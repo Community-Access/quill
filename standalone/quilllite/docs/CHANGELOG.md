@@ -4,6 +4,82 @@
 
 ### Added
 
+- **Lists announce themselves.** Arrow into a list and QuillLite says "Bulleted
+  list, 5 items"; a level deeper, "Level 2, 3 items"; on the way out, "Out of
+  list". This is the one cue a screen reader gives you everywhere else -- a
+  browser hands it a list with a count, and an editor hands it characters.
+  Markdown and HTML, over bullets, numbers and definition lists alike, with
+  "Term" and "Definition" as you move between the two halves of a `<dl>`.
+  Items are counted at your own level inside your own list, never totalled.
+  **View > Announce Lists (Ctrl+Alt+F5)** turns it off and on where you stand.
+- **A plain document now has a language**, and it decides what the keys write.
+  **Ctrl+B in a `.md` writes `**bold**`; in a `.html` it writes `<strong>`**,
+  where both used to refuse and send you to rich text. Same for italic,
+  underline and the six heading levels. `.html`, `.htm` and `.xhtml` are
+  recognised; `.md`, `.markdown`, `.mdx` and `.txt` are Markdown; a `.py` or a
+  `.conf` is plain and says so.
+- **An Insert menu**, before Format, holding what used to be Edit > Insert plus
+  three new rows. Every existing key is unchanged.
+- **Insert > Emoji (Alt+.)** -- QUILL's picker, key for key: search by name,
+  keyword, description or a typed smiley, browse by category, and read a
+  written description of every glyph. In every document, rich text included.
+- **Insert > Markdown Tag (Ctrl+Alt+I)** and **Insert > HTML Tag
+  (Ctrl+Alt+O)**. Exactly one is ever live -- whichever the document is -- and
+  the other is dimmed rather than hidden, so a reader is told it is unavailable
+  rather than left hunting for it. The HTML picker searches by what a tag
+  *does*: "dropdown" finds `select`, "checkbox" finds `input`.
+- **Whole form fields in the HTML picker** -- twenty of them, each arriving
+  labelled and wired: a `for` that matches the field's `id`, a `name` that
+  submits, options inside a select, a legend inside a fieldset, one shared
+  `name` across a radio group, and `aria-describedby` joining a field to its
+  hint and its error. The `id` is checked against your document first, so a
+  second email field is `email-2` rather than a silent duplicate. Select a word
+  and it becomes the label, with the `id` derived from it so the two agree.
+- **The HTML picker now offers 111 tags**, up from 46. The forty-six left out
+  `<dl>`, `<dt>` and `<dd>` -- which this editor *announces* as you arrow
+  through them -- along with `<figure>`, `<figcaption>`, `<caption>`, `<thead>`,
+  `<tbody>`, `<abbr>`, and `<br>` and `<hr>`, which were handled as void
+  elements and simply could not be chosen. A searchable list should be
+  complete: searching 111 is no harder than searching 46, and a missing tag is a
+  dead end.
+- **The Markdown picker gained Underline, Horizontal Rule, Strikethrough and
+  Definition List.** The first two had builders and no menu row for months.
+- **Format > Document Language (Ctrl+Alt+F6)**, and the status bar's Format
+  cell, for saying the language is not what the file name implies.
+- **A List cell on the status bar**, which says which item you are on as well
+  as which list you are in -- the one thing the speech deliberately does not.
+- **Customize Features gained a Markdown and HTML area** (18, not 17).
+
+### Changed
+
+- **A heading now says its level first**: "Heading 2, Installing" rather than
+  the line followed by "Heading 2". Not a matter of taste -- a cue queued behind
+  the reader is cancelled outright on a big caret jump, which is why Ctrl+Home
+  onto a heading announced nothing while arrowing onto it announced it.
+  **Preferences > "Say a heading's level" > After the text** restores the old
+  order for anyone who prefers it.
+- **Ctrl+Shift+M rings through all four kinds of document** -- plain text,
+  Markdown, HTML, rich text, and round again -- where it used to toggle between
+  two of them. Each stop says its own name. Enter on the Format cell does the
+  same.
+- **The status bar's Format cell names all four kinds.** It said "Plain text" or
+  "Rich text" and nothing else, so two thirds of the states its own Enter key
+  produced were invisible in the one place somebody would check.
+- **Applying a heading rewrites the line** instead of stacking on it:
+  Ctrl+Alt+2 on `### Notes` gives `## Notes`, never `## ### Notes`.
+- **Alt+Shift+Left and Right walk HTML headings** in an HTML document, instead
+  of looking for hashes it will never contain.
+- **A formatting refusal names the document it is refusing in**, and offers both
+  ways out: rich text, or giving the document a markup language.
+
+### Fixed
+
+- **F6 now leaves the status bar as well as entering it.** Escape still works;
+  so does the key that got you there. Shift+F6 too.
+- **Ctrl+Home onto a heading announces it.** See the heading-order change above.
+
+### Added
+
 - **Headings announce themselves.** Arrow onto a heading and QuillLite says
   "Heading 2". It has to say it, because no Windows edit control exposes a
   paragraph style to a screen reader -- JAWS and NVDA could see the font size

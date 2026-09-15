@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite: the small editor that actually talks to you</title>
   <style>
@@ -253,6 +253,60 @@ file of your own, or switched off</strong>, in a window that plays each
 sound as you arrow through the list. And <strong>Alt+Shift+M</strong>
 silences all of them instantly, for when you are on a call or in a quiet
 room. Press it again and they come back.</p>
+<h3 id="it-tells-you-the-shape-of-what-you-are-reading">It tells you the
+shape of what you are reading</h3>
+<p>Arrow onto a heading and QuillLite says <strong>“Heading 2,
+Installing”</strong>. Arrow into a list and it says <strong>“Bulleted
+list, 5 items”</strong>. Go a level deeper and it says <strong>“Level 2,
+3 items”</strong>. Arrow out and it says <strong>“Out of
+list”</strong>.</p>
+<p>Your screen reader cannot tell you either of those, and it is not
+failing. The text box every Windows editor is built on — Notepad’s,
+WordPad’s, ours — can pass on the font and the size and has no way at
+all to say “this paragraph is a heading” or “this is a list of five”. On
+a web page your reader tells you both, because the <em>browser</em>
+hands it both. In an editor a heading is a line and a list is some
+dashes, and nobody says anything.</p>
+<p>So QuillLite says it. Both cues stay narrow on purpose — once, on
+arrival, never while you move about inside the thing you have already
+been told about — and each has a key that turns it off where you stand,
+because whether structure is what you are listening for depends on
+whether you are writing the document or reading it.</p>
+<h3 id="it-knows-markdown-and-html-and-writes-them-for-you">It knows
+Markdown and HTML, and writes them for you</h3>
+<p>Open a <code>.md</code> and press <strong>Ctrl+B</strong> with a word
+selected: you get <code>**word**</code>. Open a <code>.html</code> and
+press the same key: you get
+<code>&lt;strong&gt;word&lt;/strong&gt;</code>. The heading keys write
+<code>## Installing</code> or
+<code>&lt;h2&gt;Installing&lt;/h2&gt;</code>. Open a <code>.py</code>
+and those keys politely decline, because a Python file has no markup and
+putting asterisks in one would be a small disaster nobody could see.</p>
+<p>There is a searchable picker for each — 111 HTML elements and the
+whole Markdown vocabulary, both looked up by what they <em>do</em>
+rather than what they are called (“glossary” finds a definition list,
+“subtitles” finds a caption track) — and the one your document cannot
+use is greyed out rather than hidden, so you are told rather than left
+hunting.</p>
+<p>And the HTML picker inserts <strong>whole form fields</strong>, not
+tags. Choose a dropdown and you get the label, the field, the options,
+and a <code>for</code> that actually points at the right
+<code>id</code>. Choose a radio group and you get a fieldset, a legend,
+and three buttons that share a name — which is the difference between a
+group and three unrelated buttons that can all be on at once. None of
+that wiring is visible, which is exactly why it gets left out, and
+exactly why it should not be left to memory. Select a word first and it
+becomes the label, with the <code>id</code> built from it so the two
+always agree.</p>
+<h3 id="an-emoji-picker-you-can-actually-use">An emoji picker you can
+actually use</h3>
+<p>Every emoji picker ever made is a wall of little pictures, which is
+precisely the one control shape that cannot be used without sight.
+<strong>Alt+.</strong> opens a list instead: search by name, by keyword,
+by a typed smiley (<code>:)</code> finds the smiling face), or browse by
+category — and every single one comes with a <strong>written description
+of what it actually shows</strong>. Insert one and QuillLite tells you
+which one went in, by name.</p>
 <h3 id="spell-check-that-tells-you-what-is-actually-wrong">Spell check
 that tells you what is actually wrong</h3>
 <p>Being told “recieve is misspelled” is being told a word that sounds
@@ -340,6 +394,9 @@ one</li>
 a paragraph, a block, each in one keystroke</li>
 <li><strong>Line tools</strong> — move, duplicate, join, sort, number,
 de-duplicate</li>
+<li><strong>Four kinds of document in one key</strong> — plain text,
+Markdown, HTML, rich text, and Ctrl+Shift+M rings between them, each
+saying its own name</li>
 <li><strong>“What is this character?”</strong> — the difference between
 a hyphen, an en dash and a minus sign, which a screen reader reads
 identically</li>

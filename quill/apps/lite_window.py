@@ -24,6 +24,8 @@ The window is assembled from four neighbours, each answering one question:
 :mod:`quill.apps.lite_window_menus` builds the bar,
 :mod:`quill.apps.lite_window_commands` answers its File and Edit items,
 :mod:`quill.apps.lite_window_format` its Format items,
+:mod:`quill.apps.lite_window_markup` its Insert items and the document's
+markup language,
 :mod:`quill.apps.lite_window_view` answers its View items, and
 :mod:`quill.apps.lite_window_theme` owns mode, theme and font, and
 :mod:`quill.apps.lite_window_status` is the status bar. What is left here is
@@ -49,6 +51,7 @@ from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
 from quill.apps.lite_window_lines import DocumentLineMixin
 from quill.apps.lite_window_marks import DocumentMarksMixin
+from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
@@ -94,6 +97,7 @@ class DocumentFrame(
     DocumentAppearanceMixin,
     DocumentStatusMixin,
     DocumentHeadingsMixin,
+    DocumentMarkupMixin,
     wx.MDIChildFrame,
 ):
     """One window, one document, one editor."""

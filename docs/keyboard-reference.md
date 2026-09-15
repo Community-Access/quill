@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 359.
+Editor commands with default bindings: 360.
 
 ## The QUILL editor
 
@@ -211,6 +211,7 @@ Editor commands with default bindings: 359.
 | Alt+Shift+E | Show Spoken Echo | `view.spoken_echo` |
 | Alt+Z | Toggle Soft Wrap | `view.toggle_soft_wrap` |
 | Ctrl+Alt+F3 | Announce Headings | `view.toggle_heading_announcements` |
+| Ctrl+Alt+F5 | Announce Lists | `view.toggle_list_announcements` |
 | Ctrl+Alt+Shift+W | Toggle Overwrite Mode | `view.toggle_overwrite_mode` |
 | Ctrl+Alt+Shift+\ | Preview Side by Side | `view.split_preview` |
 | Ctrl+F6 | Focus Preview | `view.focus_preview` |

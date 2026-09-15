@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
+from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.ui.richedit_editing import PLAIN, RICH
 
 
@@ -61,12 +62,29 @@ class _Editor:
         self._level = level
 
 
-class _Window(DocumentFormatCommandsMixin, DocumentHeadingsMixin):
+class _Settings:
+    announce_headings = True
+    announce_lists = True
+    heading_announce_position = "before"
+
+
+class _App:
+    settings = _Settings()
+
+    def save_settings(self) -> None:
+        pass
+
+
+class _Window(DocumentFormatCommandsMixin, DocumentHeadingsMixin, DocumentMarkupMixin):
     def __init__(self, text: str, cursor: int = 0, *, mode: str = PLAIN, level: int = 0) -> None:
         self.control = _Control(text, cursor)
         self.editor = _Editor(mode, level)
         self.announcements: list[str] = []
         self.modified = False
+        # A Markdown document, which is what a heading-structure test is about.
+        # The mixin reads the name; there is no file, so it is said outright.
+        self._language_override = "markdown"
+        self.app = _App()
 
     def _announce(self, message: str) -> None:
         self.announcements.append(message)

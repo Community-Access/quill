@@ -481,10 +481,20 @@ def test_editor_font_applies_to_every_window_and_is_announced(lite_window, fake_
     assert win.announcements[-1] == "Editor font Consolas, 14 point"
 
 
-def test_selection_font_is_refused_in_plain_text(lite_window):
+def test_selection_font_is_refused_outside_rich_text_and_names_this_document(lite_window):
+    """The refusal names the document it is refusing in, which is the useful half.
+
+    A font for a *selection* is rich text and nothing else. An untitled buffer
+    has no markup either, so the sentence offers **both** ways forward -- rich
+    text, or giving this document a markup language -- rather than the single
+    piece of advice that used to be right about half the time.
+    """
     win = lite_window("hello", mode="plain")
     win.cmd_selection_font()
-    assert "Not available in plain text" in win.announcements[-1]
+    said = win.announcements[-1]
+    assert "no formatting" in said
+    assert "Control Shift M" in said
+    assert "Control Alt F6" in said
 
 
 def test_selection_font_sets_the_face_and_the_size_on_the_selection(

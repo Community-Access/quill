@@ -7018,22 +7018,36 @@ file layer in both directions and dies at the control boundary.
 
 **QUILL says it itself.** `core/structure_announce.py` holds the rules and the
 latch; `ui/main_frame_structure.py` and `apps/lite_window_headings.py` are the
-thin wx wiring. Arriving at a heading announces **"Heading 2"** and nothing more.
+thin wx wiring. Arriving at a heading announces **"Heading 2, Installing"** --
+the level first, then the heading's own words, as one sentence QUILL owns.
 
 The restraint is the design, and each rule earns its place:
 
-- **The level, never the text.** The reader is already speaking the line as the
-  caret lands. Repeating the title would say every heading twice.
+- **The level first, and the text with it.** Ordering, not decoration. A cue
+  *queued behind* the reader is at the reader's mercy: on a large caret jump --
+  `Ctrl+Home`, a search hit, a bookmark -- NVDA and JAWS cancel what is pending
+  and start again on the new line, so a "Heading 1" waiting its turn is never
+  heard at all. That was reported exactly that way: arrowing onto a heading
+  announced it, `Ctrl+Home` onto the same heading did not, and the announcer had
+  the right answer in both cases. Said first, carrying the line's words, the cue
+  survives every kind of move -- and interrupting is safe *because* the text the
+  reader was about to speak is inside the sentence replacing it. It is also the
+  order a browser gives you. `heading_announce_position` = `after` restores the
+  level-alone-behind-the-reader ordering for anyone who prefers it; the
+  announcer's `replaces_reader` flag is what tells the caller which of the two
+  to do.
 - **Once, on arrival.** A latch keyed on the paragraph makes movement *inside* a
   heading silent. You are told again when you leave and return.
 - **An edit is not an arrival.** The paragraph key is a line index, so deleting a
   line above a heading moves it without the caret going anywhere. A move that
   follows a change in the text re-latches silently, or typing would be
   interrupted with "Heading 2".
-- **Never interrupting.** The cue queues behind the reader
-  (`force=False`; QuillLite gained `_announce(..., interrupt=False)` for it).
-  Cutting across the reader would cost the listener the very text they moved to
-  hear. This is the same ordering discipline as speak-then-spell.
+- **Interrupting only when the phrase carries the words.** A bare "Heading 2"
+  and every list cue queue behind the reader (`force=False`; QuillLite's
+  `_announce(..., interrupt=False)`), because cutting across the reader would
+  cost the listener the very text they moved to hear -- the same ordering
+  discipline as speak-then-spell. The composed "Heading 2, Installing"
+  interrupts, because it *is* that text.
 - **The first position is never announced.** A document that opens on its own
   title would otherwise greet every user with "Heading 1".
 - **Commands do not echo.** `format_heading` and `_adjust_heading_level` already
@@ -7056,6 +7070,80 @@ The restraint is the design, and each rule earns its place:
   `.md` / `.markdown` / `.mdx` / `.txt` and untitled buffers. The asymmetry is
   deliberate: a false positive is heard on every line, a false negative costs one
   silent key.
+
+**Form controls, inserted whole** (`core/html_forms.py`). Insert HTML Tag
+offered elements one at a time, which is the easy half of the job. A dropdown a
+screen reader can use is four things — a `<label>`, a `for` matching the field's
+`id`, the field, its `<option>`s — and three of the four are invisible: a
+missing `for` renders identically to a present one, and the page looks finished
+until somebody tabs into an unlabelled edit box.
+
+Twenty controls therefore arrive complete, with the wiring generated together so
+it cannot drift: `for`/`id` from one value, a `name` that submits, options inside
+a select, a legend inside a fieldset, one shared `name` across a radio group, an
+empty first option so a dropdown cannot submit an answer nobody gave, and
+`aria-describedby` joining a required field to its hint and its error alongside
+`aria-invalid` and a live `role="alert"`. **The generated id is checked against
+the document first** — two fields sharing one id is the commonest way a form
+that was accessible when written stops being so when copied, and its only
+symptom is that the second label focuses the first field. A selection becomes
+the label and the id is derived from it.
+
+The radio group is the case that justifies doing it this way at all: without a
+shared `name` the buttons are not a group and every one can be on at once;
+without a `fieldset` and `legend` they are a group with no name, so a reader
+announces three options and never the question they answer. Four elements and
+two attributes, with no visible evidence of any of it.
+
+Both pickers are also **complete** now — 111 HTML elements and 22 Markdown
+constructions — on the principle that a *searchable* list has no cost to being
+so. The forty-six elements that shipped before left out `<dl>`, `<dt>` and
+`<dd>`, which QUILL announces as the caret moves through them; `<figure>` and
+`<figcaption>`; `<caption>`, `<thead>` and `<tbody>`; `<abbr>`; and `<br>` and
+`<hr>`, which `VOID_HTML_TAGS` already handled and no row could reach. Ranking
+is by **what a thing does**: "glossary" finds `<dl>`, "subtitles" finds
+`<track>`, "acronym" finds `<abbr>`.
+
+**Lists.** The third cue, and the one a screen reader gives you everywhere
+else. In a browser an `<ul>` reaches the accessibility tree as a list with a
+count, and NVDA says "list with 5 items" going in, "level 2" a rung down and
+"out of list" coming out. In an editor the list is characters rather than a
+widget, so the reader has nothing to go on, and a listener writing a nested
+outline hears "dash space item" over and over with only the number of spaces,
+counted by ear, to separate one level from the next.
+
+`core/list_structure.py` does the reading and the same announcer decides what is
+worth saying. Three kinds, because all three carry different meaning and a
+reader names all three: **bullet** (`-`/`*`/`+`, `<ul>`), **numbered**
+(`1.`/`1)`, `<ol>`) and **definition** (`Term` / `: definition`, `<dl>`). Four
+events and nothing else -- in, out, a rung, and the term/definition alternation
+inside a `<dl>`, which is the one distinction inside a list that changes what
+the text *means*.
+
+Two counting rules, both chosen because the alternative is a lie told
+confidently. **Items are counted at the caret's own level within its own
+parent**, so a three-item list whose second item has four sub-items is "3 items"
+at level one and "4 items" at level two, never "7", and two sub-lists under two
+different bullets are two lists. **A fenced code block is not a list**, and
+neither is a `---` rule.
+
+The HTML side is a scanner rather than a parser, on purpose: an editor buffer is
+usually a fragment, often mid-edit and rarely well-formed, and an `html.parser`
+that raised or resynchronised on an unclosed tag would take the cue out at
+exactly the moment somebody is halfway through typing one. Comments, `<script>`
+and `<style>` are blanked to same-length runs so every offset still means what it
+meant.
+
+The switch is `view.toggle_list_announcements` (**Ctrl+Alt+F5**, a View check
+item, the `announce_lists` setting), deliberately **separate** from the heading
+one: the two answer different questions and people want different answers --
+reorganising an outline the list level is the work, and proof-reading the same
+file it is a phrase between you and every item. `Ctrl+Alt+F4` was the obvious
+neighbour and was passed over: a finger that misses the Control key on a chord
+pressed this often finds `Alt+F4`, and what that costs is the document. Off is
+expressed by building the point with `list_markup=None`, which skips the scan as
+well as the sentence and makes switching back on announce the list you are
+already in on the very next keypress.
 
 **Tables.** The same hook replaced `_maybe_announce_table_transition`, which was
 untested and said only "Entering table". Entering now gives the shape --

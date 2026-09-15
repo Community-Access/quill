@@ -101,6 +101,38 @@ PURPOSES: dict[str, str] = {
         "happens while you type, how letters are spoken, and how long each "
         "pause is before the spelling follows."
     ),
+    "Document language": (
+        "Which markup this document is written in. It decides what Bold writes, "
+        "what the heading keys write, which of the two tag pickers the Insert "
+        "menu offers, and whether the cursor can tell you what list you are in. "
+        "QuillLite reads it from the file name; this is where you say otherwise. "
+        "Nothing in your document changes -- only what the keys write from now "
+        "on. The choice lasts as long as this window is open."
+    ),
+    "Insert Markdown Tag": (
+        "Every piece of Markdown QuillLite can write, in one searchable list: "
+        "bold, italic, code, the six heading levels, bullet, numbered and task "
+        "lists, blockquote, link, image, table and footnote. Type to narrow it. "
+        "Anything selected in your document is wrapped; with nothing selected "
+        "the markup goes in empty and the cursor lands in the middle of it."
+    ),
+    "Insert HTML Tag": (
+        "Forty HTML tags, searchable by what they do as well as by what they are "
+        "called -- dropdown finds select, checkbox finds input, collapsible "
+        "finds details. Choose the tag, then give it attributes if it needs any, "
+        "or press Enter on the empty box to skip that. Anything selected in your "
+        "document is wrapped by the tag."
+    ),
+    "Insert Link": (
+        "Where the link points. Leave the address as it is to put a placeholder "
+        "in and fill it in later -- the link text is whatever you had selected."
+    ),
+    "Insert Image": (
+        "Where the image lives. Leave the address as it is to put a placeholder "
+        "in and fill it in later -- the description is whatever you had selected, "
+        "and it is what somebody using a screen reader will hear instead of the "
+        "picture, so it is worth writing."
+    ),
     "File format": (
         "How this document will be written back to disk: which character "
         "encoding, and which line endings. QuillLite normally writes back "

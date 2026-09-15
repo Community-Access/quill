@@ -164,7 +164,7 @@ def test_the_three_clashing_keys_stayed_with_their_resident() -> None:
     bound = {h: k for _m, _l, k, h, kind in COMMANDS if kind != "sep"}
     assert bound["cmd_expand_selection"] == "Ctrl+Shift+X"
     assert bound["cmd_set_bookmark"] == "Ctrl+Shift+B"
-    assert bound["cmd_switch_mode"] == "Ctrl+Shift+M"
+    assert bound["cmd_switch_document_kind"] == "Ctrl+Shift+M"
     # ...and the imports took free keys instead of evicting them.
     assert bound["cmd_exchange_point_mark"] == "Ctrl+Alt+X"
     assert bound["cmd_select_block"] == "Ctrl+Alt+Shift+B"

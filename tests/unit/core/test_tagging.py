@@ -115,10 +115,17 @@ def test_html_choices_include_form_controls() -> None:
         assert tag in HTML_TAG_CHOICES
 
 
-def test_search_html_choices_matches_radio_to_input() -> None:
+def test_search_html_choices_matches_radio_to_a_whole_group_then_to_input() -> None:
+    """ "radio" means a radio *group* to nearly everybody who types it.
+
+    A bare ``<input type="radio">`` is one button, and one radio button on its
+    own is a control that cannot be switched off again. The whole group -- a
+    fieldset, a legend, a shared name -- is what the word means, so it ranks
+    first. ``input`` is still right behind it for anyone who meant the element.
+    """
     results = search_html_tag_choices("radio")
-    assert results
-    assert results[0] == "input"
+    assert results[0] == "Form field: radio group"
+    assert "input" in results
 
 
 def test_search_html_choices_matches_heading_words() -> None:

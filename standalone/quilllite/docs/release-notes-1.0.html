@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite 1.0 — What's New</title>
   <style>
@@ -285,7 +285,8 @@ document you thought you had lost.</p>
 <h3 id="a-heading-tells-you-it-is-a-heading">A heading tells you it is a
 heading</h3>
 <p>Make a line a heading, arrow away, and arrow back onto it. QuillLite
-says <strong>“Heading 2”</strong>.</p>
+says <strong>“Heading 2, Installing”</strong> – the level, then the
+heading’s own words.</p>
 <p>That sounds like it should have worked all along, and here is why it
 did not. Your screen reader can only read what a program hands it, and
 the text box every Windows editor is built on – Notepad’s, WordPad’s,
@@ -295,12 +296,20 @@ own machinery for the job. So a heading, to a listener, read exactly
 like an ordinary sentence.</p>
 <p>QuillLite now says it instead. Three things about how:</p>
 <ul>
-<li><strong>The level, and not the text.</strong> Your reader is already
-reading the line. You do not need to hear the title twice.</li>
+<li><strong>The level first, and the words with it.</strong> This is one
+sentence QuillLite says, not a note added to your reader’s. It has to be
+that way round: a cue waiting its turn behind the reader is thrown away
+whenever the reader starts again, which is what happens on every big
+jump – <strong>Ctrl+Home</strong>, a search hit, a bookmark. Somebody
+reported exactly that: arrowing onto a heading announced it, Ctrl+Home
+onto the same heading said nothing at all. It is also the order a web
+browser gives you.</li>
 <li><strong>Once, when you get there.</strong> Moving about inside the
 heading stays quiet. Leave it and come back and you are told again.</li>
-<li><strong>After your reader, never over it.</strong> The cue waits its
-turn, so you keep the words you moved there to hear.</li>
+<li><strong>The other way round is still there.</strong> If you would
+rather hear the line and take the level as a footnote,
+<strong>Preferences ▸ Say a heading’s level ▸ After the text</strong>
+does that. Same information, other order.</li>
 </ul>
 <p>It works the same in a plain-text document, where a heading is a line
 starting with <code>#</code>. That is new too: <strong>Next
@@ -321,6 +330,181 @@ have not named yet, it is. In a <code>.py</code>, a <code>.sh</code> or
 an <code>.ini</code> it is a comment, and QuillLite leaves it alone –
 otherwise opening a build script would have it announcing “Heading 1”
 down most of the page.</p>
+<h3 id="and-a-list-tells-you-it-is-a-list">And a list tells you it is a
+list</h3>
+<p>Arrow into a list and you hear <strong>“Bulleted list, 5
+items”</strong>. Go a level deeper and you hear <strong>“Level 2, 3
+items”</strong>. Arrow out and you hear <strong>“Out of
+list”</strong>.</p>
+<p>This one is worth dwelling on, because it is the only thing in this
+release your screen reader already does <em>everywhere else</em>. Open a
+web page with a list on it and your reader will tell you it is a list
+and how long it is – because the browser hands it a list. Open the same
+list in an editor and it is not a list at all, it is a row of dashes and
+some spaces, and your reader has nothing to pass on. Writing a nested
+outline, the only thing separating the second level from the third is
+the number of spaces, counted by ear.</p>
+<p>It works wherever a list is real: Markdown <code>-</code>,
+<code>*</code>, <code>+</code>, <code>1.</code>, and HTML
+<code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>,
+<code>&lt;dl&gt;</code> – and a definition list says
+<strong>“Term”</strong> and <strong>“Definition”</strong> as you move
+between the two, because which of them you are typing into decides what
+the words mean.</p>
+<p><strong>The counting is per level.</strong> A list of three whose
+second item has four sub-items is “3 items” where you are and “4 items”
+where they are. Never seven. Somebody reorganising an outline by ear is
+relying on that number.</p>
+<p>It stays quiet everywhere it should: moving down a list (your reader
+is already reading each item), on a <code>---</code> rule, inside a code
+fence, in a <code>.py</code> where a dash is a flag, and in rich text
+where the bullets are the control’s own.</p>
+<p><strong>View ▸ Announce Lists (Ctrl+Alt+F5)</strong> turns it off
+where you stand. It is a separate switch from the heading one on purpose
+– reorganising an outline, the level <em>is</em> the work; proof-reading
+the same file, it is one more thing between you and every item – and the
+status bar’s new <strong>List</strong> cell will tell you which item of
+how many you are on whenever you want to ask.</p>
+<h3 id="bold-now-works-in-a-markdown-file">Bold now works in a Markdown
+file</h3>
+<p><strong>Ctrl+B</strong> in a <code>.md</code> used to say “Not
+available in plain text. Press Control Shift M to switch to rich text.”
+True, and beside the point: somebody writing Markdown does not want rich
+text. They want two asterisks.</p>
+<p>So a plain document now has a <strong>language</strong>, and it
+decides what the keys write:</p>
+<table>
+<thead>
+<tr>
+<th>In a</th>
+<th><strong>Ctrl+B</strong> writes</th>
+<th><strong>Ctrl+Alt+2</strong> writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown document</td>
+<td><code>**bold**</code></td>
+<td><code>## Heading</code></td>
+</tr>
+<tr>
+<td>HTML document</td>
+<td><code>&lt;strong&gt;bold&lt;/strong&gt;</code></td>
+<td><code>&lt;h2&gt;Heading&lt;/h2&gt;</code></td>
+</tr>
+<tr>
+<td>Plain text document</td>
+<td>nothing, and says why</td>
+<td>nothing, and says why</td>
+</tr>
+</tbody>
+</table>
+<p>QuillLite reads the language from the file name – <code>.md</code>
+and <code>.txt</code> are Markdown, the newly-recognised
+<code>.html</code>, <code>.htm</code> and <code>.xhtml</code> are HTML,
+a <code>.py</code> or a <code>.conf</code> is plain – and it is never
+binding. <strong>Ctrl+Shift+M</strong> rings through all four kinds of
+document, one press at a time, each saying its own name;
+<strong>Ctrl+Alt+F6</strong> goes straight to one; and the status bar’s
+<strong>Format</strong> cell says which you are in.</p>
+<p>The announcement names the markup rather than the effect – “Bold in
+Markdown”, not “Bold on”. Nothing went bold. Two asterisks appeared, and
+you need to know which of the two just happened.</p>
+<h3 id="an-insert-menu-with-emoji-and-two-tag-pickers">An Insert menu,
+with emoji and two tag pickers</h3>
+<p>Insert was three rows tucked inside Edit. It is a menu of its own
+now, sitting <strong>before Format</strong> – the order the work happens
+in: you put a thing in, then you format it. Nothing you already press
+has moved.</p>
+<ul>
+<li><strong>Alt+.</strong> opens the <strong>emoji picker</strong> –
+QUILL’s own, key for key. Search by name, by keyword, by what it looks
+like, or by a typed smiley (<code>:)</code> finds the smiling face).
+Every emoji comes with a written description of what it actually shows,
+which is the entire point: a wall of little pictures is the one control
+shape that cannot be used without sight.</li>
+<li><strong>Ctrl+Alt+I</strong> opens the <strong>Markdown tag
+picker</strong> – the whole vocabulary, searchable.</li>
+<li><strong>Ctrl+Alt+O</strong> opens the <strong>HTML tag
+picker</strong> – forty tags, and it searches by what they <em>do</em>:
+type “dropdown” and find <code>select</code>, “checkbox” and find
+<code>input</code>, “collapsible” and find <code>details</code>.</li>
+</ul>
+<p>Only one of the two tag pickers is ever available, and it is
+whichever your document is. The other is <strong>greyed out rather than
+hidden</strong>, so your reader tells you it is unavailable the moment
+you land on it instead of leaving you hunting the menus for something
+you know is there.</p>
+<h3 id="forms-that-are-accessible-before-you-start">Forms that are
+accessible before you start</h3>
+<p>The HTML picker’s top twenty rows are not tags. They are
+<strong>finished form controls</strong>, and they are the reason this
+picker is worth having.</p>
+<p>Putting a <code>&lt;select&gt;</code> into a page is the easy half.
+The half that decides whether anybody can use the form is the wiring — a
+<code>&lt;label&gt;</code>, a <code>for</code> that matches the field’s
+<code>id</code>, the options inside — and every part of that wiring is
+<strong>invisible</strong>. A missing <code>for</code> renders exactly
+like a present one. A set of radio buttons without a shared
+<code>name</code> looks exactly like a group, except every button can be
+switched on at once. Two fields that share an <code>id</code> look
+perfect until somebody clicks the second label and the first field takes
+focus.</p>
+<p>Those are not things you can check by looking, and they are certainly
+not things to leave to memory at the moment somebody is trying to write
+a form. So they come with the control:</p>
+<ul>
+<li><strong>Text, email, password, telephone, web address, number, date,
+search and file upload</strong> — each labelled, each with
+<code>autocomplete</code> where a browser can help fill it in.</li>
+<li><strong>A dropdown</strong> with its label, its options, and an
+empty first choice, so it cannot quietly submit an answer nobody
+gave.</li>
+<li><strong>A radio group</strong> in a <code>&lt;fieldset&gt;</code>
+with a <code>&lt;legend&gt;</code>, three buttons sharing one
+<code>name</code>, and exactly one default.</li>
+<li><strong>A checkbox</strong>, and a checkbox group with the same
+fieldset treatment.</li>
+<li><strong>An autocomplete field</strong> joined to its own suggestion
+list.</li>
+<li><strong>A required field with a hint and an error message</strong>,
+both joined to the field with <code>aria-describedby</code>, plus
+<code>aria-invalid</code> and a live <code>role="alert"</code> — the
+pattern that turns red text into something a screen reader reports.</li>
+<li><strong>A whole contact form</strong>, if you want the lot in one
+keystroke.</li>
+</ul>
+<p><strong>Select a word first and it becomes the label</strong>, with
+the <code>id</code> made from it so the two agree: select “Postcode”,
+choose a text field, and you have a Postcode field already wired. And
+<strong>the <code>id</code> is checked against your document before it
+is used</strong> — a second email field is <code>email-2</code>, never a
+silent duplicate of the first.</p>
+<p>The picker also grew from forty-six tags to <strong>111</strong>,
+which matters more than it sounds: the missing ones included
+<code>&lt;dl&gt;</code>, <code>&lt;dt&gt;</code> and
+<code>&lt;dd&gt;</code> — the very lists QuillLite now reads aloud to
+you — along with <code>&lt;figure&gt;</code> and
+<code>&lt;figcaption&gt;</code>, the table parts that make a table
+readable, <code>&lt;abbr&gt;</code>, and <code>&lt;br&gt;</code> and
+<code>&lt;hr&gt;</code>, which the app knew how to write and could not
+offer. A searchable list ought to be complete; searching 111 is no
+harder than searching 46, and a tag that is missing is a dead end.</p>
+<p>The Markdown picker gained <strong>Underline</strong>,
+<strong>Horizontal Rule</strong>, <strong>Strikethrough</strong> and
+<strong>Definition List</strong> for the same reason — the first two it
+could already write and had never offered.</p>
+<h3 id="smaller-things-you-asked-for">Smaller things you asked for</h3>
+<ul>
+<li><strong>F6 now gets you out of the status bar as well as
+in.</strong> So does Shift+F6. Escape always did, and still does.</li>
+<li><strong>Ctrl+Home onto a heading announces it.</strong> See above –
+the cue moved in front of your reader instead of behind it.</li>
+<li><strong>The status bar’s Format cell knows all four kinds of
+document.</strong> It used to say “Plain text” or “Rich text” and
+nothing else, so two thirds of what Ctrl+Shift+M does were invisible in
+the one place you would look to check.</li>
+</ul>
 <p>One more thing came with it, in QUILL for All rather than here: a
 heading saved to an <code>.rtf</code> file is now a proper Word heading.
 It used to be big bold text with no style attached, so Word’s navigation

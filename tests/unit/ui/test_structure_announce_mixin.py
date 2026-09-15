@@ -1,4 +1,4 @@
-"""QUILL says "Heading 2" and "Table, 3 rows, 2 columns" because nothing else can.
+"""QUILL says "Heading 2", "Table, 3 rows, 2 columns" and "Bulleted list, 5 items".
 
 The wiring, not the rules -- those are ``tests/unit/core/test_structure_announce``.
 What is tested here is that the mixin asks the right mode for the heading level,
@@ -41,6 +41,11 @@ class _Editor:
 
 class _Settings:
     announce_headings = True
+    announce_lists = True
+    # "after" keeps these tests reading as they did: the level alone, queued
+    # behind the reader. The "before" default is exercised by its own class at
+    # the bottom, where the composed sentence is the thing under test.
+    heading_announce_position = "after"
 
 
 class _Frame(StructureAnnounceMixin):
@@ -58,9 +63,11 @@ class _Frame(StructureAnnounceMixin):
         self.editor = _Editor(0, wrapper)
         self.settings = _Settings()
         self.announcements: list[str] = []
+        self.interrupted: list[bool] = []
 
-    def _announce(self, message: str) -> None:
+    def _announce(self, message: str, *, force: bool = False) -> None:
         self.announcements.append(message)
+        self.interrupted.append(bool(force))
 
     def _document_text_for_display(self) -> str:
         return self.text
@@ -249,3 +256,182 @@ class TestTheToggle:
         frame.announcements.clear()
         frame.announce_structure_at_caret()
         assert frame.announcements == []
+
+
+LISTS = """\
+Before the list.
+
+- fruit
+    - apple
+    - pear
+- veg
+
+After the list.
+"""
+
+HTML_LISTS = """\
+<p>Before.</p>
+<ol>
+  <li>first</li>
+  <li>second</li>
+</ol>
+<p>After.</p>
+"""
+
+
+class TestLists:
+    """The cue a screen reader gives you in a browser and cannot give you here."""
+
+    def test_entering_a_markdown_list_names_it_and_counts_it(self) -> None:
+        frame = _Frame(LISTS)
+        frame.at("Before the list")
+        frame.at("fruit")
+        assert frame.announcements == ["Bulleted list, 2 items"]
+
+    def test_going_a_level_down_says_the_level_and_the_new_count(self) -> None:
+        frame = _Frame(LISTS)
+        frame.at("Before the list")
+        frame.at("fruit")
+        frame.announcements.clear()
+        frame.at("apple")
+        assert frame.announcements == ["Level 2, 2 items"]
+
+    def test_leaving_says_out_of_list(self) -> None:
+        frame = _Frame(LISTS)
+        frame.at("fruit")
+        frame.announcements.clear()
+        frame.at("After the list")
+        assert frame.announcements == ["Out of list"]
+
+    def test_moving_between_items_of_one_list_is_silent(self) -> None:
+        # What the caret does nearly all the time in a list. The reader is
+        # already speaking the item; a cue per item would make lists unusable.
+        frame = _Frame(LISTS)
+        frame.at("fruit")
+        frame.announcements.clear()
+        frame.at("veg")
+        assert frame.announcements == []
+
+    def test_html_lists_are_read_with_the_html_scanner(self) -> None:
+        frame = _Frame(HTML_LISTS, markup="html")
+        frame.at("Before")
+        frame.at("first")
+        assert frame.announcements == ["Numbered list, 2 items"]
+
+    def test_a_plain_document_never_hears_about_lists(self) -> None:
+        # A letter is full of hyphens. A cue that fired on them would be
+        # superstition rather than help, so "plain" is searched for nothing.
+        frame = _Frame("Dear Kate,\n- and this is the bit -\nyours\n", markup="plain")
+        frame.at("Dear")
+        frame.at("and this")
+        assert frame.announcements == []
+
+    def test_a_rich_document_never_hears_about_markup_lists(self) -> None:
+        # Rich bullets are the control's own, set through the Text Object Model.
+        # A "-" typed into one is a hyphen.
+        frame = _Frame(LISTS, mode="rich", wrapper=_Wrapper(0))
+        frame.at("Before the list")
+        frame.at("fruit")
+        assert frame.announcements == []
+
+    def test_the_toggle_names_the_consequence_and_saves(self, monkeypatch) -> None:
+        saved: list[object] = []
+        monkeypatch.setattr(
+            "quill.ui.main_frame_structure.save_settings", lambda s: saved.append(s)
+        )
+        frame = _Frame(LISTS)
+        frame.toggle_list_announcements()
+        assert frame.settings.announce_lists is False
+        assert frame.announcements == ["Lists will not be announced"]
+        assert len(saved) == 1
+        frame.announcements.clear()
+        frame.toggle_list_announcements()
+        assert frame.announcements == ["Lists announced as you enter them"]
+
+    def test_switching_lists_off_leaves_headings_alone(self, monkeypatch) -> None:
+        # The whole case for two switches rather than one. Silencing either must
+        # never silence the other.
+        monkeypatch.setattr("quill.ui.main_frame_structure.save_settings", lambda _s: None)
+        frame = _Frame("# Title\n\n- bread\n- milk\n\n## Next\n")
+        frame.settings.announce_lists = False
+        frame.at("Title")
+        frame.at("bread")
+        assert frame.announcements == []
+        frame.at("Next")
+        assert frame.announcements == ["Heading 2"]
+
+    def test_switching_headings_off_leaves_lists_alone(self, monkeypatch) -> None:
+        monkeypatch.setattr("quill.ui.main_frame_structure.save_settings", lambda _s: None)
+        frame = _Frame("# Title\n\n- bread\n- milk\n")
+        frame.settings.announce_headings = False
+        frame.at("Title")
+        frame.at("bread")
+        assert frame.announcements == ["Bulleted list, 2 items"]
+
+
+class TestWhereTheLevelGoes:
+    """ "Heading 2, Installing" or "Installing... Heading 2" -- and why it matters.
+
+    Not a matter of taste. A cue *queued behind* the reader is at the reader's
+    mercy: on a large caret jump NVDA and JAWS cancel what is pending and start
+    again on the new line, so the level waiting its turn is never heard at all.
+    That was reported exactly that way -- arrowing onto a heading announced it,
+    Ctrl+Home onto the same heading did not.
+    """
+
+    def test_before_says_the_level_and_then_the_words_in_one_sentence(self) -> None:
+        frame = _Frame()
+        frame.settings.heading_announce_position = "before"
+        frame.at("body line")
+        frame.at("Section")
+        assert frame.announcements == ["Heading 2, Section"]
+
+    def test_before_interrupts_because_the_words_are_already_in_the_sentence(self) -> None:
+        # Interrupting is safe here precisely because the text the reader was
+        # about to say is inside the phrase that replaces it.
+        frame = _Frame()
+        frame.settings.heading_announce_position = "before"
+        frame.at("body line")
+        frame.at("Section")
+        assert frame.interrupted == [True]
+
+    def test_after_says_the_level_alone_and_waits_its_turn(self) -> None:
+        frame = _Frame()
+        frame.settings.heading_announce_position = "after"
+        frame.at("body line")
+        frame.at("Section")
+        assert frame.announcements == ["Heading 2"]
+        assert frame.interrupted == [False]
+
+    def test_a_jump_to_the_top_of_the_document_still_announces(self) -> None:
+        # The reported bug, from both ends: the announcer always had the right
+        # answer, and in "after" mode the reader threw it away.
+        frame = _Frame()
+        frame.settings.heading_announce_position = "before"
+        frame.at("more body" if "more body" in frame.text else "body line")
+        frame.announcements.clear()
+        frame.editor.SetInsertionPoint(0)
+        frame.announce_structure_at_caret()
+        assert frame.announcements == ["Heading 1, Title"]
+
+    def test_a_settings_object_that_predates_the_field_leads_with_the_level(self) -> None:
+        # The default that works on every kind of move, not the lossy one.
+        class _Old:
+            announce_headings = True
+            announce_lists = True
+
+        frame = _Frame()
+        frame.settings = _Old()
+        frame.at("body line")
+        frame.at("Section")
+        assert frame.announcements == ["Heading 2, Section"]
+
+    def test_the_list_cue_is_unaffected_by_where_the_level_goes(self) -> None:
+        # Lists never carry their item's text: the reader reads the item, and
+        # the cue is about the container.
+        frame = _Frame(LISTS)
+        frame.settings.heading_announce_position = "before"
+        frame.at("Before the list")
+        frame.at("fruit")
+        assert frame.announcements == ["Bulleted list, 2 items"]
+        assert frame.interrupted == [False]

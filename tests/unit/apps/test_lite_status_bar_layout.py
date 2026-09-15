@@ -40,7 +40,18 @@ class _Editor:
 
 
 class _Bar(wx.Frame, DocumentStatusMixin):
-    """Just enough window to build, fill and lay out the real cell row."""
+    """Just enough window to build, fill and lay out the real cell row.
+
+    The markup half of the window is stubbed rather than mixed in: this file is
+    about *widths*, and what it needs from the language is the longest label the
+    Format cell can ever show.
+    """
+
+    def document_kind_label(self) -> str:
+        return "Plain text"
+
+    def markup_surface(self) -> str | None:
+        return None
 
     def __init__(self) -> None:
         super().__init__(None, size=(900, 300))

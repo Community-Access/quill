@@ -12,6 +12,12 @@ from dataclasses import dataclass
 
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.markdown_breaks import HARD_BREAK_LABELS, HARD_BREAK_STYLES
+from quill.core.structure_announce import (
+    HEADING_POSITION_LABELS as _HEADING_POSITION_LABELS,
+)
+from quill.core.structure_announce import (
+    HEADING_POSITIONS as _HEADING_POSITIONS,
+)
 
 #: Bump when the exported document shape changes in a backward-incompatible way.
 SCHEMA_VERSION = 1
@@ -22,6 +28,12 @@ SCHEMA_VERSION = 1
 #: two settings rather than one, and sends somebody looking for the other.
 _FEEDBACK_CHOICES: tuple[tuple[str, str], ...] = tuple(
     (str(mode), label) for mode, label in ACTION_FEEDBACK_LABELS
+)
+
+#: Derived from the shared table rather than retyped, so QUILL's Preferences
+#: page and QuillLite's cannot describe the same two orders in different words.
+_HEADING_POSITION_CHOICES = tuple(
+    (key, _HEADING_POSITION_LABELS[key]) for key in _HEADING_POSITIONS
 )
 
 
@@ -1212,6 +1224,41 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         ),
         choices=_FEEDBACK_CHOICES,
         keywords=("find", "search", "not found", "feedback", "sound", "speech", "f3"),
+    ),
+    SettingSpec(
+        "heading_announce_position",
+        "Say a heading's level",
+        "accessibility",
+        "choice",
+        (
+            "Where the level goes relative to the heading itself. Before the "
+            'text is one sentence QUILL says on its own -- "Heading 2, '
+            'Installing" -- and it is the one that survives a jump: pressing '
+            "Ctrl+Home or landing on a search hit makes a screen reader cancel "
+            "whatever it was about to say, and a level waiting its turn behind "
+            "that is never heard at all. After the text lets your reader read "
+            "the line and adds the level behind it, which is quieter on "
+            "ordinary line-by-line reading. Shared with QuillLite."
+        ),
+        choices=_HEADING_POSITION_CHOICES,
+        keywords=("heading", "level", "announce", "before", "after", "order", "speech"),
+    ),
+    SettingSpec(
+        "announce_lists",
+        "Say what list the cursor is in",
+        "accessibility",
+        "bool",
+        (
+            'Say "Bulleted list, 5 items" entering a list, "Level 2, 3 items" a '
+            'rung down, and "Out of list" leaving one -- in Markdown and HTML, '
+            "over ul, ol and dl alike. This is the one cue a screen reader gives "
+            "you everywhere else: a browser hands it a list with a count, and an "
+            "editor hands it characters. Switched separately from the heading "
+            "cue (Ctrl+Alt+F5) because reorganising an outline the list level is "
+            "the work, and proof-reading the same file it is a phrase between "
+            "you and every item."
+        ),
+        keywords=("list", "bullet", "numbered", "outline", "announce", "level", "nesting"),
     ),
     SettingSpec(
         "sound_events_disabled",

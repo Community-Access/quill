@@ -58,6 +58,7 @@ from typing import Any
 import wx
 
 from quill.core.heading_levels import heading_level_at
+from quill.core.list_structure import list_context_at
 from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
 from quill.core.marks import line_column_for_position
 from quill.core.metrics import compute_document_stats
@@ -167,7 +168,11 @@ CELLS: tuple[StatusCell, ...] = (
     StatusCell(
         "format",
         "Format",
-        "Plain text or rich text. Press Enter to switch this document to the other one.",
+        "What kind of document this is: plain text, Markdown, HTML or rich "
+        "text. It decides what Bold writes, what the heading keys write, which "
+        "of the two tag pickers the Insert menu offers, and whether the cursor "
+        "can tell you what list you are in. Press Enter to ring on to the next "
+        "kind; press Control Alt F6 to go straight to one.",
     ),
     StatusCell(
         "heading",
@@ -175,6 +180,15 @@ CELLS: tuple[StatusCell, ...] = (
         "The heading the cursor is inside -- the point-size ladder in a rich "
         "text document, the Markdown hashes in a plain one. "
         "Press Enter for the list of every heading.",
+    ),
+    StatusCell(
+        "list",
+        "List",
+        "The list the cursor is inside, how many items it has at this level, "
+        "and how far down you are -- the three facts a screen reader gives you "
+        "about a list on a web page and cannot give you about one in an editor. "
+        "It reads 'Not in a list' when you are not. Press Enter to stop or "
+        "resume announcing lists as you move.",
     ),
     StatusCell(
         "encoding",
@@ -370,8 +384,9 @@ class DocumentStatusMixin:
             # QUILL's own wording for the same cell, so the two products do not
             # describe one mode two ways.
             "tab_mode": "Tab char" if getattr(self, "_tab_inserts_literal", True) else "Indent",
-            "format": "Rich text" if self.editor.mode == RICH else "Plain text",
+            "format": self.document_kind_label(),
             "heading": self._heading_text(),
+            "list": self._list_text(text),
             "encoding": encoding_name(self.encoding),
             "line_endings": newline_name(self.newline),
             "saved": "Modified" if self.modified else "Saved",
@@ -395,6 +410,32 @@ class DocumentStatusMixin:
         else:
             level = self.editor.heading_level_at_caret()
         return f"Heading {level}" if level else "Body text"
+
+    def _list_text(self, text: str) -> str:
+        """Which list the caret is in, or "Not in a list".
+
+        The cell says one thing the spoken cue deliberately does not: **which
+        item you are on**. Saying "item 4 of 9" aloud on every arrow press would
+        be the over-announcement GATE-13 is about, and never being able to find
+        out is its own problem -- somebody halfway through reordering a list of
+        nine has an entirely reasonable question and nothing to ask. A cell
+        answers it on demand and costs nothing until it is read.
+
+        One scan, on the coalesced refresh rather than per keystroke, over the
+        text the rest of the bar has already been handed. A failure reads as
+        "Not in a list", never as the bar stopping.
+        """
+        surface = self.markup_surface()
+        if surface is None:
+            return "Not in a list"
+        try:
+            context = list_context_at(text, self.control.GetInsertionPoint(), markup_kind=surface)
+        except Exception:  # noqa: BLE001 - a status cell must never break typing
+            return "Not in a list"
+        if context is None:
+            return "Not in a list"
+        where = f"{context.label}, {context.index} of {context.size}"
+        return where if context.depth <= 1 else f"{where}, level {context.depth}"
 
     def _set_status_message(self, message: str) -> None:
         """Put a spoken message in the message cell so it can be read back.
@@ -468,7 +509,13 @@ class DocumentStatusMixin:
             self._focus_cell(len(CELLS) - 1)
         elif code == wx.WXK_TAB:
             self._focus_cell(index + (-1 if event.ShiftDown() else 1))
-        elif code == wx.WXK_ESCAPE:
+        elif code in {wx.WXK_ESCAPE, wx.WXK_F6}:
+            # F6 as well as Escape, and for the reason F6 got you here: a key
+            # that takes you somewhere should take you back. Shift+F6 is the
+            # same journey backwards and lands in the same place. A listener who
+            # pressed F6 to check a line number and pressed it again to get on
+            # with their sentence should not find that the second press did
+            # nothing at all.
             self.control.SetFocus()
         elif code in {wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER, wx.WXK_SPACE}:
             self._activate_status_cell(key)
@@ -508,8 +555,13 @@ _CELL_ACTIONS: dict[str, str] = {
     "position": "cmd_goto_line",
     "typing_mode": "cmd_toggle_overwrite",
     "tab_mode": "cmd_toggle_tab_mode",
-    "format": "cmd_switch_mode",
+    "format": "cmd_switch_document_kind",
     "heading": "cmd_list_headings",
+    # Enter on List toggles the cue rather than opening anything, because there
+    # is nothing to open: the cell has already said where you are, and the only
+    # thing left to decide about a list is whether you want to keep hearing
+    # about it.
+    "list": "cmd_toggle_list_announcements",
     "encoding": "cmd_file_format",
     "line_endings": "cmd_file_format",
     "saved": "cmd_save",

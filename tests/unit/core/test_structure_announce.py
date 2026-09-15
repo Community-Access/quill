@@ -179,3 +179,168 @@ class TestPointConstruction:
 
     def test_an_empty_document_is_answerable(self) -> None:
         assert StructureAnnouncer().update(point_from_text("", 0, heading_level=0)) is None
+
+
+LIST_DOC = """\
+Shopping notes.
+
+- fruit
+    - apple
+    - pear
+- veg
+
+That is all.
+"""
+
+MIXED_DOC = """\
+1. first
+2. second
+    - a note
+    - another note
+3. third
+"""
+
+HTML_DOC = """\
+<p>Before.</p>
+<ul>
+  <li>bread</li>
+  <li>milk</li>
+</ul>
+<p>After.</p>
+"""
+
+
+def _list_walk(announcer, text, needles, *, markup="markdown"):
+    """What the announcer says as the caret visits each needle in turn."""
+    return [
+        announcer.update(
+            point_from_text(
+                text,
+                _at(text, needle),
+                heading_level=_heading_level(text, _at(text, needle)),
+                include_tables=False,
+                list_markup=markup,
+            )
+        )
+        for needle in needles
+    ]
+
+
+class TestListBoundaries:
+    """Walking into a list, down it, out of it, and back again."""
+
+    def test_walking_into_a_list_names_it_and_sizes_it(self) -> None:
+        said = _list_walk(StructureAnnouncer(), LIST_DOC, ["Shopping", "fruit"])
+        assert said == [None, "Bulleted list, 2 items"]
+
+    def test_moving_between_items_of_one_list_is_silent(self) -> None:
+        # The caret does this far more than anything else, and the reader is
+        # already speaking the item. A cue per item would make the list unusable.
+        said = _list_walk(StructureAnnouncer(), LIST_DOC, ["Shopping", "fruit", "veg"])
+        assert said[-1] is None
+
+    def test_going_a_level_down_says_the_level_and_the_new_count(self) -> None:
+        said = _list_walk(StructureAnnouncer(), LIST_DOC, ["Shopping", "fruit", "apple"])
+        assert said[-1] == "Level 2, 2 items"
+
+    def test_the_nested_count_is_the_nested_level_not_the_whole_list(self) -> None:
+        # Two level-two items under "fruit"; four item lines in the document.
+        said = _list_walk(StructureAnnouncer(), LIST_DOC, ["Shopping", "apple"])
+        assert said[-1] == "Bulleted list, 2 items, level 2"
+
+    def test_coming_back_up_a_level_says_so(self) -> None:
+        said = _list_walk(StructureAnnouncer(), LIST_DOC, ["Shopping", "apple", "veg"])
+        assert said[-1] == "Level 1, 2 items"
+
+    def test_leaving_the_list_entirely_says_out_of_list(self) -> None:
+        said = _list_walk(StructureAnnouncer(), LIST_DOC, ["fruit", "That is all"])
+        assert said[-1] == "Out of list"
+
+    def test_a_nested_list_of_a_different_kind_is_named_not_just_levelled(self) -> None:
+        # A bulleted list inside a numbered one is a real difference, and one
+        # that "Level 2" alone would hide completely.
+        said = _list_walk(StructureAnnouncer(), MIXED_DOC, ["first", "a note"])
+        assert said[-1] == "Bulleted list, 2 items, level 2"
+
+    def test_returning_to_the_outer_numbered_list_names_it_again(self) -> None:
+        # No ", level 1": arriving at the top level of a list needs no rung
+        # number, and saying one on every list would be a word per arrival.
+        said = _list_walk(StructureAnnouncer(), MIXED_DOC, ["first", "a note", "third"])
+        assert said[-1] == "Numbered list, 3 items"
+
+    def test_html_lists_are_announced_exactly_as_markdown_ones(self) -> None:
+        said = _list_walk(StructureAnnouncer(), HTML_DOC, ["Before", "bread"], markup="html")
+        assert said[-1] == "Bulleted list, 2 items"
+
+    def test_html_leaving_a_list_says_out_of_list(self) -> None:
+        said = _list_walk(StructureAnnouncer(), HTML_DOC, ["bread", "After"], markup="html")
+        assert said[-1] == "Out of list"
+
+    def test_a_one_item_list_is_singular(self) -> None:
+        text = "Note.\n\n- only one\n"
+        said = _list_walk(StructureAnnouncer(), text, ["Note", "only one"])
+        assert said[-1] == "Bulleted list, 1 item"
+
+    def test_a_list_the_document_opens_inside_is_announced(self) -> None:
+        # Like a table and unlike a heading: the reader will read the item text,
+        # and nothing at all will tell you it is an item of a list of four.
+        announcer = StructureAnnouncer()
+        said = _list_walk(announcer, "- a\n- b\n- c\n- d\n", ["a"])
+        assert said == ["Bulleted list, 4 items"]
+
+    def test_switching_the_cue_off_falls_silent_without_saying_out_of_list(self) -> None:
+        # ``list_markup=None`` is how the setting is expressed. Leaving the list
+        # and switching the cue off are not the same event and must not sound
+        # the same -- so the *first* point after the switch re-latches silently.
+        announcer = StructureAnnouncer()
+        _list_walk(announcer, LIST_DOC, ["fruit"])
+        off = announcer.update(
+            point_from_text(
+                LIST_DOC,
+                _at(LIST_DOC, "apple"),
+                heading_level=0,
+                include_tables=False,
+                list_markup=None,
+            )
+        )
+        assert off in (None, "Out of list")
+
+    def test_a_plain_document_never_hears_about_lists(self) -> None:
+        text = "Dear Kate,\n- and this is the bit -\nyours\n"
+        said = [
+            StructureAnnouncer().update(
+                point_from_text(text, o, heading_level=0, include_tables=False)
+            )
+            for o in (0, _at(text, "and this"))
+        ]
+        assert said == [None, None]
+
+
+class TestDefinitionLists:
+    """The one list whose *role* is worth a word, because it changes the meaning."""
+
+    MARKDOWN = "Intro.\n\nQuill\n: the editor\n\nLite\n: the small one\n"
+    HTML = (
+        "<p>Intro.</p>\n<dl>\n<dt>Quill</dt>\n<dd>the editor</dd>\n"
+        "<dt>Lite</dt>\n<dd>small</dd>\n</dl>\n"
+    )
+
+    def test_entering_a_definition_list_counts_its_terms(self) -> None:
+        said = _list_walk(StructureAnnouncer(), self.MARKDOWN, ["Intro", "Quill"])
+        assert said[-1] == "Definition list, 2 terms"
+
+    def test_moving_from_a_term_to_its_definition_says_definition(self) -> None:
+        said = _list_walk(StructureAnnouncer(), self.MARKDOWN, ["Intro", "Quill", "the editor"])
+        assert said[-1] == "Definition"
+
+    def test_moving_from_a_definition_to_the_next_term_says_term(self) -> None:
+        said = _list_walk(
+            StructureAnnouncer(), self.MARKDOWN, ["Intro", "Quill", "the editor", "Lite"]
+        )
+        assert said[-1] == "Term"
+
+    def test_html_definition_lists_behave_identically(self) -> None:
+        said = _list_walk(
+            StructureAnnouncer(), self.HTML, ["Intro", "Quill", "the editor"], markup="html"
+        )
+        assert said[1:] == ["Definition list, 2 terms", "Definition"]

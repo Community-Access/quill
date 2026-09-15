@@ -5,10 +5,18 @@ with a rule of its own, and the rule runs through every handler here:
 **formatting exists only in rich text, and saying so is part of the feature.**
 
 ``_require_rich`` is therefore not a guard clause, it is the product: a
-formatting key pressed in a plain text document says "Not available in plain
-text. Press Control Shift M to switch to rich text." A command that quietly does
-nothing is indistinguishable, to a listener, from a key that is not bound at
-all -- and they would have no way to find out which.
+formatting key pressed where it cannot work says what would make it work. A
+command that quietly does nothing is indistinguishable, to a listener, from a
+key that is not bound at all -- and they would have no way to find out which.
+
+That rule got *narrower* when plain documents gained a language
+(:mod:`quill.apps.lite_window_markup`). Bold in a Markdown or HTML document is
+no longer unavailable: it writes ``**bold**`` or ``<strong>``, which is what
+somebody editing one of those files meant by pressing Ctrl+B. So the three run
+attributes and the heading ladder try markup first and fall back to the
+refusal, and the refusal itself now names the real obstacle -- a ``.py`` has no
+markup and never will, and telling its author to switch to rich text would be
+advice that does not apply to the file they are in.
 
 The keys are WordPad's, deliberately and without improvement: Ctrl+B, I and U;
 Ctrl+L, E, R and J for the four alignments; Ctrl+Shift+L for bullets; Ctrl+1,
@@ -27,6 +35,7 @@ from __future__ import annotations
 import wx
 
 from quill.core.heading_levels import LevelResult, adjust_heading_level
+from quill.core.lite.filetypes import language_label
 from quill.core.markdown_sections import MoveResult, move_section
 from quill.ui.richedit_editing import (
     LINE_SPACING_DOUBLE,
@@ -55,16 +64,39 @@ class DocumentFormatCommandsMixin:
     def _require_rich(self) -> bool:
         """True when formatting can run; otherwise say why, and how to fix it."""
         if self.editor.mode != RICH:
-            self._announce(
-                "Not available in plain text. Press Control Shift M to switch to rich text."
-            )
+            self._announce(self._no_formatting_here())
             return False
         if not self.editor.rtf_available():
             self._announce("Rich text formatting is unavailable on this system")
             return False
         return True
 
+    def _no_formatting_here(self) -> str:
+        """Why this document cannot be formatted, and what would change that.
+
+        Two different sentences for two genuinely different situations, because
+        one piece of advice that is wrong half the time is worse than none. In a
+        ``.txt`` or a ``.py`` the honest answer is rich text. In a ``.md`` opened
+        with the language set to Plain -- which somebody can do deliberately --
+        the nearer answer is to set the language back, and being sent to rich
+        text instead would convert the document they are editing.
+        """
+        language = self.document_language()
+        if language == "plain":
+            return (
+                "This document has no formatting. Press Control Shift M for rich text, "
+                "or Control Alt F6 to write Markdown or HTML in it."
+            )
+        return (
+            f"Formatting is not available in this {language_label(language)} document. "
+            "Press Control Shift M to switch to rich text."
+        )
+
     def _toggle_attr(self, attr: str, label: str) -> None:
+        # Markup first: in a Markdown or HTML document Ctrl+B has a real answer
+        # that is not "go and be in a different kind of document".
+        if self.apply_markup_run(attr):
+            return
         if not self._require_rich():
             return
         try:
@@ -85,6 +117,10 @@ class DocumentFormatCommandsMixin:
         self._toggle_attr("Underline", "Underline")
 
     def _heading(self, level: int) -> None:
+        # Markdown hashes or an ``<h2>`` in a markup document; the point-size
+        # ladder in a rich one. One key, one idea, two mechanisms.
+        if self.apply_markup_heading(level):
+            return
         if not self._require_rich():
             return
         try:
@@ -135,7 +171,16 @@ class DocumentFormatCommandsMixin:
             self._heading(new_level)
             return
         text = self.control.GetValue()
-        change = adjust_heading_level(text, self.control.GetInsertionPoint(), delta)
+        # The document's own markup, so Alt+Shift+Right walks an ``<h2>`` down
+        # to an ``<h3>`` in an HTML file rather than looking for hashes that a
+        # well-formed HTML document will never contain.
+        surface = self.markup_surface() or "markdown"
+        change = adjust_heading_level(
+            text, self.control.GetInsertionPoint(), delta, markup_kind=surface
+        )
+        if change.result is LevelResult.NO_MARKUP:
+            self._announce(self._no_formatting_here())
+            return
         if change.result is LevelResult.NOT_A_HEADING:
             self._announce("Put the cursor on a heading line to change its level")
             return
@@ -332,4 +377,13 @@ class DocumentFormatCommandsMixin:
             self._announce(str(exc))
 
     def cmd_switch_mode(self) -> None:
+        """Plain to rich and back -- the two-stop half of Ctrl+Shift+M's ring.
+
+        Not bound to anything any more.
+        :meth:`~quill.apps.lite_window_markup.DocumentMarkupMixin.cmd_switch_document_kind`
+        holds the key and rings through all four kinds of document, of which
+        this pair is two. Kept because it is still exactly the right thing to
+        call when what you mean is "make this rich text" -- which is what the
+        ring's last stop means, and what several tests mean.
+        """
         self.switch_mode(PLAIN if self.editor.mode == RICH else RICH)

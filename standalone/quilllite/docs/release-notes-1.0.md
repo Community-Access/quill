@@ -94,7 +94,7 @@ looking for a document you thought you had lost.
 ### A heading tells you it is a heading
 
 Make a line a heading, arrow away, and arrow back onto it. QuillLite says
-**"Heading 2"**.
+**"Heading 2, Installing"** -- the level, then the heading's own words.
 
 That sounds like it should have worked all along, and here is why it did not.
 Your screen reader can only read what a program hands it, and the text box every
@@ -105,12 +105,18 @@ to a listener, read exactly like an ordinary sentence.
 
 QuillLite now says it instead. Three things about how:
 
-- **The level, and not the text.** Your reader is already reading the line. You
-  do not need to hear the title twice.
+- **The level first, and the words with it.** This is one sentence QuillLite
+  says, not a note added to your reader's. It has to be that way round: a cue
+  waiting its turn behind the reader is thrown away whenever the reader starts
+  again, which is what happens on every big jump -- **Ctrl+Home**, a search hit,
+  a bookmark. Somebody reported exactly that: arrowing onto a heading announced
+  it, Ctrl+Home onto the same heading said nothing at all. It is also the order
+  a web browser gives you.
 - **Once, when you get there.** Moving about inside the heading stays quiet.
   Leave it and come back and you are told again.
-- **After your reader, never over it.** The cue waits its turn, so you keep the
-  words you moved there to hear.
+- **The other way round is still there.** If you would rather hear the line and
+  take the level as a footnote, **Preferences ▸ Say a heading's level ▸ After
+  the text** does that. Same information, other order.
 
 It works the same in a plain-text document, where a heading is a line starting
 with `#`. That is new too: **Next Heading**, **Previous Heading** and the
@@ -128,6 +134,144 @@ And a `#` is only a heading where a `#` means a heading. In a `.md`, a `.txt` or
 a document you have not named yet, it is. In a `.py`, a `.sh` or an `.ini` it is
 a comment, and QuillLite leaves it alone -- otherwise opening a build script
 would have it announcing "Heading 1" down most of the page.
+
+### And a list tells you it is a list
+
+Arrow into a list and you hear **"Bulleted list, 5 items"**. Go a level deeper
+and you hear **"Level 2, 3 items"**. Arrow out and you hear **"Out of list"**.
+
+This one is worth dwelling on, because it is the only thing in this release your
+screen reader already does *everywhere else*. Open a web page with a list on it
+and your reader will tell you it is a list and how long it is -- because the
+browser hands it a list. Open the same list in an editor and it is not a list at
+all, it is a row of dashes and some spaces, and your reader has nothing to pass
+on. Writing a nested outline, the only thing separating the second level from
+the third is the number of spaces, counted by ear.
+
+It works wherever a list is real: Markdown `-`, `*`, `+`, `1.`, and HTML `<ul>`,
+`<ol>`, `<dl>` -- and a definition list says **"Term"** and **"Definition"** as
+you move between the two, because which of them you are typing into decides what
+the words mean.
+
+**The counting is per level.** A list of three whose second item has four
+sub-items is "3 items" where you are and "4 items" where they are. Never seven.
+Somebody reorganising an outline by ear is relying on that number.
+
+It stays quiet everywhere it should: moving down a list (your reader is already
+reading each item), on a `---` rule, inside a code fence, in a `.py` where a
+dash is a flag, and in rich text where the bullets are the control's own.
+
+**View ▸ Announce Lists (Ctrl+Alt+F5)** turns it off where you stand. It is a
+separate switch from the heading one on purpose -- reorganising an outline, the
+level *is* the work; proof-reading the same file, it is one more thing between
+you and every item -- and the status bar's new **List** cell will tell you which
+item of how many you are on whenever you want to ask.
+
+### Bold now works in a Markdown file
+
+**Ctrl+B** in a `.md` used to say "Not available in plain text. Press Control
+Shift M to switch to rich text." True, and beside the point: somebody writing
+Markdown does not want rich text. They want two asterisks.
+
+So a plain document now has a **language**, and it decides what the keys write:
+
+| In a | **Ctrl+B** writes | **Ctrl+Alt+2** writes |
+|---|---|---|
+| Markdown document | `**bold**` | `## Heading` |
+| HTML document | `<strong>bold</strong>` | `<h2>Heading</h2>` |
+| Plain text document | nothing, and says why | nothing, and says why |
+
+QuillLite reads the language from the file name -- `.md` and `.txt` are
+Markdown, the newly-recognised `.html`, `.htm` and `.xhtml` are HTML, a `.py` or
+a `.conf` is plain -- and it is never binding. **Ctrl+Shift+M** rings through
+all four kinds of document, one press at a time, each saying its own name;
+**Ctrl+Alt+F6** goes straight to one; and the status bar's **Format** cell says
+which you are in.
+
+The announcement names the markup rather than the effect -- "Bold in Markdown",
+not "Bold on". Nothing went bold. Two asterisks appeared, and you need to know
+which of the two just happened.
+
+### An Insert menu, with emoji and two tag pickers
+
+Insert was three rows tucked inside Edit. It is a menu of its own now, sitting
+**before Format** -- the order the work happens in: you put a thing in, then you
+format it. Nothing you already press has moved.
+
+- **Alt+.** opens the **emoji picker** -- QUILL's own, key for key. Search by
+  name, by keyword, by what it looks like, or by a typed smiley (`:)` finds the
+  smiling face). Every emoji comes with a written description of what it
+  actually shows, which is the entire point: a wall of little pictures is the
+  one control shape that cannot be used without sight.
+- **Ctrl+Alt+I** opens the **Markdown tag picker** -- the whole vocabulary,
+  searchable.
+- **Ctrl+Alt+O** opens the **HTML tag picker** -- forty tags, and it searches by
+  what they *do*: type "dropdown" and find `select`, "checkbox" and find
+  `input`, "collapsible" and find `details`.
+
+Only one of the two tag pickers is ever available, and it is whichever your
+document is. The other is **greyed out rather than hidden**, so your reader
+tells you it is unavailable the moment you land on it instead of leaving you
+hunting the menus for something you know is there.
+
+### Forms that are accessible before you start
+
+The HTML picker's top twenty rows are not tags. They are **finished form
+controls**, and they are the reason this picker is worth having.
+
+Putting a `<select>` into a page is the easy half. The half that decides whether
+anybody can use the form is the wiring — a `<label>`, a `for` that matches the
+field's `id`, the options inside — and every part of that wiring is **invisible**.
+A missing `for` renders exactly like a present one. A set of radio buttons
+without a shared `name` looks exactly like a group, except every button can be
+switched on at once. Two fields that share an `id` look perfect until somebody
+clicks the second label and the first field takes focus.
+
+Those are not things you can check by looking, and they are certainly not things
+to leave to memory at the moment somebody is trying to write a form. So they
+come with the control:
+
+- **Text, email, password, telephone, web address, number, date, search and
+  file upload** — each labelled, each with `autocomplete` where a browser can
+  help fill it in.
+- **A dropdown** with its label, its options, and an empty first choice, so it
+  cannot quietly submit an answer nobody gave.
+- **A radio group** in a `<fieldset>` with a `<legend>`, three buttons sharing
+  one `name`, and exactly one default.
+- **A checkbox**, and a checkbox group with the same fieldset treatment.
+- **An autocomplete field** joined to its own suggestion list.
+- **A required field with a hint and an error message**, both joined to the
+  field with `aria-describedby`, plus `aria-invalid` and a live `role="alert"` —
+  the pattern that turns red text into something a screen reader reports.
+- **A whole contact form**, if you want the lot in one keystroke.
+
+**Select a word first and it becomes the label**, with the `id` made from it so
+the two agree: select "Postcode", choose a text field, and you have a Postcode
+field already wired. And **the `id` is checked against your document before it
+is used** — a second email field is `email-2`, never a silent duplicate of the
+first.
+
+The picker also grew from forty-six tags to **111**, which matters more than it
+sounds: the missing ones included `<dl>`, `<dt>` and `<dd>` — the very lists
+QuillLite now reads aloud to you — along with `<figure>` and `<figcaption>`,
+the table parts that make a table readable, `<abbr>`, and `<br>` and `<hr>`,
+which the app knew how to write and could not offer. A searchable list ought to
+be complete; searching 111 is no harder than searching 46, and a tag that is
+missing is a dead end.
+
+The Markdown picker gained **Underline**, **Horizontal Rule**, **Strikethrough**
+and **Definition List** for the same reason — the first two it could already
+write and had never offered.
+
+### Smaller things you asked for
+
+- **F6 now gets you out of the status bar as well as in.** So does Shift+F6.
+  Escape always did, and still does.
+- **Ctrl+Home onto a heading announces it.** See above -- the cue moved in front
+  of your reader instead of behind it.
+- **The status bar's Format cell knows all four kinds of document.** It used to
+  say "Plain text" or "Rich text" and nothing else, so two thirds of what
+  Ctrl+Shift+M does were invisible in the one place you would look to check.
 
 One more thing came with it, in QUILL for All rather than here: a heading saved
 to an `.rtf` file is now a proper Word heading. It used to be big bold text with

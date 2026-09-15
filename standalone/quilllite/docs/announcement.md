@@ -65,6 +65,57 @@ switched off**, in a window that plays each sound as you arrow through the list.
 And **Alt+Shift+M** silences all of them instantly, for when you are on a call
 or in a quiet room. Press it again and they come back.
 
+### It tells you the shape of what you are reading
+
+Arrow onto a heading and QuillLite says **"Heading 2, Installing"**. Arrow into
+a list and it says **"Bulleted list, 5 items"**. Go a level deeper and it says
+**"Level 2, 3 items"**. Arrow out and it says **"Out of list"**.
+
+Your screen reader cannot tell you either of those, and it is not failing. The
+text box every Windows editor is built on — Notepad's, WordPad's, ours — can
+pass on the font and the size and has no way at all to say "this paragraph is a
+heading" or "this is a list of five". On a web page your reader tells you both,
+because the *browser* hands it both. In an editor a heading is a line and a list
+is some dashes, and nobody says anything.
+
+So QuillLite says it. Both cues stay narrow on purpose — once, on arrival,
+never while you move about inside the thing you have already been told about —
+and each has a key that turns it off where you stand, because whether structure
+is what you are listening for depends on whether you are writing the document or
+reading it.
+
+### It knows Markdown and HTML, and writes them for you
+
+Open a `.md` and press **Ctrl+B** with a word selected: you get `**word**`.
+Open a `.html` and press the same key: you get `<strong>word</strong>`. The
+heading keys write `## Installing` or `<h2>Installing</h2>`. Open a `.py` and
+those keys politely decline, because a Python file has no markup and putting
+asterisks in one would be a small disaster nobody could see.
+
+There is a searchable picker for each — 111 HTML elements and the whole Markdown
+vocabulary, both looked up by what they *do* rather than what they are called
+("glossary" finds a definition list, "subtitles" finds a caption track) — and
+the one your document cannot use is greyed out rather than hidden, so you are
+told rather than left hunting.
+
+And the HTML picker inserts **whole form fields**, not tags. Choose a dropdown
+and you get the label, the field, the options, and a `for` that actually points
+at the right `id`. Choose a radio group and you get a fieldset, a legend, and
+three buttons that share a name — which is the difference between a group and
+three unrelated buttons that can all be on at once. None of that wiring is
+visible, which is exactly why it gets left out, and exactly why it should not be
+left to memory. Select a word first and it becomes the label, with the `id`
+built from it so the two always agree.
+
+### An emoji picker you can actually use
+
+Every emoji picker ever made is a wall of little pictures, which is precisely
+the one control shape that cannot be used without sight. **Alt+.** opens a list
+instead: search by name, by keyword, by a typed smiley (`:)` finds the smiling
+face), or browse by category — and every single one comes with a **written
+description of what it actually shows**. Insert one and QuillLite tells you
+which one went in, by name.
+
 ### Spell check that tells you what is actually wrong
 
 Being told "recieve is misspelled" is being told a word that sounds exactly like
@@ -149,6 +200,8 @@ is down. One tick box in Settings turns even that off.
 - **Structural selection** — a word, a line, a sentence, a paragraph, a block,
   each in one keystroke
 - **Line tools** — move, duplicate, join, sort, number, de-duplicate
+- **Four kinds of document in one key** — plain text, Markdown, HTML, rich text,
+  and Ctrl+Shift+M rings between them, each saying its own name
 - **"What is this character?"** — the difference between a hyphen, an en dash
   and a minus sign, which a screen reader reads identically
 - **It looks after work you have not saved**, and reopens what you had open

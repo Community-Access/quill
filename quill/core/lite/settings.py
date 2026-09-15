@@ -110,6 +110,32 @@ class Settings:
     #: document, which is the point: it is a per-task decision, not a
     #: preference you set once.
     announce_headings: bool = True
+    #: Say "Bulleted list, 5 items" entering a list, "Level 2, 3 items" a rung
+    #: down, and "Out of list" leaving it. On, and separately from the heading
+    #: cue on purpose: a browser tells a screen reader an ``<ul>`` is a list with
+    #: a count, and an editor cannot, so with this off a nested outline is
+    #: indistinguishable by ear from a run of ordinary lines beginning with a
+    #: dash. Off is for proof-reading, where the structure is settled and the
+    #: phrase is one thing between you and every item. Ctrl+Alt+F5 toggles it.
+    announce_lists: bool = True
+    #: Where "Heading 2" goes relative to the heading's own text: ``"before"``
+    #: (the default) says "Heading 2, Installing" as one sentence of QuillLite's
+    #: own, and ``"after"`` lets the screen reader read the line and adds
+    #: "Heading 2" behind it.
+    #:
+    #: Before is the default because after is **lossy**, and not in a way anyone
+    #: would guess. A cue queued behind the reader is at the reader's mercy: on
+    #: a large caret jump -- Ctrl+Home, a search hit, a bookmark -- NVDA and JAWS
+    #: cancel what is pending and start again on the new line, so the "Heading 1"
+    #: waiting its turn is never heard. Reported exactly that way: arrowing onto
+    #: a heading announced it, Ctrl+Home onto the same heading did not. Before is
+    #: also the order a browser gives you, where the reader says "heading level
+    #: two" and then the words.
+    #:
+    #: After is kept, and is the right choice for anyone who would rather hear
+    #: the words first and the label as a footnote -- it is the same information
+    #: in the other order, and on ordinary line-by-line reading it is reliable.
+    heading_announce_position: str = "before"
     # How a hard line break is written in Markdown: "backslash" or "spaces".
     # Shared with QUILL, which must never be behind QuillLite (#1488).
     markdown_hard_break_style: str = "backslash"

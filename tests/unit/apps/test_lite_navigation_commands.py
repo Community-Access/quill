@@ -498,10 +498,19 @@ def test_growing_and_shrinking_step_the_selection_in_opposite_directions(
 
 
 @pytest.mark.parametrize("invoke", [lambda w: w.cmd_grow_font(), lambda w: w.cmd_shrink_font()])
-def test_font_stepping_is_refused_in_plain_text(lite_window, invoke):
+def test_font_stepping_is_refused_outside_rich_text_and_names_this_document(lite_window, invoke):
+    """Growing the *selection's* font is rich text and nothing else.
+
+    An untitled buffer has no markup either, so the refusal offers **both** ways
+    forward -- rich text, or giving this document a markup language -- rather
+    than the single piece of advice that used to be right about half the time.
+    """
     win = lite_window("hello", mode=PLAIN)
     invoke(win)
-    assert "Not available in plain text" in win.announcements[-1]
+    said = win.announcements[-1]
+    assert "no formatting" in said
+    assert "Control Shift M" in said
+    assert "Control Alt F6" in said
     assert win.editor.calls == []
 
 

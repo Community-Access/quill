@@ -920,11 +920,7 @@ class MenuBindingsMixin:
             lambda _e: self.focus_preview(),
             id=self._id_focus_preview,
         )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.toggle_heading_announcements(),
-            id=self._id_announce_headings,
-        )
+        self.bind_structure_cue_items()
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.preview_in_browser(),

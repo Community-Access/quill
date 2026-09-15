@@ -148,6 +148,11 @@ class FakeControl:
     def ShowPosition(self, position: int) -> None:
         self.shown_positions.append(int(position))
 
+    def GetStringSelection(self) -> str:  # noqa: N802 - wx spelling
+        """The selected text, which is what a markup insertion wraps."""
+        start, end = self._sel
+        return self._text[start:end]
+
     def SetFocus(self) -> None:
         self.focused = True
 
@@ -612,6 +617,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_history import DocumentHistoryMixin
     from quill.apps.lite_window_lines import DocumentLineMixin
     from quill.apps.lite_window_marks import DocumentMarksMixin
+    from quill.apps.lite_window_markup import DocumentMarkupMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_spelling import DocumentSpellingMixin
     from quill.apps.lite_window_tools import DocumentToolsMixin
@@ -651,6 +657,12 @@ def lite_window(tmp_path, lite_settings):
         # without it fails on Heading 1 rather than on anything to do with
         # structure -- and because the announcements themselves need testing.
         DocumentHeadingsMixin,
+        # The Insert menu, the document's markup language and the list cue,
+        # added 2026-09-15. Here rather than in a stub of its own because the
+        # heading and formatting commands ask it what the document is written in
+        # before they decide what to write -- a window without it fails on
+        # Ctrl+B rather than on anything to do with markup.
+        DocumentMarkupMixin,
         DocumentCommandsMixin,
     ):
         """A document window with wx removed and every output recorded."""
@@ -891,6 +903,20 @@ def lite_window(tmp_path, lite_settings):
 # --------------------------------------------------------------------------- #
 
 
+class _Shown:
+    """A constructed dialog whose ``show()`` returns the test's answer.
+
+    For the handful of surfaces that are classes rather than functions -- the
+    emoji picker is one -- where the caller does ``Dialog(parent).show()``.
+    """
+
+    def __init__(self, answer: Any) -> None:
+        self._answer = answer
+
+    def show(self) -> Any:
+        return self._answer
+
+
 class DialogRecorder:
     """Every window QuillLite can open, replaced by a record-and-answer stub.
 
@@ -945,7 +971,27 @@ class DialogRecorder:
         "FindDialog": ("quill.apps.lite_window_find", "FindDialog"),
         "ReplaceDialog": ("quill.apps.lite_window_find", "ReplaceDialog"),
         "KeymapEditorDialog": ("quill.apps.lite_keymap_editor", "KeymapEditorDialog"),
+        # The Insert menu's three. All four bindings are at module scope in
+        # lite_window_markup, so that is where they are patched -- the defining
+        # module is a different binding and patching it would leave a real
+        # wx.Dialog opening halfway through a test run.
+        "choose_document_language": (
+            "quill.apps.lite_window_markup",
+            "choose_document_language",
+        ),
+        "choose_searchable": ("quill.apps.lite_window_markup", "choose_searchable"),
+        "ask_text": ("quill.apps.lite_window_markup", "ask_text"),
+        # The emoji picker is QUILL's and is imported *inside* the command, so
+        # the defining module is the only binding there is. It is a class rather
+        # than a function: the stub records the construction and the test's
+        # answer is what ``.show()`` hands back.
+        "EmojiPickerDialog": ("quill.ui.main_frame_emoji_picker", "EmojiPickerDialog"),
     }
+
+    #: Names whose stub must be callable *and* have a ``show()``, because the
+    #: caller constructs an object and then asks it. One extra shape rather than
+    #: a second recorder.
+    CONSTRUCTED: frozenset[str] = frozenset({"EmojiPickerDialog"})
 
     #: The sentinel meaning "no test set an answer, so answer cancel".
     CANCELLED = object()
@@ -976,7 +1022,8 @@ class DialogRecorder:
         def opened(*args: Any, **kwargs: Any) -> Any:
             self.opened.append((name, args, kwargs))
             answer = self.answers.get(name, self.CANCELLED)
-            return None if answer is self.CANCELLED else answer
+            answer = None if answer is self.CANCELLED else answer
+            return _Shown(answer) if name in self.CONSTRUCTED else answer
 
         return opened
 

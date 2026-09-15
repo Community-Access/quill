@@ -171,3 +171,104 @@ def test_describe_omits_empty_keyword_and_emoticon_lines() -> None:
     described = emoji_data.describe(melting)
     assert "Keywords:" not in described.detail
     assert "Also typed as:" not in described.detail
+
+
+# --------------------------------------------------------------------------- #
+# The shipped catalogue is the *current* Unicode set
+# --------------------------------------------------------------------------- #
+#
+# The picker fetches nothing at runtime (network_egress_audit's no-surprise-calls
+# rule, and the app must work offline and in Safe Mode), so the catalogue is a
+# committed file that a maintainer regenerates when Unicode publishes a new
+# emoji version -- roughly once a year. A committed file with nothing watching
+# it is a file that silently falls a release behind, and the symptom is somebody
+# searching for an emoji their phone shows them and finding nothing.
+
+
+#: The Unicode Emoji version the committed catalogue is built from. Raise this
+#: and regenerate together (`python -m quill.tools.generate_emoji_catalog`);
+#: never raise it alone.
+EXPECTED_EMOJI_VERSION = "16.0"
+
+#: A representative handful from the two newest sets. A version stamp says what
+#: the generator was *asked* for; these say what actually arrived, which is the
+#: half a truncated download would get wrong.
+NEWEST_EMOJI = {
+    # Emoji 16.0
+    "\U0001fae9": "face with bags under eyes",
+    "\U0001fabe": "leafless tree",
+    "\U0001fac6": "fingerprint",
+    "\U0001fadc": "root vegetable",
+    "\U0001fadf": "splatter",
+    "\U0001fa89": "harp",
+    "\U0001fa8f": "shovel",
+    "\U0001f1e8\U0001f1f6": "flag: Sark",
+    # Emoji 15.1
+    "\U0001f426‍⬛": "black bird",
+    "\U0001f642‍↔️": "head shaking horizontally",
+    "\U0001f34b‍\U0001f7e9": "lime",
+}
+
+
+def _catalog() -> dict:
+    """The **shipped** catalogue, read straight off disk.
+
+    Deliberately not through :mod:`quill.core.emoji_data`: the autouse fixture
+    above points that at a hand-built eleven-entry stub, which is right for
+    testing the search paths and useless for asking whether the real file is
+    current. These four tests are about the committed data, so they open it.
+    """
+    import json
+    from pathlib import Path
+
+    import quill
+
+    path = Path(quill.__file__).resolve().parent / "data" / "emoji_catalog.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_the_catalog_states_the_unicode_version_it_was_built_from() -> None:
+    assert _catalog()["unicode_emoji_version"] == EXPECTED_EMOJI_VERSION
+
+
+def test_every_emoji_from_the_newest_sets_is_actually_present() -> None:
+    """The version stamp says what was asked for; this says what arrived.
+
+    A truncated download, a parser that stopped early, or a regeneration that
+    quietly reused a cached file all leave the stamp correct and the tail
+    missing -- and the only person who finds out is somebody searching for an
+    emoji their phone shows them.
+    """
+    present = {entry["char"] for entry in _catalog()["entries"]}
+    missing = sorted(name for char, name in NEWEST_EMOJI.items() if char not in present)
+    assert not missing, f"catalogue is missing: {missing}"
+
+
+def test_the_catalog_carries_every_unicode_grouping() -> None:
+    # Nine, and the same nine Unicode publishes. A missing group is a whole
+    # branch of the browse list gone, which nothing else here would notice.
+    groups = {entry["category"] for entry in _catalog()["entries"]}
+    assert groups == {
+        "Smileys & Emotion",
+        "People & Body",
+        "Animals & Nature",
+        "Food & Drink",
+        "Travel & Places",
+        "Activities",
+        "Objects",
+        "Symbols",
+        "Flags",
+    }
+
+
+def test_every_entry_has_the_description_the_picker_reads_aloud() -> None:
+    """The written description is the entire reason this picker is usable.
+
+    A visual grid is the one control shape that cannot be used without sight, so
+    the list is what replaces it -- and a row with no description is a row that
+    reads out as a bare character, which is where this started.
+    """
+    blank = [
+        entry["name"] for entry in _catalog()["entries"] if not str(entry.get("description", ""))
+    ]
+    assert not blank[:10], f"{len(blank)} entries have no description, e.g. {blank[:5]}"

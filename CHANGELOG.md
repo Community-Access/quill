@@ -2,6 +2,183 @@
 
 ## 1.0.0
 
+### Lists announce themselves, and a plain document now has a language (2026-09-15)
+
+**A list was invisible to your screen reader, and a `.md` could not be
+formatted.** Two gaps with one cause: the editor knew things about the document
+that nothing in the stack was saying out loud, and knew things about the
+document's *kind* that it was not acting on.
+
+#### Hearing that you are in a list
+
+Arrow into a list and both editors now say **"Bulleted list, 5 items"**. Go a
+level deeper and you hear **"Level 2, 3 items"**. Arrow out and you hear **"Out
+of list"**.
+
+This is the one cue in the set a screen reader gives you **everywhere else**. On
+a web page an `<ul>` reaches the accessibility tree as a list with a count, and
+NVDA says almost exactly this sentence. In an editor a list is not a list -- it
+is characters -- so the reader has nothing to go on, and a nested outline sounds
+like a run of ordinary lines beginning with a dash, with only the number of
+spaces, counted by ear, to separate level two from level three.
+
+It works in **Markdown and HTML**, over all three kinds: bullets (`-`/`*`/`+`,
+`<ul>`), numbers (`1.`/`1)`, `<ol>`) and definition lists (`Term` / `:
+definition`, `<dl>`). A definition list also says **"Term"** and
+**"Definition"** as you move between the two, because which of them you are
+standing in decides what the words mean, and a definition list written inside
+out is not something you can see you have done.
+
+**Items are counted at your own level, inside your own list.** A three-item list
+whose second item has four sub-items is "3 items" at level one and "4 items" at
+level two, never "7"; two sub-lists under two different bullets are two lists.
+Nothing is said moving from item to item -- your reader is already speaking each
+one -- and nothing at all in a plain document, in rich text, inside a fenced
+code block, or on a `- - -` rule.
+
+**View ▸ Announce Lists (`Ctrl+Alt+F5`)** turns it off and on where you stand,
+in both editors, saying which way it went. Its own switch rather than a share of
+the heading one, because the two answer different questions: reorganising an
+outline the list level is the work, and proof-reading the same file it is a
+phrase between you and every item. `Ctrl+Alt+F5` and not the `Ctrl+Alt+F4` that
+would have sat beside its sibling -- a finger that misses the Control key on a
+chord pressed this often finds `Alt+F4`, and what that costs is the document.
+
+#### A heading now says its level first, and survives a jump
+
+Arrowing onto a heading announced "Heading 2"; pressing `Ctrl+Home` onto the
+same heading announced nothing. **Reported, reproduced, and not a bug in the
+announcer** -- it always had the right answer. A cue *queued behind* the reader
+is at the reader's mercy, and on a large caret jump NVDA and JAWS cancel
+whatever is pending and start again on the new line, so the level waiting its
+turn is never heard.
+
+So the level now comes **first**, carrying the heading's own words with it:
+**"Heading 2, Installing"**, as one sentence the editor owns. It survives every
+kind of move, and it is the order a browser gives you. The old ordering is still
+available -- **Preferences ▸ "Say a heading's level" ▸ After the text**
+(`heading_announce_position`) -- for anyone who would rather hear the words and
+take the level as a footnote.
+
+#### A plain document has a language, and the keys follow it
+
+`Ctrl+B` in a `.md` used to say *"Not available in plain text. Press Control
+Shift M to switch to rich text."* True, and unhelpful: somebody writing Markdown
+does not want rich text, they want two asterisks, and they know it.
+
+A plain document now has a **language** -- Markdown, HTML, or none -- and it
+decides four things at once:
+
+| In a | `Ctrl+B` writes | `Ctrl+Alt+2` writes | Tag picker offered |
+|---|---|---|---|
+| Markdown document | `**bold**` | `## Heading` | Insert Markdown Tag |
+| HTML document | `<strong>bold</strong>` | `<h2>Heading</h2>` | Insert HTML Tag |
+| Plain text document | nothing, and says why | nothing, and says why | neither; both dimmed |
+
+QuillLite reads the language from the file name -- `.md`/`.markdown`/`.mdx` and
+`.txt` are Markdown, the new `.html`/`.htm`/`.xhtml` are HTML, and a `.py` or a
+`.conf` is plain -- and it is only ever a first guess. **`Ctrl+Shift+M` now rings
+through all four kinds of document** (plain, Markdown, HTML, rich) instead of
+toggling between two of them; **`Ctrl+Alt+F6`** goes straight to one; and the
+status bar's Format cell says which you are in and rings on with Enter.
+
+Everything else follows from the one rule. Italic is `*`/`<em>`; underline is
+`<u>` in both, since Markdown has no spelling for it. HTML gets `<strong>` and
+`<em>`, never `<b>` and `<i>` -- they are not synonyms to the thing that reads
+them out. Applying a heading **rewrites** the line rather than stacking on it,
+so `Ctrl+Alt+2` on `### Notes` gives `## Notes` and never `## ### Notes`, and an
+`id=` on an HTML heading is carried across because it is usually somebody's
+anchor. `Alt+Shift+Right` walks `<h2>` down to `<h3>` in an HTML file instead of
+hunting for hashes. Heading navigation, the headings list and the Heading cell
+all read HTML headings too.
+
+#### QuillLite gained an Insert menu, and the emoji picker
+
+Insert was a submenu of Edit holding three rows. Six is a menu, so it is one now
+-- **before Format**, the order Word uses and the order the work happens in: you
+insert a thing and then you format it. Every existing key is unchanged.
+
+- **Emoji (`Alt+.`)** -- QUILL's own picker, key for key. Search by name,
+  keyword, description or a typed smiley (`:)` finds the smiling face), or
+  browse by category starting with Favourites and Recent. Every emoji carries a
+  **written description** of what it actually shows, which is the whole point: a
+  picture wall is the shape of control that cannot be used without sight.
+  Available in every document, rich ones included -- an emoji is a character.
+- **Markdown Tag (`Ctrl+Alt+I`)** -- the whole Markdown vocabulary, searchable.
+- **HTML Tag (`Ctrl+Alt+O`)** -- forty tags, searchable by *what they do*:
+  "dropdown" finds `select`, "checkbox" finds `input`, "collapsible" finds
+  `details`. Then optional attributes, with Enter on the empty box skipping that
+  step.
+
+#### The HTML picker inserts whole form fields
+
+Choosing `select` gave you `<select></select>`, which is the easy half. The half
+that matters is the wiring, and the wiring is invisible: a missing `for` renders
+identically to a present one, a radio group without a shared `name` looks exactly
+like one with except every button can be on at once, and two fields sharing an
+`id` look perfect until the second label focuses the first field.
+
+So the picker now offers **twenty finished controls** alongside the tags, each
+arriving labelled and wired — `for`/`id` generated together so they cannot
+drift, a `name` that submits, options inside a select, a legend inside a
+fieldset, one shared `name` across a radio group, an empty first option so a
+dropdown cannot submit an answer nobody gave, and `aria-describedby` joining a
+required field to its hint and its error. **The generated `id` is checked
+against the document first**, so a second email field is `email-2` rather than a
+silent duplicate. Select a word and it becomes the label, with the `id` derived
+from it.
+
+They search by what people call them: "dropdown", "radio", "error message",
+"contact form", "multiline". The bare tags rank alongside, one row down.
+
+#### Both pickers are complete now
+
+The HTML picker offers **111 tags**, up from 46. The forty-six left out `<dl>`,
+`<dt>` and `<dd>` — which QUILL *announces* as you arrow through them — along
+with `<figure>`, `<figcaption>`, `<caption>`, `<thead>`, `<tbody>`, `<abbr>`,
+and `<br>` and `<hr>`, which were already handled as void elements and simply
+could not be chosen. A searchable list should be complete: searching 111 is no
+harder than searching 46, and a missing tag is a dead end somebody leaves the
+app to resolve.
+
+The Markdown picker gained **Underline**, **Horizontal Rule**, **Strikethrough**
+and **Definition List**. The first two had builders and no menu row for months,
+which is the quietest kind of gap.
+
+And the emoji catalogue is pinned to the current Unicode set (**Emoji 16.0**,
+3,781 entries) by a test that checks the version stamp *and* samples the newest
+additions, because a committed data file with nothing watching it is one that
+silently falls a release behind.
+
+The picker your document cannot use is **dimmed rather than hidden**, because a
+greyed row tells a reader it is unavailable the moment they arrive on it, while
+a row that has vanished leaves somebody hunting the menus for something they
+know the app has. The same rule was tightened in QUILL, where **Insert Markdown
+Tag was enabled in *plain* documents** -- the mirror image of the HTML row's own
+rule, and an enabled row promises the command will work.
+
+#### Smaller things
+
+- **`F6` leaves the status bar as well as entering it**, in both editors.
+  Escape still works; so now does the key that got you there, which is what
+  every other region-cycling key in Windows does. `Shift+F6` too.
+- **The status bar's Format cell knows all four kinds.** It read "Plain text" or
+  "Rich text" and nothing else, so ringing from plain to Markdown to HTML
+  changed the document's behaviour three times and changed the cell not at all
+  -- the one place somebody would look to check what had just happened.
+- **A new List cell** says which list you are in, how many items it has at this
+  level, *and which one you are on* -- "Bulleted list, 4 of 9, level 2". The
+  position is deliberately not spoken on every arrow press and deliberately not
+  impossible to find out; a cell answers on demand and costs nothing until it is
+  read. Enter on it turns the spoken cue off and on.
+- **QuillLite's Open dialog offers HTML**, and its "all supported files" filter
+  covers `.htm` as well as `.html`.
+- **Customize Features gained a Markdown and HTML area** (18 areas, not 17).
+  Recommended keeps it; WordPad and Notepad do not -- WordPad because rich text
+  is what it is, and Notepad because that profile's promise is "nothing Notepad
+  does not have", and a profile that quietly keeps the good extra is one whose
+  name has stopped being true.
+
 ### Headings now announce themselves, in both editors (2026-09-14)
 
 **A heading was invisible to your screen reader, and always had been.** You could

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-09-02-audio-tag-editor-design</title>
+  <title>Full audio tag editor and complete chapter editing —
+design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -238,8 +239,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="full-audio-tag-editor-and-complete-chapter-editing--design">Full
 audio tag editor and complete chapter editing — design</h1>
 <p>Date: 2026-09-02 Status: approved (design), not yet implemented Area:
@@ -260,7 +282,7 @@ lyrics, language, grouping, compilation flag, sort-order field, or cover
 art.</li>
 <li><strong>Chapters.</strong> There is no explicit <em>add</em>, no
 <em>delete</em>, no way to type an exact start <strong>and</strong> end,
-and no preview that stops at the chapter's end.
+and no preview that stops at the chapter’s end.
 <code>split_chapter</code>, <code>merge_chapter</code> and
 <code>set_chapter_start</code> approximate three of those with different
 semantics and different wording.</li>
@@ -346,7 +368,7 @@ page</td>
 <tr>
 <td><code>quill/ui/audio_studio/pages_audio.py</code></td>
 <td>grow</td>
-<td>the standalone "Edit tags only..." route</td>
+<td>the standalone “Edit tags only…” route</td>
 </tr>
 <tr>
 <td><code>quill/core/settings.py</code></td>
@@ -404,7 +426,7 @@ ISRC).</li>
 </ul>
 <p><code>AudioTags</code> holds <code>values: dict[str, str]</code>
 keyed by <code>TagField.key</code>, plus
-<code>cover: CoverArt | None</code>. Empty string means "not present";
+<code>cover: CoverArt | None</code>. Empty string means “not present”;
 writing an empty value deletes the frame. Helpers: <code>get</code>,
 <code>set</code>, <code>copy</code>.</p>
 <p><code>CoverArt</code> holds <code>data: bytes</code>,
@@ -426,7 +448,7 @@ guessed at.</p>
 <p><strong>ID3 version.</strong> <code>save_mp3_book</code> currently
 saves <code>v2_version=3</code>. ID3v2.3 has no home for
 <code>TDRC</code>, <code>TDOR</code>, <code>TSOT</code>,
-<code>TSOP</code>, <code>TSOA</code> or <code>TSO2</code>; mutagen's
+<code>TSOP</code>, <code>TSOA</code> or <code>TSO2</code>; mutagen’s
 <code>update_to_v23()</code> converts two of those and drops the rest,
 and a tag editor that silently discards every sort field is not a full
 tag editor. So <code>preferred_id3_version(tags) -&gt; int</code>
@@ -451,13 +473,13 @@ speakable message:</p>
 <ul>
 <li><code>add_chapter(chapters, at_ms, *, title, min_part_ms=1000)</code>
 inserts a boundary at <code>at_ms</code>. Inside a chapter it behaves as
-<code>split_chapter</code> does; at or past the last chapter's end it
+<code>split_chapter</code> does; at or past the last chapter’s end it
 appends, which <code>split_chapter</code> refuses.</li>
-<li><code>delete_chapter(chapters, index)</code> removes that chapter's
-marker; the audio is never touched. Deleting chapter 0 pulls chapter 1's
+<li><code>delete_chapter(chapters, index)</code> removes that chapter’s
+marker; the audio is never touched. Deleting chapter 0 pulls chapter 1’s
 start back to 0; any other deletion extends the previous chapter over
 it. Unlike <code>merge_chapter</code> it is defined for the last
-chapter, and it says "deleted", not "merged".</li>
+chapter, and it says “deleted”, not “merged”.</li>
 <li><code>set_chapter_bounds(chapters, index, start_ms, end_ms, *, min_part_ms=500)</code>
 retimes both edges at once, adjusting the neighbours so the list stays
 contiguous and ordered.</li>
@@ -466,8 +488,8 @@ contiguous and ordered.</li>
 <code>set_chapter_start</code> keep their current behaviour and their
 Workbench buttons.</p>
 <h3 id="nudging-a-chapter-marker">Nudging a chapter marker</h3>
-<p>Setting a boundary by ear is the Workbench's whole reason to exist,
-and "play, stop, press Set start to playhead, listen again" is a clumsy
+<p>Setting a boundary by ear is the Workbench’s whole reason to exist,
+and “play, stop, press Set start to playhead, listen again” is a clumsy
 way to move a marker half a second. So a fourth function:</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nudge_chapter_start(</span>
@@ -479,10 +501,10 @@ is a held key, and stopping at the wall is the behaviour a person
 expects when they run a marker up against its neighbour. A press that
 can move nothing at all returns a zero delta, and the UI says so once
 rather than every press.</p>
-<p>Because chapters are contiguous, a chapter's start <em>is</em> the
-previous chapter's end, so nudging the start is the only degree of
+<p>Because chapters are contiguous, a chapter’s start <em>is</em> the
+previous chapter’s end, so nudging the start is the only degree of
 freedom a boundary has — moving the start moves both sides of one
-boundary. Chapter 0's start is pinned at 0 and the last chapter's end is
+boundary. Chapter 0’s start is pinned at 0 and the last chapter’s end is
 pinned at the file length; both are correctly immovable, and every other
 boundary is reachable by selecting the chapter that follows it.</p>
 <p><strong>Step size, configurable.</strong> A new
@@ -499,7 +521,7 @@ chore, so the chapter list also answers Alt+Left and Alt+Right for one
 step, and Alt+Shift+Left and Alt+Shift+Right for ten steps at once.
 Neither chord is claimed by <code>wx.ListBox</code>. There is no menu
 bar on this dialog to advertise them, so the keys are named in the
-buttons' help text and in the list's own help, and the Workbench's
+buttons’ help text and in the list’s own help, and the Workbench’s
 <code>surface_help</code> entry mentions them.</p>
 <p><strong>Hearing the result.</strong> A
 <code>Hear &amp;boundary</code> button plays from three seconds before
@@ -511,9 +533,9 @@ the kind of thing that should be opted into rather than discovered.</p>
 <p><strong>Announcing without flooding.</strong> Each press announces
 the new start time alone, short form (<code>12:04.500</code>) — not a
 sentence, because a sentence repeated at key-repeat speed is unusable.
-The full sentence ("Chapter 3 starts 12:04.500, runs 4:12") is announced
+The full sentence (“Chapter 3 starts 12:04.500, runs 4:12”) is announced
 once when a run of nudges goes quiet for 600 ms. Hitting the wall
-announces "Cannot move further" once per run, not per press. This stays
+announces “Cannot move further” once per run, not per press. This stays
 inside GATE-13: the marker time is a change on an unfocused control that
 the screen reader does not otherwise say.</p>
 <h3
@@ -530,9 +552,9 @@ invariant holds.</p>
 <p>The cover art page shows a text description of the current art first
 — format, pixel dimensions, byte size, description — because that is
 what a screen reader can use, with a thumbnail beside it for sighted
-users, then Load..., Save as... and Remove buttons.</p>
+users, then Load…, Save as… and Remove buttons.</p>
 <h3 id="accessibility-and-z-order">Accessibility and z-order</h3>
-<p>This is a dense form, which is exactly where this codebase's
+<p>This is a dense form, which is exactly where this codebase’s
 accessibility gates earn their keep. The design commits to all of them
 up front rather than fixing them after the audit fails.</p>
 <p><strong>Z-order (A11Y-Z-ORDER,
@@ -559,17 +581,17 @@ buttons cannot hold unique mnemonics in one namespace. The gate scopes a
 <code>wx.Dialog</code>/<code>wx.Frame</code> subclass as one window but
 any other class per method, so one panel class per page gives each page
 its own namespace — and that matches real Windows behaviour, since only
-the visible notebook page's controls are reachable. Mnemonics are
+the visible notebook page’s controls are reachable. Mnemonics are
 declared in <code>TAG_FIELDS</code>, and a unit test asserts uniqueness
 within each page. OK, Cancel and Close carry no mnemonic, per the house
 rule.</p>
 <p><strong>F1 help (GATE-STUDIO-HELP).</strong> Every control calls
 <code>SetHelpText(field.help)</code> inline at its construction site,
 which is what <code>studio_help_audit.py</code> can verify. The
-sentences carry units and defaults in the Studio's style: the year field
+sentences carry units and defaults in the Studio’s style: the year field
 says what format it accepts, BPM says it is a whole number, the sort
 fields say they change filing order and not what is displayed. The
-dialog's own title gets an entry in
+dialog’s own title gets an entry in
 <code>quill/core/audio_studio/surface_help.py</code> so F1 opens with
 what the window is for.</p>
 <p><strong>Dialog contract.</strong> The dialog is shown through
@@ -602,12 +624,12 @@ typed time, prompting for a title), <code>&amp;Delete chapter</code>,
 <code>&amp;Edit chapter...</code> (title, exact start, exact end, and
 the Podcasting 2.0 url and image the <code>Chapter</code> dataclass
 already carries), <code>Pre&amp;view chapter</code> (plays from the
-chapter start and stops at its end, using the player panel's existing
+chapter start and stops at its end, using the player panel’s existing
 tick timer rather than a second timer), and
 <code>All &amp;tags...</code>.</p>
 <p>A second row carries the nudge controls: Nudge back, Nudge forward,
-the step <code>wx.Choice</code>, Hear boundary, and the "Hear the
-boundary after each nudge" checkbox. All five are disabled when the
+the step <code>wx.Choice</code>, Hear boundary, and the “Hear the
+boundary after each nudge” checkbox. All five are disabled when the
 selection is chapter 0, whose start is pinned at the beginning, with a
 tooltip saying why.</p>
 <p>The mnemonics above are deliberately not pinned in this spec. The
@@ -620,7 +642,7 @@ with no mnemonic rather than a duplicate, per the house rule.
 <p>The five quick tag fields stay as the fast path. Opening the full
 editor seeds it from <code>read_tags(book.path)</code> overlaid with
 whatever is currently typed in those five; on OK the five are written
-back from the editor's result, so the two views never disagree.</p>
+back from the editor’s result, so the two views never disagree.</p>
 <p>Saving an MP3: <code>save_mp3_book</code> writes the chapters and the
 core seven, then <code>write_tags</code> writes the full set — both are
 load-modify-save, so neither clobbers the other, and
@@ -632,16 +654,15 @@ change still goes through <code>save_m4b_book_as</code> and then applies
 for an M4B because chapter atoms cannot be rewritten in place, becomes
 enabled when only tags are dirty.</p>
 <p><code>write_mp3_chapters</code> gains a keyword-only
-<code>v2_version: int = 3</code>, so today's callers and today's on-disk
+<code>v2_version: int = 3</code>, so today’s callers and today’s on-disk
 result are unchanged; only a save that carries a v2.4-only field passes
 4.</p>
 <h3 id="standalone-route">Standalone route</h3>
-<p>The Studio wizard's open-a-book page
-(<code>pages_audio.OpenBookPage</code>) gains an "Edit &amp;tags
-only..." button that opens <code>TagEditorDialog</code> on the chosen
-file without the Workbench. This satisfies GATE-REACH: the surface is
-reached from an app entry point, not only from inside another
-dialog.</p>
+<p>The Studio wizard’s open-a-book page
+(<code>pages_audio.OpenBookPage</code>) gains an “Edit &amp;tags only…”
+button that opens <code>TagEditorDialog</code> on the chosen file
+without the Workbench. This satisfies GATE-REACH: the surface is reached
+from an app entry point, not only from inside another dialog.</p>
 <h3 id="shared-with-podharvest">Shared with podHarvest</h3>
 <p>Amended 2026-09-02. This feature is now built once and used by two
 repositories: QUILL and podHarvest (<code>S:\code\pod</code>). The
@@ -656,8 +677,8 @@ repos behind a drift gate; <code>audio_tags.py</code> shrinks to the
 adapter that cannot be shared (coded errors, the
 <code>AudioMetadata</code> bridge); chapter element ids change from
 <code>chp0000</code> to <code>ch0</code> to match what ffmpeg — and
-therefore podHarvest's installed libraries — already write; and
-<code>set_accessible_name</code> adopts podHarvest's stronger
+therefore podHarvest’s installed libraries — already write; and
+<code>set_accessible_name</code> adopts podHarvest’s stronger
 implementation, which attaches a real <code>wx.Accessible</code> rather
 than relying on <code>SetName</code> alone.</p>
 <h3 id="which-products-this-reaches">Which products this reaches</h3>
@@ -676,22 +697,22 @@ fix.</p>
 — so the standalone Studio does not declare the library its whole MP3
 tag and chapter path already runs on. Worse, every mutagen import in
 this codebase is lazy and inside a function, which is exactly the shape
-PyInstaller's import tracer cannot follow;
+PyInstaller’s import tracer cannot follow;
 <code>quill-audio-studio.spec</code> already hand-collects PyNaCl and
 yt-dlp for that reason and does not collect mutagen. Both are fixed
 here, and the fix is verified against a <strong>built
 executable</strong>, because no unit test can prove it.</p>
 <p>QUILL Cast is deliberately out of scope. Its chapters
 (<code>quill/core/podcasts/chapter_edits.py</code>) are inferred marks
-carrying a confidence and a source, where an edit means "this is no
-longer a guess" — a different domain with different invariants. The
+carrying a confidence and a source, where an edit means “this is no
+longer a guess” — a different domain with different invariants. The
 Media Player and Quill Radio consume chapters but do not edit them.</p>
 <h2 id="error-handling">Error handling</h2>
 <ul>
 <li>A file whose tags cannot be read opens the editor with empty fields
 and announces why, rather than refusing — the user may be tagging a file
 that has no tag block yet.</li>
-<li>A write failure surfaces through the Workbench's existing
+<li>A write failure surfaces through the Workbench’s existing
 <code>_error</code> path and leaves the file untouched; mutagen writes
 through a temporary file, so a failed save cannot truncate the
 original.</li>
@@ -745,5 +766,6 @@ document-to-speech pipeline.</p>
 obvious next step — <code>quill/core/speech/silence.py</code> already
 finds them for the propose-from- silences button — but it is a separate
 feature with its own tuning, and it is not in this one.</p>
+</main>
 </body>
 </html>

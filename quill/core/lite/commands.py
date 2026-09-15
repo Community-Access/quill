@@ -72,12 +72,21 @@ SEPARATOR: CommandRow = ("", "", "", "", "sep")
 
 COMMANDS: list[CommandRow] = [
     # The bar is Notepad's and WordPad's, in that order and with those names:
-    # **File, Edit, View, Format, Navigate, Tools, Window, Help**. Eight, where
-    # there were ten -- Clipboard and Spelling were top-level menus of their own,
-    # which is two more things to walk past on every Alt press for two features
-    # neither Notepad nor WordPad puts on the bar at all. They are submenus now
-    # (Edit > Clipboard, Tools > Spelling), which costs one keystroke to reach
-    # and saves one on every visit to everything else.
+    # **File, Edit, View, Insert, Format, Navigate, Tools, Window, Help**. Nine,
+    # where there were ten -- Clipboard and Spelling were top-level menus of
+    # their own, which is two more things to walk past on every Alt press for two
+    # features neither Notepad nor WordPad puts on the bar at all. They are
+    # submenus now (Edit > Clipboard, Tools > Spelling), which costs one
+    # keystroke to reach and saves one on every visit to everything else.
+    #
+    # **Insert is the ninth, and it is where the things you put *into* a document
+    # go.** It was a submenu of Edit holding three rows, which was the right
+    # answer while there were three; adding the emoji picker and the two tag
+    # pickers made six, and six is a menu. It sits before Format for the reason
+    # Word and every other editor puts it there: you insert a thing and then you
+    # format it, so the menus are in the order the work happens. Nothing moved
+    # key: Alt+E, I still reaches nothing, but F5, Ctrl+Shift+F2 and Shift+Enter
+    # are unchanged, which is what fingers actually remember.
     #
     # Navigate is the one menu neither of them has, and it earns its place: a
     # sighted user navigates a document by scrolling and glancing, and a
@@ -152,10 +161,6 @@ COMMANDS: list[CommandRow] = [
     # just read out is typed in here.
     ("&Edit", "&Go to Line...", "Ctrl+G", "cmd_goto_line", ""),
     ("&Edit", "", "", "", "sep"),
-    # A submenu for two items, and the reason is the arithmetic above: Edit's
-    # top-level rows claim twenty of the twenty-six Alt letters, and the six
-    # left over appear in no honest spelling of "Insert Special Character".
-    ("&Edit", "&Insert", "", "", "sub"),
     # A screen reader says "space" for four different characters. This is the
     # only way to find out which one broke the search.
     ("&Edit", "Describe C&haracter", "Ctrl+Shift+C", "cmd_describe_character", ""),
@@ -164,14 +169,6 @@ COMMANDS: list[CommandRow] = [
     ("&Edit", "&Lines", "", "", "sub"),
     ("&Edit", "Selectio&n", "", "", "sub"),
     ("&Edit", "Clip&board", "", "", "sub"),
-    # -- Edit > Insert -------------------------------------------------------
-    # Ctrl+Shift+F2 rather than QUILL's Shift+F2: that is Previous Bookmark here.
-    ("&Edit|&Insert", "&Date and Time", "F5", "cmd_insert_datetime", ""),
-    ("&Edit|&Insert", "&Special Character...", "Ctrl+Shift+F2", "cmd_insert_special_character", ""),
-    # Shift+Enter is the chord Word uses for a hard return, so the fingers that
-    # need this already know it (#1488). A hard break ends the line without
-    # starting a paragraph, which is the distinction a blank line cannot make.
-    ("&Edit|&Insert", "&Line Break", "Shift+Enter", "cmd_insert_line_break", ""),
     # -- Edit > Matches ------------------------------------------------------
     ("&Edit|&Matches", "&All Matches...", "Ctrl+Shift+F3", "cmd_find_all", ""),
     ("&Edit|&Matches", "&Count Occurrences", "Ctrl+Alt+Shift+F3", "cmd_count_occurrences", ""),
@@ -329,6 +326,17 @@ COMMANDS: list[CommandRow] = [
     # which is outside what the Ctrl+Alt policy is about -- F-keys are neither
     # AltGr characters nor claimed by any default JAWS or NVDA command.
     ("&View", "Announce &Headings", "Ctrl+Alt+F3", "cmd_toggle_heading_announcements", "check"),
+    # And the same for lists -- "Bulleted list, 5 items" going in, "Level 2, 3
+    # items" a rung down, "Out of list" coming out. Its own switch rather than a
+    # share of the heading one, because the two answer different questions and
+    # people want different answers to them: reorganising an outline the list
+    # level is the work, and proof-reading the same file it is a phrase between
+    # you and every item.
+    #
+    # Ctrl+Alt+F5, not the F4 that would have sat next to its sibling. A finger
+    # that misses the Control key on a chord pressed this often finds Alt+F4,
+    # and what that costs is the document.
+    ("&View", "&Announce Lists", "Ctrl+Alt+F5", "cmd_toggle_list_announcements", "check"),
     # Overtype, on QUILL's own chord. **Not** the Insert key, which is NVDA's
     # and JAWS's modifier -- binding it would fight the reader. The native
     # control answers Insert itself whatever we do, so QuillLite mirrors that
@@ -370,6 +378,40 @@ COMMANDS: list[CommandRow] = [
     # A menu bar answers "what is under Format?"; a palette answers "how do I
     # sort lines?", which is the question somebody actually has.
     ("&View", "Command Pa&lette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
+    # -- Insert -------------------------------------------------------------
+    # Everything that puts something into the document that is not typing. The
+    # top three were Edit > Insert and keep their keys exactly; the bottom three
+    # are new and are why this is a menu now.
+    #
+    # Ctrl+Shift+F2 rather than QUILL's Shift+F2: that is Previous Bookmark here.
+    ("&Insert", "&Date and Time", "F5", "cmd_insert_datetime", ""),
+    ("&Insert", "&Special Character...", "Ctrl+Shift+F2", "cmd_insert_special_character", ""),
+    # QUILL's own key, unchanged: Alt+. is the emoji picker in both editors, and
+    # a listener who learned it in one should not have to learn it twice. The
+    # picker itself is QUILL's too -- a searchable list with a written
+    # description of every glyph, which is the only shape of this feature that
+    # works at all without sight. It is offered in every document, rich ones
+    # included: an emoji is a character rather than markup.
+    ("&Insert", "&Emoji...", "Alt+.", "cmd_insert_emoji", ""),
+    # Shift+Enter is the chord Word uses for a hard return, so the fingers that
+    # need this already know it (#1488). A hard break ends the line without
+    # starting a paragraph, which is the distinction a blank line cannot make.
+    ("&Insert", "&Line Break", "Shift+Enter", "cmd_insert_line_break", ""),
+    ("&Insert", "", "", "", "sep"),
+    # The two tag pickers. Exactly one of them is ever enabled -- whichever the
+    # document's language is -- and the other is *dimmed rather than hidden*,
+    # because a row that is present and greyed announces itself as unavailable
+    # the moment a reader touches it, while a row that has vanished leaves
+    # somebody hunting a menu for a feature they know exists. See
+    # DocumentMarkupMixin and MARKUP_COMMANDS.
+    #
+    # The keys are two free neighbours rather than mnemonics, and that is an
+    # admission rather than a design: M, H, T and G were all bound years ago, and
+    # two adjacent letters under one finger are easier to hold onto as a pair
+    # than two unrelated ones. The route worth remembering is the menu's --
+    # Alt+I, M and Alt+I, H -- which does spell the thing.
+    ("&Insert", "&Markdown Tag...", "Ctrl+Alt+I", "cmd_insert_markdown_tag", ""),
+    ("&Insert", "&HTML Tag...", "Ctrl+Alt+O", "cmd_insert_html_tag", ""),
     # -- Format -------------------------------------------------------------
     # WordPad's Format menu, key for key where WordPad has a key: Ctrl+B/I/U,
     # Ctrl+L/E/R/J for alignment, Ctrl+1/2/5 for line spacing, Ctrl+Shift+L for
@@ -406,7 +448,24 @@ COMMANDS: list[CommandRow] = [
     ("F&ormat", "&Font for Selection...", "Ctrl+Shift+F", "cmd_selection_font", ""),
     ("F&ormat", "&Describe Formatting at Cursor", "Ctrl+Shift+D", "cmd_describe", ""),
     ("F&ormat", "", "", "", "sep"),
-    ("F&ormat", "Switch Document &Mode", "Ctrl+Shift+M", "cmd_switch_mode", ""),
+    # Ctrl+Shift+M rings: plain text, Markdown, HTML, rich text, round again.
+    # It used to toggle between two of those, from before a plain document had a
+    # language -- and a key that means "make this the other kind" should reach
+    # every kind there is rather than three quarters of them. Each stop
+    # announces itself, so you press it until you hear the one you meant.
+    ("F&ormat", "Switch Document &Mode", "Ctrl+Shift+M", "cmd_switch_document_kind", ""),
+    # Which markup a *plain* document is written in -- Markdown, HTML, or none.
+    # Next to Switch Document Mode because they are the same kind of decision one
+    # size down: that one chooses between plain and rich, this one chooses what
+    # plain means. It decides four things at once (what Ctrl+B writes, what the
+    # heading keys write, which tag picker is offered, and whether the caret can
+    # say "Bulleted list, 5 items"), which is exactly why it needs somewhere to
+    # be asked rather than being inferred and never mentioned.
+    #
+    # Also on the status bar's Language cell, where Enter opens this same
+    # chooser: the bar is where somebody notices the answer is wrong, and making
+    # them leave it to fix it would be a menu hunt for a one-word change.
+    ("F&ormat", "D&ocument Language...", "Ctrl+Alt+F6", "cmd_set_language", ""),
     # -- Format > Line Spacing -----------------------------------------------
     # WordPad's own chords, unchanged: Ctrl+1, Ctrl+5, Ctrl+2.
     ("F&ormat|Line Spacin&g", "&Single Spacing", "Ctrl+1", "cmd_spacing_single", ""),
@@ -820,6 +879,22 @@ COMMAND_AREA: dict[str, str] = {
     # "asked and answered" rather than "not listed".
     "cmd_editor_font": "",
     "cmd_go_to_anything": "go_to_anything",
+    # The Insert menu belongs to no single area, so its rows say so one at a
+    # time. The two tag pickers ride with rich_text's opposite number -- they are
+    # markup, which is what a *plain* document has instead of formatting -- and
+    # the emoji picker is neither: it inserts a character, and a character is
+    # available in every document there is.
+    "cmd_insert_markdown_tag": "markup",
+    "cmd_insert_html_tag": "markup",
+    "cmd_set_language": "markup",
+    "cmd_insert_emoji": "",
+    # Both caret cues are always present. They are the app's answer to something
+    # the screen reader cannot do, and each already has its own toggle one
+    # keystroke away -- putting them behind a second switch in Customize
+    # Features would be two ways to turn off one thing and no way to discover
+    # either.
+    "cmd_toggle_heading_announcements": "",
+    "cmd_toggle_list_announcements": "",
     # Five areas that used to belong to none, which is what "not everything is
     # in the list" meant: each is a real feature somebody may not want, and
     # each was unreachable from the Customize Features dialog because the menu

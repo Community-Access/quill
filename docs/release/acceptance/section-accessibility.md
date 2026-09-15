@@ -433,13 +433,230 @@ never leave it). Neither may happen anywhere in QUILL.
 
 ---
 
+## A11Y-14 — The caret says what structure it has walked into
+
+**Why this exists.** A Windows edit control has no paragraph styles and no list
+semantics. `RICHEDIT50W` will tell NVDA the font name, the point size and the
+weight, and has nothing at all to say about "this is a Heading 2" or "this is a
+list of five". On a web page the browser hands the reader both; in an editor
+nobody does, so QUILL says it itself. Everything in this scenario is a
+**sentence**, which is why no automated test can sign it off.
+
+**Set up**
+- Open `../qa-samples/structure.md` if it exists; otherwise make a new document,
+  press **Ctrl+Shift+S**, save it as `structure.md`, and paste this in:
+
+```
+# Title
+
+Some body text.
+
+## Installing
+
+- fruit
+    - apple
+    - pear
+- veg
+
+That is all.
+```
+
+**Do this, and listen**
+
+1. Put the cursor on "Some body text" and arrow down to `## Installing`.
+2. Arrow down to `- fruit`, then to `- apple`, then to `- pear`, then to
+   `- veg`, then to "That is all".
+3. Press **Ctrl+End**, then **Ctrl+Home**.
+4. Press **Ctrl+Alt+F5**, then repeat step 2.
+5. Press **Ctrl+Alt+F5** again, press **Ctrl+Alt+F3**, then repeat step 2.
+6. Put both switches back on.
+
+**You should hear**
+
+- Step 1: **"Heading 2, Installing"** — the level first, then the heading's own
+  words, as one sentence. Your reader does not then read the line a second time.
+- Step 2, in order: **"Bulleted list, 2 items"** entering; **"Level 2, 2
+  items"** going a rung down; **nothing** moving from `- apple` to `- pear`;
+  **"Level 1, 2 items"** coming back up; **"Out of list"** leaving.
+- Step 3: **"Heading 1, Title"** on the Ctrl+Home. **This is the one most likely
+  to fail** — a cue queued behind the reader is cancelled outright when the
+  reader restarts on a big jump, which is exactly what was reported and fixed.
+- Step 4: lists silent, **headings still announced**.
+- Step 5: headings silent, **lists still announced**. The two switches are
+  independent on purpose, and one silencing the other is a fail.
+
+**Counts are per level, inside your own list.** "2 items" at level one and "2
+items" at level two. If you hear **"5 items"** anywhere, the counting rule is
+wrong and an outline will mislead whoever reorganises it.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---
+
+## A11Y-15 — Lists in HTML, and definition lists in both
+
+**Set up** — a new document saved as `structure.html`, containing:
+
+```
+<p>Before.</p>
+<ol>
+  <li>first</li>
+  <li>second</li>
+</ol>
+<dl>
+  <dt>Quill</dt>
+  <dd>the editor</dd>
+  <dt>Lite</dt>
+  <dd>the small one</dd>
+</dl>
+<p>After.</p>
+```
+
+**Do this, and listen** — arrow from "Before." down through every line to
+"After.".
+
+**You should hear**
+- **"Numbered list, 2 items"** entering the `<ol>` — *numbered*, not bulleted.
+  Order is meaning in one and not the other, and they must not sound alike.
+- **"Definition list, 2 terms"** entering the `<dl>` — counted in **terms**, so
+  two and not four.
+- **"Term"** and **"Definition"** as you alternate between `<dt>` and `<dd>`.
+  Which of the two you are standing in decides what the words mean, and a
+  definition list written inside out is not something you can see you have done.
+- **"Out of list"** on "After.".
+- Try the Markdown spelling of the same thing in `structure.md` — a line, then
+  `: the definition` under it — and confirm it behaves identically. Two products
+  and two markups, one set of sentences.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---
+
+## A11Y-16 — The cue is quiet everywhere it should be
+
+**Why this exists.** Under-announcing gets filed as a bug. **Over-announcing is
+absorbed as "this app is chatty" and never filed**, which is why it needs a box.
+Every line below is a place the cue must say *nothing*.
+
+**Do each of these, and listen for silence**
+
+1. Type two paragraphs of ordinary prose in `structure.md`, arrowing about.
+2. Put `- - -` on a line of its own between two paragraphs, and arrow onto it.
+3. Put a fenced code block containing a line `- not a bullet` in, and arrow
+   through it.
+4. Open a `.py` or a `.conf` (or set **Navigate ▸ Set Document Language** to
+   plain text) and arrow over lines starting with `#` and with `-`.
+5. In a **rich text** document, make a bulleted paragraph with `Ctrl+Alt+7` and
+   arrow through it.
+6. Put the cursor inside a list item and type a sentence.
+7. Put the cursor in a heading and delete the line *above* it.
+8. Open a document whose very first line is its own title.
+
+**You should hear**
+- Nothing in 1–6. A hyphen in prose is a dash; a dash in a code sample is a
+  sample; a `#` in a shell script is a comment; rich-text bullets are the
+  control's own and not markup.
+- Nothing in 7: the text moved, you did not. An edit that renumbers the lines
+  must never masquerade as an arrival.
+- Nothing in 8: a document that opens on its own title must not greet every user
+  with "Heading 1" across the reader's first reading of the line.
+
+**Any sound at all in this scenario is a fail**, even a helpful-sounding one.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---
+
+## A11Y-17 — The heading level can be heard the other way round, and F6 lets go
+
+**Do this**
+
+1. **Tools ▸ Customize & Support ▸ Preferences**, find **Say a heading's
+   level** in Accessibility, choose **After the text**, save. Arrow onto a
+   heading.
+2. Put it back to **Before the text**. Arrow onto a heading again.
+3. Press **F6** to reach the status bar, arrow to any cell, and press **F6**
+   again. Repeat with **Shift+F6**, and once more with **Escape**.
+4. Open **Insert** in a Markdown document and arrow to **Insert HTML Tag**.
+   Then open a `.html` document and arrow to **Insert Markdown Tag**. Then open
+   a plain-text document and arrow to both.
+
+**You should hear**
+- Step 1: your reader reads the line, and **"Heading 2"** follows it. Same
+  information, other order.
+- Step 2: **"Heading 2, Installing"** as one sentence.
+- Step 3: you are returned to your document all three times. F6 is how you got
+  there, and a key that takes you somewhere should take you back.
+- Step 4: **exactly one** of the two tag rows is available in each of the first
+  two documents, and **neither** in the plain one — and the unavailable row is
+  **present and announced as unavailable**, never missing. A row that has
+  vanished leaves somebody hunting the menus for a feature they know exists; a
+  row that is enabled promises the command will work.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---
+
+## A11Y-18 — A form control arrives wired, and the wiring is checked
+
+**Why this exists.** Every part of what makes a form usable by a screen reader
+is invisible on screen. A missing `for` renders identically to a present one. A
+radio group without a shared `name` looks exactly like a group, except every
+button can be on at once. Two fields sharing an `id` look perfect until the
+second label focuses the first field. This scenario reads the markup back and
+compares pairs of values, because that is the only way to see any of it.
+
+**Set up** — a new HTML document (**Navigate ▸ Set Document Language ▸ HTML**,
+or save as `.html`).
+
+**Do this**
+
+1. **Insert ▸ Insert HTML Tag**, type `dropdown`, choose **Form field: dropdown
+   (select)**.
+2. Read back the `<label for="...">` and the `<select id="...">`.
+3. Insert **Form field: radio group**. Read back all three `name` values and
+   count the `checked` attributes.
+4. Type `Postcode`, select it, and insert **Form field: text**.
+5. Insert **Form field: email** twice.
+6. Insert **Form field: required, with hint and error**, and read back
+   `aria-describedby`.
+7. Search the picker for `glossary`, `acronym`, `image caption`, `table header`,
+   `subtitles` and `divider`.
+
+**You should see and hear**
+
+- Step 2: the two strings are **identical**. A `for` that points at nothing is
+  a field a reader announces as unlabelled with the text sitting beside it.
+- Step 3: a `<fieldset>`, a `<legend>`, **one** `name` shared by all three, and
+  **exactly one** `checked`.
+- Step 4: the label reads Postcode and both `id` and `for` read `postcode` —
+  generated from the selection together, so they cannot drift.
+- Step 5: the second field's `id` is **not** the first's. This is the silent
+  failure the whole feature exists to prevent.
+- Step 6: `aria-describedby` names two ids that both exist, plus
+  `aria-invalid="false"` and a `role="alert"` error paragraph.
+- Step 7: `dl`, `abbr`, `figcaption`, `thead`, `track` and `hr` are each in the
+  first few results. The picker is searched by what a tag *does*, and all six of
+  those were unreachable before.
+- Choosing a **Form field:** row inserts immediately; choosing a bare tag still
+  offers the optional-attributes box.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---
+
 ### Section sign-off
 - Tester:
 - Screen reader(s) + version(s):
 - Build / commit tested:
 - Environment (E1–E6):
 - Date:
-- Scenarios passed / total: ___ / 13
+- Scenarios passed / total: ___ / 18
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:

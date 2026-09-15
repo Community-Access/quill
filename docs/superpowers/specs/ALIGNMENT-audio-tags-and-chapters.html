@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>ALIGNMENT-audio-tags-and-chapters</title>
+  <title>Alignment: audio tags and chapters across QUILL Audio Studio
+and podHarvest</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -238,8 +239,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="alignment-audio-tags-and-chapters-across-quill-audio-studio-and-podharvest">Alignment:
 audio tags and chapters across QUILL Audio Studio and podHarvest</h1>
@@ -248,7 +270,7 @@ audio tags and chapters across QUILL Audio Studio and podHarvest</h1>
 <code>S:\code\pod</code> (podHarvest)</p>
 <p>This document is the contract between two separate repositories. A
 copy lives in each; they must stay identical. It exists because both
-apps now edit the same thing — an audio file's tags and chapter markers
+apps now edit the same thing — an audio file’s tags and chapter markers
 — and a user who moves between them should find the same fields, the
 same operations, the same keys and the same words, and should be able to
 edit a file in either app without the other noticing.</p>
@@ -272,7 +294,7 @@ parser. It went in when podHarvest needed them and QUILL Cast already
 had them, worked out against real feeds. Rather than copy, <strong>Cast
 now delegates</strong>: <code>show_note_chapters.py</code> went from 231
 lines to 109, <code>transcript_choice.py</code> from 90 to 76, and the
-text parsers moved out of <code>transcripts.py</code>. Cast's own 749
+text parsers moved out of <code>transcripts.py</code>. Cast’s own 749
 tests passing against the shared code is the proof the move was
 faithful.</p>
 <p><code>audio_tags_core.py</code> — identical bytes at
@@ -321,11 +343,11 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> _core.ChapterEditError <span class="im">as</span> exc:</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> ChapterEditError(<span class="bu">str</span>(exc)) <span class="im">from</span> exc</span></code></pre></div>
 <p>podHarvest uses the shared classes directly — it has no coded-error
-scheme. The retranslation is one decorator in QUILL's adapter, not seven
+scheme. The retranslation is one decorator in QUILL’s adapter, not seven
 try blocks.</p>
 <h3 id="the-drift-gate">The drift gate</h3>
 <p>Each repo carries a test that hashes its copy and compares against a
-constant recorded in this document's companion,
+constant recorded in this document’s companion,
 <code>audio_tags_core.sha256</code>, kept beside the module in both
 repos:</p>
 <div class="sourceCode" id="cb2"><pre
@@ -340,7 +362,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a hr
 <p>Changing the shared module is therefore always a two-repo change.
 That is the point: the gate makes silent divergence impossible, and
 makes deliberate divergence loud.</p>
-<h2 id="what-identical-output-means">What "identical output" means</h2>
+<h2 id="what-identical-output-means">What “identical output” means</h2>
 <p>Both apps must write chapter frames a byte-comparison cannot tell
 apart. Before this work they did not, and the differences were small but
 real.</p>
@@ -376,7 +398,7 @@ real.</p>
 <td>ID3 version</td>
 <td>2.4 always</td>
 <td>2.3 always</td>
-<td>adaptive: 2.3, or 2.4 once a v2.4-only field is set -- and a chapter
+<td>adaptive: 2.3, or 2.4 once a v2.4-only field is set – and a chapter
 write inherits it rather than forcing one</td>
 </tr>
 <tr>
@@ -387,17 +409,17 @@ write inherits it rather than forcing one</td>
 </tr>
 </tbody>
 </table>
-<p>Verified against real ffmpeg on 2026-09-02: podHarvest's existing
+<p>Verified against real ffmpeg on 2026-09-02: podHarvest’s existing
 writer does produce proper ID3v2.4 <code>CHAP</code> + <code>CTOC</code>
 frames that mutagen reads back correctly — it works, it is simply not
-identical to QUILL's.</p>
+identical to QUILL’s.</p>
 <p><strong>Element ids become <code>ch&lt;N&gt;</code>.</strong> QUILL
 changes; podHarvest does not. Element ids are opaque handles, so no
 player is affected, but podHarvest already has libraries of harvested
 episodes carrying <code>ch0</code>-style ids and ffmpeg is the de-facto
 convention. Changing the app with no installed base is the cheaper side
 of the trade.</p>
-<p><strong>The chapter write follows the file's ID3 version.</strong>
+<p><strong>The chapter write follows the file’s ID3 version.</strong>
 Found by running the two apps against one file rather than by reading
 the code: saving an ID3 block is all-or-nothing, so writing chapters at
 a fixed 2.3 onto a file whose tags had just been written at 2.4 quietly
@@ -406,7 +428,7 @@ demoted the whole block and stranded the sort fields.
 <code>v2_version: int | None</code> and, left unset, reads what is on
 disk and asks <code>preferred_id3_version</code>. Callers no longer have
 to write tags and chapters in a particular order to keep what they wrote
--- which is exactly the kind of thing neither app should have to
+– which is exactly the kind of thing neither app should have to
 remember.</p>
 <p><strong>podHarvest stops re-muxing MP3s to add chapters.</strong>
 This is the change that matters most to podHarvest on its own terms.
@@ -431,19 +453,19 @@ case-insensitively, so <code>&amp;Start</code> and
 <code>SetName</code>.</p>
 <p><strong>QUILL</strong> mandates a unique mnemonic per window
 (GATE-14) and names controls with <code>set_accessible_name</code>,
-which calls <code>SetName</code> and reaches a <code>SpinCtrl</code>'s
+which calls <code>SetName</code> and reaches a <code>SpinCtrl</code>’s
 inner edit.</p>
 <p>The synthesis, which costs neither app anything:</p>
 <ol type="1">
 <li><strong>The new dialogs use <code>FlexGridSizer</code> rows, not
-<code>wx.StaticBox</code> groups.</strong> podHarvest's mnemonic-scoping
+<code>wx.StaticBox</code> groups.</strong> podHarvest’s mnemonic-scoping
 objection is a property of StaticBox containment; without the boxes it
 does not arise. Mnemonics work in both.</li>
 <li><strong>Mnemonics are unique case-insensitively within a
 page</strong>, which is already what GATE-14 enforces and exactly
-answers podHarvest's <code>&amp;Start</code>/<code>&amp;speakers</code>
+answers podHarvest’s <code>&amp;Start</code>/<code>&amp;speakers</code>
 collision.</li>
-<li><strong>Both apps adopt podHarvest's <code>_Named</code>
+<li><strong>Both apps adopt podHarvest’s <code>_Named</code>
 <code>wx.Accessible</code> helper</strong> in addition to
 <code>SetName</code>. It is the stronger of the two implementations: it
 sets a real accessible name rather than relying on the platform to
@@ -472,7 +494,7 @@ since the Workbench has no menu bar to advertise them.</p>
 <tbody>
 <tr>
 <td>Alt+Left / Alt+Right</td>
-<td>Nudge the selected chapter's start by one step</td>
+<td>Nudge the selected chapter’s start by one step</td>
 </tr>
 <tr>
 <td>Alt+Shift+Left / Alt+Shift+Right</td>
@@ -497,7 +519,7 @@ construction. Announcements follow the same two rules in both:</p>
 sentence: it runs at key-repeat speed, and a sentence repeated ten times
 a second is noise. The full sentence follows once the run goes quiet for
 600 ms.</li>
-<li>Hitting the wall says "Cannot move further." once per run, not per
+<li>Hitting the wall says “Cannot move further.” once per run, not per
 press.</li>
 </ul>
 <h2 id="per-repo-work">Per-repo work</h2>
@@ -528,7 +550,7 @@ in this repo. In outline:</p>
 <ul>
 <li>Vendor <code>audio_tags_core.py</code> and add the drift test.</li>
 <li>Add <code>mutagen</code> to the <strong><code>gui</code> extra
-only</strong>. podHarvest's stated promise is that its <em>CLI</em> runs
+only</strong>. podHarvest’s stated promise is that its <em>CLI</em> runs
 on the standard library alone, with the desktop GUI as the one
 exception; tag editing is a GUI feature, so the promise is kept
 verbatim. The CLI never imports mutagen.</li>
@@ -538,7 +560,7 @@ containers, preserving its current signature and its never-raises
 contract so the harvest pipeline is unchanged.</li>
 <li>Add a Tag and Chapter Editor dialog, opened from the Episodes list,
 with the same five pages, the same fields, the same chapter operations
-and the same keys as QUILL's.</li>
+and the same keys as QUILL’s.</li>
 </ul>
 <h2 id="what-podharvest-took-from-cast-and-what-it-did-not">What
 podHarvest took from Cast, and what it did not</h2>
@@ -559,9 +581,9 @@ control nobody wrote a sentence for.</li>
 retention and expiry, listening statistics. Those make a podcatcher, and
 podHarvest is not one.</p>
 <h2 id="out-of-scope">Out of scope</h2>
-<p>QUILL Cast's inferred chapters
+<p>QUILL Cast’s inferred chapters
 (<code>quill/core/podcasts/chapter_edits.py</code>) carry a confidence
-and a source, where an edit means "this is no longer a guess" — a
+and a source, where an edit means “this is no longer a guess” — a
 different domain with different invariants. FLAC, OGG and Opus tag
 editing. Batch tagging across a folder. Online tag lookup.</p>
 <h2 id="verified">Verified</h2>
@@ -576,9 +598,10 @@ that rewrite.</li>
 <li>Element ids read back as <code>ch0</code>, <code>ch1</code> with a
 <code>toc</code>, from both sides.</li>
 <li>The file sits at ID3v2.4 because a sort field is set, and stays
-there through the other app's chapter write.</li>
+there through the other app’s chapter write.</li>
 </ul>
 <p>The last of those is what caught the version-ordering bug above. It
 is worth re-running, by hand, after any change to the shared module.</p>
+</main>
 </body>
 </html>

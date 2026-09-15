@@ -12,6 +12,7 @@ from __future__ import annotations
 import pathlib
 
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
+from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.ui.richedit_editing import PLAIN, RICH
 
 DOC = "# Title\n\nbody line\n\n## Section\n\n| a | b |\n| --- | --- |\n| c | d |\n"
@@ -46,6 +47,12 @@ class _Editor:
 
 class _Settings:
     announce_headings = True
+    announce_lists = True
+    # "after" keeps the tests above reading as they did -- the level alone,
+    # queued behind the reader. The shipped default is "before", and it has a
+    # class of its own at the bottom of this file where the composed sentence is
+    # what is being tested.
+    heading_announce_position = "after"
 
 
 class _App:
@@ -57,7 +64,7 @@ class _App:
         self.saved += 1
 
 
-class _Window(DocumentHeadingsMixin):
+class _Window(DocumentHeadingsMixin, DocumentMarkupMixin):
     def __init__(
         self, text: str = DOC, caret: int = 0, *, mode: str = PLAIN, name: str | None = "notes.md"
     ) -> None:
@@ -67,6 +74,13 @@ class _Window(DocumentHeadingsMixin):
         self.path = pathlib.Path(name) if name else None
         self.announcements: list[str] = []
         self.interrupted: list[bool] = []
+        self.status_touches = 0
+
+    def _touch_status(self) -> None:
+        self.status_touches += 1
+
+    def _set_modified(self, _flag: bool) -> None:
+        pass
 
     def _announce(self, message: str, *, interrupt: bool = True) -> None:
         # Recorded, because the heading cue must never interrupt: the reader
@@ -89,8 +103,10 @@ def test_arriving_at_a_heading_says_the_level() -> None:
 
 
 def test_the_text_of_the_heading_is_never_repeated() -> None:
-    # The screen reader is already reading the line. Saying it again here is
-    # the double-speaking GATE-13 exists to catch.
+    # In "after" mode the screen reader is already reading the line, so saying
+    # it again here is the double-speaking GATE-13 exists to catch. "Before"
+    # mode carries the text *instead of* the reader's reading, not on top of it,
+    # which is why it interrupts -- see TestWhereTheLevelGoes.
     win = _Window()
     win.at("body line")
     win.at("Section")
@@ -353,20 +369,37 @@ def test_a_markdown_file_still_has_headings() -> None:
     assert win.announcements == ["Heading 2"]
 
 
-def test_a_plain_txt_file_has_headings() -> None:
-    # Nothing conventionally starts a line of prose with "#", and a .txt is
-    # where somebody writes Markdown-ish headings without saying so.
-    win = _Window(MARKDOWN, name="notes.txt")
+def test_a_plain_txt_file_has_no_headings() -> None:
+    """Plain text stays plain, and that is the rule for `.txt` too.
+
+    It used to count as Markdown, on the argument that a plain text file is
+    where somebody writes prose with `#` headings. True of some `.txt` files and
+    false of most -- and the cost of being wrong lands on every line of the ones
+    it is wrong about. Ctrl+Shift+M says otherwise in one keystroke.
+    """
+    win = _Window("# Heading\n\nbody\n", name="notes.txt")
     win.at("body")
-    win.at("## Two")
-    assert win.announcements == ["Heading 2"]
+    win.at("Heading")
+    assert win.announcements == []
+    assert win._plain_headings() == []
 
 
-def test_an_untitled_buffer_has_headings() -> None:
-    win = _Window(MARKDOWN, name=None)
+def test_an_untitled_buffer_has_no_headings_either() -> None:
+    win = _Window("# Heading\n\nbody\n", name=None)
     win.at("body")
-    win.at("## Two")
-    assert win.announcements == ["Heading 2"]
+    win.at("Heading")
+    assert win.announcements == []
+
+
+def test_a_txt_file_told_it_is_markdown_gets_its_headings_back() -> None:
+    """Nothing is lost by the rule -- only guessed-at behaviour is."""
+    win = _Window("# Heading\n\nbody\n", name="notes.txt")
+    win.set_document_language("markdown", announce=False)
+    win.at("body")
+    win.at("Heading")
+    # The level alone, because this file's stub asks for "after" ordering; the
+    # shipped default composes the sentence (see TestWhereTheLevelGoes).
+    assert win.announcements == ["Heading 1"]
 
 
 def test_rich_text_is_unaffected_by_the_file_name() -> None:
@@ -378,3 +411,68 @@ def test_rich_text_is_unaffected_by_the_file_name() -> None:
     win.editor._level = 2
     win.at("two")
     assert win.announcements == ["Heading 2"]
+
+
+class TestWhereTheLevelGoes:
+    """The level before the heading's words, or after them -- and why it matters.
+
+    Not a matter of taste. A cue *queued behind* the reader is at the reader's
+    mercy: on a large caret jump NVDA and JAWS cancel whatever is pending and
+    start again on the new line, so the level waiting its turn is never heard.
+    Reported exactly that way -- arrowing onto a heading announced it, Ctrl+Home
+    onto the same heading did not.
+    """
+
+    @staticmethod
+    def _win(position: str) -> _Window:
+        win = _Window()
+        win.app.settings.heading_announce_position = position
+        return win
+
+    def test_before_is_one_sentence_of_quilllites_own(self) -> None:
+        win = self._win("before")
+        win.at("body line")
+        win.at("Section")
+        assert win.announcements == ["Heading 2, Section"]
+
+    def test_before_interrupts_because_it_carries_the_words_with_it(self) -> None:
+        # Safe precisely because the text the reader was about to say is inside
+        # the phrase replacing it.
+        win = self._win("before")
+        win.at("body line")
+        win.at("Section")
+        assert win.interrupted == [True]
+
+    def test_after_is_the_level_alone_and_waits_its_turn(self) -> None:
+        win = self._win("after")
+        win.at("body line")
+        win.at("Section")
+        assert win.announcements == ["Heading 2"]
+        assert win.interrupted == [False]
+
+    def test_jumping_to_the_top_of_the_document_still_announces(self) -> None:
+        win = self._win("before")
+        win.at("Section")
+        win.announcements.clear()
+        win.control.SetInsertionPoint(0)
+        win.announce_structure_at_caret()
+        assert win.announcements == ["Heading 1, Title"]
+
+    def test_a_settings_object_that_predates_the_field_leads_with_the_level(self) -> None:
+        # The behaviour that works on every kind of move, not the lossy one.
+        class _Old:
+            announce_headings = True
+            announce_lists = True
+
+        win = _Window()
+        win.app.settings = _Old()
+        win.at("body line")
+        win.at("Section")
+        assert win.announcements == ["Heading 2, Section"]
+
+    def test_an_html_heading_loses_its_tags_on_the_way_into_the_sentence(self) -> None:
+        win = _Window("<p>body</p>\n<h3>Installing</h3>\n", name="page.html")
+        win.app.settings.heading_announce_position = "before"
+        win.at("body")
+        win.at("Installing")
+        assert win.announcements == ["Heading 3, Installing"]

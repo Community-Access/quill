@@ -600,6 +600,34 @@ class Settings:
     # rather than a preference you set once. Shared with QuillLite, which must
     # never be ahead of QUILL (CLAUDE.md).
     announce_headings: bool = True
+    # Say "Bulleted list, 5 items" on entering a list, "Level 2, 3 items" a rung
+    # down, and "Out of list" on leaving one -- in Markdown and in HTML, over
+    # ul/ol/dl alike. On, and switched separately from announce_headings because
+    # the two answer different questions: reorganising an outline the list level
+    # is the work, and proof-reading the same file it is a phrase between you and
+    # every item. This is the one cue in the set a screen reader gives you
+    # everywhere else -- a browser hands it an <ul> with a count and an editor
+    # hands it characters -- so switching it off is giving something up rather
+    # than declining an extra. Ctrl+Alt+F5. Shared with QuillLite.
+    announce_lists: bool = True
+    # Where "Heading 2" goes relative to the heading's own text: ``"before"``
+    # (the default) says "Heading 2, Installing" as one sentence of QUILL's
+    # own, and ``"after"`` lets the screen reader read the line and adds
+    # "Heading 2" behind it.
+    #
+    # Before is the default because after is **lossy**, and not in a way anyone
+    # would guess. A cue queued behind the reader is at the reader's mercy: on
+    # a large caret jump -- Ctrl+Home, a search hit, a bookmark -- NVDA and JAWS
+    # cancel what is pending and start again on the new line, so the "Heading 1"
+    # waiting its turn is never heard. Reported exactly that way: arrowing onto
+    # a heading announced it, Ctrl+Home onto the same heading did not. Before is
+    # also the order a browser gives you, where the reader says "heading level
+    # two" and then the words.
+    #
+    # After is kept, and is the right choice for anyone who would rather hear
+    # the words first and the label as a footnote -- it is the same information
+    # in the other order, and on ordinary line-by-line reading it is reliable.
+    heading_announce_position: str = "before"
     # And the same choice for the one failure a search can have: nothing found.
     # Separate from action_feedback on purpose -- somebody who wants every
     # successful action spoken may well want the *failure* to be a tone, and

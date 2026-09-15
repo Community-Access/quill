@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-09-02-audio-tag-editor</title>
+  <title>Full Audio Tag Editor and Complete Chapter Editing —
+Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -238,8 +239,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="full-audio-tag-editor-and-complete-chapter-editing--implementation-plan">Full
 Audio Tag Editor and Complete Chapter Editing — Implementation Plan</h1>
@@ -249,7 +271,7 @@ superpowers:subagent-driven-development (recommended) or
 superpowers:executing-plans to implement this plan task-by-task. Steps
 use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
 </blockquote>
-<p><strong>Goal:</strong> Turn the QUILL Audio Studio's Chapter
+<p><strong>Goal:</strong> Turn the QUILL Audio Studio’s Chapter
 Workbench into a full MP3 tag editor with complete chapter editing —
 add, delete, retime, nudge by a configurable step, preview — while
 keeping every accessibility and architecture gate green.</p>
@@ -280,7 +302,7 @@ build their code in a new
 <code>quill/core/speech/audio_tags.py</code> becomes a thin adapter
 holding only what cannot be shared: the <code>CodedError</code>
 subclasses (GATE-EC forbids the
-<code>class X(Exception, CodedError)</code> MRO, so the shared module's
+<code>class X(Exception, CodedError)</code> MRO, so the shared module’s
 plain exceptions are <strong>retranslated</strong> at the boundary) and
 the <code>AudioMetadata</code> bridge. <code>chapters.py</code> keeps
 its quill-only pieces (<code>compute_chapters</code>,
@@ -289,27 +311,27 @@ re-exports the shared operations through the same adapter, so all eleven
 existing importers of <code>quill.core.speech.chapters</code> keep
 working unchanged.</p>
 <p>Add <code>quill/core/speech/audio_tags_core.sha256</code> and a drift
-test mirroring podHarvest's, so editing one copy without the other fails
+test mirroring podHarvest’s, so editing one copy without the other fails
 the build in both repos.</p>
 <p><strong>2. Chapter element ids change from <code>chp0000</code> to
-<code>ch0</code>.</strong> podHarvest's existing writer (ffmpeg)
+<code>ch0</code>.</strong> podHarvest’s existing writer (ffmpeg)
 produces <code>ch0</code>-style ids, verified against real ffmpeg on
 2026-09-02, and it has installed libraries of episodes carrying them.
 Element ids are opaque handles that no player interprets, so changing
-quill's side is free; changing podHarvest's is not. In
+quill’s side is free; changing podHarvest’s is not. In
 <code>write_mp3_chapters</code>,
 <code>element_id = f"chp{chapter.index:04d}"</code> becomes
 <code>element_id = f"ch{chapter.index}"</code>. The TOC id stays
 <code>toc</code>.</p>
-<p><strong>3. Accessibility gains podHarvest's helper.</strong>
-podHarvest's <code>set_accessible_name</code> has the <em>same
-signature</em> as quill's but a stronger implementation: it sets
+<p><strong>3. Accessibility gains podHarvest’s helper.</strong>
+podHarvest’s <code>set_accessible_name</code> has the <em>same
+signature</em> as quill’s but a stronger implementation: it sets
 <code>SetName</code> <strong>and</strong> attaches a
 <code>wx.Accessible</code> subclass holding a strong reference, because
 <code>SetName</code> alone reaches neither MSAA/UIA, AT-SPI nor
 NSAccessibility. Adopt that implementation inside
 <code>quill/ui/audio_studio/pages_base.py:set_accessible_name</code>,
-keeping quill's existing <code>SpinCtrl</code> inner-edit walk. Every
+keeping quill’s existing <code>SpinCtrl</code> inner-edit walk. Every
 call site in this plan is unchanged, and the accessible-name audit still
 classifies each as <code>named</code>.</p>
 <h2 id="global-constraints">Global Constraints</h2>
@@ -357,9 +379,9 @@ updates go through <code>wx.CallAfter</code>.</li>
 <strong>945 lines</strong>. New logic goes in new modules. Any growth
 needs a <code>_rebaseline_2026_09_02_</code> entry in
 <code>quill/tools/module_size_budgets.json</code> explaining why.</li>
-<li><strong>Commits:</strong> this repository's owner does not want
-commits created unless explicitly asked. Each task's final step says
-"commit"; if commits have not been authorised for this run, stage the
+<li><strong>Commits:</strong> this repository’s owner does not want
+commits created unless explicitly asked. Each task’s final step says
+“commit”; if commits have not been authorised for this run, stage the
 files and report instead.</li>
 </ul>
 <hr />
@@ -378,7 +400,7 @@ files and report instead.</li>
 <td>create (vendored)</td>
 <td><code>TagField</code> table, <code>AudioTags</code>,
 <code>CoverArt</code>, read/write for MP3 and MP4, <code>Chapter</code>,
-every chapter operation. Byte-identical to podHarvest's copy</td>
+every chapter operation. Byte-identical to podHarvest’s copy</td>
 </tr>
 <tr>
 <td><code>quill/core/speech/audio_tags_core.sha256</code></td>
@@ -435,7 +457,7 @@ path</td>
 <tr>
 <td><code>quill/ui/audio_studio/pages_audio.py</code></td>
 <td>modify</td>
-<td>standalone "Edit tags only..." route</td>
+<td>standalone “Edit tags only…” route</td>
 </tr>
 <tr>
 <td><code>tests/unit/core/speech/test_audio_tags.py</code></td>
@@ -980,7 +1002,7 @@ Expected: FAIL —
 keyword to <code>write_mp3_chapters</code></strong></label></li>
 </ul>
 <p>In <code>quill/core/speech/chapters.py</code>, change the signature
-and the final save. The default of 3 keeps every existing caller's
+and the final save. The default of 3 keeps every existing caller’s
 on-disk result identical:</p>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> write_mp3_chapters(</span>
@@ -1132,7 +1154,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a hr
 <span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a>        id3.save(<span class="bu">str</span>(path), v2_version<span class="op">=</span>preferred_id3_version(tags))</span>
 <span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - mutagen raises many shapes</span></span>
 <span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> TagWriteError(<span class="ss">f&quot;Could not write tags: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> exc</span></code></pre></div>
-<p>Add <code>from pathlib import Path</code> to the module's
+<p>Add <code>from pathlib import Path</code> to the module’s
 imports.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 5: Run the tests to
@@ -1580,9 +1602,9 @@ save</h3>
 <code>merge_audio_metadata(tags: AudioTags, meta: AudioMetadata) -&gt; AudioTags</code></li>
 </ul>
 <p><code>save_mp3_book</code> and <code>write_tags</code> both run on a
-save. Both are load-modify-save so neither clobbers the other's frames,
+save. Both are load-modify-save so neither clobbers the other’s frames,
 but they must agree on the ID3 version or the second save rewrites the
-first's frames at a different version. The bridge is also what keeps
+first’s frames at a different version. The bridge is also what keeps
 <code>BookFile</code>, the M4B re-mux and the batch pipeline working
 unchanged.</p>
 <ul class="task-list">
@@ -1723,7 +1745,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a h
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    id3.save(<span class="bu">str</span>(book.path), v2_version<span class="op">=</span>version)</span>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Chapters go through the shared CHAP/CTOC writer (idempotent, preserves tags).</span></span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    write_mp3_chapters(book.path, book.chapters, v2_version<span class="op">=</span>version)</span></code></pre></div>
-<p>Update the function's docstring to mention that the version follows
+<p>Update the function’s docstring to mention that the version follows
 whatever the file already carries.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 5: Run the tests to
@@ -1997,8 +2019,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href=
 <p>The nudge is the one chapter operation that <strong>clamps instead of
 raising</strong>: it is driven by a held key, and stopping at the wall
 is what a person expects when they run a marker into its neighbour. It
-returns the delta actually applied so the UI can say "cannot move
-further" once per run rather than once per press.</p>
+returns the delta actually applied so the UI can say “cannot move
+further” once per run rather than once per press.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -2178,7 +2200,7 @@ the settings documentation corpus under <code>docs/</code>, then run the
 inventory to confirm it resolves:</p>
 <p>Run: <code>python -m quill.tools.platform_report</code> Expected: the
 settings-documentation gate reports no <code>missing</code> entries. If
-it still reports one, the doc row's key spelling does not match the
+it still reports one, the doc row’s key spelling does not match the
 field name.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 7: Type-check, lint,
@@ -2320,7 +2342,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a h
 <span id="cb31-99"><a href="#cb31-99" aria-hidden="true" tabindex="-1"></a>    frame.Destroy()</span></code></pre></div>
 <p>Check <code>tests/conftest.py</code> for the existing wx app fixture
 name and the wx test group marker, and match them; the names above
-(<code>wx_app</code>, <code>xdist_group("wx")</code>) assume the repo's
+(<code>wx_app</code>, <code>xdist_group("wx")</code>) assume the repo’s
 existing convention.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 2: Run the test to
@@ -2553,7 +2575,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb32-1"><a h
 <span id="cb32-216"><a href="#cb32-216" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.pages[group].collect(edited)</span>
 <span id="cb32-217"><a href="#cb32-217" aria-hidden="true" tabindex="-1"></a>        edited.cover <span class="op">=</span> <span class="va">self</span>._cover_page.cover</span>
 <span id="cb32-218"><a href="#cb32-218" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> edited</span></code></pre></div>
-<p>Check <code>apply_modal_ids</code>'s real signature in
+<p>Check <code>apply_modal_ids</code>’s real signature in
 <code>quill/ui/dialog_contract.py:45</code> before writing this call;
 pass whatever keyword names it actually declares.</p>
 <ul class="task-list">
@@ -3769,10 +3791,10 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb52-1"><a h
 <span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _hear_after_nudge(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>:</span>
 <span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">bool</span>(<span class="va">self</span>._hear_after.GetValue())</span></code></pre></div>
-<p>Use the repository's real settings load/save function names.</p>
+<p>Use the repository’s real settings load/save function names.</p>
 <ul class="task-list">
-<li><label><input type="checkbox" /><strong>Step 5: Add the "All
-tags..." button and its handler</strong></label></li>
+<li><label><input type="checkbox" /><strong>Step 5: Add the “All tags…”
+button and its handler</strong></label></li>
 </ul>
 <p>Add to <code>io_row</code> (beside Import/Export/Split):</p>
 <div class="sourceCode" id="cb53"><pre
@@ -3896,7 +3918,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb57-1"><a h
 <p>capturing <code>tags = self._full_tags</code> before the closures,
 next to <code>book = self._book</code>.</p>
 <p>Finally, enable Save for an M4B when only tags are dirty. Replace the
-constructor's <code>if book.kind != "mp3":</code> block with a call to a
+constructor’s <code>if book.kind != "mp3":</code> block with a call to a
 new method, and call that method from <code>_apply</code> and
 <code>_on_all_tags</code> as well:</p>
 <div class="sourceCode" id="cb58"><pre
@@ -3949,9 +3971,9 @@ grew and why:</p>
 <blockquote>
 <p>chapter_workbench.py 945 -&gt; NNN (+NN): the two new button rows
 (add/delete/edit/preview, and the nudge row with its step choice, Hear
-boundary and hear-after checkbox), the All tags... launcher, and the
-save path split into chapters-dirty and tags-dirty so an M4B can save
-tags in place. Every handler lives in the new under-cap
+boundary and hear-after checkbox), the All tags… launcher, and the save
+path split into chapters-dirty and tags-dirty so an M4B can save tags in
+place. Every handler lives in the new under-cap
 <code>chapter_workbench_edits.py</code> and every computation in the
 wx-free <code>quill/core/speech/chapters.py</code> and
 <code>audio_tags.py</code>; this module gained surfaces and wiring only.
@@ -4090,7 +4112,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb63-1"><a h
 <span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>        parent <span class="op">=</span> <span class="va">self</span>.GetTopLevelParent()</span>
 <span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> parent <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
 <span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>            parent.EndModal(wx.ID_OK)</span></code></pre></div>
-<p>Add the button to the page's sizer beside Browse, following the row's
+<p>Add the button to the page’s sizer beside Browse, following the row’s
 existing layout.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 5: Act on it in the
@@ -4098,7 +4120,7 @@ Studio entry point</strong></label></li>
 </ul>
 <p>In <code>quill/ui/audio_studio/wizard.py</code>, expose the flag the
 same way <code>edit_path()</code> is exposed — a
-<code>tags_only()</code> method returning the open-a-book page's
+<code>tags_only()</code> method returning the open-a-book page’s
 <code>tags_only_requested</code>.</p>
 <p>In <code>quill/ui/audio_studio/__init__.py</code>, replace the
 edit-journey branch:</p>
@@ -4267,7 +4289,7 @@ id="task-15-the-standalone-audio-studio--menu-routes-and-packaging">Task
 <li>Modify: <code>quill/apps/studio.py:922-963</code> (the Studio menu),
 <code>:842-852</code> (the library-tree context menu)</li>
 <li>Modify: <code>quill/core/keymap.py</code> (<code>APP_KEYMAPS</code>,
-the Studio app's chords)</li>
+the Studio app’s chords)</li>
 <li>Modify: <code>standalone/studio/pyproject.toml:23</code> (dependency
 extras)</li>
 <li>Modify: <code>standalone/studio/quill-audio-studio.spec</code>
@@ -4346,7 +4368,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb70-1"><a h
 and follows the user when they rebind, so prefer it over a literal
 <code>\tCtrl+Shift+E</code>. Register the default chord for
 <code>studio.edit_tags</code> in <code>APP_KEYMAPS</code> for the Studio
-app, and give it an authored Key Describer title if the Studio's keymap
+app, and give it an authored Key Describer title if the Studio’s keymap
 carries them.</p>
 <p>Add the handler beside the existing <code>_on_edit_book</code>:</p>
 <div class="sourceCode" id="cb71"><pre
@@ -4369,7 +4391,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb71-1"><a h
 context menu entry</strong></label></li>
 </ul>
 <p>The context menu at <code>quill/apps/studio.py:842</code> already
-offers "&amp;Open in Chapter Workbench" on a selected book. Add,
+offers “&amp;Open in Chapter Workbench” on a selected book. Add,
 directly beneath it:</p>
 <div class="sourceCode" id="cb72"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>        tags_id <span class="op">=</span> menu.Append(wx.ID_ANY, <span class="st">&quot;Edit &amp;Tags...&quot;</span>)</span></code></pre></div>
@@ -4386,12 +4408,12 @@ packaging</strong></label></li>
 <p>In <code>standalone/studio/pyproject.toml</code>, change the
 dependency to carry the mp3 extra — mutagen is what every MP3 tag and
 chapter operation runs on, and the Studio has been shipping the Chapter
-Workbench's MP3 path without declaring it:</p>
+Workbench’s MP3 path without declaring it:</p>
 <div class="sourceCode" id="cb73"><pre
 class="sourceCode toml"><code class="sourceCode toml"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="dt">dependencies</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;quill[ui,mp3] @ git+https://github.com/Community-Access/quill.git@ca37c60d18b6003c5139ee905ee4bfe84a601cf8&quot;</span><span class="op">]</span></span></code></pre></div>
 <p>In <code>standalone/studio/quill-audio-studio.spec</code>, collect
 mutagen explicitly. Every mutagen import in this codebase is lazy and
-inside a function, exactly the shape PyInstaller's import tracer cannot
+inside a function, exactly the shape PyInstaller’s import tracer cannot
 follow — the same reason the spec already collects PyNaCl and yt-dlp by
 hand:</p>
 <div class="sourceCode" id="cb74"><pre
@@ -4425,10 +4447,10 @@ built <code>.exe</code>:</p>
 <div class="sourceCode" id="cb75"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-studio<span class="op">.</span><span class="fu">cmd</span></span></code></pre></div>
 <p>Then run the produced executable, open an MP3 through Studio &gt;
-Edit Tags..., change a field and save. A build that cannot import
-mutagen fails here with "Editing tags requires the 'mutagen' package"
-and nowhere else — report what actually happened rather than assuming
-the collect worked.</p>
+Edit Tags…, change a field and save. A build that cannot import mutagen
+fails here with “Editing tags requires the ‘mutagen’ package” and
+nowhere else — report what actually happened rather than assuming the
+collect worked.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 8:
 Commit</strong></label></li>
@@ -4444,12 +4466,12 @@ reach</h2>
 vendors and drives the same <code>quill/ui/audio_studio</code> package
 QUILL itself uses — its own docstring says so. Every change in Tasks
 1–14 therefore lands in both products from one implementation; Task 15
-only adds the menu routes a standalone app's front door needs, and fixes
+only adds the menu routes a standalone app’s front door needs, and fixes
 the packaging.</p>
 <p><strong>Deliberately not reached.</strong> QUILL Cast has its own
 chapter model in <code>quill/core/podcasts/chapter_edits.py</code> —
 inferred marks carrying a confidence and a source, where an edit
-<em>means</em> "this is no longer a guess". That is a different domain
+<em>means</em> “this is no longer a guess”. That is a different domain
 with different invariants, and folding it into this work would damage
 both. The Media Player and Quill Radio consume chapters but do not edit
 them. If the Tag Editor should reach Cast or the Player, that is a
@@ -4467,13 +4489,14 @@ sentence arrives once you stop.</li>
 stops two seconds after the marker.</li>
 <li>Add a chapter at the playhead, name it, delete it again. Confirm the
 audio length never changes.</li>
-<li>Open All tags..., set a sort title and a cover image, press OK,
-press Save.</li>
+<li>Open All tags…, set a sort title and a cover image, press OK, press
+Save.</li>
 <li>Reopen the file. Confirm the sort title and the cover art survived,
 and that the chapters are still intact — that combination is what proves
 the ID3 version negotiation works.</li>
 <li>Repeat steps 5 and 6 on an M4B and confirm the save is instant (no
 re-mux) when only tags changed.</li>
 </ol>
+</main>
 </body>
 </html>

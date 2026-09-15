@@ -3,6 +3,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+# Re-exported so every existing ``from quill.core.tagging import ...`` still
+# works: the split was a GATE-11 extraction, not an interface change.
+from quill.core.html_tags import HTML_SEARCH_ALIASES, HTML_TAG_CHOICES, VOID_HTML_TAGS
+
 #: Run-level keyed attributes, in the fixed order they are materialized into a
 #: Pandoc span ``[text]{...}`` so the markup round-trips deterministically. The
 #: boolean flags (:data:`SPAN_FLAG_ORDER`) are emitted after these.
@@ -39,59 +43,20 @@ _BOLD_RE = re.compile(r"\*\*([^*]+)\*\*")
 _ITALIC_RE = re.compile(r"(?<!\*)\*([^*]+)\*(?!\*)")
 _U_TAG_RE = re.compile(r"<u>(.*?)</u>", re.DOTALL | re.IGNORECASE)
 
-VOID_HTML_TAGS = {"br", "hr", "img", "input", "meta", "link"}
-
-HTML_TAG_CHOICES = [
-    "div",
-    "span",
-    "p",
-    "a",
-    "img",
-    "section",
-    "article",
-    "header",
-    "footer",
-    "nav",
-    "main",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "ul",
-    "ol",
-    "li",
-    "table",
-    "tr",
-    "th",
-    "td",
-    "strong",
-    "em",
-    "code",
-    "pre",
-    "blockquote",
-    "form",
-    "label",
-    "input",
-    "textarea",
-    "select",
-    "option",
-    "button",
-    "fieldset",
-    "legend",
-    "datalist",
-    "optgroup",
-    "output",
-    "progress",
-    "meter",
-    "details",
-    "summary",
-]
-
+#: Every Markdown construction the builder below can write.
+#:
+#: **Underline** and **Horizontal Rule** were missing from this list while
+#: :func:`build_markdown_insertion` had handled both for months -- two
+#: constructions the picker could produce and could not offer, which is the
+#: quietest kind of dead end. **Strikethrough** and **Definition List** are new
+#: builders: the first because GFM has had it for a decade, and the second
+#: because the editor *announces* definition lists as you arrow through them and
+#: being able to hear one you cannot insert is backwards.
 MARKDOWN_TAG_CHOICES = [
     "Bold",
     "Italic",
+    "Underline",
+    "Strikethrough",
     "Inline Code",
     "Code Block",
     "Heading 1",
@@ -103,37 +68,14 @@ MARKDOWN_TAG_CHOICES = [
     "Bullet List",
     "Numbered List",
     "Task List",
+    "Definition List",
     "Blockquote",
+    "Horizontal Rule",
     "Link",
     "Image",
     "Table",
     "Footnote",
 ]
-
-_HTML_SEARCH_ALIASES: dict[str, tuple[str, ...]] = {
-    "h1": ("heading 1", "heading one", "level 1", "h one"),
-    "h2": ("heading 2", "heading two", "level 2", "h two"),
-    "h3": ("heading 3", "heading three", "level 3", "h three"),
-    "h4": ("heading 4", "heading four", "level 4", "h four"),
-    "h5": ("heading 5", "heading five", "level 5", "h five"),
-    "h6": ("heading 6", "heading six", "level 6", "h six"),
-    "input": ("text", "textbox", "field", "radio", "checkbox", "email", "password"),
-    "button": ("click", "submit", "reset", "action"),
-    "select": ("dropdown", "combo", "pick"),
-    "option": ("choice", "item", "dropdown"),
-    "textarea": ("multiline", "text area", "notes"),
-    "label": ("caption", "form", "field"),
-    "form": ("fields", "controls", "submit"),
-    "fieldset": ("group", "form"),
-    "legend": ("group title", "form"),
-    "datalist": ("autocomplete", "suggestions"),
-    "optgroup": ("option group", "group"),
-    "output": ("result", "computed"),
-    "progress": ("meter", "completion"),
-    "meter": ("gauge", "level"),
-    "details": ("collapsible", "accordion"),
-    "summary": ("collapsible", "accordion", "title"),
-}
 
 _MARKDOWN_SEARCH_ALIASES: dict[str, tuple[str, ...]] = {
     "Heading 1": ("h1", "title"),
@@ -148,6 +90,14 @@ _MARKDOWN_SEARCH_ALIASES: dict[str, tuple[str, ...]] = {
     "Inline Code": ("code", "snippet"),
     "Code Block": ("code", "fenced"),
     "Footnote": ("note", "citation"),
+    "Underline": ("underline", "u"),
+    "Strikethrough": ("strike", "struck out", "crossed out", "deleted"),
+    "Definition List": ("glossary", "terms", "definitions", "dl"),
+    "Horizontal Rule": ("rule", "divider", "separator", "thematic break", "hr"),
+    "Blockquote": ("quote", "quotation"),
+    "Link": ("url", "href", "hyperlink"),
+    "Image": ("picture", "alt text", "photo"),
+    "Table": ("grid", "rows", "columns"),
 }
 
 
@@ -196,8 +146,37 @@ def _rank_choices(
     return [choice for _score, choice in scored]
 
 
+def html_insert_choices() -> list[str]:
+    """Everything Insert HTML Tag offers: the whole controls first, then the tags.
+
+    Whole controls first, and that is the recommendation rather than the
+    alphabet. Somebody reaching for "checkbox" almost always wants a checkbox
+    *with a label bound to it*, not a bare ``<input>`` they then have to
+    remember to wire up -- and the wiring is invisible, so forgetting it looks
+    exactly like doing it. The bare tags are all still here, one row further
+    down, for when the bare tag is what you meant.
+
+    Imported at call time: :mod:`quill.core.html_forms` imports
+    :class:`InsertionResult` from this module, and a module-level import here
+    would close the circle.
+    """
+    from quill.core.html_forms import form_snippet_names
+
+    return [*form_snippet_names(), *HTML_TAG_CHOICES]
+
+
 def search_html_tag_choices(query: str) -> list[str]:
-    return _rank_choices(HTML_TAG_CHOICES, query, _HTML_SEARCH_ALIASES)
+    """Rank everything the HTML picker offers against *query*.
+
+    Over the snippets as well as the tags, and over both alias tables, so one
+    search box answers "dropdown" with the labelled control and the bare
+    ``<select>`` and lets the person choose.
+    """
+    from quill.core.html_forms import FORM_SNIPPET_ALIASES
+
+    return _rank_choices(
+        html_insert_choices(), query, {**HTML_SEARCH_ALIASES, **FORM_SNIPPET_ALIASES}
+    )
 
 
 def search_markdown_tag_choices(query: str) -> list[str]:
@@ -208,7 +187,19 @@ def build_html_insertion(
     tag: str,
     selected_text: str,
     attributes: dict[str, str],
+    document_text: str = "",
 ) -> InsertionResult:
+    """Insert *tag*, which may be a bare element or a whole labelled control.
+
+    ``document_text`` is only read by the form snippets, which scan it for ids
+    already in use so a second copy of a control cannot collide with the first
+    -- the failure nobody can see, where the second label points at the first
+    field and only clicking it reveals the fact.
+    """
+    from quill.core.html_forms import build_form_snippet, is_form_snippet
+
+    if is_form_snippet(tag):
+        return build_form_snippet(tag, selected_text, document_text)
     clean_tag = tag.strip().lower()
     attrs = _render_html_attributes(attributes)
     if clean_tag in VOID_HTML_TAGS:
@@ -251,6 +242,21 @@ def build_markdown_insertion(
             text = f"<u>{selected_text}</u>"
             return InsertionResult(text, len(text))
         return InsertionResult("<u></u>", 3)
+    if kind == "Strikethrough":
+        # GFM's ``~~``, which every renderer that speaks GFM understands. Not
+        # ``<s>``: a Markdown document should stay readable as Markdown.
+        if selected_text:
+            text = f"~~{selected_text}~~"
+            return InsertionResult(text, len(text))
+        return InsertionResult("~~~~", 2)
+    if kind == "Definition List":
+        # Pandoc / PHP-Markdown-Extra: the term on its own line, the definition
+        # indented under a colon. Written out with a placeholder pair rather
+        # than as bare syntax, because this is the one Markdown construction
+        # whose shape cannot be inferred from a single line of it.
+        term = selected_text.splitlines()[0] if selected_text else "Term"
+        text = f"{term}\n:   Definition"
+        return InsertionResult(text, len(text))
     if kind == "Inline Code":
         if selected_text:
             text = f"`{selected_text}`"

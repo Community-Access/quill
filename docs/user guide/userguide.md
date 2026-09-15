@@ -487,6 +487,7 @@ The **Insert** menu adds structured content at the cursor.
 - **Heading** submenu: insert Heading 1 through 6, **Decrease Level** / **Increase Level**, and **Style Headings...** (font, size, alignment) for the current level or all levels.
 - **List** submenu: **Bullet**, **Numbered**, **Task**, **List Manager...**, and **Structured List Studio...** (F2).
 - **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert Block Quote**, **Insert Horizontal Rule**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
+- **The two tag pickers are dimmed where they do not apply**, and exactly one of them is ever live: **Insert Markdown Tag** in a Markdown document, **Insert HTML Tag** in an HTML one, and neither in a plain document or a rich text one. Markdown used to stay enabled in a *plain* document too, which was the mirror image of the HTML row's rule and worse by ear than by eye: an enabled row promises the command will work, and a document that quietly became half-Markdown is not something you can see you did. **Navigate ▸ Set Document Language...** turns the rows back on in one keystroke.
 - **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. These carry direct authoring shortcuts: **Insert Table** is `Ctrl+Alt+T`, **Insert Block Quote** is `Ctrl+Alt+Q`, and **Insert Horizontal Rule** is `Ctrl+Alt+H` — alongside the `Ctrl+Alt+1`–`6` heading chords and `Ctrl+Alt+7`/`8` list chords. All remain rebindable in the Keymap Editor.
 - **Insert Snippet...** and **Manage Snippets...** for reusable text with placeholders.
 - **Special Character...** (`Shift+F2`) opens a picker for the 357 characters a
@@ -6914,17 +6915,31 @@ a heading". Word announces heading levels only because Word ships an
 accessibility provider of its own for exactly this.
 
 So Quill says it instead. Move the caret onto a heading and you hear **"Heading
-2"** — the level, on its own, once.
+2, Installing"** — the level first, then the heading's own words, as one
+sentence.
 
 Three details are deliberate:
 
-- **The level only, never the text.** Your screen reader is already reading the
-  line as the caret lands on it. Repeating the title here would say every
-  heading twice.
+- **The level comes first.** That is not a matter of taste: a cue *queued
+  behind* your screen reader is at the reader's mercy, and on a large caret jump
+  — `Ctrl+Home`, a search hit, a bookmark — NVDA and JAWS cancel whatever was
+  pending and start again on the new line. A "Heading 1" waiting its turn behind
+  that is simply never heard, which is exactly what was reported: arrowing onto
+  a heading announced it, `Ctrl+Home` onto the same heading did not. Said first,
+  as one sentence QUILL owns, it survives every kind of move. It is also the
+  order a browser gives you, where a reader says "heading level two" and then
+  the words.
 - **Once, on arrival.** Moving around *inside* a heading says nothing more; you
   have already been told. You hear it again when you leave and come back.
 - **Every kind of heading.** Rich text, Markdown, HTML, and a real `Heading 2`
   style read out of a Word document all announce the same way.
+
+**If you would rather hear the words first**, set
+`heading_announce_position` to `after` in **Tools ▸ Preferences ▸
+Accessibility** ("Say a heading's level"). Then your reader reads the line and
+QUILL adds "Heading 2" behind it — quieter on ordinary line-by-line reading, and
+the mode that predates this choice. It is the same information in the other
+order; the only thing you give up is the jump case above.
 
 Applying a heading already announces itself, so the two never double up. And a
 document that opens on its own title does not greet you with "Heading 1" over
@@ -6943,6 +6958,59 @@ rather than configured: it is a decision per document, not per person.
 Headings are only ever found where they exist. A `#` at the start of a line
 means a heading in Markdown and HTML documents; in a shell script or a Python
 file it means a comment, and QUILL says nothing.
+
+#### Hearing that you are in a list
+
+Arrow into a list and QUILL says **"Bulleted list, 5 items"**. Go a level deeper
+and it says **"Level 2, 3 items"**. Arrow out and it says **"Out of list"**.
+
+This is the one cue in the set your screen reader gives you **everywhere except
+here**. On a web page a list reaches the reader as a list with a count, and NVDA
+says almost exactly this sentence. In an editor a list is not a list — it is
+characters — so the reader has nothing to go on, and a nested outline sounds
+like a run of ordinary lines beginning with a dash. The only thing separating
+level two from level three is the number of spaces, counted by ear.
+
+It works in **Markdown and in HTML**, over all three kinds of list:
+
+| | Markdown | HTML |
+|---|---|---|
+| **Bulleted list** | `-`, `*`, `+` | `<ul>` |
+| **Numbered list** | `1.`, `1)` | `<ol>` |
+| **Definition list** | a line, then `: the definition` under it | `<dl>` |
+
+A definition list also says **"Term"** and **"Definition"** as you move between
+the two, because which of them you are standing in decides what the words mean —
+and a definition list written inside out is not something you can see you have
+done.
+
+The counting rule matters and is easy to get wrong: **items are counted at your
+own level, inside your own list.** A three-item list whose second item has four
+sub-items is "3 items" at level one and "4 items" at level two, never "7". Two
+sub-lists under two different bullets are two lists, not one.
+
+What it never says:
+
+- **Nothing as you move down a list.** That is what the caret does nearly all
+  the time, and your reader is already speaking each item.
+- **Nothing about `- - -` or `***`.** Those are horizontal rules, not one-item
+  lists.
+- **Nothing inside a fenced code block.** A `- ` in a code sample is a sample.
+- **Nothing in a plain document.** A letter is full of hyphens, and a cue that
+  fired on them would be superstition rather than help.
+- **Nothing in rich text.** There the bullets are the control's own, and a `-`
+  you type is a hyphen.
+
+**Turning it off — View ▸ Announce Lists (`Ctrl+Alt+F5`).** Its own switch, next
+to the heading one and deliberately separate from it: reorganising an outline,
+the level is the work; proof-reading the same file, it is a phrase between you
+and every item. Like its sibling it says which way it went — "Lists will not be
+announced", or "Lists announced as you enter them" — and the choice is
+remembered as the `announce_lists` setting.
+
+`Ctrl+Alt+F5` and not the `Ctrl+Alt+F4` that would have sat next to its sibling:
+a finger that misses the Control key on a chord pressed this often finds
+`Alt+F4`, and what that costs is the document.
 
 #### Moving through a table cell by cell
 

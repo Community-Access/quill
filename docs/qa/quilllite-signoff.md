@@ -32,8 +32,9 @@ answer is what a person actually *hears*. That is this list.
 
 ## The 15-minute pass
 
-No time for the whole thing? Run exactly these twelve and stop:
-**L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61, L-90, L-105.**
+No time for the whole thing? Run exactly these fifteen and stop:
+**L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61, L-90, L-105,
+L-121, L-157, L-160.**
 
 They cover the four things most likely to be wrong and worst if they are: the
 document announces itself, F1 answers, the status bar is reachable, and a file
@@ -43,6 +44,15 @@ was shipped once already. **L-105** joined it on 2026-09-10 for the same reason
 in reverse: a status bar that reads its own text back truncated is a cell
 quietly lying about a fact, and the only place it shows is a narrow window on
 the machine it was reported from.
+
+Three more joined on 2026-09-15, and all three are regressions somebody
+reported rather than risks somebody imagined. **L-121**: the Format cell did not
+change when the document did, which is the one place anybody checks what kind of
+document they are in. **L-157**: Ctrl+Home onto a heading announced nothing,
+because a cue queued behind the screen reader is cancelled outright on a big
+jump. **L-160** is the counterweight -- everything added in Block Q is speech,
+and over-announcing is absorbed as "this app is chatty" and never filed, which
+is exactly why it needs a box to tick.
 
 ---
 
@@ -959,6 +969,406 @@ person can check that pressing the key afterwards does the thing.
   cursor in a heading and delete the line above it.
 - Pass: body text is silent throughout. Deleting a line above a heading does
   **not** announce the heading -- the text moved, you did not.
+- [ ] pass  [ ] fail: ______
+
+---
+
+## Block Q -- Markup, lists and the four kinds of document (14 min)
+
+Everything in this block is a *sentence* or a *state*, which is why none of it
+is in the test suite. A machine can check that `list_context_at` counts four
+items; only a person can check that you actually hear "Bulleted list, 4 items"
+and hear it once.
+
+Have three files ready for this block: **`notes.md`**, **`page.html`** and
+**`build.py`**, each containing a line of ordinary text. Create them from
+QuillLite with **Ctrl+Shift+S** if you have none.
+
+### The language, and the ring
+
+**L-118. The file name decides the language, and the status bar says so**
+- Do: open `notes.md`. Press **F6**, arrow to the **Format** cell.
+- Pass: the cell reads **Markdown**. Repeat with `page.html` (**HTML**) and
+  `build.py` (**Plain text**).
+- Fail if any of the three reads "Plain text" when it should not -- that cell is
+  the one place somebody checks what kind of document they are in.
+- [ ] pass  [ ] fail: ______
+
+**L-119. Ctrl+Shift+M rings through all four kinds**
+- Do: in `build.py`, press **Ctrl+Shift+M** four times, listening to each.
+- Pass: you hear **Markdown**, then **HTML**, then the rich-text switch, then
+  back to **Plain text**. Every stop says its own name.
+- Fail if it toggles between two states only -- that is the old behaviour, and
+  it means three of the four kinds are unreachable from the keyboard.
+- [ ] pass  [ ] fail: ______
+
+**L-120. Ringing between the three plain kinds changes nothing in the document**
+- Do: in `notes.md`, type `hello`, then press **Ctrl+Shift+M** twice (to HTML
+  and on to plain text, avoiding the rich stop).
+- Pass: the text is still exactly `hello`, and the document is **not** marked
+  modified. Only what the keys write changed.
+- [ ] pass  [ ] fail: ______
+
+**L-121. Enter on the Format cell does the same ring**
+- Do: **F6**, arrow to **Format**, press **Enter**.
+- Pass: you hear the next kind, and arrowing back to the cell reads the new
+  value. **Fail if the cell still reads what it read before** -- that was the
+  reported defect.
+- [ ] pass  [ ] fail: ______
+
+**L-122. Ctrl+Alt+F6 goes straight to one**
+- Do: in `build.py`, press **Ctrl+Alt+F6**, arrow to **HTML**, press **Enter**.
+- Pass: the chooser names all three, marks which one the file name implies, and
+  the confirmation says **"Document language: HTML"**.
+- [ ] pass  [ ] fail: ______
+
+### What the keys write
+
+**L-123. Ctrl+B writes Markdown in a Markdown document**
+- Do: in `notes.md`, type `hello world`, select `world` (**Shift+Ctrl+Left**),
+  press **Ctrl+B**.
+- Pass: the line reads `hello **world**`, and you hear **"Bold in Markdown"** --
+  not "Bold on". Nothing went bold; two asterisks appeared, and the sentence has
+  to say which of the two happened.
+- [ ] pass  [ ] fail: ______
+
+**L-124. Ctrl+B writes HTML in an HTML document, and uses `<strong>`**
+- Do: the same in `page.html`.
+- Pass: `hello <strong>world</strong>`, announced as **"Bold in HTML"**.
+- Fail if it wrote `<b>`. `<strong>` carries importance into the accessibility
+  tree and `<b>` carries only a typeface; an editor built for listeners must not
+  emit the presentational one.
+- [ ] pass  [ ] fail: ______
+
+**L-125. With nothing selected the cursor lands between the tags**
+- Do: in `page.html`, on an empty line, press **Ctrl+I**, then type `word`.
+- Pass: the line reads `<em>word</em>`. Fail if it reads `<em></em>word` -- you
+  cannot see where the caret went, so this has to be right without checking.
+- [ ] pass  [ ] fail: ______
+
+**L-126. Italic and underline follow the same rule**
+- Do: in `notes.md` select a word and press **Ctrl+I**; then another and
+  **Ctrl+U**.
+- Pass: `*word*` and `<u>word</u>`. Underline is `<u>` in both languages --
+  Markdown has no spelling of its own for it.
+- [ ] pass  [ ] fail: ______
+
+**L-127. A plain document refuses, and offers both ways out**
+- Do: in `build.py`, select a word and press **Ctrl+B**.
+- Pass: nothing is inserted, and you hear that this document has no formatting,
+  **Control Shift M** for rich text, **or Control Alt F6** to write Markdown or
+  HTML in it. Both routes, because either could be what was meant.
+- Fail if it silently inserted asterisks into a Python file.
+- [ ] pass  [ ] fail: ______
+
+**L-128. The heading keys write the document's own headings**
+- Do: on a line of text in `notes.md` press **Ctrl+Alt+2**. Then the same on a
+  line in `page.html`.
+- Pass: `## your text` and `<h2>your text</h2>`. Both announce **"Heading 2"**.
+- [ ] pass  [ ] fail: ______
+
+**L-129. Applying a level rewrites the line rather than stacking on it**
+- Do: put the cursor on a line reading `### Notes` in `notes.md`. Press
+  **Ctrl+Alt+2**.
+- Pass: the line reads `## Notes`. **Fail if it reads `## ### Notes`** -- that
+  renders as a Heading 2 whose text starts with three hashes, nothing announces
+  it, and you find out in the published document.
+- [ ] pass  [ ] fail: ______
+
+**L-130. An HTML heading keeps its id**
+- Do: type `<h3 id="install">Setup</h3>` in `page.html`, put the cursor in it,
+  press **Ctrl+Alt+1**.
+- Pass: `<h1 id="install">Setup</h1>`. The `id` is very often the anchor
+  somebody else's link points at.
+- [ ] pass  [ ] fail: ______
+
+**L-131. Body text takes the marker back off, and says so when there is none**
+- Do: on the `## Notes` line press **Ctrl+Alt+0**. Then press it again.
+- Pass: first it becomes `Notes` and says **"Body text"**; the second press says
+  **"Already body text"** rather than nothing.
+- [ ] pass  [ ] fail: ______
+
+**L-132. Alt+Shift+Right walks HTML headings**
+- Do: cursor in an `<h2>` in `page.html`, press **Alt+Shift+Right**.
+- Pass: `<h3>`, announced as "Heading 3". Fail if it says "Put the cursor on a
+  heading line" -- that means it went looking for hashes an HTML file will never
+  contain.
+- [ ] pass  [ ] fail: ______
+
+### The Insert menu
+
+**L-133. Insert is a top-level menu, before Format**
+- Do: press **Alt** and arrow along the menu bar.
+- Pass: the order is File, Edit, View, **Insert**, Format, Navigate, Tools,
+  Window, Help. Every item in Insert reads a key after its name.
+- [ ] pass  [ ] fail: ______
+
+**L-134. The wrong tag picker is dimmed, not missing**
+- Do: in `notes.md` open **Insert** and arrow to **HTML Tag**. Then do the same
+  in `page.html` with **Markdown Tag**.
+- Pass: in each case the row is **present and announced as unavailable**. Fail
+  if the row has vanished -- a missing row leaves somebody hunting the menus for
+  a feature they know the app has.
+- [ ] pass  [ ] fail: ______
+
+**L-135. Pressing the key anyway explains rather than doing nothing**
+- Do: in `notes.md` press **Ctrl+Alt+O** (Insert HTML Tag).
+- Pass: you hear that it needs an HTML document, that this one is Markdown, and
+  that **Control Alt F6** changes that. Nothing is inserted.
+- [ ] pass  [ ] fail: ______
+
+**L-136. The HTML picker searches by what a tag does**
+- Do: in `page.html` press **Ctrl+Alt+O**. Type `dropdown`. Press **Down**.
+- Pass: focus starts in the search box; typing filters; **Down** (or Enter)
+  moves you into the results, and `select` is in them. The list announces how
+  many matches there are as you arrive on it.
+- [ ] pass  [ ] fail: ______
+
+**L-137. Attributes are optional and Enter skips them**
+- Do: continue from L-136 -- choose `select`, then press **Enter** on the empty
+  attribute box.
+- Pass: `<select></select>` is inserted with the cursor between the tags, and
+  you hear **"Inserted HTML tag select"**.
+- [ ] pass  [ ] fail: ______
+
+**L-138. Attributes are parsed from a semicolon list**
+- Do: **Ctrl+Alt+O**, choose `div`, type `class=note; id=main`.
+- Pass: `<div class="note" id="main"></div>`.
+- [ ] pass  [ ] fail: ______
+
+**L-139. The Markdown picker asks for a link address**
+- Do: in `notes.md` press **Ctrl+Alt+I**, type `link`, choose **Link**, and put
+  an address in.
+- Pass: a Markdown link is inserted and announced. Escaping the address box
+  cancels cleanly rather than inserting a half-built link.
+- [ ] pass  [ ] fail: ______
+
+**L-140. The emoji picker is searchable and describes what it inserts**
+- Do: press **Alt+.**. Type `party`. Arrow through the results.
+- Pass: each row reads as a name rather than an unlabelled character, and the
+  description pane changes as you arrow. Insert one: you hear **"Inserted ..."**
+  with the emoji's *name*.
+- Fail if the inserted character is announced as nothing, or if the list reads
+  as blank rows.
+- [ ] pass  [ ] fail: ______
+
+**L-141. The emoji picker works in a rich text document**
+- Do: **Ctrl+Shift+N** for a new rich document, then **Alt+.**.
+- Pass: it opens and inserts. An emoji is a character, not markup.
+- [ ] pass  [ ] fail: ______
+
+### Lists
+
+Paste this into `notes.md` for the next few:
+
+```
+Shopping notes.
+
+- fruit
+    - apple
+    - pear
+- veg
+
+That is all.
+```
+
+**L-142. Entering a list names it and counts it**
+- Do: put the cursor on "Shopping notes", then arrow down to `- fruit`.
+- Pass: you hear **"Bulleted list, 2 items"** -- two, because that is how many
+  there are *at this level*. Fail if it says 5.
+- [ ] pass  [ ] fail: ______
+
+**L-143. Going a level down says the level and the new count**
+- Do: arrow down to `- apple`.
+- Pass: **"Level 2, 2 items"**.
+- [ ] pass  [ ] fail: ______
+
+**L-144. Moving between items of one list is silent**
+- Do: arrow from `- apple` to `- pear`.
+- Pass: **nothing** beyond your reader reading the line. A cue per item would
+  make a list unusable.
+- [ ] pass  [ ] fail: ______
+
+**L-145. Coming back up a level says so**
+- Do: arrow down from `- pear` to `- veg`.
+- Pass: **"Level 1, 2 items"**.
+- [ ] pass  [ ] fail: ______
+
+**L-146. Leaving says so**
+- Do: arrow down to "That is all".
+- Pass: **"Out of list"**.
+- [ ] pass  [ ] fail: ______
+
+**L-147. Numbered lists are named differently**
+- Do: replace the dashes with `1.`, `2.` and arrow in again.
+- Pass: **"Numbered list, ..."**. Order is meaning; the two must not sound the
+  same.
+- [ ] pass  [ ] fail: ______
+
+**L-148. HTML lists behave identically**
+- Do: in `page.html`, type `<p>Before.</p>`, then a `<ul>` with two `<li>`
+  rows, then `<p>After.</p>`. Arrow through it.
+- Pass: "Bulleted list, 2 items" going in, "Out of list" coming out.
+- [ ] pass  [ ] fail: ______
+
+**L-149. A definition list names its two halves**
+- Do: in `notes.md`, type a line `Quill`, then under it `: the editor`, then a
+  blank line, then `Lite` and `: the small one`. Arrow through all four lines.
+- Pass: **"Definition list, 2 terms"** entering, then **"Definition"** and
+  **"Term"** as you alternate. Which half you are standing in decides what the
+  words mean.
+- [ ] pass  [ ] fail: ______
+
+**L-150. A code fence is not a list**
+- Do: in `notes.md`, put a fenced block containing `- not a bullet` and arrow
+  through it.
+- Pass: **silence**. A dash in a code sample is a sample.
+- [ ] pass  [ ] fail: ______
+
+**L-151. A horizontal rule is not a one-item list**
+- Do: put `---` on a line of its own between two paragraphs and arrow onto it.
+- Pass: **silence**.
+- [ ] pass  [ ] fail: ______
+
+**L-152. A plain document never hears about lists**
+- Do: in `build.py`, put `- not a bullet` on a line and arrow onto it.
+- Pass: **silence**. A letter is full of hyphens and a script is full of flags.
+- [ ] pass  [ ] fail: ______
+
+**L-153. The List cell says which item you are on**
+- Do: with the cursor on `- pear`, press **F6** and arrow to **List**.
+- Pass: it reads something like **"Bulleted list, 2 of 2, level 2"**. This is
+  the fact the speech deliberately does not give you on every arrow press.
+- [ ] pass  [ ] fail: ______
+
+**L-154. Enter on the List cell turns the cue off, and says so**
+- Do: press **Enter** on that cell, then Escape back and arrow into a list.
+- Pass: **"Lists will not be announced"**, and then silence in the list. Press
+  **Ctrl+Alt+F5** to bring it back: **"Lists announced as you enter them"**.
+- [ ] pass  [ ] fail: ______
+
+**L-155. The two switches are independent**
+- Do: turn **lists** off (**Ctrl+Alt+F5**) and arrow onto a heading. Then turn
+  lists back on, turn **headings** off (**Ctrl+Alt+F3**), and arrow into a list.
+- Pass: headings still announce in the first case; lists still announce in the
+  second. **Fail if either switch silences the other** -- that is the whole
+  reason there are two of them.
+- [ ] pass  [ ] fail: ______
+
+### Where the heading level goes
+
+**L-156. A heading says its level first, with its own words**
+- Do: arrow onto a heading.
+- Pass: you hear **"Heading 2, Installing"** -- the level, then the text, as one
+  sentence, and your reader does not then read the line a second time.
+- [ ] pass  [ ] fail: ______
+
+**L-157. Ctrl+Home onto a heading announces it** *(the reported defect)*
+- Do: with the cursor somewhere in the middle of a document whose first line is
+  a heading, press **Ctrl+Home**.
+- Pass: you hear **"Heading 1, ..."**. Fail if you hear only the line -- that
+  is the defect, and it is caused by the reader cancelling a cue that was
+  queued behind it.
+- Try the same with **Ctrl+End**, a search hit (**F3**) and a bookmark jump.
+- [ ] pass  [ ] fail: ______
+
+**L-158. The other order is still available**
+- Do: **Ctrl+,** for Preferences, find **Say a heading's level**, choose
+  **After the text**, save. Arrow onto a heading.
+- Pass: your reader reads the line, then you hear **"Heading 2"** alone. Put it
+  back to **Before the text** afterwards.
+- [ ] pass  [ ] fail: ______
+
+### The status bar
+
+**L-159. F6 leaves the status bar as well as entering it** *(reported)*
+- Do: press **F6**, arrow to any cell, press **F6** again. Then repeat with
+  **Shift+F6**.
+- Pass: you are back in your document both times. Escape still works too.
+- Fail if F6 does nothing once you are in the bar.
+- [ ] pass  [ ] fail: ______
+
+**L-160. Nothing new is chatty**
+- Do: type two paragraphs of ordinary prose in `notes.md`, arrowing about. Then
+  put the cursor inside a list and type a sentence into an item.
+- Pass: body text is silent; typing inside a list item says nothing; deleting
+  the line above a list does **not** announce the list.
+- This is the one that decides whether the whole block shipped or should not
+  have: over-announcing is absorbed as "this app is chatty" and never filed.
+- [ ] pass  [ ] fail: ______
+
+
+### Form fields, inserted whole
+
+The wiring is the whole point of these and none of it is visible, so every step
+here is "read the markup back and check a pair of values match".
+
+**L-161. A dropdown arrives labelled and wired**
+- Do: in `page.html` press **Ctrl+Alt+O**, type `dropdown`, choose **Form field:
+  dropdown (select)**.
+- Pass: you get a `<label>`, a `<select>`, and options -- and the label's
+  `for="..."` is **the same string** as the select's `id="..."`. Read both
+  aloud and compare them character by character.
+- Fail if they differ, or if either is missing: a `for` that points at nothing
+  renders identically to one that works, and the field reads as unlabelled.
+- [ ] pass  [ ] fail: ______
+
+**L-162. The dropdown cannot submit an answer nobody gave**
+- Pass: the first `<option>` has `value=""`. A select whose first option is a
+  real choice submits that choice when nobody touches it.
+- [ ] pass  [ ] fail: ______
+
+**L-163. A radio group is a group**
+- Do: **Ctrl+Alt+O**, type `radio`, choose **Form field: radio group**.
+- Pass: a `<fieldset>`, a `<legend>`, three radios that **all share one
+  `name`**, and **exactly one** `checked`.
+- Fail if the names differ -- then they are not a group and all three can be on
+  at once, which looks identical on screen.
+- [ ] pass  [ ] fail: ______
+
+**L-164. A selection becomes the label, and the id follows it**
+- Do: type `Postcode`, select it, then **Ctrl+Alt+O** and choose **Form field:
+  text**.
+- Pass: the label reads Postcode, and both `id` and `for` read `postcode`.
+- [ ] pass  [ ] fail: ______
+
+**L-165. A second field does not reuse the first one's id** *(the silent one)*
+- Do: insert **Form field: email** twice in the same document.
+- Pass: the second reads `email-2` (or similar) in **both** its `id` and its
+  `for`. Fail if both fields claim `id="email"` -- the page looks perfect, and
+  the only symptom is that clicking the second label focuses the first field.
+- [ ] pass  [ ] fail: ______
+
+**L-166. The validated-field pattern is wired three ways**
+- Do: **Ctrl+Alt+O**, type `error message`, choose **Form field: required, with
+  hint and error**.
+- Pass: `aria-describedby` names **two** ids, both of which exist in what was
+  inserted; there is an `aria-invalid="false"`; and the empty error paragraph
+  carries `role="alert"`.
+- [ ] pass  [ ] fail: ______
+
+**L-167. A whole control does not ask for attributes**
+- Do: choose any **Form field:** row.
+- Pass: it inserts immediately -- no attribute box. Then choose a bare tag
+  (`div`): the attribute box **does** appear, and Enter on it empty inserts
+  `<div></div>`.
+- [ ] pass  [ ] fail: ______
+
+**L-168. The pickers are complete**
+- Do: **Ctrl+Alt+O** and search in turn for `glossary`, `acronym`, `image
+  caption`, `table header`, `subtitles`, `divider`.
+- Pass: `dl`, `abbr`, `figcaption`, `thead`, `track` and `hr` are each in the
+  first few results. Then **Ctrl+Alt+I** in `notes.md` and confirm
+  **Underline**, **Strikethrough**, **Horizontal Rule** and **Definition List**
+  are all offered.
+- [ ] pass  [ ] fail: ______
+
+**L-169. The emoji catalogue is current**
+- Do: **Alt+.** and search for `bags under eyes`, then `fingerprint`, then
+  `splatter`.
+- Pass: each is found, with a written description. These are Unicode Emoji 16.0
+  additions -- the newest published set -- so finding them is the fastest way to
+  confirm the shipped catalogue is not a release behind.
 - [ ] pass  [ ] fail: ______
 
 ---

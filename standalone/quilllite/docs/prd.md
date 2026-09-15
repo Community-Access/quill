@@ -77,15 +77,67 @@ QuillLite gets them by *using* QUILL's code, not by copying its conclusions:
   style at all, so `RICHEDIT50W` can offer JAWS the font size and the weight and
   has no property that means "heading". Word announces heading levels only by
   shipping an accessibility provider of its own. QuillLite therefore says
-  "Heading 2" itself, on arrival, level only, once -- and **queued behind the
-  reader rather than interrupting it**, because the reader is mid-line when the
-  cue fires and cutting across it would cost the listener the text they moved
-  to hear. Plain-text documents get the same cue over Markdown hashes -- but
-  only where a hash means a heading: `.md`, `.txt` and untitled buffers, never
-  the `.py` / `.sh` / `.ini` files a Notepad replacement opens all day, where a
-  leading `#` is a comment. **Ctrl+Alt+F3** turns the cue off and on in place,
-  because whether structure is what you are listening for is a decision per
-  document rather than a preference to set once.
+  **"Heading 2, Installing"** itself, on arrival, once -- the level first, then
+  the heading's own words, as one sentence it owns. The ordering is not a
+  preference about tidiness: a cue *queued behind* the reader is at the reader's
+  mercy, and on a large caret jump -- Ctrl+Home, a search hit, a bookmark --
+  NVDA and JAWS cancel what is pending and start again on the new line, so a
+  level waiting its turn is never heard. Reported exactly that way. Said first,
+  carrying the line's words, it survives every kind of move, and interrupting is
+  safe *because* the text the reader was about to speak is inside the sentence
+  replacing it. `heading_announce_position = "after"` restores the older
+  level-alone-behind-the-reader ordering for anyone who prefers it. Plain-text
+  documents get the same cue over Markdown hashes or `<h2>` tags -- but only
+  where those mean a heading, never in the `.py` / `.sh` / `.ini` files a
+  Notepad replacement opens all day. **Ctrl+Alt+F3** turns the cue off and on in
+  place, because whether structure is what you are listening for is a decision
+  per document rather than a preference to set once.
+- **Saying what list you are in** (`quill/core/list_structure.py`, shared with
+  QUILL). The same gap one level along, and the one a screen reader closes
+  everywhere else: in a browser an `<ul>` reaches the accessibility tree as a
+  list with a count, and in an editor a list is characters. "Bulleted list, 5
+  items" going in, "Level 2, 3 items" a rung down, "Out of list" coming out --
+  over Markdown and HTML alike, and over bullets, numbers and definition lists,
+  with "Term" and "Definition" as the two halves of a `<dl>` alternate. Items
+  are counted **at the caret's own level inside its own parent**, never totalled:
+  an outline read as "7 items" is a lie somebody reorganises on. **Ctrl+Alt+F5**
+  is its own switch, separate from the heading one, because reorganising an
+  outline the list level is the work and proof-reading the same file it is a
+  phrase between you and every item.
+- **A markup language for a plain document** (`quill/apps/lite_window_markup.py`,
+  over `quill/core/lite/filetypes.py`). Ctrl+B in a `.md` used to refuse and
+  send you to rich text, which is true and unhelpful: somebody writing Markdown
+  wants two asterisks and knows it. One rule -- `markup_language_for` -- decides
+  four things at once so they cannot disagree: what the run keys write, what the
+  heading keys write, which of the two tag pickers the Insert menu offers, and
+  whether the caret cue can see a list. The language is read from the file name
+  and is never binding: **Ctrl+Shift+M** rings through all four kinds of
+  document, **Ctrl+Alt+F6** goes straight to one, and the status bar's Format
+  cell names whichever you are in.
+- **Whole form controls, not tags** (`quill/core/html_forms.py`, shared with
+  QUILL). Offering `<select>` alone is offering the easy half: a usable dropdown
+  is a `<label>`, a `for` matching the field's `id`, the field and its options,
+  and three of those four are invisible. Twenty controls therefore insert whole
+  — labelled, named, grouped, with `aria-describedby` wiring a required field to
+  its hint and its error, and with **the generated `id` checked against the
+  buffer first**, because two fields sharing one id is the commonest way a form
+  that was accessible when written stops being so when copied, and its only
+  symptom is that the second label focuses the first field. A selection becomes
+  the label and the id is derived from it, so the pair cannot drift. The radio
+  group is the case that justifies the whole module: without a shared `name` the
+  buttons are not a group and all of them can be on at once; without a
+  `fieldset` and `legend` they are a group with no name. Four elements, two
+  attributes, and no visible evidence of any of it.
+- **A picker that is complete.** 111 HTML elements and 22 Markdown
+  constructions, because a *searchable* list has no cost to being complete —
+  searching 111 is no harder than searching 46 — and a missing entry is a dead
+  end somebody leaves the app to resolve. The forty-six that shipped before left
+  out `<dl>`/`<dt>`/`<dd>` (which this editor announces), `<figure>`,
+  `<figcaption>`, the accessible-table parts, `<abbr>`, and `<br>` and `<hr>`,
+  which were handled as void elements and could not be chosen. Both pickers rank
+  by **what a thing does** as well as by its name: "glossary" finds `<dl>`,
+  "subtitles" finds `<track>`, "dropdown" finds the labelled control and the
+  bare `<select>` together.
 - **The dialog contract.** Every modal goes through `show_modal_dialog`, which
   announces the transition, installs F1 help and infers the accessible names
   macOS VoiceOver needs.

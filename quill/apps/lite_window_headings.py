@@ -1,4 +1,4 @@
-"""Headings in QuillLite: finding them, and saying so when you arrive.
+"""Structure in QuillLite: the heading you arrived at, and the list you are in.
 
 QuillLite's headings are real in every way that matters to a document and
 invisible in the one way that matters to a listener. In rich text they are the
@@ -12,6 +12,20 @@ That is squarely GATE-13's "only what the reader cannot know", so QuillLite says
 it: "Heading 2", once, on arrival. The rules and the latch live in the shared
 :mod:`quill.core.structure_announce`, because QUILL announces the same thing the
 same way and two copies would drift apart within a release.
+
+**Lists are the second half, and the case for them is even plainer.** A
+screen reader in a browser says "list with 5 items", "level 2" and "out of
+list", because the browser hands it an ``<ul>`` with a count. An editor hands it
+characters. So a listener writing a nested bullet list hears "dash space item"
+over and over with nothing to separate the second level from the third but the
+number of spaces they can count by ear. The reading is
+:mod:`quill.core.list_structure`; the deciding is the same shared announcer, on
+the same latch, under a toggle of its own (Ctrl+Alt+F5).
+
+The two toggles are separate on purpose. They answer different questions and
+people want different answers: editing a report the heading level is the whole
+point, and reorganising an outline the list level is. Folding both into one
+switch would mean giving up the half you wanted to keep.
 
 Two suppressions do most of the work here, and both were learned the hard way
 from over-announcing:
@@ -31,10 +45,14 @@ from __future__ import annotations
 from typing import Any
 
 from quill.apps.lite_dialogs import choose_heading
-from quill.core.heading_levels import heading_level_at
-from quill.core.lite.filetypes import has_markdown_headings
+from quill.core.heading_levels import heading_level_at, heading_text_at
+from quill.core.list_structure import supports_lists
 from quill.core.markdown_sections import parse_heading_blocks
-from quill.core.structure_announce import StructureAnnouncer, StructurePoint
+from quill.core.structure_announce import (
+    StructureAnnouncer,
+    heading_first_from,
+    point_from_text,
+)
 from quill.ui.richedit_editing import RICH
 
 
@@ -60,13 +78,14 @@ class DocumentHeadingsMixin:
         self._structure_announcer = StructureAnnouncer()
         self._structure_text_length = None
 
-    def _structure_point(self) -> StructurePoint | None:
+    def _structure_point(self):
         """Where the caret is, structurally, or ``None`` if that is unknowable."""
         try:
             text = self.control.GetValue()
             caret = int(self.control.GetInsertionPoint())
         except (AttributeError, RuntimeError):
             return None
+        surface = self.markup_surface()
         if self.editor.mode == RICH:
             # The ladder, read from the control's own Text Object Model, so the
             # announcement and the status bar's Heading cell cannot disagree.
@@ -74,16 +93,41 @@ class DocumentHeadingsMixin:
                 level = int(self.editor.heading_level_at_caret() or 0)
             except Exception:  # noqa: BLE001 - a TOM failure must not break typing
                 level = 0
-        elif self._markdown_headings_apply():
-            level = heading_level_at(text, caret)
+        elif surface is not None:
+            level = heading_level_at(text, caret, markup_kind=surface)
         else:
             # A ``#`` in a shell script, a Python file or an ini is a comment.
             # Announcing "Heading 1" on most lines of a build script is the
             # over-announcement that makes an app tiring to use.
             level = 0
-        return StructurePoint(
-            paragraph_key=text.count("\n", 0, max(0, min(caret, len(text)))),
+        settings = self.app.settings
+        if not bool(getattr(settings, "announce_headings", True)):
+            level = 0
+        # ``None`` when list cues are off, which is deliberate rather than lazy:
+        # it skips the scan as well as the sentence, and it makes switching the
+        # cue back on announce the list you are already standing in on the very
+        # next keypress instead of staying silent until you leave and return.
+        list_markup = (
+            surface
+            if surface is not None
+            and supports_lists(surface)
+            and bool(getattr(settings, "announce_lists", True))
+            else None
+        )
+        return point_from_text(
+            text,
+            caret,
             heading_level=level,
+            # The words as well as the level, so the cue can lead with the level
+            # and carry the line with it. In rich mode the buffer line *is* the
+            # heading's text; in markup it is the line with its marker taken off.
+            heading_text=(
+                heading_text_at(text, caret, markup_kind=surface or "plain") if level else ""
+            ),
+            # Tables are QUILL's. Announcing the edge of a grid the small editor
+            # cannot then navigate would advertise something that is not there.
+            include_tables=False,
+            list_markup=list_markup,
         )
 
     def announce_structure_at_caret(self) -> None:
@@ -99,9 +143,9 @@ class DocumentHeadingsMixin:
         point = self._structure_point()
         if point is None:
             return
-        if not self.app.settings.announce_headings:
-            # Switched off. The latch is still fed, so switching it back on
-            # mid-document announces the next heading you arrive at rather than
+        if not self._structure_cues_on():
+            # Both switched off. The latch is still fed, so switching either back
+            # on mid-document announces the next thing you arrive at rather than
             # staying quiet until you happen to leave one and return.
             announcer.sync(point)
             self._structure_text_length = len(self.control.GetValue())
@@ -117,13 +161,29 @@ class DocumentHeadingsMixin:
             # that moved because a line was deleted is not an arrival.
             announcer.sync(point)
             return
-        message = announcer.update(point)
+        message = announcer.update(point, heading_first=heading_first_from(self.app.settings))
         if message:
-            # Queued, never interrupting. The reader is speaking the line the
-            # caret just landed on; cutting across it to say "Heading 2" would
-            # take away the text the user moved there to hear. Leasey reaches
-            # the same conclusion with its speak-then-spell ordering.
-            self._announce(message, interrupt=False)
+            # Queued unless the phrase already contains the line's own text.
+            # Queuing is right for "Heading 2" on its own -- the reader is
+            # speaking the line and cutting across it would take away the text
+            # the user moved there to hear. It is wrong for "Heading 2,
+            # Installing", which *is* that text: there, interrupting is what
+            # makes the cue survive a Ctrl+Home, where the reader cancels
+            # everything pending and our queued phrase is simply never heard.
+            self._announce(message, interrupt=announcer.replaces_reader)
+
+    def _structure_cues_on(self) -> bool:
+        """Whether either caret cue is switched on.
+
+        Either, not both: the point built above already zeroes the half that is
+        off, so one being on is enough reason to run the latch. Checking for
+        both would silence lists whenever headings were off, which is exactly
+        the coupling the two separate toggles exist to avoid.
+        """
+        settings = self.app.settings
+        return bool(getattr(settings, "announce_headings", True)) or bool(
+            getattr(settings, "announce_lists", True)
+        )
 
     def sync_structure_announcer(self) -> None:
         """Latch the caret's surroundings without speaking.
@@ -154,20 +214,11 @@ class DocumentHeadingsMixin:
         to skip a ``#`` inside a fenced code block -- a plain regex does not,
         and a shell comment in a code sample is not a heading.
         """
-        if not self._markdown_headings_apply():
+        surface = self.markup_surface()
+        if surface is None:
             return []
-        blocks = parse_heading_blocks(self.control.GetValue(), "markdown")
+        blocks = parse_heading_blocks(self.control.GetValue(), surface)
         return [(block.start, block.level, block.title) for block in blocks]
-
-    def _markdown_headings_apply(self) -> bool:
-        """Whether a leading ``#`` is a heading in *this* plain document.
-
-        See :func:`~quill.core.lite.filetypes.has_markdown_headings`: it is in a
-        ``.md`` or a ``.txt`` or an untitled buffer, and it is a comment in the
-        ``.py`` / ``.sh`` / ``.ini`` files a Notepad replacement opens all day.
-        """
-        path = getattr(self, "path", None)
-        return has_markdown_headings(path.name if path is not None else None)
 
     def _navigate_heading(self, *, reverse: bool) -> None:
         # Plain text has headings too -- they are Markdown hashes rather than
@@ -233,6 +284,29 @@ class DocumentHeadingsMixin:
             self.control.SetFocus()
             return
         self._go_to(target)
+
+    def cmd_toggle_list_announcements(self) -> None:
+        """Ctrl+Alt+F5: stop (or resume) saying what list the caret is in.
+
+        Its own switch rather than a share of the heading one, because the two
+        answer different questions. Reorganising an outline, the level is the
+        work; proof-reading the same file, it is a phrase between you and every
+        item. Ctrl+Alt+F4 was the obvious neighbour to Ctrl+Alt+F3 and was passed
+        over deliberately: a finger that misses the Control key on a chord you
+        press this often finds Alt+F4, and the cost of that is the document.
+
+        The message names the consequence rather than the state, as its sibling
+        does -- "Lists will not be announced" beats "off", which leaves you
+        working out what was off and what it did.
+        """
+        settings = self.app.settings
+        settings.announce_lists = not getattr(settings, "announce_lists", True)
+        self.app.save_settings()
+        if settings.announce_lists:
+            self.sync_structure_announcer()
+            self._announce("Lists announced as you enter them")
+        else:
+            self._announce("Lists will not be announced")
 
     def cmd_toggle_heading_announcements(self) -> None:
         """Ctrl+Alt+F3: stop (or resume) saying "Heading 2" on arrival.

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite -- sign-off checklist</title>
   <style>
@@ -233,9 +233,9 @@ line endings, a <code>.txt</code> saved with Unix line endings (any file
 from a git checkout will do), and any <code>.rtf</code>.</li>
 </ul>
 <h2 id="the-15-minute-pass">The 15-minute pass</h2>
-<p>No time for the whole thing? Run exactly these twelve and stop:
+<p>No time for the whole thing? Run exactly these fifteen and stop:
 <strong>L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61,
-L-90, L-105.</strong></p>
+L-90, L-105, L-121, L-157, L-160.</strong></p>
 <p>They cover the four things most likely to be wrong and worst if they
 are: the document announces itself, F1 answers, the status bar is
 reachable, and a file comes back byte-for-byte. L-90 is there because a
@@ -245,6 +245,16 @@ this product cannot ship, and it was shipped once already.
 reverse: a status bar that reads its own text back truncated is a cell
 quietly lying about a fact, and the only place it shows is a narrow
 window on the machine it was reported from.</p>
+<p>Three more joined on 2026-09-15, and all three are regressions
+somebody reported rather than risks somebody imagined.
+<strong>L-121</strong>: the Format cell did not change when the document
+did, which is the one place anybody checks what kind of document they
+are in. <strong>L-157</strong>: Ctrl+Home onto a heading announced
+nothing, because a cue queued behind the screen reader is cancelled
+outright on a big jump. <strong>L-160</strong> is the counterweight –
+everything added in Block Q is speech, and over-announcing is absorbed
+as “this app is chatty” and never filed, which is exactly why it needs a
+box to tick.</p>
 <hr />
 <h2 id="block-a--opening-and-where-focus-lands-5-min">Block A – Opening,
 and where focus lands (5 min)</h2>
@@ -1685,6 +1695,673 @@ put the cursor in a heading and delete the line above it.</li>
 <li>Pass: body text is silent throughout. Deleting a line above a
 heading does <strong>not</strong> announce the heading – the text moved,
 you did not.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2
+id="block-q--markup-lists-and-the-four-kinds-of-document-14-min">Block Q
+– Markup, lists and the four kinds of document (14 min)</h2>
+<p>Everything in this block is a <em>sentence</em> or a <em>state</em>,
+which is why none of it is in the test suite. A machine can check that
+<code>list_context_at</code> counts four items; only a person can check
+that you actually hear “Bulleted list, 4 items” and hear it once.</p>
+<p>Have three files ready for this block:
+<strong><code>notes.md</code></strong>,
+<strong><code>page.html</code></strong> and
+<strong><code>build.py</code></strong>, each containing a line of
+ordinary text. Create them from QuillLite with
+<strong>Ctrl+Shift+S</strong> if you have none.</p>
+<h3 id="the-language-and-the-ring">The language, and the ring</h3>
+<p><strong>L-118. The file name decides the language, and the status bar
+says so</strong></p>
+<ul>
+<li>Do: open <code>notes.md</code>. Press <strong>F6</strong>, arrow to
+the <strong>Format</strong> cell.</li>
+<li>Pass: the cell reads <strong>Markdown</strong>. Repeat with
+<code>page.html</code> (<strong>HTML</strong>) and <code>build.py</code>
+(<strong>Plain text</strong>).</li>
+<li>Fail if any of the three reads “Plain text” when it should not –
+that cell is the one place somebody checks what kind of document they
+are in.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-119. Ctrl+Shift+M rings through all four kinds</strong></p>
+<ul>
+<li>Do: in <code>build.py</code>, press <strong>Ctrl+Shift+M</strong>
+four times, listening to each.</li>
+<li>Pass: you hear <strong>Markdown</strong>, then
+<strong>HTML</strong>, then the rich-text switch, then back to
+<strong>Plain text</strong>. Every stop says its own name.</li>
+<li>Fail if it toggles between two states only – that is the old
+behaviour, and it means three of the four kinds are unreachable from the
+keyboard.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-120. Ringing between the three plain kinds changes nothing
+in the document</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code>, type <code>hello</code>, then press
+<strong>Ctrl+Shift+M</strong> twice (to HTML and on to plain text,
+avoiding the rich stop).</li>
+<li>Pass: the text is still exactly <code>hello</code>, and the document
+is <strong>not</strong> marked modified. Only what the keys write
+changed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-121. Enter on the Format cell does the same
+ring</strong></p>
+<ul>
+<li>Do: <strong>F6</strong>, arrow to <strong>Format</strong>, press
+<strong>Enter</strong>.</li>
+<li>Pass: you hear the next kind, and arrowing back to the cell reads
+the new value. <strong>Fail if the cell still reads what it read
+before</strong> – that was the reported defect.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-122. Ctrl+Alt+F6 goes straight to one</strong></p>
+<ul>
+<li>Do: in <code>build.py</code>, press <strong>Ctrl+Alt+F6</strong>,
+arrow to <strong>HTML</strong>, press <strong>Enter</strong>.</li>
+<li>Pass: the chooser names all three, marks which one the file name
+implies, and the confirmation says <strong>“Document language:
+HTML”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="what-the-keys-write">What the keys write</h3>
+<p><strong>L-123. Ctrl+B writes Markdown in a Markdown
+document</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code>, type <code>hello world</code>, select
+<code>world</code> (<strong>Shift+Ctrl+Left</strong>), press
+<strong>Ctrl+B</strong>.</li>
+<li>Pass: the line reads <code>hello **world**</code>, and you hear
+<strong>“Bold in Markdown”</strong> – not “Bold on”. Nothing went bold;
+two asterisks appeared, and the sentence has to say which of the two
+happened.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-124. Ctrl+B writes HTML in an HTML document, and uses
+<code>&lt;strong&gt;</code></strong></p>
+<ul>
+<li>Do: the same in <code>page.html</code>.</li>
+<li>Pass: <code>hello &lt;strong&gt;world&lt;/strong&gt;</code>,
+announced as <strong>“Bold in HTML”</strong>.</li>
+<li>Fail if it wrote <code>&lt;b&gt;</code>. <code>&lt;strong&gt;</code>
+carries importance into the accessibility tree and
+<code>&lt;b&gt;</code> carries only a typeface; an editor built for
+listeners must not emit the presentational one.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-125. With nothing selected the cursor lands between the
+tags</strong></p>
+<ul>
+<li>Do: in <code>page.html</code>, on an empty line, press
+<strong>Ctrl+I</strong>, then type <code>word</code>.</li>
+<li>Pass: the line reads <code>&lt;em&gt;word&lt;/em&gt;</code>. Fail if
+it reads <code>&lt;em&gt;&lt;/em&gt;word</code> – you cannot see where
+the caret went, so this has to be right without checking.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-126. Italic and underline follow the same rule</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code> select a word and press
+<strong>Ctrl+I</strong>; then another and <strong>Ctrl+U</strong>.</li>
+<li>Pass: <code>*word*</code> and <code>&lt;u&gt;word&lt;/u&gt;</code>.
+Underline is <code>&lt;u&gt;</code> in both languages – Markdown has no
+spelling of its own for it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-127. A plain document refuses, and offers both ways
+out</strong></p>
+<ul>
+<li>Do: in <code>build.py</code>, select a word and press
+<strong>Ctrl+B</strong>.</li>
+<li>Pass: nothing is inserted, and you hear that this document has no
+formatting, <strong>Control Shift M</strong> for rich text, <strong>or
+Control Alt F6</strong> to write Markdown or HTML in it. Both routes,
+because either could be what was meant.</li>
+<li>Fail if it silently inserted asterisks into a Python file.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-128. The heading keys write the document’s own
+headings</strong></p>
+<ul>
+<li>Do: on a line of text in <code>notes.md</code> press
+<strong>Ctrl+Alt+2</strong>. Then the same on a line in
+<code>page.html</code>.</li>
+<li>Pass: <code>## your text</code> and
+<code>&lt;h2&gt;your text&lt;/h2&gt;</code>. Both announce
+<strong>“Heading 2”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-129. Applying a level rewrites the line rather than
+stacking on it</strong></p>
+<ul>
+<li>Do: put the cursor on a line reading <code>### Notes</code> in
+<code>notes.md</code>. Press <strong>Ctrl+Alt+2</strong>.</li>
+<li>Pass: the line reads <code>## Notes</code>. <strong>Fail if it reads
+<code>## ### Notes</code></strong> – that renders as a Heading 2 whose
+text starts with three hashes, nothing announces it, and you find out in
+the published document.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-130. An HTML heading keeps its id</strong></p>
+<ul>
+<li>Do: type <code>&lt;h3 id="install"&gt;Setup&lt;/h3&gt;</code> in
+<code>page.html</code>, put the cursor in it, press
+<strong>Ctrl+Alt+1</strong>.</li>
+<li>Pass: <code>&lt;h1 id="install"&gt;Setup&lt;/h1&gt;</code>. The
+<code>id</code> is very often the anchor somebody else’s link points
+at.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-131. Body text takes the marker back off, and says so when
+there is none</strong></p>
+<ul>
+<li>Do: on the <code>## Notes</code> line press
+<strong>Ctrl+Alt+0</strong>. Then press it again.</li>
+<li>Pass: first it becomes <code>Notes</code> and says <strong>“Body
+text”</strong>; the second press says <strong>“Already body
+text”</strong> rather than nothing.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-132. Alt+Shift+Right walks HTML headings</strong></p>
+<ul>
+<li>Do: cursor in an <code>&lt;h2&gt;</code> in <code>page.html</code>,
+press <strong>Alt+Shift+Right</strong>.</li>
+<li>Pass: <code>&lt;h3&gt;</code>, announced as “Heading 3”. Fail if it
+says “Put the cursor on a heading line” – that means it went looking for
+hashes an HTML file will never contain.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="the-insert-menu">The Insert menu</h3>
+<p><strong>L-133. Insert is a top-level menu, before Format</strong></p>
+<ul>
+<li>Do: press <strong>Alt</strong> and arrow along the menu bar.</li>
+<li>Pass: the order is File, Edit, View, <strong>Insert</strong>,
+Format, Navigate, Tools, Window, Help. Every item in Insert reads a key
+after its name.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-134. The wrong tag picker is dimmed, not
+missing</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code> open <strong>Insert</strong> and arrow
+to <strong>HTML Tag</strong>. Then do the same in <code>page.html</code>
+with <strong>Markdown Tag</strong>.</li>
+<li>Pass: in each case the row is <strong>present and announced as
+unavailable</strong>. Fail if the row has vanished – a missing row
+leaves somebody hunting the menus for a feature they know the app
+has.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-135. Pressing the key anyway explains rather than doing
+nothing</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code> press <strong>Ctrl+Alt+O</strong>
+(Insert HTML Tag).</li>
+<li>Pass: you hear that it needs an HTML document, that this one is
+Markdown, and that <strong>Control Alt F6</strong> changes that. Nothing
+is inserted.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-136. The HTML picker searches by what a tag
+does</strong></p>
+<ul>
+<li>Do: in <code>page.html</code> press <strong>Ctrl+Alt+O</strong>.
+Type <code>dropdown</code>. Press <strong>Down</strong>.</li>
+<li>Pass: focus starts in the search box; typing filters;
+<strong>Down</strong> (or Enter) moves you into the results, and
+<code>select</code> is in them. The list announces how many matches
+there are as you arrive on it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-137. Attributes are optional and Enter skips
+them</strong></p>
+<ul>
+<li>Do: continue from L-136 – choose <code>select</code>, then press
+<strong>Enter</strong> on the empty attribute box.</li>
+<li>Pass: <code>&lt;select&gt;&lt;/select&gt;</code> is inserted with
+the cursor between the tags, and you hear <strong>“Inserted HTML tag
+select”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-138. Attributes are parsed from a semicolon
+list</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+O</strong>, choose <code>div</code>, type
+<code>class=note; id=main</code>.</li>
+<li>Pass:
+<code>&lt;div class="note" id="main"&gt;&lt;/div&gt;</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-139. The Markdown picker asks for a link
+address</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code> press <strong>Ctrl+Alt+I</strong>, type
+<code>link</code>, choose <strong>Link</strong>, and put an address
+in.</li>
+<li>Pass: a Markdown link is inserted and announced. Escaping the
+address box cancels cleanly rather than inserting a half-built
+link.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-140. The emoji picker is searchable and describes what it
+inserts</strong></p>
+<ul>
+<li>Do: press <strong>Alt+.</strong>. Type <code>party</code>. Arrow
+through the results.</li>
+<li>Pass: each row reads as a name rather than an unlabelled character,
+and the description pane changes as you arrow. Insert one: you hear
+<strong>“Inserted …”</strong> with the emoji’s <em>name</em>.</li>
+<li>Fail if the inserted character is announced as nothing, or if the
+list reads as blank rows.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-141. The emoji picker works in a rich text
+document</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+N</strong> for a new rich document, then
+<strong>Alt+.</strong>.</li>
+<li>Pass: it opens and inserts. An emoji is a character, not
+markup.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="lists">Lists</h3>
+<p>Paste this into <code>notes.md</code> for the next few:</p>
+<pre><code>Shopping notes.
+
+- fruit
+    - apple
+    - pear
+- veg
+
+That is all.</code></pre>
+<p><strong>L-142. Entering a list names it and counts it</strong></p>
+<ul>
+<li>Do: put the cursor on “Shopping notes”, then arrow down to
+<code>- fruit</code>.</li>
+<li>Pass: you hear <strong>“Bulleted list, 2 items”</strong> – two,
+because that is how many there are <em>at this level</em>. Fail if it
+says 5.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-143. Going a level down says the level and the new
+count</strong></p>
+<ul>
+<li>Do: arrow down to <code>- apple</code>.</li>
+<li>Pass: <strong>“Level 2, 2 items”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-144. Moving between items of one list is
+silent</strong></p>
+<ul>
+<li>Do: arrow from <code>- apple</code> to <code>- pear</code>.</li>
+<li>Pass: <strong>nothing</strong> beyond your reader reading the line.
+A cue per item would make a list unusable.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-145. Coming back up a level says so</strong></p>
+<ul>
+<li>Do: arrow down from <code>- pear</code> to <code>- veg</code>.</li>
+<li>Pass: <strong>“Level 1, 2 items”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-146. Leaving says so</strong></p>
+<ul>
+<li>Do: arrow down to “That is all”.</li>
+<li>Pass: <strong>“Out of list”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-147. Numbered lists are named differently</strong></p>
+<ul>
+<li>Do: replace the dashes with <code>1.</code>, <code>2.</code> and
+arrow in again.</li>
+<li>Pass: <strong>“Numbered list, …”</strong>. Order is meaning; the two
+must not sound the same.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-148. HTML lists behave identically</strong></p>
+<ul>
+<li>Do: in <code>page.html</code>, type
+<code>&lt;p&gt;Before.&lt;/p&gt;</code>, then a <code>&lt;ul&gt;</code>
+with two <code>&lt;li&gt;</code> rows, then
+<code>&lt;p&gt;After.&lt;/p&gt;</code>. Arrow through it.</li>
+<li>Pass: “Bulleted list, 2 items” going in, “Out of list” coming
+out.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-149. A definition list names its two halves</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code>, type a line <code>Quill</code>, then
+under it <code>: the editor</code>, then a blank line, then
+<code>Lite</code> and <code>: the small one</code>. Arrow through all
+four lines.</li>
+<li>Pass: <strong>“Definition list, 2 terms”</strong> entering, then
+<strong>“Definition”</strong> and <strong>“Term”</strong> as you
+alternate. Which half you are standing in decides what the words
+mean.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-150. A code fence is not a list</strong></p>
+<ul>
+<li>Do: in <code>notes.md</code>, put a fenced block containing
+<code>- not a bullet</code> and arrow through it.</li>
+<li>Pass: <strong>silence</strong>. A dash in a code sample is a
+sample.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-151. A horizontal rule is not a one-item list</strong></p>
+<ul>
+<li>Do: put <code>---</code> on a line of its own between two paragraphs
+and arrow onto it.</li>
+<li>Pass: <strong>silence</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-152. A plain document never hears about lists</strong></p>
+<ul>
+<li>Do: in <code>build.py</code>, put <code>- not a bullet</code> on a
+line and arrow onto it.</li>
+<li>Pass: <strong>silence</strong>. A letter is full of hyphens and a
+script is full of flags.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-153. The List cell says which item you are on</strong></p>
+<ul>
+<li>Do: with the cursor on <code>- pear</code>, press
+<strong>F6</strong> and arrow to <strong>List</strong>.</li>
+<li>Pass: it reads something like <strong>“Bulleted list, 2 of 2, level
+2”</strong>. This is the fact the speech deliberately does not give you
+on every arrow press.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-154. Enter on the List cell turns the cue off, and says
+so</strong></p>
+<ul>
+<li>Do: press <strong>Enter</strong> on that cell, then Escape back and
+arrow into a list.</li>
+<li>Pass: <strong>“Lists will not be announced”</strong>, and then
+silence in the list. Press <strong>Ctrl+Alt+F5</strong> to bring it
+back: <strong>“Lists announced as you enter them”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-155. The two switches are independent</strong></p>
+<ul>
+<li>Do: turn <strong>lists</strong> off (<strong>Ctrl+Alt+F5</strong>)
+and arrow onto a heading. Then turn lists back on, turn
+<strong>headings</strong> off (<strong>Ctrl+Alt+F3</strong>), and arrow
+into a list.</li>
+<li>Pass: headings still announce in the first case; lists still
+announce in the second. <strong>Fail if either switch silences the
+other</strong> – that is the whole reason there are two of them.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="where-the-heading-level-goes">Where the heading level goes</h3>
+<p><strong>L-156. A heading says its level first, with its own
+words</strong></p>
+<ul>
+<li>Do: arrow onto a heading.</li>
+<li>Pass: you hear <strong>“Heading 2, Installing”</strong> – the level,
+then the text, as one sentence, and your reader does not then read the
+line a second time.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-157. Ctrl+Home onto a heading announces it</strong>
+<em>(the reported defect)</em></p>
+<ul>
+<li>Do: with the cursor somewhere in the middle of a document whose
+first line is a heading, press <strong>Ctrl+Home</strong>.</li>
+<li>Pass: you hear <strong>“Heading 1, …”</strong>. Fail if you hear
+only the line – that is the defect, and it is caused by the reader
+cancelling a cue that was queued behind it.</li>
+<li>Try the same with <strong>Ctrl+End</strong>, a search hit
+(<strong>F3</strong>) and a bookmark jump.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-158. The other order is still available</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+,</strong> for Preferences, find <strong>Say a
+heading’s level</strong>, choose <strong>After the text</strong>, save.
+Arrow onto a heading.</li>
+<li>Pass: your reader reads the line, then you hear <strong>“Heading
+2”</strong> alone. Put it back to <strong>Before the text</strong>
+afterwards.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="the-status-bar">The status bar</h3>
+<p><strong>L-159. F6 leaves the status bar as well as entering
+it</strong> <em>(reported)</em></p>
+<ul>
+<li>Do: press <strong>F6</strong>, arrow to any cell, press
+<strong>F6</strong> again. Then repeat with
+<strong>Shift+F6</strong>.</li>
+<li>Pass: you are back in your document both times. Escape still works
+too.</li>
+<li>Fail if F6 does nothing once you are in the bar.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-160. Nothing new is chatty</strong></p>
+<ul>
+<li>Do: type two paragraphs of ordinary prose in <code>notes.md</code>,
+arrowing about. Then put the cursor inside a list and type a sentence
+into an item.</li>
+<li>Pass: body text is silent; typing inside a list item says nothing;
+deleting the line above a list does <strong>not</strong> announce the
+list.</li>
+<li>This is the one that decides whether the whole block shipped or
+should not have: over-announcing is absorbed as “this app is chatty” and
+never filed.</li>
+</ul>
+<ul class="task-list">
+<li><p><label><input type="checkbox" />pass [ ] fail:
+______</label></p></li>
+</ul>
+<h3 id="form-fields-inserted-whole">Form fields, inserted whole</h3>
+<p>The wiring is the whole point of these and none of it is visible, so
+every step here is “read the markup back and check a pair of values
+match”.</p>
+<p><strong>L-161. A dropdown arrives labelled and wired</strong></p>
+<ul>
+<li>Do: in <code>page.html</code> press <strong>Ctrl+Alt+O</strong>,
+type <code>dropdown</code>, choose <strong>Form field: dropdown
+(select)</strong>.</li>
+<li>Pass: you get a <code>&lt;label&gt;</code>, a
+<code>&lt;select&gt;</code>, and options – and the label’s
+<code>for="..."</code> is <strong>the same string</strong> as the
+select’s <code>id="..."</code>. Read both aloud and compare them
+character by character.</li>
+<li>Fail if they differ, or if either is missing: a <code>for</code>
+that points at nothing renders identically to one that works, and the
+field reads as unlabelled.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-162. The dropdown cannot submit an answer nobody
+gave</strong></p>
+<ul>
+<li>Pass: the first <code>&lt;option&gt;</code> has
+<code>value=""</code>. A select whose first option is a real choice
+submits that choice when nobody touches it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-163. A radio group is a group</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+O</strong>, type <code>radio</code>, choose
+<strong>Form field: radio group</strong>.</li>
+<li>Pass: a <code>&lt;fieldset&gt;</code>, a
+<code>&lt;legend&gt;</code>, three radios that <strong>all share one
+<code>name</code></strong>, and <strong>exactly one</strong>
+<code>checked</code>.</li>
+<li>Fail if the names differ – then they are not a group and all three
+can be on at once, which looks identical on screen.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-164. A selection becomes the label, and the id follows
+it</strong></p>
+<ul>
+<li>Do: type <code>Postcode</code>, select it, then
+<strong>Ctrl+Alt+O</strong> and choose <strong>Form field:
+text</strong>.</li>
+<li>Pass: the label reads Postcode, and both <code>id</code> and
+<code>for</code> read <code>postcode</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-165. A second field does not reuse the first one’s
+id</strong> <em>(the silent one)</em></p>
+<ul>
+<li>Do: insert <strong>Form field: email</strong> twice in the same
+document.</li>
+<li>Pass: the second reads <code>email-2</code> (or similar) in
+<strong>both</strong> its <code>id</code> and its <code>for</code>. Fail
+if both fields claim <code>id="email"</code> – the page looks perfect,
+and the only symptom is that clicking the second label focuses the first
+field.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-166. The validated-field pattern is wired three
+ways</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+O</strong>, type <code>error message</code>,
+choose <strong>Form field: required, with hint and error</strong>.</li>
+<li>Pass: <code>aria-describedby</code> names <strong>two</strong> ids,
+both of which exist in what was inserted; there is an
+<code>aria-invalid="false"</code>; and the empty error paragraph carries
+<code>role="alert"</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-167. A whole control does not ask for
+attributes</strong></p>
+<ul>
+<li>Do: choose any <strong>Form field:</strong> row.</li>
+<li>Pass: it inserts immediately – no attribute box. Then choose a bare
+tag (<code>div</code>): the attribute box <strong>does</strong> appear,
+and Enter on it empty inserts <code>&lt;div&gt;&lt;/div&gt;</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-168. The pickers are complete</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+O</strong> and search in turn for
+<code>glossary</code>, <code>acronym</code>, <code>image caption</code>,
+<code>table header</code>, <code>subtitles</code>,
+<code>divider</code>.</li>
+<li>Pass: <code>dl</code>, <code>abbr</code>, <code>figcaption</code>,
+<code>thead</code>, <code>track</code> and <code>hr</code> are each in
+the first few results. Then <strong>Ctrl+Alt+I</strong> in
+<code>notes.md</code> and confirm <strong>Underline</strong>,
+<strong>Strikethrough</strong>, <strong>Horizontal Rule</strong> and
+<strong>Definition List</strong> are all offered.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-169. The emoji catalogue is current</strong></p>
+<ul>
+<li>Do: <strong>Alt+.</strong> and search for
+<code>bags under eyes</code>, then <code>fingerprint</code>, then
+<code>splatter</code>.</li>
+<li>Pass: each is found, with a written description. These are Unicode
+Emoji 16.0 additions – the newest published set – so finding them is the
+fastest way to confirm the shipped catalogue is not a release
+behind.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>

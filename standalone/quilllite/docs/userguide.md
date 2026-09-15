@@ -64,20 +64,61 @@ start it with the extra option `--new-instance`.
 
 ---
 
-## Two kinds of document
+## Four kinds of document
 
-Every document is one of two kinds, and the title bar tells you which.
+Every document is one of four kinds. The title bar names the first two; the
+status bar's **Format** and **Language** cells name all four.
 
-**Plain text** is like Notepad. One font, no formatting. Text you paste in
-arrives as plain text. This is what you want for notes, lists, and any file that
-another program is going to read.
+**Plain text** is like Notepad. One font, no formatting, no markup. Text you
+paste in arrives as plain text. This is what a `.py`, a `.conf` or a log file
+is, and it is what you want when another program is going to read the file.
+
+**Markdown** is plain text that means something: `#` starts a heading, `-`
+starts a bullet, `**` makes a word bold. QuillLite writes those for you — see
+[Formatting](#formatting) — and reads them back, so the caret can tell you you
+have arrived at a Heading 2 or walked into a list of five.
+
+**HTML** is the same idea in tags: `<h2>`, `<ul>`, `<strong>`. Everything
+Markdown gets, HTML gets, in HTML's own spelling.
 
 **Rich text** is like WordPad. Bold, italic, headings, alignment, bullet points,
 line spacing. It saves as a Rich Text file, which Word and WordPad both open.
 
-QuillLite chooses the kind from the file's name. Rich Text files open as rich
-text; everything else opens as plain. **Ctrl+Shift+M** switches the document you
-are in. Going from rich to plain throws the formatting away, so it asks first.
+QuillLite chooses the kind from the file's name, and it is only ever a first
+guess:
+
+| The file is called | You get |
+|---|---|
+| `notes.rtf` | Rich text |
+| `notes.md`, `.markdown`, `.mdx` — and `.txt` | Markdown |
+| `page.html`, `.htm`, `.xhtml` | HTML |
+| `build.py`, `nginx.conf`, `app.log`, anything else | Plain text |
+| nothing yet — a new, unsaved document | Markdown |
+
+`.txt` and a brand-new document are Markdown because that is what somebody
+typing `## Notes` into one means. A `.py` or a `.conf` is plain text because in
+those a `#` is a **comment** and a `-` is a flag, and an editor that announced
+"Heading 1" on most lines of a build script would be exhausting.
+
+### Saying otherwise
+
+The guess is not binding. Writing HTML in a `.txt` scratch file is an entirely
+reasonable thing to do, and there are three ways to say so:
+
+- **Ctrl+Shift+M** rings through all four kinds — plain text, Markdown, HTML,
+  rich text, and round again. Each stop says its own name, so you press it until
+  you hear the one you meant. This is the fast way.
+- **Ctrl+Alt+F6** (**Format ▸ Document Language**) goes straight to one, and
+  tells you what each choice will do before you make it.
+- **Enter on the status bar's Language cell** opens that same chooser, because
+  the bar is where you notice the answer is wrong.
+
+Moving between plain, Markdown and HTML changes **nothing in your document** —
+it changes what the keys write from now on. Going to or from rich text is a real
+conversion, and going *from* it throws the formatting away, so it asks first.
+
+The choice lasts as long as the window. It describes what you are typing, not
+what the file is.
 
 ---
 
@@ -179,6 +220,110 @@ and **Ctrl+Shift+F3** opens **All Matches**: every match in the document, in
 order, each with its line and column and the words around it. That is the list
 you want before a Replace All, because it is the only way to see what you are
 about to change rather than finding out afterwards.
+
+## The Insert menu
+
+Everything that puts something into your document that is not typing.
+
+| Key | What it does |
+|---|---|
+| **F5** | Today's date and the time |
+| **Ctrl+Shift+F2** | Special Character — search 1,400 of them by name |
+| **Alt+.** | Emoji — search or browse, with a description of each one |
+| **Shift+Enter** | A line break that does not start a paragraph |
+| **Ctrl+Alt+I** | Markdown Tag — the whole Markdown vocabulary |
+| **Ctrl+Alt+O** | HTML Tag — forty tags, searchable by what they do |
+
+These were spread through Edit before there were six of them. Insert sits
+**before Format** on the bar for the reason Word puts it there: you insert a
+thing and then you format it, so the menus are in the order the work happens.
+Every key is unchanged.
+
+### Emoji — Alt+.
+
+QUILL's own picker, and the same key. Search by name, by keyword, by what it
+*looks like*, or by a typed smiley — `:)` finds the smiling face and `<3` finds
+the heart. Or browse by category, starting with **Favourites** and **Recent**.
+
+Every emoji comes with a **written description** of what it actually shows,
+which is the whole point: a picture wall is exactly the shape of control that
+cannot be used without sight, so this is a list you arrow through with a
+description pane beside it. What you insert is announced by name, because a bare
+emoji character is read as anything from its own name to silence depending on
+your synthesiser.
+
+It works in every kind of document, rich text included. An emoji is a character,
+not markup.
+
+### The two tag pickers
+
+**Exactly one of them is ever available**, and it is whichever your document's
+language is. The other is **greyed out rather than hidden** — a greyed row tells
+your reader it is unavailable the moment you arrive on it, while a row that has
+vanished leaves you hunting the menus for something you know the app has. Press
+the key anyway and it tells you what the document is, what it would need to be,
+and that **Ctrl+Alt+F6** is how to change that.
+
+**Markdown Tag (Ctrl+Alt+I)** offers bold, italic, inline code, a fenced code
+block, the six heading levels, bullet, numbered and task lists, blockquote,
+link, image, table and footnote. Type to narrow the list. Link and Image ask for
+the address afterwards.
+
+**HTML Tag (Ctrl+Alt+O)** offers **111 tags and 20 whole form fields**, and
+**searches by what they do as well as what they are called**: type "dropdown"
+and find both a finished labelled dropdown and the bare `select`, type
+"glossary" and find `<dl>`, type "acronym" and find `<abbr>`, type "subtitles"
+and find `<track>`. For a bare tag you can then give it attributes —
+`class=note; id=summary; aria-label=Summary` — and Enter on an empty box skips
+that step, because an `<h2>` needs none. A whole form field skips the box
+entirely: it arrives with the attributes that make it work.
+
+Anything selected is wrapped. Otherwise the cursor lands between the tags.
+
+### Whole form fields, wired up
+
+The HTML picker's top rows are not tags — they are **finished controls**. Choose
+**Form field: dropdown** and you get a label, a `for` that matches the field's
+`id`, the `<select>` and three `<option>`s, all at once.
+
+This is where the picker earns its place. Inserting `<select>` on its own is the
+easy half; the half that matters is the wiring, and the wiring is invisible. A
+missing `for` renders identically to a present one. A radio group without a
+shared `name` looks exactly like one with — except every button can be on at
+once. Two fields that share an `id` look perfect until somebody clicks the
+second label and the first field takes focus. None of that is something you can
+check by looking, which is precisely why it should not be left to memory.
+
+So every one of these arrives complete:
+
+| Choose | You get |
+|---|---|
+| **text**, **email**, **password**, **telephone**, **web address**, **number**, **date**, **search**, **file upload** | a labelled input of that type, with `autocomplete` where the browser can help |
+| **long answer (textarea)** | a labelled, five-row text area |
+| **dropdown (select)** | label, select, and an empty first option so it cannot submit an answer nobody gave |
+| **dropdown with groups** | the same, with two `<optgroup>`s |
+| **checkbox** | box first, then its label — the convention, and the label becomes part of the click target |
+| **checkbox group** | a `<fieldset>`, a `<legend>`, and boxes sharing one `name` |
+| **radio group** | the same, with three radios, one shared `name`, and exactly one default |
+| **autocomplete (input + datalist)** | an input joined to its own suggestion list |
+| **required, with hint and error** | a hint and an empty error, both named by `aria-describedby`, plus `aria-invalid` and `role="alert"` |
+| **submit button** | a `<button type="submit">` with real text, not an `<input value="">` |
+| **whole form** | a contact form: fieldset, legend, three labelled fields, and a submit |
+| **grouped fields (fieldset)** | an empty fieldset with a legend, for grouping what you already have |
+
+**Select a word first and it becomes the label** — and the `id` is made from it,
+so the two agree. Select "Postcode", choose **Form field: text**, and you get a
+Postcode field with `id="postcode"` and `for="postcode"` already matching.
+
+**The `id` is checked against your document first.** Insert a second email field
+and it will be `email-2`, not a duplicate of the first. That one line of
+behaviour is the difference between a form that stays accessible when it is
+copied and one that stops being so without anybody noticing.
+
+The bare tags are all still there, one row further down, for when a bare tag is
+what you meant.
+
+---
 
 ### Typing things there is no key for
 
@@ -432,8 +577,41 @@ need none:
 
 ## Formatting
 
-These are WordPad's keys, deliberately unchanged. They work in rich text
-documents.
+These are WordPad's keys, deliberately unchanged.
+
+**The same key, the document's own answer.** Ctrl+B used to say "Not available
+in plain text. Press Control Shift M to switch to rich text", which is true and
+unhelpful — somebody writing Markdown does not want rich text, they want two
+asterisks, and they know it. So what Ctrl+B writes now depends on what kind of
+document you are in:
+
+| In a | **Ctrl+B** writes | **Ctrl+Alt+2** writes |
+|---|---|---|
+| Markdown document | `**bold**` | `## Heading` |
+| HTML document | `<strong>bold</strong>` | `<h2>Heading</h2>` |
+| Rich text document | real bold | a 16-point bold paragraph |
+| Plain text document | nothing, and says why | nothing, and says why |
+
+Select a word first and it is wrapped. With nothing selected the markup goes in
+empty and **the cursor lands in the middle of it**, ready to type — which
+matters, because otherwise you would be typing after the closing tag with no way
+to see that you were.
+
+In Markdown and HTML the announcement names the *markup* rather than the effect
+— "Bold in Markdown", not "Bold on". Nothing on the screen went bold; two
+asterisks appeared, and you need to know which of the two happened.
+
+HTML gets `<strong>` and `<em>`, never `<b>` and `<i>`. They are not synonyms to
+the thing that reads them out: `<strong>` carries importance into the
+accessibility tree, and `<b>` carries only a typeface.
+
+Applying a heading **rewrites the line** rather than adding to it. Pressing
+Ctrl+Alt+2 on a line that is already `### Notes` gives you `## Notes`, not
+`## ### Notes` — and an `id=` on an HTML heading is carried across, because it
+is very often the anchor somebody else's link points at.
+
+The rest of the Format menu — alignment, bullets, line spacing, font — is rich
+text only, and says so when it cannot run.
 
 | Key | What it does |
 |---|---|
@@ -468,9 +646,9 @@ formatted document raises and that nothing else can answer for you.
 | **Ctrl+Alt+H** / **Ctrl+Alt+Shift+H** | Next / previous heading |
 | **Ctrl+Alt+L** | The list of every heading |
 
-These work in **both kinds of document**. In rich text they walk the point-size
-ladder above; in plain text they walk Markdown headings — the lines that start
-with `#`. They used to refuse in a plain document ("Headings are only available
+These work in **every kind of document**. In rich text they walk the point-size
+ladder above; in Markdown they walk the lines that start with `#`; in HTML they
+walk `<h1>` to `<h6>`. They used to refuse in a plain document ("Headings are only available
 in rich text"), which was wrong in the way that matters: plain-text headings are
 real enough for **Alt+Shift+Right** to change their level, and only *navigation*
 pretended the document had no shape. A `#` inside a fenced code block is not
@@ -508,7 +686,61 @@ decision per document.
 have not named yet, a line starting with `#` is a heading. In a `.py`, `.sh`,
 `.ini`, `.yml` or `.conf` it is a comment, and QuillLite says nothing and lists
 nothing — otherwise a build script would announce "Heading 1" on most of its
-lines.
+lines. In an HTML document it is neither: there the headings are `<h1>` to
+`<h6>`, and QuillLite reads and writes those instead.
+
+### Hearing that you are in a list
+
+Arrow into a list and QuillLite says **"Bulleted list, 5 items"**. Go a level
+deeper and it says **"Level 2, 3 items"**. Arrow out and it says **"Out of
+list"**.
+
+This is the one cue in the set your screen reader gives you **everywhere except
+here**. On a web page a list reaches the reader as a list with a count, and NVDA
+says almost exactly this. In an editor a list is not a list — it is characters —
+so the reader has nothing to go on, and a nested outline sounds like a run of
+ordinary lines starting with a dash. The only thing separating level two from
+level three is the number of spaces, counted by ear.
+
+It works in **Markdown and in HTML**, over all three kinds of list:
+
+| | Markdown | HTML |
+|---|---|---|
+| **Bulleted list** | `-`, `*`, `+` | `<ul>` |
+| **Numbered list** | `1.`, `1)` | `<ol>` |
+| **Definition list** | a line, then `: the definition` under it | `<dl>` |
+
+A definition list also says **"Term"** and **"Definition"** as you move between
+the two, because which of them you are standing in decides what the words mean
+— and a definition list written inside out is not something you can see you have
+done.
+
+The counting rule matters and is easy to get wrong: **items are counted at your
+own level, inside your own list.** A three-item list whose second item has four
+sub-items is "3 items" at level one and "4 items" at level two, never "7". Two
+sub-lists under two different bullets are two lists, not one.
+
+What it never says:
+
+- **Nothing as you move down a list.** That is what the caret does nearly all
+  the time, and your reader is already speaking each item.
+- **Nothing about `- - -` or `***`.** Those are horizontal rules, not one-item
+  lists.
+- **Nothing inside a fenced code block.** A `- ` in a code sample is a sample.
+- **Nothing in a plain text document.** A letter is full of hyphens, and a cue
+  that fired on them would be superstition rather than help.
+
+**Turning it off — View ▸ Announce Lists (Ctrl+Alt+F5).** Its own switch, next
+to the heading one and deliberately separate from it: reorganising an outline,
+the level is the work; proof-reading the same file, it is a phrase between you
+and every item. Like its sibling it says which way it went — "Lists will not be
+announced", or "Lists announced as you enter them".
+
+**And the status bar's List cell says something the speech never does:** which
+item you are on. "Bulleted list, 4 of 9, level 2". Saying that aloud on every
+arrow press would be too much; never being able to find out is its own problem,
+and a cell answers on demand and costs nothing until you read it. **Enter** on
+the cell turns the spoken cue off and on.
 
 
 ### Rearranging them — Format ▸ Structure
@@ -712,13 +944,15 @@ than doing nothing.
 | **Selection** | How much is selected, or "No selection" | repeats it |
 | **Typing Mode** | Whether typing inserts or overwrites | switches between them |
 | **Tab Mode** | Whether the Tab key types a tab or indents the line | switches between them |
-| **Format** | Plain text or rich text | switches between them |
+| **Format** | Plain text or rich text | rings on to the next kind of document |
 | **Heading** | Which heading you are inside | lists every heading |
+| **List** | Which list you are inside, how many items, which one you are on | stops or resumes announcing lists |
+| **Language** | Markdown, HTML, or plain text with no markup | change it |
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
 
-Five of these are worth pointing out.
+Seven of these are worth pointing out.
 
 **Typing Mode** is the one you cannot find out any other way. Every Windows
 editor has an overwrite mode, where what you type replaces the letters already
@@ -741,6 +975,19 @@ you did not mean to type can always be taken back without switching modes first.
 file opens properly on somebody else's computer, and almost no other editor
 shows them at all. You will rarely need to change them — but when a file arrives
 looking like nonsense, this is where the answer is.
+
+**List** answers the question the speech deliberately does not. Entering a list
+you hear "Bulleted list, 5 items"; this cell also tells you **which item you are
+on** — "Bulleted list, 4 of 9, level 2". Saying that aloud on every arrow press
+would be too much to listen to, and having no way at all to find out is its own
+problem when you are halfway through reordering nine things.
+
+**Language** is what decides the rest. It says whether this document is Markdown,
+HTML or plain text, and that one fact decides what **Ctrl+B** writes, what the
+heading keys write, which of the two tag pickers the Insert menu offers, and
+whether the List part above has anything to say. QuillLite reads it from the file
+name; **Enter** here says otherwise. See [Four kinds of
+document](#four-kinds-of-document).
 
 **Status Message** exists because speech is gone the moment it is spoken. If you
 missed something QuillLite said, this is where you go to read it again.
@@ -1035,12 +1282,12 @@ and change your mind.
 Under the box is a **read-only description you can read line by line**, and it
 answers two different questions. First, what the profile *is*, in its own words.
 Then what it would actually *do* to the app in front of you: how many of the
-seventeen areas it keeps and which, which ones it removes, and anything else it
+18 areas it keeps and which, which ones it removes, and anything else it
 changes -- Notepad, for instance, also makes **Ctrl+N** create a plain text
 document. **F1** on the Profile box reads the same thing.
 
 What is spoken when you choose a profile is the short version -- "Notepad
-profile: 2 of 17 features on. New documents will be plain text." -- because your
+profile: 2 of 18 features on. New documents will be plain text." -- because your
 screen reader is already reading the name and the description is there to be
 read at your own pace.
 
@@ -1057,23 +1304,23 @@ hand-edited a profile and want to start it over.
 **The same four profiles are in Preferences**, at the top, with the same
 description box. "Make this Notepad" is a preference like any other, and you
 should not have to know that a dialog called Customize Features is where it
-lives. Preferences offers the whole answers; the seventeen individual
+lives. Preferences offers the whole answers; the 18 individual
 checkboxes stay in Customize Features.
 
 Here is what each one is, at a glance and then in full.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 14 of 17 | plain text (unchanged) |
-| **Everything** | 17 of 17 | plain text (unchanged) |
-| **WordPad** | 5 of 17 | **rich text** |
-| **Notepad** | 2 of 17 | **plain text** |
+| **Recommended** | 15 of 18 | plain text (unchanged) |
+| **Everything** | 18 of 18 | plain text (unchanged) |
+| **WordPad** | 5 of 18 | **rich text** |
+| **Notepad** | 2 of 18 | **plain text** |
 
 #### Recommended
 
-**What a new install is.** Fourteen of the seventeen areas: rich text, headings,
-bookmarks, the line tools, the clipboard history, printing, abbreviations, the
-Selection submenu, spell check, Matches, Go Back and Go Forward, the Command
+**What a new install is.** 15 of the 18 areas: rich text, headings, Markdown and
+HTML, bookmarks, the line tools, the clipboard history, printing, abbreviations,
+the Selection submenu, spell check, Matches, Go Back and Go Forward, the Command
 Palette, Describe Character and text size.
 
 **Off:** autocorrect, timestamped backups, Go To Anything. Those three are not
@@ -1086,7 +1333,7 @@ palette, the headings list and the bookmark list already cover it.
 
 #### Everything
 
-**All seventeen areas on**, including those three. Autocorrect will straighten
+**All 18 areas on**, including those three. Autocorrect will straighten
 your quotes and capitalise your sentences, every save keeps a dated copy under
 your data folder, and Go To Anything joins the palette and the two lists.
 
@@ -1097,7 +1344,7 @@ them one at a time.
 
 **What WordPad was.** Rich text you can format, print, and check the spelling
 of: bold, italic, underline, headings, alignment, bullets, indenting and line
-spacing, plus Find and Replace, printing and text size. Five of the seventeen
+spacing, plus Find and Replace, printing and text size. Five of the 18
 areas.
 
 **Off:** the writing tools behind the formatting. No Edit ▸ Lines, no clipboard
@@ -1117,7 +1364,7 @@ without one in 2026 is a surprise rather than a simplification.
 #### Notepad
 
 **The smallest QuillLite gets**, and the one most people arriving here are
-replacing something with. Two of the seventeen areas: **printing** and **text
+replacing something with. Two of the 18 areas: **printing** and **text
 size**.
 
 **Off:** the Format menu and everything under it, headings, bookmarks, the line
@@ -1157,12 +1404,13 @@ is called, so typing "curly quotes" finds Autocorrect and typing "dictionary"
 finds Spell check. The line under the box says how many are left, and **Down**
 from the box moves straight into the list.
 
-### The seventeen areas
+### The 18 areas
 
 | Area | What goes | Starts |
 |---|---|---|
 | **Rich text and the Format menu** | Bold, headings, alignment, bullets, spacing | on |
 | **Heading navigation** | Next and previous heading, the headings list | on |
+| **Markdown and HTML** | The two tag pickers, Document Language, and markup Bold | on |
 | **Bookmarks** | All nine, and the list | on |
 | **Line tools and change case** | Edit ▸ Lines, Tools ▸ Change Case | on |
 | **Copy Tray and the clip library** | Edit ▸ Clipboard (Cut, Copy and Paste stay) | on |
@@ -1373,14 +1621,6 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+C** | Describe Character |
 | **Ctrl+Alt+C** | Character Details... |
 
-### Edit ▸ Insert
-
-| Key | Command |
-|---|---|
-| **F5** | Date and Time |
-| **Ctrl+Shift+F2** | Special Character... |
-| **Shift+Enter** | Line Break |
-
 ### Edit ▸ Matches
 
 | Key | Command |
@@ -1453,6 +1693,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Alt+Shift+D** | Dark Mode |
 | **Alt+Z** | Word Wrap |
+| **Ctrl+Alt+F3** | Announce Headings |
+| **Ctrl+Alt+F5** | Announce Lists |
 | **Ctrl+Alt+Shift+W** | Overwrite Mode |
 | **Ctrl+Alt+Shift+I** | Tab Key Inserts a Tab Character |
 | **Alt+Shift+B** | Status Bar |
@@ -1461,6 +1703,17 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+0** | Reset Text Size |
 | **Ctrl+Alt+W** | Document Statistics |
 | **Ctrl+Shift+P** | Command Palette... |
+
+### Insert
+
+| Key | Command |
+|---|---|
+| **F5** | Date and Time |
+| **Ctrl+Shift+F2** | Special Character... |
+| **Alt+.** | Emoji... |
+| **Shift+Enter** | Line Break |
+| **Ctrl+Alt+I** | Markdown Tag... |
+| **Ctrl+Alt+O** | HTML Tag... |
 
 ### Format
 
@@ -1480,6 +1733,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+F** | Font for Selection... |
 | **Ctrl+Shift+D** | Describe Formatting at Cursor |
 | **Ctrl+Shift+M** | Switch Document Mode |
+| **Ctrl+Alt+F6** | Document Language... |
 
 ### Format ▸ Line Spacing
 
@@ -1545,12 +1799,12 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 
 | Key | Command |
 |---|---|
-| **Ctrl+Alt+Shift+Q** | Back Up Settings... |
-| **Ctrl+Alt+Shift+D** | Restore Settings... |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
 | **Alt+Shift+A** | Expand Abbreviations |
 | **Ctrl+,** | Preferences... |
+| **Ctrl+Alt+Shift+Q** | Back Up Settings... |
+| **Ctrl+Alt+Shift+D** | Restore Settings... |
 | **Ctrl+Alt+Shift+F** | Customize Features... |
 | **Ctrl+Alt+Shift+R** | Keyboard Manager... |
 

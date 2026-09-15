@@ -46,6 +46,7 @@ from quill.core.app_features import (
     profile_impact,
     profile_summary,
 )
+from quill.core.structure_announce import HEADING_POSITION_LABELS, HEADING_POSITIONS
 from quill.ui.app_features_dialog import CUSTOM_PROFILE, SETTING_WORDS
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 
@@ -262,6 +263,28 @@ def edit_preferences(
     miss_choice.SetSelection(_feedback_index(getattr(settings, "find_not_found_feedback", "sound")))
     _stack(root, miss_label, miss_choice)
 
+    heading_words = [HEADING_POSITION_LABELS[key] for key in HEADING_POSITIONS]
+    heading_label = wx.StaticText(dialog, label="Say a &heading's level:")
+    heading_choice = wx.Choice(dialog, choices=heading_words)
+    set_accessible_name(heading_choice, "Say a heading's level")
+    heading_choice.SetHelpText(
+        "Where the level goes relative to the heading itself. Before the text "
+        "is one sentence QuillLite says on its own -- Heading 2, Installing -- "
+        "and it is the one that survives a jump: pressing Control Home or "
+        "landing on a search hit makes a screen reader cancel whatever it was "
+        "about to say, and a level waiting its turn behind that is never heard. "
+        "After the text lets your reader read the line and adds the level "
+        "behind it, which is quieter on ordinary line-by-line reading."
+    )
+    heading_choice.SetSelection(
+        HEADING_POSITIONS.index(
+            "after"
+            if str(getattr(settings, "heading_announce_position", "before")) == "after"
+            else "before"
+        )
+    )
+    _stack(root, heading_label, heading_choice)
+
     wrap_find = wx.CheckBox(dialog, label="Searching carries on from the other &end")
     wrap_find.SetHelpText(
         "On: Find Next reaching the end of the document starts again at the "
@@ -370,6 +393,9 @@ def edit_preferences(
         settings.action_feedback = str(feedback_values[action_choice.GetSelection()])
         settings.find_not_found_feedback = str(feedback_values[miss_choice.GetSelection()])
         settings.wrap_find = bool(wrap_find.GetValue())
+        settings.heading_announce_position = HEADING_POSITIONS[
+            max(0, heading_choice.GetSelection())
+        ]
         settings.font_name = str(chosen["name"])
         settings.font_size = int(chosen["size"])
         settings.normalized()

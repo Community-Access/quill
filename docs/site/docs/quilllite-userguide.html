@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite — User Guide</title>
   <style>
@@ -270,19 +270,89 @@ the numbering meaningful.</p>
 monitor, say — start it with the extra option
 <code>--new-instance</code>.</p>
 <hr />
-<h2 id="two-kinds-of-document">Two kinds of document</h2>
-<p>Every document is one of two kinds, and the title bar tells you
-which.</p>
-<p><strong>Plain text</strong> is like Notepad. One font, no formatting.
-Text you paste in arrives as plain text. This is what you want for
-notes, lists, and any file that another program is going to read.</p>
+<h2 id="four-kinds-of-document">Four kinds of document</h2>
+<p>Every document is one of four kinds. The title bar names the first
+two; the status bar’s <strong>Format</strong> and
+<strong>Language</strong> cells name all four.</p>
+<p><strong>Plain text</strong> is like Notepad. One font, no formatting,
+no markup. Text you paste in arrives as plain text. This is what a
+<code>.py</code>, a <code>.conf</code> or a log file is, and it is what
+you want when another program is going to read the file.</p>
+<p><strong>Markdown</strong> is plain text that means something:
+<code>#</code> starts a heading, <code>-</code> starts a bullet,
+<code>**</code> makes a word bold. QuillLite writes those for you — see
+<a href="#formatting">Formatting</a> — and reads them back, so the caret
+can tell you you have arrived at a Heading 2 or walked into a list of
+five.</p>
+<p><strong>HTML</strong> is the same idea in tags:
+<code>&lt;h2&gt;</code>, <code>&lt;ul&gt;</code>,
+<code>&lt;strong&gt;</code>. Everything Markdown gets, HTML gets, in
+HTML’s own spelling.</p>
 <p><strong>Rich text</strong> is like WordPad. Bold, italic, headings,
 alignment, bullet points, line spacing. It saves as a Rich Text file,
 which Word and WordPad both open.</p>
-<p>QuillLite chooses the kind from the file’s name. Rich Text files open
-as rich text; everything else opens as plain.
-<strong>Ctrl+Shift+M</strong> switches the document you are in. Going
-from rich to plain throws the formatting away, so it asks first.</p>
+<p>QuillLite chooses the kind from the file’s name, and it is only ever
+a first guess:</p>
+<table>
+<thead>
+<tr>
+<th>The file is called</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notes.rtf</code></td>
+<td>Rich text</td>
+</tr>
+<tr>
+<td><code>notes.md</code>, <code>.markdown</code>, <code>.mdx</code> —
+and <code>.txt</code></td>
+<td>Markdown</td>
+</tr>
+<tr>
+<td><code>page.html</code>, <code>.htm</code>, <code>.xhtml</code></td>
+<td>HTML</td>
+</tr>
+<tr>
+<td><code>build.py</code>, <code>nginx.conf</code>,
+<code>app.log</code>, anything else</td>
+<td>Plain text</td>
+</tr>
+<tr>
+<td>nothing yet — a new, unsaved document</td>
+<td>Markdown</td>
+</tr>
+</tbody>
+</table>
+<p><code>.txt</code> and a brand-new document are Markdown because that
+is what somebody typing <code>## Notes</code> into one means. A
+<code>.py</code> or a <code>.conf</code> is plain text because in those
+a <code>#</code> is a <strong>comment</strong> and a <code>-</code> is a
+flag, and an editor that announced “Heading 1” on most lines of a build
+script would be exhausting.</p>
+<h3 id="saying-otherwise">Saying otherwise</h3>
+<p>The guess is not binding. Writing HTML in a <code>.txt</code> scratch
+file is an entirely reasonable thing to do, and there are three ways to
+say so:</p>
+<ul>
+<li><strong>Ctrl+Shift+M</strong> rings through all four kinds — plain
+text, Markdown, HTML, rich text, and round again. Each stop says its own
+name, so you press it until you hear the one you meant. This is the fast
+way.</li>
+<li><strong>Ctrl+Alt+F6</strong> (<strong>Format ▸ Document
+Language</strong>) goes straight to one, and tells you what each choice
+will do before you make it.</li>
+<li><strong>Enter on the status bar’s Language cell</strong> opens that
+same chooser, because the bar is where you notice the answer is
+wrong.</li>
+</ul>
+<p>Moving between plain, Markdown and HTML changes <strong>nothing in
+your document</strong> — it changes what the keys write from now on.
+Going to or from rich text is a real conversion, and going <em>from</em>
+it throws the formatting away, so it asks first.</p>
+<p>The choice lasts as long as the window. It describes what you are
+typing, not what the file is.</p>
 <hr />
 <h2 id="saving">Saving</h2>
 <p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
@@ -395,6 +465,187 @@ current search anywhere, and <strong>Ctrl+Shift+F3</strong> opens
 each with its line and column and the words around it. That is the list
 you want before a Replace All, because it is the only way to see what
 you are about to change rather than finding out afterwards.</p>
+<h2 id="the-insert-menu">The Insert menu</h2>
+<p>Everything that puts something into your document that is not
+typing.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F5</strong></td>
+<td>Today’s date and the time</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F2</strong></td>
+<td>Special Character — search 1,400 of them by name</td>
+</tr>
+<tr>
+<td><strong>Alt+.</strong></td>
+<td>Emoji — search or browse, with a description of each one</td>
+</tr>
+<tr>
+<td><strong>Shift+Enter</strong></td>
+<td>A line break that does not start a paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+I</strong></td>
+<td>Markdown Tag — the whole Markdown vocabulary</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+O</strong></td>
+<td>HTML Tag — forty tags, searchable by what they do</td>
+</tr>
+</tbody>
+</table>
+<p>These were spread through Edit before there were six of them. Insert
+sits <strong>before Format</strong> on the bar for the reason Word puts
+it there: you insert a thing and then you format it, so the menus are in
+the order the work happens. Every key is unchanged.</p>
+<h3 id="emoji--alt">Emoji — Alt+.</h3>
+<p>QUILL’s own picker, and the same key. Search by name, by keyword, by
+what it <em>looks like</em>, or by a typed smiley — <code>:)</code>
+finds the smiling face and <code>&lt;3</code> finds the heart. Or browse
+by category, starting with <strong>Favourites</strong> and
+<strong>Recent</strong>.</p>
+<p>Every emoji comes with a <strong>written description</strong> of what
+it actually shows, which is the whole point: a picture wall is exactly
+the shape of control that cannot be used without sight, so this is a
+list you arrow through with a description pane beside it. What you
+insert is announced by name, because a bare emoji character is read as
+anything from its own name to silence depending on your synthesiser.</p>
+<p>It works in every kind of document, rich text included. An emoji is a
+character, not markup.</p>
+<h3 id="the-two-tag-pickers">The two tag pickers</h3>
+<p><strong>Exactly one of them is ever available</strong>, and it is
+whichever your document’s language is. The other is <strong>greyed out
+rather than hidden</strong> — a greyed row tells your reader it is
+unavailable the moment you arrive on it, while a row that has vanished
+leaves you hunting the menus for something you know the app has. Press
+the key anyway and it tells you what the document is, what it would need
+to be, and that <strong>Ctrl+Alt+F6</strong> is how to change that.</p>
+<p><strong>Markdown Tag (Ctrl+Alt+I)</strong> offers bold, italic,
+inline code, a fenced code block, the six heading levels, bullet,
+numbered and task lists, blockquote, link, image, table and footnote.
+Type to narrow the list. Link and Image ask for the address
+afterwards.</p>
+<p><strong>HTML Tag (Ctrl+Alt+O)</strong> offers <strong>111 tags and 20
+whole form fields</strong>, and <strong>searches by what they do as well
+as what they are called</strong>: type “dropdown” and find both a
+finished labelled dropdown and the bare <code>select</code>, type
+“glossary” and find <code>&lt;dl&gt;</code>, type “acronym” and find
+<code>&lt;abbr&gt;</code>, type “subtitles” and find
+<code>&lt;track&gt;</code>. For a bare tag you can then give it
+attributes — <code>class=note; id=summary; aria-label=Summary</code> —
+and Enter on an empty box skips that step, because an
+<code>&lt;h2&gt;</code> needs none. A whole form field skips the box
+entirely: it arrives with the attributes that make it work.</p>
+<p>Anything selected is wrapped. Otherwise the cursor lands between the
+tags.</p>
+<h3 id="whole-form-fields-wired-up">Whole form fields, wired up</h3>
+<p>The HTML picker’s top rows are not tags — they are <strong>finished
+controls</strong>. Choose <strong>Form field: dropdown</strong> and you
+get a label, a <code>for</code> that matches the field’s
+<code>id</code>, the <code>&lt;select&gt;</code> and three
+<code>&lt;option&gt;</code>s, all at once.</p>
+<p>This is where the picker earns its place. Inserting
+<code>&lt;select&gt;</code> on its own is the easy half; the half that
+matters is the wiring, and the wiring is invisible. A missing
+<code>for</code> renders identically to a present one. A radio group
+without a shared <code>name</code> looks exactly like one with — except
+every button can be on at once. Two fields that share an <code>id</code>
+look perfect until somebody clicks the second label and the first field
+takes focus. None of that is something you can check by looking, which
+is precisely why it should not be left to memory.</p>
+<p>So every one of these arrives complete:</p>
+<table>
+<thead>
+<tr>
+<th>Choose</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>text</strong>, <strong>email</strong>,
+<strong>password</strong>, <strong>telephone</strong>, <strong>web
+address</strong>, <strong>number</strong>, <strong>date</strong>,
+<strong>search</strong>, <strong>file upload</strong></td>
+<td>a labelled input of that type, with <code>autocomplete</code> where
+the browser can help</td>
+</tr>
+<tr>
+<td><strong>long answer (textarea)</strong></td>
+<td>a labelled, five-row text area</td>
+</tr>
+<tr>
+<td><strong>dropdown (select)</strong></td>
+<td>label, select, and an empty first option so it cannot submit an
+answer nobody gave</td>
+</tr>
+<tr>
+<td><strong>dropdown with groups</strong></td>
+<td>the same, with two <code>&lt;optgroup&gt;</code>s</td>
+</tr>
+<tr>
+<td><strong>checkbox</strong></td>
+<td>box first, then its label — the convention, and the label becomes
+part of the click target</td>
+</tr>
+<tr>
+<td><strong>checkbox group</strong></td>
+<td>a <code>&lt;fieldset&gt;</code>, a <code>&lt;legend&gt;</code>, and
+boxes sharing one <code>name</code></td>
+</tr>
+<tr>
+<td><strong>radio group</strong></td>
+<td>the same, with three radios, one shared <code>name</code>, and
+exactly one default</td>
+</tr>
+<tr>
+<td><strong>autocomplete (input + datalist)</strong></td>
+<td>an input joined to its own suggestion list</td>
+</tr>
+<tr>
+<td><strong>required, with hint and error</strong></td>
+<td>a hint and an empty error, both named by
+<code>aria-describedby</code>, plus <code>aria-invalid</code> and
+<code>role="alert"</code></td>
+</tr>
+<tr>
+<td><strong>submit button</strong></td>
+<td>a <code>&lt;button type="submit"&gt;</code> with real text, not an
+<code>&lt;input value=""&gt;</code></td>
+</tr>
+<tr>
+<td><strong>whole form</strong></td>
+<td>a contact form: fieldset, legend, three labelled fields, and a
+submit</td>
+</tr>
+<tr>
+<td><strong>grouped fields (fieldset)</strong></td>
+<td>an empty fieldset with a legend, for grouping what you already
+have</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Select a word first and it becomes the label</strong> — and
+the <code>id</code> is made from it, so the two agree. Select
+“Postcode”, choose <strong>Form field: text</strong>, and you get a
+Postcode field with <code>id="postcode"</code> and
+<code>for="postcode"</code> already matching.</p>
+<p><strong>The <code>id</code> is checked against your document
+first.</strong> Insert a second email field and it will be
+<code>email-2</code>, not a duplicate of the first. That one line of
+behaviour is the difference between a form that stays accessible when it
+is copied and one that stops being so without anybody noticing.</p>
+<p>The bare tags are all still there, one row further down, for when a
+bare tag is what you meant.</p>
+<hr />
 <h3 id="typing-things-there-is-no-key-for">Typing things there is no key
 for</h3>
 <p><strong>Edit ▸ Insert ▸ Special Character…</strong>
@@ -747,8 +998,64 @@ to the start / end of the line | | <strong>Ctrl+Shift+Home</strong> /
 document |</p>
 <hr />
 <h2 id="formatting">Formatting</h2>
-<p>These are WordPad’s keys, deliberately unchanged. They work in rich
-text documents.</p>
+<p>These are WordPad’s keys, deliberately unchanged.</p>
+<p><strong>The same key, the document’s own answer.</strong> Ctrl+B used
+to say “Not available in plain text. Press Control Shift M to switch to
+rich text”, which is true and unhelpful — somebody writing Markdown does
+not want rich text, they want two asterisks, and they know it. So what
+Ctrl+B writes now depends on what kind of document you are in:</p>
+<table>
+<thead>
+<tr>
+<th>In a</th>
+<th><strong>Ctrl+B</strong> writes</th>
+<th><strong>Ctrl+Alt+2</strong> writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown document</td>
+<td><code>**bold**</code></td>
+<td><code>## Heading</code></td>
+</tr>
+<tr>
+<td>HTML document</td>
+<td><code>&lt;strong&gt;bold&lt;/strong&gt;</code></td>
+<td><code>&lt;h2&gt;Heading&lt;/h2&gt;</code></td>
+</tr>
+<tr>
+<td>Rich text document</td>
+<td>real bold</td>
+<td>a 16-point bold paragraph</td>
+</tr>
+<tr>
+<td>Plain text document</td>
+<td>nothing, and says why</td>
+<td>nothing, and says why</td>
+</tr>
+</tbody>
+</table>
+<p>Select a word first and it is wrapped. With nothing selected the
+markup goes in empty and <strong>the cursor lands in the middle of
+it</strong>, ready to type — which matters, because otherwise you would
+be typing after the closing tag with no way to see that you were.</p>
+<p>In Markdown and HTML the announcement names the <em>markup</em>
+rather than the effect — “Bold in Markdown”, not “Bold on”. Nothing on
+the screen went bold; two asterisks appeared, and you need to know which
+of the two happened.</p>
+<p>HTML gets <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code>,
+never <code>&lt;b&gt;</code> and <code>&lt;i&gt;</code>. They are not
+synonyms to the thing that reads them out: <code>&lt;strong&gt;</code>
+carries importance into the accessibility tree, and
+<code>&lt;b&gt;</code> carries only a typeface.</p>
+<p>Applying a heading <strong>rewrites the line</strong> rather than
+adding to it. Pressing Ctrl+Alt+2 on a line that is already
+<code>### Notes</code> gives you <code>## Notes</code>, not
+<code>## ### Notes</code> — and an <code>id=</code> on an HTML heading
+is carried across, because it is very often the anchor somebody else’s
+link points at.</p>
+<p>The rest of the Format menu — alignment, bullets, line spacing, font
+— is rich text only, and says so when it cannot run.</p>
 <table>
 <thead>
 <tr>
@@ -828,9 +1135,10 @@ can answer for you.</p>
 </tr>
 </tbody>
 </table>
-<p>These work in <strong>both kinds of document</strong>. In rich text
-they walk the point-size ladder above; in plain text they walk Markdown
-headings — the lines that start with <code>#</code>. They used to refuse
+<p>These work in <strong>every kind of document</strong>. In rich text
+they walk the point-size ladder above; in Markdown they walk the lines
+that start with <code>#</code>; in HTML they walk
+<code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code>. They used to refuse
 in a plain document (“Headings are only available in rich text”), which
 was wrong in the way that matters: plain-text headings are real enough
 for <strong>Alt+Shift+Right</strong> to change their level, and only
@@ -873,7 +1181,86 @@ named yet, a line starting with <code>#</code> is a heading. In a
 <code>.py</code>, <code>.sh</code>, <code>.ini</code>, <code>.yml</code>
 or <code>.conf</code> it is a comment, and QuillLite says nothing and
 lists nothing — otherwise a build script would announce “Heading 1” on
-most of its lines.</p>
+most of its lines. In an HTML document it is neither: there the headings
+are <code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code>, and QuillLite
+reads and writes those instead.</p>
+<h3 id="hearing-that-you-are-in-a-list">Hearing that you are in a
+list</h3>
+<p>Arrow into a list and QuillLite says <strong>“Bulleted list, 5
+items”</strong>. Go a level deeper and it says <strong>“Level 2, 3
+items”</strong>. Arrow out and it says <strong>“Out of
+list”</strong>.</p>
+<p>This is the one cue in the set your screen reader gives you
+<strong>everywhere except here</strong>. On a web page a list reaches
+the reader as a list with a count, and NVDA says almost exactly this. In
+an editor a list is not a list — it is characters — so the reader has
+nothing to go on, and a nested outline sounds like a run of ordinary
+lines starting with a dash. The only thing separating level two from
+level three is the number of spaces, counted by ear.</p>
+<p>It works in <strong>Markdown and in HTML</strong>, over all three
+kinds of list:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Markdown</th>
+<th>HTML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bulleted list</strong></td>
+<td><code>-</code>, <code>*</code>, <code>+</code></td>
+<td><code>&lt;ul&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Numbered list</strong></td>
+<td><code>1.</code>, <code>1)</code></td>
+<td><code>&lt;ol&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Definition list</strong></td>
+<td>a line, then <code>: the definition</code> under it</td>
+<td><code>&lt;dl&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>A definition list also says <strong>“Term”</strong> and
+<strong>“Definition”</strong> as you move between the two, because which
+of them you are standing in decides what the words mean — and a
+definition list written inside out is not something you can see you have
+done.</p>
+<p>The counting rule matters and is easy to get wrong: <strong>items are
+counted at your own level, inside your own list.</strong> A three-item
+list whose second item has four sub-items is “3 items” at level one and
+“4 items” at level two, never “7”. Two sub-lists under two different
+bullets are two lists, not one.</p>
+<p>What it never says:</p>
+<ul>
+<li><strong>Nothing as you move down a list.</strong> That is what the
+caret does nearly all the time, and your reader is already speaking each
+item.</li>
+<li><strong>Nothing about <code>- - -</code> or
+<code>***</code>.</strong> Those are horizontal rules, not one-item
+lists.</li>
+<li><strong>Nothing inside a fenced code block.</strong> A
+<code>- </code> in a code sample is a sample.</li>
+<li><strong>Nothing in a plain text document.</strong> A letter is full
+of hyphens, and a cue that fired on them would be superstition rather
+than help.</li>
+</ul>
+<p><strong>Turning it off — View ▸ Announce Lists
+(Ctrl+Alt+F5).</strong> Its own switch, next to the heading one and
+deliberately separate from it: reorganising an outline, the level is the
+work; proof-reading the same file, it is a phrase between you and every
+item. Like its sibling it says which way it went — “Lists will not be
+announced”, or “Lists announced as you enter them”.</p>
+<p><strong>And the status bar’s List cell says something the speech
+never does:</strong> which item you are on. “Bulleted list, 4 of 9,
+level 2”. Saying that aloud on every arrow press would be too much;
+never being able to find out is its own problem, and a cell answers on
+demand and costs nothing until you read it. <strong>Enter</strong> on
+the cell turns the spoken cue off and on.</p>
 <h3 id="rearranging-them--format--structure">Rearranging them — Format ▸
 Structure</h3>
 <table>
@@ -1172,12 +1559,22 @@ again</td>
 <tr>
 <td><strong>Format</strong></td>
 <td>Plain text or rich text</td>
-<td>switches between them</td>
+<td>rings on to the next kind of document</td>
 </tr>
 <tr>
 <td><strong>Heading</strong></td>
 <td>Which heading you are inside</td>
 <td>lists every heading</td>
+</tr>
+<tr>
+<td><strong>List</strong></td>
+<td>Which list you are inside, how many items, which one you are on</td>
+<td>stops or resumes announcing lists</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Markdown, HTML, or plain text with no markup</td>
+<td>change it</td>
 </tr>
 <tr>
 <td><strong>Encoding</strong></td>
@@ -1196,7 +1593,7 @@ again</td>
 </tr>
 </tbody>
 </table>
-<p>Five of these are worth pointing out.</p>
+<p>Seven of these are worth pointing out.</p>
 <p><strong>Typing Mode</strong> is the one you cannot find out any other
 way. Every Windows editor has an overwrite mode, where what you type
 replaces the letters already there instead of pushing them along, and
@@ -1221,6 +1618,19 @@ two things that decide whether your file opens properly on somebody
 else’s computer, and almost no other editor shows them at all. You will
 rarely need to change them — but when a file arrives looking like
 nonsense, this is where the answer is.</p>
+<p><strong>List</strong> answers the question the speech deliberately
+does not. Entering a list you hear “Bulleted list, 5 items”; this cell
+also tells you <strong>which item you are on</strong> — “Bulleted list,
+4 of 9, level 2”. Saying that aloud on every arrow press would be too
+much to listen to, and having no way at all to find out is its own
+problem when you are halfway through reordering nine things.</p>
+<p><strong>Language</strong> is what decides the rest. It says whether
+this document is Markdown, HTML or plain text, and that one fact decides
+what <strong>Ctrl+B</strong> writes, what the heading keys write, which
+of the two tag pickers the Insert menu offers, and whether the List part
+above has anything to say. QuillLite reads it from the file name;
+<strong>Enter</strong> here says otherwise. See <a
+href="#four-kinds-of-document">Four kinds of document</a>.</p>
 <p><strong>Status Message</strong> exists because speech is gone the
 moment it is spoken. If you missed something QuillLite said, this is
 where you go to read it again.</p>
@@ -1515,13 +1925,13 @@ change your mind.</p>
 <p>Under the box is a <strong>read-only description you can read line by
 line</strong>, and it answers two different questions. First, what the
 profile <em>is</em>, in its own words. Then what it would actually
-<em>do</em> to the app in front of you: how many of the seventeen areas
-it keeps and which, which ones it removes, and anything else it changes
-– Notepad, for instance, also makes <strong>Ctrl+N</strong> create a
-plain text document. <strong>F1</strong> on the Profile box reads the
-same thing.</p>
+<em>do</em> to the app in front of you: how many of the 18 areas it
+keeps and which, which ones it removes, and anything else it changes –
+Notepad, for instance, also makes <strong>Ctrl+N</strong> create a plain
+text document. <strong>F1</strong> on the Profile box reads the same
+thing.</p>
 <p>What is spoken when you choose a profile is the short version –
-“Notepad profile: 2 of 17 features on. New documents will be plain
+“Notepad profile: 2 of 18 features on. New documents will be plain
 text.” – because your screen reader is already reading the name and the
 description is there to be read at your own pace.</p>
 <p><strong>Custom puts everything back.</strong> Arrow onto a profile
@@ -1537,8 +1947,7 @@ it over.</p>
 top, with the same description box. “Make this Notepad” is a preference
 like any other, and you should not have to know that a dialog called
 Customize Features is where it lives. Preferences offers the whole
-answers; the seventeen individual checkboxes stay in Customize
-Features.</p>
+answers; the 18 individual checkboxes stay in Customize Features.</p>
 <p>Here is what each one is, at a glance and then in full.</p>
 <table>
 <thead>
@@ -1551,32 +1960,32 @@ Features.</p>
 <tbody>
 <tr>
 <td><strong>Recommended</strong></td>
-<td>14 of 17</td>
+<td>15 of 18</td>
 <td>plain text (unchanged)</td>
 </tr>
 <tr>
 <td><strong>Everything</strong></td>
-<td>17 of 17</td>
+<td>18 of 18</td>
 <td>plain text (unchanged)</td>
 </tr>
 <tr>
 <td><strong>WordPad</strong></td>
-<td>5 of 17</td>
+<td>5 of 18</td>
 <td><strong>rich text</strong></td>
 </tr>
 <tr>
 <td><strong>Notepad</strong></td>
-<td>2 of 17</td>
+<td>2 of 18</td>
 <td><strong>plain text</strong></td>
 </tr>
 </tbody>
 </table>
 <h4 id="recommended">Recommended</h4>
-<p><strong>What a new install is.</strong> Fourteen of the seventeen
-areas: rich text, headings, bookmarks, the line tools, the clipboard
-history, printing, abbreviations, the Selection submenu, spell check,
-Matches, Go Back and Go Forward, the Command Palette, Describe Character
-and text size.</p>
+<p><strong>What a new install is.</strong> 15 of the 18 areas: rich
+text, headings, Markdown and HTML, bookmarks, the line tools, the
+clipboard history, printing, abbreviations, the Selection submenu, spell
+check, Matches, Go Back and Go Forward, the Command Palette, Describe
+Character and text size.</p>
 <p><strong>Off:</strong> autocorrect, timestamped backups, Go To
 Anything. Those three are not missing features; they are the ones that
 would be <em>wrong</em> on by default rather than merely unused.
@@ -1586,17 +1995,17 @@ palette, the headings list and the bookmark list already cover it.</p>
 <p><strong>Choose this</strong> to get back to the shipped answer after
 experimenting.</p>
 <h4 id="everything">Everything</h4>
-<p><strong>All seventeen areas on</strong>, including those three.
-Autocorrect will straighten your quotes and capitalise your sentences,
-every save keeps a dated copy under your data folder, and Go To Anything
-joins the palette and the two lists.</p>
+<p><strong>All 18 areas on</strong>, including those three. Autocorrect
+will straighten your quotes and capitalise your sentences, every save
+keeps a dated copy under your data folder, and Go To Anything joins the
+palette and the two lists.</p>
 <p><strong>Choose this</strong> if you would rather turn things off as
 they annoy you than find them one at a time.</p>
 <h4 id="wordpad">WordPad</h4>
 <p><strong>What WordPad was.</strong> Rich text you can format, print,
 and check the spelling of: bold, italic, underline, headings, alignment,
 bullets, indenting and line spacing, plus Find and Replace, printing and
-text size. Five of the seventeen areas.</p>
+text size. Five of the 18 areas.</p>
 <p><strong>Off:</strong> the writing tools behind the formatting. No
 Edit ▸ Lines, no clipboard history or Copy Tray, no bookmarks, no
 abbreviations, no Selection submenu, no Matches list, no Back and
@@ -1612,7 +2021,7 @@ simplification.</p>
 to look like something.</p>
 <h4 id="notepad">Notepad</h4>
 <p><strong>The smallest QuillLite gets</strong>, and the one most people
-arriving here are replacing something with. Two of the seventeen areas:
+arriving here are replacing something with. Two of the 18 areas:
 <strong>printing</strong> and <strong>text size</strong>.</p>
 <p><strong>Off:</strong> the Format menu and everything under it,
 headings, bookmarks, the line tools, Change Case, the clipboard history,
@@ -1649,7 +2058,7 @@ the profile row filters them as you type. It matches what an area
 quotes” finds Autocorrect and typing “dictionary” finds Spell check. The
 line under the box says how many are left, and <strong>Down</strong>
 from the box moves straight into the list.</p>
-<h3 id="the-seventeen-areas">The seventeen areas</h3>
+<h3 id="the-18-areas">The 18 areas</h3>
 <table>
 <thead>
 <tr>
@@ -1667,6 +2076,11 @@ from the box moves straight into the list.</p>
 <tr>
 <td><strong>Heading navigation</strong></td>
 <td>Next and previous heading, the headings list</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Markdown and HTML</strong></td>
+<td>The two tag pickers, Document Language, and markup Bold</td>
 <td>on</td>
 </tr>
 <tr>
@@ -2011,29 +2425,6 @@ list inside the app.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="edit--insert">Edit ▸ Insert</h3>
-<table>
-<thead>
-<tr>
-<th>Key</th>
-<th>Command</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>F5</strong></td>
-<td>Date and Time</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Shift+F2</strong></td>
-<td>Special Character…</td>
-</tr>
-<tr>
-<td><strong>Shift+Enter</strong></td>
-<td>Line Break</td>
-</tr>
-</tbody>
-</table>
 <h3 id="edit--matches">Edit ▸ Matches</h3>
 <table>
 <thead>
@@ -2280,6 +2671,14 @@ list inside the app.</p>
 <td>Word Wrap</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+F3</strong></td>
+<td>Announce Headings</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F5</strong></td>
+<td>Announce Lists</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+W</strong></td>
 <td>Overwrite Mode</td>
 </tr>
@@ -2310,6 +2709,41 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+P</strong></td>
 <td>Command Palette…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="insert">Insert</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F5</strong></td>
+<td>Date and Time</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F2</strong></td>
+<td>Special Character…</td>
+</tr>
+<tr>
+<td><strong>Alt+.</strong></td>
+<td>Emoji…</td>
+</tr>
+<tr>
+<td><strong>Shift+Enter</strong></td>
+<td>Line Break</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+I</strong></td>
+<td>Markdown Tag…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+O</strong></td>
+<td>HTML Tag…</td>
 </tr>
 </tbody>
 </table>
@@ -2377,6 +2811,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+M</strong></td>
 <td>Switch Document Mode</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F6</strong></td>
+<td>Document Language…</td>
 </tr>
 </tbody>
 </table>
@@ -2585,14 +3023,6 @@ list inside the app.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Ctrl+Alt+Shift+Q</strong></td>
-<td>Back Up Settings…</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Alt+Shift+D</strong></td>
-<td>Restore Settings…</td>
-</tr>
-<tr>
 <td><strong>Ctrl+Alt+E</strong></td>
 <td>File Encoding and Line Endings…</td>
 </tr>
@@ -2607,6 +3037,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+,</strong></td>
 <td>Preferences…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Q</strong></td>
+<td>Back Up Settings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+D</strong></td>
+<td>Restore Settings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F</strong></td>

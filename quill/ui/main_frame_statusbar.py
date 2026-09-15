@@ -790,7 +790,13 @@ class StatusBarMixin:
         if key_code == wx.WXK_END:
             self._focus_statusbar_cell(len(self._statusbar_cells) - 1)
             return
-        if key_code == wx.WXK_ESCAPE:
+        if key_code in (wx.WXK_ESCAPE, wx.WXK_F6):
+            # F6 as well as Escape, and for the reason F6 got you here: a key
+            # that takes you somewhere should take you back. Every other
+            # region-cycling key in Windows works that way, and a listener who
+            # pressed F6 to check a number and pressed it again to get on with
+            # their sentence should not discover that the second press did
+            # nothing. Shift+F6 too -- it is the same journey backwards.
             self.editor.SetFocus()
             self._set_active_region("Editor")
             announce("Returned to editor")

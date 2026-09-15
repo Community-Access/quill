@@ -767,6 +767,7 @@ class MenuBuilderMixin:
         self._id_split_preview = wx.NewIdRef()
         self._id_focus_preview = wx.NewIdRef()
         self._id_announce_headings = wx.NewIdRef()
+        self._id_announce_lists = wx.NewIdRef()
         self._id_toggle_auto_side_preview = wx.NewIdRef()
         self._id_start_with_no_document_open = wx.NewIdRef()
         self._id_dirty_title_text = wx.NewIdRef()
@@ -806,6 +807,15 @@ class MenuBuilderMixin:
             self._menu_label(_("Announce Hea&dings"), "view.toggle_heading_announcements"),
         )
         self._announce_headings_item.Check(bool(getattr(self.settings, "announce_headings", True)))
+        # Its own row and its own switch, next to its sibling. A list cue and a
+        # heading cue answer different questions -- reorganising an outline the
+        # list level is the work, proof-reading it the phrase is in the way --
+        # and one switch for both would mean giving up the half you wanted.
+        self._announce_lists_item = view_menu.AppendCheckItem(
+            self._id_announce_lists,
+            self._menu_label(_("Announce &Lists"), "view.toggle_list_announcements"),
+        )
+        self._announce_lists_item.Check(bool(getattr(self.settings, "announce_lists", True)))
         view_menu.Append(
             self._id_browser_preview,
             self._menu_label(_("&Browser Preview..."), "view.browser_preview"),

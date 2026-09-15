@@ -30,7 +30,7 @@ rather than how many there are -- and what a listener actually complained about
 was not the granularity but having to *walk* the list. So the list is filtered
 by typing (:class:`~quill.ui.app_features_dialog.AppFeaturesDialog`), and
 :data:`PROFILES` is there for somebody who wants to say "the small one" rather
-than tick seventeen boxes. Where the coarseness genuinely *hid* something --
+than tick eighteen boxes. Where the coarseness genuinely *hid* something --
 Matches, Back/Forward, the Command Palette, Describe Character and text size all
 belonged to no area at all -- the answer was more areas, not finer ones.
 
@@ -75,6 +75,16 @@ AREAS: tuple[AppArea, ...] = (
         "Heading navigation",
         "Move between headings, and list every heading in the document. Rich "
         "text only; it goes with the Format menu.",
+    ),
+    AppArea(
+        "markup",
+        "Markdown and HTML",
+        "Insert > Markdown Tag and Insert > HTML Tag, and Format > Document "
+        "Language. With this on, Bold, Italic, Underline and the heading keys "
+        "write markup in a .md or .html file instead of refusing -- two "
+        "asterisks, or a <strong>. Turn it off to keep those keys meaning rich "
+        "text and nothing else. The caret still says what list you are in "
+        "either way: that is a separate switch, on Ctrl+Alt+F5.",
     ),
     AppArea(
         "bookmarks",
@@ -195,7 +205,7 @@ AREAS: tuple[AppArea, ...] = (
 DEFAULT_OFF: frozenset[str] = frozenset({"autoformat", "backups", "go_to_anything"})
 
 #: Named starting points, so somebody can ask for "the small one" without
-#: ticking seventeen boxes. Applying one sets every box and then the boxes are
+#: ticking eighteen boxes. Applying one sets every box and then the boxes are
 #: the truth again -- there is no mode to escape from, and the next change is an
 #: ordinary override. Written as what each profile takes *away*, so an area
 #: added later is on in all four until somebody says otherwise.
@@ -217,7 +227,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: fourteen of the seventeen areas on. The three "
+        "What a new install is: 15 of the 18 areas on. The three "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
         "backups quietly filling a folder, and a second 'go to' front door "
@@ -229,7 +239,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "everything",
         "Everything",
-        "All seventeen areas on, including the three a new install leaves off. "
+        "All 18 areas on, including the three a new install leaves off. "
         "Autocorrect will straighten your quotes and capitalise your sentences, "
         "every save keeps a dated copy, and Go To Anything joins the command "
         "palette and the two lists as a fourth way to jump. Choose this if you "
@@ -245,7 +255,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "spacing -- and none of the writing tools behind them. No line "
         "operations, no clipboard history, no bookmarks, no abbreviations, no "
         "command palette. Ctrl+N makes a rich text document, which is the half "
-        "of this name a list of menus cannot say. Five of the seventeen areas, "
+        "of this name a list of menus cannot say. Five of the 18 areas, "
         "plus a spell checker WordPad never had.",
         frozenset({
             "abbreviations",
@@ -257,6 +267,7 @@ PROFILES: tuple[AppProfile, ...] = (
             "command_palette",
             "go_to_anything",
             "history",
+            "markup",
             "matches",
             "selection",
             "tools",
@@ -268,7 +279,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QuillLite gets, and the one most people are replacing "
-        "something with. Two of the seventeen areas: printing and text size. No "
+        "something with. Two of the 18 areas: printing and text size. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
         "history, no spell check -- nothing Notepad does not have, which is the "
         "point of choosing it. Ctrl+N makes a plain text document. What stays "
@@ -287,6 +298,12 @@ PROFILES: tuple[AppProfile, ...] = (
             "go_to_anything",
             "headings",
             "history",
+            # Markdown bold in a .md would be a genuine improvement on Notepad,
+            # which is exactly why it is off here: this profile's promise is
+            # "nothing Notepad does not have", and a profile that quietly keeps
+            # the good extra is a profile whose name has stopped being true.
+            # Recommended has it on, and is one click away.
+            "markup",
             "matches",
             "rich_text",
             "selection",

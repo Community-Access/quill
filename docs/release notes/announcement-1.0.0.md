@@ -30,6 +30,29 @@ the load, because a sound never talks over a screen reader: starting a selection
 with a rising two-note gate and completing it plays the mirror image, and the top and the
 end of a document answer with a ceiling tick and a floor thud.
 
+It also says the things your screen reader cannot. A Windows edit control has no
+paragraph styles and no list semantics, so arrive at a heading and your reader reads a
+line; arrive in a nested list and it reads some dashes. On a web page it tells you both,
+because the browser hands it both. QUILL therefore says it itself: **"Heading 2,
+Installing"** on arrival, **"Bulleted list, 5 items"** entering a list, **"Level 2, 3
+items"** a rung down, **"Out of list"** on the way out, and **"Table, 4 rows, 3 columns"**
+walking into a grid — in Markdown and HTML alike, over bulleted, numbered and definition
+lists. The level comes first because a cue queued behind your reader is thrown away the
+moment the reader restarts, which is what happens on every Ctrl+Home. Each cue has a key
+that switches it off where you stand, because whether structure is what you are listening
+for depends on whether you are writing the document or reading it.
+
+It also helps you write markup that other people can hear. The HTML picker offers 111
+elements and, above them, **twenty whole form controls** — a labelled dropdown, a radio
+group in a fieldset with one shared name, a required field wired to its hint and its error
+with `aria-describedby`. Inserting `<select>` is the easy half of a dropdown; the half
+that decides whether anyone can use it is a `for` that matches an `id`, and that half is
+invisible on screen. QUILL generates the pair together, checks the `id` against the rest
+of your document so a second field cannot silently duplicate the first, and turns whatever
+you had selected into the label. Both pickers search by what a thing *does*: "glossary"
+finds a definition list, "subtitles" finds a caption track, "error message" finds the
+whole validated-field pattern.
+
 QUILL also says as much or as little as you want: four verbosity profiles, plus Quiet Mode
 and Meeting Mode for when you need it to stop talking right now. **Spoken Echo** replays
 the last twenty announcements as an arrowable list, and an **Announcement Self-Test**

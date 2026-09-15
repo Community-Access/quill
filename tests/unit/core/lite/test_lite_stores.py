@@ -333,12 +333,14 @@ def test_every_area_the_command_table_names_actually_exists() -> None:
 
 
 def test_switching_everything_off_still_leaves_a_usable_editor() -> None:
-    """The floor, with every switch off. Three of the eight menus survive thin.
+    """The floor, with every switch off. Four of the nine menus survive thin.
 
     Format is left holding Editor Font alone, which is Notepad's Format menu and
-    the point: the face the editor draws in is not a rich-text feature. Navigate
-    keeps Back, Forward and the F6 route to the status bar, none of which belong
-    to the headings or bookmarks areas. Tools keeps indenting -- an editor that
+    the point: the face the editor draws in is not a rich-text feature. Insert
+    keeps the date, a special character, an emoji and a line break -- four ways
+    of putting a character in, none of which is a markup feature. Navigate keeps
+    Back, Forward and the F6 route to the status bar, none of which belong to
+    the headings or bookmarks areas. Tools keeps indenting -- an editor that
     cannot indent is broken rather than small -- and the two rows that switch
     everything else back on, which must never be switchable themselves.
     """
@@ -350,6 +352,7 @@ def test_switching_everything_off_still_leaves_a_usable_editor() -> None:
         "&File",
         "&Edit",
         "&View",
+        "&Insert",
         "F&ormat",
         "&Navigate",
         "&Tools",

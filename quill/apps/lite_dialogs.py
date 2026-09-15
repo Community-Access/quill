@@ -45,9 +45,12 @@ from quill.ui.dialog_contract import (
 
 __all__ = [
     "ask_line_number",
+    "ask_text",
     "choose_bookmark",
+    "choose_document_language",
     "choose_from_rows",
     "choose_heading",
+    "choose_searchable",
     "edit_file_format",
     "show_text_window",
 ]
@@ -381,5 +384,180 @@ def show_text_window(parent: wx.Window, title: str, body: str) -> None:
     field.SetInsertionPoint(0)
     try:
         show_modal_dialog(dialog, title)
+    finally:
+        dialog.Destroy()
+
+
+def choose_searchable(
+    parent: wx.Window,
+    *,
+    title: str,
+    label: str,
+    help_text: str,
+    choices: list[str],
+    search: Callable[[str], list[str]],
+    examples: str = "",
+) -> str | None:
+    """A filtered list: type to narrow it, arrow to choose. Returns the choice.
+
+    The same shape as QUILL's ``_choose_searchable_option`` and for the same
+    reason: forty HTML tags is a list nobody arrows through, and the person
+    reaching for one already knows a word for what they want -- "heading",
+    "dropdown", "checkbox" -- even when they do not know it is spelled ``select``.
+    The ranking (:func:`quill.core.tagging.search_html_tag_choices`) is what
+    turns that word into the right row.
+
+    Two details make it usable by ear rather than only by eye. **Focus starts in
+    the search box**, so the first keystroke filters rather than jumping the list
+    to a letter; and **Enter in the search box moves to the results** rather than
+    accepting whatever happens to be selected, so a filter and a choice are two
+    deliberate acts instead of one hopeful one. Down-arrow does the same, which
+    is what fingers try first.
+
+    The match count is spoken through the list's own name rather than announced,
+    because the list is what has focus and a reader reads a control's name when
+    it arrives: "3 matches" ends up in the same sentence instead of a second one.
+    """
+    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+    root = wx.BoxSizer(wx.VERTICAL)
+    prompt = f"&Search: {examples}" if examples else "&Search:"
+    root.Add(wx.StaticText(dialog, label=prompt), 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    entry = wx.TextCtrl(dialog, style=wx.TE_PROCESS_ENTER)
+    set_accessible_name(entry, _plain_label(prompt))
+    entry.SetHelpText(
+        "Type part of a name to narrow the list below. Leave it empty to see "
+        "everything. Press Enter or Down Arrow to move to the list."
+    )
+    root.Add(entry, 0, wx.EXPAND | wx.ALL, _PAD)
+    root.Add(wx.StaticText(dialog, label=label), 0, wx.LEFT | wx.RIGHT, _PAD)
+    listbox = wx.ListBox(dialog, choices=list(choices))
+    listbox.SetHelpText(help_text)
+    root.Add(listbox, 1, wx.EXPAND | wx.ALL, _PAD)
+    root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    dialog.SetSizerAndFit(root)
+    dialog.SetSize((520, 460))
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+    apply_listbox_activation(listbox, lambda _event: dialog.EndModal(wx.ID_OK))
+
+    filtered = list(choices)
+
+    def _refresh(_event: object = None) -> None:
+        nonlocal filtered
+        query = entry.GetValue().strip()
+        filtered = list(choices) if not query else list(search(query))
+        listbox.Set(filtered)
+        if filtered:
+            listbox.SetSelection(0)
+        base = _plain_label(label)
+        set_accessible_name(
+            listbox,
+            f"{base}, {len(filtered)} matches" if query else base,
+        )
+
+    def _to_list(event: wx.KeyEvent) -> None:
+        if event.GetKeyCode() in (wx.WXK_DOWN, wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and filtered:
+            listbox.SetFocus()
+            return
+        event.Skip()
+
+    entry.Bind(wx.EVT_TEXT, _refresh)
+    entry.Bind(wx.EVT_TEXT_ENTER, lambda _e: listbox.SetFocus() if filtered else None)
+    entry.Bind(wx.EVT_KEY_DOWN, _to_list)
+    _refresh()
+    entry.SetFocus()
+    try:
+        if show_modal_dialog(dialog, title) != wx.ID_OK:
+            return None
+        index = listbox.GetSelection()
+        if index == wx.NOT_FOUND or not filtered:
+            return None
+        return str(filtered[int(index)])
+    finally:
+        dialog.Destroy()
+
+
+def ask_text(
+    parent: wx.Window,
+    *,
+    title: str,
+    label: str,
+    help_text: str,
+    value: str = "",
+) -> str | None:
+    """One labelled box and an OK. Returns the text, or ``None`` on Escape.
+
+    ``wx.TextEntryDialog`` would do this in one line and is not used, for the
+    reason the module docstring gives: its prompt is not a ``wx.StaticText``
+    immediately before the field, so on wxMSW the field's accessible name is
+    whatever the reader can scrape -- which in practice is nothing. A named
+    field is the difference between "edit" and "Optional attributes, edit".
+    """
+    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE)
+    root = wx.BoxSizer(wx.VERTICAL)
+    static = wx.StaticText(dialog, label=label)
+    entry = wx.TextCtrl(dialog, value=value, style=wx.TE_PROCESS_ENTER)
+    set_accessible_name(entry, _plain_label(label))
+    entry.SetHelpText(help_text)
+    _stack(root, static, entry)
+    root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    dialog.SetSizerAndFit(root)
+    dialog.SetSize((480, dialog.GetSize().GetHeight()))
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+    entry.Bind(wx.EVT_TEXT_ENTER, lambda _e: dialog.EndModal(wx.ID_OK))
+    entry.SetFocus()
+    entry.SetInsertionPointEnd()
+    try:
+        if show_modal_dialog(dialog, title) != wx.ID_OK:
+            return None
+        return str(entry.GetValue())
+    finally:
+        dialog.Destroy()
+
+
+def choose_document_language(parent: wx.Window, *, current: str, default_label: str) -> str | None:
+    """Pick the markup this document is written in. Returns the key, or ``None``.
+
+    Three rows and a sentence, because the choice is small and its *consequences*
+    are not: it decides what Ctrl+B writes, what the heading keys write, which
+    tag picker is offered, and whether the caret says "Bulleted list, 5 items".
+    Somebody who cannot see the document has no other way to find out which of
+    those they are about to get, so the dialog says it rather than leaving it to
+    be discovered a keystroke at a time.
+    """
+    from quill.core.lite.filetypes import LANGUAGE_CHOICES, language_label
+
+    rows = [
+        (
+            key,
+            f"{language_label(key)}{'  (from the file name)' if key == default_label else ''}",
+        )
+        for key in LANGUAGE_CHOICES
+    ]
+    dialog = wx.Dialog(parent, title="Document language", style=wx.DEFAULT_DIALOG_STYLE)
+    root = wx.BoxSizer(wx.VERTICAL)
+    static = wx.StaticText(dialog, label="This document is written in:")
+    listbox = wx.ListBox(dialog, choices=[text for _key, text in rows])
+    set_accessible_name(listbox, "This document is written in")
+    listbox.SetHelpText(
+        "Markdown makes Bold write two asterisks and the heading keys write "
+        "hashes. HTML makes them write <strong> and <h2>, and offers the HTML "
+        "tag picker. Plain text writes no markup at all and is right for a "
+        "letter, a log or a script. The choice lasts as long as this window is "
+        "open; the file itself is not changed."
+    )
+    root.Add(static, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    root.Add(listbox, 1, wx.EXPAND | wx.ALL, _PAD)
+    root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    dialog.SetSizerAndFit(root)
+    dialog.SetSize((460, 300))
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+    apply_listbox_activation(listbox, lambda _event: dialog.EndModal(wx.ID_OK))
+    listbox.SetSelection(_index_of(tuple(rows), current))
+    listbox.SetFocus()
+    try:
+        if show_modal_dialog(dialog, "Document language") != wx.ID_OK:
+            return None
+        index = listbox.GetSelection()
+        return None if index == wx.NOT_FOUND else str(rows[int(index)][0])
     finally:
         dialog.Destroy()

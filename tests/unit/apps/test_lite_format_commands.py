@@ -6,17 +6,42 @@ with the right argument*, and the sentence that followed. Both matter. A command
 that toggled bold and announced "Italic on" would pass any check that only
 watched the editor, and a listener has nothing but the sentence.
 
-The other half of this file is the **refusals**. Nine of these commands do
-nothing in a plain text document, and doing nothing quietly is the failure mode
-that reads as a broken key -- so every refusal is asserted to be a sentence
+The other half of this file is the **refusals**. Several of these commands do
+nothing outside a rich text document, and doing nothing quietly is the failure
+mode that reads as a broken key -- so every refusal is asserted to be a sentence
 naming the reason and, where there is one, the way out.
+
+Since 2026-09-15 a *plain* document is not automatically a document with no
+markup: an untitled buffer and a ``.md`` are Markdown, where Ctrl+B has a real
+answer (``**bold**``) rather than a refusal. So the refusal tests here say
+``plain()`` -- a document whose language is genuinely none, which is what a
+``.py`` or a ``.conf`` is -- and the *markup* answers are tested next door in
+``test_lite_markup.py``.
 """
 
 from __future__ import annotations
 
 import pytest
 
-PLAIN_REFUSAL = "Not available in plain text. Press Control Shift M to switch to rich text."
+#: The refusal a document with no markup at all gets, which now offers both ways
+#: out rather than one: rich text, or giving the document a markup language.
+PLAIN_REFUSAL = (
+    "This document has no formatting. Press Control Shift M for rich text, "
+    "or Control Alt F6 to write Markdown or HTML in it."
+)
+
+
+def plain(win):
+    """*win* with its markup language pinned to none, and handed back.
+
+    An untitled document is Markdown, deliberately -- somebody typing ``## Notes``
+    into a fresh window means a heading. A test about what happens when there is
+    *no* markup has to say so rather than rely on a default that no longer means
+    that.
+    """
+    win.set_document_language("plain", announce=False)
+    win.announcements.clear()
+    return win
 
 
 # --------------------------------------------------------------------------- #
@@ -61,7 +86,7 @@ def test_a_font_attribute_marks_the_document_modified(lite_window, invoke, attr,
 
 @pytest.mark.parametrize(("invoke", "attr", "label"), _ATTRS)
 def test_a_font_attribute_is_refused_in_plain_text_out_loud(lite_window, invoke, attr, label):
-    win = lite_window("hello", mode="plain")
+    win = plain(lite_window("hello", mode="plain"))
     invoke(win)
     assert win.announcements[-1] == PLAIN_REFUSAL
     assert win.editor.calls == []
@@ -99,7 +124,7 @@ def test_each_alignment_reaches_the_editor_and_is_announced(lite_window, invoke,
 
 @pytest.mark.parametrize(("invoke", "alignment", "said"), _ALIGNMENTS)
 def test_alignment_is_refused_in_plain_text(lite_window, invoke, alignment, said):
-    win = lite_window("hello", mode="plain")
+    win = plain(lite_window("hello", mode="plain"))
     invoke(win)
     assert win.announcements[-1] == PLAIN_REFUSAL
     assert win.editor.calls == []
@@ -163,7 +188,7 @@ def test_the_three_spacings_are_three_different_rules(lite_window):
 
 @pytest.mark.parametrize(("invoke", "constant", "said"), _SPACINGS)
 def test_line_spacing_is_refused_in_plain_text(lite_window, invoke, constant, said):
-    win = lite_window("hello", mode="plain")
+    win = plain(lite_window("hello", mode="plain"))
     invoke(win)
     assert win.announcements[-1] == PLAIN_REFUSAL
 
@@ -208,7 +233,7 @@ def test_heading_zero_is_body_text_and_says_so(lite_window):
     [lambda w: w.cmd_heading_0(), *(entry[0] for entry in _HEADINGS)],
 )
 def test_headings_are_refused_in_plain_text(lite_window, invoke):
-    win = lite_window("hello", mode="plain")
+    win = plain(lite_window("hello", mode="plain"))
     invoke(win)
     assert win.announcements[-1] == PLAIN_REFUSAL
 
@@ -236,7 +261,7 @@ def test_toggle_bullets_flips_and_announces_both_ways(lite_window):
 
 
 def test_toggle_bullets_is_refused_in_plain_text(lite_window):
-    win = lite_window("hello", mode="plain")
+    win = plain(lite_window("hello", mode="plain"))
     win.cmd_toggle_bullets()
     assert win.announcements[-1] == PLAIN_REFUSAL
     assert win.editor.calls == []

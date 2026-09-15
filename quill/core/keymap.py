@@ -483,6 +483,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # policy is about AltGr on character keys and about the readers' own
     # Ctrl+Alt+letter/arrow commands, and a function key is neither.
     "view.toggle_heading_announcements": "Ctrl+Alt+F3",  # §edsharp-ok — family F-key
+    # Announce Lists, on the same range and exempt for the same reason. F5 and
+    # not the F4 that would have sat next to its sibling: a finger that misses
+    # the Control key on a chord pressed this often finds Alt+F4, and what that
+    # costs is the document. Shared with QuillLite, key for key.
+    "view.toggle_list_announcements": "Ctrl+Alt+F5",  # §edsharp-ok — family F-key
     "table.row_start": "Alt+Home",
     "table.row_end": "Alt+End",
     "power.paste_html_as_markdown": "Ctrl+Shift+Grave, M",

@@ -7,6 +7,15 @@ list read three times -- and the uniqueness rules can be asserted against the
 table (``tests/unit/core/lite/test_lite_commands.py``) rather than against a
 running window.
 
+One family of rows is *dimmed* as the document changes rather than rebuilt:
+**Insert > Markdown Tag and Insert > HTML Tag**, of which exactly one can ever
+apply. Dimmed rather than removed, and the difference matters by ear: a greyed
+row announces itself as unavailable the moment a reader arrives on it, which
+answers the question; a row that has vanished leaves somebody hunting the menus
+for a feature they know the app has. The state is refreshed on every menu open
+(``_on_menu_open``), so it can never be stale -- the language can change between
+two presses of Alt.
+
 Two menus are rebuilt as the app changes rather than built once:
 
 * **Open Recent**, which skips entries whose file has gone. Skipped rather than
@@ -32,8 +41,10 @@ from typing import Any
 import wx
 
 from quill.apps.lite_shell import MAX_NUMBERED
+from quill.apps.lite_window_markup import MARKUP_COMMANDS
 from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
 from quill.core.lite.keymap import resolved_commands
+from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentMenuMixin"]
 
@@ -80,6 +91,7 @@ class DocumentMenuMixin:
         menu_bar = wx.MenuBar()
         self._recent_menu = wx.Menu()
         self._check_items = {}
+        self._menu_items = {}
         self._window_menu_items = []
         rows: dict[str, list[CommandRow]] = {}
         top_level: list[str] = []
@@ -104,6 +116,7 @@ class DocumentMenuMixin:
         self.refresh_recent_menu()
         self.refresh_window_menu()
         self._sync_check_items()
+        self._sync_enabled_items()
 
     def _fill_menu(self, menu: wx.Menu, path: str, rows: dict[str, list[CommandRow]]) -> wx.Menu:
         """Put *path*'s rows into *menu*, building its submenus as they arrive."""
@@ -132,6 +145,7 @@ class DocumentMenuMixin:
                 kind=wx.ITEM_CHECK if kind == "check" else wx.ITEM_NORMAL,
             )
             self.Bind(wx.EVT_MENU, self._dispatch(handler), item)
+            self._menu_items[handler] = item
             if kind == "check":
                 self._check_items[handler] = item
             if handler == "cmd_open":
@@ -190,11 +204,40 @@ class DocumentMenuMixin:
             # two test frames the day it was added, and a test frame is only the
             # cheap version of that failure.
             "cmd_toggle_quiet_mode": _quiet_mark(self),
+            # Both caret cues. Per app rather than per document, like the rest of
+            # View: what you want said as you move is a habit, not a property of
+            # the file in front of you.
+            "cmd_toggle_heading_announcements": bool(
+                getattr(self.app.settings, "announce_headings", True)
+            ),
+            "cmd_toggle_list_announcements": bool(
+                getattr(self.app.settings, "announce_lists", True)
+            ),
         }
         for handler, checked in marks.items():
             item = self._check_items.get(handler)
             if item is not None:
                 item.Check(bool(checked))
+
+    def _sync_enabled_items(self) -> None:
+        """Grey out the rows this document's markup language cannot support.
+
+        Looked up rather than indexed, for the reason
+        :meth:`_sync_check_items` is: a row whose area is switched off is not on
+        the bar at all, and a ``KeyError`` here would take the whole menu build
+        down with it -- an app with no menus, over a row that was only ever
+        going to be dimmed.
+        """
+        language = getattr(self, "document_language", None)
+        current = language() if callable(language) else "plain"
+        rich = self.editor.mode == RICH if hasattr(self, "editor") else False
+        for handler, languages in MARKUP_COMMANDS.items():
+            item = self._menu_items.get(handler)
+            if item is not None:
+                # Rich text disables both: its headings are a point size and its
+                # bold is real bold, so a markup tag inserted into one would put
+                # literal angle brackets next to text that is already formatted.
+                item.Enable(not rich and current in languages)
 
     def refresh_recent_menu(self) -> None:
         """Rebuild Open Recent, skipping files that are no longer there.
@@ -239,4 +282,5 @@ class DocumentMenuMixin:
 
     def _on_menu_open(self, event: wx.MenuEvent) -> None:
         self._sync_check_items()
+        self._sync_enabled_items()
         event.Skip()

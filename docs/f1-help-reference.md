@@ -1079,7 +1079,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QuillLite
 
-Control coverage: 35 audited sites (35 helped).
+Control coverage: 39 audited sites (39 helped).
 
 ### Every window, and what it is for
 
@@ -1097,6 +1097,8 @@ Control coverage: 35 audited sites (35 helped).
 
 **Customize QuillLite Features.** Turn whole parts of QuillLite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Type in the search box to narrow the list, or choose a profile -- Notepad, WordPad, Recommended, Everything -- to set them all at once. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
 
+**Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QuillLite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
+
 **File format.** How this document will be written back to disk: which character encoding, and which line endings. QuillLite normally writes back exactly what it read, so these only change when you change them here -- and the change happens at the next save, not now.
 
 **Find.** Find text in this document. Enter finds the next match and Shift Enter the previous one; the search wraps around the end and says so when it does. The window stays open while you work, so F3 and Shift F3 keep moving through the matches after you have gone back to the text.
@@ -1106,6 +1108,14 @@ Control coverage: 35 audited sites (35 helped).
 **Go to line.** Jump straight to a line by number. The prompt says how many lines the document has, and a number past the end takes you to the last line rather than refusing.
 
 **Headings.** Every heading in this document, in the order they appear. Choose one and the cursor lands at the start of it. Headings exist in rich text only: they are the bold-plus-point-size ladder QUILL uses, so this list is also what Word will show in its navigation pane.
+
+**Insert HTML Tag.** Forty HTML tags, searchable by what they do as well as by what they are called -- dropdown finds select, checkbox finds input, collapsible finds details. Choose the tag, then give it attributes if it needs any, or press Enter on the empty box to skip that. Anything selected in your document is wrapped by the tag.
+
+**Insert Image.** Where the image lives. Leave the address as it is to put a placeholder in and fill it in later -- the description is whatever you had selected, and it is what somebody using a screen reader will hear instead of the picture, so it is worth writing.
+
+**Insert Link.** Where the link points. Leave the address as it is to put a placeholder in and fill it in later -- the link text is whatever you had selected.
+
+**Insert Markdown Tag.** Every piece of Markdown QuillLite can write, in one searchable list: bold, italic, code, the six heading levels, bullet, numbered and task lists, blockquote, link, image, table and footnote. Type to narrow it. Anything selected in your document is wrapped; with nothing selected the markup goes in empty and the cursor lands in the middle of it.
 
 **Insert Special Character.** Put in a character the keyboard has no key for. Search by name -- dash, quote, euro, acute, arrow -- or by Unicode code point, or clear the search box and browse one of the fifteen groups: whitespace, dashes, quotes, invisibles, typography, marks, currency, maths, fractions, superscripts, arrows, accented letters, Greek and punctuation from other languages. Arrow through the characters to hear each one described and press Enter to insert the one you are on. QuillLite reads back what it put in, because most of this list is invisible on the page. QUILL has the same picker on Shift+F2.
 
@@ -1140,6 +1150,8 @@ Control coverage: 35 audited sites (35 helped).
 - `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in.
 - `newline_choice`: CRLF is what Windows programs write. LF is what Unix, macOS and most build tools expect. QuillLite writes back whichever the file arrived with unless you change it here.
 - `close_btn`: Close this window and go back to your document.
+- `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Press Enter or Down Arrow to move to the list.
+- `listbox`: Markdown makes Bold write two asterisks and the heading keys write hashes. HTML makes them write <strong> and <h2>, and offers the HTML tag picker. Plain text writes no markup at all and is right for a letter, a log or a script. The choice lasts as long as this window is open; the file itself is not changed.
 #### (module level) (`quill/apps/lite_find_dialogs.py`)
 
 - `choice`: How the text you typed is read: as itself, as backslash escapes, or as a regular expression.
@@ -1178,6 +1190,7 @@ Control coverage: 35 audited sites (35 helped).
 - `spell_typing`: Report a misspelling in the status bar shortly after you finish a word. Never in a source or configuration file, whatever this says: every identifier in one would be a false alarm. F7 reviews the whole document either way.
 - `action_choice`: How a copy, paste, undo or started selection reports back. Play a sound is what the app has always done. Speak the action says the word instead, which is what you want before you have learned the tones. A command that has no tone in the sound pack speaks either way, and a command that could not do what you asked always says so in words.
 - `miss_choice`: Asked separately from the setting above because F3 is pressed in runs: hearing Not found spoken on every press is the fastest way to end up turning speech off. The status bar carries the words whichever you pick, so nothing is lost by choosing the tone.
+- `heading_choice`: Where the level goes relative to the heading itself. Before the text is one sentence QuillLite says on its own -- Heading 2, Installing -- and it is the one that survives a jump: pressing Control Home or landing on a search hit makes a screen reader cancel whatever it was about to say, and a level waiting its turn behind that is never heard. After the text lets your reader read the line and adds the level behind it, which is quieter on ordinary line-by-line reading.
 - `wrap_find`: On: Find Next reaching the end of the document starts again at the top. Off: it stops and tells you which end you are at, so you know to go to the other one and press again rather than that the word is absent.
 - `wrap`: When off, long lines run past the right edge and scroll instead.
 - `autosave`: How often a modified document is copied to the recovery folder. The copy is beside your file, never over it, and is removed when you save.

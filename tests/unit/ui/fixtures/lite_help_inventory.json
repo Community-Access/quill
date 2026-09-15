@@ -1,7 +1,11 @@
 {
   "quill/apps/lite_dialogs.py::_labelled_text::wx.TextCtrl": "helped",
+  "quill/apps/lite_dialogs.py::ask_text::wx.TextCtrl": "helped",
+  "quill/apps/lite_dialogs.py::choose_document_language::wx.ListBox": "helped",
   "quill/apps/lite_dialogs.py::choose_from_rows::wx.Button": "helped",
   "quill/apps/lite_dialogs.py::choose_from_rows::wx.ListBox": "helped",
+  "quill/apps/lite_dialogs.py::choose_searchable::wx.ListBox": "helped",
+  "quill/apps/lite_dialogs.py::choose_searchable::wx.TextCtrl": "helped",
   "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice": "helped",
   "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice#2": "helped",
   "quill/apps/lite_dialogs.py::show_text_window::wx.Button": "helped",

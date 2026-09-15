@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill User Guide</title>
   <style>
@@ -1191,6 +1191,16 @@ Manager…</strong>, and <strong>Structured List Studio…</strong>
 Footnote</strong>, <strong>Insert Table…</strong>, <strong>Insert Block
 Quote</strong>, <strong>Insert Horizontal Rule</strong>, <strong>Insert
 HTML Tag…</strong>, and <strong>Insert Markdown Tag…</strong>.</p></li>
+<li><p><strong>The two tag pickers are dimmed where they do not
+apply</strong>, and exactly one of them is ever live: <strong>Insert
+Markdown Tag</strong> in a Markdown document, <strong>Insert HTML
+Tag</strong> in an HTML one, and neither in a plain document or a rich
+text one. Markdown used to stay enabled in a <em>plain</em> document
+too, which was the mirror image of the HTML row’s rule and worse by ear
+than by eye: an enabled row promises the command will work, and a
+document that quietly became half-Markdown is not something you can see
+you did. <strong>Navigate ▸ Set Document Language…</strong> turns the
+rows back on in one keystroke.</p></li>
 <li><p><strong>Format-aware inserts.</strong> Block quote, horizontal
 rule, table, and image insert Markdown in a Markdown document and HTML
 in an HTML document. If the document’s format isn’t set yet (a brand-new
@@ -28530,12 +28540,20 @@ weight; there is no way for it to say “this paragraph is a heading”.
 Word announces heading levels only because Word ships an accessibility
 provider of its own for exactly this.</p>
 <p>So Quill says it instead. Move the caret onto a heading and you hear
-<strong>“Heading 2”</strong> — the level, on its own, once.</p>
+<strong>“Heading 2, Installing”</strong> — the level first, then the
+heading’s own words, as one sentence.</p>
 <p>Three details are deliberate:</p>
 <ul>
-<li><strong>The level only, never the text.</strong> Your screen reader
-is already reading the line as the caret lands on it. Repeating the
-title here would say every heading twice.</li>
+<li><strong>The level comes first.</strong> That is not a matter of
+taste: a cue <em>queued behind</em> your screen reader is at the
+reader’s mercy, and on a large caret jump — <code>Ctrl+Home</code>, a
+search hit, a bookmark — NVDA and JAWS cancel whatever was pending and
+start again on the new line. A “Heading 1” waiting its turn behind that
+is simply never heard, which is exactly what was reported: arrowing onto
+a heading announced it, <code>Ctrl+Home</code> onto the same heading did
+not. Said first, as one sentence QUILL owns, it survives every kind of
+move. It is also the order a browser gives you, where a reader says
+“heading level two” and then the words.</li>
 <li><strong>Once, on arrival.</strong> Moving around <em>inside</em> a
 heading says nothing more; you have already been told. You hear it again
 when you leave and come back.</li>
@@ -28543,6 +28561,13 @@ when you leave and come back.</li>
 and a real <code>Heading 2</code> style read out of a Word document all
 announce the same way.</li>
 </ul>
+<p><strong>If you would rather hear the words first</strong>, set
+<code>heading_announce_position</code> to <code>after</code> in
+<strong>Tools ▸ Preferences ▸ Accessibility</strong> (“Say a heading’s
+level”). Then your reader reads the line and QUILL adds “Heading 2”
+behind it — quieter on ordinary line-by-line reading, and the mode that
+predates this choice. It is the same information in the other order; the
+only thing you give up is the jump case above.</p>
 <p>Applying a heading already announces itself, so the two never double
 up. And a document that opens on its own title does not greet you with
 “Heading 1” over your reader’s first reading of the line.</p>
@@ -28561,6 +28586,84 @@ decision per document, not per person.</p>
 the start of a line means a heading in Markdown and HTML documents; in a
 shell script or a Python file it means a comment, and QUILL says
 nothing.</p>
+<h4 id="hearing-that-you-are-in-a-list">Hearing that you are in a
+list</h4>
+<p>Arrow into a list and QUILL says <strong>“Bulleted list, 5
+items”</strong>. Go a level deeper and it says <strong>“Level 2, 3
+items”</strong>. Arrow out and it says <strong>“Out of
+list”</strong>.</p>
+<p>This is the one cue in the set your screen reader gives you
+<strong>everywhere except here</strong>. On a web page a list reaches
+the reader as a list with a count, and NVDA says almost exactly this
+sentence. In an editor a list is not a list — it is characters — so the
+reader has nothing to go on, and a nested outline sounds like a run of
+ordinary lines beginning with a dash. The only thing separating level
+two from level three is the number of spaces, counted by ear.</p>
+<p>It works in <strong>Markdown and in HTML</strong>, over all three
+kinds of list:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Markdown</th>
+<th>HTML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bulleted list</strong></td>
+<td><code>-</code>, <code>*</code>, <code>+</code></td>
+<td><code>&lt;ul&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Numbered list</strong></td>
+<td><code>1.</code>, <code>1)</code></td>
+<td><code>&lt;ol&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Definition list</strong></td>
+<td>a line, then <code>: the definition</code> under it</td>
+<td><code>&lt;dl&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>A definition list also says <strong>“Term”</strong> and
+<strong>“Definition”</strong> as you move between the two, because which
+of them you are standing in decides what the words mean — and a
+definition list written inside out is not something you can see you have
+done.</p>
+<p>The counting rule matters and is easy to get wrong: <strong>items are
+counted at your own level, inside your own list.</strong> A three-item
+list whose second item has four sub-items is “3 items” at level one and
+“4 items” at level two, never “7”. Two sub-lists under two different
+bullets are two lists, not one.</p>
+<p>What it never says:</p>
+<ul>
+<li><strong>Nothing as you move down a list.</strong> That is what the
+caret does nearly all the time, and your reader is already speaking each
+item.</li>
+<li><strong>Nothing about <code>- - -</code> or
+<code>***</code>.</strong> Those are horizontal rules, not one-item
+lists.</li>
+<li><strong>Nothing inside a fenced code block.</strong> A
+<code>- </code> in a code sample is a sample.</li>
+<li><strong>Nothing in a plain document.</strong> A letter is full of
+hyphens, and a cue that fired on them would be superstition rather than
+help.</li>
+<li><strong>Nothing in rich text.</strong> There the bullets are the
+control’s own, and a <code>-</code> you type is a hyphen.</li>
+</ul>
+<p><strong>Turning it off — View ▸ Announce Lists
+(<code>Ctrl+Alt+F5</code>).</strong> Its own switch, next to the heading
+one and deliberately separate from it: reorganising an outline, the
+level is the work; proof-reading the same file, it is a phrase between
+you and every item. Like its sibling it says which way it went — “Lists
+will not be announced”, or “Lists announced as you enter them” — and the
+choice is remembered as the <code>announce_lists</code> setting.</p>
+<p><code>Ctrl+Alt+F5</code> and not the <code>Ctrl+Alt+F4</code> that
+would have sat next to its sibling: a finger that misses the Control key
+on a chord pressed this often finds <code>Alt+F4</code>, and what that
+costs is the document.</p>
 <h4 id="moving-through-a-table-cell-by-cell">Moving through a table cell
 by cell</h4>
 <p>Tables are the one structure that plain caret movement handles badly:

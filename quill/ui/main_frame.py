@@ -292,7 +292,6 @@ from quill.core.structure_nav import (
     previous_structure_position,
 )
 from quill.core.tagging import (
-    HTML_TAG_CHOICES,
     MARKDOWN_TAG_CHOICES,
     InsertionResult,
     build_html_code_block,
@@ -5463,7 +5462,14 @@ class MainFrame(
             return
         context = self._current_markup_context()
         html_only = context == "html"
-        markdown_ready = context in {"markdown", "plain"}
+        # Markdown only, where it used to be Markdown *or* plain. A plain
+        # document is one with no markup -- a .py, a .conf, a letter -- and
+        # offering to insert two asterisks into one was the mirror image of the
+        # HTML row's rule, which had always been html_only. Worse by ear than by
+        # eye: an enabled row promises the command will work, and a document
+        # that quietly became half-Markdown is not something you can see you
+        # did. Set Document Language turns the rows back on in one keystroke.
+        markdown_ready = context == "markdown"
         active_surface = self._active_markup_surface()
         structured_markup_ready = active_surface in {"markdown", "html"}
         markdown_ids = tuple(
@@ -17584,33 +17590,48 @@ class MainFrame(
         if not self._feature_enabled("core.format"):
             self._set_status("HTML tag tools are unavailable in this profile")
             return
+        from quill.core.html_forms import is_form_snippet
+        from quill.core.tagging import html_insert_choices
+
         tag = self._choose_searchable_option(
             title="Insert HTML Tag",
-            prompt="Type to filter tags (for example: text, radio, button)",
+            prompt=(
+                "Type to filter tags and form fields (for example: dropdown, radio group, button)"
+            ),
             dialog_label="Insert HTML Tag",
-            initial_choices=HTML_TAG_CHOICES,
+            initial_choices=html_insert_choices(),
             search_callback=search_html_tag_choices,
-            empty_search_examples=("text", "radio", "button"),
+            empty_search_examples=("dropdown", "radio group", "button"),
         )
         if not tag:
             return
 
         wx = self._wx
-        with wx.TextEntryDialog(
-            self.frame,
-            "Optional attributes (example: class=note; id=main; aria-label=Summary):",
-            "Insert HTML Tag",
-            value="",
-        ) as attributes_dialog:
-            if self._show_modal_dialog(attributes_dialog, "Insert HTML Tag") != wx.ID_OK:
-                return
-            attributes_raw = attributes_dialog.GetValue()
+        attributes_raw = ""
+        if not is_form_snippet(tag):
+            # A whole form control arrives already carrying the attributes that
+            # make it work -- for, id, name, type -- so the second prompt would
+            # be asking somebody to add to something they have not seen. A bare
+            # tag arrives with none, which is what the prompt is for.
+            with wx.TextEntryDialog(
+                self.frame,
+                "Optional attributes (example: class=note; id=main; aria-label=Summary):",
+                "Insert HTML Tag",
+                value="",
+            ) as attributes_dialog:
+                if self._show_modal_dialog(attributes_dialog, "Insert HTML Tag") != wx.ID_OK:
+                    return
+                attributes_raw = attributes_dialog.GetValue()
 
         selected_text = self.editor.GetStringSelection()
         attributes = parse_attribute_pairs(attributes_raw)
-        result = build_html_insertion(tag, selected_text, attributes)
+        result = build_html_insertion(
+            tag, selected_text, attributes, self._document_text_for_display()
+        )
         self._apply_insertion_result(result)
-        self._set_status(f"Inserted HTML tag <{tag}>")
+        self._set_status(
+            f"Inserted {tag}" if is_form_snippet(tag) else f"Inserted HTML tag <{tag}>"
+        )
 
     def insert_markdown_tag(self) -> None:
         if not self._feature_enabled("core.format"):

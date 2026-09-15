@@ -65,6 +65,21 @@ TITLE_EXEMPT: dict[str, str] = {
         "The title is the caller's, and both callers pass a literal that the "
         "catalogue answers: 'Keyboard shortcuts' and 'About QuillLite'."
     ),
+    "quill/apps/lite_dialogs.py::choose_searchable": (
+        "One filtered-list window with two callers, each passing a literal the "
+        "catalogue answers: 'Insert Markdown Tag' and 'Insert HTML Tag'. Exactly "
+        "the argument choose_from_rows makes: the alternative is two copies of a "
+        "search-and-choose dialog, which is two places to get the "
+        "Enter-moves-to-the-list handling wrong in."
+    ),
+    "quill/apps/lite_dialogs.py::ask_text": (
+        "One labelled-box window whose three callers pass literals the catalogue "
+        "answers: 'Insert HTML Tag' for the attribute box, and 'Insert Link' and "
+        "'Insert Image' for the address. It exists instead of wx.TextEntryDialog "
+        "precisely because that one's prompt is not a StaticText immediately "
+        "before the field, so the field's accessible name on wxMSW is whatever a "
+        "reader can scrape -- which is nothing."
+    ),
 }
 
 

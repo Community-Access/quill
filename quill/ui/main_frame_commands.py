@@ -380,6 +380,12 @@ class CommandRegistryMixin:
             self._binding_for("view.toggle_heading_announcements"),
         )
         self.commands.register(
+            "view.toggle_list_announcements",
+            "Announce Lists",
+            self.toggle_list_announcements,
+            self._binding_for("view.toggle_list_announcements"),
+        )
+        self.commands.register(
             "view.focus_preview",
             "Focus Preview",
             self.focus_preview,
@@ -2444,6 +2450,7 @@ class CommandRegistryMixin:
             "view.preview": self._id_preview,
             "view.split_preview": self._id_split_preview,
             "view.toggle_heading_announcements": self._id_announce_headings,
+            "view.toggle_list_announcements": self._id_announce_lists,
             "view.focus_preview": self._id_focus_preview,
             "view.browser_preview": self._id_browser_preview,
             "tools.read_aloud_generate_audio": self._id_read_aloud_generate_audio,
