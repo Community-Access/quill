@@ -302,7 +302,7 @@ Editor commands with default bindings: 360.
 | Alt+Shift+P | Switch Feature Profile... | `help.switch_feature_profile` |
 | Ctrl+Alt+F1 | Tutorials... | `help.tutorials` |
 | Ctrl+Alt+F2 | Get Help from Support... | `help.report_bug` |
-| QUILL Key + Shift+H | Context Help: Current Mode Keys | `help.context_help` |
+| QUILL Key + Shift+H or F1 | Context Help: Current Mode Keys | `help.context_help` |
 
 ### Everything else
 

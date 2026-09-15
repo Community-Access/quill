@@ -233,6 +233,38 @@ def test_whole_word_wraps_a_whole_regex_alternation() -> None:
     assert win.control.selection == (8, 11)
 
 
+def test_replace_all_is_one_edit_in_plain_text() -> None:
+    """One Ctrl+Z puts the whole Replace All back, as it does in QUILL.
+
+    It used to be one control.Replace per match, so undoing two hundred
+    replacements took two hundred presses -- which for a listener is
+    indistinguishable from an undo that does not work. The count of edits is the
+    test, because the undo stack itself belongs to the native control.
+    """
+    win = _Window("one 1 two 2 three 3 four 4")
+    edits: list[tuple[int, int, str]] = []
+    real_replace = win.control.Replace
+
+    def _record(start: int, end: int, text: str) -> None:
+        edits.append((start, end, text))
+        real_replace(start, end, text)
+
+    win.control.Replace = _record  # type: ignore[method-assign]
+    win._do_replace_all(_options(r"\d", mode="regex", replacement="#"))  # noqa: SLF001
+
+    assert len(edits) == 1, f"one edit, not one per match; got {len(edits)}"
+    assert edits[0][0] == 0, "the single edit covers the document"
+    assert win.control.GetValue() == "one # two # three # four #"
+    assert any("Replaced 4" in message for message in win.announcements)
+
+
+def test_replace_all_still_reports_nothing_when_nothing_matched() -> None:
+    win = _Window("alpha bravo")
+    win._do_replace_all(_options("zulu", replacement="x"))  # noqa: SLF001
+    assert win.control.GetValue() == "alpha bravo"
+    assert any("Replaced 0" in message for message in win.announcements)
+
+
 def test_replace_all_honours_the_mode() -> None:
     win = _Window("a1b22c")
     win._do_replace_all(_options(r"\d+", mode="regex", replacement="#"))  # noqa: SLF001

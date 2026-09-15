@@ -331,12 +331,36 @@ class DocumentFindMixin:
             if answer != wx.YES:
                 return
         replacement = str(options.get("replacement", ""))
-        count = 0
-        # Backwards, and through Replace rather than by rewriting the value, so
-        # every change is one undo step the user can walk back out of.
-        for match in reversed(list(pattern.finditer(self.control.GetValue()))):
-            self.control.Replace(match.start(), match.end(), replacement)
-            count += 1
+        text = self.control.GetValue()
+        count = len(list(pattern.finditer(text)))
         if count:
+            self._replace_every_match(pattern, replacement, text)
             self._set_modified(True)
         self._announce(f"Replaced {count} occurrence{'s' if count != 1 else ''}")
+
+    def _replace_every_match(self, pattern: Any, replacement: str, text: str) -> None:
+        """Apply every replacement -- in **one** undo step where that is possible.
+
+        Plain text takes a single ``Replace`` over the whole document, so
+        **Ctrl+Z once puts it all back**, the way QUILL's Replace All and every
+        editor people arrive from behave. It used to be one ``Replace`` per
+        match, on the argument that each should be separately undoable; that is
+        the wrong shape for this command. Walking back out of two hundred
+        replacements one at a time is not a feature -- you cannot see which one
+        you are on, there is nothing to stop at, and for a listener the two
+        hundredth press is indistinguishable from the hundredth.
+
+        **Rich text keeps the per-match loop, and that is a real trade rather
+        than an oversight.** Rewriting the whole range would flatten every bold
+        run and heading in the document, not just the text being replaced -- far
+        more than the confirmation above warns about. So formatting wins there
+        and the undo stack stays long; the dialog already asks first.
+
+        Backwards in both cases, so an earlier replacement cannot shift the
+        offsets of a later one.
+        """
+        if self.editor.mode == RICH:
+            for match in reversed(list(pattern.finditer(text))):
+                self.control.Replace(match.start(), match.end(), replacement)
+            return
+        self.control.Replace(0, self.control.GetLastPosition(), pattern.sub(replacement, text))

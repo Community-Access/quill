@@ -418,8 +418,9 @@ This block is the product. Take it slowly.
 ## Block I -- Recovery and sessions (6 min, includes a deliberate kill)
 
 **L-52. Unsaved work survives a kill**
-- Do: type several paragraphs into a new document. Do **not** save. Wait 70
-  seconds (the copy is taken once a minute). Kill QuillLite from Task Manager.
+- Do: type several paragraphs into a new document. Do **not** save. Wait 40
+  seconds (the copy is taken every thirty seconds, as QUILL's is). Kill
+  QuillLite from Task Manager.
   Reopen it.
 - Pass: the text is back, in its own window, marked unsaved, and you hear
   **"Recovered unsaved work from the last session"**.

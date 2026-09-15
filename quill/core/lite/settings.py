@@ -160,7 +160,14 @@ class Settings:
     #: a text file.
     window_maximized: bool = True
     recent_files: list[str] = field(default_factory=list)
-    autosave_seconds: int = 60
+    #: Seconds between recovery copies of a modified document. **30, matching
+    #: QUILL's autosave_interval_seconds** (2026-09-15): it was 60 here for no
+    #: stated reason, which meant the same crash cost a QuillLite user up to a
+    #: minute of typing and a QUILL user up to thirty seconds. The two products
+    #: make the same promise about unsaved work and should keep it equally well.
+    #: The names still differ because each dataclass is its own store; the
+    #: numbers no longer do.
+    autosave_seconds: int = 30
     #: Reopen the documents that were open when the app last closed. On by
     #: default: with MDI there is one window and a numbered list inside it, so
     #: coming back to yesterday's four documents is the expected shape rather

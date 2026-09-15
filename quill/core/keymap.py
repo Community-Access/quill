@@ -674,6 +674,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
 DEFAULT_ALIASES: dict[str, str] = {
     "edit.start_selection": "Ctrl+;",
     "edit.complete_selection": "Ctrl+'",
+    # F1 is THE help key on Windows and QUILL left it unbound, context help on a
+    # leader chord. QuillLite has answered F1 since it shipped. An alias, not a
+    # move: the leader chord keeps working (2026-09-15).
+    "help.context_help": "F1",
 }
 
 

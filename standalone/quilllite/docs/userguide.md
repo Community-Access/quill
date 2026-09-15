@@ -171,7 +171,7 @@ and the Markdown row is waiting.
 ### If something goes wrong
 
 While a document has changes you have not saved, QuillLite keeps a copy of it
-aside, about once a minute. That copy sits **beside** your file and never on top
+aside, about every thirty seconds. That copy sits **beside** your file and never on top
 of it.
 
 If QuillLite or your computer stops unexpectedly, that work is offered back to
