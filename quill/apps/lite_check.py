@@ -23,6 +23,7 @@ import wx
 
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.paths import data_dir
+from quill.core.lite.settings import load as load_settings
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["run_check"]
@@ -52,7 +53,16 @@ def run_check() -> int:
         f"python: {sys.version.split()[0]}",
         f"wxPython: {wx.version()}",
         f"native rich edit: {editor.rtf_available()}",
-        f"text mode: {editor.current_text_mode()}",
+        # TWO text modes, and reporting one of them alone reads as an answer to
+        # the other. This line is a probe: the control above was created in RICH
+        # on purpose, and what it reports back is whether the native surface
+        # honoured that -- "plain" here would mean the rich surface silently did
+        # not come up. It says nothing about the document somebody is looking
+        # at, which opens in settings.default_mode and is plain unless they
+        # changed it. A support conversation that sees "rich" here and "(plain
+        # text)" in the window title needs both lines to reconcile them.
+        f"text mode of a rich surface: {editor.current_text_mode()}",
+        f"text mode for new documents: {load_settings().default_mode}",
         f"screen reader: {ScreenReaderVoice().backend_name()}",
         f"data dir: {data_dir()}",
     ]
