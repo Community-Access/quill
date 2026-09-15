@@ -199,6 +199,27 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear="The heading level, and the line it applied to.",
             ),
             Step(
+                title="Arrow away and come back to it",
+                body=(
+                    "Move down a line or two, then arrow back up onto the "
+                    'heading. QUILL says "Heading 2" as you land on it. It has '
+                    "to say it: no Windows edit control can tell a screen "
+                    "reader that a paragraph is a heading, so without this a "
+                    "heading reads exactly like ordinary text."
+                ),
+                keys=("Up", "Down"),
+                hear=(
+                    "The level, on its own, after your reader has read the "
+                    "line -- and only when you arrive, not while you move "
+                    "along it."
+                ),
+                note=(
+                    "The same is true of a table: arrowing into one says how "
+                    'many rows and columns it has, and arrowing out says "Out '
+                    'of table".'
+                ),
+            ),
+            Step(
                 title="Emphasise something",
                 body=(
                     "Bold and Italic do what they say, in the document's own "

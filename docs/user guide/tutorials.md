@@ -1,6 +1,6 @@
 # QUILL Tutorials
 
-23 guided tutorials, 136 steps, about 120 minutes of material in all.
+23 guided tutorials, 137 steps, about 120 minutes of material in all.
 
 This document is generated from the tutorials inside QUILL, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials...** instead.
 
@@ -278,33 +278,38 @@ Next: Structure and formatting.
 
 Headings, lists, emphasis and sections -- and Describe Formatting, which tells you what is actually on the text under your cursor.
 
-*7 steps, about 6 minutes.*
+*8 steps, about 6 minutes.*
 
 1. **Make a heading.** Heading 1 through Heading 6 set the level directly, and Increase and Decrease Heading Level move an existing one. Headings are what the outline, Quick Nav and the structure keys all navigate by, so they earn their keystroke twice.
    - Keys: Ctrl+Alt+2
    - You should hear: The heading level, and the line it applied to.
 
-2. **Emphasise something.** Bold and Italic do what they say, in the document's own language: Markdown gets Markdown, HTML gets tags, rich text gets real formatting. Bold means bold -- QUILL speaks your document's format rather than imposing one.
+2. **Arrow away and come back to it.** Move down a line or two, then arrow back up onto the heading. QUILL says "Heading 2" as you land on it. It has to say it: no Windows edit control can tell a screen reader that a paragraph is a heading, so without this a heading reads exactly like ordinary text.
+   - Keys: Up, Down
+   - You should hear: The level, on its own, after your reader has read the line -- and only when you arrive, not while you move along it.
+   - Worth knowing: The same is true of a table: arrowing into one says how many rows and columns it has, and arrowing out says "Out of table".
+
+3. **Emphasise something.** Bold and Italic do what they say, in the document's own language: Markdown gets Markdown, HTML gets tags, rich text gets real formatting. Bold means bold -- QUILL speaks your document's format rather than imposing one.
    - Keys: Ctrl+B
    - You should hear: Bold on, and what it applied to.
 
-3. **Ask what formatting is here.** Describe Formatting says what is actually on the text under the cursor. It is the one-shot answer to why does this line sound different, and double-pressing it opens the Spoken Echo so you can read the answer rather than catch it.
+4. **Ask what formatting is here.** Describe Formatting says what is actually on the text under the cursor. It is the one-shot answer to why does this line sound different, and double-pressing it opens the Spoken Echo so you can read the answer rather than catch it.
    - Keys: Ctrl+Shift+D
    - You should hear: Every attribute on the text, in one pass.
 
-4. **Make a list, and nest it.** Toggle Bullet List and Toggle Numbered List convert the selection. On a Markdown list item, Tab and Shift+Tab nest and promote the item, and each move is spoken -- so you hear the indent even though the caret does not move.
+5. **Make a list, and nest it.** Toggle Bullet List and Toggle Numbered List convert the selection. On a Markdown list item, Tab and Shift+Tab nest and promote the item, and each move is spoken -- so you hear the indent even though the caret does not move.
    - Keys: Ctrl+Alt+B
    - You should hear: The list applied, then the new depth as you nest.
 
-5. **Move a whole section.** Move Section Up and Move Section Down move a heading and everything under it. Reordering a document by its structure rather than by cut and paste is the difference between an edit and an afternoon.
+6. **Move a whole section.** Move Section Up and Move Section Down move a heading and everything under it. Reordering a document by its structure rather than by cut and paste is the difference between an edit and an afternoon.
    - Keys: Alt+Shift+Up
    - You should hear: Where the section moved to.
 
-6. **Insert the awkward things.** Insert Link, Insert Table, Insert Snippet, Insert Emoji, Insert Special Character and Insert Equation each open a small, keyboard-first window rather than expecting you to type syntax from memory.
+7. **Insert the awkward things.** Insert Link, Insert Table, Insert Snippet, Insert Emoji, Insert Special Character and Insert Equation each open a small, keyboard-first window rather than expecting you to type syntax from memory.
    - Keys: Ctrl+Alt+K
    - You should hear: The window, with focus in its first field.
 
-7. **Decide what Tab does.** By default Tab indents the line and Shift+Tab outdents. If you would rather Tab typed a literal tab character, the Tab Mode chord switches it, the status bar shows which mode you are in, and Shift+Tab still outdents either way.
+8. **Decide what Tab does.** By default Tab indents the line and Shift+Tab outdents. If you would rather Tab typed a literal tab character, the Tab Mode chord switches it, the status bar shows which mode you are in, and Shift+Tab still outdents either way.
    - Keys: Ctrl+Shift+Grave, U
    - You should hear: The new mode, and afterwards the depth on every indent.
 

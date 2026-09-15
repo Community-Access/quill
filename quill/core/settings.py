@@ -591,6 +591,15 @@ class Settings:
     # the resolution rule lives there because it has to be identical in both
     # editors, and it deliberately never silences a moment that has only words.
     action_feedback: str = "sound"
+    # Say "Heading 2" when the caret arrives on a heading (and the shape of a
+    # table when it arrives in one). On, because nothing else can say it: no
+    # Windows edit control exposes a paragraph style to a screen reader, so with
+    # this off a heading reads exactly like ordinary text. Off is for reading a
+    # document *as* text, where the structure is not what you are listening for.
+    # Ctrl+Alt+F3 toggles it without leaving the document -- a per-task decision
+    # rather than a preference you set once. Shared with QuillLite, which must
+    # never be ahead of QUILL (CLAUDE.md).
+    announce_headings: bool = True
     # And the same choice for the one failure a search can have: nothing found.
     # Separate from action_feedback on purpose -- somebody who wants every
     # successful action spoken may well want the *failure* to be a tone, and

@@ -2,6 +2,48 @@
 
 ## 1.0.0
 
+### Headings now announce themselves, in both editors (2026-09-14)
+
+**A heading was invisible to your screen reader, and always had been.** You could
+apply Heading 2, navigate to it, list it, and see it in the status bar -- but
+arrowing onto it, JAWS and NVDA said only the text of the line. That is not a
+bug in the reader. No Windows edit control has paragraph styles: `RICHEDIT50W`
+can tell a reader the font name, the point size and the weight, and has no way
+to say "this paragraph is a heading". Word manages it only because Word ships an
+accessibility provider of its own.
+
+So the editor says it now. Arrive at a heading, in QUILL or QuillLite, in rich
+text or in Markdown, and you hear **"Heading 2"** -- the level alone, once, on
+arrival, because the reader is already reading the line and moving about inside
+the heading is not news. It works the same way on a heading that came out of a
+Word document.
+
+Three things came with it:
+
+- **Entering a table now tells you its shape.** "Table, 4 rows, 3 columns"
+  instead of "Entering table". Leaving one still says "Out of table".
+- **Heading navigation works in plain text.** Next Heading, Previous Heading and
+  the headings list refused outright in a QuillLite plain-text document --
+  "Headings are only available in rich text" -- in documents whose Markdown
+  headings Alt+Shift+Right would happily re-level. They now walk the hashes, and
+  a `#` inside a fenced code block is correctly not a heading. The status bar's Heading cell
+  read "Not in rich text" in the same documents, and now reads the level.
+- **You can turn it off where you stand.** **View > Announce Headings**
+  (`Ctrl+Alt+F3`) silences the cue and brings it back, in both editors, saying
+  which way it went rather than "on" and "off". Reading a document as text is a
+  different job from writing one, and it is a decision per document rather than
+  a preference to set once.
+- **A `#` is only a heading where `#` means heading.** In QuillLite a plain-text
+  document is a heading document when it is a `.md`, a `.txt`, or untitled. In a
+  `.py`, `.sh`, `.ini` or `.conf` a leading `#` is a comment, and treating it as
+  a heading would have announced "Heading 1" on most lines of a build script.
+  (QUILL was never affected: it reads the markup kind from the file already.)
+- **A heading saved to RTF is a real heading.** The writer emitted bold text and
+  an outline level with no style and no point size, so Word showed "Normal" in
+  its style box and an empty navigation pane -- and, reopened in QUILL's rich
+  mode, every heading came back as a Heading 4 whatever level it went out as.
+  The file now carries a proper stylesheet and the editor's own point sizes.
+
 ### Find Stations now finds the station you meant (2026-09-14)
 
 **A search is no longer one query.** Two ACB members between them asked for five

@@ -6903,6 +6903,47 @@ Quill is excellent for large documents because it supports:
 
 When you combine this with marks and compare sessions, long-form review starts to feel much less fragile.
 
+#### Hearing that a paragraph is a heading
+
+Apply Heading 2 to a paragraph, arrow away, then arrow back to it, and your
+screen reader reads the line — but says nothing about it being a heading. That
+is not something the reader is failing to do. **No Windows edit control has
+paragraph styles.** The control Quill hosts can tell JAWS or NVDA the font name,
+the point size and the weight; there is no way for it to say "this paragraph is
+a heading". Word announces heading levels only because Word ships an
+accessibility provider of its own for exactly this.
+
+So Quill says it instead. Move the caret onto a heading and you hear **"Heading
+2"** — the level, on its own, once.
+
+Three details are deliberate:
+
+- **The level only, never the text.** Your screen reader is already reading the
+  line as the caret lands on it. Repeating the title here would say every
+  heading twice.
+- **Once, on arrival.** Moving around *inside* a heading says nothing more; you
+  have already been told. You hear it again when you leave and come back.
+- **Every kind of heading.** Rich text, Markdown, HTML, and a real `Heading 2`
+  style read out of a Word document all announce the same way.
+
+Applying a heading already announces itself, so the two never double up. And a
+document that opens on its own title does not greet you with "Heading 1" over
+your reader's first reading of the line.
+
+**Turning it off, and back on.** Sometimes the structure is not what you are
+listening for -- you are reading the document *as text*, and one extra sentence
+per heading is one too many. **View ▸ Announce Headings** (`Ctrl+Alt+F3`) is a
+check item that turns the cue off and on without leaving the document, and it
+governs the table cue with it. QUILL says which way it went -- "Headings
+announced on arrival", or "Headings will not be announced" -- rather than
+"on" and "off", so a key pressed by accident is never ambiguous. The choice is
+remembered (the `announce_headings` setting), but it is meant to be pressed
+rather than configured: it is a decision per document, not per person.
+
+Headings are only ever found where they exist. A `#` at the start of a line
+means a heading in Markdown and HTML documents; in a shell script or a Python
+file it means a comment, and QUILL says nothing.
+
 #### Moving through a table cell by cell
 
 Tables are the one structure that plain caret movement handles badly: arrowing along a line tells you the characters but never the shape. Quill gives tables their own movement keys, and every landing says where you are before it says what is there.
@@ -6912,7 +6953,7 @@ Tables are the one structure that plain caret movement handles badly: arrowing a
 - **Alt+Home** and **Alt+End** jump to the first or last cell of the current row.
 - **Ctrl+Alt+Home** and **Ctrl+Alt+End** jump to the first or last cell of the whole table.
 
-Each move speaks the cell's position and contents together — *"Row 2 of 6, column 3 of 5: Portland"* — so you always know how far in you are without counting. An empty cell is announced as *"blank"* rather than by silence. When a move has nowhere to go, Quill says so instead of moving: *"No more cells"* at the end of a row, *"No more rows"* at the end of a column, and *"No more cells, end of table"* (or *"No more rows, end of table"*) when you are on the very last cell — the difference between "this row stops here" and "the table stops here". Ordinary caret movement in and out of a table still announces **"Entering table"** and **"Out of table"**, and the keys are harmless outside a table: Quill just reports "Not in a table".
+Each move speaks the cell's position and contents together — *"Row 2 of 6, column 3 of 5: Portland"* — so you always know how far in you are without counting. An empty cell is announced as *"blank"* rather than by silence. When a move has nowhere to go, Quill says so instead of moving: *"No more cells"* at the end of a row, *"No more rows"* at the end of a column, and *"No more cells, end of table"* (or *"No more rows, end of table"*) when you are on the very last cell — the difference between "this row stops here" and "the table stops here". Ordinary caret movement into a table announces its shape — **"Table, 6 rows, 5 columns"** — and moving out of one says **"Out of table"**, and the keys are harmless outside a table: Quill just reports "Not in a table".
 
 This works on Markdown tables you write yourself **and on tables Quill imports from Word**. A `.docx` table is brought in as a real table laid out as Markdown rows, so the same keys, the same position announcements, and the same edges apply to a table you opened from Word as to one you typed. A cell whose own text contains a `|` character stays one cell — it does not split the row or throw the column count off.
 

@@ -45,6 +45,7 @@ from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
 from quill.apps.lite_window_file import DocumentFileMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
 from quill.apps.lite_window_lines import DocumentLineMixin
 from quill.apps.lite_window_marks import DocumentMarksMixin
@@ -92,6 +93,7 @@ class DocumentFrame(
     DocumentMenuMixin,
     DocumentAppearanceMixin,
     DocumentStatusMixin,
+    DocumentHeadingsMixin,
     wx.MDIChildFrame,
 ):
     """One window, one document, one editor."""
@@ -302,6 +304,10 @@ class DocumentFrame(
         # the user asked for it to be. The check ignores anything that is not a
         # navigation key, so typing still goes through the as-you-type path.
         self.check_spelling_at_caret(key_code)
+        # And the heading the caret has just entered, which nothing else in the
+        # stack can say: no Windows edit control exposes a paragraph style to a
+        # screen reader, so if QuillLite does not say "Heading 2" nobody does.
+        self.announce_structure_at_caret()
         event.Skip()
 
     def _on_activate(self, event: wx.ActivateEvent) -> None:
@@ -353,15 +359,20 @@ class DocumentFrame(
             "arrived with. Control Shift M switches to rich text." + shared
         )
 
-    def _announce(self, message: str) -> None:
+    def _announce(self, message: str, *, interrupt: bool = True) -> None:
         """Say *message*, and leave it in the status bar to be re-read.
 
         Only ever the outcome of something the user did -- a save, a formatting
         change, a search that wrapped. Titles, focus moves, control names and
         selection changes are the screen reader's to announce, and saying them
         again is the over-announcing GATE-13 exists to catch.
+
+        ``interrupt=False`` is for a cue that *accompanies* the reader
+        rather than replacing it: the heading announcement fires as the
+        reader is reading the line the caret landed on, and cutting across
+        that would cost the listener the text they moved to hear.
         """
-        self.app.voice.speak(message)
+        self.app.voice.speak(message, interrupt=interrupt)
         self._set_status_message(message)
 
     def _action(self, event: str, message: str) -> None:

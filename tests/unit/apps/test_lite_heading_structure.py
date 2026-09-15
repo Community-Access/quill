@@ -16,6 +16,7 @@ than not having it.
 from __future__ import annotations
 
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.ui.richedit_editing import PLAIN, RICH
 
 
@@ -60,7 +61,7 @@ class _Editor:
         self._level = level
 
 
-class _Window(DocumentFormatCommandsMixin):
+class _Window(DocumentFormatCommandsMixin, DocumentHeadingsMixin):
     def __init__(self, text: str, cursor: int = 0, *, mode: str = PLAIN, level: int = 0) -> None:
         self.control = _Control(text, cursor)
         self.editor = _Editor(mode, level)

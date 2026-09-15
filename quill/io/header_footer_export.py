@@ -201,11 +201,11 @@ def _rtf_zone_group(
     filename: str,
     date: str,
 ) -> str:
-    from quill.io.rtf import _escape_rtf_text
+    from quill.io.rtf_styles import escape_rtf_text
 
     def _zone(template: str) -> str:
         static = _substitute_static(template, title=title, filename=filename, date=date)
-        pieces = [_escape_rtf_text(piece) for piece in static.split("{page}")]
+        pieces = [escape_rtf_text(piece) for piece in static.split("{page}")]
         return _RTF_PAGE_FIELD.join(pieces)
 
     if not any(part.strip() for part in (left, center, right)):

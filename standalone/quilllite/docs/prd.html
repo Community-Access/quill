@@ -307,6 +307,25 @@ to Word’s own ladder that a saved RTF reads as headings in Word. Each
 level has a size of its own so the ladder can be read <em>back</em>: a
 level the editor can set and heading navigation cannot find is worse
 than a level that does not exist.</li>
+<li><strong>Saying that a heading is a heading</strong>
+(<code>quill/core/structure_announce.py</code>, shared with QUILL). The
+ladder is invisible to a screen reader, and not because the reader is
+failing: no Windows edit control exposes a paragraph style at all, so
+<code>RICHEDIT50W</code> can offer JAWS the font size and the weight and
+has no property that means “heading”. Word announces heading levels only
+by shipping an accessibility provider of its own. QuillLite therefore
+says “Heading 2” itself, on arrival, level only, once – and
+<strong>queued behind the reader rather than interrupting it</strong>,
+because the reader is mid-line when the cue fires and cutting across it
+would cost the listener the text they moved to hear. Plain-text
+documents get the same cue over Markdown hashes – but only where a hash
+means a heading: <code>.md</code>, <code>.txt</code> and untitled
+buffers, never the <code>.py</code> / <code>.sh</code> /
+<code>.ini</code> files a Notepad replacement opens all day, where a
+leading <code>#</code> is a comment. <strong>Ctrl+Alt+F3</strong> turns
+the cue off and on in place, because whether structure is what you are
+listening for is a decision per document rather than a preference to set
+once.</li>
 <li><strong>The dialog contract.</strong> Every modal goes through
 <code>show_modal_dialog</code>, which announces the transition, installs
 F1 help and infers the accessible names macOS VoiceOver needs.</li>
@@ -429,9 +448,15 @@ silently re-level every heading in the document.</p>
 <td>The formatting a WordPad user expects, on QUILL’s ladder</td>
 </tr>
 <tr>
-<td>Heading navigation and a headings list</td>
+<td>Heading navigation and a headings list, in <strong>both</strong>
+modes</td>
 <td>The reason a screen-reader user prefers a structured document at
-all</td>
+all; plain text has Markdown headings and they are real</td>
+</tr>
+<tr>
+<td>A spoken “Heading 2” on arrival</td>
+<td>Nothing else in the stack can say it — see the heading ladder
+above</td>
 </tr>
 <tr>
 <td>Describe Formatting at the cursor</td>

@@ -468,6 +468,49 @@ formatted document raises and that nothing else can answer for you.
 | **Ctrl+Alt+H** / **Ctrl+Alt+Shift+H** | Next / previous heading |
 | **Ctrl+Alt+L** | The list of every heading |
 
+These work in **both kinds of document**. In rich text they walk the point-size
+ladder above; in plain text they walk Markdown headings — the lines that start
+with `#`. They used to refuse in a plain document ("Headings are only available
+in rich text"), which was wrong in the way that matters: plain-text headings are
+real enough for **Alt+Shift+Right** to change their level, and only *navigation*
+pretended the document had no shape. A `#` inside a fenced code block is not
+treated as a heading.
+
+### Hearing that you have arrived at one
+
+Arrow onto a heading and QuillLite says **"Heading 2"**.
+
+It has to, because your screen reader cannot. **No Windows edit control has
+paragraph styles** — the control QuillLite hosts can tell JAWS or NVDA the font
+name, the size and the weight, and has no way to say "this paragraph is a
+heading". Word manages it only by shipping an accessibility provider of its own.
+
+The rules are narrow on purpose:
+
+- **The level, not the text.** Your reader is already reading the line. Saying
+  the title here would speak every heading twice.
+- **Once, on arrival.** Moving about inside the heading says nothing further.
+  You hear it again if you leave and come back.
+- **Both modes.** A rich-text heading and a Markdown heading announce alike.
+
+Applying a heading already tells you so, and the two do not double up. Opening a
+document whose first line is its title does not greet you with "Heading 1".
+
+**Turning it off — View ▸ Announce Headings (Ctrl+Alt+F3).** Sometimes you are
+reading a document *as text* and the levels are one sentence too many. The key
+turns the cue off and on where you stand, and says which way it went —
+"Headings will not be announced", or "Headings announced on arrival" — rather
+than "off" and "on", so a key pressed by accident is never a mystery. The
+choice is remembered, but it is meant to be pressed rather than set: it is a
+decision per document.
+
+**A `#` is not always a heading.** In a `.md` or a `.txt`, or a document you
+have not named yet, a line starting with `#` is a heading. In a `.py`, `.sh`,
+`.ini`, `.yml` or `.conf` it is a comment, and QuillLite says nothing and lists
+nothing — otherwise a build script would announce "Heading 1" on most of its
+lines.
+
+
 ### Rearranging them — Format ▸ Structure
 
 | Key | What it does |

@@ -23,6 +23,8 @@ __all__ = [
     "RICH_SUFFIXES",
     "SAVE_WILDCARD_PLAIN",
     "SAVE_WILDCARD_RICH",
+    "MARKDOWN_HEADING_SUFFIXES",
+    "has_markdown_headings",
     "is_rich_path",
 ]
 
@@ -57,3 +59,30 @@ def is_rich_path(name: str) -> bool:
     """True when a file of this name should be opened (or saved) as rich text."""
     lowered = str(name).lower()
     return any(lowered.endswith(suffix) for suffix in RICH_SUFFIXES)
+
+
+#: The plain-text documents whose ``#`` lines are headings rather than comments.
+#:
+#: This distinction is load-bearing and easy to miss. QuillLite is a Notepad
+#: replacement, so people open ``.py``, ``.sh``, ``.ini``, ``.yml`` and ``.conf``
+#: files in it constantly -- and in every one of those a line beginning ``#`` is
+#: a **comment**. Treating it as a heading would make the caret cue say
+#: "Heading 1" on most lines of a shell script, and would fill the headings list
+#: with comments.
+#:
+#: ``.txt`` is in the list because a plain text file is where somebody writes
+#: prose with Markdown-ish headings and nothing conventionally starts a line
+#: with ``#``. An untitled document counts too: a buffer somebody is typing
+#: ``## Notes`` into has no extension to go on, and the person doing it means a
+#: heading. Anything else -- any extension not listed -- has no headings, which
+#: is the safe answer because the cost of a false positive is heard on every
+#: line and the cost of a false negative is one silent key.
+MARKDOWN_HEADING_SUFFIXES = frozenset({".md", ".markdown", ".mdx", ".txt"})
+
+
+def has_markdown_headings(name: str | None) -> bool:
+    """True when ``#`` at the start of a line means a heading in this document."""
+    if not name:
+        return True  # untitled: the person typing "## Notes" means a heading
+    lowered = str(name).lower()
+    return any(lowered.endswith(suffix) for suffix in MARKDOWN_HEADING_SUFFIXES)

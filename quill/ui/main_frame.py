@@ -469,6 +469,7 @@ from quill.ui.main_frame_sr_watchdog import SrWatchdogMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
+from quill.ui.main_frame_structure import StructureAnnounceMixin
 from quill.ui.main_frame_table_nav import TableNavMixin
 from quill.ui.main_frame_tutorials import TutorialsMixin
 from quill.ui.main_frame_typing import TypingPathMixin
@@ -857,6 +858,7 @@ class MainFrame(
     MenuBindingsMixin,
     MastodonSocialMixin,
     TableNavMixin,
+    StructureAnnounceMixin,
     NotebookUIMixin,
     QuillKeyMixin,
     RichModeMixin,
@@ -2344,6 +2346,10 @@ class MainFrame(
         tab = self._document_tabs[index]
         self._active_tab_index = index
         self._browse_navigation_cache = None
+        # A different document is a different structure. Forgetting the old
+        # caret surroundings stops the first arrow key in the new tab from
+        # announcing a heading the user never arrived at.
+        self.reset_structure_announcer()
         self.editor = tab.editor
         self.document = tab.document
         # The active document's bookmark set is this tab's own dict (per-document).
@@ -2523,40 +2529,10 @@ class MainFrame(
             self._maybe_announce_indent()
             self._maybe_play_indent_tone()
             self._maybe_announce_format_transition()
-            self._maybe_announce_table_transition()
+            self.announce_structure_at_caret()
         except RuntimeError:  # #603/#269: editor can be a dead TextCtrl mid-event.
             pass
         event.Skip()
-
-    def _maybe_announce_table_transition(self) -> None:
-        """Say "Entering table" / "Out of table" when ordinary navigation crosses
-        a table boundary. A cheap current-line check avoids
-        parsing the whole document except when the caret sits on a pipe row."""
-        editor = getattr(self, "editor", None)
-        if editor is None:
-            return
-        try:
-            # Display-only read: document.text is the same string GetValue
-            # would marshal, at zero cost (#1346 follow-up).
-            text = self._document_text_for_display()
-            caret = editor.GetInsertionPoint()
-        except Exception:  # noqa: BLE001 - a non-text surface has no tables
-            return
-        line_start = text.rfind("\n", 0, caret) + 1
-        line_end = text.find("\n", caret)
-        current_line = text[line_start : line_end if line_end != -1 else len(text)]
-        if "|" not in current_line:
-            in_table = False
-        else:
-            from quill.core import table_nav
-
-            in_table = table_nav.find_table_at(text, caret) is not None
-        was_in_table = getattr(self, "_caret_in_table", False)
-        if in_table and not was_in_table:
-            self._announce("Entering table")
-        elif was_in_table and not in_table:
-            self._announce("Out of table")
-        self._caret_in_table = in_table
 
     def _on_editor_key_up(self, event: object) -> None:
         wx = self._wx
@@ -16311,6 +16287,7 @@ class MainFrame(
             self._set_status("Heading tools are unavailable in this profile")
             return
         if self._rich_format_command("set_heading", f"Heading {level}", level):
+            self.sync_structure_announcer()  # already announced; do not echo it
             return
         surface = self._active_markup_surface()
         if surface is None:
@@ -16324,6 +16301,8 @@ class MainFrame(
             result = build_html_insertion(f"h{level}", selected_text, {})
         self._apply_insertion_result(result)
         self._set_status(f"Inserted heading {level} ({surface})")
+        # Already reported. Latch it so the caret hook does not say it again.
+        self.sync_structure_announcer()
 
     def decrease_heading_level(self) -> None:
         self._adjust_heading_level(-1)
@@ -16469,6 +16448,7 @@ class MainFrame(
         # The new level, not "adjusted": which way it went is the whole outcome,
         # and a listener cannot see the hashes change.
         self._set_status(f"Heading {change.new_level}")
+        self.sync_structure_announcer()
 
     def format_insert_bullet_list(self) -> None:
         self._insert_structure("Bullet List", "Inserted bullet list")

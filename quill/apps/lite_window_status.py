@@ -24,7 +24,7 @@ editor, and every cell here is a fact a text editor is actually asked for:
   line. The other invisible mode, and the other one you would otherwise
   discover by pressing the key and listening to what happened.
 * **Format** -- plain text or rich text.
-* **Heading** -- which heading the caret is in (rich text only).
+* **Heading** -- which heading the caret is in, in either kind of document.
 * **Encoding** and **Line endings** -- the two facts that decide whether a file
   round-trips byte-for-byte, which for a Notepad replacement is most of the job,
   and which are invisible everywhere else in the app.
@@ -57,6 +57,7 @@ from typing import Any
 
 import wx
 
+from quill.core.heading_levels import heading_level_at
 from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
 from quill.core.marks import line_column_for_position
 from quill.core.metrics import compute_document_stats
@@ -171,7 +172,8 @@ CELLS: tuple[StatusCell, ...] = (
     StatusCell(
         "heading",
         "Heading",
-        "The heading the cursor is inside, in a rich text document. "
+        "The heading the cursor is inside -- the point-size ladder in a rich "
+        "text document, the Markdown hashes in a plain one. "
         "Press Enter for the list of every heading.",
     ),
     StatusCell(
@@ -376,14 +378,22 @@ class DocumentStatusMixin:
         }
 
     def _heading_text(self) -> str:
-        """Which heading the caret is in. Rich text only, and best effort.
+        """Which heading the caret is in, in either kind of document.
 
-        One Text Object Model call, on the coalesced refresh rather than per
-        keystroke. A failure reads as "Body text", never as the bar stopping.
+        Rich text asks the control's Text Object Model about the point-size
+        ladder; plain text reads the Markdown hashes off the line, through the
+        same :func:`~quill.core.heading_levels.heading_level_at` the caret cue
+        and Alt+Shift+Right use. The cell used to read "Not in rich text" in a
+        plain document, which was wrong twice over: those documents have real
+        headings, and pressing Enter on the cell opens a working list of them.
+
+        One call, on the coalesced refresh rather than per keystroke. A failure
+        reads as "Body text", never as the bar stopping.
         """
         if self.editor.mode != RICH:
-            return "Not in rich text"
-        level = self.editor.heading_level_at_caret()
+            level = heading_level_at(self.control.GetValue(), self.control.GetInsertionPoint())
+        else:
+            level = self.editor.heading_level_at_caret()
         return f"Heading {level}" if level else "Body text"
 
     def _set_status_message(self, message: str) -> None:

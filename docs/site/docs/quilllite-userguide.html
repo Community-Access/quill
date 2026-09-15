@@ -828,6 +828,52 @@ can answer for you.</p>
 </tr>
 </tbody>
 </table>
+<p>These work in <strong>both kinds of document</strong>. In rich text
+they walk the point-size ladder above; in plain text they walk Markdown
+headings — the lines that start with <code>#</code>. They used to refuse
+in a plain document (“Headings are only available in rich text”), which
+was wrong in the way that matters: plain-text headings are real enough
+for <strong>Alt+Shift+Right</strong> to change their level, and only
+<em>navigation</em> pretended the document had no shape. A
+<code>#</code> inside a fenced code block is not treated as a
+heading.</p>
+<h3 id="hearing-that-you-have-arrived-at-one">Hearing that you have
+arrived at one</h3>
+<p>Arrow onto a heading and QuillLite says <strong>“Heading
+2”</strong>.</p>
+<p>It has to, because your screen reader cannot. <strong>No Windows edit
+control has paragraph styles</strong> — the control QuillLite hosts can
+tell JAWS or NVDA the font name, the size and the weight, and has no way
+to say “this paragraph is a heading”. Word manages it only by shipping
+an accessibility provider of its own.</p>
+<p>The rules are narrow on purpose:</p>
+<ul>
+<li><strong>The level, not the text.</strong> Your reader is already
+reading the line. Saying the title here would speak every heading
+twice.</li>
+<li><strong>Once, on arrival.</strong> Moving about inside the heading
+says nothing further. You hear it again if you leave and come back.</li>
+<li><strong>Both modes.</strong> A rich-text heading and a Markdown
+heading announce alike.</li>
+</ul>
+<p>Applying a heading already tells you so, and the two do not double
+up. Opening a document whose first line is its title does not greet you
+with “Heading 1”.</p>
+<p><strong>Turning it off — View ▸ Announce Headings
+(Ctrl+Alt+F3).</strong> Sometimes you are reading a document <em>as
+text</em> and the levels are one sentence too many. The key turns the
+cue off and on where you stand, and says which way it went — “Headings
+will not be announced”, or “Headings announced on arrival” — rather than
+“off” and “on”, so a key pressed by accident is never a mystery. The
+choice is remembered, but it is meant to be pressed rather than set: it
+is a decision per document.</p>
+<p><strong>A <code>#</code> is not always a heading.</strong> In a
+<code>.md</code> or a <code>.txt</code>, or a document you have not
+named yet, a line starting with <code>#</code> is a heading. In a
+<code>.py</code>, <code>.sh</code>, <code>.ini</code>, <code>.yml</code>
+or <code>.conf</code> it is a comment, and QuillLite says nothing and
+lists nothing — otherwise a build script would announce “Heading 1” on
+most of its lines.</p>
 <h3 id="rearranging-them--format--structure">Rearranging them — Format ▸
 Structure</h3>
 <table>

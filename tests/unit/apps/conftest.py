@@ -608,6 +608,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
     from quill.apps.lite_window_file import DocumentFileMixin
     from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+    from quill.apps.lite_window_headings import DocumentHeadingsMixin
     from quill.apps.lite_window_history import DocumentHistoryMixin
     from quill.apps.lite_window_lines import DocumentLineMixin
     from quill.apps.lite_window_marks import DocumentMarksMixin
@@ -645,6 +646,11 @@ def lite_window(tmp_path, lite_settings):
         # handler the Help menu binds.
         DocumentUpdatesMixin,
         DocumentContextMenuMixin,
+        # Caret-move heading announcements, added 2026-09-14. Here because the
+        # formatting commands latch it after announcing themselves, so a stub
+        # without it fails on Heading 1 rather than on anything to do with
+        # structure -- and because the announcements themselves need testing.
+        DocumentHeadingsMixin,
         DocumentCommandsMixin,
     ):
         """A document window with wx removed and every output recorded."""
@@ -903,7 +909,7 @@ class DialogRecorder:
 
     **Patch where the name is looked up.** A dialog imported at module scope
     has to be replaced in the module that imported it, not where it is defined
-    -- ``lite_window_commands.choose_heading`` is a different binding from
+    -- ``lite_window_headings.choose_heading`` is a different binding from
     ``lite_dialogs.choose_heading``, and patching the second leaves the first
     untouched. The table below names both ends for that reason.
     """
@@ -928,7 +934,7 @@ class DialogRecorder:
         # Imported at module scope by their caller: patch the caller.
         "show_text_window": ("quill.apps.lite_window_commands", "show_text_window"),
         "show_text_window_marks": ("quill.apps.lite_window_marks", "show_text_window"),
-        "choose_heading": ("quill.apps.lite_window_commands", "choose_heading"),
+        "choose_heading": ("quill.apps.lite_window_headings", "choose_heading"),
         "ask_line_number": ("quill.apps.lite_window_commands", "ask_line_number"),
         "choose_special_character": (
             "quill.apps.lite_window_special_character",

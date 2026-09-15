@@ -922,6 +922,11 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.toggle_heading_announcements(),
+            id=self._id_announce_headings,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.preview_in_browser(),
             id=self._id_browser_preview,
         )

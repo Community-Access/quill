@@ -152,6 +152,7 @@
   "cmd_toggle_case": "covered",
   "cmd_toggle_dark": "covered",
   "cmd_toggle_extend_mode": "covered",
+  "cmd_toggle_heading_announcements": "covered",
   "cmd_toggle_live_spelling": "covered",
   "cmd_toggle_overwrite": "covered",
   "cmd_toggle_quiet_mode": "covered",

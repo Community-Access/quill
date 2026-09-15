@@ -322,6 +322,13 @@ COMMANDS: list[CommandRow] = [
     # an action, which is what View is for.
     ("&View", "&Dark Mode", "Alt+Shift+D", "cmd_toggle_dark", "check"),
     ("&View", "&Word Wrap", "Alt+Z", "cmd_toggle_wrap", "check"),
+    # Say "Heading 2" on arrival, or do not. A toggle rather than a buried
+    # preference because it is a per-document decision: you want it in a report
+    # and not in a file you are reading as text. Ctrl+Alt+F3 joins Ctrl+Alt+F1
+    # (tutorials) and Ctrl+Alt+F2 (support) in the family's function-key range,
+    # which is outside what the Ctrl+Alt policy is about -- F-keys are neither
+    # AltGr characters nor claimed by any default JAWS or NVDA command.
+    ("&View", "Announce &Headings", "Ctrl+Alt+F3", "cmd_toggle_heading_announcements", "check"),
     # Overtype, on QUILL's own chord. **Not** the Insert key, which is NVDA's
     # and JAWS's modifier -- binding it would fight the reader. The native
     # control answers Insert itself whatever we do, so QuillLite mirrors that

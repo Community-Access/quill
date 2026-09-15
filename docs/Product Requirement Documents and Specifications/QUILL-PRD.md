@@ -7000,6 +7000,100 @@ preference silently disappears when two machines run different builds.
 
 ---
 
+### 5.98 Structure the reader cannot see: heading and table cues (shipped)
+
+**The problem is in the control, not in the reader.** No Windows edit control
+exposes a paragraph style to the accessibility tree. `RICHEDIT50W` will tell JAWS
+or NVDA the font name, the point size and the weight; there is no property that
+says "this paragraph is a heading", and `wx.TextCtrl` has less. Word announces
+"heading level 2" because Word ships a UIA provider of its own with
+`StyleId_Heading2` behind it. Hosting a stock control buys that control's
+provider and no seam to extend it.
+
+So a heading in QUILL was, to a listener, an ordinary line -- and had been since
+the first release. Every route was affected equally: rich mode's point-size
+ladder, Markdown hashes, HTML `<h2>`, and a real `Heading 2` style read out of a
+Word document by `io/docx_reader.py`. The information survives perfectly at the
+file layer in both directions and dies at the control boundary.
+
+**QUILL says it itself.** `core/structure_announce.py` holds the rules and the
+latch; `ui/main_frame_structure.py` and `apps/lite_window_headings.py` are the
+thin wx wiring. Arriving at a heading announces **"Heading 2"** and nothing more.
+
+The restraint is the design, and each rule earns its place:
+
+- **The level, never the text.** The reader is already speaking the line as the
+  caret lands. Repeating the title would say every heading twice.
+- **Once, on arrival.** A latch keyed on the paragraph makes movement *inside* a
+  heading silent. You are told again when you leave and return.
+- **An edit is not an arrival.** The paragraph key is a line index, so deleting a
+  line above a heading moves it without the caret going anywhere. A move that
+  follows a change in the text re-latches silently, or typing would be
+  interrupted with "Heading 2".
+- **Never interrupting.** The cue queues behind the reader
+  (`force=False`; QuillLite gained `_announce(..., interrupt=False)` for it).
+  Cutting across the reader would cost the listener the very text they moved to
+  hear. This is the same ordering discipline as speak-then-spell.
+- **The first position is never announced.** A document that opens on its own
+  title would otherwise greet every user with "Heading 1".
+- **Commands do not echo.** `format_heading` and `_adjust_heading_level` already
+  announce, then `sync_structure_announcer()` moves the latch without speaking.
+- **It can be switched off where you stand.** `view.toggle_heading_announcements`
+  (**Ctrl+Alt+F3**, a View check item, the `announce_headings` setting) silences
+  both cues and restores them, announcing the consequence rather than the state.
+  This is the one place the "a verbosity setting is not the fix" rule in GATE-13
+  is deliberately not applied, and the reason is that the answer genuinely
+  differs by *document* rather than by person: writing a report, the level is
+  the point; reading a file as text, it is a sentence between you and the line.
+  A key you press in place is not the setting the rule warns about -- it is the
+  opposite of asking somebody to go and configure how much the app says. The
+  latch keeps being fed while the cue is off, so switching back on inside a
+  heading does not stay silent until you leave and return.
+- **A `#` is only a heading where `#` means heading.** QUILL was never exposed
+  here because `_effective_markup_kind()` already answers "plain" for a `.py` or
+  a `.conf`. QuillLite had no such notion and briefly read every shell comment as
+  a Heading 1; `quill.core.lite.filetypes.has_markdown_headings` now scopes it to
+  `.md` / `.markdown` / `.mdx` / `.txt` and untitled buffers. The asymmetry is
+  deliberate: a false positive is heard on every line, a false negative costs one
+  silent key.
+
+**Tables.** The same hook replaced `_maybe_announce_table_transition`, which was
+untested and said only "Entering table". Entering now gives the shape --
+**"Table, 4 rows, 3 columns"** -- and leaving still says "Out of table"; cell
+navigation (5.x, `core/table_nav.py`) is unchanged. This half is **QUILL only**:
+QuillLite passes `include_tables=False`, because accessible table navigation is a
+full-QUILL feature and announcing the edge of a grid the small editor cannot then
+navigate advertises something that is not there. That does not offend the
+QuillLite rule, which forbids Lite being *ahead* of QUILL, never the reverse.
+
+**Two defects surfaced on the way and were fixed with it.**
+
+*Heading navigation refused in plain text.* QuillLite's Next Heading, Previous
+Heading and headings list answered "Headings are only available in rich text" in
+documents whose Markdown headings **Alt+Shift+Right would happily re-level**.
+Only navigation pretended the document had no shape. They now read
+`core/markdown_sections.parse_heading_blocks`, so a `#` inside a fenced code
+block is correctly not a heading -- which a regex would have got wrong.
+
+*A heading saved to RTF was not a heading.* `io/rtf.py` emitted `\b` and an
+outline level with no style reference and no point size. Word showed "Normal" in
+its style box and an empty navigation pane; worse, reopened in QUILL's rich mode
+every heading came back as a **Heading 4 whatever level it went out as**, because
+the ladder recognises a heading by its size and the file carried none. The writer
+now emits a `\stylesheet` declaring Word's built-in `heading 1`-`heading 6`
+(`io/rtf_styles.py`) and stamps each heading with `\sN` plus the editor's own
+point size. That is why the ladder moved to `core/heading_ladder.py`: `quill/io`
+may not import `quill/ui`, and a second copy of those numbers is a silent
+round-trip bug.
+
+**Prior art.** Leasey 11.5 solves the same problem the same way and with no UIA
+anywhere -- `accessible_output2` plus its own `heading_positions`,
+`imported_word_tables` and `announce_word_table_cell` models, backed by a
+JAWS-only script layer QUILL deliberately does not have. Confirmation that
+self-narration is the answer available to any hosted control, not a workaround.
+
+---
+
 ## 6. Spell checking deep dive
 
 ### 6.1 The TinySpell question

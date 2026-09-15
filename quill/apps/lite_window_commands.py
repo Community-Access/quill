@@ -28,7 +28,6 @@ import wx
 
 from quill.apps.lite_dialogs import (
     ask_line_number,
-    choose_heading,
     show_text_window,
 )
 from quill.apps.lite_window_find import DocumentFindMixin
@@ -324,44 +323,6 @@ class DocumentCommandsMixin(
         self.control.ShowPosition(position)
         self.control.SetFocus()
         self._touch_status()
-
-    # ------------------------------------------------------------------ #
-    # Navigate
-    # ------------------------------------------------------------------ #
-
-    def _navigate_heading(self, *, reverse: bool) -> None:
-        if self.editor.mode != RICH:
-            self._announce("Headings are only available in rich text")
-            return
-        found = self.editor.next_heading(self.control.GetInsertionPoint(), reverse=reverse)
-        if found is None:
-            self._announce("No previous heading" if reverse else "No next heading")
-            return
-        start, level = found
-        self._go_to(start)
-        # The level *and* the text: the level alone says what shape the document
-        # is, not where in it the caret has landed.
-        self._announce(f"Heading {level}: {self.editor.paragraph_text_at(start)}")
-
-    def cmd_next_heading(self) -> None:
-        self._navigate_heading(reverse=False)
-
-    def cmd_previous_heading(self) -> None:
-        self._navigate_heading(reverse=True)
-
-    def cmd_list_headings(self) -> None:
-        if self.editor.mode != RICH:
-            self._announce("Headings are only available in rich text")
-            return
-        headings = self.editor.all_headings()
-        if not headings:
-            self._announce("No headings in this document")
-            return
-        target = choose_heading(self, headings)
-        if target is None:
-            self.control.SetFocus()
-            return
-        self._go_to(target)
 
     # ------------------------------------------------------------------ #
     # Window and help

@@ -17,7 +17,14 @@ import re
 from pathlib import Path
 
 from quill.core.document import Document
+from quill.core.heading_ladder import HEADING_POINT_SIZES
 from quill.io.rtf_safety import RtfSafetyReport, scan_rtf_safety
+from quill.io.rtf_styles import (
+    DEFAULT_HALF_POINTS,
+    RtfTables,
+    escape_rtf_text,
+    heading_stylesheet,
+)
 
 __all__ = [
     "markdown_to_rtf",
@@ -67,44 +74,6 @@ _LINE_SPACING_CONTROL = {
     "1.5": "\\sl360\\slmult1",
     "2": "\\sl480\\slmult1",
 }
-_NAMED_COLORS: dict[str, tuple[int, int, int]] = {
-    "red": (255, 0, 0),
-    "green": (0, 128, 0),
-    "blue": (0, 0, 255),
-    "black": (0, 0, 0),
-    "white": (255, 255, 255),
-    "yellow": (255, 255, 0),
-    "orange": (255, 165, 0),
-    "purple": (128, 0, 128),
-    "gray": (128, 128, 128),
-    "grey": (128, 128, 128),
-}
-
-
-def _parse_pairs(raw: str) -> dict[str, str]:
-    attrs: dict[str, str] = {}
-    for match in _ATTR_PAIR_RE.finditer(raw):
-        if match.group(1) is not None:
-            attrs[match.group(1).lower()] = match.group(2)
-        elif match.group(3) is not None:
-            attrs.setdefault(match.group(3).lower(), "")
-    return attrs
-
-
-def _parse_color(value: str) -> tuple[int, int, int] | None:
-    text = value.strip()
-    if text.startswith("#"):
-        digits = text[1:]
-        if len(digits) == 3:
-            digits = "".join(char * 2 for char in digits)
-        if len(digits) == 6:
-            try:
-                return (int(digits[0:2], 16), int(digits[2:4], 16), int(digits[4:6], 16))
-            except ValueError:
-                return None
-        return None
-    return _NAMED_COLORS.get(text.lower())
-
 
 _FIELD_RE = re.compile(
     r'\{\\field\{\\\*\\fldinst\s*HYPERLINK\s*"([^"]*)"\s*\}\{\\fldrslt\s*(.*?)\}\}',
@@ -132,67 +101,22 @@ _SKIP_DESTINATIONS = {
 }
 
 
+def _parse_pairs(raw: str) -> dict[str, str]:
+    attrs: dict[str, str] = {}
+    for match in _ATTR_PAIR_RE.finditer(raw):
+        if match.group(1) is not None:
+            attrs[match.group(1).lower()] = match.group(2)
+        elif match.group(3) is not None:
+            attrs.setdefault(match.group(3).lower(), "")
+    return attrs
+
+
 # --------------------------------------------------------------------------- #
 # Markdown -> RTF
 # --------------------------------------------------------------------------- #
-def _escape_rtf_text(text: str) -> str:
-    out: list[str] = []
-    for char in text:
-        code = ord(char)
-        if char in "\\{}":
-            out.append("\\" + char)
-        elif code < 128:
-            out.append(char)
-        else:
-            out.append(f"\\u{code}?")
-    return "".join(out)
 
 
-class _RtfTables:
-    """Font and color tables built in a pre-pass and referenced by the writer.
-
-    Index 0 is reserved in both tables (``\\f0`` Calibri default; color index 0 is
-    the RTF "auto" slot), so user fonts/colors start at index 1.
-    """
-
-    def __init__(self) -> None:
-        self.fonts: dict[str, int] = {}
-        self.colors: dict[tuple[int, int, int], int] = {}
-
-    def font_index(self, family: str) -> int:
-        key = family.strip()
-        if not key:
-            return 0
-        if key not in self.fonts:
-            self.fonts[key] = len(self.fonts) + 1
-        return self.fonts[key]
-
-    def color_index(self, value: str) -> int:
-        rgb = _parse_color(value)
-        if rgb is None:
-            return 0
-        if rgb not in self.colors:
-            self.colors[rgb] = len(self.colors) + 1
-        return self.colors[rgb]
-
-    def font_table(self) -> str:
-        entries = ["{\\f0 Calibri;}"]
-        for family, index in sorted(self.fonts.items(), key=lambda item: item[1]):
-            entries.append(f"{{\\f{index} {_escape_rtf_text(family)};}}")
-        return "{\\fonttbl" + "".join(entries) + "}"
-
-    def color_table(self) -> str:
-        if not self.colors:
-            return ""
-        # Color indices are assigned in insertion order (1..N); sorting by index
-        # restores that order for the table body.
-        ordered = sorted(self.colors.items(), key=lambda item: item[1])
-        body = "".join(f"\\red{rgb[0]}\\green{rgb[1]}\\blue{rgb[2]};" for rgb, _index in ordered)
-        # Leading ';' produces the empty auto entry at index 0.
-        return "{\\colortbl;" + body + "}"
-
-
-def _span_controls(raw: str, tables: _RtfTables) -> tuple[str, str]:
+def _span_controls(raw: str, tables: RtfTables) -> tuple[str, str]:
     """Return ``(open, close)`` RTF control runs for a span's attributes."""
     attrs = _parse_pairs(raw)
     opens: list[str] = []
@@ -257,14 +181,14 @@ def _block_controls(attrs: dict[str, str], *, include_indent: bool) -> str:
     return "".join(parts)
 
 
-def _inline_to_rtf(text: str, tables: _RtfTables) -> str:
+def _inline_to_rtf(text: str, tables: RtfTables) -> str:
     result: list[str] = []
     index = 0
     length = len(text)
     while index < length:
         link = _LINK_MD_RE.match(text, index)
         if link:
-            url = _escape_rtf_text(link.group(2))
+            url = escape_rtf_text(link.group(2))
             label = _inline_to_rtf(link.group(1), tables)
             result.append(f'{{\\field{{\\*\\fldinst HYPERLINK "{url}"}}{{\\fldrslt {label}}}}}')
             index = link.end()
@@ -291,7 +215,7 @@ def _inline_to_rtf(text: str, tables: _RtfTables) -> str:
                 result.append("{\\i " + _inline_to_rtf(text[index + 1 : close], tables) + "}")
                 index = close + 1
                 continue
-        result.append(_escape_rtf_text(text[index]))
+        result.append(escape_rtf_text(text[index]))
         index += 1
     return "".join(result)
 
@@ -306,7 +230,7 @@ def markdown_to_rtf(markdown: str) -> str:
     and page breaks (``::: pagebreak``). Fonts and colors are collected into RTF
     font and color tables in a single pass over the body.
     """
-    tables = _RtfTables()
+    tables = RtfTables()
     body: list[str] = []
     block: dict[str, str] = {}
     for line in markdown.split("\n"):
@@ -325,7 +249,17 @@ def markdown_to_rtf(markdown: str) -> str:
         if heading:
             level = len(heading.group(1))
             content = _inline_to_rtf(heading.group(2), tables)
-            body.append(f"\\pard{prefix}\\outlinelevel{level - 1}\\b {content}\\b0\\par")
+            # A real Word heading, not merely bold text that happens to be large:
+            # the \sN reference is what fills Word's style box and its navigation
+            # pane, and the size is the editor's own ladder so a saved file reopens
+            # at the level it was saved at. The trailing reset matters because
+            # \pard resets the paragraph and not the font -- without it every
+            # paragraph after a heading would inherit the heading's size.
+            half_points = int(round(HEADING_POINT_SIZES[level] * 2))
+            body.append(
+                f"\\pard{prefix}\\s{level}\\outlinelevel{level - 1}\\keepn"
+                f"\\b\\fs{half_points} {content}\\b0\\fs{DEFAULT_HALF_POINTS}\\par"
+            )
             continue
         item = _LIST_RE.match(line)
         if item:
@@ -336,7 +270,13 @@ def markdown_to_rtf(markdown: str) -> str:
             )
             continue
         body.append(f"\\pard{prefix} {_inline_to_rtf(line, tables)}\\par")
-    header = "{\\rtf1\\ansi\\deff0" + tables.font_table() + tables.color_table() + "\n"
+    header = (
+        "{\\rtf1\\ansi\\deff0"
+        + tables.font_table()
+        + tables.color_table()
+        + heading_stylesheet()
+        + "\n"
+    )
     return header + "\n".join(body) + "\n}"
 
 

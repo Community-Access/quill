@@ -20,6 +20,7 @@
   "announce_counts": "documented",
   "announce_dialog_transitions": "documented",
   "announce_formatting_on_move": "grandfathered",
+  "announce_headings": "documented",
   "announce_indent_depth": "grandfathered",
   "announce_mode_changes": "grandfathered",
   "announce_punctuation_level": "grandfathered",

@@ -71,6 +71,21 @@ QuillLite gets them by *using* QUILL's code, not by copying its conclusions:
   a saved RTF reads as headings in Word. Each level has a size of its own so the
   ladder can be read *back*: a level the editor can set and heading navigation
   cannot find is worse than a level that does not exist.
+- **Saying that a heading is a heading** (`quill/core/structure_announce.py`,
+  shared with QUILL). The ladder is invisible to a screen reader, and not
+  because the reader is failing: no Windows edit control exposes a paragraph
+  style at all, so `RICHEDIT50W` can offer JAWS the font size and the weight and
+  has no property that means "heading". Word announces heading levels only by
+  shipping an accessibility provider of its own. QuillLite therefore says
+  "Heading 2" itself, on arrival, level only, once -- and **queued behind the
+  reader rather than interrupting it**, because the reader is mid-line when the
+  cue fires and cutting across it would cost the listener the text they moved
+  to hear. Plain-text documents get the same cue over Markdown hashes -- but
+  only where a hash means a heading: `.md`, `.txt` and untitled buffers, never
+  the `.py` / `.sh` / `.ini` files a Notepad replacement opens all day, where a
+  leading `#` is a comment. **Ctrl+Alt+F3** turns the cue off and on in place,
+  because whether structure is what you are listening for is a decision per
+  document rather than a preference to set once.
 - **The dialog contract.** Every modal goes through `show_modal_dialog`, which
   announces the transition, installs F1 help and infers the accessible names
   macOS VoiceOver needs.
@@ -162,7 +177,8 @@ ladder and rewriting them would silently re-level every heading in the document.
 |---|---|
 | Plain text and rich text, one document each | The two things Notepad and WordPad are |
 | Headings 1–4, bold/italic/underline, alignment, fonts | The formatting a WordPad user expects, on QUILL's ladder |
-| Heading navigation and a headings list | The reason a screen-reader user prefers a structured document at all |
+| Heading navigation and a headings list, in **both** modes | The reason a screen-reader user prefers a structured document at all; plain text has Markdown headings and they are real |
+| A spoken "Heading 2" on arrival | Nothing else in the stack can say it — see the heading ladder above |
 | Describe Formatting at the cursor | QUILL's own answer to "what am I standing in?" |
 | Find, Replace, Go to Line | Non-negotiable in any editor |
 | A **focusable** status bar (F6) | See §4.2 |

@@ -40,6 +40,12 @@ import sys
 import tempfile
 from typing import Any
 
+from quill.core.heading_ladder import (
+    BODY_POINT_SIZE,
+    HEADING_POINT_SIZES,
+    heading_level_for_font,
+)
+
 SURFACE_KIND = "richedit_rtf"
 
 # EM_GETOLEINTERFACE (richedit.h) -> the control's IRichEditOle.
@@ -84,37 +90,10 @@ _TOM_UNIT_PARAGRAPH = 4
 #: document can never make heading navigation loop unbounded.
 _MAX_HEADING_SCAN_PARAGRAPHS = 100000
 
-#: Rich-mode heading presentation: point size + bold per level, chosen to track
-#: Word's Heading 1-6 ladder closely enough that a saved RTF reads as headings
-#: in Word while staying legible in the editor. Body text is 11 pt.
-#:
-#: **Every level has a size of its own.** Levels 5 and 6 were both 11 pt, which
-#: is also the body size -- so the ladder could not tell a Heading 5 from an
-#: ordinary paragraph, ``heading_level_for_font`` refused to report either, and
-#: a document with them had headings that heading *navigation* could not find.
-#: A level you can apply and cannot then move to is worse than a level that does
-#: not exist, so the two were never offered in a menu. They are now 11.5 and
-#: 10.5: half a point either side of body text, far enough apart for the 0.25
-#: tolerance below to separate them, and Word's own ladder likewise runs its
-#: last heading level below body size.
-HEADING_POINT_SIZES: dict[int, float] = {1: 20.0, 2: 16.0, 3: 14.0, 4: 12.0, 5: 11.5, 6: 10.5}
-BODY_POINT_SIZE = 11.0
-
-
-def heading_level_for_font(size: float, bold: bool) -> int | None:
-    """The rich-mode heading level a paragraph's font implies, or ``None``.
-
-    A heading is bold and matches one of the six heading point sizes. Body text
-    is 11 pt and is not one of them, so bold body text is still body text --
-    which is the one case this has to get right, because bolding a word is the
-    commonest thing anybody does to a paragraph.
-    """
-    if not bold:
-        return None
-    for level, points in HEADING_POINT_SIZES.items():
-        if abs(float(size) - points) < 0.25:
-            return level
-    return None
+#: The heading ladder itself lives in :mod:`quill.core.heading_ladder` (imported
+#: at the top of this module and re-exported): the RTF writer must emit the same
+#: point sizes the editor reads back, ``quill/io`` may not import ``quill/ui``,
+#: and a second copy of the numbers is a silent round-trip bug.
 
 
 #: Named colors accepted by set_color/set_highlight, mirroring the hidden-codes

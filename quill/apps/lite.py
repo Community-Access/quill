@@ -45,6 +45,7 @@ from quill.apps.lite_printing import PrintSettings
 from quill.apps.lite_services import LiteServicesMixin
 from quill.apps.lite_shell import QuillLiteShell
 from quill.apps.lite_updates import check_at_launch
+from quill.apps.lite_voice import ScreenReaderVoice
 from quill.apps.lite_window import DocumentFrame
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite import features as features_mod
@@ -73,72 +74,6 @@ OPTIONAL_COMPONENTS: tuple[str, ...] = ()
 #: second is below the threshold at which opening a file from Explorer feels
 #: like a delay, and far above the cost of one ``glob`` on an empty directory.
 _INBOX_POLL_MS = 500
-
-
-class ScreenReaderVoice:
-    """Announcements, through a running screen reader and nowhere else.
-
-    QuillLite has **no self-voicing fallback** -- no SAPI, no synthesized voice
-    of its own -- and that is a decision rather than an omission. A second voice
-    talking over NVDA or JAWS is worse than silence, and a listener who has no
-    screen reader running is not the person this editor is for; for them the
-    same messages are in the status bar, which is where the window puts them.
-
-    The delivery itself is QUILL's, not a private copy: the family's
-    :class:`~quill.platform.windows.prism_bridge.AnnouncementEngine` reaches
-    NVDA and JAWS through Prism or accessible_output2 and Narrator through a UIA
-    notification. The one thing added here is the guard -- nothing is handed to
-    the engine unless a reader is actually running, which is what keeps its SAPI
-    fallback from ever being reached.
-    """
-
-    #: How long a screen-reader detection is trusted before re-probing. A reader
-    #: started mid-session is picked up within this; enumerating processes on
-    #: every announcement would not be.
-    _PROBE_INTERVAL_SECONDS = 30.0
-
-    def __init__(self) -> None:
-        self._engine: Any | None = None
-        self._reader_present = False
-        self._probed_at = 0.0
-
-    def _reader_running(self) -> bool:
-        import time
-
-        now = time.monotonic()
-        if now - self._probed_at < self._PROBE_INTERVAL_SECONDS and self._probed_at:
-            return self._reader_present
-        self._probed_at = now
-        try:
-            from quill.platform.windows.sr_detect import detect_screen_reader
-
-            self._reader_present = detect_screen_reader().detected
-        except Exception:  # noqa: BLE001 - detection must never break an announcement
-            self._reader_present = False
-        return self._reader_present
-
-    def speak(self, message: str) -> None:
-        """Say *message* if a screen reader is listening. Never raises."""
-        text = (message or "").strip()
-        if not text or not self._reader_running():
-            return
-        try:
-            if self._engine is None:
-                from quill.platform.windows.prism_bridge import AnnouncementEngine
-
-                # "prism" rather than "auto": auto is allowed to self-voice.
-                self._engine = AnnouncementEngine("prism")
-            self._engine.announce(text, force_speech=True)
-        except Exception:  # noqa: BLE001 - the status bar still carries the message
-            self._engine = None
-
-    def backend_name(self) -> str:
-        """What is serving speech right now, for the ``--check`` diagnostic."""
-        if not self._reader_running():
-            return "none (no screen reader running)"
-        self.speak("")  # builds the engine without saying anything
-        state = getattr(self._engine, "state", None)
-        return str(state().backend_name) if callable(state) else "unknown"
 
 
 class QuillLiteApp(LiteServicesMixin, wx.App):

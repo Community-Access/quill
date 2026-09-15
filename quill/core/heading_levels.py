@@ -27,7 +27,14 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
-__all__ = ["MAX_LEVEL", "MIN_LEVEL", "HeadingChange", "LevelResult", "adjust_heading_level"]
+__all__ = [
+    "MAX_LEVEL",
+    "MIN_LEVEL",
+    "HeadingChange",
+    "LevelResult",
+    "adjust_heading_level",
+    "heading_level_at",
+]
 
 #: Markdown and HTML both stop at six, so both products do.
 MIN_LEVEL = 1
@@ -74,6 +81,26 @@ def _line_span(text: str, caret: int) -> tuple[int, int]:
     start = text.rfind("\n", 0, caret) + 1
     end = text.find("\n", start)
     return start, len(text) if end == -1 else end
+
+
+def heading_level_at(text: str, caret: int, *, markup_kind: str = "markdown") -> int:
+    """The heading level of the caret's line, or ``0`` for body text.
+
+    Lives here so that "is this line a heading" is answered by the same two
+    patterns that :func:`adjust_heading_level` promotes and demotes. A second
+    regex somewhere else is a second answer, and the caret-move announcer
+    calling one while Alt+Shift+Right obeys the other is exactly the drift that
+    makes an editor feel unreliable to somebody who cannot see the font.
+    """
+    if markup_kind not in {"markdown", "html"}:
+        return 0
+    start, end = _line_span(text, caret)
+    line = text[start:end]
+    if markup_kind == "markdown":
+        match = _MARKDOWN.match(line)
+        return len(match.group(1)) if match else 0
+    html_match = _HTML.match(line)
+    return int(html_match.group(1)) if html_match else 0
 
 
 def adjust_heading_level(

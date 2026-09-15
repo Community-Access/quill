@@ -6,8 +6,10 @@ the grouping is by "what a listener gets back" rather than by menu:
 * **Find Next before Find.** ``_repeat_find`` opens the Find window when there
   is nothing to repeat, which is the difference between F3 doing nothing and F3
   being useful on a fresh document.
-* **Heading navigation refuses in plain text**, and the refusal is a sentence
-  rather than a silence -- the whole point of the group.
+* **Heading navigation works in both modes**, over the point-size ladder in
+  rich text and over Markdown hashes in plain -- and says so when a document
+  genuinely has none, because a silent key is indistinguishable from a broken
+  one.
 * **The six numbered bookmarks** exist to be pressed by number and answered by
   number, so the number in the sentence has to be the one that was pressed.
 * **Window cycling** is direction-carrying: Ctrl+Tab and Ctrl+Shift+Tab differ
@@ -163,12 +165,21 @@ def _findable():
         lambda w: w.cmd_list_headings(),
     ],
 )
-def test_heading_commands_say_why_they_do_nothing_in_plain_text(lite_window, invoke):
-    """QuillLite's headings are a rich-text font ladder, so a plain document has
-    none. Saying so beats three keys that appear broken."""
+def test_heading_commands_say_there_are_none_when_the_document_has_none(lite_window, invoke):
+    """A plain document with no Markdown hashes genuinely has no headings.
+
+    It used to refuse with "only available in rich text", which was wrong in
+    the way that matters: plain mode's headings are Markdown, Alt+Shift+Right
+    changes their level quite happily, and only *navigation* pretended the
+    document had no structure at all.
+    """
     win = lite_window("Title\nbody", mode=PLAIN)
     invoke(win)
-    assert win.announcements[-1] == "Headings are only available in rich text"
+    assert win.announcements[-1] in {
+        "No next heading",
+        "No previous heading",
+        "No headings in this document",
+    }
 
 
 def test_next_heading_moves_and_says_the_level_and_the_text(lite_window):

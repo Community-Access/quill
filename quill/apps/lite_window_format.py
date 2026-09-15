@@ -94,6 +94,9 @@ class DocumentFormatCommandsMixin:
             return
         self._set_modified(True)
         self._announce(f"Heading {level}" if level else "Body text")
+        # Already said. Latch it so the caret hook that fires next does not say
+        # it again a moment later.
+        self.sync_structure_announcer()
 
     def _shift_heading(self, delta: int) -> None:
         """Promote or demote the heading the cursor is in, in either mode.
@@ -151,6 +154,7 @@ class DocumentFormatCommandsMixin:
         self._set_modified(True)
         self._touch_status()
         self._announce(f"Heading {change.new_level}")
+        self.sync_structure_announcer()
 
     def cmd_promote_heading(self) -> None:
         """Alt+Shift+Left: one level shallower, towards Heading 1."""

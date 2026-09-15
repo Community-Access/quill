@@ -906,6 +906,61 @@ person can check that pressing the key afterwards does the thing.
   list is empty rather than stale.
 - [ ] pass  [ ] fail: ______
 
+**L-113. A heading says it is a heading**
+- Do: in a **rich text** document type three lines, make the second one a
+  Heading 2 (Ctrl+Alt+2), then arrow down onto it from the line above, arrow
+  right a few characters along it, arrow back off it and onto it again.
+- Pass: arriving on the line says **"Heading 2"** and nothing else -- not the
+  text of the heading, which your reader has just read. Moving *along* the
+  heading says nothing further. Leaving and returning says it again.
+- Pass: the cue arrives **after** your reader has read the line, not on top of
+  it. If it cuts the line off, that is a fail and the finding to write down.
+- Pass: applying Ctrl+Alt+2 in the first place says "Heading 2" once, not
+  twice.
+- [ ] pass  [ ] fail: ______
+
+**L-114. The same is true of a plain-text document**
+- Do: switch to plain text (Ctrl+Shift+M), type `## Section two` on its own
+  line with ordinary text above and below, and arrow onto it.
+- Pass: "Heading 2", on the same terms as L-113.
+- Do: with the cursor above it, press Ctrl+Alt+H for Next Heading, then
+  Ctrl+Alt+L for the headings list.
+- Pass: both work. Neither says "Headings are only available in rich text" --
+  that refusal was the bug. The list offers the Markdown headings and Enter
+  moves to the one you pick.
+- Do: open a document that has no headings at all and press Ctrl+Alt+H.
+- Pass: "No next heading" -- a sentence, not silence.
+- Do: press F6 for the status bar and arrow to the **Heading** cell, with the
+  cursor first on `## Section two` and then on an ordinary line.
+- Pass: "Heading 2", then "Body text". It used to read "Not in rich text",
+  which was wrong in a document that has headings and a cell whose Enter key
+  lists them.
+- [ ] pass  [ ] fail: ______
+
+**L-115. Announce Headings can be turned off, and says so**
+- Do: with the cursor on a heading, press **Ctrl+Alt+F3**, then arrow off the
+  heading and back onto it. Press Ctrl+Alt+F3 again.
+- Pass: the first press says "Headings will not be announced" and the heading
+  is then silent on arrival; the second says "Headings announced on arrival"
+  and it comes back. **View ▸ Announce Headings** shows a tick that matches.
+- Pass: closing and reopening QuillLite remembers the choice.
+- [ ] pass  [ ] fail: ______
+
+**L-116. A shell script is not a document full of headings**
+- Do: open (or paste and save as) a `.sh` or `.py` file with several `#`
+  comment lines. Arrow down through it, then press Ctrl+Alt+L.
+- Pass: no comment is announced as a heading, and the headings list says there
+  are none. Then do the same in a `.md` or `.txt` file with `## Section` lines:
+  those *are* headings, announced and listed.
+- [ ] pass  [ ] fail: ______
+
+**L-117. Nothing new is chatty**
+- Do: type a paragraph of ordinary prose, arrowing about in it; then put the
+  cursor in a heading and delete the line above it.
+- Pass: body text is silent throughout. Deleting a line above a heading does
+  **not** announce the heading -- the text moved, you did not.
+- [ ] pass  [ ] fail: ______
+
 ---
 
 ## Sign-off

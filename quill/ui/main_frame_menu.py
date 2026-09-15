@@ -766,6 +766,7 @@ class MenuBuilderMixin:
         self._id_preview = wx.NewIdRef()
         self._id_split_preview = wx.NewIdRef()
         self._id_focus_preview = wx.NewIdRef()
+        self._id_announce_headings = wx.NewIdRef()
         self._id_toggle_auto_side_preview = wx.NewIdRef()
         self._id_start_with_no_document_open = wx.NewIdRef()
         self._id_dirty_title_text = wx.NewIdRef()
@@ -797,6 +798,14 @@ class MenuBuilderMixin:
             self._id_focus_preview,
             self._menu_label(_("&Focus Preview"), "view.focus_preview"),
         )
+        # A state rather than an action, so a check item: you need to be able to
+        # find out whether headings are being announced without pressing the key
+        # and listening for what changed.
+        self._announce_headings_item = view_menu.AppendCheckItem(
+            self._id_announce_headings,
+            self._menu_label(_("Announce Hea&dings"), "view.toggle_heading_announcements"),
+        )
+        self._announce_headings_item.Check(bool(getattr(self.settings, "announce_headings", True)))
         view_menu.Append(
             self._id_browser_preview,
             self._menu_label(_("&Browser Preview..."), "view.browser_preview"),

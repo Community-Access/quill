@@ -48,6 +48,10 @@ class DocumentAppearanceMixin:
         self._apply_editor_help()
         self._update_title()
         self._touch_status()
+        # A new document (or the same one in the other mode) is a new structure.
+        # Forgetting the old caret surroundings is what stops the first arrow
+        # key in the new buffer from announcing a heading the user never left.
+        self.reset_structure_announcer()
 
     def switch_mode(self, mode: str) -> None:
         """Move this document between plain and rich, keeping the text."""

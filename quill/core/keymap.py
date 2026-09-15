@@ -477,6 +477,12 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "table.cell_above": "Ctrl+Alt+Up",  # §edsharp-ok — table cell navigation
     "table.first_cell": "Ctrl+Alt+Home",  # §edsharp-ok — table cell navigation
     "table.last_cell": "Ctrl+Alt+End",  # §edsharp-ok — table cell navigation
+    # Announce Headings, on the family's function-key range. Ctrl+Alt+F1 is
+    # Tutorials and Ctrl+Alt+F2 is Get Help from Support; F3 joins them, and the
+    # same reasoning exempts it from the Ctrl+Alt policy (menu_lint.py): the
+    # policy is about AltGr on character keys and about the readers' own
+    # Ctrl+Alt+letter/arrow commands, and a function key is neither.
+    "view.toggle_heading_announcements": "Ctrl+Alt+F3",  # §edsharp-ok — family F-key
     "table.row_start": "Alt+Home",
     "table.row_end": "Alt+End",
     "power.paste_html_as_markdown": "Ctrl+Shift+Grave, M",

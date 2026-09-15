@@ -200,6 +200,32 @@
 <h2 id="unreleased">Unreleased</h2>
 <h3 id="added">Added</h3>
 <ul>
+<li><p><strong>Headings announce themselves.</strong> Arrow onto a
+heading and QuillLite says “Heading 2”. It has to say it, because no
+Windows edit control exposes a paragraph style to a screen reader – JAWS
+and NVDA could see the font size and the weight and nothing else, so a
+heading read out exactly like body text. The level only, once on
+arrival, and in both rich text and Markdown.</p></li>
+<li><p><strong>Heading navigation works in plain text.</strong> Next
+Heading, Previous Heading and the headings list refused outright in a
+plain document – “Headings are only available in rich text” – in
+documents whose Markdown headings Alt+Shift+Right would happily
+re-level. They now walk the hashes, and a <code>#</code> inside a fenced
+code block is correctly not a heading. The status bar’s
+<strong>Heading</strong> cell read “Not in rich text” in those same
+documents – wrong twice over, since pressing Enter on it has always
+opened a working list of them – and now reads the level.</p></li>
+<li><p><strong>View &gt; Announce Headings (Ctrl+Alt+F3)</strong> turns
+the cue off and back on where you stand, saying which way it went rather
+than “on” and “off”. Reading a document as text is a different job from
+writing one.</p></li>
+<li><p><strong>A <code>#</code> is only a heading where <code>#</code>
+means heading.</strong> A <code>.md</code>, a <code>.txt</code> or an
+untitled buffer has Markdown headings; a <code>.py</code>,
+<code>.sh</code>, <code>.ini</code>, <code>.yml</code> or
+<code>.conf</code> does not, because there a leading <code>#</code> is a
+comment – and QuillLite is the editor people open build scripts
+in.</p></li>
 <li><p><strong>Tools &gt; Back Up Settings… (Ctrl+Alt+Shift+Q)</strong>
 and <strong>Tools &gt; Restore Settings… (Ctrl+Alt+Shift+D).</strong>
 Write your configuration to a <code>.qsf</code> file and put it back on

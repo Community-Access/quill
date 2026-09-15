@@ -101,6 +101,15 @@ class Settings:
     font_name: str = ""
     font_size: int = 12
     word_wrap: bool = True
+    #: Say "Heading 2" when the caret arrives on a heading. On, because nothing
+    #: else in the stack can say it -- no Windows edit control exposes a
+    #: paragraph style, so with this off a heading reads exactly like ordinary
+    #: text. Off is for the person editing a document *as* text, where the
+    #: structure is not what they are listening for, and for anyone who finds
+    #: it one sentence too many. Ctrl+Alt+F3 toggles it without leaving the
+    #: document, which is the point: it is a per-task decision, not a
+    #: preference you set once.
+    announce_headings: bool = True
     # How a hard line break is written in Markdown: "backslash" or "spaces".
     # Shared with QUILL, which must never be behind QuillLite (#1488).
     markdown_hard_break_style: str = "backslash"

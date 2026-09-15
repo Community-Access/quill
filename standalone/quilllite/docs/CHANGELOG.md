@@ -4,6 +4,27 @@
 
 ### Added
 
+- **Headings announce themselves.** Arrow onto a heading and QuillLite says
+  "Heading 2". It has to say it, because no Windows edit control exposes a
+  paragraph style to a screen reader -- JAWS and NVDA could see the font size
+  and the weight and nothing else, so a heading read out exactly like body text.
+  The level only, once on arrival, and in both rich text and Markdown.
+- **Heading navigation works in plain text.** Next Heading, Previous Heading and
+  the headings list refused outright in a plain document -- "Headings are only
+  available in rich text" -- in documents whose Markdown headings Alt+Shift+Right
+  would happily re-level. They now walk the hashes, and a `#` inside a fenced
+  code block is correctly not a heading. The status bar's **Heading** cell read
+  "Not in rich text" in those same documents -- wrong twice over, since pressing
+  Enter on it has always opened a working list of them -- and now reads the
+  level.
+- **View > Announce Headings (Ctrl+Alt+F3)** turns the cue off and back on where
+  you stand, saying which way it went rather than "on" and "off". Reading a
+  document as text is a different job from writing one.
+- **A `#` is only a heading where `#` means heading.** A `.md`, a `.txt` or an
+  untitled buffer has Markdown headings; a `.py`, `.sh`, `.ini`, `.yml` or
+  `.conf` does not, because there a leading `#` is a comment -- and QuillLite is
+  the editor people open build scripts in.
+
 - **Tools > Back Up Settings... (Ctrl+Alt+Shift+Q)** and **Tools > Restore
   Settings... (Ctrl+Alt+Shift+D).** Write your configuration to a `.qsf` file
   and put it back on another machine. What describes *this* computer -- the

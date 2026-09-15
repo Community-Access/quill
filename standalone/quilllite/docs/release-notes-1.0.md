@@ -91,6 +91,49 @@ To move between them:
 around. We would rather tell you that now than have you find it out while
 looking for a document you thought you had lost.
 
+### A heading tells you it is a heading
+
+Make a line a heading, arrow away, and arrow back onto it. QuillLite says
+**"Heading 2"**.
+
+That sounds like it should have worked all along, and here is why it did not.
+Your screen reader can only read what a program hands it, and the text box every
+Windows editor is built on -- Notepad's, WordPad's, ours -- has no way to say
+"this paragraph is a heading". It can pass on the font and the size and nothing
+more. Word manages it by building its own machinery for the job. So a heading,
+to a listener, read exactly like an ordinary sentence.
+
+QuillLite now says it instead. Three things about how:
+
+- **The level, and not the text.** Your reader is already reading the line. You
+  do not need to hear the title twice.
+- **Once, when you get there.** Moving about inside the heading stays quiet.
+  Leave it and come back and you are told again.
+- **After your reader, never over it.** The cue waits its turn, so you keep the
+  words you moved there to hear.
+
+It works the same in a plain-text document, where a heading is a line starting
+with `#`. That is new too: **Next Heading**, **Previous Heading** and the
+headings list used to refuse in plain text -- "Headings are only available in
+rich text" -- in documents whose headings the Promote and Demote keys were
+perfectly happy to change. They walk those documents now, and the status bar's
+**Heading** cell reads the level there as well instead of saying it cannot.
+
+If you would rather not hear it -- you are reading the file as text, and the
+levels are between you and the words -- **View ▸ Announce Headings**, or
+**Ctrl+Alt+F3**, turns it off where you stand and back on the same way. It tells
+you which way it went, not just "on" or "off".
+
+And a `#` is only a heading where a `#` means a heading. In a `.md`, a `.txt` or
+a document you have not named yet, it is. In a `.py`, a `.sh` or an `.ini` it is
+a comment, and QuillLite leaves it alone -- otherwise opening a build script
+would have it announcing "Heading 1" down most of the page.
+
+One more thing came with it, in QUILL for All rather than here: a heading saved
+to an `.rtf` file is now a proper Word heading. It used to be big bold text with
+no style attached, so Word's navigation pane showed nothing -- and QUILL itself,
+reopening the file, read every level back as a Heading 4.
+
 ### A status bar you can read
 
 Press **F6** to step into the status bar, then use the arrow keys to move along
