@@ -141,14 +141,18 @@ def ql_resolve_runtime(self_path: str, local_appdata: str | None = None) -> QlRu
             else os.environ.get("XDG_DATA_HOME")
         )
 
-    shared = try_shared_runtime(local_appdata)
-    if shared is not None:
-        return shared
-
+    # Private FIRST: a launcher shipped beside its own interpreter is a
+    # self-contained install and must answer for itself. MUST match the order
+    # in runtime_resolve.c::ql_resolve_runtime -- see the "WHY PRIVATE FIRST"
+    # note there for the two bugs the old shared-first order caused.
     self_dir = _dirname(self_path)
     private = try_private_runtime(self_dir)
     if private is not None:
         return private
+
+    shared = try_shared_runtime(local_appdata)
+    if shared is not None:
+        return shared
 
     return QlRuntime()  # python == "" signals "not found"
 
@@ -208,7 +212,14 @@ def test_shared_runtime_ignored_when_marker_missing(
 
 
 def test_shared_runtime_ignored_when_marker_wrong_version(fake_local_appdata: Path) -> None:
-    """A 3.12 marker must not be selected by a 3.13-baselined launcher."""
+    """A 3.12 marker must not be selected by a 3.13-baselined launcher.
+
+    Asserted against ``try_shared_runtime`` directly, not through
+    ``ql_resolve_runtime``: private-first (see the resolver's "WHY PRIVATE
+    FIRST" note) means a fallback interpreter beside the launcher would answer
+    whether or not the marker was rejected, which makes the end-to-end version
+    of this assertion pass for the wrong reason.
+    """
     runtime = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
     runtime.mkdir(parents=True)
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
@@ -217,12 +228,16 @@ def test_shared_runtime_ignored_when_marker_wrong_version(fake_local_appdata: Pa
         encoding="utf-8",
     )
 
+    assert try_shared_runtime(str(fake_local_appdata)) is None
+
+    # And with nothing beside the launcher either, the resolver finds nothing.
     self_dir = fake_local_appdata / "fallback"
     self_dir.mkdir()
-    (self_dir / "python.exe").write_bytes(b"MZ")
-
-    result = ql_resolve_runtime(str(self_dir / "python.exe"), local_appdata=str(fake_local_appdata))
-    assert result.python == str(self_dir / "python.exe")
+    (self_dir / "QuillLite.exe").write_bytes(b"MZ")
+    result = ql_resolve_runtime(
+        str(self_dir / "QuillLite.exe"), local_appdata=str(fake_local_appdata)
+    )
+    assert result.python == ""
 
 
 def test_private_runtime_pyinstaller_layout(tmp_path: Path) -> None:
@@ -283,6 +298,7 @@ def test_marker_with_garbage_json_is_rejected(tmp_path: Path, fake_local_appdata
     runtime.mkdir(parents=True)
     (runtime / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
     (runtime / "quillville-runtime.json").write_text("not json at all", encoding="utf-8")
+    assert try_shared_runtime(str(fake_local_appdata)) is None
     self_dir = tmp_path / "fallback"
     self_dir.mkdir()
     (self_dir / "python.exe").write_bytes(b"MZ")
@@ -298,6 +314,7 @@ def test_marker_missing_python_key_is_rejected(tmp_path: Path, fake_local_appdat
     (runtime / "quillville-runtime.json").write_text(
         json.dumps({"build": "2026-07-24"}), encoding="utf-8"
     )
+    assert try_shared_runtime(str(fake_local_appdata)) is None
     self_dir = tmp_path / "fallback"
     self_dir.mkdir()
     (self_dir / "python.exe").write_bytes(b"MZ")
@@ -317,12 +334,19 @@ def test_python_version_compatible_rejects_minor_mismatch() -> None:
     assert not _python_version_compatible("4.0.0")
 
 
-def test_shared_runtime_preferred_over_private(fake_local_appdata: Path, tmp_path: Path) -> None:
-    """When BOTH the shared runtime and a private one are valid, the shared wins.
+def test_private_runtime_preferred_over_shared(fake_local_appdata: Path, tmp_path: Path) -> None:
+    """When BOTH a shared runtime and a private one are valid, the PRIVATE wins.
 
-    This is the Phase 2 behavior: the resolver prefers the shared runtime
-    once it is installed, and the per-app private runtime becomes the
-    fallback for portable mode.
+    This is the 2026-09-15 correction to the Phase 2 behaviour. The old order
+    preferred the shared runtime once it was installed, which meant a portable
+    bundle stopped being portable the moment any other QuillVille app had put a
+    runtime in %LOCALAPPDATA%. QuillLite's portable zip died at launch with "No
+    module named quill.apps.lite" -- it was running an August runtime built
+    before QuillLite existed, while its own interpreter sat unused beside it.
+
+    A launcher shipped beside an interpreter IS a self-contained install. The
+    thin installers ship the launcher alone, so they still reach the shared
+    branch; nothing about the shared-runtime story changes for them.
     """
     shared = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
     shared.mkdir(parents=True)
@@ -332,19 +356,43 @@ def test_shared_runtime_preferred_over_private(fake_local_appdata: Path, tmp_pat
         encoding="utf-8",
     )
 
-    private = tmp_path / "QuillRadio"
+    private = tmp_path / "QuillLite"
     private.mkdir()
-    internal = private / "_internal"
-    internal.mkdir()
-    (internal / "python.exe").write_bytes(b"MZ")
-    (private / "QuillRadio.exe").write_bytes(b"MZ")
+    (private / f"python{EXE_EXT}").write_bytes(b"MZ")
+    (private / "QuillLite.exe").write_bytes(b"MZ")
+    (private / "data").mkdir()  # portable evidence
 
     result = ql_resolve_runtime(
-        str(private / "QuillRadio.exe"), local_appdata=str(fake_local_appdata)
+        str(private / "QuillLite.exe"), local_appdata=str(fake_local_appdata)
     )
-    assert result.python == str(shared / SHARED_RUNTIME_EXE), (
-        "shared runtime must be preferred over per-app private runtime"
+    assert result.python == str(private / f"python{EXE_EXT}"), (
+        "a bundle that ships its own interpreter must not borrow the shared runtime"
     )
+    assert result.data_dir == str(private), (
+        "the private branch is the only one that sets data_dir, and data_dir is "
+        "what makes the bundle portable (launcher.c sets QUILL_PORTABLE from it)"
+    )
+
+
+def test_thin_install_still_uses_the_shared_runtime(
+    fake_local_appdata: Path, tmp_path: Path
+) -> None:
+    """The Lite/Companion flavors ship the launcher alone -- shared still wins."""
+    shared = fake_local_appdata / "QuillVille" / "Runtime" / "3.13"
+    shared.mkdir(parents=True)
+    (shared / SHARED_RUNTIME_EXE).write_bytes(b"MZ")
+    (shared / "quillville-runtime.json").write_text(
+        json.dumps({"python": "3.13.14", "build": "2026-07-24"}),
+        encoding="utf-8",
+    )
+
+    thin = tmp_path / "QuillLite-shared"
+    thin.mkdir()
+    (thin / "QuillLite.exe").write_bytes(b"MZ")  # launcher only: no interpreter
+
+    result = ql_resolve_runtime(str(thin / "QuillLite.exe"), local_appdata=str(fake_local_appdata))
+    assert result.python == str(shared / SHARED_RUNTIME_EXE)
+    assert result.data_dir == "", "a thin install is not portable"
 
 
 def test_shared_runtime_finds_quillville_runtime_exe_not_python(fake_local_appdata: Path) -> None:
@@ -372,9 +420,10 @@ def test_shared_runtime_finds_quillville_runtime_exe_not_python(fake_local_appda
         json.dumps({"python": "3.13.14", "build": "2026-07-24"}),
         encoding="utf-8",
     )
+    # A launcher-only directory (the thin-install layout), so the private
+    # branch cannot answer first and this really does test the shared probe.
     self_dir = fake_local_appdata / "fallback"
     self_dir.mkdir()
-    (self_dir / "python.exe").write_bytes(b"MZ")
     (self_dir / "quill.exe").write_bytes(b"MZ")
 
     result = ql_resolve_runtime(str(self_dir / "quill.exe"), local_appdata=str(fake_local_appdata))
@@ -384,9 +433,7 @@ def test_shared_runtime_finds_quillville_runtime_exe_not_python(fake_local_appda
 
     # ONLY python.exe present (no bootloader): the resolver must NOT select
     # this as the shared runtime. The resolver's contract is "the entry point
-    # is QuillVilleRuntime.exe; if it isn't there, fall through to private."
+    # is QuillVilleRuntime.exe; if it isn't there, the shared branch declines."
     (runtime / SHARED_RUNTIME_EXE).unlink()
     result2 = ql_resolve_runtime(str(self_dir / "quill.exe"), local_appdata=str(fake_local_appdata))
-    assert result2.python == str(self_dir / "python.exe"), (
-        "without QuillVilleRuntime.exe, shared runtime is not selected"
-    )
+    assert result2.python == "", "without QuillVilleRuntime.exe, shared runtime is not selected"

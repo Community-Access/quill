@@ -12,8 +12,13 @@ The compiled launcher is **a process-spawn shim** — it does not embed
 CPython. It:
 
 1. Computes its own install root from its executable path.
-2. Resolves a Python interpreter (shared QuillVille runtime → private
-   embedded runtime → legacy `pythonw.exe` fallback).
+2. Resolves a Python interpreter (private embedded runtime beside the
+   launcher, including the legacy `pythonw.exe` fallback → shared QuillVille
+   runtime). Private first since 2026-09-15: a bundle that ships its own
+   interpreter is self-contained, and preferring the machine-wide runtime made
+   every portable zip stop being portable — and crash outright when that
+   runtime predated the app. See the "WHY PRIVATE FIRST" note in
+   `runtime_resolve.c`.
 3. Spawns the resolved interpreter with the right `-m quill.apps.<product>`
    argv and the `QUILL_APP_ROOT` / `QUILL_PORTABLE` env vars.
 4. Forwards the exit code.

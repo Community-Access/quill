@@ -6,15 +6,34 @@
  * install-root directory (used to set QUILL_APP_ROOT in the child process).
  *
  * Resolution order:
- *   1. Shared QuillVille runtime at $LOCALAPPDATA/QuillVille/Runtime/<major>/
+ *   1. Private embedded runtime beside the launcher: <dir>/python.exe
+ *      (Windows onedir) or <dir>/_internal/python.exe (PyInstaller), or
+ *      <dir>/pythonw.exe (legacy fallback during the transition from the old
+ *      stamped-launcher design; removed in a later release).
+ *   2. Shared QuillVille runtime at $LOCALAPPDATA/QuillVille/Runtime/<major>/
  *      (Windows) or $XDG_DATA_HOME/quillville/Runtime/<major>/ (POSIX).
  *      Validated by the presence of quillville-runtime.json with a parseable
  *      "python" key matching the current CPython major.minor.
- *   2. Private embedded runtime beside the launcher: <dir>/python.exe
- *      (Windows onedir) or <dir>/_internal/python.exe (PyInstaller).
- *   3. pythonw.exe beside the launcher (legacy fallback during the transition
- *      from the old stamped-launcher design). This branch is removed in a
- *      later release.
+ *
+ * WHY PRIVATE FIRST (2026-09-15). This order was the other way round --
+ * "prefer the shared runtime once it is installed" -- and that made every
+ * portable bundle stop being portable on any machine where some other
+ * QuillVille app had installed the shared runtime. A launcher that ships an
+ * interpreter beside it IS a self-contained install (the portable zips and
+ * the main QUILL distribution); the thin installers ship the launcher ALONE,
+ * so they still reach branch 2 and nothing about the shared-runtime story
+ * changes. Two bugs came out of the old order:
+ *
+ *   * QuillLite's portable zip died at launch with "No module named
+ *     quill.apps.lite" -- it was running a shared runtime frozen in August,
+ *     before QuillLite existed, while its own interpreter with the whole app
+ *     in it sat unused in the same folder. The shared runtime is validated by
+ *     CPython major.minor only, so a runtime that predates an app matches
+ *     forever.
+ *   * data_dir (and therefore QUILL_PORTABLE, set by launcher.c) is only
+ *     populated on the private branch, so a portable copy that borrowed the
+ *     shared runtime silently wrote its data to the machine profile instead
+ *     of its own data\ folder.
  *
  * The function never crashes. If nothing resolves, runtime.python[0] is set to
  * 0 and the caller (launcher.c) shows a clean error dialog.
@@ -315,23 +334,23 @@ int ql_resolve_runtime(const char *self_path, QlRuntime *out) {
     out->install_root[0] = 0;
     out->data_dir[0] = 0;
 
-    /* 1. Shared QuillVille runtime. */
-    if (try_shared_runtime(out->python, sizeof(out->python),
-                            out->install_root, sizeof(out->install_root)) == 0) {
-        return 0;
-    }
-
-    /* 2 & 3. Beside the launcher. */
+    /* 1. Beside the launcher: a self-contained install answers for itself.
+     * dirname_of failing is not fatal here -- fall through to the shared
+     * runtime rather than giving up on a path we could not split. */
     char self_dir[QL_PATH_MAX];
-    if (dirname_of(self_path, self_dir, sizeof(self_dir)) != 0) {
-        return -1;
-    }
-    if (try_private_runtime(self_dir,
+    if (dirname_of(self_path, self_dir, sizeof(self_dir)) == 0 &&
+        try_private_runtime(self_dir,
                             out->python, sizeof(out->python),
                             out->install_root, sizeof(out->install_root)) == 0) {
         /* data_dir == self_dir for portable detection (the storage_mode
          * helper looks for self_dir/data/). */
         snprintf(out->data_dir, sizeof(out->data_dir), "%s", self_dir);
+        return 0;
+    }
+
+    /* 2. Shared QuillVille runtime: the thin installers' only runtime. */
+    if (try_shared_runtime(out->python, sizeof(out->python),
+                            out->install_root, sizeof(out->install_root)) == 0) {
         return 0;
     }
 
