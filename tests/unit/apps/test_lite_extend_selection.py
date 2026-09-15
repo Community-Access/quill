@@ -74,26 +74,37 @@ def test_a_mouse_release_does_not_end_the_mode(lite_window) -> None:
     assert win.selection_extend_active()
 
 
-def test_navigation_stretches_the_selection_to_the_caret(lite_window) -> None:
+def test_moving_after_the_marker_leaves_the_caret_alone(lite_window) -> None:
+    """The 2026-09-15 report, in one test.
+
+    F8 used to stretch a live selection to meet the caret on every navigation
+    key-up. On wxMSW an arrow key pressed with text selected collapses the
+    selection to its edge and stays there, so the next key-up re-selected the
+    same span and the caret stopped advancing after one character -- "if I press
+    F8 the cursor doesn't move at all after pressing it". Nothing may touch the
+    selection between the marker and Shift+F8.
+    """
     win = lite_window("alpha bravo charlie", cursor=6)
     win.cmd_start_selection()
     win.on_caret_moved(wx.WXK_F8)
 
-    win.control.SetInsertionPoint(11)
-    win.on_caret_moved(wx.WXK_RIGHT)
+    for position in (7, 8, 9, 10, 11):
+        win.control.SetInsertionPoint(position)
+        win.on_caret_moved(wx.WXK_RIGHT)
+        assert win.control.GetSelection() == (position, position), (
+            "the marker must not select anything until Shift+F8 asks it to"
+        )
+        assert win.control.GetInsertionPoint() == position, (
+            "and it must never move the caret the user just moved"
+        )
 
+    win.cmd_complete_selection()
     assert win.control.GetSelection() == (6, 11)
     assert win.control.GetValue()[6:11] == "bravo"
 
 
-def test_extending_backwards_reaches_past_the_first_character(lite_window) -> None:
-    """Backwards has to keep going, which means not trusting the caret query.
-
-    wxMSW answers ``GetInsertionPoint`` with the *start* of the selection, so an
-    implementation that asked it mid-extension would get the anchor back and
-    stall. The control collapses its own selection before an arrow key moves, so
-    the honest reading is the one taken after the collapse.
-    """
+def test_the_span_reaches_backwards_too(lite_window) -> None:
+    """Marker after caret is the same question asked the other way round."""
     win = lite_window("alpha bravo charlie", cursor=11)
     win.cmd_start_selection()
     win.on_caret_moved(wx.WXK_F8)
@@ -102,7 +113,26 @@ def test_extending_backwards_reaches_past_the_first_character(lite_window) -> No
         win.control.SetInsertionPoint(position)
         win.on_caret_moved(wx.WXK_LEFT)
 
+    win.cmd_complete_selection()
     assert win.control.GetSelection() == (6, 11)
+
+
+def test_a_find_between_the_two_keystrokes_is_not_the_answer(lite_window) -> None:
+    """What the marker model buys, and live extension could never have done.
+
+    Find leaves its own match selected. Honouring "whatever is selected" would
+    hand back the match; the span is the marker and the caret, so it hands back
+    the run the user actually marked.
+    """
+    win = lite_window("alpha bravo charlie delta", cursor=0)
+    win.cmd_start_selection()
+    # A Find lands on "charlie" and selects it, as Find does.
+    win.control.SetSelection(12, 19)
+    win.control.SetInsertionPoint(19)
+
+    win.cmd_complete_selection()
+    assert win.control.GetSelection() == (0, 19)
+    assert win.control.GetValue()[0:19] == "alpha bravo charlie"
 
 
 def test_a_standing_selection_is_left_to_the_control(lite_window) -> None:
@@ -140,25 +170,38 @@ def test_loading_a_document_does_not_end_the_mode_by_accident(lite_window) -> No
     assert win.selection_extend_active()
 
 
-def test_escape_stops_extending_and_says_so(lite_window) -> None:
-    """Silence and "stopped" are different answers, and only one is usable."""
+def test_dropping_the_marker_says_so(lite_window) -> None:
+    """Silence and "dropped" are different answers, and only one is usable.
+
+    The marker is invisible state, so every change to it is spoken. Escape no
+    longer reaches it -- there is no mode for Escape to leave, and a key-up hook
+    that touched the marker is exactly what this change removed.
+    """
+    win = lite_window("alpha bravo", cursor=0)
+    win.cmd_start_selection()
+    win.cancel_extend_selection()
+    assert not win.selection_extend_active()
+    assert win.announcements[-1] == "Selection marker dropped"
+
+
+def test_dropping_a_marker_that_was_never_set_says_nothing(lite_window) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.cancel_extend_selection()
+    assert win.announcements == []
+
+
+def test_escape_no_longer_touches_the_marker(lite_window) -> None:
+    """Escape is the control's business now, not the selection's."""
     win = lite_window("alpha bravo", cursor=0)
     win.cmd_start_selection()
     win.on_caret_moved(wx.WXK_ESCAPE)
-    assert not win.selection_extend_active()
-    assert win.announcements[-1] == "Selection stopped"
-
-
-def test_escape_with_no_mode_running_says_nothing(lite_window) -> None:
-    win = lite_window("alpha bravo", cursor=0)
-    win.on_caret_moved(wx.WXK_ESCAPE)
-    assert win.announcements == []
+    assert win.selection_extend_active()
 
 
 def test_complete_without_start_says_why(lite_window) -> None:
     win = lite_window("alpha bravo", cursor=0)
     win.cmd_complete_selection()
-    assert win.announcements == ["No selection in progress"]
+    assert win.announcements == ["No selection marked. Press F8 where you want it to start."]
 
 
 def test_complete_after_no_movement_says_nothing_was_taken(lite_window) -> None:
@@ -197,7 +240,7 @@ def test_the_check_mark_follows_the_mode(lite_window) -> None:
     win.cmd_start_selection()
     assert win.checks_synced > before
     synced = win.checks_synced
-    win.on_caret_moved(wx.WXK_ESCAPE)
+    win.cancel_extend_selection()
     assert win.checks_synced > synced
 
 

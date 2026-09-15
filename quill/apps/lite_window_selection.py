@@ -8,11 +8,30 @@ you press, and press, and have no idea where you are.
 
 So this menu offers three different answers, and they are genuinely different:
 
-**Mark and extend.** Press **F8**, move by any means you like -- arrows, Home,
-End, Ctrl+arrow, Page Down -- and the selection follows you from where you
-started. **Shift+F8** finishes it. This is the only way to take an arbitrary run
-of text without holding a modifier down the whole way, and it is the one to
-reach for when the thing you want does not line up with any structure.
+**Mark and select.** Press **F8** to drop a marker where you are. Then move by
+*any* means at all -- arrows, Home, End, Ctrl+arrow, Page Down, Find, Go To
+Line, a bookmark, the Command Palette -- and press **Shift+F8** to take
+everything between the marker and where you ended up. This is the only way to
+take an arbitrary run of text without holding a modifier down the whole way,
+and it is the one to reach for when the thing you want does not line up with
+any structure.
+
+**The marker does not move the caret and does not start a mode**, and that is
+the whole design. It used to: F8 set an anchor and then every navigation
+key-up stretched a live selection to meet the caret. That fought the control
+itself -- on wxMSW an arrow key pressed with text selected *collapses the
+selection to its edge and stays there*, so the next key-up re-selected the same
+span, and the caret stopped advancing after one character. Reported 2026-09-15:
+"if I press F8 the cursor doesn't move at all after pressing it."
+
+Computing the span at completion time instead fixes that and buys the larger
+thing: between the two keystrokes you can use **anything**, including the
+commands that move the caret by changing the selection themselves. Find a word,
+then Shift+F8, and you have taken everything from the marker to the match --
+which live extension could never have done, because Find's own selection was
+the thing being overwritten. QUILL has always worked this way
+(``main_frame_selection_span.py``); this is QuillLite catching up to it, by
+deleting the part that was extra.
 
 **Structure.** Take the whole word, line, paragraph, sentence or block in one
 keystroke, without knowing where any of them begin. Then **Expand** outwards a
@@ -33,8 +52,7 @@ shrink ladder, which was added there rather than here so QUILL gains it too.
 
 from __future__ import annotations
 
-import wx
-
+from quill.core.marks import line_column_for_position
 from quill.core.selection import (
     block_span,
     selection_scope,
@@ -48,36 +66,6 @@ __all__ = ["DocumentSelectionMixin"]
 #: How many marks the ring holds. Ten is more than anybody uses at once and
 #: small enough that the list stays something you can arrow through.
 _MAX_MARKS = 10
-
-#: The keys that mean "I have moved" while extend mode is on.
-_NAVIGATION_KEYS = frozenset({
-    wx.WXK_LEFT,
-    wx.WXK_RIGHT,
-    wx.WXK_UP,
-    wx.WXK_DOWN,
-    wx.WXK_HOME,
-    wx.WXK_END,
-    wx.WXK_PAGEUP,
-    wx.WXK_PAGEDOWN,
-    wx.WXK_CONTROL,
-    wx.WXK_SHIFT,
-})
-
-#: The keys that end extend mode, as opposed to merely not extending it.
-#:
-#: This list is short on purpose, and it used to be its inverse: anything that
-#: was not navigation ended the mode. That reading looked reasonable and shipped
-#: F8 broken, because the key that *starts* the mode is not a navigation key
-#: either -- so F8's own key-up arrived a moment after F8's accelerator had set
-#: the anchor and threw it straight back away. Every press of F8 followed by
-#: Shift+F8 answered "No selection in progress", which is the report this list
-#: exists to make impossible. A key nobody thought about must leave the mode
-#: alone; only a key that means "stop" may end it.
-#:
-#: Typing still ends the mode -- see ``text_changed_while_extending``, which is
-#: the honest test for it, since the text changing is the thing that matters and
-#: it can arrive from a paste or a menu as easily as from a letter key.
-_CANCELS_EXTEND = frozenset({wx.WXK_ESCAPE})
 
 
 class DocumentSelectionMixin:
@@ -101,32 +89,36 @@ class DocumentSelectionMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_start_selection(self) -> None:
-        """F8: anchor here, and let every navigation key extend the selection."""
+        """F8: drop a marker here. Nothing else -- no mode, no caret movement.
+
+        The line and column are in the message for the same reason QUILL puts
+        them there: setting a marker changes nothing a screen reader announces,
+        so without the sentence F8 is a key that appears to do nothing, and the
+        only way to find out whether it worked is to press Shift+F8 and hope.
+        """
         self._selection_anchor = self.control.GetInsertionPoint()
+        line, column = line_column_for_position(self.control.GetValue(), self._selection_anchor)
         self._action(
             SoundEvent.SELECTION_STARTED,
-            "Selection started. Move to extend it, Shift F8 to finish.",
+            f"Selection marked at line {line}, column {column}. "
+            "Move anywhere, then Shift F8 to select.",
         )
         self._sync_check_items()
 
     def cmd_complete_selection(self) -> None:
-        """Shift+F8: stop extending, and say what was taken.
+        """Shift+F8: take everything between the marker and here, and say so.
 
-        What is selected wins, and the anchor is the fallback. Those agree
-        whenever live extension kept up, and when it did not, the two answers are
-        "what is on screen" and "what you asked for" -- so the selection goes
-        first, because it is what the next Ctrl+C would actually take. With no
-        selection at all the anchor is all there is, and it is better than
-        reporting nothing after the user watched the caret travel.
+        The span is the marker and the caret, computed at this moment -- not
+        whatever happens to be selected. That distinction is the feature: a Find
+        between the two keystrokes leaves its own match selected, and honouring
+        *that* would hand back the match instead of the run the user marked.
         """
         if self._selection_anchor is None:
-            self._announce("No selection in progress")
+            self._announce("No selection marked. Press F8 where you want it to start.")
             return
         anchor, self._selection_anchor = self._selection_anchor, None
         limit = self.control.GetLastPosition()
-        start, end = self.control.GetSelection()
-        if end <= start:
-            start, end = sorted((min(anchor, limit), min(self.control.GetInsertionPoint(), limit)))
+        start, end = sorted((min(anchor, limit), min(self.control.GetInsertionPoint(), limit)))
         if end <= start:
             self._announce("Selection cancelled, nothing selected")
         else:
@@ -191,43 +183,6 @@ class DocumentSelectionMixin:
         """True while F8 extending is on. Read by the menu's check mark."""
         return self._selection_anchor is not None
 
-    def extend_selection_after_move(self, key_code: int) -> None:
-        """Stretch the selection from the anchor to wherever the caret now is.
-
-        Called from the window's existing caret hook, after the key has landed.
-
-        Three answers, and the third is the one that was missing: a navigation
-        key extends, Escape cancels, and **anything else is left alone**. F8
-        itself arrives here -- its key-up reaches the control a moment after its
-        accelerator ran -- and so does every function key, every modifier and
-        every mouse release. A rule that ended the mode on all of them ended it
-        on the keystroke that had just started it, which is why F8 followed by
-        Shift+F8 answered "No selection in progress" and why the mode has never
-        worked from the keyboard.
-
-        A key-up that arrives with a selection already in place is left alone
-        too, and that is not an optimisation. An arrow key pressed while text is
-        selected collapses the selection and moves from its edge, so by key-up
-        there is nothing selected and the caret is the honest answer; a selection
-        still standing means either nothing moved (a modifier going up) or the
-        control extended it natively (Shift+arrow), and both are already right.
-        It also side-steps wxMSW answering ``GetInsertionPoint`` with the
-        selection's *start* -- which, mid-extension, is the anchor.
-        """
-        if self._selection_anchor is None:
-            return
-        if key_code in _CANCELS_EXTEND:
-            self.cancel_extend_selection()
-            return
-        if key_code not in _NAVIGATION_KEYS:
-            return
-        start, end = self.control.GetSelection()
-        if end > start:
-            return
-        caret = self.control.GetInsertionPoint()
-        if caret != self._selection_anchor:
-            self.control.SetSelection(*sorted((self._selection_anchor, caret)))
-
     def text_changed_while_extending(self) -> None:
         """End extend mode because the document changed under it.
 
@@ -243,15 +198,15 @@ class DocumentSelectionMixin:
         self._sync_check_items()
 
     def cancel_extend_selection(self) -> None:
-        """Escape: stop extending, and say so rather than going quiet.
+        """Drop the marker without selecting anything, and say so.
 
-        A mode that ends silently is one the user has to test for by pressing
-        something destructive.
+        Silence here would leave somebody unsure whether the marker is still
+        waiting -- the state is invisible, so every change to it is spoken.
         """
         if self._selection_anchor is None:
             return
         self._selection_anchor = None
-        self._announce("Selection stopped")
+        self._announce("Selection marker dropped")
         self._sync_check_items()
 
     # ------------------------------------------------------------------ #

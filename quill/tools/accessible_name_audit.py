@@ -95,12 +95,30 @@ class ControlSite:
     named_inline: bool
 
 
+#: Helpers that build a labelable wx control and hand it back, mapped to the
+#: class they build. A control constructed through one of these is still a
+#: control the gate must see: the scan matches ``wx.<Class>(...)`` textually, so
+#: without this table moving a construction behind a factory silently removes it
+#: from the inventory -- which is how a control stops being checked for a name
+#: while every test still passes. Found exactly that way on 2026-09-15, when the
+#: emoji and special-character result lists moved to ``virtual_report_list``.
+#:
+#: A factory belongs here only when it returns the control to a caller that can
+#: name it. One that names the control itself is ``named-elsewhere`` instead.
+_CONTROL_FACTORIES: dict[str, str] = {
+    "virtual_report_list": "ListCtrl",
+}
+
+
 def _wx_class_name(func: ast.expr) -> str | None:
     """Return ``<Class>`` for ``wx.<Class>(...)`` / ``wx.<mod>.<Class>(...)``.
 
     Also matches submodule aliases of the ``wx_<mod>`` convention
-    (``import wx.grid as wx_grid`` → ``wx_grid.Grid(...)``).
+    (``import wx.grid as wx_grid`` → ``wx_grid.Grid(...)``), and the helpers in
+    :data:`_CONTROL_FACTORIES` that build one and return it.
     """
+    if isinstance(func, ast.Name) and func.id in _CONTROL_FACTORIES:
+        return _CONTROL_FACTORIES[func.id]
     if not isinstance(func, ast.Attribute):
         return None
     root = func.value

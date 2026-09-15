@@ -866,11 +866,11 @@ def lite_window(tmp_path, lite_settings):
         def on_caret_moved(self, key_code: int) -> None:
             """What ``EVT_KEY_UP`` does, in the order ``lite_window`` does it.
 
-            The reason this stub exists: the F8 bug lived *between* a command and
-            this hook, so a test that only calls commands cannot see it.
+            It no longer touches the F8 marker -- that is the 2026-09-15 change,
+            and the tests in test_lite_extend_selection.py still drive this hook
+            precisely to prove that moving the caret leaves the marker alone.
             """
             self._touch_status()
-            self.extend_selection_after_move(key_code)
 
         def on_text_changed(self) -> None:
             """What ``EVT_TEXT`` does, in the order ``lite_window`` does it."""

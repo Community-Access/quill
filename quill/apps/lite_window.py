@@ -298,11 +298,11 @@ class DocumentFrame(
         # The bar refreshes on its own coalescing timer, so a held arrow key
         # costs one recount after the caret stops rather than one per repeat.
         self._touch_status()
-        # F8 extend mode rides this hook rather than binding a second handler:
-        # the caret has already moved by EVT_KEY_UP, which is exactly when the
-        # selection needs stretching to meet it.
         key_code = event.GetKeyCode() if hasattr(event, "GetKeyCode") else 0
-        self.extend_selection_after_move(key_code)
+        # No F8 hook here any more. The marker is read at Shift+F8 and not
+        # before, so moving the caret is nobody's business but the control's --
+        # see lite_window_selection.py for what stretching a live selection on
+        # every key-up cost.
         # And the word the caret has just landed on, if it is misspelled. Rides
         # the same hook for the same reason: by EVT_KEY_UP the caret is where
         # the user asked for it to be. The check ignores anything that is not a
