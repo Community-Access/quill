@@ -54,6 +54,7 @@ from quill.core.lite.commands import (
 from quill.core.storage import write_json_atomic
 
 __all__ = [
+    "DEFAULT_ALIASES",
     "KEYMAP_FILE",
     "RESERVED_KEYS",
     "KeymapAudit",
@@ -223,6 +224,43 @@ def default_keymap() -> dict[str, str]:
         for _menu, _label, key, handler, kind in COMMANDS
         if kind not in {"sep", "sub"} and handler and key
     }
+
+
+#: A **second** chord for a command that has one already, handler to chord.
+#:
+#: Why a separate table rather than a second column in ``COMMANDS``: the table
+#: is the defaults for the Keyboard Manager, and every row there is one
+#: rebindable key. An alias is not a rebindable key -- it is a shipped
+#: convenience that exists alongside whatever the user has chosen -- so keeping
+#: it out of that dict means nothing in the rebinding path has to learn about
+#: two-valued entries, and a user who rebinds F8 keeps the alias.
+#:
+#: The mark-and-select pair is the whole reason this exists (2026-09-15).
+#: **F8 stays**: it is Microsoft Word's own Extend Selection key, so it is
+#: muscle memory for most of the people this editor is written for. But a
+#: function key means leaving the home row, and for somebody typing without
+#: sight that is a real cost on a command used mid-sentence. ``Ctrl+;`` and
+#: ``Ctrl+'`` are literally the home row -- right hand, no reach -- and both
+#: were free in QuillLite *and* in QUILL, which is the other half of why they
+#: were chosen. ``Ctrl+,`` was the obvious pick and is Preferences in both
+#: apps and in most editors people arrive from.
+#:
+#: One alias per command, deliberately: a second route is a kindness, a third
+#: is a thing nobody can remember and everybody has to read about.
+DEFAULT_ALIASES: dict[str, str] = {
+    "cmd_start_selection": "Ctrl+;",
+    "cmd_complete_selection": "Ctrl+'",
+}
+
+
+def default_aliases() -> dict[str, str]:
+    """The shipped second chords, handler to chord. See :data:`DEFAULT_ALIASES`."""
+    return dict(DEFAULT_ALIASES)
+
+
+def alias_for(handler: str) -> str:
+    """The second chord *handler* also answers to, or ``""``."""
+    return DEFAULT_ALIASES.get(handler, "")
 
 
 def command_titles() -> dict[str, str]:

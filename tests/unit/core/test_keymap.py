@@ -725,3 +725,44 @@ def test_authoring_chords_are_the_defaults() -> None:
     assert DEFAULT_KEYMAP["format.horizontal_rule"] == "Ctrl+Alt+H"
     for level in range(1, 7):
         assert DEFAULT_KEYMAP[f"format.heading_{level}"] == f"Ctrl+Alt+{level}"
+
+
+def test_every_quill_alias_is_free_parseable_and_unique() -> None:
+    """A second chord must not shadow a key something else already answers to.
+
+    Three silent failures it guards: the alias repeats a key the defaults use
+    (one of the pair stops firing), two aliases claim the same chord, or wx
+    cannot parse it and the key is documented but dead. The keyboard reference
+    lists these chords, so a wrong one is a wrong instruction as well as a
+    broken key.
+    """
+    import wx
+
+    from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
+
+    taken = {chord: command for command, chord in DEFAULT_KEYMAP.items() if chord}
+    seen: dict[str, str] = {}
+    for command_id, chord in DEFAULT_ALIASES.items():
+        assert command_id in DEFAULT_KEYMAP, (
+            f"{command_id} has an alias but no primary key; an alias is a SECOND route"
+        )
+        assert chord not in taken, f"alias {chord} for {command_id} is already {taken[chord]}'s key"
+        assert chord not in seen, f"alias {chord} claimed by both {seen[chord]} and {command_id}"
+        seen[chord] = command_id
+
+        entry = wx.AcceleratorEntry()
+        assert entry.FromString(chord), f"wx cannot parse the alias {chord}"
+
+
+def test_the_two_editors_agree_about_the_home_row_pair() -> None:
+    """QUILL and QuillLite must not disagree about a key this close to the fingers.
+
+    The pair exists because a function key means taking a hand off the home row.
+    Shipping it in one editor and not the other, or on different chords, would
+    make the habit unlearnable for anyone who uses both.
+    """
+    from quill.core.keymap import DEFAULT_ALIASES
+    from quill.core.lite.keymap import DEFAULT_ALIASES as LITE_ALIASES
+
+    assert DEFAULT_ALIASES["edit.start_selection"] == LITE_ALIASES["cmd_start_selection"]
+    assert DEFAULT_ALIASES["edit.complete_selection"] == LITE_ALIASES["cmd_complete_selection"]

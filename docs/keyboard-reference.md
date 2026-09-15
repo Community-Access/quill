@@ -100,7 +100,7 @@ Editor commands with default bindings: 360.
 | Ctrl+Y | Redo | `edit.redo` |
 | Ctrl+Z | Undo | `edit.undo` |
 | F3 | Find Next | `edit.find_next` |
-| F8 | Start Selection | `edit.start_selection` |
+| F8 or Ctrl+; | Start Selection | `edit.start_selection` |
 | QUILL Key + C | Copy selection for email | `edit.copy_selection_for_email` |
 | QUILL Key + J | Expand Selection | `edit.expand_selection` |
 | QUILL Key + Shift+- | Copy to tray 11 | `edit.copy_to_tray_11` |
@@ -119,7 +119,7 @@ Editor commands with default bindings: 360.
 | QUILL Key + X | Open copy tray | `edit.open_copy_tray` |
 | Shift+End | Select to End of Line | `edit.select_to_end_of_line` |
 | Shift+F3 | Find Previous | `edit.find_previous` |
-| Shift+F8 | Complete Selection | `edit.complete_selection` |
+| Shift+F8 or Ctrl+' | Complete Selection | `edit.complete_selection` |
 | Shift+Home | Select to Start of Line | `edit.select_to_start_of_line` |
 
 ### Formatting

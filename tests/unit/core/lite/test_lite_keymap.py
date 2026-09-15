@@ -320,3 +320,54 @@ def test_an_unreadable_override_is_dropped_on_read(tmp_path: Path) -> None:
         json.dumps({"schema": 1, "bindings": {"cmd_save": "Ctrl+Nonsense"}}), encoding="utf-8"
     )
     assert load_keymap(tmp_path)["cmd_save"] == default_keymap()["cmd_save"]
+
+
+def test_every_alias_is_free_parseable_and_unique() -> None:
+    """An alias must not shadow a key something else already answers to.
+
+    Three ways a second chord goes wrong, and all three are silent: it repeats a
+    key the defaults already use (one of the pair stops firing), two aliases
+    claim the same chord (same thing), or wx cannot parse it at all (the key is
+    advertised in the docs and does nothing -- the failure the menu-accelerator
+    gate exists to stop, arriving through a table that gate does not read).
+    """
+    import wx
+
+    from quill.core.lite.keymap import DEFAULT_ALIASES, default_keymap
+
+    defaults = default_keymap()
+    taken = {chord: handler for handler, chord in defaults.items() if chord}
+
+    seen: dict[str, str] = {}
+    for handler, chord in DEFAULT_ALIASES.items():
+        assert handler in defaults, (
+            f"{handler} has an alias but no primary key; an alias is a SECOND route"
+        )
+        assert chord not in taken, f"alias {chord} for {handler} is already {taken[chord]}'s key"
+        assert chord not in seen, f"alias {chord} claimed by both {seen[chord]} and {handler}"
+        seen[chord] = handler
+
+        entry = wx.AcceleratorEntry()
+        assert entry.FromString(chord), f"wx cannot parse the alias {chord}"
+        assert entry.ToString() == chord, (
+            f"wx round-trips {chord} as {entry.ToString()}; the two spellings must agree "
+            "or the docs and the accelerator disagree"
+        )
+
+
+def test_the_mark_and_select_pair_keeps_its_function_keys() -> None:
+    """The alias is a second route, never a replacement.
+
+    F8 is Microsoft Word's own Extend Selection key, so it is muscle memory for
+    most of the people this editor is written for. The home-row pair was added
+    beside it (2026-09-15) because a function key means taking your hands off
+    the home row; taking F8 away would have traded one group's habit for
+    another's.
+    """
+    from quill.core.lite.keymap import DEFAULT_ALIASES, default_keymap
+
+    defaults = default_keymap()
+    assert defaults["cmd_start_selection"] == "F8"
+    assert defaults["cmd_complete_selection"] == "Shift+F8"
+    assert DEFAULT_ALIASES["cmd_start_selection"] == "Ctrl+;"
+    assert DEFAULT_ALIASES["cmd_complete_selection"] == "Ctrl+'"

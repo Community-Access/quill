@@ -43,7 +43,7 @@ import wx
 from quill.apps.lite_shell import MAX_NUMBERED
 from quill.apps.lite_window_markup import MARKUP_COMMANDS
 from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
-from quill.core.lite.keymap import resolved_commands
+from quill.core.lite.keymap import default_aliases, resolved_commands
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentMenuMixin"]
@@ -113,6 +113,7 @@ class DocumentMenuMixin:
         self._window_menu = menus["&Window"]
         self._window_menu.AppendSeparator()
         self.SetMenuBar(menu_bar)
+        self._apply_alias_accelerators()
         self.refresh_recent_menu()
         self.refresh_window_menu()
         self._sync_check_items()
@@ -160,6 +161,35 @@ class DocumentMenuMixin:
         an extra chance to leave a stale accelerator behind.
         """
         self._build_menus()
+
+    def _apply_alias_accelerators(self) -> None:
+        """Bind the shipped second chords, which a menu label cannot carry.
+
+        wx takes an item's accelerator from the text after the tab in its
+        label, and a label holds one. So the alias is a real accelerator table
+        pointing at the same menu id -- the item fires either way, and the
+        label keeps advertising the primary key rather than growing a second
+        one nobody asked to read.
+
+        Rebuilt with the bar because the ids are: an alias left pointing at a
+        menu item from the previous build is a key that does nothing, which is
+        worse than a key that was never offered.
+        """
+        entries = []
+        for handler, chord in default_aliases().items():
+            item = self._menu_items.get(handler)
+            if item is None:
+                continue  # the command's area is switched off; no id to fire
+            parsed = wx.AcceleratorEntry()
+            if not parsed.FromString(chord):
+                # A chord wx cannot parse is not an accelerator, and binding it
+                # would advertise a key that silently never fires -- the exact
+                # failure the menu-accelerator gate exists to stop.
+                continue
+            entries.append(
+                wx.AcceleratorEntry(parsed.GetFlags(), parsed.GetKeyCode(), item.GetId())
+            )
+        self.SetAcceleratorTable(wx.AcceleratorTable(entries))
 
     def _dispatch(self, handler: str) -> Any:
         def run(_event: wx.CommandEvent) -> None:

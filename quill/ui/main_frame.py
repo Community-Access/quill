@@ -147,6 +147,7 @@ from quill.core.keymap import (
     DEFAULT_KEYMAP,
     KEYBOARD_PACK_CUSTOM,
     KEYBOARD_PACK_DEFAULT,
+    alias_for,
     format_binding_for_display,
     keyboard_pack_description,
     keyboard_pack_names,
@@ -1784,6 +1785,13 @@ class MainFrame(
                 continue
             flags, key_code = parsed
             entries.append(wx.AcceleratorEntry(flags, key_code, menu_id))
+            # A shipped second chord on the same menu id: a label carries one
+            # key, so the alias exists here or nowhere (keymap.DEFAULT_ALIASES).
+            alias = alias_for(command_id)
+            if alias:
+                alias_parsed = self._parse_keybinding(alias)
+                if alias_parsed is not None:
+                    entries.append(wx.AcceleratorEntry(*alias_parsed, menu_id))
         # Cmd+F4 close-document accelerator is a Windows convention; on macOS it
         # becomes Cmd+F4 (not idiomatic) and Cmd+W already closes documents. Gate
         # it to non-darwin so the Mac build doesn't get a redundant chord.

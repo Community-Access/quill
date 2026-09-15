@@ -29,6 +29,7 @@ from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 
 __all__ = [
+    "DEFAULT_ALIASES",
     "DEFAULT_KEYMAP",
     "KEYBOARD_PACK_CUSTOM",
     "KEYBOARD_PACK_DEFAULT",
@@ -655,6 +656,30 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.paste_from_tray_11": "Ctrl+Shift+-",
     "edit.paste_from_tray_12": "Ctrl+Shift+=",
 }
+
+
+#: A **second** chord for a command that already has one, command id to chord.
+#:
+#: Kept out of :data:`DEFAULT_KEYMAP` because that dict is the *rebindable*
+#: keymap -- it round-trips through the Keyboard Manager, the keyboard packs and
+#: the saved-delta file, all of which assume one chord per command. An alias
+#: stands alongside whatever the user chose, so moving F8 keeps it.
+#:
+#: F8 stays: it is Word's own Extend Selection key. The home-row pair is added
+#: beside it because a function key means taking a hand off the home row, which
+#: costs somebody who is not looking at the keyboard. Both chords were free in
+#: QUILL and QuillLite alike -- the two editors must not disagree this close to
+#: the fingers. The full reasoning, including why not Ctrl+, (Preferences in
+#: both) or Ctrl+. (Word Prediction here), is in quill/core/lite/keymap.py.
+DEFAULT_ALIASES: dict[str, str] = {
+    "edit.start_selection": "Ctrl+;",
+    "edit.complete_selection": "Ctrl+'",
+}
+
+
+def alias_for(command_id: str) -> str:
+    """The second chord *command_id* also answers to, or ``""``."""
+    return DEFAULT_ALIASES.get(command_id, "")
 
 
 _PROFILES_DIR = Path(__file__).resolve().parent / "keymap"

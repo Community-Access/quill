@@ -31,7 +31,7 @@ import sys
 from pathlib import Path
 
 from quill.core.app_keymaps import APP_KEYMAPS
-from quill.core.keymap import DEFAULT_KEYMAP
+from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
 from quill.core.keymap_format import format_binding_for_display
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -170,6 +170,12 @@ def _editor_rows(titles: dict[str, str]) -> list[tuple[str, list[tuple[str, str,
             "Everything else",
         )
         display = format_binding_for_display(binding)
+        # A command with a shipped second chord shows both, because a reference
+        # that lists one of two working keys is a reference somebody checks and
+        # then does not believe. See keymap.DEFAULT_ALIASES.
+        alias = DEFAULT_ALIASES.get(command_id, "")
+        if alias:
+            display = f"{display} or {format_binding_for_display(alias)}"
         grouped[label].append((display, _title_for(command_id, titles), command_id))
     for rows in grouped.values():
         rows.sort(key=lambda row: (row[0], row[2]))
