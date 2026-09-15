@@ -29,6 +29,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.virtual_list import virtual_report_list
 
 _FAVORITES = "Favorites"
 _RECENT = "Recent"
@@ -95,7 +96,11 @@ class EmojiPickerDialog:
 
         results_col = wx.BoxSizer(wx.VERTICAL)
         results_col.Add(wx.StaticText(panel, label="&Emoji"), 0, wx.BOTTOM, 4)
-        self._results = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        # Virtual, not filled row by row: the catalogue is 3,781 entries and
+        # typing one character used to cost 1.6 seconds of frozen window.
+        # See quill/ui/virtual_list.py for the measurements and for why this
+        # costs a screen reader nothing.
+        self._results = virtual_report_list(wx, panel, self._result_cell, style=wx.BORDER_SIMPLE)
         self._results.SetName("Emoji results; arrow through to hear the description of each")
         self._results.InsertColumn(0, "Symbol", width=70)
         self._results.InsertColumn(1, "Name", width=260)
@@ -175,12 +180,16 @@ class EmojiPickerDialog:
     # ------------------------------------------------------------------
     # Results list population
 
+    def _result_cell(self, row: int, column: int) -> str:
+        """One cell of the results list, asked for while it is being drawn."""
+        if not (0 <= row < len(self._current_results)):
+            return ""
+        entry = self._current_results[row]
+        return entry.char if column == 0 else entry.name
+
     def _fill_results(self, entries: list, *, status: str) -> None:
         self._current_results = entries
-        self._results.DeleteAllItems()
-        for row, entry in enumerate(entries):
-            self._results.InsertItem(row, entry.char)
-            self._results.SetItem(row, 1, entry.name)
+        self._results.set_rows(len(entries))
         self._status.SetLabel(status)
         self._insert_btn.Enable(False)
         self._favorite_btn.Enable(False)

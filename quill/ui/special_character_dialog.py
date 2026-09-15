@@ -41,6 +41,7 @@ import wx
 
 from quill.core import special_characters as catalogue
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.virtual_list import virtual_report_list
 
 __all__ = ["SpecialCharacterDialog", "choose_special_character"]
 
@@ -102,7 +103,9 @@ class SpecialCharacterDialog:
 
         list_col = wx.BoxSizer(wx.VERTICAL)
         list_label = wx.StaticText(panel, label="&Characters")
-        self._results = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
+        # Virtual: 357 characters cost 154 ms to re-insert on every keystroke
+        # of a live search. See quill/ui/virtual_list.py.
+        self._results = virtual_report_list(wx, panel, self._result_cell, style=wx.LC_SINGLE_SEL)
         set_accessible_name(self._results, "Characters")
         self._results.SetHelpText(
             "The characters in the group you chose, or the ones your search found. "
@@ -196,13 +199,18 @@ class SpecialCharacterDialog:
     # Filling the list
     # ------------------------------------------------------------------ #
 
+    def _result_cell(self, index: int, column: int) -> str:
+        """One cell, asked for while the control is drawing that row."""
+        if not (0 <= index < len(self._rows)):
+            return ""
+        row = self._rows[index]
+        if column == 0:
+            return row.display
+        return row.name if column == 1 else row.code_point
+
     def _show(self, rows: list[catalogue.SpecialCharacter], *, status: str = "") -> None:
         self._rows = rows
-        self._results.DeleteAllItems()
-        for index, row in enumerate(rows):
-            self._results.InsertItem(index, row.display)
-            self._results.SetItem(index, 1, row.name)
-            self._results.SetItem(index, 2, row.code_point)
+        self._results.set_rows(len(rows))
         self._status.SetLabel(status or self._count_text(len(rows)))
         self._detail.SetValue("")
         if rows:
