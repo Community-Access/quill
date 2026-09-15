@@ -2676,7 +2676,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quilllite">QuillLite</h2>
-<p>Control coverage: 39 audited sites (39 helped).</p>
+<p>Control coverage: 40 audited sites (40 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>About QuillLite.</strong> What this copy is, and where it
@@ -2710,6 +2710,13 @@ one. Type in the search box to narrow the list, or choose a profile –
 Notepad, WordPad, Recommended, Everything – to set them all at once.
 Three areas start switched off and are found here rather than hidden:
 autocorrect, timestamped backups, and Go To Anything.</p>
+<p><strong>Document language.</strong> Which markup this document is
+written in. It decides what Bold writes, what the heading keys write,
+which of the two tag pickers the Insert menu offers, and whether the
+cursor can tell you what list you are in. QuillLite reads it from the
+file name; this is where you say otherwise. Nothing in your document
+changes – only what the keys write from now on. The choice lasts as long
+as this window is open.</p>
 <p><strong>File format.</strong> How this document will be written back
 to disk: which character encoding, and which line endings. QuillLite
 normally writes back exactly what it read, so these only change when you
@@ -2730,6 +2737,25 @@ order they appear. Choose one and the cursor lands at the start of it.
 Headings exist in rich text only: they are the bold-plus-point-size
 ladder QUILL uses, so this list is also what Word will show in its
 navigation pane.</p>
+<p><strong>Insert HTML Tag.</strong> Forty HTML tags, searchable by what
+they do as well as by what they are called – dropdown finds select,
+checkbox finds input, collapsible finds details. Choose the tag, then
+give it attributes if it needs any, or press Enter on the empty box to
+skip that. Anything selected in your document is wrapped by the tag.</p>
+<p><strong>Insert Image.</strong> Where the image lives. Leave the
+address as it is to put a placeholder in and fill it in later – the
+description is whatever you had selected, and it is what somebody using
+a screen reader will hear instead of the picture, so it is worth
+writing.</p>
+<p><strong>Insert Link.</strong> Where the link points. Leave the
+address as it is to put a placeholder in and fill it in later – the link
+text is whatever you had selected.</p>
+<p><strong>Insert Markdown Tag.</strong> Every piece of Markdown
+QuillLite can write, in one searchable list: bold, italic, code, the six
+heading levels, bullet, numbered and task lists, blockquote, link,
+image, table and footnote. Type to narrow it. Anything selected in your
+document is wrapped; with nothing selected the markup goes in empty and
+the cursor lands in the middle of it.</p>
 <p><strong>Insert Special Character.</strong> Put in a character the
 keyboard has no key for. Search by name – dash, quote, euro, acute,
 arrow – or by Unicode code point, or clear the search box and browse one
@@ -2920,6 +2946,14 @@ because F3 is pressed in runs: hearing Not found spoken on every press
 is the fastest way to end up turning speech off. The status bar carries
 the words whichever you pick, so nothing is lost by choosing the
 tone.</li>
+<li><code>heading_choice</code>: Where the level goes relative to the
+heading itself. Before the text is one sentence QuillLite says on its
+own – Heading 2, Installing – and it is the one that survives a jump:
+pressing Control Home or landing on a search hit makes a screen reader
+cancel whatever it was about to say, and a level waiting its turn behind
+that is never heard. After the text lets your reader read the line and
+adds the level behind it, which is quieter on ordinary line-by-line
+reading.</li>
 <li><code>wrap_find</code>: On: Find Next reaching the end of the
 document starts again at the top. Off: it stops and tells you which end
 you are at, so you know to go to the other one and press again rather

@@ -232,7 +232,7 @@ Everything that puts something into your document that is not typing.
 | **Alt+.** | Emoji — search or browse, with a description of each one |
 | **Shift+Enter** | A line break that does not start a paragraph |
 | **Ctrl+Alt+I** | Markdown Tag — the whole Markdown vocabulary |
-| **Ctrl+Alt+O** | HTML Tag — forty tags, searchable by what they do |
+| **Ctrl+Alt+O** | HTML Tag — 111 tags and 20 whole form fields, searchable by what they do |
 
 These were spread through Edit before there were six of them. Insert sits
 **before Format** on the bar for the reason Word puts it there: you insert a

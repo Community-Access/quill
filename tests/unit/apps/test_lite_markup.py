@@ -16,7 +16,7 @@ import pytest
 
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
-from quill.apps.lite_window_markup import DocumentMarkupMixin
+from quill.apps.lite_window_markup import MARKUP_COMMANDS, DocumentMarkupMixin
 from quill.ui.richedit_editing import PLAIN, RICH
 
 
@@ -536,3 +536,70 @@ def test_the_emoji_picker_is_offered_in_rich_text_too(lite_window, lite_dialogs)
     lite_dialogs.answer("EmojiPickerDialog", _Entry())
     win.cmd_insert_emoji()
     assert "\N{PARTY POPPER}" in win.control.GetValue()
+
+
+# -- the menu rows the language dims -------------------------------------------
+#
+# The logic, not a real menu bar: what has to be right is *which* rows are
+# enabled for which document, and a wx.MenuBar adds nothing to that question
+# while costing a display. The rows are refreshed on every menu open, so the
+# state can never be stale -- what this pins down is the answer it refreshes to.
+
+
+class _Item:
+    """Enough of ``wx.MenuItem`` for the enable sweep to act on."""
+
+    def __init__(self) -> None:
+        self.enabled = True
+
+    def Enable(self, value: bool) -> None:  # noqa: N802 - wx spelling
+        self.enabled = bool(value)
+
+
+class _MenuWindow(_Window):
+    """A window carrying the menu-item registry the sweep reads."""
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._menu_items = {handler: _Item() for handler in MARKUP_COMMANDS}
+
+    def state(self) -> dict[str, bool]:
+        from quill.apps.lite_window_menus import DocumentMenuMixin
+
+        DocumentMenuMixin._sync_enabled_items(self)
+        return {handler: item.enabled for handler, item in self._menu_items.items()}
+
+
+@pytest.mark.parametrize(
+    ("name", "markdown_row", "html_row"),
+    [
+        ("notes.md", True, False),
+        ("page.html", False, True),
+        ("build.py", False, False),
+        ("notes.txt", False, False),
+        (None, False, False),
+    ],
+)
+def test_exactly_one_picker_is_live_and_it_is_the_documents_own(
+    name: str | None, markdown_row: bool, html_row: bool
+) -> None:
+    state = _MenuWindow(name=name).state()
+    assert state["cmd_insert_markdown_tag"] is markdown_row
+    assert state["cmd_insert_html_tag"] is html_row
+
+
+def test_rich_text_dims_both_pickers() -> None:
+    # Rich headings are a point size and rich bold is real bold, so a markup tag
+    # inserted into one would put literal angle brackets beside formatted text.
+    state = _MenuWindow(name="notes.md", mode=RICH).state()
+    assert not any(state.values())
+
+
+def test_changing_the_language_changes_which_row_is_live() -> None:
+    window = _MenuWindow(name="build.py")
+    assert not any(window.state().values())
+    window.set_document_language("html", announce=False)
+    assert window.state()["cmd_insert_html_tag"] is True
+    window.set_document_language("markdown", announce=False)
+    assert window.state()["cmd_insert_markdown_tag"] is True
+    assert window.state()["cmd_insert_html_tag"] is False

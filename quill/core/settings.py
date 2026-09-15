@@ -23,6 +23,7 @@ from quill.core.settings_normalizers import (
     _normalize_status_bar_order,
 )
 from quill.core.storage import write_json_atomic
+from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
 from quill.core.versioned_store import load_with_migration
 
 __all__ = [
@@ -750,6 +751,12 @@ class Settings:
         theme = str(data.get("theme", "system"))
         keyboard_pack = str(data.get("keyboard_pack", "Quill Default"))
         soft_wrap = bool(data.get("soft_wrap", True))
+        # The two caret cues. Both were saved and neither was read back, so
+        # Ctrl+Alt+F3 held until you closed QUILL and was forgotten by the next
+        # launch -- the shape of bug a settings file cannot show you, because
+        # the file was right the whole time and only the loader was not.
+        announce_headings = bool(data.get("announce_headings", True))
+        announce_lists = bool(data.get("announce_lists", True))
         wrap_find = bool(data.get("wrap_find", True))
         browse_mode = _normalize_browse_mode(data)
         browse_mode_wrap = browse_mode["wrap"]
@@ -1312,6 +1319,13 @@ class Settings:
         abbreviation_backspace_behavior = str(data.get("abbreviation_backspace_behavior", "delete"))
         if abbreviation_backspace_behavior not in {"delete", "revert"}:
             abbreviation_backspace_behavior = "delete"
+        # Back to "before" rather than to "after" on a bad value, because
+        # "before" is the one that works on every kind of caret move: a
+        # hand-edited file with a typo in it should not quietly cost somebody
+        # the heading cue on every Ctrl+Home.
+        heading_announce_position = str(data.get("heading_announce_position", "before"))
+        if heading_announce_position not in set(_HEADING_POSITIONS):
+            heading_announce_position = "before"
         # Braille Mode (BR-008) field parsing with clamping and validation.
         try:
             braille_cells_per_line = int(data.get("braille_cells_per_line", 40))
@@ -1491,6 +1505,8 @@ class Settings:
             theme=theme,
             keyboard_pack=keyboard_pack,
             soft_wrap=soft_wrap,
+            announce_headings=announce_headings,
+            announce_lists=announce_lists,
             wrap_find=wrap_find,
             browse_mode_wrap=browse_mode_wrap,
             browse_mode_feedback=browse_mode_feedback,
@@ -1762,6 +1778,7 @@ class Settings:
             sound_events_disabled=sound_events_disabled,
             action_feedback=action_feedback,
             find_not_found_feedback=find_not_found_feedback,
+            heading_announce_position=heading_announce_position,
             voice_preview_announce_generating=voice_preview_announce_generating,
             indent_tone_scale=indent_tone_scale,
             abbreviation_backspace_behavior=abbreviation_backspace_behavior,

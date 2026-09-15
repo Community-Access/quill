@@ -45,6 +45,7 @@ from quill.core.settings_portable import (
     portable_import,
 )
 from quill.core.storage import write_json_atomic
+from quill.core.structure_announce import HEADING_POSITIONS
 
 __all__ = ["MAX_RECENT", "MAX_SESSION", "SCHEMA", "Settings", "load", "save"]
 
@@ -65,6 +66,10 @@ MAX_SESSION = 9
 #: file cannot put the editor into a mode it has no code for.
 _THEMES = frozenset({"dark", "system"})
 _MODES = frozenset({"plain", "rich"})
+
+#: Where a heading's level goes relative to its text. Read from the shared
+#: table so the two editors cannot offer different answers to one question.
+_HEADING_POSITIONS = frozenset(HEADING_POSITIONS)
 
 #: How the letters of a word may be spoken. The same three QUILL offers; the
 #: labels live in :data:`quill.core.spelling.voicing.LETTER_STYLES` so the two
@@ -273,6 +278,11 @@ class Settings:
         self.markdown_hard_break_style = normalise_hard_break_style(self.markdown_hard_break_style)
         if self.spell_aloud_style not in _LETTER_STYLES:
             self.spell_aloud_style = "letters"
+        # Back to "before" rather than to "after", because "before" is the one
+        # that works on every kind of caret move: a hand-edited file with a typo
+        # in it should not quietly cost somebody the cue on every Ctrl+Home.
+        if self.heading_announce_position not in _HEADING_POSITIONS:
+            self.heading_announce_position = "before"
         # Clamped rather than validated-and-refused: a hand-edited settings file
         # with a delay of 0 should give the shortest pause the feature works
         # with, not an editor that will not start.

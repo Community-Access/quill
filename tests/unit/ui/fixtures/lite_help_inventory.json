@@ -29,6 +29,7 @@
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#2": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#3": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#4": "helped",
+  "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#5": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.SpinCtrl": "helped",
   "quill/apps/lite_preferences.py::edit_preferences::wx.TextCtrl": "helped",
   "quill/apps/lite_spelling_voice_dialog.py::edit_spelling_voice::wx.Choice": "helped",

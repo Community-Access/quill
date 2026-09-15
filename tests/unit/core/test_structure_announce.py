@@ -344,3 +344,63 @@ class TestDefinitionLists:
             StructureAnnouncer(), self.HTML, ["Intro", "Quill", "the editor"], markup="html"
         )
         assert said[1:] == ["Definition list, 2 terms", "Definition"]
+
+
+class TestTheSettingsSurviveARestart:
+    """Both cues, and where the level goes, are remembered.
+
+    This is here rather than in a settings test file because it is the *cue's*
+    contract, and because the bug it catches was invisible from the settings
+    side: ``announce_headings`` was written to the file correctly and never read
+    back, so Ctrl+Alt+F3 held for as long as QUILL was open and was forgotten by
+    the next launch. The file was right the whole time; only the loader was not.
+    """
+
+    @staticmethod
+    def _round_trip(**written):
+        from quill.core.settings import Settings
+
+        return Settings.from_dict(dict(written))
+
+    def test_switching_the_heading_cue_off_survives_a_restart(self) -> None:
+        assert self._round_trip(announce_headings=False).announce_headings is False
+
+    def test_switching_the_list_cue_off_survives_a_restart(self) -> None:
+        assert self._round_trip(announce_lists=False).announce_lists is False
+
+    def test_the_two_cues_are_remembered_independently(self) -> None:
+        both = self._round_trip(announce_headings=False, announce_lists=True)
+        assert (both.announce_headings, both.announce_lists) == (False, True)
+
+    def test_where_the_level_goes_survives_a_restart(self) -> None:
+        assert self._round_trip(heading_announce_position="after").heading_announce_position == (
+            "after"
+        )
+
+    def test_an_unset_file_gets_the_defaults_that_work_everywhere(self) -> None:
+        fresh = self._round_trip()
+        assert fresh.announce_headings is True
+        assert fresh.announce_lists is True
+        assert fresh.heading_announce_position == "before"
+
+    def test_a_hand_edited_typo_falls_back_to_the_ordering_that_never_loses_the_cue(self) -> None:
+        # "before" rather than "after": a typo in a settings file must not
+        # quietly cost somebody the cue on every Ctrl+Home.
+        assert (
+            self._round_trip(heading_announce_position="sideways").heading_announce_position
+            == "before"
+        )
+
+    def test_quilllite_remembers_the_same_three(self) -> None:
+        import dataclasses
+
+        from quill.core.lite.settings import Settings as LiteSettings
+
+        written = LiteSettings()
+        written.announce_headings = False
+        written.announce_lists = False
+        written.heading_announce_position = "after"
+        read = LiteSettings(**dataclasses.asdict(written)).normalized()
+        assert read.announce_headings is False
+        assert read.announce_lists is False
+        assert read.heading_announce_position == "after"

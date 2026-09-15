@@ -295,6 +295,11 @@ a markup language.</li>
 <li><strong>F6 now leaves the status bar as well as entering
 it.</strong> Escape still works; so does the key that got you there.
 Shift+F6 too.</li>
+<li><strong>Announce Headings is remembered between launches in QUILL
+too.</strong> It never was: QUILL wrote the setting and never read it
+back. QuillLite was never affected – its loader walks the dataclass
+fields rather than naming each one – but the two products share the
+switch, so it is fixed here as well.</li>
 <li><strong>Ctrl+Home onto a heading announces it.</strong> See the
 heading-order change above.</li>
 </ul>

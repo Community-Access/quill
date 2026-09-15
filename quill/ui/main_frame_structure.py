@@ -259,18 +259,28 @@ class StructureAnnounceMixin:
         """Wire the View menu's two cue rows to their toggles.
 
         Here rather than in ``main_frame_menu_bindings``, which owns four
-        hundred of these and was at its GATE-11 ceiling. Two switches for one
-        idea are a pair, and a loop over the pair is one place a new cue gets
-        added rather than two -- the shape that let a row be built, labelled and
-        never bound.
+        hundred of these and was at its GATE-11 ceiling.
+
+        **Written out twice rather than looped**, and that is not an oversight:
+        ``test_menu_items_bound`` reads the *source* for ``id=self._id_...`` to
+        catch the row that was built, labelled and never bound -- which is
+        precisely the bug these two rows could have. A loop over a tuple of ids
+        is invisible to that scan, so it defeats the one check that would notice.
+        Same trap as GATE-LITE-COVER's "parametrize over lambdas, not names":
+        a table is only checkable when the checker can see into it.
         """
         import wx
 
-        for item_id, toggle in (
-            (self._id_announce_headings, self.toggle_heading_announcements),
-            (self._id_announce_lists, self.toggle_list_announcements),
-        ):
-            self.frame.Bind(wx.EVT_MENU, lambda _e, run=toggle: run(), id=item_id)
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.toggle_heading_announcements(),
+            id=self._id_announce_headings,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.toggle_list_announcements(),
+            id=self._id_announce_lists,
+        )
 
     def toggle_list_announcements(self) -> None:
         """Ctrl+Alt+F5: stop (or resume) saying what list the caret is in.

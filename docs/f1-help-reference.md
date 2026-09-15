@@ -1079,7 +1079,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QuillLite
 
-Control coverage: 39 audited sites (39 helped).
+Control coverage: 40 audited sites (40 helped).
 
 ### Every window, and what it is for
 

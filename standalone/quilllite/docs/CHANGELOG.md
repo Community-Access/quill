@@ -76,6 +76,10 @@
 
 - **F6 now leaves the status bar as well as entering it.** Escape still works;
   so does the key that got you there. Shift+F6 too.
+- **Announce Headings is remembered between launches in QUILL too.** It never
+  was: QUILL wrote the setting and never read it back. QuillLite was never
+  affected -- its loader walks the dataclass fields rather than naming each one
+  -- but the two products share the switch, so it is fixed here as well.
 - **Ctrl+Home onto a heading announces it.** See the heading-order change above.
 
 ### Added

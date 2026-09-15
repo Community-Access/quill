@@ -29,6 +29,12 @@ _MODULES = [
     _UI / "main_frame_devtools.py",
     _UI / "main_frame_ssh.py",
     _UI / "main_frame_sessions.py",
+    # The View menu's two caret-cue rows bind beside the toggles they call
+    # (2026-09-15), because main_frame_menu_bindings.py was at its GATE-11
+    # ceiling. The list has to follow the bindings: a module that appends menu
+    # rows and is not scanned here is a module where this gate cannot do its
+    # one job, which is catching a row that was built, labelled and never bound.
+    _UI / "main_frame_structure.py",
 ]
 
 # Ids handled by a shared catch-all EVT_MENU handler (dynamic submenus) instead

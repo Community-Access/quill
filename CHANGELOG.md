@@ -159,6 +159,13 @@ rule, and an enabled row promises the command will work.
 
 #### Smaller things
 
+- **Announce Headings is remembered between launches.** It never was: QUILL
+  wrote the setting to the file correctly and never read it back, so
+  `Ctrl+Alt+F3` held for as long as the app was open and was forgotten by the
+  next launch. Invisible from the settings file, which was right the whole time
+  — only the loader was not. Announce Lists and the new heading-order preference
+  were wired the same way from the start, and all three now have a test that
+  round-trips them. QuillLite was never affected: its loader is field-driven.
 - **`F6` leaves the status bar as well as entering it**, in both editors.
   Escape still works; so now does the key that got you there, which is what
   every other region-cycling key in Windows does. `Shift+F6` too.
