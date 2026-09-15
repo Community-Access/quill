@@ -92,6 +92,69 @@ def test_a_source_run_with_no_edition_falls_back_to_the_old_rules(monkeypatch) -
     assert _app_asset_url(LITE, "QuillLite", prefer_portable=False).endswith(".exe")
 
 
+#: What QuillLite publishes since 2026-09-15: an installer and a portable zip.
+#: Spelled out rather than filtered out of LITE -- "QuillLite-Setup-Shared"
+#: contains the substring "Lite-Setup", so the obvious filter silently drops the
+#: full installer. That is the same trap install_edition.matches_asset carries an
+#: app_prefix to avoid, and it caught this test on the first run.
+LITE_TWO = [
+    a
+    for a in LITE
+    if a["name"] in {"QuillLite-Setup-Shared-1.0.0.exe", "QuillLite-Portable-1.0.0.zip"}
+]
+
+
+@pytest.mark.parametrize(
+    ("portable", "expected"),
+    [
+        (False, "QuillLite-Setup-Shared-1.0.0.exe"),
+        (True, "QuillLite-Portable-1.0.0.zip"),
+    ],
+)
+def test_two_assets_are_decided_by_portable_alone(monkeypatch, portable, expected) -> None:
+    """QuillLite's rule, and the whole of it: portable, or not.
+
+    ``match_edition=False`` is the app saying it publishes two downloads rather
+    than four, so there is no edition question to get wrong.
+    """
+    import quill.core.install_edition as edition_module
+
+    # Whatever detect() says, it must not reach the answer.
+    monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
+    url = _app_asset_url(LITE_TWO, "QuillLite", prefer_portable=portable, match_edition=False)
+    assert url.endswith(expected)
+
+
+def test_the_companion_misdetection_cannot_reach_a_two_asset_app(monkeypatch) -> None:
+    """The reason this switch exists rather than being left to luck.
+
+    An installed QuillVille app resolves QUILL_APP_ROOT to the SHARED RUNTIME's
+    folder -- where there is no edition marker, no uninstaller, no data folder --
+    so detect() answers "companion" for every one of them (verified
+    2026-09-15). With the edition step on, an installed QuillLite is asking a
+    chooser that believes it is something it is not, and comes out right only
+    because no Companion zip is published any more. With it off, the question
+    is never asked.
+    """
+    import quill.core.install_edition as edition_module
+
+    monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
+    matched = _app_asset_url(LITE_TWO, "QuillLite", prefer_portable=False, match_edition=True)
+    skipped = _app_asset_url(LITE_TWO, "QuillLite", prefer_portable=False, match_edition=False)
+    assert matched == skipped, "same answer today -- by luck on one side, by rule on the other"
+    assert skipped.endswith("QuillLite-Setup-Shared-1.0.0.exe")
+
+
+def test_the_edition_step_is_untouched_for_the_apps_that_ship_four(monkeypatch) -> None:
+    """The other eight still answer by edition; the switch is opt-in."""
+    import quill.core.install_edition as edition_module
+
+    monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
+    assert _app_asset_url(RADIO, "Quill-Radio", prefer_portable=False).endswith(
+        "Quill-Radio-Companion-3.0.0.zip"
+    )
+
+
 def test_another_apps_assets_are_never_picked(monkeypatch) -> None:
     import quill.core.install_edition as edition_module
 

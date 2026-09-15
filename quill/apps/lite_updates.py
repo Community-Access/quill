@@ -18,7 +18,16 @@ amount that genuinely differs:
 * the silent launch check is throttled to once a day through QuillLite's own
   settings file, because QuillLite must never adopt QUILL's;
 * the dialog's parent is the *document window*, not a top-level app frame,
-  since QuillLite is MDI and the active document is where the user is.
+  since QuillLite is MDI and the active document is where the user is;
+* and the asset is chosen **without** the four-edition machinery. QuillLite
+  publishes two downloads, an installer and a portable zip, so the question is
+  "portable, or not" and nothing else. The four-way chooser exists because the
+  other apps ship four non-interchangeable assets; pointed at two it can only
+  add a way to be wrong, and it nearly did -- an installed app resolves
+  ``QUILL_APP_ROOT`` to the shared runtime's folder, where ``detect()`` finds
+  no marker and answers "companion". QuillLite came out right anyway, because
+  it publishes no Companion zip and fell through to the installer. Right for
+  the wrong reason is not something to leave holding a download link.
 """
 
 from __future__ import annotations
@@ -91,7 +100,13 @@ def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
         announce("Checking for updates")
 
     def _fetch(**_kw: object) -> object:
-        return fetch_app_releases(RELEASE_ASSET_PREFIX, api_url, prefer_portable=prefer_portable)
+        return fetch_app_releases(
+            RELEASE_ASSET_PREFIX,
+            api_url,
+            prefer_portable=prefer_portable,
+            # Two assets, one question. See this module's docstring.
+            match_edition=False,
+        )
 
     def _show(releases: Any) -> None:
         if window is None:  # nothing to parent the dialog to

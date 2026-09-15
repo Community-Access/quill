@@ -394,7 +394,9 @@ def fetch_releases(
     ]
 
 
-def _app_asset_url(assets: object, app_prefix: str, *, prefer_portable: bool) -> str:
+def _app_asset_url(
+    assets: object, app_prefix: str, *, prefer_portable: bool, match_edition: bool = True
+) -> str:
     """The download URL of ``app_prefix``'s own asset in one release's asset list,
     or "" when this release carries no asset for that app.
 
@@ -407,6 +409,11 @@ def _app_asset_url(assets: object, app_prefix: str, *, prefer_portable: bool) ->
     the fix here because the fix only reached ``_pick_asset``. The extension
     rules stay as the fall-through, for a release that published nothing for
     this edition and for a source run with no edition at all.
+
+    ``match_edition=False`` skips the edition step for an app that publishes
+    **two** assets rather than four (QuillLite, 2026-09-15): "portable, or not"
+    decides, and a four-way chooser pointed at two can only add a way to be
+    wrong. See :mod:`quill.apps.lite_updates` for the way it nearly did.
     """
     if not isinstance(assets, list):
         return ""
@@ -420,13 +427,14 @@ def _app_asset_url(assets: object, app_prefix: str, *, prefer_portable: bool) ->
         if not url.lower().startswith("https://") or not name.startswith(low):
             continue
         candidates.append((name, url))
-    from quill.core.install_edition import detect, matches_asset
+    if match_edition:
+        from quill.core.install_edition import detect, matches_asset
 
-    edition = detect()
-    if edition:
-        for name, url in candidates:
-            if matches_asset(edition, name, app_prefix=app_prefix):
-                return url
+        edition = detect()
+        if edition:
+            for name, url in candidates:
+                if matches_asset(edition, name, app_prefix=app_prefix):
+                    return url
     installer = portable = ""
     for name, url in candidates:
         if "-portable-" in name and name.endswith(".zip"):
@@ -452,6 +460,7 @@ def fetch_app_releases(
     timeout: int = 10,
     *,
     prefer_portable: bool | None = None,
+    match_edition: bool = True,
 ) -> list[GitHubRelease]:
     """Releases in the shared repo that carry an asset for one specific app,
     newest-first. Each app updates independently from its own assets in the
@@ -459,6 +468,9 @@ def fetch_app_releases(
     *this app's* asset and its ``version`` to the app-specific tag's number, so a
     Quill Radio update is never confused with a Quill Weather one. A release with
     no asset for this app is skipped entirely.
+
+    ``match_edition=False``: one installer, one portable zip -- see
+    :func:`_app_asset_url`.
     """
     api_url = api_url or resolve_releases_api_url()
     if prefer_portable is None:
@@ -476,7 +488,12 @@ def fetch_app_releases(
     for r in raw:
         if not isinstance(r, dict) or r.get("draft"):
             continue
-        url = _app_asset_url(r.get("assets"), app_prefix, prefer_portable=bool(prefer_portable))
+        url = _app_asset_url(
+            r.get("assets"),
+            app_prefix,
+            prefer_portable=bool(prefer_portable),
+            match_edition=match_edition,
+        )
         if not url:
             continue
         releases.append(
