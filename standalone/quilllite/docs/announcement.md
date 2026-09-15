@@ -213,15 +213,13 @@ is down. One tick box in Settings turns even that off.
 
 ## Getting it
 
-Download from the releases page. There are four files; you want the first one
-unless you know otherwise.
+Download from the releases page. There are two files; you want the first one
+unless you are going to run it from a USB stick.
 
 | Download | Take this if |
 |---|---|
-| `QuillLite-Setup-Shared-<version>.exe` | You want the normal installer. |
-| `QuillLite-Lite-Setup-<version>.exe` | You already have another QuillVille app. |
+| `QuillLite-Setup-Shared-<version>.exe` | You want to install it. |
 | `QuillLite-Portable-<version>.zip` | You want it on a USB stick. |
-| `QuillLite-Companion-<version>.zip` | You already have the QuillVille runtime. |
 
 Windows may warn about the installer until code signing is finished. Choose
 **More info**, then **Run anyway**.

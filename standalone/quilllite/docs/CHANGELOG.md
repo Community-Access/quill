@@ -52,6 +52,18 @@
 
 ### Changed
 
+- **Two downloads, not four.** QuillLite publishes an installer and a portable
+  zip. The thin `QuillLite-Lite-Setup` and the launcher-only
+  `QuillLite-Companion` zip are retired, and neither was right for this
+  product: the Companion zip installs nothing, so it ran against whatever
+  shared runtime happened to be on the machine -- including one built before
+  QuillLite existed, which failed at launch with "No module named
+  quill.apps.lite" and could not repair itself. The thin installer swapped a
+  113 MB download for a 110 MB first-launch download and a network dependency,
+  on the one app people install *because* they have nothing else. If you
+  already installed the thin edition, the installer upgrades it in place --
+  same AppId, nothing to uninstall -- and Check for Updates offers it to you.
+  The other QuillVille apps are unchanged.
 - **A heading now says its level first**: "Heading 2, Installing" rather than
   the line followed by "Heading 2". Not a matter of taste -- a cue queued behind
   the reader is cancelled outright on a big caret jump, which is why Ctrl+Home

@@ -527,30 +527,44 @@ Four artifacts, the family contract:
 
 | Artifact | Built from | Output | Measured |
 |---|---|---|---|
-| Full installer | `installer/quilllite.iss` | `QuillLite-Setup-Shared-1.0.0.exe` | 113 MB |
-| Lite thin installer | `installer/quilllite-lite.iss` | `QuillLite-Lite-Setup-1.0.0.exe` | 2.8 MB |
+| Installer | `installer/quilllite.iss` | `QuillLite-Setup-Shared-1.0.0.exe` | 113 MB |
 | Full portable | `build_portable.py --product quilllite` | `QuillLite-Portable-1.0.0.zip` | 91 MB |
-| Companion zip | the launcher without an interpreter | `QuillLite-Companion-1.0.0.zip` | 0.1 MB |
+
+**Two artifacts, where the other apps publish four** (2026-09-15). QuillLite used
+to ship the thin `QuillLite-Lite-Setup` and the launcher-only
+`QuillLite-Companion` zip as well, and both were wrong for this product. The
+Companion zip installs nothing, so it binds to whatever shared runtime is
+already on the machine -- including one frozen before QuillLite existed, which
+fails at launch with `No module named quill.apps.lite` and cannot repair itself,
+because the launcher's runtime bootstrap only fires when *no* runtime resolves
+and a stale one resolves perfectly well. The thin installer traded a 113 MB
+download for a 110 MB first-launch download plus a network dependency, on the
+one app somebody installs *because* they have nothing else -- so the runtime is
+usually absent and the saving is notional. Retiring both is safe for anyone
+already on one: the two installers share an AppId, so this one upgrades a thin
+install in place, and `core/updates.py` falls through to an installable asset
+when a release publishes none for the running edition. The other eight apps are
+unchanged.
 
 The download names spell the product as one mixed-case word, `QuillLite-*`,
 never `Quill-Lite-*`: a screen reader speaks `QuillLite` as the product's name,
-where a hyphenated form is read out punctuation and all, and the thin flavour
-would have been the genuinely silly "Quill dash Lite dash Lite dash Setup".
+where a hyphenated form is read out punctuation and all.
 
-The installer scripts are named `quilllite*.iss`, not `quill-lite*.iss`: the
-family reserves the `*-lite.iss` suffix for the *thin* installer flavour, and
-`quill-lite.iss` ends in it -- so the shared installer was being audited as a
-thin one. Every other identifier for this product is already `quilllite` (the
-folder, the `AppRefId`, the launcher product key), so the installers match it.
+The installer script is named `quilllite.iss`, not `quill-lite.iss`: the family
+reserves the `*-lite.iss` suffix for the *thin* installer flavour, and
+`quill-lite.iss` ends in it -- so the installer was being audited as a thin one.
+Every other identifier for this product is already `quilllite` (the folder, the
+`AppRefId`, the launcher product key), so the installer matches it.
 
 `portable-inventory.json` is committed and enforced: the portable build fails on
 any drift from it, which is the class of defect that once put 82 MB of
 undeclared payload into a runtime installer.
 
-All four come from `scripts/build_release.ps1`. The shared QuillVille Runtime at
-`%LOCALAPPDATA%\QuillVille\Runtime\3.13\` is reused: the full installer ships it,
-and the Lite and Companion editions download it once on first launch through the
-runtime's accessible download page. **Neither ffmpeg nor libmpv is staged** —
+Both come from `scripts/build_release.ps1`. The shared QuillVille Runtime at
+`%LOCALAPPDATA%\QuillVille\Runtime\3.13\` is reused: the installer ships it and
+lays it down only when what is already there is older, and the portable bundle
+carries its own interpreter and never touches it at all.
+**Neither ffmpeg nor libmpv is staged** —
 QuillLite declares no media components, and the build strips any a sibling app
 left in the shared work area, so build order cannot change what ships.
 

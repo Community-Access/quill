@@ -123,14 +123,21 @@ Source: "..\dist\QuillLite\docs\*"; DestDir: "{app}\docs"; Components: docs; Fla
 ; Every shortcut launches through {app}\QuillLite.exe -- the native launcher,
 ; which resolves the shared runtime itself and runs `-m quill.apps.lite` in it.
 ;
-; It used to name {code:RuntimeExe} directly, which worked and cost the app its
-; identity: the launcher is the only thing that exports QUILL_APP_ROOT, and
-; without it quill.core.install_edition reads the SHARED RUNTIME's folder
-; instead of this one -- finds no quill-edition.txt there, no uninstaller and
-; no data folder, and concludes the user is running the Companion zip. Check
-; for Updates then offers them the wrong download. The thin installer
-; (quilllite-lite.iss) always launched this way; this is the full one catching
-; up, not a new idea.
+; It used to name {code:RuntimeExe} directly, which is wrong for a second
+; reason: the launcher is the only thing that exports QUILL_APP_ROOT at all,
+; and a shortcut into the runtime exe exports nothing.
+;
+; It does NOT, on its own, give the app its identity, and the note that used to
+; stand here said it did. On a shared-runtime install the launcher finds no
+; interpreter beside itself, so it resolves the shared runtime and exports
+; QUILL_APP_ROOT=<the runtime folder> -- deliberately, because that is where
+; the staged tools\ and vendor\ payloads live. quill.core.install_edition then
+; reads THAT folder, finds no quill-edition.txt, no uninstaller and no data\,
+; and concludes the user is running the Companion zip (verified 2026-09-15).
+; Harmless for QuillLite from now on, because QuillLite publishes no Companion
+; zip and the updater falls through to this installer -- the right answer by
+; luck rather than by design. The two meanings of "app root" need separating
+; before it is right on purpose.
 Name: "{group}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"

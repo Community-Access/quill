@@ -45,16 +45,21 @@ Full detail is in [the user guide](docs/userguide.md); the reasoning is in
 
 ## Install
 
-Four downloads. You want one of them.
+Two downloads. You want one of them.
 
 | Download | Take this one if |
 |---|---|
-| `QuillLite-Setup-Shared-<version>.exe` | You want the normal installer. Everything is in it. |
-| `QuillLite-Lite-Setup-<version>.exe` | You already have another QuillVille app, or you would rather the shared runtime downloaded on first launch. |
+| `QuillLite-Setup-Shared-<version>.exe` | You want to install it. Everything is in it. |
 | `QuillLite-Portable-<version>.zip` | You want it on a USB stick, settings and recovered work included. |
-| `QuillLite-Companion-<version>.zip` | You already have the QuillVille runtime and want only the launcher. |
 
-The full installer offers *Open .txt and .rtf files with QuillLite* as an
+Two, deliberately. The other QuillVille apps also publish a thin installer and a
+launcher-only Companion zip, which reuse a shared runtime someone already has.
+QuillLite does not, because it is the app people install when they have nothing
+else: the runtime is usually absent, so the thin flavours download it anyway,
+and the Companion zip cannot install one at all -- it runs against whatever is
+on the machine, including a runtime older than QuillLite itself.
+
+The installer offers *Open .txt and .rtf files with QuillLite* as an
 **optional** component. It adds QuillLite to the Open With list and never
 becomes the default handler — Notepad, WordPad and QUILL stay where they were.
 

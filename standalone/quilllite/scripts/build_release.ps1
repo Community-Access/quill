@@ -2,13 +2,28 @@
 #
 #   dist\QuillLite\                        the staged app folder
 #   dist\QuillLite-Portable-<ver>.zip      portable (with its data\ folder)
-#   dist\QuillLite-Setup-Shared-<ver>.exe  full installer (bundles the runtime)
-#   dist\QuillLite-Lite-Setup-<ver>.exe    thin installer (downloads it)
-#   dist\QuillLite-Companion-<ver>.zip     launcher only, for a machine that
-#                                          already has the shared runtime
+#   dist\QuillLite-Setup-Shared-<ver>.exe  the installer (bundles the runtime)
+#
+# TWO artifacts, not four (2026-09-15). QuillLite used to publish the thin
+# "Lite" installer and the launcher-only Companion zip as well, and both were
+# wrong for THIS product. The Companion zip installs nothing, so it binds to
+# whatever shared runtime is already on the machine -- including one built
+# before QuillLite existed, which fails at launch with "No module named
+# quill.apps.lite" and cannot self-heal, because the bootstrap only fires when
+# NO runtime resolves and a stale one resolves fine. The thin installer traded
+# a 114 MB download for a 110 MB first-launch download plus a network
+# dependency, on the one app people install BECAUSE they have nothing else --
+# so the runtime is usually absent and the saving is notional. And it was
+# called Lite twice.
+#
+# Retiring them is safe for anyone already on one: both installers share an
+# AppId, so the full one upgrades a thin install in place, and the updater
+# falls through to an installable asset when a release publishes none for the
+# running edition (core/updates.py::_pick_app_asset). The other eight apps are
+# unchanged and still ship all four.
 #
 # Usage:
-#   .\scriptsuild_release.ps1 [-Python <python.exe>] [-TokenFile <path>]
+#   .\scripts\build_release.ps1 [-Python <python.exe>] [-TokenFile <path>]
 #                               [-Iscc <path>] [-SkipToken] [-SkipSharedRuntime]
 #                               [-Sign]
 #
@@ -16,7 +31,7 @@
 # stacks -- so, unlike Quill Radio's build, there is nothing to stage under its
 # own tools\. -FfmpegDir/-LibmpvDir are still accepted so an existing build
 # command keeps working; they are unused here. Pass -SkipSharedRuntime to reuse
-# a runtime another app already built. Everything is bundled; the full installer
+# a runtime another app already built. Everything is bundled; the installer
 # and the zip perform no downloads.
 
 param(
@@ -170,24 +185,6 @@ if ($env:QUILL_SIGN -eq "1") {
 }
 & $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quilllite.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
-
-# -- Lite + Companion flavors (2026-08-18) ------------------------------------
-# The Lite installer and Companion zip carry the launcher WITHOUT the
-# embedded interpreter, so they need a launcher-only payload dir -- the
-# portable $appDir above deliberately contains a full Python.
-$launcherDir = Join-Path $repoRoot "dist\QuillLite-shared"
-& $Python (Join-Path $QuillRepo "scripts\build_native_launcher.py") --product quilllite --out $launcherDir
-if ($LASTEXITCODE -ne 0) { throw "Native launcher build failed." }
-New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
-Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
-& $Python $signer sign-build $launcherDir --label "quilllite lite payload"
-if ($LASTEXITCODE -ne 0) { throw "Code signing (lite payload) failed." }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quilllite-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
-if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
-$companionZip = Join-Path $repoRoot "dist\QuillLite-Companion-$version.zip"
-if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
-Copy-Item (Join-Path $repoRoot "assets\quill-lite.ico") $launcherDir -Force
-Compress-Archive -Path (Join-Path $launcherDir "*") -DestinationPath $companionZip
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"

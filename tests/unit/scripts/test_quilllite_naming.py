@@ -21,10 +21,10 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-INSTALLERS = (
-    REPO_ROOT / "standalone" / "quilllite" / "installer" / "quilllite.iss",
-    REPO_ROOT / "standalone" / "quilllite" / "installer" / "quilllite-lite.iss",
-)
+#: One installer, since 2026-09-15. The thin "Lite" installer was retired with
+#: the Companion zip -- see the note at the top of scripts/build_release.ps1 --
+#: so QuillLite publishes an installer and a portable zip and nothing else.
+INSTALLERS = (REPO_ROOT / "standalone" / "quilllite" / "installer" / "quilllite.iss",)
 NAME = "QuillLite"
 
 #: Spellings that are wrong wherever they appear in QuillLite's own packaging.

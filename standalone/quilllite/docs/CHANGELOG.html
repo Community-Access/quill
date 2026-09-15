@@ -266,6 +266,19 @@ speech deliberately does not.</li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
+<li><strong>Two downloads, not four.</strong> QuillLite publishes an
+installer and a portable zip. The thin <code>QuillLite-Lite-Setup</code>
+and the launcher-only <code>QuillLite-Companion</code> zip are retired,
+and neither was right for this product: the Companion zip installs
+nothing, so it ran against whatever shared runtime happened to be on the
+machine – including one built before QuillLite existed, which failed at
+launch with “No module named quill.apps.lite” and could not repair
+itself. The thin installer swapped a 113 MB download for a 110 MB
+first-launch download and a network dependency, on the one app people
+install <em>because</em> they have nothing else. If you already
+installed the thin edition, the installer upgrades it in place – same
+AppId, nothing to uninstall – and Check for Updates offers it to you.
+The other QuillVille apps are unchanged.</li>
 <li><strong>A heading now says its level first</strong>: “Heading 2,
 Installing” rather than the line followed by “Heading 2”. Not a matter
 of taste – a cue queued behind the reader is cancelled outright on a big

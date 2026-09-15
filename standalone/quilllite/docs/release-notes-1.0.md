@@ -653,9 +653,7 @@ not take a key out from under somebody's fingers. In QUILL those two commands ar
 | Download | Size | Choose this if |
 |---|---|---|
 | **QuillLite-Setup-Shared-1.0.0.exe** | 113 MB | You just want to install it. Everything is included. This is the one. |
-| **QuillLite-Lite-Setup-1.0.0.exe** | 2.8 MB | You already have another Quill app, or you would rather download the shared part on first launch than wait for a big download now. |
 | **QuillLite-Portable-1.0.0.zip** | 91 MB | You want to run it from a USB stick, with your settings on the stick too. |
-| **QuillLite-Companion-1.0.0.zip** | 0.1 MB | You know you already have the shared Quill runtime and want only the app. |
 
 If you are not sure, take the first one.
 
