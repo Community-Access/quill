@@ -21,15 +21,37 @@ spent in the editor.
 | A big file behaves | QuillLite | No size guard; three full-document scans per status refresh (6.9) |
 | A file survives the round trip | both | 6.3, F1-F6 |
 
-## 0.6 Decisions taken (2026-09-16)
+## 0.6 Decisions (2026-09-16) -- the standing mandate
 
-Four questions that gate P0 were put to the user and answered. They are
-decisions, not proposals, and the rows below follow them:
+Answered by the user. These are settled; do not re-litigate them.
 
 | Question | Answer |
 | --- | --- |
-| How far does the menu restructure go? | **Full restructure** (4.5, P1.20): the Search menu is folded into Edit and deleted, Format gains Font, alignment, Bullets and Line Spacing, Edit gains Delete, Paste Text Only and Go To, and View says Word Wrap. |
-| How ambitious is QUILL's new editor font? | **Match QuillLite exactly**: `font_name` and `font_size` settings, Format > Font... on `Ctrl+Alt+F`, and `Ctrl+=` / `Ctrl+-` / `Ctrl+0`, from shared code, with view zoom rather than run sizes in rich documents. `format.font_dialog`'s Markdown-only refusal is left for P1.7. |
+| AI's six three-modifier chords | **All six vacate.** `Ctrl+Alt+Shift+{S,I,G,T,H,E}` go to Sort Z-A, Tab Inserts a Tab, Paste Collected, Tidy Whitespace, Previous Heading and Earlier Versions -- QuillLite's meanings. AI keeps its menu, the palette and `Alt+Q`. |
+| The leader reclaim | **Retire all 16** GitHub, remote-file and local-git administration positions; menu and palette only. Navigation on the leader is untouched. |
+| Insert Image | Moves `Ctrl+Alt+I` -> `Ctrl+Shift+I`, freeing `Ctrl+Alt+I` for Insert Markdown Tag. Document Intake Report -> leader. |
+| Blockquote | **Merges into Quote Lines** on `Ctrl+Shift+Q`; `format.blockquote` retires; `Ctrl+Alt+Q` -> Duplicate Selection. |
+| Numbered list | **Folds into the `Ctrl+Shift+L` cycle** (bullets -> numbered -> off, WordPad's behaviour); `Ctrl+Alt+N` -> New Plain Text Document. |
+| `keep_unique_lines` / `remove_duplicate_lines` | **Merge**: one verb, QuillLite's `Ctrl+Alt+D` and its wording. `Alt+Shift+K` freed. |
+| `trim_blank_lines` / `remove_blank_lines` | **Both kept, renamed** so a listener can hear the difference: "Trim Blank Lines at the Ends" and "Remove Every Blank Line". |
+| Spelling context menu (S11) | **Corrections first, fixed tail**, in both. The first Down arrow lands on a correction; everything after it is always the same rows in the same order. |
+| QuillLite's clip history (C1) | **Make the promise true in both**, OFF by default, with setting text that says plainly it stores everything you copy including from a password field. QUILL's capture gains Cut. |
+| New-document line endings (F11) | **CRLF in both**, with a setting. Opened files keep whatever they had. |
+| Crash recovery and session restore (F14, G4) | **Both editors ask, then restore.** Recovery lists what it found; QUILL gains session restore on QuillLite's rule (command-line files win). |
+| QUILL -> QuillLite crossings (4.2) | **All three tiers approved.** |
+| The magical tier | **All four approved**: repeat the last announcement, structure on arrival, "what changed?", spoken undo. |
+| `DocumentText` (P0.6c) | **Build it fully.** |
+| The QuillLite profile in QUILL (P2.4) | **Build it**, after the G1 settings-name reconciliation it depends on. |
+| Temporary bookmark | **Kept, and crosses to QuillLite.** Not retired -- a pin you drop and forget is a different thing from a bookmark you keep, and QuillLite should have it too. |
+| Drag-and-drop file opening (P3.8) | **Declined.** |
+| QuillLite and braille (A4) | Write the position into QuillLite's PRD as a decision. Implementing braille there stays out of scope. |
+| Keymap profile snapshots (P2.6) | **Convert to deltas.** |
+| Quick Nav | **Kept, not merged.** Go To Anything -> `Ctrl+Alt+Shift+A` (QuillLite's chord); Quick Nav -> **`Ctrl+Shift+Z`**, which also **closes** it, so the key is a toggle -- Escape still closes it too. Free in both, and Redo is `Ctrl+Y` here as it is in Word, so nothing collides. Worth knowing: `Ctrl+Shift+Z` is Redo in VS Code and browsers, so somebody arriving from those may press it expecting Redo. Leader `G` is then free for a favourite-folder command. See 3.5. |
+
+**Working rules while unattended.** Commit each logical chunk with all 40 gates
+green. Stop and leave a note for: a feature removal beyond this table; a move
+of an x.md authoring chord not in this table. Write, test, but do **not**
+commit anything touching startup, the save path or the external-change watcher.
 
 ## 1. The rules
 
@@ -115,7 +137,8 @@ Rule 6 and rule 3 both say QuillLite's win.
 | Command | QuillLite | QUILL | Golden | Moves in QUILL |
 | --- | --- | --- | --- | --- |
 | List Headings | `Ctrl+Alt+L` | `outline_navigator` `Ctrl+Shift+O` | both | alias (rule 5) |
-| Go To Anything | `Ctrl+Alt+Shift+A` | leader `G`; `quick_nav` unbound | `Ctrl+Alt+Shift+A` | favourite folders (`Ctrl+Alt+Shift+O/A/R`) -> leader after reclaim (5.9); `quick_nav` and `go_to_anything` become one command |
+| Go To Anything | `Ctrl+Alt+Shift+A` | leader `G` | `Ctrl+Alt+Shift+A` | favourite folders (`Ctrl+Alt+Shift+O/A/R`) -> leader after the reclaim |
+| Quick Nav | -- | **unbound** | `Ctrl+Shift+Z` (toggles: the chord closes it, and so does Escape) | **Corrected 2026-09-16: NOT a duplicate of Go To Anything.** Go To Anything is a palette over commands, headings, bookmarks and recent files; Quick Nav is a category-filtered landmark index over headings, links, lists, list items, tables, block quotes and code blocks, with counts. The first pass proposed merging them, which would have deleted the index. It has a key for the first time; leader `G` is freed for a favourite-folder command |
 | Go to Bookmark... (list) | `Alt+Shift+G` | `Alt+Shift+B` | `Alt+Shift+G` + `Ctrl+Shift+F5` alias | `previous_inline_note` -> `Alt+Shift+K`; `Alt+Shift+B` becomes Status Bar (3.8) |
 | Set Bookmark 1..9 | `Ctrl+Shift+N` | tray paste | `Ctrl+Shift+N` | 3.2 |
 | Go to Bookmark N | -- | -- | (no chord) | Lite can *set* by number but only *go* by list or `F2`. `Alt+Shift+1..9` is taken by Lite's Recent File N, so no chord family: the list's rows begin with the digit, so digit then Enter is two keys and no new binding |
@@ -806,11 +829,14 @@ way:
 
 | # | Item | Cost |
 | --- | --- | --- |
-| P3.1 | Re-judge QUILL's temp bookmark once numbered bookmarks land (5.3a); `select_chunk` is **kept** and renamed, not retired | S |
+| P3.1 | Temporary bookmark **crosses to QuillLite** (`Ctrl+Alt+J` set, `Ctrl+Shift+J` go) -- it is kept in QUILL, not retired: a pin you drop and forget is a different thing from a bookmark you keep. `select_chunk` renamed **Select Token**, off `Ctrl+Space` | S |
 | P3.2 | A QuillLite tutorial book on `Ctrl+Alt+F1` | M |
 | P3.3 | Documentation drift (7.6): Lite PRD 2.2/3.2/8.1, both user guides' key tables, CHANGELOGs, release notes; regenerate keyboard and F1 references; Key Describer titles for every new QUILL chord | S |
 | P3.4 | Quillin hotkey collision gate (7.4) | S |
 | P3.5 | Bugs from section 6 rated Divergent, where a decision was taken | S each |
+| P2.18 | **Clip history honours its promise** in both (C1): wire the rolling capture, OFF by default, with setting text saying it stores everything you copy including from a password field; QUILL's capture gains Cut | both | S |
+| P2.19 | **Quick Nav gets a key** -- `Ctrl+Shift+Z`, which also closes it, plus Escape -- and Go To Anything takes `Ctrl+Alt+Shift+A`. They stay two commands: a palette and a landmark index are not the same surface | QUILL | S |
+| P2.20 | **Temporary bookmark crosses to QuillLite** (`Ctrl+Alt+J` set, `Ctrl+Shift+J` go) through the same shared seam | Lite | S |
 | P3.6 | **Tier 3 of 4.2**: snippets as one concept in both, Markdown folding in Lite, print preview in Lite, `EM_FORMATRANGE` formatted printing in the shared rich surface (PR3) | M each |
 | P3.7 | **The magical tier** (4.2, last table): "What changed?", a spoken undo over the `DocumentText` journal, repeat-the-last-announcement, and a one-sentence structure summary on open. QUILL first or shared-simultaneous, never Lite first | M each |
 | P3.8 | A `wx.FileDropTarget` in both, so a file dragged onto the window opens (4.4) | S |
@@ -890,9 +916,8 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**77 items open.** Delete a row when it lands. Tiered items
-first, then the section-6 findings no tiered item has claimed -- those are
-individually small and individually real, and they are the long tail.
+**80 items open.** Delete a row when it lands. Tiered items
+first, then the section-6 findings no tiered item has claimed.
 
 | # | Item |
 | --- | --- |
@@ -936,7 +961,10 @@ individually small and individually real, and they are the long tail.
 | P2.14 | Settings names reconciled (G1) and theme given one default or one written reason (G2) |
 | P2.16 | QUILL takes Lite's SingleInstanceChecker and --new-instance, and --rich / --plain (A6, A7) |
 | P2.17 | An announcement throttle in Lite (A5); Lite's braille position written into the PRD as a decision (A4) |
-| P3.1 | Re-judge QUILL's temp bookmark once numbered bookmarks land (5.3a); select_chunk is kept and renamed, not retired |
+| P2.18 | Clip history honours its promise in both (C1): wire the rolling capture, OFF by default, with setting text saying it sto |
+| P2.19 | Quick Nav gets a key -- Ctrl+Shift+Z, which also closes it, plus Escape -- and Go To Anything takes Ctrl+Alt+Shift+A. Th |
+| P2.20 | Temporary bookmark crosses to QuillLite (Ctrl+Alt+J set, Ctrl+Shift+J go) through the same shared seam |
+| P3.1 | Temporary bookmark crosses to QuillLite (Ctrl+Alt+J set, Ctrl+Shift+J go) -- it is kept in QUILL, not retired: a pin you |
 | P3.2 | A QuillLite tutorial book on Ctrl+Alt+F1 |
 | P3.3 | Documentation drift (7.6): Lite PRD 2.2/3.2/8.1, both user guides' key tables, CHANGELOGs, release notes; regenerate key |
 | P3.4 | Quillin hotkey collision gate (7.4) |
