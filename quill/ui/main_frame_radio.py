@@ -32,6 +32,7 @@ from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
+from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
 from quill.ui.radio import playback_status, quick_play, stats_session, youtube_ui
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
@@ -1614,48 +1615,68 @@ class RadioMixin(RadioStatusWindowsMixin):
     # copies only duplicated that and drifted stale, so they were removed.
 
     def _append_radio_favorites_submenu(self, menu: object) -> None:
-        """The Favorite Stations submenu: the first ten, each showing its key.
+        """One row: Play Favorite..., which opens the chooser.
 
-        The rows are the quick-play slots — the same ``favorites_in_display_order``
-        list ``quick_play.play_favorite_slot`` indexes — so each of the first ten
-        advertises its already-bound ``radio.play_favorite_N`` chord
-        (Ctrl+Alt+Shift+1..9, 0) via ``_menu_label`` and follows the user's
-        rebinding. This replaced a nested-folder mirror whose rows carried *no*
-        keyboard route at all (the exact cost the menu-accelerator rule exists
-        to prevent — found by its own gate once the gate learned to test a
-        profile that has favorites). Ten rows, because ten is how many digit
-        chords there are; the full nested view is one keystroke away in Manage
-        Favorites, and anything past ten is a *disabled* readout naming the
-        count — a status line, exempt from the rule, never a dead action.
+        It was ten rows until 2026-09-16, one per quick-play slot, each
+        advertising its ``radio.play_favorite_N`` chord on Ctrl+Alt+Shift+1..0.
+        Those chords are gone from the editor: that is the only free
+        three-modifier digit row, numbered tray paste needed it, and an editing
+        verb outranks a media convenience inside a text editor (bad.md P0.1).
+
+        Ten rows with no keys was not an option -- every enabled menu item must
+        advertise a keyboard route, which is the rule that produced those ten
+        rows in the first place. So the ten collapse into one command with one
+        key, and the list moves inside it, where it can also show more than ten
+        and does not have to be rebuilt as the favorites change. In Quill Radio,
+        which has no editor to compete with, the ten direct chords survive on
+        Alt+1..0 (``APP_KEYMAPS["radio"]``).
+        """
+        favorites = getattr(self, "_radio_favorites", None)
+        if favorites is None or not favorites.favorites:
+            return
+        item_id = self._wx.NewIdRef()
+        menu.Append(
+            item_id,
+            self._menu_label("Play Favorite Station...", "radio.play_favorite"),
+        )
+        self.frame.Bind(
+            self._wx.EVT_MENU,
+            lambda _e: self.open_radio_favorite_chooser(),
+            id=item_id,
+        )
+        self._retain_radio_menu_ids(item_id)
+
+    def open_radio_favorite_chooser(self) -> None:
+        """Pick a favorite station from a list and play it.
+
+        Every favorite, not the first ten: the old menu could only show ten
+        because ten is how many digit chords there are, and a list has no such
+        limit. Rows are numbered so somebody who knew the quick-play slots reads
+        the same numbers in the same order.
         """
         wx = self._wx
         favorites = getattr(self, "_radio_favorites", None)
         if favorites is None or not favorites.favorites:
+            self._announce("No favorite stations yet")
             return
-        sub = wx.Menu()
         ordered = favorites.favorites_in_display_order(
             self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
         )
-        for slot, favorite in enumerate(ordered[:10], start=1):
-            station = favorite.station
-            item_id = wx.NewIdRef()
-            sub.Append(
-                item_id,
-                self._menu_label(favorite.display_label, f"radio.play_favorite_{slot}"),
-            )
-            sub.Bind(
-                wx.EVT_MENU,
-                lambda _e, s=station: self._radio_controller.play_station(s),
-                id=item_id,
-            )
-            self._retain_radio_menu_ids(item_id)
-        if len(ordered) > 10:
-            overflow = sub.Append(
-                wx.ID_ANY,
-                f"({len(ordered) - 10} more in Manage Favorites)",
-            )
-            overflow.Enable(False)
-        menu.AppendSubMenu(sub, "Favorite Stations")
+        choices = [f"{index}. {fav.display_label}" for index, fav in enumerate(ordered, start=1)]
+        with wx.SingleChoiceDialog(
+            self.frame,
+            "Choose a favorite station to play:",
+            "Play Favorite Station",
+            choices,
+        ) as dialog:
+            apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+            if self._show_modal_dialog(dialog, "Play Favorite Station") != wx.ID_OK:
+                self._set_status("No station chosen")
+                return
+            selected = dialog.GetSelection()
+        if selected < 0 or selected >= len(ordered):
+            return
+        self._radio_controller.play_station(ordered[selected].station)
 
     # -- system tray ----------------------------------------------------------
 

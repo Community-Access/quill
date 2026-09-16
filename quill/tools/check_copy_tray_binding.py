@@ -1,12 +1,21 @@
 """Copy Tray binding guard.
 
 The twelve ``edit.paste_from_tray_N`` commands are a 0.6.0-shipped feature.
-Their bindings — ``Ctrl+Shift+1``..``9`` and ``Ctrl+Shift+0``/``-``/``=`` —
-are also the natural chord for a screen-reader user to reach for numeric
-"apply heading level" / "insert list" / "wrap link" shortcuts.  Without a
-guard, a future contributor can re-bind those digits to a different
-command and silently break Copy Tray for every user on the default
-keymap.
+Their digits are also the natural chord for a screen-reader user to reach
+for numeric "apply heading level" / "insert list" / "wrap link" shortcuts.
+Without a guard, a future contributor can re-bind those digits to a
+different command and silently break Copy Tray for every user on the
+default keymap.
+
+**The row moved on 2026-09-16, and this table moved with it.** Paste was on
+``Ctrl+Shift+1``..``9`` / ``0`` / ``-`` / ``=`` and is now one modifier out,
+on ``Ctrl+Alt+Shift+``.  The digits it gave up are Set Bookmark N -- which is
+what QuillLite has meant by them since it shipped, and QUILL adopted the
+shared numbered-bookmark core the same day (bad.md P0.1).  A bookmark is an
+editing-loop verb and pasting slot seven by number is not, so the shorter
+chord went to the bookmark.  The guard itself is unchanged in spirit: these
+twelve chords belong to Copy Tray, and the gate is here so the next move is
+also deliberate rather than accidental.
 
 This gate runs as part of ``quill.tools.menu_lint`` (or directly via
 ``python -m quill.tools.check_copy_tray_binding``) and fails the build
@@ -47,18 +56,18 @@ def _discover_profiles() -> tuple[str, ...]:
 # The 12 Copy Tray paste slots and the chord each one owns.  Order matches
 # the slot number so error messages read naturally.
 _PASTE_SLOTS: tuple[tuple[str, str], ...] = (
-    ("edit.paste_from_tray_1", "Ctrl+Shift+1"),
-    ("edit.paste_from_tray_2", "Ctrl+Shift+2"),
-    ("edit.paste_from_tray_3", "Ctrl+Shift+3"),
-    ("edit.paste_from_tray_4", "Ctrl+Shift+4"),
-    ("edit.paste_from_tray_5", "Ctrl+Shift+5"),
-    ("edit.paste_from_tray_6", "Ctrl+Shift+6"),
-    ("edit.paste_from_tray_7", "Ctrl+Shift+7"),
-    ("edit.paste_from_tray_8", "Ctrl+Shift+8"),
-    ("edit.paste_from_tray_9", "Ctrl+Shift+9"),
-    ("edit.paste_from_tray_10", "Ctrl+Shift+0"),
-    ("edit.paste_from_tray_11", "Ctrl+Shift+-"),
-    ("edit.paste_from_tray_12", "Ctrl+Shift+="),
+    ("edit.paste_from_tray_1", "Ctrl+Alt+Shift+1"),
+    ("edit.paste_from_tray_2", "Ctrl+Alt+Shift+2"),
+    ("edit.paste_from_tray_3", "Ctrl+Alt+Shift+3"),
+    ("edit.paste_from_tray_4", "Ctrl+Alt+Shift+4"),
+    ("edit.paste_from_tray_5", "Ctrl+Alt+Shift+5"),
+    ("edit.paste_from_tray_6", "Ctrl+Alt+Shift+6"),
+    ("edit.paste_from_tray_7", "Ctrl+Alt+Shift+7"),
+    ("edit.paste_from_tray_8", "Ctrl+Alt+Shift+8"),
+    ("edit.paste_from_tray_9", "Ctrl+Alt+Shift+9"),
+    ("edit.paste_from_tray_10", "Ctrl+Alt+Shift+0"),
+    ("edit.paste_from_tray_11", "Ctrl+Alt+Shift+-"),
+    ("edit.paste_from_tray_12", "Ctrl+Alt+Shift+="),
 )
 
 

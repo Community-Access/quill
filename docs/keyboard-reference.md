@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 360.
+Editor commands with default bindings: 374.
 
 ## The QUILL editor
 
@@ -60,7 +60,19 @@ Editor commands with default bindings: 360.
 | Ctrl+Alt+E | Select Line | `edit.select_line` |
 | Ctrl+Alt+F8 | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
 | Ctrl+Alt+K | Insert Link... | `edit.insert_link` |
-| Ctrl+Alt+Shift+F | Toggle Fold | `edit.toggle_fold` |
+| Ctrl+Alt+Shift+- | Paste from tray 11 | `edit.paste_from_tray_11` |
+| Ctrl+Alt+Shift+0 | Paste from tray 10 | `edit.paste_from_tray_10` |
+| Ctrl+Alt+Shift+1 | Paste from tray 1 | `edit.paste_from_tray_1` |
+| Ctrl+Alt+Shift+2 | Paste from tray 2 | `edit.paste_from_tray_2` |
+| Ctrl+Alt+Shift+3 | Paste from tray 3 | `edit.paste_from_tray_3` |
+| Ctrl+Alt+Shift+4 | Paste from tray 4 | `edit.paste_from_tray_4` |
+| Ctrl+Alt+Shift+5 | Paste from tray 5 | `edit.paste_from_tray_5` |
+| Ctrl+Alt+Shift+6 | Paste from tray 6 | `edit.paste_from_tray_6` |
+| Ctrl+Alt+Shift+7 | Paste from tray 7 | `edit.paste_from_tray_7` |
+| Ctrl+Alt+Shift+8 | Paste from tray 8 | `edit.paste_from_tray_8` |
+| Ctrl+Alt+Shift+9 | Paste from tray 9 | `edit.paste_from_tray_9` |
+| Ctrl+Alt+Shift+= | Paste from tray 12 | `edit.paste_from_tray_12` |
+| Ctrl+Alt+Shift+B | Select Block | `edit.select_block` |
 | Ctrl+Alt+Shift+P | Select Paragraph | `edit.select_paragraph` |
 | Ctrl+Alt+Shift+Q | Duplicate Selection | `edit.duplicate_selection` |
 | Ctrl+Alt+Shift+Z | Restore deletion | `edit.restore_deletion` |
@@ -71,20 +83,7 @@ Editor commands with default bindings: 360.
 | Ctrl+F8 | Copy All | `edit.copy_all` |
 | Ctrl+H | Replace... | `edit.replace` |
 | Ctrl+M | Pop Mark | `edit.pop_mark` |
-| Ctrl+Shift+- | Paste from tray 11 | `edit.paste_from_tray_11` |
-| Ctrl+Shift+0 | Paste from tray 10 | `edit.paste_from_tray_10` |
-| Ctrl+Shift+1 | Paste from tray 1 | `edit.paste_from_tray_1` |
-| Ctrl+Shift+2 | Paste from tray 2 | `edit.paste_from_tray_2` |
-| Ctrl+Shift+3 | Paste from tray 3 | `edit.paste_from_tray_3` |
-| Ctrl+Shift+4 | Paste from tray 4 | `edit.paste_from_tray_4` |
-| Ctrl+Shift+5 | Paste from tray 5 | `edit.paste_from_tray_5` |
-| Ctrl+Shift+6 | Paste from tray 6 | `edit.paste_from_tray_6` |
-| Ctrl+Shift+7 | Paste from tray 7 | `edit.paste_from_tray_7` |
-| Ctrl+Shift+8 | Paste from tray 8 | `edit.paste_from_tray_8` |
-| Ctrl+Shift+9 | Paste from tray 9 | `edit.paste_from_tray_9` |
-| Ctrl+Shift+= | Paste from tray 12 | `edit.paste_from_tray_12` |
 | Ctrl+Shift+A | Unselect All | `edit.unselect_all` |
-| Ctrl+Shift+B | Select Block | `edit.select_block` |
 | Ctrl+Shift+C | Copy With Source | `edit.copy_with_source` |
 | Ctrl+Shift+E | Insert Equation... | `edit.insert_equation` |
 | Ctrl+Shift+End | Select to End of Document | `edit.select_to_end_of_document` |
@@ -96,6 +95,7 @@ Editor commands with default bindings: 360.
 | Ctrl+Shift+M | Set Mark | `edit.set_mark` |
 | Ctrl+Shift+Q | Quote Lines | `edit.quote_lines` |
 | Ctrl+Shift+X | Exchange Point and Mark | `edit.exchange_point_mark` |
+| Ctrl+Shift+[ | Toggle Fold | `edit.toggle_fold` |
 | Ctrl+Space | Select Chunk | `edit.select_chunk` |
 | Ctrl+Y | Redo | `edit.redo` |
 | Ctrl+Z | Undo | `edit.undo` |
@@ -144,12 +144,12 @@ Editor commands with default bindings: 360.
 | Ctrl+Alt+4 | Insert Heading 4 | `format.heading_4` |
 | Ctrl+Alt+5 | Insert Heading 5 | `format.heading_5` |
 | Ctrl+Alt+6 | Insert Heading 6 | `format.heading_6` |
-| Ctrl+Alt+B | Toggle Bullet List | `format.toggle_bullet_list` |
 | Ctrl+Alt+H | Insert Horizontal Rule | `format.horizontal_rule` |
 | Ctrl+Alt+J | Justify | `format.justify` |
 | Ctrl+Alt+N | Toggle Numbered List | `format.toggle_numbered_list` |
 | Ctrl+Alt+Q | Insert Block Quote | `format.blockquote` |
 | Ctrl+Alt+Shift+J | Join Lines | `format.join_lines` |
+| Ctrl+Alt+Shift+L | Structured List Studio | `format.list_studio` |
 | Ctrl+Alt+Shift+N | Toggle Case | `format.toggle_case` |
 | Ctrl+Alt+Shift+U | Sentence Case | `format.sentence_case` |
 | Ctrl+Alt+Shift+V | Describe Indent Depth | `format.describe_indent_depth` |
@@ -162,17 +162,17 @@ Editor commands with default bindings: 360.
 | Ctrl+Shift+D | Describe Formatting at Cursor | `format.describe_formatting` |
 | Ctrl+Shift+Delete | Delete Line | `format.delete_line` |
 | Ctrl+Shift+Down | Move Line Down | `format.move_line_down` |
+| Ctrl+Shift+L | Toggle Bullet List | `format.toggle_bullet_list` |
 | Ctrl+Shift+Up | Move Line Up | `format.move_line_up` |
 | Ctrl+[ | Outdent | `format.outdent` |
 | Ctrl+] | Indent | `format.indent` |
-| F2 | Structured List Studio | `format.list_studio` |
 | QUILL Key + A | Expand Abbreviation | `format.expand_abbreviation` |
 | QUILL Key + E | Toggle Abbreviation Expansion | `format.toggle_abbreviation_expansion` |
-| QUILL Key + H | Insert HTML Tag... | `format.insert_html_tag` |
+| QUILL Key + H or Ctrl+Alt+O | Insert HTML Tag... | `format.insert_html_tag` |
 | QUILL Key + K | Switch Document Format | `format.switch_document_format` |
 | QUILL Key + L | List Manager | `format.list_manager` |
 | QUILL Key + S | Insert Snippet... | `format.insert_snippet` |
-| QUILL Key + Shift+A | Manage Abbreviations... | `format.manage_abbreviations` |
+| QUILL Key + Shift+A or Ctrl+Alt+A | Manage Abbreviations... | `format.manage_abbreviations` |
 | QUILL Key + Shift+S | Manage Snippets... | `format.manage_snippets` |
 | QUILL Key + U | Toggle Tab Key Mode (Indent / Tab Character) | `format.toggle_tab_insert_mode` |
 | Shift+Alt+A | Toggle Block Comment | `format.toggle_block_comment` |
@@ -188,18 +188,31 @@ Editor commands with default bindings: 360.
 | Alt+Shift+[ | Previous Fold | `navigate.previous_fold` |
 | Alt+Shift+] | Next Fold | `navigate.next_fold` |
 | Alt+Up | Previous Structure | `navigate.previous_structure` |
+| Ctrl+Alt+B | Clear All Bookmarks | `navigate.clear_numbered_bookmarks` |
 | Ctrl+G | Go to Line... | `navigate.go_to_line` |
 | Ctrl+J | Set Temporary Bookmark | `navigate.set_temp_bookmark` |
+| Ctrl+Shift+1 | Set numbered bookmark 1 | `navigate.set_numbered_bookmark_1` |
+| Ctrl+Shift+2 | Set numbered bookmark 2 | `navigate.set_numbered_bookmark_2` |
+| Ctrl+Shift+3 | Set numbered bookmark 3 | `navigate.set_numbered_bookmark_3` |
+| Ctrl+Shift+4 | Set numbered bookmark 4 | `navigate.set_numbered_bookmark_4` |
+| Ctrl+Shift+5 | Set numbered bookmark 5 | `navigate.set_numbered_bookmark_5` |
+| Ctrl+Shift+6 | Set numbered bookmark 6 | `navigate.set_numbered_bookmark_6` |
+| Ctrl+Shift+7 | Set numbered bookmark 7 | `navigate.set_numbered_bookmark_7` |
+| Ctrl+Shift+8 | Set numbered bookmark 8 | `navigate.set_numbered_bookmark_8` |
+| Ctrl+Shift+9 | Set numbered bookmark 9 | `navigate.set_numbered_bookmark_9` |
+| Ctrl+Shift+B | Set Bookmark | `navigate.set_numbered_bookmark` |
 | Ctrl+Shift+G | Go To Page... | `navigate.go_to_page` |
 | Ctrl+Shift+J | Go to Temporary Bookmark | `navigate.go_to_temp_bookmark` |
 | Ctrl+Shift+O | Outline Navigator... | `navigate.outline_navigator` |
 | Ctrl+Shift+\ | Match Bracket | `navigate.match_bracket` |
+| F2 | Next Bookmark | `navigate.next_bookmark` |
 | F6 | Next Region | `navigate.next_region` |
 | QUILL Key + F | Speak Window Title | `navigate.speak_window_title` |
 | QUILL Key + G | Go to Anything | `navigate.go_to_anything` |
 | QUILL Key + O | Heading Organizer... | `navigate.heading_organizer` |
 | QUILL Key + P | Speak Full Path | `navigate.speak_full_path` |
 | QUILL Key + Q | Speak Status Summary | `navigate.speak_status_summary` |
+| Shift+F2 | Previous Bookmark | `navigate.previous_bookmark` |
 | Shift+F6 | Previous Region | `navigate.previous_region` |
 
 ### View
@@ -231,6 +244,7 @@ Editor commands with default bindings: 360.
 | Alt+Shift+F7 | Spell Check (Ranked by Frequency)... | `tools.spell_check_ranked` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
 | Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |
+| Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
@@ -238,7 +252,6 @@ Editor commands with default bindings: 360.
 | Ctrl+Alt+Shift+G | AI Grammar and Style Check... | `tools.ai_grammar_style` |
 | Ctrl+Alt+Shift+H | AI Thesaurus | `tools.ai_thesaurus` |
 | Ctrl+Alt+Shift+I | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
-| Ctrl+Alt+Shift+L | List Folds... | `tools.list_folds` |
 | Ctrl+Alt+Shift+S | AI Spell Check... | `tools.ai_spell_check` |
 | Ctrl+Alt+Shift+T | Translate Selection... | `tools.ai_translate_selection` |
 | Ctrl+F7 | Next Misspelling | `tools.next_misspelling` |
@@ -247,9 +260,9 @@ Editor commands with default bindings: 360.
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
 | Ctrl+Shift+F9 | Pause or Resume Dictation | `tools.dictation_pause` |
 | Ctrl+Shift+I | Document Intake Report... | `tools.document_intake_report` |
-| Ctrl+Shift+L | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
 | Ctrl+Shift+R | Replace Across Files... | `tools.replace_in_files` |
 | Ctrl+Shift+W | Word Count... | `tools.word_count` |
+| Ctrl+Shift+] | List Folds... | `tools.list_folds` |
 | Escape | Stop Dictation (keep speech) | `tools.dictation_emergency_stop` |
 | F7 | Spell Check... | `tools.spell_check_dialog` |
 | QUILL Key + D | Dictation | `tools.dictation_toggle` |
@@ -333,6 +346,16 @@ Editor commands with default bindings: 360.
 | (unbound by default) | Podcasts: Sound Enhancements... | `podcasts.sound_enhancements` |
 | (unbound by default) | Non ascii jump to report | `power.non_ascii_jump_to_report` |
 | (unbound by default) | Non ascii jump to source | `power.non_ascii_jump_to_source` |
+| (unbound by default) | Play favorite 1 | `radio.play_favorite_1` |
+| (unbound by default) | Play favorite 10 | `radio.play_favorite_10` |
+| (unbound by default) | Play favorite 2 | `radio.play_favorite_2` |
+| (unbound by default) | Play favorite 3 | `radio.play_favorite_3` |
+| (unbound by default) | Play favorite 4 | `radio.play_favorite_4` |
+| (unbound by default) | Play favorite 5 | `radio.play_favorite_5` |
+| (unbound by default) | Play favorite 6 | `radio.play_favorite_6` |
+| (unbound by default) | Play favorite 7 | `radio.play_favorite_7` |
+| (unbound by default) | Play favorite 8 | `radio.play_favorite_8` |
+| (unbound by default) | Play favorite 9 | `radio.play_favorite_9` |
 | (unbound by default) | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
 | (unbound by default) | Story Studio... | `story.open_studio` |
 | (unbound by default) | Sync Folder with GitHub... | `sync.sync_folder` |
@@ -377,16 +400,6 @@ Editor commands with default bindings: 360.
 | Ctrl+Alt+I | Insert image | `power.insert_image` |
 | Ctrl+Alt+Left | Table: Previous Cell | `table.previous_cell` |
 | Ctrl+Alt+Right | Table: Next Cell | `table.next_cell` |
-| Ctrl+Alt+Shift+0 | Play favorite 10 | `radio.play_favorite_10` |
-| Ctrl+Alt+Shift+1 | Play favorite 1 | `radio.play_favorite_1` |
-| Ctrl+Alt+Shift+2 | Play favorite 2 | `radio.play_favorite_2` |
-| Ctrl+Alt+Shift+3 | Play favorite 3 | `radio.play_favorite_3` |
-| Ctrl+Alt+Shift+4 | Play favorite 4 | `radio.play_favorite_4` |
-| Ctrl+Alt+Shift+5 | Play favorite 5 | `radio.play_favorite_5` |
-| Ctrl+Alt+Shift+6 | Play favorite 6 | `radio.play_favorite_6` |
-| Ctrl+Alt+Shift+7 | Play favorite 7 | `radio.play_favorite_7` |
-| Ctrl+Alt+Shift+8 | Play favorite 8 | `radio.play_favorite_8` |
-| Ctrl+Alt+Shift+9 | Play favorite 9 | `radio.play_favorite_9` |
 | Ctrl+Alt+Shift+Backspace | Delete paragraph | `power.delete_paragraph` |
 | Ctrl+Alt+Shift+Delete | Delete to line end | `power.delete_to_line_end` |
 | Ctrl+Alt+Shift+F3 | Count occurrences | `power.count_occurrences` |
@@ -394,12 +407,14 @@ Editor commands with default bindings: 360.
 | Ctrl+E | Sound Enhancements... | `media.sound_enhancements` |
 | Ctrl+Shift+Backspace | Delete to line start | `power.delete_to_line_start` |
 | Ctrl+Shift+Enter | Trim blank lines | `power.trim_blank_lines` |
+| Ctrl+Shift+F2 | Insert special character | `power.insert_special_character` |
 | H | QUILL Quick Nav: Heading | `quill.quick_nav.heading` |
 | I | QUILL Quick Nav: List Item | `quill.quick_nav.list_item` |
 | L | QUILL Quick Nav: List | `quill.quick_nav.list` |
 | P | QUILL Quick Nav: Paragraph | `quill.quick_nav.paragraph` |
 | Q | QUILL Quick Nav: Block Quote | `quill.quick_nav.block_quote` |
 | QUILL Key + 0 | Radio: Stop | `radio.stop` |
+| QUILL Key + 3 | Play Favorite Station... | `radio.play_favorite` |
 | QUILL Key + 4 | Podcasts: Skip Back | `podcasts.skip_back` |
 | QUILL Key + 5 | Podcasts: Skip Forward | `podcasts.skip_forward` |
 | QUILL Key + 6 | Record Now / Stop Recording | `radio.record_toggle` |
@@ -419,7 +434,6 @@ Editor commands with default bindings: 360.
 | QUILL Key + Shift+X | GitHub: Delete Branch... | `github.delete_branch` |
 | S | QUILL Quick Nav: Sentence | `quill.quick_nav.sentence` |
 | Shift+Enter | Insert line break | `power.insert_line_break` |
-| Shift+F2 | Insert special character | `power.insert_special_character` |
 | T | QUILL Quick Nav: Table | `quill.quick_nav.table` |
 | TAB | QUILL Quick Nav: Block | `quill.quick_nav.block` |
 | [ | QUILL Quick Nav: Skip Backward Past Container | `quill.quick_nav.skip_backward` |
@@ -431,6 +445,17 @@ App keys, not editor keys: these apply inside the app named above and never insi
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Alt+0 | Play favorite 10 | `radio.play_favorite_10` |
+| Alt+1 | Play favorite 1 | `radio.play_favorite_1` |
+| Alt+2 | Play favorite 2 | `radio.play_favorite_2` |
+| Alt+3 | Play favorite 3 | `radio.play_favorite_3` |
+| Alt+4 | Play favorite 4 | `radio.play_favorite_4` |
+| Alt+5 | Play favorite 5 | `radio.play_favorite_5` |
+| Alt+6 | Play favorite 6 | `radio.play_favorite_6` |
+| Alt+7 | Play favorite 7 | `radio.play_favorite_7` |
+| Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
+| Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
+| Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
 | Ctrl+Alt+9 | Suggest a Station or Podcast... | `radio.suggest_pick` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |

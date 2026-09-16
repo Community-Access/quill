@@ -22,6 +22,30 @@ from quill.core.keymap import DEFAULT_KEYMAP
 #: app id -> {command id: binding}.
 APP_KEYMAPS: dict[str, dict[str, str]] = {
     "radio": {
+        # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in
+        # DEFAULT_KEYMAP until 2026-09-16, when numbered tray paste took that
+        # row -- the only free three-modifier digit row in the editor, and an
+        # editing verb outranks a media convenience inside a text editor
+        # (bad.md rule 3, P0.1). Quill Radio has no document tabs, so the plain
+        # Alt+digit row the editor spends on window.go_to_document_N is free
+        # here, and it is the row the old comment in keymap.py told people to
+        # rebind to anyway. QUILL reaches the same favorites through one
+        # chooser, radio.play_favorite.
+        "radio.play_favorite_1": "Alt+1",
+        "radio.play_favorite_2": "Alt+2",
+        "radio.play_favorite_3": "Alt+3",
+        "radio.play_favorite_4": "Alt+4",
+        "radio.play_favorite_5": "Alt+5",
+        "radio.play_favorite_6": "Alt+6",
+        "radio.play_favorite_7": "Alt+7",
+        "radio.play_favorite_8": "Alt+8",
+        "radio.play_favorite_9": "Alt+9",
+        "radio.play_favorite_10": "Alt+0",
+        # ...and the chooser QUILL reaches them through needs a key here too:
+        # its shared default is a QUILL-key chord, which a menu label cannot
+        # carry (#612), so without this the Station menu would advertise no
+        # route for the row.
+        "radio.play_favorite": "Alt+Shift+F",
         "radio.browse": "Ctrl+B",
         "radio.add_custom_station": "Ctrl+N",
         "radio.add_youtube_playlist": "Ctrl+Shift+Y",

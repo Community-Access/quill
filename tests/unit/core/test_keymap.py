@@ -417,17 +417,21 @@ def test_legacy_full_snapshot_is_converted_to_a_stamped_delta(
         {
             "file.save": DEFAULT_KEYMAP["file.save"],  # equals default -> dropped
             "edit.find": "Ctrl+Shift+Grave, Z",  # stale leader chord -> Ctrl+F
-            "format.bold": "Ctrl+Shift+Alt+B",  # genuine override -> kept
+            # A genuine override -> kept. An F-key chord on purpose: the letter
+            # rows are saturated across the two editors, and this fixture used
+            # to pick Ctrl+Shift+Alt+B, which became edit.select_block's default
+            # on 2026-09-16 and was then correctly dropped as a duplicate.
+            "format.bold": "Ctrl+Alt+Shift+F4",
         },
     )
 
     loaded = load_keymap()
     assert loaded["edit.find"] == DEFAULT_KEYMAP["edit.find"]
-    assert loaded["format.bold"] == "Ctrl+Shift+Alt+B"
+    assert loaded["format.bold"] == "Ctrl+Alt+Shift+F4"
 
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
-        "format.bold": "Ctrl+Shift+Alt+B",
+        "format.bold": "Ctrl+Alt+Shift+F4",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
 
@@ -713,11 +717,24 @@ def test_build_keymap_for_pack_off_darwin_is_verbatim(monkeypatch) -> None:
 
 
 def test_authoring_chords_are_the_defaults() -> None:
-    # The "Authoring" chord set (x.md), user-authorized. Locks in the defaults.
+    """The "Authoring" chord set (x.md), user-authorized, minus what supersedes it.
+
+    The set was authorized before the family keymap existed. Where Microsoft
+    and QuillLite both bind a key for a verb QUILL also has, that key wins --
+    rule 1 of bad.md, decided 2026-09-16 -- so a few of these rows have moved
+    and are asserted at their new homes here rather than deleted, because the
+    point of this test is that the set is *decided* rather than accidental.
+
+    Moved, with the claim that beat it:
+      format.toggle_bullet_list  Ctrl+Alt+B -> Ctrl+Shift+L (WordPad's Bullets
+                                 key, and QuillLite's; Ctrl+Alt+B is Clear All
+                                 Bookmarks in QuillLite and now in QUILL).
+    """
     from quill.core.keymap import DEFAULT_KEYMAP
 
     assert DEFAULT_KEYMAP["edit.insert_link"] == "Ctrl+Alt+K"
-    assert DEFAULT_KEYMAP["format.toggle_bullet_list"] == "Ctrl+Alt+B"
+    assert DEFAULT_KEYMAP["format.toggle_bullet_list"] == "Ctrl+Shift+L"
+    assert DEFAULT_KEYMAP["navigate.clear_numbered_bookmarks"] == "Ctrl+Alt+B"
     assert DEFAULT_KEYMAP["format.toggle_numbered_list"] == "Ctrl+Alt+N"
     assert DEFAULT_KEYMAP["power.insert_image"] == "Ctrl+Alt+I"
     assert DEFAULT_KEYMAP["format.insert_table"] == "Ctrl+Alt+T"
@@ -725,6 +742,51 @@ def test_authoring_chords_are_the_defaults() -> None:
     assert DEFAULT_KEYMAP["format.horizontal_rule"] == "Ctrl+Alt+H"
     for level in range(1, 7):
         assert DEFAULT_KEYMAP[f"format.heading_{level}"] == f"Ctrl+Alt+{level}"
+
+
+def test_numbered_bookmarks_agree_with_quilllite() -> None:
+    """QUILL's numbered bookmarks use QuillLite's chords, because they are one feature.
+
+    quill.core.numbered_bookmarks says in its own docstring that it lives in
+    shared core so QUILL can adopt it; QuillLite was its only caller until
+    2026-09-16. Adopting it on different keys would have been the worst of
+    both: one engine, two habits.
+    """
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+
+    lite = {handler: key for _m, _label, key, handler, _flag in COMMANDS if key}
+    pairs = {
+        "navigate.set_numbered_bookmark": "cmd_set_bookmark",
+        "navigate.next_bookmark": "cmd_next_bookmark",
+        "navigate.previous_bookmark": "cmd_previous_bookmark",
+        "navigate.clear_numbered_bookmarks": "cmd_clear_bookmarks",
+        **{f"navigate.set_numbered_bookmark_{n}": f"cmd_set_bookmark_{n}" for n in range(1, 10)},
+    }
+    for command_id, handler in pairs.items():
+        assert DEFAULT_KEYMAP[command_id] == lite[handler], (
+            f"{command_id} and QuillLite's {handler} are one feature on two keys"
+        )
+
+
+def test_quick_play_favorites_left_the_editor_keymap() -> None:
+    """Ctrl+Alt+Shift+digit is numbered tray paste, not radio favorites.
+
+    It is the only free three-modifier digit row, Ctrl+Shift+digit went to
+    bookmarks, and an editing verb outranks a media convenience inside a text
+    editor (bad.md rule 3, P0.1). The ten chords survive in Quill Radio, which
+    has no editor to compete with, on the plain Alt+digit row.
+    """
+    from quill.core.app_keymaps import APP_KEYMAPS
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    for slot in range(1, 11):
+        assert DEFAULT_KEYMAP[f"radio.play_favorite_{slot}"] == ""
+        assert APP_KEYMAPS["radio"][f"radio.play_favorite_{slot}"] == (
+            f"Alt+{slot if slot < 10 else 0}"
+        )
+    assert DEFAULT_KEYMAP["edit.paste_from_tray_1"] == "Ctrl+Alt+Shift+1"
+    assert DEFAULT_KEYMAP["radio.play_favorite"], "the chooser replaces the ten chords"
 
 
 def test_every_quill_alias_is_free_parseable_and_unique() -> None:

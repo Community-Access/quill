@@ -298,7 +298,7 @@ Headings, lists, emphasis and sections -- and Describe Formatting, which tells y
    - You should hear: Every attribute on the text, in one pass.
 
 5. **Make a list, and nest it.** Toggle Bullet List and Toggle Numbered List convert the selection. On a Markdown list item, Tab and Shift+Tab nest and promote the item, and each move is spoken -- so you hear the indent even though the caret does not move.
-   - Keys: Ctrl+Alt+B
+   - Keys: Ctrl+Shift+L
    - You should hear: The list applied, then the new depth as you nest.
 
 6. **Move a whole section.** Move Section Up and Move Section Down move a heading and everything under it. Reordering a document by its structure rather than by cut and paste is the difference between an edit and an afternoon.
@@ -490,7 +490,7 @@ Summaries, folds, compare, and the report tabs that make somebody else's file re
    - You should hear: The summary, in one pass.
 
 2. **Collapse what you are not reading.** Toggle Fold collapses a section; List Folds shows what is folded; Next Fold and Previous Fold move between them. In a long structured document, folding is how you make the shape audible.
-   - Keys: Ctrl+Alt+Shift+F
+   - Keys: Ctrl+Shift+[
    - You should hear: Folded, and how many lines went away.
 
 3. **Compare two versions.** The compare tools open their summary as an ordinary document tab -- artifacts stay close to the work that made them -- and Next Difference, Previous Difference and Announce Difference walk it by ear.

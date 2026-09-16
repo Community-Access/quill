@@ -1008,17 +1008,25 @@ class MenuBuilderMixin:
         )
         navigate_menu.AppendSeparator()
         bookmarks_menu = wx.Menu()
+        # Numbered bookmarks first: nine slots addressed by digit, which is what
+        # "bookmark" means in QuillLite and in the editors people arrive from.
+        # Built by their own mixin (main_frame_numbered_bookmarks.py), which
+        # also binds them. The named vault below is QUILL's extra and says so
+        # in its labels -- before 2026-09-16 there was only one kind here and
+        # "Set Bookmark..." was unambiguous; now it would not be.
+        self.build_numbered_bookmarks_menu(bookmarks_menu)
+        bookmarks_menu.AppendSeparator()
         bookmarks_menu.Append(
             self._id_set_bookmark,
-            self._menu_label(_("&Set Bookmark..."), "navigate.set_bookmark"),
+            self._menu_label(_("Set N&amed Bookmark..."), "navigate.set_bookmark"),
         )
         bookmarks_menu.Append(
             self._id_go_to_bookmark,
-            self._menu_label(_("&Go To Bookmark..."), "navigate.go_to_bookmark"),
+            self._menu_label(_("&Go To Named Bookmark..."), "navigate.go_to_bookmark"),
         )
         bookmarks_menu.Append(
             self._id_list_bookmarks,
-            self._menu_label(_("&List Bookmarks..."), "navigate.list_bookmarks"),
+            self._menu_label(_("&List Named Bookmarks..."), "navigate.list_bookmarks"),
         )
         bookmarks_menu.AppendSeparator()
         bookmarks_menu.Append(

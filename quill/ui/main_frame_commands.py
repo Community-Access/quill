@@ -795,6 +795,11 @@ class CommandRegistryMixin:
             self.list_bookmarks,
             self._binding_for("navigate.list_bookmarks"),
         )
+        # Numbered bookmarks -- nine slots addressed by digit, the shared core
+        # QuillLite had to itself until 2026-09-16. Registered by their own
+        # mixin so the table, the menu and the bindings stay in one module
+        # (main_frame_numbered_bookmarks.py) rather than in three.
+        self.register_numbered_bookmark_commands()
         self.commands.register(
             "navigate.set_temp_bookmark",
             "Set Temporary Bookmark",

@@ -533,7 +533,7 @@ Put your ten most-played stations on ten chords, learn the two routes back to wh
 *6 steps, about 4 minutes.*
 
 1. **Play favorite number one.** Ten commands -- Play Favorite 1 through Play Favorite 10 -- play the first ten stations in your favorites directly, with no menu and no arrowing. They are the reason the order you built in the last lesson is worth building.
-   - Keys: Ctrl+Alt+Shift+1
+   - Keys: Alt+1
    - You should hear: Connecting, then Playing, and the station's name.
 
 2. **Move a station into a slot.** A slot is simply a position in the list, so putting a station on Play Favorite 3 means moving it to third. Do that in the manager with Move Up, or with Alt+Shift+Up on the main window's tree.

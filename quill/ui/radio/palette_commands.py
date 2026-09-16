@@ -223,7 +223,10 @@ def register_radio_commands(host: Any) -> None:
         host.commands.try_register(
             command_id, title, handler, host._binding_for(command_id), feature_id="core.radio"
         )
-    # Quick-play the first ten favorites (default Ctrl+Alt+Shift+1..0, rebindable).
+    # Quick-play the first ten favorites. No editor chord since 2026-09-16 --
+    # numbered tray paste took Ctrl+Alt+Shift+digit, and in Quill Radio the ten
+    # keys live on Alt+1..0 (APP_KEYMAPS). They stay registered so the palette
+    # reaches them and anybody can bind them back.
     for slot in range(1, 11):
         cmd = f"radio.play_favorite_{slot}"
         host.commands.try_register(
@@ -233,6 +236,13 @@ def register_radio_commands(host: Any) -> None:
             host._binding_for(cmd),
             feature_id="core.radio",
         )
+    host.commands.try_register(
+        "radio.play_favorite",
+        "Internet Radio: Play Favorite...",
+        host.open_radio_favorite_chooser,
+        host._binding_for("radio.play_favorite"),
+        feature_id="core.radio",
+    )
     # Spotify commands live behind future.spotify (experimental), so they
     # disappear when the listener turns that feature off.
     for command_id, title, handler in (

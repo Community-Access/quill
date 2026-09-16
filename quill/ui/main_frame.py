@@ -437,6 +437,7 @@ from quill.ui.main_frame_menu_editor import (
 )
 from quill.ui.main_frame_metadata_ai import MetadataAiMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
+from quill.ui.main_frame_numbered_bookmarks import NumberedBookmarksMixin
 from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
@@ -633,6 +634,10 @@ class _DocumentTab:
     # Single unnamed, one-shot jump point (temporary bookmark). Session-only:
     # never persisted to DocumentMemory, deliberately forgotten on restart.
     temp_bookmark: int | None = None
+    # Nine numbered bookmark slots (quill.core.numbered_bookmarks), persisted
+    # per saved file through DocumentMemory in the same records QuillLite
+    # writes. None until first touched; the mixin builds it from the store.
+    numbered_bookmarks: object = None
     # Per-document inline notes (content-anchored). Loaded from / saved to the
     # InlineNoteVault for saved files; in-memory only for untitled documents.
     inline_notes: list = field(default_factory=list)
@@ -841,6 +846,7 @@ class MainFrame(
     LibraryMixin,
     MediaSleepTimerMixin,
     FormatCodesMixin,
+    NumberedBookmarksMixin,
     SpeechCommandsMixin,
     SpeechDownloadsMixin,
     VoiceInteractionMixin,
@@ -11937,6 +11943,7 @@ class MainFrame(
         try:
             tab.bookmarks = self._doc_memory.bookmarks_for(key)
             tab.bookmark_anchors = self._doc_memory.anchors_for(key)
+            self._adopt_numbered_bookmarks(tab, self._doc_memory.numbered_for(key))
             last = self._doc_memory.last_position(key)
         except Exception:  # noqa: BLE001
             return

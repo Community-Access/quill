@@ -146,6 +146,28 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.previous_structure": "Alt+Up",
     "navigate.heading_organizer": "Ctrl+Shift+Grave, O",
     "navigate.list_bookmarks": "Alt+Shift+B",
+    # Numbered bookmarks: nine slots you address by digit, shared core
+    # (quill.core.numbered_bookmarks) whose docstring says it lives there so
+    # QUILL can adopt it. QuillLite was its only caller until 2026-09-16,
+    # which is exactly the shape CLAUDE.md forbids -- the small product ahead
+    # of the big one, invisibly. Same chords in both, which are the chords
+    # QuillLite already shipped (bad.md 3.5, 5.2, P0.1).
+    #
+    # These are NOT navigate.set_bookmark / go_to_bookmark: those are QUILL's
+    # *named* bookmark vault, which stays as the writing environment's extra.
+    "navigate.set_numbered_bookmark": "Ctrl+Shift+B",
+    "navigate.next_bookmark": "F2",
+    "navigate.previous_bookmark": "Shift+F2",
+    "navigate.clear_numbered_bookmarks": "Ctrl+Alt+B",
+    "navigate.set_numbered_bookmark_1": "Ctrl+Shift+1",
+    "navigate.set_numbered_bookmark_2": "Ctrl+Shift+2",
+    "navigate.set_numbered_bookmark_3": "Ctrl+Shift+3",
+    "navigate.set_numbered_bookmark_4": "Ctrl+Shift+4",
+    "navigate.set_numbered_bookmark_5": "Ctrl+Shift+5",
+    "navigate.set_numbered_bookmark_6": "Ctrl+Shift+6",
+    "navigate.set_numbered_bookmark_7": "Ctrl+Shift+7",
+    "navigate.set_numbered_bookmark_8": "Ctrl+Shift+8",
+    "navigate.set_numbered_bookmark_9": "Ctrl+Shift+9",
     # #1317: re-registered after the historical Ctrl+Shift+K / Alt+Shift+K went
     # to Unquote Lines (#608) and Keep Unique Lines (§4.22). J = jump point.
     "navigate.set_temp_bookmark": "Ctrl+J",
@@ -165,14 +187,23 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.next_misspelling": "Ctrl+F7",
     "tools.previous_misspelling": "Ctrl+Shift+F7",
     "tools.misspelling_list": "Alt+Shift+L",
-    "tools.misspelling_list_ranked": "Ctrl+Shift+L",
+    # Ranked pairs with the plain list on Alt+Shift+L -- L lists, R ranks --
+    # because Ctrl+Shift+L is WordPad's Bullets key and QuillLite's, and a
+    # list-of-misspellings variant does not outrank a formatting verb both
+    # products bind (bad.md 3.1). The two list commands should become one
+    # command with a sort option (bad.md P1); until then both keep a key.
+    "tools.misspelling_list_ranked": "Alt+Shift+R",
     "file.open_from_favorite_folder": "Ctrl+Alt+Shift+O",
     "file.add_favorite_folder": "Ctrl+Alt+Shift+A",
     "file.remove_favorite_folder": "Ctrl+Alt+Shift+R",
-    "edit.toggle_fold": "Ctrl+Alt+Shift+F",
+    # Folds take the Shift+bracket pair beside Ctrl+[ / Ctrl+] outdent and
+    # indent, which is where every code editor puts folding. This frees
+    # Ctrl+Alt+Shift+L for List Studio and Ctrl+Alt+Shift+F for Search in
+    # Files (bad.md 3.1).
+    "edit.toggle_fold": "Ctrl+Shift+[",
     "navigate.next_fold": "Alt+Shift+]",
     "navigate.previous_fold": "Alt+Shift+[",
-    "tools.list_folds": "Ctrl+Alt+Shift+L",
+    "tools.list_folds": "Ctrl+Shift+]",
     "tools.thesaurus": "Shift+F7",
     # Inline notes (sticky, content-anchored annotations).
     "notes.add_inline_note": "Alt+Shift+I",
@@ -187,20 +218,25 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "radio.play_pause": "Ctrl+Shift+Grave, N",  # Internet Radio (N = the last free plain letter)
     "radio.stop": "Ctrl+Shift+Grave, 0",  # Internet Radio
     "radio.mute_toggle": "Ctrl+Shift+Grave, 9",  # Internet Radio
-    # Quick-play the first ten favorites (slot 10 is the 0 key). The obvious
-    # Alt+digit / Ctrl+digit combos are already taken (window nav, headings, copy
-    # tray), so these default to the free Ctrl+Alt+Shift+digit; rebind to Alt+1-0
-    # in the Keymap Editor if you don't use window navigation.
-    "radio.play_favorite_1": "Ctrl+Alt+Shift+1",
-    "radio.play_favorite_2": "Ctrl+Alt+Shift+2",
-    "radio.play_favorite_3": "Ctrl+Alt+Shift+3",
-    "radio.play_favorite_4": "Ctrl+Alt+Shift+4",
-    "radio.play_favorite_5": "Ctrl+Alt+Shift+5",
-    "radio.play_favorite_6": "Ctrl+Alt+Shift+6",
-    "radio.play_favorite_7": "Ctrl+Alt+Shift+7",
-    "radio.play_favorite_8": "Ctrl+Alt+Shift+8",
-    "radio.play_favorite_9": "Ctrl+Alt+Shift+9",
-    "radio.play_favorite_10": "Ctrl+Alt+Shift+0",
+    # Quick-play favorites have no editor chord. They held Ctrl+Alt+Shift+digit
+    # until 2026-09-16, which is the only free three-modifier digit row and is
+    # now numbered tray paste -- and rule 7 of bad.md says a media convenience
+    # does not outrank an editing verb inside a text editor. In Quill Radio,
+    # which has no editor, the ten chords survive on Alt+1..0
+    # (APP_KEYMAPS["radio"]). In QUILL they are reached through one chooser,
+    # radio.play_favorite, so the Favorite Stations menu still advertises a
+    # keyboard route as the menu-accelerator rule requires.
+    "radio.play_favorite_1": "",
+    "radio.play_favorite_2": "",
+    "radio.play_favorite_3": "",
+    "radio.play_favorite_4": "",
+    "radio.play_favorite_5": "",
+    "radio.play_favorite_6": "",
+    "radio.play_favorite_7": "",
+    "radio.play_favorite_8": "",
+    "radio.play_favorite_9": "",
+    "radio.play_favorite_10": "",
+    "radio.play_favorite": "Ctrl+Shift+Grave, 3",  # Play Favorite... chooser
     "podcasts.play_pause": "Ctrl+Shift+Grave, 8",  # Podcasts
     "podcasts.stop": "Ctrl+Shift+Grave, 7",  # Podcasts
     # Player Information: reviewable status for what is playing. No default
@@ -350,7 +386,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.select_paragraph": "Ctrl+Alt+Shift+P",  # §edsharp-ok — authoring chord
     "edit.select_word": "Ctrl+Alt+W",  # §edsharp-ok — authoring chord
     "edit.select_line": "Ctrl+Alt+E",  # §edsharp-ok — authoring chord
-    "edit.select_block": "Ctrl+Shift+B",
+    # QuillLite's chord for the same command, and Ctrl+Shift+B is Set
+    # Bookmark in both from 2026-09-16 (bad.md 3.3, 3.5).
+    "edit.select_block": "Ctrl+Alt+Shift+B",
     # PR1 (EdSharp port): section move takes the Alt+Shift+Up/Down slot. The
     # previous expand/shrink selection pair migrates to the QUILL-key chord.
     # J and Shift+J were free in the QUILL-key second-key space (verified
@@ -442,7 +480,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.heading_6": "Ctrl+Alt+6",  # §edsharp-ok — overrides NVDA switch-to-synth-6
     "format.decrease_heading_level": "Alt+Shift+Left",
     "format.increase_heading_level": "Alt+Shift+Right",
-    "format.toggle_bullet_list": "Ctrl+Alt+B",  # §edsharp-ok — authoring chord (x.md)
+    # WordPad's Bullets key, and QuillLite's. Ctrl+Alt+B goes to Clear All
+    # Bookmarks, which is QuillLite's meaning for it (bad.md 3.1, 3.5).
+    "format.toggle_bullet_list": "Ctrl+Shift+L",
     # Rich-mode paragraph formatting, arrived at through QuillLite and wired
     # here so the editor is never behind its own small sibling. WordPad's
     # chords, deliberately: these are the ones already in people's hands.
@@ -505,9 +545,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.quick_insert": "",
     "format.new_abbreviation_from_clipboard": "",
     "format.toggle_abbreviation_expansion": "Ctrl+Shift+Grave, E",
-    # Structured List Studio takes the primary F2 slot (its PRD names F2 the
-    # primary command); Insert Special Character moves to the adjacent Shift+F2.
-    "format.list_studio": "F2",
+    # List Studio had F2 and Insert Special Character Shift+F2. Both move:
+    # F2 and Shift+F2 are Next and Previous Bookmark in QuillLite and in
+    # every editor people arrive from, and walking bookmarks is an
+    # editing-loop verb where List Studio is a dialog you visit (bad.md 3.5).
+    "format.list_studio": "Ctrl+Alt+Shift+L",
     "format.list_studio_settings": "",  # no default key; assign via keymap editor
     "story.open_studio": "",  # Story Studio binder; no default key, assign via keymap editor
     "vault.open": "",  # Accessible Vault; no default keys, assign via keymap editor
@@ -574,7 +616,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "localgit.interactive_rebase": "",
     "localgit.rebase_abort": "",
     "vault.publish_note": "",
-    "power.insert_special_character": "Shift+F2",  # §4.22 parity; F2 -> List Studio
+    "power.insert_special_character": "Ctrl+Shift+F2",  # QuillLite's chord
     # The chord Word uses for the same thing, so nobody has to learn one (#1488).
     "power.insert_line_break": "Shift+Enter",
     "edit.insert_emoji": "Alt+.",  # Accessible Emoji Picker
@@ -643,18 +685,25 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.copy_to_tray_10": "Ctrl+Shift+Grave, Shift+0",
     "edit.copy_to_tray_11": "Ctrl+Shift+Grave, Shift+-",
     "edit.copy_to_tray_12": "Ctrl+Shift+Grave, Shift+=",
-    "edit.paste_from_tray_1": "Ctrl+Shift+1",
-    "edit.paste_from_tray_2": "Ctrl+Shift+2",
-    "edit.paste_from_tray_3": "Ctrl+Shift+3",
-    "edit.paste_from_tray_4": "Ctrl+Shift+4",
-    "edit.paste_from_tray_5": "Ctrl+Shift+5",
-    "edit.paste_from_tray_6": "Ctrl+Shift+6",
-    "edit.paste_from_tray_7": "Ctrl+Shift+7",
-    "edit.paste_from_tray_8": "Ctrl+Shift+8",
-    "edit.paste_from_tray_9": "Ctrl+Shift+9",
-    "edit.paste_from_tray_10": "Ctrl+Shift+0",
-    "edit.paste_from_tray_11": "Ctrl+Shift+-",
-    "edit.paste_from_tray_12": "Ctrl+Shift+=",
+    # Ctrl+Shift+digit is Set Bookmark N in both editors from 2026-09-16:
+    # QuillLite has meant that since it shipped, numbered bookmarks live in
+    # shared core so QUILL could adopt them, and a bookmark is an
+    # editing-loop verb where pasting slot 7 by number is not (bad.md 3.2,
+    # P0.1). Paste keeps the same digits one modifier out; the row it moves
+    # into was Quill Radio's quick-play favorites, which are now the radio
+    # app's own keys plus a chooser here (app_keymaps.py, radio.play_favorite).
+    "edit.paste_from_tray_1": "Ctrl+Alt+Shift+1",
+    "edit.paste_from_tray_2": "Ctrl+Alt+Shift+2",
+    "edit.paste_from_tray_3": "Ctrl+Alt+Shift+3",
+    "edit.paste_from_tray_4": "Ctrl+Alt+Shift+4",
+    "edit.paste_from_tray_5": "Ctrl+Alt+Shift+5",
+    "edit.paste_from_tray_6": "Ctrl+Alt+Shift+6",
+    "edit.paste_from_tray_7": "Ctrl+Alt+Shift+7",
+    "edit.paste_from_tray_8": "Ctrl+Alt+Shift+8",
+    "edit.paste_from_tray_9": "Ctrl+Alt+Shift+9",
+    "edit.paste_from_tray_10": "Ctrl+Alt+Shift+0",
+    "edit.paste_from_tray_11": "Ctrl+Alt+Shift+-",
+    "edit.paste_from_tray_12": "Ctrl+Alt+Shift+=",
 }
 
 
@@ -678,6 +727,14 @@ DEFAULT_ALIASES: dict[str, str] = {
     # leader chord. QuillLite has answered F1 since it shipped. An alias, not a
     # move: the leader chord keeps working (2026-09-15).
     "help.context_help": "F1",
+    # Three more QuillLite reaches on a plain chord and QUILL buried on the
+    # leader chord. Same argument as F1: the small product found the obvious
+    # key first, and a person who uses both should not have to learn two.
+    # Go To Anything is NOT here -- QuillLite's Ctrl+Alt+Shift+A is
+    # file.add_favorite_folder in QUILL, so aligning it needs a decision about
+    # which one moves rather than an alias (bad.md 3c).
+    "format.insert_html_tag": "Ctrl+Alt+O",
+    "format.manage_abbreviations": "Ctrl+Alt+A",
 }
 
 
