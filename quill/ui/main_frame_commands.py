@@ -1384,7 +1384,7 @@ class CommandRegistryMixin:
             "help.open_user_guide",
             "Open User Guide",
             self.open_user_guide,
-            None,
+            self._binding_for("help.open_user_guide"),
         )
         self.commands.register(
             "help.open_third_party_notices",
@@ -1512,11 +1512,20 @@ class CommandRegistryMixin:
             self.open_diagnostics_folder,
             None,
         )
+        # F1 answered through a literal in a menu label until 2026-09-16 -- so
+        # it worked, and the keyboard reference said it did not, and the
+        # Keyboard Manager could not reach it (bad.md H4a).
+        self.commands.register(
+            "help.help_on_control",
+            "Help on This Control",
+            self.show_help_on_control,
+            self._binding_for("help.help_on_control"),
+        )
         self.commands.register(
             "help.what_can_i_do_here",
             "What Can I Do Here?",
             self.show_context_help,
-            None,
+            self._binding_for("help.what_can_i_do_here"),
         )
         self.commands.register(
             "whisperer.about",

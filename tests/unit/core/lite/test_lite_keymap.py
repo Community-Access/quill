@@ -94,7 +94,26 @@ def test_a_modified_insert_is_refused_too() -> None:
 
 
 def test_a_bare_letter_is_refused_with_the_reason() -> None:
-    assert "would type the letter" in describe_binding_problem("K")
+    assert "would type the character" in describe_binding_problem("K")
+
+
+def test_shift_alone_is_not_enough_to_make_a_letter_safe() -> None:
+    """Shift+A fires when the capital is typed, for the same reason K does.
+
+    The advice used to read "Add Ctrl, Alt or Shift", which was wrong about the
+    third one (bad.md H1).
+    """
+    assert "would type the character" in describe_binding_problem("Shift+A")
+
+
+def test_the_windows_key_is_refused_and_says_why() -> None:
+    """wx accepts Win+A, returns True, and hands back a BARE A.
+
+    So a hand-edited keymap saying {"cmd_delete_line": "Win+A"} ran Delete Line
+    every time the user typed the letter A -- no failure, no warning.
+    """
+    for chord in ("Win+A", "Cmd+A", "Windows+Z", "Command+7"):
+        assert "Windows key" in describe_binding_problem(chord), chord
 
 
 def test_a_real_chord_is_not_refused() -> None:

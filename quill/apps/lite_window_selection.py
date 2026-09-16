@@ -197,17 +197,22 @@ class DocumentSelectionMixin:
         self._selection_anchor = None
         self._sync_check_items()
 
-    def cancel_extend_selection(self) -> None:
-        """Drop the marker without selecting anything, and say so.
+    def cancel_extend_selection(self) -> bool:
+        """Drop the marker without selecting anything. ``True`` when there was one.
 
         Silence here would leave somebody unsure whether the marker is still
         waiting -- the state is invisible, so every change to it is spoken.
+
+        Returns whether it did anything, because Escape is bound to this and
+        Escape belongs to everything else too: when no marker is waiting the
+        key has to carry on to whatever would otherwise have had it.
         """
         if self._selection_anchor is None:
-            return
+            return False
         self._selection_anchor = None
         self._announce("Selection marker dropped")
         self._sync_check_items()
+        return True
 
     # ------------------------------------------------------------------ #
     # Structure

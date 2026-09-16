@@ -106,6 +106,15 @@ class DocumentTypingMixin:
             return
         if code == wx.WXK_TAB and self._handle_tab(event):
             return
+        # Escape drops a waiting F8 marker. It could not be cancelled at all
+        # before 2026-09-16: cancel_extend_selection existed and nothing called
+        # it, so once F8 was pressed the marker waited forever and pressing F8
+        # again silently moved it somewhere else. The state is invisible, so
+        # the only way out was to complete a selection you did not want
+        # (bad.md L4). Escape is what a listener reaches for, and it is free
+        # here -- the control does nothing with it in a plain edit.
+        if code == wx.WXK_ESCAPE and self.cancel_extend_selection():
+            return
         # Shift+F10 and the Applications key, opened here rather than left to
         # wx. Reported 2026-09-12: "I misspelled a word and arrow to it and
         # pressed shift+f10 and got no spelling information." The menu is built

@@ -82,14 +82,22 @@ class DocumentFormatCommandsMixin:
         text instead would convert the document they are editing.
         """
         language = self.document_language()
+        # Control Shift M is a RING -- plain, Markdown, HTML, rich, round again
+        # (cmd_switch_document_kind) -- so "press it for rich text" was wrong
+        # from every stop but HTML. From a plain document one press lands on
+        # Markdown. Advice that is wrong half the time is worse than none, which
+        # is the rule this method was written for; it was just breaking it
+        # itself (bad.md R10).
         if language == "plain":
             return (
-                "This document has no formatting. Press Control Shift M for rich text, "
-                "or Control Alt F6 to write Markdown or HTML in it."
+                "This document has no formatting. Control Shift M cycles the kind of "
+                "document -- Markdown, then HTML, then rich text -- or Control Alt F6 "
+                "sets the language without converting anything."
             )
         return (
             f"Formatting is not available in this {language_label(language)} document. "
-            "Press Control Shift M to switch to rich text."
+            "Control Shift M cycles on to the next kind; rich text is the one that "
+            "has formatting."
         )
 
     def _toggle_attr(self, attr: str, label: str) -> None:

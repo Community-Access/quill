@@ -2719,11 +2719,16 @@ class MainFrame(
             if _sel_start != _sel_end:
                 self.say_selected()
                 return
-        if self._extend_selection_mode and event.GetKeyCode() == wx.WXK_ESCAPE:
-            caret = self.editor.GetInsertionPoint()
-            self.toggle_extend_selection_mode(False)
-            self.editor.SetSelection(caret, caret)
-            return
+        if event.GetKeyCode() == wx.WXK_ESCAPE:
+            if self._extend_selection_mode:
+                caret = self.editor.GetInsertionPoint()
+                self.toggle_extend_selection_mode(False)
+                self.editor.SetSelection(caret, caret)
+                return
+            # ...and a waiting F8 marker, which Escape used to leave sitting
+            # there because this branch only ever looked at extend mode.
+            if self.cancel_selection_anchor():
+                return
         if not self._extend_selection_mode:
             event.Skip()
             return

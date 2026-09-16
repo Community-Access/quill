@@ -173,6 +173,25 @@ def normalise_chord(key: str) -> str:
             return ""
     if main is None:
         return ""
+    # Two refusals, both because wx will silently give back something OTHER
+    # than what was asked for -- and an accelerator that fires on a keystroke
+    # somebody meant as typing is the worst possible failure here.
+    #
+    # **Win and Cmd cannot be bound.** wx's parser accepts "Win+A" and returns
+    # True, having dropped the modifier it does not understand: the entry that
+    # comes back is a bare A, flags=0. So a hand-edited file saying
+    # {"cmd_delete_line": "Win+A"} did not fail, did not warn, and ran Delete
+    # Line every time the user typed the letter A. load_keymap is the trust
+    # boundary for a file a person can edit, and this is the rule it was
+    # missing (bad.md H1).
+    if "Win" in modifiers:
+        return ""
+    # **A single character needs Ctrl or Alt.** Shift alone leaves a chord that
+    # fires when the character is typed in its capital form, for the same
+    # reason. Named keys -- F1, Delete, Escape -- are safe bare, because
+    # pressing them is never typing.
+    if len(main) == 1 and not modifiers & {"Ctrl", "Alt"}:
+        return ""
     ordered = [mod for mod in _MODIFIER_ORDER if mod in modifiers]
     return "+".join([*ordered, main])
 
@@ -196,14 +215,27 @@ def describe_binding_problem(key: str) -> str:
     text = str(key).strip()
     if not text:
         return "Press the key combination you want to use."
+    # The two refusals normalise_chord makes are explained HERE, before it is
+    # asked, because it answers "" for every rejection and a refusal somebody
+    # cannot act on is the same as no refusal at all.
+    parts = [part.strip() for part in text.split("+") if part.strip()]
+    spelled = {part.lower() for part in parts[:-1]}
+    if spelled & {"win", "windows", "cmd", "command"}:
+        return (
+            "The Windows key cannot be used here. wx accepts it and then quietly "
+            "drops it, so the key you would actually get is the one after it, on "
+            "its own -- which is why this is refused rather than assigned."
+        )
+    if parts and len(parts[-1]) == 1 and not spelled & {"ctrl", "control", "ctl", "alt", "option"}:
+        # Shift is NOT enough: Shift+A fires when the capital letter is typed,
+        # for exactly the same reason a bare letter does.
+        return f"{parts[-1].upper()} would type the character instead. Add Ctrl or Alt."
     chord = normalise_chord(text)
     if not chord:
         return f"{text} is not a key combination QuillLite can use."
     main = chord.split("+")[-1]
     if main in RESERVED_KEYS:
         return RESERVED_KEYS[main]
-    if chord == main and len(main) == 1:
-        return f"{main} on its own would type the letter instead. Add Ctrl, Alt or Shift."
     return ""
 
 

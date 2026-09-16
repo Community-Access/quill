@@ -52,6 +52,25 @@ class SelectionSpanMixin:
         else:
             self._set_status_quiet(message)
 
+    def cancel_selection_anchor(self) -> bool:
+        """Drop a waiting F8 marker. ``True`` when there was one.
+
+        The marker could not be cancelled at all before 2026-09-16. Escape
+        cleared *extend mode* and left the anchor sitting there, so once F8 was
+        pressed the only ways out were to complete a selection you did not want
+        or to press F8 again -- which silently moved the marker somewhere else
+        rather than dropping it. The state is invisible, so it was also
+        impossible to tell which had happened (bad.md L4).
+
+        Returns whether it did anything, because Escape belongs to everything
+        else too: with no marker waiting the key must carry on.
+        """
+        if getattr(self, "_selection_anchor", None) is None:
+            return False
+        self._selection_anchor = None
+        self._announce_result("Selection marker dropped")
+        return True
+
     def complete_selection(self) -> None:
         if self._selection_anchor is None:
             self._set_status("No selection anchor. Press F8 to set one.")

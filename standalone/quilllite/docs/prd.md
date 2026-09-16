@@ -434,6 +434,40 @@ default**, because the users this editor is for are disproportionately
 light-sensitive and a first launch that is bright white is a first launch some of
 them cannot read.
 
+### 4.5 Speech, and not braille
+
+QuillLite announces through a running screen reader and nowhere else.
+`ScreenReaderVoice` reaches NVDA and JAWS through Prism or accessible_output2
+and Narrator through a UIA notification, and hands nothing to the engine unless
+a reader is actually running. There is **no self-voicing fallback** and there is
+**no braille output**: nothing in the QuillLite tree routes an announcement to a
+braille display, where QUILL has a braille service that does.
+
+This is a decision, recorded so it stops reading as an oversight.
+
+**Why.** A braille route is not a line of code; it is a delivery channel with
+its own verbosity rules, its own truncation problems, and its own way of being
+wrong -- QUILL's braille surface is several modules and a settings group. The
+editor this PRD describes is meant to stay small enough to be read in an
+afternoon, and adding a second output channel is the kind of thing that makes a
+Notepad-scale product stop being one.
+
+**What a deafblind user gets instead, and why it is not nothing.** Every
+message QuillLite speaks also lands in the status bar's message cell (4.3), and
+the status bar is a row of real focusable buttons rather than a painted strip.
+A braille display reaches it by cursor routing like any other control, and F6
+puts the caret there in one keystroke. So the information is available; it is
+pull rather than push. What is genuinely lost is the *unprompted* announcement
+-- a background result a listener would have heard, a deafblind user has to go
+and look for.
+
+**What would have to change.** The announcement path is one seam
+(`ScreenReaderVoice.speak`), so the work is not in QuillLite: it is deciding
+whether QUILL's braille service can be lifted into the shared package without
+bringing its settings group with it. If it can, QuillLite gets braille for the
+cost of one call. Until somebody has answered that question, this section is
+the honest description of where the product stands.
+
 ## 5. Safety and data
 
 ### 5.1 Byte honesty

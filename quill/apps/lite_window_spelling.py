@@ -363,6 +363,12 @@ class DocumentSpellingMixin:
             show_modal=show_modal_dialog,
             scope_label="document",
             document_path=self.path,
+            # QuillLite's own folder, or QUILL's when the listener has asked to
+            # share it. Without this the review wrote into QUILL's regardless,
+            # so a word taught through F7 was flagged again next session and a
+            # Quill folder appeared on a machine that had never had QUILL
+            # (bad.md S1). The other two add routes always passed it.
+            personal_dir=spelling_mod.dictionary_dir(self.app.settings, self.app.data_dir),
         )
         self._forget_spell_dictionary()  # the review can teach words
         self._touch_status()

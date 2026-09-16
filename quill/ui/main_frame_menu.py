@@ -1536,9 +1536,7 @@ class MenuBuilderMixin:
         )
         window_menu.Append(
             self._id_close_other_documents,
-            self._menu_label(
-                _("Close &Other Documents\tCtrl+Shift+F4"), "window.close_other_documents"
-            ),
+            self._menu_label(_("Close &Other Documents"), "window.close_other_documents"),
         )
         window_menu.AppendSeparator()
         window_menu.Append(
@@ -3283,11 +3281,11 @@ class MenuBuilderMixin:
         help_menu = wx.Menu()
         help_menu.Append(
             self._id_help_on_control,
-            self._menu_label(_("Help on This &Control\tF1"), "help.help_on_control"),
+            self._menu_label(_("Help on This &Control"), "help.help_on_control"),
         )
         help_menu.Append(
             self._id_context_help,
-            self._menu_label(_("&What Can I Do Here?\tShift+F1"), "help.what_can_i_do_here"),
+            self._menu_label(_("&What Can I Do Here?"), "help.what_can_i_do_here"),
         )
         help_menu.Append(
             self._id_announce_context_shortcuts,
@@ -3325,7 +3323,10 @@ class MenuBuilderMixin:
         )
         self._id_open_user_guide = wx.NewIdRef()
         self._id_open_third_party_notices = wx.NewIdRef()
-        help_menu.Append(self._id_open_user_guide, _("Open User &Guide\tCtrl+F1"))
+        help_menu.Append(
+            self._id_open_user_guide,
+            self._menu_label(_("Open User &Guide"), "help.open_user_guide"),
+        )
         help_menu.Append(
             self._id_open_third_party_notices,
             _("Open &Third-Party Notices"),

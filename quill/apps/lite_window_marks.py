@@ -135,6 +135,7 @@ class DocumentMarksMixin:
     def _set_bookmark(self, number: int) -> None:
         position = self.control.GetInsertionPoint()
         mark = self.bookmarks.set(number, position, label_for(self.control.GetValue(), position))
+        self.persist_bookmarks()
         self._announce(f"Bookmark {mark.number} set: {mark.label}")
 
     def cmd_set_bookmark(self) -> None:
@@ -206,6 +207,7 @@ class DocumentMarksMixin:
             return
         if action == "remove":
             self.bookmarks.clear(number)
+            self.persist_bookmarks()
             self._announce(f"Bookmark {number} removed")
             self.control.SetFocus()
             return
@@ -213,6 +215,7 @@ class DocumentMarksMixin:
 
     def cmd_clear_bookmarks(self) -> None:
         count = self.bookmarks.clear_all()
+        self.persist_bookmarks()
         self._announce(
             f"Cleared {count} bookmark{'s' if count != 1 else ''}"
             if count
@@ -266,14 +269,36 @@ class DocumentMarksMixin:
         self._tracked_length = length
         self._touch_status()
 
+    def persist_bookmarks(self) -> None:
+        """Write just the bookmarks, now, because one of them changed.
+
+        Setting, removing or clearing a bookmark is a deliberate act somebody
+        performs a handful of times in a session -- so a JSON write there costs
+        nothing, and losing it to a crash costs exactly the thing a bookmark
+        exists to protect. Until 2026-09-16 bookmarks were written only on
+        close and after a save, so a Clear All followed by a crash came back
+        with every bookmark still there (bad.md L10). QUILL writes on every Set
+        and always has; this is QuillLite catching up to the better half.
+
+        The CARET stays on the old cadence deliberately: it moves on every
+        keystroke, and a file write per arrow key is the trade the original
+        docstring was right to refuse.
+        """
+        key = self._memory_key()
+        if key is None:
+            return
+        try:
+            self.app.document_memory.set_numbered(key, self.bookmarks.to_records())
+        except Exception:  # noqa: BLE001 - a bookmark must never fail an edit
+            pass
+
     def remember_document_memory(self) -> None:
         """Write this document's bookmarks and cursor position back to the store.
 
-        Called when the window closes and after each save, not on every edit:
-        the caret moves on every keystroke and this writes a file. A crash
-        therefore costs the current cursor position and no bookmarks that were
-        set before the last save, which is the right side of that trade -- the
-        alternative is a JSON write per arrow key.
+        Called when the window closes and after each save. The bookmarks are
+        usually already current -- :meth:`persist_bookmarks` writes them the
+        moment they change -- but the caret is not, and this is where it is
+        caught up.
         """
         key = self._memory_key()
         if key is None:

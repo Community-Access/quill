@@ -24,6 +24,7 @@ def review_textctrl(
     show_modal: Any,
     scope_label: str = "post",
     document_path: Path | None = None,
+    personal_dir: Path | None = None,
 ) -> None:
     """Spell-check ``text_ctrl`` in place via the guided review dialog.
 
@@ -58,6 +59,7 @@ def review_textctrl(
         document_path=document_path,
         project_root=Path.cwd(),
         settings=settings,
+        personal_dir=personal_dir,
         scope_label=scope_label,
     )
     dlg.show(show_modal)

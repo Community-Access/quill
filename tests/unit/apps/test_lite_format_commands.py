@@ -23,11 +23,15 @@ from __future__ import annotations
 
 import pytest
 
-#: The refusal a document with no markup at all gets, which now offers both ways
-#: out rather than one: rich text, or giving the document a markup language.
+#: The refusal a document with no markup at all gets, which offers both ways out
+#: rather than one: change the kind of document, or give this one a markup
+#: language. It used to say "Press Control Shift M for rich text", which was
+#: wrong -- that key is a RING (plain, Markdown, HTML, rich), so one press from a
+#: plain document lands on Markdown (bad.md R10).
 PLAIN_REFUSAL = (
-    "This document has no formatting. Press Control Shift M for rich text, "
-    "or Control Alt F6 to write Markdown or HTML in it."
+    "This document has no formatting. Control Shift M cycles the kind of "
+    "document -- Markdown, then HTML, then rich text -- or Control Alt F6 "
+    "sets the language without converting anything."
 )
 
 

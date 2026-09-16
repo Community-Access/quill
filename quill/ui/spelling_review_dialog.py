@@ -55,6 +55,7 @@ class SpellingReviewDialog:
         project_root: Path | None,
         settings: object,
         scope_label: str = "document",
+        personal_dir: Path | None = None,
     ) -> None:
         import wx
 
@@ -65,6 +66,7 @@ class SpellingReviewDialog:
         self._project_root = project_root
         self._scope_label = scope_label
         self._settings = settings
+        self._personal_dir = personal_dir
         self._announce_fn = announce_fn
 
         verbosity = str(getattr(settings, "spell_review_verbosity", "balanced"))
@@ -317,7 +319,9 @@ class SpellingReviewDialog:
         if issue is None:
             return
         word = issue.word
-        self._session.add_to_dict("personal", self._doc_path, self._project_root)
+        self._session.add_to_dict(
+            "personal", self._doc_path, self._project_root, self._personal_dir
+        )
         self._advance_or_complete(f"Added {word} to dictionary.")
 
     def _on_undo(self) -> None:

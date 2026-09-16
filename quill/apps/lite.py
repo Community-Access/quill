@@ -282,6 +282,8 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
             return True
         if not path.exists() and not self._offer_to_create(path):
             return False
+        if not self._confirm_large_file(path):
+            return False
         if reuse is not None:
             if not reuse.load(path):
                 return False
@@ -320,6 +322,41 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
             if frame.path is not None and _same_file(frame.path, path):
                 return frame
         return None
+
+    def _confirm_large_file(self, path: Path) -> bool:
+        """Ask before opening a file big enough to hang the editor. True to go on.
+
+        QuillLite had no size guard at all until 2026-09-16 -- nothing in its
+        tree called ``stat()`` before reading -- so a 200 MB log opened by
+        ``read_text`` straight into a ``wx.TextCtrl`` with no warning, no
+        progress and no way out. For a Notepad replacement that is the scenario
+        rather than an edge case (bad.md V1).
+
+        The threshold and the wording are QUILL's, from the shared, wx-free
+        ``large_file_guard``, so the two editors cannot disagree about what
+        counts as large or about how they say so.
+
+        Here rather than in the window: ``open_path`` is the one funnel every
+        route goes through -- File > Open, the command line, the shell's Open,
+        a recent-files entry and a session restore -- so the guard is asked
+        once and cannot be walked around.
+        """
+        from quill.ui.large_file_guard import is_large_file, large_file_warning
+
+        try:
+            size = path.stat().st_size
+        except OSError:
+            return True  # unreadable size is the open path's problem to report
+        if not is_large_file(size):
+            return True
+        return (
+            show_message_box(
+                large_file_warning(path.name, size, APP_NAME),
+                APP_NAME,
+                wx.YES_NO | wx.ICON_QUESTION,
+            )
+            == wx.YES
+        )
 
     def _offer_to_create(self, path: Path) -> bool:
         """Notepad's oldest behaviour: a name that does not exist offers to be one."""

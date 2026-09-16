@@ -32,10 +32,16 @@ def human_size(size_bytes: int) -> str:
     return f"{size:.1f} TB"
 
 
-def large_file_warning(name: str, size_bytes: int) -> str:
-    """The confirmation message shown before opening a large file."""
+def large_file_warning(name: str, size_bytes: int, app_name: str = "QUILL") -> str:
+    """The confirmation message shown before opening a large file.
+
+    *app_name* because QuillLite asks this too, since 2026-09-16 -- it had no
+    size guard at all, which for a Notepad replacement is the scenario rather
+    than an edge case (bad.md V1). A message that named the wrong product would
+    be its own small dishonesty.
+    """
     return (
         f"{name} is {human_size(size_bytes)}. Opening a file this large may make "
-        "QUILL -- and your screen reader -- unresponsive for a while as it loads. "
-        "Open it anyway?"
+        f"{app_name} -- and your screen reader -- unresponsive for a while as it "
+        "loads. Open it anyway?"
     )

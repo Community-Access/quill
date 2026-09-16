@@ -41,6 +41,7 @@
   "build_indent_mode_items",
   "build_numbered_bookmarks_menu",
   "cancel_dictation_discard",
+  "cancel_selection_anchor",
   "cancel_sleep_timer",
   "change_display_language",
   "check_bw_faster_whisper_engine",

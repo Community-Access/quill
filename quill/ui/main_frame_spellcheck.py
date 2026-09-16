@@ -14,7 +14,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core import thesaurus as thesaurus_engine
-from quill.core.marks import line_column_for_position
 from quill.core.paths import app_data_dir
 from quill.core.selection import word_span
 from quill.core.spellcheck import (
@@ -42,7 +41,6 @@ from quill.platform.sr_announce import (
 )
 from quill.ui.dialog_contract import (
     apply_modal_ids,
-    set_accessible_name,
 )
 
 
@@ -210,86 +208,6 @@ class SpellcheckCommandsMixin:
             )
         else:
             self._set_status("Spelling review closed.")
-
-    def _choose_misspelling_with_context(
-        self,
-        misspellings: list[Misspelling],
-        text: str,
-        dictionary: set[str],
-    ) -> int:
-        wx = self._wx
-        dialog = wx.Dialog(self.frame, title="Spell Check", size=(860, 520))
-        root = wx.BoxSizer(wx.VERTICAL)
-        root.Add(
-            wx.StaticText(
-                dialog,
-                label=(
-                    "Choose a misspelled word, then Show Corrections to see replacement "
-                    "options. Tab to Context to read the nearby sentence; use Speak Word to "
-                    "hear the word and its spelling."
-                ),
-            ),
-            0,
-            wx.ALL | wx.EXPAND,
-            8,
-        )
-        choices = []
-        for item in misspellings:
-            line, column = line_column_for_position(text, item.start)
-            choices.append(f"{item.word} (Ln {line}, Col {column})")
-        chooser = wx.ListBox(dialog, choices=choices)
-        set_accessible_name(chooser, "Misspelled words")
-        chooser.SetSelection(0 if choices else wx.NOT_FOUND)
-        root.Add(chooser, 1, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
-        root.Add(wx.StaticText(dialog, label="Context"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        context_field = wx.TextCtrl(
-            dialog,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
-        )
-        set_accessible_name(context_field, "Context")
-        root.Add(context_field, 1, wx.ALL | wx.EXPAND, 8)
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        speak_button = wx.Button(dialog, label="Speak Word")
-        review_button = wx.Button(dialog, id=wx.ID_OK, label="Show Corrections...")
-        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
-        buttons.AddStretchSpacer(1)
-        buttons.Add(speak_button, 0, wx.RIGHT, 8)
-        buttons.Add(review_button, 0, wx.RIGHT, 8)
-        buttons.Add(cancel_button, 0)
-        root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        dialog.SetSizerAndFit(root)
-        review_button.SetDefault()
-
-        def refresh_context() -> None:
-            selection = chooser.GetSelection()
-            if selection == wx.NOT_FOUND:
-                context_field.SetValue("")
-                return
-            item = misspellings[selection]
-            context_field.SetValue(self._misspelling_context_text(text, item))
-
-        chooser.Bind(wx.EVT_LISTBOX, lambda _event: refresh_context())
-        speak_button.Bind(
-            wx.EVT_BUTTON,
-            lambda _event: (
-                self._speak_spellcheck_word(
-                    misspellings[chooser.GetSelection()].word,
-                    suggest_words(misspellings[chooser.GetSelection()].word, dictionary),
-                )
-                if chooser.GetSelection() != wx.NOT_FOUND
-                else self._set_status("Select a misspelling to speak")
-            ),
-        )
-        review_button.Bind(wx.EVT_BUTTON, lambda _event: dialog.EndModal(wx.ID_OK))
-        cancel_button.Bind(wx.EVT_BUTTON, lambda _event: dialog.EndModal(wx.ID_CANCEL))
-        refresh_context()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        result = self._show_modal_dialog(dialog, "Spell Check")
-        selection = chooser.GetSelection()
-        dialog.Destroy()
-        if result != wx.ID_OK:
-            return wx.NOT_FOUND
-        return selection
 
     def _misspelling_context_text(self, text: str, item: Misspelling) -> str:
         if not text:

@@ -227,6 +227,31 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.toggle_spellcheck_as_you_type": "Ctrl+Alt+F7",
     "tools.check_updates": "Ctrl+Alt+U",
     "help.about_quill": "Shift+F1",
+    # Open User Guide carried "Ctrl+F1" as a LITERAL after a tab in its menu
+    # label, outside the keymap: absent from the generated reference,
+    # unreachable from the Keyboard Manager, and deaf to a rebinding. It was
+    # latent until 2026-09-16, when help.key_cheatsheet gained the Ctrl+F1
+    # alias QuillLite uses -- at which point two menu items claimed one key
+    # and one of them silently stopped firing. A literal accelerator is
+    # invisible to every gate that would have caught it, which is the whole
+    # of bad.md H4. Ctrl+Shift+F1 is free in both editors.
+    "help.open_user_guide": "Ctrl+Shift+F1",
+    # Same defect, found by the gate written for the row above: this had
+    # "Shift+F1" as a literal, which About took as a real binding on
+    # 2026-09-16 -- so two Help items claimed it and one stopped firing.
+    "help.what_can_i_do_here": "Ctrl+Alt+Shift+F1",
+    # F1, at last owned by the command whose docstring begins "F1: show
+    # context-sensitive help for the currently focused control". Its only
+    # key was a literal in a menu label -- so F1 worked, and the keyboard
+    # reference said it did not, and the Keyboard Manager could not reach
+    # it. That invisibility is why help.context_help was given an F1 alias
+    # on 2026-09-15 "because F1 was bound to nothing at all": the premise
+    # was wrong, F1 was answered, and the two then claimed one key.
+    #
+    # This is also QuillLite's F1 -- "what this window is for, then what
+    # the focused control does" -- and the GATE-<APP>-HELP contract every
+    # app in the family is held to (bad.md H4a, decided 2026-09-16).
+    "help.help_on_control": "F1",
     # --- Once a year, and therefore on the F-keys (bad.md rule 9, P2.9) -----
     #
     # Back up your settings, restore them, choose which features exist, rebind
@@ -837,7 +862,9 @@ DEFAULT_ALIASES: dict[str, str] = {
     # F1 is THE help key on Windows and QUILL left it unbound, context help on a
     # leader chord. QuillLite has answered F1 since it shipped. An alias, not a
     # move: the leader chord keeps working (2026-09-15).
-    "help.context_help": "F1",
+    # help.context_help had F1 here from 2026-09-15 to 2026-09-16. It keeps
+    # its leader chord; F1 went to help.help_on_control, which is what F1
+    # already did through a literal nobody could see. See that row.
     # Word's key for the same thing, in both editors. The primary Ctrl+F7
     # keeps working; this is the chord a person arrives with (bad.md 3.6).
     "tools.next_misspelling": "Alt+F7",
