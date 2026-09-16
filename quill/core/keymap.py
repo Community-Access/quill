@@ -205,6 +205,40 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.next_misspelling": "Ctrl+F7",
     "tools.previous_misspelling": "Ctrl+Shift+F7",
     "tools.misspelling_list": "Alt+Shift+L",
+    # --- Commands QUILL had and left keyless, on QuillLite's chords ----------
+    #
+    # Rule 8 of bad.md: every registered editor command has a key or a written
+    # reason not to. A capability with no key is invisible -- it is in a menu
+    # somebody has to walk, and absent from the generated keyboard reference
+    # entirely. Each of these was registered with binding=None while QuillLite
+    # reached the same verb on a chord, which is the small product being ahead
+    # of the big one in the way CLAUDE.md forbids.
+    #
+    # Every chord here was FREE in QUILL: nothing was displaced to make room,
+    # which is why they could all land at once (bad.md P1.1, P1.13).
+    "file.page_setup": "Ctrl+Alt+P",
+    "edit.remove_duplicate_lines": "Ctrl+Alt+D",
+    "edit.sort_lines_ascending": "Ctrl+Alt+S",
+    "format.upper_case": "Ctrl+Shift+U",
+    "format.title_case": "Ctrl+Shift+T",
+    "navigate.next_heading": "Ctrl+Alt+H",
+    "navigate.set_language": "Ctrl+Alt+F6",
+    "power.describe_character": "Ctrl+Shift+C",
+    "view.toggle_spellcheck_as_you_type": "Ctrl+Alt+F7",
+    "tools.check_updates": "Ctrl+Alt+U",
+    "help.about_quill": "Shift+F1",
+    # --- Once a year, and therefore on the F-keys (bad.md rule 9, P2.9) -----
+    #
+    # Back up your settings, restore them, choose which features exist, rebind
+    # your keys. Nobody does these in the editing loop, and each was holding a
+    # three-modifier LETTER chord in QuillLite that an editing verb wanted --
+    # Ctrl+Alt+Shift+F, Q and D are Search in Files, Duplicate Selection and
+    # Restore Settings' neighbours. The F-keys past F9 are empty in both
+    # editors and nothing else is competing for them, so a command used twice
+    # a year sits where it costs nothing to leave it.
+    "tools.individual_feature_toggles": "Ctrl+Alt+F10",
+    "tools.share_export": "Ctrl+Alt+F11",
+    "tools.share_import": "Ctrl+Alt+F12",
     # Ranked pairs with the plain list on Alt+Shift+L -- L lists, R ranks --
     # because Ctrl+Shift+L is WordPad's Bullets key and QuillLite's, and a
     # list-of-misspellings variant does not outrank a formatting verb both
@@ -321,7 +355,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # the Ctrl+Alt+Shift+D compare binding above (different modifier stack).
     "view.toggle_dark_mode": "Alt+Shift+D",
     "help.switch_feature_profile": "Alt+Shift+P",
-    "edit.copy_with_source": "Ctrl+Shift+C",
+    # Ctrl+Shift+C is Describe Character in QuillLite -- what IS this symbol,
+    # the question a listener asks constantly and a reader answers by looking.
+    # Copy With Source is a citation aid used far less often (bad.md 3.7).
+    "edit.copy_with_source": "Alt+Shift+C",
     "edit.copy_selection_for_email": "Ctrl+Shift+Grave, C",
     "edit.undo": "Ctrl+Z",
     "edit.redo": "Ctrl+Y",
@@ -332,7 +369,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.go_to_start_of_selection": "Alt+Shift+F8",
     "edit.copy_all": "Ctrl+F8",
     "edit.unselect_all": "Ctrl+Shift+A",
-    "edit.say_selected": "",  # Shift+Space — conditional intercept in _on_editor_key_down
+    # Was reachable ONLY as a conditional Shift+Space intercept in
+    # _on_editor_key_down -- no chord, no menu row that could show one, and
+    # nothing in the keyboard reference. QuillLite has had it on Ctrl+Shift+Y
+    # since it shipped (bad.md L12, P1.1).
+    "edit.say_selected": "Ctrl+Shift+Y",
     "edit.read_all": "Alt+F8",
     "edit.find": "Ctrl+F",
     # macOS HIG: Find Next/Previous are Cmd+G / Cmd+Shift+G. The bare F3 /
@@ -559,7 +600,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # user-authorized; allow-listed in menu_lint, rebindable via editor.
     "format.insert_table": "Ctrl+Alt+T",  # §edsharp-ok — authorized authoring chord (x.md)
     "format.blockquote": "Ctrl+Alt+Q",  # §edsharp-ok — authorized authoring chord (x.md)
-    "format.horizontal_rule": "Ctrl+Alt+H",  # §edsharp-ok — authorized authoring chord (x.md)
+    # H is for Heading: Ctrl+Alt+H and Ctrl+Alt+Shift+H walk them in QuillLite,
+    # and heading navigation is an editing-loop verb where inserting a rule is
+    # a once-a-document one. The authoring chord moves to the key that draws
+    # what a rule looks like (bad.md 3.5).
+    "format.horizontal_rule": "Ctrl+Alt+-",
     "power.insert_image": "Ctrl+Alt+I",  # §edsharp-ok — authoring chord (x.md)
     # Table cell navigation: move cell by cell inside a
     # pipe/Markdown table, hearing each cell + its position. Context-sensitive --
@@ -734,8 +779,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # QuillLite's Paste from Tray chord. It was a leader chord here, which
     # is a two-stroke route to the tray's only overview (bad.md 5.1, P0.4).
     "edit.open_copy_tray": "Ctrl+Alt+V",
-    "edit.clear_all_tray_slots": "",
-    "edit.copy_to_next_slot": "",
+    # QuillLite's chords for the two tray verbs that do not need a slot
+    # number: put this somewhere, and empty the whole thing (bad.md 3.7).
+    "edit.clear_all_tray_slots": "Ctrl+Alt+Shift+Y",
+    "edit.copy_to_next_slot": "Ctrl+Alt+Y",
     "edit.search_tray_slots": "",
     "edit.copy_to_tray_1": "Ctrl+Shift+Grave, Shift+1",
     "edit.copy_to_tray_2": "Ctrl+Shift+Grave, Shift+2",
@@ -794,6 +841,17 @@ DEFAULT_ALIASES: dict[str, str] = {
     # Word's key for the same thing, in both editors. The primary Ctrl+F7
     # keeps working; this is the chord a person arrives with (bad.md 3.6).
     "tools.next_misspelling": "Alt+F7",
+    # Word's function-key trio. Free in both editors, so they cost nothing and
+    # they are what a hand trained on Word reaches for. Aliases, not moves:
+    # Ctrl+S, Ctrl+O and Ctrl+P remain the primaries (bad.md rule 5, P2.7).
+    "file.save_as": "F12",
+    "file.open": "Ctrl+F12",
+    "file.print": "Ctrl+Shift+F12",
+    # Word's Bookmark key, pointed at the numbered-bookmark list.
+    "navigate.list_bookmarks": "Ctrl+Shift+F5",
+    # QuillLite reaches the shortcut list on Ctrl+F1; QUILL had it on
+    # Alt+Shift+/, which is a chord you have to be told about.
+    "help.key_cheatsheet": "Ctrl+F1",
     # Three more QuillLite reaches on a plain chord and QUILL buried on the
     # leader chord. Same argument as F1: the small product found the obvious
     # key first, and a person who uses both should not have to learn two.

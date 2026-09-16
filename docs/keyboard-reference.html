@@ -209,7 +209,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 379.</p>
+<p>Editor commands with default bindings: 393.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -225,6 +225,11 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Restore Previous Version…</td>
 <td><code>file.restore_previous_version</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+P</td>
+<td>Page Setup…</td>
+<td><code>file.page_setup</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+A</td>
@@ -247,12 +252,12 @@ your own customised keymap.</p>
 <td><code>file.new</code></td>
 </tr>
 <tr>
-<td>Ctrl+O</td>
+<td>Ctrl+O or Ctrl+F12</td>
 <td>Open…</td>
 <td><code>file.open</code></td>
 </tr>
 <tr>
-<td>Ctrl+P</td>
+<td>Ctrl+P or Ctrl+Shift+F12</td>
 <td>Print…</td>
 <td><code>file.print</code></td>
 </tr>
@@ -262,7 +267,7 @@ your own customised keymap.</p>
 <td><code>file.save</code></td>
 </tr>
 <tr>
-<td>Ctrl+Shift+S</td>
+<td>Ctrl+Shift+S or F12</td>
 <td>Save As…</td>
 <td><code>file.save_as</code></td>
 </tr>
@@ -330,16 +335,6 @@ your own customised keymap.</p>
 <tbody>
 <tr>
 <td>(unbound by default)</td>
-<td>Clear all tray slots</td>
-<td><code>edit.clear_all_tray_slots</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
-<td>Copy to Next Empty Tray Slot</td>
-<td><code>edit.copy_to_next_slot</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
 <td>Jump to Named Mark</td>
 <td><code>edit.jump_to_named_mark</code></td>
 </tr>
@@ -352,11 +347,6 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Open Review Buffer</td>
 <td><code>edit.open_review_buffer</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
-<td>Say Selected</td>
-<td><code>edit.say_selected</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -384,6 +374,11 @@ your own customised keymap.</p>
 <td><code>edit.list_marks</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+C</td>
+<td>Copy With Source</td>
+<td><code>edit.copy_with_source</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+F8</td>
 <td>Go to Start of Selection</td>
 <td><code>edit.go_to_start_of_selection</code></td>
@@ -399,6 +394,11 @@ your own customised keymap.</p>
 <td><code>edit.word_prediction</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+D</td>
+<td>Remove Duplicate Lines</td>
+<td><code>edit.remove_duplicate_lines</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+E</td>
 <td>Select Line</td>
 <td><code>edit.select_line</code></td>
@@ -412,6 +412,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+R</td>
 <td>Trim Trailing Whitespace</td>
 <td><code>edit.trim_trailing_whitespace</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+S</td>
+<td>Sort Lines Ascending</td>
+<td><code>edit.sort_lines_ascending</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+-</td>
@@ -484,6 +489,11 @@ your own customised keymap.</p>
 <td><code>edit.duplicate_selection</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+Y</td>
+<td>Clear all tray slots</td>
+<td><code>edit.clear_all_tray_slots</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+Z</td>
 <td>Restore deletion</td>
 <td><code>edit.restore_deletion</code></td>
@@ -497,6 +507,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+W</td>
 <td>Select Word</td>
 <td><code>edit.select_word</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Y</td>
+<td>Copy to Next Empty Tray Slot</td>
+<td><code>edit.copy_to_next_slot</code></td>
 </tr>
 <tr>
 <td>Ctrl+Enter</td>
@@ -532,11 +547,6 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+A</td>
 <td>Unselect All</td>
 <td><code>edit.unselect_all</code></td>
-</tr>
-<tr>
-<td>Ctrl+Shift+C</td>
-<td>Copy With Source</td>
-<td><code>edit.copy_with_source</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+E</td>
@@ -592,6 +602,11 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+X</td>
 <td>Exchange Point and Mark</td>
 <td><code>edit.exchange_point_mark</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Y</td>
+<td>Say Selected</td>
+<td><code>edit.say_selected</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+[</td>
@@ -796,6 +811,11 @@ your own customised keymap.</p>
 <td><code>format.line_spacing_one_and_a_half</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+-</td>
+<td>Insert Horizontal Rule</td>
+<td><code>format.horizontal_rule</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+1</td>
 <td>Insert Heading 1</td>
 <td><code>format.heading_1</code></td>
@@ -824,11 +844,6 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+6</td>
 <td>Insert Heading 6</td>
 <td><code>format.heading_6</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+H</td>
-<td>Insert Horizontal Rule</td>
-<td><code>format.horizontal_rule</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+N</td>
@@ -936,6 +951,16 @@ your own customised keymap.</p>
 <td><code>format.toggle_bullet_list</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+T</td>
+<td>Title Case</td>
+<td><code>format.title_case</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+U</td>
+<td>Upper Case</td>
+<td><code>format.upper_case</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+Up</td>
 <td>Move Line Up</td>
 <td><code>format.move_line_up</code></td>
@@ -1028,7 +1053,7 @@ your own customised keymap.</p>
 <td><code>navigate.forward_location</code></td>
 </tr>
 <tr>
-<td>Alt+Shift+B</td>
+<td>Alt+Shift+B or Ctrl+Shift+F5</td>
 <td>List Bookmarks…</td>
 <td><code>navigate.list_bookmarks</code></td>
 </tr>
@@ -1051,6 +1076,16 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+B</td>
 <td>Clear All Bookmarks</td>
 <td><code>navigate.clear_numbered_bookmarks</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F6</td>
+<td>Set Document Language…</td>
+<td><code>navigate.set_language</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+H</td>
+<td>Next Heading</td>
+<td><code>navigate.next_heading</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+J</td>
@@ -1225,6 +1260,11 @@ your own customised keymap.</p>
 <td><code>view.toggle_list_announcements</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+F7</td>
+<td>Toggle Spell Check As You Type</td>
+<td><code>view.toggle_spellcheck_as_you_type</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+W</td>
 <td>Toggle Overwrite Mode</td>
 <td><code>view.toggle_overwrite_mode</code></td>
@@ -1302,6 +1342,21 @@ your own customised keymap.</p>
 <td><code>tools.misspelling_list_ranked</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+F10</td>
+<td>Manage Individual Features…</td>
+<td><code>tools.individual_feature_toggles</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F11</td>
+<td>Export and Back Up…</td>
+<td><code>tools.share_export</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F12</td>
+<td>Import or Restore…</td>
+<td><code>tools.share_import</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+F9</td>
 <td>Add Word to Dictionary</td>
 <td><code>tools.add_word_to_dictionary</code></td>
@@ -1350,6 +1405,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+T</td>
 <td>Translate Selection…</td>
 <td><code>tools.ai_translate_selection</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+U</td>
+<td>Check for Updates…</td>
+<td><code>tools.check_updates</code></td>
 </tr>
 <tr>
 <td>Ctrl+F7 or Alt+F7</td>
@@ -1598,7 +1658,7 @@ your own customised keymap.</p>
 <td><code>help.why_unavailable</code></td>
 </tr>
 <tr>
-<td>Alt+Shift+/</td>
+<td>Alt+Shift+/ or Ctrl+F1</td>
 <td>Key Cheatsheet</td>
 <td><code>help.key_cheatsheet</code></td>
 </tr>
@@ -1621,6 +1681,11 @@ your own customised keymap.</p>
 <td>QUILL Key + Shift+H or F1</td>
 <td>Context Help: Current Mode Keys</td>
 <td><code>help.context_help</code></td>
+</tr>
+<tr>
+<td>Shift+F1</td>
+<td>About Quill</td>
+<td><code>help.about_quill</code></td>
 </tr>
 </tbody>
 </table>
@@ -2058,6 +2123,11 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+Backspace</td>
 <td>Delete to line start</td>
 <td><code>power.delete_to_line_start</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+C</td>
+<td>Describe character</td>
+<td><code>power.describe_character</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+Enter</td>

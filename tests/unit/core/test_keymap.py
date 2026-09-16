@@ -42,9 +42,14 @@ def test_load_keymap_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -
 
 def test_load_keymap_merges_overrides(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
-    save_keymap({"file.save": "Ctrl+Alt+Shift+Y"})
+    # An F-key chord on purpose: the letter rows are saturated across the two
+    # editors, and this fixture used Ctrl+Alt+Shift+Y until 2026-09-16, when
+    # that became Clear Copy Tray's default -- at which point the loader
+    # correctly recorded the displaced default as cleared and the on-disk
+    # delta grew an entry this test did not expect.
+    save_keymap({"file.save": "Ctrl+Alt+Shift+F5"})
     keymap = load_keymap()
-    assert keymap["file.save"] == "Ctrl+Alt+Shift+Y"
+    assert keymap["file.save"] == "Ctrl+Alt+Shift+F5"
     assert keymap["file.open"] == DEFAULT_KEYMAP["file.open"]
 
 
@@ -156,7 +161,7 @@ def test_load_keymap_absent_binding_falls_back_to_default(
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    save_keymap({"file.save": "Ctrl+Alt+Shift+Y"})  # unrelated override only
+    save_keymap({"file.save": "Ctrl+Alt+Shift+F5"})  # unrelated override only
 
     loaded = load_keymap()
 
@@ -173,7 +178,7 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     carried-forward foreign binding, never the full DEFAULT_KEYMAP.
 
     **What "conflicting" means here changed on 2026-09-10.** Both entries below
-    are the user's own: they asked for Ctrl+Alt+Shift+Y on Save *and* Ctrl+S on
+    are the user's own: they asked for Ctrl+Alt+Shift+F5 on Save *and* Ctrl+S on
     the Command Palette, which together are perfectly consistent -- Ctrl+S is
     free once Save has moved off it. The old rule read the file one entry at a
     time against a map still holding Save's *default*, saw Ctrl+S "taken", and
@@ -189,7 +194,7 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # A move: Save leaves Ctrl+S, and the Palette takes it. Plus one foreign
     # (sibling-app) command that this build knows nothing about.
     save_keymap({
-        "file.save": "Ctrl+Alt+Shift+Y",  # valid override, must survive
+        "file.save": "Ctrl+Alt+Shift+F5",  # valid override, must survive
         "a.sibling_app_command": "Ctrl+Alt+X",  # unknown id, now preserved
         "app.command_palette": "Ctrl+S",  # the key Save just vacated
     })
@@ -199,7 +204,7 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # Both of the user's requests, honoured. The default that stood on Ctrl+S
     # is not what decides this: it is a suggestion, and the user gave an
     # instruction.
-    assert loaded["file.save"] == "Ctrl+Alt+Shift+Y"
+    assert loaded["file.save"] == "Ctrl+Alt+Shift+F5"
     assert loaded["a.sibling_app_command"] == "Ctrl+Alt+X"  # preserved
     assert loaded["app.command_palette"] == "Ctrl+S"
 
@@ -212,7 +217,7 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # delta plus the epoch stamp -- never the full DEFAULT_KEYMAP.
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
-        "file.save": "Ctrl+Alt+Shift+Y",
+        "file.save": "Ctrl+Alt+Shift+F5",
         "a.sibling_app_command": "Ctrl+Alt+X",
         "app.command_palette": "Ctrl+S",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
@@ -231,7 +236,7 @@ def test_load_keymap_leaves_clean_file_alone(
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    save_keymap({"file.save": "Ctrl+Alt+Shift+Y"})
+    save_keymap({"file.save": "Ctrl+Alt+Shift+F5"})
     mtime_before = store_path.stat().st_mtime_ns
 
     load_keymap()
@@ -386,12 +391,12 @@ def test_save_keymap_persists_only_the_override_delta_plus_epoch(
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
     full = DEFAULT_KEYMAP.copy()
-    full["file.save"] = "Ctrl+Alt+Shift+Y"
+    full["file.save"] = "Ctrl+Alt+Shift+F5"
     save_keymap(full)
 
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
-        "file.save": "Ctrl+Alt+Shift+Y",
+        "file.save": "Ctrl+Alt+Shift+F5",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
 
@@ -401,11 +406,11 @@ def test_non_overridden_command_tracks_the_current_default() -> None:
     # delta resolves to whatever DEFAULT_KEYMAP says today -- so a changed or
     # newly added default reaches existing users with no migration entry.
     saved = {
-        "file.save": "Ctrl+Alt+Shift+Y",
+        "file.save": "Ctrl+Alt+Shift+F5",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
     merged = keymap_module.merge_keymaps(saved)
-    assert merged["file.save"] == "Ctrl+Alt+Shift+Y"
+    assert merged["file.save"] == "Ctrl+Alt+Shift+F5"
     assert merged["edit.find"] == DEFAULT_KEYMAP["edit.find"]
 
 
@@ -743,6 +748,10 @@ def test_authoring_chords_are_the_defaults() -> None:
       edit.paste_plain_text      Ctrl+Alt+V -> Ctrl+Shift+V (Word 365, Notepad
                                  and every browser; Ctrl+Alt+V is Paste from
                                  Tray in QuillLite).
+      format.horizontal_rule     Ctrl+Alt+H -> Ctrl+Alt+- (H is for Heading:
+                                 Ctrl+Alt+H walks them in QuillLite, and that
+                                 is an editing-loop verb where inserting a rule
+                                 is a once-a-document one).
       format.justify             Ctrl+Alt+J -> Ctrl+J (Word, WordPad and
                                  QuillLite all justify there).
 
@@ -764,7 +773,8 @@ def test_authoring_chords_are_the_defaults() -> None:
     assert DEFAULT_KEYMAP["power.insert_image"] == "Ctrl+Alt+I"
     assert DEFAULT_KEYMAP["format.insert_table"] == "Ctrl+Alt+T"
     assert DEFAULT_KEYMAP["format.blockquote"] == "Ctrl+Alt+Q"
-    assert DEFAULT_KEYMAP["format.horizontal_rule"] == "Ctrl+Alt+H"
+    assert DEFAULT_KEYMAP["format.horizontal_rule"] == "Ctrl+Alt+-"
+    assert DEFAULT_KEYMAP["navigate.next_heading"] == "Ctrl+Alt+H"
     for level in range(1, 7):
         assert DEFAULT_KEYMAP[f"format.heading_{level}"] == f"Ctrl+Alt+{level}"
 

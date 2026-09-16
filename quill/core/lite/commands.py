@@ -609,13 +609,18 @@ COMMANDS: list[CommandRow] = [
     # anything that describes *this* computer -- no recent files, no window
     # size, no update timestamp -- so the file is a configuration rather than a
     # snapshot of one desk.
-    ("&Tools", "&Back Up Settings...", "Ctrl+Alt+Shift+Q", "cmd_backup_settings", ""),
-    ("&Tools", "Restore Sett&ings...", "Ctrl+Alt+Shift+D", "cmd_restore_settings", ""),
+    ("&Tools", "&Back Up Settings...", "Ctrl+Alt+F11", "cmd_backup_settings", ""),
+    ("&Tools", "Restore Sett&ings...", "Ctrl+Alt+F12", "cmd_restore_settings", ""),
     # Turning a whole area off is QUILL's own idea, and it belongs here more
     # than anywhere: the way QuillLite stays small is that somebody who does not
     # want rich text can remove the Format menu entirely rather than learn to
     # ignore it.
-    ("&Tools", "C&ustomize Features...", "Ctrl+Alt+Shift+F", "cmd_customize_features", ""),
+    # Once a year, and therefore on the F-keys. These three held
+    # Ctrl+Alt+Shift+F, Q and D -- three-modifier LETTER chords that editing
+    # verbs want in QUILL (Search in Files, Duplicate Selection) -- for
+    # commands nobody runs in the editing loop. The F-keys past F9 are empty
+    # in both editors (bad.md rule 9, P2.9).
+    ("&Tools", "C&ustomize Features...", "Ctrl+Alt+F10", "cmd_customize_features", ""),
     # Which keys do what, beside which features exist. Never switchable, for
     # the same reason as its two neighbours: the surface that repairs a key
     # somebody broke cannot be behind a key.
@@ -691,7 +696,9 @@ COMMANDS: list[CommandRow] = [
     # -- Tools > Change Case -------------------------------------------------
     ("&Tools|&Change Case", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools|&Change Case", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
-    ("&Tools|&Change Case", "&Title Case", "Ctrl+Shift+G", "cmd_title_case", ""),
+    # Ctrl+Shift+T since 2026-09-16: Ctrl+Shift+G is Word Count in Word, and
+    # both editors put Document Statistics there (bad.md 3.4).
+    ("&Tools|&Change Case", "&Title Case", "Ctrl+Shift+T", "cmd_title_case", ""),
     # The two QUILL registered and never bound, so its own Change Case offered
     # five in the menu and three from the keyboard. "Invert" rather than
     # "Toggle" because a person asked to describe it says "it swaps them".

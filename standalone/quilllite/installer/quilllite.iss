@@ -156,6 +156,13 @@ Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe"; ValueType: str
 Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\quill-lite.ico"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\.txt\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
+; QuillLite edits four kinds, not two. Markdown and HTML were missing from
+; this list until 2026-09-16 -- so a .md file could not reach the editor that
+; has a Markdown mode, from the menu Windows offers for exactly that (bad.md A1).
+Root: HKA; Subkey: "Software\Classes\.md\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
+Root: HKA; Subkey: "Software\Classes\.markdown\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
+Root: HKA; Subkey: "Software\Classes\.html\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
+Root: HKA; Subkey: "Software\Classes\.htm\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
 
 [Run]
 Filename: "{app}\QuillLite.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked

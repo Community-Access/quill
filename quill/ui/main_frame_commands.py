@@ -139,7 +139,7 @@ class CommandRegistryMixin:
             "file.page_setup",
             "Page Setup...",
             self.page_setup,
-            None,
+            self._binding_for("file.page_setup"),
         )
         self.commands.register(
             "file.print",
@@ -353,7 +353,7 @@ class CommandRegistryMixin:
             "view.toggle_spellcheck_as_you_type",
             "Toggle Spell Check As You Type",
             self.toggle_spellcheck_as_you_type,
-            None,
+            self._binding_for("view.toggle_spellcheck_as_you_type"),
         )
         self.commands.register(
             "view.toggle_intellisense_as_you_type",
@@ -680,7 +680,7 @@ class CommandRegistryMixin:
             "navigate.next_heading",
             "Next Heading",
             self.navigate_next_heading,
-            None,
+            self._binding_for("navigate.next_heading"),
         )
         self.commands.register(
             "navigate.previous_heading",
@@ -781,7 +781,7 @@ class CommandRegistryMixin:
             "navigate.set_bookmark",
             "Set Bookmark...",
             self.set_bookmark,
-            None,
+            self._binding_for("navigate.set_language"),
         )
         self.commands.register(
             "navigate.go_to_bookmark",
@@ -1204,7 +1204,7 @@ class CommandRegistryMixin:
             "tools.check_updates",
             "Check for Updates...",
             self.check_for_updates,
-            None,
+            self._binding_for("tools.check_updates"),
         )
         self.commands.register(
             "tools.check_glow_updates",
@@ -1300,13 +1300,13 @@ class CommandRegistryMixin:
             "tools.share_export",
             "Export and Back Up...",
             self.open_share_export_dialog,
-            None,
+            self._binding_for("tools.share_export"),
         )
         self.commands.register(
             "tools.share_import",
             "Import or Restore...",
             self.open_share_import_dialog,
-            None,
+            self._binding_for("tools.share_import"),
         )
         self.commands.register(
             "tools.import_keymap",
@@ -1414,7 +1414,7 @@ class CommandRegistryMixin:
             "tools.individual_feature_toggles",
             "Manage Individual Features...",
             self.open_individual_feature_toggles,
-            None,
+            self._binding_for("tools.individual_feature_toggles"),
         )
         self.commands.register(
             "tools.profiles_and_features_settings",
@@ -1486,7 +1486,7 @@ class CommandRegistryMixin:
             "help.about_quill",
             "About Quill",
             self.show_about_quill,
-            None,
+            self._binding_for("help.about_quill"),
         )
         self.commands.register(
             "help.save_diagnostics",
@@ -1799,7 +1799,7 @@ class CommandRegistryMixin:
             "edit.select_block",
             "Select Block",
             self.select_block,
-            None,
+            self._binding_for("edit.say_selected"),
         )
         self.commands.register(
             "edit.expand_selection",
@@ -2109,13 +2109,13 @@ class CommandRegistryMixin:
             "format.title_case",
             "Title Case",
             self.format_title_case,
-            None,
+            self._binding_for("format.upper_case"),
         )
         self.commands.register(
             "format.sentence_case",
             "Sentence Case",
             self.format_sentence_case,
-            None,
+            self._binding_for("format.title_case"),
         )
         self.commands.register(
             "format.toggle_case",
@@ -2279,7 +2279,7 @@ class CommandRegistryMixin:
             "edit.sort_lines_ascending",
             "Sort Lines Ascending",
             self.sort_lines_ascending,
-            None,
+            self._binding_for("edit.sort_lines_ascending"),
         )
         self.commands.register(
             "edit.sort_lines_descending",
@@ -2297,7 +2297,7 @@ class CommandRegistryMixin:
             "edit.remove_duplicate_lines",
             "Remove Duplicate Lines",
             self.remove_duplicate_lines,
-            None,
+            self._binding_for("edit.remove_duplicate_lines"),
         )
         self.commands.register(
             "edit.quote_lines",
@@ -2369,7 +2369,7 @@ class CommandRegistryMixin:
             "help.key_cheatsheet",
             "Key Cheatsheet",
             self.open_key_cheatsheet,
-            None,
+            self._binding_for("help.key_cheatsheet"),
         )
         self.commands.register(
             "view.announce_contrast",

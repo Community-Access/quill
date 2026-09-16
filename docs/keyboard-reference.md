@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 379.
+Editor commands with default bindings: 393.
 
 ## The QUILL editor
 
@@ -20,14 +20,15 @@ Editor commands with default bindings: 379.
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | Restore Previous Version... | `file.restore_previous_version` |
+| Ctrl+Alt+P | Page Setup... | `file.page_setup` |
 | Ctrl+Alt+Shift+A | Add Current Folder to Favorites | `file.add_favorite_folder` |
 | Ctrl+Alt+Shift+O | Open From Favorite Folder... | `file.open_from_favorite_folder` |
 | Ctrl+Alt+Shift+R | Remove Favorite Folder... | `file.remove_favorite_folder` |
 | Ctrl+N | New | `file.new` |
-| Ctrl+O | Open... | `file.open` |
-| Ctrl+P | Print... | `file.print` |
+| Ctrl+O or Ctrl+F12 | Open... | `file.open` |
+| Ctrl+P or Ctrl+Shift+F12 | Print... | `file.print` |
 | Ctrl+S | Save | `file.save` |
-| Ctrl+Shift+S | Save As... | `file.save_as` |
+| Ctrl+Shift+S or F12 | Save As... | `file.save_as` |
 | Ctrl+W | Close Document | `file.close_document` |
 | QUILL Key + B | Batch conversion | `file.batch_conversion` |
 | QUILL Key + Shift+I | Open GitHub Items... | `file.open_github_items` |
@@ -43,23 +44,23 @@ Editor commands with default bindings: 379.
 
 | Key | Command | Command id |
 | --- | --- | --- |
-| (unbound by default) | Clear all tray slots | `edit.clear_all_tray_slots` |
-| (unbound by default) | Copy to Next Empty Tray Slot | `edit.copy_to_next_slot` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
 | (unbound by default) | Magic Paste | `edit.magic_paste` |
 | (unbound by default) | Open Review Buffer | `edit.open_review_buffer` |
-| (unbound by default) | Say Selected | `edit.say_selected` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
 | Alt+. | Insert Emoji... | `edit.insert_emoji` |
 | Alt+F8 | Read All | `edit.read_all` |
 | Alt+M | List Marks | `edit.list_marks` |
+| Alt+Shift+C | Copy With Source | `edit.copy_with_source` |
 | Alt+Shift+F8 | Go to Start of Selection | `edit.go_to_start_of_selection` |
 | Alt+Shift+Z | Reverse Lines | `edit.reverse_lines` |
 | Ctrl+. | Word Prediction... | `edit.word_prediction` |
+| Ctrl+Alt+D | Remove Duplicate Lines | `edit.remove_duplicate_lines` |
 | Ctrl+Alt+E | Select Line | `edit.select_line` |
 | Ctrl+Alt+F8 | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
 | Ctrl+Alt+R | Trim Trailing Whitespace | `edit.trim_trailing_whitespace` |
+| Ctrl+Alt+S | Sort Lines Ascending | `edit.sort_lines_ascending` |
 | Ctrl+Alt+Shift+- | Paste from tray 11 | `edit.paste_from_tray_11` |
 | Ctrl+Alt+Shift+0 | Paste from tray 10 | `edit.paste_from_tray_10` |
 | Ctrl+Alt+Shift+1 | Paste from tray 1 | `edit.paste_from_tray_1` |
@@ -74,9 +75,11 @@ Editor commands with default bindings: 379.
 | Ctrl+Alt+Shift+= | Paste from tray 12 | `edit.paste_from_tray_12` |
 | Ctrl+Alt+Shift+B | Select Block | `edit.select_block` |
 | Ctrl+Alt+Shift+Q | Duplicate Selection | `edit.duplicate_selection` |
+| Ctrl+Alt+Shift+Y | Clear all tray slots | `edit.clear_all_tray_slots` |
 | Ctrl+Alt+Shift+Z | Restore deletion | `edit.restore_deletion` |
 | Ctrl+Alt+V | Open copy tray | `edit.open_copy_tray` |
 | Ctrl+Alt+W | Select Word | `edit.select_word` |
+| Ctrl+Alt+Y | Copy to Next Empty Tray Slot | `edit.copy_to_next_slot` |
 | Ctrl+Enter | Follow Link | `edit.follow_link` |
 | Ctrl+F | Find... | `edit.find` |
 | Ctrl+F8 | Copy All | `edit.copy_all` |
@@ -84,7 +87,6 @@ Editor commands with default bindings: 379.
 | Ctrl+K | Insert Link... | `edit.insert_link` |
 | Ctrl+M | Pop Mark | `edit.pop_mark` |
 | Ctrl+Shift+A | Unselect All | `edit.unselect_all` |
-| Ctrl+Shift+C | Copy With Source | `edit.copy_with_source` |
 | Ctrl+Shift+E | Insert Equation... | `edit.insert_equation` |
 | Ctrl+Shift+End | Select to End of Document | `edit.select_to_end_of_document` |
 | Ctrl+Shift+F3 | Find All Matches | `edit.find_all_matches` |
@@ -96,6 +98,7 @@ Editor commands with default bindings: 379.
 | Ctrl+Shift+Q | Quote Lines | `edit.quote_lines` |
 | Ctrl+Shift+V | Paste Text Only | `edit.paste_plain_text` |
 | Ctrl+Shift+X | Exchange Point and Mark | `edit.exchange_point_mark` |
+| Ctrl+Shift+Y | Say Selected | `edit.say_selected` |
 | Ctrl+Shift+[ | Toggle Fold | `edit.toggle_fold` |
 | Ctrl+Space | Select Chunk | `edit.select_chunk` |
 | Ctrl+Y | Redo | `edit.redo` |
@@ -139,13 +142,13 @@ Editor commands with default bindings: 379.
 | Ctrl+1 | Single Line Spacing | `format.line_spacing_single` |
 | Ctrl+2 | Double Line Spacing | `format.line_spacing_double` |
 | Ctrl+5 | One and a Half Line Spacing | `format.line_spacing_one_and_a_half` |
+| Ctrl+Alt+- | Insert Horizontal Rule | `format.horizontal_rule` |
 | Ctrl+Alt+1 | Insert Heading 1 | `format.heading_1` |
 | Ctrl+Alt+2 | Insert Heading 2 | `format.heading_2` |
 | Ctrl+Alt+3 | Insert Heading 3 | `format.heading_3` |
 | Ctrl+Alt+4 | Insert Heading 4 | `format.heading_4` |
 | Ctrl+Alt+5 | Insert Heading 5 | `format.heading_5` |
 | Ctrl+Alt+6 | Insert Heading 6 | `format.heading_6` |
-| Ctrl+Alt+H | Insert Horizontal Rule | `format.horizontal_rule` |
 | Ctrl+Alt+N | Toggle Numbered List | `format.toggle_numbered_list` |
 | Ctrl+Alt+Q | Insert Block Quote | `format.blockquote` |
 | Ctrl+Alt+Shift+J | Join Lines | `format.join_lines` |
@@ -167,6 +170,8 @@ Editor commands with default bindings: 379.
 | Ctrl+Shift+Delete | Delete Line | `format.delete_line` |
 | Ctrl+Shift+Down | Move Line Down | `format.move_line_down` |
 | Ctrl+Shift+L | Toggle Bullet List | `format.toggle_bullet_list` |
+| Ctrl+Shift+T | Title Case | `format.title_case` |
+| Ctrl+Shift+U | Upper Case | `format.upper_case` |
 | Ctrl+Shift+Up | Move Line Up | `format.move_line_up` |
 | Ctrl+[ | Outdent | `format.outdent` |
 | Ctrl+] | Indent | `format.indent` |
@@ -188,11 +193,13 @@ Editor commands with default bindings: 379.
 | Alt+Down | Next Structure | `navigate.next_structure` |
 | Alt+Left | Back Location | `navigate.back_location` |
 | Alt+Right | Forward Location | `navigate.forward_location` |
-| Alt+Shift+B | List Bookmarks... | `navigate.list_bookmarks` |
+| Alt+Shift+B or Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
 | Alt+Shift+[ | Previous Fold | `navigate.previous_fold` |
 | Alt+Shift+] | Next Fold | `navigate.next_fold` |
 | Alt+Up | Previous Structure | `navigate.previous_structure` |
 | Ctrl+Alt+B | Clear All Bookmarks | `navigate.clear_numbered_bookmarks` |
+| Ctrl+Alt+F6 | Set Document Language... | `navigate.set_language` |
+| Ctrl+Alt+H | Next Heading | `navigate.next_heading` |
 | Ctrl+Alt+J | Set Temporary Bookmark | `navigate.set_temp_bookmark` |
 | Ctrl+G | Go to Line... | `navigate.go_to_line` |
 | Ctrl+Shift+1 | Set numbered bookmark 1 | `navigate.set_numbered_bookmark_1` |
@@ -230,6 +237,7 @@ Editor commands with default bindings: 379.
 | Alt+Z | Toggle Soft Wrap | `view.toggle_soft_wrap` |
 | Ctrl+Alt+F3 | Announce Headings | `view.toggle_heading_announcements` |
 | Ctrl+Alt+F5 | Announce Lists | `view.toggle_list_announcements` |
+| Ctrl+Alt+F7 | Toggle Spell Check As You Type | `view.toggle_spellcheck_as_you_type` |
 | Ctrl+Alt+Shift+W | Toggle Overwrite Mode | `view.toggle_overwrite_mode` |
 | Ctrl+Alt+Shift+\ | Preview Side by Side | `view.split_preview` |
 | Ctrl+F6 | Focus Preview | `view.focus_preview` |
@@ -248,6 +256,9 @@ Editor commands with default bindings: 379.
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
 | Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
+| Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
+| Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
+| Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |
 | Ctrl+Alt+F9 | Add Word to Dictionary | `tools.add_word_to_dictionary` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
@@ -258,6 +269,7 @@ Editor commands with default bindings: 379.
 | Ctrl+Alt+Shift+I | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
 | Ctrl+Alt+Shift+S | AI Spell Check... | `tools.ai_spell_check` |
 | Ctrl+Alt+Shift+T | Translate Selection... | `tools.ai_translate_selection` |
+| Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+F | Search in Files... | `tools.search_in_files` |
@@ -315,11 +327,12 @@ Editor commands with default bindings: 379.
 | Key | Command | Command id |
 | --- | --- | --- |
 | Alt+F1 | Why Is This Unavailable? | `help.why_unavailable` |
-| Alt+Shift+/ | Key Cheatsheet | `help.key_cheatsheet` |
+| Alt+Shift+/ or Ctrl+F1 | Key Cheatsheet | `help.key_cheatsheet` |
 | Alt+Shift+P | Switch Feature Profile... | `help.switch_feature_profile` |
 | Ctrl+Alt+F1 | Tutorials... | `help.tutorials` |
 | Ctrl+Alt+F2 | Get Help from Support... | `help.report_bug` |
 | QUILL Key + Shift+H or F1 | Context Help: Current Mode Keys | `help.context_help` |
+| Shift+F1 | About Quill | `help.about_quill` |
 
 ### Everything else
 
@@ -410,6 +423,7 @@ Editor commands with default bindings: 379.
 | Ctrl+Alt+Shift+F3 | Count occurrences | `power.count_occurrences` |
 | Ctrl+Alt+Up | Table: Cell Above | `table.cell_above` |
 | Ctrl+Shift+Backspace | Delete to line start | `power.delete_to_line_start` |
+| Ctrl+Shift+C | Describe character | `power.describe_character` |
 | Ctrl+Shift+Enter | Trim blank lines | `power.trim_blank_lines` |
 | Ctrl+Shift+F2 | Insert special character | `power.insert_special_character` |
 | H | QUILL Quick Nav: Heading | `quill.quick_nav.heading` |

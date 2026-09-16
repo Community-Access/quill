@@ -165,6 +165,16 @@ Root: HKCU; Subkey: "Software\Classes\.rst\OpenWithList\{#AppExeName}"; Flags: u
 Root: HKCU; Subkey: "Software\Classes\.log\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
 Root: HKCU; Subkey: "Software\Classes\.csv\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
 Root: HKCU; Subkey: "Software\Classes\.json\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+; The formats quill/io actually reads and writes were missing from this list
+; until 2026-09-16: somebody who installed QUILL to open .docx files could not
+; reach it from Explorer's Open With, which is the one menu Windows offers for
+; "open this in something else" (bad.md A2). Still never the default handler.
+Root: HKCU; Subkey: "Software\Classes\.rtf\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCU; Subkey: "Software\Classes\.docx\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCU; Subkey: "Software\Classes\.odt\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCU; Subkey: "Software\Classes\.html\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCU; Subkey: "Software\Classes\.htm\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCU; Subkey: "Software\Classes\.epub\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
 
 ; "Send to Quill" file right-click verbs (SHELL-3). Generated from
 ; quill.core.shell_verbs so the installer, runtime registry writer, CLI

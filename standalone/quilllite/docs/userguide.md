@@ -1825,9 +1825,9 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+A** | Manage Abbreviations... |
 | **Alt+Shift+A** | Expand Abbreviations |
 | **Ctrl+,** | Preferences... |
-| **Ctrl+Alt+Shift+Q** | Back Up Settings... |
-| **Ctrl+Alt+Shift+D** | Restore Settings... |
-| **Ctrl+Alt+Shift+F** | Customize Features... |
+| **Ctrl+Alt+F11** | Back Up Settings... |
+| **Ctrl+Alt+F12** | Restore Settings... |
+| **Ctrl+Alt+F10** | Customize Features... |
 | **Ctrl+Alt+Shift+R** | Keyboard Manager... |
 
 ### Tools ▸ Spelling
@@ -1855,7 +1855,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Ctrl+Shift+U** | UPPERCASE |
 | **Ctrl+Shift+K** | lowercase |
-| **Ctrl+Shift+G** | Title Case |
+| **Ctrl+Shift+T** | Title Case |
 | **Ctrl+Alt+Shift+U** | Sentence case |
 | **Ctrl+Alt+Shift+N** | Invert Case |
 
