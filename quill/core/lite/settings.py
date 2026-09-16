@@ -199,6 +199,13 @@ class Settings:
     #: that rule says to check. Turning it off here silences the live check
     #: everywhere; F7 still reviews on demand, because that one is asked for.
     spell_check_while_typing: bool = True
+    #: Walk the F7 review by how often each word recurs rather than by
+    #: position. QuillLite never had this: it was a QUILL-only second command
+    #: on a second chord, and became the shared dialog's checkbox on
+    #: 2026-09-16, which is how QuillLite gained it (bad.md P0.3, 4.2).
+    #: Deliberately the same field name QUILL uses, so the grow-up path has
+    #: one fewer row to map (bad.md G1).
+    spell_review_ranked: bool = False
     #: Open a blank document when nothing else is being opened. On, because that
     #: is what Notepad and WordPad do and what most people expect -- but off is a
     #: real preference and it had no way to be expressed: somebody who always

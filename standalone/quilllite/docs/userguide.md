@@ -1835,10 +1835,10 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **F7** | Check Spelling... |
-| **Shift+F7** | Spelling for This Word |
+| **Alt+Shift+F7** | Spelling for This Word |
 | **Ctrl+F7** | Next Misspelling |
 | **Ctrl+Shift+F7** | Previous Misspelling |
-| **Alt+F7** | Add Word to Dictionary |
+| **Ctrl+Alt+F9** | Add Word to Dictionary |
 | **Ctrl+Alt+F7** | Check While Typing |
 | **Ctrl+Alt+Shift+F7** | Announcements... |
 

@@ -185,8 +185,23 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.sound_toggle": "Alt+Shift+M",
     "tools.word_count": "Ctrl+Shift+W",
     "tools.spell_check_dialog": "F7",
-    "tools.spell_check_ranked": "Alt+Shift+F7",
-    "tools.spell_check_word_at_cursor": "Alt+F7",
+    # tools.spell_check_ranked retired 2026-09-16: ranked review is the F7
+    # dialog's own checkbox, so it is one dialog with one key instead of the
+    # same dialog on two (bad.md P0.3). Alt+Shift+F7 is Spelling for This
+    # Word in both editors now, which is where QuillLite's has always been
+    # in spirit and where Word puts the word-level check.
+    # Alt+F7 is Add Word to Dictionary in QuillLite and was the word-level
+    # check here, so one spelling reflex taught the dictionary and the other
+    # did not, on the same key. Alt+F7 is Next Misspelling in both now -- an
+    # alias, below -- which is what Word means by it, and no habit on it can
+    # change anything. Spelling for This Word takes Alt+Shift+F7 in both
+    # (bad.md 3.6, P0.3).
+    "tools.spell_check_word_at_cursor": "Alt+Shift+F7",
+    # Add Word to Dictionary was reachable in QUILL only from the context
+    # menu -- a capability with no command and no key. Deliberately OFF the
+    # F7 row: no spelling habit should land on the one command here that
+    # changes a stored dictionary.
+    "tools.add_word_to_dictionary": "Ctrl+Alt+F9",
     "tools.next_misspelling": "Ctrl+F7",
     "tools.previous_misspelling": "Ctrl+Shift+F7",
     "tools.misspelling_list": "Alt+Shift+L",
@@ -776,6 +791,9 @@ DEFAULT_ALIASES: dict[str, str] = {
     # leader chord. QuillLite has answered F1 since it shipped. An alias, not a
     # move: the leader chord keeps working (2026-09-15).
     "help.context_help": "F1",
+    # Word's key for the same thing, in both editors. The primary Ctrl+F7
+    # keeps working; this is the chord a person arrives with (bad.md 3.6).
+    "tools.next_misspelling": "Alt+F7",
     # Three more QuillLite reaches on a plain chord and QUILL buried on the
     # leader chord. Same argument as F1: the small product found the obvious
     # key first, and a person who uses both should not have to learn two.

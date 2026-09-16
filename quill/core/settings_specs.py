@@ -2360,6 +2360,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     # --- Spelling Review (F7) ---------------------------------------------
     SettingSpec(
+        "spell_review_ranked",
+        "Review most-frequent words first",
+        "spelling",
+        "bool",
+        "Walk the F7 spelling review by how often each word recurs rather than "
+        "by where it appears, so fixing one repeated typo or OCR error clears "
+        "the bulk of a long list first. The review dialog carries the same "
+        "checkbox and writes this setting, so whichever way you set it is the "
+        "way it opens next time.",
+        keywords=("spelling", "review", "ranked", "frequency", "f7", "order"),
+        feature_id="core.spellcheck",
+    ),
+    SettingSpec(
         "spell_review_verbosity",
         "Spelling review announcement verbosity",
         "spelling",

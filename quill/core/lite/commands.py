@@ -636,12 +636,33 @@ COMMANDS: list[CommandRow] = [
     # one. The family around it is free, so the whole submenu sits on F7 with a
     # modifier -- which means one key to remember rather than six.
     ("&Tools|&Spelling", "Check &Spelling...", "F7", "cmd_spell_review", ""),
-    ("&Tools|&Spelling", "Spelling for &This Word", "Shift+F7", "cmd_spell_word_at_cursor", ""),
+    # Alt+Shift+F7 rather than Shift+F7 since 2026-09-16: Shift+F7 is the
+    # Thesaurus in Word and in QUILL, so a habit from either landed here on
+    # something else. QuillLite has no thesaurus (it needs an asset
+    # download), and the right answer for a key it cannot honour is to leave
+    # it unbound rather than to give it a different meaning (bad.md 3.6).
+    (
+        "&Tools|&Spelling",
+        "Spelling for &This Word",
+        "Alt+Shift+F7",
+        "cmd_spell_word_at_cursor",
+        "",
+    ),
     ("&Tools|&Spelling", "", "", "", "sep"),
     ("&Tools|&Spelling", "&Next Misspelling", "Ctrl+F7", "cmd_next_misspelling", ""),
     ("&Tools|&Spelling", "&Previous Misspelling", "Ctrl+Shift+F7", "cmd_previous_misspelling", ""),
     ("&Tools|&Spelling", "", "", "", "sep"),
-    ("&Tools|&Spelling", "&Add Word to Dictionary", "Alt+F7", "cmd_add_word_to_dictionary", ""),
+    # Off the F7 row entirely, and deliberately. Alt+F7 was this, and Alt+F7
+    # is Next Misspelling in Word -- so the one command in the family that
+    # writes to a stored dictionary sat where a navigation habit lands. It is
+    # Ctrl+Alt+F9 in both editors now (bad.md 3.6, P0.3).
+    (
+        "&Tools|&Spelling",
+        "&Add Word to Dictionary",
+        "Ctrl+Alt+F9",
+        "cmd_add_word_to_dictionary",
+        "",
+    ),
     # Notepad has this item, and it earns its place: the file-type rule means
     # the check is sometimes off for a reason nobody was told, so there has to
     # be one visible thing that says what the state is and changes it.

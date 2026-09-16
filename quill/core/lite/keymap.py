@@ -250,6 +250,11 @@ def default_keymap() -> dict[str, str]:
 DEFAULT_ALIASES: dict[str, str] = {
     "cmd_start_selection": "Ctrl+;",
     "cmd_complete_selection": "Ctrl+'",
+    # Word's key for Next Misspelling, in both editors. Alt+F7 was Add Word to
+    # Dictionary here until 2026-09-16, which meant one spelling reflex taught
+    # the dictionary and the same reflex in QUILL merely checked a word. An
+    # alias rather than a move: Ctrl+F7 is the primary and keeps working.
+    "cmd_next_misspelling": "Alt+F7",
 }
 
 

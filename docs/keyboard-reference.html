@@ -479,11 +479,6 @@ your own customised keymap.</p>
 <td><code>edit.select_block</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Shift+P</td>
-<td>Select Paragraph</td>
-<td><code>edit.select_paragraph</code></td>
-</tr>
-<tr>
 <td>Ctrl+Alt+Shift+Q</td>
 <td>Duplicate Selection</td>
 <td><code>edit.duplicate_selection</code></td>
@@ -565,8 +560,8 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Shift+H</td>
-<td>Replace All…</td>
-<td><code>edit.replace_all</code></td>
+<td>Select Paragraph</td>
+<td><code>edit.select_paragraph</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+Home</td>
@@ -702,6 +697,11 @@ your own customised keymap.</p>
 <td>QUILL Key + Shift+J</td>
 <td>Shrink Selection</td>
 <td><code>edit.shrink_selection</code></td>
+</tr>
+<tr>
+<td>QUILL Key + X</td>
+<td>Replace All…</td>
+<td><code>edit.replace_all</code></td>
 </tr>
 <tr>
 <td>Shift+End</td>
@@ -1272,11 +1272,6 @@ your own customised keymap.</p>
 </thead>
 <tbody>
 <tr>
-<td>Alt+F7</td>
-<td>Spell Check Word</td>
-<td><code>tools.spell_check_word_at_cursor</code></td>
-</tr>
-<tr>
 <td>Alt+F9</td>
 <td>Dictation Status</td>
 <td><code>tools.dictation_status</code></td>
@@ -1288,8 +1283,8 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Alt+Shift+F7</td>
-<td>Spell Check (Ranked by Frequency)…</td>
-<td><code>tools.spell_check_ranked</code></td>
+<td>Spell Check Word</td>
+<td><code>tools.spell_check_word_at_cursor</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+L</td>
@@ -1305,6 +1300,11 @@ your own customised keymap.</p>
 <td>Alt+Shift+R</td>
 <td>Misspelling List (Ranked by Frequency)…</td>
 <td><code>tools.misspelling_list_ranked</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F9</td>
+<td>Add Word to Dictionary</td>
+<td><code>tools.add_word_to_dictionary</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+,</td>
@@ -1352,7 +1352,7 @@ your own customised keymap.</p>
 <td><code>tools.ai_translate_selection</code></td>
 </tr>
 <tr>
-<td>Ctrl+F7</td>
+<td>Ctrl+F7 or Alt+F7</td>
 <td>Next Misspelling</td>
 <td><code>tools.next_misspelling</code></td>
 </tr>

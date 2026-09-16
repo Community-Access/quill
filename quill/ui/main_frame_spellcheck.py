@@ -16,6 +16,7 @@ from pathlib import Path
 from quill.core import thesaurus as thesaurus_engine
 from quill.core.marks import line_column_for_position
 from quill.core.paths import app_data_dir
+from quill.core.selection import word_span
 from quill.core.spellcheck import (
     Misspelling,
     add_word_to_scope,
@@ -131,21 +132,9 @@ class SpellcheckCommandsMixin:
 
     def open_spell_check_dialog(self) -> None:
         """Open the guided F7 Spelling Review dialog, in document order."""
-        self._open_spelling_review(ranked=False)
+        self._open_spelling_review()
 
-    def spell_check_ranked(self) -> None:
-        """Open the guided Spelling Review dialog, most-frequent word first.
-
-        Kurzweil-1000-style ranked spelling, community feature request:
-        the same Change/Change All/Ignore/Add to Dictionary workflow as F7,
-        but ordered so a single recurring OCR error or typo -- usually the
-        fastest way to clear the bulk of a long list -- is always reviewed
-        first. See ReviewSession(ranked=True) for how the ordering stays
-        correct as issues are fixed mid-session.
-        """
-        self._open_spelling_review(ranked=True)
-
-    def _open_spelling_review(self, *, ranked: bool) -> None:
+    def _open_spelling_review(self) -> None:
         from quill.core.spelling.session import ReviewSession
         from quill.ui.spelling_review_dialog import SpellingReviewDialog
 
@@ -166,12 +155,16 @@ class SpellcheckCommandsMixin:
             scope_end = len(text)
             scope_label = "document"
 
+        # Ranked or document order is the dialog's own checkbox now, opened at
+        # whatever it was left on. It was a second command on a second chord
+        # until 2026-09-16 -- the same dialog twice, which is how a pair drifts
+        # (bad.md 7.1) -- and the F7 chord family had no room for it anyway.
         session = ReviewSession(
             text=text,
             dictionary=set(dictionary),
             scope_start=scope_start,
             scope_end=scope_end,
-            ranked=ranked,
+            ranked=bool(getattr(self.settings, "spell_review_ranked", False)),
         )
 
         if session.is_complete():
@@ -198,7 +191,9 @@ class SpellcheckCommandsMixin:
             document_path=doc_path,
             project_root=project_root,
             settings=self.settings,
-            scope_label=f"{scope_label}, ranked by frequency" if ranked else scope_label,
+            # The order is the dialog's own checkbox and announces itself when
+            # toggled, so the scope label stays about scope.
+            scope_label=scope_label,
         )
 
         self.editor.SetFocus()  # store focus for return
@@ -685,14 +680,63 @@ class SpellcheckCommandsMixin:
     def _invalidate_spell_dictionary_cache(self) -> None:
         self._spell_dictionary_cache = None
 
+    #: Scope index -> (store name, what a listener is told it means). The
+    #: wording matters: "added to dictionary" does not say WHICH dictionary,
+    #: and three of them exist -- so the same sentence described a word taught
+    #: for one document and a word taught forever (bad.md S1, S10).
+    _DICTIONARY_SCOPES: tuple[tuple[str, str], ...] = (
+        ("personal", "your personal dictionary"),
+        ("document", "this document only"),
+        ("project", "this project"),
+    )
+
     def _add_word_to_dictionary_scope(self, word: str, scope_index: int) -> None:
-        if scope_index == 0:
-            add_word_to_scope(word, "personal", self.document.path, Path.cwd())
-        elif scope_index == 1:
-            add_word_to_scope(word, "document", self.document.path, Path.cwd())
-        elif scope_index == 2:
-            add_word_to_scope(word, "project", self.document.path, Path.cwd())
-        else:
+        if not 0 <= scope_index < len(self._DICTIONARY_SCOPES):
             return
+        store, where = self._DICTIONARY_SCOPES[scope_index]
+        add_word_to_scope(word, store, self.document.path, Path.cwd())
         self._invalidate_spell_dictionary_cache()
-        self._set_status(f'Added "{word}" to dictionary')
+        self._announce_result(f'Added "{word}" to {where}')
+
+    def _word_at_caret_for_spelling(self) -> str:
+        """The word the caret is in or has just finished typing.
+
+        The retry one character back is the fix for a real defect: the caret
+        sits at the END of a word the instant you finish typing it, and a span
+        lookup that wants ``start <= pos < end`` answers "no word" there. The
+        context menus already retried; the keyboard commands did not, so the
+        same word was addressable with the mouse and not with the keyboard
+        (bad.md S5). A selection wins outright when there is one.
+        """
+        text = self.editor.GetValue()
+        if not text:
+            return ""
+        start, end = self.editor.GetSelection()
+        if end > start:
+            return text[start:end].strip()
+        caret = self.editor.GetInsertionPoint()
+        span_start, span_end = word_span(text, caret)
+        word = text[span_start:span_end].strip()
+        if not word and caret > 0:
+            span_start, span_end = word_span(text, caret - 1)
+            word = text[span_start:span_end].strip()
+        return word
+
+    def add_word_to_dictionary(self) -> None:
+        """Teach the dictionary the word at the caret. Ctrl+Alt+F9 in both editors.
+
+        QUILL could do this only from the context menu: no command, no key, no
+        palette entry, so a keyboard-only user had to open a menu to reach it
+        while QuillLite had it on Alt+F7 (bad.md 4.1, P0.3). It is deliberately
+        NOT on the F7 row -- that row is navigation, and the one command here
+        that writes to a stored dictionary should not sit where a spelling
+        habit can land on it by accident.
+        """
+        word = self._word_at_caret_for_spelling()
+        if not word:
+            self._announce_result("No word at the cursor")
+            return
+        if word.lower() in {entry.lower() for entry in self._spell_dictionary()}:
+            self._announce_result(f'"{word}" is already in the dictionary')
+            return
+        self._add_word_to_dictionary_scope(word, 0)

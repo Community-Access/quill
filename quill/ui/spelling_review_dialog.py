@@ -64,6 +64,8 @@ class SpellingReviewDialog:
         self._doc_path = document_path
         self._project_root = project_root
         self._scope_label = scope_label
+        self._settings = settings
+        self._announce_fn = announce_fn
 
         verbosity = str(getattr(settings, "spell_review_verbosity", "balanced"))
         spell_word = bool(getattr(settings, "spell_review_spell_word", True))
@@ -140,6 +142,21 @@ class SpellingReviewDialog:
         self._suggestions.SetMinSize(wx.Size(-1, 80))
         root.Add(self._suggestions, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        # Review order. This was two commands until 2026-09-16 -- Spell Check
+        # and Spell Check (Ranked by Frequency), the same dialog opened two
+        # ways, on two chords, in two menu rows. One verb registered twice is
+        # how a pair drifts (bad.md 7.1), and the F7 chord family had no room
+        # left for the second one anyway. A checkbox instead, which also gives
+        # QuillLite ranked review for the first time -- it shares this dialog
+        # and never had the second command.
+        self._ranked_box = wx.CheckBox(self.dialog, label="Review most-&frequent words first")
+        self._ranked_box.SetValue(self._session.is_ranked())
+        self._ranked_box.SetToolTip(
+            "Walk the list by how often each word recurs rather than by "
+            "position, so fixing one repeated typo clears the bulk of it."
+        )
+        root.Add(self._ranked_box, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         # Action buttons — row 1
         btn1 = wx.BoxSizer(wx.HORIZONTAL)
         self._btn_change = wx.Button(self.dialog, label="Chan&ge")
@@ -180,6 +197,10 @@ class SpellingReviewDialog:
         # Suggestion list selection → update Change to field.
         self._suggestions.Bind(wx.EVT_LISTBOX, self._on_suggestion_select)
 
+        # Review order, live: the session re-scans, so the remaining
+        # issues reorder without losing what has been corrected.
+        self._ranked_box.Bind(wx.EVT_CHECKBOX, lambda _e: self._on_ranked_toggled())
+
         # Enter in Change-to field → Change.
         self._change_to.Bind(wx.EVT_TEXT_ENTER, lambda _e: self._on_change())
 
@@ -202,6 +223,30 @@ class SpellingReviewDialog:
     # ------------------------------------------------------------------
     # Event handlers
     # ------------------------------------------------------------------
+
+    def _on_ranked_toggled(self) -> None:
+        """Re-order what is left, say what changed, and remember the choice."""
+        ranked = bool(self._ranked_box.GetValue())
+        self._session.set_ranked(ranked)
+        if self._settings is not None:
+            try:
+                self._settings.spell_review_ranked = ranked
+            except Exception:  # noqa: BLE001 - a stub settings object in tests
+                pass
+        if self._session.is_complete():
+            self._show_completion()
+            return
+        self._populate_current_issue()
+        # The reader has already said "checked"/"unchecked" -- that is the
+        # control's own state and announcing it again would be GATE-13
+        # over-announcing. What it cannot say is that the list underneath was
+        # reordered and a different word is now in front of you, so that is
+        # what gets said, with the position to prove it moved.
+        self._announcer.announce_action_result(
+            "Most frequent first." if ranked else "Document order.",
+            self._session.position(),
+            self._session.total(),
+        )
 
     def _on_char_hook(self, event: object) -> None:
         wx = self._wx

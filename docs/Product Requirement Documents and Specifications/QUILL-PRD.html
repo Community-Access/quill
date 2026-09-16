@@ -12486,6 +12486,7 @@ Settings group added in `quill/core/settings_specs.py` and `quill/core/settings.
 | `spell_review_spell_word_pause_ms` | int (100–3000) | `800` | Milliseconds before letter-spelling starts |
 | `spell_review_wrap_to_beginning` | bool | `True` | After reaching end of document, wrap to beginning |
 | `spell_review_context_mode` | choice | `&quot;sentence&quot;` | Context extraction mode: sentence / paragraph |
+| `spell_review_ranked` | bool | `False` | Walk the review most-frequent word first rather than in document order. Set from the review dialog&#39;s own checkbox, which replaced a second command and a second chord (2026-09-16); QuillLite shares the dialog and so gained ranked review with it |
 
 #### 6.4.17 Acceptance Criteria
 

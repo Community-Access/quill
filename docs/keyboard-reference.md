@@ -242,13 +242,13 @@ Editor commands with default bindings: 379.
 
 | Key | Command | Command id |
 | --- | --- | --- |
-| Alt+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill Chat | `tools.ask_quill_chat` |
-| Alt+Shift+F7 | Spell Check (Ranked by Frequency)... | `tools.spell_check_ranked` |
+| Alt+Shift+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
 | Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
+| Ctrl+Alt+F9 | Add Word to Dictionary | `tools.add_word_to_dictionary` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
@@ -258,7 +258,7 @@ Editor commands with default bindings: 379.
 | Ctrl+Alt+Shift+I | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
 | Ctrl+Alt+Shift+S | AI Spell Check... | `tools.ai_spell_check` |
 | Ctrl+Alt+Shift+T | Translate Selection... | `tools.ai_translate_selection` |
-| Ctrl+F7 | Next Misspelling | `tools.next_misspelling` |
+| Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+F | Search in Files... | `tools.search_in_files` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |

@@ -324,7 +324,7 @@ Spell check as a list rather than a march, the ranked view for a long document, 
 *6 steps, about 5 minutes.*
 
 1. **Check one word.** Spell Check Word at Cursor answers the question you actually have -- is this one right -- without starting a pass through the whole document.
-   - Keys: Alt+F7
+   - Keys: Alt+Shift+F7
    - You should hear: The verdict, and suggestions if it is wrong.
 
 2. **Get the misspellings as a list.** The misspelling list is a list you can arrow through and jump from, rather than a modal march through the document. For a long piece the ranked view puts the ones that occur most first, which is usually the same word thirty times.

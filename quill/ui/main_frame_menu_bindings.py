@@ -1464,11 +1464,6 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
-            lambda _e: self.spell_check_ranked(),
-            id=self._id_spell_check_ranked,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
             lambda _e: self.spell_check_word_at_cursor(),
             id=self._id_spell_check_word,
         )

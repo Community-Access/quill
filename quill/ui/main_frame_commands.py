@@ -844,6 +844,17 @@ class CommandRegistryMixin:
             self.next_misspelling,
             self._binding_for("tools.next_misspelling"),
         )
+        # Add Word to Dictionary was reachable only from the context menu: a
+        # capability with no command, no key and no palette entry, while
+        # QuillLite had it on a chord (bad.md 4.1, P0.3). Deliberately off the
+        # F7 row -- that row is navigation, and this is the one command in the
+        # family that writes to a stored dictionary.
+        self.commands.register(
+            "tools.add_word_to_dictionary",
+            "Add Word to Dictionary",
+            self.add_word_to_dictionary,
+            self._binding_for("tools.add_word_to_dictionary"),
+        )
         self.commands.register(
             "tools.previous_misspelling",
             "Previous Misspelling",
@@ -2566,7 +2577,6 @@ class CommandRegistryMixin:
             "tools.sticky_notes": self._id_sticky_notes,
             "tools.sticky_note_capture": self._id_new_sticky_note,
             "tools.spell_check_dialog": self._id_spell_check,
-            "tools.spell_check_ranked": self._id_spell_check_ranked,
             "tools.spell_check_word_at_cursor": self._id_spell_check_word,
             "tools.previous_misspelling": self._id_previous_misspelling,
             "tools.next_misspelling": self._id_next_misspelling,

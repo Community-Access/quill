@@ -121,7 +121,6 @@ _PACK_LABELS: dict[str, str] = {
     "file.add_favorite_folder": "Add Favorite Folder",
     "file.remove_favorite_folder": "Remove Favorite Folder",
     "tools.spell_check_dialog": "Spell Check",
-    "tools.spell_check_ranked": "Spell Check (Ranked by Frequency)",
     "tools.spell_check_word_at_cursor": "Spell Check Word",
     "edit.toggle_fold": "Toggle Fold",
     "navigate.next_fold": "Next Fold",

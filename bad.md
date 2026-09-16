@@ -99,10 +99,7 @@ decisions, not proposals, and the rows below follow them:
 
 | Question | Answer |
 | --- | --- |
-| `Ctrl+Shift+1..9` -- tray paste or bookmarks? | **Full swap.** Set Bookmark N in both; QUILL's numbered tray paste moves to `Ctrl+Alt+Shift+1..9`. No first-use notice; the mis-press is harmless and the release note carries the change. |
-| Where does Extend Selection Mode live? | **`Ctrl+Alt+Shift+F8`, in both.** `Ctrl+Alt+F8` becomes the F8-marker toggle in both, which is QuillLite's shipped meaning. Extend mode is kept and fixed (5.3a, P1.2a), then offered to QuillLite. |
 | How far does the menu restructure go? | **Full restructure** (4.5, P1.20): the Search menu is folded into Edit and deleted, Format gains Font, alignment, Bullets and Line Spacing, Edit gains Delete, Paste Text Only and Go To, and View says Word Wrap. |
-| Do the x.md authoring chords move when Microsoft and QuillLite agree on a key? | **Yes for three, no for the fourth.** Justify `Ctrl+Alt+J` -> `Ctrl+J`, Paste Text Only `Ctrl+Alt+V` -> `Ctrl+Shift+V`, Insert Link `Ctrl+Alt+K` -> `Ctrl+K` (which only makes QUILL's existing hard-coded hook official). **Insert Table keeps `Ctrl+Alt+T`**: Trim Trailing Spaces takes a different chord in QUILL and the pair becomes a documented divergence, because an authorized chord for a verb that builds structure outranks one that strips whitespace. Every further authoring-chord move is asked before it is made. |
 | How ambitious is QUILL's new editor font? | **Match QuillLite exactly**: `font_name` and `font_size` settings, Format > Font... on `Ctrl+Alt+F`, and `Ctrl+=` / `Ctrl+-` / `Ctrl+0`, from shared code, with view zoom rather than run sizes in rich documents. `format.font_dialog`'s Markdown-only refusal is left for P1.7. |
 
 ## 1. The rules
@@ -200,8 +197,6 @@ marked **(new)** are commands QUILL does not have today and gains in section 4.
 | Command | QuillLite today | QUILL today | Golden | Moves |
 | --- | --- | --- | --- | --- |
 | Underline | `Ctrl+U` | hard-coded, no keymap entry | `Ctrl+U` | QUILL: keymap entry; the char hook dispatches the registered command instead of a method |
-| Bullets | `Ctrl+Shift+L` | `Ctrl+Alt+B` | `Ctrl+Shift+L` | WordPad's key, and WordPad *cycles* (bullets, numbered, off): one key replaces QUILL's separate numbered-list toggle on `Ctrl+Alt+N`. QUILL `misspelling_list_ranked` loses its chord and becomes a "rank by frequency" toggle inside the `Alt+Shift+L` list |
-| Insert Link | (none; Lite has Markdown/HTML kinds) | hard-coded `Ctrl+K` + keymap `Ctrl+Alt+K` | `Ctrl+K` | QUILL: keymap entry, hook removed, `Ctrl+Alt+K` released (row 3.4). Lite gains Insert Link for Markdown/HTML kinds (section 4.2) |
 | Document Statistics (Word Count) | `Ctrl+Alt+W` | `Ctrl+Shift+W` (Word Count) | `Ctrl+Shift+G` | Word's Word Count key. QUILL `go_to_page` folds into the Go To dialog (5.4); Lite Title Case -> `Ctrl+Shift+T` (free in both). Frees `Ctrl+Shift+W` and `Ctrl+Alt+W` for row 3.3 |
 | Font for Selection | `Ctrl+Shift+F` | `format.font_dialog`, no key | `Ctrl+Shift+F` | Word's font key. QUILL `search_in_files` -> `Ctrl+Alt+Shift+F`; QUILL `toggle_fold` -> `Ctrl+Shift+[` and `list_folds` -> `Ctrl+Shift+]` (free in both); Lite Customize Features -> `Ctrl+Alt+F10` (rule 9) |
 | Editor Font | `Ctrl+Alt+F` | (Preferences only) | `Ctrl+Alt+F` | QUILL gains a direct command **(new)**; free |
@@ -211,14 +206,11 @@ marked **(new)** are commands QUILL does not have today and gains in section 4.
 | Save As / Open / Print aliases | -- | -- | `F12`, `Ctrl+F12`, `Ctrl+Shift+F12` | Word's function-key trio; free in both; aliases only (rule 5) |
 | Go to Bookmark dialog alias | -- | -- | `Ctrl+Shift+F5` | Word's bookmark key; free in both; alias for row 3.5's list |
 | Body Text | `Ctrl+Alt+0` | (none) | `Ctrl+Alt+0` | Word uses `Ctrl+Shift+N`, which Notepad and Lite spend on a new document; the ladder's zero is the family key. QUILL gains the command **(new)** |
-| Thesaurus | (none) | `Shift+F7` | `Shift+F7` | Word's key; QUILL already right. Lite's `Shift+F7` moves (3.6) and stays **unbound** so the habit does nothing rather than something else |
 
 ### 3.2 Destructive overlaps (rule 4)
 
 | Chord | QuillLite | QUILL | Golden | Moves |
 | --- | --- | --- | --- | --- |
-| `Ctrl+Shift+1`..`9` | Set Bookmark N | Paste tray slot N | **Set Bookmark N** in both | Bookmarks will exist in both (4.1); numbered tray paste is QUILL-only (5.1), so it moves to `Ctrl+Alt+Shift+1`..`9`,`0`,`-`,`=`. Radio favourites vacate the *editor* keymap for Quill Radio's own `APP_KEYMAPS` (rule 7); the multi-press peek/dialog dispatcher moves with the paste chords |
-| `Alt+F7` | Add Word to Dictionary | Spelling for This Word | **Next Misspelling** (Word's key) | Neither habit can do harm: Spelling for This Word -> `Alt+Shift+F7` in both, Add Word -> `Ctrl+Alt+F9` in both (3.6) |
 | `Ctrl+Alt+T` | Trim Trailing Spaces | Insert Table | **divergent, on purpose** | Decided 2026-09-16: Insert Table keeps `Ctrl+Alt+T` in QUILL (an authorized x.md authoring chord for a verb that builds structure), and QUILL's Trim Trailing Spaces takes another chord. The one row in 3.2 that does not converge; it goes in the gate's exception table with this reason |
 
 ### 3.3 The structural selection family (one decision, six chords)
@@ -231,8 +223,6 @@ Rule 6 and rule 3 both say QuillLite's win.
 | Select Word | `Ctrl+Shift+W` | `Ctrl+Alt+W` | `Ctrl+Shift+W` | freed by Document Statistics (3.1) |
 | Select Line | `Ctrl+Shift+E` | `Ctrl+Alt+E` | `Ctrl+Shift+E` | `insert_equation` -> `Ctrl+Alt+=` (free in both) |
 | Select Sentence | `Ctrl+Space` | `select_chunk` (a run of one character class) | `Ctrl+Space` = **Select Sentence** | QUILL gains sentence selection from the shared `sentence_span` **(new)**; `select_chunk` **moves rather than retires** -- it is renamed Select Token and rebound. See 5.3a: it duplicates Select Word on words and is the only way to select a run of punctuation or whitespace |
-| Select Paragraph | `Ctrl+Shift+H` | `Ctrl+Alt+Shift+P` | `Ctrl+Shift+H` | see 3.2 |
-| Select Block | `Ctrl+Alt+Shift+B` | `Ctrl+Shift+B` | `Ctrl+Alt+Shift+B` | `Ctrl+Shift+B` goes to Set Bookmark (3.5) |
 | Expand Selection | `Ctrl+Shift+X` | leader `J` | `Ctrl+Shift+X` | `exchange_point_mark` -> `Ctrl+Alt+X` (Lite's) |
 | Shrink Selection | `Ctrl+Alt+Shift+X` | leader `Shift+J` | `Ctrl+Alt+Shift+X` | free in QUILL |
 | Set Mark | `Ctrl+Alt+Shift+K` | `Ctrl+Shift+M` | `Ctrl+Shift+M` | rule 3: Set Mark is an editing-loop verb; Lite's Switch Document Mode -> `Alt+Shift+F` in both (free in both; QUILL's leaves leader `K`) |
@@ -261,24 +251,16 @@ Rule 6 and rule 3 both say QuillLite's win.
 | Next / Previous Heading | `Ctrl+Alt+H` / `Ctrl+Alt+Shift+H` | no key | same | `horizontal_rule` -> `Ctrl+Alt+-` (free in both); `ai_thesaurus` vacates. `next_structure`/`previous_structure` (`Alt+Up/Down`) stay: they walk every block, not only headings |
 | List Headings | `Ctrl+Alt+L` | `outline_navigator` `Ctrl+Shift+O` | both | alias (rule 5) |
 | Go To Anything | `Ctrl+Alt+Shift+A` | leader `G`; `quick_nav` unbound | `Ctrl+Alt+Shift+A` | favourite folders (`Ctrl+Alt+Shift+O/A/R`) -> leader after reclaim (5.9); `quick_nav` and `go_to_anything` become one command |
-| Set Bookmark | `Ctrl+Shift+B` | no key | `Ctrl+Shift+B` | `select_block` moves (3.3). Note the `markdown-helpers` Quillin also claims `Ctrl+Shift+B` (7.4) |
 | Go to Bookmark... (list) | `Alt+Shift+G` | `Alt+Shift+B` | `Alt+Shift+G` + `Ctrl+Shift+F5` alias | `previous_inline_note` -> `Alt+Shift+K`; `Alt+Shift+B` becomes Status Bar (3.8) |
-| Next / Previous Bookmark | `F2` / `Shift+F2` | `list_studio` / `insert_special_character` | `F2` / `Shift+F2` | `list_studio` -> `Ctrl+Alt+Shift+L` (folds moved in 3.1); Special Character -> `Ctrl+Shift+F2` (Lite's, free in QUILL) |
-| Clear All Bookmarks | `Ctrl+Alt+B` | (none) | `Ctrl+Alt+B` | freed by Bullets (3.1) |
 | Set Bookmark 1..9 | `Ctrl+Shift+N` | tray paste | `Ctrl+Shift+N` | 3.2 |
 | Go to Bookmark N | -- | -- | (no chord) | Lite can *set* by number but only *go* by list or `F2`. `Alt+Shift+1..9` is taken by Lite's Recent File N, so no chord family: the list's rows begin with the digit, so digit then Enter is two keys and no new binding |
 | Recent File 1..9 | `Alt+Shift+1`..`9` | (none) | `Alt+Shift+1`..`9` | QUILL gains the nine commands **(new)**; free |
-| Temp bookmark set / go | -- | `Ctrl+J` / `Ctrl+Shift+J` | `Ctrl+Alt+J` / `Ctrl+Shift+J` | QUILL-only; candidate for retirement once numbered bookmarks land |
 
 ### 3.6 Spelling
 
 | Command | QuillLite | QUILL | Golden | Moves |
 | --- | --- | --- | --- | --- |
-| Check Spelling | `F7` | `F7` | `F7` | -- |
 | Thesaurus | (none) | `Shift+F7` | `Shift+F7` | Word's key; Lite leaves it unbound |
-| Next / Previous Misspelling | `Ctrl+F7` / `Ctrl+Shift+F7` | same | same, plus **`Alt+F7` = Next** as Word's alias in both | The two destructive-by-habit chords become navigation: QUILL's word-at-cursor and Lite's Add Word both leave `Alt+F7` |
-| Spelling for This Word | `Shift+F7` | `Alt+F7` | `Alt+Shift+F7` | both move; QUILL's `spell_check_ranked` (today on `Alt+Shift+F7`) becomes a "ranked" option in the F7 dialog |
-| Add Word to Dictionary | `Alt+F7` | no command in keymap | `Ctrl+Alt+F9` | deliberately **off the F7 row**, so no spelling habit lands on a command that changes a setting; QUILL registers the command over `_add_word_to_dictionary_scope`; both announce which dictionary the word went to |
 | Check While Typing | `Ctrl+Alt+F7` | `toggle_spellcheck_as_you_type` no key | `Ctrl+Alt+F7` | free in QUILL; Lite unchanged |
 | Spelling Announcements | `Ctrl+Alt+Shift+F7` | Settings rows only | `Ctrl+Alt+Shift+F7` | free in QUILL; Lite unchanged |
 
@@ -313,7 +295,6 @@ Rule 6 and rule 3 both say QuillLite's win.
 | Status Bar (show/hide) | `Alt+Shift+B` | (no command, no setting) | `Alt+Shift+B` | QUILL gains it **(new)**; `list_bookmarks` moves (3.5) |
 | Focus the status bar | `F6` | `F6` next region | `F6` | see 5.6: QUILL's `F6` already lands in the status bar when it is the next region; the plan makes the status bar the *first* stop from the editor in both |
 | Switch Document Mode | `Ctrl+Shift+M` | leader `K` | `Alt+Shift+F` | 3.3 |
-| Preview | -- | `Ctrl+Shift+V` | `Alt+Shift+V` | 3.2 |
 | Reveal Codes | -- | `Alt+F3` | `Alt+F3` | QUILL-only, no collision; documented divergence (Lite declined it in its PRD) |
 
 ### 3.9 Documented divergences (rule 11)
@@ -372,12 +353,10 @@ in this plan sits.
 | Character Details | `lite_window_special_character.py` | command beside Describe Character |
 | Paste Everything Collected / Clear the Collector | `lite_window_clipboard.py` | two commands over the existing `clipboard_collector` core |
 | Copy to Tray, next empty slot -- as a *bound* command | `copy_to_next_slot` is registered in QUILL and keyless | a key (3.7) |
-| Add Word to Dictionary as a command | `_add_word_to_dictionary_scope` reachable only from the context menu | registered command with a key (3.6) |
 | Spelling Announcements (spell aloud after a delay, on navigation, suggestions) | `lite_spelling_voice_dialog.py`, `lite_check.py` | **verify** in the spelling audit (section 6) whether QUILL has the feature; if not, the engine moves to `quill/core` and QUILL gets the dialog |
 | New Rich Text / New Plain Text Document | `lite_window_file.py` | two commands; QUILL's `default_new_document_format` setting already knows the kinds |
 | Keyboard Shortcuts window on `Ctrl+F1`, About on `Shift+F1`, Check for Updates on `Ctrl+Alt+U` | Lite table | keys (3.7) |
 | Feature profiles named after what a person wants ("Notepad", "WordPad") that also set the default document kind | `quill/core/lite/features.py` | see 5.8, the grow-up profile |
-| Alignment **registered**, not alignment *added* | `format_align` in `main_frame_format_codes.py` already did all four, in rich and Markdown | **Corrected 2026-09-16, and landed.** The first pass said QUILL lacked Align Left/Centre/Right. It did not: they were in the Format > Align submenu and were never registered commands, so they had no key, no palette entry, no keyboard-reference row and no way to be rebound -- the same shape as Underline's hard-coded `Ctrl+U`. Registering them was the whole fix |
 | **Editor font, font for selection, and text size** | `lite_window_view.py`, `lite_window_format.py`, `lite_window_theme.py` | the whole of 4.3 -- this is the one that is P0, not P1 |
 
 ### 4.2 QUILL has it, QuillLite should take it
@@ -634,14 +613,9 @@ keeps its behaviour, loses `Ctrl+Space` to Select Sentence, and is renamed
 **Select Token** -- because "chunk" describes the implementation and "token"
 describes what a person gets.
 
-**Temporary bookmark: still the weak one, but decide it later.** `Ctrl+J` set,
-`Ctrl+Shift+J` go, one unnamed slot per document, not persisted, no list. Once
-nine persistent numbered bookmarks exist with `F2`/`Shift+F2` to walk them, its
-only remaining claim is "one key, no list, no commitment" -- a pin you drop and
-forget rather than a bookmark you keep. That is a real habit for some people
-and it costs two keymap rows. It must leave `Ctrl+J` regardless, because that
-is Word's Justify. Whether it then earns `Ctrl+Alt+J` is a question worth
-asking a user, not one worth answering from the source.
+**Temporary bookmark:** moved to `Ctrl+Alt+J` so Justify could have Word's key.
+Whether it still earns a chord now nine persistent numbered bookmarks exist is a
+question for a user, not for the source (P3.1).
 
 ### 5.4 Go To
 
@@ -734,11 +708,11 @@ Engine: one and shared (`quill.core.spellcheck`, `quill.core.spelling.*`, `Spell
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| S1 | Broken | Lite | **F7's "Add to Dictionary" writes into QUILL's data folder**, not QuillLite's: `ReviewSession.add_to_dict` passes no `personal_dir`, so a Lite-only machine grows `%APPDATA%\Quill`, the word is flagged again next session unless `share_quill_dictionary` is on, and the completion line cannot say where it went. `Alt+F7` and the context menu write to the right place. | `quill/core/spelling/session.py:230-238`, `spellcheck.py:731-733`, `lite_window_spelling.py:356-366` |
+| S1 | Broken | Lite | **F7's "Add to Dictionary" writes into QUILL's data folder**, not QuillLite's: `ReviewSession.add_to_dict` passes no `personal_dir`, so a Lite-only machine grows `%APPDATA%\Quill`, the word is flagged again next session unless `share_quill_dictionary` is on, and the completion line cannot say where it went. QUILL's wording is fixed; QuillLite's wrong-folder write is not. `Alt+F7` and the context menu write to the right place. | `quill/core/spelling/session.py:230-238`, `spellcheck.py:731-733`, `lite_window_spelling.py:356-366` |
 | S2 | Broken | QUILL | **The as-you-type alert is spoken even when `spelling_alert_speech` is off**, and twice when it is on: `_announce_spellcheck_hint` goes through `_set_status`, which always announces. Lite's status write is silent, so the same setting means opposite things in the two editors. | `main_frame_spell_voice.py:351-355`, `main_frame_statusbar.py:938-949`, `lite_window_status.py:440-448` |
 | S3 | Broken | QUILL | **"Ignore" in Spelling for This Word writes the document sidecar** (a permanent `.quill-dict.json`), not a session ignore; on an unsaved document the write silently does nothing and the command still announces `Added "word" to dictionary`. | `main_frame_spellcheck.py:543-545, 697-698`; `spellcheck.py:658-660, 734-736` |
 | S4 | Worse | both | **Word boundaries are ASCII in the tokenizer and Unicode in the walk-left**: `cafe` with an accent is flagged as `caf`, `naive` with a diaeresis as `na` and `ve`, `dogs'` keeps its apostrophe, and a curly apostrophe splits `don't`. The same word is silent on one path and flagged on another. | `spellcheck.py:67, 514-520, 574-575`; `spelling/voicing.py:103-118` already expects the token the tokenizer cannot produce |
-| S5 | Worse | both | **The caret just past a word is "no word"**: `misspelling_at_position` needs `start <= pos < end`, and the caret sits at `end` right after typing. The context menus retry at `pos - 1`; the four keyboard commands do not. | `spellcheck.py:566`; `lite_window_spelling.py:391-396, 500-505`; `main_frame_spellcheck.py:513-522` |
+| S5 | Worse | both | **The caret just past a word is "no word"**: `misspelling_at_position` needs `start <= pos < end`, and the caret sits at `end` right after typing. The context menus retry at `pos - 1`, and so does Add Word via `_word_at_caret_for_spelling`; the other four keyboard commands do not. | `spellcheck.py:566`; `lite_window_spelling.py:391-396, 500-505`; `main_frame_spellcheck.py:513-522` |
 | S6 | Worse | both | **F7 ignores session ignores** in both editors: `ReviewSession` is built without the `IgnoreList` that live check, `Ctrl+F7` and word-at-cursor honour. Lite's docstring claims "every route". | `main_frame_spellcheck.py:169-175`, `spell_review.py:411-416`, `lite_window_spelling.py:49-57` |
 | S7 | Worse | both | **Dead settings**: `spell_aloud_delay_ms` is never read (every caller passes its own delay); Lite's "spell misspelled words out letter by letter" does not switch off spelling inside F7 (no `spell_review_spell_word` field); `spell_review_wrap_to_beginning` and `announce_wrap_prompt` have no callers; `_choose_misspelling_with_context` and `_spell_word_for_speech` are dead code carrying a second spelling engine. | `settings_specs.py:2447`, `lite_spelling_voice_dialog.py:283-295`, `announcements.py:50-52, 133, 179, 200`, `main_frame_spellcheck.py:219-365` |
 | S8 | Worse | Lite | **Timers outlive the window**: `stop_timers` stops autosave and status only; `_spell_timer` and the pending spell-aloud `CallLater` fire on a destroyed frame (swallowed by a bare except). `check_spelling_at_caret` marshals `GetValue()` out of the RichEdit on every navigation key-up, O(N) per arrow press on a large file; QUILL reuses the document string. | `lite_window_file.py:243-249`, `lite_window_spelling.py:172-180, 200, 303`, `main_frame_typing.py:115-122` |
@@ -961,21 +935,11 @@ Lite's Remove Every Blank Line). Golden: one command id per verb; a Quillin may
 
 ### 7.2 Keys outside the keymap
 
-**Ctrl+K: fixed 2026-09-16, and there were three of them, not one.** The first
-pass named `_on_editor_char_hook`. A grep for `self.insert_link()` found the
-same hard-coded key code in three separate handlers -- the editor char hook, the
-frame-level hook and the editor key-down handler -- each an undocumented second
-binding beside the keymap's, invisible to the Keyboard Manager, the generated
-reference and the Key Describer, and deaf to a rebinding. All three now call
-`_run_chord_through_registry("Ctrl+K")`, which asks the registry what the chord
-is bound to and runs that, so the hooks deliver a chord rather than deciding
-what it means. A test asserts `self.insert_link()` never returns to that file.
-
-**Still open: rich-mode `Ctrl+B/I/U`.** The same hook binds those three by key
-code in rich mode (`main_frame.py`), for the same good reason -- the native
-RichEdit would otherwise eat them silently -- and with the same defect. They
-should go through `_run_chord_through_registry` too; the helper is written and
-the change is three lines (P1).
+Rich-mode `Ctrl+B/I/U` are still bound by key code in `_on_editor_char_hook`,
+for the good reason that the native RichEdit would otherwise eat them silently
+-- and with the bad consequence that they are a second binding the keymap
+cannot see or change. `_run_chord_through_registry` exists now, so the change
+is three lines (P1).
 
 ### 7.3 Keymap profile snapshots
 
@@ -1055,7 +1019,6 @@ way:
 
 | # | Item | Editors | Cost | Done when |
 | --- | --- | --- | --- | --- |
-| P0.3 | `Alt+F7` = Next Misspelling in both; Spelling for This Word -> `Alt+Shift+F7`; Add Word -> `Ctrl+Alt+F9` as a registered QUILL command that says which dictionary it wrote to | both | S | pressing `Alt+F7` never teaches the dictionary in either editor |
 | **P0.6a** | **An editor font, a font size, and text size in/out/reset in QUILL** (4.3): two settings, `SetFont` on the editor, three commands on Notepad's `Ctrl+=` / `Ctrl+-` / `Ctrl+0`, a Format menu item that says **Font...**, and `format.font_dialog` made to work on a rich selection instead of refusing outside Markdown | QUILL | M | a low-vision user can make QUILL's text bigger; a rich selection's font can be changed; the rich kind zooms rather than re-levelling headings (5.5) |
 | **P0.6b** | **A large-file guard in QuillLite** (V1): move `quill/ui/large_file_guard.py` to shared, size the file before reading, warn once, open deliberately | Lite | S | a 200 MB log announces its size and opens on purpose or not at all |
 | **P0.6c** | **`DocumentText` in core** (V2-V4, T1, S8): the Python-side mirror, a revision counter, cached stats and `line_column_for_position`, and the rule that display code reads it and never the control. Lite's status bar, live spell check, heading cue and autoformat all move onto it | both | M | holding Down for five seconds in a 50 MB file costs Lite no more than 20% over QUILL, and no status refresh runs more than once per 250 ms |

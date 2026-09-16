@@ -148,7 +148,6 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "tools.list_folds": "core.navigate",
     "tools.word_count": "core.analysis",
     "tools.spell_check_dialog": "core.spellcheck",
-    "tools.spell_check_ranked": "core.spellcheck",
     "tools.spell_check_word_at_cursor": "core.spellcheck",
     "tools.next_misspelling": "core.spellcheck",
     "tools.misspelling_list": "core.spellcheck",

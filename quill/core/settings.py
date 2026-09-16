@@ -676,6 +676,11 @@ class Settings:
     spell_review_spell_word_pause_ms: int = 800
     spell_review_wrap_to_beginning: bool = True
     spell_review_context_mode: str = "sentence"
+    # Kurzweil-1000-style ranked spelling: walk the review by how often each
+    # word recurs rather than by position. It was a second command on a
+    # second chord until 2026-09-16 (bad.md P0.3); it is the F7 dialog's own
+    # checkbox now, and this is where the choice is remembered.
+    spell_review_ranked: bool = False
     # How a misspelling is *said*, everywhere it is said (quill/core/spelling/
     # voicing.py). The two spell_review_* fields above are the review dialog's
     # own switch and pause and stay as they are; these govern the surfaces the
@@ -1796,6 +1801,7 @@ class Settings:
             braille_include_running_head=braille_include_running_head,
             braille_include_continuation=braille_include_continuation,
             spell_review_verbosity=spell_review_verbosity,
+            spell_review_ranked=bool(data.get("spell_review_ranked", False)),
             spell_review_spell_word=spell_review_spell_word,
             spell_review_spell_word_pause_ms=spell_review_spell_word_pause_ms,
             spell_review_wrap_to_beginning=spell_review_wrap_to_beginning,

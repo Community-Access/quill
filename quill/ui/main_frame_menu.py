@@ -1552,7 +1552,6 @@ class MenuBuilderMixin:
         self._id_quill_eraser = wx.NewIdRef()
         self._id_quill_eraser_selection = wx.NewIdRef()
         self._id_spell_check = wx.NewIdRef()
-        self._id_spell_check_ranked = wx.NewIdRef()
         self._id_spell_check_word = wx.NewIdRef()
         self._id_previous_misspelling = wx.NewIdRef()
         self._id_next_misspelling = wx.NewIdRef()
@@ -2030,12 +2029,6 @@ class MenuBuilderMixin:
         writing_menu.Append(
             self._id_spell_check,
             self._menu_label(_("&Spell Check..."), "tools.spell_check_dialog"),
-        )
-        writing_menu.Append(
-            self._id_spell_check_ranked,
-            self._menu_label(
-                _("Spell Check (&Ranked by Frequency)..."), "tools.spell_check_ranked"
-            ),
         )
         writing_menu.Append(
             self._id_spell_check_word,

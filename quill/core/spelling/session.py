@@ -75,6 +75,29 @@ class ReviewSession:
         self._current_idx: int = 0
         self._rescan(advance_past=None)
 
+    def set_ranked(self, ranked: bool) -> None:
+        """Re-order the remaining issues, mid-review, without losing progress.
+
+        Ranked and document order were two commands opening the same dialog
+        until 2026-09-16 -- ``_open_spelling_review(ranked=False/True)`` --
+        which is one verb registered twice, the shape that already let
+        ``keep_unique_lines`` and ``blockquote`` drift from their twins
+        (bad.md 7.1). It is now a checkbox, and a checkbox has to work while
+        the dialog is open.
+
+        Cheap because ``_rescan`` already re-applies the ordering after every
+        action, so the ranking cannot go stale mid-session; flipping the flag
+        and re-scanning is the whole change. Counters, session ignores and the
+        undo stack are untouched: what was corrected stays corrected.
+        """
+        if bool(ranked) == self._ranked:
+            return
+        self._ranked = bool(ranked)
+        self._rescan(advance_past=None)
+
+    def is_ranked(self) -> bool:
+        return self._ranked
+
     # ------------------------------------------------------------------
     # Public read API
     # ------------------------------------------------------------------
