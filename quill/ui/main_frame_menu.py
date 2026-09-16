@@ -1069,7 +1069,6 @@ class MenuBuilderMixin:
         self._id_format_bold = wx.NewIdRef()
         self._id_format_italic = wx.NewIdRef()
         self._id_format_underline = wx.NewIdRef()
-        self._id_format_justify = wx.NewIdRef()
         self._id_format_grow_font = wx.NewIdRef()
         self._id_format_shrink_font = wx.NewIdRef()
         self._id_format_spacing_single = wx.NewIdRef()
@@ -1142,9 +1141,6 @@ class MenuBuilderMixin:
         # Paragraph and run formatting the editor was missing until QuillLite
         # needed it. Every label goes through _menu_label so it advertises
         # whatever is actually bound, and follows a rebinding.
-        format_menu.Append(
-            self._id_format_justify, self._menu_label(_("&Justify"), "format.justify")
-        )
         # Grow/Shrink Font and the three keyed line spacings used to sit here,
         # flat, beside the submenus holding the same two concepts. They are now
         # inside them (see build_format_codes_submenus and PRD 8.14a).

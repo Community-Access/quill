@@ -170,7 +170,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.set_numbered_bookmark_9": "Ctrl+Shift+9",
     # #1317: re-registered after the historical Ctrl+Shift+K / Alt+Shift+K went
     # to Unquote Lines (#608) and Keep Unique Lines (§4.22). J = jump point.
-    "navigate.set_temp_bookmark": "Ctrl+J",
+    # Ctrl+J is Word's Justify and QuillLite's, so the temporary bookmark
+    # takes the chord Justify vacates. Go To keeps Ctrl+Shift+J: it is the
+    # pair's second half and nothing else wants it (bad.md 3.1).
+    "navigate.set_temp_bookmark": "Ctrl+Alt+J",
     "navigate.go_to_temp_bookmark": "Ctrl+Shift+J",
     # support#67: bare Alt+Q is a macOS Option deadkey -- disable on darwin
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
@@ -245,7 +248,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "podcasts.player_information": "",
     # Sound Enhancements: both standalone apps use Ctrl+E, so in full QUILL --
     # which has both players -- one key follows whatever is playing.
-    "media.sound_enhancements": "Ctrl+E",
+    # Was Ctrl+E until 2026-09-16, which is Centre in Word, WordPad and
+    # QuillLite. Media lives on the leader digits (rule 7), and this joins
+    # them rather than holding a plain letter an editing verb needs.
+    "media.sound_enhancements": "Ctrl+Shift+Grave, 1",
     "radio.sound_enhancements": "",
     "podcasts.sound_enhancements": "",
     # My Notes in This Episode: your notes for whatever is playing. Unbound by
@@ -337,8 +343,20 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # sits in File > Import > Batch Conversion... and File > Export >
     # Batch Conversion... (one in each, both invoking the same wizard).
     "file.batch_conversion": "Ctrl+Shift+Grave, B",
-    "edit.replace_all": "Ctrl+Shift+H",
-    "edit.insert_link": "Ctrl+Alt+K",  # §edsharp-ok — authoring chord (x.md)
+    # Ctrl+Shift+H is Select Paragraph in QuillLite, so the same reflex that
+    # selected a paragraph there ran a document-wide Replace All here --
+    # rule 4 of bad.md, destructive habits first, and the reason this was
+    # P0. Replace All keeps a key rather than losing one: the leader's X
+    # was freed when the Copy Tray took QuillLite's Ctrl+Alt+V. Ctrl+H
+    # still opens the Replace dialog, which is where most people start.
+    "edit.replace_all": "Ctrl+Shift+Grave, X",
+    # Word's Insert Hyperlink key, and the chord QUILL has ALREADY answered
+    # since the char hook hard-coded it by key code (main_frame.py). That
+    # binding was invisible to the keymap editor, the keyboard reference and
+    # the Key Describer, and could not be rebound; this makes it real. The
+    # x.md authoring chord moves by explicit authorization (2026-09-16) and
+    # becomes QuillLite's Remove Every Blank Line (bad.md 3.1, 3.2, P0.6).
+    "edit.insert_link": "Ctrl+K",
     "edit.insert_equation": "Ctrl+Shift+E",  # #1197 — math authoring chord
     # #1304: both ship unbound. The QUILL-key namespace has no free letter left,
     # and taking one from an existing command would cost a binding people already
@@ -354,7 +372,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.select_chunk": "Cmd+Alt+Space"
     if sys.platform == "darwin"
     else "Ctrl+Space",  # §4.22 advanced-editor parity
-    "view.preview": "Ctrl+Shift+V",
+    # Ctrl+Shift+V is Paste Without Formatting in Word 365, Notepad, every
+    # browser and QuillLite -- so a Lite user reaching to paste plain text
+    # in QUILL opened a preview pane instead. Preview is QUILL-only and
+    # moves (bad.md 3.2, P0.4).
+    "view.preview": "Alt+Shift+V",
     "view.browser_preview": "Ctrl+Shift+Grave, V",  # §10.8.2: QUILL-key chord
     # Ctrl+Alt+backslash, written as itself (2026-09-09): two faults in one
     # binding, the second hidden behind the first. wx has no name for this key,
@@ -383,7 +405,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "edit.list_marks": "" if sys.platform == "darwin" else "Alt+M",
     # §10.8's Ctrl+Alt+P avoidance is reversed; QuillLite binds all three.
-    "edit.select_paragraph": "Ctrl+Alt+Shift+P",  # §edsharp-ok — authoring chord
+    # QuillLite's chord, three keys rather than four, for a verb used in the
+    # editing loop. The authoring chord moves by explicit authorization
+    # (2026-09-16); Ctrl+Alt+Shift+P is now free (bad.md 3.3, P0.5).
+    "edit.select_paragraph": "Ctrl+Shift+H",
     "edit.select_word": "Ctrl+Alt+W",  # §edsharp-ok — authoring chord
     "edit.select_line": "Ctrl+Alt+E",  # §edsharp-ok — authoring chord
     # QuillLite's chord for the same command, and Ctrl+Shift+B is Set
@@ -491,7 +516,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # binding somebody's hands already know is not something a new command gets
     # to take. Ctrl+Alt+J instead, and the divergence is recorded rather than
     # hidden -- the two products differ here on purpose.
-    "format.justify": "Ctrl+Alt+J",  # §edsharp-ok — authoring chord (x.md)
+    # Word's four alignment keys, and QuillLite's. QUILL had Justify alone,
+    # on the x.md authoring chord Ctrl+Alt+J -- so the one alignment it had
+    # was on the one key no other editor uses for it, and the three it did
+    # not have were on keys standing empty. The authoring chord moves by
+    # explicit authorization (2026-09-16); it is now the temporary
+    # bookmark's, which is what Ctrl+J used to be (bad.md 3.1, P0.2).
+    "format.align_left": "Ctrl+L",
+    "format.align_center": "Ctrl+E",
+    "format.align_right": "Ctrl+R",
+    "format.justify": "Ctrl+J",
     "format.line_spacing_single": "Ctrl+1",
     "format.line_spacing_one_and_a_half": "Ctrl+5",
     "format.line_spacing_double": "Ctrl+2",
@@ -499,7 +533,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.shrink_font": "Ctrl+Shift+,",
     # Ctrl+Shift+V is Preview here, so plain paste takes Ctrl+Alt+V. Same
     # reasoning: an existing binding wins over a new command's convention.
-    "edit.paste_plain_text": "Ctrl+Alt+V",  # §edsharp-ok — authoring chord (x.md)
+    # The x.md authoring chord moves by explicit authorization (2026-09-16):
+    # Ctrl+Alt+V is Paste from Tray in QuillLite, and the tray chooser takes
+    # it here too.
+    "edit.paste_plain_text": "Ctrl+Shift+V",
     "format.toggle_numbered_list": "Ctrl+Alt+N",  # §edsharp-ok — authoring chord (x.md)
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
     "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown
@@ -622,6 +659,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.insert_emoji": "Alt+.",  # Accessible Emoji Picker
     "power.number_lines": "Alt+Shift+N",  # §4.22 Number Items parity
     "power.trim_blank_lines": "Ctrl+Shift+Enter",  # §4.22 Trim Blanks parity
+    # QuillLite's two whitespace verbs, on QuillLite's chords where the
+    # chord was free. Remove Every Blank Line takes Ctrl+Alt+K, freed by
+    # Insert Link moving to Word's Ctrl+K. Trim Trailing Spaces CANNOT take
+    # QuillLite's Ctrl+Alt+T, which is Insert Table here -- an authorized
+    # x.md authoring chord for a verb that builds structure, deliberately
+    # kept over one that strips whitespace (decided 2026-09-16). That is a
+    # documented divergence, the only one in bad.md 3.2 that does not
+    # converge, and it is in the parity gate's exception table.
+    "power.remove_blank_lines": "Ctrl+Alt+K",
+    "edit.trim_trailing_whitespace": "Ctrl+Alt+R",
     "power.keep_unique_lines": "Alt+Shift+K",  # §4.22 Keep Unique parity
     "quill.quick_nav.heading": "H",
     "quill.quick_nav.link": "A",
@@ -669,7 +716,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Copy:  QUILL+Shift+N for same key positions (Shift+digit/symbol).
     # QUILL+1-6 (bare) are heading shortcuts; Shift variants are distinct.
     # Open tray dialog: QUILL+X.
-    "edit.open_copy_tray": "Ctrl+Shift+Grave, X",
+    # QuillLite's Paste from Tray chord. It was a leader chord here, which
+    # is a two-stroke route to the tray's only overview (bad.md 5.1, P0.4).
+    "edit.open_copy_tray": "Ctrl+Alt+V",
     "edit.clear_all_tray_slots": "",
     "edit.copy_to_next_slot": "",
     "edit.search_tray_slots": "",

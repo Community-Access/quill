@@ -2044,6 +2044,25 @@ class MainFrame(
         # three routes reach them. These events fire for all three.
         self.bind_clipboard_cues(editor)
 
+    def _run_chord_through_registry(self, chord: str) -> bool:
+        """Run whatever *chord* is bound to right now. ``True`` when something ran.
+
+        Three key handlers had to see Ctrl+K before the native control ate it,
+        and all three called ``insert_link`` by name -- a second, undocumented
+        binding beside the keymap's, invisible to the Keyboard Manager, the
+        generated keyboard reference and the Key Describer, and deaf to a
+        rebinding (bad.md 7.2, which recorded one site and there were three).
+        Asking the registry what the chord means keeps the hooks a delivery
+        mechanism rather than a second source of truth.
+        """
+        wanted = chord.replace(" ", "").lower()
+        for command in self.commands.list():
+            binding = command.keybinding
+            if binding and binding.replace(" ", "").lower() == wanted:
+                self.commands.run(command.id)
+                return True
+        return False
+
     def _on_editor_char_hook(self, event: object) -> None:
         wx = self._wx
         if self._maybe_describe_key(event):
@@ -2053,8 +2072,8 @@ class MainFrame(
             and not event.AltDown()
             and not event.ShiftDown()
             and event.GetKeyCode() in (ord("K"), ord("k"), 11)
+            and self._run_chord_through_registry("Ctrl+K")
         ):
-            self.insert_link()
             return
         # Rich mode: the native RichEdit handles Ctrl+B/I/U itself, silently.
         # Route them through QUILL's commands instead so formatting is
@@ -2278,8 +2297,8 @@ class MainFrame(
             and not event.ShiftDown()
             and key_code in (ord("K"), ord("k"), 11)
             and self._active_tab() is not None
+            and self._run_chord_through_registry("Ctrl+K")
         ):
-            self.insert_link()
             return
         # Ctrl-W closes the side preview unconditionally — even when the WebView
         # holds native focus.  WebView2 captures its own keyboard events and does
@@ -2564,8 +2583,8 @@ class MainFrame(
             and not event.AltDown()
             and not event.ShiftDown()
             and event.GetKeyCode() in (ord("K"), ord("k"), 11)
+            and self._run_chord_through_registry("Ctrl+K")
         ):
-            self.insert_link()
             return
         if event.ControlDown() and event.ShiftDown() and event.GetKeyCode() in (ord("O"), ord("o")):
             self.open_outline_navigator()

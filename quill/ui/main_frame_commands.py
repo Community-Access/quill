@@ -1967,11 +1967,26 @@ class CommandRegistryMixin:
         # Paragraph and run formatting that arrived through QuillLite. The
         # capability was always in the Rich Edit surface; nothing was bound to
         # it, so the editor could not do what its own small sibling could.
+        # Alignment was never missing from QUILL -- format_align has handled all
+        # four since the hidden-codes work, in rich text AND Markdown. What was
+        # missing is that only Justify was a registered command: the other three
+        # lived in the Format > Align submenu and nowhere else, so they had no
+        # key, no palette entry and no row in the keyboard reference, and could
+        # not be rebound (bad.md 4.1, P0.2 -- the same shape as Underline's
+        # hard-coded Ctrl+U).
+        for _command_id, _title, _how in (
+            ("format.align_left", "Align Left", "left"),
+            ("format.align_center", "Centre", "center"),
+            ("format.align_right", "Align Right", "right"),
+        ):
+            self.commands.register(
+                _command_id,
+                _title,
+                (lambda how=_how: self.format_align(how)),
+                self._binding_for(_command_id),
+            )
         self.commands.register(
-            "format.justify",
-            "Justify",
-            self.format_justify,
-            self._binding_for("format.justify"),
+            "format.justify", "Justify", self.format_justify, self._binding_for("format.justify")
         )
         self.commands.register(
             "format.line_spacing_single",
@@ -2301,7 +2316,7 @@ class CommandRegistryMixin:
             "edit.trim_trailing_whitespace",
             "Trim Trailing Whitespace",
             self.trim_trailing_whitespace,
-            None,
+            self._binding_for("edit.trim_trailing_whitespace"),
         )
         self.commands.register(
             "edit.normalize_whitespace",
@@ -2620,7 +2635,14 @@ class CommandRegistryMixin:
             "format.bold": self._id_format_bold,
             "format.italic": self._id_format_italic,
             "format.underline": self._id_format_underline,
-            "format.justify": self._id_format_justify,
+            # All four alignments live in Format > Align, which is the one
+            # place they have ever been. Justify had a second, flat row in
+            # the Format menu until 2026-09-16; once both advertised Ctrl+J
+            # the menu gate caught the double claim.
+            "format.align_left": self._id_align_left,
+            "format.align_center": self._id_align_center,
+            "format.align_right": self._id_align_right,
+            "format.justify": self._id_align_justify,
             "format.grow_font": self._id_format_grow_font,
             "format.shrink_font": self._id_format_shrink_font,
             "format.line_spacing_single": self._id_format_spacing_single,

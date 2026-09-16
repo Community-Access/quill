@@ -93,7 +93,7 @@ Line, heading, structure, bookmark and history -- the movement that makes a two-
    - You should hear: The headings, with their levels.
 
 4. **Drop a bookmark and come back.** Set a temporary bookmark before you go and look at something else, and go back to it when you are done. For places you return to often, named marks are worth learning.
-   - Keys: Ctrl+J
+   - Keys: Ctrl+Alt+J
    - You should hear: Bookmark set -- then, later, the line you left.
 
 5. **Retrace your steps.** Back Location and Forward Location walk your movement history, the way a browser's back button does. It is the answer to where was I before I followed that link.
@@ -218,7 +218,7 @@ Selection that grows by structure rather than by character, marks you can return
    - You should hear: What is now selected, and how much of it.
 
 2. **Select exactly one paragraph or block.** Select Paragraph and Select Block take the unit you mean in one keystroke. Say Selected reads back what you have, which is the check worth making before a destructive edit.
-   - Keys: Ctrl+Alt+Shift+P
+   - Keys: Ctrl+Shift+H
    - You should hear: The paragraph, then its size.
 
 3. **Drop a mark and come back to it.** Set Mark remembers where you are; Exchange Point and Mark jumps between the mark and the cursor, which is how you select across a long distance without holding anything down. Named marks survive for as long as you want them.
@@ -226,7 +226,7 @@ Selection that grows by structure rather than by character, marks you can return
    - You should hear: Mark set -- and, on the exchange, where you landed.
 
 4. **Use more than one clipboard.** The copy tray has twelve slots. Copy to a numbered slot, paste from a numbered slot, or open the tray and search it. It is the answer to gathering five quotes from one document into another without a round trip each time.
-   - Keys: Ctrl+Shift+Grave, X
+   - Keys: Ctrl+Alt+V
    - You should hear: The tray, with what each slot holds.
    - Worth knowing: Clear All Tray Slots asks first and defaults to No, like every destructive question in QUILL.
 
@@ -306,7 +306,7 @@ Headings, lists, emphasis and sections -- and Describe Formatting, which tells y
    - You should hear: Where the section moved to.
 
 7. **Insert the awkward things.** Insert Link, Insert Table, Insert Snippet, Insert Emoji, Insert Special Character and Insert Equation each open a small, keyboard-first window rather than expecting you to type syntax from memory.
-   - Keys: Ctrl+Alt+K
+   - Keys: Ctrl+K
    - You should hear: The window, with focus in its first field.
 
 8. **Decide what Tab does.** By default Tab indents the line and Shift+Tab outdents. If you would rather Tab typed a literal tab character, the Tab Mode chord switches it, the status bar shows which mode you are in, and Shift+Tab still outdents either way.

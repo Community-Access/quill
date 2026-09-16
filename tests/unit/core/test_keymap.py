@@ -315,7 +315,11 @@ def test_indent_shortcuts_are_available() -> None:
 
 
 def test_browser_preview_shortcut_is_available() -> None:
-    assert DEFAULT_KEYMAP["view.preview"] == "Ctrl+Shift+V"
+    # Preview moved off Ctrl+Shift+V on 2026-09-16: that is Paste Without
+    # Formatting in Word 365, Notepad, every browser and QuillLite, so the
+    # chord everybody reaches for to strip a web page's styling was opening a
+    # preview pane instead. Preview is QUILL-only and had no competing claim.
+    assert DEFAULT_KEYMAP["view.preview"] == "Alt+Shift+V"
     assert DEFAULT_KEYMAP["view.browser_preview"] == "Ctrl+Shift+Grave, V"
 
 
@@ -324,7 +328,10 @@ def test_legacy_preview_conflict_migrates_to_in_app_preview() -> None:
         "view.preview": "Ctrl+Shift+P",
         "view.browser_preview": "Ctrl+Shift+V",
     })
-    assert merged["view.preview"] == "Ctrl+Shift+V"
+    # Both stale entries are dropped and the current defaults win. The saved
+    # browser_preview value is now Paste Text Only's chord, which is exactly
+    # the kind of stale override this migration exists to clear.
+    assert merged["view.preview"] == "Alt+Shift+V"
     assert merged["view.browser_preview"] == "Ctrl+Shift+Grave, V"
 
 
@@ -729,10 +736,28 @@ def test_authoring_chords_are_the_defaults() -> None:
       format.toggle_bullet_list  Ctrl+Alt+B -> Ctrl+Shift+L (WordPad's Bullets
                                  key, and QuillLite's; Ctrl+Alt+B is Clear All
                                  Bookmarks in QuillLite and now in QUILL).
+      edit.insert_link           Ctrl+Alt+K -> Ctrl+K (Word's Insert Hyperlink,
+                                 and the chord three key handlers already
+                                 hard-coded outside the keymap; Ctrl+Alt+K is
+                                 Remove Every Blank Line in QuillLite).
+      edit.paste_plain_text      Ctrl+Alt+V -> Ctrl+Shift+V (Word 365, Notepad
+                                 and every browser; Ctrl+Alt+V is Paste from
+                                 Tray in QuillLite).
+      format.justify             Ctrl+Alt+J -> Ctrl+J (Word, WordPad and
+                                 QuillLite all justify there).
+
+    Kept, deliberately: format.insert_table stays on Ctrl+Alt+T, which is Trim
+    Trailing Spaces in QuillLite. An authorized chord for a verb that builds
+    structure outranks one that strips whitespace, so QUILL's trim took
+    Ctrl+Alt+R and that pair is the one documented divergence in bad.md 3.2.
     """
     from quill.core.keymap import DEFAULT_KEYMAP
 
-    assert DEFAULT_KEYMAP["edit.insert_link"] == "Ctrl+Alt+K"
+    assert DEFAULT_KEYMAP["edit.insert_link"] == "Ctrl+K"
+    assert DEFAULT_KEYMAP["power.remove_blank_lines"] == "Ctrl+Alt+K"
+    assert DEFAULT_KEYMAP["edit.paste_plain_text"] == "Ctrl+Shift+V"
+    assert DEFAULT_KEYMAP["format.justify"] == "Ctrl+J"
+    assert DEFAULT_KEYMAP["edit.trim_trailing_whitespace"] == "Ctrl+Alt+R"
     assert DEFAULT_KEYMAP["format.toggle_bullet_list"] == "Ctrl+Shift+L"
     assert DEFAULT_KEYMAP["navigate.clear_numbered_bookmarks"] == "Ctrl+Alt+B"
     assert DEFAULT_KEYMAP["format.toggle_numbered_list"] == "Ctrl+Alt+N"

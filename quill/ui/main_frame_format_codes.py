@@ -109,11 +109,17 @@ class FormatCodesMixin:
         self._id_align_center = wx.NewIdRef()
         self._id_align_right = wx.NewIdRef()
         self._id_align_justify = wx.NewIdRef()
+        # Word's four alignment keys, advertised. These rows carried no key at
+        # all until 2026-09-16 -- the commands were menu-only, so there was
+        # nothing for a label to show. _menu_label means each row now renders
+        # whatever is bound and follows a rebinding.
         align_menu = wx.Menu()
-        align_menu.Append(self._id_align_left, _("&Left"))
-        align_menu.Append(self._id_align_center, _("&Center"))
-        align_menu.Append(self._id_align_right, _("&Right"))
-        align_menu.Append(self._id_align_justify, _("&Justify"))
+        align_menu.Append(self._id_align_left, self._menu_label(_("&Left"), "format.align_left"))
+        align_menu.Append(
+            self._id_align_center, self._menu_label(_("&Center"), "format.align_center")
+        )
+        align_menu.Append(self._id_align_right, self._menu_label(_("&Right"), "format.align_right"))
+        align_menu.Append(self._id_align_justify, self._menu_label(_("&Justify"), "format.justify"))
         format_menu.AppendSubMenu(align_menu, _("&Align"))
 
         self._color_menu_ids: dict[int, tuple[str, str]] = {}

@@ -61,16 +61,16 @@ class RichParagraphMixin:
     # -- alignment ---------------------------------------------------------- #
 
     def format_justify(self) -> None:
-        """Justify the paragraph (rich mode). The fourth alignment, at last."""
-        if not self._feature_enabled("core.format"):
-            self._set_status("Justify is unavailable in this profile")
-            return
-        if self._rich_format_command("set_alignment", "Justified", "justify"):
-            return
-        # Markdown and HTML have no paragraph justification worth inventing, and
-        # a command that silently did nothing would be worse than one that says
-        # where it does work.
-        self._set_status("Justify applies to Rich Text documents")
+        """Justify the paragraph. Word's Ctrl+J since 2026-09-16.
+
+        Delegates to :meth:`format_align` rather than repeating it. The two
+        were separate implementations of one verb until now -- ``format.justify``
+        went through here and the Format > Align submenu's Justify row went
+        through ``format_align("justify")``, which also knows how to write a
+        Markdown alignment div. One of them was better and it was not this one
+        (bad.md 7.1: one verb, one registration).
+        """
+        self.format_align("justify")
 
     # -- lists -------------------------------------------------------------- #
 

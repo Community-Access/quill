@@ -160,7 +160,11 @@ def test_all_three_commands_are_in_the_keymap() -> None:
     they could not be bound at all -- against x.md's own cross-cutting rule."""
     from quill.core.keymap import DEFAULT_KEYMAP
 
-    assert DEFAULT_KEYMAP["media.sound_enhancements"] == "Ctrl+E"
+    # Ctrl+E until 2026-09-16, when it went to Centre -- Word's key, and
+    # QuillLite's. Media transport lives on the leader digits (bad.md rule
+    # 7); the point of this test is that the command is bindable at all,
+    # which a leader chord satisfies as well as a plain one did.
+    assert DEFAULT_KEYMAP["media.sound_enhancements"] == "Ctrl+Shift+Grave, 1"
     assert DEFAULT_KEYMAP["radio.sound_enhancements"] == ""
     assert DEFAULT_KEYMAP["podcasts.sound_enhancements"] == ""
 
@@ -168,5 +172,9 @@ def test_all_three_commands_are_in_the_keymap() -> None:
 def test_ctrl_e_does_not_collide_with_an_existing_binding() -> None:
     from quill.core.keymap import DEFAULT_KEYMAP
 
-    owners = [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+E"]
+    owners = [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+Shift+Grave, 1"]
     assert owners == ["media.sound_enhancements"]
+    # Ctrl+E is Centre now, and only Centre.
+    assert [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+E"] == [
+        "format.align_center"
+    ]

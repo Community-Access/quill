@@ -1158,7 +1158,10 @@ def test_temp_bookmark_commands_are_registered_with_chords_and_a_feature() -> No
     from quill.core.keymap import DEFAULT_KEYMAP
     from quill.core.keymap_packs import _PACK_LABELS
 
-    assert DEFAULT_KEYMAP["navigate.set_temp_bookmark"] == "Ctrl+J"
+    # Ctrl+J went to Justify on 2026-09-16 -- Word's key, WordPad's and
+    # QuillLite's -- and the temporary bookmark took the chord Justify
+    # vacated. Go To keeps Ctrl+Shift+J, so the pair stays a pair.
+    assert DEFAULT_KEYMAP["navigate.set_temp_bookmark"] == "Ctrl+Alt+J"
     assert DEFAULT_KEYMAP["navigate.go_to_temp_bookmark"] == "Ctrl+Shift+J"
     assert _PACK_LABELS["navigate.set_temp_bookmark"] == "Set Temporary Bookmark"
     assert _PACK_LABELS["navigate.go_to_temp_bookmark"] == "Go to Temporary Bookmark"
@@ -1169,10 +1172,12 @@ def test_temp_bookmark_commands_are_registered_with_chords_and_a_feature() -> No
 def test_temp_bookmark_chords_do_not_collide_with_another_default() -> None:
     from quill.core.keymap import DEFAULT_KEYMAP
 
-    owners_ctrl_j = [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+J"]
+    owners = [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+Alt+J"]
     owners_ctrl_shift_j = [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+Shift+J"]
-    assert owners_ctrl_j == ["navigate.set_temp_bookmark"]
+    assert owners == ["navigate.set_temp_bookmark"]
     assert owners_ctrl_shift_j == ["navigate.go_to_temp_bookmark"]
+    # And the chord it gave up is Justify's, alone.
+    assert [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+J"] == ["format.justify"]
 
 
 def test_toggle_fold_folds_then_unfolds_heading_section() -> None:

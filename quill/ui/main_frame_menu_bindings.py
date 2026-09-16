@@ -1270,7 +1270,6 @@ class MenuBindingsMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.format_underline(), id=self._id_format_underline
         )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_justify(), id=self._id_format_justify)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.format_grow_font(), id=self._id_format_grow_font
         )

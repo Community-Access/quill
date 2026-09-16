@@ -176,13 +176,13 @@ def test_round_trip(tmp_path: pytest.TempPathFactory) -> None:
     # uses plain digits instead -- still free, and just as good for exercising
     # the export/import round trip.
     keymap["edit.find_next"] = "Ctrl+Shift+Grave, Z"
-    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, 1"
+    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, 2"
     target = tmp_path / "trip.kqp"
     export_keyboard_pack(target, keymap, name="Trip Pack", description="Round trip test")
     name, description, merged = import_keyboard_pack(target)
     assert name == "Trip Pack"
     assert description == "Round trip test"
     assert merged["edit.find_next"] == "Ctrl+Shift+Grave, Z"
-    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, 1"
+    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, 2"
     # Untouched defaults survive.
     assert merged["file.save"] == DEFAULT_KEYMAP["file.save"]
