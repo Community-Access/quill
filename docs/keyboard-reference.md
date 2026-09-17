@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 405.
+Editor commands with default bindings: 410.
 
 ## The QUILL editor
 
@@ -49,6 +49,8 @@ Editor commands with default bindings: 405.
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
 | Alt+. | Insert Emoji... | `edit.insert_emoji` |
+| Alt+F11 | Convert Indentation to Spaces | `edit.convert_indentation_to_spaces` |
+| Alt+F12 | Convert Indentation to Tabs | `edit.convert_indentation_to_tabs` |
 | Alt+F8 | Read All | `edit.read_all` |
 | Alt+M | List Marks | `edit.list_marks` |
 | Alt+Shift+C | Copy With Source | `edit.copy_with_source` |
@@ -421,10 +423,13 @@ Editor commands with default bindings: 405.
 | Alt+Shift+J | Next Inline Note | `notes.next_inline_note` |
 | Alt+Shift+K | Keep unique lines | `power.keep_unique_lines` |
 | Alt+Shift+N | Number lines | `power.number_lines` |
+| Alt+Shift+W | Hard wrap lines | `power.hard_wrap_lines` |
+| Alt+Shift+X | Delete lines containing | `power.delete_lines_containing` |
 | B | QUILL Quick Nav: Bookmark | `quill.quick_nav.bookmark` |
 | C | QUILL Quick Nav: Table of Contents | `quill.quick_nav.table_of_contents` |
 | Ctrl+Alt+Down | Table: Cell Below | `table.cell_below` |
 | Ctrl+Alt+End | Table: Last Cell | `table.last_cell` |
+| Ctrl+Alt+G | Compute line statistics | `power.compute_line_statistics` |
 | Ctrl+Alt+Home | Table: First Cell | `table.first_cell` |
 | Ctrl+Alt+I | Insert image | `power.insert_image` |
 | Ctrl+Alt+K | Remove blank lines | `power.remove_blank_lines` |

@@ -4506,6 +4506,15 @@ changed --- "Bullet list removed, 4 items" --- because the count is the fact you
 cannot see. `Ctrl+Z` puts them back; the change is an edit like any other, not a
 rebuild of the whole document.
 
+**Five line tools got a key.** They were reachable only by walking a menu,
+which is a cost you pay on every visit rather than once: **Hard-Wrap Lines**
+(`Alt+Shift+W`), **Delete Lines Containing** (`Alt+Shift+X`), **Convert
+Indentation to Spaces** (`Alt+F11`), **Convert Indentation to Tabs**
+(`Alt+F12`) and **Line Statistics** (`Ctrl+Alt+G`). The first four are the
+chords QuillLite uses for the same verbs, so a hand trained on either product
+finds them; Line Statistics takes `Ctrl+Alt+G` because it is the "how wide is
+this" companion to Document Statistics on `Ctrl+Shift+G`.
+
 The **Transform Lines** submenu gathers every line and text transform in one place: **Number Lines...**, **Number Lines (Advanced)...**, **Hard-Wrap Lines...**, **Sort Lines Ascending**, **Sort Lines Descending**, **Reverse Lines**, **Remove Duplicate Lines**, **Trim Trailing Whitespace**, **Normalize Whitespace**, **Convert Indentation to Spaces**, and **Convert Indentation to Tabs**. **Number Lines (Advanced)...** adds a starting number, increment, digit or Roman-numeral style, zero-padding width, a custom suffix, and left or right alignment, for cases the simple version doesn't cover.
 
 **Two blank-line commands, and the names say which is which.** The Format menu

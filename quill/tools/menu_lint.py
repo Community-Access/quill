@@ -168,6 +168,10 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "tools.check_updates",  # Ctrl+Alt+U
     "edit.open_copy_tray",  # Ctrl+Alt+V, one modifier off Ctrl+V
     "edit.copy_to_next_slot",  # Ctrl+Alt+Y
+    # Ctrl+Alt+G, 2026-09-16: the "how wide is this document" sibling of
+    # Document Statistics on Ctrl+Shift+G, so G is the letter either way.
+    # Reachable only by walking the Tools menu before this (bad.md P1.1).
+    "power.compute_line_statistics",
 })
 
 # §10.3 binding-spec cluster labels that must appear as the label argument

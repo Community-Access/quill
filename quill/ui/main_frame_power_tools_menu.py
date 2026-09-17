@@ -39,9 +39,17 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
     Commands are declared grouped by their recirculated menu home (menus.md
     Phase 4). Within each ``group`` the declaration order is the live menu order,
     and ``separator_before`` reproduces the visual grouping; one data-driven
-    helper appends each group. None carry a default keybinding — their original
-    shortcuts collide with QUILL's curated keymap, so users bind them from the
-    Keymap Editor instead.
+    helper appends each group.
+
+    Most carry no default keybinding: their original shortcuts collided with
+    QUILL's curated keymap, so users bind them from the Keymap Editor. Three do
+    as of 2026-09-16 -- Hard-Wrap Lines (``Alt+Shift+W``), Delete Lines
+    Containing (``Alt+Shift+X``) and Line Statistics (``Ctrl+Alt+G``) -- because
+    QuillLite gave the first two those exact chords and both were free here, and
+    because a verb reachable only by walking a menu is a cost a screen-reader
+    user pays on every visit (bad.md P1.1, rule 8). The keys live in
+    ``DEFAULT_KEYMAP`` and arrive through ``_binding_for``; nothing in this
+    manifest names a chord.
     """
 
     registrar = FirstPartyRegistrar()

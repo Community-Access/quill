@@ -2376,13 +2376,16 @@ class CommandRegistryMixin:
             "edit.convert_indentation_to_spaces",
             "Convert Indentation to Spaces",
             self.convert_indentation_to_spaces,
-            None,
+            # QuillLite's Alt+F11 / Alt+F12 since 2026-09-16; both were free
+            # here, and a verb reachable only by walking a menu is a cost a
+            # screen-reader user pays on every visit (bad.md P1.1).
+            self._binding_for("edit.convert_indentation_to_spaces"),
         )
         self.commands.register(
             "edit.convert_indentation_to_tabs",
             "Convert Indentation to Tabs",
             self.convert_indentation_to_tabs,
-            None,
+            self._binding_for("edit.convert_indentation_to_tabs"),
         )
         self.commands.register(
             "help.context_help",

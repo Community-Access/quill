@@ -2,6 +2,26 @@
 
 ## 1.0.0
 
+### Five line tools got a key (2026-09-17)
+
+**Hard-Wrap Lines** is `Alt+Shift+W`, **Delete Lines Containing** is
+`Alt+Shift+X`, **Convert Indentation to Spaces** and **to Tabs** are `Alt+F11`
+and `Alt+F12`, and **Line Statistics** is `Ctrl+Alt+G`. All five were reachable
+only by walking a menu, which for a screen-reader user is a cost paid on every
+visit rather than once.
+
+The first four are the chords QuillLite already uses for the same verbs and all
+four were free in QUILL, so there was nothing to trade. Line Statistics takes
+`Ctrl+Alt+G` rather than QuillLite's `Ctrl+Alt+W` --- that is Select Word here
+--- and G is the better letter anyway, since Line Statistics answers "how wide
+is this document" to Document Statistics' "how big", and that is on
+`Ctrl+Shift+G`.
+
+The remaining keyless commands in this family (Sort Z to A, Tidy Whitespace,
+Keyboard Manager, lowercase) each want a chord an AI command or a
+favourite-folder command currently holds. Those move as one deliberate change
+rather than four scattered ones.
+
 ### The whole status bar has a switch (2026-09-17)
 
 **`Alt+Shift+B` shows and hides the status bar.** QUILL could hide any

@@ -787,6 +787,17 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # converge, and it is in the parity gate's exception table.
     "power.remove_blank_lines": "Ctrl+Alt+K",
     "edit.trim_trailing_whitespace": "Ctrl+Alt+R",
+    # Five verbs QuillLite gave a key on 2026-09-16 and QUILL could only reach
+    # by walking a menu, on the chords QuillLite uses -- all four of those were
+    # free here, so there was nothing to trade (bad.md P1.1, rule 8). Line
+    # Statistics takes Ctrl+Alt+G rather than QuillLite's Ctrl+Alt+W, which is
+    # edit.select_word here: it is the "how wide is this" sibling of Document
+    # Statistics on Ctrl+Shift+G, so G is the letter either way.
+    "edit.convert_indentation_to_spaces": "Alt+F11",
+    "edit.convert_indentation_to_tabs": "Alt+F12",
+    "power.delete_lines_containing": "Alt+Shift+X",
+    "power.hard_wrap_lines": "Alt+Shift+W",
+    "power.compute_line_statistics": "Ctrl+Alt+G",
     "power.keep_unique_lines": "Alt+Shift+K",  # §4.22 Keep Unique parity
     "quill.quick_nav.heading": "H",
     "quill.quick_nav.link": "A",
