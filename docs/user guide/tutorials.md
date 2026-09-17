@@ -263,7 +263,7 @@ The four levels: find here, find every match, replace with care, and search or r
    - You should hear: Each replacement, or the count at the end.
 
 5. **Search a whole folder.** Search in Files answers where did I write that when you cannot remember which document it was in. Replace in Files is its counterpart, and it is worth doing on a copy the first time you use it.
-   - Keys: Ctrl+Shift+F
+   - Keys: Ctrl+Alt+Shift+F
    - You should hear: The matches, grouped by file.
 
 6. **Learn the one that is not a search.** Go to Anything reaches files, headings and places rather than text. When you know the *name* of the thing you want, it is faster than any search.

@@ -28,11 +28,12 @@ from __future__ import annotations
 
 import wx
 
+from quill.core.editor_font import editor_points_for, sets_font, zoom_for
 from quill.core.lite import APP_NAME
 from quill.core.lite.filetypes import is_rich_path
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
-from quill.ui.richedit_rtf_surface import BODY_POINT_SIZE, RichEditRtfError
+from quill.ui.richedit_rtf_surface import RichEditRtfError
 
 __all__ = ["DocumentAppearanceMixin"]
 
@@ -91,28 +92,32 @@ class DocumentAppearanceMixin:
         self._announce("Rich text mode" if mode == RICH else "Plain text mode")
 
     def _apply_editor_font(self) -> None:
-        """Apply the chosen face and size.
+        """Apply the chosen face and size, through the rule QUILL now shares.
 
-        In rich mode the size is a *zoom* rather than a font change: run point
-        sizes are the heading ladder, so resizing them would re-level every
-        heading in the document.
+        In a rich document the size is a **zoom** and ``SetFont`` is not called
+        at all. It used to be called with the ladder's body size, on the theory
+        that passing the body size was harmless -- but wxMSW applies ``SetFont``
+        to the *whole control*, existing runs included, so every ``Ctrl+=``,
+        every dark-mode toggle and every font change flattened a Heading 1 and a
+        body paragraph to one size, and heading navigation and the headings list
+        went with them. Fixed 2026-09-16 (bad.md R5, P1.3).
+
+        The decision itself is :func:`quill.core.editor_font.sets_font`, so both
+        editors answer it from one place rather than getting it right twice.
         """
         settings = self.app.settings
         rich = self.editor.mode == RICH
-        points = int(BODY_POINT_SIZE) if rich else settings.font_size
-        self.control.SetFont(
-            wx.Font(
-                points,
-                wx.FONTFAMILY_DEFAULT,
-                wx.FONTSTYLE_NORMAL,
-                wx.FONTWEIGHT_NORMAL,
-                faceName=settings.font_name,
+        if sets_font(rich=rich):
+            self.control.SetFont(
+                wx.Font(
+                    int(editor_points_for(settings.font_size, rich=rich)),
+                    wx.FONTFAMILY_DEFAULT,
+                    wx.FONTSTYLE_NORMAL,
+                    wx.FONTWEIGHT_NORMAL,
+                    faceName=settings.font_name,
+                )
             )
-        )
-        if rich:
-            self.editor.set_zoom(settings.font_size, BODY_POINT_SIZE)
-        else:
-            self.editor.set_zoom(0, 0)
+        self.editor.set_zoom(*zoom_for(settings.font_size, rich=rich))
 
     def theme_colours(self) -> tuple[wx.Colour, wx.Colour, wx.Colour]:
         """``(text, page, chrome)`` for the current theme."""

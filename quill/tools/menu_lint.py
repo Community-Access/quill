@@ -114,6 +114,55 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "tools.compare_next_difference",  # Ctrl+Alt+Shift+.
     "tools.compare_previous_difference",  # Ctrl+Alt+Shift+,
     "tools.compare_announce_difference",  # Ctrl+Alt+Shift+D
+    # ------------------------------------------------------------------ #
+    # The 2026-09 keyless-command sweep (bad.md P1.1, 4452595 and after).
+    #
+    # Eighteen chords arrived in one round, and they are listed here rather
+    # than carrying eighteen inline "# §edsharp-ok" comments because the
+    # reasoning divides cleanly into two cases and is worth writing once.
+    #
+    # **Ctrl+Alt+<function key> is outside what the policy is about.** The
+    # policy has two real grounds: Ctrl+Alt is AltGr on European layouts, so
+    # the chord *types a character* instead of firing; and JAWS and NVDA both
+    # own a spread of Ctrl+Alt+<letter> and Ctrl+Alt+<arrow> commands. Neither
+    # ground reaches a function key -- AltGr cannot produce F6, and no default
+    # JAWS or NVDA command uses Ctrl+Alt+F6 through F12. This is the same
+    # exemption already granted above to help.tutorials (Ctrl+Alt+F1) and
+    # help.report_bug (Ctrl+Alt+F2), and it is the whole justification for:
+    "navigate.set_language",  # Ctrl+Alt+F6
+    "view.toggle_spellcheck_as_you_type",  # Ctrl+Alt+F7
+    "tools.add_word_to_dictionary",  # Ctrl+Alt+F9
+    "tools.individual_feature_toggles",  # Ctrl+Alt+F10
+    "tools.share_export",  # Ctrl+Alt+F11
+    "tools.share_import",  # Ctrl+Alt+F12
+    #
+    # **Ctrl+Alt+<letter> is a real cost, and these twelve are worth it.**
+    # Each overrides nothing in a default JAWS or NVDA layer: both readers
+    # reserve Insert+<key> for their own commands and use Ctrl+Alt only for
+    # NVDA's table navigation (Ctrl+Alt+<arrow>, already allowed above for
+    # QUILL's own table cells) and NVDA's Ctrl+Alt+<digit> synthesiser switch
+    # (already allowed above for the heading chords, which deliberately take
+    # it). No letter below collides with either.
+    #
+    # The AltGr cost is real and is accepted knowingly: on a European layout
+    # these chords may type a character instead of firing, which is exactly
+    # what the Keyboard Manager exists to let somebody rebind. The trade is
+    # that the alternative was **no key at all** -- every one of these twelve
+    # was reachable only by walking the menu bar, which is a cost a
+    # screen-reader user pays on every single visit, not once per layout.
+    # bad.md 3.9 decided that trade; this table records it.
+    "navigate.clear_numbered_bookmarks",  # Ctrl+Alt+B (Ctrl+Shift+B sets)
+    "edit.remove_duplicate_lines",  # Ctrl+Alt+D
+    "format.editor_font",  # Ctrl+Alt+F -- the editor's own face and size
+    "navigate.next_heading",  # Ctrl+Alt+H (Ctrl+Alt+Shift+H goes back)
+    "navigate.set_temp_bookmark",  # Ctrl+Alt+J (Ctrl+J is Word's Justify)
+    "power.remove_blank_lines",  # Ctrl+Alt+K
+    "file.page_setup",  # Ctrl+Alt+P, one modifier off Ctrl+P
+    "edit.trim_trailing_whitespace",  # Ctrl+Alt+R
+    "edit.sort_lines_ascending",  # Ctrl+Alt+S
+    "tools.check_updates",  # Ctrl+Alt+U
+    "edit.open_copy_tray",  # Ctrl+Alt+V, one modifier off Ctrl+V
+    "edit.copy_to_next_slot",  # Ctrl+Alt+Y
 })
 
 # §10.3 binding-spec cluster labels that must appear as the label argument

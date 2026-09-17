@@ -243,6 +243,11 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "tools.describe_image": "Describe Image",
     "edit.copy_selection_for_email": "Copy Selection For Email",
     "edit.open_review_buffer": "Review Buffer",
+    "view.text_size_up": "Increase Text Size",
+    "view.text_size_down": "Decrease Text Size",
+    "view.text_size_reset": "Reset Text Size",
+    "format.editor_font": "Editor Font",
+    "format.selection_font": "Font For Selection",
     # Three leader chords whose Key Describer title was being machine-derived
     # from the command id, which is what GATE-DESCRIBE exists to catch: the
     # cheat sheet read "Play Favorite" and "Sound Enhancements" and

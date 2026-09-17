@@ -68,14 +68,18 @@ def test_import_keymap_saves_merged_defaults(
 ) -> None:
     store_path = tmp_path / "keymap-store.json"
     source_path = tmp_path / "incoming.json"
-    export_keymap(source_path, {"edit.find": "Ctrl+Alt+F"})
+    # Ctrl+Alt+Shift+K rather than Ctrl+Alt+F, which became format.editor_font's
+    # default on 2026-09-16. This test wants a chord that is only ever the
+    # user's, so a new default taking it turns a test about *saving* into a test
+    # about conflict precedence -- pick a free chord and it stays the former.
+    export_keymap(source_path, {"edit.find": "Ctrl+Alt+Shift+K"})
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
 
     merged = import_keymap(source_path)
 
-    assert merged["edit.find"] == "Ctrl+Alt+F"
+    assert merged["edit.find"] == "Ctrl+Alt+Shift+K"
     saved = load_keymap()
-    assert saved["edit.find"] == "Ctrl+Alt+F"
+    assert saved["edit.find"] == "Ctrl+Alt+Shift+K"
     assert saved["file.save"] == DEFAULT_KEYMAP["file.save"]
 
 
@@ -371,8 +375,9 @@ def test_beta_forces_any_quill_leader_find_to_ctrl_f() -> None:
 def test_non_leader_custom_find_binding_is_preserved() -> None:
     # A user who deliberately rebinds Find to a non-leader chord keeps it; the
     # beta force only reclaims leader-chord Find bindings.
-    merged = keymap_module.merge_keymaps({"edit.find": "Ctrl+Alt+F"})
-    assert merged["edit.find"] == "Ctrl+Alt+F"
+    # A free chord on purpose; see test_import_keymap_saves_merged_defaults.
+    merged = keymap_module.merge_keymaps({"edit.find": "Ctrl+Alt+Shift+K"})
+    assert merged["edit.find"] == "Ctrl+Alt+Shift+K"
 
 
 # ---------------------------------------------------------------------------

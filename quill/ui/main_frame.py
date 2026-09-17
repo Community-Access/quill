@@ -403,6 +403,7 @@ from quill.ui.main_frame_cues import CueMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
 from quill.ui.main_frame_docconvert import DocConvertMixin
+from quill.ui.main_frame_editor_font import EditorFontMixin
 from quill.ui.main_frame_emoji_picker import EmojiPickerMixin
 from quill.ui.main_frame_equations import EquationsMixin
 from quill.ui.main_frame_format_codes import FormatCodesMixin
@@ -846,6 +847,7 @@ class MainFrame(
     LibraryMixin,
     MediaSleepTimerMixin,
     FormatCodesMixin,
+    EditorFontMixin,
     NumberedBookmarksMixin,
     SpeechCommandsMixin,
     SpeechDownloadsMixin,
@@ -4664,6 +4666,9 @@ class MainFrame(
             editor.SetForegroundColour(foreground)
             editor.SetBackgroundColour(background)
             editor.Refresh()
+        # With the theme: a theme change rebuilds the control's appearance and
+        # would otherwise drop the font back to wx's pick (bad.md P0.6a).
+        self.apply_editor_font()
         self.frame.SetForegroundColour(foreground)
         self.frame.SetBackgroundColour(chrome_background)
         self.statusbar.SetForegroundColour(foreground)

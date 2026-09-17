@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 396.
+Editor commands with default bindings: 401.
 
 ## The QUILL editor
 
@@ -149,6 +149,7 @@ Editor commands with default bindings: 396.
 | Ctrl+Alt+4 | Insert Heading 4 | `format.heading_4` |
 | Ctrl+Alt+5 | Insert Heading 5 | `format.heading_5` |
 | Ctrl+Alt+6 | Insert Heading 6 | `format.heading_6` |
+| Ctrl+Alt+F | Font... | `format.editor_font` |
 | Ctrl+Alt+N | Toggle Numbered List | `format.toggle_numbered_list` |
 | Ctrl+Alt+Q | Insert Block Quote | `format.blockquote` |
 | Ctrl+Alt+Shift+J | Join Lines | `format.join_lines` |
@@ -169,6 +170,7 @@ Editor commands with default bindings: 396.
 | Ctrl+Shift+D | Describe Formatting at Cursor | `format.describe_formatting` |
 | Ctrl+Shift+Delete | Delete Line | `format.delete_line` |
 | Ctrl+Shift+Down | Move Line Down | `format.move_line_down` |
+| Ctrl+Shift+F | Font for Selection... | `format.selection_font` |
 | Ctrl+Shift+L | Toggle Bullet List | `format.toggle_bullet_list` |
 | Ctrl+Shift+T | Title Case | `format.title_case` |
 | Ctrl+Shift+U | Upper Case | `format.upper_case` |
@@ -235,6 +237,9 @@ Editor commands with default bindings: 396.
 | Alt+Shift+E | Show Spoken Echo | `view.spoken_echo` |
 | Alt+Shift+V | Preview | `view.preview` |
 | Alt+Z | Toggle Soft Wrap | `view.toggle_soft_wrap` |
+| Ctrl+- | Decrease Text Size | `view.text_size_down` |
+| Ctrl+0 | Reset Text Size | `view.text_size_reset` |
+| Ctrl+= | Increase Text Size | `view.text_size_up` |
 | Ctrl+Alt+F3 | Announce Headings | `view.toggle_heading_announcements` |
 | Ctrl+Alt+F5 | Announce Lists | `view.toggle_list_announcements` |
 | Ctrl+Alt+F7 | Toggle Spell Check As You Type | `view.toggle_spellcheck_as_you_type` |
@@ -264,6 +269,7 @@ Editor commands with default bindings: 396.
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
 | Ctrl+Alt+Shift+E | Switch AI Engine | `tools.ai_switch_engine` |
+| Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
 | Ctrl+Alt+Shift+G | AI Grammar and Style Check... | `tools.ai_grammar_style` |
 | Ctrl+Alt+Shift+H | AI Thesaurus | `tools.ai_thesaurus` |
 | Ctrl+Alt+Shift+I | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
@@ -272,7 +278,6 @@ Editor commands with default bindings: 396.
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
-| Ctrl+Shift+F | Search in Files... | `tools.search_in_files` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
 | Ctrl+Shift+F9 | Pause or Resume Dictation | `tools.dictation_pause` |
 | Ctrl+Shift+I | Document Intake Report... | `tools.document_intake_report` |

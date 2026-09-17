@@ -1385,6 +1385,37 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("punctuation", "announce", "speech"),
     ),
     SettingSpec(
+        "font_name",
+        "Editor font",
+        "editing",
+        "str",
+        (
+            "The typeface the editor draws in. Empty means whatever the system "
+            "picks, which is the right answer for anybody who has never chosen. "
+            "It changes what you see and nothing about the file: the face is "
+            "never written into a document. Format > Font... is the chooser, "
+            "and QuillLite reads the same setting."
+        ),
+        keywords=("font", "typeface", "face", "editor", "low vision", "size"),
+    ),
+    SettingSpec(
+        "font_size",
+        "Editor text size (points)",
+        "editing",
+        "int",
+        (
+            "How big the editor's text is, in points, from 6 to 72. Control "
+            "plus, Control minus and Control 0 change it without leaving the "
+            "document -- Notepad's own three keys. In a rich text document the "
+            "same keys zoom the view instead of resizing the runs, because run "
+            "sizes are the heading ladder and resizing them would re-level "
+            "every heading."
+        ),
+        minimum=6,
+        maximum=72,
+        keywords=("font", "size", "zoom", "text size", "low vision", "bigger"),
+    ),
+    SettingSpec(
         "announcement_throttle_ms",
         "Announcement throttle (milliseconds)",
         "accessibility",

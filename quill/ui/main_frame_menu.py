@@ -754,6 +754,9 @@ class MenuBuilderMixin:
         self._id_send_to_tray = wx.NewIdRef()
         self._id_toggle_tray_mode = wx.NewIdRef()
         self._id_toggle_soft_wrap = wx.NewIdRef()
+        self._id_text_size_up = wx.NewIdRef()
+        self._id_text_size_down = wx.NewIdRef()
+        self._id_text_size_reset = wx.NewIdRef()
         self._id_toggle_tab_control = wx.NewIdRef()
         self._id_toggle_find_wrap = wx.NewIdRef()
         self._id_toggle_title_full_path = wx.NewIdRef()
@@ -786,6 +789,22 @@ class MenuBuilderMixin:
         view_menu.Check(self._id_toggle_soft_wrap, self.settings.soft_wrap)
         view_menu.AppendCheckItem(self._id_toggle_tab_control, _("Show &Tab Control"))
         view_menu.Check(self._id_toggle_tab_control, self.settings.show_tab_control)
+        view_menu.AppendSeparator()
+        # Notepad's three, and QuillLite's. There was no way to change the size
+        # of QUILL's text at all before 2026-09-16, which for an audience that
+        # includes low-vision users is the product not working (bad.md 4.3).
+        view_menu.Append(
+            self._id_text_size_up,
+            self._menu_label(_("&Increase Text Size"), "view.text_size_up"),
+        )
+        view_menu.Append(
+            self._id_text_size_down,
+            self._menu_label(_("D&ecrease Text Size"), "view.text_size_down"),
+        )
+        view_menu.Append(
+            self._id_text_size_reset,
+            self._menu_label(_("&Reset Text Size"), "view.text_size_reset"),
+        )
         view_menu.AppendSeparator()
         view_menu.Append(
             self._id_preview,

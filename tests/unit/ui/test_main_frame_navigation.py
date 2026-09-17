@@ -355,18 +355,20 @@ def test_document_tabs_region_absent_when_tab_control_hidden() -> None:
 def test_misspellings_behind_message_counts_the_other_direction(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # Patched in quill.core.spellcheck, which is where the sentence now lives:
+    # it moved out of main_frame_spellcheck.py on 2026-09-16 so QuillLite could
+    # say it too (bad.md S9), and a test that patches the module that merely
+    # calls it patches nothing.
+    from quill.core import spellcheck as mf
     from quill.core.spellcheck import Misspelling
-    from quill.ui import main_frame_spellcheck as mf
 
     # The unit env has no real spell backend, so drive the message logic with a
     # single known misspelling at [0, 5) (a stand-in for "teest good").
     miss = Misspelling(word="teest", start=0, end=5)
     monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d: [miss])
+    monkeypatch.setattr(mf, "next_misspelling", lambda _t, c, _d: miss if c <= miss.start else None)
     monkeypatch.setattr(
-        mf, "find_next_misspelling", lambda _t, c, _d: miss if c <= miss.start else None
-    )
-    monkeypatch.setattr(
-        mf, "find_previous_misspelling", lambda _t, c, _d: miss if c > miss.end else None
+        mf, "previous_misspelling", lambda _t, c, _d: miss if c > miss.end else None
     )
     frame = _build_frame("teest good")
     # Caret past the only misspelling: nothing ahead, one behind.
@@ -380,11 +382,11 @@ def test_misspellings_behind_message_counts_the_other_direction(
 def test_misspellings_behind_message_reports_none_when_clean(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from quill.ui import main_frame_spellcheck as mf
+    from quill.core import spellcheck as mf
 
     monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d: [])
-    monkeypatch.setattr(mf, "find_next_misspelling", lambda _t, _c, _d: None)
-    monkeypatch.setattr(mf, "find_previous_misspelling", lambda _t, _c, _d: None)
+    monkeypatch.setattr(mf, "next_misspelling", lambda _t, _c, _d: None)
+    monkeypatch.setattr(mf, "previous_misspelling", lambda _t, _c, _d: None)
     frame = _build_frame("good good")
     assert (
         frame._misspellings_behind_message("good good", 9, {"good"}, ahead=True)

@@ -376,6 +376,8 @@
   "quill/ui/main_frame_copy_tray.py::_TraySearchDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_dictation_hotkeys.py::DictationHotkeysMixin.open_dictation_settings::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_docconvert.py::DocConvertMixin.import_convert_document::wx.FileDialog": "native",
+  "quill/ui/main_frame_editor_font.py::EditorFontMixin.choose_editor_font::wx.FontDialog": "native",
+  "quill/ui/main_frame_editor_font.py::EditorFontMixin.choose_selection_font::wx.FontDialog": "native",
   "quill/ui/main_frame_emoji_picker.py::EmojiPickerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_equations.py::EquationsMixin.insert_equation::show_web_form": "web",
   "quill/ui/main_frame_file_search_prompt.py::FileSearchPromptMixin._prompt_file_search::wx.Dialog": "hardened_custom",

@@ -134,6 +134,8 @@
   "find_not_found_feedback": "documented",
   "find_use_quill_dialog": "documented",
   "first_line_as_title": "documented",
+  "font_name": "documented",
+  "font_size": "documented",
   "git_sync_last_folder": "documented",
   "github_poll_audible_tick": "grandfathered",
   "github_poll_interrupt_speech": "grandfathered",

@@ -845,6 +845,11 @@ class MenuBindingsMixin:
             self._on_toggle_soft_wrap,
             id=self._id_toggle_soft_wrap,
         )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.increase_text_size(), id=self._id_text_size_up)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.decrease_text_size(), id=self._id_text_size_down
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.reset_text_size(), id=self._id_text_size_reset)
         self.frame.Bind(
             wx.EVT_MENU,
             self._on_toggle_auto_side_preview,

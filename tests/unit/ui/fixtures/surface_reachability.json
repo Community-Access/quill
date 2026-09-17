@@ -107,6 +107,7 @@
   "quill.ui.main_frame_copy_tray": "reachable",
   "quill.ui.main_frame_dictation_hotkeys": "reachable",
   "quill.ui.main_frame_docconvert": "reachable",
+  "quill.ui.main_frame_editor_font": "reachable",
   "quill.ui.main_frame_emoji_picker": "reachable",
   "quill.ui.main_frame_file_search_prompt": "reachable",
   "quill.ui.main_frame_format_codes": "reachable",

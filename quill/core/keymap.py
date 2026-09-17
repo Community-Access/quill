@@ -121,6 +121,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # so Option+Z types its character. The command stays available via the
     # command palette and menu; a Mac-validated remap is the follow-up.
     "view.toggle_soft_wrap": "" if sys.platform == "darwin" else "Alt+Z",
+    # Notepad's own three, and QuillLite's. QUILL could not change the size of
+    # its own text at all before 2026-09-16 (bad.md 4.3, P0.6a).
+    "view.text_size_up": "Ctrl+=",
+    "view.text_size_down": "Ctrl+-",
+    "view.text_size_reset": "Ctrl+0",
     "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
@@ -410,7 +415,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Ctrl+H becomes Cmd+H on macOS (system Hide) -- dead by default. The darwin
     # alternate Cmd+Alt+F mirrors the Mac/VS Code Replace convention (#30).
     "edit.replace": "Cmd+Alt+F" if sys.platform == "darwin" else "Ctrl+H",
-    "tools.search_in_files": "Ctrl+Shift+F",
+    # Ctrl+Alt+Shift+F since 2026-09-16. Ctrl+Shift+F is Word's Font key and
+    # QuillLite's Font for Selection, and the family follows Word (bad.md 3.1,
+    # 3.9): the code-editor convention loses to the one in everybody's hands.
+    "tools.search_in_files": "Ctrl+Alt+Shift+F",
     "tools.replace_in_files": "Ctrl+Shift+R",
     # Bare "N" after the QUILL-key prefix is intercepted for browse mode in
     # QuillKeyMixin (before chord dispatch), so a bare-N chord here is dead.
@@ -574,6 +582,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # it is the only chord free in both QUILL and QuillLite, and one key across
     # the two is worth more than a better letter in one of them.
     "format.describe_indent_depth": "Ctrl+Alt+Shift+V",
+    # QuillLite's two, and Word's for the second. Ctrl+Shift+F was Search in
+    # Files here, which moved: the family follows Word where Word has a key,
+    # and a font is the one everybody's hands already know (bad.md 3.1, P1.7).
+    "format.editor_font": "Ctrl+Alt+F",
+    "format.selection_font": "Ctrl+Shift+F",
     "format.list_manager": "Ctrl+Shift+Grave, L",
     "format.bold": "Ctrl+B",
     "format.italic": "Ctrl+I",

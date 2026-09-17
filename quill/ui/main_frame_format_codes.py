@@ -138,8 +138,9 @@ class FormatCodesMixin:
             highlight_menu.Append(hl_id, hl_name)
         format_menu.AppendSubMenu(highlight_menu, _("&Highlight"))
 
+        self.add_font_menu_items(format_menu)  # EditorFontMixin; bad.md M2
         self._id_font_dialog = wx.NewIdRef()
-        format_menu.Append(self._id_font_dialog, _("&More Font Options..."))
+        format_menu.Append(self._id_font_dialog, _("&Markdown Format Codes..."))
 
         # Inline weight/decoration toggles + clear.
         self._id_strikethrough = wx.NewIdRef()
@@ -342,12 +343,21 @@ class FormatCodesMixin:
         announce(status)
 
     def open_font_dialog(self) -> None:
-        """The accessible "Font..." surface for arbitrary font/size/color values."""
+        """Markdown format codes: arbitrary font, size and colour as hidden codes.
+
+        Renamed from "Font..." on 2026-09-16: Format > Font is the editor's own
+        face and size now, and the refusal below names it. Being told "only in
+        Markdown documents" about a row called Font is how somebody concludes
+        the editor cannot change its font at all -- which it could not (bad.md M2).
+        """
         if not self._feature_enabled("core.format"):
             self._set_status("Font tools are unavailable in this profile")
             return
         if self._active_markup_surface() != "markdown":
-            self._set_status("Font is only available in Markdown documents")
+            self._set_status(
+                "Markdown format codes are for Markdown documents. "
+                "Format, Font sets the face the editor draws in."
+            )
             return
         from quill.ui.dialog_contract import apply_modal_ids
         from quill.ui.font_format_dialog import FontFormatDialog

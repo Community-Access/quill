@@ -35,7 +35,6 @@ spent in the editor.
 
 | Bar | Fails | Why |
 | --- | --- | --- |
-| The text's typeface and size can be changed | QUILL | No `SetFont` on any editor control, no font setting, no zoom (4.3) |
 | A big file behaves | **passed** | The size guard landed 2026-09-16; the document mirror (`quill/core/document_text.py`) retired the three scans per status refresh and the O(N) read per keystroke. What is left is the gate that keeps it that way (section 9, item 8) |
 | A file survives the round trip | both | 6.3, F1-F6 |
 
@@ -308,25 +307,7 @@ shared core simultaneously, because QuillLite may never be the one that has it:
 | **Structure on arrival** | after opening a file, one sentence: "Markdown, 412 lines, 9 headings, longest line 180 characters". Both editors compute all four already for the status bar | shared `metrics`; both |
 
 
-### 4.3 QUILL has no editor font and no text size (P0 viability)
-
-No code in `quill/ui` calls `SetFont` on an editor control; every call site is a
-dialog heading or the print DC. `Settings` has no `font_name` and no
-`font_size`. There is no zoom command and no text-size command. QUILL's editor
-renders in whatever font wx picked, forever.
-
-The one thing called "Font" is `format.font_dialog`, menu-labelled **"&More
-Font Options..."**, which refuses outside Markdown
-(`main_frame_format_codes.py:343-345`), writes hidden Markdown format codes
-rather than changing the display or the rich run, and has no key.
-
-QuillLite has **Editor Font** (`Ctrl+Alt+F`), **Font for Selection**
-(`Ctrl+Shift+F`, Word's key) and **text size in/out/reset** (`Ctrl+=`,
-`Ctrl+-`, `Ctrl+0`, Notepad's keys). For an app whose audience includes
-low-vision users, "you cannot make the text bigger" is a viability failure, not
-a parity row. P0.6a.
-
-### 4.4 What neither editor has, that Microsoft's three do
+### 4.3 What neither editor has, that Microsoft's three do
 
 Recorded so the omissions are decisions rather than oversights:
 
@@ -741,7 +722,6 @@ way:
 
 | # | Item | Editors | Cost | Done when |
 | --- | --- | --- | --- | --- |
-| **P0.6a** | **An editor font, a font size, and text size in/out/reset in QUILL** (4.3): two settings, `SetFont` on the editor, three commands on Notepad's `Ctrl+=` / `Ctrl+-` / `Ctrl+0`, a Format menu item that says **Font...**, and `format.font_dialog` made to work on a rich selection instead of refusing outside Markdown | QUILL | M | a low-vision user can make QUILL's text bigger; a rich selection's font can be changed; the rich kind zooms rather than re-levelling headings (5.5) |
 | **P0.6c** | **QUILL adopts `DocumentText`** (V4). The object exists (`quill/core/document_text.py`) and QuillLite is on it: the mirror, the revision counter, the cached stats and line table, and the rule that display code reads it and never the control. QUILL still has its own half-answer -- `document.text` plus a stats cache in `main_frame_statusbar.py` -- and should move onto the shared object, which is what makes the edit journal the spoken undo needs (P3.7) possible at all | QUILL | M | one mirror, owned by core, read by both |
 | P0.7 | The **Broken** rows of section 6, each with a regression test: F1 Lite Save As converts the window before the write; F2 Lite recovery rewrites encoding; F3 unencodable characters silent in both (one shared prompt: "3 characters cannot be saved as Windows-1252. Save as UTF-8?"); F4 QUILL non-atomic Save As HTML / Plain Text; F5 QUILL watcher replaces a `.docx` tab with decoded binary; F6 QUILL encoding change does not dirty, UTF-16 undetected; R2 list-off strips every list and clears undo; R3 Markdown heading prepends; R6 Lite mode switch discards formatting; S2 QUILL live alert speaks with speech off; S3 QUILL Ignore writes a sidecar and lies; | per bug | S each | regression test per bug |
 | P0.8 | **Verify live, then fix if confirmed**: R4 dark mode writing grey text into every saved `.rtf`; R5 Lite `SetFont` re-levelling headings on `Ctrl+=`; C2/N3 QUILL whole-document rewrite for a local insert or line tool in an `.rtf`; R14 two-step undo after Heading N; L13 Lite's Go to Start of Selection | both | S each | a rich document survives each with its runs intact |
@@ -755,10 +735,9 @@ way:
 | P1.2 | Structural selection family on Lite's six chords; Set Mark `Ctrl+Shift+M`, Exchange `Ctrl+Alt+X`, Duplicate Selection `Ctrl+Alt+Q`; Switch Document Mode `Alt+Shift+F`; `Ctrl+Alt+F8` becomes the marker toggle in **both** and Extend Selection Mode takes its own chord in both (5.3a); Shrink drops its stack; Reselect remembers every structural select; F8 gains a cancel; marks on the shared ring, clamped, recorded for Back | both | M | -- |
 | P1.2a | **Fix Extend Selection Mode's four movement bugs** (5.3a): page keys ask the control for a real page, Up/Down follow visual lines under soft wrap, word movement stops at punctuation as Windows does, and the line table comes from `DocumentText` instead of an O(N) rescan per keystroke | QUILL | S | holding Down inside a wrapped paragraph moves one visual line per press, and a 50 MB file costs nothing extra per key |
 | P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
-| P1.3 | Lite's rich kind switched from `SetFont` to view zoom (5.5), now that QUILL has the same three commands from P0.6a | Lite | S | a rich document's heading ladder is unchanged after `Ctrl+=` |
+| P1.3 | Lite's rich kind switched from `SetFont` to the view zoom `quill/core/editor_font.py` now computes (5.5, R5). QUILL is on it as of 2026-09-16; QuillLite still calls `control.SetFont(11pt)` on a populated rich control from `lite_window_theme.py` | Lite | S | a rich document's heading ladder is unchanged after `Ctrl+=` |
 | P1.4 | Body Text `Ctrl+Alt+0`; Next/Previous Heading `Ctrl+Alt+H`/`+Shift+H`; List Headings alias | QUILL | S | -- |
 | P1.6 | Document Statistics `Ctrl+Shift+G` **in QUILL** (Lite moved 2026-09-16). The Go To dialog is built and shared (`quill/ui/go_to_dialog.py`) and QuillLite is on it; **QUILL still opens Go To Line and Go To Page as two commands** and should open the shared one, with Page as a third kind | QUILL | S | -- |
-| P1.7 | Font for Selection `Ctrl+Shift+F`, Editor Font `Ctrl+Alt+F` (the keys for P0.6a); Search in Files and folds relocated | QUILL | S | -- |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) | QUILL | M | round-trip test per encoding |
 | P1.9 | Date and Time as a core command on `F5` in QUILL | QUILL | S | works in Safe Mode |
 | P1.10 | Status bar show/hide in QUILL on `Alt+Shift+B` -- the whole-bar switch beside the existing per-cell `status_bar_hidden` list (G3); `F6` lands in the status bar first in both | QUILL | S | -- |
@@ -849,11 +828,7 @@ meeting a slow status bar.
    refresh, one autoformat keystroke and one live-spell pass in each editor,
    asserted against a ceiling rather than against each other, so neither can
    regain an O(N) reader. This is the gate that keeps P0.6c from rotting.
-9. **Editor-font gate**: `quill/ui` must contain a `SetFont` call on an editor
-   control, and `Settings` a font name and size. A one-line gate, because the
-   absence of a whole capability is exactly the kind of thing no test notices
-   (4.3).
-10. Existing gates that must stay green and will need regeneration: menu
+9. Existing gates that must stay green and will need regeneration: menu
    accelerators, GATE-KEYREF, GATE-HELPREF, GATE-DESCRIBE (Key Describer
    titles for every new QUILL chord), GATE-LITE-COVER (every new Lite handler
    needs a behavioural test), module size budgets.
@@ -879,7 +854,7 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**64 items open.** Delete a row when it lands. Tiered items first,
+**63 items open.** Delete a row when it lands. Tiered items first,
 then the section-6 findings no tiered item has claimed.
 
 | # | Item |
@@ -891,10 +866,9 @@ then the section-6 findings no tiered item has claimed.
 | P1.2 | Structural selection family on Lite's six chords; Set Mark Ctrl+Shift+M, Exchange Ctrl+Alt+X, Duplicate Selection Ctrl |
 | P1.2a | Fix Extend Selection Mode's four movement bugs (5.3a): page keys ask the control for a real page, Up/Down follow visua |
 | P1.2b | select_chunk renamed Select Token, off Ctrl+Space, with help text that says what it does that Select Word does not (5. |
-| P1.3 | Lite's rich kind switched from SetFont to view zoom (5.5), now that QUILL has the same three commands from P0.6a |
+| P1.3 | Lite's rich kind switched from SetFont to the view zoom quill/core/editor_font.py computes (5.5, R5); QUILL is on it |
 | P1.4 | Body Text Ctrl+Alt+0; Next/Previous Heading Ctrl+Alt+H/+Shift+H; List Headings alias |
 | P1.6 | Document Statistics Ctrl+Shift+G in QUILL; QUILL opens the shared Go To dialog, with Page as a third kind (5.4) |
-| P1.7 | Font for Selection Ctrl+Shift+F, Editor Font Ctrl+Alt+F (the keys for P0.6a); Search in Files and folds relocated |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |
 | P1.9 | Date and Time as a core command on F5 in QUILL |
 | P1.10 | Status bar show/hide in QUILL on Alt+Shift+B -- the whole-bar switch beside the existing per-cell status_bar_hidden li |

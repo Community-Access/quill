@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill User Guide</title>
   <style>
@@ -1131,6 +1131,13 @@ modifying the file.</li>
 beside the editor automatically.</li>
 <li><strong>Show Tab Control</strong> toggles the visible document tab
 strip.</li>
+<li><strong>Increase Text Size</strong> (<code>Ctrl+=</code>),
+<strong>Decrease Text Size</strong> (<code>Ctrl+-</code>) and
+<strong>Reset Text Size</strong> (<code>Ctrl+0</code>) change how big
+the editor’s text is without leaving the document. These are Notepad’s
+own three keys, and QuillLite’s. See <a
+href="#the-size-and-face-of-the-text">The size and face of the
+text</a>.</li>
 <li><strong>Wrap Find Searches</strong> controls whether Find wraps past
 the end of the document.</li>
 <li><strong>Start With No Document Open</strong> makes Quill open into
@@ -24269,10 +24276,16 @@ edit clean prose, and the document still becomes a properly formatted
 Word, RTF, or HTML file on save.</p>
 <ul>
 <li><strong>Apply it</strong> from the Format menu’s Font / Size / Align
-/ Colour / Highlight items, or from the accessible
-<strong>Font…</strong> dialog, which gathers font family, point size,
+/ Colour / Highlight items, or from the accessible <strong>Markdown
+Format Codes…</strong> dialog, which gathers font family, point size,
 colour, and highlight in one place. With text selected, the formatting
-applies to the selection; with no selection it applies as you type.</li>
+applies to the selection; with no selection it applies as you type. That
+dialog was called “More Font Options…” until it was renamed to say what
+it is: it writes hidden Markdown codes and works only in a Markdown
+document. The two rows above it in the Format menu are the ones most
+people mean by the word — <strong>Font…</strong> for the editor’s own
+face and size, and <strong>Font for Selection…</strong> for a rich text
+document’s runs.</li>
 <li><strong>Hear what’s there.</strong> Because the codes are hidden,
 <strong>Describe Formatting at Cursor</strong> speaks exactly what is in
 effect at the caret — for example “Arial, 14 point, centred, bold”. Turn
@@ -30732,6 +30745,102 @@ for testers helping improve the product.</p>
 <p>You can validate contrast, switch dark mode, and align with system
 behavior. This matters for users who need a predictable low-vision
 experience rather than a single visual theme.</p>
+<h3 id="the-size-and-face-of-the-text">The size and face of the
+text</h3>
+<p><strong>QUILL could not change the size of its own text until
+September 2026.</strong> Not “the setting was hard to find” – there was
+no setting, no menu row and no key, and the editor drew in whatever font
+the toolkit picked on your machine. For a product whose audience
+includes low-vision users that is not a missing preference, so this
+section describes the whole of the new capability rather than just the
+keys.</p>
+<p><strong>Three keys, and they are the ones you already
+know.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+=</code></td>
+<td>Increase Text Size, one point</td>
+</tr>
+<tr>
+<td><code>Ctrl+-</code></td>
+<td>Decrease Text Size, one point</td>
+</tr>
+<tr>
+<td><code>Ctrl+0</code></td>
+<td>Reset Text Size to the default (12 point)</td>
+</tr>
+</tbody>
+</table>
+<p>Notepad uses those three, every browser uses those three, and
+QuillLite has used those three since it shipped – so the hand that
+already knows one of them knows QUILL’s. QUILL says the new size out
+loud (“14 point”) each time, because a screen reader announces nothing
+when a control it is not focused on changes size; without the sentence,
+pressing the key twice tells you nothing about where you landed. The
+size runs from 6 to 72 points and is saved, so the editor opens tomorrow
+the way you left it today.</p>
+<p><strong>Format &gt; Font…</strong> (<code>Ctrl+Alt+F</code>) opens
+the standard Windows font chooser for the typeface and size together. It
+is the system dialog on purpose: it is the one font surface every
+Windows screen reader already reads well, and nothing QUILL could build
+would read better.</p>
+<p><strong>The face is about reading, never about the file.</strong>
+Choosing Consolas at 18 point changes what is on your screen and changes
+nothing at all in the document – the face is never written into the
+file, the same promise dark mode makes. A colleague who opens the same
+file sees their own font; you see yours.</p>
+<p><strong>It applies to every open tab, not just this one.</strong> The
+size is a statement about how you need to read, and an editor whose text
+is large in one document and small in the next is one you cannot trust.
+It also survives a theme change, which rebuilds the editor’s appearance
+and would otherwise quietly drop you back to the toolkit’s default.</p>
+<h4 id="rich-text-documents-behave-differently-and-should">Rich text
+documents behave differently, and should</h4>
+<p>In a Word or RTF document the <em>point sizes are the heading
+structure</em>: a Heading 1 is large because it is a Heading 1. If
+<code>Ctrl+=</code> simply enlarged every run, your Heading 1 and your
+body paragraph would arrive at the same size, and because heading
+navigation and the headings list read that size ladder, the document’s
+structure would flatten with it – you would make the text bigger and
+lose the ability to jump through it.</p>
+<p>So in a rich text document the same three keys <strong>zoom the
+view</strong> instead. The text on screen gets larger or smaller by
+exactly as much; the document is not touched; the heading ladder is
+intact; <code>Ctrl+0</code> returns you to 100 percent. You do not have
+to know which kind of document you are in — the keys are the same and
+the result is what you asked for either way.</p>
+<p><strong>Format &gt; Font for Selection…</strong>
+(<code>Ctrl+Shift+F</code>) is the other half: it sets the face and size
+of <em>the text you have selected</em> in a rich text document, which is
+a real edit to the file. In a plain or Markdown document it declines and
+says where to go instead, rather than silently doing the other thing.
+<code>Ctrl+Shift+F</code> is Word’s key for Font, which is why it is
+QUILL’s — <strong>Search in Files moved to
+<code>Ctrl+Alt+Shift+F</code></strong> in the same change, because the
+convention in everybody’s hands beats the one in code editors.</p>
+<h4 id="the-settings-if-you-would-rather-type-them">The settings, if you
+would rather type them</h4>
+<p>Both live in <strong>Preferences &gt; Settings</strong> (search for
+“font”):</p>
+<ul>
+<li><strong>Editor font</strong> (<code>font_name</code>) — the
+typeface. Empty means “whatever the system picks”, which is the right
+answer for anybody who has never chosen.</li>
+<li><strong>Editor text size (points)</strong> (<code>font_size</code>)
+— 6 to 72, default 12. A hand-edited value outside that range is clamped
+to the nearest legal size rather than refused, so a settings file with a
+typo in it still opens into a readable editor.</li>
+</ul>
+<p>They are the same two setting names QuillLite uses, deliberately: a
+settings file carried between the two products means the same thing in
+both.</p>
 <h3 id="status-bar-as-an-accessible-control-surface">Status bar as an
 accessible control surface</h3>
 <p>Quill’s status bar is navigable and interactive. This is a subtle but

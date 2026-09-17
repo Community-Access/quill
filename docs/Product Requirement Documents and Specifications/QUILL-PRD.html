@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill: Product Requirements Document</title>
   <style>
@@ -4602,6 +4602,108 @@ line groups, offers a difference list, and supports synchronized compare
 navigation. Diff hunks remain navigable with <code>Ctrl+]</code> /
 <code>Ctrl+[</code>.</li>
 </ul>
+<h3 id="522a-editor-font-and-text-size-the-viability-bar">5.22a Editor
+font and text size (the viability bar)</h3>
+<p><strong>Requirement.</strong> The reader must be able to change the
+typeface and the size of the text the editor draws in, from the
+keyboard, without leaving the document, and the choice must persist.</p>
+<p><strong>Why it is stated as a requirement at all.</strong> It was
+absent until 2026-09-16. No module under <code>quill/ui</code> called
+<code>SetFont</code> on an editor control, <code>Settings</code> carried
+no font name and no font size, and there was no zoom command — QUILL
+rendered in whatever face the toolkit chose, permanently. Every test the
+product had was a test of a feature it <em>had</em>, so nothing failed;
+the absence of a whole capability is precisely the class of defect a
+test suite does not notice. For an editor whose stated audience includes
+low-vision users this is a viability failure rather than a missing
+preference, and it is recorded here so it cannot recur silently.</p>
+<p><strong>Commands and default keys.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command id</th>
+<th>Default key</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>view.text_size_up</code></td>
+<td><code>Ctrl+=</code></td>
+<td>One point larger</td>
+</tr>
+<tr>
+<td><code>view.text_size_down</code></td>
+<td><code>Ctrl+-</code></td>
+<td>One point smaller</td>
+</tr>
+<tr>
+<td><code>view.text_size_reset</code></td>
+<td><code>Ctrl+0</code></td>
+<td>Back to <code>DEFAULT_FONT_POINTS</code> (12)</td>
+</tr>
+<tr>
+<td><code>format.editor_font</code></td>
+<td><code>Ctrl+Alt+F</code></td>
+<td>System font chooser: face and size for the editor</td>
+</tr>
+<tr>
+<td><code>format.selection_font</code></td>
+<td><code>Ctrl+Shift+F</code></td>
+<td>Face and size of the selected runs (rich text only)</td>
+</tr>
+</tbody>
+</table>
+<p>The first three are Notepad’s, every browser’s, and QuillLite’s.
+<code>Ctrl+Shift+F</code> is Word’s Font key;
+<code>tools.search_in_files</code> moved to
+<code>Ctrl+Alt+Shift+F</code> to free it, under the family rule that
+where Word has a key the family follows Word.</p>
+<p><strong>Settings.</strong> <code>font_name</code> (string; empty
+means the system default) and <code>font_size</code> (int, 6–72, default
+12), in <code>quill.core.settings.Settings</code>. These are QuillLite’s
+field names by design, so one settings file means the same thing in both
+products and the grow-up path has two fewer rows to map. Out-of-range
+values are <strong>clamped, never refused</strong>: a hand-edited
+settings file must not be able to produce an editor that will not
+start.</p>
+<p><strong>The rich/plain split (<code>quill.core.editor_font</code>,
+wx-free).</strong> In a rich text document the run point sizes
+<em>are</em> the heading ladder, and heading navigation and the headings
+list read that ladder. <code>SetFont</code> on wxMSW applies to the
+whole control, so applying the user’s chosen size there would render a
+Heading 1 and a body paragraph at one size and flatten the document’s
+navigable structure. Therefore:</p>
+<ul>
+<li><strong>Plain and Markdown surfaces</strong>: <code>SetFont</code>
+with the chosen face at the chosen point size; no zoom.</li>
+<li><strong>Rich text surfaces</strong>: <code>SetFont</code> at the
+ladder’s body size and a <strong>view zoom</strong> of
+<code>chosen : body</code>, which scales what is drawn and writes
+nothing.</li>
+</ul>
+<p><code>editor_points_for(points, rich=...)</code> and
+<code>zoom_for(points, rich=...)</code> are the two functions that
+decide this, and they are pure so the rule is testable without a
+display.</p>
+<p><strong>Scope and persistence.</strong> The face and size apply to
+<strong>every open tab</strong>, not the focused one, and are re-applied
+after a theme change (a theme rebuild otherwise drops the control back
+to the toolkit default). The face is <strong>never written into a
+document</strong>: it is a reading preference, with the same guarantee
+dark mode carries.</p>
+<p><strong>Announcement.</strong> Each size change speaks the resulting
+size (“14 point”). Under GATE-13 the app says only what the screen
+reader does not, and a reader announces nothing when an unfocused
+control’s metrics change — so without this sentence the key is
+unverifiable by ear.</p>
+<p><strong>Gate.</strong>
+<code>tests/unit/tools/test_editor_font_gate.py</code> asserts the three
+parts exist: a <code>SetFont</code> call somewhere in
+<code>quill/ui</code>, the two settings fields on both products’
+<code>Settings</code>, and the five default bindings. It is deliberately
+an existence gate rather than a behavioural one, for the reason in the
+second paragraph.</p>
 <h3 id="523-recent-locations-history-browser-style-backforward">5.23
 Recent locations history (browser-style back/forward)</h3>
 <ul>

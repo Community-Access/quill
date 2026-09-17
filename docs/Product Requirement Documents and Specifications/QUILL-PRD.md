@@ -2085,6 +2085,76 @@ A group of small, individually unremarkable features whose absence would feel ch
 - **Extract to plain text**: `Tools > Save As Plain Text` works for any opened format and is the canonical way to harvest text from a non-editable source.
 - **Compare two documents**: `Tools > Compare With File…` supports an interactive compare session and can also produce a unified-diff document in a new editor tab. Interactive compare mode moves the cursor between differing line groups, offers a difference list, and supports synchronized compare navigation. Diff hunks remain navigable with `Ctrl+]` / `Ctrl+[`.
 
+### 5.22a Editor font and text size (the viability bar)
+
+**Requirement.** The reader must be able to change the typeface and the size of
+the text the editor draws in, from the keyboard, without leaving the document,
+and the choice must persist.
+
+**Why it is stated as a requirement at all.** It was absent until 2026-09-16.
+No module under `quill/ui` called `SetFont` on an editor control, `Settings`
+carried no font name and no font size, and there was no zoom command --- QUILL
+rendered in whatever face the toolkit chose, permanently. Every test the product
+had was a test of a feature it *had*, so nothing failed; the absence of a whole
+capability is precisely the class of defect a test suite does not notice. For an
+editor whose stated audience includes low-vision users this is a viability
+failure rather than a missing preference, and it is recorded here so it cannot
+recur silently.
+
+**Commands and default keys.**
+
+| Command id | Default key | Behaviour |
+| --- | --- | --- |
+| `view.text_size_up` | `Ctrl+=` | One point larger |
+| `view.text_size_down` | `Ctrl+-` | One point smaller |
+| `view.text_size_reset` | `Ctrl+0` | Back to `DEFAULT_FONT_POINTS` (12) |
+| `format.editor_font` | `Ctrl+Alt+F` | System font chooser: face and size for the editor |
+| `format.selection_font` | `Ctrl+Shift+F` | Face and size of the selected runs (rich text only) |
+
+The first three are Notepad's, every browser's, and QuillLite's. `Ctrl+Shift+F`
+is Word's Font key; `tools.search_in_files` moved to `Ctrl+Alt+Shift+F` to free
+it, under the family rule that where Word has a key the family follows Word.
+
+**Settings.** `font_name` (string; empty means the system default) and
+`font_size` (int, 6--72, default 12), in `quill.core.settings.Settings`. These
+are QuillLite's field names by design, so one settings file means the same thing
+in both products and the grow-up path has two fewer rows to map. Out-of-range
+values are **clamped, never refused**: a hand-edited settings file must not be
+able to produce an editor that will not start.
+
+**The rich/plain split (`quill.core.editor_font`, wx-free).** In a rich text
+document the run point sizes *are* the heading ladder, and heading navigation
+and the headings list read that ladder. `SetFont` on wxMSW applies to the whole
+control, so applying the user's chosen size there would render a Heading 1 and a
+body paragraph at one size and flatten the document's navigable structure.
+Therefore:
+
+- **Plain and Markdown surfaces**: `SetFont` with the chosen face at the chosen
+  point size; no zoom.
+- **Rich text surfaces**: `SetFont` at the ladder's body size and a **view
+  zoom** of `chosen : body`, which scales what is drawn and writes nothing.
+
+`editor_points_for(points, rich=...)` and `zoom_for(points, rich=...)` are the
+two functions that decide this, and they are pure so the rule is testable
+without a display.
+
+**Scope and persistence.** The face and size apply to **every open tab**, not
+the focused one, and are re-applied after a theme change (a theme rebuild
+otherwise drops the control back to the toolkit default). The face is **never
+written into a document**: it is a reading preference, with the same guarantee
+dark mode carries.
+
+**Announcement.** Each size change speaks the resulting size ("14 point").
+Under GATE-13 the app says only what the screen reader does not, and a reader
+announces nothing when an unfocused control's metrics change --- so without this
+sentence the key is unverifiable by ear.
+
+**Gate.** `tests/unit/tools/test_editor_font_gate.py` asserts the three parts
+exist: a `SetFont` call somewhere in `quill/ui`, the two settings fields on both
+products' `Settings`, and the five default bindings. It is deliberately an
+existence gate rather than a behavioural one, for the reason in the second
+paragraph.
+
 ### 5.23 Recent locations history (browser-style back/forward)
 
 - `Ctrl+Alt+Left` moves back through cursor jump points; `Ctrl+Alt+Right` moves forward.

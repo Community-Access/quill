@@ -6,6 +6,7 @@ from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
+from quill.core.editor_font import DEFAULT_FONT_POINTS, clamp_font_points
 from quill.core.markdown_breaks import normalise_hard_break_style
 from quill.core.monitor_policy import (
     MONITOR_GITHUB,
@@ -449,6 +450,22 @@ class Settings:
     # memory, not a user-tunable policy, so not exposed in Preferences.
     convert_file_last_output_dir: str = ""
     convert_file_last_format: str = "gfm"
+    # -- The face and size the editor draws in -------------------------------
+    # QUILL had neither until 2026-09-16. No code in quill/ui called SetFont on
+    # an editor control -- every call site was a dialog heading or a print DC --
+    # so the editor rendered in whatever font wx picked, forever, for an
+    # audience that includes low-vision users (bad.md 4.3, the P0 viability
+    # bar). QuillLite has had both since its first release.
+    #
+    # Deliberately QuillLite's field names, so the grow-up path has two fewer
+    # rows to map (bad.md G1) and a settings file carried between the two
+    # products means the same thing in both.
+    #
+    #: The face. Empty means "whatever wx picks", which is the system's own
+    #: default and the right answer for somebody who has never chosen.
+    font_name: str = ""
+    #: The size, in points. Clamped to 6..72 by quill.core.editor_font.
+    font_size: int = 12
     # SET-2: tunable timing and pacing
     autosave_interval_seconds: int = 30
     quick_nav_debounce_ms: int = 250
@@ -1160,6 +1177,10 @@ class Settings:
         quick_nav_debounce_ms = _clamp_int(data.get("quick_nav_debounce_ms", 250), 250, 0, 2000)
         quick_nav_min_chars = _clamp_int(data.get("quick_nav_min_chars", 1), 1, 1, 5)
         announcement_throttle_ms = _clamp_int(data.get("announcement_throttle_ms", 0), 0, 0, 2000)
+        font_name = str(data.get("font_name", "") or "")
+        # Through the shared clamp rather than a local one, so "what is a legal
+        # text size" is answered in one place for both editors.
+        font_size = clamp_font_points(data.get("font_size", DEFAULT_FONT_POINTS))
         read_aloud_sentence_pause_ms = _clamp_int(
             data.get("read_aloud_sentence_pause_ms", 0), 0, 0, 2000
         )
@@ -1697,6 +1718,8 @@ class Settings:
             quick_nav_debounce_ms=quick_nav_debounce_ms,
             quick_nav_min_chars=quick_nav_min_chars,
             announcement_throttle_ms=announcement_throttle_ms,
+            font_name=font_name,
+            font_size=font_size,
             read_aloud_sentence_pause_ms=read_aloud_sentence_pause_ms,
             read_aloud_follow_cursor=read_aloud_follow_cursor,
             ocr_engine=ocr_engine,

@@ -319,6 +319,10 @@ class CommandRegistryMixin:
             self.verbosity_speak_status,
             self._binding_for("verbosity.speak_status"),
         )
+        # The editor's face and size, and Notepad's three text-size keys, in
+        # their own mixin. QUILL could not change the size of its own text at
+        # all until 2026-09-16 (bad.md 4.3, main_frame_editor_font.py).
+        self.register_editor_font_commands()
         self.commands.register(
             "view.toggle_soft_wrap",
             "Toggle Soft Wrap",
@@ -781,7 +785,9 @@ class CommandRegistryMixin:
             "navigate.set_bookmark",
             "Set Bookmark...",
             self.set_bookmark,
-            self._binding_for("navigate.set_language"),
+            # Its own id: this read navigate.set_language, so Set Bookmark
+            # advertised Ctrl+Alt+F6 on a second Navigate row (bad.md M1).
+            self._binding_for("navigate.set_bookmark"),
         )
         self.commands.register(
             "navigate.go_to_bookmark",
@@ -1808,7 +1814,8 @@ class CommandRegistryMixin:
             "edit.select_block",
             "Select Block",
             self.select_block,
-            self._binding_for("edit.say_selected"),
+            # Its own id: this read edit.say_selected (Ctrl+Shift+Y).
+            self._binding_for("edit.select_block"),
         )
         self.commands.register(
             "edit.expand_selection",
@@ -2118,13 +2125,15 @@ class CommandRegistryMixin:
             "format.title_case",
             "Title Case",
             self.format_title_case,
-            self._binding_for("format.upper_case"),
+            # Its own id: this read format.upper_case (Ctrl+Shift+U).
+            self._binding_for("format.title_case"),
         )
         self.commands.register(
             "format.sentence_case",
             "Sentence Case",
             self.format_sentence_case,
-            self._binding_for("format.title_case"),
+            # Its own id; the same off-by-one, one row further down.
+            self._binding_for("format.sentence_case"),
         )
         self.commands.register(
             "format.toggle_case",

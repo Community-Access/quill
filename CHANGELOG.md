@@ -2,6 +2,75 @@
 
 ## 1.0.0
 
+### QUILL can change the size of its own text (2026-09-16)
+
+**It could not, before today.** No font setting, no menu row, no key, no zoom --
+QUILL drew in whatever font the toolkit happened to pick on your machine, and
+there was nothing anywhere in the product to change it. For an editor whose
+audience includes low-vision users that is not a missing preference; it is the
+product not working. It was also the largest of sixteen things the small sibling
+QuillLite could do and the full editor could not, which is exactly backwards:
+nobody opens QUILL and notices the absence of a thing they have only ever seen
+somewhere else, so it never gets reported.
+
+**Three keys, the ones already in your hands.** `Ctrl+=` makes the text one
+point bigger, `Ctrl+-` one point smaller, `Ctrl+0` puts it back to 12 point.
+Notepad's three, every browser's three, and QuillLite's three. QUILL speaks the
+new size ("14 point") each time, because a screen reader says nothing at all
+when a control changes size --- and without that sentence, pressing the key
+twice tells you nothing about where you ended up. The range is 6 to 72 points,
+it is saved, and it applies to **every open tab**: how large you need the text
+is not a per-document opinion.
+
+**Format ▸ Font...** (`Ctrl+Alt+F`) opens the standard Windows font chooser for
+the face and the size together --- the system dialog, because it is the one font
+surface every Windows screen reader already reads well. What you choose changes
+what is on your screen and **nothing in the file**; the face is never written
+into a document, the same promise dark mode makes.
+
+**Rich text documents zoom instead, and that is the point.** In a Word or RTF
+document the point sizes *are* the heading structure --- a Heading 1 is large
+because it is a Heading 1 --- so enlarging every run would bring your Heading 1
+and your body text to the same size, and heading navigation and the headings
+list, which read that ladder, would flatten with it. You would make the text
+bigger and lose the ability to move through the document. So in rich text the
+same three keys scale the view: the text is bigger, the file is untouched, the
+structure is intact, `Ctrl+0` returns to 100 percent. You never have to know
+which kind of document you are in.
+
+**Format ▸ Font for Selection...** (`Ctrl+Shift+F`) is the other half --- the
+face and size of the selected runs in a rich text document, which *is* a real
+edit. Outside rich text it declines and says where to go instead of silently
+doing the other thing. That is Word's key for Font, so **Search in Files moved
+to `Ctrl+Alt+Shift+F`**: where Word has a key, the family follows Word, because
+the convention in everybody's hands beats the one in code editors.
+
+**The one row that said "Font" did not mean it.** The Format menu's old **More
+Font Options...** refused outside Markdown documents and wrote hidden Markdown
+format codes rather than changing anything you could see. It is still there and
+still does that --- it is now called **Markdown Format Codes...**, which is what
+it is, and its refusal now points at the two real rows above it. Being told
+"only available in Markdown documents" by a menu item called Font is exactly how
+somebody concludes the editor cannot change its font at all, which until today
+happened to be true.
+
+**Two settings, shared with QuillLite.** **Editor font** (`font_name`, empty
+means the system's own pick) and **Editor text size (points)** (`font_size`,
+6--72, default 12) live in Preferences ▸ Settings under "font". They are
+QuillLite's field names deliberately, so a settings file carried between the two
+products means the same thing in both. A hand-edited size outside the range is
+clamped to the nearest legal one rather than refused: a typo in a settings file
+should not cost you a working editor.
+
+**Four commands were firing somebody else's key.** Found while checking this
+one. **Select Block**, **Title Case**, **Sentence Case** and **Set Bookmark**
+were each registered with the keyboard shortcut of the command *next to them in
+the source*, so each advertised and bound a chord that belonged to another
+command while its own reached nothing --- Title Case and Upper Case both claimed
+`Ctrl+Shift+U`, and one of any such pair silently never fires. All four now
+carry their own key, and a new check fails the build if any command is ever
+registered with another's again.
+
 ### Lists announce themselves, and a plain document now has a language (2026-09-15)
 
 **A list was invisible to your screen reader, and a `.md` could not be

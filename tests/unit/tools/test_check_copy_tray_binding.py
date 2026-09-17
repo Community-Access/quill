@@ -71,12 +71,20 @@ def test_drift_rebound_slot_raises(tmp_path: Path, monkeypatch: pytest.MonkeyPat
 
 def test_drift_stolen_slot_raises(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """If a *different* command claims one of the reserved bindings, the gate
-    must report it so a contributor cannot silently shadow a Copy Tray slot."""
+    must report it so a contributor cannot silently shadow a Copy Tray slot.
+
+    The chord it steals is ``Ctrl+Alt+Shift+3``, because that is where slot 3
+    lives. The tray slots moved off ``Ctrl+Shift+<digit>`` when the nine
+    numbered bookmarks took that row, and this test kept stealing the old
+    chord -- which by then belonged to ``navigate.set_numbered_bookmark_3``
+    fair and square, so the gate correctly reported nothing and the test
+    failed. A test that names a chord has to move when the chord moves.
+    """
     from quill.core import keymap as keymap_module
 
     patched = dict(DEFAULT_KEYMAP)
-    # Add a brand-new command that tries to steal ``Ctrl+Shift+3``.
-    patched["format.heading_3_shortcut"] = "Ctrl+Shift+3"
+    # A brand-new command that tries to steal slot 3's chord.
+    patched["format.heading_3_shortcut"] = "Ctrl+Alt+Shift+3"
     monkeypatch.setattr(keymap_module, "DEFAULT_KEYMAP", patched)
     errors = check_copy_tray_binding.run_checks()
     assert any("format.heading_3_shortcut" in e for e in errors)
