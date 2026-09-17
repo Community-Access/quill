@@ -154,7 +154,14 @@ class SpellVoiceMixin:
         self._last_live_misspelling_feedback_at = now
         if policy.sound:
             self._play_spelling_alert()
-        self._set_status(f'Possible misspelling: "{item.word}"')
+        # Written, not spoken. `_set_status` always announces, so until
+        # 2026-09-16 this line was read aloud whether or not
+        # `spelling_alert_speech` was on -- and TWICE when it was on, once here
+        # and once below. The setting therefore meant nothing in QUILL and the
+        # opposite of nothing in QuillLite, whose status write is silent
+        # (bad.md S2). The quiet write keeps the status bar honest for anybody
+        # reviewing it, which is GATE-12's requirement, without speaking.
+        self._set_status_quiet(f'Possible misspelling: "{item.word}"')
         # Off by default, and deliberately: speech here interrupts the sentence
         # it is commenting on. Available for anyone who wants it anyway.
         if policy.speech:

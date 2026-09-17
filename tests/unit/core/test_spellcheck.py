@@ -373,3 +373,25 @@ def test_language_display_names_are_speakable() -> None:
     assert "extended word list" in spellcheck.language_display_name("en_AU-large")
     # An unknown tag still degrades to something rather than raising.
     assert spellcheck.language_display_name("de_DE") == "de_DE"
+
+
+def test_add_word_to_scope_says_when_there_was_nowhere_to_write(tmp_path: Path) -> None:
+    """bad.md S3. The document and project dictionaries are files *beside* the
+    document, so an unsaved buffer has neither. This used to return None and the
+    caller announced `Added "word" to this document only` anyway -- the word
+    stayed underlined and the only way to find out was to try again and hear the
+    same sentence twice."""
+    assert add_word_to_scope("qwertyword", "document", None, None) is False
+    assert add_word_to_scope("qwertyword", "project", None, None) is False
+
+
+def test_add_word_to_scope_reports_the_write_it_did(tmp_path: Path) -> None:
+    doc = tmp_path / "note.md"
+    doc.write_text("x", encoding="utf-8")
+    assert add_word_to_scope("qwertyword", "document", doc, tmp_path) is True
+
+
+def test_an_empty_word_is_not_a_word(tmp_path: Path) -> None:
+    doc = tmp_path / "note.md"
+    doc.write_text("x", encoding="utf-8")
+    assert add_word_to_scope("   ", "document", doc, tmp_path) is False

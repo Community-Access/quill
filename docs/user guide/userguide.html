@@ -1190,6 +1190,17 @@ link.</p></li>
 <strong>Decrease Level</strong> / <strong>Increase Level</strong>, and
 <strong>Style Headings…</strong> (font, size, alignment) for the current
 level or all levels.</p></li>
+<li><p><strong>Heading N sets the level, it does not add one.</strong>
+<code>Ctrl+Alt+2</code> on a line that already reads
+<code>### Notes</code> gives you <code>## Notes</code>, not
+<code>## ### Notes</code>. It works from anywhere on the line, not only
+from the start, and if you have several lines selected it heads
+<strong>all</strong> of them — as one change, so a single
+<code>Ctrl+Z</code> puts them all back. <code>Ctrl+Alt+0</code> is the
+way out: it takes the marker off and leaves the words. (Before September
+2026 each of those four cases went wrong in a way nothing announced —
+your screen reader says “Heading 2” whether the line is right or not, so
+the mistake only showed up in the published document.)</p></li>
 <li><p><strong>List</strong> submenu: <strong>Bullet</strong>,
 <strong>Numbered</strong>, <strong>Task</strong>, <strong>List
 Manager…</strong>, and <strong>Structured List Studio…</strong>
@@ -24305,6 +24316,13 @@ plain text drops the formatting with the same honest warning.</li>
 <p>Everything that makes Quill fast still works on the same clean text:
 undo, search, the outline, word counts, read-aloud, and the AI tools all
 operate on your prose, not on markup.</p>
+<p><strong>Turning a list off turns off the list you are in.</strong>
+<code>Ctrl+Shift+L</code> and <code>Ctrl+Alt+N</code> inside an existing
+list strip the markers from <strong>that</strong> list and leave every
+other list in the document alone, and QUILL says how many items it
+changed — “Bullet list removed, 4 items” — because the count is the fact
+you cannot see. <code>Ctrl+Z</code> puts them back; the change is an
+edit like any other, not a rebuild of the whole document.</p>
 <p>The <strong>Transform Lines</strong> submenu gathers every line and
 text transform in one place: <strong>Number Lines…</strong>,
 <strong>Number Lines (Advanced)…</strong>, <strong>Hard-Wrap
@@ -25382,6 +25400,14 @@ by default – an interruption while you are composing costs more than it
 tells you. <strong>spelling_alert_repeat_ms</strong> is the shortest gap
 before the same word is reported again, so one stubborn proper noun does
 not become a drum; zero means every time.</p>
+<p>The status bar always carries the word — “Possible misspelling:
+teest” — whichever way those two settings are set, so you can go and
+read it with your reader at any time. Until September 2026 QUILL spoke
+that status line as well, whether or not
+<strong>spelling_alert_speech</strong> was on, and spoke it
+<em>twice</em> when it was: the setting did nothing here while doing
+exactly what it says in QuillLite. Both editors now mean the same thing
+by it.</p>
 <p><strong>Spelling a word out.</strong>
 <strong>spell_aloud_enabled</strong> is the master switch.
 <strong>spell_aloud_style</strong> chooses how the letters are said:
@@ -30943,6 +30969,18 @@ seconds so the device never sleeps. Off by default.</li>
 checkout to audition the identity set family by family, or add
 <code>--all</code> for every sound in the pack.</li>
 </ul>
+<h4 id="when-a-word-cannot-be-added-to-a-dictionary">When a word cannot
+be added to a dictionary</h4>
+<p><strong>Add to This Document Only</strong> and <strong>Add to This
+Project</strong> write a small dictionary file <em>beside</em> your
+document, which means a document you have not saved yet has nowhere to
+put one. QUILL used to report success anyway, leaving the word
+underlined with no explanation; it now says so, and says what to do:
+<em>“Cannot add “Bhattacharya” to this document only until the document
+is saved. Save it, or add the word to your personal dictionary
+instead.”</em> Your <strong>personal dictionary</strong> always works,
+saved document or not — it lives with your settings rather than with the
+file.</p>
 <h4 id="choosing-between-a-tone-and-words">Choosing between a tone and
 words</h4>
 <p>A few moments have both a sound and a sentence available, and which

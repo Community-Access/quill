@@ -2,6 +2,52 @@
 
 ## 1.0.0
 
+### Four things QUILL did quietly and wrongly (2026-09-16)
+
+All four share a shape: the editor did something other than what it said, and
+nothing you could hear told you so.
+
+**Turning a list off unmade every list in the document.** Pressing
+`Ctrl+Shift+L` inside a three-item list stripped the markers from *that* list
+and from every other list in the file --- and it rebuilt the whole buffer to do
+it, which cleared the undo stack, so `Ctrl+Z` could not bring any of them back.
+It announced "Bullet List removed", singular. Now it strips only the list you
+are standing in, edits in place so undo still works, and says how many items it
+changed: **"Bullet list removed, 4 items"**.
+
+**Heading N added a heading instead of setting one.** Applying Heading 2 to a
+line that already read `### Notes` produced `## ### Notes` --- a Heading 2 whose
+text begins with three hashes. With the caret in the middle of a line it
+produced `foo ## bar`. With five lines selected it headed the first and left
+four alone, saying nothing about the four. Every one of those is invisible by
+ear: the screen reader says "Heading 2" in all four cases, and the damage only
+appears in the published file. Heading N now **rewrites** the line, does **every
+selected line**, and does it as one edit so one `Ctrl+Z` walks it back. `Body
+Text` takes the markers off the same way. QuillLite fixed exactly this bug a
+while ago with a shared function whose docstring names it; QUILL had never
+called it.
+
+**The as-you-type spelling alert spoke whether you asked it to or not.**
+"Possible misspelling" was read aloud with *Speak the spelling alert* switched
+off, and read twice with it switched on. The setting did nothing here and did
+exactly what it says in QuillLite, so one preference meant two opposite things
+in two editors meant to agree. The alert now writes the status bar silently and
+speaks only when you have asked for speech.
+
+**"Add to this document only" could fail silently.** The per-document and
+per-project dictionaries are files kept beside the document, so an unsaved
+buffer has neither --- the word went nowhere and QUILL still announced `Added
+"word" to this document only`. The word stayed underlined and the only way to
+discover it was to try again and hear the same sentence twice. It now says what
+actually happened and what to do instead: **"Cannot add "word" to this document
+only until the document is saved. Save it, or add the word to your personal
+dictionary instead."** QuillLite's `teach_word` was equally cheerful and is
+equally honest now.
+
+Two modules came out of `main_frame.py` in the process
+(`main_frame_headings.py`, and the list helpers into `quill/core/list_style.py`),
+so the file is 46 lines smaller than it was this morning rather than larger.
+
 ### QUILL can change the size of its own text (2026-09-16)
 
 **It could not, before today.** No font setting, no menu row, no key, no zoom --

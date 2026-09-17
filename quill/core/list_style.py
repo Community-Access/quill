@@ -30,7 +30,13 @@ from __future__ import annotations
 
 import re
 
-__all__ = ["LIST_STYLES", "cycle_list_style", "list_style_of"]
+__all__ = [
+    "LIST_STYLES",
+    "cycle_list_style",
+    "list_block_span",
+    "list_style_of",
+    "strip_list_block",
+]
 
 #: The ring, in order. Pressing the key at the last stop comes back to the first.
 LIST_STYLES: tuple[str, str, str] = ("none", "bullet", "numbered")
@@ -114,3 +120,94 @@ def cycle_list_style(text: str, start: int, end: int) -> tuple[str, str, int, in
         line_start,
         line_start + len(updated),
     )
+
+
+def list_block_span(text: str, start: int, end: int) -> tuple[int, int] | None:
+    """The span of the one contiguous list the caret (or selection) sits in.
+
+    ``None`` when there is no list there. Walks outward from the caret's line
+    while each neighbouring line is a list item or a blank line *between* two
+    items, so a list with a paragraph break inside it stays one list and the
+    next list further down the document is a different one.
+
+    This exists because of bad.md R2. QUILL's "turn the list off" ran
+    :func:`strip_list_markers` over **the whole document** and wrote the result
+    back with ``SetValue`` -- so switching one three-item list off silently
+    unmade every other list in the file, and ``SetValue`` also cleared the
+    RichEdit undo stack, so Ctrl+Z could not bring any of them back. The
+    announcement was "Bullet List removed", singular, which is the sentence a
+    listener has to believe.
+    """
+    line_starts: list[int] = [0]
+    for index, character in enumerate(text):
+        if character == "\n":
+            line_starts.append(index + 1)
+
+    def _line_end(line_start: int) -> int:
+        end_index = text.find("\n", line_start)
+        return len(text) if end_index == -1 else end_index
+
+    line_spans = [(line_start, _line_end(line_start)) for line_start in line_starts]
+
+    def is_item(row: int) -> bool:
+        if not 0 <= row < len(line_spans):
+            return False
+        line = text[line_spans[row][0] : line_spans[row][1]]
+        return _BULLET.match(line) is not None or _NUMBER.match(line) is not None
+
+    def is_blank(row: int) -> bool:
+        if not 0 <= row < len(line_spans):
+            return False
+        return not text[line_spans[row][0] : line_spans[row][1]].strip()
+
+    if end < start:
+        start, end = end, start
+    first = max(row for row, span in enumerate(line_spans) if span[0] <= start)
+    last = max(row for row, span in enumerate(line_spans) if span[0] <= end)
+    rows = [row for row in range(first, last + 1) if is_item(row)]
+    if not rows:
+        return None
+    top, bottom = rows[0], rows[-1]
+    # A blank line only continues the list when another item follows it;
+    # otherwise the list ended and the blank belongs to what comes next.
+    while is_item(top - 1) or (is_blank(top - 1) and is_item(top - 2)):
+        top -= 2 if not is_item(top - 1) else 1
+    while is_item(bottom + 1) or (is_blank(bottom + 1) and is_item(bottom + 2)):
+        bottom += 2 if not is_item(bottom + 1) else 1
+    return line_spans[top][0], line_spans[bottom][1]
+
+
+def strip_list_block(text: str, start: int, end: int) -> tuple[int, int, str, int] | None:
+    """``(start, end, replacement, items)`` for turning off just this list.
+
+    The count is returned because the caller must say it: "Bullet list removed,
+    4 items" is the only way somebody who cannot see the markers disappear
+    learns how much just changed (GATE-BULK-COUNT).
+    """
+    span = list_block_span(text, start, end)
+    if span is None:
+        return None
+    block_start, block_end = span
+    block = text[block_start:block_end]
+    items = sum(
+        1
+        for line in block.splitlines()
+        if _BULLET.match(line) is not None or _NUMBER.match(line) is not None
+    )
+    return block_start, block_end, _strip_markers(block), items
+
+
+def _strip_markers(block: str) -> str:
+    """*block* with every bullet or number marker removed, indents kept."""
+    out: list[str] = []
+    for line in block.splitlines():
+        bullet = _BULLET.match(line)
+        if bullet is not None:
+            out.append(f"{bullet.group(1)}{line[bullet.end() :]}")
+            continue
+        number = _NUMBER.match(line)
+        if number is not None:
+            out.append(f"{number.group(1)}{line[number.end() :]}")
+            continue
+        out.append(line)
+    return "\n".join(out)

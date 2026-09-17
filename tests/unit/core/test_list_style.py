@@ -78,3 +78,72 @@ def test_the_offsets_span_exactly_what_was_rewritten() -> None:
 def test_an_empty_document_is_left_alone() -> None:
     updated, style, start, end = cycle_list_style("", 0, 0)
     assert (updated, style, start, end) == ("", "bullet", 0, 0)
+
+
+# ---------------------------------------------------------------------------
+# Turning one list off, and only that one (bad.md R2)
+# ---------------------------------------------------------------------------
+
+
+def test_only_the_list_at_the_caret_is_found() -> None:
+    """QUILL's list-off used to run over the whole document, so switching one
+    three-item list off silently unmade every other list in the file."""
+    from quill.core.list_style import list_block_span
+
+    text = "intro\n\n- a\n- b\n- c\n\npara\n\n- x\n- y"
+    start, end = list_block_span(text, text.index("- b"), text.index("- b"))
+    assert text[start:end] == "- a\n- b\n- c"
+
+
+def test_a_caret_outside_any_list_finds_nothing() -> None:
+    from quill.core.list_style import list_block_span
+
+    assert list_block_span("intro\n\n- a\n- b", 0, 3) is None
+
+
+def test_a_blank_line_between_two_items_keeps_one_list() -> None:
+    """A loose list is still one list; the blank lines are part of it."""
+    from quill.core.list_style import list_block_span
+
+    text = "- a\n\n- b\n\n- c"
+    assert list_block_span(text, 0, 0) == (0, len(text))
+
+
+def test_a_blank_line_after_the_last_item_ends_the_list() -> None:
+    from quill.core.list_style import list_block_span
+
+    text = "- a\n- b\n\nafter"
+    start, end = list_block_span(text, 0, 0)
+    assert text[start:end] == "- a\n- b"
+
+
+def test_strip_returns_the_span_the_text_and_the_count() -> None:
+    """The count, because the caller must say it: "Bullet list removed, 3
+    items" is the only way somebody who cannot see the markers go learns how
+    much changed."""
+    from quill.core.list_style import strip_list_block
+
+    text = "intro\n- a\n- b\n- c"
+    start, end, replacement, items = strip_list_block(text, text.index("- a"), text.index("- a"))
+    assert replacement == "a\nb\nc"
+    assert items == 3
+    assert text[:start] == "intro\n"
+
+
+def test_numbered_lists_strip_too() -> None:
+    from quill.core.list_style import strip_list_block
+
+    text = "1. one\n2. two"
+    _, _, replacement, items = strip_list_block(text, 0, 0)
+    assert replacement == "one\ntwo"
+    assert items == 2
+
+
+def test_indentation_survives_the_strip() -> None:
+    """A nested list that loses its markers keeps its shape; the indent is the
+    only thing left saying which item belonged under which."""
+    from quill.core.list_style import strip_list_block
+
+    text = "- top\n  - nested"
+    _, _, replacement, _ = strip_list_block(text, 0, 0)
+    assert replacement == "top\n  nested"

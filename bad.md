@@ -447,8 +447,6 @@ Engine: one and shared (`quill.core.spellcheck`, `quill.core.spelling.*`, `Spell
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| S2 | Broken | QUILL | **The as-you-type alert is spoken even when `spelling_alert_speech` is off**, and twice when it is on: `_announce_spellcheck_hint` goes through `_set_status`, which always announces. Lite's status write is silent, so the same setting means opposite things in the two editors. | `main_frame_spell_voice.py:351-355`, `main_frame_statusbar.py:938-949`, `lite_window_status.py:440-448` |
-| S3 | Broken | QUILL | **"Ignore" in Spelling for This Word writes the document sidecar** (a permanent `.quill-dict.json`), not a session ignore; on an unsaved document the write silently does nothing and the command still announces `Added "word" to dictionary`. | `main_frame_spellcheck.py:543-545, 697-698`; `spellcheck.py:658-660, 734-736` |
 | S4 | Worse | both | **Word boundaries are ASCII in the tokenizer and Unicode in the walk-left**: `cafe` with an accent is flagged as `caf`, `naive` with a diaeresis as `na` and `ve`, `dogs'` keeps its apostrophe, and a curly apostrophe splits `don't`. The same word is silent on one path and flagged on another. | `spellcheck.py:67, 514-520, 574-575`; `spelling/voicing.py:103-118` already expects the token the tokenizer cannot produce |
 | S5 | Worse | both | **The caret just past a word is "no word"**: `misspelling_at_position` needs `start <= pos < end`, and the caret sits at `end` right after typing. The context menus retry at `pos - 1`, and so does Add Word via `_word_at_caret_for_spelling`; the other four keyboard commands do not. | `spellcheck.py:566`; `lite_window_spelling.py:391-396, 500-505`; `main_frame_spellcheck.py:513-522` |
 | S7 | Worse | both | **Half of this was wrong and is corrected.** `spell_aloud_delay_ms` IS read (`voicing.py:232`) and `_spell_word_for_speech` IS called -- neither is dead. Genuinely open: `spell_review_wrap_to_beginning` is a documented setting with no reader and `announce_wrap_prompt` has no callers, so wrap-to-beginning is a half-built feature that either gets wired or gets removed (a removal, so ask); and QuillLite has no `spell_review_spell_word` field, so its "spell words out" switch does not govern the F7 review. The dead `_choose_misspelling_with_context` dialog is gone. | `settings.py`, `announcements.py:179` |
@@ -512,10 +510,7 @@ Rich engine shared (`richedit_editing.py`, `richedit_rtf_surface.py`, `heading_l
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| R2 | Broken | QUILL | **Turning a list off strips every list in the document** (`strip_list_markers` over the whole text, then `SetValue`, which also clears the RichEdit undo stack) and announces only "Bullet List removed". | `main_frame.py:16497-16505`, `markdown_sections.py:747` |
-| R3 | Broken | QUILL | **Heading N in Markdown prepends** instead of rewriting: `### Notes` becomes `## ### Notes`; mid-line with no selection gives `foo ## bar`; a multi-line selection heads only the first line. Lite fixed exactly this with the shared `set_heading_level`, whose docstring names the bug; QUILL never adopted it. | `main_frame.py:16299-16318`, `tagging.py:274-280`, `heading_levels.py:188-236` |
 | R4 | Broken | QUILL | **Dark mode may write grey text into every saved `.rtf`**: `_apply_theme` calls `SetForegroundColour` on the rich control (wxMSW applies it as `SCF_ALL` character colour) and nothing resets to `tomAutoColor` before the native save. Lite guards both directions. Verify live before fixing. | `main_frame.py:4632-4636`, `main_frame_rich_mode.py:110`, `lite_window_theme.py:9-15`, `lite_window_file.py:194, 213` |
-| R5 | Broken | Lite | **Text size and theme changes may re-level every heading in a rich document**: `_apply_editor_font` calls `control.SetFont(11pt)` on a populated rich control on every `Ctrl+=`, dark-mode toggle or font change in any window; wxMSW `SetFont` applies to the whole text, which is what the module docstring says it avoids. Tests use a fake control. Verify live. | `lite_window_theme.py:91-113`, `lite.py:417`, `test_lite_view_commands.py:72-106` |
 | R6 | Broken | Lite | **Switch Document Mode discards formatting**: rich to plain is `GetValue()` text only (confirmed, No default) with no Markdown conversion; plain to rich leaves `## Title` as literal hashes; `ChangeValue` twice clears undo; `path` is dropped on suffix mismatch. QUILL converts both ways with a lossy inventory. | `lite_window_theme.py:63-91`, `main_frame_rich_mode.py:589-666` |
 | R7 | Worse | both | **The font ladder lacks H5 (11.5) and H6 (10.5)**: Shrink on H4 lands on 11 = bold body, heading gone; Grow on H6 likewise. Neither editor announces the level change, only "N point". | `richedit_editing.py:104-121`, `heading_ladder.py:27`, `main_frame_rich_paragraph.py:140`, `lite_window_format.py:311` |
 | R8 | Worse | QUILL | Rich `Ctrl+B/I/U` announce the verb ("Bold") with no state; the shared `toggle_font_attr` returns the state and Lite says "Bold on / Bold off". | `main_frame_rich_mode.py:377-399`, `richedit_editing.py:285-297` |
@@ -723,8 +718,8 @@ way:
 | # | Item | Editors | Cost | Done when |
 | --- | --- | --- | --- | --- |
 | **P0.6c** | **QUILL adopts `DocumentText`** (V4). The object exists (`quill/core/document_text.py`) and QuillLite is on it: the mirror, the revision counter, the cached stats and line table, and the rule that display code reads it and never the control. QUILL still has its own half-answer -- `document.text` plus a stats cache in `main_frame_statusbar.py` -- and should move onto the shared object, which is what makes the edit journal the spoken undo needs (P3.7) possible at all | QUILL | M | one mirror, owned by core, read by both |
-| P0.7 | The **Broken** rows of section 6, each with a regression test: F1 Lite Save As converts the window before the write; F2 Lite recovery rewrites encoding; F3 unencodable characters silent in both (one shared prompt: "3 characters cannot be saved as Windows-1252. Save as UTF-8?"); F4 QUILL non-atomic Save As HTML / Plain Text; F5 QUILL watcher replaces a `.docx` tab with decoded binary; F6 QUILL encoding change does not dirty, UTF-16 undetected; R2 list-off strips every list and clears undo; R3 Markdown heading prepends; R6 Lite mode switch discards formatting; S2 QUILL live alert speaks with speech off; S3 QUILL Ignore writes a sidecar and lies; | per bug | S each | regression test per bug |
-| P0.8 | **Verify live, then fix if confirmed**: R4 dark mode writing grey text into every saved `.rtf`; R5 Lite `SetFont` re-levelling headings on `Ctrl+=`; C2/N3 QUILL whole-document rewrite for a local insert or line tool in an `.rtf`; R14 two-step undo after Heading N; L13 Lite's Go to Start of Selection | both | S each | a rich document survives each with its runs intact |
+| P0.7 | The remaining **Broken** rows of section 6, each with a regression test. **F4** QUILL non-atomic Save As HTML / Plain Text; **F5** QUILL watcher replaces a `.docx` tab with decoded binary; **F6** QUILL encoding change does not dirty, UTF-16 undetected -- all three touch the save path or the watcher and are held under 0.6's rule. **R6** Lite mode switch discards formatting, which wants the same Markdown conversion F1 introduces, so it lands with F1. (R2, R3, S2, S3 landed 2026-09-16; F1, F2, F3 are written and held.) | per bug | S each | regression test per bug |
+| P0.8 | **Verify live, then fix if confirmed**: R4 dark mode writing grey text into every saved `.rtf`; C2/N3 QUILL whole-document rewrite for a local insert or line tool in an `.rtf`; R14 two-step undo after Heading N; L13 Lite's Go to Start of Selection. (R5 was confirmed by reading and fixed 2026-09-16: neither editor calls `SetFont` on a rich control now.) | both | S each | a rich document survives each with its runs intact |
 | P0.9 | `_run_command` reports the exception class and message, not "Command failed"; `save_file` handles `UnicodeEncodeError` and `UnsupportedSaveFormatError` with the same sentences as `OSError`; Lite stops `errors="replace"` | both | S | a cp1252 document that gains an emoji says so on `Ctrl+S` in both |
 
 ### P1 -- parity violations and the rest of the family keymap
@@ -735,7 +730,6 @@ way:
 | P1.2 | Structural selection family on Lite's six chords; Set Mark `Ctrl+Shift+M`, Exchange `Ctrl+Alt+X`, Duplicate Selection `Ctrl+Alt+Q`; Switch Document Mode `Alt+Shift+F`; `Ctrl+Alt+F8` becomes the marker toggle in **both** and Extend Selection Mode takes its own chord in both (5.3a); Shrink drops its stack; Reselect remembers every structural select; F8 gains a cancel; marks on the shared ring, clamped, recorded for Back | both | M | -- |
 | P1.2a | **Fix Extend Selection Mode's four movement bugs** (5.3a): page keys ask the control for a real page, Up/Down follow visual lines under soft wrap, word movement stops at punctuation as Windows does, and the line table comes from `DocumentText` instead of an O(N) rescan per keystroke | QUILL | S | holding Down inside a wrapped paragraph moves one visual line per press, and a 50 MB file costs nothing extra per key |
 | P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
-| P1.3 | Lite's rich kind switched from `SetFont` to the view zoom `quill/core/editor_font.py` now computes (5.5, R5). QUILL is on it as of 2026-09-16; QuillLite still calls `control.SetFont(11pt)` on a populated rich control from `lite_window_theme.py` | Lite | S | a rich document's heading ladder is unchanged after `Ctrl+=` |
 | P1.4 | Body Text `Ctrl+Alt+0`; Next/Previous Heading `Ctrl+Alt+H`/`+Shift+H`; List Headings alias | QUILL | S | -- |
 | P1.6 | Document Statistics `Ctrl+Shift+G` **in QUILL** (Lite moved 2026-09-16). The Go To dialog is built and shared (`quill/ui/go_to_dialog.py`) and QuillLite is on it; **QUILL still opens Go To Line and Go To Page as two commands** and should open the shared one, with Page as a third kind | QUILL | S | -- |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) | QUILL | M | round-trip test per encoding |
@@ -854,19 +848,18 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**63 items open.** Delete a row when it lands. Tiered items first,
+**62 items open.** Delete a row when it lands. Tiered items first,
 then the section-6 findings no tiered item has claimed.
 
 | # | Item |
 | --- | --- |
-| P0.7 | The Broken rows of section 6, each with a regression test: F1 Lite Save As converts the window before the write; F2 Lite recovery rewrites encoding |
-| P0.8 | Verify live, then fix if confirmed: R4 dark mode writing grey text into every saved .rtf; R5 Lite SetFont re-levelling |
+| P0.7 | The REMAINING Broken rows: F4, F5, F6 (save path / watcher, held) and R6 (lands with F1). R2, R3, S2, S3 landed 2026-09-16 |
+| P0.8 | Verify live, then fix if confirmed: R4 dark mode grey text in saved .rtf; C2/N3 whole-document rewrite; R14 two-step undo; L13. R5 fixed 2026-09-16 |
 | P0.9 | _run_command reports the exception class and message, not "Command failed"; save_file handles UnicodeEncodeError and U |
 | P1.1 | Bind the keyless QUILL commands still waiting on a displacement: Sort Z-A, Tidy Whitespace, Previous Heading, Earlier  |
 | P1.2 | Structural selection family on Lite's six chords; Set Mark Ctrl+Shift+M, Exchange Ctrl+Alt+X, Duplicate Selection Ctrl |
 | P1.2a | Fix Extend Selection Mode's four movement bugs (5.3a): page keys ask the control for a real page, Up/Down follow visua |
 | P1.2b | select_chunk renamed Select Token, off Ctrl+Space, with help text that says what it does that Select Word does not (5. |
-| P1.3 | Lite's rich kind switched from SetFont to the view zoom quill/core/editor_font.py computes (5.5, R5); QUILL is on it |
 | P1.4 | Body Text Ctrl+Alt+0; Next/Previous Heading Ctrl+Alt+H/+Shift+H; List Headings alias |
 | P1.6 | Document Statistics Ctrl+Shift+G in QUILL; QUILL opens the shared Go To dialog, with Page as a third kind (5.4) |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |

@@ -93,14 +93,20 @@ def add_word(
 
     A read-only profile is a real situation and not an error worth a dialog, so
     the caller gets a boolean to announce rather than an exception to handle.
+
+    ``False`` also when there was simply nowhere to write: a "this document
+    only" dictionary is a file beside the document, so an unsaved buffer has
+    none. That used to return ``True`` and the word stayed underlined with
+    nothing said about it (bad.md S3).
     """
     from quill.core.spellcheck import add_word_to_scope
 
     try:
-        add_word_to_scope(word, scope, document_path, None, dictionary_dir(settings, data_dir))
+        return add_word_to_scope(
+            word, scope, document_path, None, dictionary_dir(settings, data_dir)
+        )
     except Exception:  # noqa: BLE001 - see the docstring
         return False
-    return True
 
 
 def initial_live_check(document_path: Path | None) -> bool:

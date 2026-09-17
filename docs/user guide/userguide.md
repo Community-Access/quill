@@ -489,6 +489,15 @@ The **Insert** menu adds structured content at the cursor.
 
 - **Insert Link...** creates a format-aware link.
 - **Heading** submenu: insert Heading 1 through 6, **Decrease Level** / **Increase Level**, and **Style Headings...** (font, size, alignment) for the current level or all levels.
+- **Heading N sets the level, it does not add one.** `Ctrl+Alt+2` on a line that
+  already reads `### Notes` gives you `## Notes`, not `## ### Notes`. It works
+  from anywhere on the line, not only from the start, and if you have several
+  lines selected it heads **all** of them --- as one change, so a single
+  `Ctrl+Z` puts them all back. `Ctrl+Alt+0` is the way out: it takes the marker
+  off and leaves the words. (Before September 2026 each of those four cases
+  went wrong in a way nothing announced --- your screen reader says "Heading 2"
+  whether the line is right or not, so the mistake only showed up in the
+  published document.)
 - **List** submenu: **Bullet**, **Numbered**, **Task**, **List Manager...**, and **Structured List Studio...** (F2).
 - **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert Block Quote**, **Insert Horizontal Rule**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
 - **The two tag pickers are dimmed where they do not apply**, and exactly one of them is ever live: **Insert Markdown Tag** in a Markdown document, **Insert HTML Tag** in an HTML one, and neither in a plain document or a rich text one. Markdown used to stay enabled in a *plain* document too, which was the mirror image of the HTML row's rule and worse by ear than by eye: an enabled row promises the command will work, and a document that quietly became half-Markdown is not something you can see you did. **Navigate ▸ Set Document Language...** turns the rows back on in one keystroke.
@@ -4466,6 +4475,13 @@ Inline emphasis:
 
 Everything that makes Quill fast still works on the same clean text: undo, search, the outline, word counts, read-aloud, and the AI tools all operate on your prose, not on markup.
 
+**Turning a list off turns off the list you are in.** `Ctrl+Shift+L` and
+`Ctrl+Alt+N` inside an existing list strip the markers from **that** list and
+leave every other list in the document alone, and QUILL says how many items it
+changed --- "Bullet list removed, 4 items" --- because the count is the fact you
+cannot see. `Ctrl+Z` puts them back; the change is an edit like any other, not a
+rebuild of the whole document.
+
 The **Transform Lines** submenu gathers every line and text transform in one place: **Number Lines...**, **Number Lines (Advanced)...**, **Hard-Wrap Lines...**, **Sort Lines Ascending**, **Sort Lines Descending**, **Reverse Lines**, **Remove Duplicate Lines**, **Trim Trailing Whitespace**, **Normalize Whitespace**, **Convert Indentation to Spaces**, and **Convert Indentation to Tabs**. **Number Lines (Advanced)...** adds a starting number, increment, digit or Roman-numeral style, zero-padding width, a custom suffix, and left or right alignment, for cases the simple version doesn't cover.
 
 **Two blank-line commands, and the names say which is which.** The Format menu
@@ -5195,6 +5211,13 @@ also speaks the word, and is off by default -- an interruption while you are
 composing costs more than it tells you. **spelling_alert_repeat_ms** is the
 shortest gap before the same word is reported again, so one stubborn proper noun
 does not become a drum; zero means every time.
+
+The status bar always carries the word --- "Possible misspelling: teest" ---
+whichever way those two settings are set, so you can go and read it with your
+reader at any time. Until September 2026 QUILL spoke that status line as well,
+whether or not **spelling_alert_speech** was on, and spoke it *twice* when it
+was: the setting did nothing here while doing exactly what it says in QuillLite.
+Both editors now mean the same thing by it.
 
 **Spelling a word out.** **spell_aloud_enabled** is the master switch.
 **spell_aloud_style** chooses how the letters are said: plain **letters** are
@@ -8011,6 +8034,17 @@ Quill can play short, non-speech audio cues — earcons — at meaningful editin
 - **The companion apps have their own voice.** Quill Radio and Quill Weather cue their own moments (connecting, a stall, a new weather alert) through the same Sound Events system, and each cue can be turned off individually from the same settings surface. Which moments each app marks, and how, is documented in that app's own user guide.
 - **Keep the sound device awake.** Some USB and Bluetooth audio devices power down after a few silent seconds and clip the start of the next sound. If the first moment of your earcons or speech gets cut off, turn on **Keep the sound device awake** (in Settings, search "keepalive"): QUILL plays a silent clip every 20 seconds so the device never sleeps. Off by default.
 - **Hear them all.** Run `python scripts/audition_ink_sounds.py` from a QUILL source checkout to audition the identity set family by family, or add `--all` for every sound in the pack.
+
+#### When a word cannot be added to a dictionary
+
+**Add to This Document Only** and **Add to This Project** write a small
+dictionary file *beside* your document, which means a document you have not
+saved yet has nowhere to put one. QUILL used to report success anyway, leaving
+the word underlined with no explanation; it now says so, and says what to do:
+*"Cannot add "Bhattacharya" to this document only until the document is saved.
+Save it, or add the word to your personal dictionary instead."* Your **personal
+dictionary** always works, saved document or not --- it lives with your
+settings rather than with the file.
 
 #### Choosing between a tone and words
 

@@ -69,6 +69,12 @@ class _Editor:
 class _Document:
     def __init__(self, path: str | None) -> None:
         self.path = Path(path) if path is not None else None
+        self.text = ""
+
+    def set_text(self, text: str) -> None:
+        # The strip path keeps the document model in step now that it edits
+        # through Replace rather than replacing the whole buffer (bad.md R2).
+        self.text = text
 
 
 def _make_frame(
@@ -165,7 +171,11 @@ def test_toggle_bullet_list_strips_when_caret_is_inside_list() -> None:
     new_text = editor._text
     assert "- a" not in new_text
     assert "- b" not in new_text
-    assert "Bullet List removed" in frame._status_message
+    # Only this list, and the count -- both new on 2026-09-16. It used to strip
+    # every list in the document and say "Bullet List removed" with no number
+    # (bad.md R2).
+    assert "Bullet List removed, 3 items" == frame._status_message
+    assert new_text.startswith("hello\n")
 
 
 def test_toggle_numbered_list_strips_when_caret_is_inside_list() -> None:
@@ -176,7 +186,7 @@ def test_toggle_numbered_list_strips_when_caret_is_inside_list() -> None:
     new_text = editor._text
     assert "1. one" not in new_text
     assert "2. two" not in new_text
-    assert "Numbered List removed" in frame._status_message
+    assert "Numbered List removed, 3 items" == frame._status_message
 
 
 # ---------------------------------------------------------------------------

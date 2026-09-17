@@ -36,6 +36,7 @@ __all__ = [
     "heading_level_at",
     "heading_text_at",
     "set_heading_level",
+    "set_heading_level_over_lines",
 ]
 
 #: Markdown and HTML both stop at six, so both products do.
@@ -229,6 +230,64 @@ def set_heading_level(
         start=start,
         end=end,
         replacement=replacement,
+        old_level=old_level,
+        new_level=level,
+    )
+
+
+def set_heading_level_over_lines(
+    text: str, start: int, end: int, level: int, *, markup_kind: str = "markdown"
+) -> HeadingChange:
+    """:func:`set_heading_level` applied to every line the selection touches.
+
+    A selection of five lines and a press of Ctrl+Alt+2 means five Heading 2s.
+    QUILL used to head only the first of them and say "Inserted heading 2",
+    leaving four lines unchanged and nothing to hear about it (bad.md R3) --
+    which is the worse half of the bug, because a listener who selected five
+    lines has no way to discover that four of them were skipped.
+
+    Returned as **one** :class:`HeadingChange` spanning the whole block, so the
+    caller performs a single ``Replace`` and the undo stack gets one entry. Five
+    separate edits would take five presses of Ctrl+Z to walk back, for one
+    action the person took once.
+
+    Blank lines inside the selection are left blank rather than turned into an
+    empty heading. ``level=0`` takes the markers off every line that has one,
+    and returns ``NOT_A_HEADING`` only when *none* of them did.
+    """
+    level = int(level)
+    if markup_kind not in {"markdown", "html"}:
+        return HeadingChange(LevelResult.NO_MARKUP)
+    if level and not (MIN_LEVEL <= level <= MAX_LEVEL):
+        return HeadingChange(LevelResult.NO_MARKUP)
+    if end < start:
+        start, end = end, start
+    block_start = _line_span(text, start)[0]
+    block_end = _line_span(text, end)[1]
+    lines: list[str] = []
+    changed_any = False
+    old_level = 0
+    offset = block_start
+    for line in text[block_start:block_end].splitlines():
+        if not line.strip():
+            lines.append(line)
+            offset += len(line) + 1
+            continue
+        change = set_heading_level(text, offset, level, markup_kind=markup_kind)
+        if change.result is LevelResult.OK:
+            lines.append(change.replacement)
+            changed_any = True
+            old_level = old_level or change.old_level
+        else:
+            lines.append(line)
+        offset += len(line) + 1
+    if not changed_any:
+        return HeadingChange(LevelResult.NOT_A_HEADING)
+    return HeadingChange(
+        LevelResult.OK,
+        start=block_start,
+        end=block_end,
+        replacement="\n".join(lines),
         old_level=old_level,
         new_level=level,
     )

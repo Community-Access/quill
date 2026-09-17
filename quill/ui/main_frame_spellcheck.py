@@ -596,7 +596,17 @@ class SpellcheckCommandsMixin:
         if not 0 <= scope_index < len(self._DICTIONARY_SCOPES):
             return
         store, where = self._DICTIONARY_SCOPES[scope_index]
-        add_word_to_scope(word, store, self.document.path, Path.cwd())
+        if not add_word_to_scope(word, store, self.document.path, Path.cwd()):
+            # Nowhere to write it. The document and project dictionaries are
+            # files beside the document, so an unsaved buffer has neither --
+            # and this used to announce success anyway, leaving the word still
+            # underlined and the reason invisible (bad.md S3). The sentence
+            # names the way out, because there is one.
+            self._announce_result(
+                f'Cannot add "{word}" to {where} until the document is saved. '
+                "Save it, or add the word to your personal dictionary instead."
+            )
+            return
         self._invalidate_spell_dictionary_cache()
         self._announce_result(f'Added "{word}" to {where}')
 

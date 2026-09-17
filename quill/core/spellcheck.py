@@ -679,16 +679,27 @@ def add_word_to_scope(
     document_path: Path | None,
     project_root: Path | None,
     personal_dir: Path | None = None,
-) -> None:
+) -> bool:
+    """Teach *word* in *scope*. ``False`` when there was nowhere to write it.
+
+    The return value is bad.md S3. The "this document only" and "this project"
+    dictionaries are files *beside* the document, so an unsaved buffer has no
+    such file and nothing is written -- and the caller went on announcing
+    ``Added "word" to this document only`` regardless. The word stayed
+    underlined, and the only way to learn that was to try again and hear the
+    same sentence a second time. Callers must now say which of the two
+    happened.
+    """
     token = word.strip().lower()
     if not token:
-        return
+        return False
     path = _dictionary_path(scope, document_path, project_root, personal_dir)
     if path is None:
-        return
+        return False
     existing = load_scope_dictionary(scope, document_path, project_root, personal_dir)
     existing.add(token)
     write_json_atomic(path, sorted(existing))
+    return True
 
 
 def load_combined_dictionary(

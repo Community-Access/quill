@@ -128,7 +128,6 @@ from quill.core.guides import (
     build_keyboard_shortcut_html,
     build_welcome_guide,
 )
-from quill.core.heading_levels import LevelResult, adjust_heading_level
 from quill.core.heading_styles import HeadingStyle, apply_heading_style
 from quill.core.intake import (
     build_bad_extraction_package,
@@ -164,6 +163,7 @@ from quill.core.language_profile import (
 )
 from quill.core.lexical_preload import start_lexical_preload
 from quill.core.links import build_link_text, find_link_at_cursor, infer_markup_kind
+from quill.core.list_style import strip_list_block
 from quill.core.locations import LocationRing
 from quill.core.macros import MacroManager
 from quill.core.markdown_sections import (
@@ -175,7 +175,6 @@ from quill.core.markdown_sections import (
     is_caret_inside_list,
     parse_heading_blocks,
     should_auto_fill_numbers,
-    strip_list_markers,
     validate_heading_sequence,
 )
 from quill.core.marks import MarkRing, NamedMarks, line_column_for_position
@@ -414,6 +413,7 @@ from quill.ui.main_frame_github_admin import GitHubAdminMixin
 from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
 from quill.ui.main_frame_glow import GlowFileMixin
+from quill.ui.main_frame_headings import HeadingLevelsMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_hygiene import HygieneMixin
 from quill.ui.main_frame_image import ImageCaptureMixin
@@ -847,6 +847,7 @@ class MainFrame(
     LibraryMixin,
     MediaSleepTimerMixin,
     FormatCodesMixin,
+    HeadingLevelsMixin,
     EditorFontMixin,
     NumberedBookmarksMixin,
     SpeechCommandsMixin,
@@ -16332,34 +16333,6 @@ class MainFrame(
         self._apply_insertion_result(result)
         self._set_status(f"Applied underline ({surface})")
 
-    def format_heading(self, level: int) -> None:
-        if not self._feature_enabled("core.format"):
-            self._set_status("Heading tools are unavailable in this profile")
-            return
-        if self._rich_format_command("set_heading", f"Heading {level}", level):
-            self.sync_structure_announcer()  # already announced; do not echo it
-            return
-        surface = self._active_markup_surface()
-        if surface is None:
-            if self._offer_plain_text_formatting_choice(f"Heading {level}") != "markdown":
-                return
-            surface = "markdown"
-        selected_text = self.editor.GetStringSelection()
-        if surface == "markdown":
-            result = build_markdown_insertion(f"Heading {level}", selected_text)
-        else:
-            result = build_html_insertion(f"h{level}", selected_text, {})
-        self._apply_insertion_result(result)
-        self._set_status(f"Inserted heading {level} ({surface})")
-        # Already reported. Latch it so the caret hook does not say it again.
-        self.sync_structure_announcer()
-
-    def decrease_heading_level(self) -> None:
-        self._adjust_heading_level(-1)
-
-    def increase_heading_level(self) -> None:
-        self._adjust_heading_level(1)
-
     def style_headings(self) -> None:
         if not self._feature_enabled("core.format"):
             self._set_status("Heading tools are unavailable in this profile")
@@ -16467,39 +16440,6 @@ class MainFrame(
             return None
         return style
 
-    def _adjust_heading_level(self, delta: int) -> None:
-        if not self._feature_enabled("core.format"):
-            self._set_status("Heading tools are unavailable in this profile")
-            return
-        surface = self._active_markup_surface()
-        if surface is None:
-            self._set_status("Headings are only available in Markdown or HTML documents")
-            return
-        text = self.editor.GetValue()
-        cursor = self.editor.GetInsertionPoint()
-        # The rule itself is quill.core.heading_levels, shared with QuillLite,
-        # which binds the same Alt+Shift+Left / Right pair. It used to be two
-        # regexes and four branches inline here, which is the shape that gets
-        # copied rather than called the second time somebody needs it.
-        change = adjust_heading_level(text, cursor, delta, markup_kind=surface)
-        if change.result is LevelResult.NOT_A_HEADING:
-            self._set_status("Place cursor on a heading line to adjust its level")
-            return
-        if change.result in {LevelResult.AT_TOP, LevelResult.AT_BOTTOM}:
-            direction = "minimum" if change.result is LevelResult.AT_TOP else "maximum"
-            self._set_status(f"Heading already at {direction} level")
-            return
-        if not change.changed:
-            self._set_status("Headings are only available in Markdown or HTML documents")
-            return
-        self.editor.SetSelection(change.start, change.end)
-        self.editor.Replace(change.start, change.end, change.replacement)
-        self.document.set_text(self.editor.GetValue())
-        # The new level, not "adjusted": which way it went is the whole outcome,
-        # and a listener cannot see the hashes change.
-        self._set_status(f"Heading {change.new_level}")
-        self.sync_structure_announcer()
-
     def format_insert_bullet_list(self) -> None:
         self._insert_structure("Bullet List", "Inserted bullet list")
 
@@ -16553,14 +16493,28 @@ class MainFrame(
         except Exception:
             inside = False
         if inside:
-            stripped = strip_list_markers(text)
+            # Just this list, and through Replace. Until 2026-09-16 this ran
+            # strip_list_markers over the WHOLE document and wrote it back with
+            # SetValue, so turning one list off unmade every other list in the
+            # file -- and SetValue clears the RichEdit undo stack, so Ctrl+Z
+            # could not bring any of them back. It announced "Bullet List
+            # removed", singular, which is the sentence a listener believes
+            # (bad.md R2).
+            start, end = self.editor.GetSelection()
+            block = strip_list_block(text, start if end > start else caret, end)
+            if block is None:
+                self._set_status(f"{kind} is not at the cursor")
+                return
+            block_start, block_end, replacement, items = block
             try:
-                self.editor.SetValue(stripped)
-                self.editor.SetInsertionPoint(min(caret, len(stripped)))
+                self.editor.Replace(block_start, block_end, replacement)
+                self.document.set_text(self.editor.GetValue())
+                self.editor.SetInsertionPoint(min(caret, len(self.editor.GetValue())))
                 self.editor.SetFocus()
             except RuntimeError:
                 return
-            self._announce(f"{kind} removed")
+            plural = "" if items == 1 else "s"
+            self._announce(f"{kind} removed, {items} item{plural}")
             return
         # Insert path
         selected_text = self.editor.GetStringSelection()
