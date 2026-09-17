@@ -136,6 +136,12 @@ def test_quill_can_do_everything_the_select_menu_can() -> None:
         "cmd_exchange_point_mark": "edit.exchange_point_mark",
         "cmd_say_selection": "edit.say_selected",
         "cmd_duplicate_selection": "edit.duplicate_selection",
+        # Added 2026-09-16, and it is the reason QUILL's own
+        # edit.open_review_buffer finally got a key: the command had been
+        # registered there since SEL-4 with nothing bound to it, so the moment
+        # QuillLite could reach the feature from the keyboard the small product
+        # was ahead (bad.md 4.2, Tier 2). This gate is what said so.
+        "cmd_open_review_buffer": "edit.open_review_buffer",
     }
     handlers = {h for _m, _l, _k, h, kind in COMMANDS if kind != "sep" and _m == SELECT_MENU}
     assert handlers <= set(equivalent), sorted(handlers - set(equivalent))

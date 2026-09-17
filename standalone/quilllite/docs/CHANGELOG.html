@@ -341,6 +341,33 @@ a markup language.</li>
 </ul>
 <h3 id="added-1">Added</h3>
 <ul>
+<li><strong>Review Buffer (Alt+Shift+U)</strong> opens a copy of what
+you have selected, in a window of its own, that cannot be edited. The
+point is what you cannot do in it: reading a long selection back means
+arrowing through it, and arrowing through your own document with a
+selection live means the next character you type replaces all of it.
+QUILL has had this and no key for it; it has one now too, the same
+one.</li>
+<li><strong>List Misspellings (Alt+Shift+L)</strong> shows every one at
+once with the line it is on, and Enter goes there. Ctrl+F7 answers
+“where is the next one”; this answers “how many are there, and which do
+I want”. Words you have ignored are left out.</li>
+<li><strong>Quote Lines (Ctrl+Shift+Q)</strong> and <strong>Remove Quote
+Marks (Ctrl+Alt+Shift+Q)</strong>, for replying to email and quoting a
+log excerpt.</li>
+<li><strong>Hard Wrap Lines (Alt+Shift+W)</strong> asks for a width and
+re-flows to it, keeping paragraphs apart and never breaking a word. This
+changes the document, unlike View, Word Wrap.</li>
+<li><strong>Delete Lines Containing (Alt+Shift+X)</strong> removes every
+line with what you typed in it – taken literally, not as a pattern – and
+says how many went. One Ctrl+Z takes them all back.</li>
+<li><strong>Convert to Spaces (Alt+F11)</strong> and <strong>Convert to
+Tabs (Alt+F12)</strong> in Tools, Indenting: the single most common
+change anybody makes to somebody else’s file.</li>
+<li><strong>Line Statistics (Ctrl+Alt+W)</strong> says the longest line,
+which line it is, and the average, which is what you want when
+formatting for a braille display or a narrow window. Document Statistics
+answers how big; this answers how wide.</li>
 <li><strong>Insert Link (Ctrl+K).</strong> Word’s key, and everybody’s.
 Select the words, press it, type the address:
 <code>[text](address)</code> in a Markdown document,
@@ -394,6 +421,14 @@ short one.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li><strong>All Matches selects the match you chose.</strong> It
+selected however many characters the <em>first</em> match had, which for
+a search that finds runs of different lengths meant the selection ended
+somewhere you did not ask for.</li>
+<li><strong>The spelling keys in this guide were two versions out of
+date.</strong> Suggestions for a word is Alt+Shift+F7 and Add to
+Dictionary is Ctrl+Alt+F9; the guide still said Shift+F7 and
+Alt+F7.</li>
 <li><strong>Describe Formatting (Ctrl+Shift+D) reads Markdown.</strong>
 With the cursor inside <code>**bold**</code> or on a
 <code>## heading</code> it said “Plain text”, which is not a description

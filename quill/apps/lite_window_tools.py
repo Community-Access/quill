@@ -30,17 +30,23 @@ document say so before they run.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 
 import wx
 
 from quill.apps.lite_dialogs import choose_from_rows, edit_file_format
+from quill.apps.lite_dialogs_entry import ask_text
 from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
+from quill.core.wrap_ops import hard_wrap
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentToolsMixin"]
+
+#: Below this a wrap width is not a width, it is a column of single letters.
+_MIN_WRAP_WIDTH = 20
 
 #: A tool is a function from text to text. QUILL's operations return the new
 #: text and nothing else, so the count an announcement needs is worked out here
@@ -181,6 +187,132 @@ class DocumentToolsMixin:
     def cmd_normalize_whitespace(self) -> None:
         """Collapse runs of spaces and tabs -- the cure for pasted-in text."""
         self._apply_tool(format_ops.normalize_whitespace, unit="line", verb="Tidied")
+
+    def cmd_quote_lines(self) -> None:
+        """Put ``> `` in front of the lines you chose. QUILL's Ctrl+Shift+Q.
+
+        Replying to an email and quoting a log excerpt are Notepad-scale tasks,
+        and the engine was already shared: QuillLite had every other line tool
+        and not this one (bad.md 4.2, Tier 2).
+        """
+        self._apply_tool(format_ops.quote_lines, unit="line", verb="Quoted", count="scope")
+
+    def cmd_unquote_lines(self) -> None:
+        """Take ``> `` off again."""
+        self._apply_tool(format_ops.unquote_lines, unit="line", verb="Unquoted", count="scope")
+
+    def cmd_indentation_to_spaces(self) -> None:
+        """Turn the leading tabs of every chosen line into spaces.
+
+        The single most common fix a person makes to somebody else's file, and
+        the other half of the concession that QuillLite is where a ``.py`` gets
+        opened (bad.md 4.2, Tier 2).
+        """
+        self._apply_tool(
+            format_ops.convert_indentation_to_spaces,
+            unit="line",
+            verb="Converted",
+            count="scope",
+        )
+
+    def cmd_indentation_to_tabs(self) -> None:
+        """And the other way: leading spaces become tabs."""
+        self._apply_tool(
+            format_ops.convert_indentation_to_tabs,
+            unit="line",
+            verb="Converted",
+            count="scope",
+        )
+
+    def cmd_delete_lines_containing(self) -> None:
+        """Delete every chosen line that matches what you type.
+
+        Log triage is exactly why people open a plain-text editor, and doing
+        this by hand means reading every line to find the ones to remove --
+        which by ear is the whole file, twice (bad.md 4.2, Tier 2).
+
+        A plain search, not a regular expression: QUILL asks for one because
+        QUILL's user asked for one, and a ``.`` that silently matches every
+        character is a poor surprise in a tool that deletes.
+        """
+        pattern = ask_text(
+            self,
+            title="Delete Lines Containing",
+            label="Delete every line that &contains:",
+            help_text=(
+                "Typed exactly, not as a pattern. Only the lines you have "
+                "selected are looked at, or the whole document if you have "
+                "selected nothing. Control Z takes it back."
+            ),
+        )
+        self.control.SetFocus()
+        if pattern is None:
+            return
+        if not pattern:
+            self._announce("Nothing was typed, so no lines were deleted")
+            return
+        self._apply_tool(
+            lambda text: format_ops.delete_lines_containing(text, re.escape(pattern)),
+            unit="line",
+            verb="Deleted",
+            count="changed",
+        )
+
+    def cmd_hard_wrap(self) -> None:
+        """Re-flow the chosen lines so none is longer than a width you give.
+
+        The *document* changes, which is what makes this different from Word
+        Wrap on the View menu: that one changes what you see and is not saved.
+        Somebody formatting text to be read on a narrow display, or pasting into
+        something that will not wrap for them, needs the real thing.
+        """
+        answer = ask_text(
+            self,
+            title="Hard Wrap Lines",
+            label="&Longest line, in characters:",
+            help_text=(
+                "Lines are re-flowed so none is longer than this. Paragraphs "
+                "are kept apart; a single word longer than the width is left "
+                "whole rather than broken. This changes the document, so it is "
+                "saved -- View, Word Wrap is the one that only changes the view."
+            ),
+            value="72",
+        )
+        self.control.SetFocus()
+        if answer is None:
+            return
+        try:
+            width = int(answer.strip())
+        except ValueError:
+            self._announce(f"{answer} is not a number of characters")
+            return
+        if width < _MIN_WRAP_WIDTH:
+            self._announce(f"A width of at least {_MIN_WRAP_WIDTH} characters is needed")
+            return
+        self._apply_tool(
+            lambda text: hard_wrap(text, width), unit="line", verb="Wrapped", count="scope"
+        )
+
+    def cmd_line_statistics(self) -> None:
+        """How long the lines are: the longest, the average, and where it is.
+
+        Document Statistics answers "how big is this"; this answers "how wide",
+        which is the question somebody formatting for a braille display or a
+        narrow window actually has. Nothing is changed and nothing is selected.
+        """
+        text = self.doc_text.text
+        lines = text.split("\n")
+        if not text:
+            self._announce("The document is empty")
+            return
+        widths = [len(line) for line in lines]
+        longest = max(widths)
+        at = widths.index(longest) + 1
+        average = round(sum(widths) / len(widths))
+        self._announce(
+            f"{len(lines):,} lines. Longest {longest:,} characters, on line {at:,}. "
+            f"Average {average:,}."
+        )
 
     def cmd_number_lines(self) -> None:
         self._apply_tool(line_ops.number_lines, unit="line", verb="Numbered")

@@ -238,6 +238,28 @@ COMMANDS: list[CommandRow] = [
     # prefix comes from the file name, through the same shared helper QUILL
     # uses, so a .py gets "# " and a .sql gets "-- " in both editors.
     ("&Edit|&Lines", "Toggle Line &Comment", "Ctrl+/", "cmd_toggle_line_comment", ""),
+    ("&Edit|&Lines", "", "", "", "sep"),
+    # Replying to an email and quoting a log excerpt are Notepad-scale tasks,
+    # and the engine was shared already: QuillLite had every other line tool
+    # and not these two (bad.md 4.2, Tier 2). Ctrl+Shift+Q is QUILL's own.
+    #
+    # "Remove Quote Marks" rather than "Unquote Lines", which is QUILL's label:
+    # a listener hears "unquote" as the start of a quotation, and Edit > Lines
+    # had no free mnemonic in the word anyway. The divergence is a label, not a
+    # verb -- both editors run the same `unquote_lines`.
+    ("&Edit|&Lines", "&Quote Lines", "Ctrl+Shift+Q", "cmd_quote_lines", ""),
+    ("&Edit|&Lines", "Remove Quote &Marks", "Ctrl+Alt+Shift+Q", "cmd_unquote_lines", ""),
+    ("&Edit|&Lines", "", "", "", "sep"),
+    # Log triage and formatting for a narrow display, which are two of the
+    # reasons somebody opens a plain-text editor at all (bad.md 4.2, Tier 2).
+    (
+        "&Edit|&Lines",
+        "Delete Lines Containin&g...",
+        "Alt+Shift+X",
+        "cmd_delete_lines_containing",
+        "",
+    ),
+    ("&Edit|&Lines", "&Hard Wrap Lines...", "Alt+Shift+W", "cmd_hard_wrap", ""),
     ("&Edit|&Lines", "Tid&y Whitespace", "Ctrl+Alt+Shift+T", "cmd_normalize_whitespace", ""),
     # -- Edit > Selection ----------------------------------------------------
     # A submenu of Edit, which is where Word and QUILL both keep it. Nineteen
@@ -307,6 +329,16 @@ COMMANDS: list[CommandRow] = [
     # there is no glance that confirms the selection is the one you meant, and
     # the next keystroke may well replace it.
     ("&Edit|Selectio&n", "Sa&y Selection", "Ctrl+Shift+Y", "cmd_say_selection", ""),
+    # A read-only copy of the selection, in a window of its own. The point is
+    # what you cannot do in it: arrowing through your own document with a
+    # selection live means the next character you type replaces all of it, so
+    # the safe way to read a selection back is a copy that refuses to be edited
+    # (bad.md 4.2, Tier 2). QUILL has had the command since SEL-4 and never
+    # bound a key to it.
+    # Alt+Shift+U, not the V that "Review" asks for: V is Preview in QUILL and
+    # a chord free in both is adopted in both (rule 5). QUILL gained the key on
+    # the same day -- it had had the command since SEL-4 and nothing bound to it.
+    ("&Edit|Selectio&n", "Re&view Buffer...", "Alt+Shift+U", "cmd_open_review_buffer", ""),
     ("&Edit|Selectio&n", "&Duplicate Selection", "Ctrl+Alt+Q", "cmd_duplicate_selection", ""),
     # -- Edit > Clipboard ----------------------------------------------------
     # The system clipboard holds one thing, which is one fewer than people need.
@@ -402,6 +434,11 @@ COMMANDS: list[CommandRow] = [
     # (bad.md 3.1). It was Ctrl+Alt+W here and Ctrl+Shift+W in QUILL -- two
     # editors, two chords, neither of them the one anybody's hands knew.
     ("&View", "Do&cument Statistics", "Ctrl+Shift+G", "cmd_statistics", ""),
+    # How *wide* the document is, which is the question somebody formatting for
+    # a braille display or a narrow window has -- Document Statistics answers
+    # how big it is (bad.md 4.2, Tier 2). On Ctrl+Alt+W, which is the chord its
+    # sibling vacated on the same day: one letter, two scopes.
+    ("&View", "Li&ne Statistics", "Ctrl+Alt+W", "cmd_line_statistics", ""),
     # A menu bar answers "what is under Format?"; a palette answers "how do I
     # sort lines?", which is the question somebody actually has.
     ("&View", "Command Pa&lette...", "Ctrl+Shift+P", "cmd_command_palette", ""),
@@ -710,6 +747,12 @@ COMMANDS: list[CommandRow] = [
         "",
     ),
     ("&Tools|&Spelling", "", "", "", "sep"),
+    # Every misspelling at once, with the line each is on. Ctrl+F7 N times is
+    # the alternative and answers a different question -- it moves you to the
+    # next one, and this says how many there are (bad.md 4.2, Tier 2). QUILL's
+    # own chord; the one row of this submenu that is not on an F7 chord,
+    # because it is a list rather than a step.
+    ("&Tools|&Spelling", "&List Misspellings...", "Alt+Shift+L", "cmd_misspelling_list", ""),
     ("&Tools|&Spelling", "&Next Misspelling", "Ctrl+F7", "cmd_next_misspelling", ""),
     ("&Tools|&Spelling", "&Previous Misspelling", "Ctrl+Shift+F7", "cmd_previous_misspelling", ""),
     ("&Tools|&Spelling", "", "", "", "sep"),
@@ -776,6 +819,13 @@ COMMANDS: list[CommandRow] = [
     # announce-as-you-move toggle that speaks while you move and goes quiet the
     # moment you stop to wonder.
     ("&Tools|Indentin&g", "&Describe Indent Depth", "Ctrl+Alt+Shift+V", "cmd_describe_indent", ""),
+    ("&Tools|Indentin&g", "", "", "", "sep"),
+    # The single most common fix a person makes to somebody else's file, and
+    # the other half of the concession that QuillLite is where a .py gets
+    # opened (bad.md 4.2, Tier 2). On F-keys past F9 by rule 9: they are real
+    # commands and they are not run in the editing loop.
+    ("&Tools|Indentin&g", "Convert to &Spaces", "Alt+F11", "cmd_indentation_to_spaces", ""),
+    ("&Tools|Indentin&g", "Convert to &Tabs", "Alt+F12", "cmd_indentation_to_tabs", ""),
     # -- Window -------------------------------------------------------------
     # Ctrl+F6 is the Windows MDI convention and Ctrl+Tab is what everyone
     # actually presses; both are bound, because a key somebody expects and

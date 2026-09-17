@@ -1005,6 +1005,12 @@ class DialogRecorder:
         # module scope, so patching only lite_dialogs left the tray and the clip
         # library opening a real wx.Dialog in the middle of a test.
         "choose_from_rows_clipboard": ("quill.apps.lite_window_clipboard", "choose_from_rows"),
+        # Third binding: the Misspelling List imports it at module scope too
+        # (bad.md 4.2, Tier 2).
+        "choose_from_rows_spelling": (
+            "quill.apps.lite_window_spelling_navigation",
+            "choose_from_rows",
+        ),
         "edit_spelling_voice": ("quill.apps.lite_spelling_voice_dialog", "edit_spelling_voice"),
         "AppFeaturesDialog": ("quill.ui.app_features_dialog", "AppFeaturesDialog"),
         "CommandPaletteDialog": ("quill.ui.palette", "CommandPaletteDialog"),
@@ -1014,6 +1020,9 @@ class DialogRecorder:
         # Imported at module scope by their caller: patch the caller.
         "show_text_window": ("quill.apps.lite_window_commands", "show_text_window"),
         "show_text_window_marks": ("quill.apps.lite_window_marks", "show_text_window"),
+        # And a third binding, for the Review Buffer, which is the same
+        # read-only window used for a different purpose (bad.md 4.2, Tier 2).
+        "show_text_window_review": ("quill.apps.lite_window_selection", "show_text_window"),
         "choose_heading": ("quill.apps.lite_window_headings", "choose_heading"),
         "ask_line_number": ("quill.apps.lite_window_commands", "ask_line_number"),
         "choose_special_character": (
@@ -1036,6 +1045,10 @@ class DialogRecorder:
         "choose_searchable": ("quill.apps.lite_window_markup", "choose_searchable"),
         "ask_link": ("quill.apps.lite_window_markup", "ask_link"),
         "ask_text": ("quill.apps.lite_window_markup", "ask_text"),
+        # Second binding: the line tools import it at their own module scope,
+        # so patching the markup module leaves Delete Lines Containing and Hard
+        # Wrap opening a real wx.Dialog in the middle of a test.
+        "ask_text_tools": ("quill.apps.lite_window_tools", "ask_text"),
         # The emoji picker is QUILL's and is imported *inside* the command, so
         # the defining module is the only binding there is. It is a class rather
         # than a function: the stub records the construction and the test's
@@ -1091,8 +1104,14 @@ class DialogRecorder:
         "choose_from_rows": (
             "choose_from_rows",
             "choose_from_rows_clipboard",
+            "choose_from_rows_spelling",
         ),
-        "show_text_window": ("show_text_window", "show_text_window_marks"),
+        "show_text_window": (
+            "show_text_window",
+            "show_text_window_marks",
+            "show_text_window_review",
+        ),
+        "ask_text": ("ask_text", "ask_text_tools"),
     }
 
     def answer(self, name: str, value: Any) -> None:

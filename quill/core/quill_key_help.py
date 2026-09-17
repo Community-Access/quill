@@ -242,6 +242,15 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "tools.dictation_toggle": "Dictation Toggle",
     "tools.describe_image": "Describe Image",
     "edit.copy_selection_for_email": "Copy Selection For Email",
+    "edit.open_review_buffer": "Review Buffer",
+    # Three leader chords whose Key Describer title was being machine-derived
+    # from the command id, which is what GATE-DESCRIBE exists to catch: the
+    # cheat sheet read "Play Favorite" and "Sound Enhancements" and
+    # "Replace All" only because those ids happen to read cleanly, and the
+    # gate cannot tell a lucky id from an authored title.
+    "radio.play_favorite": "Play Favourite Station",
+    "media.sound_enhancements": "Sound Enhancements",
+    "edit.replace_all": "Replace All",
     "tools.sticky_note_capture": "Sticky Note Capture",
     "view.browser_preview": "Browser Preview",
     "format.switch_document_format": "Switch Document Format",

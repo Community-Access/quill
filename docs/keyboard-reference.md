@@ -46,7 +46,6 @@ Editor commands with default bindings: 396.
 | --- | --- | --- |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
 | (unbound by default) | Magic Paste | `edit.magic_paste` |
-| (unbound by default) | Open Review Buffer | `edit.open_review_buffer` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
 | Alt+. | Insert Emoji... | `edit.insert_emoji` |
@@ -54,6 +53,7 @@ Editor commands with default bindings: 396.
 | Alt+M | List Marks | `edit.list_marks` |
 | Alt+Shift+C | Copy With Source | `edit.copy_with_source` |
 | Alt+Shift+F8 | Go to Start of Selection | `edit.go_to_start_of_selection` |
+| Alt+Shift+U | Open Review Buffer | `edit.open_review_buffer` |
 | Alt+Shift+Z | Reverse Lines | `edit.reverse_lines` |
 | Ctrl+. | Word Prediction... | `edit.word_prediction` |
 | Ctrl+Alt+D | Remove Duplicate Lines | `edit.remove_duplicate_lines` |

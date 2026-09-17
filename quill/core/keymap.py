@@ -506,7 +506,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.move_section_down": "Alt+Shift+Down",  # §edsharp-ok — markdown/html only
     "edit.set_named_mark": "",
     "edit.jump_to_named_mark": "",
-    "edit.open_review_buffer": "",
+    "edit.open_review_buffer": "Alt+Shift+U",  # bad.md 4.2: registered, never bound
     "edit.select_to_start_of_line": "Shift+Home",
     "edit.select_to_end_of_line": "Shift+End",
     "edit.select_to_start_of_document": "Ctrl+Shift+Home",

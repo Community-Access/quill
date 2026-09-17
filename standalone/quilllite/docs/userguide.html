@@ -1398,7 +1398,7 @@ your dictionary so it is never questioned again.</p>
 <td>Check the whole document</td>
 </tr>
 <tr>
-<td><strong>Shift+F7</strong></td>
+<td><strong>Alt+Shift+F7</strong></td>
 <td>Suggestions for the word you are on</td>
 </tr>
 <tr>
@@ -1406,7 +1406,11 @@ your dictionary so it is never questioned again.</p>
 <td>Go to the next / previous mistake</td>
 </tr>
 <tr>
-<td><strong>Alt+F7</strong></td>
+<td><strong>Alt+Shift+L</strong></td>
+<td>List every misspelling, with its line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F9</strong></td>
 <td>Add this word to your dictionary</td>
 </tr>
 <tr>
@@ -1426,8 +1430,13 @@ pause, <strong>spells it out</strong>. That is the part that matters:
 you nothing, and the letters are the answer. Press the next key and the
 spelling is cancelled unheard, so it costs you nothing when you did not
 need it.</p>
-<p><strong>Shift+F7</strong> and <strong>Alt+F7</strong> work from
-anywhere in a word, not only from its first letter.</p>
+<p><strong>Alt+Shift+L</strong> lists every misspelling at once, with
+the line each one is on, and Enter on a row goes there. That answers a
+different question from Ctrl+F7: that one moves you to the next mistake,
+and this one tells you how many there are and lets you choose which.
+Words you have chosen to ignore are left out.</p>
+<p><strong>Alt+Shift+F7</strong> and <strong>Ctrl+Alt+F9</strong> work
+from anywhere in a word, not only from its first letter.</p>
 <h3 id="while-you-type">While you type</h3>
 <p>When you finish a word that is not in the dictionary – finish it, so
 a space or a comma or a new line, not while you are still in the middle
@@ -1570,7 +1579,10 @@ its own name and value.</p>
 <p><strong>View ▸ Status Bar</strong> (<strong>Alt+Shift+B</strong>)
 takes the bar off the screen altogether, the way Notepad’s does, and
 puts it back. Nothing is lost when it is away:
-<strong>Ctrl+Shift+G</strong> speaks the counts, and
+<strong>Ctrl+Shift+G</strong> speaks the counts,
+<strong>Ctrl+Alt+W</strong> speaks the line widths — the longest line,
+which line it is, and the average, which is what you want when you are
+formatting for a braille display or a narrow window — and
 <strong>Ctrl+G</strong> asks for the line number the Position part would
 have shown you. F6 with the bar hidden says so rather than doing
 nothing.</p>
@@ -1698,6 +1710,18 @@ href="#four-kinds-of-document">Four kinds of document</a>.</p>
 moment it is spoken. If you missed something QuillLite said, this is
 where you go to read it again.</p>
 <hr />
+<h2 id="reading-a-selection-without-risking-it">Reading a selection
+without risking it</h2>
+<p><strong>Alt+Shift+U</strong> opens the <strong>Review
+Buffer</strong>: a copy of what you have selected, in a window of its
+own, that cannot be edited.</p>
+<p>The point is what you cannot do in it. Reading a long selection back
+means arrowing through it, and arrowing through your own document while
+a selection is live means the next character you type replaces all of
+it. A copy that refuses to be edited removes that whole class of
+accident. Escape closes it and puts you back where you were, with the
+selection intact.</p>
+<hr />
 <h2 id="copying-and-pasting-more-than-one-thing">Copying and pasting
 more than one thing</h2>
 <p>The Windows clipboard holds one thing at a time. QuillLite gives you
@@ -1808,6 +1832,23 @@ the blank lines before the first line of text and after the last;
 QuillLite has just the one.</p>
 <p>Each one counts as a single undo, so <strong>Ctrl+Z</strong> takes
 back the whole sort rather than putting back one line at a time.</p>
+<h3 id="quoting-wrapping-and-throwing-lines-away">Quoting, wrapping, and
+throwing lines away</h3>
+<p><strong>Ctrl+Shift+Q</strong> puts <code>&gt; </code> in front of the
+lines you have selected, the way an email reply does, and
+<strong>Ctrl+Alt+Shift+Q</strong> takes the marks off again.</p>
+<p><strong>Alt+Shift+W</strong> is <strong>Hard Wrap Lines</strong>. It
+asks for a width and re-flows the lines so none is longer than that,
+keeping paragraphs apart and never breaking a word. This changes the
+document, so it is saved – which is what makes it different from
+<strong>View ▸ Word Wrap</strong>, which only changes what you see.</p>
+<p><strong>Alt+Shift+X</strong> is <strong>Delete Lines
+Containing</strong>. Type what the lines to go have in them – taken
+exactly, not as a pattern – and they are removed. It says how many went,
+and <strong>Ctrl+Z</strong> takes them all back in one step. This is log
+triage, which by ear otherwise means reading the whole file twice.</p>
+<p>All three work on what you have selected, or on the whole document if
+you have selected nothing.</p>
 <h3 id="commenting-lines-out">Commenting lines out</h3>
 <p><strong>Ctrl+/</strong> comments the lines you have selected out, and
 pressing it again brings them back. The prefix comes from the file’s
@@ -1820,6 +1861,13 @@ many lines it changed.</p>
 <p>An unsaved document gets <code>// </code>, because there is nothing
 else to go on. Save it once under the name you mean and the key gets it
 right from then on.</p>
+<h3 id="tabs-or-spaces">Tabs or spaces</h3>
+<p><strong>Tools ▸ Indenting</strong> has <strong>Convert to
+Spaces</strong> (<strong>Alt+F11</strong>) and <strong>Convert to
+Tabs</strong> (<strong>Alt+F12</strong>), which rewrite the indentation
+at the start of each line without touching anything else. Four spaces to
+a tab. It is the single most common change anybody makes to somebody
+else’s file.</p>
 <h3 id="changing-case">Changing case</h3>
 <p><strong>Tools ▸ Change Case</strong> has five. UPPERCASE
 (<strong>Ctrl+Shift+U</strong>), lowercase
@@ -2654,6 +2702,22 @@ list inside the app.</p>
 <td><strong>Ctrl+/</strong></td>
 <td>Toggle Line Comment</td>
 </tr>
+<tr>
+<td><strong>Ctrl+Shift+Q</strong></td>
+<td>Quote Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Q</strong></td>
+<td>Remove Quote Marks</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+X</strong></td>
+<td>Delete Lines Containing…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+W</strong></td>
+<td>Hard Wrap Lines…</td>
+</tr>
 </tbody>
 </table>
 <h3 id="edit--selection">Edit ▸ Selection</h3>
@@ -2740,6 +2804,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+Q</strong></td>
 <td>Duplicate Selection</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+U</strong></td>
+<td>Review Buffer…</td>
 </tr>
 </tbody>
 </table>
@@ -2842,6 +2910,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+G</strong></td>
 <td>Document Statistics</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+W</strong></td>
+<td>Line Statistics</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+P</strong></td>
@@ -3219,6 +3291,10 @@ list inside the app.</p>
 <td>Check Spelling…</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+L</strong></td>
+<td>List Misspellings…</td>
+</tr>
+<tr>
 <td><strong>Alt+Shift+F7</strong></td>
 <td>Spelling for This Word</td>
 </tr>
@@ -3314,6 +3390,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+Shift+V</strong></td>
 <td>Describe Indent Depth</td>
+</tr>
+<tr>
+<td><strong>Alt+F11</strong></td>
+<td>Convert to Spaces</td>
+</tr>
+<tr>
+<td><strong>Alt+F12</strong></td>
+<td>Convert to Tabs</td>
 </tr>
 </tbody>
 </table>

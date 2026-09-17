@@ -117,6 +117,30 @@
 
 ### Added
 
+- **Review Buffer (Alt+Shift+U)** opens a copy of what you have selected, in a
+  window of its own, that cannot be edited. The point is what you cannot do in
+  it: reading a long selection back means arrowing through it, and arrowing
+  through your own document with a selection live means the next character you
+  type replaces all of it. QUILL has had this and no key for it; it has one now
+  too, the same one.
+- **List Misspellings (Alt+Shift+L)** shows every one at once with the line it
+  is on, and Enter goes there. Ctrl+F7 answers "where is the next one"; this
+  answers "how many are there, and which do I want". Words you have ignored are
+  left out.
+- **Quote Lines (Ctrl+Shift+Q)** and **Remove Quote Marks (Ctrl+Alt+Shift+Q)**,
+  for replying to email and quoting a log excerpt.
+- **Hard Wrap Lines (Alt+Shift+W)** asks for a width and re-flows to it, keeping
+  paragraphs apart and never breaking a word. This changes the document, unlike
+  View, Word Wrap.
+- **Delete Lines Containing (Alt+Shift+X)** removes every line with what you
+  typed in it -- taken literally, not as a pattern -- and says how many went.
+  One Ctrl+Z takes them all back.
+- **Convert to Spaces (Alt+F11)** and **Convert to Tabs (Alt+F12)** in Tools,
+  Indenting: the single most common change anybody makes to somebody else's
+  file.
+- **Line Statistics (Ctrl+Alt+W)** says the longest line, which line it is, and
+  the average, which is what you want when formatting for a braille display or
+  a narrow window. Document Statistics answers how big; this answers how wide.
 - **Insert Link (Ctrl+K).** Word's key, and everybody's. Select the words, press
   it, type the address: `[text](address)` in a Markdown document,
   `<a href="address">text</a>` in an HTML one. QuillLite had both kinds, a tag
@@ -159,6 +183,12 @@
 
 ### Fixed
 
+- **All Matches selects the match you chose.** It selected however many
+  characters the *first* match had, which for a search that finds runs of
+  different lengths meant the selection ended somewhere you did not ask for.
+- **The spelling keys in this guide were two versions out of date.** Suggestions
+  for a word is Alt+Shift+F7 and Add to Dictionary is Ctrl+Alt+F9; the guide
+  still said Shift+F7 and Alt+F7.
 - **Describe Formatting (Ctrl+Shift+D) reads Markdown.** With the cursor inside
   `**bold**` or on a `## heading` it said "Plain text", which is not a
   description of the formatting but a denial that there is any. It now reads the

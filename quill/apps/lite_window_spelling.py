@@ -64,6 +64,7 @@ from __future__ import annotations
 
 import wx
 
+from quill.apps.lite_window_spelling_navigation import DocumentSpellingNavigationMixin
 from quill.core.lite import spelling as spelling_mod
 from quill.core.spelling.voicing import LiveAlertPolicy, SpellAloudPolicy, SpellAloudVoice
 
@@ -79,7 +80,7 @@ _LIVE_DELAY_MS = 700
 _MAX_SUGGESTIONS = 12
 
 
-class DocumentSpellingMixin:
+class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
     """The Spelling menu, and the quiet check behind it."""
 
     # ------------------------------------------------------------------ #
@@ -434,57 +435,6 @@ class DocumentSpellingMixin:
         self._touch_status()
         self._announce("Replaced with " + chosen)
         self.control.SetFocus()
-
-    def cmd_next_misspelling(self) -> None:
-        """Ctrl+F7: move to the next word that is not in the dictionary."""
-        self._go_to_misspelling(forward=True)
-
-    def cmd_previous_misspelling(self) -> None:
-        """Ctrl+Shift+F7: move to the previous one."""
-        self._go_to_misspelling(forward=False)
-
-    def _go_to_misspelling(self, *, forward: bool) -> None:
-        from quill.core.spellcheck import next_misspelling, previous_misspelling
-
-        if not self._require_spelling():
-            return
-        text = self.control.GetValue()
-        caret = self.control.GetInsertionPoint()
-        finder = next_misspelling if forward else previous_misspelling
-        # Stepped rather than filtered: an ignored word is not a stop, so the
-        # search carries on from where that one was instead of announcing "no
-        # further misspellings" at the first word somebody chose to skip. Bounded
-        # by the search itself -- each hop starts past the last hit, so a
-        # document of nothing but ignored words ends rather than loops.
-        dictionary = self._spell_dictionary()
-        item = finder(text, caret, dictionary)
-        while item is not None and self.spell_ignores.skips(text, item):
-            caret = item.end if forward else item.start
-            item = finder(text, caret, dictionary)
-        if item is None:
-            # The count in the other direction, from the shared sentence QUILL
-            # has said since #9. "No further misspellings" on its own reads as
-            # "your document is clean", which is a lie when seven are sitting
-            # behind the caret and the fix is to press the other key (bad.md S9).
-            from quill.core.spellcheck import no_misspelling_message
-
-            self._announce(
-                no_misspelling_message(
-                    text, self.control.GetInsertionPoint(), dictionary, ahead=forward
-                )
-            )
-            return
-        # Selected rather than merely arrived at: the word is then what Shift+F7
-        # acts on, and what the reader reads on arrival.
-        self.control.SetSelection(item.start, item.end)
-        self._touch_status()
-        self._announce("Misspelling: " + item.word)
-        # And then the letters, after a pause. The reader has just said the
-        # word, which for a misspelling is the one piece of information that
-        # does not help: "recieve" and "receive" are the same sound. The pause
-        # is what makes this free for somebody who does not need it -- the next
-        # press of Ctrl+F7 cancels it unheard.
-        self._spell_after_landing(item.word)
 
     def _spell_suggestion(self, suggestion: object) -> None:
         """Queue the letters of the suggestion the user has arrowed onto."""

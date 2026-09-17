@@ -77,6 +77,8 @@ MENU_AREA: dict[str, str] = {
 COMMAND_AREA: dict[str, str] = {
     "cmd_page_setup": "printing",
     "cmd_print": "printing",
+    # With the rest of the spelling submenu, which is one switchable area.
+    "cmd_misspelling_list": "spelling",
     "cmd_next_heading": "headings",
     "cmd_previous_heading": "headings",
     "cmd_list_headings": "headings",

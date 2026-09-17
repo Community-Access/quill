@@ -52,6 +52,7 @@ shrink ladder, which was added there rather than here so QUILL gains it too.
 
 from __future__ import annotations
 
+from quill.apps.lite_dialogs import show_text_window
 from quill.core.marks import line_column_for_position
 from quill.core.selection import (
     block_span,
@@ -362,6 +363,31 @@ class DocumentSelectionMixin:
     # ------------------------------------------------------------------ #
     # Reading and duplicating
     # ------------------------------------------------------------------ #
+
+    def cmd_open_review_buffer(self) -> None:
+        """A read-only copy of the selection, in a window of its own.
+
+        The point is what you *cannot* do in it. Reading a long selection back
+        means arrowing through it, and arrowing through your own document with a
+        selection live means the next character you type replaces all of it --
+        so the safe way to read a selection is a copy you cannot edit. It costs
+        one dialog and removes a whole class of accident, which is why it is the
+        most QuillLite-shaped thing QUILL has (bad.md 4.2, Tier 2).
+
+        QUILL has had this command since SEL-4 with no key bound to it at all.
+        """
+        start, end = self.control.GetSelection()
+        if end <= start:
+            self._announce("Select something to review first")
+            return
+        text = self.control.GetValue()[start:end]
+        show_text_window(self, "Review Buffer", text)
+        self.control.SetFocus()
+        words = len(text.split())
+        self._announce(
+            f"Reviewed {words:,} word{'s' if words != 1 else ''}, "
+            f"{len(text):,} character{'s' if len(text) != 1 else ''}"
+        )
 
     def cmd_say_selection(self) -> None:
         """Ctrl+Shift+Y: read back what is selected, on demand.

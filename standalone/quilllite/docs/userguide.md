@@ -839,9 +839,10 @@ questioned again.
 | Key | What it does |
 |---|---|
 | **F7** | Check the whole document |
-| **Shift+F7** | Suggestions for the word you are on |
+| **Alt+Shift+F7** | Suggestions for the word you are on |
 | **Ctrl+F7** / **Ctrl+Shift+F7** | Go to the next / previous mistake |
-| **Alt+F7** | Add this word to your dictionary |
+| **Alt+Shift+L** | List every misspelling, with its line |
+| **Ctrl+Alt+F9** | Add this word to your dictionary |
 | **Ctrl+Alt+F7** | Turn checking-as-you-type on or off here |
 | **Ctrl+Alt+Shift+F7** | Spelling Announcements: how a misspelling is said |
 
@@ -852,8 +853,13 @@ the word tells you nothing, and the letters are the answer. Press the next key
 and the spelling is cancelled unheard, so it costs you nothing when you did not
 need it.
 
-**Shift+F7** and **Alt+F7** work from anywhere in a word, not only from its
-first letter.
+**Alt+Shift+L** lists every misspelling at once, with the line each one is on,
+and Enter on a row goes there. That answers a different question from Ctrl+F7:
+that one moves you to the next mistake, and this one tells you how many there
+are and lets you choose which. Words you have chosen to ignore are left out.
+
+**Alt+Shift+F7** and **Ctrl+Alt+F9** work from anywhere in a word, not only from
+its first letter.
 
 ### While you type
 
@@ -979,7 +985,10 @@ document. Each part says its own name and value.
 
 **View ▸ Status Bar** (**Alt+Shift+B**) takes the bar off the screen
 altogether, the way Notepad's does, and puts it back. Nothing is lost when it is
-away: **Ctrl+Shift+G** speaks the counts, and **Ctrl+G** asks for the line number
+away: **Ctrl+Shift+G** speaks the counts, **Ctrl+Alt+W** speaks the line widths
+— the longest line, which line it is, and the average, which is what you want
+when you are formatting for a braille display or a narrow window — and **Ctrl+G**
+asks for the line number
 the Position part would have shown you. F6 with the bar hidden says so rather
 than doing nothing.
 
@@ -1039,6 +1048,19 @@ document](#four-kinds-of-document).
 
 **Status Message** exists because speech is gone the moment it is spoken. If you
 missed something QuillLite said, this is where you go to read it again.
+
+---
+
+## Reading a selection without risking it
+
+**Alt+Shift+U** opens the **Review Buffer**: a copy of what you have selected,
+in a window of its own, that cannot be edited.
+
+The point is what you cannot do in it. Reading a long selection back means
+arrowing through it, and arrowing through your own document while a selection is
+live means the next character you type replaces all of it. A copy that refuses
+to be edited removes that whole class of accident. Escape closes it and puts you
+back where you were, with the selection intact.
 
 ---
 
@@ -1155,6 +1177,24 @@ just the one.
 Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
 than putting back one line at a time.
 
+### Quoting, wrapping, and throwing lines away
+
+**Ctrl+Shift+Q** puts `> ` in front of the lines you have selected, the way an
+email reply does, and **Ctrl+Alt+Shift+Q** takes the marks off again.
+
+**Alt+Shift+W** is **Hard Wrap Lines**. It asks for a width and re-flows the
+lines so none is longer than that, keeping paragraphs apart and never breaking a
+word. This changes the document, so it is saved -- which is what makes it
+different from **View ▸ Word Wrap**, which only changes what you see.
+
+**Alt+Shift+X** is **Delete Lines Containing**. Type what the lines to go have
+in them -- taken exactly, not as a pattern -- and they are removed. It says how
+many went, and **Ctrl+Z** takes them all back in one step. This is log triage,
+which by ear otherwise means reading the whole file twice.
+
+All three work on what you have selected, or on the whole document if you have
+selected nothing.
+
 ### Commenting lines out
 
 **Ctrl+/** comments the lines you have selected out, and pressing it again brings
@@ -1165,6 +1205,13 @@ uncomments in the other. It says how many lines it changed.
 
 An unsaved document gets `// `, because there is nothing else to go on. Save it
 once under the name you mean and the key gets it right from then on.
+
+### Tabs or spaces
+
+**Tools ▸ Indenting** has **Convert to Spaces** (**Alt+F11**) and **Convert to
+Tabs** (**Alt+F12**), which rewrite the indentation at the start of each line
+without touching anything else. Four spaces to a tab. It is the single most
+common change anybody makes to somebody else's file.
 
 ### Changing case
 
@@ -1761,6 +1808,10 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+T** | Trim Trailing Spaces |
 | **Ctrl+Alt+Shift+T** | Tidy Whitespace |
 | **Ctrl+/** | Toggle Line Comment |
+| **Ctrl+Shift+Q** | Quote Lines |
+| **Ctrl+Alt+Shift+Q** | Remove Quote Marks |
+| **Alt+Shift+X** | Delete Lines Containing... |
+| **Alt+Shift+W** | Hard Wrap Lines... |
 
 ### Edit ▸ Selection
 
@@ -1785,6 +1836,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+X** | Exchange Cursor and Mark |
 | **Ctrl+Shift+Y** | Say Selection |
 | **Ctrl+Alt+Q** | Duplicate Selection |
+| **Alt+Shift+U** | Review Buffer... |
 
 ### Edit ▸ Clipboard
 
@@ -1815,6 +1867,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+-** | Decrease Text Size |
 | **Ctrl+0** | Reset Text Size |
 | **Ctrl+Shift+G** | Document Statistics |
+| **Ctrl+Alt+W** | Line Statistics |
 | **Ctrl+Shift+P** | Command Palette... |
 
 ### Insert
@@ -1929,6 +1982,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **F7** | Check Spelling... |
+| **Alt+Shift+L** | List Misspellings... |
 | **Alt+Shift+F7** | Spelling for This Word |
 | **Ctrl+F7** | Next Misspelling |
 | **Ctrl+Shift+F7** | Previous Misspelling |
@@ -1960,6 +2014,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+]** | Indent |
 | **Ctrl+[** | Outdent |
 | **Ctrl+Alt+Shift+V** | Describe Indent Depth |
+| **Alt+F11** | Convert to Spaces |
+| **Alt+F12** | Convert to Tabs |
 
 ### Window
 

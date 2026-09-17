@@ -280,8 +280,14 @@ class DocumentFindMixin:
         if chosen is None:
             self.control.SetFocus()
             return
+        # The chosen match's own length, not the first one's. A regular
+        # expression matches runs of different lengths, so jumping to the fifth
+        # hit selected however many characters the *first* hit had been -- which
+        # for a listener is a selection whose end is somewhere they did not ask
+        # for, and for Ctrl+X is the wrong text.
+        lengths = {match.start: len(match.text) for match in matches}
         self._record_location()
-        self.control.SetSelection(chosen, chosen + len(matches[0].text))
+        self.control.SetSelection(chosen, chosen + lengths.get(chosen, 0))
         self.control.ShowPosition(chosen)
         self.control.SetFocus()
         self._touch_status()

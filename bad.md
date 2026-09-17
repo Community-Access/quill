@@ -8,12 +8,12 @@ person's hands already know the answer.
 
 ## 0.4 Pick up here
 
-**Next, and already decided (§0.6) -- no questions needed:** **P2.13** Tier 2,
-of which **Review Buffer** is the best value for the least code: a read-only
-dialog holding the selection, so somebody can arrow through text with no chance
-of typing into their own document. Then Tier 1's last row, the **Go To dialog
+**Next, and already decided (§0.6) -- no questions needed:** the **Go To dialog
 with Line, Bookmark and Heading targets** (5.4, P1.6, P2.3), which is one shared
-dialog replacing Lite's line-only one and QUILL's two separate commands.
+dialog replacing QuillLite's line-only one and QUILL's two separate commands --
+and it is the last row of Tier 1. Then Tier 2's remaining two: the **Heading
+Organizer**, and **Extend Selection Mode**, which waits on P1.2a fixing its four
+movement bugs first.
 
 **QuillLite's remaining Broken findings, in the order they hurt:** F1 and F2
 (Save As converts the buffer before the write; recovery rewrites encoding). Both
@@ -273,16 +273,8 @@ Everything below passes all four. The tiers are about confidence, not size.
 
 | Capability | Why Lite | Cost |
 | --- | --- | --- |
-| **Review Buffer** (`edit.open_review_buffer`) | a read-only dialog holding the selection, so somebody can arrow through text and read it letter by letter with no possibility of typing into their own document. This is the most Lite-shaped thing QUILL has: it costs one dialog and removes a whole class of accident | trivial; `main_frame_selection.py:267-290` moves to a shared dialog |
-| **Misspelling List** (`tools.misspelling_list`) | every misspelling in the document as one list you can jump from, instead of `Ctrl+F7` N times. Lite already builds the same data for its live check | small; shared `quill.core.spellcheck` |
-| **Quote / Unquote Lines** | replying to email and quoting a log excerpt are Notepad-scale tasks; the engine is `line_ops`, already shared, and Lite already has every other line tool | trivial |
-| **Convert Indentation to Spaces / to Tabs** | the code-file concession again: this is the single most common fix a person makes to somebody else's file | trivial; shared |
-| **Delete Lines Containing...** and **Hard Wrap** | log triage and email are exactly why people open a plain-text editor; both are QUILL power tools over shared engines with no rich-text complication | small |
 | **Heading Organizer** | Lite already lists headings and moves sections; the organizer is the two combined into one list where reordering is arrow keys instead of four commands | medium; shared |
-| **Find All Matches results that jump** | Lite has All Matches; QUILL's list is the model where Enter goes to the match | small |
 | **Extend Selection Mode**, once P1.2a has fixed it | a sticky Shift: select by navigating, no modifier held, and no "selected" from the reader on every keystroke. QuillLite deleted its own broken attempt at this (`d20fabe`) and has had nothing since; QUILL's mechanism is the one that works on wxMSW | small, after P1.2a; shared |
-| **Open Link / Copy Link Address** in the context menu | QUILL offers both when the caret sits on a link (`find_link_at_cursor`); Lite's context menu has spelling and the six clipboard verbs and nothing else. A URL in a text file is the commonest actionable thing in one | trivial; shared `find_link_at_cursor` |
-| **Word-count-style Line Statistics** on demand | Lite has Document Statistics; QUILL's per-line statistics answer "how long is this line" for somebody formatting for a screen | trivial |
 
 #### Tier 3 -- worth doing, once the P0s are out of the way
 
@@ -765,7 +757,7 @@ way:
 
 | # | Item | Editors | Cost | Done when |
 | --- | --- | --- | --- | --- |
-| P1.1 | Bind the keyless QUILL commands still waiting on a displacement: Sort Z-A, Tidy Whitespace, Previous Heading, Earlier Versions, Keyboard Manager, Sound Scheme, lowercase, Markdown Tag (each blocked on P1.11 or a chord decision) | QUILL | S | rule 8 gate passes |
+| P1.1 | Bind the keyless QUILL commands still waiting on a displacement: Sort Z-A, Tidy Whitespace, Previous Heading, Earlier Versions, Keyboard Manager, Sound Scheme, lowercase, Markdown Tag (each blocked on P1.11 or a chord decision). **And five QuillLite gave a key to on 2026-09-16, which QUILL can reach only from a menu**: Convert Indentation to Spaces and to Tabs (`Alt+F11`/`Alt+F12` there), Delete Lines Containing (`Alt+Shift+X`), Hard-Wrap Lines (`Alt+Shift+W`) and Line Statistics -- all four chords free in QUILL today. `edit.open_review_buffer` took `Alt+Shift+U` in both in the same change | QUILL | S | rule 8 gate passes |
 | P1.2 | Structural selection family on Lite's six chords; Set Mark `Ctrl+Shift+M`, Exchange `Ctrl+Alt+X`, Duplicate Selection `Ctrl+Alt+Q`; Switch Document Mode `Alt+Shift+F`; `Ctrl+Alt+F8` becomes the marker toggle in **both** and Extend Selection Mode takes its own chord in both (5.3a); Shrink drops its stack; Reselect remembers every structural select; F8 gains a cancel; marks on the shared ring, clamped, recorded for Back | both | M | -- |
 | P1.2a | **Fix Extend Selection Mode's four movement bugs** (5.3a): page keys ask the control for a real page, Up/Down follow visual lines under soft wrap, word movement stops at punctuation as Windows does, and the line table comes from `DocumentText` instead of an O(N) rescan per keystroke | QUILL | S | holding Down inside a wrapped paragraph moves one visual line per press, and a 50 MB file costs nothing extra per key |
 | P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
@@ -802,7 +794,7 @@ way:
 | P2.10 | New documents default to CRLF in QUILL as in Notepad, WordPad, Word and Lite, with the default exposed in Settings in both (F11); close prompts name the file and say Save / Don't Save / Cancel in both, from one core string (F12) | both | S |
 | P2.11 | Lossy Save As warns before the write in every lossy direction in both, and converts at write time, never in the buffer (F1); Lite's Earlier Versions says "formatting is not kept" for rich documents (F7). Lite's print settings persist as of 2026-09-16 | both | S |
 | P2.12 | Session restore in QUILL on the shared rule Lite uses, command-line files winning (G4); crash recovery in Lite lists slots and lets the user decline (F14); read-only detected at open in both | both | M |
-| P2.13 | **Tier 2 of 4.2 into Lite**: Review Buffer, Misspelling List, Quote/Unquote Lines, indentation conversion, Delete Lines Containing, Hard Wrap, Heading Organizer, jumping Find All results, Line Statistics | Lite | M |
+| P2.13 | **Tier 2 of 4.2 into Lite** is down to two rows: the **Heading Organizer** (one list where reordering is arrow keys instead of four commands -- medium, and shared), and **Extend Selection Mode**, which waits on P1.2a fixing its four movement bugs first. The other nine landed 2026-09-16 | Lite | M |
 | P2.14 | **Settings names reconciled** (G1) and `theme` given one default or one written reason (G2) | both | S |
 | P2.16 | QUILL takes Lite's `SingleInstanceChecker` and `--new-instance`, and `--rich` / `--plain` (A6, A7) | QUILL | S |
 
@@ -934,7 +926,7 @@ then the section-6 findings no tiered item has claimed.
 | P2.10 | New documents default to CRLF in QUILL as in Notepad, WordPad, Word and Lite, with the default exposed in Settings in  |
 | P2.11 | Lossy Save As warns before the write in every lossy direction in both (F1); Lite's Earlier Versions says formatting is not kept (F7) |
 | P2.12 | Session restore in QUILL on the shared rule Lite uses, command-line files winning (G4); crash recovery in Lite lists s |
-| P2.13 | Tier 2 of 4.2 into Lite: Review Buffer, Misspelling List, Quote/Unquote Lines, indentation conversion, Delete Lines Co |
+| P2.13 | Tier 2 of 4.2 into Lite is down to the Heading Organizer and Extend Selection Mode (which waits on P1.2a) |
 | P2.14 | Settings names reconciled (G1) and theme given one default or one written reason (G2) |
 | P2.16 | QUILL takes Lite's SingleInstanceChecker and --new-instance, and --rich / --plain (A6, A7) |
 | P2.18 | Clip history honours its promise in QUILL (C1): QUILL's capture still never sees a Cut; QuillLite's is wired and off by default |

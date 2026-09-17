@@ -58,6 +58,7 @@ from __future__ import annotations
 
 import wx
 
+from quill.core.links import find_link_at_cursor
 from quill.core.spelling.context_menu import IgnoreList, SpellingContext, spelling_context
 
 __all__ = ["DocumentContextMenuMixin"]
@@ -133,6 +134,7 @@ class DocumentContextMenuMixin:
         context = self._context_spelling(position)
         if context is not None:
             self._append_spelling_section(menu, context)
+        self._append_link_section(menu, position)
         self._append_edit_section(menu)
         try:
             self._popup_at(menu, event)
@@ -278,6 +280,53 @@ class DocumentContextMenuMixin:
         # which is the same reason every row inside it names the word.
         menu.AppendSubMenu(spelling, f'&Spelling: "{self._escape_menu_text(word)}"')
         menu.AppendSeparator()
+
+    def _append_link_section(self, menu: wx.Menu, position: int) -> None:
+        """Two rows, and only when the caret is actually on a link.
+
+        A web address in a text file is the commonest actionable thing in one,
+        and QuillLite's context menu had spelling, the clipboard verbs and
+        nothing else -- so the only way to follow a link was to select it by
+        hand, copy it, and paste it into a browser. QUILL offers both of these
+        when the caret is on one; the finder
+        (:func:`~quill.core.links.find_link_at_cursor`) is shared and understands
+        a Markdown link, an ``href=`` and a bare URL (bad.md 4.2, Tier 2).
+
+        Absent rather than greyed, unlike the edit rows: those three are always
+        *about* something and their state answers "why can I not copy?", while a
+        permanent "Open Link" on every right-click in a document with no links
+        in it is a row to walk past forever.
+        """
+        url = find_link_at_cursor(self.doc_text.text, int(position))
+        if not url:
+            return
+        shown = url if len(url) <= 60 else url[:59] + "\u2026"
+        open_item = menu.Append(wx.ID_ANY, f"&Open {self._escape_menu_text(shown)}")
+        copy_item = menu.Append(wx.ID_ANY, "Cop&y Link Address")
+        menu.Bind(wx.EVT_MENU, lambda _e, target=url: self._open_link(target), open_item)
+        menu.Bind(wx.EVT_MENU, lambda _e, target=url: self._copy_link(target), copy_item)
+        menu.AppendSeparator()
+
+    def _open_link(self, url: str) -> None:
+        """Hand *url* to whatever the system opens it with. Never raises.
+
+        A failure is announced rather than thrown: no browser configured, or a
+        URL the shell refuses, must not take the editor down with it -- and the
+        address is still on offer through Copy Link Address.
+        """
+        try:
+            opened = bool(wx.LaunchDefaultBrowser(url))
+        except Exception:  # noqa: BLE001 - opening a link is never worth a crash
+            opened = False
+        self.control.SetFocus()
+        self._announce(f"Opened {url}" if opened else f"That link could not be opened: {url}")
+
+    def _copy_link(self, url: str) -> None:
+        self.control.SetFocus()
+        if self._set_clipboard_text(url):
+            self._announce(f"Copied {url}")
+            return
+        self._announce("That could not be copied")
 
     def _append_edit_section(self, menu: wx.Menu) -> None:
         """What the native menu had. Rebuilt because replacing it removed it.
