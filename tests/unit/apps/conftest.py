@@ -1030,7 +1030,9 @@ class DialogRecorder:
         ),
         # Fourth: Earlier Versions and Paste from Tray both list rows, and the
         # line tools module imports the chooser at its own scope as well.
-        "choose_from_rows_tools": ("quill.apps.lite_window_tools", "choose_from_rows"),
+        # Earlier Versions moved to its own module under GATE-11 and is the
+        # only row-chooser left on this side of the tools split.
+        "choose_from_rows_backups": ("quill.apps.lite_window_backups", "choose_from_rows"),
         # Fifth: Restore Deleted Text offers the ring's three entries rather
         # than only the newest (bad.md C9).
         "choose_from_rows_lines": ("quill.apps.lite_window_lines", "choose_from_rows"),
@@ -1131,8 +1133,8 @@ class DialogRecorder:
             "choose_from_rows",
             "choose_from_rows_clipboard",
             "choose_from_rows_spelling",
-            "choose_from_rows_tools",
             "choose_from_rows_lines",
+            "choose_from_rows_backups",
         ),
         "show_text_window": (
             "show_text_window",

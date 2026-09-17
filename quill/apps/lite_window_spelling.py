@@ -386,6 +386,10 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
             # Quill folder appeared on a machine that had never had QUILL
             # (bad.md S1). The other two add routes always passed it.
             personal_dir=spelling_mod.dictionary_dir(self.app.settings, self.app.data_dir),
+            # The session ignores, which F7 did not honour: the docstring on
+            # this module claimed "every route" and this was the route that
+            # was not (bad.md S6).
+            ignores=self.spell_ignores,
         )
         self._forget_spell_dictionary()  # the review can teach words
         self._touch_status()

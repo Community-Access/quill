@@ -190,6 +190,11 @@
 
 ### Changed
 
+- **Change Case with nothing selected changes the word you are on**, not the
+  whole document -- which is what Word's Shift+F3 has always done. It matters
+  more here than elsewhere: a document that has changed case reads exactly the
+  same out loud, so a chord half-pressed used to be a change you could not hear.
+  With a selection nothing has changed.
 - **A full copy tray refuses instead of overwriting slot 1.** It wrapped round,
   overwrote whatever was there and reported success -- and slot 1 holds the
   oldest thing you kept, which is the one most likely to be what you were
@@ -207,6 +212,12 @@
 
 ### Fixed
 
+- **F7 skips the words you have told it to ignore.** Every other route honoured
+  them -- the check as you type, Ctrl+F7, the right-click menu -- and the full
+  review did not, so a word you had deliberately skipped was the first thing it
+  stopped on.
+- **The guide's Title Case key was out of date.** It is Ctrl+Shift+T;
+  Ctrl+Shift+G is Document Statistics, which is Word's Word Count key.
 - **A bookmark now finds its own text again after an edit.** Bookmarks were
   moved by a guess -- the document's length changed by so much and the cursor is
   here, so everything after it moves -- which is right for one insertion and

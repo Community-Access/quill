@@ -17,6 +17,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from quill.apps.lite_window_tools import DocumentToolsMixin
+from quill.core.document_text import DocumentText
 from quill.ui.richedit_editing import PLAIN
 
 
@@ -47,6 +48,10 @@ class _Control:
 class _Window(DocumentToolsMixin):
     def __init__(self, text: str) -> None:
         self.control = _Control(text)
+        # The case commands read the mirror rather than the control, since
+        # "no selection" means the word at the caret and finding that word is
+        # a read of the text (bad.md N5).
+        self.doc_text = DocumentText(self.control.GetValue)
         self.announcements: list[str] = []
         self.modified = False
         self.editor = SimpleNamespace(mode=PLAIN)
@@ -62,7 +67,11 @@ class _Window(DocumentToolsMixin):
 
 
 def test_sentence_case_lowers_the_shouting_and_keeps_the_first_capital() -> None:
+    # Selected, because with nothing selected the case tools take the word at
+    # the caret rather than the document (bad.md N5). What is under test here
+    # is the transform, which wants more than one word.
     win = _Window("THIS IS A HEADING")
+    win.control.SetSelection(0, len("THIS IS A HEADING"))
     win.cmd_sentence_case()
     assert win.control.GetValue() == "This is a heading"
     assert win.announcements and "Changed" in win.announcements[0]
@@ -70,6 +79,7 @@ def test_sentence_case_lowers_the_shouting_and_keeps_the_first_capital() -> None
 
 def test_invert_case_swaps_every_letter() -> None:
     win = _Window("hELLO wORLD")
+    win.control.SetSelection(0, len("hELLO wORLD"))
     win.cmd_toggle_case()
     assert win.control.GetValue() == "Hello World"
 

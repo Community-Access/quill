@@ -82,10 +82,37 @@ def test_case_applies_to_the_selection_and_leaves_the_rest_alone(lite_window) ->
     assert win.control.GetValue() == "alpha BRAVO charlie"
 
 
-def test_case_with_no_selection_takes_the_whole_document(lite_window) -> None:
+def test_case_with_no_selection_takes_the_word_at_the_caret(lite_window) -> None:
+    """Word's Shift+F3 scope, and QuillLite's since 2026-09-16 (bad.md N5).
+
+    It took the whole document, which is the right scope for a sort and the
+    wrong one for a case change -- and by ear it is the worst kind of wrong: a
+    document that has changed case reads exactly the same, so a chord somebody
+    half-pressed was a change they could not hear.
+    """
     win = lite_window("alpha bravo", cursor=0)
     win.cmd_upper_case()
-    assert win.control.GetValue() == "ALPHA BRAVO"
+    assert win.control.GetValue() == "ALPHA bravo"
+    assert win.announcements[-1] == "Changed to ALPHA"
+
+
+def test_case_works_from_anywhere_inside_the_word(lite_window) -> None:
+    win = lite_window("alpha bravo", cursor=8)
+    win.cmd_upper_case()
+    assert win.control.GetValue() == "alpha BRAVO"
+
+
+def test_case_with_the_caret_in_no_word_says_what_to_do(lite_window) -> None:
+    win = lite_window("   ", cursor=1)
+    win.cmd_upper_case()
+    assert win.announcements[-1] == "Put the cursor in a word, or select some text"
+
+
+def test_a_word_already_in_that_case_says_so_rather_than_going_quiet(lite_window) -> None:
+    win = lite_window("ALPHA bravo", cursor=0)
+    win.cmd_upper_case()
+    assert win.announcements[-1] == "ALPHA is already like that"
+    assert win.modified is False
 
 
 # --------------------------------------------------------------------- #

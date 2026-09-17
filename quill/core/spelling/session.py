@@ -55,6 +55,7 @@ class ReviewSession:
         scope_start: int = 0,
         scope_end: int | None = None,
         ranked: bool = False,
+        ignores: object | None = None,
     ) -> None:
         self._text = text
         self._dictionary = dictionary
@@ -67,6 +68,13 @@ class ReviewSession:
         # the next most-frequent word naturally rises to the front instead of
         # the ranking going stale mid-session.
         self._ranked = ranked
+        #: The words this window has already been told to skip, from outside
+        #: this session. Every other route honours them -- the live check,
+        #: Ctrl+F7, the word-at-cursor menu -- and F7 did not, so a word
+        #: somebody had deliberately ignored was the first thing the review
+        #: stopped on (bad.md S6). Duck-typed on ``skips(text, item)`` so the
+        #: session stays wx-free and either editor's list fits.
+        self._ignores = ignores
         self._session_ignores: set[str] = set()
         self._ignored_once_positions: set[int] = set()
         self._counters = ReviewCounters()
@@ -353,6 +361,21 @@ class ReviewSession:
     # Internal helpers
     # ------------------------------------------------------------------
 
+    def _externally_ignored(self, item: object) -> bool:
+        """Whether the host's own ignore list says to skip *item*. Never raises.
+
+        A list that raises must cost the filtering, not the review: the worst
+        outcome of answering False is a word offered that somebody had skipped,
+        and the worst outcome of raising is F7 not opening at all.
+        """
+        skips = getattr(self._ignores, "skips", None)
+        if skips is None:
+            return False
+        try:
+            return bool(skips(self._text, item))
+        except Exception:  # noqa: BLE001 - an ignore list must not break F7
+            return False
+
     def _rescan(self, advance_past: int | None) -> None:
         """Re-scan _text and set _current_idx to the first unhandled issue.
 
@@ -370,6 +393,7 @@ class ReviewSession:
             if self._scope_start <= m.start < self._scope_end
             and m.word.lower() not in self._session_ignores
             and m.start not in self._ignored_once_positions
+            and not self._externally_ignored(m)
         ]
         if self._ranked:
             self._issues = rank_misspellings_by_frequency(self._issues)

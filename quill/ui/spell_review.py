@@ -25,6 +25,7 @@ def review_textctrl(
     scope_label: str = "post",
     document_path: Path | None = None,
     personal_dir: Path | None = None,
+    ignores: Any = None,
 ) -> None:
     """Spell-check ``text_ctrl`` in place via the guided review dialog.
 
@@ -49,6 +50,11 @@ def review_textctrl(
         dictionary=set(dictionary),
         scope_start=0,
         scope_end=len(text),
+        # The words this surface has already been told to skip. Every other
+        # route honoured them and F7 did not, so a word somebody had
+        # deliberately ignored was the first thing the review stopped on
+        # (bad.md S6).
+        ignores=ignores,
     )
     if session.is_complete():
         announce_fn("No misspellings found.")

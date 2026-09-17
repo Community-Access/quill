@@ -1230,16 +1230,24 @@ common change anybody makes to somebody else's file.
 ### Changing case
 
 **Tools ▸ Change Case** has five. UPPERCASE (**Ctrl+Shift+U**), lowercase
-(**Ctrl+Shift+K**) and Title Case (**Ctrl+Shift+G**) are the ones you would
+(**Ctrl+Shift+K**) and Title Case (**Ctrl+Shift+T**) are the ones you would
 expect. **Sentence case** (**Ctrl+Alt+Shift+U**) puts a capital at the start and
 lowers the rest, which is what a heading typed in shouting needs, and **Invert
 Case** (**Ctrl+Alt+Shift+N**) swaps every letter, which is the cure for a
 sentence typed with Caps Lock on.
 
+All five work on what you have selected. **With nothing selected they change the
+word the cursor is in**, which is what Word's Shift+F3 has always done -- and
+which matters here more than it does for a sighted user: a whole document that
+has changed case reads exactly the same out loud, so a chord half-pressed would
+be a change you could not hear.
+
 ### Getting deleted text back somewhere else
 
-**Restore Deleted Text** (**Ctrl+Alt+Shift+Z**) puts your most recent deletion back
-**at the cursor**, wherever the cursor now is.
+**Restore Deleted Text** (**Ctrl+Alt+Shift+Z**) puts a recent deletion back **at
+the cursor**, wherever the cursor now is. QuillLite remembers the last three, so
+if what you want is not the last thing you deleted it offers a list with a
+preview of each.
 
 That is what makes it different from undo, and it is the reason it exists.
 Ctrl+Z puts text back where it came from; this puts it where you are now, so

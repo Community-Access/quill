@@ -267,3 +267,37 @@ def test_ranked_session_ignore_once_moves_to_next_occurrence_of_same_word():
     # Still "teh" -- two occurrences remain, still the most frequent word.
     assert second is not None
     assert second.word == "teh"
+
+
+def test_the_review_skips_words_the_host_has_already_ignored() -> None:
+    """F7 was the one route that did not honour the session ignores.
+
+    The live check, Ctrl+F7 and the right-click menu all consult the window's
+    IgnoreList; the full review built its ReviewSession without it, so a word
+    somebody had deliberately skipped was the first thing the review stopped on
+    (bad.md S6).
+    """
+    from quill.core.spelling.context_menu import IgnoreList
+
+    text = "brxwn zzqua"
+    ignores = IgnoreList()
+    ignores.ignore_word("brxwn")
+
+    session = ReviewSession(text=text, dictionary=set(), ignores=ignores)
+    assert [issue.word for issue in session._issues] == ["zzqua"]
+
+
+def test_no_ignore_list_is_the_old_behaviour() -> None:
+    session = ReviewSession(text="brxwn zzqua", dictionary=set())
+    assert [issue.word for issue in session._issues] == ["brxwn", "zzqua"]
+
+
+def test_an_ignore_list_that_raises_costs_the_filtering_not_the_review() -> None:
+    """A list that cannot answer must not be able to stop F7 opening."""
+
+    class _Broken:
+        def skips(self, _text, _item):
+            raise RuntimeError("no")
+
+    session = ReviewSession(text="brxwn", dictionary=set(), ignores=_Broken())
+    assert [issue.word for issue in session._issues] == ["brxwn"]
