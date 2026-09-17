@@ -183,6 +183,24 @@
 
 ### Fixed
 
+- **A bookmark now finds its own text again after an edit.** Bookmarks were
+  moved by a guess -- the document's length changed by so much and the cursor is
+  here, so everything after it moves -- which is right for one insertion and
+  wrong for a Replace All, an undo, a paste over a selection, or a reload. A
+  bookmark now remembers the words around it and is re-found from them, which is
+  how QUILL's named bookmarks have always worked. Bookmarks you already have
+  keep working; they gain the new behaviour the next time you set them.
+- **The Keyboard Manager refuses a key Windows will not send.** Some chords look
+  fine, save fine, and then never fire -- the menu advertises a key that does
+  nothing. The check existed and ran only from the Audit button, after the
+  damage; it now runs when you assign.
+- **Earlier Versions says what a rich restore costs.** A backup is a copy of the
+  text, not the formatting, so putting one back into a rich text document keeps
+  the words and loses the styling. The dialog offered the rows and said nothing.
+- **File Encoding and Line Endings is no longer offered in rich text.** It let
+  you choose, dirtied the document and announced a change that never happened: a
+  rich text file has its own format and neither setting is read when it is
+  written.
 - **All Matches selects the match you chose.** It selected however many
   characters the *first* match had, which for a search that finds runs of
   different lengths meant the selection ended somewhere you did not ask for.

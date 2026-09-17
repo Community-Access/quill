@@ -44,7 +44,12 @@ import wx
 
 from quill.apps.lite_dialogs import choose_bookmark, show_text_window
 from quill.core.char_describe import describe_character
-from quill.core.numbered_bookmarks import MAX_BOOKMARKS, BookmarkSet, label_for
+from quill.core.numbered_bookmarks import (
+    MAX_BOOKMARKS,
+    BookmarkSet,
+    capture_anchor,
+    label_for,
+)
 from quill.core.selection import expand_selection, line_span, paragraph_span, word_span
 
 __all__ = ["DocumentMarksMixin"]
@@ -134,7 +139,13 @@ class DocumentMarksMixin:
 
     def _set_bookmark(self, number: int) -> None:
         position = self.control.GetInsertionPoint()
-        mark = self.bookmarks.set(number, position, label_for(self.control.GetValue(), position))
+        text = self.doc_text.text
+        # The anchor is the whole of L9's fix: a bookmark that remembers the
+        # text around it can be *found* again after an edit, where one that
+        # remembers only a number has to be guessed at.
+        mark = self.bookmarks.set(
+            number, position, label_for(text, position), capture_anchor(text, position)
+        )
         self.persist_bookmarks()
         self._announce(f"Bookmark {mark.number} set: {mark.label}")
 
@@ -174,14 +185,14 @@ class DocumentMarksMixin:
         self._announce(f"Bookmark {mark.number}: {mark.label}")
 
     def cmd_next_bookmark(self) -> None:
-        mark = self.bookmarks.next_after(self.control.GetInsertionPoint())
+        mark = self.reanchored_bookmarks().next_after(self.control.GetInsertionPoint())
         if mark is None:
             self._announce("No bookmarks in this document")
             return
         self._go_to_bookmark(mark)
 
     def cmd_previous_bookmark(self) -> None:
-        mark = self.bookmarks.previous_before(self.control.GetInsertionPoint())
+        mark = self.reanchored_bookmarks().previous_before(self.control.GetInsertionPoint())
         if mark is None:
             self._announce("No bookmarks in this document")
             return
@@ -189,7 +200,7 @@ class DocumentMarksMixin:
 
     def cmd_list_bookmarks(self) -> None:
         """The bookmark list: choose one to go there, or remove one from it."""
-        marks = self.bookmarks.all()
+        marks = self.reanchored_bookmarks().all()
         if not marks:
             self._announce(
                 f"No bookmarks in this document. Control Shift B sets one, or "
@@ -345,18 +356,35 @@ class DocumentMarksMixin:
     # ------------------------------------------------------------------ #
 
     def _track_bookmarks(self, event: wx.CommandEvent) -> None:
-        """Move the bookmarks with the text on every edit.
+        """Note that the text changed. Do nothing else.
 
-        The control does not say *where* it changed, only that it did, so the
-        shift is inferred from the length change and the caret: a bookmark that
-        stayed at a fixed offset while a paragraph was inserted above it would
-        point somewhere arbitrary, and a bookmark that is wrong is worse than
-        one that does not exist, because it is trusted.
+        It used to infer a shift from the length change and the caret --
+        "the document grew by nine characters and the caret is here, so
+        everything after that moves nine". That is right for one insertion at
+        the caret and wrong for every other edit there is: a Replace All, an
+        undo, a paste over a selection, a reload that happens to change the
+        length. And there was no loading guard, so opening a shorter file moved
+        every bookmark in it (bad.md L9).
+
+        A bookmark now remembers the text around it and is re-found when it is
+        *read* (:meth:`~quill.core.numbered_bookmarks.BookmarkSet.reanchor`),
+        which is also why this hook can be O(1): the search is over the
+        document, and running it per character typed is the cost the document
+        mirror exists to remove.
         """
-        length = self.control.GetLastPosition()
-        delta = length - self._tracked_length
-        self._tracked_length = length
-        if delta and len(self.bookmarks):
-            caret = self.control.GetInsertionPoint()
-            self.bookmarks.shift(max(0, caret - max(0, delta)), delta)
+        self._bookmarks_need_reanchor = True
         event.Skip()
+
+    def reanchored_bookmarks(self):
+        """The bookmark set, relocated to the current text if anything changed.
+
+        Every reader goes through here rather than touching ``self.bookmarks``
+        directly, because a bookmark read without re-anchoring is a bookmark
+        that answers about the document as it was before the last edit -- and
+        the failure mode of "some readers remembered" is one stale jump nobody
+        can reproduce.
+        """
+        if getattr(self, "_bookmarks_need_reanchor", False):
+            self._bookmarks_need_reanchor = False
+            self.bookmarks.reanchor(self.doc_text.text)
+        return self.bookmarks

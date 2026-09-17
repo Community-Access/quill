@@ -49,7 +49,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-__all__ = ["MAX_BOOKMARKS", "Bookmark", "BookmarkSet"]
+from quill.core.bookmark_anchor import BookmarkAnchor, capture_anchor, resolve_anchor
+
+__all__ = ["MAX_BOOKMARKS", "Bookmark", "BookmarkSet", "capture_anchor"]
 
 #: Nine, so every one can have a digit.
 MAX_BOOKMARKS = 9
@@ -63,6 +65,11 @@ class Bookmark:
     position: int
     #: A snippet of the line, so the list reads as places rather than as numbers.
     label: str
+    #: The text around the position when it was set, so the bookmark can be
+    #: *relocated* rather than merely moved along. ``None`` for a bookmark
+    #: written by a build that did not capture one; those still shift, they
+    #: just shift less well.
+    anchor: BookmarkAnchor | None = None
 
 
 @dataclass
@@ -83,11 +90,22 @@ class BookmarkSet:
 
     # -- setting and clearing ------------------------------------------------ #
 
-    def set(self, number: int, position: int, label: str) -> Bookmark:
+    def set(
+        self,
+        number: int,
+        position: int,
+        label: str,
+        anchor: BookmarkAnchor | None = None,
+    ) -> Bookmark:
         """Put bookmark *number* at *position*, replacing whatever was there."""
         if not 1 <= number <= MAX_BOOKMARKS:
             raise ValueError(f"bookmark number out of range: {number}")
-        mark = Bookmark(number=number, position=max(0, int(position)), label=label.strip())
+        mark = Bookmark(
+            number=number,
+            position=max(0, int(position)),
+            label=label.strip(),
+            anchor=anchor,
+        )
         self._slots[mark.number] = mark
         return mark
 
@@ -159,10 +177,17 @@ class BookmarkSet:
         on-disk form and a file whose lines reorder themselves as the user edits
         makes for a diff nobody can read.
         """
-        return [
-            {"number": mark.number, "position": mark.position, "label": mark.label}
-            for mark in sorted(self._slots.values(), key=lambda mark: mark.number)
-        ]
+        records: list[dict[str, object]] = []
+        for mark in sorted(self._slots.values(), key=lambda mark: mark.number):
+            record: dict[str, object] = {
+                "number": mark.number,
+                "position": mark.position,
+                "label": mark.label,
+            }
+            if mark.anchor is not None:
+                record["anchor"] = mark.anchor.to_dict()
+            records.append(record)
+        return records
 
     @classmethod
     def from_records(cls, records: object) -> BookmarkSet:
@@ -187,7 +212,12 @@ class BookmarkSet:
             if not 1 <= number <= MAX_BOOKMARKS:
                 continue
             label = record.get("label")
-            marks.set(number, position, label if isinstance(label, str) else "")
+            marks.set(
+                number,
+                position,
+                label if isinstance(label, str) else "",
+                BookmarkAnchor.from_dict(record.get("anchor")),
+            )
         return marks
 
     def clamped_to(self, length: int) -> None:
@@ -200,7 +230,7 @@ class BookmarkSet:
         limit = max(0, int(length))
         for number, mark in list(self._slots.items()):
             if mark.position > limit:
-                self._slots[number] = Bookmark(number, limit, mark.label)
+                self._slots[number] = Bookmark(number, limit, mark.label, mark.anchor)
         if self._temporary is not None and self._temporary > limit:
             self._temporary = limit
 
@@ -221,13 +251,39 @@ class BookmarkSet:
 
     # -- keeping up with the document ---------------------------------------- #
 
+    def reanchor(self, text: str) -> None:
+        """Relocate every bookmark to where its text actually is in *text* now.
+
+        The better of the two models both editors had, and the one QUILL has
+        used for its *named* bookmarks since #300: each bookmark remembers a
+        window of the text around it, and re-anchoring finds that text again,
+        preferring the occurrence nearest the old offset.
+
+        It replaces a length-delta guess -- "the document grew by nine
+        characters and the caret is here, so everything after that moves nine".
+        That is right for one insertion at the caret and wrong for every other
+        edit there is: a Replace All, an undo, a paste over a selection, a
+        reload. Being wrong is the expensive direction, because a bookmark that
+        is wrong is still trusted (bad.md L9).
+
+        Called when a bookmark is *read* rather than on every keystroke -- the
+        search is over the document, and a hook that ran it per character typed
+        would be the cost the document mirror exists to remove. A bookmark with
+        no anchor (written by an older build) is clamped and left where it is.
+        """
+        for number, mark in list(self._slots.items()):
+            if mark.anchor is None:
+                continue
+            position = resolve_anchor(text, mark.anchor)
+            if position != mark.position:
+                self._slots[number] = Bookmark(number, position, mark.label, mark.anchor)
+        self.clamped_to(len(text))
+
     def shift(self, at: int, delta: int) -> None:
         """Move every bookmark after *at* by *delta* characters.
 
-        Called on every edit. A bookmark that stayed at a fixed offset while the
-        text moved under it would point somewhere arbitrary after the first
-        paragraph is inserted above it -- and a bookmark that is wrong is worse
-        than one that does not exist, because it is trusted.
+        The fallback for bookmarks with no anchor to re-find -- see
+        :meth:`reanchor`, which is what a bookmark set by this version gets.
 
         A deletion that swallows a bookmark collapses it onto the deletion point
         rather than dropping it: the place is still roughly where the person
@@ -242,6 +298,7 @@ class BookmarkSet:
                 number=number,
                 position=max(at, mark.position + delta),
                 label=mark.label,
+                anchor=mark.anchor,
             )
 
 

@@ -353,6 +353,24 @@ class KeymapEditorDialog:
             show_message_box(problem, "Cannot use that key", wx.OK | wx.ICON_WARNING, self.dialog)
             return
         chord = keymap_mod.normalise_chord(chord)
+        # And wx's own answer, at assign time. The check above is
+        # :mod:`quill.core.lite.keymap` asking whether the chord is *sane*; this
+        # is wx asking whether it can actually fire one, and they are not the
+        # same question -- ``wx.AcceleratorEntry`` silently drops what it cannot
+        # parse, so a chord that normalises cleanly and that wx refuses is
+        # assigned and inert. The menu then advertises a key that does nothing
+        # and nothing says so, which is the one failure that looks like success.
+        # It ran only from the Audit button, which is to say after the damage
+        # (bad.md H2); QUILL's keymap editor has checked at assign time all
+        # along.
+        if not binding_is_dispatchable(chord):
+            refusal = (
+                f"{chord} is a key Windows will not send to QuillLite, so nothing "
+                "would happen when you pressed it. Try another."
+            )
+            self._say(refusal)
+            show_message_box(refusal, "Cannot use that key", wx.OK | wx.ICON_WARNING, self.dialog)
+            return
         owners = keymap_mod.conflicting_handlers(self._keymap, handler, chord)
         if owners and not self._confirm_move(chord, owners):
             self._say(f"{title} still answers to {self._keymap.get(handler, '') or _UNBOUND}.")

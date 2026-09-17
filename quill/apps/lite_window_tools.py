@@ -446,6 +446,18 @@ class DocumentToolsMixin:
                 "replaces the text in this window, which you can undo and which does "
                 "not write to the file until you save. Open a Copy puts the old "
                 "version in a new window and leaves this one alone."
+            )
+            + (
+                # Said, because it is a loss and it is not obvious. A backup
+                # stores GetValue(), which is the text and none of the runs, so
+                # restoring one into a rich document replaces formatted text
+                # with flat text. The dialog offered the rows and said nothing
+                # (bad.md F7); the honest answer is to warn rather than to stop
+                # -- the text is still the thing somebody came back for.
+                " These are copies of the text only: restoring one into this "
+                "rich text document keeps the words and loses the formatting."
+                if self.editor.mode == RICH
+                else ""
             ),
             rows=rows,
             extra_button="Open a &Copy",
@@ -503,6 +515,19 @@ class DocumentToolsMixin:
         choice takes effect at the next save, which is the moment it means
         anything.
         """
+        # Not in rich text, where the answer would be a lie. A .rtf is written
+        # by _write_rtf, which reads neither of these: the dialog dirtied the
+        # document, announced "Saving as UTF-16, CRLF" and changed nothing at
+        # all, while the status cells went on reading UTF-8 / CRLF for every
+        # rich document there is (bad.md F7). A refusal that says why is the
+        # honest version of that.
+        if self.editor.mode == RICH:
+            self._announce(
+                "A rich text document has its own format, so the encoding and the "
+                "line endings are not yours to choose. They apply to plain text, "
+                "Markdown and HTML."
+            )
+            return
         chosen = edit_file_format(self, encoding=self.encoding, newline=self.newline)
         if chosen is None:
             self.control.SetFocus()

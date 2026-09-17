@@ -237,6 +237,28 @@ def test_assigning_with_nothing_selected_asks_rather_than_failing(manager) -> No
     assert "Move to a command in the list first." in manager.status.GetLabel()
 
 
+def test_a_chord_wx_will_not_fire_is_refused_at_assign_time(manager, monkeypatch) -> None:
+    """The one failure that looks like success.
+
+    ``wx.AcceleratorEntry`` silently drops what it cannot parse, so a chord that
+    normalises cleanly and that wx refuses used to be *assigned* -- the menu then
+    advertised a key that did nothing and nothing said so. The check existed and
+    ran only from the Audit button, which is to say after the damage (bad.md H2).
+    """
+    import quill.apps.lite_keymap_editor as editor
+
+    monkeypatch.setattr(editor, "ask_for_chord", lambda *_a, **_k: "Ctrl+Shift+Plus")
+    monkeypatch.setattr(editor, "show_message_box", lambda *_a, **_k: None)
+    monkeypatch.setattr(editor.keymap_mod, "describe_binding_problem", lambda _c: "")
+    before = manager._keymap.get("cmd_save")
+
+    _select(manager, "cmd_save")
+    manager._assign_selected()
+
+    assert manager._keymap.get("cmd_save") == before
+    assert "will not send" in manager.status.GetLabel()
+
+
 def test_every_status_message_is_also_announced(manager) -> None:
     """A label change on an unfocused control is what a reader does not say."""
     manager._say("Something happened.")

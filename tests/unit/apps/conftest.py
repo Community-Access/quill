@@ -760,6 +760,11 @@ def lite_window(tmp_path, lite_settings):
             # regression the mirror exists to prevent (bad.md V2).
             self.doc_text = DocumentText(lambda: self.control.GetValue())
             self.bookmarks = BookmarkSet()
+            #: Set by the text hook, cleared when a bookmark is read. Bookmarks
+            #: are re-found from the text around them rather than shifted by a
+            #: length guess (bad.md L9), and the flag is what keeps the search
+            #: off the typing path.
+            self._bookmarks_need_reanchor = False
             self.locations = LocationRing()
             self._tracked_length = len(text)
             self._loading = False
@@ -926,11 +931,18 @@ def lite_window(tmp_path, lite_settings):
             self._touch_status()
 
         def on_text_changed(self) -> None:
-            """What ``EVT_TEXT`` does, in the order ``lite_window`` does it."""
+            """What ``EVT_TEXT`` does, in the order ``lite_window`` does it.
+
+            *Both* handlers: the real window binds EVT_TEXT twice, once for the
+            window's own state and once for the bookmarks, and a stub that ran
+            one of them would let a bookmark answer about the document as it
+            was before the edit (bad.md L9).
+            """
             self.doc_text.invalidate()
             self._set_modified(True)
             self._touch_status()
             self.text_changed_while_extending()
+            self._track_bookmarks(_SkippableEvent())
 
     def make(text: str = "", cursor: int = 0, mode: str = "plain") -> Any:
         window = LiteWindowStub(text, cursor, mode)
@@ -1011,6 +1023,9 @@ class DialogRecorder:
             "quill.apps.lite_window_spelling_navigation",
             "choose_from_rows",
         ),
+        # Fourth: Earlier Versions and Paste from Tray both list rows, and the
+        # line tools module imports the chooser at its own scope as well.
+        "choose_from_rows_tools": ("quill.apps.lite_window_tools", "choose_from_rows"),
         "edit_spelling_voice": ("quill.apps.lite_spelling_voice_dialog", "edit_spelling_voice"),
         "AppFeaturesDialog": ("quill.ui.app_features_dialog", "AppFeaturesDialog"),
         "CommandPaletteDialog": ("quill.ui.palette", "CommandPaletteDialog"),
@@ -1020,6 +1035,7 @@ class DialogRecorder:
         # Imported at module scope by their caller: patch the caller.
         "show_text_window": ("quill.apps.lite_window_commands", "show_text_window"),
         "show_text_window_marks": ("quill.apps.lite_window_marks", "show_text_window"),
+        "choose_bookmark": ("quill.apps.lite_window_marks", "choose_bookmark"),
         # And a third binding, for the Review Buffer, which is the same
         # read-only window used for a different purpose (bad.md 4.2, Tier 2).
         "show_text_window_review": ("quill.apps.lite_window_selection", "show_text_window"),
@@ -1105,6 +1121,7 @@ class DialogRecorder:
             "choose_from_rows",
             "choose_from_rows_clipboard",
             "choose_from_rows_spelling",
+            "choose_from_rows_tools",
         ),
         "show_text_window": (
             "show_text_window",

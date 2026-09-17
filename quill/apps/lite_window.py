@@ -156,6 +156,11 @@ class DocumentFrame(
         #: This document's nine numbered places. Per window, in memory: a
         #: bookmark is about where you are in *this* document right now.
         self.bookmarks = BookmarkSet()
+        #: Set by the text hook, cleared when a bookmark is next read. A
+        #: bookmark is re-found from the text around it rather than shifted by
+        #: a length guess (bad.md L9), and this flag is what keeps that search
+        #: off the typing path.
+        self._bookmarks_need_reanchor = False
         #: Where the caret has been, so a jump can be taken back. QUILL's own
         #: ring (quill/core/locations.py), fed from the one seam every jump
         #: goes through -- see DocumentCommandsMixin._go_to. Per window and in

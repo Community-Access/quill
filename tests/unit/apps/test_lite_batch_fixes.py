@@ -133,3 +133,36 @@ def test_a_nonsense_margin_list_falls_back_to_the_defaults() -> None:
 
     settings.print_margins_mm = [15, 15, 15, -4]
     assert settings.normalized().print_margins_mm == [15, 15, 15, 15]
+
+
+# --------------------------------------------------------------------------- #
+# F7. Two dialogs that were honest about plain text and silent about rich
+# --------------------------------------------------------------------------- #
+
+
+def test_earlier_versions_warns_that_a_rich_restore_loses_formatting(
+    lite_window, lite_dialogs, tmp_path
+) -> None:
+    """A backup stores the text and none of the runs, so restoring one into a
+    rich document replaces formatted text with flat text. The dialog offered the
+    rows and said nothing about it (bad.md F7)."""
+    path = tmp_path / "notes.rtf"
+    path.write_text("body", encoding="utf-8")
+    win = lite_window("body", cursor=0, mode="rich")
+    win.path = path
+
+    from quill.core.lite import backups as backups_mod
+
+    backups_mod.write_backup(path, "an earlier body")
+    win.cmd_browse_backups()
+    assert "loses the formatting" in lite_dialogs.kwargs_for("choose_from_rows")["help_text"]
+
+
+def test_the_encoding_dialog_is_refused_in_rich_text(lite_window, lite_dialogs) -> None:
+    """It dirtied the document, announced "Saving as UTF-16, CRLF" and changed
+    nothing at all: _write_rtf reads neither field (bad.md F7)."""
+    win = lite_window("body", cursor=0, mode="rich")
+    win.cmd_file_format()
+    assert "rich text document has its own format" in win.announcements[-1]
+    assert lite_dialogs.names() == []
+    assert win.modified is False
