@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite changelog</title>
   <style>
@@ -198,6 +198,36 @@
 <main id="main-content">
 <h1 id="quilllite-changelog">QuillLite changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li><strong>Save As converts the file, not the window.</strong> Saving a
+rich text document as plain text, or an HTML one as Markdown, used to
+change the document in front of you <em>first</em> and then try to write
+it. If the write failed — a locked file, a full disk — you were left
+holding flattened text under the old name, with the next Ctrl+S ready to
+write it over the original, and the formatting gone from the window as
+well because that change could not be undone. The file is written first
+now, and the window follows only when the write succeeded.</li>
+<li><strong>A character the file cannot hold is a question, not a silent
+loss.</strong> Typing an em dash or an emoji into a file stored in an
+older encoding used to turn it into a question mark, with “Saved”
+announced as though nothing had happened. QuillLite now asks before it
+writes: save as UTF-8 and keep everything, save as asked and lose them
+knowingly, or cancel.</li>
+<li><strong>Crash recovery puts your file back the way it was.</strong>
+The copy kept aside is always written in one format, because it has to
+hold whatever you typed — and the recovered document used to adopt
+<em>that</em> format, so a file in an older encoding, or one with Unix
+line endings, came back changed and was saved that way. What the copy
+records now is what your document was, and the restore puts it
+back.</li>
+<li><strong>A recovery that fails claims nothing.</strong> If the copy
+could not be read, QuillLite still took your file’s name, marked the
+empty window as changed and set the copy as its own — so closing that
+window and answering “No” deleted the only copy of the work. It now says
+the recovery failed, takes nothing, and leaves the copy for next
+time.</li>
+</ul>
 <h3 id="added">Added</h3>
 <ul>
 <li><p><strong>Copy All (Ctrl+F8)</strong> puts the whole document on
@@ -453,7 +483,7 @@ listener who had asked for a tone could not tell the alert from a clean
 document. A setting chooses between two kinds of feedback; it may never
 choose down to none.</li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 <ul>
 <li><strong>F7 skips the words you have told it to ignore.</strong>
 Every other route honoured them – the check as you type, Ctrl+F7, the
@@ -1020,7 +1050,7 @@ offers <em>Open with QuillLite</em> for <code>.txt</code> and
 editor that quietly takes over every <code>.txt</code> on a machine is
 an editor people uninstall.</p></li>
 </ul>
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixed-2">Fixed</h3>
 <ul>
 <li><p><strong>Choosing a profile in Customize Features now applies
 it.</strong> It used to need a second press of a <strong>Use

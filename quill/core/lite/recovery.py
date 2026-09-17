@@ -49,6 +49,15 @@ class RecoverySlot:
     original_path: str
     content_path: Path
     meta_path: Path
+    #: The *original document's* encoding, not the slot's. The slot itself is
+    #: always UTF-8, because the copy has to hold whatever was typed; what this
+    #: records is how the file it came from was written, so restoring a cp1252
+    #: document after a crash does not silently save it back as UTF-8 (F2).
+    #: Empty when the window had no file, in which case the defaults apply.
+    encoding: str = ""
+    #: And its line endings, for the same reason. ``"\r\n"``, ``"\n"`` or
+    #: ``"\r"``; empty when unknown.
+    newline: str = ""
 
     @property
     def title(self) -> str:
@@ -82,6 +91,11 @@ def write_meta(slot: RecoverySlot) -> None:
             "mode": slot.mode,
             "original_path": slot.original_path,
             "content": slot.content_path.name,
+            # What the *document* was, not what the slot is. Without these a
+            # recovered cp1252/CRLF file was saved back as UTF-8/LF, silently,
+            # because the window adopted the slot's own encoding (F2).
+            "encoding": slot.encoding,
+            "newline": slot.newline,
         },
     )
 
@@ -124,6 +138,8 @@ def pending(directory: Path | None = None) -> list[RecoverySlot]:
                     original_path=str(payload.get("original_path", "")),
                     content_path=content,
                     meta_path=meta_path,
+                    encoding=str(payload.get("encoding", "")),
+                    newline=str(payload.get("newline", "")),
                 )
             )
         except (OSError, ValueError, KeyError):

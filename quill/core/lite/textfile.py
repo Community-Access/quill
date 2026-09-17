@@ -30,6 +30,8 @@ from pathlib import Path
 
 __all__ = [
     "ENCODING_CHOICES",
+    "unencodable_characters",
+    "unencodable_warning",
     "NEWLINE_CHOICES",
     "DecodedText",
     "decode_text",
@@ -96,12 +98,59 @@ def decode_text(data: bytes) -> DecodedText:
     return DecodedText(text=normalized, encoding=encoding, newline=newline)
 
 
+def _encoding_name(codec: str) -> str:
+    """How a codec is named to a person; the raw codec if it is not one of ours.
+
+    From the same table the chooser and the status bar read, so the three
+    cannot call one encoding three things.
+    """
+    return dict(ENCODING_CHOICES).get(codec, codec)
+
+
+def unencodable_characters(text: str, encoding: str) -> list[str]:
+    """The distinct characters *encoding* cannot hold, in the order they appear.
+
+    Asked *before* the write, so the app can say what it is about to lose rather
+    than losing it. ``errors="replace"`` turned an em dash typed into a cp1252
+    file into a question mark with nothing said, which is the quietest possible
+    way to damage somebody's document -- and the damage is only visible if they
+    happen to read that line again (bad.md F3).
+    """
+    missing: list[str] = []
+    seen: set[str] = set()
+    for character in text:
+        if character in seen:
+            continue
+        seen.add(character)
+        try:
+            character.encode(encoding)
+        except UnicodeEncodeError:
+            missing.append(character)
+    return missing
+
+
+def unencodable_warning(count: int, encoding: str) -> str:
+    """The one sentence both editors ask with, when characters will not fit.
+
+    One string, because two products asking the same question in two different
+    ways is two things to learn -- and this one is asked at the worst possible
+    moment, which is while somebody is trying to save.
+    """
+    plural = "" if count == 1 else "s"
+    return (
+        f"{count} character{plural} cannot be saved as {_encoding_name(encoding)}. "
+        "Save as UTF-8 instead?"
+    )
+
+
 def encode_text(text: str, *, encoding: str, newline: str) -> bytes:
     """The bytes to write for *text*, restoring *newline* and *encoding*.
 
-    ``errors="replace"`` rather than ``strict``: a save that raises because the
-    user typed an em dash into a cp1252 file is a save that loses the document.
-    A replacement character is visible and recoverable; a refused save is not.
+    ``errors="replace"`` is the last resort rather than the policy: the caller
+    asks :func:`unencodable_characters` first and offers UTF-8, so by the time
+    this runs the user has either chosen an encoding that fits or chosen to lose
+    the characters knowingly. It stays ``replace`` because a save that *raises*
+    is a save that loses the document, which is the worse of the two.
     """
     restored = text.replace("\n", newline) if newline != "\n" else text
     return restored.encode(encoding, errors="replace")

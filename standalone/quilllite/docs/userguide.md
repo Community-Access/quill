@@ -146,6 +146,26 @@ deliberately change them from **Tools ▸ File Encoding and Line Endings**
 copy of an old file in a newer format. The change takes effect the next time you
 save.
 
+### When a character will not fit
+
+Older files store only a limited set of letters. If you type an em dash, a
+curly quote or an emoji into a file that cannot hold one, QuillLite asks before
+it saves rather than after:
+
+> 3 characters cannot be saved as Windows-1252. Save as UTF-8 instead?
+
+- **Yes** saves the file as UTF-8 and keeps every character. The **Encoding**
+  cell in the status bar changes to match, because from now on the file really
+  is UTF-8.
+- **No** saves it the way it already was, and those characters become question
+  marks. Sometimes that is what you want — a file something else has to read
+  back.
+- **Cancel** stops, and nothing is written.
+
+Until version 1.0 there was no question. The characters became question marks,
+QuillLite said "Saved", and the only way to find out was to read that line
+again.
+
 ### Saving an HTML page as Markdown
 
 **Ctrl+Shift+S** offers **Markdown (*.md)** in its list of types, and in one
@@ -161,6 +181,13 @@ you typed disappears. If the conversion would produce nothing at all -- a page
 that is only a comment, say -- QuillLite keeps your text exactly as it was and
 tells you so, rather than writing an empty file.
 
+The conversion happens **to the file**, and the window follows only once the
+file is safely written. If the save fails — the file is locked, the disk is
+full — the document in front of you is untouched, still HTML, with its undo
+history intact. The same is true of flattening a rich text document to plain:
+QuillLite asks, writes the plain file, and only then drops the formatting from
+the window.
+
 Saving a plain text or Markdown document as `.md` changes nothing at all: plain
 text is already what it claims to be, and Markdown already is Markdown. A
 **rich text** document is not offered Markdown, because turning real formatting
@@ -175,7 +202,16 @@ aside, about every thirty seconds. That copy sits **beside** your file and never
 of it.
 
 If QuillLite or your computer stops unexpectedly, that work is offered back to
-you the next time you start, in its own document.
+you the next time you start, in its own document. It comes back **the way it
+was**: a file stored in an older encoding, or written with Unix line endings,
+is still that file after a recovery. The copy kept aside is always written in
+one format, because it has to hold whatever you typed — but what it records
+alongside is what *your* document was, and that is what is put back.
+
+If a copy cannot be read back — a damaged disk, a file something else is
+holding — QuillLite says so and leaves it exactly where it is. The window does
+not take your file's name, and the copy is offered again next time. It is still
+the only copy of that work.
 
 Save it, or close normally, and the copy is deleted. So there is never anything
 in there except work you actually need.

@@ -1417,6 +1417,84 @@ makes is kept.
   row is there.
 - [ ] pass  [ ] fail: ______
 
+### The save path keeps what you had (2026-09-17)
+
+Four bugs on one path, and every one of them loses work quietly. Run this block
+on a copy of a real file, not a scratch one -- the failures here are the kind
+you only notice a week later.
+
+**L-174. A failed Save As leaves the window alone**
+- Do: open any `.rtf` and put a heading and a bold word in it. Open the same
+  folder in another program that locks files, or make the target read-only --
+  the simplest way is to save once as `locked.txt`, then set that file
+  read-only in Explorer. Now in QuillLite press **Ctrl+Shift+S**, choose
+  **Text files**, and save over `locked.txt`. Answer **Yes** to "Saving as
+  plain text removes all formatting".
+- Pass: you hear that the save failed and names the file. The document in front
+  of you is **still rich text** -- the heading is still a heading, the bold word
+  is still bold, the status bar's Format cell still says Rich Text -- and
+  **Ctrl+Z** still has your edits in it.
+- Fail if the window is now plain text. That is the bug: the conversion used to
+  happen before the write, so a failed write left flattened text under the
+  original name, with the next Ctrl+S ready to write it over the `.rtf`.
+- [ ] pass  [ ] fail: ______
+
+**L-175. A failed HTML-to-Markdown save leaves the window alone**
+- Do: the same, from an HTML document saving over a read-only `.md`.
+- Pass: the save fails, and the document is still HTML -- tags and all. Nothing
+  is announced about converting.
+- [ ] pass  [ ] fail: ______
+
+**L-176. A character the encoding cannot hold is asked about**
+- Do: open a file saved as **Windows-1252** (or use Tools ▸ File Encoding and
+  Line Endings to set it to Windows-1252 and save once). Type an em dash — this
+  one — and an emoji. Press **Ctrl+S**.
+- Pass: a question appears before anything is written, and it counts them:
+  "2 characters cannot be saved as Windows-1252. Save as UTF-8 instead?" with
+  **Yes**, **No** and **Cancel**.
+- Fail if it saves without asking. Those characters used to become question
+  marks with "Saved" announced as though nothing had happened.
+- [ ] pass  [ ] fail: ______
+
+**L-177. Yes keeps the characters and the status bar agrees**
+- Do: answer **Yes** to L-176, then press **F6** and arrow to the **Encoding**
+  cell.
+- Pass: the file holds the em dash and the emoji, and the cell reads **UTF-8**.
+  The document really is UTF-8 from now on, so the cell has to say so.
+- [ ] pass  [ ] fail: ______
+
+**L-178. Cancel writes nothing**
+- Do: repeat L-176 and answer **Cancel**.
+- Pass: you hear "Save cancelled", the file on disk is unchanged, and the
+  document is still marked as having unsaved changes.
+- [ ] pass  [ ] fail: ______
+
+**L-179. A recovered file keeps its own encoding and line endings**
+- Do: open a `.txt` saved with **Unix** line endings (any file from a git
+  checkout). Type a sentence but do **not** save. Wait forty seconds so the
+  copy-aside has run. Now end the QuillLite process from Task Manager. Start
+  QuillLite again and let it restore the document. Press **Ctrl+S**.
+- Pass: press **F6** and the **Line Endings** cell reads **LF** before you save,
+  and the saved file still has Unix line endings afterwards.
+- Fail if it reads CRLF, or the saved file gained Windows line endings. The copy
+  kept aside is always written one way; what the document *was* is recorded
+  beside it, and that is what must come back.
+- [ ] pass  [ ] fail: ______
+
+**L-180. A recovery that fails takes nothing**
+- Do: after a crash as in L-179, and **before** starting QuillLite, open
+  `%LOCALAPPDATA%\QuillLite\recovery` and make the copy's content file
+  unreadable -- the simplest way is to open it in another program that holds an
+  exclusive lock, or deny yourself read access in its Properties ▸ Security.
+  Now start QuillLite.
+- Pass: you hear that it could not be recovered and is still saved aside. The
+  window is **untitled** -- it has not taken the original file's name -- and it
+  is not marked as changed. The copy is still on disk, and the next launch
+  offers it again.
+- Fail if the empty window carries the real file's name. Closing that window and
+  answering "No" used to delete the only copy of the work.
+- [ ] pass  [ ] fail: ______
+
 ---
 
 ## Sign-off

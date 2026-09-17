@@ -31,6 +31,7 @@ from quill.apps.lite_window_find import DocumentFindMixin
 from quill.apps.lite_window_go_to import DocumentGoToMixin
 from quill.apps.lite_window_settings_backup import DocumentSettingsBackupMixin
 from quill.apps.lite_window_special_character import DocumentSpecialCharacterMixin
+from quill.core.datetime_insert import NOTEPAD_DATETIME_FORMAT
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands import shortcut_text
 from quill.core.lite.filetypes import (
@@ -50,7 +51,8 @@ from quill.ui.richedit_editing import (
 __all__ = ["DocumentCommandsMixin"]
 
 #: Date and time, in the order most of the English-speaking world writes it.
-_DATETIME_FORMAT = "%H:%M %d/%m/%Y"
+#: In core since 2026-09-16, so QUILL's F5 writes the same stamp (bad.md P1.9).
+_DATETIME_FORMAT = NOTEPAD_DATETIME_FORMAT
 
 
 class DocumentCommandsMixin(
@@ -128,18 +130,38 @@ class DocumentCommandsMixin(
         wants_rich = is_rich_path(target.name)
         if wants_rich and not rich:
             self.switch_mode(RICH)
-        elif not wants_rich and rich and not self._confirm_flatten_to_plain():
-            return False
+        elif not wants_rich and rich:
+            if not self._confirm_flatten_to_plain():
+                return False
+            # The *file* is flattened first and the window only afterwards, and
+            # only if the write worked. It used to ChangeValue the buffer here,
+            # leave self.path pointing at the old .rtf, and then try the save --
+            # so a locked file or a full disk left the window holding flattened
+            # text under the rich name, with the next Ctrl+S ready to write it
+            # over the original. ChangeValue is off the undo stack, so the
+            # formatting was gone from the window too (bad.md F1).
+            if not self.save(target, text=self.control.GetValue()):
+                return False
+            self._apply_flatten_to_plain()
+            return True
         # A .md target converts an HTML document rather than renaming it, which
-        # is what the Markdown row in the type list promises. Runs after the
-        # flatten above on purpose: rich text has to become plain before there
-        # is any markup to convert.
-        if not self.convert_for_markdown_target(target):
-            return False
+        # is what the Markdown row in the type list promises. Planned here and
+        # applied after the write, for the same reason.
+        markdown = self.plan_markdown_conversion(target)
+        if markdown is not None:
+            if not self.save(target, text=markdown):
+                return False
+            self.apply_markdown_conversion(markdown)
+            return True
         return self.save(target)
 
     def _confirm_flatten_to_plain(self) -> bool:
-        """Warn before a Save As that throws the formatting away, then do it."""
+        """Ask before a Save As that throws the formatting away. Asks only.
+
+        The flattening itself is :meth:`_apply_flatten_to_plain`, after the
+        write: a conversion applied to the buffer before the file is written is
+        one a failed write cannot take back (bad.md F1).
+        """
         answer = show_message_box(
             "Saving as plain text removes all formatting. Continue?",
             APP_NAME,
@@ -148,19 +170,19 @@ class DocumentCommandsMixin(
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
             self,
         )
-        if answer != wx.YES:
-            return False
+        return answer == wx.YES
+
+    def _apply_flatten_to_plain(self) -> None:
+        """Make the window plain text, now that the plain file is on disk."""
         text = self.control.GetValue()
         self._loading = True
         try:
             self._set_mode_internal(PLAIN)
             self.control.ChangeValue(text)
             self.doc_text.invalidate()  # ChangeValue raises no text event
-            self.doc_text.invalidate()  # ChangeValue raises no text event
             self.apply_theme()
         finally:
             self._loading = False
-        return True
 
     def cmd_close(self) -> None:
         self.Close()
@@ -275,17 +297,19 @@ class DocumentCommandsMixin(
         which something had silently appeared, and finding out what meant
         arrowing back over it character by character.
 
-        **"QuillLite may never be ahead of QUILL", settled 2026-09-10.** QUILL
-        has no ``cmd_insert_datetime``, and it should not grow one: the built-in
-        Insert Date/Time command was deliberately retired into the bundled
-        ``com.quill.bundled.insert-tools`` Quillin, which is enabled by default
-        and puts *three* variants -- date, time, and both -- on QUILL's own
-        Insert > Date and Time submenu with keyboard routes of their own. That is
-        a menu item in the shipped product, not a hidden capability, so QUILL is
-        ahead here rather than behind, and adding a second inserter would undo a
-        consolidation on the strength of a rule it does not break. The one real
-        gap is Safe Mode, which switches Quillin contributions off; QuillLite has
-        no Safe Mode, so the two cannot be compared there.
+        **QUILL grew an F5 of its own on 2026-09-16**, reversing the 2026-09-10
+        reading of "QuillLite may never be ahead of QUILL". That reading was
+        that QUILL's bundled ``com.quill.bundled.insert-tools`` Quillin already
+        put three variants on Insert > Date and Time, so a second inserter would
+        undo a consolidation for nothing. What it missed is the key: those three
+        are menu rows reached through a submenu, and F5 is the chord a person
+        arrives with. The Quillin's three variants stay; QUILL's F5 is one
+        command in core (``edit.insert_date_time``), which also closes the gap
+        the old reading named and shrugged at -- **Safe Mode** switches Quillin
+        contributions off, and there QUILL had no date insert at all.
+
+        The stamp itself is :data:`~quill.core.datetime_insert.NOTEPAD_DATETIME_FORMAT`
+        so the two editors cannot drift apart on what F5 writes (bad.md P1.9).
         """
         stamp = time.strftime(_DATETIME_FORMAT)
         self.control.WriteText(stamp)

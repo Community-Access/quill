@@ -200,52 +200,57 @@ class DocumentMarkupMixin:
         if announce:
             self._announce(f"Document language: {language_label(self.document_language())}")
 
-    def convert_for_markdown_target(self, target: Any) -> bool:
-        """Turn an HTML document into Markdown when Save As asks for ``.md``.
+    def plan_markdown_conversion(self, target: Any) -> str | None:
+        """The Markdown to write when Save As asks for ``.md``, or ``None``.
 
-        The Markdown row in the Save As box promises a conversion, so this is
-        the thing that keeps the promise. Only the **HTML** case converts: a
-        plain document saved as ``.md`` is already what it claims to be, and a
-        Markdown one doubly so -- running either through the converter would be
-        a round trip that can only lose something.
+        ``None`` means "write the buffer as it stands", which covers three
+        cases: the target is not a ``.md``, the document is not HTML (a plain or
+        Markdown document saved as ``.md`` is already what it claims to be, and
+        running either through the converter would be a round trip that can only
+        lose something), or the HTML converts to nothing -- and saving the HTML
+        unchanged under a ``.md`` name is the silent-wrong-file case the
+        Markdown row was removed for in the first place.
 
-        Returns True when the save should go ahead. Never refuses: choosing
-        Markdown in a Save As type list IS the consent, and a confirmation on a
-        conversion somebody just asked for by name is the tax that gets a
-        feature left unused. What it does instead is *say what happened*, since
-        the buffer changes under the caret and a screen reader announces
-        nothing about a document being rewritten.
+        **Planned, not applied.** It used to ``ChangeValue`` the buffer here and
+        then let the caller try the write. If the write failed -- a locked file,
+        a full disk -- the window was left holding flattened Markdown under the
+        old ``.html`` name, with ``self.path`` still pointing at it, so the next
+        Ctrl+S wrote it over the original. And ``ChangeValue`` is off the undo
+        stack, so the HTML was gone from the window too (bad.md F1).
         """
         if markup_language_for(getattr(target, "name", "")) != "markdown":
-            return True
+            return None
         if self.editor.mode == RICH or self.document_language() != "html":
-            return True
+            return None
 
         from quill.core.html_to_markdown import html_to_markdown
 
-        html = self.control.GetValue()
-        markdown = html_to_markdown(html)
-        if not markdown.strip():
-            # Converting to nothing is not a conversion. Saving the HTML
-            # unchanged under a .md name would be the silent-wrong-file case
-            # the Markdown row was removed for in the first place.
-            self._announce("No Markdown could be made from this HTML; saved unchanged")
-            return True
+        markdown = html_to_markdown(self.control.GetValue())
+        return markdown if markdown.strip() else None
+
+    def apply_markdown_conversion(self, markdown: str) -> None:
+        """Put the converted Markdown in the window. **After** a successful write.
+
+        Said out loud, because the buffer changes under the caret and a screen
+        reader announces nothing about a document being rewritten. Not asked
+        about: choosing Markdown in a Save As type list *is* the consent, and a
+        confirmation on a conversion somebody just asked for by name is the tax
+        that gets a feature left unused.
+        """
         self._loading = True
         try:
             self.control.ChangeValue(markdown)
             self.doc_text.invalidate()  # ChangeValue raises no text event
         finally:
             self._loading = False
-        # The override, not the language: the file is about to become a .md, so
-        # the NAME should decide from here on. Leaving "html" pinned would show
-        # a Markdown file whose Format cell said HTML.
+        # The override, not the language: the file is now a .md, so the NAME
+        # should decide from here on. Leaving "html" pinned would show a
+        # Markdown file whose Format cell said HTML.
         self._language_override = ""
         self.reset_structure_announcer()
         self.sync_structure_announcer()
         self._touch_status()
         self._announce("Converted HTML to Markdown")
-        return True
 
     def cmd_switch_document_kind(self) -> None:
         """Ctrl+Shift+M: ring on to the next kind of document.

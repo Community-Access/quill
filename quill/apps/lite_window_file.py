@@ -28,11 +28,19 @@ from pathlib import Path
 
 import wx
 
+from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
 from quill.core.lite.filetypes import is_rich_path
-from quill.core.lite.textfile import decode_text, encode_text, write_bytes_atomic
+from quill.core.lite.textfile import (
+    decode_text,
+    encode_text,
+    unencodable_characters,
+    unencodable_warning,
+    write_bytes_atomic,
+)
 from quill.core.sound_events import SoundEvent
 from quill.io.rtf_safety import scan_rtf_safety
+from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
 from quill.ui.richedit_rtf_surface import RichEditRtfError
 
@@ -110,8 +118,25 @@ class DocumentFileMixin:
         self.control.ChangeValue(decoded.text)
 
     def _load_recovery(self, slot: recovery_mod.RecoverySlot) -> None:
-        """Restore a slot into this window, leaving it modified and unsaved."""
+        """Restore a slot into this window, leaving it modified and unsaved.
+
+        Two things this used to get wrong, and both of them lose work.
+
+        **The document's own format is restored with it (F2).** The slot is
+        always UTF-8 with LF line endings, because a copy of unsaved work has to
+        hold whatever was typed -- and the window adopted *the slot's* encoding,
+        so a cp1252 file recovered after a crash was saved back as UTF-8 and a
+        CRLF one as LF. The slot records what the document was; this puts it
+        back, and falls through to the slot's own only when there is nothing
+        recorded (a slot written by an older build).
+
+        **A failed restore claims nothing (F9).** It used to adopt the path,
+        set the slot and mark the window modified even when the read had raised
+        -- so an empty window sat under the name of a real file, and closing it
+        and answering "No" deleted the only copy of the work.
+        """
         self._loading = True
+        restored = False
         try:
             if slot.mode == RICH and self.editor.rtf_available():
                 self._set_mode_internal(RICH)
@@ -119,14 +144,21 @@ class DocumentFileMixin:
                 self._apply_rich_theme_colour()
             else:
                 decoded = decode_text(slot.content_path.read_bytes())
-                self.encoding, self.newline = decoded.encoding, decoded.newline
+                self.encoding = slot.encoding or decoded.encoding
+                self.newline = slot.newline or decoded.newline
                 self._set_mode_internal(PLAIN)
                 self.control.ChangeValue(decoded.text)
+            restored = True
         except (OSError, RichEditRtfError) as exc:
             self._report_failure("Recovery failed", f"Could not restore {slot.title}.\n\n{exc}")
         finally:
             self._loading = False
             self.doc_text.invalidate()  # as in open_path: no text event fires
+        if not restored:
+            # The slot is left on disk deliberately. It is still the only copy
+            # of that work, and the next launch will offer it again.
+            self._announce(f"{slot.title} could not be recovered, and is still saved aside")
+            return
         if slot.original_path and Path(slot.original_path).exists():
             self.path = Path(slot.original_path)
         self._slot = slot
@@ -144,23 +176,33 @@ class DocumentFileMixin:
     # Save
     # ------------------------------------------------------------------ #
 
-    def save(self, target: Path | None = None) -> bool:
-        """Write the document. Falls through to Save As when it has no name yet."""
+    def save(self, target: Path | None = None, text: str | None = None) -> bool:
+        """Write the document. Falls through to Save As when it has no name yet.
+
+        *text* is what to write instead of the buffer, which is how Save As
+        converts a document **at write time** rather than in the window: the
+        conversion is applied to the file, and only a successful write is
+        allowed to change what is on screen (bad.md F1).
+        """
         destination = target if target is not None else self.path
         if destination is None:
             return self.cmd_save_as()
         destination = Path(destination)
+        body = self.control.GetValue() if text is None else text
+        # A text override *is* the instruction to write characters rather than
+        # runs: both conversions produce one, and both are saving a rich or HTML
+        # document to a plain target. Without this the window is still rich at
+        # write time, so Save As from .rtf to .txt wrote RTF into the .txt.
+        as_rich = self.editor.mode == RICH and text is None
+        if not as_rich and not self._encoding_allows(body):
+            return False
         try:
-            if self.editor.mode == RICH:
+            if as_rich:
                 self._write_rtf(destination)
             else:
                 write_bytes_atomic(
                     destination,
-                    encode_text(
-                        self.control.GetValue(),
-                        encoding=self.encoding,
-                        newline=self.newline,
-                    ),
+                    encode_text(body, encoding=self.encoding, newline=self.newline),
                 )
         except (OSError, RichEditRtfError) as exc:
             self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
@@ -187,6 +229,38 @@ class DocumentFileMixin:
         self._remember(destination)
         self._cue(SoundEvent.DOCUMENT_SAVED)
         self._announce(f"Saved {destination.name}")
+        return True
+
+    def _encoding_allows(self, body: str) -> bool:
+        """True when the save may go ahead; asks about characters that will not fit.
+
+        The encoding a text file was read in is the one it is written back in,
+        which is the right default and the reason somebody can type an em dash
+        into a Windows-1252 file and lose it. ``errors="replace"`` turned each
+        one into a question mark and said nothing at all -- the quietest
+        possible way to damage a document, and visible only if the person
+        happens to read that line again (bad.md F3).
+
+        Three answers, which is why it is a question rather than a refusal:
+        **Yes** saves as UTF-8 and keeps everything, **No** saves as asked and
+        loses them knowingly, and **Cancel** stops. The status bar's Encoding
+        cell follows a Yes, because the document really is UTF-8 from then on.
+        """
+        missing = unencodable_characters(body, self.encoding)
+        if not missing:
+            return True
+        answer = show_message_box(
+            unencodable_warning(len(missing), self.encoding),
+            APP_NAME,
+            wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION,
+            self,
+        )
+        if answer == wx.CANCEL:
+            self._announce("Save cancelled")
+            return False
+        if answer == wx.YES:
+            self.encoding = "utf-8"
+            self._touch_status()
         return True
 
     def _write_rtf(self, target: Path) -> None:
@@ -234,6 +308,11 @@ class DocumentFileMixin:
                     slot.content_path, self.control.GetValue().encode("utf-8", errors="replace")
                 )
             slot.original_path = str(self.path) if self.path else ""
+            # What the document is, so a restore can put it back (F2). Recorded
+            # on every tick rather than at slot creation, because File > Encoding
+            # and Line Endings can change either one between ticks.
+            slot.encoding = self.encoding
+            slot.newline = self.newline
             recovery_mod.write_meta(slot)
         except (OSError, RichEditRtfError):
             pass  # the next tick tries again; a failed copy must not interrupt typing

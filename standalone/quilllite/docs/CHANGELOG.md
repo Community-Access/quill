@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+### Fixed
+
+- **Save As converts the file, not the window.** Saving a rich text document as
+  plain text, or an HTML one as Markdown, used to change the document in front
+  of you *first* and then try to write it. If the write failed — a locked file,
+  a full disk — you were left holding flattened text under the old name, with
+  the next Ctrl+S ready to write it over the original, and the formatting gone
+  from the window as well because that change could not be undone. The file is
+  written first now, and the window follows only when the write succeeded.
+- **A character the file cannot hold is a question, not a silent loss.** Typing
+  an em dash or an emoji into a file stored in an older encoding used to turn it
+  into a question mark, with "Saved" announced as though nothing had happened.
+  QuillLite now asks before it writes: save as UTF-8 and keep everything, save
+  as asked and lose them knowingly, or cancel.
+- **Crash recovery puts your file back the way it was.** The copy kept aside is
+  always written in one format, because it has to hold whatever you typed — and
+  the recovered document used to adopt *that* format, so a file in an older
+  encoding, or one with Unix line endings, came back changed and was saved that
+  way. What the copy records now is what your document was, and the restore puts
+  it back.
+- **A recovery that fails claims nothing.** If the copy could not be read,
+  QuillLite still took your file's name, marked the empty window as changed and
+  set the copy as its own — so closing that window and answering "No" deleted
+  the only copy of the work. It now says the recovery failed, takes nothing, and
+  leaves the copy for next time.
+
 ### Added
 
 - **Copy All (Ctrl+F8)** puts the whole document on the clipboard without
