@@ -2,6 +2,38 @@
 
 ## 1.0.0
 
+### Selections say one thing, in one shape (2026-09-17)
+
+**Every selection is announced as its scope and its word count** --- "Selected
+paragraph, 41 words" --- from one function both editors call. QUILL said that
+and QuillLite said "Selected paragraph, 412 characters, 41 words", so the same
+key reported the same fact two ways depending on which of the two you were in.
+Words rather than characters, because a word count is a size you can picture and
+412 characters is a number you then have to divide.
+
+The **F8** span is the one that says more, and the only one that needs to: it
+reaches between two arbitrary points, so it adds the lines it covered. Every
+other selection is named by its own scope already.
+
+Two things that used to be announced and had not happened:
+
+- **Shift+F8 with the cursor still on the marker** said "Selected 0 characters,
+  line 4 column 7 to line 4 column 7" --- a number, a place, and the same place
+  again, to report that nothing happened. It says "Selection cancelled, nothing
+  selected".
+- **Select Word, Line, Paragraph or Block on a blank line** said "Selected line,
+  0 words". It now says which thing was not there.
+
+And **Reselect knows about every way of selecting**. `Ctrl+Shift+F8` only ever
+remembered a selection made with F8, so Select Word, Select Line, Select
+Paragraph, Select Block, Shrink and Unselect All --- the ones people actually
+reach for --- were the ones it could not put back.
+
+`unselect_all` and `say_selected` moved out of `main_frame.py` into the
+selection mixin where their subject lives; the module ratcheted **down** again,
+19430 to 19415.
+
+
 ### Five line tools got a key (2026-09-17)
 
 **Hard-Wrap Lines** is `Alt+Shift+W`, **Delete Lines Containing** is

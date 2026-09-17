@@ -446,7 +446,11 @@ def test_select_line_announces_scope_and_word_count() -> None:
 
     frame.select_line()
 
-    assert statuses == ["Selected line, 3 words."]
+    # No trailing full stop: the sentence comes from
+    # quill.core.selection.describe_selection now, which is QuillLite's shape
+    # as well, and QuillLite's announcement vocabulary carries none (bad.md
+    # L14). One shape means one punctuation too.
+    assert statuses == ["Selected line, 3 words"]
 
 
 def test_select_paragraph_announces_scope_and_word_count() -> None:
@@ -457,7 +461,71 @@ def test_select_paragraph_announces_scope_and_word_count() -> None:
 
     frame.select_paragraph()
 
-    assert statuses == ["Selected paragraph, 3 words."]
+    assert statuses == ["Selected paragraph, 3 words"]
+
+
+def test_an_f8_span_says_which_lines_it_reached() -> None:
+    """The one selection that carries a line range, and the only one that needs
+    it: an F8 span is arbitrary, so its reach cannot be worked out from a scope
+    name the way "Selected paragraph" can (bad.md L14, 5.3)."""
+    frame = _build_frame("one two three\nsecond line\n", insertion_point=0)
+    statuses: list[str] = []
+    frame._set_status = statuses.append  # type: ignore[method-assign]
+    frame._selection_anchor = 0
+    frame.editor.SetInsertionPoint(18)
+
+    frame.complete_selection()
+
+    assert statuses == ["Selected 4 words, lines 1 to 2"]
+
+
+def test_completing_an_empty_f8_span_says_nothing_was_selected() -> None:
+    """It used to announce "Selected 0 characters, line 1 column 1 to line 1
+    column 1" -- a number, a place, and the same place again, to say the one
+    thing that matters: nothing happened. QuillLite's wording is the one a
+    listener can act on (bad.md L11)."""
+    frame = _build_frame("one two three\n", insertion_point=4)
+    statuses: list[str] = []
+    frame._set_status = statuses.append  # type: ignore[method-assign]
+    frame._selection_anchor = 4
+
+    frame.complete_selection()
+
+    assert statuses == ["Selection cancelled, nothing selected"]
+
+
+def test_a_structural_select_on_a_blank_line_says_which_thing_is_missing() -> None:
+    """ "Selected line, 0 words" reports that something happened when nothing
+    did (bad.md L11)."""
+    frame = _build_frame("\n\nafter\n", insertion_point=0)
+    statuses: list[str] = []
+    frame._set_status = statuses.append  # type: ignore[method-assign]
+
+    frame.select_paragraph()
+
+    assert statuses == ["No paragraph at the cursor"]
+
+
+def test_a_structural_select_is_remembered_for_reselect() -> None:
+    """Only F8 ever set _last_selection, so the four commands people actually
+    reach for were the four Ctrl+Shift+F8 could not put back (bad.md L5)."""
+    frame = _build_frame("one two three\nsecond line\n", insertion_point=0)
+    frame._set_status = lambda *_a, **_k: None  # type: ignore[method-assign]
+
+    frame.select_line()
+
+    assert frame._last_selection == (0, 13)
+
+
+def test_clearing_a_selection_is_remembered_too() -> None:
+    """Clearing one is exactly the action people want undone (bad.md L5)."""
+    frame = _build_frame("one two three\n", insertion_point=0)
+    frame._set_status = lambda *_a, **_k: None  # type: ignore[method-assign]
+    frame.editor.SetSelection(0, 7)
+
+    frame.unselect_all()
+
+    assert frame._last_selection == (0, 7)
 
 
 def test_select_line_announces_singular_word() -> None:
@@ -468,7 +536,7 @@ def test_select_line_announces_singular_word() -> None:
 
     frame.select_line()
 
-    assert statuses == ["Selected line, 1 word."]
+    assert statuses == ["Selected line, 1 word"]
 
 
 def test_expand_selection_grows_and_announces_scope() -> None:

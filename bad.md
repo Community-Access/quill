@@ -473,14 +473,8 @@ Engine: shared (`quill/core/selection.py`, `marks.py`, `locations.py`, `bookmark
 | --- | --- | --- | --- | --- |
 | L2 | Worse | QUILL | **Extend Selection Mode (`Ctrl+Alt+F8`) collides with QuillLite's marker toggle on the same key, and carries four movement bugs** -- but it is *not* the design Lite deleted, and the first pass was wrong to say so. Lite's `d20fabe` bug was a key-**up** hook that stretched a live selection from anchor to caret after every arrow; on wxMSW an arrow pressed while text is selected collapses to the edge and stops, so the caret never advanced. QUILL's version intercepts the key **before** the control, moves the caret itself, and collapses the selection after each move *precisely so the control cannot fight it*, applying the span only when a non-movement key commits. Opposite mechanism, and QUILL's works. What it costs: `_move_extend_selection_caret` rebuilds every line start by scanning the whole text on each keystroke (O(N) per key); PgUp/PgDn are hardcoded to ten lines rather than a real page; Up/Down move by *logical* line, so soft wrap sends the caret a whole paragraph away; and word movement stops only at whitespace where Windows also stops at punctuation. | `main_frame.py:1218-1219, 2704-2724, 2813-2900`; `lite_window_selection.py:135-145`; `d20fabe` |
 | L3 | Worse | QUILL | **Shrink pops a stack that is never cleared**: expand, arrow away, select something else, Shrink jumps to the old span; the stack can hold an empty pair, so Shrink collapses the selection and announces "Shrank selection". Lite computes shrink every time. | `main_frame_selection.py:89-93, 121-127` |
-| L5 | Worse | both | **Reselect only knows some selections**: QUILL's Unselect All and the structural selects never record `_last_selection` (only F8 does); Lite records Select Sentence/Block but not Word/Line/Paragraph. | `main_frame.py:7558-7561`, `main_frame_selection.py:33-96`, `lite_window_marks.py:68-78`, `lite_window_selection.py:232` |
-| L6 | Worse | both | **Marks are bare offsets**: no shift on edit, no persistence, in either editor; Lite clamps on pop, QUILL does not. Lite re-implements the mark ring as a plain list (cap 10, no de-dup) instead of using the shared `MarkRing` (cap 20, de-dups). | `quill/core/marks.py:4-58`, `main_frame_selection.py:337`, `lite_window_selection.py:68, 278-355` |
 | L7 | Worse | QUILL | **List Bookmarks shows stale positions**: jumps re-anchor by snippet but the list prints the raw stored offset, and the resolved offset is written back without saving, so tab and disk keep the old value until the next Set. | `main_frame.py:11533-11549, 11607-11610` |
-| L8 | Worse | both | **Back (`Alt+Left`) does not undo a bookmark or mark jump**: QUILL records only go-to-line/page; Lite routes bookmarks through its `_go_to` seam but pop/list/exchange set the caret directly. | `main_frame.py:11572-11653`, `main_frame_selection.py:258-265, 332-353`, `lite_window_commands.py:314-330`, `lite_window_selection.py:292, 326, 346` |
-| L11 | Worse | QUILL | Shift+F8 with the caret still on the marker announces "Selected 0 characters, line N column M to line N column M"; Lite says "Selection cancelled, nothing selected". Select Word/Line/Paragraph/Block on a blank line announces "Selected line, 0 words"; Lite says "No line at the cursor". | `main_frame_selection_span.py:63-74`, `main_frame_selection.py:71-76`, `lite_window_marks.py:72-74` |
 | L12 | Worse | QUILL | List Marks is a message box nothing in it can be jumped to (Lite's list jumps). Exchange Point and Mark only moves (Lite selects the span). Say Selected speaks the whole selection with no cap and is a conditional `Shift+Space` intercept that no menu shows (Lite summarises over 200 characters on `Ctrl+Shift+Y`). | `main_frame_selection.py:344-371`, `main_frame.py:2686-2696, 7563-7570`, `lite_window_selection.py:297-383` |
-| L13 | Worse | Lite | Go to Start of Selection calls `SetInsertionPoint(start)` then `SetSelection(start, end)`; on wxMSW the caret ends at `end`, so the promise is doubtful. Needs a live check. | `lite_window_selection.py:176-178` |
-| L14 | Divergent | both | Selection announcements differ in shape: QUILL "Selected paragraph, 41 words"; Lite "Selected paragraph, 412 characters, 41 words"; F8 completion differs again. One format in core: scope, words, and the line range only for F8. | `main_frame_selection.py:71-76`, `lite_window_selection.py:414-420` |
 
 
 ### 6.3 Files, saving and recovery
@@ -718,7 +712,7 @@ way:
 | --- | --- | --- | --- | --- |
 | **P0.6c** | **QUILL adopts `DocumentText`** (V4). The object exists (`quill/core/document_text.py`) and QuillLite is on it: the mirror, the revision counter, the cached stats and line table, and the rule that display code reads it and never the control. QUILL still has its own half-answer -- `document.text` plus a stats cache in `main_frame_statusbar.py` -- and should move onto the shared object, which is what makes the edit journal the spoken undo needs (P3.7) possible at all | QUILL | M | one mirror, owned by core, read by both |
 | P0.7 | The remaining **Broken** rows of section 6, each with a regression test, and all three are QUILL's: **F4** non-atomic Save As HTML / Plain Text; **F5** the watcher replaces a `.docx` tab with decoded binary; **F6** an encoding change does not dirty, UTF-16 undetected. (R2, R3, S2, S3 landed 2026-09-16; F1, F2, F3, F9, R6 landed 2026-09-17.) | QUILL | S each | regression test per bug |
-| P0.8 | **Verify live, then fix if confirmed**: R4 dark mode writing grey text into every saved `.rtf`; C2/N3 QUILL whole-document rewrite for a local insert or line tool in an `.rtf`; R14 two-step undo after Heading N; L13 Lite's Go to Start of Selection. (R5 was confirmed by reading and fixed 2026-09-16: neither editor calls `SetFont` on a rich control now.) | both | S each | a rich document survives each with its runs intact |
+| P0.8 | **Verify live, then fix if confirmed**: R4 dark mode writing grey text into every saved `.rtf`; C2/N3 QUILL whole-document rewrite for a local insert or line tool in an `.rtf`; R14 two-step undo after Heading N. (R5 was confirmed by reading and fixed 2026-09-16. L13 was settled by reading on 2026-09-17: wx leaves the caret at the *to* end of a selection, so `SetInsertionPoint(start)` then `SetSelection(start, end)` cannot work whatever the platform does -- `SetSelection(end, start)` is the fix, and the test fake now models the direction so it cannot come back.) | QUILL | S each | a rich document survives each with its runs intact |
 | P0.9 | `_run_command` reports the exception class and message, not "Command failed"; `save_file` handles `UnicodeEncodeError` and `UnsupportedSaveFormatError` with the same sentences as `OSError`; Lite stops `errors="replace"` | both | S | a cp1252 document that gains an emoji says so on `Ctrl+S` in both |
 
 ### P1 -- parity violations and the rest of the family keymap
@@ -844,13 +838,13 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**59 items open.** Delete a row when it lands. Tiered items first,
+**54 items open.** Delete a row when it lands. Tiered items first,
 then the section-6 findings no tiered item has claimed.
 
 | # | Item |
 | --- | --- |
 | P0.7 | The REMAINING Broken rows, all QUILL's: F4, F5, F6 (save path / watcher). F1, F2, F3, F9, R6 landed 2026-09-17 |
-| P0.8 | Verify live, then fix if confirmed: R4 dark mode grey text in saved .rtf; C2/N3 whole-document rewrite; R14 two-step undo; L13. R5 fixed 2026-09-16 |
+| P0.8 | Verify live, then fix if confirmed: R4 dark mode grey text in saved .rtf; C2/N3 whole-document rewrite; R14 two-step undo. R5 fixed 2026-09-16, L13 2026-09-17 |
 | P0.9 | _run_command reports the exception class and message, not "Command failed"; save_file handles UnicodeEncodeError and U |
 | P1.1 | Keyless QUILL commands still waiting on a displacement P1.11 frees: Sort Z-A, Tidy Whitespace, Keyboard Manager, lowercase, + 3 |
 | P1.2 | Structural selection family on Lite's six chords; Set Mark Ctrl+Shift+M, Exchange Ctrl+Alt+X, Duplicate Selection Ctrl |
@@ -894,13 +888,8 @@ then the section-6 findings no tiered item has claimed.
 | G5 (D) | [both] Lite's feature model is core/lite/features.py (areas, DEFAULT_OFF, four shape-profiles); QUILL's is Fea |
 | H8 (W) | [QUILL] Word Count is a message box, Line Statistics and document.summary are unbound; Describe Character is an |
 | L2 (W) | [QUILL] Extend Selection Mode (Ctrl+Alt+F8) collides with QuillLite's marker toggle on the same key, and carrie |
-| L5 (W) | [both] Reselect only knows some selections: QUILL's Unselect All and the structural selects never record _last |
-| L6 (W) | [both] Marks are bare offsets: no shift on edit, no persistence, in either editor; Lite clamps on pop, QUILL d |
 | L7 (W) | [QUILL] List Bookmarks shows stale positions: jumps re-anchor by snippet but the list prints the raw stored off |
-| L8 (W) | [both] Back (Alt+Left) does not undo a bookmark or mark jump: QUILL records only go-to-line/page; Lite routes  |
-| L11 (W) | [QUILL] Shift+F8 with the caret still on the marker announces "Selected 0 characters, line N column M to line N |
 | L12 (W) | [QUILL] List Marks is a message box nothing in it can be jumped to (Lite's list jumps). Exchange Point and Mark |
-| L14 (D) | [both] Selection announcements differ in shape: QUILL "Selected paragraph, 41 words"; Lite "Selected paragraph |
 | N2 (W) | [QUILL] No no-op detection and no counts: every QUILL line tool announces its past-tense status even when nothi |
 | PR4 (D) | [both] QUILL has header/footer editing, page selection and Print Studio; Lite has page setup and print. Right  |
 | R15 (D) | [both] Heading navigation is duplicated with different wording ("Moved to next heading, H2: title" vs "Heading |

@@ -53,9 +53,10 @@ shrink ladder, which was added there rather than here so QUILL gains it too.
 from __future__ import annotations
 
 from quill.apps.lite_dialogs import show_text_window
-from quill.core.marks import line_column_for_position
+from quill.core.marks import MarkRing, line_column_for_position
 from quill.core.selection import (
     block_span,
+    describe_selection,
     selection_scope,
     sentence_span,
     shrink_selection,
@@ -63,10 +64,6 @@ from quill.core.selection import (
 from quill.core.sound_events import SoundEvent
 
 __all__ = ["DocumentSelectionMixin"]
-
-#: How many marks the ring holds. Ten is more than anybody uses at once and
-#: small enough that the list stays something you can arrow through.
-_MAX_MARKS = 10
 
 
 class DocumentSelectionMixin:
@@ -82,8 +79,12 @@ class DocumentSelectionMixin:
         self._selection_anchor: int | None = None
         #: The last completed selection, for Reselect.
         self._last_selection: tuple[int, int] | None = None
-        #: Positions you can bounce back to, most recent last.
-        self._marks: list[int] = []
+        #: Places you can bounce back to. The **shared** ring since 2026-09-17
+        #: (bad.md L6): QuillLite had a plain list of its own, capped at ten and
+        #: with no de-duplication, beside a core one capped at twenty that
+        #: de-dupes. Two implementations of something that simple are how two
+        #: editors drift without anybody deciding to.
+        self.marks = MarkRing()
 
     # ------------------------------------------------------------------ #
     # Mark and extend
@@ -129,7 +130,10 @@ class DocumentSelectionMixin:
             # just take" is a fact, not a cue, and a tone cannot carry it. The
             # mode governs the earcon that comes with it.
             self._cue(SoundEvent.SELECTION_COMPLETED)
-            self._announce_span(start, end, "Selected")
+            # The line range, here and nowhere else: an F8 span is arbitrary, so
+            # this is the only selection whose reach a person cannot work out
+            # from the scope name (5.3).
+            self._announce_span(start, end, with_line_range=True)
         self._sync_check_items()
         self._touch_status()
 
@@ -169,14 +173,21 @@ class DocumentSelectionMixin:
 
         Reading a long selection starts at its beginning, and after extending
         downwards the caret is at the far end of it.
+
+        **The range is passed backwards on purpose** (bad.md L13). It used to be
+        ``SetInsertionPoint(start)`` and then ``SetSelection(start, end)``, and
+        the second call undid the first: wx leaves the caret at the *to* end of
+        a selection, so the caret landed back at ``end`` and the command did
+        nothing but announce that it had. ``SetSelection(end, start)`` selects
+        the same span with ``start`` as the *to*, which is the documented way to
+        ask for a selection whose caret is at its beginning.
         """
         start, end = self.control.GetSelection()
         if end <= start:
             self._announce("Nothing is selected")
             return
         self.control.ShowPosition(start)
-        self.control.SetInsertionPoint(start)
-        self.control.SetSelection(start, end)
+        self.control.SetSelection(end, start)
         self._announce("At the start of the selection")
         self._touch_status()
 
@@ -236,7 +247,7 @@ class DocumentSelectionMixin:
         self.control.SetSelection(start, end)
         self.control.ShowPosition(start)
         self._last_selection = (start, end)
-        self._announce_span(start, end, f"Selected {kind},")
+        self._announce_span(start, end, scope=kind)
         self._touch_status()
 
     def cmd_shrink_selection(self) -> None:
@@ -258,7 +269,10 @@ class DocumentSelectionMixin:
         new_start, new_end, scope = smaller
         self.control.SetSelection(new_start, new_end)
         self.control.ShowPosition(new_start)
-        self._announce_span(new_start, new_end, f"Selected {scope},")
+        # L5: every structural select is remembered, not only F8's. Shrink used
+        # to be one of the four that Reselect could not put back.
+        self._last_selection = (new_start, new_end)
+        self._announce_span(new_start, new_end, scope=scope)
         self._touch_status()
 
     def cmd_unselect_all(self) -> None:
@@ -282,34 +296,42 @@ class DocumentSelectionMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_set_mark(self) -> None:
-        """Ctrl+Alt+Shift+K: remember where you are, so you can come back."""
+        """Ctrl+Alt+Shift+K: remember where you are, so you can come back.
+
+        The text goes with the position, so the mark can be *relocated* after an
+        edit rather than pointing at whatever has since moved into that offset
+        (bad.md L6). Same anchor the numbered bookmarks use.
+        """
         position = self.control.GetInsertionPoint()
-        self._marks.append(position)
-        del self._marks[:-_MAX_MARKS]
+        self.marks.set_mark(position, self.control.GetValue())
         line = self._line_of(position)
         self._announce(f"Mark set at line {line}. {self._mark_count()}.")
 
     def cmd_pop_mark(self) -> None:
-        """Ctrl+M: go back to the most recent mark, and use it up."""
-        if not self._marks:
+        """Ctrl+M: go back to the most recent mark, and use it up.
+
+        Through ``_go_to`` rather than straight onto the control, so ``Alt+Left``
+        undoes it. A Back key that skips some of the places you have been is
+        worse than no Back key (bad.md L8).
+        """
+        position = self._resolved_marks().pop_mark()
+        if position is None:
             self._announce("No marks set")
             return
-        position = min(self._marks.pop(), self.control.GetLastPosition())
-        self.control.SetInsertionPoint(position)
-        self.control.ShowPosition(position)
+        self._go_to(position)
         self._announce(f"Line {self._line_of(position)}. {self._mark_count()} left.")
-        self._touch_status()
 
     def cmd_list_marks(self) -> None:
         """Alt+M: every mark, newest first, with the line it is on."""
         from quill.apps.lite_dialogs import choose_from_rows
 
-        if not self._marks:
+        positions = self._resolved_marks().list_marks()
+        if not positions:
             self._announce("No marks set")
             return
         text = self.control.GetValue()
         rows = []
-        for position in reversed(self._marks):
+        for position in reversed(positions):
             line = self._line_of(position)
             start = text.rfind("\n", 0, position) + 1
             end = text.find("\n", position)
@@ -328,12 +350,8 @@ class DocumentSelectionMixin:
         if not isinstance(chosen, int):
             self.control.SetFocus()
             return
-        position = min(chosen, self.control.GetLastPosition())
-        self.control.SetInsertionPoint(position)
-        self.control.ShowPosition(position)
-        self.control.SetFocus()
-        self._announce(f"Line {self._line_of(position)}")
-        self._touch_status()
+        self._go_to(min(chosen, self.control.GetLastPosition()))
+        self._announce(f"Line {self._line_of(self.control.GetInsertionPoint())}")
 
     def cmd_exchange_point_mark(self) -> None:
         """Ctrl+Alt+X: swap the caret with the newest mark, and select between.
@@ -342,14 +360,13 @@ class DocumentSelectionMixin:
         span *and* the span itself is selected, which is the usual reason for
         wanting to be there.
         """
-        if not self._marks:
+        caret = self.control.GetInsertionPoint()
+        mark = self._resolved_marks().exchange_point_and_mark(caret, self.control.GetValue())
+        if mark is None:
             self._announce("No marks set")
             return
-        limit = self.control.GetLastPosition()
-        caret = self.control.GetInsertionPoint()
-        mark = min(self._marks[-1], limit)
-        self._marks[-1] = caret
-        self.control.SetInsertionPoint(mark)
+        mark = min(mark, self.control.GetLastPosition())
+        self._go_to(mark)
         start, end = sorted((caret, mark))
         if end > start:
             self.control.SetSelection(start, end)
@@ -357,8 +374,6 @@ class DocumentSelectionMixin:
             self._announce_span(start, end, "Swapped with mark, selected")
         else:
             self._announce("Cursor and mark are in the same place")
-        self.control.ShowPosition(mark)
-        self._touch_status()
 
     # ------------------------------------------------------------------ #
     # Reading and duplicating
@@ -442,13 +457,48 @@ class DocumentSelectionMixin:
     # Shared
     # ------------------------------------------------------------------ #
 
-    def _announce_span(self, start: int, end: int, prefix: str) -> None:
-        """Say how much was taken. The count is the part that is load-bearing."""
-        selected = self.control.GetValue()[start:end]
-        words = len(selected.split())
-        characters = len(selected)
-        unit = "word" if words == 1 else "words"
-        self._announce(f"{prefix} {characters} characters, {words} {unit}")
+    def _announce_span(
+        self,
+        start: int,
+        end: int,
+        prefix: str = "Selected",
+        *,
+        scope: str | None = None,
+        with_line_range: bool = False,
+    ) -> None:
+        """Say how much was taken, in the shape both editors use (bad.md L14).
+
+        The sentence itself is :func:`quill.core.selection.describe_selection`.
+        QUILL said "Selected paragraph, 41 words" and QuillLite said "Selected
+        paragraph, 412 characters, 41 words" -- neither wrong, and having two was,
+        because somebody who uses both had to know which product they were in
+        before they could parse the answer.
+        """
+        self._announce(
+            describe_selection(
+                self.control.GetValue(),
+                start,
+                end,
+                prefix=prefix,
+                scope=scope,
+                with_line_range=with_line_range,
+            )
+        )
+
+    def _resolved_marks(self) -> MarkRing:
+        """The ring, brought up to date with the document, then handed back.
+
+        Re-anchoring happens when the marks are *read* rather than on every
+        keystroke: the search is over the whole document, and doing it per
+        character typed would cost exactly what the document mirror exists to
+        save. Clamping follows it, so a document that has got shorter cannot
+        hand back a position past its end -- QuillLite clamped on pop and QUILL
+        did not, which is one shrunken document giving two answers (bad.md L6).
+        """
+        text = self.control.GetValue()
+        self.marks.reanchor(text)
+        self.marks.clamped_to(len(text))
+        return self.marks
 
     def _mark_count(self) -> str:
         """ "3 marks", "1 mark", "no marks" -- because this is read aloud.
@@ -456,7 +506,7 @@ class DocumentSelectionMixin:
         A count that reads "1 marks" is the kind of thing a listener notices
         every single time and a reader never does.
         """
-        total = len(self._marks)
+        total = len(self.marks)
         if total == 0:
             return "no marks"
         return "1 mark" if total == 1 else f"{total} marks"

@@ -198,3 +198,65 @@ def selection_scope(text: str, start: int, end: int) -> str:
     if "\n" in text[start:end]:
         return "lines"
     return "span"
+
+
+#: The scope names a listener should never hear, because they describe the
+#: classifier rather than the document. "Selected span, 4 words" tells nobody
+#: anything; the count already said how much.
+_UNSPOKEN_SCOPES = frozenset({"none", "span", "lines"})
+
+
+def describe_selection(
+    text: str,
+    start: int,
+    end: int,
+    *,
+    prefix: str = "Selected",
+    scope: str | None = None,
+    with_line_range: bool = False,
+) -> str:
+    """The one sentence both editors say when a selection changes (bad.md L14).
+
+    Scope, then words, and the line range only when asked for -- which is F8
+    completing, the one case where the span is arbitrary and the person has no
+    other way to know how far it reached.
+
+    The two editors had two shapes for one event: QUILL said "Selected
+    paragraph, 41 words" and QuillLite said "Selected paragraph, 412
+    characters, 41 words", and F8 completion differed again. Neither was wrong;
+    having two was, because a person who uses both hears the same key report the
+    same thing two ways and has to learn which product they are in before they
+    can parse the answer.
+
+    **Words rather than characters** is QUILL's choice and the right one: a word
+    count is a size somebody can picture, and 412 characters is a number they
+    then have to divide. The character count survives only where it is the
+    actual subject -- Duplicate Selection, the review buffer -- and not as the
+    routine report on a selection.
+
+    *scope* may be passed by a caller that already knows what it selected (Select
+    Paragraph knows); otherwise it is classified from the text, and a scope that
+    only names the classifier is left out rather than spoken.
+    """
+    length = len(text)
+    start = max(0, min(start, length))
+    end = max(0, min(end, length))
+    if end < start:
+        start, end = end, start
+    if end == start:
+        return f"{prefix} nothing"
+    selected = text[start:end]
+    words = len(selected.split())
+    named = scope if scope is not None else selection_scope(text, start, end)
+    parts = [prefix]
+    if named and named not in _UNSPOKEN_SCOPES:
+        parts.append(f"{named},")
+    parts.append(f"{words} {'word' if words == 1 else 'words'}")
+    sentence = " ".join(parts)
+    if not with_line_range:
+        return sentence
+    first = text.count("\n", 0, start) + 1
+    last = text.count("\n", 0, end) + 1
+    if first == last:
+        return f"{sentence}, line {first}"
+    return f"{sentence}, lines {first} to {last}"

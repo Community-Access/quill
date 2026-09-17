@@ -71,7 +71,12 @@ class DocumentMarksMixin:
     # ------------------------------------------------------------------ #
 
     def _select_span(self, kind: str) -> None:
-        """Select the *kind* the caret is in, and say how much that was."""
+        """Select the *kind* the caret is in, and say how much that was.
+
+        Recorded for Reselect, which used to know only about Select Sentence
+        and Select Block -- so the three commands people actually reach for
+        were the three ``Ctrl+Shift+F8`` could not put back (bad.md L5).
+        """
         text = self.control.GetValue()
         start, end = _SPANS[kind](text, self.control.GetInsertionPoint())
         if end <= start:
@@ -79,7 +84,8 @@ class DocumentMarksMixin:
             return
         self.control.SetSelection(start, end)
         self.control.ShowPosition(start)
-        self._announce(f"Selected {kind}, {len(text[start:end])} characters")
+        self._last_selection = (start, end)
+        self._announce_span(start, end, scope=kind)
         self._touch_status()
 
     def cmd_select_word(self) -> None:
@@ -109,7 +115,8 @@ class DocumentMarksMixin:
         new_start, new_end, scope = grown
         self.control.SetSelection(new_start, new_end)
         self.control.ShowPosition(new_start)
-        self._announce(f"Selected {scope}, {new_end - new_start} characters")
+        self._last_selection = (new_start, new_end)
+        self._announce_span(new_start, new_end, scope=scope)
         self._touch_status()
 
     # ------------------------------------------------------------------ #

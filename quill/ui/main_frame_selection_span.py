@@ -72,6 +72,23 @@ class SelectionSpanMixin:
         return True
 
     def complete_selection(self) -> None:
+        """Shift+F8: take everything between the marker and here, and say so.
+
+        **An empty span says so plainly.** Pressing Shift+F8 without having
+        moved used to announce "Selected 0 characters, line 4 column 7 to line 4
+        column 7" -- a sentence that reports a number, a place and a second
+        identical place to say the one thing that matters, which is that nothing
+        happened. QuillLite's wording is the one a listener can act on
+        (bad.md L11).
+
+        The sentence for a real span is
+        :func:`quill.core.selection.describe_selection`, with the line range,
+        which is the one selection that carries it: an F8 span is arbitrary, so
+        it is the only one whose reach cannot be worked out from a scope name
+        (bad.md L14, 5.3).
+        """
+        from quill.core.selection import describe_selection
+
         if self._selection_anchor is None:
             self._set_status("No selection anchor. Press F8 to set one.")
             return
@@ -79,17 +96,14 @@ class SelectionSpanMixin:
         start = min(self._selection_anchor, caret)
         end = max(self._selection_anchor, caret)
         self.editor.SetSelection(start, end)
-        if start != end:
-            self._last_selection = (start, end)
-            post_sound(SoundEvent.SELECTION_COMPLETED)
         self._selection_anchor = None
-        text = self.editor.GetValue()
-        s_line, s_col = line_column_for_position(text, start)
-        e_line, e_col = line_column_for_position(text, end)
-        char_count = end - start
+        if start == end:
+            self._set_status("Selection cancelled, nothing selected")
+            return
+        self._last_selection = (start, end)
+        post_sound(SoundEvent.SELECTION_COMPLETED)
         self._set_status(
-            f"Selected {char_count} character{'s' if char_count != 1 else ''},"
-            f" line {s_line} column {s_col} to line {e_line} column {e_col}."
+            describe_selection(self.editor.GetValue(), start, end, with_line_range=True)
         )
 
     def reselect(self) -> None:

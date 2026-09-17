@@ -2660,6 +2660,101 @@ happens is the difference between a warning and a formality.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
+<h3 id="selections-and-marks-2026-09-17">Selections and marks
+(2026-09-17)</h3>
+<p><strong>L-189. Go to the Start of the Selection actually goes
+there</strong></p>
+<ul>
+<li>Do: put the cursor at the start of a paragraph, press
+<strong>Ctrl+Shift+H</strong> to select it, then
+<strong>Alt+Shift+F8</strong>. Now press <strong>Shift+Right</strong>
+once.</li>
+<li>Pass: you hear “At the start of the selection”, and the Shift+Right
+extends from the <strong>beginning</strong> of the paragraph – one
+character selected, the first one.</li>
+<li>Fail if Shift+Right moves at the far end. The command used to
+announce an arrival it had not made: the call that re-selected the text
+put the cursor straight back where it came from.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-190. Every selection is announced the same way</strong></p>
+<ul>
+<li>Do: press in turn <strong>Ctrl+Shift+W</strong> (word),
+<strong>Ctrl+Shift+E</strong> (line), <strong>Ctrl+Shift+H</strong>
+(paragraph) and <strong>Ctrl+Space</strong> (sentence).</li>
+<li>Pass: each says what it took and how many <strong>words</strong> –
+“Selected line, 3 words”. No character counts.</li>
+<li>Fail if any of them reports characters. QUILL says words and
+QuillLite said both, so the same key reported the same fact two
+ways.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-191. The F8 span is the one that says which
+lines</strong></p>
+<ul>
+<li>Do: press <strong>F8</strong> at the top of a paragraph, arrow down
+three lines, press <strong>Shift+F8</strong>.</li>
+<li>Pass: the sentence ends with the lines it reached – “lines 4 to 7”.
+This is the only selection that carries them, because it is the only one
+whose reach you cannot work out from its name.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-192. Reselect puts back a selection made any way at
+all</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Shift+H</strong> to select a paragraph, press
+<strong>Right</strong> to throw it away, then
+<strong>Ctrl+Shift+F8</strong>.</li>
+<li>Pass: the paragraph is selected again and you hear “Reselected”,
+with the same word count.</li>
+<li>Fail if it says there is no previous selection. Reselect used to
+know only about F8, Select Sentence and Select Block – so the three
+commands people actually use were the three it could not undo.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-193. A mark moves with the text</strong></p>
+<ul>
+<li>Do: in a document of several paragraphs, put the cursor on the word
+starting the <strong>third</strong> paragraph and press
+<strong>Ctrl+Shift+M</strong>. Go to the very top (Ctrl+Home) and type
+three new lines. Now press <strong>Ctrl+M</strong>.</li>
+<li>Pass: the cursor is back on that same word.</li>
+<li>Fail if it lands three lines short. A mark used to be a bare
+position, so it pointed at whatever had since moved into that spot.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-194. Alt+Left comes back from a mark</strong></p>
+<ul>
+<li>Do: set a mark somewhere, move a long way off, press
+<strong>Ctrl+M</strong> to go back to it, then press
+<strong>Alt+Left</strong>.</li>
+<li>Pass: you are returned to where you pressed Ctrl+M from.</li>
+<li>Fail if Alt+Left goes somewhere else or does nothing. Pop Mark, the
+mark list and Ctrl+Alt+X used to move the cursor without telling the
+Back key.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-195. The same place cannot fill the mark ring</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Shift+M</strong> five times without
+moving.</li>
+<li>Pass: the last one says “1 mark”, not “5 marks”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
 <hr />
 <h2 id="sign-off">Sign-off</h2>
 <table>

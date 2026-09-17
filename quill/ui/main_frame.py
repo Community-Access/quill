@@ -7590,21 +7590,6 @@ class MainFrame(
             f"All text copied ({char_count} character{'s' if char_count != 1 else ''})."
         )
 
-    def unselect_all(self) -> None:
-        caret = self.editor.GetInsertionPoint()
-        self.editor.SetSelection(caret, caret)
-        self._set_status("Selection cleared.")
-
-    def say_selected(self) -> None:
-        start, end = self.editor.GetSelection()
-        if start == end:
-            self._set_status("Nothing selected.")
-            return
-        text = self.editor.GetRange(start, end)
-        preview = text[:60].replace("\n", " ")
-        self._set_status_quiet("Say selected: " + preview + ("..." if len(text) > 60 else ""))
-        announce(text)
-
     def read_all(self) -> None:
         if self._safe_mode:
             return

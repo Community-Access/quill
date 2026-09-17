@@ -154,11 +154,21 @@ class FakeControl:
         return self._sel
 
     def SetSelection(self, start: int, end: int) -> None:
+        """Select the span, and leave the caret at *end* -- as wx does.
+
+        The caret lands on the ``to`` argument rather than on the larger of the
+        two, which is what makes ``SetSelection(end, start)`` the way to ask for
+        a selection whose caret is at its beginning. A stand-in that sorted
+        first would let Go to Start of Selection pass its test while the caret
+        sat at the far end (bad.md L13) -- that is precisely how that bug lived
+        long enough to need a live check.
+        """
+        caret = max(0, min(int(end), len(self._text)))
         low, high = sorted((int(start), int(end)))
         low = max(0, min(low, len(self._text)))
         high = max(0, min(high, len(self._text)))
         self._sel = (low, high)
-        self._cursor = high
+        self._cursor = caret
 
     def SelectAll(self) -> None:
         self.SetSelection(0, len(self._text))

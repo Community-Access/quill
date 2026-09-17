@@ -69,11 +69,30 @@ class SelectionMarksMixin:
         self._announce_selection_scope("block", text, start, end)
 
     def _announce_selection_scope(self, scope: str, text: str, start: int, end: int) -> None:
-        """Announce a structural selection with its scope and word count (SEL-1)."""
-        from quill.core.announcements import format_announcement
+        """Announce a structural selection, in the shape both editors use.
 
-        words = len(text[start:end].split())
-        self._set_status(format_announcement("Selected", scope, count=words, unit="word"))
+        The sentence is :func:`quill.core.selection.describe_selection` since
+        2026-09-17 (bad.md L14): QUILL said "Selected paragraph, 41 words" and
+        QuillLite said "Selected paragraph, 412 characters, 41 words", and F8
+        completion differed again. Neither was wrong, and having two was --
+        somebody who uses both had to know which product they were in before
+        they could parse the answer.
+
+        **Recorded for Reselect**, which is the other half of the same fix:
+        only F8 ever set ``_last_selection``, so Select Word, Line, Paragraph
+        and Block -- the four people actually reach for -- were the four
+        ``Ctrl+Shift+F8`` could not put back (bad.md L5).
+        """
+        from quill.core.selection import describe_selection
+
+        if end <= start:
+            # "Selected line, 0 words" on a blank line is a report that
+            # something happened when nothing did. QuillLite's wording says
+            # which thing was not there (bad.md L11).
+            self._set_status(f"No {scope} at the cursor")
+            return
+        self._last_selection = (start, end)
+        self._set_status(describe_selection(text, start, end, scope=scope))
 
     def expand_selection(self) -> None:
         """Grow the selection to the next structural unit, announcing scope (SEL-2)."""
@@ -125,10 +144,51 @@ class SelectionMarksMixin:
         if previous_start == previous_end:
             self._set_status("Shrank selection")
             return
-        words = len(text[previous_start:previous_end].split())
-        from quill.core.announcements import format_announcement
+        from quill.core.selection import describe_selection
 
-        self._set_status(format_announcement("Shrank", "selection", count=words, unit="word"))
+        self._last_selection = (previous_start, previous_end)
+        self._set_status(describe_selection(text, previous_start, previous_end, prefix="Shrank to"))
+
+    # ------------------------------------------------------------------ #
+    # Clearing one, and reading one back
+    # ------------------------------------------------------------------ #
+
+    def unselect_all(self) -> None:
+        """Drop the selection, staying where you are.
+
+        Remembered first, so Reselect can put it back: clearing a selection is
+        exactly the action people want undone, and this was one of the commands
+        that never recorded one (bad.md L5).
+
+        Moved here from ``main_frame.py`` on 2026-09-17, with ``say_selected``
+        beside it. Both are selection verbs that happened to be written in the
+        host rather than in the mixin whose subject they are, and GATE-11 is
+        the right way to find that out: the L5 fix cost nine lines in a module
+        that may not grow, and the answer to that is never a bigger budget.
+        """
+        start, end = self.editor.GetSelection()
+        if end > start:
+            self._last_selection = (start, end)
+        caret = self.editor.GetInsertionPoint()
+        self.editor.SetSelection(caret, caret)
+        self._set_status("Selection cleared.")
+
+    def say_selected(self) -> None:
+        """Read the selection back on demand.
+
+        Without sight there is no glance that confirms the selection is the one
+        you meant, and the next keystroke may replace it.
+        """
+        from quill.platform.sr_announce import announce
+
+        start, end = self.editor.GetSelection()
+        if start == end:
+            self._set_status("Nothing selected.")
+            return
+        text = self.editor.GetRange(start, end)
+        preview = text[:60].replace("\n", " ")
+        self._set_status_quiet("Say selected: " + preview + ("..." if len(text) > 60 else ""))
+        announce(text)
 
     def _has_active_selection(self) -> bool:
         editor = getattr(self, "editor", None)

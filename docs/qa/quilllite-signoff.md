@@ -1562,6 +1562,68 @@ you only notice a week later.
   the difference between a warning and a formality.
 - [ ] pass  [ ] fail: ______
 
+### Selections and marks (2026-09-17)
+
+**L-189. Go to the Start of the Selection actually goes there**
+- Do: put the cursor at the start of a paragraph, press **Ctrl+Shift+H** to
+  select it, then **Alt+Shift+F8**. Now press **Shift+Right** once.
+- Pass: you hear "At the start of the selection", and the Shift+Right extends
+  from the **beginning** of the paragraph -- one character selected, the first
+  one.
+- Fail if Shift+Right moves at the far end. The command used to announce an
+  arrival it had not made: the call that re-selected the text put the cursor
+  straight back where it came from.
+- [ ] pass  [ ] fail: ______
+
+**L-190. Every selection is announced the same way**
+- Do: press in turn **Ctrl+Shift+W** (word), **Ctrl+Shift+E** (line),
+  **Ctrl+Shift+H** (paragraph) and **Ctrl+Space** (sentence).
+- Pass: each says what it took and how many **words** -- "Selected line, 3
+  words". No character counts.
+- Fail if any of them reports characters. QUILL says words and QuillLite said
+  both, so the same key reported the same fact two ways.
+- [ ] pass  [ ] fail: ______
+
+**L-191. The F8 span is the one that says which lines**
+- Do: press **F8** at the top of a paragraph, arrow down three lines, press
+  **Shift+F8**.
+- Pass: the sentence ends with the lines it reached -- "lines 4 to 7". This is
+  the only selection that carries them, because it is the only one whose reach
+  you cannot work out from its name.
+- [ ] pass  [ ] fail: ______
+
+**L-192. Reselect puts back a selection made any way at all**
+- Do: press **Ctrl+Shift+H** to select a paragraph, press **Right** to throw it
+  away, then **Ctrl+Shift+F8**.
+- Pass: the paragraph is selected again and you hear "Reselected", with the
+  same word count.
+- Fail if it says there is no previous selection. Reselect used to know only
+  about F8, Select Sentence and Select Block -- so the three commands people
+  actually use were the three it could not undo.
+- [ ] pass  [ ] fail: ______
+
+**L-193. A mark moves with the text**
+- Do: in a document of several paragraphs, put the cursor on the word starting
+  the **third** paragraph and press **Ctrl+Shift+M**. Go to the very top
+  (Ctrl+Home) and type three new lines. Now press **Ctrl+M**.
+- Pass: the cursor is back on that same word.
+- Fail if it lands three lines short. A mark used to be a bare position, so it
+  pointed at whatever had since moved into that spot.
+- [ ] pass  [ ] fail: ______
+
+**L-194. Alt+Left comes back from a mark**
+- Do: set a mark somewhere, move a long way off, press **Ctrl+M** to go back to
+  it, then press **Alt+Left**.
+- Pass: you are returned to where you pressed Ctrl+M from.
+- Fail if Alt+Left goes somewhere else or does nothing. Pop Mark, the mark list
+  and Ctrl+Alt+X used to move the cursor without telling the Back key.
+- [ ] pass  [ ] fail: ______
+
+**L-195. The same place cannot fill the mark ring**
+- Do: press **Ctrl+Shift+M** five times without moving.
+- Pass: the last one says "1 mark", not "5 marks".
+- [ ] pass  [ ] fail: ______
+
 ---
 
 ## Sign-off

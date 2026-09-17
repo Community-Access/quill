@@ -2,7 +2,39 @@
 
 ## Unreleased
 
+### Changed
+
+- **Selections are announced the same way in QuillLite and QUILL.** Both now
+  say the scope and the number of words --- "Selected paragraph, 41 words".
+  QuillLite used to add a character count in front of the words and QUILL did
+  not, so the same key reported the same thing two ways depending on which
+  editor you were in. Words rather than characters because a word count is a
+  size you can picture, where 412 characters is a number you then have to
+  divide. The one selection that still says more is the **F8** span, which adds
+  the lines it reached --- it is the only selection whose reach you cannot work
+  out from its name.
+
 ### Fixed
+
+- **Go to the Start of the Selection now goes there.** `Alt+Shift+F8`
+  announced that it had arrived and left the cursor at the far end, because the
+  call that selected the text put the cursor back where it started from. It
+  lands at the beginning now, with the selection intact.
+- **Marks survive editing.** A mark used to be a bare position, so inserting a
+  paragraph above one left it pointing at whatever had since moved into that
+  spot. Each mark now remembers the text around it and finds that text again ---
+  the same way numbered bookmarks have worked since the last release.
+- **Alt+Left comes back from a mark.** Pop Mark, the mark list and Exchange
+  Point and Mark moved the cursor without telling the Back key, so those were
+  the three jumps `Alt+Left` could not undo. A Back key that skips some of the
+  places you have been is worse than no Back key.
+- **Reselect knows about every way of selecting.** `Ctrl+Shift+F8` only
+  remembered selections made with **F8**, Select Sentence and Select Block ---
+  so Select Word, Select Line, Select Paragraph, Expand and Shrink, the ones
+  people actually reach for, were the ones it could not put back.
+- **The mark ring holds twenty and never holds the same place twice.**
+  QuillLite kept its own list of ten beside the shared ring; there is one ring
+  now, and it is the shared one.
 
 - **Switching out of rich text keeps your work.** It used to take the letters
   and leave everything else: an afternoon of headings and bold became a wall of

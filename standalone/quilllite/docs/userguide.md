@@ -639,7 +639,24 @@ the thing you want does not line up neatly with a word or a paragraph.
 | **Alt+Shift+F8** | Go to the beginning of what is selected |
 
 **Ctrl+Shift+F8** is worth remembering for the moment an arrow key has just
-thrown away a selection that took six keystrokes to build.
+thrown away a selection that took six keystrokes to build. It puts back whatever
+you last selected, however you selected it — F8, Select Word, Select Paragraph,
+Grow, or simply clearing one by accident.
+
+#### What you hear when something is selected
+
+Every selection says the same thing in the same order: **what** it took and
+**how many words** — "Selected paragraph, 41 words". A word count is a size you
+can picture; a character count is a number you then have to divide.
+
+The **F8** span is the one exception, and it says more because it has to: it
+reaches between two arbitrary points, so "Selected 120 words, lines 14 to 31"
+is the only way to know how far it went. Everything else is named by its scope
+already.
+
+QUILL says exactly the same sentences. One of the two used to add a character
+count and the other did not, so the same key reported the same fact two ways
+depending on which editor you happened to be in.
 
 ### Take a whole word, line or paragraph at once
 
@@ -671,6 +688,17 @@ where you were standing before you went off to check something.
 | **Ctrl+M** | Go back to the last mark |
 | **Alt+M** | List your marks and pick one |
 | **Ctrl+Alt+X** | Swap between the cursor and the mark, selecting what is between |
+
+Twenty marks are kept, and marking the same place twice does not use up two of
+them.
+
+A mark **moves with your text**. Drop one on a paragraph, insert three
+paragraphs above it, and Ctrl+M still takes you to that paragraph — the mark
+remembers the words around it, not a count of characters from the top.
+
+And **Alt+Left comes back**. Every way of reaching a mark — Ctrl+M, choosing one
+from the list, Ctrl+Alt+X — is a jump the Back key can undo, the same as a
+bookmark or a Go To.
 
 ### Two more
 
