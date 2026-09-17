@@ -29,6 +29,7 @@ from dataclasses import dataclass
 import wx
 
 from quill.ui.dialog_contract import (
+    apply_listbox_activation,
     apply_modal_ids,
     set_accessible_name,
     show_modal_dialog,
@@ -144,7 +145,11 @@ def ask_go_to(
 
     kind_box.Bind(wx.EVT_RADIOBOX, _on_kind)
     line_field.Bind(wx.EVT_TEXT_ENTER, lambda _e: dialog.EndModal(wx.ID_OK))
-    places.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: dialog.EndModal(wx.ID_OK))
+    # Enter and Space as well as a double-click. A wx.ListBox raises no
+    # item-activated event of its own, so binding only the double-click leaves
+    # the whole list unreachable from the keyboard -- which in this window is
+    # every bookmark and every heading (GATE-13).
+    apply_listbox_activation(places, lambda _e: dialog.EndModal(wx.ID_OK))
 
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     _sync()
