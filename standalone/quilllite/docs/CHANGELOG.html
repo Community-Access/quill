@@ -200,33 +200,51 @@
 <h2 id="unreleased">Unreleased</h2>
 <h3 id="fixed">Fixed</h3>
 <ul>
-<li><strong>Save As converts the file, not the window.</strong> Saving a
-rich text document as plain text, or an HTML one as Markdown, used to
-change the document in front of you <em>first</em> and then try to write
-it. If the write failed — a locked file, a full disk — you were left
-holding flattened text under the old name, with the next Ctrl+S ready to
-write it over the original, and the formatting gone from the window as
-well because that change could not be undone. The file is written first
-now, and the window follows only when the write succeeded.</li>
-<li><strong>A character the file cannot hold is a question, not a silent
-loss.</strong> Typing an em dash or an emoji into a file stored in an
-older encoding used to turn it into a question mark, with “Saved”
+<li><p><strong>Switching out of rich text keeps your work.</strong> It
+used to take the letters and leave everything else: an afternoon of
+headings and bold became a wall of unmarked text, announced as “Plain
+text mode”, with no undo. Both directions convert now. Out of rich text,
+a Heading 2 becomes <code>## </code>, a bold word becomes
+<code>**bold**</code> and a bullet list becomes <code>- </code> lines —
+and the document is then a Markdown document, so heading navigation and
+the headings list still find everything. Into rich text, a Markdown
+document’s <code>## Title</code> becomes a real heading instead of
+sitting there as two hash marks. Anything the target cannot carry — a
+table, a picture, a footnote — is named before you are asked.</p></li>
+<li><p><strong>A document that changes mode keeps its name.</strong> It
+used to forget it, so Ctrl+S asked you to find your own file again with
+nothing filled in. The name is kept, and Save offers the right suffix
+for what the document now holds — <code>notes.rtf</code> for a
+<code>notes.txt</code> you made rich. Nothing is ever written under a
+name that does not match what is in it.</p></li>
+<li><p><strong>Save As converts the file, not the window.</strong>
+Saving a rich text document as plain text, or an HTML one as Markdown,
+used to change the document in front of you <em>first</em> and then try
+to write it. If the write failed — a locked file, a full disk — you were
+left holding flattened text under the old name, with the next Ctrl+S
+ready to write it over the original, and the formatting gone from the
+window as well because that change could not be undone. The file is
+written first now, and the window follows only when the write
+succeeded.</p></li>
+<li><p><strong>A character the file cannot hold is a question, not a
+silent loss.</strong> Typing an em dash or an emoji into a file stored
+in an older encoding used to turn it into a question mark, with “Saved”
 announced as though nothing had happened. QuillLite now asks before it
 writes: save as UTF-8 and keep everything, save as asked and lose them
-knowingly, or cancel.</li>
-<li><strong>Crash recovery puts your file back the way it was.</strong>
-The copy kept aside is always written in one format, because it has to
-hold whatever you typed — and the recovered document used to adopt
-<em>that</em> format, so a file in an older encoding, or one with Unix
-line endings, came back changed and was saved that way. What the copy
-records now is what your document was, and the restore puts it
-back.</li>
-<li><strong>A recovery that fails claims nothing.</strong> If the copy
-could not be read, QuillLite still took your file’s name, marked the
-empty window as changed and set the copy as its own — so closing that
-window and answering “No” deleted the only copy of the work. It now says
-the recovery failed, takes nothing, and leaves the copy for next
-time.</li>
+knowingly, or cancel.</p></li>
+<li><p><strong>Crash recovery puts your file back the way it
+was.</strong> The copy kept aside is always written in one format,
+because it has to hold whatever you typed — and the recovered document
+used to adopt <em>that</em> format, so a file in an older encoding, or
+one with Unix line endings, came back changed and was saved that way.
+What the copy records now is what your document was, and the restore
+puts it back.</p></li>
+<li><p><strong>A recovery that fails claims nothing.</strong> If the
+copy could not be read, QuillLite still took your file’s name, marked
+the empty window as changed and set the copy as its own — so closing
+that window and answering “No” deleted the only copy of the work. It now
+says the recovery failed, takes nothing, and leaves the copy for next
+time.</p></li>
 </ul>
 <h3 id="added">Added</h3>
 <ul>

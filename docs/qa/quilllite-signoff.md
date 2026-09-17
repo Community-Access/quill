@@ -1495,6 +1495,73 @@ you only notice a week later.
   answering "No" used to delete the only copy of the work.
 - [ ] pass  [ ] fail: ______
 
+### The mode switch converts rather than flattens (2026-09-17)
+
+**L-181. Leaving rich text turns the formatting into Markdown**
+- Do: in a **rich text** document write a line, make it **Heading 2**
+  (Ctrl+Alt+2), write a second line with a **bold** word in it, and a two-item
+  bullet list. Press **Alt+Shift+F** until you are asked about leaving rich
+  text, and answer **Yes**.
+- Pass: the heading line now reads `## ` followed by its text, the bold word
+  reads `**word**`, and the list lines begin `- `. You hear "Plain text mode".
+- Fail if the text is there with none of the marks. That is the old behaviour:
+  it took the letters and left everything else.
+- [ ] pass  [ ] fail: ______
+
+**L-182. The document is then called Markdown**
+- Do: straight after L-181, press **F6** and arrow to the **Format** cell.
+- Pass: it reads **Markdown**. A buffer full of `##` that the cell calls plain
+  text is the cell lying about the one thing it is for.
+- [ ] pass  [ ] fail: ______
+
+**L-183. The headings are still headings afterwards**
+- Do: straight after L-182, press **Ctrl+Alt+L** for the headings list.
+- Pass: the heading from L-181 is in it. This is the point of converting rather
+  than flattening -- heading navigation, the list and the outline all keep
+  working because the structure survived in a form they can read.
+- [ ] pass  [ ] fail: ______
+
+**L-184. Saying no changes nothing at all**
+- Do: repeat L-181 and answer **No**.
+- Pass: the document is still rich text, the heading is still a heading, and the
+  Format cell still reads Rich text. Nothing was announced about plain text.
+- [ ] pass  [ ] fail: ______
+
+**L-185. Markdown becomes real formatting going the other way**
+- Do: in a **Markdown** document (`notes.md`) type `## Title`, a blank line, and
+  `Some **bold** text.` Ring with **Alt+Shift+F** to rich text.
+- Pass: the title line is a real heading -- arrow onto it and you hear
+  "Heading 2" -- and the bold word is really bold with no asterisks on screen.
+- Fail if `##` and `**` are still sitting there. The document said it was rich
+  text and nothing in it was.
+- [ ] pass  [ ] fail: ______
+
+**L-186. A plain text file is not read as markup**
+- Do: in a **plain text** document (`list.txt`, with the Language cell reading
+  Plain text) type `buy 2 * 3 eggs`. Ring to rich text.
+- Pass: the line is unchanged, character for character. The asterisk is an
+  asterisk.
+- Fail if anything became bold or italic. Guessing that a shopping list is
+  markup is a decision with no way back from it.
+- [ ] pass  [ ] fail: ______
+
+**L-187. A document that changes mode keeps its name**
+- Do: open `notes.txt`, ring to **rich text**, then press **Ctrl+S**.
+- Pass: the Save As box opens with **notes.rtf** already filled in -- the same
+  folder, the same stem, the right suffix. Accept it and the file is written.
+- Fail if the box is empty, or proposes `notes.txt`, or if Ctrl+S writes RTF
+  into `notes.txt` without asking. The window used to forget the file
+  altogether.
+- [ ] pass  [ ] fail: ______
+
+**L-188. The warning names what will not survive**
+- Do: open an `.rtf` that contains a **table** (make one in WordPad or Word and
+  save it as RTF). Open it in QuillLite and ring out of rich text.
+- Pass: the question names it -- "Switching to plain text cannot carry: tables".
+- Fail if the question is the generic one. Naming the loss before it happens is
+  the difference between a warning and a formality.
+- [ ] pass  [ ] fail: ______
+
 ---
 
 ## Sign-off

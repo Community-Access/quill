@@ -349,8 +349,33 @@ wrong.</li>
 </ul>
 <p>Moving between plain, Markdown and HTML changes <strong>nothing in
 your document</strong> — it changes what the keys write from now on.
-Going to or from rich text is a real conversion, and going <em>from</em>
-it throws the formatting away, so it asks first.</p>
+Going to or from rich text is a real conversion, and it asks first,
+because it rewrites what is in the window.</p>
+<h3 id="what-the-conversion-keeps">What the conversion keeps</h3>
+<p>Going <strong>out of rich text</strong> turns the formatting into
+Markdown rather than throwing it away. A Heading 2 becomes
+<code>## </code>, a bold word becomes <code>**bold**</code>, a bullet
+list becomes <code>- </code> lines. The document is then a Markdown
+document, and says so in the <strong>Format</strong> cell — so heading
+navigation, the headings list and the outline all still find everything
+they found a moment ago. If the document holds something Markdown cannot
+carry — a table, a picture, a footnote — QuillLite names it before it
+asks.</p>
+<p>Until version 1.0 this direction took the letters and left everything
+else. An afternoon of headings and bold became a wall of unmarked text,
+and the only announcement was “Plain text mode”.</p>
+<p>Going <strong>into rich text</strong> converts in the other
+direction: a Markdown document’s <code>## Title</code> becomes a real
+Heading 1, <code>**bold**</code> becomes really bold, and an HTML
+document goes through Markdown on the way. A <strong>plain text</strong>
+document is left as characters, deliberately — the asterisks in a
+shopping list are not bold, and there would be no way back from deciding
+they were.</p>
+<p>Your file keeps its name. Because a rich document cannot be written
+over a <code>.txt</code>, the next <strong>Ctrl+S</strong> offers you
+<code>notes.rtf</code> instead of <code>notes.txt</code> — the name
+filled in, ready to accept. Nothing is written under a name that does
+not match what is in it.</p>
 <p>The choice lasts as long as the window. It describes what you are
 typing, not what the file is.</p>
 <hr />

@@ -4,6 +4,21 @@
 
 ### Fixed
 
+- **Switching out of rich text keeps your work.** It used to take the letters
+  and leave everything else: an afternoon of headings and bold became a wall of
+  unmarked text, announced as "Plain text mode", with no undo. Both directions
+  convert now. Out of rich text, a Heading 2 becomes `## `, a bold word becomes
+  `**bold**` and a bullet list becomes `- ` lines — and the document is then a
+  Markdown document, so heading navigation and the headings list still find
+  everything. Into rich text, a Markdown document's `## Title` becomes a real
+  heading instead of sitting there as two hash marks. Anything the target cannot
+  carry — a table, a picture, a footnote — is named before you are asked.
+- **A document that changes mode keeps its name.** It used to forget it, so
+  Ctrl+S asked you to find your own file again with nothing filled in. The name
+  is kept, and Save offers the right suffix for what the document now holds —
+  `notes.rtf` for a `notes.txt` you made rich. Nothing is ever written under a
+  name that does not match what is in it.
+
 - **Save As converts the file, not the window.** Saving a rich text document as
   plain text, or an HTML one as Markdown, used to change the document in front
   of you *first* and then try to write it. If the write failed — a locked file,

@@ -53,6 +53,7 @@ from quill.apps.lite_window_lines import DocumentLineMixin
 from quill.apps.lite_window_marks import DocumentMarksMixin
 from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
+from quill.apps.lite_window_mode import DocumentModeMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
 from quill.apps.lite_window_status import DocumentStatusMixin
@@ -96,6 +97,7 @@ class DocumentFrame(
     DocumentContextMenuMixin,
     DocumentMenuMixin,
     DocumentAppearanceMixin,
+    DocumentModeMixin,
     DocumentStatusMixin,
     DocumentHeadingsMixin,
     DocumentMarkupMixin,

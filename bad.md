@@ -511,7 +511,6 @@ Rich engine shared (`richedit_editing.py`, `richedit_rtf_surface.py`, `heading_l
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
 | R4 | Broken | QUILL | **Dark mode may write grey text into every saved `.rtf`**: `_apply_theme` calls `SetForegroundColour` on the rich control (wxMSW applies it as `SCF_ALL` character colour) and nothing resets to `tomAutoColor` before the native save. Lite guards both directions. Verify live before fixing. | `main_frame.py:4632-4636`, `main_frame_rich_mode.py:110`, `lite_window_theme.py:9-15`, `lite_window_file.py:194, 213` |
-| R6 | Broken | Lite | **Switch Document Mode discards formatting**: rich to plain is `GetValue()` text only (confirmed, No default) with no Markdown conversion; plain to rich leaves `## Title` as literal hashes; `ChangeValue` twice clears undo; `path` is dropped on suffix mismatch. QUILL converts both ways with a lossy inventory. | `lite_window_theme.py:63-91`, `main_frame_rich_mode.py:589-666` |
 | R7 | Worse | both | **The font ladder lacks H5 (11.5) and H6 (10.5)**: Shrink on H4 lands on 11 = bold body, heading gone; Grow on H6 likewise. Neither editor announces the level change, only "N point". | `richedit_editing.py:104-121`, `heading_ladder.py:27`, `main_frame_rich_paragraph.py:140`, `lite_window_format.py:311` |
 | R8 | Worse | QUILL | Rich `Ctrl+B/I/U` announce the verb ("Bold") with no state; the shared `toggle_font_attr` returns the state and Lite says "Bold on / Bold off". | `main_frame_rich_mode.py:377-399`, `richedit_editing.py:285-297` |
 | R9 | Worse | both | **Native RichEdit hotkeys leak into plain and Markdown documents** because plain documents are `TM_RICHTEXT` controls: in QUILL unbound `Ctrl+U`, `Ctrl+L`, `Ctrl+R` underline or re-align a Markdown buffer natively (not dirty, not announced, not saved, but visible and undo-stacked); in Lite every native chord it does not bind (`Ctrl+Shift+=` superscript and friends) does the same. Paste is guarded; keys are not. | `main_frame.py:2052-2068`, `richedit_editing.py:243-254`, `lite_window_commands.py:223-236` |
@@ -718,7 +717,7 @@ way:
 | # | Item | Editors | Cost | Done when |
 | --- | --- | --- | --- | --- |
 | **P0.6c** | **QUILL adopts `DocumentText`** (V4). The object exists (`quill/core/document_text.py`) and QuillLite is on it: the mirror, the revision counter, the cached stats and line table, and the rule that display code reads it and never the control. QUILL still has its own half-answer -- `document.text` plus a stats cache in `main_frame_statusbar.py` -- and should move onto the shared object, which is what makes the edit journal the spoken undo needs (P3.7) possible at all | QUILL | M | one mirror, owned by core, read by both |
-| P0.7 | The remaining **Broken** rows of section 6, each with a regression test. **F4** QUILL non-atomic Save As HTML / Plain Text; **F5** QUILL watcher replaces a `.docx` tab with decoded binary; **F6** QUILL encoding change does not dirty, UTF-16 undetected. **R6** Lite mode switch discards formatting. (R2, R3, S2, S3 landed 2026-09-16; F1, F2, F3, F9 landed 2026-09-17.) | per bug | S each | regression test per bug |
+| P0.7 | The remaining **Broken** rows of section 6, each with a regression test, and all three are QUILL's: **F4** non-atomic Save As HTML / Plain Text; **F5** the watcher replaces a `.docx` tab with decoded binary; **F6** an encoding change does not dirty, UTF-16 undetected. (R2, R3, S2, S3 landed 2026-09-16; F1, F2, F3, F9, R6 landed 2026-09-17.) | QUILL | S each | regression test per bug |
 | P0.8 | **Verify live, then fix if confirmed**: R4 dark mode writing grey text into every saved `.rtf`; C2/N3 QUILL whole-document rewrite for a local insert or line tool in an `.rtf`; R14 two-step undo after Heading N; L13 Lite's Go to Start of Selection. (R5 was confirmed by reading and fixed 2026-09-16: neither editor calls `SetFont` on a rich control now.) | both | S each | a rich document survives each with its runs intact |
 | P0.9 | `_run_command` reports the exception class and message, not "Command failed"; `save_file` handles `UnicodeEncodeError` and `UnsupportedSaveFormatError` with the same sentences as `OSError`; Lite stops `errors="replace"` | both | S | a cp1252 document that gains an emoji says so on `Ctrl+S` in both |
 
@@ -850,7 +849,7 @@ then the section-6 findings no tiered item has claimed.
 
 | # | Item |
 | --- | --- |
-| P0.7 | The REMAINING Broken rows: F4, F5, F6 (QUILL save path / watcher) and R6 (Lite mode switch). F1, F2, F3, F9 landed 2026-09-17 |
+| P0.7 | The REMAINING Broken rows, all QUILL's: F4, F5, F6 (save path / watcher). F1, F2, F3, F9, R6 landed 2026-09-17 |
 | P0.8 | Verify live, then fix if confirmed: R4 dark mode grey text in saved .rtf; C2/N3 whole-document rewrite; R14 two-step undo; L13. R5 fixed 2026-09-16 |
 | P0.9 | _run_command reports the exception class and message, not "Command failed"; save_file handles UnicodeEncodeError and U |
 | P1.1 | Keyless QUILL commands still waiting on a displacement P1.11 frees: Sort Z-A, Tidy Whitespace, Keyboard Manager, lowercase, + 3 |

@@ -261,12 +261,20 @@ class DocumentMarkupMixin:
         the way anybody sighted would click through a Format dropdown.
 
         The rich stop is the only one that changes the document, and
-        :meth:`~quill.apps.lite_window_theme.DocumentAppearanceMixin.switch_mode`
+        :meth:`~quill.apps.lite_window_mode.DocumentModeMixin.switch_mode`
         owns that -- including the confirmation for leaving it, which is a
-        conversion that discards formatting and must never be one keypress deep.
+        conversion that rewrites the buffer and must never be one keypress deep.
         If that confirmation is declined the ring stops where it was rather than
         skipping the stop, because a key that quietly moved you somewhere else
         after you said no is worse than one that did nothing.
+
+        **Leaving rich lands on Markdown, not on plain text**, which is the ring
+        skipping a stop for the one reason worth skipping one for: the
+        conversion produces Markdown. Ringing on to "Plain text" and clearing
+        the language would leave a buffer full of ``##`` and ``**`` being called
+        text that has no markup in it -- the Format cell lying about the very
+        thing it exists to report. One more press reaches plain text, and then
+        it is true.
         """
         current = ("rich", "") if self.editor.mode == RICH else ("plain", self.document_language())
         try:
@@ -281,6 +289,10 @@ class DocumentMarkupMixin:
             self.switch_mode(PLAIN)
             if self.editor.mode == RICH:
                 return  # the conversion was declined; stay where we are
+            # Markdown, not the ring's next stop: see the docstring. The ring
+            # decides where it lands, here, rather than inheriting whatever
+            # switch_mode happened to leave the override on.
+            language = "markdown"
         self.set_document_language(language)
 
     def cmd_set_language(self) -> None:

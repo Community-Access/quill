@@ -19,6 +19,7 @@ the grouping is by "what a listener gets back" rather than by menu:
 from __future__ import annotations
 
 import pytest
+import wx
 
 from quill.ui.richedit_editing import PLAIN, RICH
 
@@ -533,7 +534,13 @@ def test_describe_reads_the_formatting_back_in_rich_text(lite_window):
     assert win.announcements[-1] == "Body text"
 
 
-def test_switch_mode_flips_between_plain_and_rich_and_says_which(lite_window):
+def test_switch_mode_flips_between_plain_and_rich_and_says_which(lite_window, monkeypatch):
+    # Leaving rich asks first -- it rewrites the buffer (bad.md R6) -- so the
+    # question is answered here rather than opening a message box in CI.
+    from quill.apps import lite_window_mode as modemod
+
+    monkeypatch.setattr(modemod, "show_message_box", lambda *_a, **_k: wx.YES)
+
     win = lite_window("hello", mode=PLAIN)
     win.cmd_switch_mode()
     assert win.editor.mode == RICH

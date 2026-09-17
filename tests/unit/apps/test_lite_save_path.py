@@ -18,6 +18,8 @@ from pathlib import Path
 import pytest
 import wx
 
+from quill.io.rtf import markdown_to_rtf
+
 #: A character Windows-1252 cannot hold. An em dash is *not* one -- cp1252 has it
 #: at 0x97 -- and picking one that happens to encode is how a test for this
 #: passes while the bug is still there.
@@ -29,6 +31,7 @@ def answers(monkeypatch):
     """Answer the save path's message boxes, and record what they asked."""
     from quill.apps import lite_window_commands as commands
     from quill.apps import lite_window_file as filemod
+    from quill.apps import lite_window_mode as modemod
 
     asked: list[str] = []
     replies: list[int] = []
@@ -39,6 +42,10 @@ def answers(monkeypatch):
 
     monkeypatch.setattr(commands, "show_message_box", _ask)
     monkeypatch.setattr(filemod, "show_message_box", _ask)
+    # Patched where it was imported, not where it is defined: the mode switch
+    # asks its own question, and a test that reached the real one would open a
+    # message box in CI (tests/unit/apps/conftest.py, DialogRecorder).
+    monkeypatch.setattr(modemod, "show_message_box", _ask)
     return {"asked": asked, "replies": replies}
 
 
@@ -231,3 +238,107 @@ def test_a_slot_from_an_older_build_reads_as_unknown(tmp_path) -> None:
 
     back = [one for one in recovery.pending(slot.meta_path.parent) if one.slot_id == slot.slot_id]
     assert back and back[0].encoding == ""
+
+
+# --------------------------------------------------------------------------- #
+# R6 -- Switch Document Mode converted nothing, in either direction
+# --------------------------------------------------------------------------- #
+
+
+def test_leaving_rich_text_turns_the_formatting_into_markdown(lite_window, answers) -> None:
+    """It used to take GetValue() -- the characters -- and call that the answer.
+
+    An afternoon of headings and bold became a wall of unmarked text, announced
+    as "Plain text mode" (bad.md R6). QUILL has converted through
+    ``quill.io.rtf`` since 0.9.0-beta3 and QuillLite may never be behind it.
+    """
+    win = lite_window("", cursor=0, mode="rich")
+    win.editor.set_rtf(markdown_to_rtf("# Title\n\nSome **bold** text.\n").encode("utf-8"))
+
+    win.switch_mode("plain")
+
+    assert win.editor.mode == "plain"
+    assert "# Title" in win.control.GetValue()
+    assert "**bold**" in win.control.GetValue()
+    assert win.announcements[-1] == "Plain text mode"
+
+
+def test_the_document_is_called_markdown_once_it_holds_markdown(lite_window, answers) -> None:
+    """The Format cell reads the language, and a buffer full of ## that the cell
+    calls plain text is the cell lying about the one thing it is for."""
+    win = lite_window("", cursor=0, mode="rich")
+    win.editor.set_rtf(markdown_to_rtf("# Title\n").encode("utf-8"))
+    win.switch_mode("plain")
+    assert win.document_language() == "markdown"
+
+
+def test_declining_the_switch_out_of_rich_changes_nothing(lite_window, answers) -> None:
+    """Planned first, applied second -- the order the save path learned in F1."""
+    win = lite_window("", cursor=0, mode="rich")
+    win.editor.set_rtf(markdown_to_rtf("# Title\n").encode("utf-8"))
+    before = win.control.GetValue()
+    answers["replies"].append(wx.NO)
+
+    win.switch_mode("plain")
+
+    assert win.editor.mode == "rich"
+    assert win.control.GetValue() == before
+
+
+def test_the_warning_names_what_plain_text_cannot_carry(lite_window, answers) -> None:
+    """QUILL's honest-fidelity gate: say what will be lost before losing it."""
+    win = lite_window("", cursor=0, mode="rich")
+    win.editor.rtf_bytes = rb"{\rtf1\ansi \trowd\cell a table\par}"
+
+    win.switch_mode("plain")
+
+    assert any("tables" in asked for asked in answers["asked"])
+
+
+def test_a_markdown_document_becomes_real_formatting(lite_window, answers) -> None:
+    """``## Title`` used to sit in a rich document as two hash marks and a space:
+    the document said it was rich text and nothing in it was."""
+    win = lite_window("## Title\n\nSome **bold** text.\n", cursor=0, name="notes.md")
+
+    win.switch_mode("rich")
+
+    assert win.editor.mode == "rich"
+    assert any(call[0] == "set_rtf" for call in win.editor.calls)
+
+
+def test_a_plain_text_file_is_not_read_as_markup(lite_window, answers) -> None:
+    """The asymmetry, and it is the honest one: markup can always be read as
+    text, but the asterisks in a shopping list are not bold."""
+    win = lite_window("buy 2 * 3 eggs\n", cursor=0, name="list.txt")
+
+    win.switch_mode("rich")
+
+    assert win.editor.mode == "rich"
+    assert not any(call[0] == "set_rtf" for call in win.editor.calls)
+    assert win.control.GetValue() == "buy 2 * 3 eggs\n"
+
+
+def test_a_mode_switch_keeps_the_name_and_proposes_the_right_one(lite_window, answers) -> None:
+    """It used to set ``self.path = None``: safe, and unhelpful. The person still
+    has a file open and now Ctrl+S asks them to find it again with nothing
+    proposed. QUILL keeps the name and retargets the suffix."""
+    win = lite_window("hello\n", cursor=0, name="notes.txt")
+
+    win.switch_mode("rich")
+
+    assert win.path is not None and win.path.name == "notes.txt"
+    assert win.proposed_name_for_mode() == "notes.rtf"
+
+
+def test_save_after_a_mode_switch_goes_through_save_as(lite_window, answers, monkeypatch) -> None:
+    """Save proposes; it never writes RTF bytes into a file called .txt."""
+    win = lite_window("hello\n", cursor=0, name="notes.txt")
+    win.switch_mode("rich")
+
+    asked_for_a_name: list[bool] = []
+    monkeypatch.setattr(
+        type(win), "cmd_save_as", lambda self: (asked_for_a_name.append(True), True)[1]
+    )
+
+    assert win.save() is True
+    assert asked_for_a_name == [True]

@@ -115,7 +115,11 @@ class DocumentCommandsMixin(
     def cmd_save_as(self) -> bool:
         """Ask for a name, converting the document if the extension asks for it."""
         rich = self.editor.mode == RICH
-        default_name = self.path.name if self.path else ("Untitled.rtf" if rich else "Untitled.txt")
+        # Not self.path.name: a document that has just changed mode is proposed
+        # under the suffix its new contents deserve, so switching a notes.txt to
+        # rich text and pressing Ctrl+S offers notes.rtf rather than asking the
+        # person to retype a name they already have (bad.md R6).
+        default_name = self.proposed_name_for_mode()
         with wx.FileDialog(
             self,
             "Save As",

@@ -2550,6 +2550,116 @@ window and answering “No” used to delete the only copy of the work.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
+<h3 id="the-mode-switch-converts-rather-than-flattens-2026-09-17">The
+mode switch converts rather than flattens (2026-09-17)</h3>
+<p><strong>L-181. Leaving rich text turns the formatting into
+Markdown</strong></p>
+<ul>
+<li>Do: in a <strong>rich text</strong> document write a line, make it
+<strong>Heading 2</strong> (Ctrl+Alt+2), write a second line with a
+<strong>bold</strong> word in it, and a two-item bullet list. Press
+<strong>Alt+Shift+F</strong> until you are asked about leaving rich
+text, and answer <strong>Yes</strong>.</li>
+<li>Pass: the heading line now reads <code>## </code> followed by its
+text, the bold word reads <code>**word**</code>, and the list lines
+begin <code>- </code>. You hear “Plain text mode”.</li>
+<li>Fail if the text is there with none of the marks. That is the old
+behaviour: it took the letters and left everything else.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-182. The document is then called Markdown</strong></p>
+<ul>
+<li>Do: straight after L-181, press <strong>F6</strong> and arrow to the
+<strong>Format</strong> cell.</li>
+<li>Pass: it reads <strong>Markdown</strong>. A buffer full of
+<code>##</code> that the cell calls plain text is the cell lying about
+the one thing it is for.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-183. The headings are still headings
+afterwards</strong></p>
+<ul>
+<li>Do: straight after L-182, press <strong>Ctrl+Alt+L</strong> for the
+headings list.</li>
+<li>Pass: the heading from L-181 is in it. This is the point of
+converting rather than flattening – heading navigation, the list and the
+outline all keep working because the structure survived in a form they
+can read.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-184. Saying no changes nothing at all</strong></p>
+<ul>
+<li>Do: repeat L-181 and answer <strong>No</strong>.</li>
+<li>Pass: the document is still rich text, the heading is still a
+heading, and the Format cell still reads Rich text. Nothing was
+announced about plain text.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-185. Markdown becomes real formatting going the other
+way</strong></p>
+<ul>
+<li>Do: in a <strong>Markdown</strong> document (<code>notes.md</code>)
+type <code>## Title</code>, a blank line, and
+<code>Some **bold** text.</code> Ring with <strong>Alt+Shift+F</strong>
+to rich text.</li>
+<li>Pass: the title line is a real heading – arrow onto it and you hear
+“Heading 2” – and the bold word is really bold with no asterisks on
+screen.</li>
+<li>Fail if <code>##</code> and <code>**</code> are still sitting there.
+The document said it was rich text and nothing in it was.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-186. A plain text file is not read as markup</strong></p>
+<ul>
+<li>Do: in a <strong>plain text</strong> document
+(<code>list.txt</code>, with the Language cell reading Plain text) type
+<code>buy 2 * 3 eggs</code>. Ring to rich text.</li>
+<li>Pass: the line is unchanged, character for character. The asterisk
+is an asterisk.</li>
+<li>Fail if anything became bold or italic. Guessing that a shopping
+list is markup is a decision with no way back from it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-187. A document that changes mode keeps its
+name</strong></p>
+<ul>
+<li>Do: open <code>notes.txt</code>, ring to <strong>rich text</strong>,
+then press <strong>Ctrl+S</strong>.</li>
+<li>Pass: the Save As box opens with <strong>notes.rtf</strong> already
+filled in – the same folder, the same stem, the right suffix. Accept it
+and the file is written.</li>
+<li>Fail if the box is empty, or proposes <code>notes.txt</code>, or if
+Ctrl+S writes RTF into <code>notes.txt</code> without asking. The window
+used to forget the file altogether.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-188. The warning names what will not survive</strong></p>
+<ul>
+<li>Do: open an <code>.rtf</code> that contains a <strong>table</strong>
+(make one in WordPad or Word and save it as RTF). Open it in QuillLite
+and ring out of rich text.</li>
+<li>Pass: the question names it – “Switching to plain text cannot carry:
+tables”.</li>
+<li>Fail if the question is the generic one. Naming the loss before it
+happens is the difference between a warning and a formality.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
 <hr />
 <h2 id="sign-off">Sign-off</h2>
 <table>

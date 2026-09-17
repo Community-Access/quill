@@ -37,6 +37,8 @@ from typing import Any
 import pytest
 import wx
 
+from quill.ui.richedit_rtf_surface import RichEditRtfError
+
 
 class _SkippableEvent:
     """Enough of ``wx.CommandEvent`` for a cue handler: it calls ``Skip``."""
@@ -305,6 +307,10 @@ class FakeEditor:
         self.control = control
         self.mode = mode
         self.rtf: bool = True
+        #: RTF a test has handed the surface, or ``None`` to serialize the
+        #: buffer on demand. Set by :meth:`set_rtf` so a round trip is a round
+        #: trip rather than two independent conversions.
+        self.rtf_bytes: bytes | None = None
         self.calls: list[tuple[str, Any]] = []
         self.attrs: dict[str, bool] = {}
         self.font_size = 11
@@ -316,6 +322,33 @@ class FakeEditor:
 
     def rtf_available(self) -> bool:
         return self.rtf
+
+    def get_rtf(self) -> bytes:
+        """The document as RTF, through the same writer the real surface saves with.
+
+        A stand-in that returned a canned string would let the mode switch pass
+        its tests while converting nothing. Running the buffer through
+        ``markdown_to_rtf`` means a test can put ``## Title`` in a window, ring
+        to rich and back, and assert it is still a heading -- which is the whole
+        of bad.md R6.
+        """
+        if not self.rtf:
+            raise RichEditRtfError("no native surface")
+        if self.rtf_bytes is not None:
+            return self.rtf_bytes
+        from quill.io.rtf import markdown_to_rtf
+
+        return markdown_to_rtf(self.control.GetValue()).encode("utf-8")
+
+    def set_rtf(self, data: bytes) -> None:
+        """Take RTF, and keep the plain text the control would show."""
+        if not self.rtf:
+            raise RichEditRtfError("no native surface")
+        from quill.io.rtf import rtf_to_markdown
+
+        self.rtf_bytes = data
+        self.calls.append(("set_rtf", len(data)))
+        self.control.ChangeValue(rtf_to_markdown(data.decode("utf-8", errors="replace")))
 
     def toggle_overtype(self) -> bool:
         self.overtype = not getattr(self, "overtype", False)
@@ -664,6 +697,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_lines import DocumentLineMixin
     from quill.apps.lite_window_marks import DocumentMarksMixin
     from quill.apps.lite_window_markup import DocumentMarkupMixin
+    from quill.apps.lite_window_mode import DocumentModeMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_spelling import DocumentSpellingMixin
     from quill.apps.lite_window_tools import DocumentToolsMixin
@@ -703,6 +737,10 @@ def lite_window(tmp_path, lite_settings):
         # without it fails on Heading 1 rather than on anything to do with
         # structure -- and because the announcements themselves need testing.
         DocumentHeadingsMixin,
+        # The converting mode switch, added 2026-09-17 (bad.md R6). The real
+        # mixin rather than a stand-in: a stub that only moved ``editor.mode``
+        # was exactly what let a switch that converted nothing look correct.
+        DocumentModeMixin,
         # The Insert menu, the document's markup language and the list cue,
         # added 2026-09-15. Here rather than in a stub of its own because the
         # heading and formatting commands ask it what the document is written in
@@ -862,13 +900,6 @@ def lite_window(tmp_path, lite_settings):
             self.closed += 1
             return True
 
-        def switch_mode(self, mode: str) -> None:
-            """What ``DocumentFrame.switch_mode`` does, minus the reload."""
-            self.editor.set_text_mode(mode)
-            self._announce(
-                "Rich text mode" if mode == "rich" else "Plain text mode",
-            )
-
         def describe_indent_at_cursor(self) -> str:
             return "no indent"
 
@@ -944,8 +975,12 @@ def lite_window(tmp_path, lite_settings):
             self.text_changed_while_extending()
             self._track_bookmarks(_SkippableEvent())
 
-    def make(text: str = "", cursor: int = 0, mode: str = "plain") -> Any:
+    def make(text: str = "", cursor: int = 0, mode: str = "plain", name: str | None = None) -> Any:
         window = LiteWindowStub(text, cursor, mode)
+        if name is not None:
+            # The file name is what decides a document's markup language, so a
+            # test about Markdown has to be able to say the window holds a .md.
+            window.path = tmp_path / name
         window.available_sounds = frozenset({
             "search_not_found",
             "search_found",

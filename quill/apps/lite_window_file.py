@@ -187,6 +187,12 @@ class DocumentFileMixin:
         destination = target if target is not None else self.path
         if destination is None:
             return self.cmd_save_as()
+        if target is None and self._pending_suffix:
+            # A mode switch has made this name wrong for what the buffer holds
+            # -- rich runs under a .txt, or Markdown under a .rtf. Save proposes
+            # the renamed file; it never rewrites the one on disk into a format
+            # its name does not claim (bad.md R6).
+            return self.cmd_save_as()
         destination = Path(destination)
         body = self.control.GetValue() if text is None else text
         # A text override *is* the instruction to write characters rather than
@@ -228,6 +234,8 @@ class DocumentFileMixin:
         self._forget_spell_dictionary()
         self._remember(destination)
         self._cue(SoundEvent.DOCUMENT_SAVED)
+        # Whatever the name was wrong about, it is not wrong now.
+        self._pending_suffix = ""
         self._announce(f"Saved {destination.name}")
         return True
 

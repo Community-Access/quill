@@ -115,7 +115,32 @@ reasonable thing to do, and there are three ways to say so:
 
 Moving between plain, Markdown and HTML changes **nothing in your document** —
 it changes what the keys write from now on. Going to or from rich text is a real
-conversion, and going *from* it throws the formatting away, so it asks first.
+conversion, and it asks first, because it rewrites what is in the window.
+
+### What the conversion keeps
+
+Going **out of rich text** turns the formatting into Markdown rather than
+throwing it away. A Heading 2 becomes `## `, a bold word becomes `**bold**`, a
+bullet list becomes `- ` lines. The document is then a Markdown document, and
+says so in the **Format** cell — so heading navigation, the headings list and
+the outline all still find everything they found a moment ago. If the document
+holds something Markdown cannot carry — a table, a picture, a footnote —
+QuillLite names it before it asks.
+
+Until version 1.0 this direction took the letters and left everything else. An
+afternoon of headings and bold became a wall of unmarked text, and the only
+announcement was "Plain text mode".
+
+Going **into rich text** converts in the other direction: a Markdown document's
+`## Title` becomes a real Heading 1, `**bold**` becomes really bold, and an HTML
+document goes through Markdown on the way. A **plain text** document is left as
+characters, deliberately — the asterisks in a shopping list are not bold, and
+there would be no way back from deciding they were.
+
+Your file keeps its name. Because a rich document cannot be written over a
+`.txt`, the next **Ctrl+S** offers you `notes.rtf` instead of `notes.txt` — the
+name filled in, ready to accept. Nothing is written under a name that does not
+match what is in it.
 
 The choice lasts as long as the window. It describes what you are typing, not
 what the file is.

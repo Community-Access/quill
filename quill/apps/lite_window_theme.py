@@ -20,8 +20,10 @@ That is not a slogan, it is three specific traps this module exists to avoid:
   control is a *view zoom* (``EM_SETZOOM``) and the runs are never touched;
   only plain mode, which has no ladder, changes the control's font.
 
-Switching between plain and rich is here too, because it is the same question
-asked once: what is presentation, and what is the document?
+Switching between plain and rich lived here too, while it was a one-line
+question. It converts now, in both directions, and moved to
+:mod:`quill.apps.lite_window_mode` -- what a document *is* turned out to be a
+different question from what it looks like.
 """
 
 from __future__ import annotations
@@ -29,9 +31,6 @@ from __future__ import annotations
 import wx
 
 from quill.core.editor_font import editor_points_for, sets_font, zoom_for
-from quill.core.lite import APP_NAME
-from quill.core.lite.filetypes import is_rich_path
-from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
 from quill.ui.richedit_rtf_surface import RichEditRtfError
 
@@ -54,42 +53,6 @@ class DocumentAppearanceMixin:
         # Forgetting the old caret surroundings is what stops the first arrow
         # key in the new buffer from announcing a heading the user never left.
         self.reset_structure_announcer()
-
-    def switch_mode(self, mode: str) -> None:
-        """Move this document between plain and rich, keeping the text."""
-        if mode == self.editor.mode:
-            return
-        if mode == RICH and not self.editor.rtf_available():
-            self._announce("Rich text needs the Windows Rich Edit control")
-            return
-        if mode == PLAIN and self.editor.mode == RICH:
-            answer = show_message_box(
-                "Switching to plain text removes all formatting. Continue?",
-                APP_NAME,
-                # NO_DEFAULT: Enter must not be the key that discards formatting.
-                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-                self,
-            )
-            if answer != wx.YES:
-                return
-        text = self.control.GetValue()
-        caret = self.control.GetInsertionPoint()
-        self._loading = True
-        try:
-            self._set_mode_internal(mode)
-            self.control.ChangeValue(text)
-            self.doc_text.invalidate()  # ChangeValue raises no text event
-            self._apply_rich_theme_colour()
-        finally:
-            self._loading = False
-        self.control.SetInsertionPoint(min(caret, len(text)))
-        if self.path is not None and is_rich_path(self.path.name) != (mode == RICH):
-            # A rich document cannot be written back over a .txt without a
-            # deliberate Save As, so the window forgets its name rather than
-            # silently changing what that name means.
-            self.path = None
-        self._set_modified(True)
-        self._announce("Rich text mode" if mode == RICH else "Plain text mode")
 
     def _apply_editor_font(self) -> None:
         """Apply the chosen face and size, through the rule QUILL now shares.
