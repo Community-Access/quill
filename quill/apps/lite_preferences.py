@@ -230,6 +230,31 @@ def edit_preferences(
     spell_typing.SetValue(bool(settings.spell_check_while_typing))
     root.Add(spell_typing, 0, wx.LEFT | wx.RIGHT, _PAD)
 
+    # Two checkboxes rather than one, which is QUILL's granularity and the
+    # better of the two: curly quotes and em dashes are different opinions and
+    # somebody may well want one without the other (bad.md T5). Customize
+    # Features still owns the master switch -- these say which rules run when
+    # the area is on, and neither does anything in a source or configuration
+    # file whatever they say, because that gate is the document's kind (T4).
+    quotes = wx.CheckBox(dialog, label="Curl &quotes as I type")
+    quotes.SetHelpText(
+        "Turn a straight quote into a matching curly one, the way a typesetter "
+        "would. Welcome in prose. Never in a source or configuration file, "
+        "whatever this says -- a curly quote there is a syntax error. "
+        "Autocorrect also has to be switched on in Tools, Customize Features."
+    )
+    quotes.SetValue(bool(getattr(settings, "autoformat_smart_quotes", False)))
+    root.Add(quotes, 0, wx.LEFT | wx.RIGHT, _PAD)
+
+    dashes = wx.CheckBox(dialog, label="Turn two hyphens into an em &dash")
+    dashes.SetHelpText(
+        "Typing a second hyphen replaces both with a single long dash. Same "
+        "two conditions as curly quotes: Autocorrect switched on, and not in a "
+        "source or configuration file."
+    )
+    dashes.SetValue(bool(getattr(settings, "autoformat_dashes", False)))
+    root.Add(dashes, 0, wx.LEFT | wx.RIGHT, _PAD)
+
     # The two feedback choosers are built from ACTION_FEEDBACK_LABELS rather
     # than from four typed strings, so this pane and QUILL's cannot describe the
     # same four modes in different words -- which would read as two settings.
@@ -393,6 +418,8 @@ def edit_preferences(
             settings.share_quill_dictionary,
             getattr(settings, "clip_library_autocapture", False),
             settings.spell_check_while_typing,
+            getattr(settings, "autoformat_smart_quotes", False),
+            getattr(settings, "autoformat_dashes", False),
             settings.open_blank_document_at_startup,
             getattr(settings, "check_updates_on_launch", True),
             getattr(settings, "action_feedback", "sound"),
@@ -408,6 +435,8 @@ def edit_preferences(
         settings.share_quill_dictionary = bool(share_dict.GetValue())
         settings.clip_library_autocapture = bool(keep_clips.GetValue())
         settings.spell_check_while_typing = bool(spell_typing.GetValue())
+        settings.autoformat_smart_quotes = bool(quotes.GetValue())
+        settings.autoformat_dashes = bool(dashes.GetValue())
         settings.open_blank_document_at_startup = bool(blank.GetValue())
         settings.check_updates_on_launch = bool(updates.GetValue())
         settings.autosave_seconds = int(autosave.GetValue())
@@ -436,6 +465,8 @@ def edit_preferences(
                 settings.share_quill_dictionary,
                 settings.clip_library_autocapture,
                 settings.spell_check_while_typing,
+                settings.autoformat_smart_quotes,
+                settings.autoformat_dashes,
                 settings.open_blank_document_at_startup,
                 settings.check_updates_on_launch,
                 settings.action_feedback,

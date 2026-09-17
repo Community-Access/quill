@@ -54,7 +54,13 @@ def test_example_registry_resolves_without_conflicts() -> None:
     menu_parents = {menu.parent for menu in registry.menus}
     assert menu_parents == {"Format"}
     assert {ctx.command_id for ctx in registry.context_menu} == {"ext.mdh.bold"}
-    assert {hotkey.command_id for hotkey in registry.hotkeys} == {"ext.mdh.bold"}
+    # No hotkeys. It claimed Ctrl+Shift+B, which is Set Numbered Bookmark --
+    # and it claimed it for a **bold** command the core already answers on
+    # Ctrl+B, so the chord bought nothing and cost a bookmark key (bad.md 7.4,
+    # GATE-QHK). A Quillin may add a verb and never re-ship one the core has
+    # (7.1), so this lost its hotkey rather than moving. The menu row and the
+    # context-menu row are both still here, which is how it is reached.
+    assert {hotkey.command_id for hotkey in registry.hotkeys} == set()
 
 
 def test_example_snippet_expands_layer_one_placeholders() -> None:

@@ -63,7 +63,7 @@ from typing import Any
 import wx
 
 from quill.core.abbreviations import is_trigger_char, try_expand
-from quill.core.autoformat import is_dash_merge, smart_quote_for
+from quill.core.autoformat import autoformat_allows, is_dash_merge, smart_quote_for
 from quill.core.sound_events import SoundEvent
 
 __all__ = ["DocumentTypingMixin"]
@@ -114,6 +114,18 @@ class DocumentTypingMixin:
         # (bad.md L4). Escape is what a listener reaches for, and it is free
         # here -- the control does nothing with it in a plain edit.
         if code == wx.WXK_ESCAPE and self.cancel_extend_selection():
+            return
+        # Escape also leaves Extend Selection Mode, which is a different state
+        # from a waiting F8 marker: the marker is a place, the mode is a
+        # sticky Shift. Both are invisible, so both answer Escape and both say
+        # they did.
+        if code == wx.WXK_ESCAPE and self.cancel_extend_selection_mode():
+            return
+        # Extend Selection Mode owns the navigation keys while it is on, and
+        # must see them BEFORE the control does -- on wxMSW an arrow pressed
+        # with text selected collapses the selection and stops, which is what
+        # broke QuillLite's own attempt at this (bad.md P2.13, 5.3a).
+        if self.handle_extend_selection_key(event):
             return
         # Shift+F10 and the Applications key, opened here rather than left to
         # wx. Reported 2026-09-12: "I misspelled a word and arrow to it and
@@ -229,7 +241,19 @@ class DocumentTypingMixin:
     # ------------------------------------------------------------------ #
 
     def _autoformat(self, typed: str) -> bool:
-        """Replace the keystroke where a rule applies. ``True`` when it did."""
+        """Replace the keystroke where a rule applies. ``True`` when it did.
+
+        Three gates, and they answer different questions. The Customize Features
+        area is "do I want this at all"; the two settings are "which of the two
+        rules" (QUILL's granularity, taken on 2026-09-17 -- curly quotes and em
+        dashes are different opinions, bad.md T5); and the document kind is the
+        one the app answers for itself, because a curly quote in a ``.json`` is
+        a syntax error nobody asked for and no setting can express "except in
+        code" (bad.md T4).
+        """
+        if not autoformat_allows(self.document_language()):
+            return False
+        settings = self.app.settings
         position = self.control.GetInsertionPoint()
         if position and self.control.GetSelection()[0] != self.control.GetSelection()[1]:
             return False  # a selection is a replacement, not a typed character
@@ -239,9 +263,15 @@ class DocumentTypingMixin:
         # QUILL has read it this way since #1346 (bad.md T1).
         preceding = self.control.GetRange(position - 1, position) if position else ""
         if typed in _QUOTES:
+            if not bool(getattr(settings, "autoformat_smart_quotes", False)):
+                return False
             self._insert_replacing(smart_quote_for(preceding, typed), back=0)
             return True
-        if typed == "-" and is_dash_merge(preceding):
+        if (
+            typed == "-"
+            and bool(getattr(settings, "autoformat_dashes", False))
+            and is_dash_merge(preceding)
+        ):
             # The second hyphen of "--" becomes an em dash, eating the first.
             self._insert_replacing("—", back=1)
             self._cue(SoundEvent.WORD_CORRECTED)
@@ -327,6 +357,76 @@ class DocumentTypingMixin:
         # a menu deleted while it is still dispatching that menu's event.
         wx.CallAfter(self.app.rebuild_all_menus)
         self._announce("Abbreviations off" if enabled else "Abbreviations on")
+
+    def cmd_snippet_gallery(self) -> None:
+        """Ctrl+Shift+Insert: pick a snippet from a list and put it in.
+
+        The half QuillLite did not have. Abbreviations expand when you *type the
+        trigger*, which is perfect for the six you use daily and useless for the
+        fortieth one, whose trigger you cannot remember -- and a manager is for
+        editing them, not for reaching them. QUILL has had a gallery since its
+        snippets shipped; this is the same surface at QuillLite's scale
+        (bad.md 4.2 Tier 3, P3.6).
+
+        "Snippet" rather than "abbreviation" in the title, because it is the
+        name the bigger product uses for the same idea and a person moving
+        between the two should not have to learn that they are the same thing.
+        The store, the triggers and the manager are unchanged and still say
+        abbreviation -- renaming those would move every key, every menu row and
+        every line of documentation for a wording preference.
+
+        Ordered by :func:`quill.core.abbreviations.quick_insert_order`, so the
+        ones actually used rise to the top of the list rather than sitting in
+        whatever order they were added.
+        """
+        from quill.apps.lite_dialogs import choose_from_rows
+        from quill.core.abbreviations import quick_insert_order, resolve_expansion
+
+        library = self.app.abbreviations
+        if library is None:
+            self._announce("Abbreviations are switched off. Alt+Shift+A turns them back on")
+            return
+        entries = quick_insert_order(library)
+        if not entries:
+            self._announce("There are no snippets yet. Manage Abbreviations adds one")
+            return
+        rows = []
+        for entry in entries:
+            # The trigger *and* a preview of what it writes: the trigger alone
+            # is the thing somebody came here because they could not remember.
+            preview = " ".join(entry.expansion.split())[:60]
+            rows.append((entry.id, f"{entry.abbreviation}: {preview}"))
+        chosen = choose_from_rows(
+            self,
+            title="Snippets",
+            label="Snippets, most used first:",
+            help_text=(
+                "Choose one and press Enter to put it in at the cursor. These are "
+                "the same abbreviations that expand as you type; this is the way "
+                "in when you cannot remember the trigger."
+            ),
+            rows=rows,
+        )
+        self.control.SetFocus()
+        if not isinstance(chosen, str):
+            return
+        entry = next((one for one in entries if one.id == chosen), None)
+        if entry is None:
+            return
+        # ``_clipboard_text`` is DocumentClipboardMixin's -- the same reader the
+        # typed expansion uses, so a clipboard snippet inserts the same thing
+        # whichever route reached it.
+        text, back, _used_clipboard = resolve_expansion(entry.expansion, self._clipboard_text())
+        self.control.WriteText(text)
+        if back:
+            # The cursor placeholder, honoured the same way the typed expansion
+            # honours it -- a snippet that puts the caret in the wrong place
+            # through one route and the right place through the other is two
+            # features wearing one name.
+            self.control.SetInsertionPoint(max(0, self.control.GetInsertionPoint() - back))
+        self._set_modified(True)
+        self._touch_status()
+        self._announce(f"Inserted {entry.abbreviation}")
 
     def cmd_manage_abbreviations(self) -> None:
         """QUILL's own abbreviation manager, over whichever library is in use."""

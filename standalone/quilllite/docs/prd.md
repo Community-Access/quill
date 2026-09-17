@@ -200,12 +200,22 @@ In this release that meant:
   extension point exists because QuillLite needed it, and it lives in QUILL's
   module rather than in a copy of it.
 
-Where the two must differ, they differ **on purpose and in writing**. QUILL
-takes `Ctrl+Alt+J` and `Ctrl+Alt+V` where QuillLite uses WordPad's `Ctrl+J` and
-`Ctrl+Shift+V`, because `Ctrl+J` has been Set Temporary Bookmark and
-`Ctrl+Shift+V` has been Preview in QUILL for far longer. An existing binding
-somebody's hands already know outranks a new command's convention, and the
+Where the two must differ, they differ **on purpose and in writing**, and the
 reason is a comment in `keymap.py` rather than folklore.
+
+That principle stands; the example it used to give does not. This paragraph
+recorded `Ctrl+Alt+J` and `Ctrl+Alt+V` as deliberate divergences from WordPad's
+`Ctrl+J` and `Ctrl+Shift+V`, on the grounds that an existing binding somebody's
+hands already know outranks a new command's convention. The family keymap
+reversed both (bad.md §3, rule 1: Microsoft's key wins where Word, WordPad or
+Notepad bind one for a function both editors have). Keeping the paragraph would
+have left the PRD describing a divergence the products no longer have -- which
+is worse than describing none, because somebody reads it and writes code to
+match.
+
+The divergences that remain are listed in the family keymap's exception table
+and each carries its own reason. **QuillLite may never be ahead of QUILL**
+remains the rule (`CLAUDE.md`); value crosses both ways, violations cross one.
 
 ### 2.3 What QuillLite adds to the shared package
 
@@ -250,8 +260,13 @@ ladder and rewriting them would silently re-level every heading in the document.
 ### 3.2 What it drops, and why
 
 Tabs, AI, dictation, self-voicing, preview, Quillins, remote files, GitHub,
-braille tooling, the setup wizard, the command palette, comparison, publishing,
-and every companion app.
+braille tooling, the setup wizard, comparison, publishing, and every companion
+app.
+
+**The command palette is not on that list any more**, and was listed here in
+error: §3.1 and the command table have always had it, and it ships. A document
+that says a shipped feature was dropped is worse than one that says nothing,
+because somebody reads it and does not go looking for the key.
 
 Two of those deserve their reasoning stated rather than assumed:
 
@@ -783,7 +798,21 @@ predates all of it.
 
 ## 8. Future directions
 
-### 8.1 Accepted for a later release (decided 2026-09-08)
+### 8.1 Accepted for a later release (decided 2026-09-08; shipped 2026-09)
+
+**Everything in this section has shipped.** It is kept as the record of *why*
+each item was accepted, because the reasoning is the part worth having and the
+list itself is now the command table. Overwrite mode, tab mode, the line
+operations, the deletion ring, persistent bookmarks, back and forward, Earlier
+Versions, promote and demote, sentence and toggle case, reverse and number
+lines are all in the shipped product; so, since 2026-09-17, are three of the
+four things the last paragraph declined --- Extend Selection Mode, the Heading
+Organizer and folding over Markdown sections --- which arrived by the other
+route, as crossings from QUILL rather than as inventions here (bad.md 4.2).
+
+Read it as history. The live list of what is still open is the family parity
+plan, not this section.
+
 
 QUILL's editor surface was diffed against QuillLite's, command table against
 command table and user guide against user guide, and the result reviewed

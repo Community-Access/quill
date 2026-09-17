@@ -60,9 +60,45 @@ __all__ = [
     "HEADING_POSITION_LABELS",
     "StructureAnnouncer",
     "StructurePoint",
+    "describe_heading_arrival",
     "point_from_text",
     "heading_first_from",
 ]
+
+
+def describe_heading_arrival(
+    level: int,
+    title: str,
+    *,
+    ordinal: int | None = None,
+    total: int | None = None,
+) -> str:
+    """What both editors say on arriving at a heading (bad.md R15).
+
+    QUILL said "Moved to next heading, H2, 3 of 12: Installing" and QuillLite
+    said "Heading 2: Installing". Two products, one key, two sentences -- and
+    each half-right.
+
+    **"Moved to next heading" goes.** You pressed the next-heading key; that you
+    moved to the next heading is the one thing you already knew, and GATE-13 is
+    the rule that says the app speaks only what the reader cannot. It is also
+    what every screen reader says navigating headings on a web page: the level,
+    then the text. QuillLite's shape wins on that count.
+
+    **"3 of 12" stays**, which is QUILL's and is the half worth keeping: it is
+    the only thing in the sentence that tells you where you are in the document
+    rather than what is under the caret, and there is no other way to find out
+    without counting.
+
+    **"Heading 2" rather than "H2"**, because "H2" read aloud is "aitch two" and
+    a person has to translate it every time.
+    """
+    named = title.strip() or "untitled"
+    where = ""
+    if ordinal is not None and total is not None and total > 0:
+        where = f", {ordinal} of {total}"
+    return f"Heading {level}{where}: {named}"
+
 
 #: Where the level goes relative to the heading's own text.
 HEADING_POSITIONS: tuple[str, ...] = ("before", "after")

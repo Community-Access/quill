@@ -423,7 +423,14 @@ def test_navigate_next_heading_announces_level_and_ordinal() -> None:
 
     frame.navigate_next_heading()
 
-    assert statuses == ["Moved to next heading, H2, 2 of 3: Child at line 3, column 1"]
+    # "Moved to next heading" went, and "H2" became "Heading 2" (bad.md R15).
+    # You pressed the next-heading key: that you moved to the next heading is
+    # the one thing you already knew, which is what GATE-13 is about -- and it
+    # is what every screen reader says navigating headings on a web page. The
+    # "2 of 3" stays, because it is the only part that says where you are in
+    # the document rather than what is under the caret. QuillLite says exactly
+    # this sentence now.
+    assert statuses == ["Heading 2, 2 of 3: Child at line 3, column 1"]
 
 
 def test_navigate_previous_heading_announces_level_and_ordinal() -> None:
@@ -435,7 +442,7 @@ def test_navigate_previous_heading_announces_level_and_ordinal() -> None:
 
     frame.navigate_previous_heading()
 
-    assert statuses == ["Moved to previous heading, H3, 3 of 3: Grandchild at line 5, column 1"]
+    assert statuses == ["Heading 3, 3 of 3: Grandchild at line 5, column 1"]
 
 
 def test_select_line_announces_scope_and_word_count() -> None:

@@ -1625,6 +1625,15 @@ class CommandRegistryMixin:
             self.toggle_extend_selection_mode,
             self._binding_for("edit.toggle_extend_selection_mode"),
         )
+        # The F8 marker, as a toggle -- QuillLite's Ctrl+Alt+F8, which QUILL was
+        # spending on Extend Selection Mode. Two different things on one chord
+        # across two products somebody may use in the same hour (bad.md 5.3a).
+        self.commands.register(
+            "edit.toggle_selection_marker",
+            "Toggle Selection Marker",
+            self.toggle_selection_marker,
+            self._binding_for("edit.toggle_selection_marker"),
+        )
         self.commands.register(
             "edit.start_selection",
             "Start Selection",
@@ -1874,7 +1883,11 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "navigate.quick_nav",
-            "Quick Nav (Go to Anything)",
+            # Not "Quick Nav (Go to Anything)". Two commands whose names both
+            # said "Go to Anything" were two front doors somebody had to try to
+            # tell apart; they are a landmark index and a fuzzy palette, and
+            # they have two keys now (bad.md H6, P2.19).
+            "Quick Nav (Landmarks)",
             self.open_quick_nav,
             self._binding_for("navigate.quick_nav"),
         )
@@ -2356,9 +2369,18 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "edit.select_chunk",
-            "Select Chunk",
+            "Select Token",
             self.select_chunk,
             self._binding_for("edit.select_chunk"),
+        )
+        # QuillLite has had this since it shipped and QUILL had no Select
+        # Sentence at all -- a 4.1 violation, and the one that took Ctrl+Space
+        # away from the sentence in this product (bad.md P1.2, P1.2b).
+        self.commands.register(
+            "edit.select_sentence",
+            "Select Sentence",
+            self.select_sentence,
+            self._binding_for("edit.select_sentence"),
         )
         self.commands.register(
             "edit.trim_trailing_whitespace",
@@ -2403,7 +2425,11 @@ class CommandRegistryMixin:
             "navigate.go_to_anything",
             "Go to Anything",
             self.open_go_to_anything,
-            None,
+            # Not None. The keymap binds this and the palette read the literal
+            # None instead of asking, so the one surface whose whole job is
+            # showing you what a command's key is showed none for this one
+            # (bad.md H6).
+            self._binding_for("navigate.go_to_anything"),
         )
         self.commands.register(
             "help.key_cheatsheet",

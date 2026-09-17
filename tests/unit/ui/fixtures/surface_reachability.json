@@ -80,6 +80,7 @@
   "quill.ui.guided_speech_dialog": "reachable",
   "quill.ui.harness_api_key_dialog": "reachable",
   "quill.ui.header_footer_dialog": "reachable",
+  "quill.ui.heading_organizer_dialog": "reachable",
   "quill.ui.hygiene_dialog": "reachable",
   "quill.ui.info_pages": "reachable",
   "quill.ui.inkwell_expansion": "reachable",

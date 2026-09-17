@@ -2,7 +2,85 @@
 
 ## Unreleased
 
+### Added
+
+- **Tutorials — Ctrl+Alt+F1.** Eight guided lessons in two tracks: opening a
+  file and getting it back unchanged, the four kinds of document, numbered
+  documents, what to press when you are lost — then selecting more than a few
+  words, finding your way back, skimming something long, and spelling without a
+  red squiggle. About thirty-six minutes in all.
+
+  Each lesson is a list of steps, and each step says what to press, **why**, and
+  what you should hear when it worked. A step shows *your* key rather than the
+  one QuillLite ships with, can run itself for you, and the window remembers
+  where you stopped.
+
+  Eight, and not more. QUILL has twenty-one in six tracks because QUILL is an
+  environment you move into; a Notepad replacement with a twenty-one-lesson
+  course attached is advertising that it is not one.
+
+  The same lessons are also a document, beside the user guide, generated from
+  the same source — so the book and the window cannot disagree.
+
+- **Extend Selection Mode — Alt+Shift+F9.** A Shift that stays down: press
+  it, move by any means you like, and the selection follows without you holding
+  a modifier — and without your screen reader saying "selected" on every single
+  arrow press, which is what makes Shift+Down unusable for taking four
+  paragraphs. QuillLite tried this once before and it did not work; this is
+  QUILL's version, which does. **Ctrl+Alt+F8** is now the F8 *marker* toggle,
+  which is a different thing and used to share the key.
+- **The Heading Organizer — Ctrl+Alt+Shift+O.** Every heading in the document
+  in one list. Arrow through them, Tab to demote and Shift+Tab to promote, move
+  a whole section up or down, rename one, and check the result against the
+  accessibility rules for heading order. QuillLite could already list headings
+  and already move sections; this is both at once, so you can hear the shape of
+  the document change as you change it.
+- **Folding over Markdown sections.** **Ctrl+Shift+Minus** folds the section you
+  are in and says how many lines went with it; **Ctrl+Shift+Right** and
+  **Ctrl+Shift+Left** walk between sections, each one saying its heading,
+  whether it is folded, and how long it is; **Ctrl+Shift+Equals** opens
+  everything again. Nothing is hidden from the cursor and a folded section reads
+  exactly as it reads unfolded — this is a way of skimming, not a change to your
+  document.
+- **Snippets — Ctrl+Shift+Insert.** A list of every abbreviation, most used
+  first, with a preview of what each one writes. Abbreviations expand when you
+  type the trigger, which is perfect for the six you use daily and no help at
+  all for the fortieth one, whose trigger you cannot remember.
+- **Print Preview — Ctrl+Alt+Shift+P.** Not a picture of a page. How many pages,
+  on what paper, with what margins, and what is at the top of each one — the
+  questions a picture of a page was never going to answer for you.
+- **Rich text prints as rich text.** A rich document is now printed by the text
+  control itself, so headings are headings and bold is bold on paper. It used to
+  print as flat text.
+
 ### Changed
+
+- **Curly quotes and em dashes are two switches, not one.** Preferences now has
+  **Curl quotes as I type** and **Turn two hyphens into an em dash** separately,
+  which is what QUILL has always had — they are different opinions and you may
+  well want one without the other. Autocorrect in Customize Features is still
+  the master switch, and both still start switched off.
+- **Autocorrect never runs in a source or configuration file.** A curly quote in
+  a `.json` and an em dash in a `.py` are syntax errors that arrive silently.
+  Both editors now decide this from the kind of document rather than from a
+  setting, because no setting can say "except in code".
+- **The spelling context menu puts the corrections first again.** Press the
+  Applications key on a misspelled word and the first Down arrow lands on a
+  suggestion, not on a submenu. Everything else about the word — ignore, teach,
+  next and previous — is one row below them, in the same place every time. The
+  submenu was the right answer to a real complaint (a menu whose length changes
+  is a menu nobody can learn) and this keeps that, because the part that changes
+  length is now at the top rather than in the middle.
+- **F7 starts where your cursor is**, the way it does in Word, and offers to
+  carry on from the beginning when it reaches the end. It used to start at the
+  top of the document every time, which walked you back through everything you
+  had already checked.
+- **"Spell words out" now governs the F7 review too.** The switch existed and
+  quietly did nothing to the one place a spelled word is most useful.
+- **A shared dictionary is actually shared.** With **Use QUILL's dictionary**
+  on, a word taught in QUILL is known here immediately — it used to take a
+  restart. And two apps teaching a word at the same moment no longer lose one of
+  them.
 
 - **Selections are announced the same way in QuillLite and QUILL.** Both now
   say the scope and the number of words --- "Selected paragraph, 41 words".

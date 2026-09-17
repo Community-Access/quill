@@ -172,6 +172,12 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     # Document Statistics on Ctrl+Shift+G, so G is the letter either way.
     # Reachable only by walking the Tools menu before this (bad.md P1.1).
     "power.compute_line_statistics",
+    # Ctrl+Alt+Space, 2026-09-17: Select Token gave up Ctrl+Space to Select
+    # Sentence, which is what that chord means in QuillLite and now means in
+    # both (bad.md P1.2b, 5.3a). Ctrl+Alt+Space is the nearest free
+    # neighbour, and Space is not a letter any screen reader claims with
+    # Ctrl+Alt -- the §10.8 concern is the letter rows.
+    "edit.select_chunk",
 })
 
 # §10.3 binding-spec cluster labels that must appear as the label argument

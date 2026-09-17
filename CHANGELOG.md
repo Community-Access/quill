@@ -2,6 +2,170 @@
 
 ## 1.0.0
 
+### Ctrl+F6 walks documents, and Word Count stopped opening a window (2026-09-17)
+
+**`Ctrl+F6` and `Ctrl+Shift+F6` move between documents.** That is Windows' own
+MDI pair, it is Word's, and it is QuillLite's --- QUILL was the one product in
+the family where the key somebody arrives with did something else entirely
+(Focus Preview). `Ctrl+Tab` stays the primary in both, because it is what
+people actually press; the platform's pair now works as well rather than
+instead.
+
+**Focus Preview is `Alt+F6`**, which is a better home than a free slot: `F6`
+walks the regions, so `Alt+F6` reads as "jump straight to one of them".
+
+**Word Count says the counts instead of opening a message box.** It opened one
+you then had to find the OK button of and dismiss, to be told three numbers
+already written to the status line on the way there. Three numbers are a
+sentence. All three are in the sentence now --- words, lines and characters ---
+where the lines and characters had existed only inside the box.
+
+**The Keyboard Manager refuses the screen reader's own keys.** It never did:
+binding `Insert` was accepted, shown as assigned, and never fired, because the
+reader intercepts it before QUILL sees it. Every visible surface agreed it
+should have worked, which is the worst shape a keymap bug can take. QuillLite
+has refused these since it shipped; the list is shared now
+(`quill/core/reserved_keys.py`) so "which keys belong to the reader" has one
+answer.
+
+**`F6`'s region order is unchanged, deliberately.** It was changed to put the
+status bar second --- the most-visited region, one press from the document ---
+and reversed the same day. `F6` is a **spatial** key: somebody who knows their
+window has a Reveal Codes pane under the editor and a status bar at the bottom
+can predict where three presses land. Ordering the ring by how often a region
+is wanted makes it unpredictable, and a navigation key you cannot predict is
+one you press and then have to listen to find out where you are. A region that
+is not showing stays out of the ring, which is the same rule from the other
+side.
+
+
+### Ctrl+Space means sentence, and four surfaces got a key (2026-09-17)
+
+**`Ctrl+Space` selects the sentence.** It was Select Chunk here and Select
+Sentence in QuillLite --- one key meaning two different things in two products
+somebody may use in the same hour --- and QUILL had no Select Sentence command
+at all, which is what let the chord be spent elsewhere.
+
+**Select Chunk is now Select Token, on `Ctrl+Alt+Space`.** "Chunk" named
+nothing anybody could picture, and on a word the command does exactly what
+Select Word does. What it is genuinely for is the case Select Word cannot
+answer: a run of **punctuation**, or a run of **whitespace**. Selecting the
+`::` in a path, or the indent in front of a line, is a thing only this can do,
+and now its name and its help text say so.
+
+**Quick Nav has a key at last: `Ctrl+Shift+Z`, and the same key closes it.** A
+surface opened by mistake should close with the key that opened it; Escape
+closes it too. It stays a separate command from **Go to Anything**, which takes
+QuillLite's `Ctrl+Alt+Shift+A` --- a fuzzy command palette and a landmark index
+answer different questions, and merging them would mean typing a heading's name
+into a list that also holds every command in the app. Both were also registered
+claiming no key at all, so the palette --- the one surface whose job is telling
+you what a command's key is --- showed none for either.
+
+**Favourite folders moved to the leader** (`Ctrl+Shift+Grave, G` opens from
+one). Editor chords are for the editor; adding and removing a favourite are
+things you do once, when you set the app up, and they keep their menu rows.
+That freed three three-modifier chords, spent immediately: Go to Anything took
+one, and **Keyboard Manager** (`Ctrl+Alt+Shift+R`) and **Sound Scheme**
+(`Ctrl+Alt+Shift+O`) --- both reachable only by walking a menu until now, and
+both on QuillLite's own chord for them --- took the other two.
+
+**A cut goes into the Clip Library too.** With **Keep everything I copy** on,
+QUILL captured copies and never cuts. That is the half that matters: a copy
+leaves the text where it was, a cut takes it away, and the library is then the
+only copy of it outside the undo stack.
+
+### GATE-QHK: a Quillin cannot claim a chord the core owns (2026-09-17)
+
+`quill/tools/quillin_hotkey_audit.py`, and its first run found **all three**
+bundled hotkeys colliding. When two things claim one chord, one of them
+silently never fires --- and which one depends on binding order, which nobody
+can reason about from outside. The user presses the key, gets the wrong verb or
+none, and neither the menu nor the Keyboard Shortcuts sheet mentions the
+extension's claim.
+
+The Quillin moves, never the core: an extension is the newcomer by definition,
+and a core chord may be one somebody's hands already know. `markdown-helpers`
+bound `Ctrl+Shift+B` (Set Numbered Bookmark) for a **bold** command the core
+already has on `Ctrl+B`, and `math-equations` bound `Ctrl+Shift+E` --- which is
+the core's own Insert Equation, so the extension was shadowing the command it
+duplicates. Both of those lost their hotkey entirely rather than moving,
+because a Quillin may add a verb and never re-ship one the core has. Explore
+Equation Structure is genuinely new and took the free leader position.
+
+
+### Extend Selection Mode moves the way Windows does (2026-09-17)
+
+**Four bugs, all of them in how the caret moved while extending**, and all four
+of them the kind you feel rather than see:
+
+- **Page Up and Page Down moved ten lines.** Ten is a page on nobody's screen.
+  They move a real page now, measured from the window.
+- **Up and Down moved by paragraph under word wrap.** They followed the
+  *logical* line, so one press inside a wrapped paragraph sent the caret past
+  the whole thing. They follow the line you can see.
+- **Ctrl+Left and Ctrl+Right stopped only at spaces**, so `self.editor.Replace`
+  was one word. They stop at punctuation too, which is what Notepad, WordPad,
+  Word and every other edit control on Windows do.
+- **The line table was rebuilt by scanning the whole document on every
+  keystroke.** It reads the document mirror, which is what the mirror is for.
+
+The mode also **moved to `Alt+Shift+F9`**, and `Ctrl+Alt+F8` became
+**Toggle Selection Marker** --- QuillLite's meaning for that key. One chord was
+carrying two different things across two products somebody may use in the same
+hour: here a sticky Shift, there a pin you drop and pick up.
+
+All of it moved to `quill/ui/extend_selection_mode.py`, shared, because
+QuillLite deleted its own attempt at this and has had nothing since --- so
+fixing it in place would have been fixing it once for one of the two products.
+
+### The Heading Organizer is shared, and QUILL prints its headings (2026-09-17)
+
+The **Heading Organizer** moved to `quill/ui/heading_organizer_dialog.py` so
+QuillLite can open it too. Same window, same rules, same keys.
+
+**A rich document no longer prints as anonymous flat text.** QUILL printed
+`GetValue()` and nothing else, so every heading, every bold run and every list
+arrived on paper indistinguishable from body text --- while QuillLite at least
+wrote the level in front of each heading line, which made the *small* product
+better on paper than this one. QUILL marks them now, from the same function
+QuillLite uses. The real answer, `EM_FORMATRANGE` in the shared rich surface, is
+in `quill/ui/richedit_printing.py` and QuillLite prints through it today.
+
+### Spelling: the contested menu, and a review that starts where you are (2026-09-17)
+
+**The context menu keeps the corrections first *and* gains a fixed tail.** Two
+good arguments had been pulling opposite ways: corrections at the top level
+(the Applications key is the squiggle a listener does not have, so the first
+Down arrow must land on the answer) against a submenu (a menu whose length
+changes with the caret is a menu nobody can learn). Both are right, and they do
+not conflict --- the variable part is at the *front*. Corrections, then one
+**Spelling Actions** row, then the edit verbs, in that order every time.
+
+**F7 starts at the insertion point** and offers to carry on from the beginning
+when it reaches the end, which is what Word does and what
+`spell_review_wrap_to_beginning` has promised in Preferences while being read by
+nothing at all. It had no "end" to happen at, because the review always started
+at the top.
+
+**A shared dictionary is now actually shared.** With `share_quill_dictionary`
+on, both editors read and write one `personal.json` --- and a word taught in one
+stayed underlined in the other until a restart. Each now notices the file
+changing (one `stat`, and a re-read only when it moved). Two apps teaching a
+word at the same moment no longer lose one of them: the read-modify-write is
+guarded by `quill/core/file_lock.py`.
+
+### Autocorrect stops at the door of a source file (2026-09-17)
+
+`autoformat_smart_quotes` and `autoformat_dashes` were gated by app and by
+setting and **never by document kind**, so once either was on, a typed quote
+curled inside a `.json` and `--` became an em dash inside a `.py`. Both are
+syntax errors that arrive silently. The gate belongs on the kind, which both
+editors already know --- no setting can express "except in code", and asking
+somebody to switch it off per file is asking them to do the classification the
+app has already done.
+
+
 ### Selections say one thing, in one shape (2026-09-17)
 
 **Every selection is announced as its scope and its word count** --- "Selected

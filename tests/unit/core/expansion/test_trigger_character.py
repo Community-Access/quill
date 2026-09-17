@@ -74,6 +74,12 @@ def test_the_injector_types_the_trigger_back_after_the_expansion() -> None:
     assert "tail = text + trigger_char" in source
 
 
+def test_automatic_expansion_uses_the_target_bound_runtime() -> None:
+    source = (_ROOT / "quill" / "ui" / "inkwell_expansion.py").read_text(encoding="utf-8")
+    assert "InkwellTextRuntime().replace_typed_text(" in source
+    assert "expected_window=match.target_window" in source
+
+
 def test_the_caret_offset_accounts_for_what_follows_the_expansion() -> None:
     source = (_ROOT / "quill" / "platform" / "windows" / "text_injector.py").read_text(
         encoding="utf-8"

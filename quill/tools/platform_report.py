@@ -100,6 +100,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.quillin_lint", "quill/quillins_bundled", "--strict"),
     ),
     Gate(
+        "quillin-hotkeys",
+        "GATE-QHK: no Quillin claims a chord the core keymap owns",
+        (sys.executable, "-m", "quill.tools.quillin_hotkey_audit"),
+    ),
+    Gate(
         "agent-standards",
         "bundled agents meet the agent standards",
         (sys.executable, "-m", "quill.tools.agent_lint", "quill/core/ai/agents", "--strict"),

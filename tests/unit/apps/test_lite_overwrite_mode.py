@@ -20,6 +20,7 @@ import wx
 from quill.apps.lite_window_menus import DocumentMenuMixin
 from quill.apps.lite_window_status import CELLS
 from quill.apps.lite_window_typing import DocumentTypingMixin
+from quill.ui.extend_selection_mode import ExtendSelectionMixin
 
 
 class _RichEdit:
@@ -34,7 +35,15 @@ class _RichEdit:
         return self.works
 
 
-class _Window(DocumentTypingMixin):
+class _Window(ExtendSelectionMixin, DocumentTypingMixin):
+    """The typing mixin, with the shared Extend Selection Mode beside it.
+
+    The real one rather than a stand-in: the key hook offers every navigation
+    key to the mode before the control sees it, so a stub without it fails on
+    an AttributeError in the middle of an overwrite test and tells you nothing
+    about overwrite.
+    """
+
     def __init__(self, *, works: bool = True) -> None:
         self.editor = _RichEdit(works=works)
         self.announcements: list[str] = []

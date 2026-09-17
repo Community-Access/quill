@@ -27,6 +27,7 @@ from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
 
+from quill.core.file_lock import guarded_write
 from quill.core.paths import app_data_dir
 
 # The language catalogue lives in spell_languages (a GATE-11 extraction). The
@@ -673,6 +674,25 @@ def _length_buckets(wordlist: frozenset[str]) -> dict[int, list[str]]:
         return frozen
 
 
+def personal_dictionary_revision(personal_dir: Path | None = None) -> tuple[int, int]:
+    """``(mtime_ns, size)`` of the personal dictionary; ``(0, 0)`` if absent.
+
+    What a caller compares against to find out whether the shared list has
+    changed under it. Each app used to load the dictionary once and keep the
+    set, so a word taught in QuillLite stayed underlined in QUILL until QUILL
+    was restarted -- which makes a *shared* dictionary look broken rather than
+    shared (bad.md S10).
+    """
+    path = _dictionary_path("personal", None, None, personal_dir)
+    if path is None:
+        return (0, 0)
+    try:
+        stat = path.stat()
+    except OSError:
+        return (0, 0)
+    return (int(stat.st_mtime_ns), int(stat.st_size))
+
+
 def add_word_to_scope(
     word: str,
     scope: str,
@@ -696,9 +716,15 @@ def add_word_to_scope(
     path = _dictionary_path(scope, document_path, project_root, personal_dir)
     if path is None:
         return False
-    existing = load_scope_dictionary(scope, document_path, project_root, personal_dir)
-    existing.add(token)
-    write_json_atomic(path, sorted(existing))
+    # Read and write inside the lock, not either side of it: the point is that
+    # nothing else rewrites the file between the two (bad.md S10).
+    # The lock is quill/core/file_lock.py: every shared read-modify-write in
+    # the product has the same race and deserves the same answer, not a second
+    # implementation of it (bad.md S10).
+    with guarded_write(path):
+        existing = load_scope_dictionary(scope, document_path, project_root, personal_dir)
+        existing.add(token)
+        write_json_atomic(path, sorted(existing))
     return True
 
 

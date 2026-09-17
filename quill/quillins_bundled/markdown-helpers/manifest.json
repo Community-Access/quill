@@ -7,30 +7,46 @@
   "description": "Bundled Quillin: a Layer 1 front-matter snippet and a Layer 2 bold-selection handler, surfaced on the Format menu, the editor context menu, and a hotkey.",
   "license": "MIT",
   "min_quill_version": "1.0.0",
-  "capabilities": ["editor.read", "editor.write", "ui.announce", "ui.command"],
+  "capabilities": [
+    "editor.read",
+    "editor.write",
+    "ui.announce",
+    "ui.command"
+  ],
   "main": "extension.py",
   "contributes": {
     "commands": [
       {
         "id": "ext.mdh.frontmatter",
         "title": "Insert Markdown Front Matter",
-        "run": { "snippet": "---\ntitle: ${filename}\ndate: ${date}\n---\n\n${cursor}" }
+        "run": {
+          "snippet": "---\ntitle: ${filename}\ndate: ${date}\n---\n\n${cursor}"
+        }
       },
       {
         "id": "ext.mdh.bold",
         "title": "Wrap Selection in Bold",
-        "run": { "handler": "wrap_bold" }
+        "run": {
+          "handler": "wrap_bold"
+        }
       }
     ],
     "menus": [
-      { "parent": "Format", "command": "ext.mdh.bold" },
-      { "parent": "Format", "command": "ext.mdh.frontmatter" }
+      {
+        "parent": "Format",
+        "command": "ext.mdh.bold"
+      },
+      {
+        "parent": "Format",
+        "command": "ext.mdh.frontmatter"
+      }
     ],
     "context_menu": [
-      { "command": "ext.mdh.bold", "when": "editor.hasSelection" }
+      {
+        "command": "ext.mdh.bold",
+        "when": "editor.hasSelection"
+      }
     ],
-    "hotkeys": [
-      { "command": "ext.mdh.bold", "binding": "Ctrl+Shift+B" }
-    ]
+    "hotkeys": []
   }
 }

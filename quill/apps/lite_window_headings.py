@@ -50,6 +50,7 @@ from quill.core.list_structure import supports_lists
 from quill.core.markdown_sections import parse_heading_blocks
 from quill.core.structure_announce import (
     StructureAnnouncer,
+    describe_heading_arrival,
     heading_first_from,
     point_from_text,
 )
@@ -243,7 +244,7 @@ class DocumentHeadingsMixin:
         self._go_to(start)
         # The level *and* the text: the level alone says what shape the document
         # is, not where in it the caret has landed.
-        self._announce(f"Heading {level}: {self.editor.paragraph_text_at(start)}")
+        self._announce(describe_heading_arrival(level, self.editor.paragraph_text_at(start)))
 
     def cmd_next_heading(self) -> None:
         self._navigate_heading(reverse=False)
@@ -266,8 +267,53 @@ class DocumentHeadingsMixin:
         start, level, title = candidates[0]
         self._go_to(start)
         # The level *and* the text, for the same reason the rich path gives both.
-        self._announce(f"Heading {level}: {title}")
+        self._announce(describe_heading_arrival(level, title))
         self.sync_structure_announcer()
+
+    def cmd_heading_organizer(self) -> None:
+        """Ctrl+Alt+Shift+O: every heading in one list, reordered with arrows.
+
+        QuillLite could already list headings and already move a section up or
+        down; what it could not do was see both at once. Restructuring with four
+        separate commands means holding the shape of the document in your head
+        while you change it, because nothing reads the result back -- and in the
+        organizer the list *is* the shape (bad.md P2.13, Tier 2).
+
+        The window is :mod:`quill.ui.heading_organizer_dialog`, shared with
+        QUILL rather than written a second time. Rich text is not offered it:
+        its headings are point sizes on runs, so reordering means moving
+        formatted ranges rather than lines, which is a different job.
+        """
+        from quill.ui.heading_organizer_dialog import ORGANIZER_KINDS, organize_headings
+
+        if self.editor.mode == RICH:
+            self._announce("The Heading Organizer needs a Markdown or HTML document")
+            return
+        surface = self.markup_surface()
+        if surface not in ORGANIZER_KINDS:
+            self._announce("The Heading Organizer needs a Markdown or HTML document")
+            return
+        transformed = organize_headings(
+            self,
+            markup_kind=surface,
+            text=self.control.GetValue(),
+            say=self._announce,
+            warn_duplicate_h1=bool(
+                getattr(self.app.settings, "heading_organizer_warn_duplicate_h1", False)
+            ),
+        )
+        if transformed is None:
+            return
+        # One Replace over the whole document, which is one undo step: the
+        # organizer's changes are a single edit as far as the person is
+        # concerned, and Ctrl+Z should treat them that way.
+        self.control.Replace(0, self.control.GetLastPosition(), transformed)
+        self.doc_text.invalidate()
+        self._set_modified(True)
+        self.reset_structure_announcer()
+        self.sync_structure_announcer()
+        self._touch_status()
+        self._announce("Applied heading organizer changes")
 
     def all_document_headings(self) -> list[tuple[int, int, str]]:
         """Every heading as ``(start, level, title)``, whichever kind of document.

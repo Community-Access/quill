@@ -84,6 +84,17 @@ BOOKS: tuple[Book, ...] = (
         "",
         "Help > Tutorials...",
     ),
+    Book(
+        "quilllite",
+        "QuillLite",
+        REPO_ROOT / "standalone" / "quilllite" / "docs" / "tutorials.md",
+        # No APP_KEYMAPS section: QuillLite's keys are its own command table
+        # (core/lite/commands.py), not overrides on QUILL's keymap. The
+        # catalogue names commands by QuillLite handler, so the resolver below
+        # answers from that table instead.
+        "",
+        "Help > Tutorials... (Ctrl+Alt+F1)",
+    ),
 )
 
 
@@ -105,11 +116,36 @@ def catalogue_for(app_id: str) -> TutorialSet:
         from quill.core.quill_tutorials import CATALOGUE as QUILL
 
         return QUILL
+    if app_id == "quilllite":
+        from quill.core.lite.tutorials import CATALOGUE as LITE
+
+        return LITE
     raise SystemExit(f"No tutorials for app '{app_id}'.")
 
 
-def shipped_key(keymap_id: str) -> object:
-    """A lookup answering the key *keymap_id*'s app ships with for a command."""
+def shipped_key(keymap_id: str, app_id: str = "") -> object:
+    """A lookup answering the key *keymap_id*'s app ships with for a command.
+
+    QuillLite is the exception and needs its own branch: its steps name
+    QuillLite *handlers* (``cmd_select_paragraph``) rather than QUILL command
+    ids, because QuillLite has its own command table rather than overrides on
+    QUILL's keymap. Resolving those through ``DEFAULT_KEYMAP`` would answer
+    "no key" for every step in the book.
+    """
+    if app_id == "quilllite":
+        from quill.core.lite.commands import COMMANDS
+
+        shipped = {
+            handler: (key or "").strip()
+            for _menu, _label, key, handler, kind in COMMANDS
+            if kind != "sep" and handler
+        }
+
+        def lite_lookup(command_id: str) -> str:
+            return shipped.get(command_id, "")
+
+        return lite_lookup
+
     overrides = APP_KEYMAPS.get(keymap_id, {}) if keymap_id else {}
 
     def lookup(command_id: str) -> str:
@@ -159,7 +195,7 @@ def render(book: Book) -> str:
         raise SystemExit(
             f"The {book.app_name} tutorial catalogue is not sound:\n  " + "\n  ".join(problems)
         )
-    key_for = shipped_key(book.keymap_id)
+    key_for = shipped_key(book.keymap_id, book.app_id)
     lines: list[str] = [
         f"# {book.app_name} Tutorials",
         "",

@@ -471,14 +471,23 @@ needed it, and it lives in QUILL’s module rather than in a copy of
 it.</li>
 </ul>
 <p>Where the two must differ, they differ <strong>on purpose and in
-writing</strong>. QUILL takes <code>Ctrl+Alt+J</code> and
-<code>Ctrl+Alt+V</code> where QuillLite uses WordPad’s
-<code>Ctrl+J</code> and <code>Ctrl+Shift+V</code>, because
-<code>Ctrl+J</code> has been Set Temporary Bookmark and
-<code>Ctrl+Shift+V</code> has been Preview in QUILL for far longer. An
-existing binding somebody’s hands already know outranks a new command’s
-convention, and the reason is a comment in <code>keymap.py</code> rather
-than folklore.</p>
+writing</strong>, and the reason is a comment in <code>keymap.py</code>
+rather than folklore.</p>
+<p>That principle stands; the example it used to give does not. This
+paragraph recorded <code>Ctrl+Alt+J</code> and <code>Ctrl+Alt+V</code>
+as deliberate divergences from WordPad’s <code>Ctrl+J</code> and
+<code>Ctrl+Shift+V</code>, on the grounds that an existing binding
+somebody’s hands already know outranks a new command’s convention. The
+family keymap reversed both (bad.md §3, rule 1: Microsoft’s key wins
+where Word, WordPad or Notepad bind one for a function both editors
+have). Keeping the paragraph would have left the PRD describing a
+divergence the products no longer have – which is worse than describing
+none, because somebody reads it and writes code to match.</p>
+<p>The divergences that remain are listed in the family keymap’s
+exception table and each carries its own reason. <strong>QuillLite may
+never be ahead of QUILL</strong> remains the rule
+(<code>CLAUDE.md</code>); value crosses both ways, violations cross
+one.</p>
 <h3 id="23-what-quilllite-adds-to-the-shared-package">2.3 What QuillLite
 adds to the shared package</h3>
 <p><code>quill/ui/richedit_editing.py</code> is a subclass of QUILL’s
@@ -587,8 +596,13 @@ above</td>
 </table>
 <h3 id="32-what-it-drops-and-why">3.2 What it drops, and why</h3>
 <p>Tabs, AI, dictation, self-voicing, preview, Quillins, remote files,
-GitHub, braille tooling, the setup wizard, the command palette,
-comparison, publishing, and every companion app.</p>
+GitHub, braille tooling, the setup wizard, comparison, publishing, and
+every companion app.</p>
+<p><strong>The command palette is not on that list any more</strong>,
+and was listed here in error: §3.1 and the command table have always had
+it, and it ships. A document that says a shipped feature was dropped is
+worse than one that says nothing, because somebody reads it and does not
+go looking for the key.</p>
 <p>Two of those deserve their reasoning stated rather than assumed:</p>
 <ul>
 <li><strong>No tabs.</strong> Documents are numbered children of one
@@ -1176,8 +1190,22 @@ which is not a test anybody should have to run.</p>
 area, so turning the submenu off can never remove the one selection
 command that predates all of it.</p>
 <h2 id="8-future-directions">8. Future directions</h2>
-<h3 id="81-accepted-for-a-later-release-decided-2026-09-08">8.1 Accepted
-for a later release (decided 2026-09-08)</h3>
+<h3
+id="81-accepted-for-a-later-release-decided-2026-09-08-shipped-2026-09">8.1
+Accepted for a later release (decided 2026-09-08; shipped 2026-09)</h3>
+<p><strong>Everything in this section has shipped.</strong> It is kept
+as the record of <em>why</em> each item was accepted, because the
+reasoning is the part worth having and the list itself is now the
+command table. Overwrite mode, tab mode, the line operations, the
+deletion ring, persistent bookmarks, back and forward, Earlier Versions,
+promote and demote, sentence and toggle case, reverse and number lines
+are all in the shipped product; so, since 2026-09-17, are three of the
+four things the last paragraph declined — Extend Selection Mode, the
+Heading Organizer and folding over Markdown sections — which arrived by
+the other route, as crossings from QUILL rather than as inventions here
+(bad.md 4.2).</p>
+<p>Read it as history. The live list of what is still open is the family
+parity plan, not this section.</p>
 <p>QUILL’s editor surface was diffed against QuillLite’s, command table
 against command table and user guide against user guide, and the result
 reviewed against one test: does the absence read as a <strong>defect

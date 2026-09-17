@@ -303,12 +303,20 @@ def test_bundled_profiles_do_not_override_platform_aware_defaults() -> None:
 
 
 def test_snippet_shortcuts_are_available() -> None:
-    # word_prediction moved to Ctrl+. (§4.22); Ctrl+Space freed for select_chunk
+    # word_prediction moved to Ctrl+. (§4.22), freeing Ctrl+Space for the
+    # sentence family -- which is what it means in QuillLite, and what it means
+    # in both editors since 2026-09-17 (bad.md P1.2b, 5.3a). It was Select
+    # Chunk here, so one key meant two different things across the two
+    # products; the sentence is what people reach for and keeps the chord.
     assert DEFAULT_KEYMAP["edit.word_prediction"] == "Ctrl+."
     # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default, so
     # DEFAULT_KEYMAP uses a darwin alternate (#32).
-    expected_select_chunk = "Cmd+Alt+Space" if sys.platform == "darwin" else "Ctrl+Space"
-    assert DEFAULT_KEYMAP["edit.select_chunk"] == expected_select_chunk
+    expected_sentence = "Cmd+Alt+Space" if sys.platform == "darwin" else "Ctrl+Space"
+    assert DEFAULT_KEYMAP["edit.select_sentence"] == expected_sentence
+    # And Select Token, which is what Select Chunk is called now: on a word it
+    # duplicates Select Word, so what it is for is the run of punctuation or
+    # whitespace Select Word cannot take.
+    assert DEFAULT_KEYMAP["edit.select_chunk"] == "Ctrl+Alt+Space"
     assert DEFAULT_KEYMAP["format.insert_snippet"] == "Ctrl+Shift+Grave, S"
     assert DEFAULT_KEYMAP["format.manage_snippets"] == "Ctrl+Shift+Grave, Shift+S"
 

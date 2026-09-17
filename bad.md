@@ -449,9 +449,6 @@ Engine: one and shared (`quill.core.spellcheck`, `quill.core.spelling.*`, `Spell
 | --- | --- | --- | --- | --- |
 | S4 | Worse | both | **Word boundaries are ASCII in the tokenizer and Unicode in the walk-left**: `cafe` with an accent is flagged as `caf`, `naive` with a diaeresis as `na` and `ve`, `dogs'` keeps its apostrophe, and a curly apostrophe splits `don't`. The same word is silent on one path and flagged on another. | `spellcheck.py:67, 514-520, 574-575`; `spelling/voicing.py:103-118` already expects the token the tokenizer cannot produce |
 | S5 | Worse | both | **The caret just past a word is "no word"**: `misspelling_at_position` needs `start <= pos < end`, and the caret sits at `end` right after typing. The context menus retry at `pos - 1`, and so does Add Word via `_word_at_caret_for_spelling`; the other four keyboard commands do not. | `spellcheck.py:566`; `lite_window_spelling.py:391-396, 500-505`; `main_frame_spellcheck.py:513-522` |
-| S7 | Worse | both | **Half of this was wrong and is corrected.** `spell_aloud_delay_ms` IS read (`voicing.py:232`) and `_spell_word_for_speech` IS called -- neither is dead. Genuinely open: `spell_review_wrap_to_beginning` is a documented setting with no reader and `announce_wrap_prompt` has no callers, so wrap-to-beginning is a half-built feature that either gets wired or gets removed (a removal, so ask); and QuillLite has no `spell_review_spell_word` field, so its "spell words out" switch does not govern the F7 review. The dead `_choose_misspelling_with_context` dialog is gone. | `settings.py`, `announcements.py:179` |
-| S10 | Divergent | both | `share_quill_dictionary` is real but **one-directional and not live**: Lite reads and writes QUILL's `personal.json`; QUILL never reads Lite's; no locking on the read-modify-write; each app caches, so a word taught in one is unseen by the other until restart. QUILL's "project" scope is `Path.cwd()`, i.e. wherever the process was launched. | `core/lite/spelling.py:47-59`, `spellcheck.py:661-663, 686-714`, `main_frame_spellcheck.py:671-683` |
-| S11 | Divergent | both | Context menu: QUILL puts corrections at top level; Lite has one "Spelling: word" submenu (asked for 2026-09-13). A menu whose length is the same every time is the one a listener can learn. **Adopt Lite's in QUILL** -- but see the note below the table: QUILL's code argues the opposite, in writing, and the argument is good. | `main_frame_spell_context.py:8-13`, `lite_window_context_menu.py:21-30` |
 
 **S11 is the one contested row in this plan.** QUILL's
 `_on_editor_context_menu` carries a seven-line comment explaining why
@@ -471,10 +468,8 @@ Engine: shared (`quill/core/selection.py`, `marks.py`, `locations.py`, `bookmark
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| L2 | Worse | QUILL | **Extend Selection Mode (`Ctrl+Alt+F8`) collides with QuillLite's marker toggle on the same key, and carries four movement bugs** -- but it is *not* the design Lite deleted, and the first pass was wrong to say so. Lite's `d20fabe` bug was a key-**up** hook that stretched a live selection from anchor to caret after every arrow; on wxMSW an arrow pressed while text is selected collapses to the edge and stops, so the caret never advanced. QUILL's version intercepts the key **before** the control, moves the caret itself, and collapses the selection after each move *precisely so the control cannot fight it*, applying the span only when a non-movement key commits. Opposite mechanism, and QUILL's works. What it costs: `_move_extend_selection_caret` rebuilds every line start by scanning the whole text on each keystroke (O(N) per key); PgUp/PgDn are hardcoded to ten lines rather than a real page; Up/Down move by *logical* line, so soft wrap sends the caret a whole paragraph away; and word movement stops only at whitespace where Windows also stops at punctuation. | `main_frame.py:1218-1219, 2704-2724, 2813-2900`; `lite_window_selection.py:135-145`; `d20fabe` |
 | L3 | Worse | QUILL | **Shrink pops a stack that is never cleared**: expand, arrow away, select something else, Shrink jumps to the old span; the stack can hold an empty pair, so Shrink collapses the selection and announces "Shrank selection". Lite computes shrink every time. | `main_frame_selection.py:89-93, 121-127` |
 | L7 | Worse | QUILL | **List Bookmarks shows stale positions**: jumps re-anchor by snippet but the list prints the raw stored offset, and the resolved offset is written back without saving, so tab and disk keep the old value until the next Set. | `main_frame.py:11533-11549, 11607-11610` |
-| L12 | Worse | QUILL | List Marks is a message box nothing in it can be jumped to (Lite's list jumps). Exchange Point and Mark only moves (Lite selects the span). Say Selected speaks the whole selection with no cap and is a conditional `Shift+Space` intercept that no menu shows (Lite summarises over 200 characters on `Ctrl+Shift+Y`). | `main_frame_selection.py:344-371`, `main_frame.py:2686-2696, 7563-7570`, `lite_window_selection.py:297-383` |
 
 
 ### 6.3 Files, saving and recovery
@@ -483,15 +478,11 @@ Engines duplicated: `quill/io/text.py` vs `quill/core/lite/textfile.py`; `core/r
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| F1 | Broken | Lite | **Save As converts the window before the write.** Rich to plain and HTML to Markdown both `ChangeValue()` the buffer, keep `self.path` pointing at the old `.rtf`/`.html`, and leave the modified flag as it was. If `save(target)` then fails (locked file, full disk) the window holds flattened text under the old name and the next `Ctrl+S` writes it over the original. `ChangeValue` is off the undo stack, so the formatting is gone from the window too. | `lite_window_commands.py:111-159`, `lite_window_markup.py:200-244`, `lite_window_file.py:143-158` |
-| F2 | Broken | Lite | **Crash recovery silently rewrites encoding and line endings**: the slot is always UTF-8/LF, `_load_recovery` adopts the slot's encoding, so a cp1252/CRLF or UTF-16 document recovered after a crash is saved back as UTF-8/LF. The original's encoding is never recorded in the slot meta. | `lite_window_file.py:116-117, 227-229`, `core/lite/recovery.py:351-364` |
-| F3 | Broken | both | **Unencodable characters are handled silently in both directions**: Lite's `encode_text` uses `errors="replace"`, so a cp1252 file that gained an em dash or emoji saves with `?` and announces "Saved"; QUILL's save raises `UnicodeEncodeError`, which `_run_command` swallows into "Command failed: file.save". Notepad warns and offers UTF-8. Neither editor tells the user. | `core/lite/textfile.py:99-107`, `main_frame.py:7876-7880, 8719-8725` |
 | F4 | Broken | QUILL | **Save As HTML and Save As Plain Text are not atomic and force UTF-8**, discarding the read encoding and BOM; rich-mode `.md`/`.html` saves ignore `document.encoding` and `line_ending` (always UTF-8, LF); the remote save copy is a plain `write_text`. Every other document writer is atomic. | `quill/io/export.py:245-252`, `main_frame_rich_mode.py:170-187`, `main_frame.py:8521` |
 | F5 | Broken | QUILL | **The external-change watcher auto-reloads a clean tab of any suffix with `path.read_text()`**: a `.docx`/`.rtf`/`.pdf`/`.epub` tab rewritten by Word is replaced with binary decoded as replacement characters and marked clean. The "Open Disk Version in New Tab" button selects the existing tab instead of opening a second one, so the compare it promises never happens. | `main_frame.py:3137-3230, 6870-6876` |
 | F6 | Broken | QUILL | **Encoding and line-ending changes do not dirty the document**, so Close does not prompt and the change is lost unless `Ctrl+S` is pressed; the two commands are in no menu (status-cell or palette only); the chooser has no "UTF-8 with BOM" although `encoding_tools.ENCODING_CHOICES` has the label; **UTF-16 is never detected on open** (decodes as cp1252 NUL garbage). Lite detects UTF-16, offers BOM, dirties, and has a menu item. | `main_frame.py:7581-7612`, `quill/io/text.py:44-96`, `core/lite/textfile.py:45-50, 85-93` |
 | F7 | Worse | Lite | **Half fixed 2026-09-16**: Earlier Versions now says a rich restore keeps the words and loses the formatting, and File Encoding and Line Endings is refused in rich mode rather than lying about a change `_write_rtf` never reads. What is left is the status bar, whose Encoding and Line Endings cells still read "UTF-8 / CRLF" for every `.rtf` -- they should read the document's own format instead. | `lite_window_status.py:390-391` |
 | F8 | Worse | Lite | "No Markdown could be made from this HTML; saved unchanged" and "Converted HTML to Markdown" are spoken *before* the save runs. A classic-Mac CR file opens the format dialog with CRLF preselected, so OK silently converts it. UTF-16 big-endian round-trips as little-endian on a no-edit save, against the module's own byte-honesty contract. | `lite_window_markup.py:229, 243`, `lite_dialogs.py:331, 350-355`, `core/lite/textfile.py:87-88, 107` |
-| F9 | Worse | Lite | A failed `_load_recovery` still sets the slot, marks modified and adopts the path; closing that empty window and answering "No" deletes the only copy of the work. A forced close (`CanVeto() == False`) skips the prompt *and* deletes the slot; no `EVT_END_SESSION` handler exists, so recovery survives shutdown only because children are destroyed rather than closed. | `lite_window_file.py:120-129`, `lite_window.py:443-457` |
 | F10 | Worse | QUILL | `save_all_files` never restores the active tab; `save_file` relies on `EVT_TEXT` having synced the document (Save As syncs explicitly); the OS session-end handler is bound on the frame while wx delivers the event to the App, so a logoff with dirty documents never prompts. | `main_frame.py:7915-7923, 7840-7913, 3860-4046` |
 | F11 | Worse | both | New documents default to **LF** in QUILL and **CRLF** in Lite; Notepad, WordPad and Word all write CRLF. No setting exposes it in either. | `quill/core/document.py:9-13`, `lite_window.py:139-140` |
 | F12 | Worse | both | Close prompt wording differs and both use Yes/No: Lite "Save changes to notes.txt?", QUILL "You have unsaved changes. Save before Close?". Notepad and Word name the file and label the buttons Save / Don't Save / Cancel, which a listener does not have to hold a question in memory to answer. | `lite_window.py:428-441`, `main_frame.py:6020-6047` |
@@ -505,13 +496,11 @@ Rich engine shared (`richedit_editing.py`, `richedit_rtf_surface.py`, `heading_l
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
 | R4 | Broken | QUILL | **Dark mode may write grey text into every saved `.rtf`**: `_apply_theme` calls `SetForegroundColour` on the rich control (wxMSW applies it as `SCF_ALL` character colour) and nothing resets to `tomAutoColor` before the native save. Lite guards both directions. Verify live before fixing. | `main_frame.py:4632-4636`, `main_frame_rich_mode.py:110`, `lite_window_theme.py:9-15`, `lite_window_file.py:194, 213` |
-| R7 | Worse | both | **The font ladder lacks H5 (11.5) and H6 (10.5)**: Shrink on H4 lands on 11 = bold body, heading gone; Grow on H6 likewise. Neither editor announces the level change, only "N point". | `richedit_editing.py:104-121`, `heading_ladder.py:27`, `main_frame_rich_paragraph.py:140`, `lite_window_format.py:311` |
 | R8 | Worse | QUILL | Rich `Ctrl+B/I/U` announce the verb ("Bold") with no state; the shared `toggle_font_attr` returns the state and Lite says "Bold on / Bold off". | `main_frame_rich_mode.py:377-399`, `richedit_editing.py:285-297` |
 | R9 | Worse | both | **Native RichEdit hotkeys leak into plain and Markdown documents** because plain documents are `TM_RICHTEXT` controls: in QUILL unbound `Ctrl+U`, `Ctrl+L`, `Ctrl+R` underline or re-align a Markdown buffer natively (not dirty, not announced, not saved, but visible and undo-stacked); in Lite every native chord it does not bind (`Ctrl+Shift+=` superscript and friends) does the same. Paste is guarded; keys are not. | `main_frame.py:2052-2068`, `richedit_editing.py:243-254`, `lite_window_commands.py:223-236` |
 | R11 | Worse | QUILL | Choosing "Convert to Rich Text" in the plain-text formatting prompt converts and then **drops the Bold that was asked for**. | `main_frame_rich_mode.py:463-482`, `main_frame.py:16161-16163` |
 | R12 | Worse | QUILL | Outline Navigator and Quick Nav are text-only: an `.rtf`/`.docx` tab is "plain" so "Outline is not available"; `all_headings()` on the shared surface is called only by Lite. `next_structure` (`Alt+Down`) is blind in rich mode. | `main_frame.py:10176-10228, 10850, 11000-11002`, `richedit_editing.py:348` |
 | R14 | Worse | both | `set_heading` assigns `font.Size` then `font.Bold` as two TOM assignments with no edit collection: one `Ctrl+Z` after "Heading 2" likely leaves a 16-point non-bold paragraph nothing recognises as a heading. Same shape in Lite's selection font dialog. Verify live. | `richedit_rtf_surface.py:430-461`, `lite_window_format.py:325-326` |
-| R15 | Divergent | both | Heading navigation is duplicated with different wording ("Moved to next heading, H2: title" vs "Heading 2: title"); word wrap uses `TE_DONTWRAP` in QUILL and `EM_SETTARGETDEVICE` in Lite; the structure-cue wrappers are duplicated around one shared `StructureAnnouncer`. | `main_frame.py:10061-10125, 7669-7683`, `lite_window_headings.py:84-140, 225-262` |
 
 
 ### 6.5 Shell: status bar, windows, help, features
@@ -524,9 +513,6 @@ The disputed fact first: QUILL's status bar **is** a row of focusable button cel
 | --- | --- | --- | --- | --- |
 | H3 | Worse | QUILL | **GATE-13 over-announce in the status bar**: every cell focus, including each arrow press, announces "label, value" although the button already carries the name and label, so each press is spoken twice; leaving the bar announces "Returned to editor", which is a focus move the reader already speaks. The gate cannot see it (lambda-bound handler, announce one call deeper). Lite deliberately does neither. | `main_frame_statusbar.py:628-631, 757-776, 800-802`, `lite_window_status.py:469-483, 519` |
 | H5 | Worse | QUILL | Mnemonic collisions inside Tools > Customize and Support (`&Export...` three times, `&Import...` twice); the access-key test checks only top-level titles. | `main_frame_menu.py:3254-3262`, `test_menu_bar_access_keys.py:82-104` |
-| H6 | Worse | QUILL | Two Go To Anything front doors: `navigate.go_to_anything` (the shared dialog, leader) and `navigate.quick_nav` ("Quick Nav (Go to Anything)", a landmark index, unbound). Both registered with `binding=None` although the keymap binds one, so the palette shows no key. | `main_frame_commands.py:1825-1829, 2332-2341`, `main_frame.py:4752-4770, 10204-10228` |
-| H8 | Worse | QUILL | Word Count is a message box, Line Statistics and `document.summary` are unbound; Describe Character is an unbound modal. Lite speaks all of these. | `main_frame.py:11955, 4730`, `main_frame_power_tools_menu.py:734, 742`, `classic_editor.py:118` |
-| H9 | Divergent | both | QUILL has two "quiet" concepts (`tools.sound_toggle` writing `sound_enabled`, and `verbosity.toggle_quiet`); Lite has one, on the same shared setting. Lite reserves the Insert key in its keymap editor; QUILL reserves nothing. Lite's keymap editor lacks assign-time checks; QUILL's lacks a reserved list. Port each guard to the other. | `main_frame.py:8989`, `verbosity.py:63`, `core/lite/keymap.py:137-142` |
 
 
 ### 6.6 Clipboard family
@@ -567,8 +553,6 @@ wiring, the gating and the defaults are all duplicated.
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
 | T3 | Worse | both | **Tab means the opposite thing by default**: QUILL `_tab_inserts_literal = False` (Tab indents), Lite `= True` (Tab inserts a tab character). Both status bars then say "Indent" or "Tab char" for the same cell, so each bar is honest and the defaults still disagree. Notepad inserts a tab; Word indents. Rule 1 gives it to the document kind: a tab character in plain and code kinds, an indent in rich -- decided once, in core. | `main_frame.py:1311`, `lite_window_typing.py:91`, `main_frame_statusbar.py:257`, `lite_window_status.py:386` |
-| T4 | Worse | both | **Autoformat is gated by app, never by document kind.** QUILL has two settings (`autoformat_smart_quotes`, `autoformat_dashes`) in Preferences; Lite has one feature flag in Customize Features, off by default with the right reason written down ("actively wrong in a configuration file"). Once either is on, a typed quote curls inside a `.json` or a `.py` in both editors. The gate belongs on the kind, which both editors already know. | `main_frame.py:2093-2094`, `core/lite/features.py:145-147` |
-| T5 | Divergent | both | Same concept, two control surfaces and two granularities: one flag in Lite's Customize Features, two checkboxes in QUILL's Preferences. Take QUILL's granularity and Lite's default, and expose both in both. | as above |
 
 ### 6.9 Large documents (the QuillLite viability bar)
 
@@ -585,9 +569,6 @@ per 250 ms.
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| PR1 | Worse | QUILL | **A rich document prints as flat text with no structural marker.** Lite prefixes a heading line with its level so the structure survives paper; QUILL prints `editor.GetValue()` and nothing else. The small product is ahead on paper. | `main_frame_print.py:245-251`; `lite_printing.py:145-162` |
-| PR3 | Worse | both | **Neither prints formatting.** RichEdit exposes `EM_FORMATRANGE`, which is how WordPad prints; the shared `richedit_rtf_surface` is where it belongs. Until then, adopt Lite's honest heading marker in QUILL (one afternoon) rather than leaving QUILL's silent flattening. | as above |
-| PR4 | Divergent | both | QUILL has header/footer editing, page selection and Print Studio; Lite has page setup and print. Right for the two products; recorded. | `main_frame_print.py:210-244` |
 
 ### 6.11 Settings, profiles and the grow-up path
 
@@ -596,17 +577,12 @@ Measured: `quill.core.settings.Settings` has **341** fields;
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| G1 | Worse | both | **The same concept has two names in eight places**, which is precisely how the two apps drift without anyone deciding to: `autosave_seconds` / `autosave_interval_seconds`, `word_wrap` / `soft_wrap`, `spell_check_while_typing` / `spellcheck_as_you_type`, `default_mode` / `default_new_document_format`, `font_name`+`font_size` / (nothing), `show_status_bar` / (nothing), `restore_session`+`session_files` / (nothing), `recent_files` / `recent_files_limit`. Each pair needs either one name or one row in the mapping table 5.8's "Bring my QuillLite settings" depends on. | `core/settings.py`, `core/lite/settings.py` |
-| G2 | Worse | both | **`theme` is one shared name with two defaults**: Lite `"dark"`, QUILL `"system"`. The same person launching both gets two different-looking editors on day one, from one setting spelled one way. Pick one -- `"system"` is the accessible answer, because it follows the OS high-contrast choice -- or write down why Lite differs. | `core/lite/settings.py`, `core/settings.py` |
-| G3 | Worse | QUILL | **QUILL has no whole-bar status toggle**, which the first pass got half right: `status_bar_hidden` is a list of *cells* to hide, not a switch for the bar. Lite's `show_status_bar` is the switch. QUILL needs the switch as well as the list (3.8, P1.10). | `core/settings.py:527`, `settings_normalizers.py:83-134` |
 | G4 | Worse | QUILL | **No session restore.** Lite has `restore_session` and `session_files` and reopens last session's documents unless files were named on the command line (Notepad 11's behaviour). QUILL has manual, keyless Snapshots only (F14). | `lite.py:185-186, 228-252` |
-| G5 | Divergent | both | Lite's feature model is `core/lite/features.py` (areas, `DEFAULT_OFF`, four shape-profiles); QUILL's is `FeatureManager` with ten audience-profiles. Both are right for their product; 5.8's QuillLite profile is the bridge. Recorded so nobody unifies them by accident. | `core/lite/features.py:205-300` |
 
 ### 6.12 Startup, shell integration and announcements
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| A6 | Worse | QUILL | **No single-instance check.** Lite uses `wx.SingleInstanceChecker`, so a second launch hands its files to the running copy, and `--new-instance` is the documented escape. QUILL has neither, so two QUILLs can run against one data folder and one recovery store. | `lite.py:25, 472-543`; `quill/__main__.py:558-620` |
 | A7 | Divergent | both | Command lines differ in shape: Lite hand-parses four flags plus paths and prints its own usage; QUILL uses `argparse` with fourteen options. Harmless, but `--rich`/`--plain` are worth adopting in QUILL alongside `default_new_document_format`. | as above |
 
 ## 7. Architecture findings
@@ -721,10 +697,7 @@ way:
 | --- | --- | --- | --- | --- |
 | P1.1 | Bind the keyless QUILL commands **still waiting on a displacement**: Sort Z-A (`Ctrl+Alt+Shift+S` in Lite, `tools.ai_spell_check` here), Tidy Whitespace (`Ctrl+Alt+Shift+T` / `ai_translate_selection`), Keyboard Manager (`Ctrl+Alt+Shift+R` / `file.remove_favorite_folder`), lowercase (`Ctrl+Shift+K` / `edit.unquote_lines`), Earlier Versions, Sound Scheme, Markdown Tag. Every one of the first four wants a chord P1.11 is already scheduled to free, so they wait for it rather than being resolved twice. (Previous Heading landed with P1.4; the five QuillLite-keyed line tools landed 2026-09-17 on QuillLite's own chords.) | QUILL | S | rule 8 gate passes |
 | P1.2 | Structural selection family on Lite's six chords; Set Mark `Ctrl+Shift+M`, Exchange `Ctrl+Alt+X`, Duplicate Selection `Ctrl+Alt+Q`; Switch Document Mode `Alt+Shift+F`; `Ctrl+Alt+F8` becomes the marker toggle in **both** and Extend Selection Mode takes its own chord in both (5.3a); Shrink drops its stack; Reselect remembers every structural select; F8 gains a cancel; marks on the shared ring, clamped, recorded for Back | both | M | -- |
-| P1.2a | **Fix Extend Selection Mode's four movement bugs** (5.3a): page keys ask the control for a real page, Up/Down follow visual lines under soft wrap, word movement stops at punctuation as Windows does, and the line table comes from `DocumentText` instead of an O(N) rescan per keystroke | QUILL | S | holding Down inside a wrapped paragraph moves one visual line per press, and a 50 MB file costs nothing extra per key |
-| P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) | QUILL | M | round-trip test per encoding |
-| P1.10 | **`F6` lands in the status bar first in both.** The whole-bar switch landed 2026-09-17 on `Alt+Shift+B`, displacing List Bookmarks onto `Ctrl+Shift+F5`, which was already its alias; the region-order half is left because it changes where every `F6` press goes and wants a live listen rather than a reading | both | S | -- |
 | P1.11 | AI commands vacate `Ctrl+Alt+Shift+{S,I,G,T,H,E}`; favourite folders to the leader; leader reclaim (5.9) | QUILL | S | -- |
 | P1.12 | Clipboard verbs: Copy to Tray / Clear / Collect / Paste Collected / Clear Collector / Keep Clip / Recent Clips on Lite's chords in QUILL | QUILL | S | -- |
 | P1.13 | New Rich / New Plain Text Document, Character Details, Recent File N and Editor Font in QUILL -- the four that need a command written, not just a key; Open User Guide off its literal accelerator | QUILL | S | -- |
@@ -732,7 +705,7 @@ way:
 | P1.15 | The **parity gate** (section 9) with its exception table, so P0/P1 cannot regress | tests | S | gate green with zero undocumented divergences |
 | P1.16 | One line-tool helper in QUILL with Lite's scope, no-op detection, counts and rich warning (N1-N3); one command per verb (N4); **and the case tools take the word at the caret with no selection**, which QuillLite does as of 2026-09-16 and QUILL still does not (N5, 3.4) | QUILL | S | Sort with no selection sorts the document and says how many lines |
 | P1.17 | QUILL adopts `set_heading_level` for Markdown headings, `all_headings()` for the outline in rich, bold state announcements, the H5/H6 ladder sizes, and a rich-aware Describe in Lite (R3, R7, R8, R12, R13) | both | M | -- |
-| P1.18 | Status bar: GATE-13 fixes in QUILL's cells (H3); QUILL's Insert reservation into Lite's keymap loader (H9). Lite's assign-time wx check landed 2026-09-16 (H2), and `Win` is rejected there (H1) | both | S | -- |
+| P1.18 | Status bar: GATE-13 fixes in QUILL's cells (H3) -- the last of this row. H9 landed 2026-09-17: the reserved-key list moved to the shared `quill/core/reserved_keys.py` and QUILL's Keyboard Manager refuses the screen reader's own keys, which it never did, so a binding on Insert was assigned, shown as assigned and never fired. Lite's assign-time wx check landed 2026-09-16 (H2), and `Win` is rejected there (H1) | QUILL | S | -- |
 | P1.19 | Clipboard: tray labels and pins survive edits (C3); collector becomes a buffer (C4, 5.1); tray paste no longer waits for the multi-press window on a plain single press (C5); Lite's clip history captures copies as promised or the promise is removed (C1); one verified undo story for `Replace` (C6) | both | M | -- |
 | P1.20 | **The menu bar answers to Word** (4.5): fold Search into Edit and delete the menu (M1); a Format menu item that says Font... (M2, with P0.6a); alignment, Bullets and Line Spacing in Format (M3); Go To in Edit as well as Navigate (M4); "Word Wrap" not "Toggle Soft Wrap" (M5); Delete and Paste Text Only in Edit (M7) | QUILL | S | a person who knows Word finds each verb in the menu Word puts it in |
 | P1.21 | **Typing defaults decided once** (T3, T4): Tab's meaning follows the document kind in both; autoformat gated by kind as well as by setting; QUILL's two-setting granularity and Lite's off-by-default adopted in both | both | S | typing a quote in a `.json` inserts a straight quote in both, whatever the setting says |
@@ -750,21 +723,14 @@ way:
 | P2.10 | New documents default to CRLF in QUILL as in Notepad, WordPad, Word and Lite, with the default exposed in Settings in both (F11); close prompts name the file and say Save / Don't Save / Cancel in both, from one core string (F12) | both | S |
 | P2.11 | Lossy Save As warns before the write in every lossy direction in both, and converts at write time, never in the buffer (F1); Lite's Earlier Versions says "formatting is not kept" for rich documents (F7). Lite's print settings persist as of 2026-09-16 | both | S |
 | P2.12 | Session restore in QUILL on the shared rule Lite uses, command-line files winning (G4); crash recovery in Lite lists slots and lets the user decline (F14); read-only detected at open in both | both | M |
-| P2.13 | **Tier 2 of 4.2 into Lite** is down to two rows: the **Heading Organizer** (one list where reordering is arrow keys instead of four commands -- medium, and shared), and **Extend Selection Mode**, which waits on P1.2a fixing its four movement bugs first. The other nine landed 2026-09-16 | Lite | M |
-| P2.14 | **Settings names reconciled** (G1) and `theme` given one default or one written reason (G2) | both | S |
-| P2.16 | QUILL takes Lite's `SingleInstanceChecker` and `--new-instance`, and `--rich` / `--plain` (A6, A7) | QUILL | S |
+| P2.16 | A7's `--rich` / `--plain` only. **A6 was already done**: `core/ipc.py`'s advisory file lock has guarded against a second QUILL since #609, and it is the better mechanism -- the kernel owns the lock's lifecycle, so unlike a PID file or Lite's named object a stale lock cannot happen. A7 needs a seam QUILL does not have (nothing starts a document in a chosen kind; the switcher changes one afterwards), so it is S for real rather than T | QUILL | S |
 
 ### P3 -- polish, docs, the long tail, and the magical tier
 
 | # | Item | Cost |
 | --- | --- | --- |
-| P3.2 | A QuillLite tutorial book on `Ctrl+Alt+F1` | M |
 | P3.3 | Documentation drift (7.6): Lite PRD 2.2/3.2/8.1, both user guides' key tables, CHANGELOGs, release notes; regenerate keyboard and F1 references; Key Describer titles for every new QUILL chord | S |
-| P3.4 | Quillin hotkey collision gate (7.4) | S |
 | P3.5 | Bugs from section 6 rated Divergent, where a decision was taken | S each |
-| P2.18 | **Clip history honours its promise in QUILL** (C1). QuillLite's is wired -- off by default, on `clip_library_autocapture`, capturing cut as well as copy, with Preferences text that says what it stores. QUILL's capture works but still never sees a Cut | QUILL | S |
-| P2.19 | **Quick Nav gets a key** -- `Ctrl+Shift+Z`, which also closes it, plus Escape -- and Go To Anything takes `Ctrl+Alt+Shift+A`. They stay two commands: a palette and a landmark index are not the same surface | QUILL | S |
-| P3.6 | **Tier 3 of 4.2**: snippets as one concept in both, Markdown folding in Lite, print preview in Lite, `EM_FORMATRANGE` formatted printing in the shared rich surface (PR3) | M each |
 | P3.7 | **The magical tier** (4.2, last table): "What changed?", a spoken undo over the `DocumentText` journal, repeat-the-last-announcement, and a one-sentence structure summary on open. QUILL first or shared-simultaneous, never Lite first | M each |
 
 ### Shipping order and the migration story
@@ -819,6 +785,37 @@ meeting a slow status bar.
 
 ## Recorded, so nobody looks again
 
+- **`F6` walks the regions in the order they appear on screen**, and 5.6's
+  "F6 lands in the status bar first in both" is **withdrawn** (Jeff,
+  2026-09-17, after it was implemented and heard). The status bar is the
+  most-visited region, which is the argument that produced 5.6; the better
+  argument is that F6 is a *spatial* key. Somebody who knows their window has a
+  Reveal Codes pane under the editor and a status bar at the bottom can predict
+  where three presses land. Ordering the ring by how often each region is
+  wanted makes it unpredictable, and a navigation key you cannot predict is one
+  you press and then have to listen to find out where you are. A region that is
+  not showing is not in the ring at all, which is the same rule from the other
+  side. Both editors already did this; the change was the mistake.
+
+- **Turning the document tabs off is already possible in both**, and was when
+  the row was written. QUILL's `show_tab_control` defaults to **False**, so
+  there is no tab strip and no `F6` stop out of the box; **View > Show Tab
+  Control** toggles it, and `Ctrl+Tab`, `Ctrl+Shift+Tab` and the Window menu's
+  per-document rows are bound independently of the strip, so the walk is
+  unaffected either way. QuillLite is MDI and has never had a strip: `F6` is
+  editor <-> status bar only, and documents are reached by `Ctrl+Tab`,
+  `Ctrl+F6`, `Alt+1`-`Alt+9` and the Window menu. (Verified 2026-09-17.)
+
+- **A6 was already fixed when the audit called it broken.** "No single-instance
+  check" was wrong: `quill/core/ipc.py` has guarded against a second QUILL
+  since #609, with an OS **advisory file lock** (`flock` / `msvcrt.locking`)
+  rather than QuillLite's `wx.SingleInstanceChecker`. QUILL's is the better of
+  the two -- the kernel owns the lock's lifecycle, so a stale lock is
+  impossible, where a PID file or a named object can outlive the process that
+  made it. `--force-new-window` is the escape hatch, spelled differently from
+  Lite's `--new-instance` and doing the same job. Nothing to take; recorded so
+  the row is not reopened. (Found 2026-09-17 while starting P2.16.)
+
 - **Find and replace** is shared where it matters: the wrap setting, the two
   not-found sentences and the feedback channel are one implementation. One
   divergence survives and is worth one line of work, not an audit: QUILL's Find
@@ -838,7 +835,7 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**54 items open.** Delete a row when it lands. Tiered items first,
+**34 items open.** Delete a row when it lands. Tiered items first,
 then the section-6 findings no tiered item has claimed.
 
 | # | Item |
@@ -846,20 +843,17 @@ then the section-6 findings no tiered item has claimed.
 | P0.7 | The REMAINING Broken rows, all QUILL's: F4, F5, F6 (save path / watcher). F1, F2, F3, F9, R6 landed 2026-09-17 |
 | P0.8 | Verify live, then fix if confirmed: R4 dark mode grey text in saved .rtf; C2/N3 whole-document rewrite; R14 two-step undo. R5 fixed 2026-09-16, L13 2026-09-17 |
 | P0.9 | _run_command reports the exception class and message, not "Command failed"; save_file handles UnicodeEncodeError and U |
-| P1.1 | Keyless QUILL commands still waiting on a displacement P1.11 frees: Sort Z-A, Tidy Whitespace, Keyboard Manager, lowercase, + 3 |
+| P1.1 | Keyless QUILL commands still waiting on the chords P1.11 frees: Sort Z-A, Tidy Whitespace, lowercase, Earlier Versions, Markdown Tag. Keyboard Manager and Sound Scheme landed 2026-09-17 on the favourite-folder move |
 | P1.2 | Structural selection family on Lite's six chords; Set Mark Ctrl+Shift+M, Exchange Ctrl+Alt+X, Duplicate Selection Ctrl |
-| P1.2a | Fix Extend Selection Mode's four movement bugs (5.3a): page keys ask the control for a real page, Up/Down follow visua |
-| P1.2b | select_chunk renamed Select Token, off Ctrl+Space, with help text that says what it does that Select Word does not (5. |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |
-| P1.10 | F6 lands in the status bar first in both. The whole-bar Alt+Shift+B switch landed 2026-09-17 |
-| P1.11 | AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,H,E}; favourite folders to the leader; leader reclaim (5.9) |
+| P1.11 | AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,H,E}; leader reclaim (5.9). Favourite folders went to the leader 2026-09-17 |
 | P1.12 | Clipboard verbs: Copy to Tray / Clear / Collect / Paste Collected / Clear Collector / Keep Clip / Recent Clips on Lite |
 | P1.13 | New Rich / New Plain Text Document, Character Details, Recent File N and Editor Font in QUILL -- the four that need a  |
 | P1.14 | Spelling parity into QUILL: the caret-landing check, suggestions spelled as you arrow, the "Spelling: word" context su |
 | P1.15 | The parity gate (section 9) with its exception table, so P0/P1 cannot regress |
 | P1.16 | One line-tool helper in QUILL with Lite's scope, no-op detection, counts and rich warning (N1-N3); one command per ver |
 | P1.17 | QUILL adopts set_heading_level for Markdown headings, all_headings() for the outline in rich, bold state announcements |
-| P1.18 | Status bar: GATE-13 fixes in QUILL's cells (H3); QUILL's Insert reservation into Lite's keymap loader (H9) |
+| P1.18 | Status bar: GATE-13 fixes in QUILL's cells (H3). H9 landed 2026-09-17 -- the reserved-key list is shared (core/reserved_keys.py) and QUILL's Keyboard Manager refuses the reader's own keys, which it never did |
 | P1.19 | Clipboard: tray labels and pins survive edits (C3); collector becomes a buffer (C4, 5.1); tray paste no longer waits f |
 | P1.20 | The menu bar answers to Word (4.5): fold Search into Edit and delete the menu (M1); a Format menu item that says Font. |
 | P1.21 | Typing defaults decided once (T3, T4): Tab's meaning follows the document kind in both; autoformat gated by kind as well as by setting |
@@ -872,28 +866,11 @@ then the section-6 findings no tiered item has claimed.
 | P2.10 | New documents default to CRLF in QUILL as in Notepad, WordPad, Word and Lite, with the default exposed in Settings in  |
 | P2.11 | Lossy Save As warns before the write in every lossy direction in both (F1); Lite's Earlier Versions says formatting is not kept (F7) |
 | P2.12 | Session restore in QUILL on the shared rule Lite uses, command-line files winning (G4); crash recovery in Lite lists s |
-| P2.13 | Tier 2 of 4.2 into Lite is down to the Heading Organizer and Extend Selection Mode (which waits on P1.2a) |
-| P2.14 | Settings names reconciled (G1) and theme given one default or one written reason (G2) |
-| P2.16 | QUILL takes Lite's SingleInstanceChecker and --new-instance, and --rich / --plain (A6, A7) |
-| P2.18 | Clip history honours its promise in QUILL (C1): QUILL's capture still never sees a Cut; QuillLite's is wired and off by default |
-| P2.19 | Quick Nav gets a key -- Ctrl+Shift+Z, which also closes it, plus Escape -- and Go To Anything takes Ctrl+Alt+Shift+A.  |
-| P3.2 | A QuillLite tutorial book on Ctrl+Alt+F1 |
+| P2.16 | **A6 is already done and the row's premise was stale**: QUILL has had a single-instance guard since #609 (`core/ipc.py`, an OS advisory file lock, which is BETTER than Lite's kernel object -- a stale lock is impossible) plus `--force-new-window`. What is left is A7's `--rich` / `--plain`, and it is not the one-liner it looks like: QUILL has no "start a document in this kind" seam at all, so the flag needs threading through run_app into the Document Format switcher. A flag that parses and does nothing is the bug class this whole plan is about |
 | P3.3 | Documentation drift (7.6): Lite PRD 2.2/3.2/8.1, both user guides' key tables, CHANGELOGs, release notes; regenerate k |
-| P3.4 | Quillin hotkey collision gate (7.4) |
 | P3.5 | Bugs from section 6 rated Divergent, where a decision was taken |
-| P3.6 | Tier 3 of 4.2: snippets as one concept in both, Markdown folding in Lite, print preview in Lite, EM_FORMATRANGE format |
 | P3.7 | The magical tier (4.2, last table): "What changed?", a spoken undo over the DocumentText journal, repeat-the-last-anno |
 | C9 (D) | [both] Tray full: QUILL refuses and says so, Lite overwrites slot 1 and reports success (QUILL's wins). Restor |
 | F10 (W) | [QUILL] save_all_files never restores the active tab; save_file relies on EVT_TEXT having synced the document ( |
-| G5 (D) | [both] Lite's feature model is core/lite/features.py (areas, DEFAULT_OFF, four shape-profiles); QUILL's is Fea |
-| H8 (W) | [QUILL] Word Count is a message box, Line Statistics and document.summary are unbound; Describe Character is an |
-| L2 (W) | [QUILL] Extend Selection Mode (Ctrl+Alt+F8) collides with QuillLite's marker toggle on the same key, and carrie |
 | L7 (W) | [QUILL] List Bookmarks shows stale positions: jumps re-anchor by snippet but the list prints the raw stored off |
-| L12 (W) | [QUILL] List Marks is a message box nothing in it can be jumped to (Lite's list jumps). Exchange Point and Mark |
 | N2 (W) | [QUILL] No no-op detection and no counts: every QUILL line tool announces its past-tense status even when nothi |
-| PR4 (D) | [both] QUILL has header/footer editing, page selection and Print Studio; Lite has page setup and print. Right  |
-| R15 (D) | [both] Heading navigation is duplicated with different wording ("Moved to next heading, H2: title" vs "Heading |
-| S7 (W) | [both] Half of this was wrong and is corrected. spell_aloud_delay_ms IS read (voicing.py:232) and _spell_word_ |
-| S10 (D) | [both] share_quill_dictionary is real but one-directional and not live: Lite reads and writes QUILL's personal |
-| S11 (D) | [both] Context menu: QUILL puts corrections at top level; Lite has one "Spelling: word" submenu (asked for 202 |
-| T5 (D) | [both] Same concept, two control surfaces and two granularities: one flag in Lite's Customize Features, two ch |

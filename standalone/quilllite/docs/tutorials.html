@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QuillLite Tutorials</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quilllite-tutorials">QuillLite Tutorials</h1>
+<p>8 guided tutorials, 33 steps, about 36 minutes of material in
+all.</p>
+<p>This document is generated from the tutorials inside QuillLite, so it
+says exactly what the app teaches. To work through one with the app
+watching – running a step for you, and moving you on once it can see you
+have done it – open <strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong>
+instead.</p>
+<p>The keys below are the ones QuillLite ships with. If you have rebound
+something in the Keyboard Manager, the tutorials <em>inside the app</em>
+say your key; this document cannot know it.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><strong>Your first documents</strong> – Open a file and give it back
+unchanged, learn where the facts about it live, learn what kind of
+document you are in, and find your way between the ones you have open.
+<ul>
+<li>Open a file, and give it back unchanged (5 minutes)</li>
+<li>Four kinds of document, and how to say which (4 minutes)</li>
+<li>Your documents are numbered (3 minutes)</li>
+<li>What to press when you are lost (3 minutes)</li>
+</ul></li>
+<li><strong>Working in a document</strong> – Selecting more than a few
+words, finding your way back to where you were, skimming something long,
+and spelling without a red squiggle.
+<ul>
+<li>Selecting more than a few words (6 minutes)</li>
+<li>Finding your way back (5 minutes)</li>
+<li>Skimming something long (5 minutes)</li>
+<li>Spelling, without a red squiggle (5 minutes)</li>
+</ul></li>
+</ul>
+<h2 id="your-first-documents">Your first documents</h2>
+<p>Open a file and give it back unchanged, learn where the facts about
+it live, learn what kind of document you are in, and find your way
+between the ones you have open.</p>
+<h3 id="open-a-file-and-give-it-back-unchanged">Open a file, and give it
+back unchanged</h3>
+<p>The one promise QuillLite makes, and the three things it remembers
+about your file in order to keep it.</p>
+<p><em>4 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open something you already have.</strong> Any text file
+will do, and an old one is a better test than a new one. QuillLite reads
+plain text, Markdown, HTML and rich text.</p>
+<ul>
+<li>Keys: Ctrl+O</li>
+<li>You should hear: The file’s name, and the first line of it.</li>
+</ul></li>
+<li><p><strong>Look at what it remembered.</strong> The status bar is a
+row of cells you can arrow along, not a strip of text. Three of them are
+the promise: Encoding is how the letters are stored, Line Endings is how
+the lines finish, and Format is what kind of document this is. QuillLite
+puts all three back exactly as it found them.</p>
+<ul>
+<li>Keys: F6</li>
+<li>You should hear: Each cell’s name and its value as you arrow
+along.</li>
+<li>Worth knowing: Escape brings you back to your document. Nothing you
+do in the status bar changes the file unless you press Enter on a cell
+and answer the question it asks.</li>
+</ul></li>
+<li><p><strong>Save it without changing anything.</strong> Save it
+straight back. Then compare it with the original, however you like to do
+that – it is the same file, byte for byte.</p>
+<ul>
+<li>Keys: Ctrl+S</li>
+<li>You should hear: “Saved” and the file’s name.</li>
+</ul></li>
+<li><p><strong>Type a character the file cannot hold.</strong> If your
+file is stored in an older encoding, type an em dash or an emoji into it
+and save again. QuillLite asks before it writes: save as UTF-8 and keep
+it, save as asked and lose it knowingly, or cancel.</p>
+<ul>
+<li>You should hear: A question counting the characters, naming the
+encoding, and offering Yes, No and Cancel.</li>
+<li>Worth knowing: Before version 1.0 those characters became question
+marks and the app said “Saved”. The only way to find out was to read
+that line again.</li>
+</ul></li>
+</ol>
+<p>That is the product in four steps. Everything else is convenience on
+top of a file that comes back the way you left it.</p>
+<p>Next: Four kinds of document, and how to say which.</p>
+<h3 id="four-kinds-of-document-and-how-to-say-which">Four kinds of
+document, and how to say which</h3>
+<p>Plain text, Markdown, HTML and rich text – what each changes, and the
+one key that rings between them.</p>
+<p><em>4 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Find out what you are in.</strong> The Format cell says
+which of the four this document is, and the Language cell says which
+markup a plain one is written in. QuillLite guesses from the file’s
+name, and the guess is only ever a first guess.</p>
+<ul>
+<li>Keys: F6</li>
+<li>You should hear: The Format cell, reading “Markdown”, “HTML”, “Plain
+text” or “Rich text”.</li>
+</ul></li>
+<li><p><strong>Ring through the four.</strong> One key walks all four,
+announcing each stop. Press it until you hear the one you meant. Moving
+between plain, Markdown and HTML changes nothing in your document – it
+changes what the formatting keys write from now on.</p>
+<ul>
+<li>Keys: Alt+Shift+F</li>
+<li>You should hear: Each kind naming itself as you land on it.</li>
+</ul></li>
+<li><p><strong>Go into rich text, and come back.</strong> Rich text is
+the one stop that really converts. Going in turns Markdown into real
+formatting; coming out turns the formatting back into Markdown, and asks
+first, naming anything it cannot carry.</p>
+<ul>
+<li>You should hear: A question before it converts, then “Rich text
+mode” or “Plain text mode”.</li>
+<li>Worth knowing: Your file keeps its name. Because a rich document
+cannot be written over a .txt, the next Ctrl+S offers you the right
+suffix already filled in.</li>
+</ul></li>
+<li><p><strong>Say otherwise, for this window only.</strong> Writing
+HTML in a scratch .txt is a reasonable thing to do. Document Language
+goes straight to one and tells you what each choice will do before you
+make it. The choice lasts as long as the window.</p>
+<ul>
+<li>Keys: Ctrl+Alt+F6</li>
+<li>You should hear: Each option described, and the one the file name
+would have chosen marked.</li>
+</ul></li>
+</ol>
+<p>Next: Your documents are numbered.</p>
+<h3 id="your-documents-are-numbered">Your documents are numbered</h3>
+<p>Why there are no tabs, what you get instead, and the four ways to
+reach the document you want.</p>
+<p><em>3 steps, about 3 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open a second file.</strong> It opens inside the same
+window, as document 2. “Document 3” is a name you can hold in your head
+and say out loud; “the other Untitled” is not.</p>
+<ul>
+<li>Keys: Ctrl+O</li>
+<li>You should hear: The new document’s number and name, in its
+title.</li>
+</ul></li>
+<li><p><strong>Walk between them.</strong> Ctrl+Tab is what most people
+press and Ctrl+F6 is what Windows documents. Both work, and so does the
+Window menu.</p>
+<ul>
+<li>Keys: Ctrl+Tab</li>
+<li>You should hear: The document you arrive at, announcing its number
+and name.</li>
+</ul></li>
+<li><p><strong>Go straight to one.</strong> Alt and a digit goes
+directly to that document. This is the fast way once you have more than
+two open, and it is the reason they are numbered at all.</p>
+<ul>
+<li>Keys: Alt+1, Alt+2, Alt+3</li>
+<li>You should hear: The document you asked for.</li>
+<li>Worth knowing: Documents here are children of one window, so they do
+not appear in Alt+Tab. That is the cost of the numbering, and these four
+routes are how QuillLite carries it.</li>
+</ul></li>
+</ol>
+<h3 id="what-to-press-when-you-are-lost">What to press when you are
+lost</h3>
+<p>Three keys that answer where you are, what this does, and what
+exists.</p>
+<p><em>3 steps, about 3 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Ask what you are standing on.</strong> F1 answers
+everywhere – in the document, on a button, in any window. It says what
+the window is for and then what the control you are on does.</p>
+<ul>
+<li>Keys: F1</li>
+<li>You should hear: The window’s purpose, then the control’s.</li>
+</ul></li>
+<li><p><strong>Ask what the facts are.</strong> The status bar holds
+everything QuillLite knows about your document, and every message it has
+said. A message you missed is still in the first cell.</p>
+<ul>
+<li>Keys: F6</li>
+<li>You should hear: The last thing QuillLite said, and then each fact
+as you arrow.</li>
+</ul></li>
+<li><p><strong>Ask what exists.</strong> The Keyboard Shortcuts window
+lists every key QuillLite has, built from the live command table – so it
+shows your keys, including any you have changed.</p>
+<ul>
+<li>Keys: Ctrl+F1</li>
+<li>You should hear: A searchable list of every command and its
+key.</li>
+</ul></li>
+</ol>
+<p>Nothing in QuillLite is more than these three keys away from being
+explained.</p>
+<h2 id="working-in-a-document">Working in a document</h2>
+<p>Selecting more than a few words, finding your way back to where you
+were, skimming something long, and spelling without a red squiggle.</p>
+<h3 id="selecting-more-than-a-few-words">Selecting more than a few
+words</h3>
+<p>Three genuinely different answers to the same problem, and when each
+one is the right one.</p>
+<p><em>6 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Take a whole thing in one key.</strong> When what you
+want lines up with a word, a line, a paragraph, a sentence or a block,
+there is a key for it and you do not have to know where it starts.</p>
+<ul>
+<li>Keys: Ctrl+Shift+H</li>
+<li>You should hear: “Selected paragraph”, and how many words that
+was.</li>
+</ul></li>
+<li><p><strong>Grow and shrink.</strong> From whatever you have, step
+outwards a level at a time – word, line, sentence, paragraph, block,
+everything – and back in again. Each step says the scope it took.</p>
+<ul>
+<li>Keys: Ctrl+Shift+X</li>
+<li>You should hear: The new scope, and its word count.</li>
+</ul></li>
+<li><p><strong>Mark a spot and walk to the end of it.</strong> For
+anything that does not line up with a structure. Drop a marker, then
+move however you like – arrows, Find, Go To Line, a bookmark – and take
+everything between. No modifier held the whole way.</p>
+<ul>
+<li>Keys: F8</li>
+<li>You should hear: The line and column where the marker went
+down.</li>
+</ul></li>
+<li><p><strong>Finish it, and hear how far it reached.</strong> The span
+is worked out now, from the marker and where you actually are. That is
+why you can use Find in between: its own selection does not get in the
+way.</p>
+<ul>
+<li>Keys: Shift+F8</li>
+<li>You should hear: How many words, and the lines it ran between.</li>
+<li>Worth knowing: That line range is the only selection that carries
+one, because it is the only one whose reach you cannot work out from its
+name.</li>
+</ul></li>
+<li><p><strong>Or hold the Shift down without holding it.</strong>
+Extend Selection Mode is the third answer: turn it on and every arrow
+extends instead of moving, with no modifier and no “selected” from your
+screen reader on every press.</p>
+<ul>
+<li>Keys: Alt+Shift+F9</li>
+<li>You should hear: “Extend selection mode on”, and where it
+started.</li>
+</ul></li>
+<li><p><strong>Check what you have before you replace it.</strong> There
+is no glance that confirms a selection is the one you meant, and the
+next character you type replaces it. Say Selection reads it back; long
+ones are summarised rather than read in full.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Y</li>
+<li>You should hear: The selection, or a summary of it with its
+size.</li>
+</ul></li>
+</ol>
+<p>Put back the one you just lost with Reselect. It remembers every way
+of selecting, not only the marker.</p>
+<p>Next: Finding your way back.</p>
+<h3 id="finding-your-way-back">Finding your way back</h3>
+<p>Bookmarks, marks and the Back key – three things that sound alike and
+answer different questions.</p>
+<p><em>4 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Keep a place you mean to come back to.</strong> Nine
+numbered bookmarks, per file, and they are still there tomorrow. A
+bookmark survives editing: it remembers the words around it, so
+inserting three paragraphs above one does not move it off its line.</p>
+<ul>
+<li>Keys: Ctrl+Shift+1</li>
+<li>You should hear: The bookmark’s number, and the line it went
+on.</li>
+</ul></li>
+<li><p><strong>Drop a pin you will forget.</strong> A mark is different:
+it is where you were standing before you went to look something up. No
+number, no label, no list. Pop Mark uses it up getting back.</p>
+<ul>
+<li>Keys: Ctrl+Shift+M</li>
+<li>You should hear: The line, and how many marks you now have.</li>
+</ul></li>
+<li><p><strong>Go and look something up, then come back.</strong> Move a
+long way off – Ctrl+End will do – and pop the mark.</p>
+<ul>
+<li>Keys: Ctrl+M</li>
+<li>You should hear: The line you came back to, and how many marks are
+left.</li>
+</ul></li>
+<li><p><strong>Undo the jump.</strong> Back is the undo for navigation.
+Every jump in QuillLite goes through it – bookmarks, marks, headings, Go
+To, search results – so there is no jump it cannot take you back
+from.</p>
+<ul>
+<li>Keys: Alt+Left</li>
+<li>You should hear: Where you were before the jump.</li>
+<li>Worth knowing: Without this, every jump is one-way: you followed a
+heading and have no way back to the paragraph you were writing except a
+line number nobody told you.</li>
+</ul></li>
+</ol>
+<p>Next: Skimming something long.</p>
+<h3 id="skimming-something-long">Skimming something long</h3>
+<p>What a sighted reader gets from scrolling and glancing, and the three
+ways to get it without one.</p>
+<p><em>5 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Ask for the shape.</strong> The headings list is every
+heading in the document, in order, each reading its level and its text.
+Enter goes there.</p>
+<ul>
+<li>Keys: Ctrl+Alt+L</li>
+<li>You should hear: Each heading, with its level.</li>
+</ul></li>
+<li><p><strong>Walk it instead.</strong> Next and Previous Heading move
+by structure rather than by line, and each arrival says the level and
+the text.</p>
+<ul>
+<li>Keys: Ctrl+Alt+H</li>
+<li>You should hear: “Heading 2”, and the heading’s words.</li>
+</ul></li>
+<li><p><strong>Skim by section.</strong> Walking sections says the
+heading, whether it is folded, and <strong>how many lines are under
+it</strong>. That last part is the glance: it is how you find out a
+section is enormous without reading any of it.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+Down</li>
+<li>You should hear: The heading, its state, and its size in lines.</li>
+</ul></li>
+<li><p><strong>Mark one as dealt with.</strong> Folding a section is a
+note to yourself. Nothing is hidden from the cursor and Find still finds
+things inside it – you simply hear that it is folded when you pass
+by.</p>
+<ul>
+<li>Keys: Ctrl+Shift+F9</li>
+<li>You should hear: How many lines went with it.</li>
+</ul></li>
+<li><p><strong>Rearrange it, if the shape is wrong.</strong> The Heading
+Organizer is every heading as one list. Tab demotes, Shift+Tab promotes,
+and Move Up and Move Down take the heading and everything under it.</p>
+<ul>
+<li>Keys: Alt+Shift+O</li>
+<li>You should hear: Each heading as you arrow, with a preview of its
+section.</li>
+<li>Worth knowing: Nothing changes until Apply, and one Ctrl+Z puts it
+all back.</li>
+</ul></li>
+</ol>
+<h3 id="spelling-without-a-red-squiggle">Spelling, without a red
+squiggle</h3>
+<p>How QuillLite tells you a word is wrong without interrupting the
+sentence you are writing, and the one key that fixes it.</p>
+<p><em>4 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Type something wrong, and keep going.</strong> A moment
+after you finish the word, the status bar says it may be misspelled. It
+is not spoken over your typing, because a spell checker that interrupts
+the sentence you are writing is one people switch off.</p>
+<ul>
+<li>You should hear: Nothing, unless you asked for a sound or a sentence
+in Preferences.</li>
+</ul></li>
+<li><p><strong>Fix the word you are standing in.</strong> The
+Applications key is your squiggle. Press it with the cursor in the word,
+and <strong>the first Down arrow lands on a suggestion</strong>. Enter
+replaces it; the cursor does not move and no dialog opens.</p>
+<ul>
+<li>Keys: Applications, Shift+F10</li>
+<li>You should hear: The suggestions, in order, as you arrow.</li>
+<li>Worth knowing: Everything else about the word – ignore, teach, next,
+previous – is one row below the suggestions, in the same place every
+time.</li>
+</ul></li>
+<li><p><strong>Teach it a word.</strong> Your own dictionary keeps it
+for good. The document’s own keeps it beside the file, so anybody who
+opens that file gets it too – which is the right home for a product name
+and the wrong one for your surname.</p>
+<ul>
+<li>You should hear: Which of the two it was added to, by name.</li>
+</ul></li>
+<li><p><strong>Check the whole thing.</strong> F7 walks the document one
+word at a time. It starts where your cursor is and offers to carry on
+from the beginning when it reaches the end.</p>
+<ul>
+<li>Keys: F7</li>
+<li>You should hear: Each word, its suggestions, and a summary of what
+changed at the end.</li>
+</ul></li>
+</ol>
+<p>Spelling stays quiet in source and configuration files whatever the
+settings say – every identifier in one would be a false alarm.</p>
+</main>
+</body>
+</html>

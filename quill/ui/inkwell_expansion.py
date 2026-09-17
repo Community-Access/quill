@@ -22,6 +22,7 @@ from quill.core.abbreviations import (
     save_abbreviation_library,
 )
 from quill.core.expansion.matcher import GlobalMatch
+from quill.core.snippets import SnippetLibrary, load_snippet_library, snippet_library_path
 
 #: How often batched usage counts reach disk. Writing on every expansion would
 #: put a disk write in the middle of someone's typing.
@@ -47,6 +48,8 @@ class InkwellExpansionMixin:
             self._on_global_match,
             self._current_library,
             get_clipboard_text=self._clipboard_text,
+            get_snippet_library=self._current_snippet_library,
+            get_snippet_context=self._snippet_context,
             excluded_processes=lambda: set(self._settings.excluded_processes),
             on_undo=self._on_global_undo,
             on_unreachable_window=self._on_unreachable_window,
@@ -96,6 +99,30 @@ class InkwellExpansionMixin:
             self._library_stamp = stamp
             wx.CallAfter(self._reload_list)
         return self._merged_library(self._library)
+
+    def _current_snippet_library(self) -> SnippetLibrary:
+        """Return shared snippets, reloading edits made by the other app."""
+        path = snippet_library_path()
+        try:
+            stamp = path.stat().st_mtime_ns
+        except OSError:
+            return self._snippet_library
+        if stamp != getattr(self, "_snippet_library_stamp", None):
+            try:
+                self._snippet_library = load_snippet_library(path)
+                self._snippet_library_stamp = stamp
+            except Exception:  # noqa: BLE001 - a bad file cannot break typing
+                return self._snippet_library
+        return self._snippet_library
+
+    def _snippet_context(self) -> dict[str, str]:
+        """Capture bounded selection context only after a snippet matched."""
+        from quill.platform.windows.text_runtime import InkwellTextRuntime
+
+        selection = InkwellTextRuntime().capture_selection()
+        if selection is None or not selection.selected_text:
+            return {}
+        return {"selection": selection.selected_text}
 
     def _merged_library(self, user: AbbreviationLibrary) -> AbbreviationLibrary:
         """The user's abbreviations plus anything the Quillins contribute.
@@ -187,7 +214,7 @@ class InkwellExpansionMixin:
         """Perform one expansion. Runs on the hook's worker thread."""
         from quill.core.expansion.fields import has_fields
 
-        if has_fields(match.abbreviation.expansion):
+        if has_fields(match.template):
             # A form has to be filled on the UI thread, and it takes focus away
             # from wherever the user is typing -- so ask first, then give focus
             # back and type. Nothing has been erased yet, so cancelling leaves
@@ -199,18 +226,30 @@ class InkwellExpansionMixin:
     def _expand_with_fields(self, match: GlobalMatch) -> None:
         """Ask for the fields, restore focus, then expand. UI thread."""
         from quill.core.abbreviations import resolve_expansion
+        from quill.core.snippets import render_snippet
         from quill.ui.fill_in_dialog import prompt_for_fields
 
         target = self._foreground_before_dialog()
+        title = (
+            match.abbreviation.abbreviation
+            if match.abbreviation is not None
+            else (match.snippet.name if match.snippet is not None else "Fill In")
+        )
         filled = prompt_for_fields(
             self.frame,
-            match.abbreviation.expansion,
+            match.template,
             self._show_modal_dialog,
-            title=match.abbreviation.abbreviation,
+            title=title,
         )
         if filled is None:
             return
-        text, cursor_offset, has_cursor = resolve_expansion(filled, self._clipboard_text())
+        if match.abbreviation is not None:
+            text, cursor_offset, has_cursor = resolve_expansion(filled, self._clipboard_text())
+        else:
+            rendered = render_snippet(filled, dict(match.context_values))
+            text = rendered.text
+            cursor_offset = rendered.cursor
+            has_cursor = "${cursor}" in filled
         resolved = replace(match, text=text, cursor_offset=cursor_offset, has_cursor=has_cursor)
         if target:
             from quill.platform.windows.foreground import force_foreground_window
@@ -221,26 +260,22 @@ class InkwellExpansionMixin:
 
     def _inject(self, match: GlobalMatch) -> None:
         """Erase the abbreviation and type the expansion in the focused window."""
-        from quill.platform.windows import text_injector
+        from quill.core.external_text import OperationStatus
+        from quill.platform.windows.text_runtime import InkwellTextRuntime
 
         caret_from_end = len(match.text) - match.cursor_offset if match.has_cursor else 0
-        if self._injection_mode_now() == "paste":
-            text_injector.send_backspaces(match.backspace_count)
-            if not text_injector.paste_text(match.text):
-                text_injector.send_text(match.text)
-            # The hook swallowed the trigger character, so type it back here too.
-            tail = match.trigger_char + (" " if match.trailing_space else "")
-            if tail:
-                text_injector.send_text(tail)
-            text_injector.move_caret_left(caret_from_end + len(tail) if caret_from_end else 0)
-        else:
-            text_injector.inject_expansion(
-                match.text,
-                backspace_count=match.backspace_count,
-                caret_from_end=caret_from_end,
-                trailing_space=match.trailing_space,
-                trigger_char=match.trigger_char,
-            )
+        tail = match.trigger_char + (" " if match.trailing_space else "")
+        result = InkwellTextRuntime().replace_typed_text(
+            match.text,
+            backspace_count=match.backspace_count,
+            expected_window=match.target_window,
+            trailing_text=tail,
+            use_clipboard=self._injection_mode_now() == "paste",
+            caret_from_end=caret_from_end,
+        )
+        if result.status is not OperationStatus.APPLIED:
+            wx.CallAfter(self._announce, result.message)
+            return
         # Arm the undo: a Backspace now puts the abbreviation back.
         hook = self._hook
         if hook is not None:
@@ -248,11 +283,19 @@ class InkwellExpansionMixin:
             # possibly a trailing space -- undo has to account for all of it and
             # put the user's own trigger character back with the abbreviation.
             hook.note_expansion(
-                abbreviation=match.abbreviation.abbreviation + match.trigger_char,
+                abbreviation=self._match_label(match) + match.trigger_char,
                 expanded_text=match.text + match.trigger_char,
                 trailing_space=match.trailing_space,
             )
         wx.CallAfter(self._after_expansion, match)
+
+    @staticmethod
+    def _match_label(match: GlobalMatch) -> str:
+        if match.abbreviation is not None:
+            return match.abbreviation.abbreviation
+        if match.snippet is not None:
+            return match.snippet.trigger
+        return ""
 
     def _injection_mode_now(self) -> str:
         """How to deliver into the window that has focus right now.
@@ -278,22 +321,27 @@ class InkwellExpansionMixin:
     def _after_expansion(self, match: GlobalMatch) -> None:
         """UI-thread follow-up: usage counters, speech, and sound."""
         entry = match.abbreviation
-        record_use(self._library, entry.id)
-        # Batched, not per-expansion: a disk write belongs nowhere near typing.
-        self._uses_pending = getattr(self, "_uses_pending", 0) + 1
-        if self._uses_pending >= USAGE_SAVE_EVERY:
-            self._uses_pending = 0
-            save_abbreviation_library(self._library, self._data_dir)
-            self._library_stamp = None  # our own write; force a re-read next time
-        if entry.sound == "on" or (entry.sound == "inherit" and self._settings.announce_expansions):
-            self._play_expansion_sound()
-        if entry.speak_mode == "name":
-            self._announce(entry.abbreviation)
-        elif entry.speak_mode == "expansion":
-            self._announce(match.text)
-        elif self._settings.announce_expansions:
-            preview = match.text[:40] + ("..." if len(match.text) > 40 else "")
-            self._announce(f"Expanded to: {preview}")
+        if entry is not None:
+            record_use(self._library, entry.id)
+            # Batched, not per-expansion: a disk write belongs nowhere near typing.
+            self._uses_pending = getattr(self, "_uses_pending", 0) + 1
+            if self._uses_pending >= USAGE_SAVE_EVERY:
+                self._uses_pending = 0
+                save_abbreviation_library(self._library, self._data_dir)
+                self._library_stamp = None  # our own write; force a re-read next time
+            if entry.sound == "on" or (
+                entry.sound == "inherit" and self._settings.announce_expansions
+            ):
+                self._play_expansion_sound()
+            if entry.speak_mode == "name":
+                self._announce(entry.abbreviation)
+            elif entry.speak_mode == "expansion":
+                self._announce(match.text)
+            elif self._settings.announce_expansions:
+                preview = match.text[:40] + ("..." if len(match.text) > 40 else "")
+                self._announce(f"Expanded to: {preview}")
+        elif self._settings.announce_expansions and match.snippet is not None:
+            self._announce(f"Expanded snippet: {match.snippet.name}")
 
     def _play_expansion_sound(self) -> None:
         """The shared sound-pack event, with the same winsound fallback the

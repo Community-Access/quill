@@ -18,16 +18,29 @@ the corrections for that word.
 
 The shape, and the reasons:
 
-* **Everything about the word is under one "Spelling" submenu**, and that is a
-  deliberate reversal (2026-09-13, asked for directly). The first build put the
-  corrections at the top level so the first Down arrow landed on one; the cost
-  was a context menu whose length changed depending on where the caret was, with
-  Undo and Cut a dozen unpredictable rows further down every time the word
-  happened to be misspelled. One row named "Spelling" is a Right arrow and a
-  short pause, and in exchange the menu is the same menu every time and the
-  spelling half is announced as what it is rather than as a list of bare words.
-  The corrections are still the *first* thing inside it, so the sequence is
-  Applications, Down, Right, Down.
+* **The corrections are at the top level; everything else about the word is
+  one row below them**, and that shape is the settled answer to the one
+  genuinely contested question in this area (bad.md S11, resolved 2026-09-17).
+
+  Two good arguments pulled opposite ways. QUILL's: the Applications key *is*
+  the squiggle a listener does not have, so the first Down arrow has to land on
+  the correction itself -- a submenu costs a Right arrow and a pause before
+  anything is said, which is most of what the menu was saving. QuillLite's,
+  asked for directly on 2026-09-13: a menu whose length changes depending on
+  where the caret is, with Undo and Cut a dozen unpredictable rows further down
+  whenever the word happens to be misspelled, is a menu nobody can learn.
+
+  Both are right, and they are not actually in conflict, because the variable
+  part is at the **front**. The corrections come first, then a separator, then
+  **the same rows in the same order every single time** -- Spelling Actions,
+  then the edit verbs. So the first Down arrow is a correction when there is
+  one, and everything below the corrections is where it always is. What a
+  person learns is not a row number, it is "after the suggestions, the menu is
+  the menu".
+
+  The rest of the spelling verbs -- ignore, teach, more suggestions, next and
+  previous -- keep a submenu of their own, because they are the part nobody
+  needs in a hurry and the part that would otherwise make the tail long.
 * **The word is in every spelling label.** "Add "Bhattacharya" to My
   Dictionary", not "Add to Dictionary". A context menu is read out of context by
   a listener who arrived by keyboard, and a label that names the word is one
@@ -186,7 +199,7 @@ class DocumentContextMenuMixin:
             return None
 
     def _append_spelling_section(self, menu: wx.Menu, context: SpellingContext) -> None:
-        """Hang a "Spelling" submenu, filled with everything about the word.
+        """Corrections at the top, then one "Spelling Actions" row (bad.md S11).
 
         Built complete and only then attached, which is a wxMSW rule rather
         than a style: rows added to a ``wx.Menu`` *after* ``AppendSubMenu`` has
@@ -207,10 +220,11 @@ class DocumentContextMenuMixin:
         hand and by the test that walks the built menu.
         """
         word = context.word
-        spelling = self._new_menu()
+        # The corrections, on the menu itself. This is the half of S11 that came
+        # back from the submenu: the first Down arrow has to land on the answer.
         if context.suggestions:
             for suggestion in context.suggestions:
-                item = spelling.Append(wx.ID_ANY, self._escape_menu_text(suggestion))
+                item = menu.Append(wx.ID_ANY, self._escape_menu_text(suggestion))
                 menu.Bind(
                     wx.EVT_MENU,
                     lambda _e, replacement=suggestion, ctx=context: self._replace_from_context(
@@ -223,12 +237,11 @@ class DocumentContextMenuMixin:
             # that is right: the user asked about *this word* and "there is
             # nothing I can suggest" is the answer to their question. The rows
             # below still act on it.
-            empty = spelling.Append(
-                wx.ID_ANY, f'No suggestions for "{self._escape_menu_text(word)}"'
-            )
+            empty = menu.Append(wx.ID_ANY, f'No suggestions for "{self._escape_menu_text(word)}"')
             empty.Enable(False)
-        spelling.AppendSeparator()
+        menu.AppendSeparator()
 
+        spelling = self._new_menu()
         ignore_once = spelling.Append(wx.ID_ANY, "&Ignore Once")
         menu.Bind(
             wx.EVT_MENU, lambda _e, ctx=context: self._ignore_once_from_context(ctx), ignore_once
@@ -277,8 +290,10 @@ class DocumentContextMenuMixin:
 
         # The word is in the title too. A submenu is read as one row on the way
         # past, and "Spelling" alone does not say which word it is about --
-        # which is the same reason every row inside it names the word.
-        menu.AppendSubMenu(spelling, f'&Spelling: "{self._escape_menu_text(word)}"')
+        # which is the same reason every row inside it names the word. What is
+        # in here is everything that is *not* a correction: the corrections
+        # themselves are above, where the first Down arrow reaches them.
+        menu.AppendSubMenu(spelling, f'&Spelling Actions for "{self._escape_menu_text(word)}"')
         menu.AppendSeparator()
 
     def _append_link_section(self, menu: wx.Menu, position: int) -> None:

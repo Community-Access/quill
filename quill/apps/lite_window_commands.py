@@ -188,6 +188,23 @@ class DocumentCommandsMixin(
         finally:
             self._loading = False
 
+    def cmd_tutorials(self) -> None:
+        """Ctrl+Alt+F1: eight guided lessons, in two tracks.
+
+        Eight, and the number is the point: QUILL has twenty-one in six,
+        because QUILL is an environment somebody moves into. A Notepad
+        replacement with a twenty-one-lesson course attached is advertising
+        that it is not one (bad.md P3.2).
+
+        The window is the shared one every QuillVille app uses, so a lesson
+        shows *your* key rather than the shipped one, can run the step for you,
+        and remembers where you stopped. The same lessons render to the printed
+        book beside the user guide, from one source, so the two cannot drift.
+        """
+        from quill.apps.lite_tutorials import open_tutorials
+
+        open_tutorials(self)
+
     def cmd_close(self) -> None:
         self.Close()
 

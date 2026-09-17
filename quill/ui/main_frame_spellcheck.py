@@ -24,6 +24,7 @@ from quill.core.spellcheck import (
     load_combined_dictionary,
     load_scope_dictionary,
     misspelling_at_position,
+    personal_dictionary_revision,
     rank_misspellings_by_frequency,
     suggest_words,
 )
@@ -157,6 +158,14 @@ class SpellcheckCommandsMixin:
             scope_start=scope_start,
             scope_end=scope_end,
             ranked=bool(getattr(self.settings, "spell_review_ranked", False)),
+            # Word starts F7 at the insertion point, and has since it had an
+            # F7. Starting at the top instead walks somebody working in the
+            # middle of a long document back through everything they already
+            # checked -- and it is what left spell_review_wrap_to_beginning
+            # with no "end" to happen at (bad.md S7). Only for a whole-document
+            # pass: a review scoped to a selection has a start the person chose.
+            start_at=(self.editor.GetInsertionPoint() if scope_start == 0 else None),
+            wrap=bool(getattr(self.settings, "spell_review_wrap_to_beginning", True)),
         )
 
         if session.is_complete():
@@ -566,12 +575,19 @@ class SpellcheckCommandsMixin:
             clipboard.Close()
 
     def _spell_dictionary(self) -> set[str]:
-        # Cache the combined dictionary keyed by (document path, project root).
-        # Reading + parsing the three JSON scope files on every keystroke (via
-        # "spell check as you type") is wasteful; we invalidate the cache when
-        # a word is added or the active document changes.
+        """The words this document treats as correct, cached but not stale.
+
+        Reading and parsing the three JSON scope files on every keystroke --
+        which "spell check as you type" would do -- is wasteful, so the result
+        is cached. The key includes the personal dictionary's **revision**
+        (mtime and size), which is what makes a *shared* dictionary actually
+        shared: QuillLite writes into this same ``personal.json`` when the
+        listener has asked it to, and until 2026-09-17 a word taught there
+        stayed underlined here until QUILL was restarted (bad.md S10). The
+        check is one ``stat``; the re-read only happens when the file moved.
+        """
         project_root = Path.cwd()
-        cache_key = (self.document.path, project_root)
+        cache_key = (self.document.path, project_root, personal_dictionary_revision())
         cached = getattr(self, "_spell_dictionary_cache", None)
         if cached is not None and cached[0] == cache_key:
             return cached[1]

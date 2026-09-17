@@ -119,16 +119,28 @@ def test_manifest_command_under_insert_menu() -> None:
     assert "Insert" in parents
 
 
-def test_manifest_hotkey_ctrl_shift_e() -> None:
-    manifest = _load_manifest()
-    bindings = {hk.binding for hk in manifest.contributes.hotkeys}
-    assert "Ctrl+Shift+E" in bindings
+def test_insert_equation_has_no_hotkey_of_its_own() -> None:
+    """It claimed Ctrl+Shift+E, which is the CORE's own edit.insert_equation --
+    so the extension was shadowing the very command it duplicates, and one of
+    the two silently never fired (bad.md 7.4, GATE-QHK).
 
-
-def test_manifest_hotkey_explore_equation_structure() -> None:
+    A Quillin may *add* a verb and never re-ship one the core has (bad.md 7.1),
+    so this one lost its hotkey rather than moving: the core command already
+    answers that key, and the menu row is still here.
+    """
     manifest = _load_manifest()
     by_command = {hk.command: hk.binding for hk in manifest.contributes.hotkeys}
-    assert by_command["ext.math.explore_equation_structure"] == "Ctrl+Shift+Grave, F"
+    assert "ext.math.insert_equation" not in by_command
+
+
+def test_explore_equation_structure_moved_off_the_cores_chord() -> None:
+    """It had Ctrl+Shift+Grave, F -- which is navigate.speak_window_title. This
+    one IS a genuinely new verb, so it moved rather than losing its key: the
+    Quillin yields, never the core, because an extension is the newcomer by
+    definition and a core chord may be one somebody's hands already know."""
+    manifest = _load_manifest()
+    by_command = {hk.command: hk.binding for hk in manifest.contributes.hotkeys}
+    assert by_command["ext.math.explore_equation_structure"] == "Ctrl+Shift+Grave, Z"
 
 
 # -- handler: LaTeX insertion -------------------------------------------------

@@ -36,6 +36,7 @@ from quill.core.keymap_query import (
     rewrite_chord_prefixes,
 )
 from quill.core.platform_nouns import primary_command_chord_label
+from quill.core.reserved_keys import reservation_for
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 #: Commands that take part in the QUILL Quick Nav single-key browse layer. They
@@ -312,6 +313,22 @@ class KeymapEditorMixin:
             )
             return False
         canonical = parsed.canonical
+        # The screen reader's own keys, refused before anything else looks at
+        # the binding. Not a conflict QUILL could win: the reader intercepts
+        # these before the app sees them, so the binding would be assigned,
+        # shown as assigned, and never fire -- the worst shape a keymap bug
+        # takes, because every visible surface agrees it should have worked.
+        # QuillLite has refused them since it shipped and QUILL refused nothing
+        # (bad.md H9, P1.18); the list is shared so there is one answer.
+        reserved = reservation_for(canonical)
+        if reserved:
+            self._show_message_box(
+                f"{format_binding_for_display(canonical, prefix=prefix)} cannot be "
+                f"used as a shortcut.\n\n{reserved}",
+                "Keymap Editor",
+                wx.ICON_ERROR | wx.OK,
+            )
+            return False
         if not self._binding_is_dispatchable(canonical):
             self._show_message_box(
                 f"QUILL cannot bind '{format_binding_for_display(canonical, prefix=prefix)}' "

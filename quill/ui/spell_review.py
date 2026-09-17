@@ -55,6 +55,9 @@ def review_textctrl(
         # deliberately ignored was the first thing the review stopped on
         # (bad.md S6).
         ignores=ignores,
+        # The caret, and the wrap that then has somewhere to happen (bad.md S7).
+        start_at=text_ctrl.GetInsertionPoint(),
+        wrap=bool(getattr(settings, "spell_review_wrap_to_beginning", True)),
     )
     if session.is_complete():
         announce_fn("No misspellings found.")

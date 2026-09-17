@@ -110,6 +110,14 @@ COMMANDS: list[CommandRow] = [
     # Ctrl+Alt+P, not the Ctrl+Alt+U it used to hold: that key is Check
     # for Updates in the eight other QuillVille apps, and P suits Page Setup.
     ("&File", "Page Set&up...", "Ctrl+Alt+P", "cmd_page_setup", ""),
+    # An accessible preview rather than a picture of a page (bad.md PR2,
+    # P3.6). WordPad and Word both show a scaled image of the sheet, which
+    # answers nothing for somebody who listens; this says how many pages, on
+    # what paper, with what margins, and what is at the top of each one.
+    # Not &V: Earlier &Versions has it in this menu, and Windows cycles
+    # focus between duplicates instead of pressing, so one of the pair
+    # silently cannot be reached (GATE-14).
+    ("&File", "Print Previe&w...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Close Window", "Ctrl+W", "cmd_close", ""),
@@ -299,10 +307,22 @@ COMMANDS: list[CommandRow] = [
         "",
     ),
     (
+        # Named for what it does since 2026-09-17. It was called "Extend
+        # Selection Mode", which is a different thing that QUILL has on
+        # Alt+Shift+F9 and QuillLite now has too -- and calling the marker
+        # toggle by the mode's name is how somebody presses it expecting a
+        # sticky Shift and gets a pin (bad.md 5.3a).
         "&Edit|Selectio&n",
-        "Extend Selection &Mode",
+        "&Toggle Selection Marker",
         "Ctrl+Alt+F8",
         "cmd_toggle_extend_mode",
+        "check",
+    ),
+    (
+        "&Edit|Selectio&n",
+        "Extend Selection &Mode",
+        "Alt+Shift+F9",
+        "cmd_toggle_extend_selection_mode",
         "check",
     ),
     ("&Edit|Selectio&n", "", "", "", "sep"),
@@ -595,6 +615,21 @@ COMMANDS: list[CommandRow] = [
     ("F&ormat|Structur&e", "D&emote Heading", "Alt+Shift+Right", "cmd_demote_heading", ""),
     ("F&ormat|Structur&e", "Move Section &Up", "Alt+Shift+Up", "cmd_move_section_up", ""),
     ("F&ormat|Structur&e", "Move Section Do&wn", "Alt+Shift+Down", "cmd_move_section_down", ""),
+    ("F&ormat|Structur&e", "", "", "", "sep"),
+    # The four rows above, in one window. QUILL has had this since #303 and
+    # QuillLite already had both halves of it -- a headings list and section
+    # moves -- so what was missing was only the surface that puts them
+    # together (bad.md P2.13, Tier 2). QUILL's own chord is Ctrl+Alt+Shift+H,
+    # which is Previous Heading here, and Ctrl+Alt+Shift+O is Sound Scheme --
+    # the letter it is named after is taken twice over. Alt+Shift+O keeps the O
+    # and is free in both.
+    (
+        "F&ormat|Structur&e",
+        "Heading &Organizer...",
+        "Alt+Shift+O",
+        "cmd_heading_organizer",
+        "",
+    ),
     # -- Navigate -----------------------------------------------------------
     # Where you are, and how to get somewhere else. The one menu Notepad and
     # WordPad do not have, because a sighted reader navigates by scrolling and
@@ -617,6 +652,23 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate", "&Next Heading", "Ctrl+Alt+H", "cmd_next_heading", ""),
     ("&Navigate", "&Previous Heading", "Ctrl+Alt+Shift+H", "cmd_previous_heading", ""),
     ("&Navigate", "&List Headings...", "Ctrl+Alt+L", "cmd_list_headings", ""),
+    ("&Navigate", "", "", "", "sep"),
+    # Folding. A reading aid rather than a change to the document: nothing
+    # is hidden from the caret and a folded section reads exactly as it
+    # reads unfolded, which is QUILL's decision too -- a fold that really
+    # hid text would be a document whose contents depend on a view state,
+    # and the first thing it would break is Find (bad.md P3.6).
+    # Function keys rather than Minus and Equal. Those two are unparseable to
+    # wx.AcceleratorEntry, which does not complain -- it rejects the whole
+    # string, leaving the menu advertising a key that can never fire. Subtract
+    # and Add parse in wx and not in QuillLite's own reader, which is the same
+    # failure from the other end. F9 and F10 are read by both, and a fold is a
+    # once-in-a-while verb rather than an editing-loop one, which is where the
+    # F-keys past F8 belong (bad.md rule 9).
+    ("&Navigate", "&Fold or Unfold Section", "Ctrl+Shift+F9", "cmd_toggle_fold", ""),
+    ("&Navigate", "Ne&xt Section", "Ctrl+Alt+Shift+Down", "cmd_next_fold", ""),
+    ("&Navigate", "Previo&us Section", "Ctrl+Alt+Shift+Up", "cmd_previous_fold", ""),
+    ("&Navigate", "Unfold &Everything", "Ctrl+Shift+F10", "cmd_unfold_all", ""),
     ("&Navigate", "", "", "", "sep"),
     ("&Navigate", "&Bookmarks", "", "", "sub"),
     ("&Navigate", "", "", "", "sep"),
@@ -684,6 +736,14 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "", "", "", "sep"),
     # Type a short form and a space, get the long one. QUILL's engine, QUILL's
     # manager dialog, and QuillLite's own library unless Preferences says share.
+    # The gallery, and the manager beside it. Abbreviations expand when you
+    # type the trigger, which is perfect for the six you use daily and useless
+    # for the fortieth, whose trigger you cannot remember. QUILL has had a
+    # snippet gallery since its snippets shipped (bad.md 4.2 Tier 3).
+    # Not Insert: QuillLite reserves it, because it is the screen reader's
+    # own modifier and a binding on it is a binding the reader eats. Not
+    # &S either -- Spelling has it in this menu (GATE-14).
+    ("&Tools", "Snippe&ts...", "Alt+Shift+I", "cmd_snippet_gallery", ""),
     ("&Tools", "&Manage Abbreviations...", "Ctrl+Alt+A", "cmd_manage_abbreviations", ""),
     # The switch beside the manager, and not the same thing as the Customize
     # Features checkbox even though it moves it: expansion is the one feature
@@ -843,6 +903,9 @@ COMMANDS: list[CommandRow] = [
     # does. The static key list moved to Ctrl+F1 rather than taking F1 from the
     # engine every other QuillVille app answers with.
     ("&Help", "&Help for This Window", "F1", "cmd_context_help", ""),
+    # The family key for lessons, and the family window. Ctrl+Alt+F1 is what
+    # Radio, Cast, Weather and QUILL answer with (bad.md P3.2).
+    ("&Help", "&Tutorials...", "Ctrl+Alt+F1", "cmd_tutorials", ""),
     ("&Help", "&Keyboard Shortcuts", "Ctrl+F1", "cmd_shortcuts", ""),
     # The family item, on the family key: QuillLite is the app whose users
     # are least likely to know where else to write.

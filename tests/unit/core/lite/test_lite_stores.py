@@ -117,17 +117,20 @@ def test_only_rtf_is_rich() -> None:
 
 def test_settings_round_trip_and_a_corrupt_file_gives_defaults(data_dir: Path) -> None:
     settings = settings_mod.load()
-    settings.theme = "system"
+    settings.theme = "dark"
     settings.font_size = 15
     settings.remember_recent("C:/notes.txt")
     settings_mod.save(settings)
-    assert settings_mod.load().theme == "system"
+    assert settings_mod.load().theme == "dark"
     assert settings_mod.load().font_size == 15
 
     # An editor that refuses to open because its settings file has a stray
-    # comma is an editor somebody loses work to.
+    # comma is an editor somebody loses work to. The default it falls back to
+    # is "system" since 2026-09-17 (bad.md G2): both editors follow the
+    # contrast choice the person already made in Windows, rather than each
+    # guessing a different one.
     settings_mod.settings_path().write_text("{not json", encoding="utf-8")
-    assert settings_mod.load().theme == "dark"
+    assert settings_mod.load().theme == "system"
 
 
 def test_out_of_range_values_are_clamped_not_rejected(data_dir: Path) -> None:
@@ -138,7 +141,7 @@ def test_out_of_range_values_are_clamped_not_rejected(data_dir: Path) -> None:
     loaded = settings_mod.load()
     assert loaded.font_size == 72
     assert loaded.autosave_seconds == 15
-    assert loaded.theme == "dark"
+    assert loaded.theme == "system"
 
 
 def test_a_bool_is_not_accepted_as_an_int(data_dir: Path) -> None:
@@ -274,20 +277,25 @@ def test_only_what_differs_from_the_default_is_written(data_dir: Path) -> None:
     """The delta store, which is the whole reason this is not a plain dump.
 
     A file that spells out every field freezes today's defaults into every
-    user's profile forever: change the default theme in 1.1 and the person who
-    never expressed a preference does not move with it, because their file says
-    "dark" rather than saying nothing.
+    user's profile forever: change the default theme and the person who never
+    expressed a preference does not move with it, because their file states the
+    old answer rather than saying nothing.
+
+    That is not hypothetical any more. The theme default really did change on
+    2026-09-17, from "dark" to "system" (bad.md G2), and this is the mechanism
+    that carried everybody who had not chosen -- while leaving anybody who
+    *had* chosen dark exactly where they were.
     """
     settings_mod.save(settings_mod.Settings())
     on_disk = json.loads(settings_mod.settings_path().read_text(encoding="utf-8"))
     assert on_disk == {"schema": settings_mod.SCHEMA}, on_disk
 
     changed = settings_mod.Settings()
-    changed.theme = "system"
+    changed.theme = "dark"
     settings_mod.save(changed)
     on_disk = json.loads(settings_mod.settings_path().read_text(encoding="utf-8"))
-    assert on_disk == {"schema": settings_mod.SCHEMA, "theme": "system"}, on_disk
-    assert settings_mod.load().theme == "system"
+    assert on_disk == {"schema": settings_mod.SCHEMA, "theme": "dark"}, on_disk
+    assert settings_mod.load().theme == "dark"
     # And everything untouched still comes from code, not from the file.
     assert settings_mod.load().word_wrap is settings_mod.Settings().word_wrap
 

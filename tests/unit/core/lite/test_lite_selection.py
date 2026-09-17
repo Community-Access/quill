@@ -121,11 +121,21 @@ def test_quill_can_do_everything_the_select_menu_can() -> None:
         "cmd_complete_selection": "edit.complete_selection",
         "cmd_reselect": "edit.reselect",
         "cmd_go_to_selection_start": "edit.go_to_start_of_selection",
-        "cmd_toggle_extend_mode": "edit.toggle_extend_selection_mode",
+        # Two rows, not one, since 2026-09-17: Ctrl+Alt+F8 is the F8 *marker*
+        # toggle and Ctrl+Alt+Shift+F8 is Extend Selection Mode, a sticky
+        # Shift. They were sharing a chord across the two products with two
+        # different meanings, which is the shape of a key somebody presses
+        # expecting one thing and gets the other (bad.md 5.3a, P1.2).
+        "cmd_toggle_extend_mode": "edit.toggle_selection_marker",
+        "cmd_toggle_extend_selection_mode": "edit.toggle_extend_selection_mode",
         "cmd_select_word": "edit.select_word",
         "cmd_select_line": "edit.select_line",
         "cmd_select_paragraph": "edit.select_paragraph",
-        "cmd_select_sentence": "edit.select_chunk",
+        # Ctrl+Space means sentence in both since 2026-09-17. It mapped to
+        # edit.select_chunk because QUILL had no Select Sentence at all -- the
+        # gate could only say "something here answers that key", not "the same
+        # thing does" (bad.md P1.2b, 5.3a).
+        "cmd_select_sentence": "edit.select_sentence",
         "cmd_select_block": "edit.select_block",
         "cmd_expand_selection": "edit.expand_selection",
         "cmd_shrink_selection": "edit.shrink_selection",

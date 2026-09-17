@@ -106,3 +106,31 @@ def describe_preview(preview: PrintPreview) -> str:
     """The spoken/textual accessible print preview: "N pages, Letter, 1-inch margins"."""
     noun = "page" if preview.page_count == 1 else "pages"
     return f"{preview.page_count} {noun}, {preview.paper_name}, {preview.margins_text}"
+
+
+#: How a heading is marked when it has to be printed as text. Ugly on purpose:
+#: it is meant to be read as a marker rather than mistaken for the words.
+HEADING_PRINT_MARKER = "[H{level}] "
+
+
+def mark_headings_for_print(lines: list[str], levels: dict[int, int]) -> list[str]:
+    """Write each heading's level in front of it, for a text-only printout.
+
+    A heading printed at body weight and body size is indistinguishable from
+    body text on paper, and that is the one piece of structure the document had.
+    QuillLite has marked them since it shipped; QUILL printed ``GetValue()`` and
+    nothing else, so the **small** product was ahead on paper (bad.md PR1).
+
+    This is the honest stopgap and says so. The real answer is the control's own
+    renderer (:mod:`quill.ui.richedit_printing`, ``EM_FORMATRANGE``), which
+    prints the formatting rather than describing it; a printout that cannot
+    reach it should still not silently lose the structure.
+
+    *levels* maps a 0-based line index to a heading level.
+    """
+    if not levels:
+        return list(lines)
+    return [
+        HEADING_PRINT_MARKER.format(level=levels[index]) + line if index in levels else line
+        for index, line in enumerate(lines)
+    ]

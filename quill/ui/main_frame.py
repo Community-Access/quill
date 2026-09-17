@@ -33,7 +33,7 @@ from quill.core.a11y_regions import (
 from quill.core.ai import Assistant
 from quill.core.ai.agent import allowed_tools
 from quill.core.announce import Channel as AnnounceChannel
-from quill.core.autoformat import EM_DASH, is_dash_merge, smart_quote_for
+from quill.core.autoformat import EM_DASH, autoformat_allows, is_dash_merge, smart_quote_for
 from quill.core.backups import list_backups
 from quill.core.bookmark_anchor import BookmarkAnchor, capture_anchor, resolve_anchor
 from quill.core.bookmarks import (  # N-13: keep the module as the supported home for these helpers
@@ -168,14 +168,10 @@ from quill.core.locations import LocationRing
 from quill.core.macros import MacroManager
 from quill.core.markdown_sections import (
     _LIST_AUTO_FILL_ARM_SECONDS,
-    HeadingBlock,
-    apply_heading_organizer_edits,
     fill_numbered_markers,
     heading_context_at,
     is_caret_inside_list,
-    parse_heading_blocks,
     should_auto_fill_numbers,
-    validate_heading_sequence,
 )
 from quill.core.marks import MarkRing, NamedMarks, line_column_for_position
 from quill.core.menu_customization import (
@@ -282,6 +278,7 @@ from quill.core.spellcheck import (
 )
 from quill.core.spoken_echo import format_spoken_echo, new_history, record_spoken
 from quill.core.sticky_notes import save_sticky_note
+from quill.core.structure_announce import describe_heading_arrival
 from quill.core.structure_nav import (
     find_matching_bracket,
     next_structure_position,
@@ -376,6 +373,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_modal_dialog,
 )
+from quill.ui.extend_selection_mode import ExtendSelectionMixin
 from quill.ui.html_paste_cleaner import analyze_paste
 from quill.ui.keybinding_parse import KeybindingParseMixin
 from quill.ui.keymap_editor import KeymapEditorMixin
@@ -825,6 +823,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    ExtendSelectionMixin,
     SelectionSpanMixin,
     RichParagraphMixin,
     TypingModesMixin,
@@ -1219,7 +1218,7 @@ class MainFrame(
         self._suspend_persistent_undo = False
         self._persistent_undo_dirty = False
         self._last_persistent_undo_write_at: datetime | None = None
-        self._spell_dictionary_cache: tuple[tuple[Path | None, Path], set[str]] | None = None
+        self._spell_dictionary_cache: tuple[tuple[object, ...], set[str]] | None = None
         self._last_live_misspelling_feedback: tuple[str, int, int] | None = None
         self._last_live_misspelling_feedback_at: float = 0.0
         self._extend_selection_mode = False
@@ -2040,6 +2039,10 @@ class MainFrame(
         editor.Bind(wx.EVT_SET_FOCUS, self._on_editor_caret_activity)
         editor.Bind(wx.EVT_CONTEXT_MENU, self._on_editor_context_menu)
         editor.Bind(wx.EVT_TEXT_COPY, self._on_editor_text_copy)
+        # And the cut, which is the half that was missing: a copy leaves the
+        # text where it was, a cut takes it away, and the clip library is
+        # then the only copy of it outside the undo stack (bad.md C1).
+        editor.Bind(wx.EVT_TEXT_CUT, self._on_editor_text_copy)
         # Cut, copy and paste are stock commands the control handles
         # itself, so there is no QUILL method to add a cue to -- and
         # three routes reach them. These events fire for all three.
@@ -2106,8 +2109,17 @@ class MainFrame(
 
         Returns ``True`` when the keystroke was consumed (the replacement was
         inserted directly), ``False`` to let the editor handle it normally.
+
+        Gated by the document **kind** as well as by the two settings since
+        2026-09-17. A curly quote inside a ``.json`` and an em dash inside a
+        ``.py`` are syntax errors nobody asked for, arriving silently, and no
+        setting can express "except in code" -- while the app already knows the
+        kind, because it decides what Ctrl+B writes and what the Format cell
+        says (bad.md T4).
         """
         if event.ControlDown() or event.AltDown():
+            return False
+        if not autoformat_allows(self._effective_markup_kind()):
             return False
         try:
             typed = chr(event.GetUnicodeKey())
@@ -2721,37 +2733,16 @@ class MainFrame(
                 self.say_selected()
                 return
         if event.GetKeyCode() == wx.WXK_ESCAPE:
-            if self._extend_selection_mode:
-                caret = self.editor.GetInsertionPoint()
-                self.toggle_extend_selection_mode(False)
-                self.editor.SetSelection(caret, caret)
+            if self.cancel_extend_selection_mode():
                 return
             # ...and a waiting F8 marker, which Escape used to leave sitting
             # there because this branch only ever looked at extend mode.
             if self.cancel_selection_anchor():
                 return
-        if not self._extend_selection_mode:
-            event.Skip()
-            return
-        movement_keys = {
-            wx.WXK_LEFT,
-            wx.WXK_RIGHT,
-            wx.WXK_UP,
-            wx.WXK_DOWN,
-            wx.WXK_HOME,
-            wx.WXK_END,
-            wx.WXK_PAGEUP,
-            wx.WXK_PAGEDOWN,
-        }
-        if event.GetKeyCode() not in movement_keys:
-            self._commit_pending_extend_selection()
-            event.Skip()
-            return
-        if self._extend_selection_anchor is None:
-            self._extend_selection_anchor = self.editor.GetInsertionPoint()
-        if self._move_extend_selection_caret(event):
-            caret = self.editor.GetInsertionPoint()
-            self.editor.SetSelection(caret, caret)
+        # The mode itself is quill/ui/extend_selection_mode.py since 2026-09-17,
+        # so QuillLite can have it too (bad.md P2.13) and the four movement bugs
+        # were fixed once rather than twice (bad.md P1.2a).
+        if self.handle_extend_selection_key(event):
             return
         event.Skip()
 
@@ -2810,132 +2801,12 @@ class MainFrame(
         line = text[line_start:line_end].strip()
         return bool(re.match(r"^(?:[-+*]|\d+[.)])\s+", line))
 
-    def _apply_extend_selection(self) -> None:
-        if not self._extend_selection_mode or self._extend_selection_anchor is None:
-            return
-        caret = self.editor.GetInsertionPoint()
-        start = min(self._extend_selection_anchor, caret)
-        end = max(self._extend_selection_anchor, caret)
-        self.editor.SetSelection(start, end)
-        if start != end:
-            self._last_selection = (start, end)
-
-    def _has_pending_extend_selection(self) -> bool:
-        if not self._extend_selection_mode or self._extend_selection_anchor is None:
-            return False
-        selection_start, selection_end = self.editor.GetSelection()
-        if selection_start != selection_end:
-            return False
-        return self.editor.GetInsertionPoint() != self._extend_selection_anchor
-
-    def _commit_pending_extend_selection(self) -> bool:
-        if not self._has_pending_extend_selection():
-            return False
-        self._apply_extend_selection()
-        return True
-
     def _command_should_commit_extend_selection(self, command_id: str) -> bool:
         if command_id in self._EXTEND_SELECTION_ACTION_COMMANDS:
             return True
         if command_id in self._EXTEND_SELECTION_ACTION_EXEMPT_COMMANDS:
             return False
         return command_id.startswith(self._EXTEND_SELECTION_ACTION_COMMAND_PREFIXES)
-
-    def _move_extend_selection_caret(self, event: object) -> bool:
-        wx = self._wx
-        text = self.editor.GetValue()
-        caret = self.editor.GetInsertionPoint()
-        key_code = event.GetKeyCode()
-        line_starts = [0]
-        for index, character in enumerate(text):
-            if character == "\n":
-                line_starts.append(index + 1)
-
-        def line_index_for_position(position: int) -> int:
-            for index in range(1, len(line_starts)):
-                if line_starts[index] > position:
-                    return index - 1
-            return len(line_starts) - 1
-
-        def line_limit(index: int) -> int:
-            if index + 1 < len(line_starts):
-                return line_starts[index + 1] - 1
-            return len(text)
-
-        def move_vertical(delta: int) -> bool:
-            current_line = line_index_for_position(caret)
-            target_line = max(0, min(current_line + delta, len(line_starts) - 1))
-            if target_line == current_line:
-                return False
-            column = caret - line_starts[current_line]
-            target = min(line_starts[target_line] + column, line_limit(target_line))
-            self.editor.SetInsertionPoint(target)
-            return True
-
-        def move_word(reverse: bool) -> bool:
-            if not text:
-                return False
-            target = caret
-            if reverse:
-                while target > 0 and text[target - 1].isspace():
-                    target -= 1
-                while target > 0 and not text[target - 1].isspace():
-                    target -= 1
-            else:
-                while target < len(text) and not text[target].isspace():
-                    target += 1
-                while target < len(text) and text[target].isspace():
-                    target += 1
-            if target == caret:
-                return False
-            self.editor.SetInsertionPoint(target)
-            return True
-
-        target = caret
-        # macOS text semantics (#7/#8): Option (Alt) is the word-movement
-        # modifier and Cmd (wx ControlDown on darwin) is the line/document
-        # bounds modifier. Windows uses Ctrl for both. Branching here keeps
-        # the extend-selection caret movement matching native Mac muscle memory
-        # instead of using Cmd for word movement.
-        is_darwin = sys.platform == "darwin"
-        word_mod = event.AltDown() if is_darwin else event.ControlDown()
-        cmd_down = event.ControlDown()  # Cmd on darwin, Ctrl on Windows
-        if cmd_down and key_code == wx.WXK_HOME:
-            target = 0
-        elif cmd_down and key_code == wx.WXK_END:
-            target = len(text)
-        elif word_mod and key_code == wx.WXK_LEFT:
-            return move_word(reverse=True)
-        elif word_mod and key_code == wx.WXK_RIGHT:
-            return move_word(reverse=False)
-        elif is_darwin and cmd_down and key_code == wx.WXK_LEFT:
-            # Cmd+Left -> start of line (macOS HIG line-bound movement).
-            target = line_starts[line_index_for_position(caret)]
-        elif is_darwin and cmd_down and key_code == wx.WXK_RIGHT:
-            # Cmd+Right -> end of line (macOS HIG line-bound movement).
-            target = line_limit(line_index_for_position(caret))
-        elif key_code == wx.WXK_LEFT:
-            target = max(0, caret - 1)
-        elif key_code == wx.WXK_RIGHT:
-            target = min(len(text), caret + 1)
-        elif key_code == wx.WXK_UP:
-            return move_vertical(-1)
-        elif key_code == wx.WXK_DOWN:
-            return move_vertical(1)
-        elif key_code == wx.WXK_HOME:
-            target = line_starts[line_index_for_position(caret)]
-        elif key_code == wx.WXK_END:
-            target = line_limit(line_index_for_position(caret))
-        elif key_code == wx.WXK_PAGEUP:
-            return move_vertical(-10)
-        elif key_code == wx.WXK_PAGEDOWN:
-            return move_vertical(10)
-        else:
-            return False
-        if target == caret:
-            return False
-        self.editor.SetInsertionPoint(target)
-        return True
 
     def _move_point(self, position: int) -> None:
         capped = max(0, min(position, len(self.editor.GetValue())))
@@ -3469,7 +3340,7 @@ class MainFrame(
         menu.AppendSeparator()
         menu.Append(select_all_id, "Select All")
         menu.Append(select_line_id, "Select Line")
-        menu.Append(select_chunk_id, self._menu_label("Select Chunk", "edit.select_chunk"))
+        menu.Append(select_chunk_id, self._menu_label("Select Token", "edit.select_chunk"))
 
         if not has_selection:
             cut_item.Enable(False)
@@ -7554,29 +7425,6 @@ class MainFrame(
             "Word prediction as you type on" if next_state else "Word prediction as you type off"
         )
 
-    def toggle_extend_selection_mode(self, enabled: bool | None = None) -> None:
-        next_state = (not self._extend_selection_mode) if enabled is None else enabled
-        self._extend_selection_mode = next_state
-        if next_state:
-            self._extend_selection_anchor = self.editor.GetInsertionPoint()
-            text = self.editor.GetValue()
-            anchor = self._extend_selection_anchor
-            line, col = line_column_for_position(text, anchor)
-            self._set_status(f"Extend selection mode on. Anchor at line {line}, column {col}.")
-        else:
-            self._extend_selection_anchor = None
-            sel = self._last_selection
-            if sel is not None:
-                text = self.editor.GetValue()
-                s_line, s_col = line_column_for_position(text, sel[0])
-                e_line, e_col = line_column_for_position(text, sel[1])
-                self._set_status(
-                    f"Extend selection mode off. Last region: line {s_line} column {s_col}"
-                    f" to line {e_line} column {e_col}."
-                )
-            else:
-                self._set_status("Extend selection mode off.")
-
     def copy_all(self) -> None:
         text = self.editor.GetValue()
         if not text:
@@ -9969,9 +9817,11 @@ class MainFrame(
         self._location_ring.record(target)
         context = heading_context_at(self.editor.GetValue(), target, markup_kind)
         if context is not None:
-            title = context.title or "untitled"
-            prefix = (
-                f"Moved to {label}, H{context.level}, {context.ordinal} of {context.total}: {title}"
+            prefix = describe_heading_arrival(
+                context.level,
+                context.title,
+                ordinal=context.ordinal,
+                total=context.total,
             )
         else:
             prefix = f"Moved to {label}"
@@ -10000,9 +9850,8 @@ class MainFrame(
         self.editor.SetSelection(target, target)
         self.editor.SetFocus()
         self._location_ring.record(target)
-        title = self._heading_title_at(target) or "untitled"
-        label = "previous heading" if reverse else "next heading"
-        self._announce_navigation_move(f"Moved to {label}, H{level}: {title}", target)
+        title = self._heading_title_at(target)
+        self._announce_navigation_move(describe_heading_arrival(level, title), target)
         return True
 
     def _heading_title_at(self, offset: int) -> str:
@@ -10082,13 +9931,26 @@ class MainFrame(
         self._jump_to(selected.position, "Moved to heading")
 
     def open_quick_nav(self) -> None:
-        """Open the unified Quick Nav / Go to Anything surface (NAV-1, NAV-4).
+        """``Ctrl+Shift+Z``: the landmark index. The same key closes it.
 
-        Builds one index of navigable landmarks (headings, links, lists, list
-        items, tables, block quotes, bookmarks, code blocks) and presents it with
+        One index of every navigable thing in the document -- headings, links,
+        lists, list items, tables, block quotes, bookmarks, code blocks -- with
         a category filter that shows counts (NAV-1) and a type-ahead jump field
         (NAV-4). Selecting an entry jumps to it.
+
+        **A toggle, not only an opener** (bad.md P2.19, §0.6). The key that
+        opened it closes it, because a surface somebody opened by mistake
+        should close the way it came; Escape closes it too. Without that, the
+        only way out of a window you did not mean to open is a key you have to
+        know is different from the one you just pressed.
+
+        It had **no key at all** until 2026-09-17, and stays a separate command
+        from Go To Anything: a fuzzy command palette and a landmark index
+        answer different questions, and merging them would mean typing a
+        heading's name into a list that also contains every command in the app.
         """
+        if self._close_open_quick_nav():
+            return
         text = self.editor.GetValue()
         context = self._quick_nav_panel_context()
         items = build_nav_index(text, context)
@@ -10106,6 +9968,22 @@ class MainFrame(
             self._set_status("Quick Nav cancelled")
             return
         self._jump_to(selected.position, f"Moved to {nav_category(selected.kind).lower()}")
+
+    def _close_open_quick_nav(self) -> bool:
+        """Close a Quick Nav that is already up. ``True`` when there was one.
+
+        The other half of the toggle. Held as an attribute rather than found by
+        walking the window list, because the dialog is modal and the walk would
+        have to run from inside its own event loop.
+        """
+        dialog = getattr(self, "_quick_nav_dialog", None)
+        if dialog is None:
+            return False
+        try:
+            dialog.EndModal(self._wx.ID_CANCEL)
+        except Exception:  # noqa: BLE001 - a dialog already closing is not an error
+            return False
+        return True
 
     def _present_quick_nav(self, items: list[NavItem]) -> NavItem | None:
         """Show the Quick Nav dialog and return the chosen item, or None."""
@@ -10213,6 +10091,8 @@ class MainFrame(
                 call_after(search.SetFocus)
             else:
                 search.SetFocus()
+            # Held so the same key can close it -- see _close_open_quick_nav.
+            self._quick_nav_dialog = dialog
             if self._show_modal_dialog(dialog, "Quick Nav") == wx.ID_OK:
                 if chosen["item"] is None:
                     index = results.GetSelection()
@@ -10221,6 +10101,7 @@ class MainFrame(
                 return chosen["item"]
             return None
         finally:
+            self._quick_nav_dialog = None
             handle = debounce_timer.get("handle")
             stop = getattr(handle, "Stop", None)
             if callable(stop):
@@ -10229,244 +10110,29 @@ class MainFrame(
             self.editor.SetFocus()
 
     def open_heading_organizer(self) -> None:
-        markup_kind = self._effective_markup_kind()
-        if markup_kind not in {"markdown", "html"}:
-            self._set_status("Heading Organizer is only available for Markdown or HTML documents")
-            return
-        text = self.editor.GetValue()
-        headings = parse_heading_blocks(text, markup_kind)
-        if not headings:
-            self._set_status("No headings found for Heading Organizer")
-            return
-        updated = self._show_heading_organizer_dialog(markup_kind, headings)
-        if updated is None:
-            self._set_status("Heading Organizer cancelled")
-            return
-        transformed = apply_heading_organizer_edits(text, markup_kind, updated)
-        if transformed == text:
-            self._set_status("Heading Organizer closed without changes")
-            return
-        self._apply_editor_text(transformed, "Applied heading organizer changes")
+        """Every heading in one list, reordered with arrow keys.
 
-    def _show_heading_organizer_dialog(
-        self,
-        markup_kind: str,
-        headings: list[HeadingBlock],
-    ) -> list[HeadingBlock] | None:
-        wx = self._wx
-        dialog = wx.Dialog(
+        The window itself is :mod:`quill.ui.heading_organizer_dialog`, shared
+        with QuillLite since 2026-09-17 (bad.md P2.13). What stays here is the
+        three things only this host knows: which kind of markup the document is,
+        how to put text back through the undo-aware apply, and the setting that
+        decides whether a second Heading 1 is a warning.
+        """
+        from quill.ui.heading_organizer_dialog import organize_headings
+
+        transformed = organize_headings(
             self.frame,
-            title="Heading Organizer",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-            size=(920, 620),
-        )
-        working = [replace(heading) for heading in headings]
-        source_text = self.editor.GetValue()
-        originals = {heading.source_index: heading for heading in headings}
-        selected_index = 0
-        list_box = wx.ListBox(dialog)
-        set_accessible_name(list_box, "Headings")
-        preview = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        set_accessible_name(preview, "Heading preview")
-        instructions = wx.StaticText(
-            dialog,
-            label=(
-                "Arrow through headings. Tab demotes, Shift+Tab promotes. "
-                "Use Move Up/Down to reorder sections and Rename to edit heading text."
+            markup_kind=self._effective_markup_kind(),
+            text=self.editor.GetValue(),
+            show_modal=self._show_modal_dialog,
+            say=self._set_status,
+            warn_duplicate_h1=bool(
+                getattr(self.settings, "heading_organizer_warn_duplicate_h1", False)
             ),
         )
-        promote_button = wx.Button(dialog, label="Promote")
-        demote_button = wx.Button(dialog, label="Demote")
-        move_up_button = wx.Button(dialog, label="Move Up")
-        move_down_button = wx.Button(dialog, label="Move Down")
-        rename_button = wx.Button(dialog, label="Rename...")
-        validate_button = wx.Button(dialog, label="Validate")
-        apply_button = wx.Button(dialog, id=wx.ID_OK, label="Apply")
-        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
-
-        def labels() -> list[str]:
-            return [
-                f"Heading {entry.level}: {entry.title or '(empty heading)'}" for entry in working
-            ]
-
-        def refresh() -> None:
-            nonlocal selected_index
-            list_box.Set(labels())
-            if not working:
-                preview.ChangeValue("No headings found.")
-                return
-            selected_index = max(0, min(selected_index, len(working) - 1))
-            list_box.SetSelection(selected_index)
-            update_preview()
-
-        def selected() -> HeadingBlock | None:
-            if not working:
-                return None
-            current = list_box.GetSelection()
-            if current == wx.NOT_FOUND:
-                return None
-            return working[current]
-
-        def set_selected(entry: HeadingBlock) -> None:
-            nonlocal selected_index
-            current = list_box.GetSelection()
-            if current == wx.NOT_FOUND:
-                return
-            working[current] = entry
-            selected_index = current
-            refresh()
-
-        def update_preview() -> None:
-            entry = selected()
-            if entry is None:
-                preview.ChangeValue("No heading selected.")
-                return
-            origin = originals.get(entry.source_index)
-            if origin is None:
-                preview.ChangeValue(entry.title)
-                return
-            section = source_text[origin.section_start : origin.section_end].strip()
-            preview.ChangeValue(section or entry.title)
-
-        def promote() -> None:
-            entry = selected()
-            if entry is None:
-                return
-            if entry.level <= 1:
-                self._set_status("Heading already at level 1")
-                return
-            set_selected(replace(entry, level=entry.level - 1))
-            self._set_status(f"{entry.title or '(empty heading)'} is now Heading {entry.level - 1}")
-
-        def demote() -> None:
-            entry = selected()
-            if entry is None:
-                return
-            if entry.level >= 6:
-                self._set_status("Heading already at level 6")
-                return
-            set_selected(replace(entry, level=entry.level + 1))
-            self._set_status(f"{entry.title or '(empty heading)'} is now Heading {entry.level + 1}")
-
-        def move(delta: int) -> None:
-            nonlocal selected_index
-            current = list_box.GetSelection()
-            if current == wx.NOT_FOUND:
-                return
-            target = current + delta
-            if target < 0 or target >= len(working):
-                return
-            working[current], working[target] = working[target], working[current]
-            selected_index = target
-            refresh()
-            self._set_status("Moved heading")
-
-        def rename() -> None:
-            entry = selected()
-            if entry is None:
-                return
-            with wx.TextEntryDialog(
-                dialog,
-                "Enter heading text:",
-                "Rename Heading",
-                value=entry.title,
-            ) as rename_dialog:
-                if self._show_modal_dialog(rename_dialog, "Rename Heading") != wx.ID_OK:
-                    return
-                new_title = rename_dialog.GetValue().strip()
-            set_selected(replace(entry, title=new_title))
-            self._set_status("Renamed heading")
-
-        def validate(show_success: bool = False) -> bool:
-            # #303: surface the duplicate-H1 warning only when the user
-            # has explicitly opted in. Defaults keep the historical
-            # behavior (only "must start at H1" and "skipped level"
-            # issues fire) so users who deliberately write multi-H1
-            # works are not interrupted by a new warning.
-            issues = validate_heading_sequence(
-                working,
-                require_single_h1=getattr(
-                    self.settings,
-                    "heading_organizer_warn_duplicate_h1",
-                    False,
-                ),
-            )
-            if not issues:
-                if show_success:
-                    self._show_message_box(
-                        "Heading order passed accessibility checks.",
-                        "Heading Organizer",
-                        wx.OK | wx.ICON_INFORMATION,
-                    )
-                return True
-            self._show_message_box(
-                "Fix these heading issues before applying:\n\n"
-                + "\n".join(f"- {issue}" for issue in issues),
-                "Heading Organizer",
-                wx.OK | wx.ICON_WARNING,
-            )
-            return False
-
-        def on_key(event: object) -> None:
-            key_code = event.GetKeyCode()
-            if key_code == wx.WXK_TAB:
-                if event.ShiftDown():
-                    promote()
-                else:
-                    demote()
-                return
-            if key_code in (wx.WXK_ADD, wx.WXK_NUMPAD_ADD):
-                demote()
-                return
-            if key_code in (wx.WXK_SUBTRACT, wx.WXK_NUMPAD_SUBTRACT):
-                promote()
-                return
-            event.Skip()
-
-        body = wx.BoxSizer(wx.HORIZONTAL)
-        main = wx.BoxSizer(wx.VERTICAL)
-        main.Add(instructions, 0, wx.ALL | wx.EXPAND, 8)
-        main.Add(list_box, 1, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
-        main.Add(
-            wx.StaticText(dialog, label="Preview of selected heading section:"),
-            0,
-            wx.LEFT | wx.RIGHT,
-            8,
-        )
-        main.Add(preview, 1, wx.ALL | wx.EXPAND, 8)
-        actions = wx.BoxSizer(wx.VERTICAL)
-        actions.Add(promote_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        actions.Add(demote_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        actions.Add(move_up_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        actions.Add(move_down_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        actions.Add(rename_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        actions.Add(validate_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        actions.AddStretchSpacer(1)
-        actions.Add(apply_button, 0, wx.EXPAND | wx.BOTTOM, 6)
-        actions.Add(cancel_button, 0, wx.EXPAND)
-        body.Add(main, 1, wx.EXPAND)
-        body.Add(actions, 0, wx.ALL | wx.EXPAND, 8)
-        dialog.SetSizer(body)
-
-        list_box.Bind(wx.EVT_LISTBOX, lambda _e: update_preview())
-        list_box.Bind(wx.EVT_CHAR_HOOK, on_key)
-        promote_button.Bind(wx.EVT_BUTTON, lambda _e: promote())
-        demote_button.Bind(wx.EVT_BUTTON, lambda _e: demote())
-        move_up_button.Bind(wx.EVT_BUTTON, lambda _e: move(-1))
-        move_down_button.Bind(wx.EVT_BUTTON, lambda _e: move(1))
-        rename_button.Bind(wx.EVT_BUTTON, lambda _e: rename())
-        validate_button.Bind(wx.EVT_BUTTON, lambda _e: validate(show_success=True))
-        apply_button.Bind(
-            wx.EVT_BUTTON,
-            lambda _e: dialog.EndModal(wx.ID_OK) if validate() else None,
-        )
-        cancel_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
-
-        refresh()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        if self._show_modal_dialog(dialog, "Heading Organizer") != wx.ID_OK:
-            return None
-        return working
+        if transformed is None:
+            return
+        self._apply_editor_text(transformed, "Applied heading organizer changes")
 
     def open_yaml_structure_editor(self) -> None:
         if self._effective_markup_kind() != "yaml":
@@ -10764,6 +10430,24 @@ class MainFrame(
         joins the rotation only then — otherwise F6 would "land" on an
         unreachable region. This is the fix for the tab bar being unreachable
         by F6 and by the JAWS cursor when Show Tab Control is on."""
+        # **Screen order, not use order.** F6 walks the regions in the order
+        # they appear in the window: the editor, then whatever panes are
+        # showing, then the status bar at the bottom -- which is where it is on
+        # screen and where QuillLite's F6 finds it too.
+        #
+        # Reordering it to put the status bar second was tried on 2026-09-17
+        # (bad.md P1.10, 5.6, which asked for exactly that) and REVERSED the
+        # same day by the person it was for. The argument for second was that
+        # the status bar is the most-visited region; the argument against is
+        # better, and it is that F6 is a *spatial* key. Somebody who knows the
+        # window has a Reveal Codes pane under the editor and a status bar at
+        # the bottom can predict where three presses land. Ordering the ring by
+        # how often each region is wanted makes it unpredictable, and a
+        # navigation key you cannot predict is one you press and then have to
+        # listen to find out where you are.
+        #
+        # A region that is not showing is not in the ring at all, which is the
+        # other half of the same rule: the ring matches the window.
         labels = ["Editor"]
         reveal = getattr(self, "_reveal_pane", None)
         if reveal is not None and reveal.panel.IsShown():
@@ -11833,11 +11517,20 @@ class MainFrame(
             pass
 
     def show_word_count(self) -> None:
-        wx = self._wx
+        """Say the counts. **No message box** (bad.md H8).
+
+        It opened one, which somebody then had to find the OK button of and
+        dismiss, to be told three numbers they had already heard on the way --
+        the status line was written too. Three numbers are a sentence, and a
+        sentence does not need a window. QuillLite has always spoken this, and
+        a modal for a readout is a modal you close on every single use.
+
+        All three numbers are in the sentence now rather than only the words,
+        because the box was the only place the lines and the characters
+        appeared at all.
+        """
         stats = compute_document_stats(self.editor.GetValue())
-        message = f"Words: {stats.words}\nLines: {stats.lines}\nCharacters: {stats.characters}"
-        self._show_message_box(message, "Word Count", wx.ICON_INFORMATION | wx.OK)
-        summary = f"Word count: {stats.words} words"
+        summary = f"{stats.words:,} words, {stats.lines:,} lines, {stats.characters:,} characters"
         if getattr(self.settings, "announce_counts", True):
             self._set_status(summary)
         else:

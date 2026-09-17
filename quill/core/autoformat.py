@@ -8,6 +8,7 @@ insertion-point manipulation; these functions only decide the replacement.
 from __future__ import annotations
 
 __all__ = [
+    "autoformat_allows",
     "LEFT_DOUBLE",
     "RIGHT_DOUBLE",
     "LEFT_SINGLE",
@@ -49,3 +50,33 @@ def smart_quote_for(preceding_char: str, typed_quote: str) -> str:
 def is_dash_merge(preceding_char: str) -> bool:
     """Return ``True`` when a typed hyphen should merge with the prior one."""
     return preceding_char == "-"
+
+
+#: Document kinds a typed quote must stay straight in. Not a blocklist of
+#: suffixes -- the kinds both editors already classify a document into.
+_LITERAL_KINDS = frozenset({"plain", "code", "json", "yaml", "toml", "ini", "conf"})
+
+
+def autoformat_allows(kind: str | None) -> bool:
+    """Whether autocorrect may touch a document of this *kind* (bad.md T4).
+
+    Autoformat was gated by **app** in both editors and by document kind in
+    neither, so once it was switched on a typed quote curled inside a ``.json``
+    and a ``--`` became an em dash inside a ``.py``. In prose those rules are
+    what the feature is for; in a configuration file they are a syntax error
+    somebody then has to find by reading, having never been told a substitution
+    happened.
+
+    The gate belongs on the kind because both editors already know the kind --
+    it decides what Ctrl+B writes, what the status bar's Format cell says and
+    whether a leading ``#`` is a heading. A setting cannot express "except in
+    code", and asking somebody to remember to switch it off per file is asking
+    them to do the classification the app has already done.
+
+    ``None`` means "unknown", which is treated as prose: an untitled buffer is
+    far more often a note than a config file, and the failure in that direction
+    is a curly quote somebody can undo.
+    """
+    if kind is None:
+        return True
+    return kind.strip().lower() not in _LITERAL_KINDS

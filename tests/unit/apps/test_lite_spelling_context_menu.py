@@ -183,12 +183,12 @@ def _build(text: str, cursor: int, **kwargs: Any) -> tuple[_Window, _Menu]:
 
 
 def _menu_for(text: str, cursor: int, **kwargs: Any) -> tuple[_Window, _Menu]:
-    """The *Spelling submenu* -- or the empty popup, when there is no misspelling.
+    """The *Spelling Actions submenu* -- or the popup, when there is none.
 
-    Almost every question below is about what the submenu offers and what its
-    rows do, and returning it directly keeps those tests reading as they did
-    when the rows were at the top level. The two tests about where the submenu
-    sits use :func:`_build` instead.
+    Most questions below are about what that submenu offers: ignore, teach,
+    next and previous. The **corrections** are not in it -- they are on the
+    popup itself, where the first Down arrow reaches them (bad.md S11) -- so a
+    test about a suggestion uses :func:`_build` and reads the popup's own rows.
     """
     window, menu = _build(text, cursor, **kwargs)
     if menu.submenus:
@@ -200,31 +200,46 @@ def _menu_for(text: str, cursor: int, **kwargs: Any) -> tuple[_Window, _Menu]:
 # What the menu offers
 
 
-def test_the_corrections_are_the_first_thing_in_the_spelling_submenu() -> None:
-    """Opening Spelling has to land on the answer, not on Ignore Once."""
+def test_the_first_down_arrow_lands_on_a_correction() -> None:
+    """The settled answer to the one contested question here (bad.md S11).
+
+    A sighted person finds a misspelling by looking for a red squiggle and
+    right-clicking it. A listener has no squiggle, so the Applications key *is*
+    the squiggle -- and the first Down arrow has to land on the answer rather
+    than on Undo or on a submenu that costs a Right arrow and a pause before
+    anything is said.
+    """
     text = "the wrold is round"
-    _window, menu = _menu_for(text, text.index("wrold") + 2)
+    _window, menu = _build(text, text.index("wrold"))
     assert menu.rows
     assert menu.rows[0] not in {"---", "&Ignore Once"}
     assert "wrold" not in menu.rows[0]  # a suggestion, not the word itself
 
 
-def test_the_whole_spelling_half_is_one_row_on_the_popup_itself() -> None:
-    """So Undo and Cut are in the same place whether the word is misspelled or
-    not, instead of a dozen unpredictable rows further down."""
+def test_everything_below_the_corrections_is_in_the_same_place_every_time() -> None:
+    """The other half of S11, and the reason the two arguments never actually
+    conflicted: the part that changes length is at the **front**.
+
+    QuillLite's complaint was a menu whose length changes with where the caret
+    is, putting Undo and Cut a dozen unpredictable rows down whenever the word
+    happens to be misspelled. Corrections, a separator, one Spelling Actions
+    row, a separator -- so what somebody learns is not a row number, it is
+    "after the suggestions, the menu is the menu".
+    """
     text = "the wrold is round"
     _window, menu = _build(text, text.index("wrold"))
     assert len(menu.submenus) == 1
-    assert menu.rows == [next(iter(menu.submenus)), "---"]
+    tail = menu.rows[menu.rows.index("---") :]
+    assert tail == ["---", next(iter(menu.submenus)), "---"]
 
 
-def test_the_submenu_title_names_the_word_it_is_about() -> None:
-    """A submenu is one row read on the way past, and "Spelling" alone does not
-    say which word -- the same reason every row inside it names the word."""
+def test_the_actions_submenu_names_the_word_it_is_about() -> None:
+    """A submenu is one row read on the way past, and "Spelling Actions" alone
+    does not say which word -- the same reason every row inside it names it."""
     text = "the wrold is round"
     _window, menu = _build(text, text.index("wrold"))
     title = next(iter(menu.submenus))
-    assert title.startswith("&Spelling")
+    assert title.startswith("&Spelling Actions")
     assert "wrold" in title
 
 
@@ -292,7 +307,7 @@ def test_a_word_with_no_suggestions_still_gets_the_rows_that_act_on_it() -> None
 
 def test_a_suggestion_replaces_the_word_and_says_which() -> None:
     text = "the wrold is round"
-    window, menu = _menu_for(text, text.index("wrold"))
+    window, menu = _build(text, text.index("wrold"))
     suggestion = menu.rows[0]
     menu.handlers[suggestion](None)
     assert window.control.GetValue() == text.replace("wrold", suggestion)
@@ -302,7 +317,7 @@ def test_a_suggestion_replaces_the_word_and_says_which() -> None:
 
 def test_replacing_leaves_the_caret_after_the_new_word() -> None:
     text = "the wrold is round"
-    window, menu = _menu_for(text, text.index("wrold"))
+    window, menu = _build(text, text.index("wrold"))
     suggestion = menu.rows[0]
     menu.handlers[suggestion](None)
     assert window.control.GetInsertionPoint() == 4 + len(suggestion)
@@ -312,7 +327,7 @@ def test_a_stale_offset_refuses_rather_than_corrupting_another_word() -> None:
     """A menu stays open as long as the user leaves it open. Replacing on an
     offset the document has moved past is the worst outcome available here."""
     text = "the wrold is round"
-    window, menu = _menu_for(text, text.index("wrold"))
+    window, menu = _build(text, text.index("wrold"))
     suggestion = menu.rows[0]
     window.control.Replace(0, len(text), "something else entirely here")
     menu.handlers[suggestion](None)

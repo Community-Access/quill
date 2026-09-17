@@ -46,6 +46,7 @@ from quill.apps.lite_window_clipboard import DocumentClipboardMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
 from quill.apps.lite_window_file import DocumentFileMixin
+from quill.apps.lite_window_folding import DocumentFoldingMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
@@ -68,6 +69,7 @@ from quill.core.locations import LocationRing
 from quill.core.numbered_bookmarks import BookmarkSet
 from quill.core.sound_events import SoundEvent
 from quill.ui.dialog_contract import show_message_box
+from quill.ui.extend_selection_mode import ExtendSelectionMixin
 from quill.ui.richedit_editing import RICH, create_richedit_document
 
 __all__ = ["DocumentFrame"]
@@ -98,6 +100,16 @@ class DocumentFrame(
     DocumentMenuMixin,
     DocumentAppearanceMixin,
     DocumentModeMixin,
+    # Folding over Markdown sections, 2026-09-17 (bad.md P3.6, Tier 3).
+    # QuillLite already parsed heading blocks for its outline; collapsing
+    # to headings is how a listener skims a long document without the
+    # scroll-and-glance a sighted reader gets for free.
+    DocumentFoldingMixin,
+    # Extend Selection Mode, 2026-09-17 (bad.md P2.13, Tier 2).
+    # QuillLite deleted its own attempt at this in d20fabe and has had
+    # nothing since; QUILL's is the mechanism that works on wxMSW, so it
+    # was extracted rather than written a third time.
+    ExtendSelectionMixin,
     DocumentStatusMixin,
     DocumentHeadingsMixin,
     DocumentMarkupMixin,
@@ -181,6 +193,7 @@ class DocumentFrame(
         self._init_spelling()
         # Before the menu bar too: _sync_check_items reads the extend-mode flag.
         self._init_selection()
+        self._init_folding()
         # And the overtype mirror, for the same reason: the Overwrite Mode mark
         # is read while the bar is built.
         self._init_overwrite()

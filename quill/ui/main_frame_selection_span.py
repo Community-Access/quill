@@ -71,6 +71,23 @@ class SelectionSpanMixin:
         self._announce_result("Selection marker dropped")
         return True
 
+    def toggle_selection_marker(self) -> None:
+        """Ctrl+Alt+F8: drop the F8 marker, or take it back up. No caret move.
+
+        What somebody wants when they have already arrived at the right
+        starting point and do not want a keystroke that might move them --
+        and, pressed a second time, the way out of a marker they no longer
+        want without completing a selection they did not ask for.
+
+        QuillLite's chord, taken here on 2026-09-17. QUILL was spending it on
+        Extend Selection Mode, which is a different thing and now has
+        Alt+Shift+F9 in both (bad.md 5.3a, P1.2).
+        """
+        if getattr(self, "_selection_anchor", None) is None:
+            self.start_selection()
+            return
+        self.complete_selection()
+
     def complete_selection(self) -> None:
         """Shift+F8: take everything between the marker and here, and say so.
 

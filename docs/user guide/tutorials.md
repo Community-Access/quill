@@ -126,7 +126,7 @@ The command palette, Go to Anything, and the keyboard reference that is generate
    - You should hear: The reason, in a sentence.
 
 3. **Go to anything.** Go to Anything is the other door: one box that reaches files, headings, symbols and places rather than commands. Use the palette when you want to *do* something and this when you want to *reach* something.
-   - Keys: Ctrl+Shift+Grave, G
+   - Keys: Ctrl+Alt+Shift+A
    - You should hear: A search box, then matches grouped by what they are.
 
 4. **Read the keys you actually have.** The keyboard reference is generated from your current feature profile and your own keybindings, so it always describes the QUILL in front of you -- not the one in a manual written a year ago.
@@ -267,7 +267,7 @@ The four levels: find here, find every match, replace with care, and search or r
    - You should hear: The matches, grouped by file.
 
 6. **Learn the one that is not a search.** Go to Anything reaches files, headings and places rather than text. When you know the *name* of the thing you want, it is faster than any search.
-   - Keys: Ctrl+Shift+Grave, G
+   - Keys: Ctrl+Alt+Shift+A
    - You should hear: Matches grouped by what they are.
 
 Find for here, Find All for how many, Search in Files for which document. The regex helper is there when the pattern gets hard.

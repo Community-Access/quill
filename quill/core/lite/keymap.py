@@ -52,6 +52,7 @@ from quill.core.lite.commands import (
     plain_label,
     split_menu,
 )
+from quill.core.reserved_keys import RESERVED_KEYS as _SHARED_RESERVED_KEYS
 from quill.core.storage import write_json_atomic
 
 __all__ = [
@@ -135,12 +136,11 @@ _NAMED_KEYS.update({f"f{index}": f"F{index}" for index in range(1, 25)})
 #: Keys QuillLite refuses to bind, with the reason a user is given. Insert is
 #: the screen reader's own modifier; taking it would take away the key somebody
 #: needs to get it back.
-RESERVED_KEYS: dict[str, str] = {
-    "Insert": (
-        "Insert is the key NVDA and JAWS use as their own modifier, so QuillLite "
-        "never binds it. Watching it go past is what the Typing Mode cell does."
-    ),
-}
+#: Re-exported from :mod:`quill.core.reserved_keys` since 2026-09-17, where the
+#: list now lives so QUILL reads the same one. QuillLite refused these at assign
+#: time and QUILL refused nothing, which is how "which keys belong to the screen
+#: reader" came to have two answers (bad.md H9).
+RESERVED_KEYS = _SHARED_RESERVED_KEYS
 
 
 # --------------------------------------------------------------------------- #

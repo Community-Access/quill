@@ -402,30 +402,94 @@ class SelectionMarksMixin:
         )
 
     def exchange_point_and_mark(self) -> None:
+        """Swap the caret with the newest mark, **and select what is between**.
+
+        Two things at once, deliberately, which is QuillLite's behaviour and the
+        useful one: you end up at the other end of the span *and* the span is
+        selected, because wanting to be at the other end of something is
+        normally a prelude to doing something to it (bad.md L12).
+
+        It only moved before, so the span you had just defined was gone the
+        moment you arrived at its far end, and taking it meant pressing the key
+        again to get back and then Shift-arrowing the whole way.
+        """
+        from quill.core.selection import describe_selection
+
+        text = self.editor.GetValue()
         current = self.editor.GetInsertionPoint()
-        target = self._mark_ring.exchange_point_and_mark(current)
+        target = self._mark_ring.exchange_point_and_mark(current, text)
         if target is None:
             self._set_status("No marks in ring. Marks are temporary jump points.")
             return
+        target = min(target, len(text))
         self.editor.SetInsertionPoint(target)
+        start, end = sorted((current, target))
+        if end > start:
+            self.editor.SetSelection(start, end)
+            self._last_selection = (start, end)
+            self._set_status(describe_selection(text, start, end, prefix="Swapped with mark,"))
+            return
         self.editor.SetSelection(target, target)
-        line, column = line_column_for_position(self.editor.GetValue(), target)
-        self._set_status(f"Exchanged point and mark to line {line}, column {column}")
+        self._set_status("Cursor and mark are in the same place")
 
     def list_marks(self) -> None:
-        wx = self._wx
+        """The marks, as a list you can **go to one from** (bad.md L12).
+
+        It was a message box: a read-only wall of "3. Line 41, Column 7" that
+        you had to dismiss and then reach by some other means. A list of places
+        that cannot take you to one of them is a list that answers the easy half
+        of the question -- QuillLite's jumps, and has since it shipped.
+
+        Each row leads with the line and carries a snippet of it, because "Line
+        41" is not a place anybody recognises and the words on it are.
+        """
+        text = self.editor.GetValue()
+        self._mark_ring.reanchor(text)
+        self._mark_ring.clamped_to(len(text))
         marks = self._mark_ring.list_marks()
         if not marks:
             self._set_status("No marks in ring. Marks are temporary jump points.")
             return
-        lines: list[str] = []
-        text = self.editor.GetValue()
-        for index, position in enumerate(reversed(marks), start=1):
-            line, column = line_column_for_position(text, position)
-            lines.append(f"{index}. Line {line}, Column {column}")
-        self._show_message_box(
-            "\n".join(lines),
-            "Mark Ring (Temporary Jump Points)",
-            wx.ICON_INFORMATION | wx.OK,
+        rows: list[tuple[int, str]] = []
+        for position in reversed(marks):
+            line, _column = line_column_for_position(text, position)
+            start = text.rfind("\n", 0, position) + 1
+            end = text.find("\n", position)
+            snippet = text[start : end if end >= 0 else len(text)].strip()[:60]
+            rows.append((position, f"Line {line}: {snippet or '(blank line)'}"))
+        chosen = self._choose_mark_row(rows)
+        if not isinstance(chosen, int):
+            self._set_status(f"Listed {len(marks)} mark(s)")
+            return
+        self._record_location_before_jump()
+        self.editor.SetInsertionPoint(chosen)
+        self.editor.SetFocus()
+        line, column = line_column_for_position(text, chosen)
+        self._set_status(f"Line {line}, column {column}")
+
+    def _choose_mark_row(self, rows: list[tuple[int, str]]) -> int | None:
+        """Show the mark list and return the chosen offset, or ``None``.
+
+        A single-selection list with Enter on a row, which is the shape every
+        other chooser in the product uses -- and the reason this is a method
+        rather than four lines inline is that the dialog has to be substitutable
+        in a test that has no display.
+        """
+        wx = self._wx
+        dialog = wx.SingleChoiceDialog(
+            self.frame,
+            "Choose a mark and press Enter to go there. Marks are places you "
+            "passed through; bookmarks are places you meant to keep.",
+            "Marks",
+            [label for _position, label in rows],
         )
-        self._set_status(f"Listed {len(marks)} mark(s)")
+        try:
+            apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+            if self._show_modal_dialog(dialog, "Marks") != wx.ID_OK:
+                return None
+            index = dialog.GetSelection()
+        finally:
+            dialog.Destroy()
+        if not (0 <= index < len(rows)):
+            return None
+        return rows[index][0]

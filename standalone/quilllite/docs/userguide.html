@@ -219,6 +219,9 @@ window is for and what the thing you are on does.</li>
 useful facts live. Arrow along it, press <strong>Escape</strong> to come
 back.</li>
 <li><strong>Ctrl+F1</strong> lists every key QuillLite has.</li>
+<li><strong>Ctrl+Alt+F1</strong> opens <strong>Tutorials…</strong>:
+eight short lessons that walk you through the things that are hard to
+work out by pressing keys.</li>
 </ul>
 <hr />
 <h2 id="your-documents-are-numbered">Your documents are numbered</h2>
@@ -1010,7 +1013,8 @@ or a paragraph.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F8</strong></td>
-<td>Turn selecting-as-you-move on or off without moving</td>
+<td><strong>Toggle Selection Marker</strong> — drop or pick it up,
+without moving the cursor</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+F8</strong></td>
@@ -1022,6 +1026,26 @@ or a paragraph.</p>
 </tr>
 </tbody>
 </table>
+<h4 id="a-shift-that-stays-down--altshiftf9">A Shift that stays down —
+Alt+Shift+F9</h4>
+<p><strong>Extend Selection Mode</strong> is the other way to do the
+same job, and which one suits you is a matter of taste rather than of
+which is better.</p>
+<p>Press <strong>Alt+Shift+F9</strong> and QuillLite says “Extend
+selection mode on” and tells you where you are. From then on every
+arrow, Home, End, Page Down and Ctrl+arrow <em>extends</em> instead of
+moving — no modifier held, and, the part that matters, <strong>no
+“selected” from your screen reader on every press</strong>. That is what
+makes holding Shift and pressing Down forty times so unpleasant, and it
+is the whole reason this mode exists.</p>
+<p>Press it again, or <strong>Escape</strong>, to stop. Typing anything
+that is not a movement key finishes the selection and replaces it,
+exactly as it would have if you had been holding Shift.</p>
+<p>The difference from <strong>F8</strong>: F8 marks a spot and computes
+the span when you press Shift+F8, so between the two you can use
+<em>anything</em> — Find, Go To Line, a bookmark. This mode is live, so
+what you have is always what is highlighted. Both are here because both
+are genuinely the better answer sometimes.</p>
 <p><strong>Ctrl+Shift+F8</strong> is worth remembering for the moment an
 arrow key has just thrown away a selection that took six keystrokes to
 build. It puts back whatever you last selected, however you selected it
@@ -1306,6 +1330,48 @@ for <strong>Alt+Shift+Right</strong> to change their level, and only
 <em>navigation</em> pretended the document had no shape. A
 <code>#</code> inside a fenced code block is not treated as a
 heading.</p>
+<h3 id="skimming-a-long-one--folding">Skimming a long one — folding</h3>
+<p>A sighted reader finds out what is in a long document by scrolling
+and glancing. Folding is the same thing for somebody who cannot.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+F9</strong></td>
+<td><strong>Fold or Unfold Section</strong> — the one you are in</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Down</strong></td>
+<td><strong>Next Section</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Up</strong></td>
+<td><strong>Previous Section</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F10</strong></td>
+<td><strong>Unfold Everything</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Walking between sections says the heading, whether it is folded, and
+how many lines are under it — “Installing, expanded, 34 lines”. That
+sentence is the skim: it is what a glance down the page would have told
+you.</p>
+<p><strong>Nothing is hidden from your cursor.</strong> A folded section
+reads exactly as it reads unfolded, arrow for arrow, and Find still
+finds things in it. A fold that really hid your text would be a document
+whose contents depend on how you happen to be looking at it, and the
+first thing that breaks is Find. What a fold <em>is</em> here is a note
+to yourself that you have dealt with that section, and you hear it when
+you pass by.</p>
+<p>Markdown documents, where a <code>#</code> heading marks where a
+section starts.</p>
 <h3 id="hearing-that-you-have-arrived-at-one">Hearing that you have
 arrived at one</h3>
 <p>Arrow onto a heading and QuillLite says <strong>“Heading
@@ -1422,8 +1488,34 @@ level 2”. Saying that aloud on every arrow press would be too much;
 never being able to find out is its own problem, and a cell answers on
 demand and costs nothing until you read it. <strong>Enter</strong> on
 the cell turns the spoken cue off and on.</p>
-<h3 id="rearranging-them--format--structure">Rearranging them — Format ▸
-Structure</h3>
+<h3 id="all-of-them-at-once--the-heading-organizer">All of them at once
+— the Heading Organizer</h3>
+<p><strong>Alt+Shift+O</strong> opens <strong>Heading
+Organizer…</strong>: every heading in the document as one list.</p>
+<p>Arrow through it and each row says its level and its text — “Heading
+2: Installing”. <strong>Tab</strong> demotes the one you are on,
+<strong>Shift+Tab</strong> promotes it, and <strong>Move Up</strong> and
+<strong>Move Down</strong> take the heading <em>and everything under
+it</em> past its neighbour. <strong>Rename</strong> changes the wording
+without moving anything, and <strong>Validate</strong> checks the result
+against the rules a screen reader relies on: it must start at Heading 1,
+and it must not skip a level on the way down.</p>
+<p>There is a preview beside the list showing the section under
+whichever heading you are on, which is how you tell two similarly named
+headings apart before you move either of them.</p>
+<p>Nothing happens to your document until you press
+<strong>Apply</strong>, and everything that does happen is one change —
+one <strong>Ctrl+Z</strong> puts it all back.</p>
+<p>This is the same window QUILL has, and it is here for the reason
+everything else in this section is: restructuring a document with four
+separate commands means holding its shape in your head while you change
+it, because nothing reads the result back to you. In the list, the list
+<em>is</em> the shape.</p>
+<p>Markdown and HTML documents only. Rich text headings are a font size
+rather than a marker, so reordering them means moving formatted text
+rather than lines, which is a different job.</p>
+<h3 id="rearranging-them-one-at-a-time--format--structure">Rearranging
+them one at a time — Format ▸ Structure</h3>
 <table>
 <thead>
 <tr>
@@ -1483,6 +1575,12 @@ QuillLite has one, and it is the same one QUILL for All uses.</p>
 it one word at a time with suggestions you can arrow through. For each
 word you can change it, change every one like it, skip it, or add it to
 your dictionary so it is never questioned again.</p>
+<p>It <strong>starts where your cursor is</strong>, the way F7 has in
+Word since there was an F7, and when it reaches the end it says so and
+carries on from the beginning. Before version 1.0 it always started at
+the top, which walked you back through everything you had already
+checked to reach the paragraph you were working in. You can turn the
+wrap off in Preferences if you would rather it simply stopped.</p>
 <table>
 <thead>
 <tr>
@@ -1571,16 +1669,22 @@ its Settings window, so tuning this once tunes both.</p>
 <h3 id="the-word-you-are-on-the-applications-key">The word you are on:
 the Applications key</h3>
 <p>With the cursor in a word QuillLite thinks is misspelled, press the
-<strong>Applications key</strong> (or Shift+F10, or right-click) and the
-menu grows a <strong>Spelling</strong> submenu at the top, named after
-the word: <em>Spelling: “wrold”</em>. One <strong>Down</strong> arrow,
-then <strong>Right</strong>, and you are on the first suggestion;
-<strong>Enter</strong> replaces the word. No dialog opens and the cursor
-does not move.</p>
-<p>Everything about the word is in that one submenu, so the ordinary
-rows below it – Undo, Redo, Cut, Copy, Paste, Delete, Select All – are
-in the same place whether the word is misspelled or not.</p>
-<p>Inside the submenu, under the suggestions:</p>
+<strong>Applications key</strong> (or Shift+F10, or right-click) and
+<strong>the first Down arrow lands on a suggestion</strong>.
+<strong>Enter</strong> replaces the word. No dialog opens, the cursor
+does not move, and there is nothing to arrow past first.</p>
+<p>That is the whole point of this menu. A sighted person finds a
+misspelling by looking for a red squiggle and right-clicking it; you
+have no squiggle, so the Applications key <em>is</em> the squiggle, and
+what it says first should be the answer.</p>
+<p>Under the suggestions there is a separator and then <strong>one
+row</strong> — <em>Spelling Actions for “wrold”</em> — and then the
+ordinary rows: Undo, Redo, Cut, Copy, Paste, Delete, Select All. That
+order never changes. The part that varies in length is at the
+<strong>top</strong>, so everything below the suggestions is always
+where you left it, and what you learn is not a row number but “after the
+suggestions, the menu is the menu”.</p>
+<p>Inside <strong>Spelling Actions</strong>:</p>
 <table>
 <thead>
 <tr>
@@ -1622,6 +1726,8 @@ too.</td>
 </tr>
 </tbody>
 </table>
+<p>QUILL’s menu is the same menu, in the same order, with one extra
+dictionary in it (it has projects; QuillLite opens files).</p>
 <p>Every row names the word it is about, so a menu you reached by
 keyboard still tells you what it is going to do. On a word that is
 spelled correctly there is no Spelling submenu at all – just the
@@ -2036,6 +2142,17 @@ with one keystroke, without first working out which mode you were
 in.</p>
 <p>The status bar’s <strong>Tab Mode</strong> part always says which one
 is on.</p>
+<h3 id="snippets--altshifti">Snippets — Alt+Shift+I</h3>
+<p><strong>Alt+Shift+I</strong> opens <strong>Snippets…</strong>: every
+abbreviation you have, most used first, with a preview of what each one
+writes. Choose one, press Enter, and it goes in at the cursor.</p>
+<p>This is the way in when you cannot remember the trigger.
+Abbreviations expanding as you type is perfect for the six you use every
+day and no help at all for the fortieth one, which you set up in March —
+and a manager is for <em>editing</em> them, not for reaching them.</p>
+<p>It is the same list either way. Anything here expands from its
+trigger too, and anything you add in Manage Abbreviations appears
+here.</p>
 <h3 id="abbreviations">Abbreviations</h3>
 <p>Type a short form, press space, and get the long one. Useful for an
 address, a sign off, or anything you type often and would rather not
@@ -2473,10 +2590,26 @@ margins — is remembered for next time.</p>
 <p>Long lines are wrapped to fit the page whatever your Word Wrap
 setting says, because a printed line that runs off the edge of the paper
 is simply gone.</p>
-<p><strong>In this version, rich formatting does not print.</strong>
-Your text prints in the editor’s font, with headings marked rather than
-styled. We would rather tell you that here than have you find it on
-paper.</p>
+<p><strong>Rich text prints as rich text.</strong> A rich document is
+printed by the editor itself, so a heading arrives on paper as a heading
+and a bold word arrives bold. This was not true before version 1.0:
+everything printed flat, in one size.</p>
+<p>A plain text or Markdown document prints as it reads, which is the
+right answer — a Markdown heading already carries its own <code>#</code>
+onto the page.</p>
+<h3 id="print-preview--ctrlaltshiftp">Print Preview… —
+Ctrl+Alt+Shift+P</h3>
+<p>Not a picture of a page. A picture of a page is the one kind of
+preview that answers nothing at all if you cannot see it, which is why
+WordPad’s and Word’s have never been much use here.</p>
+<p>This one answers the questions you actually have: <strong>how many
+pages</strong>, on what paper, with what margins — and then, page by
+page, what is at the top of each one. “Page 3 of 7: Installing” is how
+you find out whether the section you care about starts where you wanted
+it to, without printing anything.</p>
+<p>The page count is worked out against your real printer, using the
+same measurements the print itself uses, so the number here is the
+number that comes out.</p>
 <hr />
 <h2 id="speech">Speech</h2>
 <p>QuillLite talks through <strong>NVDA or JAWS</strong>, and nothing

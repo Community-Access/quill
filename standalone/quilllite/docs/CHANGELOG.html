@@ -198,9 +198,94 @@
 <main id="main-content">
 <h1 id="quilllite-changelog">QuillLite changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li><p><strong>Tutorials — Ctrl+Alt+F1.</strong> Eight guided lessons in
+two tracks: opening a file and getting it back unchanged, the four kinds
+of document, numbered documents, what to press when you are lost — then
+selecting more than a few words, finding your way back, skimming
+something long, and spelling without a red squiggle. About thirty-six
+minutes in all.</p>
+<p>Each lesson is a list of steps, and each step says what to press,
+<strong>why</strong>, and what you should hear when it worked. A step
+shows <em>your</em> key rather than the one QuillLite ships with, can
+run itself for you, and the window remembers where you stopped.</p>
+<p>Eight, and not more. QUILL has twenty-one in six tracks because QUILL
+is an environment you move into; a Notepad replacement with a
+twenty-one-lesson course attached is advertising that it is not one.</p>
+<p>The same lessons are also a document, beside the user guide,
+generated from the same source — so the book and the window cannot
+disagree.</p></li>
+<li><p><strong>Extend Selection Mode — Alt+Shift+F9.</strong> A Shift
+that stays down: press it, move by any means you like, and the selection
+follows without you holding a modifier — and without your screen reader
+saying “selected” on every single arrow press, which is what makes
+Shift+Down unusable for taking four paragraphs. QuillLite tried this
+once before and it did not work; this is QUILL’s version, which does.
+<strong>Ctrl+Alt+F8</strong> is now the F8 <em>marker</em> toggle, which
+is a different thing and used to share the key.</p></li>
+<li><p><strong>The Heading Organizer — Ctrl+Alt+Shift+O.</strong> Every
+heading in the document in one list. Arrow through them, Tab to demote
+and Shift+Tab to promote, move a whole section up or down, rename one,
+and check the result against the accessibility rules for heading order.
+QuillLite could already list headings and already move sections; this is
+both at once, so you can hear the shape of the document change as you
+change it.</p></li>
+<li><p><strong>Folding over Markdown sections.</strong>
+<strong>Ctrl+Shift+Minus</strong> folds the section you are in and says
+how many lines went with it; <strong>Ctrl+Shift+Right</strong> and
+<strong>Ctrl+Shift+Left</strong> walk between sections, each one saying
+its heading, whether it is folded, and how long it is;
+<strong>Ctrl+Shift+Equals</strong> opens everything again. Nothing is
+hidden from the cursor and a folded section reads exactly as it reads
+unfolded — this is a way of skimming, not a change to your
+document.</p></li>
+<li><p><strong>Snippets — Ctrl+Shift+Insert.</strong> A list of every
+abbreviation, most used first, with a preview of what each one writes.
+Abbreviations expand when you type the trigger, which is perfect for the
+six you use daily and no help at all for the fortieth one, whose trigger
+you cannot remember.</p></li>
+<li><p><strong>Print Preview — Ctrl+Alt+Shift+P.</strong> Not a picture
+of a page. How many pages, on what paper, with what margins, and what is
+at the top of each one — the questions a picture of a page was never
+going to answer for you.</p></li>
+<li><p><strong>Rich text prints as rich text.</strong> A rich document
+is now printed by the text control itself, so headings are headings and
+bold is bold on paper. It used to print as flat text.</p></li>
+</ul>
 <h3 id="changed">Changed</h3>
 <ul>
-<li><strong>Selections are announced the same way in QuillLite and
+<li><p><strong>Curly quotes and em dashes are two switches, not
+one.</strong> Preferences now has <strong>Curl quotes as I type</strong>
+and <strong>Turn two hyphens into an em dash</strong> separately, which
+is what QUILL has always had — they are different opinions and you may
+well want one without the other. Autocorrect in Customize Features is
+still the master switch, and both still start switched off.</p></li>
+<li><p><strong>Autocorrect never runs in a source or configuration
+file.</strong> A curly quote in a <code>.json</code> and an em dash in a
+<code>.py</code> are syntax errors that arrive silently. Both editors
+now decide this from the kind of document rather than from a setting,
+because no setting can say “except in code”.</p></li>
+<li><p><strong>The spelling context menu puts the corrections first
+again.</strong> Press the Applications key on a misspelled word and the
+first Down arrow lands on a suggestion, not on a submenu. Everything
+else about the word — ignore, teach, next and previous — is one row
+below them, in the same place every time. The submenu was the right
+answer to a real complaint (a menu whose length changes is a menu nobody
+can learn) and this keeps that, because the part that changes length is
+now at the top rather than in the middle.</p></li>
+<li><p><strong>F7 starts where your cursor is</strong>, the way it does
+in Word, and offers to carry on from the beginning when it reaches the
+end. It used to start at the top of the document every time, which
+walked you back through everything you had already checked.</p></li>
+<li><p><strong>“Spell words out” now governs the F7 review too.</strong>
+The switch existed and quietly did nothing to the one place a spelled
+word is most useful.</p></li>
+<li><p><strong>A shared dictionary is actually shared.</strong> With
+<strong>Use QUILL’s dictionary</strong> on, a word taught in QUILL is
+known here immediately — it used to take a restart. And two apps
+teaching a word at the same moment no longer lose one of them.</p></li>
+<li><p><strong>Selections are announced the same way in QuillLite and
 QUILL.</strong> Both now say the scope and the number of words —
 “Selected paragraph, 41 words”. QuillLite used to add a character count
 in front of the words and QUILL did not, so the same key reported the
@@ -209,7 +294,7 @@ than characters because a word count is a size you can picture, where
 412 characters is a number you then have to divide. The one selection
 that still says more is the <strong>F8</strong> span, which adds the
 lines it reached — it is the only selection whose reach you cannot work
-out from its name.</li>
+out from its name.</p></li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
@@ -282,7 +367,7 @@ that window and answering “No” deleted the only copy of the work. It now
 says the recovery failed, takes nothing, and leaves the copy for next
 time.</p></li>
 </ul>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li><p><strong>Copy All (Ctrl+F8)</strong> puts the whole document on
 the clipboard without selecting it. Select All then Copy is two keys and
@@ -423,7 +508,7 @@ HTML document, instead of looking for hashes it will never contain.</li>
 in</strong>, and offers both ways out: rich text, or giving the document
 a markup language.</li>
 </ul>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li><strong>Ctrl+G is Go To, not just Go to Line.</strong> One window
 with a target kind – Line, Bookmark or Heading – the way Word has always
@@ -628,7 +713,7 @@ switch, so it is fixed here as well.</li>
 <li><strong>Ctrl+Home onto a heading announces it.</strong> See the
 heading-order change above.</li>
 </ul>
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 <ul>
 <li><p><strong>Headings announce themselves.</strong> Arrow onto a
 heading and QuillLite says “Heading 2”. It has to say it, because no
@@ -750,7 +835,7 @@ menu, exactly.</p></li>
 Tools</strong>, where Windows applications have kept their settings
 since Word 6.</p></li>
 </ul>
-<h3 id="added-3">Added</h3>
+<h3 id="added-4">Added</h3>
 <ul>
 <li><p><strong>Get Help from Support (Ctrl+Alt+F2).</strong> QuillLite
 shipped with no way to report anything: only an address printed in the

@@ -100,6 +100,10 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         ) and spelling_mod.initial_live_check(self.path)
         self._spell_timer = None
         self._spell_dictionary_cache = None
+        #: What the personal dictionary looked like when the cache was
+        #: filled, so a word taught in the other editor is noticed
+        #: without a restart (bad.md S10).
+        self._spell_dictionary_revision: tuple[int, int] = (0, 0)
         self._last_live_word = None
         #: When the last live alert was made, so the repeat throttle has
         #: something to measure against. Monotonic, because a clock that can go
@@ -127,15 +131,29 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         return bool(self.app.feature_enabled("spelling"))
 
     def _spell_dictionary(self) -> set[str]:
-        """The taught words for this document, read once and kept.
+        """The taught words for this document, cached but not stale.
 
         Cached because it is consulted on every live check: going to disk each
         time somebody stops typing would put a file read in the typing path.
+
+        Keyed on the personal dictionary's **revision** since 2026-09-17, which
+        is what makes ``share_quill_dictionary`` mean what it says. With sharing
+        on, both editors read and write one ``personal.json`` -- and a word
+        taught in QUILL stayed underlined here until QuillLite was restarted,
+        which makes a shared dictionary look broken rather than shared
+        (bad.md S10). The check is one ``stat``; the re-read only happens when
+        the file actually moved.
         """
-        if self._spell_dictionary_cache is None:
+        from quill.core.spellcheck import personal_dictionary_revision
+
+        revision = personal_dictionary_revision(
+            spelling_mod.dictionary_dir(self.app.settings, self.app.data_dir)
+        )
+        if self._spell_dictionary_cache is None or self._spell_dictionary_revision != revision:
             self._spell_dictionary_cache = spelling_mod.load_dictionary(
                 self.app.settings, self.app.data_dir, self.path
             )
+            self._spell_dictionary_revision = revision
         return self._spell_dictionary_cache
 
     def _forget_spell_dictionary(self) -> None:

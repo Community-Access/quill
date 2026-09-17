@@ -101,11 +101,33 @@ _MIN_AUTOSAVE_SECONDS = 15
 class Settings:
     """Everything QuillLite remembers between sessions."""
 
-    #: ``dark`` or ``system``. Dark is the default, and that is a decision
-    #: rather than a fashion: the users this editor is for are
-    #: disproportionately light-sensitive, and a first launch that is bright
-    #: white is a first launch some of them cannot read.
-    theme: str = "dark"
+    #: ``dark`` or ``system``. **``system`` since 2026-09-17, which reverses
+    #: the default this field shipped with** (bad.md G2).
+    #:
+    #: The old reason was a good one and is worth stating before the reason it
+    #: lost: the users this editor is for are disproportionately
+    #: light-sensitive, and a first launch that is bright white is a first
+    #: launch some of them cannot read.
+    #:
+    #: What it got wrong is the assumption that light-sensitive means *dark*.
+    #: Somebody who needs high-contrast **light** -- black on white, which
+    #: Windows ships as a high-contrast theme and which some low-vision readers
+    #: depend on -- is harmed by a dark default in exactly the same way, and
+    #: there are more ways to need a particular contrast than there are
+    #: defaults to guess with.
+    #:
+    #: ``system`` does not guess. Anybody with a strong requirement has already
+    #: told Windows about it, in the one place that every other app on the
+    #: machine reads, and following that is strictly better than a guess that is
+    #: right for one group and wrong for another. It also settles G2's real
+    #: complaint, which was never about which colour: the same person launching
+    #: QUILL and QuillLite got two different-looking editors on day one, from
+    #: one setting spelled one way.
+    #:
+    #: Existing users come with it, and that is deliberate -- see ``_deltas``:
+    #: somebody who never chose a theme has no ``theme`` in their file, so a
+    #: changed default reaches them. Anybody who *did* choose dark keeps dark.
+    theme: str = "system"
     #: Empty means the system default face; a name means that face.
     font_name: str = ""
     font_size: int = 12
@@ -242,6 +264,17 @@ class Settings:
     #: that rule says to check. Turning it off here silences the live check
     #: everywhere; F7 still reviews on demand, because that one is asked for.
     spell_check_while_typing: bool = True
+    #: The two halves of autocorrect, separately, which is QUILL's granularity
+    #: and the better one: curly quotes and em dashes are different opinions and
+    #: somebody may well want one without the other (bad.md T5). The Customize
+    #: Features area stays the master switch -- turning the area off turns both
+    #: off -- and these say *which* rules run when it is on.
+    #:
+    #: Both default to False, which is QuillLite's default and the right one:
+    #: a substitution that happens without being asked for is one somebody has
+    #: to discover by reading their own file back.
+    autoformat_smart_quotes: bool = False
+    autoformat_dashes: bool = False
     #: Walk the F7 review by how often each word recurs rather than by
     #: position. QuillLite never had this: it was a QUILL-only second command
     #: on a second chord, and became the shared dialog's checkbox on
@@ -249,6 +282,21 @@ class Settings:
     #: Deliberately the same field name QUILL uses, so the grow-up path has
     #: one fewer row to map (bad.md G1).
     spell_review_ranked: bool = False
+    #: Spell the word out, letter by letter, when the F7 review arrives at one.
+    #:
+    #: QuillLite had the *switch* for this -- Spelling Announcements offers
+    #: "spell words out" -- and no field for it, so the switch governed the
+    #: as-you-type alert and the caret arrival and silently did nothing to the
+    #: review, which is the one place a listener most wants a word spelled
+    #: (bad.md S7). QUILL's field name, again, so there is nothing to map.
+    spell_review_spell_word: bool = True
+    #: How long to wait before spelling it, so the word and its letters do not
+    #: land on top of each other.
+    spell_review_spell_word_pause_ms: int = 800
+    #: Reaching the end of the document comes back round to the beginning and
+    #: carries on, saying so first. Word's behaviour, and the reason the review
+    #: can start at the caret at all.
+    spell_review_wrap_to_beginning: bool = True
     #: Open a blank document when nothing else is being opened. On, because that
     #: is what Notepad and WordPad do and what most people expect -- but off is a
     #: real preference and it had no way to be expressed: somebody who always
@@ -323,7 +371,7 @@ class Settings:
     def normalized(self) -> Settings:
         """This object with every field forced back into range. Returns self."""
         if self.theme not in _THEMES:
-            self.theme = "dark"
+            self.theme = "system"
         if self.default_mode not in _MODES:
             self.default_mode = "plain"
         self.font_size = max(_MIN_FONT_POINTS, min(_MAX_FONT_POINTS, int(self.font_size)))

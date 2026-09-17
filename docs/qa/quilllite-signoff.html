@@ -2755,6 +2755,342 @@ moving.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
+<h3 id="the-tier-2-and-tier-3-crossings-2026-09-17">The Tier 2 and Tier
+3 crossings (2026-09-17)</h3>
+<p>Five things QUILL had and QuillLite did not. Each is shared code
+given a door here, so what these check is the door and the sentence, not
+the engine.</p>
+<p><strong>L-196. Extend Selection Mode is a Shift that stays
+down</strong></p>
+<ul>
+<li>Do: put the cursor at the start of a paragraph and press
+<strong>Alt+Shift+F9</strong>. Now press <strong>Down</strong> four
+times, listening on each press. Then press <strong>Ctrl+Shift+C</strong>
+to copy.</li>
+<li>Pass: you hear “Extend selection mode on” with a line and column.
+The four Down presses each move one line and your screen reader does
+<strong>not</strong> say “selected” on any of them. The copy takes all
+four lines.</li>
+<li>Fail if the reader announces a selection on every arrow. That noise
+is the entire reason this mode exists.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-197. Page Up in Extend Selection Mode moves a real
+page</strong></p>
+<ul>
+<li>Do: in a document longer than two screens, turn the mode on at the
+top and press <strong>Page Down</strong> once, then
+<strong>Shift+F8</strong>-style check by copying.</li>
+<li>Pass: the selection reaches roughly the bottom of the visible
+window, not ten lines. Ten was hardcoded; a page is measured from your
+window.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-198. Down follows the line you can see, not the
+paragraph</strong></p>
+<ul>
+<li>Do: with <strong>Word Wrap on</strong>, write one paragraph long
+enough to wrap over three or four display lines. Put the cursor at its
+start, turn the mode on, and press <strong>Down</strong> once.</li>
+<li>Pass: the cursor moves down one <em>visible</em> line, still inside
+the paragraph.</li>
+<li>Fail if it jumps past the whole paragraph. That was the bug.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-199. Ctrl+Right stops at punctuation</strong></p>
+<ul>
+<li>Do: type <code>self.editor.SetSelection</code> and put the cursor at
+the start. Turn the mode on and press <strong>Ctrl+Right</strong>
+repeatedly.</li>
+<li>Pass: it stops at each <code>.</code> on the way –
+<code>self</code>, <code>.</code>, <code>editor</code>, <code>.</code>,
+<code>SetSelection</code> – which is what Notepad, WordPad and every
+other edit control on Windows do.</li>
+<li>Fail if one press takes you past the whole expression.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-200. Ctrl+Alt+F8 is the marker, not the mode</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Alt+F8</strong>, then read the Edit ▸
+Selection menu.</li>
+<li>Pass: it says <strong>Toggle Selection Marker</strong>, and the mode
+is on <strong>Alt+Shift+F9</strong> as its own row. Pressing Ctrl+Alt+F8
+drops the F8 marker without moving the cursor.</li>
+<li>Fail if one key does both jobs, or if the menu calls the marker
+“Extend Selection Mode”. They are different things and QUILL uses the
+same two keys.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-201. The Heading Organizer lists every heading</strong></p>
+<ul>
+<li>Do: in a Markdown document with at least four headings at two
+levels, press <strong>Ctrl+Alt+Shift+O</strong>.</li>
+<li>Pass: a <strong>Headings</strong> list opens with every heading in
+it, each row reading its level and its text. Arrowing changes the
+preview beside it to the section under that heading.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-202. Tab and Shift+Tab change a heading’s
+level</strong></p>
+<ul>
+<li>Do: in the organizer, arrow to a Heading 2 and press
+<strong>Tab</strong>, then <strong>Shift+Tab</strong>.</li>
+<li>Pass: you hear it become Heading 3 and then Heading 2 again, naming
+the heading each time.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-203. Moving a heading takes its section with
+it</strong></p>
+<ul>
+<li>Do: arrow to the second heading, press <strong>Move Down</strong>,
+then <strong>Apply</strong>.</li>
+<li>Pass: you hear where it moved to, as “3 of 7”. The document now has
+that heading <strong>and the paragraphs under it</strong> below the
+section that was after it. One <strong>Ctrl+Z</strong> puts the whole
+thing back.</li>
+<li>Fail if only the heading line moved, or if undo takes several
+presses.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-204. Validate names what is wrong with the
+order</strong></p>
+<ul>
+<li>Do: make the first heading a Heading 2 (so the document does not
+start at 1) and press <strong>Validate</strong>.</li>
+<li>Pass: it says so, and <strong>Apply</strong> refuses until it is
+fixed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-205. Folding says how much went with it</strong></p>
+<ul>
+<li>Do: in a Markdown document, put the cursor inside a section and
+press <strong>Ctrl+Shift+Minus</strong>.</li>
+<li>Pass: “Folded: 34 lines under Installing”, with the real count.
+Pressing it again says “Unfolded: Installing”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-206. A folded section still reads normally</strong></p>
+<ul>
+<li>Do: straight after L-205, arrow <strong>Down</strong> through the
+folded section.</li>
+<li>Pass: every line reads exactly as it did before, and
+<strong>Ctrl+F</strong> still finds text inside it.</li>
+<li>Fail if any text is skipped. Nothing is ever hidden from the cursor
+– the fold is a note to yourself, not a change to the document.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-207. Walking sections is the skim</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Shift+Right</strong> several times from the
+top of the document.</li>
+<li>Pass: each stop says the heading, whether it is folded, and how many
+lines are under it. <strong>Alt+Left</strong> brings you back from the
+last jump.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-208. Snippets lists them with a preview</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Shift+Insert</strong>.</li>
+<li>Pass: a <strong>Snippets</strong> list opens with every
+abbreviation, each row reading its trigger and the beginning of what it
+writes. Enter on one puts it in at the cursor and says “Inserted” with
+its name.</li>
+<li>Fail if the rows are triggers alone – the trigger is the thing you
+came here because you could not remember.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-209. Print Preview answers in words</strong></p>
+<ul>
+<li>Do: in a document of a few pages, press
+<strong>Ctrl+Alt+Shift+P</strong>.</li>
+<li>Pass: you hear “N pages”, the paper name and the margins, and the
+window lists each page with the first line on it. The page count matches
+what comes out if you then print.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-210. Rich text prints as rich text</strong></p>
+<ul>
+<li>Do: in a <strong>rich text</strong> document with a Heading 1, a
+bold word and a bullet list, print to PDF (or to paper).</li>
+<li>Pass: the heading is larger and bold on the page, the bold word is
+bold, and the list has bullets.</li>
+<li>Fail if everything is one size. That was true until this version,
+and it made QuillLite’s printed output worse than its screen.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-211. The corrections come first again</strong></p>
+<ul>
+<li>Do: type a misspelled word, leave the cursor in it, and press the
+<strong>Applications key</strong>. Press <strong>Down</strong>
+once.</li>
+<li>Pass: you land on a <strong>suggestion</strong>, and Enter replaces
+the word. Below the suggestions there is one row, <strong>Spelling
+Actions for “word”</strong>, and then Undo, Cut, Copy and the rest – in
+that order, every time.</li>
+<li>Fail if the first Down lands on a submenu or on Undo.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-212. F7 starts where you are and offers to
+wrap</strong></p>
+<ul>
+<li>Do: put the cursor halfway down a document with misspellings both
+above and below it, and press <strong>F7</strong>. Work through to the
+end.</li>
+<li>Pass: the first word it stops on is <strong>after</strong> the
+cursor, and when it runs out it says it is wrapping to the beginning and
+carries on with the ones above.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-213. A word taught in QUILL is known here at
+once</strong></p>
+<ul>
+<li>Do: with <strong>Use QUILL’s dictionary</strong> on in Preferences
+and both apps open, teach a made-up word in QUILL. Come back to
+QuillLite, type the same word and wait for the live check.</li>
+<li>Pass: it is not reported. No restart needed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-214. Curly quotes and em dashes are separate
+switches</strong></p>
+<ul>
+<li>Do: in Preferences, switch <strong>Curl quotes as I type</strong> on
+and <strong>Turn two hyphens into an em dash</strong> off (with
+Autocorrect on in Customize Features). Type a quote, then two
+hyphens.</li>
+<li>Pass: the quote curls; the hyphens stay two hyphens.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-215. Autocorrect never touches a configuration
+file</strong></p>
+<ul>
+<li>Do: with both switches on, open a <code>.json</code> or a
+<code>.py</code> and type a quote and two hyphens.</li>
+<li>Pass: both stay exactly as typed. A curly quote there is a syntax
+error that arrives silently.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="the-tutorials-2026-09-17">The tutorials (2026-09-17)</h3>
+<p><strong>L-216. Ctrl+Alt+F1 opens the lessons</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Alt+F1</strong>.</li>
+<li>Pass: a <strong>QuillLite Tutorials</strong> window opens, listing
+eight lessons in two tracks. Arrowing reads each lesson’s title, how
+long it takes, and what you will be able to do at the end.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-217. A step shows the key you actually have</strong></p>
+<ul>
+<li>Do: rebind <strong>Select Paragraph</strong> in the Keyboard Manager
+to something else. Open the tutorials, go to “Selecting more than a few
+words”, and read its first step.</li>
+<li>Pass: the step shows <strong>your</strong> key, not
+Ctrl+Shift+H.</li>
+<li>Fail if it shows the shipped key. The lesson asks the command
+registry when it draws the step, which is the whole reason a step names
+a command rather than a key.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-218. Every step says what you should hear</strong></p>
+<ul>
+<li>Do: arrow through any lesson’s steps.</li>
+<li>Pass: each one ends with what to listen for. A screen-reader user’s
+confirmation that a step worked is a sentence, not a green tick.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-219. The book says the same thing as the
+window</strong></p>
+<ul>
+<li>Do: open the tutorial book (the button in the window, or
+<code>docs\tutorials.html</code> beside the app) and compare any lesson
+with the window.</li>
+<li>Pass: the same lessons, the same steps, in the same order. The book
+is generated from the lessons, so they cannot drift.</li>
+<li>Fail if any lesson is in one and not the other.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-220. It remembers where you stopped</strong></p>
+<ul>
+<li>Do: work three steps into a lesson, close the window, and reopen
+it.</li>
+<li>Pass: you are offered the lesson again at the step you were on.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="the-family-keymap-second-pass-2026-09-17">The family keymap,
+second pass (2026-09-17)</h3>
+<p>Three keys changed meaning in <strong>both</strong> editors, so these
+are worth a listen in QuillLite even though the work was mostly QUILL’s
+side.</p>
+<p><strong>L-221. Ctrl+Space takes the sentence</strong></p>
+<ul>
+<li>Do: put the cursor in the middle of a sentence and press
+<strong>Ctrl+Space</strong>.</li>
+<li>Pass: the whole sentence is selected and you hear “Selected
+sentence” with a word count. QUILL answers the same key the same way
+now; it used to select a “chunk” there.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-222. Nothing else moved in QuillLite</strong></p>
+<ul>
+<li>Do: read Edit ▸ Selection top to bottom.</li>
+<li>Pass: every key is the one it was. QuillLite’s selection keys were
+already the family’s; what changed was QUILL coming into line with
+them.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
 <hr />
 <h2 id="sign-off">Sign-off</h2>
 <table>

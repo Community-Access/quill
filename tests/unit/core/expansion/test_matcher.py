@@ -5,6 +5,7 @@ from __future__ import annotations
 from quill.core.abbreviations import Abbreviation, AbbreviationLibrary
 from quill.core.expansion.matcher import apply_typed_case, match_buffer
 from quill.core.expansion.ring_buffer import RingBuffer
+from quill.core.snippets import Snippet, SnippetLibrary
 
 
 def _library(*entries: Abbreviation) -> AbbreviationLibrary:
@@ -128,3 +129,94 @@ def test_the_matched_entry_is_returned_for_its_per_entry_settings() -> None:
 
 def test_apply_typed_case_leaves_ordinary_typing_alone() -> None:
     assert apply_typed_case("btw", "by the way") == "by the way"
+
+
+def test_user_abbreviation_wins_a_same_trigger_collision() -> None:
+    abbreviation = _entry("btw", "by the way")
+    snippets = SnippetLibrary(
+        version=1,
+        snippets=[Snippet(id="s", name="Aside", trigger="btw", body="aside")],
+    )
+
+    match = match_buffer(
+        _typed("btw "),
+        _library(abbreviation),
+        snippet_library=snippets,
+    )
+
+    assert match is not None
+    assert match.abbreviation is abbreviation
+    assert match.snippet is None
+
+
+def test_snippet_context_is_requested_only_for_a_matching_snippet() -> None:
+    calls: list[bool] = []
+    snippets = SnippetLibrary(
+        version=1,
+        snippets=[
+            Snippet(
+                id="s",
+                name="Wrap selection",
+                trigger=";wrap",
+                body="<${selection}>${cursor}",
+            )
+        ],
+    )
+
+    assert (
+        match_buffer(
+            _typed("plain "),
+            _library(_entry("plain", "text")),
+            snippet_library=snippets,
+            snippet_context_provider=lambda: calls.append(True) or {"selection": "x"},
+        )
+        is not None
+    )
+    assert calls == []
+
+    match = match_buffer(
+        _typed(";wrap "),
+        _library(),
+        snippet_library=snippets,
+        snippet_context_provider=lambda: calls.append(True) or {"selection": "picked"},
+    )
+
+    assert match is not None
+    assert match.snippet is snippets.snippets[0]
+    assert match.text == "<picked>"
+    assert match.context_values == (("selection", "picked"),)
+    assert calls == [True]
+
+
+def test_snippet_with_unavailable_selection_context_does_not_match() -> None:
+    snippets = SnippetLibrary(
+        version=1,
+        snippets=[Snippet(id="s", name="Wrap", trigger=";wrap", body="<${selection}>")],
+    )
+
+    assert match_buffer(_typed(";wrap "), _library(), snippet_library=snippets) is None
+
+
+def test_snippet_fields_are_left_for_the_shared_prompt() -> None:
+    snippets = SnippetLibrary(
+        version=1,
+        snippets=[
+            Snippet(
+                id="s",
+                name="Journal",
+                trigger=";journal",
+                body="# ${input:title}\n${selection}\n${cursor}",
+            )
+        ],
+    )
+
+    match = match_buffer(
+        _typed(";journal "),
+        _library(),
+        snippet_library=snippets,
+        snippet_context_provider=lambda: {"selection": "picked"},
+    )
+
+    assert match is not None
+    assert match.text == "# ${input:title}\n${selection}\n${cursor}"
+    assert match.template == match.text

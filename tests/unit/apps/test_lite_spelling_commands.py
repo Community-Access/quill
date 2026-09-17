@@ -210,11 +210,29 @@ def test_add_word_says_which_of_the_two_dictionaries_it_went_to(spelled):
     assert "your QuillLite dictionary" in win.announcements[-1]
 
 
-def test_add_word_names_the_shared_dictionary_when_sharing_is_on(spelled, tmp_path):
+def test_add_word_names_the_shared_dictionary_when_sharing_is_on(spelled, tmp_path, monkeypatch):
+    """Isolated, because "shared" means QUILL's own data folder.
+
+    ``tmp_path`` was an unused parameter here until 2026-09-17 and the test was
+    writing its made-up word into the **developer's real** personal dictionary,
+    every run, for good. Nothing noticed, because each app cached the list at
+    startup: within one run the word stayed underlined, so the assertion still
+    passed while the file quietly grew. Making the cache notice the file change
+    (bad.md S10) is what surfaced it -- the second run of the suite failed,
+    because by then the word really was taught.
+
+    ``QUILL_DATA_DIR`` is honoured under the dev-build flag ``tests/conftest.py``
+    sets for the whole session, so this points the shared folder at a temporary
+    one for the duration.
+    """
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path / "quill-data"))
     win = spelled("the quick brxwn fox", cursor=13)
     win.app.settings.share_quill_dictionary = True
     win.cmd_add_word_to_dictionary()
     assert "QUILL's shared dictionary" in win.announcements[-1]
+    # And it really went there, rather than into QuillLite's own folder.
+    taught = tmp_path / "quill-data" / "dictionaries" / "personal.json"
+    assert taught.is_file() and "brxwn" in taught.read_text(encoding="utf-8")
 
 
 def test_add_word_on_a_correctly_spelled_word_says_there_is_nothing_to_teach(spelled):

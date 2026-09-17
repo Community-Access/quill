@@ -153,6 +153,15 @@ def test_the_guide_states_the_cost_of_the_mdi_window_model(guide: str) -> None:
     assert "not** appear in Alt+Tab" in guide or "do not appear in Alt+Tab" in guide
 
 
-def test_the_guide_states_the_printing_limit(guide: str) -> None:
-    """Rich formatting does not print in 1.0, and that has to be said up front."""
-    assert "rich formatting does not print" in guide.lower()
+def test_the_guide_says_rich_text_prints_as_rich_text(guide: str) -> None:
+    """The limitation this used to assert is gone, so the assertion inverted.
+
+    Until 2026-09-17 a rich document printed as flat text in one size, and the
+    guide had to say so up front rather than let somebody find it on paper. It
+    prints through the control's own renderer now (bad.md PR3,
+    ``quill/ui/richedit_printing.py``), so the sentence a reader needs is the
+    opposite one -- and a guide still carrying the old warning would send
+    somebody looking for a workaround they no longer need.
+    """
+    assert "rich text prints as rich text" in guide.lower()
+    assert "rich formatting does not print" not in guide.lower()

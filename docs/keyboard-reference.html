@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Keyboard Reference (default bindings)</title>
   <style>
@@ -209,7 +209,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 410.</p>
+<p>Editor commands with default bindings: 415.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -223,6 +223,16 @@ your own customised keymap.</p>
 <tbody>
 <tr>
 <td>(unbound by default)</td>
+<td>Add Current Folder to Favorites</td>
+<td><code>file.add_favorite_folder</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Remove Favorite Folder…</td>
+<td><code>file.remove_favorite_folder</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>Restore Previous Version…</td>
 <td><code>file.restore_previous_version</code></td>
 </tr>
@@ -230,21 +240,6 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+P</td>
 <td>Page Setup…</td>
 <td><code>file.page_setup</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+A</td>
-<td>Add Current Folder to Favorites</td>
-<td><code>file.add_favorite_folder</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+O</td>
-<td>Open From Favorite Folder…</td>
-<td><code>file.open_from_favorite_folder</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+R</td>
-<td>Remove Favorite Folder…</td>
-<td><code>file.remove_favorite_folder</code></td>
 </tr>
 <tr>
 <td>Ctrl+N</td>
@@ -280,6 +275,11 @@ your own customised keymap.</p>
 <td>QUILL Key + B</td>
 <td>Batch conversion</td>
 <td><code>file.batch_conversion</code></td>
+</tr>
+<tr>
+<td>QUILL Key + G</td>
+<td>Open From Favorite Folder…</td>
+<td><code>file.open_from_favorite_folder</code></td>
 </tr>
 <tr>
 <td>QUILL Key + Shift+I</td>
@@ -389,6 +389,11 @@ your own customised keymap.</p>
 <td><code>edit.go_to_start_of_selection</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+F9</td>
+<td>Toggle Extend Selection Mode</td>
+<td><code>edit.toggle_extend_selection_mode</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+U</td>
 <td>Open Review Buffer</td>
 <td><code>edit.open_review_buffer</code></td>
@@ -415,8 +420,8 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+F8</td>
-<td>Toggle Extend Selection Mode</td>
-<td><code>edit.toggle_extend_selection_mode</code></td>
+<td>Toggle Selection Marker</td>
+<td><code>edit.toggle_selection_marker</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+R</td>
@@ -507,6 +512,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+Z</td>
 <td>Restore deletion</td>
 <td><code>edit.restore_deletion</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Space</td>
+<td>Select Token</td>
+<td><code>edit.select_chunk</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+V</td>
@@ -625,8 +635,8 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Space</td>
-<td>Select Chunk</td>
-<td><code>edit.select_chunk</code></td>
+<td>Select Sentence</td>
+<td><code>edit.select_sentence</code></td>
 </tr>
 <tr>
 <td>Ctrl+Y</td>
@@ -1123,6 +1133,11 @@ your own customised keymap.</p>
 <td><code>navigate.set_temp_bookmark</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+A</td>
+<td>Go to Anything</td>
+<td><code>navigate.go_to_anything</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+H</td>
 <td>Previous Heading</td>
 <td><code>navigate.previous_heading</code></td>
@@ -1198,6 +1213,11 @@ your own customised keymap.</p>
 <td><code>navigate.outline_navigator</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+Z</td>
+<td>Quick Nav (Landmarks)</td>
+<td><code>navigate.quick_nav</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+\</td>
 <td>Match Bracket</td>
 <td><code>navigate.match_bracket</code></td>
@@ -1216,11 +1236,6 @@ your own customised keymap.</p>
 <td>QUILL Key + F</td>
 <td>Speak Window Title</td>
 <td><code>navigate.speak_window_title</code></td>
-</tr>
-<tr>
-<td>QUILL Key + G</td>
-<td>Go to Anything</td>
-<td><code>navigate.go_to_anything</code></td>
 </tr>
 <tr>
 <td>QUILL Key + O</td>
@@ -1263,6 +1278,11 @@ your own customised keymap.</p>
 <td>Alt+F3</td>
 <td>Reveal Codes</td>
 <td><code>view.reveal_codes_toggle</code></td>
+</tr>
+<tr>
+<td>Alt+F6</td>
+<td>Focus Preview</td>
+<td><code>view.focus_preview</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+B</td>
@@ -1328,11 +1348,6 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+\</td>
 <td>Preview Side by Side</td>
 <td><code>view.split_preview</code></td>
-</tr>
-<tr>
-<td>Ctrl+F6</td>
-<td>Focus Preview</td>
-<td><code>view.focus_preview</code></td>
 </tr>
 <tr>
 <td>QUILL Key + Shift+C</td>
@@ -1455,6 +1470,16 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+M</td>
 <td>AI Thesaurus</td>
 <td><code>tools.ai_thesaurus</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+O</td>
+<td>Sound Scheme</td>
+<td><code>tools.sound_events</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+R</td>
+<td>Keymap Editor…</td>
+<td><code>tools.keymap_editor</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+S</td>
@@ -1639,7 +1664,7 @@ your own customised keymap.</p>
 <td><code>window.close_other_documents</code></td>
 </tr>
 <tr>
-<td>Ctrl+Shift+Tab</td>
+<td>Ctrl+Shift+Tab or Ctrl+Shift+F6</td>
 <td>Previous Document</td>
 <td><code>window.previous_document</code></td>
 </tr>
@@ -1649,7 +1674,7 @@ your own customised keymap.</p>
 <td><code>window.new_document_tab</code></td>
 </tr>
 <tr>
-<td>Ctrl+Tab</td>
+<td>Ctrl+Tab or Ctrl+F6</td>
 <td>Next Document</td>
 <td><code>window.next_document</code></td>
 </tr>

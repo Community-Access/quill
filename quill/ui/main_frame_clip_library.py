@@ -39,13 +39,20 @@ class ClipLibraryMixin:
             self._set_status("Already in the Clip Library.")
 
     def _on_editor_text_copy(self, event: object) -> None:
-        """Auto-capture a copy into the Clip Library, when opted in.
+        """Auto-capture a copy **or a cut** into the Clip Library, when opted in.
 
-        Bound to ``wx.EVT_TEXT_COPY``, which the native control fires for
-        every copy regardless of trigger (menu, Ctrl+C, or right-click) --
-        the one mechanism that does not require guessing which UI path was
-        used. Off by default (``clip_library_autocapture``); always skips
-        the event so the native copy itself is never affected.
+        Bound to ``wx.EVT_TEXT_COPY`` and ``wx.EVT_TEXT_CUT``, which the native
+        control fires for every copy and every cut regardless of trigger (menu,
+        Ctrl+C, Ctrl+X, or right-click) -- the one mechanism that does not
+        require guessing which UI path was used. Off by default
+        (``clip_library_autocapture``); always skips the event so the native
+        operation itself is never affected.
+
+        **The cut half was missing until 2026-09-17** (bad.md C1, P2.18), and
+        it is the half that matters most: a copy leaves the text where it was,
+        so losing it from the history costs nothing. A cut takes it away, and
+        the clip library is then the only copy outside the undo stack.
+        QuillLite captures both.
         """
         if getattr(self.settings, "clip_library_autocapture", False):
             start, end = self.editor.GetSelection()

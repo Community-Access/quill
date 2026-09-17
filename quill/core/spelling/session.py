@@ -56,6 +56,8 @@ class ReviewSession:
         scope_end: int | None = None,
         ranked: bool = False,
         ignores: object | None = None,
+        start_at: int | None = None,
+        wrap: bool = False,
     ) -> None:
         self._text = text
         self._dictionary = dictionary
@@ -75,6 +77,21 @@ class ReviewSession:
         #: stopped on (bad.md S6). Duck-typed on ``skips(text, item)`` so the
         #: session stays wx-free and either editor's list fits.
         self._ignores = ignores
+        #: Where the review begins, which is the caret rather than the top of
+        #: the document when the caller passes one. Word has started F7 at the
+        #: insertion point since it had an F7, and for somebody working in the
+        #: middle of a long document the alternative is being walked back
+        #: through everything they already checked (bad.md S7, rule 1).
+        self._start_at = None if start_at is None else max(scope_start, int(start_at))
+        #: Whether reaching the end comes back round to the beginning. The
+        #: setting ``spell_review_wrap_to_beginning`` has been documented, and
+        #: shipped, and read by nothing at all -- there was no "end" for it to
+        #: happen at, because the review always started from the top. Giving it
+        #: a start gave it a meaning.
+        self._wrap = bool(wrap)
+        #: True once the wrap has happened, so it happens once and the prompt
+        #: is said once.
+        self._wrapped = False
         self._session_ignores: set[str] = set()
         self._ignored_once_positions: set[int] = set()
         self._counters = ReviewCounters()
@@ -135,6 +152,42 @@ class ReviewSession:
 
     def can_undo(self) -> bool:
         return bool(self._undo_stack)
+
+    def should_wrap(self) -> bool:
+        """True when the review has run out *after* the caret but not before it.
+
+        Asked by the dialog between issues. Answering yes means: say the wrap
+        prompt, call :meth:`wrap_to_beginning`, and carry on. The session does
+        not announce anything itself -- it has no voice, and a wx-free core
+        earning one is how a core stops being wx-free.
+        """
+        if not self._wrap or self._wrapped or self._start_at is None:
+            return False
+        if self._current_idx < len(self._issues):
+            return False
+        return any(m.start < self._start_at for m in self._issues_before_start())
+
+    def wrap_to_beginning(self) -> None:
+        """Come back round to the top and carry on. Once per review."""
+        if self._wrapped:
+            return
+        self._wrapped = True
+        self._start_at = None
+        self._rescan(advance_past=None)
+        self._current_idx = 0
+
+    def _issues_before_start(self) -> list[object]:
+        """Every issue in scope, including the ones the caret start held back."""
+        from quill.core.spellcheck import list_misspellings as _lm
+
+        return [
+            m
+            for m in _lm(self._text, self._dictionary)
+            if self._scope_start <= m.start < self._scope_end
+            and m.word.lower() not in self._session_ignores
+            and m.start not in self._ignored_once_positions
+            and not self._externally_ignored(m)
+        ]
 
     def is_complete(self) -> bool:
         return self._current_idx >= len(self._issues)
@@ -394,6 +447,10 @@ class ReviewSession:
             and m.word.lower() not in self._session_ignores
             and m.start not in self._ignored_once_positions
             and not self._externally_ignored(m)
+            # Held back until the wrap, when there is one. Filtered here rather
+            # than skipped at the cursor so the counts, the ranking and "no
+            # misspellings found" all agree about what this pass covers.
+            and (self._start_at is None or m.start >= self._start_at)
         ]
         if self._ranked:
             self._issues = rank_misspellings_by_frequency(self._issues)

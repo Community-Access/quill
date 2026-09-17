@@ -1624,6 +1624,223 @@ you only notice a week later.
 - Pass: the last one says "1 mark", not "5 marks".
 - [ ] pass  [ ] fail: ______
 
+### The Tier 2 and Tier 3 crossings (2026-09-17)
+
+Five things QUILL had and QuillLite did not. Each is shared code given a door
+here, so what these check is the door and the sentence, not the engine.
+
+**L-196. Extend Selection Mode is a Shift that stays down**
+- Do: put the cursor at the start of a paragraph and press
+  **Alt+Shift+F9**. Now press **Down** four times, listening on each press.
+  Then press **Ctrl+Shift+C** to copy.
+- Pass: you hear "Extend selection mode on" with a line and column. The four
+  Down presses each move one line and your screen reader does **not** say
+  "selected" on any of them. The copy takes all four lines.
+- Fail if the reader announces a selection on every arrow. That noise is the
+  entire reason this mode exists.
+- [ ] pass  [ ] fail: ______
+
+**L-197. Page Up in Extend Selection Mode moves a real page**
+- Do: in a document longer than two screens, turn the mode on at the top and
+  press **Page Down** once, then **Shift+F8**-style check by copying.
+- Pass: the selection reaches roughly the bottom of the visible window, not ten
+  lines. Ten was hardcoded; a page is measured from your window.
+- [ ] pass  [ ] fail: ______
+
+**L-198. Down follows the line you can see, not the paragraph**
+- Do: with **Word Wrap on**, write one paragraph long enough to wrap over three
+  or four display lines. Put the cursor at its start, turn the mode on, and
+  press **Down** once.
+- Pass: the cursor moves down one *visible* line, still inside the paragraph.
+- Fail if it jumps past the whole paragraph. That was the bug.
+- [ ] pass  [ ] fail: ______
+
+**L-199. Ctrl+Right stops at punctuation**
+- Do: type `self.editor.SetSelection` and put the cursor at the start. Turn the
+  mode on and press **Ctrl+Right** repeatedly.
+- Pass: it stops at each `.` on the way -- `self`, `.`, `editor`, `.`,
+  `SetSelection` -- which is what Notepad, WordPad and every other edit control
+  on Windows do.
+- Fail if one press takes you past the whole expression.
+- [ ] pass  [ ] fail: ______
+
+**L-200. Ctrl+Alt+F8 is the marker, not the mode**
+- Do: press **Ctrl+Alt+F8**, then read the Edit ▸ Selection menu.
+- Pass: it says **Toggle Selection Marker**, and the mode is on
+  **Alt+Shift+F9** as its own row. Pressing Ctrl+Alt+F8 drops the F8
+  marker without moving the cursor.
+- Fail if one key does both jobs, or if the menu calls the marker "Extend
+  Selection Mode". They are different things and QUILL uses the same two keys.
+- [ ] pass  [ ] fail: ______
+
+**L-201. The Heading Organizer lists every heading**
+- Do: in a Markdown document with at least four headings at two levels, press
+  **Ctrl+Alt+Shift+O**.
+- Pass: a **Headings** list opens with every heading in it, each row reading
+  its level and its text. Arrowing changes the preview beside it to the section
+  under that heading.
+- [ ] pass  [ ] fail: ______
+
+**L-202. Tab and Shift+Tab change a heading's level**
+- Do: in the organizer, arrow to a Heading 2 and press **Tab**, then
+  **Shift+Tab**.
+- Pass: you hear it become Heading 3 and then Heading 2 again, naming the
+  heading each time.
+- [ ] pass  [ ] fail: ______
+
+**L-203. Moving a heading takes its section with it**
+- Do: arrow to the second heading, press **Move Down**, then **Apply**.
+- Pass: you hear where it moved to, as "3 of 7". The document now has that
+  heading **and the paragraphs under it** below the section that was after it.
+  One **Ctrl+Z** puts the whole thing back.
+- Fail if only the heading line moved, or if undo takes several presses.
+- [ ] pass  [ ] fail: ______
+
+**L-204. Validate names what is wrong with the order**
+- Do: make the first heading a Heading 2 (so the document does not start at 1)
+  and press **Validate**.
+- Pass: it says so, and **Apply** refuses until it is fixed.
+- [ ] pass  [ ] fail: ______
+
+**L-205. Folding says how much went with it**
+- Do: in a Markdown document, put the cursor inside a section and press
+  **Ctrl+Shift+Minus**.
+- Pass: "Folded: 34 lines under Installing", with the real count. Pressing it
+  again says "Unfolded: Installing".
+- [ ] pass  [ ] fail: ______
+
+**L-206. A folded section still reads normally**
+- Do: straight after L-205, arrow **Down** through the folded section.
+- Pass: every line reads exactly as it did before, and **Ctrl+F** still finds
+  text inside it.
+- Fail if any text is skipped. Nothing is ever hidden from the cursor -- the
+  fold is a note to yourself, not a change to the document.
+- [ ] pass  [ ] fail: ______
+
+**L-207. Walking sections is the skim**
+- Do: press **Ctrl+Shift+Right** several times from the top of the document.
+- Pass: each stop says the heading, whether it is folded, and how many lines
+  are under it. **Alt+Left** brings you back from the last jump.
+- [ ] pass  [ ] fail: ______
+
+**L-208. Snippets lists them with a preview**
+- Do: press **Ctrl+Shift+Insert**.
+- Pass: a **Snippets** list opens with every abbreviation, each row reading its
+  trigger and the beginning of what it writes. Enter on one puts it in at the
+  cursor and says "Inserted" with its name.
+- Fail if the rows are triggers alone -- the trigger is the thing you came here
+  because you could not remember.
+- [ ] pass  [ ] fail: ______
+
+**L-209. Print Preview answers in words**
+- Do: in a document of a few pages, press **Ctrl+Alt+Shift+P**.
+- Pass: you hear "N pages", the paper name and the margins, and the window
+  lists each page with the first line on it. The page count matches what comes
+  out if you then print.
+- [ ] pass  [ ] fail: ______
+
+**L-210. Rich text prints as rich text**
+- Do: in a **rich text** document with a Heading 1, a bold word and a bullet
+  list, print to PDF (or to paper).
+- Pass: the heading is larger and bold on the page, the bold word is bold, and
+  the list has bullets.
+- Fail if everything is one size. That was true until this version, and it made
+  QuillLite's printed output worse than its screen.
+- [ ] pass  [ ] fail: ______
+
+**L-211. The corrections come first again**
+- Do: type a misspelled word, leave the cursor in it, and press the
+  **Applications key**. Press **Down** once.
+- Pass: you land on a **suggestion**, and Enter replaces the word. Below the
+  suggestions there is one row, **Spelling Actions for "word"**, and then Undo,
+  Cut, Copy and the rest -- in that order, every time.
+- Fail if the first Down lands on a submenu or on Undo.
+- [ ] pass  [ ] fail: ______
+
+**L-212. F7 starts where you are and offers to wrap**
+- Do: put the cursor halfway down a document with misspellings both above and
+  below it, and press **F7**. Work through to the end.
+- Pass: the first word it stops on is **after** the cursor, and when it runs out
+  it says it is wrapping to the beginning and carries on with the ones above.
+- [ ] pass  [ ] fail: ______
+
+**L-213. A word taught in QUILL is known here at once**
+- Do: with **Use QUILL's dictionary** on in Preferences and both apps open,
+  teach a made-up word in QUILL. Come back to QuillLite, type the same word and
+  wait for the live check.
+- Pass: it is not reported. No restart needed.
+- [ ] pass  [ ] fail: ______
+
+**L-214. Curly quotes and em dashes are separate switches**
+- Do: in Preferences, switch **Curl quotes as I type** on and **Turn two
+  hyphens into an em dash** off (with Autocorrect on in Customize Features).
+  Type a quote, then two hyphens.
+- Pass: the quote curls; the hyphens stay two hyphens.
+- [ ] pass  [ ] fail: ______
+
+**L-215. Autocorrect never touches a configuration file**
+- Do: with both switches on, open a `.json` or a `.py` and type a quote and two
+  hyphens.
+- Pass: both stay exactly as typed. A curly quote there is a syntax error that
+  arrives silently.
+- [ ] pass  [ ] fail: ______
+
+### The tutorials (2026-09-17)
+
+**L-216. Ctrl+Alt+F1 opens the lessons**
+- Do: press **Ctrl+Alt+F1**.
+- Pass: a **QuillLite Tutorials** window opens, listing eight lessons in two
+  tracks. Arrowing reads each lesson's title, how long it takes, and what you
+  will be able to do at the end.
+- [ ] pass  [ ] fail: ______
+
+**L-217. A step shows the key you actually have**
+- Do: rebind **Select Paragraph** in the Keyboard Manager to something else.
+  Open the tutorials, go to "Selecting more than a few words", and read its
+  first step.
+- Pass: the step shows **your** key, not Ctrl+Shift+H.
+- Fail if it shows the shipped key. The lesson asks the command registry when
+  it draws the step, which is the whole reason a step names a command rather
+  than a key.
+- [ ] pass  [ ] fail: ______
+
+**L-218. Every step says what you should hear**
+- Do: arrow through any lesson's steps.
+- Pass: each one ends with what to listen for. A screen-reader user's
+  confirmation that a step worked is a sentence, not a green tick.
+- [ ] pass  [ ] fail: ______
+
+**L-219. The book says the same thing as the window**
+- Do: open the tutorial book (the button in the window, or
+  `docs\tutorials.html` beside the app) and compare any lesson with the window.
+- Pass: the same lessons, the same steps, in the same order. The book is
+  generated from the lessons, so they cannot drift.
+- Fail if any lesson is in one and not the other.
+- [ ] pass  [ ] fail: ______
+
+**L-220. It remembers where you stopped**
+- Do: work three steps into a lesson, close the window, and reopen it.
+- Pass: you are offered the lesson again at the step you were on.
+- [ ] pass  [ ] fail: ______
+
+### The family keymap, second pass (2026-09-17)
+
+Three keys changed meaning in **both** editors, so these are worth a listen in
+QuillLite even though the work was mostly QUILL's side.
+
+**L-221. Ctrl+Space takes the sentence**
+- Do: put the cursor in the middle of a sentence and press **Ctrl+Space**.
+- Pass: the whole sentence is selected and you hear "Selected sentence" with a
+  word count. QUILL answers the same key the same way now; it used to select a
+  "chunk" there.
+- [ ] pass  [ ] fail: ______
+
+**L-222. Nothing else moved in QuillLite**
+- Do: read Edit ▸ Selection top to bottom.
+- Pass: every key is the one it was. QuillLite's selection keys were already the
+  family's; what changed was QUILL coming into line with them.
+- [ ] pass  [ ] fail: ______
+
 ---
 
 ## Sign-off

@@ -295,9 +295,25 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # products bind (bad.md 3.1). The two list commands should become one
     # command with a sort option (bad.md P1); until then both keep a key.
     "tools.misspelling_list_ranked": "Alt+Shift+R",
-    "file.open_from_favorite_folder": "Ctrl+Alt+Shift+O",
-    "file.add_favorite_folder": "Ctrl+Alt+Shift+A",
-    "file.remove_favorite_folder": "Ctrl+Alt+Shift+R",
+    # Favourite folders to the leader, 2026-09-17 (bad.md §0.6, rule 7: media,
+    # radio favourites, favourite folders, AI and remote-file commands live on
+    # the leader or in a menu -- editor chords are for the editor).
+    #
+    # ONE of the three keeps a chord, because only one of them is something you
+    # do while working: **open** from a favourite folder. Adding and removing a
+    # favourite are things you do once, when you set the app up, and they keep
+    # their menu rows. Rule 9 is about once-a-year commands needing *a* key, not
+    # the same key, and a menu row is a key route.
+    "file.open_from_favorite_folder": "Ctrl+Shift+Grave, G",
+    # Two of P1.1's keyless names, each waiting on exactly one of the chords
+    # the move above frees, and each taking QuillLite's own chord for it so the
+    # two products agree. Both are once-in-a-while commands, which is where
+    # three-modifier chords belong (rule 9) -- and "reachable only by walking a
+    # menu" is a cost a screen-reader user pays on every visit, not once.
+    "tools.keymap_editor": "Ctrl+Alt+Shift+R",
+    "tools.sound_events": "Ctrl+Alt+Shift+O",
+    "file.add_favorite_folder": "",
+    "file.remove_favorite_folder": "",
     # Folds take the Shift+bracket pair beside Ctrl+[ / Ctrl+] outdent and
     # indent, which is where every code editor puts folding. This frees
     # Ctrl+Alt+Shift+L for List Studio and Ctrl+Alt+Shift+F for Search in
@@ -412,7 +428,18 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.copy_selection_for_email": "Ctrl+Shift+Grave, C",
     "edit.undo": "Ctrl+Z",
     "edit.redo": "Ctrl+Y",
-    "edit.toggle_extend_selection_mode": "Ctrl+Alt+F8",  # §edsharp-ok — F8 family
+    "edit.toggle_selection_marker": "Ctrl+Alt+F8",  # §edsharp-ok — F8 family
+    # NOT Ctrl+Alt+Shift+F8, which bad.md 5.3a proposed: the whole
+    # Ctrl+Alt+Shift+F7..F12 block belongs to the QuillVille launchers
+    # (app_keymaps.SIBLING_APP_ACCELERATORS), and that table's own comment
+    # settles who moves -- "an existing binding outranks a newcomer's
+    # convention". Extend Selection Mode is the newcomer to that chord.
+    # Alt+Shift+F9 is free in both editors and keeps the mode beside the F8
+    # family it belongs to, whose every other combination is already spoken
+    # for: F8 marks, Shift+F8 completes, Ctrl+Shift+F8 reselects,
+    # Alt+Shift+F8 goes to the start, Ctrl+F8 copies all, and Ctrl+Alt+F8 is
+    # now the marker toggle.
+    "edit.toggle_extend_selection_mode": "Alt+Shift+F9",  # §edsharp-ok
     "edit.start_selection": "F8",
     "edit.complete_selection": "Shift+F8",
     "edit.reselect": "Ctrl+Shift+F8",
@@ -475,12 +502,22 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "app.announcement_self_test": "",
     "app.open_media_player": "",
     "edit.follow_link": "Ctrl+Enter",
-    "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
+    "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for the sentence family (§4.22)
+    # Ctrl+Space means SENTENCE in both editors (bad.md 5.3a, P1.2b). It was
+    # Select Chunk here and Select Sentence in QuillLite, which is one key
+    # meaning two things across two products -- and the sentence is the one
+    # people reach for, so it keeps the chord.
+    #
     # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default. The
     # darwin alternate Cmd+Alt+Space avoids the system shortcuts (#32).
-    "edit.select_chunk": "Cmd+Alt+Space"
-    if sys.platform == "darwin"
-    else "Ctrl+Space",  # §4.22 advanced-editor parity
+    "edit.select_sentence": "Cmd+Alt+Space" if sys.platform == "darwin" else "Ctrl+Space",
+    # Renamed from Select Chunk on 2026-09-17. "Chunk" named nothing a person
+    # could picture, and the command duplicates Select Word on a word -- both
+    # use \w -- so what it is actually FOR is the case Select Word cannot
+    # answer: a run of punctuation, or a run of whitespace. "Token" is the word
+    # for that. The id is unchanged deliberately: a renamed id orphans every
+    # keymap override somebody has already made.
+    "edit.select_chunk": "Ctrl+Alt+Space",
     # Ctrl+Shift+V is Paste Without Formatting in Word 365, Notepad, every
     # browser and QuillLite -- so a Lite user reaching to paste plain text
     # in QUILL opened a preview pane instead. Preview is QUILL-only and
@@ -501,7 +538,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # character instead of firing and nothing tells the user which.
     # tests/unit/ui/test_keymap_accelerators.py walks every chord for both.
     "view.split_preview": "Ctrl+Alt+Shift+\\",
-    "view.focus_preview": "Ctrl+F6",
+    # Alt+F6, moved off Ctrl+F6 on 2026-09-17 (bad.md 5.7). Ctrl+F6 is
+    # Windows' own "next document" in every MDI application, it is Word's,
+    # and it is QuillLite's -- so QUILL was the one product in the family
+    # where the key a person arrives with does something else entirely.
+    #
+    # Alt+F6 is the better home anyway rather than merely a free one: F6
+    # walks the regions, so Alt+F6 reading as "jump straight to one of
+    # them" puts Focus Preview in the family it belongs to. Free in both.
+    "view.focus_preview": "Alt+F6",
     # The Document Format switcher (One Editor, Every Format): took over the
     # chord the retired Rich text lens command held.
     "format.switch_document_format": "Ctrl+Shift+Grave, K",
@@ -821,7 +866,22 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "document.summary": "" if sys.platform == "darwin" else "Alt+I",
     # §8.2 — universal "Go to anything" palette (Quill+G).
-    "navigate.go_to_anything": "Ctrl+Shift+Grave, G",
+    # QuillLite's chord, so the fuzzy jump is one key in both (bad.md P2.19).
+    # The leader G it gives up is what 5.9 wants for a favourite folder.
+    # Freed by the favourite-folder move above; QuillLite's chord for it.
+    "navigate.go_to_anything": "Ctrl+Alt+Shift+A",
+    # Quick Nav had no key at all. It is a landmark index rather than a
+    # command palette -- a different surface answering a different
+    # question -- so the two stay two commands (§0.6).
+    #
+    # Ctrl+Shift+Z both opens and CLOSES it, so the key is a toggle and
+    # Escape still closes it too. Free in both editors, and Redo is Ctrl+Y
+    # here as it is in Word, so nothing collides. Worth knowing: Ctrl+Shift+Z
+    # is Redo in VS Code and in browsers, so somebody arriving from those
+    # may press it expecting Redo and get a list of landmarks instead --
+    # recorded rather than avoided, because the alternative is leaving a
+    # surface with no key at all.
+    "navigate.quick_nav": "Ctrl+Shift+Z",
     # §8.1 — QUILL-key cheatsheet overlay (Alt+?).
     "help.key_cheatsheet": "Alt+Shift+/",
     # §8.1 — live contrast check announcement.
@@ -901,6 +961,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
 #: the fingers. The full reasoning, including why not Ctrl+, (Preferences in
 #: both) or Ctrl+. (Word Prediction here), is in quill/core/lite/keymap.py.
 DEFAULT_ALIASES: dict[str, str] = {
+    # Windows' MDI pair, and QuillLite's. Ctrl+Tab stays the primary in both
+    # -- it is what people actually press -- and these are the keys the
+    # platform documents, so both work rather than one (rule 5: a chord free
+    # in both is adopted as an alias and nothing moves). Ctrl+F6 was
+    # view.focus_preview here until 2026-09-17, which made QUILL the only
+    # product in the family where it did not walk documents (bad.md 5.7).
+    "window.next_document": "Ctrl+F6",
+    "window.previous_document": "Ctrl+Shift+F6",
     "edit.start_selection": "Ctrl+;",
     "edit.complete_selection": "Ctrl+'",
     # F1 is THE help key on Windows and QUILL left it unbound, context help on a

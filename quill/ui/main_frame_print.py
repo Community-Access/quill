@@ -245,10 +245,47 @@ class PrintMixin:
     def print_document(self) -> None:
         printout = self._build_text_printout(
             self.document.name,
-            self.editor.GetValue(),
+            self._printable_text(),
             header_footer=self._current_header_footer_spec(),
         )
         self._run_print_job(printout)
+
+    def _printable_text(self) -> str:
+        """The document as text for printing, with headings marked.
+
+        QUILL printed ``editor.GetValue()`` and nothing else, so a rich document
+        came out as a wall of body text with every heading, every bold run and
+        every list gone -- while QuillLite at least wrote the level in front of
+        each heading line, which made the **small** product better on paper
+        (bad.md PR1). The marker is core's, so the two print the same thing.
+
+        Plain and markup documents are untouched: a Markdown heading already
+        carries its own ``##`` onto the page.
+        """
+        from quill.core.print_pagination import mark_headings_for_print
+
+        text = self.editor.GetValue()
+        lines = text.splitlines() or [""]
+        levels = self._heading_levels_by_line(text)
+        return "\n".join(mark_headings_for_print(lines, levels))
+
+    def _heading_levels_by_line(self, text: str) -> dict[int, int]:
+        """``{line index: level}`` for a rich document. Empty for anything else.
+
+        Best effort and never raises: printing must not fail because a readback
+        from the Text Object Model did.
+        """
+        richedit = getattr(self, "_active_richedit", None)
+        surface = richedit() if callable(richedit) else None
+        if surface is None or not hasattr(surface, "all_headings"):
+            return {}
+        try:
+            return {
+                text.count("\n", 0, min(int(offset), len(text))): int(level)
+                for offset, level, _title in surface.all_headings()
+            }
+        except Exception:  # noqa: BLE001 - a readback failure is not a failed print
+            return {}
 
     def print_studio(self) -> None:
         """File > Print Studio...: an accessible preview + page-set options.

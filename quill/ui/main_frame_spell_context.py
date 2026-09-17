@@ -5,12 +5,28 @@ Its own module rather than more lines in ``main_frame.py`` or
 self-contained subject with one entry point (:meth:`_append_spelling_corrections`)
 and two commands the rest of the app can call.
 
-**Why the corrections come first, and not in a submenu.** A sighted user finds a
-misspelling by looking for a red squiggle and right-clicks it. There is no
-squiggle in a screen reader, so the Applications key *is* the squiggle -- and the
-first Down arrow has to land on the correction itself, not on Undo and not on a
-"Spelling Suggestions" submenu that costs a Right arrow and a pause before
-anything is said. QUILL had them nested until 2026-09-10.
+**Corrections first, then a fixed tail** -- the settled answer to the one
+genuinely contested question in this area (bad.md S11, resolved 2026-09-17).
+
+A sighted user finds a misspelling by looking for a red squiggle and right-
+clicks it. There is no squiggle in a screen reader, so the Applications key *is*
+the squiggle, and the first Down arrow has to land on the correction itself --
+not on Undo, and not on a "Spelling Suggestions" submenu that costs a Right
+arrow and a pause before anything is said. QUILL had them nested until
+2026-09-10 and that was the fix.
+
+QuillLite, asked directly on 2026-09-13, went the other way and had a reason
+just as good: a menu whose *length* changes with where the caret is, with Undo
+and Cut a dozen unpredictable rows further down whenever the word happens to be
+misspelled, is a menu nobody can learn.
+
+Both are right, and they do not actually conflict, because the variable part is
+at the **front**. Corrections, a separator, then **one row** -- Spelling Actions
+for the word -- and then the edit verbs, in that order, every single time. The
+first Down arrow is a correction when there is one; everything below the
+corrections is where it always is. What a person learns is not a row number, it
+is "after the suggestions, the menu is the menu". Both editors build it this way
+now.
 
 **Why ignoring lives in memory and nowhere else.** "Ignore this" is a statement
 about the document in front of you, this afternoon. An ignore that survived the
@@ -108,9 +124,15 @@ class SpellContextMenuMixin:
 
         Ignore Once and Ignore in This Document are both offered, and neither
         touches disk: they last until the document is closed. Teaching a word is
-        the durable answer, it is right underneath, and it says which of the
+        the durable answer, it is in the same submenu, and it says which of the
         three dictionaries it wrote to -- because there are three, and "added to
         dictionary" does not say which.
+
+        Everything that is not a correction is behind one **Spelling Actions**
+        row, which is what makes the tail fixed (see the module docstring). Three
+        of QuillLite's scopes are two, because QuillLite opens files rather than
+        projects and has nothing to call a project root; that divergence is
+        real and is the only one here.
         """
         wx = self._wx
         word = context.word
@@ -155,40 +177,52 @@ class SpellContextMenuMixin:
             empty.Enable(False)
         menu.AppendSeparator()
 
+        # One row, built complete and attached last -- rows added to a wx.Menu
+        # after AppendSubMenu has taken it do not appear, silently. Its items
+        # bind on the PARENT popup, because wxMSW routes a popup's WM_COMMAND
+        # through the menu handed to PopupMenu, so a handler bound on a submenu
+        # is a handler nothing reaches. Bind matches on id, so binding on the
+        # parent works for a row at either level.
+        actions = wx.Menu()
+
         once_id = wx.NewIdRef()
-        menu.Append(once_id, "&Ignore Once")
+        actions.Append(once_id, "&Ignore Once")
         menu.Bind(
             wx.EVT_MENU,
             lambda _e, item=context.item: self.ignore_misspelling_once(item),
             id=once_id,
         )
         all_id = wx.NewIdRef()
-        menu.Append(all_id, "Ignore in This &Document")
+        actions.Append(all_id, "I&gnore in This Document")
         menu.Bind(
             wx.EVT_MENU,
             lambda _e, value=word: self.ignore_misspelling_everywhere(value),
             id=all_id,
         )
+        actions.AppendSeparator()
 
-        add_menu = wx.Menu()
         for label, scope_index in (
-            ("&Personal dictionary", 0),
-            ("This &document only", 1),
-            ("This p&roject", 2),
+            (f'Add "{_escape(word)}" to My &Dictionary', 0),
+            ("Add to This &Document Only", 1),
+            ("Add to This P&roject", 2),
         ):
             scope_id = wx.NewIdRef()
-            add_menu.Append(scope_id, label)
-            add_menu.Bind(
+            actions.Append(scope_id, label)
+            menu.Bind(
                 wx.EVT_MENU,
                 lambda _e, value=word, index=scope_index: self._add_word_to_dictionary_scope(
                     value, index
                 ),
                 id=scope_id,
             )
-        # A submenu for the scopes and not for the suggestions: three near-
-        # identical rows that all mean "teach it" belong behind one name, and
-        # the one press they cost buys the answer to "teach it *where*", which
-        # is a question the user has. The suggestions cost the same press and
-        # buy nothing.
-        menu.AppendSubMenu(add_menu, f'&Add "{_escape(word)}" to Dictionary')
+        actions.AppendSeparator()
+
+        next_id = wx.NewIdRef()
+        actions.Append(next_id, "&Next Misspelling")
+        menu.Bind(wx.EVT_MENU, lambda _e: self.next_misspelling(), id=next_id)
+        prev_id = wx.NewIdRef()
+        actions.Append(prev_id, "Pre&vious Misspelling")
+        menu.Bind(wx.EVT_MENU, lambda _e: self.previous_misspelling(), id=prev_id)
+
+        menu.AppendSubMenu(actions, f'&Spelling Actions for "{_escape(word)}"')
         menu.AppendSeparator()

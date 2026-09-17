@@ -1297,6 +1297,18 @@ def build_inno_setup_script(
             " Flags: uninsdeletekey; Tasks: fileassoc"
         )
     lines += [
+        "; The formats quill/io actually reads and writes were missing from this",
+        "; list until 2026-09-16: somebody who installed QUILL to open .docx files",
+        "; could not reach it from Explorer's Open With, which is the one menu",
+        '; Windows offers for "open this in something else" (bad.md A2). Still',
+        "; never the default handler.",
+    ]
+    for extension in (".rtf", ".docx", ".odt", ".html", ".htm", ".epub"):
+        lines.append(
+            f'Root: HKCU; Subkey: "Software\\Classes\\{extension}\\OpenWithList\\{{#AppExeName}}";'
+            " Flags: uninsdeletekey; Tasks: fileassoc"
+        )
+    lines += [
         "",
         '; "Send to Quill" file right-click verbs (SHELL-3). Generated from',
         "; quill.core.shell_verbs so the installer, runtime registry writer, CLI",

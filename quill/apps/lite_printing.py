@@ -34,8 +34,21 @@ from typing import Any
 
 import wx
 
-from quill.core.print_pagination import paginate_lines
+from quill.core.print_pagination import (
+    PrintPreview,
+    describe_preview,
+    margins_text,
+    mark_headings_for_print,
+    paginate_lines,
+    paper_name,
+)
 from quill.ui.richedit_editing import RICH
+from quill.ui.richedit_printing import format_range_available, print_rich_document
+
+#: A twip is 1/1440 inch and a millimetre is 1/25.4 inch, so one millimetre
+#: is 1440/25.4 twips. Page Setup stores millimetres; EM_FORMATRANGE wants
+#: twips, and a wrong conversion here prints the corner of the page.
+_TWIPS_PER_MM = 1440 / 25.4
 
 __all__ = ["DocumentPrintMixin", "PrintSettings"]
 
@@ -97,19 +110,49 @@ class PrintSettings:
 class _LitePrintout(wx.Printout):
     """One document, paginated against the real printer DC."""
 
-    def __init__(self, title: str, lines: list[str], font: wx.Font) -> None:
+    def __init__(
+        self,
+        title: str,
+        lines: list[str],
+        font: wx.Font,
+        *,
+        rich_hwnd: int = 0,
+        margins_twips: tuple[int, int, int, int] = (1440, 1440, 1440, 1440),
+    ) -> None:
         super().__init__(title)
         self._title = title
         self._lines = lines or [""]
         self._font = font
         self._pages: list[list[str]] = [self._lines]
+        #: The Rich Edit control to ask for its own rendering, when there is
+        #: one. A rich document printed as flat text loses every heading, every
+        #: bold run and every list, which is what both editors did until
+        #: 2026-09-17 (bad.md PR1, PR3). Zero means "print the text version" --
+        #: the right answer for a plain document and the only answer off
+        #: Windows.
+        self._rich_hwnd = int(rich_hwnd)
+        self._margins_twips = margins_twips
+        #: Where each page starts, in characters, when printing through the
+        #: control. Empty while the text path is in use.
+        self._rich_page_starts: list[int] = []
 
     # -- wx.Printout contract ---------------------------------------------- #
 
     def OnPreparePrinting(self) -> None:  # noqa: N802 - wx API shape
-        """Wrap and paginate once, against the DC that will actually print."""
+        """Paginate once, against the DC that will actually print.
+
+        Through the control when there is one: ``EM_FORMATRANGE`` lays the
+        document out with drawing off purely to count the pages, and the same
+        call draws them afterwards. Doing it twice is how the page count is
+        known before the first sheet is sent.
+        """
         dc = self.GetDC()
         if dc is None:
+            return
+        if format_range_available(self._rich_hwnd):
+            self._rich_page_starts = print_rich_document(
+                self._rich_hwnd, dc, margins_twips=self._margins_twips, draw=False
+            )
             return
         dc.SetFont(self._font)
         width, height = dc.GetSize()
@@ -119,17 +162,37 @@ class _LitePrintout(wx.Printout):
         wrapped = _wrap_to_width(dc, self._lines, width - 2 * _MARGIN_PX)
         self._pages = paginate_lines(wrapped, lines_per_page)
 
+    def _page_total(self) -> int:
+        return max(1, len(self._rich_page_starts or self._pages))
+
     def HasPage(self, page: int) -> bool:  # noqa: N802 - wx API shape
-        return 1 <= page <= len(self._pages)
+        return 1 <= page <= self._page_total()
 
     def GetPageInfo(self) -> tuple[int, int, int, int]:  # noqa: N802 - wx API shape
-        last = max(1, len(self._pages))
+        last = self._page_total()
         return (1, last, 1, last)
+
+    def _print_rich_page(self, dc: wx.DC, page: int) -> bool:
+        """One page, drawn by the control itself so the formatting survives.
+
+        ``EM_FORMATRANGE`` is sequential: each call starts where the last one
+        stopped. Printers ask for pages in order in every normal case, so
+        drawing simply continues from wherever the previous page left the
+        control.
+        """
+        print_rich_document(self._rich_hwnd, dc, margins_twips=self._margins_twips, draw=True)
+        width, height = dc.GetSize()
+        footer = f"{self._title}    Page {page} of {self._page_total()}"
+        footer_width = dc.GetTextExtent(footer)[0]
+        dc.DrawText(footer, (width - footer_width) // 2, height - _MARGIN_PX)
+        return True
 
     def OnPrintPage(self, page: int) -> bool:  # noqa: N802 - wx API shape
         dc = self.GetDC()
         if dc is None or not self.HasPage(page):
             return False
+        if self._rich_page_starts:
+            return self._print_rich_page(dc, page)
         dc.SetFont(self._font)
         width, _height = dc.GetSize()
         line_height = dc.GetTextExtent("A")[1] + 2
@@ -184,13 +247,9 @@ class DocumentPrintMixin:
         lines = self.control.GetValue().splitlines() or [""]
         if self.editor.mode != RICH:
             return lines
-        marks = self._heading_marks()
-        if not marks:
-            return lines
-        return [
-            f"[H{marks[index]}] {line}" if index in marks else line
-            for index, line in enumerate(lines)
-        ]
+        # The marker itself is core's, so QUILL prints the same thing -- it
+        # printed no marker at all until 2026-09-17 (bad.md PR1).
+        return mark_headings_for_print(lines, self._heading_marks())
 
     def _heading_marks(self) -> dict[int, int]:
         """``{line index: heading level}`` for this document. Best effort."""
@@ -226,12 +285,90 @@ class DocumentPrintMixin:
         self.app.save_settings()
         self._announce("Page setup saved")
 
+    def cmd_print_preview(self) -> None:
+        """Ctrl+Alt+Shift+P: what this document will look like on paper, in words.
+
+        Not a picture of a page. WordPad and Word both offer a preview that is a
+        scaled image of the sheet, which answers nothing at all for somebody who
+        listens -- and QUILL's answer to that has never been a bigger picture, it
+        is Print Studio, which *says* the answer. This is the same idea at
+        QuillLite's scale (bad.md PR2, P3.6): how many pages, on what paper,
+        with what margins, and what is at the top of each one.
+
+        The pagination is :func:`quill.core.print_pagination.paginate_lines`,
+        the same function the printout itself uses, so the count here and the
+        count that comes out of the printer cannot disagree. It is measured
+        against a real printer DC for the same reason -- a guess at lines per
+        page would be a preview of a document nobody is printing.
+        """
+        from quill.apps.lite_dialogs import show_text_window
+
+        pages = self._preview_pages()
+        if pages is None:
+            self._announce("No printer is available, so there is nothing to preview")
+            return
+        settings = self.app.print_settings
+        top_left = settings.page_setup.GetMarginTopLeft()
+        bottom_right = settings.page_setup.GetMarginBottomRight()
+        preview = PrintPreview(
+            page_count=len(pages),
+            paper_name=paper_name(int(settings.print_data.GetPaperId())),
+            margins_text=margins_text(
+                (int(top_left.x), int(top_left.y)),
+                (int(bottom_right.x), int(bottom_right.y)),
+            ),
+        )
+        summary = describe_preview(preview)
+        body = [summary, ""]
+        for number, page in enumerate(pages, start=1):
+            # The first non-blank line of each page, which is what somebody
+            # wants when the question is "does the table start on page 3" --
+            # and is the only part of a page image a listener could have used.
+            opening = next((line for line in page if line.strip()), "")
+            body.append(f"Page {number} of {len(pages)}: {opening.strip() or '(blank)'}")
+        show_text_window(self, "Print Preview", "\n".join(body))
+        self.control.SetFocus()
+        # Said as well as shown: the window's own text is not announced on open,
+        # and the count is the whole answer for most of the people who asked.
+        self._announce(summary)
+
+    def _preview_pages(self) -> list[list[str]] | None:
+        """The pages this document would print as, or ``None`` with no printer.
+
+        Measured against a real ``wx.Printer`` DC rather than estimated, so the
+        preview and the print agree. Never raises: a preview that fails is a
+        sentence, not a traceback in the middle of somebody's afternoon.
+        """
+        try:
+            printout = _LitePrintout(
+                self.document_name(),
+                self._printable_lines(),
+                self._print_font(),
+                rich_hwnd=self._print_rich_hwnd(),
+                margins_twips=self._print_margins_twips(),
+            )
+            printer_dc = wx.PrinterDC(self.app.print_settings.print_data)
+        except Exception:  # noqa: BLE001 - no printer, or a driver that will not answer
+            return None
+        try:
+            printout.SetDC(printer_dc)
+            printout.OnPreparePrinting()
+            return list(printout._pages)
+        except Exception:  # noqa: BLE001
+            return None
+
     def cmd_print(self) -> None:
         """Print this document. Cancelling is not a failure and says nothing."""
         settings = self.app.print_settings
         print_dialog_data = wx.PrintDialogData(settings.print_data)
         printer = wx.Printer(print_dialog_data)
-        printout = _LitePrintout(self.document_name(), self._printable_lines(), self._print_font())
+        printout = _LitePrintout(
+            self.document_name(),
+            self._printable_lines(),
+            self._print_font(),
+            rich_hwnd=self._print_rich_hwnd(),
+            margins_twips=self._print_margins_twips(),
+        )
         from quill.core.sound_events import SoundEvent
 
         self._cue(SoundEvent.PRINT_STARTED)
@@ -250,6 +387,35 @@ class DocumentPrintMixin:
                 "installed and available, then try again.",
             )
         printout.Destroy()
+
+    def _print_rich_hwnd(self) -> int:
+        """The Rich Edit to print through, or ``0`` to print the text version.
+
+        Only in rich mode: a plain document has no runs to render, and asking
+        the control to draw it would give exactly the same page with a slower
+        path (bad.md PR3).
+        """
+        if self.editor.mode != RICH:
+            return 0
+        try:
+            return int(self.editor.hwnd())
+        except Exception:  # noqa: BLE001 - no native surface is a legitimate answer
+            return 0
+
+    def _print_margins_twips(self) -> tuple[int, int, int, int]:
+        """The page margins in twips, from the millimetres Page Setup stores.
+
+        ``EM_FORMATRANGE`` measures in 1/1440ths of an inch and Page Setup is in
+        millimetres, and getting the conversion wrong does not raise -- it
+        silently prints the top-left corner of the page.
+        """
+        setup = self.app.print_settings.page_setup
+        top_left = setup.GetMarginTopLeft()
+        bottom_right = setup.GetMarginBottomRight()
+        return tuple(  # type: ignore[return-value]
+            int(mm * _TWIPS_PER_MM)
+            for mm in (top_left.x, top_left.y, bottom_right.x, bottom_right.y)
+        )
 
     def _print_font(self) -> Any:
         """The document's own face and size, at a printable point size.

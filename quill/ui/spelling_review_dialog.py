@@ -338,6 +338,16 @@ class SpellingReviewDialog:
     # ------------------------------------------------------------------
 
     def _advance_or_complete(self, action_msg: str) -> None:
+        # Reaching the end when the review started at the caret is not the end
+        # of the review: it is the moment to come back round to the top, which
+        # is what Word does and what ``spell_review_wrap_to_beginning`` has
+        # promised in Preferences while being read by nothing (bad.md S7).
+        if self._session.should_wrap():
+            self._announcer.announce_wrap_prompt()
+            self._session.wrap_to_beginning()
+            if not self._session.is_complete():
+                self._populate_current_issue()
+                return
         if self._session.is_complete():
             self._announcer.announce_action_result(
                 action_msg, self._session.total() + 1, self._session.total()

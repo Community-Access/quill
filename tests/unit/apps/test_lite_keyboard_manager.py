@@ -304,7 +304,17 @@ def test_a_cleared_binding_leaves_no_trailing_tab_in_the_label(wx_app) -> None:
             super().__init__(None)
             self.app = _App()
             self._selection_anchor = None
+            self._extend_selection_mode = False
             self._build_menus()
+
+        def extend_selection_active(self) -> bool:
+            """Read by _sync_check_items for the Extend Selection Mode mark.
+
+            The mode is invisible -- no selection on screen while it is on --
+            so the menu's check mark is one of the two places its state can be
+            seen at all.
+            """
+            return False
 
         def sound_is_quiet(self) -> bool:
             """Read by _sync_check_items for the Quiet Mode mark.

@@ -138,16 +138,41 @@ class DocumentSelectionMixin:
         self._touch_status()
 
     def cmd_toggle_extend_mode(self) -> None:
-        """Ctrl+Alt+F8: turn extending on or off without moving the caret.
+        """Ctrl+Alt+F8: drop or take up the F8 marker, without moving the caret.
 
         The same state F8 sets, reachable as a toggle -- which is what somebody
         wants when they have already arrived at the right starting point and do
         not want a keystroke that might move them.
+
+        **Not** Extend Selection Mode, which is
+        :meth:`cmd_toggle_extend_selection_mode` on ``Alt+Shift+F9``. This
+        was called that until 2026-09-17 and they are different things: the
+        marker is a place you come back to, the mode is a Shift that stays
+        down. Pressing one expecting the other is the kind of mistake a menu
+        label causes and a person then blames themselves for (bad.md 5.3a).
         """
         if self._selection_anchor is None:
             self.cmd_start_selection()
             return
         self.cmd_complete_selection()
+
+    def cmd_toggle_extend_selection_mode(self) -> None:
+        """Alt+Shift+F9: a Shift that stays down.
+
+        Select by navigating, with no modifier held and -- the part that matters
+        for a listener -- no "selected" from the screen reader on every arrow
+        press, which is what makes Shift+Down unusable for taking four
+        paragraphs.
+
+        QuillLite had this, in a form that could not work: an anchor plus a live
+        selection stretched on every navigation key-**up**, which on wxMSW
+        collapses to the edge and stops, so the caret never advanced past one
+        character. It was deleted in ``d20fabe``. What it takes now is QUILL's
+        mechanism, which intercepts the key *before* the control and leaves it
+        no selection to fight (bad.md P2.13, Tier 2; the engine is
+        :mod:`quill.ui.extend_selection_mode`, shared).
+        """
+        self.toggle_extend_selection_mode()
 
     def cmd_reselect(self) -> None:
         """Ctrl+Shift+F8: put back the selection you just had.

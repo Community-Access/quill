@@ -37,6 +37,7 @@ from typing import Any
 import pytest
 import wx
 
+from quill.ui.extend_selection_mode import ExtendSelectionMixin
 from quill.ui.richedit_rtf_surface import RichEditRtfError
 
 
@@ -499,6 +500,14 @@ class FakeTimer:
         self.stopped += 1
 
 
+class _FakePoint:
+    """``wx.Point``, for the two margin accessors and nothing else."""
+
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
+
 class FakePageData:
     """Stands in for ``wx.PageSetupDialogData`` and ``wx.PrintData`` alike.
 
@@ -518,6 +527,18 @@ class FakePageData:
 
     def GetPrintData(self) -> Any:  # noqa: N802 - wx API shape
         return self.print_data
+
+    # The margins, added 2026-09-17 with Print Preview and formatted printing
+    # (bad.md P3.6, PR3): both convert them from millimetres into twips, and
+    # both ask this object for them.
+    def GetMarginTopLeft(self) -> Any:  # noqa: N802 - wx API shape
+        return _FakePoint(15, 15)
+
+    def GetMarginBottomRight(self) -> Any:  # noqa: N802 - wx API shape
+        return _FakePoint(15, 15)
+
+    def GetPaperId(self) -> int:  # noqa: N802 - wx API shape
+        return 9  # wx.PAPER_A4
 
 
 class FakePrintSettings:
@@ -701,6 +722,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
     from quill.apps.lite_window_file import DocumentFileMixin
+    from quill.apps.lite_window_folding import DocumentFoldingMixin
     from quill.apps.lite_window_format import DocumentFormatCommandsMixin
     from quill.apps.lite_window_headings import DocumentHeadingsMixin
     from quill.apps.lite_window_history import DocumentHistoryMixin
@@ -751,6 +773,13 @@ def lite_window(tmp_path, lite_settings):
         # mixin rather than a stand-in: a stub that only moved ``editor.mode``
         # was exactly what let a switch that converted nothing look correct.
         DocumentModeMixin,
+        # The Tier 2 and Tier 3 crossings, 2026-09-17 (bad.md P2.13, P3.6):
+        # folding over Markdown sections, and Extend Selection Mode -- the
+        # latter through the SHARED quill.ui.extend_selection_mode rather
+        # than a stand-in, because a stub that only moved a flag is exactly
+        # what let extend mode ship never having worked from the keyboard.
+        DocumentFoldingMixin,
+        ExtendSelectionMixin,
         # The Insert menu, the document's markup language and the list cue,
         # added 2026-09-15. Here rather than in a stub of its own because the
         # heading and formatting commands ask it what the document is written in
@@ -991,6 +1020,7 @@ def lite_window(tmp_path, lite_settings):
             # The file name is what decides a document's markup language, so a
             # test about Markdown has to be able to say the window holds a .md.
             window.path = tmp_path / name
+        window._init_folding()
         window.available_sounds = frozenset({
             "search_not_found",
             "search_found",
