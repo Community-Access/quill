@@ -26,11 +26,9 @@ from pathlib import Path
 
 import wx
 
-from quill.apps.lite_dialogs import (
-    ask_line_number,
-    show_text_window,
-)
+from quill.apps.lite_dialogs import show_text_window
 from quill.apps.lite_window_find import DocumentFindMixin
+from quill.apps.lite_window_go_to import DocumentGoToMixin
 from quill.apps.lite_window_settings_backup import DocumentSettingsBackupMixin
 from quill.apps.lite_window_special_character import DocumentSpecialCharacterMixin
 from quill.core.lite import APP_NAME, APP_VERSION
@@ -56,7 +54,10 @@ _DATETIME_FORMAT = "%H:%M %d/%m/%Y"
 
 
 class DocumentCommandsMixin(
-    DocumentFindMixin, DocumentSpecialCharacterMixin, DocumentSettingsBackupMixin
+    DocumentFindMixin,
+    DocumentGoToMixin,
+    DocumentSpecialCharacterMixin,
+    DocumentSettingsBackupMixin,
 ):
     """The ``cmd_*`` handlers the command table names.
 
@@ -291,28 +292,6 @@ class DocumentCommandsMixin(
         self._set_modified(True)
         self._announce(f"Inserted {stamp}")
         self._touch_status()
-
-    def cmd_goto_line(self) -> None:
-        total = max(1, self.control.GetNumberOfLines())
-        _ok, _column, line = self.control.PositionToXY(self.control.GetInsertionPoint())
-        chosen = ask_line_number(self, line + 1, total)
-        if chosen is None:
-            self.control.SetFocus()
-            return
-        position = self.control.XYToPosition(0, chosen - 1)
-        if position < 0:
-            position = self.control.GetLastPosition()
-        self._go_to(position)
-
-    def go_to_line_number(self, line: int) -> None:
-        """Put the caret at the start of *line* (1-based). Clamped, never refused.
-
-        Public because it is the callback Go To Anything uses to land on a
-        heading, and because "go to a line" is a reasonable thing for anything
-        else to ask a document window for.
-        """
-        position = self.control.XYToPosition(0, max(0, int(line) - 1))
-        self._go_to(position if position >= 0 else self.control.GetLastPosition())
 
     def _go_to(self, position: int) -> None:
         """Put the caret at *position*, scroll it into view, and take focus back.

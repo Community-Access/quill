@@ -218,7 +218,7 @@ version is in the list too.
 | **Ctrl+F** | Find |
 | **F3** / **Shift+F3** | Find next / previous |
 | **Ctrl+H** | Replace |
-| **Ctrl+G** | Go to a line by number |
+| **Ctrl+G** | Go To: a line, a bookmark or a heading |
 
 When a search runs off the end of the document it starts again at the top, and
 it tells you it has done so. That matters more than it sounds: without it, a
@@ -447,6 +447,20 @@ only one of them is fixed by retyping.
 Whole word works with all three. In regular expression mode it wraps the whole
 pattern, so `cat|dog` means "the word cat or the word dog", not "the word cat,
 or dog anywhere".
+
+---
+
+## Going somewhere
+
+**Ctrl+G** opens **Go To**, which is Word's rather than Notepad's: one window,
+and a choice of what to go to. Arrow between **Line**, **Bookmark** and
+**Heading** at the top, and what is below follows — a number box for a line, a
+list of places for the other two. Bookmark rows are led by their digit and
+heading rows by their level, so you can pick one out by its first word.
+
+**Alt+Shift+G** and **Ctrl+Alt+L** still go straight to the bookmark list and
+the heading list. Those are faster when you already know which kind you want;
+Ctrl+G is the one to press when you do not.
 
 ---
 
@@ -1775,7 +1789,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **F3** | Find Next |
 | **Shift+F3** | Find Previous |
 | **Ctrl+H** | Replace... |
-| **Ctrl+G** | Go to Line... |
+| **Ctrl+G** | Go To... |
 | **Ctrl+Shift+C** | Describe Character |
 | **Ctrl+Alt+C** | Character Details... |
 

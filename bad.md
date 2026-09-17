@@ -8,12 +8,11 @@ person's hands already know the answer.
 
 ## 0.4 Pick up here
 
-**Next, and already decided (§0.6) -- no questions needed:** the **Go To dialog
-with Line, Bookmark and Heading targets** (5.4, P1.6, P2.3), which is one shared
-dialog replacing QuillLite's line-only one and QUILL's two separate commands --
-and it is the last row of Tier 1. Then Tier 2's remaining two: the **Heading
-Organizer**, and **Extend Selection Mode**, which waits on P1.2a fixing its four
-movement bugs first.
+**Next, and already decided (§0.6) -- no questions needed:** Tier 2's remaining
+two, the **Heading Organizer** (Lite lists headings and moves sections; the
+organizer is the two combined into one list where reordering is arrow keys) and
+**Extend Selection Mode**, which waits on P1.2a fixing its four movement bugs
+first. Tier 1 is finished as of 2026-09-16.
 
 **QuillLite's remaining Broken findings, in the order they hurt:** F1 and F2
 (Save As converts the buffer before the write; recovery rewrites encoding). Both
@@ -760,7 +759,7 @@ way:
 | P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
 | P1.3 | Lite's rich kind switched from `SetFont` to view zoom (5.5), now that QUILL has the same three commands from P0.6a | Lite | S | a rich document's heading ladder is unchanged after `Ctrl+=` |
 | P1.4 | Body Text `Ctrl+Alt+0`; Next/Previous Heading `Ctrl+Alt+H`/`+Shift+H`; List Headings alias | QUILL | S | -- |
-| P1.6 | Document Statistics `Ctrl+Shift+G` **in QUILL** (Lite moved 2026-09-16); Go To dialog with targets (5.4), which is also P2.3's last row | both | M | -- |
+| P1.6 | Document Statistics `Ctrl+Shift+G` **in QUILL** (Lite moved 2026-09-16). The Go To dialog is built and shared (`quill/ui/go_to_dialog.py`) and QuillLite is on it; **QUILL still opens Go To Line and Go To Page as two commands** and should open the shared one, with Page as a third kind | QUILL | S | -- |
 | P1.7 | Font for Selection `Ctrl+Shift+F`, Editor Font `Ctrl+Alt+F` (the keys for P0.6a); Search in Files and folds relocated | QUILL | S | -- |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) | QUILL | M | round-trip test per encoding |
 | P1.9 | Date and Time as a core command on `F5` in QUILL | QUILL | S | works in Safe Mode |
@@ -783,7 +782,6 @@ way:
 | --- | --- | --- | --- |
 | P2.1 | Copy to Tray Slot... chooser **in QUILL** (Lite has it, `Alt+Shift+Y`, with each row saying what it would overwrite); "tray is full" wording from the core (5.1) | QUILL | S |
 | P2.2 | Bookmark re-anchoring landed in the shared `BookmarkSet` on 2026-09-16 and QuillLite is on it; **QUILL still has no numbered bookmarks at all** (4.1), so what is left here is QUILL adopting the set -- and, in both, list rows led by the digit (5.2) | both | S |
-| P2.3 | **Tier 1 of 4.2 into Lite** is down to one row: the **Go To dialog with Line, Bookmark and Heading targets** (5.4), which is shared work and is the same item as P1.6's third clause. Everything else in the tier has landed -- Insert Link, the list-style cycle, Toggle Line Comment, Copy All, Set Mark's chord, the tray-slot chooser, the large-file guard, the document mirror and the announcement throttle | both | M |
 | P2.4 | The QuillLite profile in QUILL with "Bring my QuillLite settings" (5.8), on the settings-name mapping from G1 | QUILL | M |
 | P2.5 | One verb, one registration: retire duplicate ids and Quillin re-shipments (7.1); char hook dispatches through the registry (7.2) | QUILL | M |
 | P2.6 | Keymap profile JSONs become deltas over `DEFAULT_KEYMAP` (7.3) | QUILL | S |
@@ -883,7 +881,7 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**65 items open.** Delete a row when it lands. Tiered items first,
+**64 items open.** Delete a row when it lands. Tiered items first,
 then the section-6 findings no tiered item has claimed.
 
 | # | Item |
@@ -897,7 +895,7 @@ then the section-6 findings no tiered item has claimed.
 | P1.2b | select_chunk renamed Select Token, off Ctrl+Space, with help text that says what it does that Select Word does not (5. |
 | P1.3 | Lite's rich kind switched from SetFont to view zoom (5.5), now that QUILL has the same three commands from P0.6a |
 | P1.4 | Body Text Ctrl+Alt+0; Next/Previous Heading Ctrl+Alt+H/+Shift+H; List Headings alias |
-| P1.6 | Document Statistics Ctrl+Shift+G in QUILL (Lite moved); Go To dialog with targets (5.4) |
+| P1.6 | Document Statistics Ctrl+Shift+G in QUILL; QUILL opens the shared Go To dialog, with Page as a third kind (5.4) |
 | P1.7 | Font for Selection Ctrl+Shift+F, Editor Font Ctrl+Alt+F (the keys for P0.6a); Search in Files and folds relocated |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |
 | P1.9 | Date and Time as a core command on F5 in QUILL |
@@ -915,7 +913,6 @@ then the section-6 findings no tiered item has claimed.
 | P1.21 | Typing defaults decided once (T3, T4): Tab's meaning follows the document kind in both; autoformat gated by kind as well as by setting |
 | P2.1 | Copy to Tray Slot... chooser in QUILL (Lite has it); "tray is full" wording from the core |
 | P2.2 | QUILL adopts the shared BookmarkSet (4.1); list rows led by the digit in both (5.2) |
-| P2.3 | Tier 1 of 4.2 into Lite is down to the Go To dialog with targets (5.4), which is the same item as P1.6's third clause |
 | P2.4 | The QuillLite profile in QUILL with "Bring my QuillLite settings" (5.8), on the settings-name mapping from G1 |
 | P2.5 | One verb, one registration: retire duplicate ids and Quillin re-shipments (7.1); char hook dispatches through the regi |
 | P2.6 | Keymap profile JSONs become deltas over DEFAULT_KEYMAP (7.3) |

@@ -117,6 +117,13 @@
 
 ### Added
 
+- **Ctrl+G is Go To, not just Go to Line.** One window with a target kind --
+  Line, Bookmark or Heading -- the way Word has always done it. A number field
+  for a line, a list of places for the other two, and arrow keys move between
+  the kinds. Alt+Shift+G and Ctrl+Alt+L still go straight to the bookmark and
+  heading lists, which is faster when you already know which you want; this is
+  the key to press when you do not. Bookmark rows are led by their digit and
+  heading rows by their level, so you can pick one out by its first word.
 - **Review Buffer (Alt+Shift+U)** opens a copy of what you have selected, in a
   window of its own, that cannot be edited. The point is what you cannot do in
   it: reading a long selection back means arrowing through it, and arrowing

@@ -1048,7 +1048,9 @@ class DialogRecorder:
         # read-only window used for a different purpose (bad.md 4.2, Tier 2).
         "show_text_window_review": ("quill.apps.lite_window_selection", "show_text_window"),
         "choose_heading": ("quill.apps.lite_window_headings", "choose_heading"),
-        "ask_line_number": ("quill.apps.lite_window_commands", "ask_line_number"),
+        # Ctrl+G opens one Go To window with a target kind since 2026-09-16
+        # (bad.md 5.4); ask_line_number is gone from this module with it.
+        "ask_go_to": ("quill.apps.lite_window_go_to", "ask_go_to"),
         "choose_special_character": (
             "quill.apps.lite_window_special_character",
             "choose_special_character",

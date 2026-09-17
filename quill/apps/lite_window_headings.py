@@ -269,6 +269,18 @@ class DocumentHeadingsMixin:
         self._announce(f"Heading {level}: {title}")
         self.sync_structure_announcer()
 
+    def all_document_headings(self) -> list[tuple[int, int, str]]:
+        """Every heading as ``(start, level, title)``, whichever kind of document.
+
+        One accessor rather than the ``if RICH`` every caller was writing: the
+        headings list had it, the Go To dialog needs it, and the two asking the
+        question differently is how one of them ends up blind in half the
+        documents somebody opens (bad.md R13 was that, from the other end).
+        """
+        if self.editor.mode == RICH:
+            return list(self.editor.all_headings())
+        return self._plain_headings()
+
     def cmd_list_headings(self) -> None:
         if self.editor.mode != RICH:
             headings = self._plain_headings()

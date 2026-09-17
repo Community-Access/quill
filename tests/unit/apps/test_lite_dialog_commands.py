@@ -613,30 +613,70 @@ def _showable():
     return _Dialog()
 
 
-def test_goto_line_is_offered_the_current_line_and_the_total(lite_window, lite_dialogs):
+def test_goto_is_offered_the_current_line_and_the_total(lite_window, lite_dialogs):
     win = lite_window("one\ntwo\nthree", cursor=5)
     win.cmd_goto_line()
-    assert lite_dialogs.args_for("ask_line_number")[1:] == (2, 3)
+    kwargs = lite_dialogs.kwargs_for("ask_go_to")
+    assert (kwargs["line"], kwargs["last_line"]) == (2, 3)
 
 
-def test_goto_line_cancelled_leaves_the_caret_where_it_was(lite_window, lite_dialogs):
+def test_goto_offers_the_kinds_quilllite_has_and_not_pages(lite_window, lite_dialogs):
+    """QuillLite has no pagination model, and a greyed row for a thing the
+    product does not do is a row to walk past forever (bad.md 5.4)."""
+    win = lite_window("# One\n\nbody\n", cursor=0)
+    win.set_document_language("markdown", announce=False)
+    win.cmd_goto_line()
+    assert set(lite_dialogs.kwargs_for("ask_go_to")["kinds"]) == {"Bookmark", "Heading"}
+
+
+def test_goto_offers_the_headings_led_by_their_level(lite_window, lite_dialogs):
+    win = lite_window("# One\n\nbody\n\n## Two\n", cursor=0)
+    win.set_document_language("markdown", announce=False)
+    win.cmd_goto_line()
+    headings = lite_dialogs.kwargs_for("ask_go_to")["kinds"]["Heading"]
+    assert [target.label for target in headings] == ["Heading 1, One", "Heading 2, Two"]
+
+
+def test_goto_offers_the_bookmarks_led_by_their_digit(lite_window, lite_dialogs):
+    """Led by the digit so "3, Enter" needs no extra chord (bad.md 5.2)."""
+    win = lite_window("one\ntwo\nthree", cursor=4)
+    win.cmd_set_bookmark_3()
+    win.cmd_goto_line()
+    bookmarks = lite_dialogs.kwargs_for("ask_go_to")["kinds"]["Bookmark"]
+    assert [target.label for target in bookmarks] == ["3, two"]
+
+
+def test_goto_cancelled_leaves_the_caret_where_it_was(lite_window, lite_dialogs):
     win = lite_window("one\ntwo\nthree", cursor=5)
     win.cmd_goto_line()
     assert win.control.GetInsertionPoint() == 5
 
 
-def test_goto_line_moves_to_the_start_of_the_chosen_line(lite_window, lite_dialogs):
+def test_goto_moves_to_the_start_of_the_chosen_line(lite_window, lite_dialogs):
+    from quill.ui.go_to_dialog import GoToResult
+
     win = lite_window("one\ntwo\nthree", cursor=0)
-    lite_dialogs.answer("ask_line_number", 3)
+    lite_dialogs.answer("ask_go_to", GoToResult(line=3))
     win.cmd_goto_line()
     assert win.control.GetInsertionPoint() == len("one\ntwo\n")
 
 
-def test_goto_line_past_the_end_lands_on_the_last_position(lite_window, lite_dialogs):
+def test_goto_moves_to_a_chosen_place(lite_window, lite_dialogs):
+    from quill.ui.go_to_dialog import GoToResult
+
+    win = lite_window("one\ntwo\nthree", cursor=0)
+    lite_dialogs.answer("ask_go_to", GoToResult(position=8))
+    win.cmd_goto_line()
+    assert win.control.GetInsertionPoint() == 8
+
+
+def test_goto_past_the_end_lands_on_the_last_position(lite_window, lite_dialogs):
     """Clamped rather than refused. A number somebody typed from a stale count
     should still take them somewhere sensible."""
+    from quill.ui.go_to_dialog import GoToResult
+
     win = lite_window("one\ntwo", cursor=0)
-    lite_dialogs.answer("ask_line_number", 99)
+    lite_dialogs.answer("ask_go_to", GoToResult(line=99))
     win.cmd_goto_line()
     assert win.control.GetInsertionPoint() == win.control.GetLastPosition()
 

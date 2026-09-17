@@ -76,6 +76,7 @@
   "quill.ui.github_pr_diff_dialog": "reachable",
   "quill.ui.github_repo_admin_dialogs": "reachable",
   "quill.ui.global_hotkeys_dialog": "reachable",
+  "quill.ui.go_to_dialog": "reachable",
   "quill.ui.guided_speech_dialog": "reachable",
   "quill.ui.harness_api_key_dialog": "reachable",
   "quill.ui.header_footer_dialog": "reachable",

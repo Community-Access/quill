@@ -361,6 +361,8 @@
   "quill/ui/github_repo_admin_dialogs.py::TypedConfirmDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/global_hotkeys_dialog.py::GlobalHotkeysDialog.__init__::wx.ListBox": "named",
   "quill/ui/global_hotkeys_dialog.py::_CaptureDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/go_to_dialog.py::ask_go_to::wx.ListBox": "named",
+  "quill/ui/go_to_dialog.py::ask_go_to::wx.TextCtrl": "named",
   "quill/ui/guided_speech_dialog.py::show_guided_speech_setup::wx.ListBox": "named",
   "quill/ui/guided_speech_dialog.py::show_guided_speech_setup::wx.TextCtrl": "named",
   "quill/ui/harness_api_key_dialog.py::HarnessApiKeyDialog._build_ui::wx.TextCtrl": "named",

@@ -166,7 +166,11 @@ COMMANDS: list[CommandRow] = [
     # Go To is in Edit because that is where Notepad has always kept it, and
     # because it answers the question Find asks: the line number the status bar
     # just read out is typed in here.
-    ("&Edit", "&Go to Line...", "Ctrl+G", "cmd_goto_line", ""),
+    # Word's Go To, not Notepad's Go to Line: one window with a target kind --
+    # Line, Bookmark or Heading -- rather than three surfaces for one verb
+    # (bad.md 5.4). Alt+Shift+G and Ctrl+Alt+L still go straight to their own
+    # list, which is the faster route when you already know which kind you want.
+    ("&Edit", "&Go To...", "Ctrl+G", "cmd_goto_line", ""),
     ("&Edit", "", "", "", "sep"),
     # A screen reader says "space" for four different characters. This is the
     # only way to find out which one broke the search.
