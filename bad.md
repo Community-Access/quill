@@ -1,21 +1,29 @@
 # QUILL and QuillLite: the parity and viability plan
 
-**Working list, 2026-09-16.** What is left, not what happened -- a landed item
-is **deleted** from this file and git history is the record. Three dimensions:
-the two editors' keys and capabilities must agree, each app must be viable for
-its own job, and both must behave the way Notepad, WordPad and Word do where a
-person's hands already know the answer.
+**Working list, audited against the code 2026-09-17.** What is left, not what
+happened -- a landed item is **deleted** from this file and git history is the
+record. Three dimensions: the two editors' keys and capabilities must agree,
+each app must be viable for its own job, and both must behave the way Notepad,
+WordPad and Word do where a person's hands already know the answer.
 
 ## 0.3 Where this stands
 
-**Working from the top of section 10 down, deleting a row as it lands.** The
-count at the head of that table is the number that matters; everything else in
-this file is the detail behind a row.
+**Section 10 is the list. Everything else in this file is the detail behind one
+of its rows**, and where the two disagree, the code wins -- which is not a
+figure of speech: the 2026-09-17 audit checked every open row against the
+source and deleted five that were already done, having found earlier that A6,
+G3, T4, R7 and three quarters of H8 had been fixed while still listed.
 
-The save-path work that was held under 0.6 ("write and test, do not commit
-anything touching startup, the save path or the external-change watcher") has
-been **reviewed and committed**: F1, F2, F3 and F9. That unblocks R6, which
-wanted F1's Markdown conversion, and P0.9, which reuses F3's sentence.
+**A row is not open because this file says so.** Before working one, check it.
+The audit took forty minutes and removed more items than a morning of coding
+would have.
+
+**59 open on 2026-09-17 morning; 28 now.** What went: the held save path (F1,
+F2, F3, F9), the mode switch (R6), the selection and marks family (L5, L6, L8,
+L11, L12, L13, L14), both remaining Tier 2 crossings and all four of Tier 3,
+the six contested shared-surface rows (R15, S7, S10, S11, T5, PR4), the
+settings vocabulary (G1, G2), the reserved-key list (H9), the Quillin hotkey
+gate (P3.4), the tutorial book (P3.2), and the printing pair (PR1, PR3).
 
 ### The one gate still red, and why
 
@@ -785,6 +793,38 @@ meeting a slow status bar.
 
 ## Recorded, so nobody looks again
 
+**Five rows deleted by the 2026-09-17 code audit**, each checked rather than
+assumed. They are listed because a deleted row with no reason is a row somebody
+re-adds:
+
+- **P2.2 -- QUILL already has the shared numbered bookmarks.** The row said
+  "QUILL adopts the shared `BookmarkSet`"; `quill/ui/main_frame_numbered_bookmarks.py`
+  has imported and used it since 2026-09-16, through the same `DocumentMemory`
+  records QuillLite writes, so a file's bookmarks really are the same file's
+  bookmarks in both. The row's second half -- "list rows led by the digit in
+  both" -- is also done: both announce `Bookmark {number}: {label}`.
+- **F10 -- all three of its claims are false now.** `save_all_files` restores
+  the active tab, `save_file` syncs the document itself rather than trusting
+  `EVT_TEXT` to have done it, and `EVT_END_SESSION` is bound where wx delivers
+  it. Nothing left.
+- **M5 (inside P1.20) -- the View menu no longer says "Toggle Soft Wrap".** It
+  says what Notepad, WordPad, Word and QuillLite say. The rest of P1.20 is
+  real and stays.
+- **N2 and L7 were folded into P1.16 and P2.8** rather than deleted: they are
+  both true, and both are one line of somebody else's row.
+- **The QA sign-off and the screen-reader listens left the count entirely**
+  (Jeff, 2026-09-17). They are real work and they are his; counting them as
+  open build items made one number mean two different kinds of thing.
+
+**What the audit did NOT find stale**, listed because these look like the kind
+of thing that quietly gets fixed and they have not been: the keymap profiles
+are still full 184- and 168-entry snapshots rather than deltas (P2.6);
+`_replace_document_text` is still the write path at ten sites in
+`main_frame.py` (P1.16); `quill/io/text.py` still cannot detect UTF-16 on open
+(P1.8); QUILL still has no `restore_session` (P2.12); and `Document()` still
+defaults to LF where every Microsoft editor and QuillLite write CRLF (P2.10).
+
+
 - **`F6` walks the regions in the order they appear on screen**, and 5.6's
   "F6 lands in the status bar first in both" is **withdrawn** (Jeff,
   2026-09-17, after it was implemented and heard). The status bar is the
@@ -835,42 +875,59 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**34 items open.** Delete a row when it lands. Tiered items first,
-then the section-6 findings no tiered item has claimed.
+**28 items open.** Every row below was **checked against the code on
+2026-09-17**, not inherited from the audit -- five rows were already done and
+have been deleted, and several others shrank to the half that is still true.
+Delete a row when it lands.
 
-| # | Item |
+Two things are deliberately **not** counted here:
+
+* **Screen-reader and QA passes** are Jeff's, not the build's. The sign-off
+  sheet (`docs/qa/quilllite-signoff.md`, 221 steps) and the JAWS/NVDA listens
+  are his to run, and counting them as open work made the number mean two
+  different kinds of thing at once.
+* **Four bugs that need a live check first** -- see the table after this one.
+  Nobody can write the fix honestly until somebody has heard the symptom.
+
+| # | Editors | Item |
+| --- | --- | --- |
+| P0.7 | QUILL | **F4** Save As HTML / Plain Text is not atomic and forces UTF-8, discarding the read encoding and BOM. **F5** the external-change watcher auto-reloads a `.docx`/`.rtf`/`.pdf` tab with `read_text()`, replacing it with decoded binary and marking it clean. **F6** encoding and line-ending changes do not dirty the document, and UTF-16 is never detected on open |
+| P0.9 | both | `_run_command` still answers "Command failed: file.save" rather than naming the exception; `save_file` has no `UnicodeEncodeError` branch. QuillLite's half landed with F3 |
+| P1.1 | QUILL | Five commands with no key, each waiting on a chord P1.11 frees: Sort Z-A, Tidy Whitespace, lowercase, Earlier Versions, Markdown Tag |
+| P1.2 | both | Three of the six structural chords still disagree: Exchange is `Ctrl+Shift+X` here and `Ctrl+Alt+X` there; Duplicate Selection `Ctrl+Alt+Shift+Q` against `Ctrl+Alt+Q`; Switch Document Mode is on the leader here and `Alt+Shift+F` there. Set Mark already agrees. Plus: Shrink drops its stack, and marks go on the shared ring |
+| P1.8 | QUILL | File Encoding and Line Endings as one dialog in the File menu, dirtying the document, offering UTF-8 with BOM -- and **UTF-16 detection on open**, which `quill/io/text.py` still has none of |
+| P1.11 | QUILL | The six AI commands vacate `Ctrl+Alt+Shift+{S,I,G,T,H,E}`; the leader reclaim (5.9). This is what unblocks P1.1 |
+| P1.12 | QUILL | Four clipboard verbs have no binding at all: Collect, Paste Collected, Keep Clip, Recent Clips. Copy to Next Slot and Open Copy Tray already agree with QuillLite |
+| P1.13 | QUILL | Four commands that need writing, not just a key: New Rich Document, New Plain Text Document, Character Details, Editor Font. None is registered |
+| P1.14 | both | Spelling parity into QUILL: the caret-landing check (S5), suggestions spelled as you arrow, the Announcements dialog, Check While Typing state said once on open; and the tokenizer goes Unicode in core (S4) |
+| P1.15 | tests | The family parity gate. `tests/unit/core/test_family_keymap.py` does not exist; the handler-to-command-id mapping it needs lives in `tests/unit/core/lite/test_lite_selection.py` covering the selection family only, and `quill/core/lite/parity.py` is waiting for it |
+| P1.16 | QUILL | One line-tool helper with QuillLite's scope, no-op detection, counts and rich warning (N1-N3). `_replace_document_text` -- select-all plus WriteText -- is still the write path at **10 sites** in `main_frame.py` |
+| P1.17 | both | QUILL adopts `set_heading_level` for Markdown headings, `all_headings()` for the outline in rich, bold state announcements, and a rich-aware Describe in QuillLite (R8, R12, R13) |
+| P1.18 | QUILL | GATE-13 in the status-bar cells (H3): every cell focus announces "label, value" although the button already carries both, so each arrow press is spoken twice, and leaving announces "Returned to editor" -- a focus move the reader already speaks |
+| P1.19 | both | Clipboard: tray labels and pins survive an edit (C3); the collector becomes a buffer rather than a mode (C4); tray paste stops waiting out the 400 ms multi-press window on a single press (C5); one verified undo story for `Replace` (C6) |
+| P1.20 | QUILL | The menu bar answers to Word (4.5). **Search is still a top-level menu with two items**; Go To is not in Edit; Delete and Paste Text Only are not in Edit. "Toggle Soft Wrap" is already fixed |
+| P1.21 | both | Tab's meaning follows the document kind in both (T3): QUILL indents, QuillLite inserts a tab, and there is no kind-aware rule anywhere yet. Autoformat's half of this landed with T5 |
+| P2.1 | QUILL | Copy to Tray Slot... -- the previewing chooser QuillLite has on `Alt+Shift+Y`. `edit.copy_to_tray_slot` does not exist |
+| P2.4 | QUILL | The QuillLite profile, with "Bring my QuillLite settings" (5.8). The settings-name mapping it depends on is now `quill/core/lite/parity.py`, so this is unblocked |
+| P2.5 | QUILL | One verb, one registration (7.1). `power.keep_unique_lines` and `edit.remove_duplicate_lines` both exist with different chords and different wording; so do `format.blockquote` and `edit.quote_lines`. The `line-tools` Quillin ships four more a third time |
+| P2.6 | QUILL | Keymap profile JSONs become deltas (7.3). They are **full snapshots of 184 and 168 bindings**, which is what lets them disagree with `DEFAULT_KEYMAP` silently |
+| P2.8 | per bug | The remaining Worse rows of section 6 that no P1 row names: F7, F8, F11, F12, S6, S8, S9, L3, R11, C7, C8, N5, A1-A5 |
+| P2.10 | both | New documents default to CRLF. `Document().line_ending` is still `"\n"`, where Notepad, WordPad, Word and QuillLite all write CRLF, and no setting exposes it |
+| P2.11 | both | Lossy Save As warns before the write in every lossy direction in QUILL, as QuillLite now does (F1); QuillLite's Earlier Versions says formatting is not kept for a rich document (F7) |
+| P2.12 | both | Session restore in QUILL on QuillLite's rule, command-line files winning (G4) -- QUILL has neither `restore_session` nor `session_files`. Crash recovery in QuillLite lists what it found and lets the user decline (F14). Read-only detected at open in both |
+| P2.16 | QUILL | `--rich` / `--plain`. Not the one-liner it looks: QUILL has no "start a document in this kind" seam, so it needs threading through `run_app` into the Document Format switcher. **A6 is already done** -- see the Recorded section |
+| P3.3 | docs | Documentation drift (7.6): both user guides' key tables, the release notes, and Key Describer titles for every new chord. The QuillLite PRD's three (2.2, 3.2, 8.1) landed 2026-09-17 |
+| P3.5 | per bug | The section-6 rows rated Divergent where a decision was taken but not applied |
+| P3.7 | both | The magical tier (4.2): "What changed?", a spoken undo over the `DocumentText` journal, repeat-the-last-announcement, structure on arrival. None of the four has a command; the spoken undo waits on P0.6c |
+
+### Waiting on a live listen, not on code
+
+Four bugs nobody can honestly fix from a reading. Each needs the symptom heard
+once on a real document with a real screen reader; the fix is small after that.
+
+| # | What to check |
 | --- | --- |
-| P0.7 | The REMAINING Broken rows, all QUILL's: F4, F5, F6 (save path / watcher). F1, F2, F3, F9, R6 landed 2026-09-17 |
-| P0.8 | Verify live, then fix if confirmed: R4 dark mode grey text in saved .rtf; C2/N3 whole-document rewrite; R14 two-step undo. R5 fixed 2026-09-16, L13 2026-09-17 |
-| P0.9 | _run_command reports the exception class and message, not "Command failed"; save_file handles UnicodeEncodeError and U |
-| P1.1 | Keyless QUILL commands still waiting on the chords P1.11 frees: Sort Z-A, Tidy Whitespace, lowercase, Earlier Versions, Markdown Tag. Keyboard Manager and Sound Scheme landed 2026-09-17 on the favourite-folder move |
-| P1.2 | Structural selection family on Lite's six chords; Set Mark Ctrl+Shift+M, Exchange Ctrl+Alt+X, Duplicate Selection Ctrl |
-| P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |
-| P1.11 | AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,H,E}; leader reclaim (5.9). Favourite folders went to the leader 2026-09-17 |
-| P1.12 | Clipboard verbs: Copy to Tray / Clear / Collect / Paste Collected / Clear Collector / Keep Clip / Recent Clips on Lite |
-| P1.13 | New Rich / New Plain Text Document, Character Details, Recent File N and Editor Font in QUILL -- the four that need a  |
-| P1.14 | Spelling parity into QUILL: the caret-landing check, suggestions spelled as you arrow, the "Spelling: word" context su |
-| P1.15 | The parity gate (section 9) with its exception table, so P0/P1 cannot regress |
-| P1.16 | One line-tool helper in QUILL with Lite's scope, no-op detection, counts and rich warning (N1-N3); one command per ver |
-| P1.17 | QUILL adopts set_heading_level for Markdown headings, all_headings() for the outline in rich, bold state announcements |
-| P1.18 | Status bar: GATE-13 fixes in QUILL's cells (H3). H9 landed 2026-09-17 -- the reserved-key list is shared (core/reserved_keys.py) and QUILL's Keyboard Manager refuses the reader's own keys, which it never did |
-| P1.19 | Clipboard: tray labels and pins survive edits (C3); collector becomes a buffer (C4, 5.1); tray paste no longer waits f |
-| P1.20 | The menu bar answers to Word (4.5): fold Search into Edit and delete the menu (M1); a Format menu item that says Font. |
-| P1.21 | Typing defaults decided once (T3, T4): Tab's meaning follows the document kind in both; autoformat gated by kind as well as by setting |
-| P2.1 | Copy to Tray Slot... chooser in QUILL (Lite has it); "tray is full" wording from the core |
-| P2.2 | QUILL adopts the shared BookmarkSet (4.1); list rows led by the digit in both (5.2) |
-| P2.4 | The QuillLite profile in QUILL with "Bring my QuillLite settings" (5.8), on the settings-name mapping from G1 |
-| P2.5 | One verb, one registration: retire duplicate ids and Quillin re-shipments (7.1); char hook dispatches through the regi |
-| P2.6 | Keymap profile JSONs become deltas over DEFAULT_KEYMAP (7.3) |
-| P2.8 | The remaining Worse rows of section 6 not named in P1: F7-F13, S6-S9, L3-L13, R9-R11, C7-C8, N5, PR1-PR3, A1-A7 |
-| P2.10 | New documents default to CRLF in QUILL as in Notepad, WordPad, Word and Lite, with the default exposed in Settings in  |
-| P2.11 | Lossy Save As warns before the write in every lossy direction in both (F1); Lite's Earlier Versions says formatting is not kept (F7) |
-| P2.12 | Session restore in QUILL on the shared rule Lite uses, command-line files winning (G4); crash recovery in Lite lists s |
-| P2.16 | **A6 is already done and the row's premise was stale**: QUILL has had a single-instance guard since #609 (`core/ipc.py`, an OS advisory file lock, which is BETTER than Lite's kernel object -- a stale lock is impossible) plus `--force-new-window`. What is left is A7's `--rich` / `--plain`, and it is not the one-liner it looks like: QUILL has no "start a document in this kind" seam at all, so the flag needs threading through run_app into the Document Format switcher. A flag that parses and does nothing is the bug class this whole plan is about |
-| P3.3 | Documentation drift (7.6): Lite PRD 2.2/3.2/8.1, both user guides' key tables, CHANGELOGs, release notes; regenerate k |
-| P3.5 | Bugs from section 6 rated Divergent, where a decision was taken |
-| P3.7 | The magical tier (4.2, last table): "What changed?", a spoken undo over the DocumentText journal, repeat-the-last-anno |
-| C9 (D) | [both] Tray full: QUILL refuses and says so, Lite overwrites slot 1 and reports success (QUILL's wins). Restor |
-| F10 (W) | [QUILL] save_all_files never restores the active tab; save_file relies on EVT_TEXT having synced the document ( |
-| L7 (W) | [QUILL] List Bookmarks shows stale positions: jumps re-anchor by snippet but the list prints the raw stored off |
-| N2 (W) | [QUILL] No no-op detection and no counts: every QUILL line tool announces its past-tense status even when nothi |
+| R4 | Does dark mode write grey text into a saved `.rtf`? Set a dark theme, type, save, reopen in WordPad |
+| C2 / N3 | Does a tray paste or a line tool rewrite a whole `.rtf`, losing every heading and bold run for one inserted line? |
+| R14 | Does one `Ctrl+Z` after Heading 2 leave a 16-point non-bold paragraph that nothing recognises as a heading? |
+| L3 | Does Shrink jump to an old span after you have selected something else? (The stack is never cleared) |
