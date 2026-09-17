@@ -1,6 +1,5 @@
 {
   "quill/apps/lite_dialogs.py::_labelled_text::wx.TextCtrl": "helped",
-  "quill/apps/lite_dialogs.py::ask_text::wx.TextCtrl": "helped",
   "quill/apps/lite_dialogs.py::choose_document_language::wx.ListBox": "helped",
   "quill/apps/lite_dialogs.py::choose_from_rows::wx.Button": "helped",
   "quill/apps/lite_dialogs.py::choose_from_rows::wx.ListBox": "helped",
@@ -9,6 +8,9 @@
   "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice": "helped",
   "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice#2": "helped",
   "quill/apps/lite_dialogs.py::show_text_window::wx.Button": "helped",
+  "quill/apps/lite_dialogs_entry.py::ask_link::wx.TextCtrl": "helped",
+  "quill/apps/lite_dialogs_entry.py::ask_link::wx.TextCtrl#2": "helped",
+  "quill/apps/lite_dialogs_entry.py::ask_text::wx.TextCtrl": "helped",
   "quill/apps/lite_find_dialogs.py::FindDialog.__init__::wx.Button": "helped",
   "quill/apps/lite_find_dialogs.py::FindDialog.__init__::wx.Button#2": "helped",
   "quill/apps/lite_find_dialogs.py::FindDialog.__init__::wx.Button#3": "helped",

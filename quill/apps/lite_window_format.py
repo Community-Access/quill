@@ -35,7 +35,9 @@ from __future__ import annotations
 import wx
 
 from quill.core.heading_levels import LevelResult, adjust_heading_level
+from quill.core.list_style import LIST_STYLES, cycle_list_style
 from quill.core.lite.filetypes import language_label
+from quill.core.lite.keymap import spoken_key_for
 from quill.core.markdown_sections import MoveResult, move_section
 from quill.ui.richedit_editing import (
     LINE_SPACING_DOUBLE,
@@ -82,21 +84,29 @@ class DocumentFormatCommandsMixin:
         text instead would convert the document they are editing.
         """
         language = self.document_language()
-        # Control Shift M is a RING -- plain, Markdown, HTML, rich, round again
+        # The ring key is a RING -- plain, Markdown, HTML, rich, round again
         # (cmd_switch_document_kind) -- so "press it for rich text" was wrong
         # from every stop but HTML. From a plain document one press lands on
         # Markdown. Advice that is wrong half the time is worse than none, which
         # is the rule this method was written for; it was just breaking it
         # itself (bad.md R10).
+        #
+        # Read out of the keymap rather than typed into the sentence: the chord
+        # moved on 2026-09-16 and is rebindable besides, and a refusal that names
+        # a key which does something else is the same defect as no refusal at
+        # all (bad.md C7).
+        keymap = getattr(self.app, "keymap", None)
+        ring = spoken_key_for(keymap, "cmd_switch_document_kind")
+        language_key = spoken_key_for(keymap, "cmd_set_language")
         if language == "plain":
             return (
-                "This document has no formatting. Control Shift M cycles the kind of "
-                "document -- Markdown, then HTML, then rich text -- or Control Alt F6 "
+                f"This document has no formatting. {ring} cycles the kind of "
+                f"document -- Markdown, then HTML, then rich text -- or {language_key} "
                 "sets the language without converting anything."
             )
         return (
             f"Formatting is not available in this {language_label(language)} document. "
-            "Control Shift M cycles on to the next kind; rich text is the one that "
+            f"{ring} cycles on to the next kind; rich text is the one that "
             "has formatting."
         )
 
@@ -307,18 +317,58 @@ class DocumentFormatCommandsMixin:
     def cmd_align_justify(self) -> None:
         self._align("justify", "Justified")
 
-    def cmd_toggle_bullets(self) -> None:
-        """WordPad's bullet button, on WordPad's chord (Ctrl+Shift+L)."""
-        if not self._require_rich():
+    #: What each stop of the ring is called when it announces itself.
+    _LIST_STYLE_WORDS = {
+        "none": "Not a list",
+        "bullet": "Bulleted list",
+        "numbered": "Numbered list",
+    }
+
+    def cmd_cycle_list_style(self) -> None:
+        """Ctrl+Shift+L: bulleted list, numbered list, no list, round again.
+
+        WordPad's key and WordPad's behaviour. It was a *toggle* -- bullets on,
+        bullets off -- which meant QuillLite could not make a numbered list at
+        all, in any kind of document, while its own PRD said an ordered list is
+        structure a reader announces and should come first (bad.md P1.5, 4.2).
+
+        Two implementations, because a list is two different things:
+
+        * In **rich text** it is ``ITextPara.ListType`` -- a paragraph property
+          the control draws and renumbers itself. Nothing is written into the
+          text, which is what makes it a list rather than a line that starts
+          with a bullet character.
+        * In **Markdown** it is the ``- `` and ``1. `` markers, over the
+          selected lines or the caret's line and *never* the whole document:
+          QUILL's list-off rewrote the entire buffer, which removed every other
+          list in the file and cleared the undo stack with them (bad.md R2).
+
+        HTML says so rather than guessing: ``<ul>`` needs a wrapper as well as
+        per-item tags, and half of one is a document that will not render.
+        """
+        if self.editor.mode == RICH:
+            try:
+                style = LIST_STYLES[
+                    (LIST_STYLES.index(self.editor.list_style_at_caret()) + 1) % len(LIST_STYLES)
+                ]
+                self.editor.set_list_style(style)
+            except RichEditRtfError as exc:
+                self._announce(str(exc))
+                return
+            self._set_modified(True)
+            self._announce(self._LIST_STYLE_WORDS[style])
             return
-        wanted = not self.editor.bullets_at_caret()
-        try:
-            self.editor.set_bullets(wanted)
-        except RichEditRtfError as exc:
-            self._announce(str(exc))
+        if self.markup_surface() != "markdown":
+            self._announce(self._no_formatting_here())
             return
+        text = self.control.GetValue()
+        start, end = self.control.GetSelection()
+        updated, style, span_start, span_end = cycle_list_style(text, start, end)
+        self.control.Replace(0, self.control.GetLastPosition(), updated)
+        self.control.SetSelection(span_start, span_end)
         self._set_modified(True)
-        self._announce("Bullets on" if wanted else "Bullets off")
+        self._touch_status()
+        self._announce(self._LIST_STYLE_WORDS[style])
 
     def _line_spacing(self, rule: int, label: str) -> None:
         if not self._require_rich():

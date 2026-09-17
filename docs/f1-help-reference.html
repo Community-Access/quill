@@ -2400,7 +2400,7 @@ playback to its start.</p></li>
 read-only text, when one is available. Empty otherwise.</p></li>
 </ul>
 <h2 id="quilllite">QuillLite</h2>
-<p>Control coverage: 41 audited sites (41 helped).</p>
+<p>Control coverage: 43 audited sites (43 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>About QuillLite.</strong> What this copy is, and where it
@@ -2572,7 +2572,12 @@ the heading keys write hashes. HTML makes them write <strong> and</p>
 <p>, and offers the HTML tag picker. Plain text writes no markup at all
 and is right for a letter, a log or a script. The choice lasts as long
 as this window is open; the file itself is not changed. #### (module
-level) (<code>quill/apps/lite_find_dialogs.py</code>)</p></li>
+level) (<code>quill/apps/lite_dialogs_entry.py</code>)</p></li>
+<li><p><code>display</code>: The words the link will read as. Leave it
+empty to show the address itself.</p></li>
+<li><p><code>url</code>: Where the link goes – a web address, or a path
+to another file. #### (module level)
+(<code>quill/apps/lite_find_dialogs.py</code>)</p></li>
 <li><p><code>choice</code>: How the text you typed is read: as itself,
 as backslash escapes, or as a regular expression. #### FindDialog
 (<code>quill/apps/lite_find_dialogs.py</code>)</p></li>

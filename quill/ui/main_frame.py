@@ -16504,12 +16504,11 @@ class MainFrame(
     def toggle_bullet_list(self) -> None:
         """Insert a bullet list, or strip one if the caret is inside it.
 
-        Bound to Ctrl+Alt+7 (EdSharp port).  HTML and plain-text
-        documents announce the chord is unavailable and the action is
-        skipped.  Strip mode reads the current selection (or the whole
-        document when there is no selection) so the writer can collapse
-        a list without leaving the chord.
+        Rich text first (see ``format_rich_bullets``); otherwise the Markdown or
+        HTML markers, over the selection or the whole document.
         """
+        if self.format_rich_bullets():
+            return
         self._toggle_list("Bullet List", strip_kind="bullet")
 
     def toggle_numbered_list(self) -> None:

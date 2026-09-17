@@ -72,7 +72,7 @@ TITLE_EXEMPT: dict[str, str] = {
         "search-and-choose dialog, which is two places to get the "
         "Enter-moves-to-the-list handling wrong in."
     ),
-    "quill/apps/lite_dialogs.py::ask_text": (
+    "quill/apps/lite_dialogs_entry.py::ask_text": (
         "One labelled-box window whose three callers pass literals the catalogue "
         "answers: 'Insert HTML Tag' for the attribute box, and 'Insert Link' and "
         "'Insert Image' for the address. It exists instead of wx.TextEntryDialog "

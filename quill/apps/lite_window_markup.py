@@ -2,7 +2,7 @@
 
 QuillLite has always had two kinds of document -- plain and rich -- and one of
 them could not be formatted at all. Ctrl+B in a ``.md`` said "Not available in
-plain text. Press Control Shift M to switch to rich text", which is a true
+plain text. Press Alt Shift F to switch to rich text", which is a true
 sentence and an unhelpful one: somebody writing Markdown does not want rich
 text, they want two asterisks, and they know it. The key was bound, the feature
 existed one product over, and the answer was to go and be in a different kind of
@@ -60,10 +60,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.apps.lite_dialogs import ask_text, choose_document_language, choose_searchable
+from quill.apps.lite_dialogs import choose_document_language, choose_searchable
+from quill.apps.lite_dialogs_entry import ask_link, ask_text
 from quill.core.heading_levels import LevelResult, set_heading_level
 from quill.core.html_forms import is_form_snippet
+from quill.core.links import build_link_text
 from quill.core.lite.filetypes import language_label, markup_language_for
+from quill.core.lite.keymap import spoken_key_for
 from quill.core.tagging import (
     MARKDOWN_TAG_CHOICES,
     InsertionResult,
@@ -453,6 +456,41 @@ class DocumentMarkupMixin:
         self._announce(f"Inserted {tag}" if is_form_snippet(tag) else f"Inserted HTML tag {tag}")
         self.control.SetFocus()
 
+    def cmd_insert_link(self) -> None:
+        """Ctrl+K: a link, in whatever markup the document is written in.
+
+        Word's key, and everybody's: a link is the one tag every person who has
+        ever written anything has inserted. QuillLite had the kinds and the tag
+        pickers and no way to make the one tag that matters (bad.md 4.2, Tier 1).
+
+        Markdown and HTML only. Rich text says so -- a link in a rich document is
+        a field the RichEdit control owns, and writing ``[text](url)`` into one
+        would put the brackets on the page.
+        """
+        surface = self.markup_surface()
+        if surface is None:
+            keymap = getattr(self.app, "keymap", None)
+            self._announce(
+                "A link needs a Markdown or HTML document. Press "
+                f"{spoken_key_for(keymap, 'cmd_set_language')} to set the language, or "
+                f"{spoken_key_for(keymap, 'cmd_switch_document_kind')} to change the kind."
+            )
+            return
+        answer = ask_link(self, text=self.control.GetStringSelection())
+        if answer is None:
+            self.control.SetFocus()
+            return
+        display, url = answer
+        url = url.strip()
+        if not url or url == "https://":
+            self.control.SetFocus()
+            self._announce("No address was given, so nothing was inserted")
+            return
+        snippet = build_link_text(surface, display, url)
+        self._apply_insertion(InsertionResult(inserted_text=snippet, caret_offset=len(snippet)))
+        self.control.SetFocus()
+        self._announce(f"Inserted link to {url}")
+
     def cmd_insert_emoji(self) -> None:
         """Insert > Emoji: browse or search, with a description of what it looks like.
 
@@ -499,8 +537,10 @@ class DocumentMarkupMixin:
         """
         if self.editor.mode == RICH:
             self._announce(
-                f"{what} works in plain text documents. "
-                "Press Control Shift M to switch this one to plain text."
+                f"{what} works in plain text documents. Press "
+                f"{spoken_key_for(getattr(self.app, 'keymap', None), 'cmd_switch_document_kind')}"
+                " to switch this one "
+                "to plain text."
             )
             return False
         current = self.document_language()
@@ -508,8 +548,9 @@ class DocumentMarkupMixin:
             return True
         self._announce(
             f"{what} needs a {language_label(wanted)} document. "
-            f"This one is {language_label(current)}. "
-            "Press Control Alt F6 to change the document language."
+            f"This one is {language_label(current)}. Press "
+            f"{spoken_key_for(getattr(self.app, 'keymap', None), 'cmd_set_language')}"
+            " to change the document language."
         )
         return False
 

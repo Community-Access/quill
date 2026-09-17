@@ -391,7 +391,7 @@ class DocumentFrame(
             "Your document, in plain text: one font, no formatting, and a paste "
             "arrives as text. This is the mode for notes, code and configuration "
             "files, and it writes back the encoding and the line endings the file "
-            "arrived with. Control Shift M switches to rich text." + shared
+            "arrived with. Alt Shift F switches to rich text." + shared
         )
 
     def _announce(self, message: str, *, interrupt: bool = True) -> None:

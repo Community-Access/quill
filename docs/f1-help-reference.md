@@ -1079,7 +1079,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QuillLite
 
-Control coverage: 41 audited sites (41 helped).
+Control coverage: 43 audited sites (43 helped).
 
 ### Every window, and what it is for
 
@@ -1152,6 +1152,10 @@ Control coverage: 41 audited sites (41 helped).
 - `close_btn`: Close this window and go back to your document.
 - `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Press Enter or Down Arrow to move to the list.
 - `listbox`: Markdown makes Bold write two asterisks and the heading keys write hashes. HTML makes them write <strong> and <h2>, and offers the HTML tag picker. Plain text writes no markup at all and is right for a letter, a log or a script. The choice lasts as long as this window is open; the file itself is not changed.
+#### (module level) (`quill/apps/lite_dialogs_entry.py`)
+
+- `display`: The words the link will read as. Leave it empty to show the address itself.
+- `url`: Where the link goes -- a web address, or a path to another file.
 #### (module level) (`quill/apps/lite_find_dialogs.py`)
 
 - `choice`: How the text you typed is read: as itself, as backslash escapes, or as a regular expression.

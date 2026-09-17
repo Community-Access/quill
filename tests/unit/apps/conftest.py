@@ -312,7 +312,7 @@ class FakeEditor:
         self.headings: dict[int, int] = {}
         #: ``(offset, level, text)`` rows the heading list and Alt+Down report.
         self.heading_rows: list[tuple[int, int, str]] = []
-        self.bullets = False
+        self.list_style = "none"
 
     def rtf_available(self) -> bool:
         return self.rtf
@@ -334,13 +334,27 @@ class FakeEditor:
         self.calls.append(("set_line_spacing", spacing))
         return True
 
+    def set_list_style(self, style: str) -> bool:
+        """The three-stop ring the real surface gained on 2026-09-16.
+
+        ``ITextPara.ListType`` has always had a numbered value; the surface
+        offered two of the three, so QuillLite could not make a numbered list in
+        any kind of document (bad.md P1.5).
+        """
+        self.list_style = style
+        self.calls.append(("set_list_style", style))
+        return True
+
+    def list_style_at_caret(self) -> str:
+        return self.list_style
+
     def set_bullets(self, on: bool) -> bool:
-        self.bullets = on
+        self.set_list_style("bullet" if on else "none")
         self.calls.append(("set_bullets", on))
         return True
 
     def bullets_at_caret(self) -> bool:
-        return self.bullets
+        return self.list_style == "bullet"
 
     def set_font_name(self, name: str) -> bool:
         self.calls.append(("set_font_name", name))
@@ -1020,6 +1034,7 @@ class DialogRecorder:
             "choose_document_language",
         ),
         "choose_searchable": ("quill.apps.lite_window_markup", "choose_searchable"),
+        "ask_link": ("quill.apps.lite_window_markup", "ask_link"),
         "ask_text": ("quill.apps.lite_window_markup", "ask_text"),
         # The emoji picker is QUILL's and is imported *inside* the command, so
         # the defining module is the only binding there is. It is a class rather

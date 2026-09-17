@@ -45,7 +45,6 @@ from quill.ui.dialog_contract import (
 
 __all__ = [
     "ask_line_number",
-    "ask_text",
     "choose_bookmark",
     "choose_document_language",
     "choose_from_rows",
@@ -472,44 +471,6 @@ def choose_searchable(
         if index == wx.NOT_FOUND or not filtered:
             return None
         return str(filtered[int(index)])
-    finally:
-        dialog.Destroy()
-
-
-def ask_text(
-    parent: wx.Window,
-    *,
-    title: str,
-    label: str,
-    help_text: str,
-    value: str = "",
-) -> str | None:
-    """One labelled box and an OK. Returns the text, or ``None`` on Escape.
-
-    ``wx.TextEntryDialog`` would do this in one line and is not used, for the
-    reason the module docstring gives: its prompt is not a ``wx.StaticText``
-    immediately before the field, so on wxMSW the field's accessible name is
-    whatever the reader can scrape -- which in practice is nothing. A named
-    field is the difference between "edit" and "Optional attributes, edit".
-    """
-    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE)
-    root = wx.BoxSizer(wx.VERTICAL)
-    static = wx.StaticText(dialog, label=label)
-    entry = wx.TextCtrl(dialog, value=value, style=wx.TE_PROCESS_ENTER)
-    set_accessible_name(entry, _plain_label(label))
-    entry.SetHelpText(help_text)
-    _stack(root, static, entry)
-    root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
-    dialog.SetSizerAndFit(root)
-    dialog.SetSize((480, dialog.GetSize().GetHeight()))
-    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-    entry.Bind(wx.EVT_TEXT_ENTER, lambda _e: dialog.EndModal(wx.ID_OK))
-    entry.SetFocus()
-    entry.SetInsertionPointEnd()
-    try:
-        if show_modal_dialog(dialog, title) != wx.ID_OK:
-            return None
-        return str(entry.GetValue())
     finally:
         dialog.Destroy()
 

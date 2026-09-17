@@ -85,11 +85,23 @@ _TOM_AUTOCOLOR = -9999997
 _TOM_SUSPEND = -9999995
 _TOM_RESUME = -9999994
 
-#: ``ITextPara.ListType`` (tom.h). Only the two a WordPad-scale editor offers:
-#: no list, or a bullet. Numbered lists need a numbering format and a start
-#: value to be worth anything, and half a numbered list is worse than none.
+#: ``ITextPara.ListType`` (tom.h). Three of them, since 2026-09-16: no list, a
+#: bullet, and arabic numerals. The numbered one was left out on the argument
+#: that "numbered lists need a numbering format and a start value to be worth
+#: anything" -- which is true of a list *manager* and not of the thing WordPad
+#: puts on Ctrl+Shift+L. ``tomListNumberAsArabic`` is exactly that thing: the
+#: control numbers the paragraphs, renumbers them when you insert one, and stops
+#: when you leave the list. Both editors reach it (bad.md P1.5, R1).
 _TOM_LIST_NONE = 0
 _TOM_LIST_BULLET = 1
+_TOM_LIST_NUMBERED = 2
+
+#: The three, named, in the order Ctrl+Shift+L rings through them.
+LIST_STYLE_VALUES: dict[str, int] = {
+    "none": _TOM_LIST_NONE,
+    "bullet": _TOM_LIST_BULLET,
+    "numbered": _TOM_LIST_NUMBERED,
+}
 
 #: ``ITextPara.SetLineSpacing`` rules (tom.h). The three WordPad offers, on the
 #: three chords WordPad uses (Ctrl+1, Ctrl+5, Ctrl+2).
@@ -325,30 +337,50 @@ class RichEditDocument(QuillRichEdit):
         """
         self.set_alignment("justify")
 
-    def set_bullets(self, enabled: bool) -> None:
-        """Turn a bullet list on or off across the paragraphs under the selection.
+    def set_list_style(self, style: str) -> None:
+        """Make the selected paragraphs a bulleted list, a numbered one, or neither.
 
-        ``ITextPara.ListType``. Numbered lists are deliberately not offered: a
-        number needs a format and a start value to be worth anything, and a
-        numbered list that cannot be continued or restarted is worse than none.
+        ``ITextPara.ListType``, which is how a rich document holds a list: the
+        control draws the marker, renumbers when a paragraph is inserted, and
+        stops at the end of the run. That is why nothing here writes characters
+        into the text -- a bullet you can select and delete is not a list.
         """
+        value = LIST_STYLE_VALUES.get(style)
+        if value is None:
+            raise RichEditRtfError(f"Unknown list style: {style}")
         try:
             span = self._selection().Duplicate
             span.Expand(_TOM_UNIT_PARAGRAPH)
-            span.Para.ListType = _TOM_LIST_BULLET if enabled else _TOM_LIST_NONE
+            span.Para.ListType = value
         except RichEditRtfError:
             raise
         except Exception as exc:  # noqa: BLE001 - map COM failure to our error
             raise RichEditRtfError(f"Could not change the list: {exc}") from exc
 
-    def bullets_at_caret(self) -> bool:
-        """True when the caret is in a bulleted paragraph. Never raises."""
+    def list_style_at_caret(self) -> str:
+        """``"none"``, ``"bullet"`` or ``"numbered"`` at the caret. Never raises."""
         try:
             para = self._format_range().Duplicate
             para.Expand(_TOM_UNIT_PARAGRAPH)
-            return int(para.Para.ListType or 0) == _TOM_LIST_BULLET
+            value = int(para.Para.ListType or 0)
         except Exception:  # noqa: BLE001 - a readback must never break a keypress
-            return False
+            return "none"
+        for name, number in LIST_STYLE_VALUES.items():
+            if number == value:
+                return name
+        return "none"
+
+    def set_bullets(self, enabled: bool) -> None:
+        """Turn a bullet list on or off. :meth:`set_list_style` by another name.
+
+        Kept because QUILL's rich bullet command calls it, and because "make
+        this a bulleted list" is a thing a caller legitimately means.
+        """
+        self.set_list_style("bullet" if enabled else "none")
+
+    def bullets_at_caret(self) -> bool:
+        """True when the caret is in a bulleted paragraph. Never raises."""
+        return self.list_style_at_caret() == "bullet"
 
     def set_line_spacing(self, rule: int) -> None:
         """Single, one-and-a-half or double spacing on the selected paragraphs.

@@ -29,7 +29,7 @@ import pytest
 #: wrong -- that key is a RING (plain, Markdown, HTML, rich), so one press from a
 #: plain document lands on Markdown (bad.md R10).
 PLAIN_REFUSAL = (
-    "This document has no formatting. Control Shift M cycles the kind of "
+    "This document has no formatting. Alt Shift F cycles the kind of "
     "document -- Markdown, then HTML, then rich text -- or Control Alt F6 "
     "sets the language without converting anything."
 )
@@ -254,18 +254,22 @@ def test_a_heading_marks_the_document_modified(lite_window):
 # --------------------------------------------------------------------------- #
 
 
-def test_toggle_bullets_flips_and_announces_both_ways(lite_window):
+def test_the_list_key_rings_through_three_answers_in_rich_text(lite_window):
+    """A toggle can only say yes or no, so QuillLite could not make a numbered
+    list at all -- in any kind of document (bad.md P1.5). WordPad's own button
+    on this chord rings, and each stop says its own name so you press it until
+    you hear the one you meant."""
     win = lite_window("hello", mode="rich")
-    win.cmd_toggle_bullets()
-    assert ("set_bullets", True) in win.editor.calls
-    first = win.announcements[-1]
-    win.cmd_toggle_bullets()
-    assert ("set_bullets", False) in win.editor.calls
-    assert win.announcements[-1] != first, "on and off must not read the same"
+    heard = []
+    for _ in range(4):
+        win.cmd_cycle_list_style()
+        heard.append(win.announcements[-1])
+    assert heard == ["Bulleted list", "Numbered list", "Not a list", "Bulleted list"]
+    assert ("set_list_style", "numbered") in win.editor.calls
 
 
-def test_toggle_bullets_is_refused_in_plain_text(lite_window):
+def test_the_list_key_is_refused_in_plain_text(lite_window):
     win = plain(lite_window("hello", mode="plain"))
-    win.cmd_toggle_bullets()
+    win.cmd_cycle_list_style()
     assert win.announcements[-1] == PLAIN_REFUSAL
     assert win.editor.calls == []

@@ -493,7 +493,7 @@ def test_selection_font_is_refused_outside_rich_text_and_names_this_document(lit
     win.cmd_selection_font()
     said = win.announcements[-1]
     assert "no formatting" in said
-    assert "Control Shift M" in said
+    assert "Alt Shift F" in said
     assert "Control Alt F6" in said
 
 

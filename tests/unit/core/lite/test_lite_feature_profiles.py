@@ -18,7 +18,8 @@ from __future__ import annotations
 import pytest
 
 from quill.core.app_features import AppFeatureSettings, apply_profile
-from quill.core.lite.commands import COMMAND_AREA, COMMANDS, MENU_AREA, area_for, plain_label
+from quill.core.lite.command_areas import COMMAND_AREA, MENU_AREA, area_for
+from quill.core.lite.commands import COMMANDS, plain_label
 from quill.core.lite.features import AREAS, DEFAULT_OFF, PROFILES, area_ids
 
 
@@ -29,7 +30,7 @@ def _settings_for(profile) -> AppFeatureSettings:
 
 
 def _handlers(settings: AppFeatureSettings) -> set[str]:
-    from quill.core.lite.commands import visible_commands
+    from quill.core.lite.command_areas import visible_commands
 
     return {row[3] for row in visible_commands(settings.is_enabled) if row[3]}
 
@@ -154,7 +155,7 @@ def test_wordpad_keeps_rich_text_and_drops_the_writing_tools() -> None:
 
 def test_no_profile_leaves_an_empty_menu() -> None:
     """Tidying is the part that is obvious only when it is missing."""
-    from quill.core.lite.commands import visible_commands
+    from quill.core.lite.command_areas import visible_commands
 
     for profile in PROFILES:
         rows = visible_commands(_settings_for(profile).is_enabled)
@@ -198,7 +199,7 @@ def test_profile_names_read_as_products() -> None:
 
 def test_labels_survive_a_profile(capsys: pytest.CaptureFixture[str]) -> None:
     """A sanity net: every surviving row still has a readable label."""
-    from quill.core.lite.commands import visible_commands
+    from quill.core.lite.command_areas import visible_commands
 
     for profile in PROFILES:
         for _menu, label, _key, _handler, kind in visible_commands(

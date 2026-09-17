@@ -8,13 +8,12 @@ person's hands already know the answer.
 
 ## 0.4 Pick up here
 
-**Next, and already decided (§0.6) -- no questions needed:** what is left of
-**P2.3** Tier 1 -- Insert Link, the list-style cycle, Toggle Line Comment, the Go
-To dialog with targets, and Set Mark's move to `Ctrl+Shift+M` (which needs Switch
-Document Mode to move to `Alt+Shift+F` first). Then **P2.13** Tier 2, of which
-**Review Buffer** is the best value for the least code: a read-only dialog
-holding the selection, so somebody can arrow through text with no chance of
-typing into their own document.
+**Next, and already decided (§0.6) -- no questions needed:** **P2.13** Tier 2,
+of which **Review Buffer** is the best value for the least code: a read-only
+dialog holding the selection, so somebody can arrow through text with no chance
+of typing into their own document. Then Tier 1's last row, the **Go To dialog
+with Line, Bookmark and Heading targets** (5.4, P1.6, P2.3), which is one shared
+dialog replacing Lite's line-only one and QUILL's two separate commands.
 
 **QuillLite's remaining Broken findings, in the order they hurt:** F1 and F2
 (Save As converts the buffer before the write; recovery rewrites encoding). Both
@@ -51,7 +50,7 @@ Answered by the user. These are settled; do not re-litigate them.
 | The leader reclaim | **Retire all 16** GitHub, remote-file and local-git administration positions; menu and palette only. Navigation on the leader is untouched. |
 | Insert Image | Moves `Ctrl+Alt+I` -> `Ctrl+Shift+I`, freeing `Ctrl+Alt+I` for Insert Markdown Tag. Document Intake Report -> leader. |
 | Blockquote | **Merges into Quote Lines** on `Ctrl+Shift+Q`; `format.blockquote` retires; `Ctrl+Alt+Q` -> Duplicate Selection. |
-| Numbered list | **Folds into the `Ctrl+Shift+L` cycle** (bullets -> numbered -> off, WordPad's behaviour); `Ctrl+Alt+N` -> New Plain Text Document. |
+| Numbered list | **Folds into the `Ctrl+Shift+L` cycle** (bullets -> numbered -> off, WordPad's behaviour); `Ctrl+Alt+N` -> New Plain Text Document. QuillLite rings on that key as of 2026-09-16; QUILL's `Ctrl+Alt+N` is still its own command. |
 | `keep_unique_lines` / `remove_duplicate_lines` | **Merge**: one verb, QuillLite's `Ctrl+Alt+D` and its wording. `Alt+Shift+K` freed. |
 | `trim_blank_lines` / `remove_blank_lines` | **Both kept, renamed** so a listener can hear the difference: "Trim Blank Lines at the Ends" and "Remove Every Blank Line". |
 | Spelling context menu (S11) | **Corrections first, fixed tail**, in both. The first Down arrow lands on a correction; everything after it is always the same rows in the same order. |
@@ -112,7 +111,7 @@ marked **(new)** are commands QUILL does not have today and gains in section 4.
 | Command | QuillLite today | QUILL today | Golden | Moves |
 | --- | --- | --- | --- | --- |
 | Underline | `Ctrl+U` | hard-coded, no keymap entry | `Ctrl+U` | QUILL: keymap entry; the char hook dispatches the registered command instead of a method |
-| Document Statistics (Word Count) | `Ctrl+Alt+W` | `Ctrl+Shift+W` (Word Count) | `Ctrl+Shift+G` | Word's Word Count key. QUILL `go_to_page` folds into the Go To dialog (5.4); Lite Title Case -> `Ctrl+Shift+T` (free in both). Frees `Ctrl+Shift+W` and `Ctrl+Alt+W` for row 3.3 |
+| Document Statistics (Word Count) | `Ctrl+Shift+G` | `Ctrl+Shift+W` (Word Count) | `Ctrl+Shift+G` | Word's Word Count key. Lite moved 2026-09-16; QUILL's half is outstanding and frees `Ctrl+Shift+W` for Select Word. `go_to_page` folds into the Go To dialog (5.4) |
 | Font for Selection | `Ctrl+Shift+F` | `format.font_dialog`, no key | `Ctrl+Shift+F` | Word's font key. QUILL `search_in_files` -> `Ctrl+Alt+Shift+F`; QUILL `toggle_fold` -> `Ctrl+Shift+[` and `list_folds` -> `Ctrl+Shift+]` (free in both); Lite Customize Features -> `Ctrl+Alt+F10` (rule 9) |
 | Editor Font | `Ctrl+Alt+F` | (Preferences only) | `Ctrl+Alt+F` | QUILL gains a direct command **(new)**; free |
 | Next window / document | `Ctrl+F6` (MDI) + `Ctrl+Tab` | `Ctrl+Tab`; `Ctrl+F6` = `focus_preview` | `Ctrl+F6` and `Ctrl+Tab` | Word's `Ctrl+F6`. QUILL `focus_preview` -> `Ctrl+Shift+F6` (free in both) |
@@ -138,7 +137,6 @@ Rule 6 and rule 3 both say QuillLite's win.
 | Select Sentence | `Ctrl+Space` | `select_chunk` (a run of one character class) | `Ctrl+Space` = **Select Sentence** | QUILL gains sentence selection from the shared `sentence_span` **(new)**; `select_chunk` **moves rather than retires** -- it is renamed Select Token and rebound. See 5.3a: it duplicates Select Word on words and is the only way to select a run of punctuation or whitespace |
 | Expand Selection | `Ctrl+Shift+X` | leader `J` | `Ctrl+Shift+X` | `exchange_point_mark` -> `Ctrl+Alt+X` (Lite's) |
 | Shrink Selection | `Ctrl+Alt+Shift+X` | leader `Shift+J` | `Ctrl+Alt+Shift+X` | free in QUILL |
-| Set Mark | `Ctrl+Alt+Shift+K` | `Ctrl+Shift+M` | `Ctrl+Shift+M` | rule 3: Set Mark is an editing-loop verb; Lite's Switch Document Mode -> `Alt+Shift+F` in both (free in both; QUILL's leaves leader `K`) |
 | Exchange Cursor and Mark | `Ctrl+Alt+X` | `Ctrl+Shift+X` | `Ctrl+Alt+X` | as above |
 | Duplicate Selection | `Ctrl+Alt+Q` | `Ctrl+Alt+Shift+Q` | `Ctrl+Alt+Q` | QUILL `format.blockquote` merges with `edit.quote_lines` (one verb, `Ctrl+Shift+Q`); `unquote_lines` -> `Ctrl+Alt+Shift+Q`; Lite Back Up Settings -> `Ctrl+Alt+F11` (rule 9) |
 
@@ -192,7 +190,7 @@ Rule 6 and rule 3 both say QuillLite's win.
 | --- | --- | --- | --- | --- |
 | Status Bar (show/hide) | `Alt+Shift+B` | (no command, no setting) | `Alt+Shift+B` | QUILL gains it **(new)**; `list_bookmarks` moves (3.5) |
 | Focus the status bar | `F6` | `F6` next region | `F6` | see 5.6: QUILL's `F6` already lands in the status bar when it is the next region; the plan makes the status bar the *first* stop from the editor in both |
-| Switch Document Mode | `Ctrl+Shift+M` | leader `K` | `Alt+Shift+F` | 3.3 |
+| Switch Document Mode | `Alt+Shift+F` | leader `K` | `Alt+Shift+F` | QUILL's half is outstanding: leader `K` stays until the reclaim (5.9) |
 | Reveal Codes | -- | `Alt+F3` | `Alt+F3` | QUILL-only, no collision; documented divergence (Lite declined it in its PRD) |
 
 ### 3.9 Documented divergences (rule 11)
@@ -269,11 +267,7 @@ Everything below passes all four. The tiers are about confidence, not size.
 
 | Capability | Why Lite | Cost |
 | --- | --- | --- |
-| Insert Link `Ctrl+K` in Markdown and HTML kinds | Lite has those kinds and a tag picker; a link is the one tag everybody inserts, and Word's key for it is universal | small; shared `quill/core/links` |
-| List style cycle on `Ctrl+Shift+L` (bullets -> numbered -> off) | Lite's PRD 8.1 says "revisit numbered lists first" because an ordered list is structure a reader announces; WordPad cycles on this key | small in rich (`ITextPara.ListType`), small in Markdown |
-| Toggle Line Comment `Ctrl+/` in plain kind | Lite's PRD accepts that people edit `.py`, `.json`, `.conf` there and already silences spelling for them; a comment toggle is the second half of that concession | small; shared `line_ops` |
 | Go To dialog with Line / Bookmark / Heading targets | Word's Go To (5.4); the shared dialog replaces Lite's line-only one | medium, shared |
-| Set Mark on `Ctrl+Shift+M` | family key (3.3) | keymap |
 
 #### Tier 2 -- take these; they are small, shared, and a listener feels them immediately
 
@@ -549,7 +543,6 @@ Rich engine shared (`richedit_editing.py`, `richedit_rtf_surface.py`, `heading_l
 
 | # | Severity | Editor | Finding | Evidence |
 | --- | --- | --- | --- | --- |
-| R1 | Broken | QUILL | **Rich bullets are unreachable.** `format_rich_bullets` is defined and never called; `toggle_bullet_list` has no rich branch and refuses with "Bullet List is only available in Markdown or HTML documents". The module docstring promises the opposite. | `main_frame_rich_paragraph.py:11-14, 77`, `main_frame.py:16483, 5420-5437` |
 | R2 | Broken | QUILL | **Turning a list off strips every list in the document** (`strip_list_markers` over the whole text, then `SetValue`, which also clears the RichEdit undo stack) and announces only "Bullet List removed". | `main_frame.py:16497-16505`, `markdown_sections.py:747` |
 | R3 | Broken | QUILL | **Heading N in Markdown prepends** instead of rewriting: `### Notes` becomes `## ### Notes`; mid-line with no selection gives `foo ## bar`; a multi-line selection heads only the first line. Lite fixed exactly this with the shared `set_heading_level`, whose docstring names the bug; QUILL never adopted it. | `main_frame.py:16299-16318`, `tagging.py:274-280`, `heading_levels.py:188-236` |
 | R4 | Broken | QUILL | **Dark mode may write grey text into every saved `.rtf`**: `_apply_theme` calls `SetForegroundColour` on the rich control (wxMSW applies it as `SCF_ALL` character colour) and nothing resets to `tomAutoColor` before the native save. Lite guards both directions. Verify live before fixing. | `main_frame.py:4632-4636`, `main_frame_rich_mode.py:110`, `lite_window_theme.py:9-15`, `lite_window_file.py:194, 213` |
@@ -764,7 +757,7 @@ way:
 | --- | --- | --- | --- | --- |
 | **P0.6a** | **An editor font, a font size, and text size in/out/reset in QUILL** (4.3): two settings, `SetFont` on the editor, three commands on Notepad's `Ctrl+=` / `Ctrl+-` / `Ctrl+0`, a Format menu item that says **Font...**, and `format.font_dialog` made to work on a rich selection instead of refusing outside Markdown | QUILL | M | a low-vision user can make QUILL's text bigger; a rich selection's font can be changed; the rich kind zooms rather than re-levelling headings (5.5) |
 | **P0.6c** | **QUILL adopts `DocumentText`** (V4). The object exists (`quill/core/document_text.py`) and QuillLite is on it: the mirror, the revision counter, the cached stats and line table, and the rule that display code reads it and never the control. QUILL still has its own half-answer -- `document.text` plus a stats cache in `main_frame_statusbar.py` -- and should move onto the shared object, which is what makes the edit journal the spoken undo needs (P3.7) possible at all | QUILL | M | one mirror, owned by core, read by both |
-| P0.7 | The **Broken** rows of section 6, each with a regression test: F1 Lite Save As converts the window before the write; F2 Lite recovery rewrites encoding; F3 unencodable characters silent in both (one shared prompt: "3 characters cannot be saved as Windows-1252. Save as UTF-8?"); F4 QUILL non-atomic Save As HTML / Plain Text; F5 QUILL watcher replaces a `.docx` tab with decoded binary; F6 QUILL encoding change does not dirty, UTF-16 undetected; R1 rich bullets unreachable; R2 list-off strips every list and clears undo; R3 Markdown heading prepends; R6 Lite mode switch discards formatting; S2 QUILL live alert speaks with speech off; S3 QUILL Ignore writes a sidecar and lies; | per bug | S each | regression test per bug |
+| P0.7 | The **Broken** rows of section 6, each with a regression test: F1 Lite Save As converts the window before the write; F2 Lite recovery rewrites encoding; F3 unencodable characters silent in both (one shared prompt: "3 characters cannot be saved as Windows-1252. Save as UTF-8?"); F4 QUILL non-atomic Save As HTML / Plain Text; F5 QUILL watcher replaces a `.docx` tab with decoded binary; F6 QUILL encoding change does not dirty, UTF-16 undetected; R2 list-off strips every list and clears undo; R3 Markdown heading prepends; R6 Lite mode switch discards formatting; S2 QUILL live alert speaks with speech off; S3 QUILL Ignore writes a sidecar and lies; | per bug | S each | regression test per bug |
 | P0.8 | **Verify live, then fix if confirmed**: R4 dark mode writing grey text into every saved `.rtf`; R5 Lite `SetFont` re-levelling headings on `Ctrl+=`; C2/N3 QUILL whole-document rewrite for a local insert or line tool in an `.rtf`; R14 two-step undo after Heading N; L13 Lite's Go to Start of Selection | both | S each | a rich document survives each with its runs intact |
 | P0.9 | `_run_command` reports the exception class and message, not "Command failed"; `save_file` handles `UnicodeEncodeError` and `UnsupportedSaveFormatError` with the same sentences as `OSError`; Lite stops `errors="replace"` | both | S | a cp1252 document that gains an emoji says so on `Ctrl+S` in both |
 
@@ -778,8 +771,7 @@ way:
 | P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
 | P1.3 | Lite's rich kind switched from `SetFont` to view zoom (5.5), now that QUILL has the same three commands from P0.6a | Lite | S | a rich document's heading ladder is unchanged after `Ctrl+=` |
 | P1.4 | Body Text `Ctrl+Alt+0`; Next/Previous Heading `Ctrl+Alt+H`/`+Shift+H`; List Headings alias | QUILL | S | -- |
-| P1.5 | Bullets `Ctrl+Shift+L` as a list-style cycle in both; QUILL's numbered-list command folded in | both | S | -- |
-| P1.6 | Document Statistics `Ctrl+Shift+G` in both; Title Case `Ctrl+Shift+T`; Go To dialog with targets (5.4) | both | M | -- |
+| P1.6 | Document Statistics `Ctrl+Shift+G` **in QUILL** (Lite moved 2026-09-16); Go To dialog with targets (5.4), which is also P2.3's last row | both | M | -- |
 | P1.7 | Font for Selection `Ctrl+Shift+F`, Editor Font `Ctrl+Alt+F` (the keys for P0.6a); Search in Files and folds relocated | QUILL | S | -- |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) | QUILL | M | round-trip test per encoding |
 | P1.9 | Date and Time as a core command on `F5` in QUILL | QUILL | S | works in Safe Mode |
@@ -802,7 +794,7 @@ way:
 | --- | --- | --- | --- |
 | P2.1 | Copy to Tray Slot... chooser **in QUILL** (Lite has it, `Alt+Shift+Y`, with each row saying what it would overwrite); "tray is full" wording from the core (5.1) | QUILL | S |
 | P2.2 | Bookmark re-anchoring under the shared `BookmarkSet`, written on every change, list rows led by the digit (5.2) | both | S |
-| P2.3 | **Tier 1 of 4.2 into Lite**, what is left of it: Insert Link, the list-style cycle, Toggle Line Comment, the Go To dialog with targets, and Set Mark's move to `Ctrl+Shift+M` (which needs Switch Document Mode to move to `Alt+Shift+F` first). Copy All, the tray-slot chooser, the large-file guard, the document mirror and the announcement throttle have landed | Lite | M |
+| P2.3 | **Tier 1 of 4.2 into Lite** is down to one row: the **Go To dialog with Line, Bookmark and Heading targets** (5.4), which is shared work and is the same item as P1.6's third clause. Everything else in the tier has landed -- Insert Link, the list-style cycle, Toggle Line Comment, Copy All, Set Mark's chord, the tray-slot chooser, the large-file guard, the document mirror and the announcement throttle | both | M |
 | P2.4 | The QuillLite profile in QUILL with "Bring my QuillLite settings" (5.8), on the settings-name mapping from G1 | QUILL | M |
 | P2.5 | One verb, one registration: retire duplicate ids and Quillin re-shipments (7.1); char hook dispatches through the registry (7.2) | QUILL | M |
 | P2.6 | Keymap profile JSONs become deltas over `DEFAULT_KEYMAP` (7.3) | QUILL | S |
@@ -902,7 +894,7 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**68 items open.** Delete a row when it lands. Tiered items first,
+**67 items open.** Delete a row when it lands. Tiered items first,
 then the section-6 findings no tiered item has claimed.
 
 | # | Item |
@@ -916,8 +908,7 @@ then the section-6 findings no tiered item has claimed.
 | P1.2b | select_chunk renamed Select Token, off Ctrl+Space, with help text that says what it does that Select Word does not (5. |
 | P1.3 | Lite's rich kind switched from SetFont to view zoom (5.5), now that QUILL has the same three commands from P0.6a |
 | P1.4 | Body Text Ctrl+Alt+0; Next/Previous Heading Ctrl+Alt+H/+Shift+H; List Headings alias |
-| P1.5 | Bullets Ctrl+Shift+L as a list-style cycle in both; QUILL's numbered-list command folded in |
-| P1.6 | Document Statistics Ctrl+Shift+G in both; Title Case Ctrl+Shift+T; Go To dialog with targets (5.4) |
+| P1.6 | Document Statistics Ctrl+Shift+G in QUILL (Lite moved); Go To dialog with targets (5.4) |
 | P1.7 | Font for Selection Ctrl+Shift+F, Editor Font Ctrl+Alt+F (the keys for P0.6a); Search in Files and folds relocated |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |
 | P1.9 | Date and Time as a core command on F5 in QUILL |
@@ -935,7 +926,7 @@ then the section-6 findings no tiered item has claimed.
 | P1.21 | Typing defaults decided once (T3, T4): Tab's meaning follows the document kind in both; autoformat gated by kind as well as by setting |
 | P2.1 | Copy to Tray Slot... chooser in QUILL (Lite has it); "tray is full" wording from the core |
 | P2.2 | Bookmark re-anchoring under the shared BookmarkSet, written on every change, list rows led by the digit (5.2) |
-| P2.3 | Tier 1 of 4.2 into Lite, what is left: Insert Link, list-style cycle, line comment, Go To dialog, Set Mark |
+| P2.3 | Tier 1 of 4.2 into Lite is down to the Go To dialog with targets (5.4), which is the same item as P1.6's third clause |
 | P2.4 | The QuillLite profile in QUILL with "Bring my QuillLite settings" (5.8), on the settings-name mapping from G1 |
 | P2.5 | One verb, one registration: retire duplicate ids and Quillin re-shipments (7.1); char hook dispatches through the regi |
 | P2.6 | Keymap profile JSONs become deltas over DEFAULT_KEYMAP (7.3) |

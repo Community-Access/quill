@@ -336,7 +336,7 @@ script would be exhausting.</p>
 file is an entirely reasonable thing to do, and there are three ways to
 say so:</p>
 <ul>
-<li><strong>Ctrl+Shift+M</strong> rings through all four kinds — plain
+<li><strong>Alt+Shift+F</strong> rings through all four kinds — plain
 text, Markdown, HTML, rich text, and round again. Each stop says its own
 name, so you press it until you hear the one you meant. This is the fast
 way.</li>
@@ -1018,7 +1018,7 @@ something.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Ctrl+Alt+Shift+K</strong></td>
+<td><strong>Ctrl+Shift+M</strong></td>
 <td>Set a mark here</td>
 </tr>
 <tr>
@@ -1055,9 +1055,9 @@ document |</p>
 <h2 id="formatting">Formatting</h2>
 <p>These are WordPad’s keys, deliberately unchanged.</p>
 <p><strong>The same key, the document’s own answer.</strong> Ctrl+B used
-to say “Not available in plain text. Press Control Shift M to switch to
-rich text”, which is true and unhelpful — somebody writing Markdown does
-not want rich text, they want two asterisks, and they know it. So what
+to say “Not available in plain text. Press Alt Shift F to switch to rich
+text”, which is true and unhelpful — somebody writing Markdown does not
+want rich text, they want two asterisks, and they know it. So what
 Ctrl+B writes now depends on what kind of document you are in:</p>
 <table>
 <thead>
@@ -1109,8 +1109,16 @@ adding to it. Pressing Ctrl+Alt+2 on a line that is already
 <code>## ### Notes</code> — and an <code>id=</code> on an HTML heading
 is carried across, because it is very often the anchor somebody else’s
 link points at.</p>
-<p>The rest of the Format menu — alignment, bullets, line spacing, font
-— is rich text only, and says so when it cannot run.</p>
+<p>The rest of the Format menu — alignment, line spacing, font — is rich
+text only, and says so when it cannot run. Lists are not:
+<strong>Ctrl+Shift+L</strong> works in a rich text document and in a
+Markdown one.</p>
+<p><strong>Ctrl+Shift+L rings</strong>, the way WordPad’s own button
+does: bulleted list, numbered list, no list, round again. Each stop says
+its own name, so you press it until you hear the one you meant. In rich
+text the control draws the markers and renumbers them for you; in
+Markdown it writes <code>- </code> and <code>1. </code> on the lines you
+have selected — and only on those, never on the rest of the file.</p>
 <table>
 <thead>
 <tr>
@@ -1136,7 +1144,7 @@ link points at.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+L</strong></td>
-<td>Bullet points</td>
+<td>Lists: bulleted, numbered, none, round again</td>
 </tr>
 <tr>
 <td><strong>Ctrl+1</strong>, <strong>Ctrl+5</strong>,
@@ -1562,7 +1570,7 @@ its own name and value.</p>
 <p><strong>View ▸ Status Bar</strong> (<strong>Alt+Shift+B</strong>)
 takes the bar off the screen altogether, the way Notepad’s does, and
 puts it back. Nothing is lost when it is away:
-<strong>Ctrl+Alt+W</strong> speaks the counts, and
+<strong>Ctrl+Shift+G</strong> speaks the counts, and
 <strong>Ctrl+G</strong> asks for the line number the Position part would
 have shown you. F6 with the bar hidden says so rather than doing
 nothing.</p>
@@ -1728,6 +1736,26 @@ Copy does the same thing in two keys and leaves the document selected
 afterwards, which is a hazard when you cannot glance at it: the next
 character you type replaces everything.</p>
 <hr />
+<h2 id="links">Links</h2>
+<p><strong>Ctrl+K</strong> puts a link in, in whatever markup the
+document is written in — <code>[text](address)</code> in Markdown,
+<code>&lt;a href="address"&gt;text&lt;/a&gt;</code> in HTML. Select the
+words first and they arrive in the box already; leave the display box
+empty and the address shows as its own text.</p>
+<p>Rich text says so instead: a link there is something the control
+owns, and writing brackets into one would just put brackets on the
+page.</p>
+<hr />
+<h2 id="links-1">Links</h2>
+<p><strong>Ctrl+K</strong> puts a link in, in whatever markup the
+document is written in — <code>[text](address)</code> in Markdown,
+<code>&lt;a href="address"&gt;text&lt;/a&gt;</code> in HTML. Select the
+words first and they arrive in the box already; leave the display box
+empty and the address shows as its own text.</p>
+<p>Rich text says so instead: a link there is something the control
+owns, and writing brackets into one would just put brackets on the
+page.</p>
+<hr />
 <h2 id="working-on-lines">Working on lines</h2>
 <p><strong>Edit ▸ Lines</strong> is everything that happens to whole
 lines. It is in Edit because line work <em>is</em> editing — it belongs
@@ -1780,6 +1808,18 @@ the blank lines before the first line of text and after the last;
 QuillLite has just the one.</p>
 <p>Each one counts as a single undo, so <strong>Ctrl+Z</strong> takes
 back the whole sort rather than putting back one line at a time.</p>
+<h3 id="commenting-lines-out">Commenting lines out</h3>
+<p><strong>Ctrl+/</strong> comments the lines you have selected out, and
+pressing it again brings them back. The prefix comes from the file’s
+name — <code># </code> in a <code>.py</code>, <code>.yml</code>,
+<code>.ini</code> or <code>.conf</code>, <code>-- </code> in a
+<code>.sql</code>, <code>&lt;!-- --&gt;</code> in HTML and Markdown,
+<code>// </code> in anything else — which is the same rule QUILL
+follows, so a file commented in one uncomments in the other. It says how
+many lines it changed.</p>
+<p>An unsaved document gets <code>// </code>, because there is nothing
+else to go on. Save it once under the name you mean and the key gets it
+right from then on.</p>
 <h3 id="changing-case">Changing case</h3>
 <p><strong>Tools ▸ Change Case</strong> has five. UPPERCASE
 (<strong>Ctrl+Shift+U</strong>), lowercase
@@ -2610,6 +2650,10 @@ list inside the app.</p>
 <td><strong>Ctrl+Alt+Shift+T</strong></td>
 <td>Tidy Whitespace</td>
 </tr>
+<tr>
+<td><strong>Ctrl+/</strong></td>
+<td>Toggle Line Comment</td>
+</tr>
 </tbody>
 </table>
 <h3 id="edit--selection">Edit ▸ Selection</h3>
@@ -2674,7 +2718,7 @@ list inside the app.</p>
 <td>Unselect All</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+Shift+K</strong></td>
+<td><strong>Ctrl+Shift+M</strong></td>
 <td>Set Mark</td>
 </tr>
 <tr>
@@ -2796,7 +2840,7 @@ list inside the app.</p>
 <td>Reset Text Size</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+W</strong></td>
+<td><strong>Ctrl+Shift+G</strong></td>
 <td>Document Statistics</td>
 </tr>
 <tr>
@@ -2829,6 +2873,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Shift+Enter</strong></td>
 <td>Line Break</td>
+</tr>
+<tr>
+<td><strong>Ctrl+K</strong></td>
+<td>Link…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+I</strong></td>
@@ -2887,7 +2935,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+L</strong></td>
-<td>Bullets</td>
+<td>Lists</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F</strong></td>
@@ -2902,7 +2950,7 @@ list inside the app.</p>
 <td>Describe Formatting at Cursor</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Shift+M</strong></td>
+<td><strong>Alt+Shift+F</strong></td>
 <td>Switch Document Mode</td>
 </tr>
 <tr>

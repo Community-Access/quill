@@ -117,6 +117,19 @@
 
 ### Added
 
+- **Insert Link (Ctrl+K).** Word's key, and everybody's. Select the words, press
+  it, type the address: `[text](address)` in a Markdown document,
+  `<a href="address">text</a>` in an HTML one. QuillLite had both kinds, a tag
+  picker for each, and no way at all to make the one tag everybody inserts.
+- **Numbered lists, at last.** **Ctrl+Shift+L** rings rather than toggles:
+  bulleted list, numbered list, no list, round again, which is what WordPad's
+  own button on that key does. It works in rich text -- where the control draws
+  the markers and renumbers them as you add items -- and in Markdown, where it
+  writes `- ` and `1. ` on the lines you selected and nowhere else.
+- **Toggle Line Comment (Ctrl+/).** QuillLite is where people edit a `.py`, a
+  `.conf` or a bit of JSON -- it already keeps the spell checker quiet in them --
+  and commenting a few lines out is the other half of that. The prefix follows
+  the file name: `# `, `-- `, `<!-- -->` or `// `, the same rule QUILL uses.
 - **A pause between spoken messages.** Preferences has **Shortest gap between
   spoken messages**, in milliseconds, and setting it stops QuillLite saying
   things faster than you can hear them -- which is what a held-down key used to
@@ -127,6 +140,14 @@
 
 ### Changed
 
+- **Three keys moved**, and each moved to the one QUILL and Word already use.
+  **Set Mark is Ctrl+Shift+M** (it was Ctrl+Alt+Shift+K) -- it is a key you press
+  in the middle of editing, and it was on a four-key chord while Switch Document
+  Mode, which you press a few times a year, held the three-key one.
+  **Switch Document Mode is Alt+Shift+F.** **Document Statistics is
+  Ctrl+Shift+G**, which is Word's Word Count key.
+- **A refusal that names a key reads it from your keymap.** If you rebind
+  something, the sentence that tells you which key to press changes with it.
 - **Large documents stopped costing what they did.** QuillLite read its whole
   buffer out of the text control five separate times -- the status bar's counts,
   the heading cue, the list cue, the live spell check on every arrow press, and

@@ -38,6 +38,8 @@ from collections.abc import Callable
 
 from quill.core import line_ops
 from quill.core.deletion_ring import DeletionRing, removed_span
+from quill.core.format_ops import toggle_line_comment
+from quill.ui.richedit_editing import RICH
 
 #: ``(text, cursor) -> (text, cursor)`` -- the shape every whole-document line
 #: operation in :mod:`quill.core.line_ops` already has.
@@ -185,3 +187,51 @@ class DocumentLineMixin:
         self._set_modified(True)
         self._touch_status()
         self._announce(f"Restored {len(restored)} characters: {self._preview(restored)}")
+
+    # ------------------------------------------------------------------ #
+    # Comments
+    # ------------------------------------------------------------------ #
+
+    def cmd_toggle_line_comment(self) -> None:
+        """Ctrl+/: comment the selected lines out, or bring them back.
+
+        QuillLite's PRD accepts that people edit ``.py``, ``.json`` and
+        ``.conf`` here -- it already silences the spell checker in them for
+        exactly that reason -- and a comment toggle is the second half of that
+        concession (bad.md 4.2, Tier 1). It is the same shared
+        :func:`~quill.core.format_ops.toggle_line_comment` QUILL uses, so the
+        prefix a file gets is the one QUILL would give it: ``# `` for Python and
+        the configuration formats, ``-- `` for SQL, ``<!-- -->`` for HTML and
+        Markdown, ``// `` for everything else.
+
+        The file name decides, which is why an unsaved document gets ``// ``:
+        there is nothing else to go on, and guessing from the contents would be
+        a guess a person then has to undo.
+        """
+        if self.editor.mode == RICH:
+            self._announce("Commenting out lines works in plain text documents")
+            return
+        text = self.control.GetValue()
+        start, end = self.control.GetSelection()
+        updated, span_start, span_end = toggle_line_comment(text, start, end, self.path)
+        if updated == text:
+            self._announce("Nothing to comment")
+            return
+        # Counted by comparing the lines, not by counting the newlines in the
+        # span: the span ends at a line break, so a newline count is one too
+        # many, and whether a blank line inside a selection takes a marker
+        # depends on the comment style. A count that is sometimes wrong is
+        # worse than no count at all (the same rule as the collector's, C7).
+        before_lines = text[span_start:span_end].split("\n")
+        after_lines = updated[span_start:span_end].split("\n")
+        count = sum(
+            1 for pair in zip(before_lines, after_lines, strict=False) if pair[0] != pair[1]
+        )
+        self.control.Replace(0, self.control.GetLastPosition(), updated)
+        self.control.SetSelection(span_start, span_end)
+        self._set_modified(True)
+        self._touch_status()
+        commented = len(updated) > len(text)
+        self._announce(
+            f"{'Commented' if commented else 'Uncommented'} {count} line{'s' if count != 1 else ''}"
+        )

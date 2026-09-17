@@ -162,6 +162,10 @@ def test_quilllite_no_longer_promises_one_press_to_rich_text() -> None:
     source = Path("quill/apps/lite_window_format.py").read_text(encoding="utf-8")
     assert "Press Control Shift M to switch to rich text" not in source
     assert "Press Control Shift M for rich text" not in source
+    # And the chord itself is no longer typed into a spoken refusal at all: it
+    # moved on 2026-09-16 (bad.md 3.3), and a sentence with a chord in it has to
+    # read the keymap or it is one rebinding away from lying again (C7).
+    assert "Control Shift M cycles" not in source
     assert "cycles" in source, "say that the key is a ring, since that is what it is"
 
 

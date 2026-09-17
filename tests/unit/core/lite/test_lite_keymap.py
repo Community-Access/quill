@@ -160,7 +160,7 @@ def test_every_bound_handler_has_a_title() -> None:
 
 
 def test_with_no_overrides_the_rows_are_the_table() -> None:
-    from quill.core.lite.commands import visible_commands
+    from quill.core.lite.command_areas import visible_commands
 
     assert resolved_commands(ALL_ON) == visible_commands(ALL_ON)
 

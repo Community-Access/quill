@@ -14,7 +14,8 @@ from __future__ import annotations
 import pytest
 
 from quill.core.keymap import DEFAULT_KEYMAP
-from quill.core.lite.commands import COMMANDS, plain_label, visible_commands
+from quill.core.lite.command_areas import visible_commands
+from quill.core.lite.commands import COMMANDS, plain_label
 from quill.core.lite.features import AREAS
 
 SELECT_MENU = "&Edit|Selectio&n"
@@ -160,12 +161,19 @@ def test_the_three_clashing_keys_stayed_with_their_resident() -> None:
 
     An existing binding somebody's fingers already know outranks a new command's
     convention, which is the same call made for Ctrl+J and Ctrl+Shift+V.
+
+    **Except Set Mark**, on 2026-09-16, and the exception has a rule behind it
+    rather than a preference: frequency breaks the tie (bad.md rule 3). Set Mark
+    is an editing-loop verb and was on a four-key chord, while Switch Document
+    Mode -- pressed a handful of times a year -- held the three-key one that is
+    Set Mark's in QUILL. The resident moved, to Alt+Shift+F, which is free in
+    both editors.
     """
     bound = {h: k for _m, _l, k, h, kind in COMMANDS if kind != "sep"}
     assert bound["cmd_expand_selection"] == "Ctrl+Shift+X"
     assert bound["cmd_set_bookmark"] == "Ctrl+Shift+B"
-    assert bound["cmd_switch_document_kind"] == "Ctrl+Shift+M"
+    assert bound["cmd_switch_document_kind"] == "Alt+Shift+F"
     # ...and the imports took free keys instead of evicting them.
     assert bound["cmd_exchange_point_mark"] == "Ctrl+Alt+X"
     assert bound["cmd_select_block"] == "Ctrl+Alt+Shift+B"
-    assert bound["cmd_set_mark"] == "Ctrl+Alt+Shift+K"
+    assert bound["cmd_set_mark"] == "Ctrl+Shift+M"

@@ -513,7 +513,7 @@ def test_font_stepping_is_refused_outside_rich_text_and_names_this_document(lite
     invoke(win)
     said = win.announcements[-1]
     assert "no formatting" in said
-    assert "Control Shift M" in said
+    assert "Alt Shift F" in said
     assert "Control Alt F6" in said
     assert win.editor.calls == []
 

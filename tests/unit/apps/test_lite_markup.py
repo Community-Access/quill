@@ -234,7 +234,7 @@ def test_a_plain_document_refuses_and_offers_both_ways_out() -> None:
     win.cmd_bold()
     assert win.text == "hello"
     said = win.said[0]
-    assert "Control Shift M" in said and "Control Alt F6" in said
+    assert "Alt Shift F" in said and "Control Alt F6" in said
 
 
 def test_a_markdown_document_in_rich_mode_is_sent_to_rich_formatting() -> None:
@@ -338,7 +338,7 @@ def test_both_pickers_refuse_in_rich_text_and_say_how_to_leave_it() -> None:
         win = _Window("", name=name, mode=RICH)
         win.cmd_insert_html_tag()
         win.cmd_insert_markdown_tag()
-        assert all("Control Shift M" in message for message in win.said)
+        assert all("Alt Shift F" in message for message in win.said)
 
 
 def test_the_menu_map_pairs_each_picker_with_exactly_one_language() -> None:

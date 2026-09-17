@@ -105,7 +105,7 @@ those a `#` is a **comment** and a `-` is a flag, and an editor that announced
 The guess is not binding. Writing HTML in a `.txt` scratch file is an entirely
 reasonable thing to do, and there are three ways to say so:
 
-- **Ctrl+Shift+M** rings through all four kinds — plain text, Markdown, HTML,
+- **Alt+Shift+F** rings through all four kinds — plain text, Markdown, HTML,
   rich text, and round again. Each stop says its own name, so you press it until
   you hear the one you meant. This is the fast way.
 - **Ctrl+Alt+F6** (**Format ▸ Document Language**) goes straight to one, and
@@ -592,7 +592,7 @@ where you were standing before you went off to check something.
 
 | Key | What it does |
 |---|---|
-| **Ctrl+Alt+Shift+K** | Set a mark here |
+| **Ctrl+Shift+M** | Set a mark here |
 | **Ctrl+M** | Go back to the last mark |
 | **Alt+M** | List your marks and pick one |
 | **Ctrl+Alt+X** | Swap between the cursor and the mark, selecting what is between |
@@ -621,7 +621,7 @@ need none:
 These are WordPad's keys, deliberately unchanged.
 
 **The same key, the document's own answer.** Ctrl+B used to say "Not available
-in plain text. Press Control Shift M to switch to rich text", which is true and
+in plain text. Press Alt Shift F to switch to rich text", which is true and
 unhelpful — somebody writing Markdown does not want rich text, they want two
 asterisks, and they know it. So what Ctrl+B writes now depends on what kind of
 document you are in:
@@ -651,15 +651,22 @@ Ctrl+Alt+2 on a line that is already `### Notes` gives you `## Notes`, not
 `## ### Notes` — and an `id=` on an HTML heading is carried across, because it
 is very often the anchor somebody else's link points at.
 
-The rest of the Format menu — alignment, bullets, line spacing, font — is rich
-text only, and says so when it cannot run.
+The rest of the Format menu — alignment, line spacing, font — is rich text only,
+and says so when it cannot run. Lists are not: **Ctrl+Shift+L** works in a rich
+text document and in a Markdown one.
+
+**Ctrl+Shift+L rings**, the way WordPad's own button does: bulleted list,
+numbered list, no list, round again. Each stop says its own name, so you press it
+until you hear the one you meant. In rich text the control draws the markers and
+renumbers them for you; in Markdown it writes `- ` and `1. ` on the lines you
+have selected — and only on those, never on the rest of the file.
 
 | Key | What it does |
 |---|---|
 | **Ctrl+B**, **Ctrl+I**, **Ctrl+U** | Bold, italic, underline |
 | **Ctrl+Shift+>** / **Ctrl+Shift+<** | Bigger / smaller text |
 | **Ctrl+L**, **Ctrl+E**, **Ctrl+R**, **Ctrl+J** | Left, centre, right, justify |
-| **Ctrl+Shift+L** | Bullet points |
+| **Ctrl+Shift+L** | Lists: bulleted, numbered, none, round again |
 | **Ctrl+1**, **Ctrl+5**, **Ctrl+2** | Single, one-and-a-half, double spacing |
 | **Ctrl+Alt+1** to **Ctrl+Alt+6** | Heading 1 to 6 |
 | **Ctrl+Alt+0** | Back to ordinary text |
@@ -972,7 +979,7 @@ document. Each part says its own name and value.
 
 **View ▸ Status Bar** (**Alt+Shift+B**) takes the bar off the screen
 altogether, the way Notepad's does, and puts it back. Nothing is lost when it is
-away: **Ctrl+Alt+W** speaks the counts, and **Ctrl+G** asks for the line number
+away: **Ctrl+Shift+G** speaks the counts, and **Ctrl+G** asks for the line number
 the Position part would have shown you. F6 with the bar hidden says so rather
 than doing nothing.
 
@@ -1075,6 +1082,30 @@ you cannot glance at it: the next character you type replaces everything.
 
 ---
 
+## Links
+
+**Ctrl+K** puts a link in, in whatever markup the document is written in —
+`[text](address)` in Markdown, `<a href="address">text</a>` in HTML. Select the
+words first and they arrive in the box already; leave the display box empty and
+the address shows as its own text.
+
+Rich text says so instead: a link there is something the control owns, and
+writing brackets into one would just put brackets on the page.
+
+---
+
+## Links
+
+**Ctrl+K** puts a link in, in whatever markup the document is written in —
+`[text](address)` in Markdown, `<a href="address">text</a>` in HTML. Select the
+words first and they arrive in the box already; leave the display box empty and
+the address shows as its own text.
+
+Rich text says so instead: a link there is something the control owns, and
+writing brackets into one would just put brackets on the page.
+
+---
+
 ## Working on lines
 
 **Edit ▸ Lines** is everything that happens to whole lines. It is in Edit
@@ -1123,6 +1154,17 @@ just the one.
 
 Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
 than putting back one line at a time.
+
+### Commenting lines out
+
+**Ctrl+/** comments the lines you have selected out, and pressing it again brings
+them back. The prefix comes from the file's name — `# ` in a `.py`, `.yml`,
+`.ini` or `.conf`, `-- ` in a `.sql`, `<!-- -->` in HTML and Markdown, `// ` in
+anything else — which is the same rule QUILL follows, so a file commented in one
+uncomments in the other. It says how many lines it changed.
+
+An unsaved document gets `// `, because there is nothing else to go on. Save it
+once under the name you mean and the key gets it right from then on.
 
 ### Changing case
 
@@ -1718,6 +1760,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+D** | Remove Duplicate Lines |
 | **Ctrl+Alt+T** | Trim Trailing Spaces |
 | **Ctrl+Alt+Shift+T** | Tidy Whitespace |
+| **Ctrl+/** | Toggle Line Comment |
 
 ### Edit ▸ Selection
 
@@ -1736,7 +1779,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+X** | Expand Selection |
 | **Ctrl+Alt+Shift+X** | Shrink Selection |
 | **Ctrl+Shift+A** | Unselect All |
-| **Ctrl+Alt+Shift+K** | Set Mark |
+| **Ctrl+Shift+M** | Set Mark |
 | **Ctrl+M** | Pop Mark |
 | **Alt+M** | List Marks |
 | **Ctrl+Alt+X** | Exchange Cursor and Mark |
@@ -1771,7 +1814,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+=** | Increase Text Size |
 | **Ctrl+-** | Decrease Text Size |
 | **Ctrl+0** | Reset Text Size |
-| **Ctrl+Alt+W** | Document Statistics |
+| **Ctrl+Shift+G** | Document Statistics |
 | **Ctrl+Shift+P** | Command Palette... |
 
 ### Insert
@@ -1782,6 +1825,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+F2** | Special Character... |
 | **Alt+.** | Emoji... |
 | **Shift+Enter** | Line Break |
+| **Ctrl+K** | Link... |
 | **Ctrl+Alt+I** | Markdown Tag... |
 | **Ctrl+Alt+O** | HTML Tag... |
 
@@ -1798,11 +1842,11 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+E** | Centre |
 | **Ctrl+R** | Align Right |
 | **Ctrl+J** | Justify |
-| **Ctrl+Shift+L** | Bullets |
+| **Ctrl+Shift+L** | Lists |
 | **Ctrl+Alt+F** | Editor Font... |
 | **Ctrl+Shift+F** | Font for Selection... |
 | **Ctrl+Shift+D** | Describe Formatting at Cursor |
-| **Ctrl+Shift+M** | Switch Document Mode |
+| **Alt+Shift+F** | Switch Document Mode |
 | **Ctrl+Alt+F6** | Document Language... |
 
 ### Format ▸ Line Spacing

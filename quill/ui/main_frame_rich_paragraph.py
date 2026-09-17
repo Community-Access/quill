@@ -80,6 +80,13 @@ class RichParagraphMixin:
         Returns rather than announces so the existing Markdown bullet command
         can call it first and fall through untouched in every other mode -- one
         key, one idea, two implementations that never both run.
+
+        **And it is called, since 2026-09-16.** It was written to be called from
+        ``toggle_bullet_list`` and nothing ever called it, so a bulleted list was
+        unreachable in a rich document and Ctrl+Shift+L said "Bullet List is only
+        available in Markdown or HTML documents" about the one kind of document
+        that has real lists (bad.md R1). The module docstring above promised the
+        opposite for a year.
         """
         wrapper = self._active_richedit()
         if self._current_editor_mode() != "rich" or wrapper is None:

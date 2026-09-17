@@ -323,7 +323,7 @@ def test_the_default_off_set_is_seeded_once_and_a_change_of_mind_sticks(
 def test_every_area_the_command_table_names_actually_exists() -> None:
     """A command mapped to a typo'd area would be permanently invisible."""
     from quill.core.lite import features as features_mod
-    from quill.core.lite.commands import COMMAND_AREA, MENU_AREA
+    from quill.core.lite.command_areas import COMMAND_AREA, MENU_AREA
 
     known = features_mod.area_ids()
     # "" is the explicit always-on answer -- a handler saying "whatever menu I
@@ -344,7 +344,8 @@ def test_switching_everything_off_still_leaves_a_usable_editor() -> None:
     cannot indent is broken rather than small -- and the two rows that switch
     everything else back on, which must never be switchable themselves.
     """
-    from quill.core.lite.commands import menu_titles, visible_commands
+    from quill.core.lite.command_areas import visible_commands
+    from quill.core.lite.commands import menu_titles
 
     rows = visible_commands(lambda _area: False)
     menus = [menu for menu in menu_titles() if any(row[0] == menu for row in rows)]
@@ -377,7 +378,7 @@ def test_switching_everything_off_still_leaves_a_usable_editor() -> None:
 
 def test_no_menu_is_left_with_only_separators_in_it() -> None:
     """Tidying is easy to forget and is read out loud when it is."""
-    from quill.core.lite.commands import visible_commands
+    from quill.core.lite.command_areas import visible_commands
 
     for switch in (lambda _a: True, lambda _a: False, lambda a: a in {"tools", "printing"}):
         rows = visible_commands(switch)

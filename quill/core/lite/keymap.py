@@ -40,16 +40,17 @@ inert -- the one failure that looks like success from in here.
 from __future__ import annotations
 
 import json
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.keymap_format import spoken_binding
+from quill.core.lite.command_areas import visible_commands
 from quill.core.lite.commands import (
     COMMANDS,
     CommandRow,
     plain_label,
     split_menu,
-    visible_commands,
 )
 from quill.core.storage import write_json_atomic
 
@@ -64,11 +65,13 @@ __all__ = [
     "conflicting_handlers",
     "default_keymap",
     "describe_binding_problem",
+    "key_for",
     "keymap_path",
     "load_keymap",
     "normalise_chord",
     "resolved_commands",
     "save_keymap",
+    "spoken_key_for",
 ]
 
 #: The overrides file, beside the settings file in QuillLite's own data folder.
@@ -434,6 +437,23 @@ def audit_keymap(keymap: dict[str, str], known: Iterable[str] | None = None) -> 
 
 def keymap_path(data_dir: Path) -> Path:
     return data_dir / KEYMAP_FILE
+
+
+def key_for(keymap: Mapping[str, str] | None, handler: str) -> str:
+    """The chord *handler* answers to right now, or "" if it has none.
+
+    The user's rebinding first, the shipped default behind it. A free function
+    rather than a method because the windows that need it are spread across a
+    dozen mixins, and a sentence that names a key has to name the key that is
+    *bound*: QuillLite told people "Control Shift 0 copies into it" for a chord
+    that had not been Copy to Tray since before 1.0 (bad.md C7).
+    """
+    return str((keymap or {}).get(handler) or default_keymap().get(handler, ""))
+
+
+def spoken_key_for(keymap: Mapping[str, str] | None, handler: str) -> str:
+    """:func:`key_for`, as a sentence says it -- "Control Alt Y"."""
+    return spoken_binding(key_for(keymap, handler))
 
 
 def load_keymap(data_dir: Path) -> dict[str, str]:
