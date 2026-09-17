@@ -240,11 +240,21 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         # commenting on. The Message cell holds it, F6 reads it, the Spelling
         # menu acts on it, and the earcon is what makes it noticeable without a
         # word being said.
-        self._set_status_message(f'Possible misspelling: "{word}"')
-        if policy.sound:
+        message = f'Possible misspelling: "{word}"'
+        self._set_status_message(message)
+        # A tone asked for and not available falls through to the words, never to
+        # silence: the setting chooses between two kinds of feedback, and the
+        # house rule (CLAUDE.md, action_feedback) is that it may never choose
+        # down to none. This one went quiet on a machine with no sound pack, so
+        # a listener who had asked for a tone and got nothing had no way to tell
+        # the alert apart from a clean document (bad.md S12).
+        from quill.core.sound_events import SoundEvent
+
+        has_clip = self._has_sound_for(SoundEvent.SPELLING_ALERT)
+        if policy.sound and has_clip:
             self._play_spelling_alert()
-        if policy.speech:
-            self._announce(f'Possible misspelling: "{word}"')
+        if policy.speech or (policy.sound and not has_clip):
+            self._announce(message)
 
     #: The keys that move the caret without changing the text. A caret that
     #: arrived on one of these is *navigating*, and the word it landed on is the
@@ -315,13 +325,16 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
             pass
 
     def _play_spelling_alert(self) -> None:
-        """The earcon, or nothing at all. Never a bell fallback.
+        """The earcon. Never a bell fallback, and never silence either.
 
         QUILL falls back to ``wx.Bell`` when no pack is loaded, and that is
-        right there: QUILL always has a sound stack. QuillLite may be installed
-        on a machine that has never had one, and the system bell is a loud,
-        undismissable, wrong-sounding noise to attach to something this frequent.
-        A missing pack means silence, which is what the status bar is for.
+        wrong here even though QUILL always has a sound stack: the system bell
+        is a loud, undismissable, wrong-sounding noise to attach to something
+        this frequent. But *silence* was the other wrong answer, and it is the
+        one this had -- a listener who asked for a tone and got nothing could
+        not tell the alert from a clean document. The caller falls through to
+        the words instead, which is the house rule for every feedback mode
+        (bad.md S12).
         """
         from quill.core.sound_events import SoundEvent
         from quill.ui.companion_cues import post_cue

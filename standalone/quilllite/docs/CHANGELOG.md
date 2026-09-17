@@ -181,6 +181,23 @@
   instead of the document. Nothing looks different; a long file simply behaves
   like a short one.
 
+### Changed
+
+- **A full copy tray refuses instead of overwriting slot 1.** It wrapped round,
+  overwrote whatever was there and reported success -- and slot 1 holds the
+  oldest thing you kept, which is the one most likely to be what you were
+  saving. The refusal says both ways out.
+- **Clearing the copy tray asks first, and says how many.** It counted after the
+  fact; QUILL asked without a count. Each half was the one the other needed.
+- **Restore Deleted Text offers the last three.** The ring has held three all
+  along and the command offered one, so two were unreachable -- and the one you
+  want is rarely the last thing you deleted, because the last thing you deleted
+  you probably meant to.
+- **A spelling alert that asks for a tone and finds none now speaks.** On a
+  machine with no sound pack it went silent, so a listener who had asked for a
+  tone could not tell the alert from a clean document. A setting chooses between
+  two kinds of feedback; it may never choose down to none.
+
 ### Fixed
 
 - **A bookmark now finds its own text again after an edit.** Bookmarks were

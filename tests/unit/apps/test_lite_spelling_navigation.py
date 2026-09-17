@@ -93,6 +93,14 @@ class _Window(DocumentSpellingMixin):
     def _spelling_enabled(self) -> bool:
         return True
 
+    #: Whether the loaded pack has a clip for the event asked about. True here
+    #: because the shipped Ink pack does; a test that wants the no-clip
+    #: fall-through sets it False (bad.md S12).
+    has_clip = True
+
+    def _has_sound_for(self, _event: str) -> bool:
+        return self.has_clip
+
     def _spell_dictionary(self) -> set[str]:
         return set()
 
@@ -300,3 +308,24 @@ def test_the_keyboard_menu_asks_about_the_word_at_the_caret(monkeypatch) -> None
     _Win().open_context_menu_at_caret()
     assert seen["position"] == WORD_MIDDLE
     assert seen["event"] is None
+
+
+def test_a_tone_with_no_clip_falls_through_to_the_words(monkeypatch) -> None:
+    """The setting chooses between two kinds of feedback, never down to none.
+
+    QuillLite went silent on a machine with no sound pack, so a listener who had
+    asked for a tone and got nothing could not tell the alert from a clean
+    document (bad.md S12, and the house rule in CLAUDE.md).
+    """
+    window = _Window(TEXT, WORD_MIDDLE)
+    window.has_clip = False
+    window.check_spelling_at_caret(wx.WXK_RIGHT)
+    assert window.cues == []
+    assert window.announcements == ['Possible misspelling: "recieve"']
+
+
+def test_a_tone_with_a_clip_stays_a_tone() -> None:
+    window = _Window(TEXT, WORD_MIDDLE)
+    window.check_spelling_at_caret(wx.WXK_RIGHT)
+    assert window.cues == ["spelling-alert"]
+    assert window.announcements == []

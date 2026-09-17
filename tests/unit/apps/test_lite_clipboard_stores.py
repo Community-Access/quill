@@ -17,6 +17,23 @@ commands are mostly *about* the store.
 
 from __future__ import annotations
 
+import pytest
+import wx
+
+
+@pytest.fixture()
+def say_yes(monkeypatch):
+    """Answer Yes to the "clear N filled slots?" question.
+
+    Asked at all since 2026-09-16: QUILL asked without a count and QuillLite
+    counted without asking, and each half is the one the other needed
+    (bad.md C9). Answering it in a fixture rather than per test keeps the
+    tests about the *count*, which is the part that was wrong.
+    """
+    from quill.apps import lite_window_clipboard as clipboard
+
+    monkeypatch.setattr(clipboard, "show_message_box", lambda *_a, **_k: wx.YES)
+
 
 def test_copy_to_tray_takes_the_first_free_slot_and_previews_it(lite_window) -> None:
     """The preview is the identification. "Copied to tray slot 1" alone would
@@ -44,7 +61,7 @@ def test_copy_to_tray_with_nothing_selected_says_what_to_do_first(lite_window) -
     assert win.app.copy_tray.slot(1).is_empty()
 
 
-def test_clearing_the_tray_reports_how_many_slots_went(lite_window) -> None:
+def test_clearing_the_tray_reports_how_many_slots_went(lite_window, say_yes) -> None:
     """ "Copy tray cleared" was the same sentence for twelve slots and for none.
 
     Those are the two outcomes most worth telling apart: one of them is the moment
@@ -60,7 +77,7 @@ def test_clearing_the_tray_reports_how_many_slots_went(lite_window) -> None:
     assert win.app.copy_tray.slot(1).is_empty()
 
 
-def test_clearing_one_slot_uses_the_singular(lite_window) -> None:
+def test_clearing_one_slot_uses_the_singular(lite_window, say_yes) -> None:
     win = lite_window("alpha bravo", cursor=0)
     win.control.SetSelection(0, 5)
     win.cmd_copy_to_tray()
@@ -299,3 +316,45 @@ def test_copy_all_fills_the_library_when_asked(lite_window) -> None:
     win.cmd_copy_all()
     entries = win.app.clip_library.all_entries()
     assert [entry.fragment.markup for _index, entry in entries] == ["alpha bravo"]
+
+
+def test_clearing_the_tray_asks_first_and_names_the_count(lite_window, monkeypatch) -> None:
+    """A count after the fact tells you what you have lost; a question without
+    one asks you to confirm you do not know what (bad.md C9)."""
+    from quill.apps import lite_window_clipboard as clipboard
+
+    asked: list[str] = []
+
+    def _ask(message, *_a, **_k):
+        asked.append(message)
+        return wx.NO
+
+    monkeypatch.setattr(clipboard, "show_message_box", _ask)
+    win = lite_window("alpha bravo", cursor=0)
+    win.control.SetSelection(0, 5)
+    win.cmd_copy_to_tray()
+    win.control.SetSelection(6, 11)
+    win.cmd_copy_to_tray()
+
+    win.cmd_clear_copy_tray()
+    assert "Clear 2 filled tray slots?" in asked[0]
+    assert win.app.copy_tray.slot(1).text == "alpha", "No means no"
+    assert win.announcements[-1] == "The copy tray was left alone"
+
+
+def test_a_full_tray_refuses_rather_than_overwriting_slot_one(lite_window) -> None:
+    """It wrapped round to slot 1, overwrote it and reported success -- and slot
+    1 is the oldest, which is the one most likely to be what you were saving
+    (bad.md C9)."""
+    win = lite_window("alpha bravo", cursor=0)
+    tray = win.app.copy_tray
+    for number in range(1, tray.SLOT_COUNT + 1):
+        tray.copy_to(number, f"kept {number}")
+
+    win.control.SetSelection(0, 5)
+    win.cmd_copy_to_tray()
+
+    assert tray.slot(1).text == "kept 1"
+    said = win.announcements[-1]
+    assert f"All {tray.SLOT_COUNT} tray slots are full" in said
+    assert "Alt Shift Y" in said, "the refusal has to say a way out"

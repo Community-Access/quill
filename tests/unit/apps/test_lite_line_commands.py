@@ -20,6 +20,16 @@ class _Control:
     def __init__(self, text: str, cursor: int = 0) -> None:
         self._text = text
         self._cursor = cursor
+        self.focused = 0
+
+    def SetFocus(self) -> None:  # noqa: N802 - wx API shape
+        """Where focus goes back to after a chooser closes. Recorded, not done.
+
+        Needed since Restore Deleted Text offers the ring's three entries
+        (bad.md C9): a command behind a dialog has to hand focus back, and a
+        stub without this would fail on the plumbing rather than the behaviour.
+        """
+        self.focused += 1
 
     def GetValue(self) -> str:
         return self._text
@@ -148,3 +158,63 @@ def test_duplicate_line_does_not_claim_to_have_deleted_anything() -> None:
     win.cmd_duplicate_line()
     assert win.control.GetValue().count("alpha") == 2
     assert win.announcements == ["Duplicated line"]
+
+
+def test_restore_deletion_offers_all_three_the_ring_holds(monkeypatch) -> None:
+    """The ring has held three all along and this command offered one of them.
+
+    Two were unreachable from the only surface that reads the ring -- and the one
+    you want is rarely the last thing you deleted, because the last thing you
+    deleted you probably meant to (bad.md C9).
+    """
+    from quill.apps import lite_window_lines as lines
+
+    offered: list[list[tuple[object, str]]] = []
+
+    def _choose(_parent, **kwargs):
+        offered.append(list(kwargs["rows"]))
+        return 2  # the oldest of the three
+
+    monkeypatch.setattr(lines, "choose_from_rows", _choose)
+
+    win = _window("alpha\nbravo\ncharlie\ndelta\n", cursor=0)
+    win.cmd_delete_line()  # alpha
+    win.cmd_delete_line()  # bravo
+    win.cmd_delete_line()  # charlie
+
+    win.control.SetInsertionPoint(win.control.GetLastPosition())
+    win.cmd_restore_deletion()
+
+    assert [label for _value, label in offered[0]] == [
+        "8 characters: charlie",
+        "6 characters: bravo",
+        "6 characters: alpha",
+    ]
+    assert win.control.GetValue().endswith("alpha\n")
+
+
+def test_restore_deletion_with_one_entry_does_not_ask(monkeypatch) -> None:
+    """A question with one answer is a keystroke for nothing."""
+    from quill.apps import lite_window_lines as lines
+
+    def _must_not_ask(*_a, **_k):
+        raise AssertionError("one entry must not open a chooser")
+
+    monkeypatch.setattr(lines, "choose_from_rows", _must_not_ask)
+    win = _window("alpha\nbravo\n", cursor=0)
+    win.cmd_delete_line()
+    win.control.SetInsertionPoint(win.control.GetLastPosition())
+    win.cmd_restore_deletion()
+    assert "alpha" in win.control.GetValue()
+
+
+def test_cancelling_the_restore_chooser_restores_nothing(monkeypatch) -> None:
+    from quill.apps import lite_window_lines as lines
+
+    monkeypatch.setattr(lines, "choose_from_rows", lambda *_a, **_k: None)
+    win = _window("alpha\nbravo\ncharlie\n", cursor=0)
+    win.cmd_delete_line()
+    win.cmd_delete_line()
+    before = win.control.GetValue()
+    win.cmd_restore_deletion()
+    assert win.control.GetValue() == before

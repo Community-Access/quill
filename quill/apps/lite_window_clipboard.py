@@ -37,7 +37,9 @@ import wx
 from quill.apps.lite_dialogs import choose_from_rows
 from quill.core.clipboard_collector import DEFAULT_DIVIDER, append_collected
 from quill.core.fragment import Fragment
+from quill.core.lite import APP_NAME
 from quill.core.sound_events import SoundEvent
+from quill.ui.dialog_contract import show_message_box
 
 __all__ = ["DocumentClipboardMixin"]
 
@@ -174,7 +176,18 @@ class DocumentClipboardMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_copy_to_tray(self) -> None:
-        """Copy the selection into the first free tray slot, or slot 1 when full."""
+        """Copy the selection into the first free tray slot, or refuse if full.
+
+        It used to wrap round to slot 1, overwrite whatever was in it and report
+        success. Twelve slots deep, that is the app quietly throwing away
+        something you had deliberately kept and telling you it worked -- and
+        slot 1 is the *oldest*, which is the one most likely to be the thing you
+        were saving. QUILL refuses and names the problem, and QUILL's is the
+        right answer (bad.md C9).
+
+        The refusal says both ways out, because "the tray is full" on its own
+        leaves somebody with no next move.
+        """
         text = self._selected_text()
         if not text:
             self._announce("Select something to copy first")
@@ -182,8 +195,15 @@ class DocumentClipboardMixin:
         tray = self.app.copy_tray
         slot = next(
             (n for n in range(1, tray.SLOT_COUNT + 1) if tray.slot(n).is_empty()),
-            1,
+            None,
         )
+        if slot is None:
+            self._announce(
+                f"All {tray.SLOT_COUNT} tray slots are full. "
+                f"{self.spoken_key_for('cmd_copy_to_tray_slot')} chooses one to replace, or "
+                f"{self.spoken_key_for('cmd_clear_copy_tray')} empties the tray."
+            )
+            return
         tray.copy_to(slot, text)
         self._announce(f"Copied to tray slot {slot}: {tray.slot(slot).preview(40)}")
 
@@ -272,8 +292,25 @@ class DocumentClipboardMixin:
         if not filled:
             self._announce("The copy tray is already empty")
             return
+        # Asked *and* counted. QUILL asked without a count and QuillLite counted
+        # without asking, and each half is the one the other needed: a count
+        # after the fact tells you what you have lost, and a question without
+        # one asks you to confirm you do not know what (bad.md C9).
+        if not self._confirm_clearing_tray(filled):
+            self._announce("The copy tray was left alone")
+            return
         tray.clear_all()
         self._announce(f"Cleared {filled} tray slot{'s' if filled != 1 else ''}")
+
+    def _confirm_clearing_tray(self, filled: int) -> bool:
+        answer = show_message_box(
+            f"Clear {filled} filled tray slot{'s' if filled != 1 else ''}? This cannot be undone.",
+            APP_NAME,
+            # NO_DEFAULT: Enter must not be the key that empties the tray.
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+            self,
+        )
+        return answer == wx.YES
 
     # ------------------------------------------------------------------ #
     # The collector

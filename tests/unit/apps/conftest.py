@@ -958,6 +958,11 @@ def lite_window(tmp_path, lite_settings):
             "redo_performed",
             "selection_started",
             "selection_completed",
+            # The shipped Ink pack has this one, which matters because a
+            # spelling alert that asks for a tone and finds none falls through
+            # to the words (bad.md S12) -- so a fixture that left it out would
+            # be testing the fall-through as if it were the normal case.
+            "spelling_alert",
         })
         return window
 
@@ -1026,6 +1031,9 @@ class DialogRecorder:
         # Fourth: Earlier Versions and Paste from Tray both list rows, and the
         # line tools module imports the chooser at its own scope as well.
         "choose_from_rows_tools": ("quill.apps.lite_window_tools", "choose_from_rows"),
+        # Fifth: Restore Deleted Text offers the ring's three entries rather
+        # than only the newest (bad.md C9).
+        "choose_from_rows_lines": ("quill.apps.lite_window_lines", "choose_from_rows"),
         "edit_spelling_voice": ("quill.apps.lite_spelling_voice_dialog", "edit_spelling_voice"),
         "AppFeaturesDialog": ("quill.ui.app_features_dialog", "AppFeaturesDialog"),
         "CommandPaletteDialog": ("quill.ui.palette", "CommandPaletteDialog"),
@@ -1122,6 +1130,7 @@ class DialogRecorder:
             "choose_from_rows_clipboard",
             "choose_from_rows_spelling",
             "choose_from_rows_tools",
+            "choose_from_rows_lines",
         ),
         "show_text_window": (
             "show_text_window",

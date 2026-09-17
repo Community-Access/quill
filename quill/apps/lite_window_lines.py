@@ -36,6 +36,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.apps.lite_dialogs import choose_from_rows
 from quill.core import line_ops
 from quill.core.deletion_ring import DeletionRing, removed_span
 from quill.core.format_ops import toggle_line_comment
@@ -171,16 +172,47 @@ class DocumentLineMixin:
         )
 
     def cmd_restore_deletion(self) -> None:
-        """Put the most recent structured deletion back, at the caret.
+        """Put a recent structured deletion back, at the caret.
 
         Deliberately *at the caret* rather than where it came from: that is what
         distinguishes this from undo, and it is the whole reason to have it.
+
+        **All three, not just the newest.** The ring has held three deletions
+        all along and this command offered one of them, so two were unreachable
+        from the only surface that reads the ring -- and the one you want is
+        rarely the last thing you deleted, because the last thing you deleted
+        you probably meant to (bad.md C9). One of them goes straight in; more
+        than one asks which, with a preview of each.
         """
         ring = self._deletion_ring()
-        restored = ring.most_recent()
-        if not restored:
+        entries = ring.entries()
+        if not entries:
             self._announce("Nothing deleted yet in this document")
             return
+        if len(entries) == 1:
+            self._restore_deleted(entries[0])
+            return
+        rows = [
+            (index, f"{len(text):,} characters: {self._preview(text)}")
+            for index, text in enumerate(entries)
+        ]
+        chosen = choose_from_rows(
+            self,
+            title="Restore Deleted Text",
+            label="&Recently deleted, newest first:",
+            help_text=(
+                "The last few things a line command deleted. Choosing one puts it "
+                "back where the cursor is now, which is what makes this different "
+                "from undo."
+            ),
+            rows=rows,
+        )
+        self.control.SetFocus()
+        if chosen is None:
+            return
+        self._restore_deleted(entries[int(chosen)])
+
+    def _restore_deleted(self, restored: str) -> None:
         at = self.control.GetInsertionPoint()
         self.control.Replace(at, at, restored)
         self.control.SetInsertionPoint(at + len(restored))
