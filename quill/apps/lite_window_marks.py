@@ -223,6 +223,36 @@ class DocumentMarksMixin:
         )
 
     # ------------------------------------------------------------------ #
+    # The one bookmark with no number
+    # ------------------------------------------------------------------ #
+    #
+    # QUILL has had this since before QuillLite existed and QuillLite had
+    # nothing like it, which is the wrong way round for a pair of editors whose
+    # keys are meant to agree (bad.md P2.20). It is *not* a tenth numbered
+    # bookmark and it is not a mark: a numbered bookmark is a place you mean to
+    # keep, a mark is consumed when you go back to it, and this is a pin you
+    # drop before going to look something up and then stop thinking about.
+    #
+    # No dialog, no label, no list, no persistence. Overwritten silently every
+    # time it is set, because being overwritten is what it is for. QUILL's
+    # wording, word for word, so somebody who moves between the two hears the
+    # same two sentences.
+
+    def cmd_set_temp_bookmark(self) -> None:
+        """Ctrl+Alt+J: drop the single unnamed, one-shot jump point."""
+        self.bookmarks.set_temporary(self.control.GetInsertionPoint())
+        self._announce("Temporary bookmark set")
+
+    def cmd_go_to_temp_bookmark(self) -> None:
+        """Ctrl+Shift+J: go back to it, with no picker in the way."""
+        position = self.bookmarks.temporary
+        if position is None:
+            self._announce("No temporary bookmark set")
+            return
+        self._go_to(min(position, self.control.GetLastPosition()))
+        self._announce("Jumped to temporary bookmark")
+
+    # ------------------------------------------------------------------ #
     # What this document remembers between sessions
     # ------------------------------------------------------------------ #
 

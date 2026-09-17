@@ -62,7 +62,7 @@ from typing import Any
 
 import wx
 
-from quill.core.abbreviations import try_expand
+from quill.core.abbreviations import is_trigger_char, try_expand
 from quill.core.autoformat import is_dash_merge, smart_quote_for
 from quill.core.sound_events import SoundEvent
 
@@ -233,8 +233,11 @@ class DocumentTypingMixin:
         position = self.control.GetInsertionPoint()
         if position and self.control.GetSelection()[0] != self.control.GetSelection()[1]:
             return False  # a selection is a replacement, not a typed character
-        text = self.control.GetValue()
-        preceding = text[position - 1] if position else ""
+        # One character, not the whole document. This runs on *every
+        # keystroke*, and reading the buffer out of the control to look at the
+        # character behind the caret was the single hottest O(N) in the app --
+        # QUILL has read it this way since #1346 (bad.md T1).
+        preceding = self.control.GetRange(position - 1, position) if position else ""
         if typed in _QUOTES:
             self._insert_replacing(smart_quote_for(preceding, typed), back=0)
             return True
@@ -270,8 +273,15 @@ class DocumentTypingMixin:
         if library is None:
             return
         try:
-            text = self.control.GetValue()
             caret = self.control.GetInsertionPoint()
+            # An abbreviation is recognised by the character that follows it, so
+            # a keystroke that is not a trigger cannot possibly expand anything.
+            # Asked first, and asked of one character, because the answer is no
+            # for every letter anybody types and the alternative was reading the
+            # whole document to find that out (bad.md T1).
+            if caret < 2 or not is_trigger_char(self.control.GetRange(caret - 1, caret)):
+                return
+            text = self.control.GetValue()
             match = try_expand(text, caret, library, clipboard_provider=self._clipboard_text)
         except Exception:  # noqa: BLE001 - expansion must never break typing
             return

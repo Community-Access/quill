@@ -17,6 +17,7 @@ import pytest
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_markup import MARKUP_COMMANDS, DocumentMarkupMixin
+from quill.core.document_text import DocumentText
 from quill.ui.richedit_editing import PLAIN, RICH
 
 
@@ -28,6 +29,7 @@ class _Control:
         self._caret = caret
         self._sel = (caret, caret)
         self.focused = 0
+        self.doc_text = DocumentText(self.GetValue)
 
     def GetValue(self) -> str:  # noqa: N802 - wx spelling
         return self._text
@@ -54,6 +56,10 @@ class _Control:
         self._text = self._text[:start] + text + self._text[end:]
         self._caret = start + len(text)
         self._sel = (self._caret, self._caret)
+        # What ``EVT_TEXT`` does in the real window. An edit that left the
+        # mirror alone would let the list and heading cues answer about the text
+        # as it was a moment ago, which is the one way a mirror can be wrong.
+        self.doc_text.invalidate()
 
     def WriteText(self, text: str) -> None:  # noqa: N802 - wx spelling
         self.Replace(*self._sel, text)
@@ -90,6 +96,7 @@ class _App:
 class _Window(DocumentMarkupMixin, DocumentFormatCommandsMixin, DocumentHeadingsMixin):
     def __init__(self, text: str = "", *, name: str | None = "notes.md", mode: str = PLAIN):
         self.control = _Control(text)
+        self.doc_text = self.control.doc_text
         self.editor = _Editor(mode)
         self.app = _App()
         self.path = pathlib.Path(name) if name else None

@@ -120,9 +120,124 @@ def test_clearing_the_collection_says_so(lite_window) -> None:
     assert "nothing" in win.announcements[-1].lower()
 
 
+def test_clearing_the_collection_says_how_much_went(lite_window) -> None:
+    """Discarding two gathered quotes and doing nothing are not one sentence."""
+    win = lite_window("alpha bravo", cursor=0)
+    win.control.SetSelection(0, 5)
+    win.cmd_collect_selection()
+    win.control.SetSelection(6, 11)
+    win.cmd_collect_selection()
+    win.cmd_clear_collected()
+    assert win.announcements[-1] == "Collector cleared, 2 pieces discarded"
+
+
+def test_clearing_an_empty_collector_says_it_was_already_empty(lite_window) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.cmd_clear_collected()
+    assert win.announcements[-1] == "The collector is already empty"
+
+
+def test_a_piece_containing_the_divider_does_not_inflate_the_count(lite_window) -> None:
+    """The count used to be the number of dividers in the buffer plus one.
+
+    A line of dashes is most log files and half of everybody's notes, so the
+    count was wrong for exactly the documents this feature is for (bad.md C7).
+    """
+    text = "one\n\n----\n\ntwo"
+    win = lite_window(text, cursor=0)
+    win.control.SetSelection(0, len(text))
+    win.cmd_collect_selection()
+    assert win.announcements[-1] == "Collected 1 piece"
+
+
 # --------------------------------------------------------------------- #
 # The library: the automatic tier under all of it
 # --------------------------------------------------------------------- #
+
+
+def test_the_empty_tray_names_the_key_that_is_actually_bound(lite_window) -> None:
+    """It named Control Shift 0, which is QUILL's paste-slot-10 and has not been
+    Copy to Tray here since before 1.0 -- and is rebindable besides (bad.md C7)."""
+    win = lite_window("alpha", cursor=0)
+    win.cmd_paste_from_tray()
+    assert win.announcements[-1] == ("The copy tray is empty. Control Alt Y copies into it.")
+
+
+def test_the_empty_tray_follows_a_rebinding(lite_window) -> None:
+    win = lite_window("alpha", cursor=0)
+    win.app.keymap = {"cmd_copy_to_tray": "Ctrl+Shift+F9"}
+    win.cmd_paste_from_tray()
+    assert "Control Shift F9" in win.announcements[-1]
+
+
+# --------------------------------------------------------------------- #
+# Copy to Tray Slot: the number is the point, so it has to be choosable
+# --------------------------------------------------------------------- #
+
+
+def test_the_slot_chooser_offers_every_slot_and_says_what_is_in_it(
+    lite_window, lite_dialogs
+) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.control.SetSelection(0, 5)
+    win.cmd_copy_to_tray()
+
+    win.control.SetSelection(6, 11)
+    lite_dialogs.answer("choose_from_rows_clipboard", 7)
+    win.cmd_copy_to_tray_slot()
+
+    rows = dict(lite_dialogs.kwargs_for("choose_from_rows_clipboard")["rows"])
+    assert rows[1] == "Slot 1: alpha"
+    assert rows[2] == "Slot 2: empty"
+    assert win.app.copy_tray.slot(7).text == "bravo"
+    assert win.announcements[-1] == "Copied to tray slot 7: bravo"
+
+
+def test_choosing_an_occupied_slot_says_it_replaced_something(lite_window, lite_dialogs) -> None:
+    """Overwriting a slot you filled on purpose is the one mistake this can make."""
+    win = lite_window("alpha bravo", cursor=0)
+    win.control.SetSelection(0, 5)
+    win.cmd_copy_to_tray()
+
+    win.control.SetSelection(6, 11)
+    lite_dialogs.answer("choose_from_rows_clipboard", 1)
+    win.cmd_copy_to_tray_slot()
+    assert win.announcements[-1] == "Replaced tray slot 1: bravo"
+
+
+def test_cancelling_the_slot_chooser_changes_nothing(lite_window, lite_dialogs) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.control.SetSelection(0, 5)
+    win.cmd_copy_to_tray_slot()
+    assert win.app.copy_tray.slot(1).is_empty()
+
+
+def test_the_slot_chooser_with_nothing_selected_says_what_to_do_first(lite_window) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.cmd_copy_to_tray_slot()
+    assert win.announcements[-1] == "Select something to copy first"
+
+
+# --------------------------------------------------------------------- #
+# Copy All
+# --------------------------------------------------------------------- #
+
+
+def test_copy_all_copies_without_selecting(lite_window) -> None:
+    """Select All then Copy leaves the document selected, and the next character
+    typed replaces all of it. This is the whole reason the command exists."""
+    win = lite_window("alpha bravo", cursor=3)
+    win.cmd_copy_all()
+    assert win.control.clipboard == "alpha bravo"
+    assert win.control.GetSelection() == (3, 3)
+    assert win.announcements[-1] == "Copied the whole document, 11 characters"
+
+
+def test_copy_all_on_an_empty_document_says_so(lite_window) -> None:
+    win = lite_window("", cursor=0)
+    win.cmd_copy_all()
+    assert win.announcements[-1] == "The document is empty"
+    assert win.control.clipboard == ""
 
 
 def test_remembering_a_clip_keeps_it(lite_window) -> None:
@@ -137,3 +252,50 @@ def test_remembering_with_nothing_selected_says_what_to_do_first(lite_window) ->
     win = lite_window("alpha bravo", cursor=0)
     win.cmd_remember_clip()
     assert "select" in win.announcements[-1].lower()
+
+
+# --------------------------------------------------------------------- #
+# The automatic tier, which was a promise and a method nobody called
+# --------------------------------------------------------------------- #
+#
+# ``_remember_copy`` was defined, documented in three places -- the module
+# docstring, the Recent Clips help text and the Customize Features blurb, all
+# promising "a rolling history of the last two hundred things copied" -- and
+# called from nowhere at all (bad.md C1). It is wired to wx's own cut and copy
+# events now, which is the seam that sees every route into a copy, and it is off
+# until somebody asks for it.
+
+
+def test_a_copy_is_not_remembered_until_asked(lite_window) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.control.SetSelection(0, 5)
+    win.control.Copy()
+    assert win.app.clip_library.all_entries() == []
+
+
+def test_a_copy_is_remembered_once_the_setting_is_on(lite_window) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.app.settings.clip_library_autocapture = True
+    win.control.SetSelection(0, 5)
+    win.control.Copy()
+    entries = win.app.clip_library.all_entries()
+    assert [entry.fragment.markup for _index, entry in entries] == ["alpha"]
+
+
+def test_a_cut_is_remembered_too(lite_window) -> None:
+    """QUILL's own capture never saw a cut, which is the copy most worth keeping:
+    the text is no longer in the document to go back for (bad.md C1)."""
+    win = lite_window("alpha bravo", cursor=0)
+    win.app.settings.clip_library_autocapture = True
+    win.control.SetSelection(0, 5)
+    win.control.Cut()
+    entries = win.app.clip_library.all_entries()
+    assert [entry.fragment.markup for _index, entry in entries] == ["alpha"]
+
+
+def test_copy_all_fills_the_library_when_asked(lite_window) -> None:
+    win = lite_window("alpha bravo", cursor=0)
+    win.app.settings.clip_library_autocapture = True
+    win.cmd_copy_all()
+    entries = win.app.clip_library.all_entries()
+    assert [entry.fragment.markup for _index, entry in entries] == ["alpha bravo"]

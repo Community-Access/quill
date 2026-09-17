@@ -188,6 +188,20 @@ class Settings:
     #: switch is: a machine that has never had QUILL installed must not grow a
     #: Quill data folder because somebody taught a text editor a word.
     share_quill_dictionary: bool = False
+    #: Keep every copy and cut in the clip library automatically.
+    #:
+    #: Off, and the default is the feature rather than a timidity about it: a
+    #: rolling history of everything you copy is a file on your disk holding
+    #: whatever you last took out of a document, and nobody should acquire one
+    #: by installing a text editor. On, Recent Clips fills itself and the
+    #: library becomes what its help text has always claimed it was; off, only
+    #: Keep Clip puts anything in it.
+    #:
+    #: Deliberately the same field name QUILL uses, so the grow-up path has one
+    #: fewer row to map (bad.md G1). QuillLite promised this history from 1.0
+    #: and never implemented it -- the capture method was written and called
+    #: from nowhere (bad.md C1).
+    clip_library_autocapture: bool = False
     #: Whether the status bar is on screen at all. Notepad's View menu has had
     #: this checkbox since Windows 95 and QuillLite had no answer to it: the bar
     #: was always there. Per app rather than per document, because it is a

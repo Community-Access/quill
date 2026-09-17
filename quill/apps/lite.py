@@ -103,6 +103,10 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         #: every document: gathering quotes out of three files into one place is
         #: exactly the case it exists for.
         self.collected = ""
+        #: How many pieces are in the collector. Counted rather than inferred
+        #: from the dividers in ``collected``, because a piece that contains a
+        #: divider made that count wrong (bad.md C7).
+        self.collected_pieces = 0
         self.shutting_down = False
         #: Documents are numbered in the order they were opened, and a number is
         #: never reused inside one session: reusing it would mean "document 3"

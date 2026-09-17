@@ -24,6 +24,7 @@ import pytest
 import wx
 
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
+from quill.core.document_text import DocumentText
 
 
 class _Control:
@@ -67,6 +68,11 @@ class _Window(DocumentSpellingMixin):
 
     def __init__(self, text: str, cursor: int) -> None:
         self.control = _Control(text, cursor)
+        # The live check reads the mirror, not the control: it runs on every
+        # navigation key-up, and marshalling the buffer per arrow press was the
+        # cost (bad.md S8). The text does not change in these tests, so the
+        # mirror needs no invalidation -- which is itself the point.
+        self.doc_text = DocumentText(lambda: self.control.GetValue())
         self.app = _App()
         self.path = None
         self.announcements: list[str] = []

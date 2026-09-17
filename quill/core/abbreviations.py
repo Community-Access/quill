@@ -30,6 +30,18 @@ _TRIGGER_CHARS: frozenset[str] = frozenset({
     "'",
 })
 
+
+def is_trigger_char(character: str) -> bool:
+    """Would *character*, typed after a word, end it and offer an expansion?
+
+    Public so a caller can ask before doing anything expensive. QuillLite read
+    the whole document on every keystroke to find out whether an expansion was
+    even possible, and the answer is no for every letter anybody types
+    (bad.md T1).
+    """
+    return character in _TRIGGER_CHARS
+
+
 _ABBREVIATIONS_FILE = "abbreviations.json"
 
 

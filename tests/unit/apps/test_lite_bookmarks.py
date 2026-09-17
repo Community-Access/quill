@@ -141,3 +141,70 @@ def test_describe_character_at_the_end_of_the_document_says_so(lite_window) -> N
     win.cmd_describe_character()
     assert win.announcements != []
     assert "U+" not in win.announcements[-1]
+
+
+# --------------------------------------------------------------------------- #
+# The temporary bookmark
+# --------------------------------------------------------------------------- #
+#
+# A third thing again: not a numbered bookmark (a place you mean to keep, with a
+# digit and a row in a list) and not a mark (consumed when you go back to it).
+# This is a pin you drop before going to look something up, overwritten every
+# time it is set and never written down. QUILL has had it since before QuillLite
+# existed; these tests are the crossing (bad.md P2.20).
+
+
+def test_setting_the_temporary_bookmark_says_so(lite_window) -> None:
+    win = lite_window(DOC, cursor=25)
+    win.cmd_set_temp_bookmark()
+    assert win.announcements[-1] == "Temporary bookmark set"
+
+
+def test_going_to_it_returns_the_caret(lite_window) -> None:
+    win = lite_window(DOC, cursor=25)
+    win.cmd_set_temp_bookmark()
+    win.control.SetInsertionPoint(0)
+    win.cmd_go_to_temp_bookmark()
+    assert win.control.GetInsertionPoint() == 25
+    assert win.announcements[-1] == "Jumped to temporary bookmark"
+
+
+def test_setting_it_again_moves_it_with_no_question_asked(lite_window) -> None:
+    """Being overwritten is the whole point: there is nothing to confirm."""
+    win = lite_window(DOC, cursor=25)
+    win.cmd_set_temp_bookmark()
+    win.control.SetInsertionPoint(2)
+    win.cmd_set_temp_bookmark()
+    win.control.SetInsertionPoint(40)
+    win.cmd_go_to_temp_bookmark()
+    assert win.control.GetInsertionPoint() == 2
+
+
+def test_going_to_one_that_was_never_set_says_so(lite_window) -> None:
+    win = lite_window(DOC, cursor=0)
+    win.cmd_go_to_temp_bookmark()
+    assert win.announcements[-1] == "No temporary bookmark set"
+
+
+def test_it_is_not_one_of_the_nine(lite_window) -> None:
+    """It takes no slot, appears in no list, and Clear All leaves it alone."""
+    win = lite_window(DOC, cursor=25)
+    win.cmd_set_temp_bookmark()
+    assert win.bookmarks.all() == []
+    assert win.bookmarks.to_records() == []
+
+    win.cmd_set_bookmark()
+    assert win.announcements[-1] == "Bookmark 1 set: second line here"
+    win.cmd_clear_bookmarks()
+
+    win.control.SetInsertionPoint(0)
+    win.cmd_go_to_temp_bookmark()
+    assert win.control.GetInsertionPoint() == 25
+
+
+def test_a_pin_past_the_end_of_a_shortened_document_lands_at_the_end(lite_window) -> None:
+    win = lite_window(DOC, cursor=40)
+    win.cmd_set_temp_bookmark()
+    win.control.SetValue("short")
+    win.cmd_go_to_temp_bookmark()
+    assert win.control.GetInsertionPoint() == len("short")

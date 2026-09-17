@@ -231,6 +231,7 @@ class DocumentMarkupMixin:
         self._loading = True
         try:
             self.control.ChangeValue(markdown)
+            self.doc_text.invalidate()  # ChangeValue raises no text event
         finally:
             self._loading = False
         # The override, not the language: the file is about to become a .md, so

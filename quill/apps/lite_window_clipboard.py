@@ -144,9 +144,30 @@ class DocumentClipboardMixin:
     def _clipboard_cue(self, cue: str, phrase: str) -> Any:
         def handler(event: wx.CommandEvent) -> None:
             self._action(cue, phrase)
+            if cue in {SoundEvent.TEXT_CUT, SoundEvent.TEXT_COPIED}:
+                self._remember_copy(self._selected_text())
             event.Skip()
 
         return handler
+
+    def cmd_copy_all(self) -> None:
+        """Ctrl+F8: the whole document on the clipboard, without selecting it.
+
+        Select All then Copy is two keys and leaves the document selected, which
+        for somebody who cannot glance at it is a loaded gun: the next character
+        typed replaces everything. QUILL has had this on this key for years
+        (bad.md 4.2, Tier 1).
+        """
+        text = self.control.GetValue()
+        if not text:
+            self._announce("The document is empty")
+            return
+        if not self._set_clipboard_text(text):
+            self._announce("That could not be copied")
+            return
+        self._cue(SoundEvent.TEXT_COPIED)
+        self._remember_copy(text)
+        self._announce(f"Copied the whole document, {len(text):,} characters")
 
     # ------------------------------------------------------------------ #
     # Copy Tray
@@ -166,6 +187,48 @@ class DocumentClipboardMixin:
         tray.copy_to(slot, text)
         self._announce(f"Copied to tray slot {slot}: {tray.slot(slot).preview(40)}")
 
+    def cmd_copy_to_tray_slot(self) -> None:
+        """Alt+Shift+Y: choose which slot, having heard what is already in it.
+
+        The next free slot is the right default and the wrong only option: a
+        tray you fill in order is a tray whose numbers mean nothing, and the
+        value of a numbered slot is that *you* chose the number and can
+        therefore remember it. Each row says what it would overwrite, because
+        overwriting something put there deliberately is the one mistake this
+        feature can make (bad.md 5.1, P2.1).
+        """
+        text = self._selected_text()
+        if not text:
+            self._announce("Select something to copy first")
+            return
+        tray = self.app.copy_tray
+        rows = []
+        for number in range(1, tray.SLOT_COUNT + 1):
+            slot = tray.slot(number)
+            holds = "empty" if slot.is_empty() else slot.preview(_PREVIEW_CHARS)
+            rows.append((number, f"Slot {number}: {holds}"))
+        chosen = choose_from_rows(
+            self,
+            title="Copy to Tray Slot",
+            label="&Choose the slot to copy into:",
+            help_text=(
+                "Twelve numbered slots. Each row says what is in that slot now; "
+                "choosing one replaces it with what you have selected."
+            ),
+            rows=rows,
+        )
+        if chosen is None:
+            self.control.SetFocus()
+            return
+        number = int(chosen)
+        replaced = not tray.slot(number).is_empty()
+        tray.copy_to(number, text)
+        self.control.SetFocus()
+        self._announce(
+            f"{'Replaced' if replaced else 'Copied to'} tray slot {number}: "
+            f"{tray.slot(number).preview(40)}"
+        )
+
     def cmd_paste_from_tray(self) -> None:
         """Choose a numbered slot and paste it."""
         tray = self.app.copy_tray
@@ -175,7 +238,9 @@ class DocumentClipboardMixin:
             if not tray.slot(n).is_empty()
         ]
         if not rows:
-            self._announce("The copy tray is empty. Control Shift 0 copies into it.")
+            self._announce(
+                f"The copy tray is empty. {self.spoken_key_for('cmd_copy_to_tray')} copies into it."
+            )
             return
         chosen = choose_from_rows(
             self,
@@ -221,7 +286,12 @@ class DocumentClipboardMixin:
             self._announce("Select something to collect first")
             return
         self.app.collected = append_collected(self.app.collected, text, divider=DEFAULT_DIVIDER)
-        pieces = self.app.collected.count(DEFAULT_DIVIDER) + 1
+        # Counted, not inferred from the dividers in the text: a piece that
+        # happens to contain the divider -- a line of dashes, which is most log
+        # files and half of everybody's notes -- made the old count wrong, and a
+        # count that is sometimes wrong is worse than no count at all (C7).
+        self.app.collected_pieces = int(getattr(self.app, "collected_pieces", 0)) + 1
+        pieces = self.app.collected_pieces
         self._announce(f"Collected {pieces} piece{'s' if pieces != 1 else ''}")
 
     def cmd_paste_collected(self) -> None:
@@ -233,8 +303,20 @@ class DocumentClipboardMixin:
         self._announce(f"Pasted {len(self.app.collected):,} collected characters")
 
     def cmd_clear_collected(self) -> None:
+        """Empty the collector, and say whether there was anything in it.
+
+        "Collector cleared" was announced either way, and those are the two
+        outcomes a listener most needs told apart: one of them has just thrown
+        away five gathered quotes and the other did nothing at all (C7). The
+        same answer the copy tray and the bookmarks already give.
+        """
+        pieces = int(getattr(self.app, "collected_pieces", 0))
+        if not self.app.collected:
+            self._announce("The collector is already empty")
+            return
         self.app.collected = ""
-        self._announce("Collector cleared")
+        self.app.collected_pieces = 0
+        self._announce(f"Collector cleared, {pieces} piece{'s' if pieces != 1 else ''} discarded")
 
     # ------------------------------------------------------------------ #
     # The clip library
@@ -284,7 +366,22 @@ class DocumentClipboardMixin:
         The automatic tier: you do not have to have decided in advance that a
         copy mattered. Failures are swallowed -- a clip library that cannot
         write must not be able to break Ctrl+C.
+
+        **Off unless asked** (``clip_library_autocapture``), and that is the
+        point of the setting rather than an accident of it: a rolling history of
+        everything you copy is a file on your disk holding whatever you last
+        took out of a document, and nobody should acquire one by installing a
+        text editor. Keep Clip fills the library deliberately either way.
+
+        This method existed and was called from nowhere for the whole of 1.0,
+        while the module docstring, the Recent Clips help text and the Customize
+        Features blurb all promised the history (bad.md C1). It hangs off wx's
+        own cut and copy events now -- the same seam QUILL uses -- so it sees
+        every route into a copy rather than only the ones that go through a
+        command.
         """
+        if not getattr(self.app.settings, "clip_library_autocapture", False):
+            return
         library: Any = getattr(self.app, "clip_library", None)
         if library is None or not text.strip():
             return

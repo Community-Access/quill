@@ -28,6 +28,7 @@ from quill.branding import QUILL_KEY_LABEL
 __all__ = [
     "format_binding_for_display",
     "format_quill_key_chord",
+    "spoken_binding",
 ]
 
 #: The default QUILL Key prefix. Used when callers do not pass a
@@ -73,6 +74,46 @@ def format_binding_for_display(
     if text == p:
         return QUILL_KEY_LABEL
     return text
+
+
+#: How each modifier is said out loud. "Control" rather than "Ctrl" because a
+#: synthesiser reads the abbreviation as a word, and "ctrl" is not one.
+_SPOKEN_MODIFIERS = {
+    "CTRL": "Control",
+    "CONTROL": "Control",
+    "ALT": "Alt",
+    "SHIFT": "Shift",
+    "CMD": "Command",
+    "WIN": "Windows",
+}
+
+
+def spoken_binding(binding: str | None) -> str:
+    """A chord as a sentence says it: ``"Ctrl+Alt+Y"`` -> ``"Control Alt Y"``.
+
+    For the announcements that tell somebody *which key* to press -- "the copy
+    tray is empty, Control Alt Y copies into it". Those sentences were typed by
+    hand with the chord spelled into them, which is how QuillLite came to name
+    a key that had not been that command's since before 1.0 and is in any case
+    rebindable. One rewrite, applied to whatever the keymap actually resolves,
+    cannot go stale.
+
+    ``+`` becomes a space because a reader says "plus" otherwise, and a chord
+    with a comma in it (QUILL's leader) keeps the comma, which is the pause a
+    listener needs between the two presses.
+    """
+    text = (binding or "").strip()
+    if not text:
+        return ""
+    parts = []
+    for step in text.split(", "):
+        pieces = [
+            _SPOKEN_MODIFIERS.get(piece.strip().upper(), piece.strip())
+            for piece in step.split("+")
+            if piece.strip()
+        ]
+        parts.append(" ".join(pieces))
+    return ", ".join(parts)
 
 
 def format_quill_key_chord(prefix: str, second_key: str) -> str:

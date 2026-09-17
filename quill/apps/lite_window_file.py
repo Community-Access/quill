@@ -66,6 +66,11 @@ class DocumentFileMixin:
             return False
         finally:
             self._loading = False
+            # The one funnel every open goes through -- File > Open, the command
+            # line, a recent file, the shell. Rich and plain both replace the
+            # text without raising a text event (ChangeValue, and the TOM's own
+            # set_rtf), so the mirror is told here rather than in each branch.
+            self.doc_text.invalidate()
         self.path = path
         self._discard_slot()
         self.modified = False
@@ -121,6 +126,7 @@ class DocumentFileMixin:
             self._report_failure("Recovery failed", f"Could not restore {slot.title}.\n\n{exc}")
         finally:
             self._loading = False
+            self.doc_text.invalidate()  # as in open_path: no text event fires
         if slot.original_path and Path(slot.original_path).exists():
             self.path = Path(slot.original_path)
         self._slot = slot
@@ -241,12 +247,29 @@ class DocumentFileMixin:
         self._write_recovery_copy()
 
     def stop_timers(self) -> None:
-        """Stop everything that fires on a clock. Safe to call more than once."""
+        """Stop everything that fires on a clock. Safe to call more than once.
+
+        *Everything*, since 2026-09-16. It stopped the autosave and the status
+        bar and left two behind: the live spell check's one-shot timer and the
+        pending "and here is how it is spelled" -- both of which fire a second
+        or so later, on a window that has been destroyed, into a bare ``except``
+        that swallowed the evidence (bad.md S8). A timer nobody stops is a
+        crash nobody can reproduce.
+        """
         try:
             self._autosave.Stop()
         except RuntimeError:
             pass
         self._stop_status_timer()
+        timer = getattr(self, "_spell_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except RuntimeError:
+                pass
+        voice = getattr(self, "_spell_voice", None)
+        if voice is not None:
+            voice.cancel()
 
     def restart_autosave(self) -> None:
         """Re-arm the timer at the current interval, after Preferences changes it."""

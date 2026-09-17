@@ -205,6 +205,23 @@ def edit_preferences(
     share_dict.SetValue(bool(settings.share_quill_dictionary))
     root.Add(share_dict, 0, wx.LEFT | wx.RIGHT, _PAD)
 
+    # Beside the two sharing switches because it is the third question of the
+    # same kind -- what QuillLite keeps, and where. Off by default, and the
+    # help text says plainly what "everything" means rather than selling the
+    # feature: somebody turning this on should know what they are turning on.
+    keep_clips = wx.CheckBox(dialog, label="&Keep everything I copy in the clip library")
+    keep_clips.SetHelpText(
+        "Off: the clip library holds only what you put there with Keep Clip. "
+        "On: every piece of text you copy or cut inside a QuillLite document is "
+        "added to it automatically, up to the last two hundred, and Recent "
+        "Clips offers them all. That includes anything you had pasted into a "
+        "document and copied back out -- a password, a licence key, a private "
+        "address -- and it is written to a file in QuillLite's data folder. It "
+        "never sees what you copy in other programs."
+    )
+    keep_clips.SetValue(bool(getattr(settings, "clip_library_autocapture", False)))
+    root.Add(keep_clips, 0, wx.LEFT | wx.RIGHT, _PAD)
+
     # &U, because every other letter in "Look for updates" is spoken for in
     # this window and Windows cycles focus between two controls with the same
     # access key rather than pressing either (GATE-14).
@@ -373,6 +390,7 @@ def edit_preferences(
             settings.restore_session,
             settings.share_quill_abbreviations,
             settings.share_quill_dictionary,
+            getattr(settings, "clip_library_autocapture", False),
             settings.spell_check_while_typing,
             settings.open_blank_document_at_startup,
             getattr(settings, "check_updates_on_launch", True),
@@ -386,6 +404,7 @@ def edit_preferences(
         settings.restore_session = bool(restore.GetValue())
         settings.share_quill_abbreviations = bool(share.GetValue())
         settings.share_quill_dictionary = bool(share_dict.GetValue())
+        settings.clip_library_autocapture = bool(keep_clips.GetValue())
         settings.spell_check_while_typing = bool(spell_typing.GetValue())
         settings.open_blank_document_at_startup = bool(blank.GetValue())
         settings.check_updates_on_launch = bool(updates.GetValue())
@@ -412,6 +431,7 @@ def edit_preferences(
                 settings.restore_session,
                 settings.share_quill_abbreviations,
                 settings.share_quill_dictionary,
+                settings.clip_library_autocapture,
                 settings.spell_check_while_typing,
                 settings.open_blank_document_at_startup,
                 settings.check_updates_on_launch,

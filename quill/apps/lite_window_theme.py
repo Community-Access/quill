@@ -43,6 +43,7 @@ class DocumentAppearanceMixin:
     def _set_mode_internal(self, mode: str) -> None:
         """Switch the control's text mode. The buffer must be empty first."""
         self.control.ChangeValue("")
+        self.doc_text.invalidate()  # ChangeValue raises no text event
         self.editor.set_text_mode(mode)
         self._apply_editor_font()
         self._apply_editor_help()
@@ -76,6 +77,7 @@ class DocumentAppearanceMixin:
         try:
             self._set_mode_internal(mode)
             self.control.ChangeValue(text)
+            self.doc_text.invalidate()  # ChangeValue raises no text event
             self._apply_rich_theme_colour()
         finally:
             self._loading = False

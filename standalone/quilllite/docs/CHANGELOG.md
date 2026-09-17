@@ -4,6 +4,27 @@
 
 ### Added
 
+- **Copy All (Ctrl+F8)** puts the whole document on the clipboard without
+  selecting it. Select All then Copy is two keys and leaves everything selected
+  afterwards, so the next character typed replaces the document.
+- **Copy to Tray Slot... (Alt+Shift+Y)** lets you choose which of the twelve
+  slots to copy into, with each row saying what is in that slot now. Ctrl+Alt+Y
+  still takes the next free one.
+- **The clip library can fill itself.** Preferences has a new switch, **Keep
+  everything I copy in the clip library**, and with it on every copy and every
+  cut made inside a QuillLite document is remembered, up to the last two
+  hundred. It is off until you ask for it: a history of everything you copy is a
+  file on your disk holding whatever you last took out of a document. The help
+  text in Preferences says so. Until now the app promised this history in three
+  places and never kept any of it -- only Keep Clip ever put anything in the
+  library.
+
+- **A temporary bookmark** -- **Ctrl+Alt+J** drops a pin where the cursor is and
+  **Ctrl+Shift+J** goes back to it. Use it when you are about to go and look
+  something up and want to come straight back. It has no number, no label and no
+  row in the bookmark list, setting it again simply moves it, and it is gone when
+  the document closes. QUILL has had these two keys for years; they now mean the
+  same thing here.
 - **Save an HTML page as Markdown.** The Save As box offers **Markdown
   (*.md)** again, and this time it converts: an HTML document saved as `.md`
   has its tags turned into Markdown as it saves -- `#` headings, `**bold**`,
@@ -94,8 +115,33 @@
 - **A formatting refusal names the document it is refusing in**, and offers both
   ways out: rich text, or giving the document a markup language.
 
+### Changed
+
+- **Large documents stopped costing what they did.** QuillLite read its whole
+  buffer out of the text control five separate times -- the status bar's counts,
+  the heading cue, the list cue, the live spell check on every arrow press, and
+  the autocorrect rule on every single keystroke. In a big file that is what made
+  arrowing feel heavy. It reads once per edit now and answers everything else
+  from what it already has, and the autocorrect rule asks for one character
+  instead of the document. Nothing looks different; a long file simply behaves
+  like a short one.
+
 ### Fixed
 
+- **Two timers could fire on a window that had been closed.** The live spell
+  check and the pending "and here is how it is spelled" were left running when a
+  document window went away, and the failure that followed was swallowed. Both
+  are stopped now, with everything else on a clock.
+- **The empty copy tray named the wrong key.** "Control Shift 0 copies into it"
+  was a chord that had not been Copy to Tray since before 1.0, and could not be
+  right anyway once the key was rebindable. It now reads whatever Copy to Tray
+  actually answers to.
+- **The collector's count no longer counts dashes.** Collecting a piece with a
+  line of `----` in it -- which is most log files -- inflated "Collected N
+  pieces". The pieces are counted now rather than inferred from the text.
+- **Clearing an empty collector says so**, instead of reporting "Collector
+  cleared" whether it discarded five gathered quotes or nothing at all. When it
+  did discard something it now says how much.
 - **F6 now leaves the status bar as well as entering it.** Escape still works;
   so does the key that got you there. Shift+F6 too.
 - **Announce Headings is remembered between launches in QUILL too.** It never

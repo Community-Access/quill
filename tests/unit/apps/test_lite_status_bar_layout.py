@@ -21,6 +21,7 @@ from quill.apps.lite_window_status import (
     DocumentStatusMixin,
     _clip_message,
 )
+from quill.core.document_text import DocumentText
 
 
 @pytest.fixture(scope="module")
@@ -64,6 +65,10 @@ class _Bar(wx.Frame, DocumentStatusMixin):
         self._init_status_bar()
         self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         self.control.SetValue("A document with a few words in it.\nAnd a second line.")
+        # The cells read the mirror rather than the control, so the harness
+        # keeps one too. Built after the text is in, which is why it needs no
+        # invalidation here.
+        self.doc_text = DocumentText(lambda: self.control.GetValue())
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(self.control, 1, wx.EXPAND)
         layout.Add(self.status_panel, 0, wx.EXPAND)

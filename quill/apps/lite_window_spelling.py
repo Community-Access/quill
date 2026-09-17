@@ -197,7 +197,7 @@ class DocumentSpellingMixin:
         from quill.core.spellcheck import misspelling_behind
         from quill.core.spellcheck_live import live_alert_suppressed
 
-        text = self.control.GetValue()
+        text = self.doc_text.text
         caret = self.control.GetInsertionPoint()
         item = misspelling_behind(text, caret, self._spell_dictionary())
         if item is None or self.spell_ignores.skips(text, item):
@@ -300,7 +300,10 @@ class DocumentSpellingMixin:
         try:
             from quill.core.spellcheck import misspelling_at_position
 
-            text = self.control.GetValue()
+            # The mirror, not the control: this runs on every navigation key-up,
+            # and marshalling the whole buffer out of the RichEdit to look at
+            # one word was O(N) per arrow press (bad.md S8, V3).
+            text = self.doc_text.text
             item = misspelling_at_position(
                 text, int(self.control.GetInsertionPoint()), self._spell_dictionary()
             )

@@ -33,6 +33,7 @@ from quill.apps.lite_dialogs import (
 from quill.apps.lite_window_find import DocumentFindMixin
 from quill.apps.lite_window_settings_backup import DocumentSettingsBackupMixin
 from quill.apps.lite_window_special_character import DocumentSpecialCharacterMixin
+from quill.core.keymap_format import spoken_binding
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands import shortcut_text
 from quill.core.lite.filetypes import (
@@ -41,6 +42,7 @@ from quill.core.lite.filetypes import (
     SAVE_WILDCARD_RICH,
     is_rich_path,
 )
+from quill.core.lite.keymap import default_keymap
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import (
@@ -153,6 +155,8 @@ class DocumentCommandsMixin(
         try:
             self._set_mode_internal(PLAIN)
             self.control.ChangeValue(text)
+            self.doc_text.invalidate()  # ChangeValue raises no text event
+            self.doc_text.invalidate()  # ChangeValue raises no text event
             self.apply_theme()
         finally:
             self._loading = False
@@ -329,6 +333,26 @@ class DocumentCommandsMixin(
         self.control.ShowPosition(position)
         self.control.SetFocus()
         self._touch_status()
+
+    # ------------------------------------------------------------------ #
+    # Naming a key in a sentence
+    # ------------------------------------------------------------------ #
+
+    def key_for(self, handler: str) -> str:
+        """The chord *handler* answers to right now, or "" if it has none.
+
+        The user's rebinding first, the shipped default behind it. Public
+        because a sentence that names a key is written in several mixins and
+        every one of them has to name the key that is *bound*, not the one that
+        shipped: QuillLite told people "Control Shift 0 copies into it" for a
+        chord that had not been Copy to Tray since before 1.0 (bad.md C7).
+        """
+        keymap = getattr(self.app, "keymap", None) or {}
+        return str(keymap.get(handler) or default_keymap().get(handler, ""))
+
+    def spoken_key_for(self, handler: str) -> str:
+        """:meth:`key_for`, as a sentence says it -- "Control Alt Y"."""
+        return spoken_binding(self.key_for(handler))
 
     # ------------------------------------------------------------------ #
     # Window and help

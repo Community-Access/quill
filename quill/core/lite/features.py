@@ -105,9 +105,10 @@ AREAS: tuple[AppArea, ...] = (
         "clipboard",
         "Copy Tray and the clip library",
         "Edit > Clipboard: numbered clipboard slots, a collector that gathers "
-        "several copies into one, and a rolling history of everything you have "
-        "copied. Cut, Copy, Paste and Paste Text Only stay available either "
-        "way.",
+        "several copies into one, and a library of clips you have kept. "
+        "Preferences can also have it keep every copy automatically, which is "
+        "off until you ask. Cut, Copy, Paste and Paste Text Only stay available "
+        "either way.",
     ),
     AppArea(
         "printing",

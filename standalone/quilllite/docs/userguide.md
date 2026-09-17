@@ -490,6 +490,25 @@ Two details worth knowing:
 You can turn all of this off with the rest of bookmarks in **Tools ▸ Customize
 Features**, and then nothing is written at all.
 
+### The one with no number
+
+| Key | What it does |
+|---|---|
+| **Ctrl+Alt+J** | Set Temporary Bookmark — drop a pin where the cursor is |
+| **Ctrl+Shift+J** | Go to Temporary Bookmark — go back to it |
+
+There is one more bookmark, and it is a different kind of thing. Use it when you
+are about to go and look something up and you want to come straight back: press
+Ctrl+Alt+J before you go, Ctrl+Shift+J when you are done.
+
+It has no number, no label and no row in the list, and setting it again simply
+moves it — nothing asks whether you meant to. It is not kept when you close the
+document. That is the point: a place you did not name is a place you did not
+mean to keep, and having to name one is exactly the interruption you were trying
+to avoid.
+
+QUILL has had these two keys for years and they are the same two keys here.
+
 ### Going back where you came from
 
 | Key | What it does |
@@ -1025,18 +1044,34 @@ around that, in **Edit ▸ Clipboard**.
 into a slot with **Ctrl+Alt+Y**, and paste from any of them an hour later with
 **Ctrl+Alt+V**. **Ctrl+Alt+Shift+Y** empties it.
 
+**Ctrl+Alt+Y** takes the next free slot, which is fine until you want to *choose*
+the number — and choosing is the whole point of a numbered slot, because a number
+you picked is one you can remember. **Alt+Shift+Y** offers all twelve, each row
+saying what is in that slot now, so nothing gets overwritten unheard.
+
 **The collector** gathers things up. Each **Ctrl+Alt+G** adds what you have
 selected to one growing pile, and **Ctrl+Alt+Shift+G** pastes the whole pile.
 This is what you want when you are pulling five quotes out of a long document.
 **Ctrl+Alt+Shift+C** empties the pile.
 
-**The clip library** happens by itself — a rolling history of what you have
-copied, whether or not you decided at the time that it mattered. **Ctrl+Alt+M**
-keeps the current clip deliberately, and **Ctrl+Alt+Shift+M** opens the list.
+**The clip library** is where clips you want to keep go. **Ctrl+Alt+M** keeps
+what you have selected, and **Ctrl+Alt+Shift+M** opens the list to paste one back.
+
+It can also fill itself. **Preferences ▸ Keep everything I copy in the clip
+library** turns that on, and then every copy and every cut you make inside a
+QuillLite document is added automatically, up to the last two hundred. It is off
+until you ask, and the reason is worth stating plainly: a history of everything
+you copy is a file on your disk holding whatever you last took out of a
+document, a password you had pasted somewhere included. It never sees what you
+copy in other programs.
 
 And **Ctrl+Shift+V** pastes text with none of its formatting, which is what you
 want when something copied from a web page arrives wearing its own fonts and
 colours.
+
+**Ctrl+F8** copies the whole document. Select All then Copy does the same thing
+in two keys and leaves the document selected afterwards, which is a hazard when
+you cannot glance at it: the next character you type replaces everything.
 
 ---
 
@@ -1435,7 +1470,7 @@ from the box moves straight into the list.
 | **Markdown and HTML** | The two tag pickers, Document Language, and markup Bold | on |
 | **Bookmarks** | All nine, and the list | on |
 | **Line tools and change case** | Edit ▸ Lines, Tools ▸ Change Case | on |
-| **Copy Tray and the clip library** | Edit ▸ Clipboard (Cut, Copy and Paste stay) | on |
+| **Copy Tray and the clip library** | Edit ▸ Clipboard (Cut, Copy, Paste and Copy All stay) | on |
 | **Printing** | Print and Page Setup | on |
 | **Abbreviations** | Short forms, and the list that manages them | on |
 | **Spell check** | Tools ▸ Spelling, and checking as you type | on |
@@ -1635,6 +1670,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+V** | Paste Text Only |
 | **Del** | Delete |
 | **Ctrl+A** | Select All |
+| **Ctrl+F8** | Copy All |
 | **Ctrl+F** | Find... |
 | **F3** | Find Next |
 | **Shift+F3** | Find Previous |
@@ -1701,6 +1737,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+Alt+Y** | Copy to Tray |
+| **Alt+Shift+Y** | Copy to Tray Slot... |
 | **Ctrl+Alt+V** | Paste from Tray... |
 | **Ctrl+Alt+Shift+Y** | Clear Copy Tray |
 | **Ctrl+Alt+G** | Collect Selection |
@@ -1807,6 +1844,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **F2** | Next Bookmark |
 | **Shift+F2** | Previous Bookmark |
 | **Ctrl+Alt+B** | Clear All Bookmarks |
+| **Ctrl+Alt+J** | Set Temporary Bookmark |
+| **Ctrl+Shift+J** | Go to Temporary Bookmark |
 | **Ctrl+Shift+1** | Set Bookmark 1 |
 | **Ctrl+Shift+2** | Set Bookmark 2 |
 | **Ctrl+Shift+3** | Set Bookmark 3 |

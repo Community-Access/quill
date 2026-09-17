@@ -60,6 +60,7 @@ from quill.apps.lite_window_theme import DocumentAppearanceMixin
 from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.apps.lite_window_typing import DocumentTypingMixin
 from quill.apps.lite_window_view import DocumentViewCommandsMixin
+from quill.core.document_text import DocumentText
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
 from quill.core.locations import LocationRing
@@ -177,6 +178,25 @@ class DocumentFrame(
         self.control: wx.TextCtrl = surface
         self.editor = surface.quill_richedit
         self.control.SetName("Document")
+        #: The document's text, on the Python side, for everything that only
+        #: *reads* it -- the status bar's counts, the heading and list cues, the
+        #: live spell check. ``GetValue()`` on a multiline control copies the
+        #: whole buffer across the wx boundary, and QuillLite had five separate
+        #: readers doing it: one coalesced status refresh cost three full scans
+        #: and two marshals, and one arrow key in a large file cost another
+        #: (bad.md V2, V3, S8). It reads at most once per edit and answers
+        #: everything after that for free.
+        #:
+        #: **Display only.** Anything that edits or saves reads the control. And
+        #: anything that replaces the text with ``ChangeValue`` -- which raises
+        #: no text event -- must call ``invalidate()`` itself; the five places
+        #: that do are marked.
+        #:
+        #: Read through the attribute rather than bound to today's control:
+        #: switching between plain and rich destroys the wx control and
+        #: builds another, and a mirror holding the old one's method would
+        #: be reading a window that no longer exists.
+        self.doc_text = DocumentText(lambda: self.control.GetValue())
         self._apply_editor_help()
         self._init_status_bar()
         # The editor takes every pixel the status bar does not. A sizer rather
@@ -276,6 +296,11 @@ class DocumentFrame(
             )
 
     def _on_text(self, event: wx.CommandEvent) -> None:
+        # First, and outside the loading guard: a document being loaded changes
+        # the text as surely as one being typed into, and a mirror that missed
+        # the load would answer every question about the new file with the old
+        # one's text. O(1) -- it only forgets, it does not read.
+        self.doc_text.invalidate()
         if not self._loading:
             self._set_modified(True)
             # Every edit invalidates the counts, so every edit marks the bar

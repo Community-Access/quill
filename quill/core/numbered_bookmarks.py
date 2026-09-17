@@ -67,9 +67,19 @@ class Bookmark:
 
 @dataclass
 class BookmarkSet:
-    """The nine slots for one document."""
+    """The nine slots for one document, plus the one that has no number."""
 
     _slots: dict[int, Bookmark] = field(default_factory=dict)
+    #: The unnamed, unnumbered, one-shot jump point -- the *temporary* bookmark.
+    #:
+    #: A different thing from the nine, and kept here rather than beside them so
+    #: both editors reach it through one seam. A numbered bookmark is a place you
+    #: mean to keep and therefore has a digit, a label and a row in a list; this
+    #: is a pin you drop before going to look something up, overwritten silently
+    #: every time it is set and forgotten when the document closes. It is
+    #: deliberately absent from :meth:`to_records`: something you did not name is
+    #: something you did not mean to keep.
+    _temporary: int | None = None
 
     # -- setting and clearing ------------------------------------------------ #
 
@@ -92,6 +102,27 @@ class BookmarkSet:
             if number not in self._slots:
                 return number
         return 1
+
+    def set_temporary(self, position: int) -> int:
+        """Drop the temporary pin at *position*, replacing whatever was there.
+
+        No dialog, no number, no announcement of what it replaced: a pin you
+        overwrite is the whole point of this one, and asking about it would cost
+        more than losing it.
+        """
+        self._temporary = max(0, int(position))
+        return self._temporary
+
+    @property
+    def temporary(self) -> int | None:
+        """Where the temporary pin is, or ``None`` when none has been dropped."""
+        return self._temporary
+
+    def clear_temporary(self) -> bool:
+        """Forget the temporary pin. ``True`` when there was one."""
+        had = self._temporary is not None
+        self._temporary = None
+        return had
 
     def clear(self, number: int) -> bool:
         """Remove one bookmark. ``True`` when there was one."""
@@ -170,6 +201,8 @@ class BookmarkSet:
         for number, mark in list(self._slots.items()):
             if mark.position > limit:
                 self._slots[number] = Bookmark(number, limit, mark.label)
+        if self._temporary is not None and self._temporary > limit:
+            self._temporary = limit
 
     def next_after(self, position: int) -> Bookmark | None:
         """The first bookmark after *position*, wrapping to the first."""

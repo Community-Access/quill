@@ -144,6 +144,11 @@ COMMANDS: list[CommandRow] = [
     # without it: a menu is how somebody discovers what a key does.
     ("&Edit", "&Delete", "Del", "cmd_delete", ""),
     ("&Edit", "Select &All", "Ctrl+A", "cmd_select_all", ""),
+    # Beside Select All because it is the thing people use Select All *for*, and
+    # it is the better answer: Select All then Copy leaves the whole document
+    # selected, and the next character typed replaces it. QUILL's own key
+    # (bad.md 4.2, Tier 1).
+    ("&Edit", "Cop&y All", "Ctrl+F8", "cmd_copy_all", ""),
     ("&Edit", "", "", "", "sep"),
     ("&Edit", "&Find...", "Ctrl+F", "cmd_find", ""),
     ("&Edit", "Find Ne&xt", "F3", "cmd_find_next", ""),
@@ -297,6 +302,11 @@ COMMANDS: list[CommandRow] = [
     # switched off in one checkbox -- which a submenu does just as well, because
     # a submenu with nothing left in it is removed along with its title.
     ("&Edit|Clip&board", "&Copy to Tray", "Ctrl+Alt+Y", "cmd_copy_to_tray", ""),
+    # The next free slot is the right default and the wrong only option: a tray
+    # filled in order is a tray whose numbers mean nothing, and the value of a
+    # numbered slot is that you chose the number. Each row says what it holds,
+    # so nothing is overwritten unheard (bad.md 5.1, P2.1).
+    ("&Edit|Clip&board", "Copy to Tray &Slot...", "Alt+Shift+Y", "cmd_copy_to_tray_slot", ""),
     ("&Edit|Clip&board", "&Paste from Tray...", "Ctrl+Alt+V", "cmd_paste_from_tray", ""),
     ("&Edit|Clip&board", "C&lear Copy Tray", "Ctrl+Alt+Shift+Y", "cmd_clear_copy_tray", ""),
     ("&Edit|Clip&board", "", "", "", "sep"),
@@ -559,6 +569,21 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Bookmarks", "&Next Bookmark", "F2", "cmd_next_bookmark", ""),
     ("&Navigate|&Bookmarks", "&Previous Bookmark", "Shift+F2", "cmd_previous_bookmark", ""),
     ("&Navigate|&Bookmarks", "&Clear All Bookmarks", "Ctrl+Alt+B", "cmd_clear_bookmarks", ""),
+    ("&Navigate|&Bookmarks", "", "", "", "sep"),
+    # The one with no number. QUILL has had it for years and QuillLite had
+    # nothing like it, which is backwards for two editors whose keys are meant
+    # to agree -- so it crosses on QUILL's own two chords (bad.md P2.20).
+    # A pin you drop before going to look something up: no dialog, no label, no
+    # list, and gone when the document closes. Its own group between the five
+    # that manage the nine and the nine themselves, because it is neither.
+    ("&Navigate|&Bookmarks", "Set &Temporary Bookmark", "Ctrl+Alt+J", "cmd_set_temp_bookmark", ""),
+    (
+        "&Navigate|&Bookmarks",
+        "Go to Temporar&y Bookmark",
+        "Ctrl+Shift+J",
+        "cmd_go_to_temp_bookmark",
+        "",
+    ),
     ("&Navigate|&Bookmarks", "", "", "", "sep"),
     ("&Navigate|&Bookmarks", "Set Bookmark &1", "Ctrl+Shift+1", "cmd_set_bookmark_1", ""),
     ("&Navigate|&Bookmarks", "Set Bookmark &2", "Ctrl+Shift+2", "cmd_set_bookmark_2", ""),
@@ -878,8 +903,11 @@ COMMAND_AREA: dict[str, str] = {
     "cmd_next_bookmark": "bookmarks",
     "cmd_previous_bookmark": "bookmarks",
     "cmd_clear_bookmarks": "bookmarks",
+    "cmd_set_temp_bookmark": "bookmarks",
+    "cmd_go_to_temp_bookmark": "bookmarks",
     "cmd_paste_from_tray": "clipboard",
     "cmd_copy_to_tray": "clipboard",
+    "cmd_copy_to_tray_slot": "clipboard",
     "cmd_clear_copy_tray": "clipboard",
     "cmd_collect_selection": "clipboard",
     "cmd_paste_collected": "clipboard",
@@ -906,6 +934,11 @@ COMMAND_AREA: dict[str, str] = {
     # membership test in area_for is what makes an explicit empty string mean
     # "asked and answered" rather than "not listed".
     "cmd_editor_font": "",
+    # In the Edit menu and always present. It is not a clipboard *feature*, it
+    # is Copy over the whole document, and an editor that cannot copy its own
+    # text because somebody switched off the numbered slots would be broken
+    # rather than small -- the same argument that keeps Select All in Edit.
+    "cmd_copy_all": "",
     "cmd_go_to_anything": "go_to_anything",
     # The Insert menu belongs to no single area, so its rows say so one at a
     # time. The two tag pickers ride with rich_text's opposite number -- they are

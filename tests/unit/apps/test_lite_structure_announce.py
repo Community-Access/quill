@@ -13,21 +13,33 @@ import pathlib
 
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_markup import DocumentMarkupMixin
+from quill.core.document_text import DocumentText
 from quill.ui.richedit_editing import PLAIN, RICH
 
 DOC = "# Title\n\nbody line\n\n## Section\n\n| a | b |\n| --- | --- |\n| c | d |\n"
 
 
 class _Control:
+    """A text control, and the mirror the window keeps beside it.
+
+    ``SetValue`` invalidates the mirror because the real control raises
+    ``EVT_TEXT`` and the real window's hook does exactly that. A stub that set
+    the text and left the mirror alone would be testing a window that cannot
+    exist -- and would hide the one failure mode a mirror has, which is
+    answering a question about the new document with the old one's text.
+    """
+
     def __init__(self, text: str, caret: int = 0) -> None:
         self._text = text
         self._caret = caret
+        self.doc_text = DocumentText(self.GetValue)
 
     def GetValue(self) -> str:  # noqa: N802 - wx spelling
         return self._text
 
     def SetValue(self, text: str) -> None:  # noqa: N802 - wx spelling
         self._text = text
+        self.doc_text.invalidate()
 
     def GetInsertionPoint(self) -> int:  # noqa: N802 - wx spelling
         return self._caret
@@ -69,6 +81,7 @@ class _Window(DocumentHeadingsMixin, DocumentMarkupMixin):
         self, text: str = DOC, caret: int = 0, *, mode: str = PLAIN, name: str | None = "notes.md"
     ) -> None:
         self.control = _Control(text, caret)
+        self.doc_text = self.control.doc_text
         self.editor = _Editor(mode)
         self.app = _App()
         self.path = pathlib.Path(name) if name else None
@@ -290,9 +303,9 @@ def test_the_status_bar_heading_cell_reads_a_plain_documents_headings() -> None:
             self.editor = _Editor(PLAIN)
 
     frame = _Frame(MARKDOWN, MARKDOWN.find("## Two"))
-    assert frame._heading_text() == "Heading 2"
+    assert frame._heading_text(MARKDOWN) == "Heading 2"
     frame.control.SetInsertionPoint(MARKDOWN.find("body"))
-    assert frame._heading_text() == "Body text"
+    assert frame._heading_text(MARKDOWN) == "Body text"
 
 
 # --------------------------------------------------------------------------- #

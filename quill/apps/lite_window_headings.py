@@ -76,12 +76,12 @@ class DocumentHeadingsMixin:
         own reading of the line.
         """
         self._structure_announcer = StructureAnnouncer()
-        self._structure_text_length = None
+        self._structure_revision = None
 
     def _structure_point(self):
         """Where the caret is, structurally, or ``None`` if that is unknowable."""
         try:
-            text = self.control.GetValue()
+            text = self.doc_text.text
             caret = int(self.control.GetInsertionPoint())
         except (AttributeError, RuntimeError):
             return None
@@ -148,14 +148,21 @@ class DocumentHeadingsMixin:
             # on mid-document announces the next thing you arrive at rather than
             # staying quiet until you happen to leave one and return.
             announcer.sync(point)
-            self._structure_text_length = len(self.control.GetValue())
+            self._structure_revision = self.doc_text.revision
             return
+        # The revision, not the length. This ran on every caret move and read
+        # the whole buffer to measure it -- twice, counting the sync below --
+        # which is the second half of what an arrow key cost in a large file
+        # (bad.md V3). The mirror's revision answers the same question ("has the
+        # text changed since I last looked?") for nothing, and answers it
+        # correctly for an edit that happens to leave the length unchanged,
+        # which the old test could not see at all.
         try:
-            length = len(self.control.GetValue())
+            revision = self.doc_text.revision
         except (AttributeError, RuntimeError):
             return
-        edited = self._structure_text_length is not None and length != self._structure_text_length
-        self._structure_text_length = length
+        edited = self._structure_revision is not None and revision != self._structure_revision
+        self._structure_revision = revision
         if edited:
             # The text changed under the caret. Re-latch silently: a line index
             # that moved because a line was deleted is not an arrival.
@@ -200,7 +207,7 @@ class DocumentHeadingsMixin:
         if point is not None:
             announcer.sync(point)
             try:
-                self._structure_text_length = len(self.control.GetValue())
+                self._structure_revision = self.doc_text.revision
             except (AttributeError, RuntimeError):
                 pass
 
@@ -217,7 +224,7 @@ class DocumentHeadingsMixin:
         surface = self.markup_surface()
         if surface is None:
             return []
-        blocks = parse_heading_blocks(self.control.GetValue(), surface)
+        blocks = parse_heading_blocks(self.doc_text.text, surface)
         return [(block.start, block.level, block.title) for block in blocks]
 
     def _navigate_heading(self, *, reverse: bool) -> None:

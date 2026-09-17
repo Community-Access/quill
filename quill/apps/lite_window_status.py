@@ -60,7 +60,6 @@ import wx
 from quill.core.heading_levels import heading_level_at
 from quill.core.list_structure import list_context_at
 from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
-from quill.core.marks import line_column_for_position
 from quill.core.metrics import compute_document_stats
 from quill.ui.richedit_editing import RICH
 
@@ -364,10 +363,19 @@ class DocumentStatusMixin:
         self._reflow_status_bar()
 
     def _cell_values(self) -> dict[str, str]:
-        """Every cell's text. One document scan, not one per cell."""
-        text = self.control.GetValue()
-        stats = compute_document_stats(text)
-        line, column = line_column_for_position(text, self.control.GetInsertionPoint())
+        """Every cell's text, off the document mirror rather than the control.
+
+        It said "one document scan, not one per cell" and was three: the counts
+        here, the heading cue's own ``GetValue()`` and hashes walk, and the list
+        cue's scan -- plus two full marshals out of the native control, on every
+        coalesced refresh, which is every pause in typing and every pause in
+        arrowing (bad.md V2). The mirror reads once per *edit*, so a refresh
+        after a caret move now costs nothing at all, and the counts are memoised
+        against the revision the way QUILL's have been since #1346.
+        """
+        text = self.doc_text.text
+        stats = self.doc_text.stats()
+        line, column = self.doc_text.line_column(self.control.GetInsertionPoint())
         start, end = self.control.GetSelection()
         if end > start:
             selected = compute_document_stats(text[start:end])
@@ -385,14 +393,14 @@ class DocumentStatusMixin:
             # describe one mode two ways.
             "tab_mode": "Tab char" if getattr(self, "_tab_inserts_literal", True) else "Indent",
             "format": self.document_kind_label(),
-            "heading": self._heading_text(),
+            "heading": self._heading_text(text),
             "list": self._list_text(text),
             "encoding": encoding_name(self.encoding),
             "line_endings": newline_name(self.newline),
             "saved": "Modified" if self.modified else "Saved",
         }
 
-    def _heading_text(self) -> str:
+    def _heading_text(self, text: str) -> str:
         """Which heading the caret is in, in either kind of document.
 
         Rich text asks the control's Text Object Model about the point-size
@@ -406,7 +414,7 @@ class DocumentStatusMixin:
         reads as "Body text", never as the bar stopping.
         """
         if self.editor.mode != RICH:
-            level = heading_level_at(self.control.GetValue(), self.control.GetInsertionPoint())
+            level = heading_level_at(text, self.control.GetInsertionPoint())
         else:
             level = self.editor.heading_level_at_caret()
         return f"Heading {level}" if level else "Body text"

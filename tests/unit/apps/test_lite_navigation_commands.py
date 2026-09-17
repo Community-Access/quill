@@ -408,10 +408,14 @@ def test_a_structured_delete_can_be_put_back_somewhere_else(lite_window, invoke)
 
 def test_paste_from_tray_says_how_to_fill_an_empty_tray(lite_window, lite_dialogs):
     """A refusal that names the key that fixes it. "The copy tray is empty" on
-    its own leaves somebody with no next move."""
+    its own leaves somebody with no next move.
+
+    The key is read out of the keymap since 2026-09-16. It was typed into the
+    sentence as Control Shift 0, which is QUILL's paste-slot-10 and has not been
+    Copy to Tray here since before 1.0 (bad.md C7)."""
     win = lite_window("hello")
     win.cmd_paste_from_tray()
-    assert "Control Shift 0" in win.announcements[-1]
+    assert "Control Alt Y" in win.announcements[-1]
     assert lite_dialogs.names() == []
 
 

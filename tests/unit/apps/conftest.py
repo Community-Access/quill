@@ -79,11 +79,27 @@ class FakeControl:
         self.font: Any = None
         self.colours: dict[str, Any] = {}
         self.clipboard_handlers: dict[str, Any] = {}
+        #: How many times the whole buffer has been marshalled out of the
+        #: "control". Counted because the document mirror's entire value is in
+        #: how *few* of these happen -- a version that was always correct and
+        #: read the buffer per question would pass every other test in this
+        #: suite and cost a listener their arrow keys (bad.md V2, V3, S8, T1).
+        self.value_reads = 0
 
     # -- text ---------------------------------------------------------- #
 
     def GetValue(self) -> str:
+        self.value_reads += 1
         return self._text
+
+    def GetRange(self, start: int, end: int) -> str:  # noqa: N802 - wx API shape
+        """A slice, without the whole-buffer marshal ``GetValue`` costs.
+
+        Deliberately not counted in ``value_reads``: the point of the counter is
+        the O(N) read, and this is the O(1) call that replaces it on the typing
+        path (bad.md T1).
+        """
+        return self._text[max(0, int(start)) : max(0, int(end))]
 
     def SetValue(self, text: str) -> None:
         self._push_undo()
@@ -180,23 +196,30 @@ class FakeControl:
 
     # -- clipboard ----------------------------------------------------- #
 
+    # The event fires BEFORE the edit, which is wx's order and not the obvious
+    # one. wxMSW handles WM_CUT by sending wxEVT_TEXT_CUT first and only doing
+    # the cut if the handler skipped it, so a handler reading the selection sees
+    # the text that is about to go. Raising it afterwards -- which this stub did
+    # until the clip-library capture needed the text -- meant a cut handler saw
+    # an empty selection, and the copy history would have quietly recorded
+    # nothing for the copy most worth keeping.
     def Cut(self) -> None:
+        self._raise_clipboard_event("cut")
         start, end = self._sel
         if end > start:
             self.clipboard = self._text[start:end]
             self.Remove(start, end)
-        self._raise_clipboard_event("cut")
 
     def Copy(self) -> None:
+        self._raise_clipboard_event("copy")
         start, end = self._sel
         if end > start:
             self.clipboard = self._text[start:end]
-        self._raise_clipboard_event("copy")
 
     def Paste(self) -> None:
+        self._raise_clipboard_event("paste")
         if self.clipboard:
             self.WriteText(self.clipboard)
-        self._raise_clipboard_event("paste")
 
     def _raise_clipboard_event(self, kind: str) -> None:
         """Fire the handler wx would fire, because the cue now hangs off it.
@@ -486,6 +509,7 @@ class FakeApp:
         self.copy_tray = CopyTray(tmp_path)
         self.clip_library = ClipLibrary(tmp_path)
         self.collected = ""
+        self.collected_pieces = 0
         self.abbreviations: dict[str, str] = {}
         self.features: dict[str, bool] = {}
         self.keymap: dict[str, str] = {}
@@ -703,9 +727,16 @@ def lite_window(tmp_path, lite_settings):
             # The same state ``DocumentFrame.__init__`` sets up, set up the same
             # way. Anything a command reads must exist before the command runs,
             # and the real window's ordering is part of what is being tested.
+            from quill.core.document_text import DocumentText
             from quill.core.locations import LocationRing
             from quill.core.numbered_bookmarks import BookmarkSet
 
+            # The real window's mirror, built the same way and fed the same way:
+            # display code reads this and never the control, and every edit
+            # marks it stale. A stub that skipped it would let a reader go back
+            # to GetValue() with every test still green, which is the whole
+            # regression the mirror exists to prevent (bad.md V2).
+            self.doc_text = DocumentText(lambda: self.control.GetValue())
             self.bookmarks = BookmarkSet()
             self.locations = LocationRing()
             self._tracked_length = len(text)
@@ -874,6 +905,7 @@ def lite_window(tmp_path, lite_settings):
 
         def on_text_changed(self) -> None:
             """What ``EVT_TEXT`` does, in the order ``lite_window`` does it."""
+            self.doc_text.invalidate()
             self._set_modified(True)
             self._touch_status()
             self.text_changed_while_extending()
