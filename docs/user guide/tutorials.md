@@ -336,7 +336,7 @@ Spell check as a list rather than a march, the ranked view for a long document, 
    - You should hear: The word, and the line it is on.
 
 4. **Count what you have written.** Word Count reports the document or the selection. Document Summary is the bigger answer -- what this document is, how long, and how it is shaped.
-   - Keys: Ctrl+Shift+W
+   - Keys: Ctrl+Shift+G
    - You should hear: Words, characters, and the rest.
 
 5. **Find a better word.** The thesaurus works on the word under the cursor and offers replacements you can apply straight into the document, rather than a list you have to copy out of.
@@ -617,7 +617,7 @@ Translate, thesaurus, describe an image, and the spell check that asks a model -
    - You should hear: The translation, as a response you can copy.
 
 2. **Ask for a better word.** The AI thesaurus is the other half of the offline one: it answers with alternatives in the sentence's own context rather than a dictionary list.
-   - Keys: Ctrl+Alt+Shift+H
+   - Keys: Ctrl+Alt+Shift+M
    - You should hear: The alternatives, with the sense each fits.
 
 3. **Describe an image.** Describe Image is the command that matters most in somebody else's document. It answers what a picture is, which is the one thing a screen reader cannot do for you.

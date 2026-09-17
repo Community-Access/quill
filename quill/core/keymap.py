@@ -136,7 +136,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # was moved to Ctrl+Shift+Q to free up Ctrl+Q.
     "app.exit": "Ctrl+Q",
     "navigate.go_to_line": "Ctrl+G",
-    "navigate.go_to_page": "Ctrl+Shift+G",
+    "navigate.go_to_page": "",  # the Page row of one Go To now (bad.md 5.4, P1.6)
+    # Notepad's F5, and QuillLite's. A core command rather than the bundled
+    # insert-tools Quillin's menu rows, so it has a chord and so it survives
+    # Safe Mode, where Quillin contributions are off (bad.md P1.9).
+    "edit.insert_date_time": "F5",
     "navigate.next_region": "F6",
     "navigate.previous_region": "Shift+F6",
     # #609: on macOS, Alt+Left / Alt+Right collide with the system-standard
@@ -188,7 +192,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # command somebody reaches for without wanting to think about which
     # app they are in. Free in both keymaps, which is why it is this one.
     "tools.sound_toggle": "Alt+Shift+M",
-    "tools.word_count": "Ctrl+Shift+W",
+    "tools.word_count": "Ctrl+Shift+G",
     "tools.spell_check_dialog": "F7",
     # tools.spell_check_ranked retired 2026-09-16: ranked review is the F7
     # dialog's own checkbox, so it is one dialog with one key instead of the
@@ -227,6 +231,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.upper_case": "Ctrl+Shift+U",
     "format.title_case": "Ctrl+Shift+T",
     "navigate.next_heading": "Ctrl+Alt+H",
+    # Shift for backwards, which is the pattern every other pair in this file
+    # follows. It cost tools.ai_thesaurus its H; that moved one letter over in
+    # its own Ctrl+Alt+Shift class, to M for synonyMs -- the plain Thesaurus
+    # keeps Word's Shift+F7, and Ctrl+Alt+Shift+F7..F12 are the QuillVille
+    # launcher block, so the F-keys were not free (bad.md P1.4).
+    "navigate.previous_heading": "Ctrl+Alt+Shift+H",
+    # Ctrl+Alt+1..6 are the six heading levels; 0 is the way back to body
+    # text, which is the same shape Word's style gallery uses and the
+    # command QUILL had no key for at all (bad.md P1.4).
+    "format.body_text": "Ctrl+Alt+0",
     "navigate.set_language": "Ctrl+Alt+F6",
     "power.describe_character": "Ctrl+Shift+C",
     "view.toggle_spellcheck_as_you_type": "Ctrl+Alt+F7",
@@ -364,7 +378,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.ai_spell_check_interactive": "Ctrl+Alt+Shift+I",  # §edsharp-ok — AI reserved chord class
     "tools.ai_grammar_style": "Ctrl+Alt+Shift+G",  # §edsharp-ok — AI reserved chord class
     "tools.ai_translate_selection": "Ctrl+Alt+Shift+T",  # §edsharp-ok — AI reserved chord class
-    "tools.ai_thesaurus": "Ctrl+Alt+Shift+H",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_thesaurus": "Ctrl+Alt+Shift+M",  # §edsharp-ok — AI class; M for synonyMs
     "tools.ai_switch_engine": "Ctrl+Alt+Shift+E",  # §edsharp-ok — AI reserved chord class
     # #357 keymap consolidation: compare commands move from inline
     # F8/Shift+F8/Ctrl+F8 accelerators (colliding with the selection
@@ -887,6 +901,10 @@ DEFAULT_ALIASES: dict[str, str] = {
     "file.save_as": "F12",
     "file.open": "Ctrl+F12",
     "file.print": "Ctrl+Shift+F12",
+    # QuillLite's List Headings chord, pointed at QUILL's Outline Navigator:
+    # one list of the document's headings, reachable by either habit
+    # (bad.md P1.4). Ctrl+Shift+O remains the primary.
+    "navigate.outline_navigator": "Ctrl+Alt+L",
     # Word's Bookmark key, pointed at the numbered-bookmark list.
     "navigate.list_bookmarks": "Ctrl+Shift+F5",
     # QuillLite reaches the shortcut list on Ctrl+F1; QUILL had it on

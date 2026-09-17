@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 401.
+Editor commands with default bindings: 404.
 
 ## The QUILL editor
 
@@ -104,6 +104,7 @@ Editor commands with default bindings: 401.
 | Ctrl+Y | Redo | `edit.redo` |
 | Ctrl+Z | Undo | `edit.undo` |
 | F3 | Find Next | `edit.find_next` |
+| F5 | Insert Date and Time | `edit.insert_date_time` |
 | F8 or Ctrl+; | Start Selection | `edit.start_selection` |
 | QUILL Key + C | Copy selection for email | `edit.copy_selection_for_email` |
 | QUILL Key + J | Expand Selection | `edit.expand_selection` |
@@ -143,6 +144,7 @@ Editor commands with default bindings: 401.
 | Ctrl+2 | Double Line Spacing | `format.line_spacing_double` |
 | Ctrl+5 | One and a Half Line Spacing | `format.line_spacing_one_and_a_half` |
 | Ctrl+Alt+- | Insert Horizontal Rule | `format.horizontal_rule` |
+| Ctrl+Alt+0 | Body Text | `format.body_text` |
 | Ctrl+Alt+1 | Insert Heading 1 | `format.heading_1` |
 | Ctrl+Alt+2 | Insert Heading 2 | `format.heading_2` |
 | Ctrl+Alt+3 | Insert Heading 3 | `format.heading_3` |
@@ -192,6 +194,7 @@ Editor commands with default bindings: 401.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Go To Page... | `navigate.go_to_page` |
 | Alt+Down | Next Structure | `navigate.next_structure` |
 | Alt+Left | Back Location | `navigate.back_location` |
 | Alt+Right | Forward Location | `navigate.forward_location` |
@@ -203,6 +206,7 @@ Editor commands with default bindings: 401.
 | Ctrl+Alt+F6 | Set Document Language... | `navigate.set_language` |
 | Ctrl+Alt+H | Next Heading | `navigate.next_heading` |
 | Ctrl+Alt+J | Set Temporary Bookmark | `navigate.set_temp_bookmark` |
+| Ctrl+Alt+Shift+H | Previous Heading | `navigate.previous_heading` |
 | Ctrl+G | Go to Line... | `navigate.go_to_line` |
 | Ctrl+Shift+1 | Set numbered bookmark 1 | `navigate.set_numbered_bookmark_1` |
 | Ctrl+Shift+2 | Set numbered bookmark 2 | `navigate.set_numbered_bookmark_2` |
@@ -214,9 +218,8 @@ Editor commands with default bindings: 401.
 | Ctrl+Shift+8 | Set numbered bookmark 8 | `navigate.set_numbered_bookmark_8` |
 | Ctrl+Shift+9 | Set numbered bookmark 9 | `navigate.set_numbered_bookmark_9` |
 | Ctrl+Shift+B | Set Bookmark | `navigate.set_numbered_bookmark` |
-| Ctrl+Shift+G | Go To Page... | `navigate.go_to_page` |
 | Ctrl+Shift+J | Go to Temporary Bookmark | `navigate.go_to_temp_bookmark` |
-| Ctrl+Shift+O | Outline Navigator... | `navigate.outline_navigator` |
+| Ctrl+Shift+O or Ctrl+Alt+L | Outline Navigator... | `navigate.outline_navigator` |
 | Ctrl+Shift+\ | Match Bracket | `navigate.match_bracket` |
 | F2 | Next Bookmark | `navigate.next_bookmark` |
 | F6 | Next Region | `navigate.next_region` |
@@ -271,8 +274,8 @@ Editor commands with default bindings: 401.
 | Ctrl+Alt+Shift+E | Switch AI Engine | `tools.ai_switch_engine` |
 | Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
 | Ctrl+Alt+Shift+G | AI Grammar and Style Check... | `tools.ai_grammar_style` |
-| Ctrl+Alt+Shift+H | AI Thesaurus | `tools.ai_thesaurus` |
 | Ctrl+Alt+Shift+I | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
+| Ctrl+Alt+Shift+M | AI Thesaurus | `tools.ai_thesaurus` |
 | Ctrl+Alt+Shift+S | AI Spell Check... | `tools.ai_spell_check` |
 | Ctrl+Alt+Shift+T | Translate Selection... | `tools.ai_translate_selection` |
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
@@ -280,9 +283,9 @@ Editor commands with default bindings: 401.
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
 | Ctrl+Shift+F9 | Pause or Resume Dictation | `tools.dictation_pause` |
+| Ctrl+Shift+G | Document Statistics... | `tools.word_count` |
 | Ctrl+Shift+I | Document Intake Report... | `tools.document_intake_report` |
 | Ctrl+Shift+R | Replace Across Files... | `tools.replace_in_files` |
-| Ctrl+Shift+W | Word Count... | `tools.word_count` |
 | Ctrl+Shift+] | List Folds... | `tools.list_folds` |
 | Escape | Stop Dictation (keep speech) | `tools.dictation_emergency_stop` |
 | F7 | Spell Check... | `tools.spell_check_dialog` |

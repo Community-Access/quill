@@ -2,6 +2,58 @@
 
 ## 1.0.0
 
+### F5 writes the date in QUILL too (2026-09-16)
+
+`F5` has put the time and date at the caret since Notepad on Windows 3.1, and
+QuillLite has done it since it shipped. QUILL had no `F5` at all: its three
+date/time inserters were menu rows contributed by the bundled Insert Tools
+extension, reached through a submenu --- and a menu row is not a chord. They
+also switch off in **Safe Mode** along with every other extension, so in the
+mode people fall back to when something is wrong, QUILL could not insert a date
+at all.
+
+It is a built-in command now, on `F5`, writing the same stamp QuillLite writes
+(`14:07 16/09/2026`) from one format both editors read, and reading it back to
+you afterwards --- a screen reader says nothing when an app writes text on its
+own behalf, so without that sentence `F5` is a keystroke after which something
+has silently appeared. The extension's three variants are untouched.
+
+### One Go To window, and a heading ladder with a bottom rung (2026-09-16)
+
+**`Ctrl+G` now goes to a line, a page, a bookmark or a heading.** It used to go
+to a line and nothing else; a page meant `Ctrl+Shift+G` and a different prompt,
+and a bookmark meant a third surface entirely. Three places to look for one
+verb. It is Word's shape, it is the window QuillLite already opens on the same
+key, and QUILL brings the **Page** row QuillLite has no model for --- exact
+numbers in a PDF, `~4 (estimated)` everywhere else, so which kind of jump you
+are making is written on the row instead of buried in a prompt. The kind is a
+radio box rather than a drop-down on purpose: arrow keys walk it and every stop
+says its own name, where a drop-down announces only the one you landed on. Go To
+Line and Go To Page both still exist as commands and both open this window, so a
+rebinding you made still works.
+
+**`Ctrl+Shift+G` is Document Statistics.** Freed by the above, and given to the
+window that was "Word Count" on `Ctrl+Shift+W`. That is Word's key for it and
+the one QuillLite already used, and the new name is honest about a window that
+also counts characters, lines, paragraphs and reading time.
+
+**Three heading commands that had no key, and one that had no command.**
+
+- **Body Text** is `Ctrl+Alt+0` --- the bottom rung of the `Ctrl+Alt+1`--`6`
+  ladder, the way back from a heading to ordinary text. QUILL had no such
+  command at all.
+- **Previous Heading** is `Ctrl+Alt+Shift+H`, beside `Ctrl+Alt+H` for Next.
+  Shift for backwards, which is what every other pair in the product does.
+- **`Ctrl+Alt+L`** opens the **Outline Navigator**. That is QuillLite's List
+  Headings chord, pointed at QUILL's list of the same thing, so a hand trained
+  on either product finds it. `Ctrl+Shift+O` still works.
+
+**AI Thesaurus moved to `Ctrl+Alt+Shift+M`** (M for synony**m**s) to free the H.
+The plain **Thesaurus** keeps Word's `Shift+F7`, where it has always been.
+
+`main_frame.py` shed another 143 lines to a new `main_frame_go_to.py`: the two
+old page and line prompts went with them, since one window replaces both.
+
 ### Four things QUILL did quietly and wrongly (2026-09-16)
 
 All four share a shape: the editor did something other than what it said, and

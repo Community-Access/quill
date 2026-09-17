@@ -80,6 +80,11 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "format.heading_4",
     "format.heading_5",
     "format.heading_6",
+    # Ctrl+Alt+0, the seventh row of the same ladder: the way back to body text.
+    # Same justification as the six above it -- it overrides NVDA's
+    # switch-to-synth-N, deliberately, and a heading ladder with a hole where
+    # "not a heading" belongs is a ladder you cannot come down (bad.md P1.4).
+    "format.body_text",
     # Format-aware structured inserts / authoring chords
     # (x.md "Authoring"), user-authorized as in-app Ctrl+Alt chords. None
     # collides with a default NVDA/JAWS command.

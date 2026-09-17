@@ -6,19 +6,74 @@ the two editors' keys and capabilities must agree, each app must be viable for
 its own job, and both must behave the way Notepad, WordPad and Word do where a
 person's hands already know the answer.
 
+## 0.3 Where this stands, morning of 2026-09-17
+
+**Six commits landed overnight**, each with the gate scorecard green when it was
+made. This file went from **72 open items to 59**. Nothing touching the save
+path, the external-change watcher or startup was committed -- that work exists,
+is tested, and is waiting in the working tree (see below).
+
+**`main_frame.py` shrank by 184 lines** rather than growing. Four new modules
+came out of it or arrived beside it, and five budget entries ratcheted **down**.
+
+### What landed
+
+| Item | What it was |
+| --- | --- |
+| **P0.6a** + the 0.5 typeface bar | QUILL could not change the size of its own text at all. Now `Ctrl+=` / `Ctrl+-` / `Ctrl+0`, **Format > Font...** (`Ctrl+Alt+F`), **Font for Selection...** (`Ctrl+Shift+F`), two settings shared with QuillLite, a wx-free `quill/core/editor_font.py`, and GATE-9 to keep it |
+| **R5**, **P1.3** | Neither editor calls `SetFont` on a rich control now -- both zoom, through one shared `sets_font()`, so the heading ladder survives `Ctrl+=`. Confirmed by reading rather than live, and the fix is the safe direction either way |
+| **R2** | Turning a list off stripped **every** list in the document and cleared the undo stack. Now one list, through `Replace`, with the item count spoken |
+| **R3** | Heading N prepended (`## ### Notes`), broke mid-line, and headed only the first of a selection. Now it rewrites, does every selected line, and does it as one undoable change |
+| **S2** | The as-you-type spelling alert spoke with `spelling_alert_speech` off, and twice with it on |
+| **S3** | "Add to this document only" reported success on an unsaved document where it had written nothing. Both editors honest now |
+| **P1.6** | One **Go To** window on `Ctrl+G` -- line, page, bookmark, heading -- replacing Go To Line, Go To Page and a third bookmark surface. **Document Statistics** takes the freed `Ctrl+Shift+G`, which is Word's key and QuillLite's |
+| **P1.4** | **Body Text** `Ctrl+Alt+0` (no such command existed), **Previous Heading** `Ctrl+Alt+Shift+H` (no key), `Ctrl+Alt+L` reaching the Outline Navigator. AI Thesaurus moved to `Ctrl+Alt+Shift+M` |
+| **P1.9** | **F5** writes the time and date in QUILL, as a core command, so it has a chord and survives Safe Mode. Reverses a 2026-09-10 reading; the reasoning is in `main_frame_power_tools.py` |
+| four silent key bugs | Select Block, Title Case, Sentence Case and Set Bookmark were each registered with a **neighbouring command's** key, so each advertised a chord belonging to something else while its own fired nothing. `tests/unit/ui/test_command_binding_ids.py` gates the class now |
+| the gate backlog | The eighteen `Ctrl+Alt` chords from the keyless sweep are documented in `menu_lint.py`; the Copy Tray drift test was stealing a chord the numbered bookmarks had legitimately taken; two `test_keymap.py` tests were using a chord that had become a default. All nine of the pre-existing `main` failures found in a clean worktree are fixed |
+
+### Held for review, not committed
+
+Under §0.6: *write and test, do not commit anything touching startup, the save
+path or the external-change watcher.* All of it is in the working tree with its
+tests, and `fixes.md` describes each one.
+
+* **F1** QuillLite's Save As converted the window before the write
+  (`lite_window_commands.py`, `lite_window_file.py`, `lite_window_markup.py`)
+* **F2** QuillLite's recovery rewrote the encoding (`core/lite/recovery.py`)
+* **F3** unencodable characters were silent in both (`core/lite/textfile.py`)
+* `tests/unit/apps/test_lite_save_path.py` covers all three
+
+**R6** (QuillLite's mode switch discards formatting) needs the same Markdown
+conversion F1 introduces. It lands with F1 rather than being written twice.
+
+### The one gate still red, and why
+
+`test_repo_layout::test_repository_root_markdown_is_limited_to_sanctioned_files`
+fails because **this file** is an unsanctioned root Markdown file. It goes green
+the moment this file is empty and deleted, which is the point of the exercise.
+
 ## 0.4 Pick up here
 
-**Next, and already decided (§0.6) -- no questions needed:** Tier 2's remaining
-two, the **Heading Organizer** (Lite lists headings and moves sections; the
-organizer is the two combined into one list where reordering is arrow keys) and
-**Extend Selection Mode**, which waits on P1.2a fixing its four movement bugs
-first. Tier 1 is finished as of 2026-09-16.
+**The first thing to do is look at the held save-path work** (§0.3), because
+everything else in QuillLite's Broken list waits behind it: F1 introduces the
+Markdown conversion R6 needs, and F3's unencodable-character prompt is the
+sentence P0.9's `save_file` error handling will reuse.
 
-**QuillLite's remaining Broken findings, in the order they hurt:** F1 and F2
-(Save As converts the buffer before the write; recovery rewrites encoding). Both
-are save-path work: under the standing rules they get **written and tested but
-not committed** until a person has looked. R5 and R6 need a live check against a
-real rich document first -- do not guess at them.
+**Then, and already decided (§0.6) -- no questions needed:** **P1.1**, the
+keyless commands whose displacements are now free (Previous Heading is done;
+Sort Z-A, Tidy Whitespace, Earlier Versions, Keyboard Manager, Sound Scheme,
+lowercase and Markdown Tag remain, plus the five QuillLite keyed on 2026-09-16
+that QUILL reaches only from a menu). **P1.10**, the whole-bar status switch --
+note that `Alt+Shift+B` is QuillLite's chord for it and QUILL's for List
+Bookmarks, which has `Ctrl+Shift+F5` as an alias already, so the displacement is
+free; "`F6` lands in the status bar first" is the half worth a live listen before
+committing. Then Tier 2's remaining two, the **Heading Organizer** and **Extend
+Selection Mode**, the second of which waits on P1.2a's four movement bugs.
+
+**R4 still needs a live check** against a real rich document -- do not guess at
+it. R5 was settled by reading: `SetFont` on a populated rich control cannot be
+safe whichever size is passed, so both editors stopped calling it.
 
 **One thing left open deliberately:** S7's wrap-to-beginning. It is a half-built
 feature, not dead code -- wiring it or removing it are both decisions, and
@@ -36,7 +91,8 @@ spent in the editor.
 | Bar | Fails | Why |
 | --- | --- | --- |
 | A big file behaves | **passed** | The size guard landed 2026-09-16; the document mirror (`quill/core/document_text.py`) retired the three scans per status refresh and the O(N) read per keystroke. What is left is the gate that keeps it that way (section 9, item 8) |
-| A file survives the round trip | both | 6.3, F1-F6 |
+| The text's typeface and size can be changed | **passed** | 2026-09-16 (P0.6a). Kept by GATE-9, `tests/unit/tools/test_editor_font_gate.py` -- an existence gate, because the absence of a whole capability is the one thing a suite of feature tests cannot notice |
+| A file survives the round trip | both | 6.3. F1, F2 and F3 are **written and held**; F4, F5 and F6 are QUILL's and are save-path or watcher work, so also held under §0.6 |
 
 ## 0.6 Decisions (2026-09-16) -- the standing mandate
 
@@ -730,10 +786,7 @@ way:
 | P1.2 | Structural selection family on Lite's six chords; Set Mark `Ctrl+Shift+M`, Exchange `Ctrl+Alt+X`, Duplicate Selection `Ctrl+Alt+Q`; Switch Document Mode `Alt+Shift+F`; `Ctrl+Alt+F8` becomes the marker toggle in **both** and Extend Selection Mode takes its own chord in both (5.3a); Shrink drops its stack; Reselect remembers every structural select; F8 gains a cancel; marks on the shared ring, clamped, recorded for Back | both | M | -- |
 | P1.2a | **Fix Extend Selection Mode's four movement bugs** (5.3a): page keys ask the control for a real page, Up/Down follow visual lines under soft wrap, word movement stops at punctuation as Windows does, and the line table comes from `DocumentText` instead of an O(N) rescan per keystroke | QUILL | S | holding Down inside a wrapped paragraph moves one visual line per press, and a 50 MB file costs nothing extra per key |
 | P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
-| P1.4 | Body Text `Ctrl+Alt+0`; Next/Previous Heading `Ctrl+Alt+H`/`+Shift+H`; List Headings alias | QUILL | S | -- |
-| P1.6 | Document Statistics `Ctrl+Shift+G` **in QUILL** (Lite moved 2026-09-16). The Go To dialog is built and shared (`quill/ui/go_to_dialog.py`) and QuillLite is on it; **QUILL still opens Go To Line and Go To Page as two commands** and should open the shared one, with Page as a third kind | QUILL | S | -- |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) | QUILL | M | round-trip test per encoding |
-| P1.9 | Date and Time as a core command on `F5` in QUILL | QUILL | S | works in Safe Mode |
 | P1.10 | Status bar show/hide in QUILL on `Alt+Shift+B` -- the whole-bar switch beside the existing per-cell `status_bar_hidden` list (G3); `F6` lands in the status bar first in both | QUILL | S | -- |
 | P1.11 | AI commands vacate `Ctrl+Alt+Shift+{S,I,G,T,H,E}`; favourite folders to the leader; leader reclaim (5.9) | QUILL | S | -- |
 | P1.12 | Clipboard verbs: Copy to Tray / Clear / Collect / Paste Collected / Clear Collector / Keep Clip / Recent Clips on Lite's chords in QUILL | QUILL | S | -- |
@@ -848,7 +901,7 @@ meeting a slow status bar.
 
 ## 10. Everything left, in one table
 
-**62 items open.** Delete a row when it lands. Tiered items first,
+**59 items open.** Delete a row when it lands. Tiered items first,
 then the section-6 findings no tiered item has claimed.
 
 | # | Item |
@@ -860,10 +913,7 @@ then the section-6 findings no tiered item has claimed.
 | P1.2 | Structural selection family on Lite's six chords; Set Mark Ctrl+Shift+M, Exchange Ctrl+Alt+X, Duplicate Selection Ctrl |
 | P1.2a | Fix Extend Selection Mode's four movement bugs (5.3a): page keys ask the control for a real page, Up/Down follow visua |
 | P1.2b | select_chunk renamed Select Token, off Ctrl+Space, with help text that says what it does that Select Word does not (5. |
-| P1.4 | Body Text Ctrl+Alt+0; Next/Previous Heading Ctrl+Alt+H/+Shift+H; List Headings alias |
-| P1.6 | Document Statistics Ctrl+Shift+G in QUILL; QUILL opens the shared Go To dialog, with Page as a third kind (5.4) |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |
-| P1.9 | Date and Time as a core command on F5 in QUILL |
 | P1.10 | Status bar show/hide in QUILL on Alt+Shift+B -- the whole-bar switch beside the existing per-cell status_bar_hidden li |
 | P1.11 | AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,H,E}; favourite folders to the leader; leader reclaim (5.9) |
 | P1.12 | Clipboard verbs: Copy to Tray / Clear / Collect / Paste Collected / Clear Collector / Keep Clip / Recent Clips on Lite |

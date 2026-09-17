@@ -658,8 +658,8 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "navigate.go_to_line",
-            "Go To Line...",
-            self.go_to_line,
+            "Go To...",  # one window: line, page, bookmark, heading (P1.6)
+            self.go_to,
             self._binding_for("navigate.go_to_line"),
         )
         self.commands.register(
@@ -690,7 +690,19 @@ class CommandRegistryMixin:
             "navigate.previous_heading",
             "Previous Heading",
             self.navigate_previous_heading,
-            None,
+            self._binding_for("navigate.previous_heading"),
+        )
+        self.commands.register(
+            "edit.insert_date_time",
+            "Insert Date and Time",
+            self.insert_date_time,
+            self._binding_for("edit.insert_date_time"),
+        )
+        self.commands.register(
+            "format.body_text",
+            "Body Text",
+            lambda: self.format_heading(0),
+            self._binding_for("format.body_text"),
         )
         self.commands.register(
             "navigate.next_block",
@@ -820,7 +832,8 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "tools.word_count",
-            "Word Count...",
+            # QuillLite's name; "Word Count" undersells the window (bad.md 3.4).
+            "Document Statistics...",
             self.show_word_count,
             self._binding_for("tools.word_count"),
         )
@@ -2571,7 +2584,6 @@ class CommandRegistryMixin:
             "edit.jump_to_named_mark": self._id_jump_to_named_mark,
             "edit.open_review_buffer": self._id_open_review_buffer,
             "navigate.go_to_line": self._id_go_to_line,
-            "navigate.go_to_page": self._id_go_to_page,
             "navigate.list_bookmarks": self._id_list_bookmarks,
             "navigate.set_temp_bookmark": self._id_set_temp_bookmark,
             "navigate.go_to_temp_bookmark": self._id_go_to_temp_bookmark,

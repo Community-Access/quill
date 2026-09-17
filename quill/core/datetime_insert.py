@@ -19,6 +19,7 @@ from datetime import date, datetime
 
 __all__ = [
     "DEFAULT_DATETIME_FORMAT",
+    "NOTEPAD_DATETIME_FORMAT",
     "calculate_date",
     "format_datetime",
     "nth_weekday_of_month",
@@ -26,6 +27,13 @@ __all__ = [
 ]
 
 DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M"
+
+#: What **F5** writes, in both editors. Notepad's own shape and Notepad's own
+#: key, which is the whole argument for it: a person who has pressed F5 in
+#: Notepad for twenty years should get the same thing here. QuillLite has
+#: written this since it shipped and kept the format to itself; it lives in
+#: core now so QUILL's F5 cannot drift from it (bad.md P1.9).
+NOTEPAD_DATETIME_FORMAT = "%H:%M %d/%m/%Y"
 
 # Ordered longest-first so that, for example, ``yyyy`` is replaced before ``yy``.
 _NET_TOKENS: tuple[tuple[str, str], ...] = (

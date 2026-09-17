@@ -863,7 +863,6 @@ class MenuBuilderMixin:
         self._id_list_bookmarks = wx.NewIdRef()
         self._id_set_temp_bookmark = wx.NewIdRef()
         self._id_go_to_temp_bookmark = wx.NewIdRef()
-        self._id_go_to_page = wx.NewIdRef()
         self._id_back_location = wx.NewIdRef()
         self._id_forward_location = wx.NewIdRef()
         self._id_next_heading = wx.NewIdRef()
@@ -898,13 +897,10 @@ class MenuBuilderMixin:
             self._menu_label(_("&Forward Location"), "navigate.forward_location"),
         )
         navigate_menu.AppendSeparator()
+        # One row, because it is one window now (bad.md 5.4, P1.6).
         navigate_menu.Append(
             self._id_go_to_line,
-            self._menu_label(_("&Go To Line..."), "navigate.go_to_line"),
-        )
-        navigate_menu.Append(
-            self._id_go_to_page,
-            self._menu_label(_("Go To &Page..."), "navigate.go_to_page"),
+            self._menu_label(_("&Go To..."), "navigate.go_to_line"),
         )
         # Go to Percent, First/Last Non-Blank, Open Target at Cursor (power tools navigate group)
         self._append_power_tools_navigate_items(navigate_menu)
@@ -1093,6 +1089,7 @@ class MenuBuilderMixin:
         self._id_format_spacing_single = wx.NewIdRef()
         self._id_format_spacing_one_and_a_half = wx.NewIdRef()
         self._id_format_spacing_double = wx.NewIdRef()
+        self._id_body_text = wx.NewIdRef()
         self._id_heading_1 = wx.NewIdRef()
         self._id_heading_2 = wx.NewIdRef()
         self._id_heading_3 = wx.NewIdRef()
@@ -1371,6 +1368,10 @@ class MenuBuilderMixin:
         heading_menu.Append(
             self._id_heading_6, self._menu_label(_("Heading &6"), "format.heading_6")
         )
+        # The way back down; QUILL had no Body Text at all (bad.md P1.4).
+        heading_menu.Append(
+            self._id_body_text, self._menu_label(_("&Body Text"), "format.body_text")
+        )
         heading_menu.AppendSeparator()
         heading_menu.Append(
             self._id_decrease_heading_level,
@@ -1520,7 +1521,13 @@ class MenuBuilderMixin:
         # below and routes Quillin contributions whose parent matches its name.
         self._append_quillin_menu_items(insert_menu, "Insert")
         date_time_menu = wx.Menu()
-        # No separator-before: this is the first item of a new submenu.
+        # The core one leads, because it is the one with a key and the one that
+        # works in Safe Mode; the Quillin's three variants follow (bad.md P1.9).
+        self._id_insert_date_time = wx.NewIdRef()
+        date_time_menu.Append(
+            self._id_insert_date_time,
+            self._menu_label(_("Date and &Time"), "edit.insert_date_time"),
+        )
         self._append_quillin_menu_items(date_time_menu, "Date and Time", prepend_separator=False)
         # Always show the submenu, even when no Quillin contributes a date/time
         # item (the bundled ``insert-tools`` Quillin is enabled by default and
@@ -2041,7 +2048,7 @@ class MenuBuilderMixin:
         writing_menu = wx.Menu()
         writing_menu.Append(
             self._id_word_count,
-            self._menu_label(_("&Word Count..."), "tools.word_count"),
+            self._menu_label(_("Do&cument Statistics..."), "tools.word_count"),
         )
         writing_menu.Append(
             self._id_spell_check,

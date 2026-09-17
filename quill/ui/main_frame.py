@@ -185,13 +185,9 @@ from quill.core.menu_customization import (
 from quill.core.metrics import compute_document_stats
 from quill.core.multi_press import MultiPressDispatcher
 from quill.core.navigation import (
-    estimate_page_count,
-    estimate_page_start_for_number,
     next_block_start,
     next_heading_start,
     page_start_for_number,
-    page_starts,
-    parse_line_column,
     previous_block_start,
     previous_heading_start,
 )
@@ -413,6 +409,7 @@ from quill.ui.main_frame_github_admin import GitHubAdminMixin
 from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
 from quill.ui.main_frame_glow import GlowFileMixin
+from quill.ui.main_frame_go_to import GoToMixin
 from quill.ui.main_frame_headings import HeadingLevelsMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_hygiene import HygieneMixin
@@ -847,6 +844,7 @@ class MainFrame(
     LibraryMixin,
     MediaSleepTimerMixin,
     FormatCodesMixin,
+    GoToMixin,
     HeadingLevelsMixin,
     EditorFontMixin,
     NumberedBookmarksMixin,
@@ -9928,146 +9926,6 @@ class MainFrame(
         self._announce(summarize_plan(dialog.plan))
         dialog.show_modal()
 
-    def go_to_line(self) -> None:
-        wx = self._wx
-        with wx.TextEntryDialog(
-            self.frame,
-            "Enter line or line,column:",
-            "Go To Line",
-            value="1",
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Go To Line") != wx.ID_OK:
-                return
-            raw_line = dialog.GetValue().strip()
-
-        try:
-            target_line, target_column = parse_line_column(raw_line)
-        except ValueError:
-            self._show_message_box(
-                "Use a line number or line,column (for example: 12 or 12,4).",
-                "Go To Line",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-        if target_line < 1:
-            self._show_message_box(
-                "Line number must be at least 1.",
-                "Go To Line",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-        if target_column is not None and target_column < 1:
-            self._show_message_box(
-                "Column number must be at least 1.",
-                "Go To Line",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-
-        text = self.editor.GetValue()
-        line_starts = [0]
-        for index, char in enumerate(text):
-            if char == "\n":
-                line_starts.append(index + 1)
-
-        if target_line > len(line_starts):
-            self._show_message_box(
-                f"Document has only {len(line_starts)} lines.",
-                "Go To Line",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-
-        line_start = line_starts[target_line - 1]
-        if target_line < len(line_starts):
-            line_end = line_starts[target_line] - 1
-        else:
-            line_end = len(text)
-        if target_column is None:
-            insertion_point = line_start
-        else:
-            insertion_point = min(line_start + target_column - 1, line_end)
-        self._record_location_before_jump()
-        self._move_point(insertion_point)
-        self.editor.SetFocus()
-        self._location_ring.record(insertion_point)
-        if target_column is None:
-            self._set_status(f"Moved to line {target_line}")
-        else:
-            self._set_status(f"Moved to line {target_line}, column {target_column}")
-
-    def go_to_line_number(self, lineno: int) -> None:
-        """Navigate to *lineno* (1-based) without prompting.
-
-        Used by GoToAnythingDialog (§8.1 NAV-4).
-        """
-        if self.editor is None:
-            return
-        text = self.editor.GetValue()
-        line_starts = [0]
-        for index, char in enumerate(text):
-            if char == "\n":
-                line_starts.append(index + 1)
-        if lineno < 1 or lineno > len(line_starts):
-            self._set_status(f"Line {lineno} out of range (document has {len(line_starts)} lines)")
-            return
-        insertion_point = line_starts[lineno - 1]
-        self._record_location_before_jump()
-        self._move_point(insertion_point)
-        self.editor.SetFocus()
-        self._location_ring.record(insertion_point)
-        self._set_status(f"Moved to line {lineno}")
-
-    def go_to_page(self) -> None:
-        wx = self._wx
-        text = self.editor.GetValue()
-        starts = page_starts(text)
-        exact = len(starts) > 1
-        words_per_page = getattr(self.settings, "page_estimate_words_per_page", 300)
-        total_pages = len(starts) if exact else estimate_page_count(text, words_per_page)
-        prompt = (
-            f"Enter a page number (1-{total_pages}):"
-            if exact
-            else (
-                f"Enter an estimated page number (1-{total_pages}). This is "
-                "based on word count, not an exact printed page count:"
-            )
-        )
-        with wx.TextEntryDialog(
-            self.frame,
-            prompt,
-            "Go To Page",
-            value="1",
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Go To Page") != wx.ID_OK:
-                return
-            raw_value = dialog.GetValue().strip()
-        try:
-            page_number = int(raw_value)
-        except ValueError:
-            self._show_message_box(
-                "Page number must be a number.",
-                "Go To Page",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-        if exact:
-            target = page_start_for_number(text, page_number)
-        else:
-            target = estimate_page_start_for_number(text, page_number, words_per_page)
-        if target is None:
-            self._show_message_box(
-                f"Document has only {total_pages} page(s).",
-                "Go To Page",
-                wx.ICON_ERROR | wx.OK,
-            )
-            return
-        self._record_location_before_jump()
-        self._move_point(target)
-        self.editor.SetFocus()
-        self._location_ring.record(target)
-        self._set_status(f"Moved to page {page_number}")
-
     def navigate_back_location(self) -> None:
         cursor = self.editor.GetInsertionPoint()
         target = self._location_ring.back(cursor)
@@ -11537,7 +11395,6 @@ class MainFrame(
             return
         if getattr(tab, "bookmarks", None):
             return  # already has bookmarks — don't duplicate or fight curation
-        from quill.core.navigation import page_start_for_number
 
         text = getattr(loaded, "text", "") or ""
         bookmarks: dict[str, int] = {}

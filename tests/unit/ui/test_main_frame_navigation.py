@@ -2407,42 +2407,47 @@ def _go_to_page_wx(typed_value: str) -> object:
     )()
 
 
-def test_go_to_page_exact_jumps_to_form_feed_boundary() -> None:
-    text = "page one\fpage two\fpage three"
+def test_go_to_page_offers_real_pages_where_the_file_has_them() -> None:
+    """Form feeds are real page boundaries, so the rows are real page numbers.
+
+    The Go To Page *prompt* is gone: Page is now a row of the one Go To window
+    (bad.md 5.4, P1.6), so what is worth testing is the list of places it
+    offers rather than a dialog that no longer exists.
+    """
+    text = "page onepage twopage three"
     frame = _build_frame(text, insertion_point=0)
-    frame._wx = _go_to_page_wx("2")
-    frame._show_modal_dialog = lambda dialog, title: frame._wx.ID_OK  # type: ignore[method-assign]
-    frame.go_to_page()
-    assert frame.editor.GetInsertionPoint() == text.index("page two")
+    targets = frame._go_to_page_targets(text)
+    assert [target.label for target in targets] == ["1", "2", "3"]
+    assert targets[1].position == text.index("page two")
 
 
-def test_go_to_page_estimated_prompt_says_estimated() -> None:
-    text = " ".join(["word"] * 900)  # 3 pages at 300/page
+def test_an_estimated_page_says_so_in_its_own_row() -> None:
+    """The tilde and the word "estimated" travel together, the same promise the
+    status bar's Page cell makes: a page number without them is a real one."""
+    text = " ".join(["word"] * 900)  # 3 pages at 300 words a page
     frame = _build_frame(text, insertion_point=0)
-    frame._wx = _go_to_page_wx("1")
-    frame._show_modal_dialog = lambda dialog, title: frame._wx.ID_OK  # type: ignore[method-assign]
-    # Capture the prompt text passed to TextEntryDialog by wrapping the
-    # constructor _go_to_page_wx already installed on frame._wx.
-    captured: list[str] = []
-    original = frame._wx.TextEntryDialog
-    frame._wx.TextEntryDialog = lambda parent, message, title, value: (
-        captured.append(message) or original(parent, message, title, value)
-    )
-    frame.go_to_page()
-    assert "estimated" in captured[0].lower()
+    labels = [target.label for target in frame._go_to_page_targets(text)]
+    assert labels
+    assert all(label.startswith("~") and "(estimated)" in label for label in labels)
 
 
-def test_go_to_page_estimated_out_of_range_reports_total() -> None:
-    text = " ".join(["word"] * 10)  # 1 page at 300/page
+def test_a_short_document_offers_the_one_page_it_has() -> None:
+    """Out of range is now unreachable rather than an error message: you pick
+    from the pages that exist."""
+    text = " ".join(["word"] * 10)
     frame = _build_frame(text, insertion_point=0)
-    frame._wx = _go_to_page_wx("5")
-    frame._show_modal_dialog = lambda dialog, title: frame._wx.ID_OK  # type: ignore[method-assign]
-    messages: list[str] = []
-    frame._show_message_box = (  # type: ignore[method-assign]
-        lambda message, *_a, **_k: messages.append(message)
-    )
+    assert len(frame._go_to_page_targets(text)) == 1
+
+
+def test_go_to_page_opens_the_one_go_to_window() -> None:
+    """The old command keeps its id, for a rebinding or a palette search, and
+    lands in the same place as Ctrl+G."""
+    frame = _build_frame("one\ntwo", insertion_point=0)
+    opened: list[bool] = []
+    frame.go_to = lambda: opened.append(True)  # type: ignore[method-assign]
     frame.go_to_page()
-    assert "1 page" in messages[0]
+    frame.go_to_line()
+    assert opened == [True, True]
 
 
 def test_focus_is_in_document_surface_before_editor_exists(monkeypatch: pytest.MonkeyPatch) -> None:

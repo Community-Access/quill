@@ -312,8 +312,6 @@
   "quill/ui/main_frame.py::MainFrame.generate_speech_audio::wx.FileDialog": "native",
   "quill/ui/main_frame.py::MainFrame.generate_speech_audio::wx.FileDialog#2": "native",
   "quill/ui/main_frame.py::MainFrame.go_to_bookmark::wx.SingleChoiceDialog": "native",
-  "quill/ui/main_frame.py::MainFrame.go_to_line::wx.TextEntryDialog": "native",
-  "quill/ui/main_frame.py::MainFrame.go_to_page::wx.TextEntryDialog": "native",
   "quill/ui/main_frame.py::MainFrame.import_document::wx.FileDialog": "native",
   "quill/ui/main_frame.py::MainFrame.import_document_other::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame.py::MainFrame.insert_citation::show_web_form": "web",

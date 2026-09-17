@@ -13,13 +13,12 @@ wrap_ops, set_ops, regex_ops, cursor_address, indent_infer, clipboard_collector,
 key_describer, run_target) and ``quill/core/line_ops``; this layer only wires
 those into the editor, dialogs, and announcements.
 
-NOTE: the former ``insert_date_time`` and ``calculate_and_insert_date`` EDS-2
-and EDS-3 methods were removed in lock-step with the date/time consolidation
-that moved all Insert-menu date/time items into the bundled
-``com.quill.bundled.insert-tools`` Quillin (``Insert > Date and Time``).
-``quill.core.datetime_insert`` is no longer imported here for that reason;
-``datetime.now`` is still used for unrelated helpers (clipboard collector,
-session metadata).
+NOTE: ``calculate_and_insert_date`` (EDS-3) and the three Insert > Date and Time
+menu variants belong to the bundled ``com.quill.bundled.insert-tools`` Quillin,
+where the 2026-06 consolidation put them. ``insert_date_time`` (EDS-2) came back
+on 2026-09-16 as **F5** -- Notepad's key, QuillLite's key, and one that a menu
+row cannot be; it is core rather than contributed so it also works in Safe Mode,
+where every Quillin contribution is off (bad.md P1.9).
 """
 
 from __future__ import annotations
@@ -27,6 +26,7 @@ from __future__ import annotations
 import sys
 import webbrowser
 from collections.abc import Callable
+from datetime import datetime
 from pathlib import Path
 
 from quill.core import format_ops as _fmt
@@ -248,14 +248,38 @@ class PowerToolsActionsMixin(SpecialCharacterMixin, LineBreakMixin):
     # inherited below. It moved out under GATE-11 when it grew a character list;
     # the method name and the ``power.insert_special_character`` id are unchanged.
 
-    # NOTE: EDS-2 (``insert_date_time``) and EDS-3 (``calculate_and_insert_date``)
-    # were removed in the date/time consolidation that moved all Insert-menu
-    # date/time items into the bundled ``com.quill.bundled.insert-tools``
-    # Quillin (``Insert > Date and Time``). The handlers used to live here and
-    # the corresponding ``power.insert_date_time`` / ``power.calculate_and_insert_date``
-    # commands are no longer registered. ``quill.core.datetime_insert`` still
-    # exists for tests and downstream callers but is no longer imported by this
-    # module.
+    # EDS-3 (``calculate_and_insert_date``) is still the bundled
+    # ``com.quill.bundled.insert-tools`` Quillin's, along with the three
+    # Insert > Date and Time menu variants it contributes. EDS-2 came back on
+    # 2026-09-16 as the one-key version below.
+
+    def insert_date_time(self) -> None:
+        """F5: write the time and date at the caret, and read it back.
+
+        Notepad's key and Notepad's stamp, which is the whole argument for it:
+        somebody who has pressed F5 in Notepad for twenty years should get the
+        same thing here, and QuillLite has since it shipped (bad.md P1.9).
+
+        This reverses the 2026-09-10 decision not to give QUILL an F5 on the
+        grounds that the bundled insert-tools Quillin already offered three
+        date/time variants. It does -- as **menu rows**, reached through a
+        submenu, and a menu row is not a chord. It also switches off in **Safe
+        Mode** along with every other Quillin contribution, which left QUILL
+        with no way to insert a date at all in the mode people fall back to when
+        something is wrong. A core command has neither problem, and the
+        Quillin's three variants are untouched.
+
+        The read-back is the accessibility of the command, not decoration: a
+        screen reader says nothing when an app writes text on its own behalf --
+        no focus moved, no control was named -- so without it F5 is a keystroke
+        after which something has silently appeared.
+        """
+        from quill.core.datetime_insert import NOTEPAD_DATETIME_FORMAT, format_datetime
+
+        stamp = format_datetime(datetime.now(), NOTEPAD_DATETIME_FORMAT)
+        self.editor.WriteText(stamp)
+        self.document.set_text(self.editor.GetValue())
+        self._announce_result(f"Inserted {stamp}")
 
     # ----------------------------------- EDS-4/5 line transforms (migrated)
     # ``number_lines`` and ``hard_wrap_lines`` moved onto the contribution

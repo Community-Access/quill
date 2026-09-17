@@ -489,6 +489,16 @@ The **Insert** menu adds structured content at the cursor.
 
 - **Insert Link...** creates a format-aware link.
 - **Heading** submenu: insert Heading 1 through 6, **Decrease Level** / **Increase Level**, and **Style Headings...** (font, size, alignment) for the current level or all levels.
+- **Body Text** (`Ctrl+Alt+0`) is the bottom rung of the `Ctrl+Alt+1`--`6`
+  heading ladder: it takes the heading marker off and leaves the words. QUILL
+  had no such command at all before September 2026 --- a ladder with no way
+  down.
+- **Next Heading** is `Ctrl+Alt+H` and **Previous Heading** is
+  `Ctrl+Alt+Shift+H`; `Ctrl+Alt+L` opens the **Outline Navigator**, which is
+  QuillLite's List Headings chord pointed at QUILL's list, so either habit
+  works. (`Ctrl+Shift+O` still opens it too.) **AI Thesaurus** moved to
+  `Ctrl+Alt+Shift+M` to free the H; the plain **Thesaurus** keeps Word's
+  `Shift+F7`.
 - **Heading N sets the level, it does not add one.** `Ctrl+Alt+2` on a line that
   already reads `### Notes` gives you `## Notes`, not `## ### Notes`. It works
   from anywhere on the line, not only from the start, and if you have several
@@ -502,6 +512,12 @@ The **Insert** menu adds structured content at the cursor.
 - **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert Block Quote**, **Insert Horizontal Rule**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
 - **The two tag pickers are dimmed where they do not apply**, and exactly one of them is ever live: **Insert Markdown Tag** in a Markdown document, **Insert HTML Tag** in an HTML one, and neither in a plain document or a rich text one. Markdown used to stay enabled in a *plain* document too, which was the mirror image of the HTML row's rule and worse by ear than by eye: an enabled row promises the command will work, and a document that quietly became half-Markdown is not something you can see you did. **Navigate ▸ Set Document Language...** turns the rows back on in one keystroke.
 - **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. These carry direct authoring shortcuts: **Insert Table** is `Ctrl+Alt+T`, **Insert Block Quote** is `Ctrl+Alt+Q`, and **Insert Horizontal Rule** is `Ctrl+Alt+H` — alongside the `Ctrl+Alt+1`–`6` heading chords and `Ctrl+Alt+7`/`8` list chords. All remain rebindable in the Keymap Editor.
+- **Date and Time** (`F5`) writes the time and date at the caret and reads it
+  back to you --- Notepad's key, Notepad's shape (`14:07 16/09/2026`), and
+  QuillLite's. It is a built-in command rather than an extension, so it also
+  works in **Safe Mode**; the three variants below it in the same submenu
+  (date only, time only, both) come from the bundled Insert Tools extension and
+  switch off with the rest of them.
 - **Insert Snippet...** and **Manage Snippets...** for reusable text with placeholders.
 - **Special Character...** (`Shift+F2`) opens a picker for the 357 characters a
   keyboard has no key for. Search by name (`dash`, `euro`, `acute`, `arrow`) or
@@ -4503,8 +4519,16 @@ The **Navigate** menu is one of Quill's strongest differentiators. It assumes yo
 
 Core location commands:
 
-- **Go To Line...**
-- **Go To Page...**
+- **Go To...** (`Ctrl+G`) --- one window for four kinds of destination:
+  a **line** number, a **page**, a **bookmark**, or a **heading**. Choose the
+  kind from the radio buttons at the top; the number field and the list below
+  follow your choice, and the one that does not apply is dimmed rather than
+  removed, so the window never changes shape under you. Pages are exact in a
+  PDF and marked `~4 (estimated)` everywhere else. QuillLite opens the same
+  window on the same key, without the Page row --- it has no pagination model,
+  and a dimmed row for something a product does not do is a row you walk past
+  forever. The old **Go To Line** and **Go To Page** commands both land here
+  now, so a rebinding you made still works.
 - **Back Location** (default: `Alt+Left` on Windows, `Cmd+[` on macOS — see [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2) for why the macOS chord changed in 0.7.0 Beta 2)
 - **Forward Location** (default: `Alt+Right` on Windows, `Cmd+]` on macOS — see [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2))
 
@@ -4814,7 +4838,10 @@ This is the exact same engine **Sync Vault** (above) already uses, opened up to 
 
 #### Writing and language
 
-- **Word Count...**
+- **Document Statistics...** (`Ctrl+Shift+G`) --- words, characters, lines,
+  paragraphs and reading time. It was "Word Count" on `Ctrl+Shift+W` until
+  September 2026; the new name and key are Word's and QuillLite's, so one
+  window has one name and one key across the family.
 - **Spell Check...**
 - **Next Misspelling**
 - **Thesaurus...**
@@ -8011,10 +8038,11 @@ Navigation and QUILL Key > Estimated words per page** (default 300, range
 150-600) if your writing runs noticeably longer or shorter per page than
 the default assumes.
 
-**Go To Page** (`Ctrl+Shift+G`, also reachable by pressing Enter on the
-Page cell) jumps to a page number. For PDFs this is exact; for everything
-else, it jumps to QUILL's best estimate of where that page would fall --
-the prompt tells you which kind of jump you're about to make.
+**Go To** (`Ctrl+G`, also reachable by pressing Enter on the Page cell) jumps
+to a page number: choose **Page** at the top of the window and pick from the
+list, or type the number. For PDFs the rows are exact page numbers; for
+everything else each row reads `~4 (estimated)`, so which kind of jump you are
+about to make is on the row itself rather than in a prompt you have to remember.
 
 Braille (BRF) documents keep their own, more detailed page system (see
 Braille Mode above) and do not show this generic Page cell.
@@ -9370,7 +9398,7 @@ If you want a compact set of shortcuts to remember first, start here:
 - `F9` to hold-to-dictate, `Ctrl+F9` for Locked Dictation (`Alt+F9` speaks the
   dictation state)
 - `F7`, `Ctrl+F7`, `Ctrl+Shift+F7`, `Shift+F7`
-- `Ctrl+Shift+W` for Word Count
+- `Ctrl+Shift+G` for Document Statistics
 - `Ctrl+Tab` and `Ctrl+Shift+Tab`
 - `F6` and `Shift+F6`
 - `Alt+Z` for soft wrap

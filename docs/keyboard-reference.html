@@ -209,7 +209,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 401.</p>
+<p>Editor commands with default bindings: 404.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -634,6 +634,11 @@ your own customised keymap.</p>
 <td><code>edit.find_next</code></td>
 </tr>
 <tr>
+<td>F5</td>
+<td>Insert Date and Time</td>
+<td><code>edit.insert_date_time</code></td>
+</tr>
+<tr>
 <td>F8 or Ctrl+;</td>
 <td>Start Selection</td>
 <td><code>edit.start_selection</code></td>
@@ -814,6 +819,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+-</td>
 <td>Insert Horizontal Rule</td>
 <td><code>format.horizontal_rule</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+0</td>
+<td>Body Text</td>
+<td><code>format.body_text</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+1</td>
@@ -1048,6 +1058,11 @@ your own customised keymap.</p>
 </thead>
 <tbody>
 <tr>
+<td>(unbound by default)</td>
+<td>Go To Page…</td>
+<td><code>navigate.go_to_page</code></td>
+</tr>
+<tr>
 <td>Alt+Down</td>
 <td>Next Structure</td>
 <td><code>navigate.next_structure</code></td>
@@ -1101,6 +1116,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+J</td>
 <td>Set Temporary Bookmark</td>
 <td><code>navigate.set_temp_bookmark</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+H</td>
+<td>Previous Heading</td>
+<td><code>navigate.previous_heading</code></td>
 </tr>
 <tr>
 <td>Ctrl+G</td>
@@ -1158,17 +1178,12 @@ your own customised keymap.</p>
 <td><code>navigate.set_numbered_bookmark</code></td>
 </tr>
 <tr>
-<td>Ctrl+Shift+G</td>
-<td>Go To Page…</td>
-<td><code>navigate.go_to_page</code></td>
-</tr>
-<tr>
 <td>Ctrl+Shift+J</td>
 <td>Go to Temporary Bookmark</td>
 <td><code>navigate.go_to_temp_bookmark</code></td>
 </tr>
 <tr>
-<td>Ctrl+Shift+O</td>
+<td>Ctrl+Shift+O or Ctrl+Alt+L</td>
 <td>Outline Navigator…</td>
 <td><code>navigate.outline_navigator</code></td>
 </tr>
@@ -1417,14 +1432,14 @@ your own customised keymap.</p>
 <td><code>tools.ai_grammar_style</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Shift+H</td>
-<td>AI Thesaurus</td>
-<td><code>tools.ai_thesaurus</code></td>
-</tr>
-<tr>
 <td>Ctrl+Alt+Shift+I</td>
 <td>AI Spell Check Interactive…</td>
 <td><code>tools.ai_spell_check_interactive</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+M</td>
+<td>AI Thesaurus</td>
+<td><code>tools.ai_thesaurus</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+S</td>
@@ -1462,6 +1477,11 @@ your own customised keymap.</p>
 <td><code>tools.dictation_pause</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+G</td>
+<td>Document Statistics…</td>
+<td><code>tools.word_count</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+I</td>
 <td>Document Intake Report…</td>
 <td><code>tools.document_intake_report</code></td>
@@ -1470,11 +1490,6 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+R</td>
 <td>Replace Across Files…</td>
 <td><code>tools.replace_in_files</code></td>
-</tr>
-<tr>
-<td>Ctrl+Shift+W</td>
-<td>Word Count…</td>
-<td><code>tools.word_count</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+]</td>

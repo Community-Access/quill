@@ -1085,8 +1085,7 @@ class MenuBindingsMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.find_text(), id=self._id_find)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.replace_text(), id=self._id_replace)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.replace_all_text(), id=self._id_replace_all)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.go_to_line(), id=self._id_go_to_line)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.go_to_page(), id=self._id_go_to_page)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.go_to(), id=self._id_go_to_line)
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.navigate_back_location(),
@@ -1297,6 +1296,10 @@ class MenuBindingsMixin:
             id=self._id_format_spacing_double,
         )
         self.bind_format_codes(wx)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.insert_date_time(), id=self._id_insert_date_time
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(0), id=self._id_body_text)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(1), id=self._id_heading_1)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(2), id=self._id_heading_2)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(3), id=self._id_heading_3)
