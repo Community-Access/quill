@@ -115,20 +115,37 @@ def test_previous_misspelling_goes_the_other_way(spelled):
 def test_a_clean_document_says_there_are_no_more(spelled):
     win = spelled("the quick brown fox", cursor=0)
     win.cmd_next_misspelling()
-    assert win.announcements[-1] == "No further misspellings"
+    assert win.announcements[-1] == "No misspellings found"
+
+
+def test_a_miss_says_how_many_are_the_other_way(spelled):
+    """ "No further misspellings" reads as "your document is clean".
+
+    It is a lie when seven are sitting behind the caret, and the fix -- press
+    the other key -- is exactly what the bare sentence does not say. QUILL has
+    counted the other direction since #9; QuillLite said nothing (bad.md S9).
+    """
+    win = spelled("the quick brxwn fox", cursor=19)
+    win.cmd_next_misspelling()
+    assert win.announcements[-1] == "No misspellings ahead; 1 misspelling behind"
+
+
+def test_the_count_is_plural_when_it_should_be(spelled):
+    text = "brxwn zzqua fxxle end"
+    win = spelled(text, cursor=len(text))
+    win.cmd_next_misspelling()
+    assert win.announcements[-1] == "No misspellings ahead; 3 misspellings behind"
 
 
 def test_the_two_directions_word_their_misses_differently(spelled):
-    """ "No further" and "No earlier" are different facts.
-
-    Hearing the forward sentence after pressing the backward key would send
-    somebody looking at the wrong end of the document.
-    """
-    win = spelled("the quick brown fox", cursor=0)
+    """Hearing the forward sentence after pressing the backward key would send
+    somebody looking at the wrong end of the document."""
+    win = spelled("the quick brxwn fox", cursor=19)
     win.cmd_next_misspelling()
     forward = win.announcements[-1]
+    win.control.SetInsertionPoint(0)
     win.cmd_previous_misspelling()
-    assert win.announcements[-1] == "No earlier misspellings"
+    assert win.announcements[-1] == "No misspellings behind; 1 misspelling ahead"
     assert forward != win.announcements[-1]
 
 
@@ -216,7 +233,7 @@ def test_a_taught_word_stops_being_a_misspelling(spelled):
     win.cmd_add_word_to_dictionary()
     win.control.SetInsertionPoint(0)
     win.cmd_next_misspelling()
-    assert win.announcements[-1] == "No further misspellings"
+    assert win.announcements[-1] == "No misspellings found"
 
 
 def test_teaching_drops_the_cached_dictionary(spelled):

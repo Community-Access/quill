@@ -121,7 +121,13 @@ class DocumentFrame(
         # the File menu while the bar said something else entirely. Dropping
         # WS_SYSMENU removes all four; the child still maximises (which
         # dropping the maximise box would prevent), still has its caption, and
-        # is still closed with Ctrl+W, Alt+F4 or File > Close Window.
+        # is still closed with Ctrl+W, Ctrl+F4 or File > Close Window.
+        #
+        # **Not Alt+F4**, which this comment claimed for a year and the shell's
+        # own comment contradicted (bad.md H7). Alt+F4 belongs to the window
+        # manager and reaches the top-level frame, which is the shell: it exits
+        # QuillLite, asking about each unsaved document on the way out. That is
+        # the MDI convention and the right behaviour; only the comment was wrong.
         super().__init__(
             app.shell,
             wx.ID_ANY,

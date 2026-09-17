@@ -462,7 +462,17 @@ class DocumentSpellingMixin:
             caret = item.end if forward else item.start
             item = finder(text, caret, dictionary)
         if item is None:
-            self._announce("No further misspellings" if forward else "No earlier misspellings")
+            # The count in the other direction, from the shared sentence QUILL
+            # has said since #9. "No further misspellings" on its own reads as
+            # "your document is clean", which is a lie when seven are sitting
+            # behind the caret and the fix is to press the other key (bad.md S9).
+            from quill.core.spellcheck import no_misspelling_message
+
+            self._announce(
+                no_misspelling_message(
+                    text, self.control.GetInsertionPoint(), dictionary, ahead=forward
+                )
+            )
             return
         # Selected rather than merely arrived at: the word is then what Shift+F7
         # acts on, and what the reader reads on arrival.

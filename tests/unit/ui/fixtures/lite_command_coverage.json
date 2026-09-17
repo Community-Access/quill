@@ -14,6 +14,7 @@
   "cmd_clear_collected": "covered",
   "cmd_clear_copy_tray": "covered",
   "cmd_close": "covered",
+  "cmd_close_mdi": "covered",
   "cmd_collect_selection": "covered",
   "cmd_command_palette": "covered",
   "cmd_complete_selection": "covered",

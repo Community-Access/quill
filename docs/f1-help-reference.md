@@ -1079,7 +1079,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QuillLite
 
-Control coverage: 40 audited sites (40 helped).
+Control coverage: 41 audited sites (41 helped).
 
 ### Every window, and what it is for
 
@@ -1194,10 +1194,11 @@ Control coverage: 40 audited sites (40 helped).
 - `heading_choice`: Where the level goes relative to the heading itself. Before the text is one sentence QuillLite says on its own -- Heading 2, Installing -- and it is the one that survives a jump: pressing Control Home or landing on a search hit makes a screen reader cancel whatever it was about to say, and a level waiting its turn behind that is never heard. After the text lets your reader read the line and adds the level behind it, which is quieter on ordinary line-by-line reading.
 - `wrap_find`: On: Find Next reaching the end of the document starts again at the top. Off: it stops and tells you which end you are at, so you know to go to the other one and press again rather than that the word is absent.
 - `wrap`: When off, long lines run past the right edge and scroll instead.
+- `throttle`: Zero, the default, says everything as it happens. A larger number drops anything QuillLite would say too soon after the last thing it said, which is what you want if holding a key down floods your screen reader. Nothing is lost by it: the status bar is written either way, and F6 reads it back.
 - `autosave`: How often a modified document is copied to the recovery folder. The copy is beside your file, never over it, and is removed when you save.
 - `font_field`: The face and size the editor draws in. Change Font opens the chooser; this box reads back whatever you pick.
 - `choose_btn`: Open the font chooser and pick a face and size for the editor.
-#### _ProfileRow (`quill/apps/lite_preferences.py`)
+#### ProfileRow (`quill/apps/lite_preferences_profile.py`)
 
 - `self.impact`: What the profile above would change: which parts of the app it keeps, which it removes, and anything else it sets.
 #### (module level) (`quill/apps/lite_spelling_voice_dialog.py`)

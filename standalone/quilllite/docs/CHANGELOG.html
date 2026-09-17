@@ -200,14 +200,30 @@
 <h2 id="unreleased">Unreleased</h2>
 <h3 id="added">Added</h3>
 <ul>
-<li><strong>A temporary bookmark</strong> – <strong>Ctrl+Alt+J</strong>
-drops a pin where the cursor is and <strong>Ctrl+Shift+J</strong> goes
-back to it. Use it when you are about to go and look something up and
-want to come straight back. It has no number, no label and no row in the
-bookmark list, setting it again simply moves it, and it is gone when the
-document closes. QUILL has had these two keys for years; they now mean
-the same thing here.</li>
-<li><strong>Save an HTML page as Markdown.</strong> The Save As box
+<li><p><strong>Copy All (Ctrl+F8)</strong> puts the whole document on
+the clipboard without selecting it. Select All then Copy is two keys and
+leaves everything selected afterwards, so the next character typed
+replaces the document.</p></li>
+<li><p><strong>Copy to Tray Slot… (Alt+Shift+Y)</strong> lets you choose
+which of the twelve slots to copy into, with each row saying what is in
+that slot now. Ctrl+Alt+Y still takes the next free one.</p></li>
+<li><p><strong>The clip library can fill itself.</strong> Preferences
+has a new switch, <strong>Keep everything I copy in the clip
+library</strong>, and with it on every copy and every cut made inside a
+QuillLite document is remembered, up to the last two hundred. It is off
+until you ask for it: a history of everything you copy is a file on your
+disk holding whatever you last took out of a document. The help text in
+Preferences says so. Until now the app promised this history in three
+places and never kept any of it – only Keep Clip ever put anything in
+the library.</p></li>
+<li><p><strong>A temporary bookmark</strong> –
+<strong>Ctrl+Alt+J</strong> drops a pin where the cursor is and
+<strong>Ctrl+Shift+J</strong> goes back to it. Use it when you are about
+to go and look something up and want to come straight back. It has no
+number, no label and no row in the bookmark list, setting it again
+simply moves it, and it is gone when the document closes. QUILL has had
+these two keys for years; they now mean the same thing here.</p></li>
+<li><p><strong>Save an HTML page as Markdown.</strong> The Save As box
 offers <strong>Markdown (*.md)</strong> again, and this time it
 converts: an HTML document saved as <code>.md</code> has its tags turned
 into Markdown as it saves – <code>#</code> headings,
@@ -218,8 +234,8 @@ never disagree. Tags Markdown cannot write are dropped and their text
 kept; a page that would convert to nothing is left exactly as it was and
 says so. Plain text and Markdown documents saved as <code>.md</code> are
 untouched. Rich text is not offered the row – flatten to plain text
-first, which the dialog already asks about.</li>
-<li><strong>Lists announce themselves.</strong> Arrow into a list and
+first, which the dialog already asks about.</p></li>
+<li><p><strong>Lists announce themselves.</strong> Arrow into a list and
 QuillLite says “Bulleted list, 5 items”; a level deeper, “Level 2, 3
 items”; on the way out, “Out of list”. This is the one cue a screen
 reader gives you everywhere else – a browser hands it a list with a
@@ -228,30 +244,30 @@ bullets, numbers and definition lists alike, with “Term” and
 “Definition” as you move between the two halves of a
 <code>&lt;dl&gt;</code>. Items are counted at your own level inside your
 own list, never totalled. <strong>View &gt; Announce Lists
-(Ctrl+Alt+F5)</strong> turns it off and on where you stand.</li>
-<li><strong>A plain document now has a language</strong>, and it decides
-what the keys write. <strong>Ctrl+B in a <code>.md</code> writes
+(Ctrl+Alt+F5)</strong> turns it off and on where you stand.</p></li>
+<li><p><strong>A plain document now has a language</strong>, and it
+decides what the keys write. <strong>Ctrl+B in a <code>.md</code> writes
 <code>**bold**</code>; in a <code>.html</code> it writes
 <code>&lt;strong&gt;</code></strong>, where both used to refuse and send
 you to rich text. Same for italic, underline and the six heading levels.
 <code>.html</code>, <code>.htm</code> and <code>.xhtml</code> are
 recognised; <code>.md</code>, <code>.markdown</code>, <code>.mdx</code>
 and <code>.txt</code> are Markdown; a <code>.py</code> or a
-<code>.conf</code> is plain and says so.</li>
-<li><strong>An Insert menu</strong>, before Format, holding what used to
-be Edit &gt; Insert plus three new rows. Every existing key is
-unchanged.</li>
-<li><strong>Insert &gt; Emoji (Alt+.)</strong> – QUILL’s picker, key for
-key: search by name, keyword, description or a typed smiley, browse by
-category, and read a written description of every glyph. In every
-document, rich text included.</li>
-<li><strong>Insert &gt; Markdown Tag (Ctrl+Alt+I)</strong> and
+<code>.conf</code> is plain and says so.</p></li>
+<li><p><strong>An Insert menu</strong>, before Format, holding what used
+to be Edit &gt; Insert plus three new rows. Every existing key is
+unchanged.</p></li>
+<li><p><strong>Insert &gt; Emoji (Alt+.)</strong> – QUILL’s picker, key
+for key: search by name, keyword, description or a typed smiley, browse
+by category, and read a written description of every glyph. In every
+document, rich text included.</p></li>
+<li><p><strong>Insert &gt; Markdown Tag (Ctrl+Alt+I)</strong> and
 <strong>Insert &gt; HTML Tag (Ctrl+Alt+O)</strong>. Exactly one is ever
 live – whichever the document is – and the other is dimmed rather than
 hidden, so a reader is told it is unavailable rather than left hunting
 for it. The HTML picker searches by what a tag <em>does</em>: “dropdown”
-finds <code>select</code>, “checkbox” finds <code>input</code>.</li>
-<li><strong>Whole form fields in the HTML picker</strong> – twenty of
+finds <code>select</code>, “checkbox” finds <code>input</code>.</p></li>
+<li><p><strong>Whole form fields in the HTML picker</strong> – twenty of
 them, each arriving labelled and wired: a <code>for</code> that matches
 the field’s <code>id</code>, a <code>name</code> that submits, options
 inside a select, a legend inside a fieldset, one shared
@@ -260,8 +276,8 @@ inside a select, a legend inside a fieldset, one shared
 The <code>id</code> is checked against your document first, so a second
 email field is <code>email-2</code> rather than a silent duplicate.
 Select a word and it becomes the label, with the <code>id</code> derived
-from it so the two agree.</li>
-<li><strong>The HTML picker now offers 111 tags</strong>, up from 46.
+from it so the two agree.</p></li>
+<li><p><strong>The HTML picker now offers 111 tags</strong>, up from 46.
 The forty-six left out <code>&lt;dl&gt;</code>, <code>&lt;dt&gt;</code>
 and <code>&lt;dd&gt;</code> – which this editor <em>announces</em> as
 you arrow through them – along with <code>&lt;figure&gt;</code>,
@@ -270,18 +286,19 @@ you arrow through them – along with <code>&lt;figure&gt;</code>,
 <code>&lt;abbr&gt;</code>, and <code>&lt;br&gt;</code> and
 <code>&lt;hr&gt;</code>, which were handled as void elements and simply
 could not be chosen. A searchable list should be complete: searching 111
-is no harder than searching 46, and a missing tag is a dead end.</li>
-<li><strong>The Markdown picker gained Underline, Horizontal Rule,
+is no harder than searching 46, and a missing tag is a dead
+end.</p></li>
+<li><p><strong>The Markdown picker gained Underline, Horizontal Rule,
 Strikethrough and Definition List.</strong> The first two had builders
-and no menu row for months.</li>
-<li><strong>Format &gt; Document Language (Ctrl+Alt+F6)</strong>, and
+and no menu row for months.</p></li>
+<li><p><strong>Format &gt; Document Language (Ctrl+Alt+F6)</strong>, and
 the status bar’s Format cell, for saying the language is not what the
-file name implies.</li>
-<li><strong>A List cell on the status bar</strong>, which says which
+file name implies.</p></li>
+<li><p><strong>A List cell on the status bar</strong>, which says which
 item you are on as well as which list you are in – the one thing the
-speech deliberately does not.</li>
-<li><strong>Customize Features gained a Markdown and HTML area</strong>
-(18, not 17).</li>
+speech deliberately does not.</p></li>
+<li><p><strong>Customize Features gained a Markdown and HTML
+area</strong> (18, not 17).</p></li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
@@ -322,8 +339,74 @@ HTML document, instead of looking for hashes it will never contain.</li>
 in</strong>, and offers both ways out: rich text, or giving the document
 a markup language.</li>
 </ul>
+<h3 id="added-1">Added</h3>
+<ul>
+<li><strong>A pause between spoken messages.</strong> Preferences has
+<strong>Shortest gap between spoken messages</strong>, in milliseconds,
+and setting it stops QuillLite saying things faster than you can hear
+them – which is what a held-down key used to do. Zero, the default, is
+what it has always done. Nothing is lost by turning it up: the status
+bar is written either way, and F6 reads it back.</li>
+<li><strong>Ctrl+F4 closes the document</strong>, the key Windows has
+used for a window inside a window since 3.1. Ctrl+W always did; Ctrl+F4
+did nothing.</li>
+</ul>
+<h3 id="changed-1">Changed</h3>
+<ul>
+<li><strong>Large documents stopped costing what they did.</strong>
+QuillLite read its whole buffer out of the text control five separate
+times – the status bar’s counts, the heading cue, the list cue, the live
+spell check on every arrow press, and the autocorrect rule on every
+single keystroke. In a big file that is what made arrowing feel heavy.
+It reads once per edit now and answers everything else from what it
+already has, and the autocorrect rule asks for one character instead of
+the document. Nothing looks different; a long file simply behaves like a
+short one.</li>
+</ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li><strong>Describe Formatting (Ctrl+Shift+D) reads Markdown.</strong>
+With the cursor inside <code>**bold**</code> or on a
+<code>## heading</code> it said “Plain text”, which is not a description
+of the formatting but a denial that there is any. It now reads the
+markup the way QUILL does.</li>
+<li><strong>Moving a section works in an HTML document.</strong>
+Alt+Shift+Up and Down were looking for Markdown hashes whatever the
+document was, so in a <code>.html</code> they said there was no section
+where there plainly was one.</li>
+<li><strong>“No further misspellings” now says how many are the other
+way.</strong> On its own it reads as “your document is clean”, which is
+a lie when seven are sitting behind the cursor – and it did not say that
+pressing the other key would find them. QUILL has counted the other
+direction for years.</li>
+<li><strong>F7 on an empty document says so</strong> instead of doing
+nothing at all, which is indistinguishable from a key that is not
+bound.</li>
+<li><strong>Page Setup is remembered.</strong> Paper size, orientation
+and all four margins went back to the defaults at every launch, so
+anybody not printing A4 with 15 mm margins set them again every
+session.</li>
+<li><strong>Customize Features no longer promises sentence
+capitals.</strong> Autocorrect does curly quotes and em dashes; it has
+never capitalised a sentence, and saying otherwise sent people looking
+for a switch that was not broken.</li>
+<li><strong>Two timers could fire on a window that had been
+closed.</strong> The live spell check and the pending “and here is how
+it is spelled” were left running when a document window went away, and
+the failure that followed was swallowed. Both are stopped now, with
+everything else on a clock.</li>
+<li><strong>The empty copy tray named the wrong key.</strong> “Control
+Shift 0 copies into it” was a chord that had not been Copy to Tray since
+before 1.0, and could not be right anyway once the key was rebindable.
+It now reads whatever Copy to Tray actually answers to.</li>
+<li><strong>The collector’s count no longer counts dashes.</strong>
+Collecting a piece with a line of <code>----</code> in it – which is
+most log files – inflated “Collected N pieces”. The pieces are counted
+now rather than inferred from the text.</li>
+<li><strong>Clearing an empty collector says so</strong>, instead of
+reporting “Collector cleared” whether it discarded five gathered quotes
+or nothing at all. When it did discard something it now says how
+much.</li>
 <li><strong>F6 now leaves the status bar as well as entering
 it.</strong> Escape still works; so does the key that got you there.
 Shift+F6 too.</li>
@@ -335,7 +418,7 @@ switch, so it is fixed here as well.</li>
 <li><strong>Ctrl+Home onto a heading announces it.</strong> See the
 heading-order change above.</li>
 </ul>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li><p><strong>Headings announce themselves.</strong> Arrow onto a
 heading and QuillLite says “Heading 2”. It has to say it, because no
@@ -402,7 +485,7 @@ has the same picker on Shift+F2.</p>
 <strong>Edit &gt; Insert &gt; Date and Time</strong>. Its key is still
 <strong>F5</strong>.</p></li>
 </ul>
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 <ul>
 <li><strong>The spelling context menu is one submenu.</strong> The
 Applications key on a misspelled word used to add a dozen rows to the
@@ -420,7 +503,7 @@ else.</p>
 href="https://github.com/Community-Access/quill/pull/1490">PR #1490</a>
 by Steven Scott (<code>doubletaponair</code>) under this repository’s
 MIT licence, and adopted into the QuillVille family here.</p>
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 <ul>
 <li><p><strong>Page Setup moved to Ctrl+Alt+P.</strong> It had
 Ctrl+Alt+U, which is Check for Updates in every other app in the family
@@ -457,7 +540,7 @@ menu, exactly.</p></li>
 Tools</strong>, where Windows applications have kept their settings
 since Word 6.</p></li>
 </ul>
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 <ul>
 <li><p><strong>Get Help from Support (Ctrl+Alt+F2).</strong> QuillLite
 shipped with no way to report anything: only an address printed in the

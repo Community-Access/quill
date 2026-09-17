@@ -1698,18 +1698,35 @@ three ways around that, in <strong>Edit ▸ Clipboard</strong>.</p>
 closing the app. Copy into a slot with <strong>Ctrl+Alt+Y</strong>, and
 paste from any of them an hour later with <strong>Ctrl+Alt+V</strong>.
 <strong>Ctrl+Alt+Shift+Y</strong> empties it.</p>
+<p><strong>Ctrl+Alt+Y</strong> takes the next free slot, which is fine
+until you want to <em>choose</em> the number — and choosing is the whole
+point of a numbered slot, because a number you picked is one you can
+remember. <strong>Alt+Shift+Y</strong> offers all twelve, each row
+saying what is in that slot now, so nothing gets overwritten
+unheard.</p>
 <p><strong>The collector</strong> gathers things up. Each
 <strong>Ctrl+Alt+G</strong> adds what you have selected to one growing
 pile, and <strong>Ctrl+Alt+Shift+G</strong> pastes the whole pile. This
 is what you want when you are pulling five quotes out of a long
 document. <strong>Ctrl+Alt+Shift+C</strong> empties the pile.</p>
-<p><strong>The clip library</strong> happens by itself — a rolling
-history of what you have copied, whether or not you decided at the time
-that it mattered. <strong>Ctrl+Alt+M</strong> keeps the current clip
-deliberately, and <strong>Ctrl+Alt+Shift+M</strong> opens the list.</p>
+<p><strong>The clip library</strong> is where clips you want to keep go.
+<strong>Ctrl+Alt+M</strong> keeps what you have selected, and
+<strong>Ctrl+Alt+Shift+M</strong> opens the list to paste one back.</p>
+<p>It can also fill itself. <strong>Preferences ▸ Keep everything I copy
+in the clip library</strong> turns that on, and then every copy and
+every cut you make inside a QuillLite document is added automatically,
+up to the last two hundred. It is off until you ask, and the reason is
+worth stating plainly: a history of everything you copy is a file on
+your disk holding whatever you last took out of a document, a password
+you had pasted somewhere included. It never sees what you copy in other
+programs.</p>
 <p>And <strong>Ctrl+Shift+V</strong> pastes text with none of its
 formatting, which is what you want when something copied from a web page
 arrives wearing its own fonts and colours.</p>
+<p><strong>Ctrl+F8</strong> copies the whole document. Select All then
+Copy does the same thing in two keys and leaves the document selected
+afterwards, which is a hazard when you cannot glance at it: the next
+character you type replaces everything.</p>
 <hr />
 <h2 id="working-on-lines">Working on lines</h2>
 <p><strong>Edit ▸ Lines</strong> is everything that happens to whole
@@ -2150,7 +2167,7 @@ from the box moves straight into the list.</p>
 </tr>
 <tr>
 <td><strong>Copy Tray and the clip library</strong></td>
-<td>Edit ▸ Clipboard (Cut, Copy and Paste stay)</td>
+<td>Edit ▸ Clipboard (Cut, Copy, Paste and Copy All stay)</td>
 <td>on</td>
 </tr>
 <tr>
@@ -2257,7 +2274,8 @@ somebody.</p>
 <hr />
 <h2 id="printing">Printing</h2>
 <p><strong>Ctrl+P</strong> prints. <strong>Ctrl+Alt+P</strong> is Page
-Setup.</p>
+Setup, and what you set there — paper size, orientation and all four
+margins — is remembered for next time.</p>
 <p>Long lines are wrapped to fit the page whatever your Word Wrap
 setting says, because a printed line that runs off the edge of the paper
 is simply gone.</p>
@@ -2279,6 +2297,14 @@ bold went on, that four things were replaced.</p>
 so <strong>F6</strong> will bring back a message you missed.</p>
 <p>If you have no screen reader running, QuillLite says nothing out loud
 — but every message is still there in the status bar.</p>
+<h3 id="if-it-says-too-much">If it says too much</h3>
+<p>Holding a key down can make QuillLite speak faster than anybody can
+listen. <strong>Preferences ▸ Shortest gap between spoken
+messages</strong> sets a floor, in milliseconds: anything it would say
+too soon after the last thing it said is dropped. Zero, the default,
+says everything as it happens. Nothing is lost by turning it up — the
+status bar is written either way, and <strong>F6</strong> reads it
+back.</p>
 <hr />
 <h2 id="where-your-files-are-kept">Where your files are kept</h2>
 <p>Your settings, recent files, copy tray and any recovered work are
@@ -2404,6 +2430,10 @@ list inside the app.</p>
 <td>Close Window</td>
 </tr>
 <tr>
+<td><strong>Ctrl+F4</strong></td>
+<td>Close Window (MDI)</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Q</strong></td>
 <td>Exit QuillLite</td>
 </tr>
@@ -2449,6 +2479,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+A</strong></td>
 <td>Select All</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F8</strong></td>
+<td>Copy All</td>
 </tr>
 <tr>
 <td><strong>Ctrl+F</strong></td>
@@ -2677,6 +2711,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+Y</strong></td>
 <td>Copy to Tray</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Y</strong></td>
+<td>Copy to Tray Slot…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+V</strong></td>

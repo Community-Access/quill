@@ -120,6 +120,15 @@ COMMANDS: list[CommandRow] = [
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Close Window", "Ctrl+W", "cmd_close", ""),
+    # The same move on the key Windows has used for an MDI child since Windows
+    # 3.1. Nothing bound it, so somebody arriving from any MDI application
+    # pressed it and got nothing -- and the two comments that mentioned Alt+F4
+    # disagreed about what *that* did (bad.md H7). Alt+F4 closes the shell and
+    # takes the documents with it, which is the window manager's key and not
+    # ours to rebind; Ctrl+F4 closes this document, and now says so. Bound as
+    # its own row rather than an alias because the table gives one key to one
+    # handler -- the same arrangement Ctrl+Tab and Ctrl+F6 already have.
+    ("&File", "Close Window (&MDI)", "Ctrl+F4", "cmd_close_mdi", ""),
     ("&File", "E&xit QuillLite", "Ctrl+Q", "cmd_exit", ""),
     # -- Edit ---------------------------------------------------------------
     # Notepad's Edit menu is the top of this one, in Notepad's order, and then

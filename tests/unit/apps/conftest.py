@@ -475,6 +475,14 @@ class FakePrintSettings:
     def __init__(self) -> None:
         self.page_setup: Any = FakePageData("page setup")
         self.print_data: Any = FakePageData("print data")
+        #: Where ``store_into`` last wrote. Page Setup persists to the settings
+        #: file since 2026-09-16 -- it was in memory only, so paper, orientation
+        #: and all four margins reverted at every launch (bad.md F13, PR2) -- and
+        #: a test needs to see that the write happened, not what wx put in it.
+        self.stored: list[Any] = []
+
+    def store_into(self, settings: Any) -> None:
+        self.stored.append(settings)
 
 
 class FakeVoice:

@@ -1528,7 +1528,8 @@ text in a document you send somebody.
 
 ## Printing
 
-**Ctrl+P** prints. **Ctrl+Alt+P** is Page Setup.
+**Ctrl+P** prints. **Ctrl+Alt+P** is Page Setup, and what you set there — paper
+size, orientation and all four margins — is remembered for next time.
 
 Long lines are wrapped to fit the page whatever your Word Wrap setting says,
 because a printed line that runs off the edge of the paper is simply gone.
@@ -1555,6 +1556,15 @@ will bring back a message you missed.
 
 If you have no screen reader running, QuillLite says nothing out loud — but
 every message is still there in the status bar.
+
+### If it says too much
+
+Holding a key down can make QuillLite speak faster than anybody can listen.
+**Preferences ▸ Shortest gap between spoken messages** sets a floor, in
+milliseconds: anything it would say too soon after the last thing it said is
+dropped. Zero, the default, says everything as it happens. Nothing is lost by
+turning it up — the status bar is written either way, and **F6** reads it
+back.
 
 ---
 
@@ -1656,6 +1666,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+P** | Page Setup... |
 | **Ctrl+P** | Print... |
 | **Ctrl+W** | Close Window |
+| **Ctrl+F4** | Close Window (MDI) |
 | **Ctrl+Q** | Exit QuillLite |
 
 ### Edit

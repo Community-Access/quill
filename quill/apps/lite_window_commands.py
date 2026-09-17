@@ -364,6 +364,15 @@ class DocumentCommandsMixin(
     def cmd_previous_window(self) -> None:
         self.app.cycle(self, -1)
 
+    def cmd_close_mdi(self) -> None:
+        """Ctrl+F4, the Windows MDI convention. The same move as Ctrl+W.
+
+        Both are bound rather than one, for the reason Ctrl+F6 and Ctrl+Tab both
+        are: a key somebody expects and does not get is indistinguishable from a
+        broken app, and Ctrl+F4 has closed an MDI child since Windows 3.1.
+        """
+        self.cmd_close()
+
     def cmd_next_window_mdi(self) -> None:
         """Ctrl+F6, the Windows MDI convention. The same move as Ctrl+Tab.
 

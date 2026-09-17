@@ -53,14 +53,45 @@ class PrintSettings:
     Owned by the app rather than by a window: paper size and margins are a
     property of the printer, and answering Page Setup separately in each window
     would mean setting it again for every document.
+
+    **And they outlive the session**, since 2026-09-16. They did not: Page Setup
+    wrote into this object and nothing wrote it anywhere, so paper, orientation
+    and all four margins reverted at every launch. For somebody who prints on
+    Letter, or who wants wide margins because they print large, that is the same
+    dialog every day (bad.md F13, PR2). Three fields in the settings file, which
+    is a configuration rather than a record of one desk, so it travels with the
+    portable backup like everything else.
+
+    The printer *itself* is deliberately not stored: which printer is attached
+    is a fact about the machine and about today, and a stored one that has gone
+    away is worse than the system default.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, settings: Any | None = None) -> None:
+        margins = list(getattr(settings, "print_margins_mm", None) or [15, 15, 15, 15])
+        if len(margins) != 4:
+            margins = [15, 15, 15, 15]
         self.print_data = wx.PrintData()
-        self.print_data.SetPaperId(wx.PAPER_A4)
+        self.print_data.SetPaperId(int(getattr(settings, "print_paper_id", wx.PAPER_A4)))
+        self.print_data.SetOrientation(
+            wx.LANDSCAPE if getattr(settings, "print_landscape", False) else wx.PORTRAIT
+        )
         self.page_setup = wx.PageSetupDialogData(self.print_data)
-        self.page_setup.SetMarginTopLeft(wx.Point(15, 15))
-        self.page_setup.SetMarginBottomRight(wx.Point(15, 15))
+        self.page_setup.SetMarginTopLeft(wx.Point(margins[0], margins[1]))
+        self.page_setup.SetMarginBottomRight(wx.Point(margins[2], margins[3]))
+
+    def store_into(self, settings: Any) -> None:
+        """Copy the current paper, orientation and margins back into *settings*."""
+        top_left = self.page_setup.GetMarginTopLeft()
+        bottom_right = self.page_setup.GetMarginBottomRight()
+        settings.print_paper_id = int(self.print_data.GetPaperId())
+        settings.print_landscape = self.print_data.GetOrientation() == wx.LANDSCAPE
+        settings.print_margins_mm = [
+            int(top_left.x),
+            int(top_left.y),
+            int(bottom_right.x),
+            int(bottom_right.y),
+        ]
 
 
 class _LitePrintout(wx.Printout):
@@ -189,6 +220,10 @@ class DocumentPrintMixin:
             settings.print_data = wx.PrintData(settings.page_setup.GetPrintData())
         finally:
             dialog.Destroy()
+        # Written to disk, not just to memory: "Page setup saved" was a sentence
+        # about a variable until 2026-09-16 (bad.md F13, PR2).
+        settings.store_into(self.app.settings)
+        self.app.save_settings()
         self._announce("Page setup saved")
 
     def cmd_print(self) -> None:

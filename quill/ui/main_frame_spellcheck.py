@@ -30,12 +30,6 @@ from quill.core.spellcheck import (
 from quill.core.spellcheck import (
     backend_info as spellcheck_backend_info,
 )
-from quill.core.spellcheck import (
-    next_misspelling as find_next_misspelling,
-)
-from quill.core.spellcheck import (
-    previous_misspelling as find_previous_misspelling,
-)
 from quill.platform.sr_announce import (
     announce,
 )
@@ -350,26 +344,16 @@ class SpellcheckCommandsMixin:
     def _misspellings_behind_message(
         self, text: str, cursor: int, dictionary: set[str], *, ahead: bool
     ) -> str:
-        """Build the spoken "none in this direction" result for F7/F8.
+        """The spoken "none in this direction" result for Ctrl+F7 / Ctrl+Shift+F7.
 
-        F7/F8 search forward/backward from the caret and don't wrap, so right
-        after typing a misspelling the caret sits past it and there is no *next*
-        one -- the bare "No next misspelling" was both misleading and silent
-        under a screen reader (#9). Count the misspellings in the other
-        direction so the user knows to reverse instead of assuming the document
-        is clean."""
-        direction = "ahead" if ahead else "behind"
-        other_key = "behind" if ahead else "ahead"
-        other = (
-            find_previous_misspelling(text, cursor, dictionary)
-            if ahead
-            else find_next_misspelling(text, cursor, dictionary)
-        )
-        if other is None:
-            return "No misspellings found"
-        count = sum(1 for m in list_misspellings(text, dictionary) if (m.end <= cursor) == ahead)
-        plural = "" if count == 1 else "s"
-        return f"No misspellings {direction}; {count} misspelling{plural} {other_key}"
+        The sentence itself moved to :func:`quill.core.spellcheck.no_misspelling_message`
+        on 2026-09-16, so QuillLite could say it too: it had the bare "No further
+        misspellings" with no count, which reads as "your document is clean" when
+        seven are sitting behind the caret (bad.md S9).
+        """
+        from quill.core.spellcheck import no_misspelling_message
+
+        return no_misspelling_message(text, cursor, dictionary, ahead=ahead)
 
     def next_misspelling(self) -> None:
         dictionary = self._spell_dictionary()

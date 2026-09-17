@@ -143,9 +143,14 @@ AREAS: tuple[AppArea, ...] = (
     AppArea(
         "autoformat",
         "Autocorrect while typing",
-        "Curly quotes, em dashes, and a capital at the start of a sentence. "
-        "Welcome in prose and actively wrong in a configuration file, which is "
-        "why it starts switched off.",
+        # It said "and a capital at the start of a sentence", which QuillLite
+        # has never done: _autoformat implements quotes and dashes and nothing
+        # else. A feature list that describes a rule the code does not have is
+        # worse than one that describes nothing -- somebody turns the area on to
+        # get the capitals and concludes the app is broken (bad.md T2).
+        "Curly quotes and em dashes. Welcome in prose and actively wrong in a "
+        "configuration file, which is why it starts switched off. It does not "
+        "capitalise sentences.",
     ),
     AppArea(
         "backups",

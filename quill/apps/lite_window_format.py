@@ -240,7 +240,13 @@ class DocumentFormatCommandsMixin:
             return
         text = self.control.GetValue()
         caret = self.control.GetInsertionPoint()
-        new_text, new_caret, result, announce = move_section(text, caret, direction)
+        # The document's own markup, not an assumed "markdown". An HTML document
+        # has headings too, and move_section was looking for hashes it would
+        # never find in one -- so Alt+Shift+Up in a .html said "not in a
+        # section" about a section (bad.md R13).
+        new_text, new_caret, result, announce = move_section(
+            text, caret, direction, markup_kind=self.markup_surface() or "markdown"
+        )
         if result is not MoveResult.OK:
             self._announce(announce)
             return
@@ -375,14 +381,58 @@ class DocumentFormatCommandsMixin:
         self._announce(f"{font.GetFaceName()}, {font.GetPointSize()} point")
 
     def cmd_describe(self) -> None:
-        """Say what the formatting at the cursor is -- QUILL's Describe Formatting."""
-        if self.editor.mode != RICH:
+        """Say what the formatting at the cursor is -- QUILL's Describe Formatting.
+
+        Three answers, because there are three kinds of document with formatting
+        in them:
+
+        * **Rich text** asks the control's own Text Object Model -- "Arial, 14
+          point, bold, centred".
+        * **Markdown** parses the markup, through the same shared pair QUILL
+          uses (:func:`~quill.io.rtf_model.format_at_markdown_offset` and
+          :func:`~quill.core.format_speech.describe_inline_format`). It used to
+          answer "Plain text" with the caret inside ``**bold**`` or on a ``##``
+          heading, which is not a description of the formatting, it is a denial
+          that there is any (bad.md R13).
+        * **Everything else** -- HTML, and a plain document with no markup
+          language -- says so rather than guessing. QUILL answers the same way.
+        """
+        if self.editor.mode == RICH:
+            try:
+                self._announce(self.editor.caret_format_description())
+            except RichEditRtfError as exc:
+                self._announce(str(exc))
+            return
+        if self.markup_surface() != "markdown":
             self._announce("Plain text")
             return
-        try:
-            self._announce(self.editor.caret_format_description())
-        except RichEditRtfError as exc:
-            self._announce(str(exc))
+        from quill.core.format_speech import describe_inline_format
+        from quill.io.rtf_model import format_at_markdown_offset
+
+        fmt = format_at_markdown_offset(self.doc_text.text, self.control.GetInsertionPoint())
+        phrase = describe_inline_format(
+            bold=fmt.bold,
+            italic=fmt.italic,
+            href=fmt.href,
+            heading_level=fmt.heading_level,
+            bullet=fmt.bullet,
+            underline=fmt.underline,
+            strike=fmt.strike,
+            superscript=fmt.superscript,
+            subscript=fmt.subscript,
+            font_family=fmt.font_family,
+            font_size_pt=fmt.font_size_pt,
+            color=fmt.color,
+            highlight=fmt.highlight,
+            align=fmt.align,
+            named_style=fmt.named_style,
+            line_spacing=fmt.line_spacing,
+            space_before=fmt.space_before,
+            space_after=fmt.space_after,
+            indent=fmt.indent,
+            first_line_indent=fmt.first_line_indent,
+        )
+        self._announce(phrase or "Plain text")
 
     def cmd_switch_mode(self) -> None:
         """Plain to rich and back -- the two-stop half of Ctrl+Shift+M's ring.

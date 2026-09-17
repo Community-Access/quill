@@ -2400,7 +2400,7 @@ playback to its start.</p></li>
 read-only text, when one is available. Empty otherwise.</p></li>
 </ul>
 <h2 id="quilllite">QuillLite</h2>
-<p>Control coverage: 40 audited sites (40 helped).</p>
+<p>Control coverage: 41 audited sites (41 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>About QuillLite.</strong> What this copy is, and where it
@@ -2675,6 +2675,11 @@ you are at, so you know to go to the other one and press again rather
 than that the word is absent.</p></li>
 <li><p><code>wrap</code>: When off, long lines run past the right edge
 and scroll instead.</p></li>
+<li><p><code>throttle</code>: Zero, the default, says everything as it
+happens. A larger number drops anything QuillLite would say too soon
+after the last thing it said, which is what you want if holding a key
+down floods your screen reader. Nothing is lost by it: the status bar is
+written either way, and F6 reads it back.</p></li>
 <li><p><code>autosave</code>: How often a modified document is copied to
 the recovery folder. The copy is beside your file, never over it, and is
 removed when you save.</p></li>
@@ -2682,8 +2687,8 @@ removed when you save.</p></li>
 Change Font opens the chooser; this box reads back whatever you
 pick.</p></li>
 <li><p><code>choose_btn</code>: Open the font chooser and pick a face
-and size for the editor. #### _ProfileRow
-(<code>quill/apps/lite_preferences.py</code>)</p></li>
+and size for the editor. #### ProfileRow
+(<code>quill/apps/lite_preferences_profile.py</code>)</p></li>
 <li><p><code>self.impact</code>: What the profile above would change:
 which parts of the app it keeps, which it removes, and anything else it
 sets. #### (module level)

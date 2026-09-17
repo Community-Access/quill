@@ -39,6 +39,12 @@ class ScreenReaderVoice:
         self._engine: Any | None = None
         self._reader_present = False
         self._probed_at = 0.0
+        #: Shortest gap between two spoken messages, in milliseconds. Zero is no
+        #: throttle, which is the default and what QuillLite has always done.
+        #: Set from ``settings.announcement_throttle_ms`` when the app starts and
+        #: whenever Preferences is saved.
+        self.throttle_ms = 0
+        self._spoke_at = 0.0
 
     def _reader_running(self) -> bool:
 
@@ -63,6 +69,17 @@ class ScreenReaderVoice:
         text = (message or "").strip()
         if not text or not self._reader_running():
             return
+        # The throttle, which QUILL has had and QuillLite did not (bad.md A5). A
+        # key held down that announces on every repeat floods the reader, and
+        # the only remedy a listener had was to turn speech off. Dropped here
+        # rather than at the call sites, because the status bar is written
+        # before this is reached: the throttle takes the speech and never the
+        # record, so nothing is lost that cannot be read back.
+        if self.throttle_ms > 0:
+            now = time.monotonic()
+            if (now - self._spoke_at) * 1000.0 < self.throttle_ms:
+                return
+            self._spoke_at = now
         try:
             if self._engine is None:
                 from quill.platform.windows.prism_bridge import AnnouncementEngine

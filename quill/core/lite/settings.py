@@ -83,6 +83,10 @@ _LETTER_STYLES = frozenset({"letters", "phonetic", "both"})
 _MIN_SPELL_MS = 100
 _MAX_SPELL_MS = 5000
 _MAX_ALERT_REPEAT_MS = 10000
+#: The announcement throttle's ceiling. Two seconds, the same as QUILL's,
+#: because past that a throttle stops being a throttle and becomes a mute with
+#: a timer on it.
+_MAX_THROTTLE_MS = 2000
 
 #: Point sizes outside this range are either unreadable or a typo.
 _MIN_FONT_POINTS = 6
@@ -202,6 +206,31 @@ class Settings:
     #: and never implemented it -- the capture method was written and called
     #: from nowhere (bad.md C1).
     clip_library_autocapture: bool = False
+    #: Shortest gap between two spoken announcements, in milliseconds.
+    #:
+    #: Zero -- no throttle -- which is what QuillLite has always done and what
+    #: QUILL defaults to as well. It exists because a held key that announces
+    #: per repeat floods the reader, and a listener who hits that has no way to
+    #: ask for less short of switching speech off entirely (bad.md A5). The
+    #: status bar is written whatever this says: the throttle drops the *speech*
+    #: and never the record.
+    #:
+    #: QUILL's own field name, so the grow-up path has one fewer row to map (G1).
+    announcement_throttle_ms: int = 0
+    # -- Printing ------------------------------------------------------------
+    # Page Setup was in memory only, so paper size, orientation and all four
+    # margins went back to the defaults at every launch: somebody printing on
+    # Letter, or wanting wider margins for a large-print copy, re-entered them
+    # every session (bad.md F13, PR2). Three fields rather than six, because the
+    # four margins are one decision.
+    #
+    #: ``wx.PaperSize`` id. 9 is A4, which is what QuillLite has always started
+    #: with; the number rather than the name because that is what wx stores.
+    print_paper_id: int = 9
+    #: Landscape rather than portrait.
+    print_landscape: bool = False
+    #: Left, top, right and bottom margins, in millimetres.
+    print_margins_mm: list[int] = field(default_factory=lambda: [15, 15, 15, 15])
     #: Whether the status bar is on screen at all. Notepad's View menu has had
     #: this checkbox since Windows 95 and QuillLite had no answer to it: the bar
     #: was always there. Per app rather than per document, because it is a
@@ -322,8 +351,22 @@ class Settings:
         self.spelling_alert_repeat_ms = _clamp_ms(
             self.spelling_alert_repeat_ms, 750, low=0, high=_MAX_ALERT_REPEAT_MS
         )
+        # Same range QUILL clamps to, and the same floor of zero meaning "no
+        # throttle". Two seconds is the ceiling because anything longer stops
+        # being a throttle and starts being a mute with a timer.
+        self.announcement_throttle_ms = _clamp_ms(
+            self.announcement_throttle_ms, 0, low=0, high=_MAX_THROTTLE_MS
+        )
         # Through the shared coercion rather than a local frozenset, so a mode
         # added to the enum is understood here on the day it is added.
+        # Four margins, each a sane number of millimetres. A hand-edited file
+        # with three of them, or with a negative one, gives the defaults back
+        # rather than a printer dialog that will not open.
+        margins = [int(value) for value in self.print_margins_mm if isinstance(value, int)]
+        if len(margins) != 4 or any(not 0 <= value <= 100 for value in margins):
+            margins = [15, 15, 15, 15]
+        self.print_margins_mm = margins
+        self.print_paper_id = max(0, int(self.print_paper_id))
         self.action_feedback = str(_coerce_action_feedback(self.action_feedback))
         self.find_not_found_feedback = str(_coerce_action_feedback(self.find_not_found_feedback))
         return self
@@ -353,7 +396,16 @@ def _coerce(current: Any, value: Any) -> Any | None:
     if isinstance(current, str):
         return value if isinstance(value, str) else None
     if isinstance(current, list):
-        return [str(item) for item in value] if isinstance(value, list) else None
+        if not isinstance(value, list):
+            return None
+        # The element type comes from the default, because the two kinds of list
+        # this store holds are not interchangeable: the recent-files lists are
+        # strings and the print margins are numbers, and coercing everything to
+        # str silently turned four saved margins into four strings the
+        # validator then threw away (bad.md F13).
+        if current and isinstance(current[0], int) and not isinstance(current[0], bool):
+            return [int(item) for item in value if isinstance(item, int)]
+        return [str(item) for item in value]
     return None
 
 

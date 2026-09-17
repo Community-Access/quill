@@ -36,18 +36,15 @@ from typing import Any, NamedTuple
 import wx
 
 from quill.apps.lite_dialogs import _stack
+from quill.apps.lite_preferences_profile import ProfileRow
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.app_features import (
     AppArea,
     AppFeatureSettings,
     AppProfile,
-    apply_profile,
-    profile_impact,
-    profile_summary,
 )
 from quill.core.structure_announce import HEADING_POSITION_LABELS, HEADING_POSITIONS
-from quill.ui.app_features_dialog import CUSTOM_PROFILE, SETTING_WORDS
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 
 __all__ = ["PreferencesResult", "edit_preferences"]
@@ -62,22 +59,9 @@ _PAD = 8
 _IMPACT_WIDTH = 560
 _IMPACT_LINES = 7
 
+
 #: What the impact box says when the areas match no profile. The same words the
 #: Customize Features dialog uses, for the same reason.
-_CUSTOM_DESCRIPTION = (
-    "Your own mix of features, picked one at a time in Tools, Customize "
-    "Features. Choosing a profile above replaces it; leaving this alone keeps "
-    "it exactly as it is."
-)
-
-_PROFILE_HELP = (
-    "A named starting point for which parts of the app exist at all. Choosing "
-    "one here does everything the Customize Features checklist would do, in one "
-    "go, and the box below says exactly what it would change. Leave it on "
-    "Custom to keep the features you have."
-)
-
-
 class PreferencesResult(NamedTuple):
     """What the window changed: ordinary settings, feature areas, or neither.
 
@@ -120,7 +104,7 @@ def edit_preferences(
     dialog = wx.Dialog(parent, title="Preferences", style=wx.DEFAULT_DIALOG_STYLE)
     root = wx.BoxSizer(wx.VERTICAL)
 
-    profile_row = _ProfileRow(dialog, root, features, areas, profiles, settings, announce)
+    profile_row = ProfileRow(dialog, root, features, areas, profiles, settings, announce)
 
     mode_label = wx.StaticText(dialog, label="&New documents are:")
     mode_choice = wx.Choice(dialog, choices=["Plain text", "Rich text"])
@@ -317,6 +301,23 @@ def edit_preferences(
     wrap.SetValue(bool(settings.word_wrap))
     root.Add(wrap, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
 
+    # In milliseconds because that is the unit a throttle is thought about in,
+    # and the range is QUILL's: zero to two seconds, with zero meaning off. Past
+    # two seconds it stops being a throttle and becomes a mute with a timer.
+    throttle_label = wx.StaticText(dialog, label="Shortest ga&p between spoken messages (ms):")
+    throttle = wx.SpinCtrl(
+        dialog, min=0, max=2000, initial=int(getattr(settings, "announcement_throttle_ms", 0) or 0)
+    )
+    set_accessible_name(throttle, "Shortest gap between spoken messages, milliseconds")
+    throttle.SetHelpText(
+        "Zero, the default, says everything as it happens. A larger number "
+        "drops anything QuillLite would say too soon after the last thing it "
+        "said, which is what you want if holding a key down floods your screen "
+        "reader. Nothing is lost by it: the status bar is written either way, "
+        "and F6 reads it back."
+    )
+    _stack(root, throttle_label, throttle)
+
     autosave_label = wx.StaticText(dialog, label="&Copy unsaved work aside every (seconds):")
     autosave = wx.SpinCtrl(dialog, min=15, max=600, initial=int(settings.autosave_seconds))
     set_accessible_name(autosave, "Copy unsaved work aside every, seconds")
@@ -397,6 +398,7 @@ def edit_preferences(
             getattr(settings, "action_feedback", "sound"),
             getattr(settings, "find_not_found_feedback", "sound"),
             getattr(settings, "wrap_find", True),
+            getattr(settings, "announcement_throttle_ms", 0),
         )
         settings.default_mode = "rich" if mode_choice.GetSelection() == 1 else "plain"
         settings.theme = "dark" if theme_choice.GetSelection() == 0 else "system"
@@ -412,6 +414,7 @@ def edit_preferences(
         settings.action_feedback = str(feedback_values[action_choice.GetSelection()])
         settings.find_not_found_feedback = str(feedback_values[miss_choice.GetSelection()])
         settings.wrap_find = bool(wrap_find.GetValue())
+        settings.announcement_throttle_ms = int(throttle.GetValue())
         settings.heading_announce_position = HEADING_POSITIONS[
             max(0, heading_choice.GetSelection())
         ]
@@ -438,151 +441,12 @@ def edit_preferences(
                 settings.action_feedback,
                 settings.find_not_found_feedback,
                 settings.wrap_find,
+                settings.announcement_throttle_ms,
             ),
             features_changed,
         )
     finally:
         dialog.Destroy()
-
-
-class _ProfileRow:
-    """The feature-profile Choice, its impact box, and what OK does with them.
-
-    A class rather than a closure because it owns three questions that have to
-    stay in step: which profile the current areas match, what the box should
-    say, and whether OK has anything to write. An app that passes no features
-    gets an inert instance that builds nothing and applies nothing, so the one
-    caller needs no branch.
-    """
-
-    def __init__(
-        self,
-        dialog: wx.Dialog,
-        root: wx.Sizer,
-        features: AppFeatureSettings | None,
-        areas: Sequence[AppArea],
-        profiles: Sequence[AppProfile],
-        settings: Any,
-        announce: Callable[[str], None] | None,
-    ) -> None:
-        self._features = features
-        self._areas = list(areas)
-        self._profiles = list(profiles)
-        self._settings = settings
-        self._announce = announce
-        #: Called with a chosen profile's settings pairs, so the window can move
-        #: the controls that show them. Set by the caller once those controls
-        #: exist; a profile that claims nothing never calls it.
-        self.on_settings: Callable[[dict[str, object]], None] | None = None
-        self._live = bool(features is not None and self._areas and self._profiles)
-        if not self._live:
-            return
-
-        label = wx.StaticText(dialog, label="Feature pro&file:")
-        self.choice = wx.Choice(dialog, choices=[p.name for p in self._profiles] + [CUSTOM_PROFILE])
-        set_accessible_name(self.choice, "Feature profile")
-        # Inline at the construction site, which is the only place the help
-        # audit can see it. _show replaces it with this plus the selected
-        # profile's own impact, so F1 answers "what is this one?" as well.
-        self.choice.SetHelpText(_PROFILE_HELP)
-        _stack(root, label, self.choice)
-        # Read-only, multi-line and in the tab ring, exactly as in Customize
-        # Features: a static label is not reachable by a screen reader's arrow
-        # keys, and this is a paragraph, not a caption.
-        self.impact = wx.TextCtrl(
-            dialog,
-            value="",
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_BESTWRAP,
-            size=(_IMPACT_WIDTH, dialog.GetCharHeight() * _IMPACT_LINES),
-        )
-        set_accessible_name(self.impact, "What this profile does")
-        self.impact.SetHelpText(
-            "What the profile above would change: which parts of the app it "
-            "keeps, which it removes, and anything else it sets."
-        )
-        root.Add(self.impact, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
-        self.choice.Bind(wx.EVT_CHOICE, lambda _e: self._on_choice())
-        self._select_matching()
-
-    # -- state ------------------------------------------------------------ #
-
-    def _select_matching(self) -> None:
-        """Point the Choice at the profile the current areas are, or Custom."""
-        assert self._features is not None
-        for index, profile in enumerate(self._profiles):
-            if self._features.matches_profile(profile, self._areas, self._settings):
-                self.choice.SetSelection(index)
-                self._show()
-                return
-        self.choice.SetSelection(len(self._profiles))
-        self._show()
-
-    def _chosen(self) -> AppProfile | None:
-        index = self.choice.GetSelection()
-        if 0 <= index < len(self._profiles):
-            return self._profiles[index]
-        return None
-
-    def _show(self) -> None:
-        profile = self._chosen()
-        text = (
-            profile_impact(profile, self._areas, SETTING_WORDS)
-            if profile is not None
-            else _CUSTOM_DESCRIPTION
-        )
-        self.impact.SetValue(text)
-        self.choice.SetHelpText(f"{_PROFILE_HELP} {' '.join(text.split())}")
-
-    def _on_choice(self) -> None:
-        """Update the box, and say the one-line version.
-
-        The box is an unfocused control whose text just changed, which is
-        precisely what a screen reader does not read (GATE-12); the profile's
-        *name* is what it does read as you arrow, so what gets spoken is the
-        outcome and not the name again (GATE-13). Nothing is applied yet --
-        this window has an OK button and it means it.
-        """
-        self._show()
-        profile = self._chosen()
-        if profile is not None and profile.settings and self.on_settings is not None:
-            self.on_settings(dict(profile.settings))
-        if self._announce is None:
-            return
-        if profile is None:
-            self._announce("Custom: the features you already have. Nothing will change.")
-            return
-        self._announce(
-            profile_summary(profile, self._areas, SETTING_WORDS)
-            + " Nothing is applied until you press OK."
-        )
-
-    # -- OK ---------------------------------------------------------------- #
-
-    def apply(self) -> bool:
-        """Write the chosen profile into the feature settings. True if it moved.
-
-        Custom applies nothing at all -- it is what the Choice reads when the
-        areas are somebody's own mix, and treating it as an instruction would
-        make "leave my features alone" impossible to express.
-
-        Areas only. Whatever else a profile claims has already been put into the
-        controls that show it (see ``on_settings``), and those controls are what
-        the window writes -- so the settings half is applied exactly once, by
-        the code that owns it, and is visible before it happens.
-        """
-        if not self._live:
-            return False
-        assert self._features is not None
-        profile = self._chosen()
-        if profile is None:
-            return False
-        # Compared over the areas alone: the settings half is the controls'
-        # business by now, and a profile whose only outstanding difference is a
-        # setting somebody has since changed back has still not moved an area.
-        if self._features.matches_profile(profile, self._areas):
-            return False
-        apply_profile(self._features, profile, self._areas)
-        return True
 
 
 def _font_summary(chosen: dict[str, Any]) -> str:

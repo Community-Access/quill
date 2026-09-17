@@ -85,6 +85,7 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         self.frames: list[DocumentFrame] = []
         self.active_frame: DocumentFrame | None = None
         self.voice = ScreenReaderVoice()
+        self.voice.throttle_ms = int(getattr(self.settings, "announcement_throttle_ms", 0) or 0)
         self.print_settings: PrintSettings | None = None
         self.shell: QuillLiteShell | None = None
         #: Which areas of the app exist at all. Everything unknown is on;
@@ -139,7 +140,7 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
 
         set_transition_announcement_policy(lambda: False)
 
-        self.print_settings = PrintSettings()
+        self.print_settings = PrintSettings(self.settings)
         # The earcon player, so the as-you-type spelling alert has something to
         # reach. QuillLite had no sound stack at all: the alert was a status-bar
         # line and nothing else, which on an unwatched bar is not an alert. Never
@@ -454,6 +455,10 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         near-identical loops is four chances for one of them to forget a step.
         Everything here is cheap enough to do wholesale.
         """
+        # The voice first: it is the app's, not a window's, and a throttle
+        # somebody has just set should apply to the very next thing said rather
+        # than from the next launch (bad.md A5).
+        self.voice.throttle_ms = int(getattr(self.settings, "announcement_throttle_ms", 0) or 0)
         for frame in self.frames:
             frame._apply_editor_font()
             frame.apply_theme()

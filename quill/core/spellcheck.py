@@ -551,6 +551,34 @@ def previous_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspe
     return previous
 
 
+def no_misspelling_message(text: str, cursor: int, dictionary: set[str], *, ahead: bool) -> str:
+    """What to say when there is no misspelling in the direction asked for.
+
+    Ctrl+F7 and Ctrl+Shift+F7 search forward and backward from the caret and do
+    not wrap, so right after typing a misspelling the caret sits past it and
+    there is no *next* one. A bare "No further misspellings" is then both
+    misleading -- it reads as "your document is clean" -- and a dead end, since
+    it does not say that turning round would find seven.
+
+    QUILL has answered this way since #9; QuillLite said the bare sentence with
+    no count at all (bad.md S9). Shared here rather than copied, because two
+    editors describing the same silence in two different ways is exactly the
+    divergence the family plan exists to remove.
+    """
+    direction = "ahead" if ahead else "behind"
+    other_key = "behind" if ahead else "ahead"
+    other = (
+        previous_misspelling(text, cursor, dictionary)
+        if ahead
+        else next_misspelling(text, cursor, dictionary)
+    )
+    if other is None:
+        return "No misspellings found"
+    count = sum(1 for m in list_misspellings(text, dictionary) if (m.end <= cursor) == ahead)
+    plural = "" if count == 1 else "s"
+    return f"No misspellings {direction}; {count} misspelling{plural} {other_key}"
+
+
 def misspelling_at_position(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
     # Find the word boundary around `position` directly rather than scanning
     # every word in the document. Walk left to the start of the current word,

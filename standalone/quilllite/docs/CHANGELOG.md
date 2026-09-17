@@ -115,6 +115,16 @@
 - **A formatting refusal names the document it is refusing in**, and offers both
   ways out: rich text, or giving the document a markup language.
 
+### Added
+
+- **A pause between spoken messages.** Preferences has **Shortest gap between
+  spoken messages**, in milliseconds, and setting it stops QuillLite saying
+  things faster than you can hear them -- which is what a held-down key used to
+  do. Zero, the default, is what it has always done. Nothing is lost by turning
+  it up: the status bar is written either way, and F6 reads it back.
+- **Ctrl+F4 closes the document**, the key Windows has used for a window inside
+  a window since 3.1. Ctrl+W always did; Ctrl+F4 did nothing.
+
 ### Changed
 
 - **Large documents stopped costing what they did.** QuillLite read its whole
@@ -128,6 +138,25 @@
 
 ### Fixed
 
+- **Describe Formatting (Ctrl+Shift+D) reads Markdown.** With the cursor inside
+  `**bold**` or on a `## heading` it said "Plain text", which is not a
+  description of the formatting but a denial that there is any. It now reads the
+  markup the way QUILL does.
+- **Moving a section works in an HTML document.** Alt+Shift+Up and Down were
+  looking for Markdown hashes whatever the document was, so in a `.html` they
+  said there was no section where there plainly was one.
+- **"No further misspellings" now says how many are the other way.** On its own
+  it reads as "your document is clean", which is a lie when seven are sitting
+  behind the cursor -- and it did not say that pressing the other key would find
+  them. QUILL has counted the other direction for years.
+- **F7 on an empty document says so** instead of doing nothing at all, which is
+  indistinguishable from a key that is not bound.
+- **Page Setup is remembered.** Paper size, orientation and all four margins
+  went back to the defaults at every launch, so anybody not printing A4 with
+  15 mm margins set them again every session.
+- **Customize Features no longer promises sentence capitals.** Autocorrect does
+  curly quotes and em dashes; it has never capitalised a sentence, and saying
+  otherwise sent people looking for a switch that was not broken.
 - **Two timers could fire on a window that had been closed.** The live spell
   check and the pending "and here is how it is spelled" were left running when a
   document window went away, and the failure that followed was swallowed. Both

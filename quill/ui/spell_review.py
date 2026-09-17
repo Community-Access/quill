@@ -37,6 +37,12 @@ def review_textctrl(
 
     text = text_ctrl.GetValue()
     if not text.strip():
+        # Said, not silent. A command that quietly does nothing is
+        # indistinguishable, to a listener, from a key that is not bound --
+        # and F7 on an empty document is exactly the moment somebody wonders
+        # whether spell check is switched off (bad.md S9). QUILL's editor path
+        # has always said this; the shared one returned.
+        announce_fn(f"The {scope_label} is empty")
         return
     session = ReviewSession(
         text=text,

@@ -363,6 +363,20 @@ def test_page_setup_saves_what_the_dialog_returned(
     assert win.announcements[-1] == "Page setup saved"
 
 
+def test_page_setup_is_written_to_the_settings_file(
+    lite_window, fake_wx_dialog, stub_print_data, page_data
+):
+    """ "Page setup saved" was a sentence about a variable: paper, orientation and
+    all four margins went back to the defaults at every launch (bad.md F13)."""
+    import wx
+
+    fake_wx_dialog("PageSetupDialog", wx.ID_OK, GetPageSetupData=page_data("chosen"))
+    win = lite_window("hello")
+    win.cmd_page_setup()
+    assert win.app.print_settings.stored == [win.app.settings]
+    assert win.app.saved_settings >= 1
+
+
 def test_page_setup_is_not_used_as_a_context_manager(
     lite_window, fake_wx_dialog, monkeypatch, stub_print_data
 ):
