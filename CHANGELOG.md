@@ -2,6 +2,27 @@
 
 ## 1.0.0
 
+### The whole status bar has a switch (2026-09-17)
+
+**`Alt+Shift+B` shows and hides the status bar.** QUILL could hide any
+individual *cell* of it and never the bar itself, so somebody who wanted
+Notepad's plain window had to go and empty a list of cell names --- and still
+give up a row of the screen to a bar with nothing in it. Notepad has had
+**View > Status Bar** on this key for decades and QuillLite has had it since it
+shipped, under the same `show_status_bar` setting name, so a settings file
+carried between the two products now means one thing in both.
+
+Choosing *which cells* the bar carries is still there and still separate; the
+two questions are different and only one of them was answerable before.
+
+`Alt+Shift+B` was **List Bookmarks** in QUILL. It moved to `Ctrl+Shift+F5`,
+which was already its second chord --- Word's own Bookmark key --- so nothing
+was lost and one alias row could be deleted.
+
+QUILL says which way the toggle went, because nothing else will: a bar leaving
+the window is not a focus change and not a control your reader was sitting on,
+so the sentence is the only evidence the key did anything.
+
 ### F5 writes the date in QUILL too (2026-09-16)
 
 `F5` has put the time and date at the caret since Notepad on Windows 3.1, and

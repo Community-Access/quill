@@ -693,6 +693,12 @@ class CommandRegistryMixin:
             self._binding_for("navigate.previous_heading"),
         )
         self.commands.register(
+            "view.toggle_status_bar",
+            "Show Status Bar",
+            self.toggle_status_bar,
+            self._binding_for("view.toggle_status_bar"),
+        )
+        self.commands.register(
             "edit.insert_date_time",
             "Insert Date and Time",
             self.insert_date_time,

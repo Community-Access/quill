@@ -203,6 +203,20 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("tabs", "documents"),
     ),
     SettingSpec(
+        "show_status_bar",
+        "Show status bar",
+        "general",
+        "bool",
+        (
+            "Show the status bar at the bottom of the window. This is the whole "
+            "bar; which cells it carries is a separate setting, and a bar with "
+            "every cell hidden still takes a row of the window. Notepad's View "
+            "menu has the same switch, on the same Alt+Shift+B, and so does "
+            "QuillLite."
+        ),
+        keywords=("status", "bar", "hide", "show", "bottom", "notepad"),
+    ),
+    SettingSpec(
         "start_with_no_document_open",
         "Start with no document open",
         "general",

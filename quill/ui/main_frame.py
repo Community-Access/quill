@@ -4668,6 +4668,7 @@ class MainFrame(
         # With the theme: a theme change rebuilds the control's appearance and
         # would otherwise drop the font back to wx's pick (bad.md P0.6a).
         self.apply_editor_font()
+        self.apply_status_bar_visibility()
         self.frame.SetForegroundColour(foreground)
         self.frame.SetBackgroundColour(chrome_background)
         self.statusbar.SetForegroundColour(foreground)

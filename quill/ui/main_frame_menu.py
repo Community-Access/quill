@@ -754,6 +754,7 @@ class MenuBuilderMixin:
         self._id_send_to_tray = wx.NewIdRef()
         self._id_toggle_tray_mode = wx.NewIdRef()
         self._id_toggle_soft_wrap = wx.NewIdRef()
+        self._id_toggle_status_bar = wx.NewIdRef()
         self._id_text_size_up = wx.NewIdRef()
         self._id_text_size_down = wx.NewIdRef()
         self._id_text_size_reset = wx.NewIdRef()
@@ -789,6 +790,12 @@ class MenuBuilderMixin:
         view_menu.Check(self._id_toggle_soft_wrap, self.settings.soft_wrap)
         view_menu.AppendCheckItem(self._id_toggle_tab_control, _("Show &Tab Control"))
         view_menu.Check(self._id_toggle_tab_control, self.settings.show_tab_control)
+        # Notepad's View > Status Bar, the whole bar rather than a cell of it.
+        view_menu.AppendCheckItem(
+            self._id_toggle_status_bar,
+            self._menu_label(_("&Status Bar"), "view.toggle_status_bar"),
+        )
+        view_menu.Check(self._id_toggle_status_bar, self.settings.show_status_bar)
         view_menu.AppendSeparator()
         # Notepad's three, and QuillLite's. There was no way to change the size
         # of QUILL's text at all before 2026-09-16, which for an audience that

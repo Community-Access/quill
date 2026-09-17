@@ -152,6 +152,11 @@ class Settings:
     preview_browser: str = "system"
     auto_side_preview: bool = True
     show_tab_control: bool = False
+    #: The whole status bar, not the per-cell ``status_bar_hidden`` list below.
+    #: QUILL could hide individual cells and not the bar (bad.md G3, P1.10);
+    #: QuillLite has had Notepad's View > Status Bar since it shipped, under
+    #: this name, so a settings file means the same thing in both.
+    show_status_bar: bool = True
     title_bar_path_mode: str = "name"
     dirty_title_style: str = "text"
     start_with_no_document_open: bool = False
@@ -868,6 +873,7 @@ class Settings:
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
         auto_side_preview = bool(data.get("auto_side_preview", True))
         show_tab_control = bool(data.get("show_tab_control", False))
+        show_status_bar = bool(data.get("show_status_bar", True))
         title_bar_path_mode = str(data.get("title_bar_path_mode", "name"))
         if title_bar_path_mode not in {"name", "full_path"}:
             title_bar_path_mode = "name"
@@ -1581,6 +1587,7 @@ class Settings:
             preview_browser=preview_browser,
             auto_side_preview=auto_side_preview,
             show_tab_control=show_tab_control,
+            show_status_bar=show_status_bar,
             title_bar_path_mode=title_bar_path_mode,
             dirty_title_style=dirty_title_style,
             start_with_no_document_open=start_with_no_document_open,

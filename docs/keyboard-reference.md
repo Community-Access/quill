@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 404.
+Editor commands with default bindings: 405.
 
 ## The QUILL editor
 
@@ -198,7 +198,6 @@ Editor commands with default bindings: 404.
 | Alt+Down | Next Structure | `navigate.next_structure` |
 | Alt+Left | Back Location | `navigate.back_location` |
 | Alt+Right | Forward Location | `navigate.forward_location` |
-| Alt+Shift+B or Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
 | Alt+Shift+[ | Previous Fold | `navigate.previous_fold` |
 | Alt+Shift+] | Next Fold | `navigate.next_fold` |
 | Alt+Up | Previous Structure | `navigate.previous_structure` |
@@ -218,6 +217,7 @@ Editor commands with default bindings: 404.
 | Ctrl+Shift+8 | Set numbered bookmark 8 | `navigate.set_numbered_bookmark_8` |
 | Ctrl+Shift+9 | Set numbered bookmark 9 | `navigate.set_numbered_bookmark_9` |
 | Ctrl+Shift+B | Set Bookmark | `navigate.set_numbered_bookmark` |
+| Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
 | Ctrl+Shift+J | Go to Temporary Bookmark | `navigate.go_to_temp_bookmark` |
 | Ctrl+Shift+O or Ctrl+Alt+L | Outline Navigator... | `navigate.outline_navigator` |
 | Ctrl+Shift+\ | Match Bracket | `navigate.match_bracket` |
@@ -236,6 +236,7 @@ Editor commands with default bindings: 404.
 | Key | Command | Command id |
 | --- | --- | --- |
 | Alt+F3 | Reveal Codes | `view.reveal_codes_toggle` |
+| Alt+Shift+B | Show Status Bar | `view.toggle_status_bar` |
 | Alt+Shift+D | Toggle Dark Mode | `view.toggle_dark_mode` |
 | Alt+Shift+E | Show Spoken Echo | `view.spoken_echo` |
 | Alt+Shift+V | Preview | `view.preview` |

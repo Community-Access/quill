@@ -154,7 +154,13 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.next_structure": "Alt+Down",
     "navigate.previous_structure": "Alt+Up",
     "navigate.heading_organizer": "Ctrl+Shift+Grave, O",
-    "navigate.list_bookmarks": "Alt+Shift+B",
+    # Word's own Bookmark key. Alt+Shift+B went to view.toggle_status_bar on
+    # 2026-09-16, which is Notepad's chord for it and QuillLite's; this was
+    # already an alias here, so the displacement cost nothing (bad.md P1.10).
+    "navigate.list_bookmarks": "Ctrl+Shift+F5",
+    # Notepad's View > Status Bar, and QuillLite's. QUILL could hide any one
+    # cell and not the bar itself (bad.md G3, P1.10).
+    "view.toggle_status_bar": "Alt+Shift+B",
     # Numbered bookmarks: nine slots you address by digit, shared core
     # (quill.core.numbered_bookmarks) whose docstring says it lives there so
     # QUILL can adopt it. QuillLite was its only caller until 2026-09-16,
@@ -905,8 +911,6 @@ DEFAULT_ALIASES: dict[str, str] = {
     # one list of the document's headings, reachable by either habit
     # (bad.md P1.4). Ctrl+Shift+O remains the primary.
     "navigate.outline_navigator": "Ctrl+Alt+L",
-    # Word's Bookmark key, pointed at the numbered-bookmark list.
-    "navigate.list_bookmarks": "Ctrl+Shift+F5",
     # QuillLite reaches the shortcut list on Ctrl+F1; QUILL had it on
     # Alt+Shift+/, which is a chord you have to be told about.
     "help.key_cheatsheet": "Ctrl+F1",

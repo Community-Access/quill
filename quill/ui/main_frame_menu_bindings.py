@@ -1299,6 +1299,9 @@ class MenuBindingsMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.insert_date_time(), id=self._id_insert_date_time
         )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.toggle_status_bar(), id=self._id_toggle_status_bar
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(0), id=self._id_body_text)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(1), id=self._id_heading_1)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(2), id=self._id_heading_2)

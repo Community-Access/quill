@@ -469,6 +469,14 @@ The **View** menu controls how Quill presents your document on screen without ch
 - **Toggle Soft Wrap** changes line wrapping without modifying the file.
 - **Auto Side-by-Side Preview** opens a live preview beside the editor automatically.
 - **Show Tab Control** toggles the visible document tab strip.
+- **Status Bar** (`Alt+Shift+B`) shows or hides the **whole** status bar, which
+  is Notepad's switch on Notepad's key, and QuillLite's. It is distinct from
+  choosing *which cells* the bar carries (right-click the bar, or
+  **Preferences > Settings**, `status_bar_hidden`): a bar with every cell hidden
+  still takes a row of the window, and until September 2026 emptying that list
+  was the only thing QUILL offered. The setting is **`show_status_bar`**, it is
+  on by default, and it is remembered. QUILL says which way it went, because a
+  bar leaving the window is not something your screen reader will mention.
 - **Increase Text Size** (`Ctrl+=`), **Decrease Text Size** (`Ctrl+-`) and
   **Reset Text Size** (`Ctrl+0`) change how big the editor's text is without
   leaving the document. These are Notepad's own three keys, and QuillLite's.

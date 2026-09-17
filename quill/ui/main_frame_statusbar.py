@@ -696,6 +696,40 @@ class StatusBarMixin:
             self._STATUSBAR_COALESCE_MS, self._refresh_statusbar
         )
 
+    def apply_status_bar_visibility(self) -> None:
+        """Show or hide the whole bar, per ``settings.show_status_bar``.
+
+        QUILL could hide any *cell* and not the bar itself, so a person who
+        wanted Notepad's plain window had to empty a list and still give up a
+        row of the screen to a bar with nothing in it (bad.md G3, P1.10).
+
+        Never raises: the bar is a panel that may be mid-teardown, and a view
+        preference is not worth failing a settings save for.
+        """
+        bar = getattr(self, "statusbar", None)
+        if bar is None:
+            return
+        try:
+            bar.Show(bool(getattr(self.settings, "show_status_bar", True)))
+            self.frame.Layout()
+        except Exception:  # noqa: BLE001 - see the docstring
+            pass
+
+    def toggle_status_bar(self) -> None:
+        """Alt+Shift+B: Notepad's View > Status Bar, and QuillLite's chord.
+
+        Spoken, because nothing else will say it. A bar that has just left the
+        window is not a focus change and not a control the reader was on, so
+        the only evidence of the press is the sentence -- and the state is
+        exactly what somebody pressing a toggle needs to hear.
+        """
+        self.settings.show_status_bar = not getattr(self.settings, "show_status_bar", True)
+        self.apply_status_bar_visibility()
+        self._save_settings_quietly()
+        self._announce_result(
+            "Status bar shown" if self.settings.show_status_bar else "Status bar hidden"
+        )
+
     def _refresh_statusbar(self) -> None:
         if not hasattr(self, "_statusbar_cells") or not hasattr(self, "_wx"):
             self._refresh_legacy_statusbar()

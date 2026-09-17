@@ -248,6 +248,7 @@
   "shell_verb_ocr_structured": "grandfathered",
   "shell_verb_open": "grandfathered",
   "shell_verb_read": "grandfathered",
+  "show_status_bar": "documented",
   "show_tab_control": "documented",
   "skipped_update_version": "documented",
   "snippet_trigger_expansion": "grandfathered",

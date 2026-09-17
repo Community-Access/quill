@@ -787,7 +787,7 @@ way:
 | P1.2a | **Fix Extend Selection Mode's four movement bugs** (5.3a): page keys ask the control for a real page, Up/Down follow visual lines under soft wrap, word movement stops at punctuation as Windows does, and the line table comes from `DocumentText` instead of an O(N) rescan per keystroke | QUILL | S | holding Down inside a wrapped paragraph moves one visual line per press, and a 50 MB file costs nothing extra per key |
 | P1.2b | `select_chunk` renamed **Select Token**, off `Ctrl+Space`, with help text that says what it does that Select Word does not (5.3a) | QUILL | T | -- |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) | QUILL | M | round-trip test per encoding |
-| P1.10 | Status bar show/hide in QUILL on `Alt+Shift+B` -- the whole-bar switch beside the existing per-cell `status_bar_hidden` list (G3); `F6` lands in the status bar first in both | QUILL | S | -- |
+| P1.10 | **`F6` lands in the status bar first in both.** The whole-bar switch landed 2026-09-17 on `Alt+Shift+B`, displacing List Bookmarks onto `Ctrl+Shift+F5`, which was already its alias; the region-order half is left because it changes where every `F6` press goes and wants a live listen rather than a reading | both | S | -- |
 | P1.11 | AI commands vacate `Ctrl+Alt+Shift+{S,I,G,T,H,E}`; favourite folders to the leader; leader reclaim (5.9) | QUILL | S | -- |
 | P1.12 | Clipboard verbs: Copy to Tray / Clear / Collect / Paste Collected / Clear Collector / Keep Clip / Recent Clips on Lite's chords in QUILL | QUILL | S | -- |
 | P1.13 | New Rich / New Plain Text Document, Character Details, Recent File N and Editor Font in QUILL -- the four that need a command written, not just a key; Open User Guide off its literal accelerator | QUILL | S | -- |
@@ -914,7 +914,7 @@ then the section-6 findings no tiered item has claimed.
 | P1.2a | Fix Extend Selection Mode's four movement bugs (5.3a): page keys ask the control for a real page, Up/Down follow visua |
 | P1.2b | select_chunk renamed Select Token, off Ctrl+Space, with help text that says what it does that Select Word does not (5. |
 | P1.8 | File Encoding and Line Endings dialog in QUILL's File menu (dirtying, with UTF-8 BOM, UTF-16 detection on open) |
-| P1.10 | Status bar show/hide in QUILL on Alt+Shift+B -- the whole-bar switch beside the existing per-cell status_bar_hidden li |
+| P1.10 | F6 lands in the status bar first in both. The whole-bar Alt+Shift+B switch landed 2026-09-17 |
 | P1.11 | AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,H,E}; favourite folders to the leader; leader reclaim (5.9) |
 | P1.12 | Clipboard verbs: Copy to Tray / Clear / Collect / Paste Collected / Clear Collector / Keep Clip / Recent Clips on Lite |
 | P1.13 | New Rich / New Plain Text Document, Character Details, Recent File N and Editor Font in QUILL -- the four that need a  |
