@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Inkwell Global Text Assistant Support Plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="inkwell-global-text-assistant-support-plan">Inkwell Global Text
+Assistant Support Plan</h1>
+<p><strong>Status:</strong> Implementation in progress for unreleased
+1.0.0<br />
+<strong>Date:</strong> 2026-09-17<br />
+<strong>Scope:</strong> Windows desktop applications, browser edit
+fields, and other user-facing text surfaces</p>
+<p>This plan is part of the 1.0.0 scope. 1.0.0 has not been released;
+the status ledger distinguishes implemented foundation from unfinished
+integration and live certification. See <a
+href="IMPLEMENTATION_STATUS.md">Implementation Status</a>.</p>
+<h2 id="executive-decision">Executive decision</h2>
+<p>Expand Inkwell from a system-wide abbreviation expander into a
+capability-based global text assistant. Reuse QUILL’s existing pure text
+engines and shared abbreviation/snippet formats, then add a Windows
+target and transaction layer that can safely inspect and replace text
+outside the QUILL editor.</p>
+<p>Browser extensions are <strong>not</strong> the baseline. A user who
+clicks into a browser edit field, or navigates to it with a screen
+reader, has already given Inkwell a focused target. Standard HTML
+<code>input</code>, <code>textarea</code>, and browser-exposed text
+controls should be handled through the same native Windows target path
+used for other edit controls. An optional browser extension is justified
+only when a requested capability cannot be provided reliably through UI
+Automation or keyboard/clipboard operations, such as DOM-aware
+selection/context, complex rich editing, canvas editors, or protected
+page behavior.</p>
+<p>The product promise is capability-based, not universal: Inkwell
+should say what the focused target can safely support and why an
+operation is unavailable. It must never claim that every surface
+accepting keystrokes is a document editor.</p>
+<h3 id="optional-clipman-companion">Optional Clipman companion</h3>
+<p>Inkwell’s native target and transaction paths are the standalone
+baseline. Clipman may provide opt-in clipboard-history and rich-format
+conveniences, but it is never required for global expansion, insertion,
+replacement, or any other certified native capability. Inkwell must
+continue to work when Clipman is not installed, not running, disabled,
+incompatible, or stopped during an operation.</p>
+<p>The detailed boundary, coexistence rules, privacy requirements, and
+test matrix live in <a
+href="clipman-optional-integration.md"><code>clipman-optional-integration.md</code></a>.</p>
+<h2 id="goals-and-user-promise">Goals and user promise</h2>
+<h3 id="goals">Goals</h3>
+<ul>
+<li>Expand abbreviations and snippets wherever a supported external text
+target is focused.</li>
+<li>Apply selected-text operations such as case changes, selection
+expansion, line transforms, spelling replacement, and review-first
+grammar fixes.</li>
+<li>Support explicit dictation insertion into a validated external
+target.</li>
+<li>Preserve the current credential, secure-surface, privacy, focus, and
+accessibility protections.</li>
+<li>Give Word, Outlook, Notepad, Edge, Chrome, Firefox, terminals,
+dialogs, and ordinary edit fields a common baseline plus target-specific
+certification where needed.</li>
+<li>Keep QUILL’s editor behavior unchanged and prevent double expansion
+in QUILL-owned windows.</li>
+</ul>
+<h3 id="non-promises">Non-promises</h3>
+<p>Inkwell will not promise arbitrary editing for:</p>
+<ul>
+<li>Password fields, credential managers, sign-in surfaces, UAC, the
+secure desktop, lock screens, or other protected targets.</li>
+<li>An elevated application when Inkwell does not have matching
+privilege.</li>
+<li>Canvas-only or owner-drawn editors without a tested text
+contract.</li>
+<li>Remote desktop, virtualized, streamed, or terminal surfaces whose
+text semantics cannot be verified.</li>
+<li>Rich-format preservation through a generic plain-text adapter.</li>
+<li>Silent cloud analysis of external document content.</li>
+</ul>
+<h3 id="user-visible-capability-language">User-visible capability
+language</h3>
+<p>Every operation should resolve to one of these outcomes:</p>
+<ul>
+<li><strong>Supported:</strong> the target exposes the requested text
+capability and the operation completed.</li>
+<li><strong>Text-only:</strong> the operation completed but rich
+formatting or native semantic state was not available.</li>
+<li><strong>Clipboard fallback:</strong> the operation used a bounded,
+user-visible clipboard transaction.</li>
+<li><strong>Needs review:</strong> text was captured but could not be
+safely applied after a focus or content change.</li>
+<li><strong>Unsupported:</strong> the target does not expose enough
+information for the operation.</li>
+<li><strong>Protected:</strong> policy blocked the operation.</li>
+<li><strong>Elevated:</strong> the target requires matching
+privilege.</li>
+<li><strong>Cancelled:</strong> the user or target cancelled the
+operation.</li>
+</ul>
+<h2 id="current-state">Current state</h2>
+<p>Inkwell already has a strong global expansion foundation:</p>
+<ul>
+<li><a
+href="../../../quill/apps/inkwell.py"><code>quill/apps/inkwell.py</code></a>
+owns the tray service, settings, Quick Insert, Expand Now, and
+lifecycle.</li>
+<li><a
+href="../../../quill/ui/inkwell_expansion.py"><code>quill/ui/inkwell_expansion.py</code></a>
+handles expansion lifecycle, field prompts, focus restoration, injection
+selection, usage persistence, announcements, and library reloads.</li>
+<li><a
+href="../../../quill/core/abbreviations.py"><code>quill/core/abbreviations.py</code></a>
+provides the shared schema-v2 abbreviation library, including app
+scoping, case behavior, variables, fields, choices, cursor placement,
+and usage data.</li>
+<li><a
+href="../../../quill/platform/windows/expansion_hook.py"><code>quill/platform/windows/expansion_hook.py</code></a>
+provides the low-level keyboard hook, bounded buffer, injected-event
+filtering, worker dispatch, navigation resets, watchdog recovery, and
+existing expansion safety checks.</li>
+<li><a
+href="../../../quill/platform/windows/text_target.py"><code>quill/platform/windows/text_target.py</code></a>,
+<a
+href="../../../quill/platform/windows/foreground.py"><code>foreground.py</code></a>,
+and <a
+href="../../../quill/platform/windows/text_injector.py"><code>text_injector.py</code></a>
+provide target heuristics, elevation checks, foreground identity,
+Unicode <code>SendInput</code>, and optional clipboard paste.</li>
+<li><code>QuillHandlesOwnExpansion</code> keeps Inkwell out of QUILL’s
+own editor so the native editor path does not expand twice.</li>
+</ul>
+<p>QUILL also has reusable editor engines, but they are currently bound
+to QUILL’s document and controls:</p>
+<ul>
+<li><a
+href="../../../quill/core/snippets.py"><code>quill/core/snippets.py</code></a>
+provides persistent snippets, search, starter packs, fields, choices,
+date/time values, and cursor placement.</li>
+<li><a
+href="../../../quill/core/selection.py"><code>quill/core/selection.py</code></a>
+provides pure word, line, sentence, paragraph, and block spans plus
+expand/shrink behavior.</li>
+<li><a
+href="../../../quill/core/transforms.py"><code>quill/core/transforms.py</code></a>,
+<code>line_ops.py</code>, and <code>format_ops.py</code> provide pure
+text transformations.</li>
+<li><a
+href="../../../quill/core/spellcheck.py"><code>quill/core/spellcheck.py</code></a>
+provides misspelling detection, suggestions, dictionaries, and ignore
+behavior.</li>
+<li><a
+href="../../../quill/core/ai/grammar_check.py"><code>quill/core/ai/grammar_check.py</code></a>
+and <code>diff_review.py</code> provide structured review and
+application models.</li>
+<li><a
+href="../../../quill/core/speech/dictation/controller.py"><code>quill/core/speech/dictation/controller.py</code></a>
+is a wx-free dictation state machine with injected services.</li>
+<li><a
+href="../../../quill/core/action_feedback.py"><code>quill/core/action_feedback.py</code></a>
+defines consistent sound/speech/silent outcome behavior.</li>
+</ul>
+<h3 id="root-gap">Root gap</h3>
+<p>The current global path can type an expansion, but it cannot safely
+implement arbitrary external editing because it lacks a contract
+for:</p>
+<ul>
+<li>Stable focused-target identity.</li>
+<li>Selection and surrounding-text snapshots.</li>
+<li>UIA text-range and read-only capability detection.</li>
+<li>Replacement transactions and stale-target detection.</li>
+<li>Clipboard format preservation and ownership conflict handling.</li>
+<li>Target-native undo grouping.</li>
+<li>Rich-text semantics.</li>
+<li>Structured failure reasons.</li>
+</ul>
+<p><code>SendInput</code> is an input mechanism, not a semantic document
+API. It cannot by itself read a selection, preserve rich formatting, or
+guarantee that the target’s undo stack contains exactly one
+operation.</p>
+<h2 id="architecture">Architecture</h2>
+<h3 id="layer-1-target-neutral-core-contract">Layer 1: target-neutral
+core contract</h3>
+<p>Add a wx-free contract for external text operations. The exact module
+name can be chosen during implementation, but it should live under
+<code>quill/core</code> and contain no Windows, wx, COM, or browser
+imports.</p>
+<p>The contract should model at least:</p>
+<pre class="text"><code>TargetSnapshot
+  target_id: stable window/control identity
+  process_id and process_name
+  window_handle or platform reference
+  control identity/class and accessible role
+  elevation and protection state
+  read_only state
+  capabilities
+  captured_at and revision/sequence information
+
+SelectionSnapshot
+  full_text or selected_text, when available
+  selection_start and selection_end, when available
+  caret position, when available
+  surrounding context, when authorized and bounded
+  source target snapshot
+
+TextReplacement
+  expected source text and range
+  replacement text
+  resulting caret/selection
+  requested formatting mode
+  operation label
+
+OperationResult
+  status: applied, unsupported, protected, stale, cancelled, failed
+  capability used
+  fallback used
+  affected character count
+  target-safe reason code
+  user-facing message without document content</code></pre>
+<p>The contract must distinguish <code>unknown</code>,
+<code>unsupported</code>, and <code>denied</code>. An unknown provider
+must not be treated as an editable document merely because it accepts
+keystrokes.</p>
+<h3 id="layer-2-windows-target-and-transaction-adapters">Layer 2:
+Windows target and transaction adapters</h3>
+<p>Extend the Windows platform boundary around:</p>
+<ul>
+<li><a
+href="../../../quill/platform/windows/text_target.py"><code>text_target.py</code></a>
+for focused-target discovery, UIA patterns, read-only state, capability
+confidence, and policy classification.</li>
+<li><a
+href="../../../quill/platform/windows/foreground.py"><code>foreground.py</code></a>
+for identity capture, focus transitions, and just-in-time
+revalidation.</li>
+<li><a
+href="../../../quill/platform/windows/text_injector.py"><code>text_injector.py</code></a>
+for checked input results and text-only insertion.</li>
+<li>A new <code>clipboard_transaction.py</code> for bounded
+read/copy/paste/restore cycles, format preservation, sequence checks,
+and contention outcomes.</li>
+<li>New target-specific modules only where the generic contract is
+insufficient, such as <code>office_word.py</code>,
+<code>office_outlook.py</code>, <code>browser_bridge.py</code>, and
+<code>terminal.py</code>.</li>
+<li>An optional clipboard-provider boundary for history or rich-format
+enhancements. It must not grant target editability, replace the native
+transaction, or become a runtime dependency.</li>
+</ul>
+<p>The transaction layer owns the lifecycle:</p>
+<ol type="1">
+<li>Capture the focused target and its capabilities.</li>
+<li>Capture the selection/context using the strongest available
+mechanism.</li>
+<li>If user interaction is required, keep the captured data bounded and
+do not mutate yet.</li>
+<li>Restore or reacquire focus and revalidate target identity.</li>
+<li>Confirm that the source range/content is still the captured
+source.</li>
+<li>Perform one replacement or insertion through the strongest available
+adapter.</li>
+<li>Verify the operation result where possible.</li>
+<li>Restore clipboard state if it was used, unless the user changed it
+during the transaction.</li>
+<li>Return a structured outcome and announce only the outcome
+information the screen reader does not already provide.</li>
+</ol>
+<p>No operation may issue an implicit <code>Ctrl+A</code> to discover
+document content. A clipboard fallback must be explicit, bounded,
+whole-cycle retried, and able to abort on ownership or focus
+changes.</p>
+<h3 id="layer-3-inkwell-assistant-services">Layer 3: Inkwell assistant
+services</h3>
+<p>Keep <code>ExpansionHook</code> responsible for observing and
+dispatching low-level keyboard input. Do not turn the hook into the
+semantic editing engine. Inkwell should own:</p>
+<ul>
+<li>Global trigger matching and expansion policy.</li>
+<li>Capability-aware command dispatch.</li>
+<li>Quick Insert for abbreviations and snippets.</li>
+<li>Field and choice prompts.</li>
+<li>Review flows for spelling and AI actions.</li>
+<li>Dictation lifecycle integration.</li>
+<li>User settings, pause/kill switch, status, announcements, and
+recovery.</li>
+</ul>
+<p>Global commands must use a bound target/session service. Do not
+register raw <code>MainFrame</code> methods as global handlers and do
+not broaden QUILL’s existing safe global-hotkey allowlist by
+accident.</p>
+<h2 id="capability-model">Capability model</h2>
+<p>Capabilities are independent. A target may support insertion but not
+selection reading, or plain replacement but not rich formatting.</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>insert_text</code></td>
+<td>Insert text at the focused caret.</td>
+</tr>
+<tr>
+<td><code>expand_trigger</code></td>
+<td>Observe a trigger and replace it with an abbreviation/snippet
+result.</td>
+</tr>
+<tr>
+<td><code>read_selection</code></td>
+<td>Read the currently selected text with a trusted target
+association.</td>
+</tr>
+<tr>
+<td><code>replace_selection</code></td>
+<td>Replace a known selection without writing into a stale target.</td>
+</tr>
+<tr>
+<td><code>read_context</code></td>
+<td>Read bounded surrounding text for selection, spacing, or
+context-aware templates.</td>
+</tr>
+<tr>
+<td><code>plain_text</code></td>
+<td>Operate on plain text without claiming formatting preservation.</td>
+</tr>
+<tr>
+<td><code>rich_text</code></td>
+<td>Preserve or intentionally modify target-native formatting.</td>
+</tr>
+<tr>
+<td><code>native_undo</code></td>
+<td>Group the change in the target’s native undo model.</td>
+</tr>
+<tr>
+<td><code>dictation_target</code></td>
+<td>Keep a stable insertion target through a dictation session.</td>
+</tr>
+<tr>
+<td><code>browser_dom</code></td>
+<td>Use browser page/DOM semantics beyond the native control
+contract.</td>
+</tr>
+</tbody>
+</table>
+<p>Capability confidence should include the evidence used: UIA pattern,
+known control class, target adapter, keyboard/clipboard probe, or
+extension protocol. The UI can then explain why a feature is unavailable
+without exposing raw implementation details.</p>
+<h2 id="reuse-plan">Reuse plan</h2>
+<h3 id="abbreviations">Abbreviations</h3>
+<p>Reuse the existing schema-v2 library and matching rules. Add a common
+rendered-result shape containing:</p>
+<ul>
+<li>Rendered text.</li>
+<li>Cursor offset or cursor placement instruction.</li>
+<li>Required fields and choices.</li>
+<li>Context values actually available to the target.</li>
+<li>Source entry and usage metadata.</li>
+</ul>
+<p>Existing variables such as date/time, clipboard, and cursor placement
+can be made global when their data is available. App scoping remains
+useful. QUILL-only context such as filename, document title, line
+number, or editor word-at-cursor must be capability-gated rather than
+filled with guesses.</p>
+<p>Automatic expansion should remain conservative and fast. It should
+not read arbitrary external document content merely to decide whether a
+trigger exists.</p>
+<h3 id="snippets">Snippets</h3>
+<p>Reuse <a
+href="../../../quill/core/snippets.py"><code>quill/core/snippets.py</code></a>
+for storage, search, rendering, fields, choices, and cursor markers. Add
+a global context provider that can supply selection and clipboard values
+first, followed by date/time and foreground application metadata.</p>
+<p>Global snippet execution must:</p>
+<ul>
+<li>Keep QUILL’s snippet format compatible.</li>
+<li>Distinguish user snippets from contributed snippets.</li>
+<li>Define deterministic abbreviation/snippet collision precedence.</li>
+<li>Show the entry type, category, and source in Quick Insert.</li>
+<li>Gate every placeholder by an available capability.</li>
+<li>Never grant a Quillin arbitrary external document access just
+because it contributes a snippet.</li>
+</ul>
+<p>Recommended collision order: user abbreviation, user snippet, then
+permissioned contributed entries. Collisions should be visible in the
+picker and deterministic in trigger expansion.</p>
+<h3 id="selection-transforms-spelling-and-review">Selection, transforms,
+spelling, and review</h3>
+<p>Reuse the pure engines with an external <code>TextSnapshot</code>
+rather than copying QUILL’s document mutation code:</p>
+<ul>
+<li>Selection spans and descriptions from
+<code>selection.py</code>.</li>
+<li>Case transforms from <code>transforms.py</code>.</li>
+<li>Line and whitespace operations from <code>line_ops.py</code> and
+<code>format_ops.py</code>.</li>
+<li>Misspelling detection and suggestions from
+<code>spellcheck.py</code>.</li>
+<li>Structured grammar issues and accepted-fix application from
+<code>grammar_check.py</code> and <code>diff_review.py</code>.</li>
+<li>Feedback resolution from <code>action_feedback.py</code>.</li>
+</ul>
+<p>Every external write must pass through the target transaction. Rich
+formatting commands are separate: a generic adapter must not claim to
+preserve formatting when it only replaces Unicode text.</p>
+<h3 id="dictation">Dictation</h3>
+<p>Reuse <code>DictationController</code>, insertion normalization, and
+session concepts. Implement an external <code>DictationServices</code>
+adapter that captures the target identity and caret/selection at start,
+stops on focus loss by default, and sends failed or stale insertion to
+review or clipboard rather than writing into a new target.</p>
+<h2 id="native-windows-baseline">Native Windows baseline</h2>
+<p>The first implementation should support the strongest common behavior
+for ordinary Windows controls:</p>
+<ul>
+<li>Win32 Edit and RichEdit controls.</li>
+<li>Notepad and WordPad where their current control exposes the expected
+semantics.</li>
+<li>Standard dialog edit fields that are not secure or
+credential-like.</li>
+<li>Common Scintilla-based controls where capability probes are
+reliable.</li>
+<li>UIA <code>Edit</code> and <code>Document</code> controls exposing
+usable Value/Text/Selection patterns.</li>
+<li>Console and terminal insertion only where the target’s semantics are
+explicitly certified.</li>
+</ul>
+<p>The target probe should prefer, in order:</p>
+<ol type="1">
+<li>A dedicated target adapter with verified semantics.</li>
+<li>UIA TextPattern, ValuePattern, SelectionPattern, and control
+metadata.</li>
+<li>Known native edit/control classes with conservative behavior.</li>
+<li>An explicit keyboard/clipboard fallback for a single safe
+operation.</li>
+<li>Unsupported or protected status.</li>
+</ol>
+<p>The current heuristic that treats unknown UIA <code>Pane</code> or
+<code>Custom</code> controls as editable must not be sufficient for
+selected-text commands. It may remain part of the legacy expansion path
+only while the new assistant uses a positive capability policy.</p>
+<h2 id="browser-strategy-native-first-extension-by-exception">Browser
+strategy: native first, extension by exception</h2>
+<h3 id="default-path">Default path</h3>
+<p>For Edge, Chrome, and Firefox, a focused browser edit field is a
+valid target even when focus was obtained by mouse click or
+screen-reader navigation. The assistant should attempt the generic
+native path first:</p>
+<ol type="1">
+<li>Capture the foreground browser window and focused UIA element.</li>
+<li>Identify whether the element is a browser-exposed <code>Edit</code>,
+<code>Document</code>, or another positively identified text
+control.</li>
+<li>Use native UIA text/selection/value patterns when available.</li>
+<li>If the field does not expose a usable range, use a bounded
+keyboard/clipboard transaction only when it can preserve the user’s
+selection and revalidate the same focused element.</li>
+<li>Perform plain-text insertion or replacement and report the actual
+fallback used.</li>
+<li>Do not install, require, or prompt for an extension merely because
+the target is a browser.</li>
+</ol>
+<p>This baseline is intended to cover ordinary search boxes,
+address-like edit fields, <code>input</code>, <code>textarea</code>, and
+accessible browser-hosted fields. It also covers many contenteditable
+fields when the browser exposes enough native text semantics. The
+product must measure and certify the actual behavior instead of assuming
+that the browser process name implies support.</p>
+<h3 id="optional-extension-path">Optional extension path</h3>
+<p>A signed and permissioned extension is an enhancement, not a
+prerequisite. Consider it only after native probing demonstrates a real
+capability gap, and only for a declared capability such as:</p>
+<ul>
+<li>DOM-aware selection and context that UIA cannot provide.</li>
+<li>Reliable range replacement in complex <code>contenteditable</code>
+editors.</li>
+<li>Rich-text or HTML-preserving operations.</li>
+<li>Canvas/editor surfaces with no native text range.</li>
+<li>Browser-specific page events or editor state that cannot be observed
+natively.</li>
+<li>A protected or virtualized page integration that has an explicit
+product and security design.</li>
+</ul>
+<p>Reuse the transport and registration patterns in <a
+href="../../../quill/apps/beacon/native_messaging.py"><code>quill/apps/beacon/native_messaging.py</code></a>
+and the existing browser bridge only as infrastructure. Define a neutral
+Inkwell assistant protocol rather than coupling semantics to Beacon
+capture payloads.</p>
+<p>The extension must be optional, separately permissioned,
+origin-aware, and fail closed. It must not inspect or mutate browser
+chrome, password inputs, extension stores, protected pages, or arbitrary
+page content. The native path must continue to work when the extension
+is absent, disconnected, unavailable for the current browser, or
+declined by the user.</p>
+<h3 id="browser-certification-matrix">Browser certification matrix</h3>
+<p>Certify the native path independently for:</p>
+<ul>
+<li>Edge, Chrome, and Firefox search/address-style fields.</li>
+<li>HTML <code>input</code> and <code>textarea</code>.</li>
+<li>Accessible <code>contenteditable</code> fields.</li>
+<li>Webmail compose/reply fields, including Outlook on the web.</li>
+<li>Password fields and protected pages, which must be refused.</li>
+<li>Pages where UIA reports only a generic <code>Pane</code> or
+<code>Custom</code> surface.</li>
+</ul>
+<p>If an extension is later added, certify its DOM path separately. Do
+not use extension test success as evidence that the native path is
+correct.</p>
+<h2 id="target-families">Target families</h2>
+<h3 id="notepad-and-standard-windows-controls">Notepad and standard
+Windows controls</h3>
+<p>Use these as the first live certification targets because plain-text
+semantics are easiest to verify. Certify expansion, explicit selected
+replacement, transforms, spelling replacement, snippet prompts,
+dictation insertion, focus restoration, undo behavior, clipboard
+restoration, and credential refusal.</p>
+<h3 id="word">Word</h3>
+<p>Treat live Word as a dedicated adapter, not a process-name heuristic.
+Start with a plain-text selection/replacement baseline through the
+generic transaction where it is safe. Add Office COM/TOM integration for
+stable range identity, rich replacement, formatting, and undo grouping
+only after a separate design for Office versions, bitness, Protected
+View, read-only documents, and COM cleanup.</p>
+<p>The existing <code>.docx</code> readers and writers are file I/O and
+do not provide live Word selection access.</p>
+<h3 id="outlook">Outlook</h3>
+<p>Treat classic Outlook compose/reply controls separately from new
+Outlook’s WebView/browser surface:</p>
+<ul>
+<li>Classic Outlook may require WordEditor-aware range handling.</li>
+<li>New Outlook should first use the browser/native field path; an
+extension is optional only for a measured DOM capability gap.</li>
+<li>Reading panes, signatures, quoted replies, protected content,
+account dialogs, and compose fields need separate tests.</li>
+</ul>
+<h3 id="terminals-and-consoles">Terminals and consoles</h3>
+<p>Provide insertion or paste only where explicitly certified. Do not
+assume that shell input, a terminal scrollback buffer, a TUI widget, and
+a document selection have the same semantics. Terminal actions must be
+separately configured and must explain when native undo or selection
+replacement is unavailable.</p>
+<h3 id="dialogs-and-custom-controls">Dialogs and custom controls</h3>
+<p>Standard non-secure edit fields may use the native baseline. Unknown,
+read-only, owner-drawn, or credential-like fields require positive
+capability evidence. A custom control that accepts keystrokes is not
+automatically safe for reading or replacing text.</p>
+<h3 id="elevated-targets">Elevated targets</h3>
+<p>Detect elevation mismatch and explain it. Matching elevation is the
+first supported option. Signed <code>uiAccess</code> deployment,
+brokering, and installer changes are separate security/release work.
+Never auto-elevate or weaken secure-surface exclusions.</p>
+<h2 id="global-feature-set">Global feature set</h2>
+<h3 id="phase-a-baseline">Phase A baseline</h3>
+<ul>
+<li>Existing abbreviation expansion, preserved and
+regression-tested.</li>
+<li>Global Quick Insert for abbreviations and snippets.</li>
+<li>Explicit insert and replace-selection commands for supported
+plain-text targets.</li>
+<li>Selected-text case transforms.</li>
+<li>Selection expansion/shrink where text and offsets are
+available.</li>
+<li>Safe line/whitespace transforms where the target can provide the
+required text range.</li>
+<li>Spelling suggestions and one-word replacement.</li>
+<li>Accessible field and choice prompts with target revalidation before
+insertion.</li>
+</ul>
+<h3 id="phase-b-review-features">Phase B review features</h3>
+<ul>
+<li>Review-first grammar and style checks for bounded selected
+text.</li>
+<li>Accepted-fix application as one replacement transaction.</li>
+<li>External dictation insertion with focus-loss recovery and review
+fallback.</li>
+<li>Persistent global-action recovery that does not assume the target’s
+<code>Ctrl+Z</code> is reliable.</li>
+</ul>
+<p>AI and networked actions require explicit per-action consent, bounded
+content, visible progress/outcome, stale-target rejection, and the
+existing network egress/privacy controls.</p>
+<h3 id="later-target-specific-features">Later target-specific
+features</h3>
+<ul>
+<li>Rich Word/Outlook replacement and native undo grouping.</li>
+<li>Browser DOM-aware context, rich HTML preservation, and complex
+editor support.</li>
+<li>Terminal-specific selection semantics.</li>
+<li>Additional adapters for known custom controls.</li>
+</ul>
+<h2 id="safety-privacy-and-accessibility-requirements">Safety, privacy,
+and accessibility requirements</h2>
+<h3 id="safety">Safety</h3>
+<ul>
+<li>Keep existing credential, password, sign-in, UAC, lock-screen, and
+secure-desktop exclusions fail closed.</li>
+<li>Capture target identity before every read and revalidate immediately
+before mutation.</li>
+<li>Abort if focus, process, control identity, selection, source text,
+or clipboard ownership changed.</li>
+<li>Never silently select the entire document.</li>
+<li>Never mutate before a prompt/review flow is accepted.</li>
+<li>Keep automatic expansion narrower than explicit user-invoked
+editing.</li>
+<li>Return captured text for review or copy when safe application fails;
+do not retry blindly against a new target.</li>
+<li>Check <code>SendInput</code> results and report partial or failed
+injection.</li>
+</ul>
+<h3 id="privacy">Privacy</h3>
+<ul>
+<li>Do not place document text, selections, snippets containing document
+text, or dictation transcripts in logs, telemetry, crash bundles, or
+Quillin metadata.</li>
+<li>Require explicit consent before external text leaves the
+device.</li>
+<li>Keep offline spelling and transforms offline.</li>
+<li>Bound all captured content by operation and size.</li>
+<li>Make pause, disable, target exclusions, clipboard fallback, and AI
+consent visible in Inkwell settings.</li>
+</ul>
+<h3 id="screen-readers-and-braille">Screen readers and braille</h3>
+<p>Reuse the existing announcement, screen-reader detection, braille,
+modal, and focus-restoration infrastructure. Inkwell should announce
+action outcomes and failures, not repeat the focused control’s name,
+role, state, selection, or text that NVDA, JAWS, or Narrator already
+reports. Prompts must restore focus to the initiating external target
+after completion or cancellation.</p>
+<p>All new commands need an accessible name, a predictable keyboard
+route, cancellation behavior, and an outcome message that distinguishes
+protected, unsupported, stale, and successful operations.</p>
+<h2 id="definitive-implementation-breakdown">Definitive implementation
+breakdown</h2>
+<p>The following work packages are the definitive implementation
+breakdown. A work package is not complete until its code, focused tests,
+and stated exit evidence exist. The sequence is dependency order, not
+product priority: Word, Outlook, browsers, and standard Windows controls
+remain first-class target families. The native contract is shared so
+those families do not grow separate, incompatible editing
+implementations.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Work package</th>
+<th>Primary surfaces</th>
+<th>Depends on</th>
+<th>Exit criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W0</td>
+<td>Contract and policy</td>
+<td><code>quill/core/external_text.py</code> (new),
+<code>quill/core/expansion/targets.py</code>, this plan, Inkwell
+PRD</td>
+<td>None</td>
+<td>Capability names, snapshots, reason codes, explicit/automatic
+policy, placeholder rules, and collision rules are approved and covered
+by wx-free tests.</td>
+</tr>
+<tr>
+<td>W1</td>
+<td>Native target probe</td>
+<td><code>quill/platform/windows/text_target.py</code>,
+<code>foreground.py</code></td>
+<td>W0</td>
+<td>A focused target returns identity, privilege, protection, read-only
+state, UIA evidence, and independent capabilities; unknown
+<code>Pane</code>/<code>Custom</code> controls are not treated as
+editable for explicit reads or writes.</td>
+</tr>
+<tr>
+<td>W2</td>
+<td>Text transaction</td>
+<td><code>quill/platform/windows/text_transaction.py</code> (new),
+<code>clipboard_transaction.py</code> (new),
+<code>text_injector.py</code></td>
+<td>W1</td>
+<td>Selection capture, target revalidation, replacement, checked
+injection, clipboard ownership/format handling, timeout, and
+stale-target aborts pass fake platform tests.</td>
+</tr>
+<tr>
+<td>W3</td>
+<td>Assistant runtime</td>
+<td><code>expansion_hook.py</code>,
+<code>quill/ui/inkwell_expansion.py</code>,
+<code>quill/apps/inkwell.py</code>, Inkwell settings</td>
+<td>W2</td>
+<td>Global dispatch can bind a validated target session without adding
+semantic editing work to the hook or changing hook latency/watchdog
+behavior.</td>
+</tr>
+<tr>
+<td>W4</td>
+<td>Shared snippets and prompts</td>
+<td><code>quill/core/snippets.py</code>, expansion fields, Quick Insert,
+Quillin contribution boundary</td>
+<td>W0 and W3</td>
+<td>Abbreviations and snippets share the global rendered-result
+contract; fields, choices, context capabilities, usage, and collisions
+behave deterministically.</td>
+</tr>
+<tr>
+<td>W5</td>
+<td>Plain-text commands</td>
+<td><code>selection.py</code>, <code>transforms.py</code>,
+<code>line_ops.py</code>, <code>format_ops.py</code>,
+<code>spellcheck.py</code>, <code>action_feedback.py</code></td>
+<td>W2 and W4</td>
+<td>Insert, replace, selection, transform, spelling, feedback, and
+recovery commands use one external transaction and preserve
+one-operation semantics.</td>
+</tr>
+<tr>
+<td>W6</td>
+<td>Common-control certification</td>
+<td><code>tests/uia</code>, new Windows target fixtures,
+Notepad/WordPad/native controls</td>
+<td>W1-W5</td>
+<td>Live Windows evidence covers insert, replacement, snippets,
+transforms, spelling, dictation, focus return, undo behavior, clipboard
+recovery, and refusal cases.</td>
+</tr>
+<tr>
+<td>W7</td>
+<td>Browser native certification</td>
+<td><code>text_target.py</code>, <code>text_transaction.py</code>,
+browser target fixtures</td>
+<td>W1-W6</td>
+<td>Edge, Chrome, and Firefox ordinary edit fields pass with no
+extension installed, including mouse focus and screen-reader focus; gaps
+are recorded by capability.</td>
+</tr>
+<tr>
+<td>W8</td>
+<td>Optional browser capability bridge</td>
+<td><code>quill/apps/beacon/native_messaging.py</code>,
+<code>capture_bridge.py</code>, browser extension paths</td>
+<td>W7 plus measured gap</td>
+<td>An extension exists only for a named native-path gap, uses least
+privilege and origin checks, and native operation remains functional
+when it is absent.</td>
+</tr>
+<tr>
+<td>W9</td>
+<td>Word and Outlook adapters</td>
+<td>new <code>office_word.py</code>, <code>office_outlook.py</code>,
+Office fixtures</td>
+<td>W1-W5</td>
+<td>Each advertised Word/Outlook capability has a dedicated adapter,
+version/privilege/read-only policy, stale-range handling, and live
+certification.</td>
+</tr>
+<tr>
+<td>W10</td>
+<td>Dictation and release hardening</td>
+<td>dictation controller adapter, screen-reader bridges, settings, docs,
+manual matrix</td>
+<td>W3-W9 as applicable</td>
+<td>External dictation, AI consent, accessibility outcomes, elevation
+behavior, privacy controls, and target-specific release claims pass
+their gates.</td>
+</tr>
+<tr>
+<td>W11</td>
+<td>Optional Clipman companion</td>
+<td>opt-in provider boundary, native fallback, settings, tests, and
+<code>clipman-optional-integration.md</code></td>
+<td>W2 and native baseline</td>
+<td>Clipman absence, stop, disablement, incompatibility, disconnect,
+clipboard contention, and hotkey coexistence leave the native path fully
+usable.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="stage-gates">Stage gates</h3>
+<ol type="1">
+<li><strong>No external write before W2.</strong> A capability probe may
+report support, but no selected-text command or review flow may mutate a
+target until the transaction layer can revalidate it.</li>
+<li><strong>No extension before W7.</strong> The native browser path
+must be implemented and measured first. An extension proposal must name
+the missing capability and the target surfaces it will cover.</li>
+<li><strong>No universal target claim.</strong> A process name,
+successful keystroke, or source-contract test is not certification.
+Advertise only the capabilities supported by live target evidence.</li>
+<li><strong>No silent content transfer.</strong> Local transforms remain
+offline. AI, browser bridge, and any other outbound path require
+explicit consent, bounded content, visible progress, and stale-target
+rejection.</li>
+<li><strong>No companion prerequisite.</strong> Clipman may enhance an
+explicit clipboard action, but its absence or failure must never block a
+certified native operation or cause Inkwell to start a companion
+process.</li>
+</ol>
+<h3 id="phase-0-contract-and-product-matrix">Phase 0: Contract and
+product matrix</h3>
+<ul>
+<li>Define the capability enum, target snapshot, selection snapshot,
+replacement request, result status, and reason codes.</li>
+<li>Define target confidence and explicit versus automatic operation
+policy.</li>
+<li>Capture the browser native-first decision in the Inkwell PRD and
+user guide.</li>
+<li>Create the target matrix and release terminology in this plan.</li>
+<li>Define abbreviation/snippet collision and placeholder capability
+rules.</li>
+</ul>
+<p><strong>Estimate:</strong> M, 1-2 weeks.</p>
+<h3 id="phase-1-native-target-and-transaction-layer">Phase 1: Native
+target and transaction layer</h3>
+<ul>
+<li>Add UIA TextPattern/ValuePattern/SelectionPattern probing and
+read-only classification.</li>
+<li>Add stable foreground/control identity and just-in-time
+revalidation.</li>
+<li>Add checked Unicode injection results.</li>
+<li>Build clipboard transactions with bounded retry, format preservation
+where available, sequence/ownership checks, timeout, and safe
+abort.</li>
+<li>Preserve the existing expansion hook latency and watchdog
+behavior.</li>
+</ul>
+<p><strong>Estimate:</strong> L, 3-6 weeks.</p>
+<h3 id="phase-2-global-snippets-and-plain-text-commands">Phase 2: Global
+snippets and plain-text commands</h3>
+<ul>
+<li>Move global matching behind an assistant matcher interface.</li>
+<li>Add shared snippet loading, Quick Insert result types, field
+prompts, and capability-gated context.</li>
+<li>Add target-aware command dispatch separate from QUILL’s document
+command registry.</li>
+<li>Implement plain-text insertion, replacement, selection operations,
+transforms, spelling, feedback, and recovery.</li>
+<li>Keep QUILL-owned expansion excluded.</li>
+</ul>
+<p><strong>Estimate:</strong> L, 3-6 weeks.</p>
+<h3 id="phase-3-common-control-and-browser-native-certification">Phase
+3: Common-control and browser-native certification</h3>
+<ul>
+<li>Certify Notepad, WordPad, standard Windows edit fields, and
+supported RichEdit/Scintilla controls.</li>
+<li>Certify Edge, Chrome, and Firefox native edit fields without
+extensions.</li>
+<li>Test ordinary <code>input</code>, <code>textarea</code>, search
+fields, and accessible <code>contenteditable</code> controls.</li>
+<li>Record capability gaps instead of filling them with broad browser
+heuristics.</li>
+</ul>
+<p><strong>Estimate:</strong> L, 3-6 weeks including live Windows
+validation.</p>
+<h3 id="phase-4-optional-browser-capability-bridge">Phase 4: Optional
+browser capability bridge</h3>
+<ul>
+<li>Add an extension only for gaps demonstrated by Phase 3.</li>
+<li>Reuse Beacon native-messaging framing and registration patterns, but
+define an Inkwell-specific, least-privilege protocol.</li>
+<li>Implement origin and target checks, explicit permissions, disconnect
+handling, and DOM selection/replacement only for declared supported
+editors.</li>
+<li>Keep native operation available when the extension is absent.</li>
+</ul>
+<p><strong>Estimate:</strong> L to XL, 4-8 weeks depending on
+DOM/rich-editor scope and browser packaging.</p>
+<h3 id="phase-5-word-and-outlook-adapters">Phase 5: Word and Outlook
+adapters</h3>
+<ul>
+<li>Define Office version, bitness, Protected View, read-only, and COM
+lifecycle policy.</li>
+<li>Implement and certify Word selection/range identity, plain/rich
+replacement, and undo grouping.</li>
+<li>Implement classic Outlook WordEditor flows.</li>
+<li>Validate new Outlook through the native browser path first and add
+an extension only if needed.</li>
+<li>Test compose, reply, signatures, quoted text, reading panes, and
+security dialogs.</li>
+</ul>
+<p><strong>Estimate:</strong> L to XL, 4-8 weeks per adapter family.</p>
+<h3
+id="phase-6-dictation-terminals-privilege-and-accessibility-release-hardening">Phase
+6: Dictation, terminals, privilege, and accessibility release
+hardening</h3>
+<ul>
+<li>Adapt dictation to external targets and stale-target recovery.</li>
+<li>Certify terminal insertion/paste behavior separately.</li>
+<li>Complete normal/elevated behavior and document any
+<code>uiAccess</code> decision separately.</li>
+<li>Run NVDA, JAWS, and Narrator keyboard/focus/announcement
+acceptance.</li>
+<li>Update the <a href="prd.md">Inkwell PRD</a>, <a
+href="userguide.md">user guide</a>, and <a
+href="../../../docs/Product%20Requirement%20Documents%20and%20Specifications/QUILL-PRD.md">QUILL
+PRD</a>.</li>
+</ul>
+<p><strong>Estimate:</strong> L, 3-6 weeks plus target availability and
+manual test time.</p>
+<p>The phases are dependency order, not product priority. Word, Outlook,
+browsers, and standard controls remain first-class target families; the
+generic native contract is the shared foundation that prevents three
+incompatible implementations.</p>
+<h2 id="testing-and-certification">Testing and certification</h2>
+<h3 id="core-unit-tests">Core unit tests</h3>
+<p>Add tests for:</p>
+<ul>
+<li>Capability merging, confidence, and reason codes.</li>
+<li>Abbreviation/snippet precedence and placeholder gating.</li>
+<li>Selection snapshots, stale revisions, and target identity
+changes.</li>
+<li>Transform offsets and one-replacement semantics.</li>
+<li>Spelling replacement and grammar/diff application.</li>
+<li>Dictation focus loss, cancellation, and review fallback.</li>
+<li>Feedback modes, including missing sound and silent behavior.</li>
+</ul>
+<h3 id="windows-platform-tests">Windows platform tests</h3>
+<p>Add fake API tests for:</p>
+<ul>
+<li>UIA pattern discovery and read-only/provider classification.</li>
+<li>Known control classes and unknown
+<code>Pane</code>/<code>Custom</code> behavior.</li>
+<li>Foreground identity changes and elevation mismatch.</li>
+<li>Credential and secure-surface denial.</li>
+<li>Unicode, surrogate, dead-key, AltGr, and keyboard-layout input.</li>
+<li>Partial <code>SendInput</code> results and watchdog recovery.</li>
+<li>Clipboard contention, non-text formats, user copies during a
+transaction, timeout, and restoration failure.</li>
+<li>Hook injection filtering and lifecycle.</li>
+</ul>
+<p>Real clipboard and system-resource tests must use the repository’s
+<code>machine_global</code> grouping rules.</p>
+<h3 id="live-target-tests">Live target tests</h3>
+<p>Use opt-in Windows fixtures with deterministic launch and cleanup. Do
+not put document content in test logs.</p>
+<table>
+<thead>
+<tr>
+<th>Target family</th>
+<th>Required live scenarios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Notepad/WordPad</td>
+<td>Insert, replace selection, snippets, transforms, spelling,
+dictation, undo, focus return.</td>
+</tr>
+<tr>
+<td>Native edit/dialog fields</td>
+<td>Keyboard and screen-reader focus, read-only refusal, cancellation,
+secure-field denial.</td>
+</tr>
+<tr>
+<td>Edge/Chrome/Firefox native path</td>
+<td>Search/input/textarea/contenteditable, click focus, screen-reader
+focus, selection replacement, extension absent.</td>
+</tr>
+<tr>
+<td>Optional browser extension</td>
+<td>DOM selection/context, rich/contenteditable cases, origin checks,
+disconnects, protected/password refusal.</td>
+</tr>
+<tr>
+<td>Word</td>
+<td>Plain/rich selection replacement, undo grouping, read-only,
+Protected View, version/bitness matrix.</td>
+</tr>
+<tr>
+<td>Outlook</td>
+<td>Classic WordEditor compose/reply, new Outlook native path,
+signatures, quoted text, reading pane, security dialogs.</td>
+</tr>
+<tr>
+<td>Terminals</td>
+<td>Insert/paste only where certified, shell/TUI distinction, focus
+loss, no false selection claims.</td>
+</tr>
+<tr>
+<td>Elevated/custom</td>
+<td>Matching elevation, mismatch refusal, positive capability probes,
+unsupported fallback wording.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-accessibility-acceptance">Manual accessibility
+acceptance</h3>
+<p>With NVDA, JAWS, and Narrator, verify:</p>
+<ul>
+<li>Mouse focus and screen-reader navigation both establish the same
+supported target.</li>
+<li>Commands do not steal focus unexpectedly.</li>
+<li>Prompts have deterministic focus and return focus on close.</li>
+<li>Announcements report outcomes without duplicating control names,
+roles, states, or selected text.</li>
+<li>Keyboard-only cancellation and emergency stop work.</li>
+<li>Braille and high-contrast behavior remain usable.</li>
+<li>Clipboard changes and restoration are understandable without
+exposing document content.</li>
+<li>Failure wording distinguishes unsupported, protected, elevated,
+stale, and cancelled.</li>
+</ul>
+<h2 id="effort-summary">Effort summary</h2>
+<p>For one experienced Windows engineer, excluding procurement and app
+licensing delays:</p>
+<ul>
+<li>Contract, capability model, documentation, and pure tests:
+<strong>M, 1-2 weeks</strong>.</li>
+<li>Native target probing and clipboard transaction: <strong>L, 3-6
+weeks</strong>.</li>
+<li>Global snippets, commands, transforms, spelling, and review flows:
+<strong>L, 3-6 weeks</strong>.</li>
+<li>Common-control and browser-native certification: <strong>L, 3-6
+weeks</strong>.</li>
+<li>Optional browser extension: <strong>L-XL, 4-8 weeks</strong>, only
+if Phase 3 proves it necessary.</li>
+<li>Word and Outlook adapters: <strong>L-XL, 4-8 weeks each</strong>,
+depending on rich editing and Office matrix.</li>
+<li>Dictation, terminals, elevation, and screen-reader certification:
+<strong>L, 3-6 weeks</strong>.</li>
+</ul>
+<p>A useful 1.0.0 release is the native plain-text baseline plus
+certified browser edit fields, with no extension requirement. Rich
+Word/Outlook behavior and browser DOM enhancements should ship as
+separately tested capabilities rather than being implied by the
+baseline.</p>
+<h2 id="release-gates">Release gates</h2>
+<p>Do not claim full global text-assistant support until all of the
+following are true:</p>
+<ul>
+<li>The target contract and reason codes are implemented and
+unit-tested.</li>
+<li>The native transaction layer revalidates target identity and
+protects clipboard state.</li>
+<li>Existing abbreviation expansion and QUILL ownership behavior remain
+green.</li>
+<li>Notepad/standard controls and browser-native fields pass live
+Windows tests.</li>
+<li>Each advertised Word, Outlook, terminal, or extension capability has
+its own certification evidence.</li>
+<li>Secure, credential, elevated, protected, and unsupported cases fail
+safely.</li>
+<li>NVDA, JAWS, and Narrator manual acceptance covers the advertised
+target matrix.</li>
+<li>The native baseline passes with Clipman absent, stopped, disabled,
+and incompatible; companion behavior is tested separately from that
+baseline.</li>
+<li>PRD, user guide, support matrix, tests, and known limitations
+agree.</li>
+</ul>
+<p>This roadmap should be tracked as a new target-aware Inkwell
+subsystem. It should not be implemented by making the keyboard hook
+larger or by treating browser process detection as proof that a text
+control is available.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Optional Clipman Companion Integration</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="optional-clipman-companion-integration">Optional Clipman
+Companion Integration</h1>
+<p><strong>Status:</strong> Design; optional enhancement only<br />
+<strong>Date:</strong> 2026-09-17<br />
+<strong>Scope:</strong> Inkwell global text operations on Windows</p>
+<h2 id="decision">Decision</h2>
+<p>Inkwell must be fully useful without Clipman. Clipman is an optional
+companion provider for users who want clipboard-history or rich-format
+conveniences; it is not an Inkwell dependency, runtime service, or
+prerequisite for any native text operation.</p>
+<p>A user may run Inkwell alone, Clipman alone, both together, or
+neither. Starting or stopping one application must not be required to
+start, stop, or recover the other. If Clipman is absent, stopped,
+disabled, incompatible, or disconnected, Inkwell uses its native target
+and clipboard paths or reports an honest unsupported result for an
+enhancement-only capability.</p>
+<p>This means:</p>
+<ul>
+<li>No Clipman package, import, process launch, database read,
+settings-file read, server connection, or Clipman credential is required
+by Inkwell.</li>
+<li>The wx-free external-text contract remains Clipman-free. Clipman
+must never appear in <code>quill/core/external_text.py</code> or grant
+editability to an unknown target.</li>
+<li>Native UI Automation, Win32, keyboard, and bounded clipboard
+transactions remain the source of truth for target identity, selection,
+replacement, and revalidation.</li>
+<li>Optional integration is opt-in and can be disabled without
+uninstalling either application.</li>
+</ul>
+<p>The integration is therefore a capability provider boundary, not a
+shared implementation boundary. Inkwell may use a supported, versioned
+local protocol in a future implementation, but it must not couple to
+Clipman’s internal C# assemblies, process memory, files, database
+schema, or implementation classes.</p>
+<h2 id="what-works-without-clipman">What works without Clipman</h2>
+<p>The standalone Inkwell baseline includes all capabilities that have
+native certification evidence:</p>
+<ul>
+<li>Global abbreviation and snippet expansion into a validated
+target.</li>
+<li>Explicit text insertion and plain-text selection replacement.</li>
+<li>Selection, case, line, whitespace, and spelling operations supported
+by the target’s capability snapshot.</li>
+<li>Native UIA or Win32 text access where available.</li>
+<li>A bounded Inkwell-owned clipboard fallback for an explicit operation
+when the native text range is unavailable.</li>
+<li>Target identity, privilege, protection, read-only, selection,
+source-text, and clipboard-sequence revalidation.</li>
+<li>Existing focus restoration, screen-reader announcements, privacy
+controls, and failure outcomes.</li>
+</ul>
+<p>The native clipboard fallback is an operation transaction, not
+clipboard history. It saves only the formats needed for the current
+operation, checks clipboard ownership and sequence changes, and restores
+state only when doing so is safe. It does not require a clipboard
+manager to be installed or running.</p>
+<p>Clipman-only conveniences may be unavailable when Clipman is not
+enabled. That must be surfaced as an enhancement unavailable message,
+never as a failure of the underlying Inkwell text command.</p>
+<h2 id="optional-capabilities">Optional capabilities</h2>
+<p>Clipman may add capabilities such as:</p>
+<ul>
+<li>Choosing a previous clipboard item for an explicit insert or paste
+action.</li>
+<li>Restoring a prior clipboard item after a user-visible recovery
+flow.</li>
+<li>Preserving or selecting rich clipboard formats when the target and
+the provider both explicitly support them.</li>
+<li>Providing user-requested clipboard history context to an Inkwell
+prompt.</li>
+</ul>
+<p>Clipman does not provide proof that the focused window is editable.
+It does not replace the target probe, selection snapshot, transaction
+layer, or stale-target checks. In particular, a Clipman history item
+must never be used to infer that an unknown <code>Pane</code>,
+<code>Custom</code>, terminal, or protected control accepts a safe
+replacement.</p>
+<p>Real-time typing, expansion matching, target discovery, and semantic
+editing remain Inkwell responsibilities. Clipman’s clipboard capture
+loop is not an Inkwell input path, and Inkwell must not use Clipman
+Server or Clipman CLI as a low-latency typing dependency.</p>
+<h2 id="provider-boundary-and-negotiation">Provider boundary and
+negotiation</h2>
+<p>The future optional provider should live outside the core contract,
+for example under the Windows or Inkwell application boundary. Its
+public surface should be small and capability-based:</p>
+<ol type="1">
+<li>Check whether optional integration is enabled by the user.</li>
+<li>Perform a short, passive handshake against a supported local
+protocol.</li>
+<li>Negotiate a protocol version and the specific operation
+capabilities.</li>
+<li>Return bounded clipboard data or an explicit provider outcome.</li>
+<li>Close the request without retaining Inkwell target or document
+state.</li>
+</ol>
+<p>The provider must report distinct states for:</p>
+<ul>
+<li><code>disabled</code>: no probe and no connection attempt.</li>
+<li><code>not_installed</code>: no optional provider is available.</li>
+<li><code>not_running</code>: the provider is installed but is not
+active; Inkwell does not start it.</li>
+<li><code>incompatible</code>: the handshake or required capability is
+not supported.</li>
+<li><code>available</code>: the negotiated capability is ready for this
+operation.</li>
+<li><code>disconnected</code>: the provider stopped or lost the
+connection during the operation.</li>
+</ul>
+<p>A provider capability is advertised only after the user setting,
+handshake, protocol version, privacy policy, and operation-specific
+format support all agree. Provider availability must never alter the
+native <code>TargetSnapshot</code> or upgrade <code>UNKNOWN</code>
+evidence to <code>CONFIRMED</code> evidence.</p>
+<p>Routing follows this order:</p>
+<ol type="1">
+<li>Use the native target adapter and Inkwell transaction for semantic
+text operations.</li>
+<li>Use the optional provider only when the user explicitly requests an
+enhancement it owns, or when an explicit transaction asks it for a
+bounded clipboard format or restore operation.</li>
+<li>If no mutation has occurred and the provider fails, use the native
+fallback only when the original target is revalidated. Otherwise return
+a stale, cancelled, or provider-unavailable result without retrying
+against a new target.</li>
+</ol>
+<p>No provider failure may turn a successful native operation into a
+silent no-op, and no fallback may hide a stale-target or
+clipboard-ownership change.</p>
+<h2 id="coexistence-rules">Coexistence rules</h2>
+<p>Inkwell and Clipman must have independent ownership of their
+application state. The following rules prevent duplicate capture, hotkey
+races, and competing paste actions:</p>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Inkwell behavior</th>
+<th>Coexistence rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clipboard capture</td>
+<td>Uses a bounded, explicit transaction only when an operation needs
+it.</td>
+<td>Inkwell does not subscribe to Clipman’s history events or require
+its watcher. Clipman may continue its own capture independently.</td>
+</tr>
+<tr>
+<td>Clipboard storage</td>
+<td>Keeps only operation-scoped state needed for safe restore.</td>
+<td>Inkwell never reads or writes Clipman’s history store, cache, or
+database.</td>
+</tr>
+<tr>
+<td>Keyboard hooks</td>
+<td>Uses its existing expansion and command routes.</td>
+<td>Inkwell does not register Clipman’s hotkeys, and it does not assume
+Clipman’s hotkeys exist. A collision is reported or disabled; neither
+application steals the key.</td>
+</tr>
+<tr>
+<td>Paste</td>
+<td>Performs one explicit paste/injection transaction when selected by
+the user or required by a certified fallback.</td>
+<td>Clipman and Inkwell must not issue competing paste actions for one
+command. There is one operation owner.</td>
+</tr>
+<tr>
+<td>Restore</td>
+<td>Restores only after a sequence and ownership check.</td>
+<td>A Clipman change during the transaction produces
+<code>CLIPBOARD_CHANGED</code>; Inkwell does not overwrite the newer
+clipboard owner.</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td>Revalidates the original target immediately before mutation.</td>
+<td>A provider callback cannot redirect an operation to the provider
+window or to a newly focused target.</td>
+</tr>
+<tr>
+<td>Lifecycle</td>
+<td>Starts and stops independently.</td>
+<td>Inkwell never launches, supervises, or requires Clipman. Provider
+loss degrades only the optional capability.</td>
+</tr>
+<tr>
+<td>Network and credentials</td>
+<td>Uses existing Inkwell consent and egress rules.</td>
+<td>Clipman sync consent is not transitively granted by Inkwell, and
+Inkwell never handles Clipman credentials.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rich-formats-and-clipboard-ownership">Rich formats and clipboard
+ownership</h2>
+<p>Rich clipboard support is an enhancement, not a precondition for
+plain-text editing. The transaction must choose a format
+deliberately:</p>
+<ul>
+<li>If the target advertises plain-text support only, Inkwell requests
+plain text and reports a text-only outcome.</li>
+<li>If both target and optional provider support a declared rich format,
+the user may explicitly choose the rich operation. The operation still
+captures the target identity and revalidates it before paste or
+replacement.</li>
+<li>If the provider returns formats that cannot be verified or bounded,
+Inkwell falls back to plain text or reports unsupported; it does not
+guess.</li>
+<li>A clipboard sequence number, ownership marker, and bounded timeout
+protect every read, write, and restore. Any unexpected change aborts
+restoration.</li>
+<li>Clipboard contents are never placed in logs, telemetry, crash
+bundles, or provider diagnostics.</li>
+</ul>
+<p>The optional provider must not make a clipboard transaction appear
+atomic when another application can observe or change the clipboard. The
+operation result must retain the existing
+<code>CLIPBOARD_CHANGED</code>, <code>STALE_TARGET</code>, and
+<code>ADAPTER_UNAVAILABLE</code> distinctions.</p>
+<h2 id="privacy-and-protected-targets">Privacy and protected
+targets</h2>
+<p>Clipman history can contain more text than the current Inkwell
+operation. For that reason, optional history access is disabled until
+the user enables it and is still subject to the operation’s target and
+privacy policy.</p>
+<ul>
+<li>Password, credential, sign-in, UAC, secure-desktop, lock-screen, and
+other protected targets never supply text to Clipman or Inkwell
+enhancement code.</li>
+<li>The provider receives only the bounded item or format requested for
+the current user action, not the complete Inkwell document or clipboard
+history.</li>
+<li>Local history access does not grant consent for AI, server sync,
+telemetry, or any other outbound transfer.</li>
+<li>AI and networked actions retain their separate explicit-consent
+gate, visible progress, bounded-content rule, and stale-target
+rejection.</li>
+<li>Disabling the provider stops new requests. It does not delete
+Clipman data, change Clipman settings, or require an Inkwell restart for
+native operations to continue.</li>
+</ul>
+<h2 id="detection-and-lifecycle-behavior">Detection and lifecycle
+behavior</h2>
+<p>Detection must be passive and cheap:</p>
+<ul>
+<li>When integration is disabled, Inkwell does not probe for
+Clipman.</li>
+<li>When enabled, Inkwell performs a bounded handshake only when an
+operation needs an optional capability. It never auto-starts
+Clipman.</li>
+<li>A missing executable, stopped process, incompatible protocol,
+timeout, or provider crash is an ordinary unavailable state, not an
+Inkwell startup failure.</li>
+<li>The provider is disconnected after each operation unless a
+documented, user-enabled session is required. Long-lived clipboard
+monitoring is not an implicit side effect of enabling a single
+enhancement.</li>
+<li>Uninstalling Clipman or removing its configuration leaves Inkwell’s
+native commands and settings valid. The next request simply resolves to
+the native path or an enhancement-unavailable result.</li>
+</ul>
+<p>Suggested user setting: <strong>Use optional Clipman
+enhancements</strong>. It should be off by default for a new
+installation, clearly describe that Clipman is not required, and expose
+a status such as <code>Disabled</code>, <code>Unavailable</code>, or
+<code>Ready</code>. The setting must not hide native Inkwell commands
+when it is off.</p>
+<h2 id="test-matrix">Test matrix</h2>
+<p>The following cases are required before shipping an optional
+provider:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Required result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clipman is not installed</td>
+<td>Native Inkwell expansion, insertion, replacement, and supported
+transforms pass; no import or launch is attempted.</td>
+</tr>
+<tr>
+<td>Clipman is installed but stopped</td>
+<td>Native behavior is unchanged; optional status is
+<code>not_running</code>; no auto-start occurs.</td>
+</tr>
+<tr>
+<td>Clipman is running but integration is disabled</td>
+<td>No handshake or history access occurs; native behavior is
+unchanged.</td>
+</tr>
+<tr>
+<td>Clipman is running and enabled</td>
+<td>Only negotiated, explicitly requested capabilities are available;
+target checks still come from Inkwell.</td>
+</tr>
+<tr>
+<td>Provider protocol is incompatible</td>
+<td>Optional capabilities are hidden or return
+<code>ADAPTER_UNAVAILABLE</code>; native commands remain usable.</td>
+</tr>
+<tr>
+<td>Provider disconnects before mutation</td>
+<td>The original target is revalidated and native fallback is used only
+if safe; otherwise no mutation occurs.</td>
+</tr>
+<tr>
+<td>Provider disconnects after clipboard change</td>
+<td>Inkwell does not overwrite the newer clipboard owner and returns a
+clipboard-change outcome.</td>
+</tr>
+<tr>
+<td>User changes focus during a provider request</td>
+<td>The original target fails revalidation; nothing is inserted into the
+new target.</td>
+</tr>
+<tr>
+<td>Rich format is unavailable or ambiguous</td>
+<td>Plain text is used only when explicitly allowed; otherwise the
+operation is reported unsupported.</td>
+</tr>
+<tr>
+<td>Password or protected target is focused</td>
+<td>No text is captured or sent to the provider.</td>
+</tr>
+<tr>
+<td>Elevation or privilege does not match</td>
+<td>The operation is denied or reported elevated, independent of
+provider availability.</td>
+</tr>
+<tr>
+<td>Hotkey collision exists</td>
+<td>Inkwell and Clipman retain independent bindings; neither silently
+steals the other binding.</td>
+</tr>
+<tr>
+<td>Clipman is uninstalled while Inkwell remains</td>
+<td>Inkwell continues without restart and without stale provider
+state.</td>
+</tr>
+</tbody>
+</table>
+<p>The automated suite should include a fake provider for handshake,
+capability, format, timeout, disconnect, and ownership-conflict paths. A
+separate no-Clipman test environment must run the complete native
+contract and transaction tests with the provider package, process,
+files, and environment variables absent.</p>
+<h2 id="acceptance-gates">Acceptance gates</h2>
+<p>The optional integration is not ready until all of these are
+true:</p>
+<ol type="1">
+<li>A clean Inkwell installation passes the native global-text tests
+with no Clipman installation or process.</li>
+<li>The core external-text contract has no Clipman import or
+provider-specific state.</li>
+<li>Turning the optional setting off prevents provider probing and
+leaves native command routing intact.</li>
+<li>Provider absence, stop, incompatibility, timeout, and disconnect are
+tested as ordinary outcomes.</li>
+<li>Clipboard sequence, target identity, source text, privilege, and
+protected state are revalidated exactly as they are without the
+provider.</li>
+<li>Rich-format and history features are documented as optional
+capabilities, not as part of the Inkwell baseline promise.</li>
+<li>No Inkwell log, telemetry event, crash bundle, or consent record
+contains document text, clipboard history, or Clipman credentials.</li>
+<li>Manual keyboard and screen-reader testing covers Inkwell alone and
+both applications running together, including hotkey, focus, paste,
+restore, and cancellation behavior.</li>
+</ol>
+<p>The native-only path is the release blocker. Clipman integration may
+be omitted, disabled, or removed without delaying or invalidating
+standalone Inkwell text assistance.</p>
+</main>
+</body>
+</html>

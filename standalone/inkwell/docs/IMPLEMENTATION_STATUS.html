@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Inkwell 1.0.0 Implementation Status</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="inkwell-100-implementation-status">Inkwell 1.0.0 Implementation
+Status</h1>
+<p><strong>Release state:</strong> 1.0.0 is not released. Implementation
+is in progress.</p>
+<p>This is the status of the current checkout, not a release claim. The
+standalone folder contains the product wrapper, packaging, installers,
+and documentation; the application and Windows adapters live in the
+shared <code>quill</code> package. A foundation can be implemented and
+unit-tested without being advertised as support for every Windows
+target. Live target, browser, Office, and screen-reader evidence is
+still required before those capabilities are released.</p>
+<h2 id="executive-summary">Executive summary</h2>
+<ul>
+<li>The 1.0.0 abbreviation expander and standalone packaging path are
+implemented, but 1.0.0 has not shipped.</li>
+<li>The native external-text contract, target probe, selection capture,
+checked injection, and bounded clipboard transaction are implemented as
+a shared foundation with focused tests.</li>
+<li>The global assistant command set, target-family adapters, live
+certification, and optional Clipman provider are not complete.</li>
+<li>Clipman is optional. Inkwell’s native path must remain usable when
+Clipman is absent, stopped, disabled, incompatible, or
+disconnected.</li>
+</ul>
+<h2 id="status-meanings">Status meanings</h2>
+<ul>
+<li><strong>Implemented foundation:</strong> code and focused automated
+tests exist; live target certification or full user-facing integration
+may still be outstanding.</li>
+<li><strong>Partial:</strong> some integration exists, but the work
+package exit criteria are not met.</li>
+<li><strong>Certification pending:</strong> the shared code exists, but
+no release support claim is made until the required Windows or
+assistive-technology evidence exists.</li>
+<li><strong>Not started:</strong> no implementation or certification
+evidence exists in this checkout.</li>
+<li><strong>Design only:</strong> the boundary is documented, but the
+runtime provider or adapter is not implemented.</li>
+</ul>
+<h2 id="work-package-status">Work package status</h2>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Current state</th>
+<th>Evidence in this checkout</th>
+<th>Remaining release gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W0 Contract and policy</td>
+<td>Implemented foundation</td>
+<td><a
+href="../../../quill/core/external_text.py"><code>external_text.py</code></a>,
+target policy, and boundary tests</td>
+<td>Keep capability, reason-code, placeholder, and collision policy
+aligned with the intended 1.0.0 command set.</td>
+</tr>
+<tr>
+<td>W1 Native target probe</td>
+<td>Implemented foundation; certification pending</td>
+<td><a
+href="../../../quill/platform/windows/external_target.py"><code>external_target.py</code></a>,
+advisory <a
+href="../../../quill/platform/windows/text_target.py"><code>text_target.py</code></a>,
+and <a
+href="../../../tests/unit/platform/windows/test_external_target.py"><code>test_external_target.py</code></a></td>
+<td>Live UIA/native behavior for common controls, read-only fields,
+protected targets, and elevation.</td>
+</tr>
+<tr>
+<td>W2 Text transaction</td>
+<td>Implemented foundation; certification pending</td>
+<td><a
+href="../../../quill/platform/windows/text_transaction.py"><code>text_transaction.py</code></a>,
+<a
+href="../../../quill/platform/windows/clipboard_transaction.py"><code>clipboard_transaction.py</code></a>,
+and focused transaction tests</td>
+<td>Live checked mutation, clipboard contention, focus changes, undo
+behavior, and screen-reader outcomes.</td>
+</tr>
+<tr>
+<td>W3 Assistant runtime</td>
+<td>Partial</td>
+<td><a
+href="../../../quill/ui/inkwell_expansion.py"><code>inkwell_expansion.py</code></a>,
+<a
+href="../../../quill/platform/windows/text_runtime.py"><code>text_runtime.py</code></a>,
+and <a
+href="../../../tests/unit/platform/windows/test_text_runtime.py"><code>test_text_runtime.py</code></a>
+bind global expansion to a validated target transaction.</td>
+<td>Wire and test the complete explicit assistant command surface
+without adding semantic work to the hook callback.</td>
+</tr>
+<tr>
+<td>W4 Shared snippets and prompts</td>
+<td>Partial</td>
+<td><a
+href="../../../quill/core/snippets.py"><code>snippets.py</code></a>,
+expansion fields, <a
+href="../../../tests/unit/core/test_snippets.py"><code>test_snippets.py</code></a>,
+and <a
+href="../../../tests/unit/core/expansion/test_fields.py"><code>test_fields.py</code></a>
+cover shared storage and prompt primitives.</td>
+<td>Complete global capability gating, collision precedence, context
+policy, Quillin boundaries, and cancellation behavior.</td>
+</tr>
+<tr>
+<td>W5 Plain-text commands</td>
+<td>Core engines only</td>
+<td>Shared selection, transform, line, format, spelling, grammar-review,
+and feedback engines exist.</td>
+<td>Route explicit global insert, replacement, transform, spelling, and
+review actions through one external transaction.</td>
+</tr>
+<tr>
+<td>W6 Common-control certification</td>
+<td>Not started</td>
+<td>No live Notepad, WordPad, native-control, or screen-reader
+certification evidence is recorded here.</td>
+<td>Add Windows fixtures and certify each advertised capability,
+including refusal and recovery cases.</td>
+</tr>
+<tr>
+<td>W7 Browser native certification</td>
+<td>Not started</td>
+<td>Native browser-first policy is documented; no Edge, Chrome, or
+Firefox evidence is recorded.</td>
+<td>Certify ordinary edit fields with mouse focus, screen-reader focus,
+no extension, and protected-page refusal.</td>
+</tr>
+<tr>
+<td>W8 Optional browser bridge</td>
+<td>Gated, not started</td>
+<td>The optional path is documented and Beacon transport can be reused
+if a measured gap exists.</td>
+<td>First complete W7, then name a native capability gap before building
+an extension.</td>
+</tr>
+<tr>
+<td>W9 Word and Outlook adapters</td>
+<td>Not started</td>
+<td>No dedicated live Word or Outlook adapter is present.</td>
+<td>Design and certify version, privilege, read-only, Protected View,
+COM/WebView, stale-range, and cleanup behavior.</td>
+</tr>
+<tr>
+<td>W10 Dictation and release hardening</td>
+<td>Not started for the global assistant</td>
+<td>Existing 1.0 UI and dictation foundations do not constitute
+external-target release evidence.</td>
+<td>Bind dictation to a stable external target, complete
+privacy/accessibility gates, and perform manual NVDA, JAWS, and Narrator
+acceptance.</td>
+</tr>
+<tr>
+<td>W11 Optional Clipman companion</td>
+<td>Design only</td>
+<td><a
+href="clipman-optional-integration.md"><code>clipman-optional-integration.md</code></a>
+defines the boundary; the native clipboard transaction is
+independent.</td>
+<td>Add an opt-in provider, negotiation, disconnect, ownership, hotkey,
+privacy, and no-Clipman test matrix without making it a dependency.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-is-complete-inside-this-folder">What is complete inside
+this folder</h2>
+<ul>
+<li>The standalone launcher, portable/installed data-root behavior,
+package metadata, PyInstaller entry point, release script, installers,
+icon, and documentation renderer are present.</li>
+<li>The user-facing documentation now distinguishes unreleased 1.0.0
+work from future work and states that Clipman is optional.</li>
+<li>Markdown documents are the source. Matching HTML and EPUB files are
+generated by <a
+href="../scripts/render_docs.ps1"><code>render_docs.ps1</code></a>.</li>
+</ul>
+<h2 id="work-that-must-return-to-the-shared-package">Work that must
+return to the shared package</h2>
+<p>The next implementation slices cannot be completed by editing the
+standalone shell alone:</p>
+<ul>
+<li>Finish global snippets, transforms, spelling, grammar review, and
+dictation command wiring in <code>quill</code>.</li>
+<li>Add target-family routing and certification for native controls,
+browsers, terminals, Word, and Outlook.</li>
+<li>Add optional Clipman negotiation and coexistence tests while keeping
+the native-only path independent.</li>
+<li>Run live Windows, browser, Office, clipboard, and screen-reader
+acceptance.</li>
+</ul>
+<p>The detailed requirements and sequencing remain in <a
+href="global-text-support-plan.md"><code>global-text-support-plan.md</code></a>.
+The optional provider boundary is in <a
+href="clipman-optional-integration.md"><code>clipman-optional-integration.md</code></a>.</p>
+</main>
+</body>
+</html>
