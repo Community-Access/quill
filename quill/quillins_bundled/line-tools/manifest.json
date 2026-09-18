@@ -2,53 +2,33 @@
   "schema": "quill.extension/1",
   "id": "com.quill.bundled.line-tools",
   "name": "Line Tools",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "QUILL Project",
-  "description": "Bundled Quillin: duplicate, delete, move up/down, and join lines using cursor-aware operations.",
+  "description": "Bundled Quillin: join a line with the next one, a verb QUILL's core does not register.",
   "license": "MIT",
   "min_quill_version": "1.0.0",
-  "capabilities": ["editor.read", "editor.write", "ui.announce", "ui.command"],
+  "capabilities": [
+    "editor.read",
+    "editor.write",
+    "ui.announce",
+    "ui.command"
+  ],
   "main": "extension.py",
   "contributes": {
     "commands": [
       {
-        "id": "ext.lines.duplicate",
-        "title": "Duplicate Line",
-        "run": { "handler": "duplicate_line" }
-      },
-      {
-        "id": "ext.lines.delete",
-        "title": "Delete Line",
-        "run": { "handler": "delete_line" }
-      },
-      {
-        "id": "ext.lines.move_up",
-        "title": "Move Line Up",
-        "run": { "handler": "move_line_up" }
-      },
-      {
-        "id": "ext.lines.move_down",
-        "title": "Move Line Down",
-        "run": { "handler": "move_line_down" }
-      },
-      {
-        "id": "ext.lines.join",
-        "title": "Join Paragraph Lines",
-        "run": { "handler": "join_paragraph" }
-      },
-      {
         "id": "ext.lines.join_next",
         "title": "Join with Next Line",
-        "run": { "handler": "join_with_next_line" }
+        "run": {
+          "handler": "join_with_next_line"
+        }
       }
     ],
     "menus": [
-      { "parent": "Edit", "command": "ext.lines.duplicate" },
-      { "parent": "Edit", "command": "ext.lines.delete" },
-      { "parent": "Edit", "command": "ext.lines.move_up" },
-      { "parent": "Edit", "command": "ext.lines.move_down" },
-      { "parent": "Edit", "command": "ext.lines.join" },
-      { "parent": "Edit", "command": "ext.lines.join_next" }
+      {
+        "parent": "Edit",
+        "command": "ext.lines.join_next"
+      }
     ]
   }
 }

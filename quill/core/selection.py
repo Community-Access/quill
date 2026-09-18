@@ -260,3 +260,38 @@ def describe_selection(
     if first == last:
         return f"{sentence}, line {first}"
     return f"{sentence}, lines {first} to {last}"
+
+
+def changed_span(before: str, after: str) -> tuple[int, int, str]:
+    """The narrowest ``(start, end, replacement)`` turning *before* into *after*.
+
+    Trims the common prefix and the common suffix, so replacing one line in a
+    document rewrites one line. Both editors had a helper that replaced the
+    **whole document** for any change at all, and on a rich surface that is not
+    merely wasteful -- it is destructive:
+
+    Writing over a selection makes the new text adopt the format at the
+    selection's start, so selecting all and writing turns every run in the
+    document into whatever position 0 was. Confirmed live on 2026-09-17
+    (``scripts/probe_rich_edits.py``): a document with one Heading 1 and two
+    body lines came back with ``all_headings()`` reporting **five** headings --
+    every line promoted. bad.md C2/N3 predicted the formatting would be lost;
+    what actually happens is that it *spreads*, which is worse, and which is
+    why the obvious check ("is my heading still there?") answers yes and misses
+    it entirely.
+
+    Returns an empty replacement over an empty span when the two are equal, so
+    a caller can tell "nothing changed" from "changed to nothing" -- the
+    distinction every no-op announcement depends on.
+    """
+    if before == after:
+        return (0, 0, "")
+    limit = min(len(before), len(after))
+    start = 0
+    while start < limit and before[start] == after[start]:
+        start += 1
+    # The suffix must not run back past the prefix in either string.
+    tail = 0
+    while tail < (limit - start) and before[len(before) - 1 - tail] == after[len(after) - 1 - tail]:
+        tail += 1
+    return (start, len(before) - tail, after[start : len(after) - tail])

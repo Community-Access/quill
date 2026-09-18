@@ -106,7 +106,13 @@ APPS: tuple[AppConfig, ...] = (
         "QuillLite",
         "quill.core.lite_surface_help",
         (),
-        ("quill/apps/lite*.py",),
+        # The Spelling Announcements dialog moved to quill/ui in 2026-09 so
+        # QUILL could open the same window on the same chord (bad.md P1.14).
+        # It stays in this scope deliberately: the move took twelve authored
+        # help sentences straight out of the reference and out of every gate
+        # that watches them, which is precisely the rot GATE-REACH exists to
+        # stop. The audit follows the surface, not the folder.
+        ("quill/apps/lite*.py", "quill/ui/spelling_voice_dialog.py"),
         "lite_help_inventory.json",
     ),
 )

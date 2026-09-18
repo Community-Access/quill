@@ -31,9 +31,23 @@ class MenuBindingsMixin:
         wx = self._wx
 
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.new_file(), id=self._id_new)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.edit_paste_plain_text(), id=self._id_paste_plain_text
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.new_rich_document(), id=self._id_new_rich_document
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.new_plain_text_document(),
+            id=self._id_new_plain_text_document,
+        )
         # #1246: Ctrl+T new document tab (reuses new_file).
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.new_file(), id=self._id_new_tab)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_file(), id=self._id_open)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_file_format_dialog(), id=self._id_file_format
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_url(), id=self._id_open_url)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -2030,7 +2044,7 @@ class MenuBindingsMixin:
         for _n in range(1, 13):
             self.frame.Bind(
                 wx.EVT_MENU,
-                lambda _e, _slot=_n: self.copy_to_tray_slot(_slot),
+                lambda _e, _slot=_n: self.copy_to_tray_slot_number(_slot),
                 id=self._id_copy_tray_slots[_n - 1],
             )
         for _n in range(1, 13):

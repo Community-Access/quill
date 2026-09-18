@@ -467,33 +467,12 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         self._announce(f"Saving as {_encoding_name(encoding)}, {_newline_name(newline)}")
 
 
-def _scope_size(text: str, *, unit: str) -> int:
-    """How much the tool was handed, counted in *unit*.
-
-    A terminal newline is not a line. Counting it would make "Sorted 4 lines" the
-    answer for three lines in a file that ends the way files end.
-    """
-    if unit != "line":
-        return len(text)
-    lines = text.split("\n")
-    if lines and lines[-1] == "":
-        lines.pop()
-    return len(lines)
-
-
-def _difference(before: str, after: str, *, unit: str) -> int:
-    """How much changed, counted in *unit*, for an announcement that says something.
-
-    Lines when the tool works on lines, characters when it works on characters.
-    A count of "1" for a sort of forty lines would be technically true of the
-    string and useless to the person who ran it.
-    """
-    if unit == "line":
-        old, new = before.split("\n"), after.split("\n")
-        return abs(len(old) - len(new)) or sum(1 for a, b in zip(old, new, strict=False) if a != b)
-    if len(before) != len(after):
-        return max(len(before), len(after))
-    return sum(1 for a, b in zip(before, after, strict=True) if a != b)
+# The two counting rules moved into quill/core/line_tool_report.py on
+# 2026-09-18 so QUILL could read them too (bad.md P1.16): QUILL's line tools
+# announced a past tense and no number at all, including when nothing had
+# changed. Same functions, same behaviour, one copy.
+from quill.core.line_tool_report import changed_size as _difference  # noqa: E402
+from quill.core.line_tool_report import scope_size as _scope_size  # noqa: E402
 
 
 def _encoding_name(encoding: str) -> str:

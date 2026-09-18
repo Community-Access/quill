@@ -48,11 +48,23 @@ class CopyTray:
     # -- write --
 
     def copy_to(self, slot: int, text: str) -> None:
-        """Store *text* in *slot* (1-12)."""
+        """Store *text* in *slot* (1-12), keeping the slot's label and pin.
+
+        It used to build a fresh ``TraySlot``, and every write path goes
+        through here -- so editing a slot's text dropped the name somebody had
+        given it and un-pinned it at the same time (bad.md C3). A label is how
+        a listener tells slot seven from slot nine without reading either, and
+        a pin is a statement that this one matters; losing both silently, as a
+        side effect of changing the text, is the tray forgetting the two things
+        the person told it.
+        """
         self._check(slot)
+        existing = self._slots[slot - 1]
         self._slots[slot - 1] = TraySlot(
             text=text,
             copied_at=datetime.now(tz=UTC).isoformat(),
+            label=existing.label,
+            pinned=existing.pinned,
         )
         self._save()
 

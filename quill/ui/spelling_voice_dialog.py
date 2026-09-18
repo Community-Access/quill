@@ -14,9 +14,15 @@ So: three labelled groups, each with a sentence saying what the group is for,
 and the numbers beside the switches they belong to.
 
 QUILL renders the same twelve settings from ``settings_specs.py`` into its own
-searchable Settings window, which is the right shape there because that window
-has four hundred rows and a search box. Both read and write the same names, so a
-listener who tunes this in one editor finds the other already tuned.
+searchable Settings window too, which is the right shape there because that
+window has four hundred rows and a search box -- but it also opens *this*
+window on ``Ctrl+Alt+Shift+F7``, QuillLite's chord for it, because a person who
+wants to tune how a misspelling is said should not have to find twelve rows
+among four hundred first (bad.md 3.6, P1.14).
+
+It moved from ``quill/apps/`` to ``quill/ui/`` on 2026-09-18 when QUILL started
+using it: a window both editors open is shared UI, and leaving it under the
+small product's package would have meant QUILL importing from QuillLite.
 """
 
 from __future__ import annotations
@@ -256,7 +262,7 @@ def edit_spelling_voice(
     # No access key on OK or Cancel: Enter and Escape already serve them, and
     # every letter they give up resolves a collision elsewhere (GATE-14).
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
-    root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     sound.SetFocus()

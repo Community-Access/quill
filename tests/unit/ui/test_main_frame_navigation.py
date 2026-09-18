@@ -225,33 +225,31 @@ def test_navigate_next_region_focuses_status_bar() -> None:
     assert frame.statusbar.focused is True
 
 
-def test_navigate_to_status_bar_does_not_announce_generic_region_message(
+def test_navigating_to_the_status_bar_says_the_region_like_every_other_region(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Entering the status bar via F6 must not emit the generic 'Focused Status
-    Bar region' message. The cell-focus announcement already names the region,
-    so emitting both makes a screen reader say 'Status Bar' twice on entry."""
-    import quill.ui.main_frame_statusbar as statusbar_module
+    """The status bar used to be the exception, and for a reason that is gone.
 
-    spoken: list[str] = []
-    monkeypatch.setattr(statusbar_module, "announce", lambda message: spoken.append(message))
-
+    Its cells announced themselves on focus -- label and value, the pair the
+    screen reader already reads off the button -- so the generic region line
+    was suppressed to stop "Status Bar" being said twice. The cells stopped
+    announcing on 2026-09-17 (GATE-13, bad.md H3), so the exception went with
+    them: one line, spoken once, naming the only thing the reader cannot know.
+    """
     frame = _build_frame("hello")
     frame.navigate_next_region()
 
     assert frame._active_region == "Status Bar"
-    # The F6 landing arms the one-shot region-name flag consumed by the first
-    # cell focus (real cell focus is a wx event not fired in this fake harness).
-    assert frame._statusbar_entry_pending is True
-    assert not any("Focused Status Bar region" in message for message in spoken)
+    assert frame._status_message == "Focused Status Bar region"
 
 
-def test_statusbar_speaks_region_name_on_entry_but_not_on_arrow(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """The F6 landing speaks 'Status bar, <cell>, <value>'; arrowing to the next
-    cell speaks only that cell, so 'Status bar' is not repeated on every arrow
-    keystroke (#status-bar-region-repeat)."""
+def test_a_cell_focus_says_nothing_at_all(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The button carries its own name and value; saying them again is noise.
+
+    Every arrow press along the bar was spoken twice before this. Over-
+    announcing is the failure nobody files -- it reads as "this app is chatty"
+    rather than as a bug -- which is exactly why GATE-13 exists.
+    """
     import quill.ui.main_frame_statusbar as statusbar_module
 
     spoken: list[str] = []
@@ -262,23 +260,20 @@ def test_statusbar_speaks_region_name_on_entry_but_not_on_arrow(
         statusbar_module._StatusBarCell(item="message", button=object()),
         statusbar_module._StatusBarCell(item="line_column", button=object()),
     ]
-    frame._active_statusbar_cell_index = 0
 
     class _Event:
+        def __init__(self) -> None:
+            self.skipped = False
+
         def Skip(self) -> None:
-            return None
+            self.skipped = True
 
-    # F6 landing: the entry flag is armed, so the first cell carries the region.
-    frame._statusbar_entry_pending = True
-    frame._on_statusbar_cell_focus(_Event(), "message")
-    assert spoken[-1].startswith("Status bar, ")
-    # The flag is one-shot: it is consumed by the landing announcement.
-    assert frame._statusbar_entry_pending is False
-
-    # Arrowing to the next cell speaks only the cell -- no "Status bar" prefix.
-    frame._on_statusbar_cell_focus(_Event(), "line_column")
-    assert not spoken[-1].startswith("Status bar")
-    assert "Position" in spoken[-1]
+    event = _Event()
+    frame._on_statusbar_cell_focus(event, "line_column")
+    assert spoken == []
+    assert event.skipped is True
+    # It still tracks which cell has focus, which is what the arrow keys need.
+    assert frame._active_statusbar_cell_index == 1
 
 
 def _attach_split_preview(frame: MainFrame) -> object:
@@ -573,7 +568,7 @@ def test_shrink_selection_restores_previous_span() -> None:
     assert frame.editor.GetSelection() == expanded
 
 
-def test_shrink_selection_with_empty_stack_reports() -> None:
+def test_shrink_selection_with_nothing_smaller_says_so() -> None:
     text = "alpha beta\n"
     frame = _build_frame(text, insertion_point=0)
     statuses: list[str] = []
@@ -581,7 +576,37 @@ def test_shrink_selection_with_empty_stack_reports() -> None:
 
     frame.shrink_selection()
 
-    assert statuses == ["No selection to shrink"]
+    assert statuses == ["Nothing smaller to select"]
+
+
+def test_shrink_never_jumps_to_a_span_you_have_left() -> None:
+    """The bug the expansion stack was (bad.md L3), reproduced live 2026-09-17.
+
+    Expand around one paragraph, then select something else entirely. The stack
+    still held the first span and Shrink popped it, so the command took you
+    somewhere you had not been for several keystrokes -- and the stack could
+    hold an empty pair too, so Shrink would collapse the selection and announce
+    that it had shrunk something.
+
+    It computes from the text now, which is what QuillLite has always done and
+    is strictly better rather than merely simpler: a history can only answer
+    for selections you reached by *expanding*, and the text can answer for any
+    selection at all.
+    """
+    text = "alpha beta gamma\n\nsecond paragraph here\n"
+    frame = _build_frame(text, insertion_point=0)
+    frame._set_status = lambda *_a, **_k: None  # type: ignore[method-assign]
+
+    frame.editor.SetSelection(0, 16)
+    frame.expand_selection()
+    # ...and now somewhere else entirely.
+    frame.editor.SetSelection(18, 39)
+
+    frame.shrink_selection()
+
+    start, end = frame.editor.GetSelection()
+    assert (start, end) != (0, 16), "Shrink jumped back to the span you left"
+    assert 18 <= start < end <= 39, f"shrank outside the current selection: {(start, end)}"
 
 
 def test_persistent_undo_steps_across_history() -> None:
@@ -2203,11 +2228,16 @@ def test_prompt_untrusted_location_uses_single_checkbox_dialog() -> None:
     assert captured["checkbox"] == "Trust this folder for future opens"
 
 
-def test_prompt_unsaved_changes_action_uses_native_yes_no_cancel() -> None:
-    # #23: the dialog must use the platform's native Yes/No/Cancel buttons
-    # without overriding labels, so the built-in Y/N/Esc keyboard
-    # accelerators fire on every platform (overriding labels with
-    # SetYesNoCancelLabels disables them on at least macOS Cocoa).
+def test_prompt_unsaved_changes_action_asks_in_words_where_it_can(monkeypatch) -> None:
+    """Word's words where the platform keeps its keyboard, native where it does not.
+
+    #23 was written as a blanket rule -- never override the labels, because on
+    macOS Cocoa the override also drops the built-in Y/N/Esc accelerators, and
+    clearer words are not worth the keyboard. bad.md F12 narrowed it to the
+    platform that actually has the defect: everywhere else, "Yes" and "No" make
+    somebody work out which of two irreversible answers "No" is, so the buttons
+    say Save, Don't Save and Cancel like every other editor.
+    """
     frame = _build_frame("hello")
     captured: dict[str, object] = {}
     dialogs: list[_MessageDialog] = []
@@ -2248,18 +2278,27 @@ def test_prompt_unsaved_changes_action_uses_native_yes_no_cancel() -> None:
         lambda _dialog, _label, **_kwargs: wx.ID_NO  # type: ignore[method-assign]
     )
 
+    from quill.core import close_prompt
+
+    monkeypatch.setattr(close_prompt.sys, "platform", "win32")
     result = frame._prompt_unsaved_changes_action(
         "Unsaved changes",
         "You have unsaved changes. Save before closing?",
     )
 
     assert result == wx.ID_NO
-    # Native labels = native accelerators; we MUST NOT call
-    # SetYesNoCancelLabels, because that override is what was disabling Y/N.
-    assert dialogs[0].set_label_calls == []
+    assert dialogs[0].set_label_calls == [("Save", "Don't Save", "Cancel")]
     # Style must still request YES_NO + CANCEL + ICON_WARNING so the
     # platform synthesises the three buttons (and their accelerators).
     assert captured["style"] == wx.YES_NO | wx.CANCEL | wx.ICON_WARNING
+
+    # macOS keeps the native pair: there, the override is what disables Y/N.
+    monkeypatch.setattr(close_prompt.sys, "platform", "darwin")
+    frame._prompt_unsaved_changes_action(
+        "Unsaved changes",
+        "You have unsaved changes. Save before closing?",
+    )
+    assert dialogs[1].set_label_calls == []
 
 
 def test_prompt_table_shape_reprompts_invalid_values() -> None:

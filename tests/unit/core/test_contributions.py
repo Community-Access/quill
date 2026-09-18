@@ -165,9 +165,16 @@ def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # shared format_ops helper and the house rule puts the capability in the
     # shared package with a way for QUILL to reach it in the same change.
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
-    # 82 since #1488 added power.insert_line_break to the Insert menu.
-    assert len(POWER_TOOLS_COMMANDS) == 82
-    assert len(registry.commands) == 82
+    # 84 since 2026-09-17: +1 Character Details (power.describe_character_detail),
+    # the studying half of Describe Character, which QuillLite has had since it
+    # shipped and QUILL had only the window of (bad.md P1.13); and +1 Copy to
+    # Tray Slot (edit.copy_to_tray_slot), the chooser that says what each slot
+    # would overwrite, which QUILL had no equivalent of at all (P2.1).
+    # 83 since 2026-09-18: power.keep_unique_lines retired into
+    # edit.remove_duplicate_lines -- one core function, two command ids, two
+    # chords and two sentences for the same verb (bad.md 7.1, P2.5).
+    assert len(POWER_TOOLS_COMMANDS) == 83
+    assert len(registry.commands) == 83
     assert registry.conflicts == ()
     for menu in registry.menus:
         assert menu.parent in FIRST_PARTY_MENU_PARENTS

@@ -1,12 +1,17 @@
-"""#23: the unsaved-changes Save/Don't Save dialog must use the platform's
-native Yes / No / Cancel buttons and accelerators. We previously overrode
-the labels with SetYesNoCancelLabels("Save", "Don't Save", "Cancel"), which
-on at least macOS Cocoa also disabled the built-in Y / N / Esc keyboard
-accelerators that wx.MessageDialog wires up against its synthesised
-buttons -- users had to Tab to a button and press Space. Native labels =
-native accelerators, and these tests lock in that contract so a future
-contributor can't reintroduce the label override without realising they
-will break the keyboard shortcuts."""
+"""#23, narrowed on 2026-09-17 to the platform it was ever about (bad.md F12).
+
+The unsaved-changes dialog used to override its buttons with
+SetYesNoCancelLabels("Save", "Don't Save", "Cancel"), and on macOS Cocoa that
+also disabled the built-in Y / N / Esc accelerators wx.MessageDialog wires up
+against its synthesised buttons -- users had to Tab to a button and press
+Space. The fix was to stop relabelling everywhere, which fixed Cocoa and cost
+every other platform the clearer words: "No" is one of two irreversible
+answers, and working out which is a question a person should not be asked at
+the moment they are about to lose work.
+
+So the rule is now per platform, decided once in quill.core.close_prompt:
+macOS keeps the native pair and its accelerators; everywhere else says what
+Word, Notepad and WordPad say. These tests lock in both halves."""
 
 from __future__ import annotations
 
@@ -83,19 +88,33 @@ def _install_wx_stub(frame: MainFrame) -> type[_CapturingMessageDialog]:
     return _CapturingMessageDialog
 
 
-def test_prompt_does_not_call_set_yes_no_cancel_labels() -> None:
+def test_the_buttons_say_word_s_words_where_the_platform_allows_it(monkeypatch) -> None:
+    import quill.core.close_prompt as close_prompt
+
+    monkeypatch.setattr(close_prompt, "can_relabel_buttons", lambda *_a: True)
     frame = _build_frame()
     dialog_cls = _install_wx_stub(frame)
 
-    frame._prompt_unsaved_changes_action(
-        "Unsaved changes",
-        "You have unsaved changes. Save before closing?",
-    )
+    frame._prompt_unsaved_changes_action("Unsaved changes", "Save changes to notes.txt?")
 
     assert len(dialog_cls.instances) == 1
-    # The contract: SetYesNoCancelLabels must not be called. The pre-#23
-    # code did call it with ("Save", "Don't Save", "Cancel"), which on
-    # macOS Cocoa disabled the Y/N keyboard accelerators.
+    assert dialog_cls.instances[0].set_label_calls == [("Save", "Don't Save", "Cancel")]
+
+
+def test_macos_keeps_the_native_pair_and_therefore_its_accelerators(monkeypatch) -> None:
+    """The whole of #23, and the reason the rule is per platform rather than off.
+
+    Relabelling on Cocoa disabled Y / N / Esc, so the clearer words cost the
+    keyboard -- which is the wrong way round in this app.
+    """
+    import quill.core.close_prompt as close_prompt
+
+    monkeypatch.setattr(close_prompt, "can_relabel_buttons", lambda *_a: False)
+    frame = _build_frame()
+    dialog_cls = _install_wx_stub(frame)
+
+    frame._prompt_unsaved_changes_action("Unsaved changes", "Save changes to notes.txt?")
+
     assert dialog_cls.instances[0].set_label_calls == []
 
 

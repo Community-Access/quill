@@ -111,15 +111,33 @@ class TypingModesMixin:
         self._refresh_statusbar()
         self._set_status("Overwrite mode on" if next_state else "Insert mode on")
 
+    def _tab_types_a_tab(self) -> bool:
+        """Whether Tab types a tab character right now (bad.md T3, P1.21).
+
+        The toggle wins when it has been used; otherwise the document kind
+        decides, through the shared ``quill.core.tab_behaviour`` rule QuillLite
+        reads too. Before this, QUILL indented in every kind and QuillLite typed
+        a tab in every kind, and each was wrong in the other's documents.
+        """
+        from quill.core.tab_behaviour import tab_inserts_a_tab
+
+        if getattr(self, "_tab_mode_chosen", False):
+            return bool(self._tab_inserts_literal)
+        return tab_inserts_a_tab(self._effective_markup_kind())
+
     def toggle_tab_insert_mode(self, enabled: bool | None = None) -> None:
         """Toggle whether the Tab key inserts a literal tab or indents lines.
 
-        Default (off) keeps the smart line-indent behaviour. On, Tab types a
-        tab character at the caret like a plain text editor. The new mode is
-        spoken and reflected in the Tab Mode status-bar cell and the Format
-        menu check item."""
+        Until this is called the document kind decides (``_tab_types_a_tab``);
+        calling it fixes the answer for the session. On, Tab types a tab
+        character at the caret like a plain text editor. The new mode is spoken
+        and reflected in the Tab Mode status-bar cell and the Format menu check
+        item."""
         next_state = (not self._tab_inserts_literal) if enabled is None else enabled
         self._tab_inserts_literal = next_state
+        # From here the kind stops deciding: somebody has said what they want
+        # (bad.md T3, P1.21), and a document's extension must not overrule them.
+        self._tab_mode_chosen = True
         self._sync_tab_mode_menu_check()
         self._refresh_statusbar()
         self._set_status(

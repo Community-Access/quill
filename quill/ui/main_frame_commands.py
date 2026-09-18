@@ -19,6 +19,33 @@ class CommandRegistryMixin:
             self.new_file,
             self._binding_for("file.new"),
         )
+        # QuillLite's two "start a document in this kind" commands (bad.md
+        # P1.13). Both run one seam, new_document_in_format, which is also what
+        # --rich / --plain will call (P2.16).
+        self.commands.register(
+            "tools.spelling_announcements",
+            "Spelling Announcements",
+            self.open_spelling_announcements,
+            self._binding_for("tools.spelling_announcements"),
+        )
+        self.commands.register(
+            "file.file_format",
+            "File Format",
+            self.open_file_format_dialog,
+            self._binding_for("file.file_format"),
+        )
+        self.commands.register(
+            "file.new_rich_document",
+            "New Rich Text Document",
+            self.new_rich_document,
+            self._binding_for("file.new_rich_document"),
+        )
+        self.commands.register(
+            "file.new_plain_text_document",
+            "New Plain Text Document",
+            self.new_plain_text_document,
+            self._binding_for("file.new_plain_text_document"),
+        )
         # #1246: Ctrl+T = new document tab in the current notebook. Reuses new_file
         # (which already opens a new tab); this is a second, tab-oriented entry point.
         self.commands.register(
@@ -2467,7 +2494,7 @@ class CommandRegistryMixin:
             self.commands.register(
                 f"edit.copy_to_tray_{_ct_n}",
                 f"Copy to Tray Slot {_ct_n}",
-                (lambda _n=_ct_n: lambda: self.copy_to_tray_slot(_n))(),
+                (lambda _n=_ct_n: lambda: self.copy_to_tray_slot_number(_n))(),
                 self._binding_for(f"edit.copy_to_tray_{_ct_n}"),
             )
             self.commands.register(

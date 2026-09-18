@@ -1,8 +1,14 @@
 """Line Tools - a bundled Layer 2 Quillin (Tier C).
 
-Six cursor-aware line operations converted out of QUILL's core into a genuine
-sandboxed Quillin: duplicate line, delete line, move line up, move line down,
-join paragraph lines, and join with next line.
+**One** cursor-aware line operation: join with the next line. It shipped with
+six, and the other five -- duplicate line, delete line, move line up, move line
+down, join paragraph lines -- were verbs QUILL's core already registers on real
+chords (`Ctrl+D`, `Ctrl+Shift+Delete`, `Ctrl+Shift+Up`/`Down`,
+`Ctrl+Alt+Shift+J`). A Quillin may *add* a verb and may never re-ship one the
+core has: two registrations of one verb is two places for the behaviour and the
+wording to drift, and the audit found pairs that already had (bad.md 7.1,
+P2.5). They were retired on 2026-09-18; the core commands are unchanged and
+keep their keys.
 
 Each operation uses the new ``get_cursor_offset()`` and ``set_cursor()`` API
 methods to read and reposition the caret as an integer character offset, so
@@ -18,14 +24,7 @@ filesystem, network, clipboard, or storage access.
 
 from __future__ import annotations
 
-from line_ops import (
-    delete_line,
-    duplicate_line,
-    join_paragraph,
-    join_with_next_line,
-    move_line_down,
-    move_line_up,
-)
+from line_ops import join_with_next_line
 
 
 def register(api):
@@ -44,9 +43,4 @@ def register(api):
 
         return command
 
-    api.register_command("duplicate_line", _make_simple_command(duplicate_line))
-    api.register_command("delete_line", _make_simple_command(delete_line))
-    api.register_command("move_line_up", _make_simple_command(move_line_up))
-    api.register_command("move_line_down", _make_simple_command(move_line_down))
-    api.register_command("join_paragraph", _make_simple_command(join_paragraph))
     api.register_command("join_with_next_line", _make_simple_command(join_with_next_line))

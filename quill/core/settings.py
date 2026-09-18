@@ -536,6 +536,18 @@ class Settings:
     confirm_destructive_actions: bool = True
     default_export_preset: str = "html"
     default_new_document_format: str = "markdown"
+    # CRLF, like Notepad, WordPad, Word and QuillLite. A file that is OPENED
+    # keeps whatever line ending it had; this is only what a new document is
+    # born with (bad.md F11, P2.10).
+    default_line_ending: str = "crlf"
+    #: Reopen last session's documents at launch, which is what Notepad 11 and
+    #: QuillLite both do (bad.md G4, P2.12). Files named on the command line
+    #: always win: somebody who double-clicked a file asked for that file.
+    restore_session: bool = True
+    #: The paths that were open when QUILL last exited, saved documents only --
+    #: an untitled window has nothing to reopen *from*, and its content is the
+    #: recovery store's business, which is a different promise.
+    session_files: list[str] = field(default_factory=list)
     # How QUILL writes a hard line break in Markdown: "backslash" (audible,
     # survives a trailing-whitespace strip) or "spaces" (the older two-space
     # spelling). Both are always *read*; this chooses what is written (#1488).
@@ -1272,6 +1284,16 @@ class Settings:
         )
         if default_new_document_format not in {"markdown", "text", "html"}:
             default_new_document_format = "markdown"
+        default_line_ending = str(data.get("default_line_ending", "crlf")).strip().lower()
+        if default_line_ending not in {"crlf", "lf"}:
+            default_line_ending = "crlf"
+        restore_session = bool(data.get("restore_session", True))
+        raw_session = data.get("session_files", [])
+        session_files = (
+            [str(entry) for entry in raw_session if str(entry).strip()][:20]
+            if isinstance(raw_session, list)
+            else []
+        )
         markdown_hard_break_style = normalise_hard_break_style(
             data.get("markdown_hard_break_style", "backslash")
         )
@@ -1768,6 +1790,9 @@ class Settings:
             confirm_destructive_actions=confirm_destructive_actions,
             default_export_preset=default_export_preset,
             default_new_document_format=default_new_document_format,
+            default_line_ending=default_line_ending,
+            restore_session=restore_session,
+            session_files=session_files,
             markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,
             autoformat_dashes=autoformat_dashes,

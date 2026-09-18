@@ -226,6 +226,12 @@ class _TabWindow(_Window):
     def describe_indent_at_cursor(self) -> str:
         return "4 spaces"
 
+    def markup_surface(self) -> str | None:
+        """What kind of document this is, which is what decides Tab's meaning
+        until somebody uses the toggle (bad.md T3, P1.21). None is a plain
+        document, where Tab types a tab."""
+        return None
+
 
 class _ShiftKeyEvent(_KeyEvent):
     def __init__(self, code: int, *, shift: bool = False) -> None:
@@ -281,6 +287,10 @@ def test_shift_tab_outdents_in_either_mode() -> None:
 
 
 def test_toggling_tab_mode_says_which_way_it_went() -> None:
+    """The first press flips away from whatever the document kind was saying.
+
+    A plain document types a tab (bad.md T3), so the first toggle indents.
+    """
     win = _TabWindow()
 
     win.cmd_toggle_tab_mode()

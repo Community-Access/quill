@@ -542,6 +542,7 @@ def main() -> int:
                 diagnostics_mode=diagnostics_mode,
                 cold_import_seconds=_import_main_frame_seconds,
                 persona_name=parsed.persona,
+                document_kind=parsed.document_kind,
             )
         finally:
             release_primary_instance()
@@ -622,6 +623,26 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
         metavar="NAME",
         help="Launch directly into a saved Work Persona (Tools > Work Personas...).",
     )
+    # QuillLite's two, and the reason A7 was not the one-liner it looked: QUILL
+    # had no "start a document in this kind" seam at all until 2026-09-17
+    # (bad.md P2.16, P1.13). Mutually exclusive, because "--rich --plain" has no
+    # sensible answer and argparse can say so better than we can.
+    kind = parser.add_mutually_exclusive_group()
+    kind.add_argument(
+        "--rich",
+        dest="document_kind",
+        action="store_const",
+        const="rtf",
+        help="Start with a new rich text document.",
+    )
+    kind.add_argument(
+        "--plain",
+        dest="document_kind",
+        action="store_const",
+        const="plain",
+        help="Start with a new plain text document.",
+    )
+    parser.set_defaults(document_kind=None)
     return parser.parse_args(arguments)
 
 

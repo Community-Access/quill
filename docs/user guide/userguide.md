@@ -8283,6 +8283,9 @@ Quill's current settings and customization surface covers the things you are mos
 - active keyboard pack
 - custom keybindings through the keymap editor
 - status-bar order and status-bar visibility
+- **reopen last session's documents** (`restore_session`) -- on by default, the way Notepad 11 and QuillLite both behave. The list of what was open is kept in `session_files`; a file you open from Explorer or the command line always wins, and is opened *instead* of the session rather than on top of it.
+- **line endings for new documents** (`default_line_ending`) -- Windows (CR LF) by default, which is what Notepad, WordPad, Word and QuillLite all write. Set it to Unix (LF) if you would rather. A file you *open* always keeps the line endings it already had, whichever this says; the choice only decides what a brand-new document starts with.
+- **the format a new document starts in** (`default_new_document_format`) -- Markdown, plain text or HTML. **File -> New Rich Text Document** (Ctrl+Shift+N) and **New Plain Text Document** (Ctrl+Alt+N) start one in that kind whatever the setting says, and `quill --rich` / `quill --plain` do the same from a command line.
 
 Some of these live in the View menu for quick toggling; the preference-style toggles now live in the **Settings** dialog (**Tools -> Customize & Support -> Preferences...**). Others live in **Profiles and Features...**, **Status Bar Layout...**, **Keymap Editor...**, and the related customization commands under **Tools -> Customize & Support**.
 

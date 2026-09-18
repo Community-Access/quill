@@ -171,6 +171,18 @@ class LineCommandsMixin:
         )
 
     def quote_lines(self) -> None:
+        """Quote the lines, in whatever this document's markup calls a quote.
+
+        One verb since 2026-09-18 (bad.md 7.1, P2.5). `format.blockquote` was a
+        second command, on a second chord, in a second menu, doing the same
+        thing to the same lines -- in Markdown, literally the same `> `. The
+        only difference that was ever real is HTML, where a quote needs a
+        wrapper as well as per-line markers, so that is the branch that
+        survived; everything else is this one.
+        """
+        if self._effective_markup_kind() == "html":
+            self.format_blockquote()
+            return
         self._apply_text_block_operation(_quote_lines, "Quoted lines")
 
     def unquote_lines(self) -> None:

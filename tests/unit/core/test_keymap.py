@@ -199,7 +199,11 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # (sibling-app) command that this build knows nothing about.
     save_keymap({
         "file.save": "Ctrl+Alt+Shift+F5",  # valid override, must survive
-        "a.sibling_app_command": "Ctrl+Alt+X",  # unknown id, now preserved
+        # A chord no command in THIS build claims, which is the point of the
+        # row: it is a newer sibling app's. It was Ctrl+Alt+X until 2026-09-18,
+        # when Exchange Cursor and Mark took that (bad.md P1.2) and the guard
+        # correctly started dropping one of the two.
+        "a.sibling_app_command": "Ctrl+Alt+Shift+F12",  # unknown id, now preserved
         "app.command_palette": "Ctrl+S",  # the key Save just vacated
     })
 
@@ -209,7 +213,7 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # is not what decides this: it is a suggestion, and the user gave an
     # instruction.
     assert loaded["file.save"] == "Ctrl+Alt+Shift+F5"
-    assert loaded["a.sibling_app_command"] == "Ctrl+Alt+X"  # preserved
+    assert loaded["a.sibling_app_command"] == "Ctrl+Alt+Shift+F12"  # preserved
     assert loaded["app.command_palette"] == "Ctrl+S"
 
     # And nothing ended up on two commands at once, which is the property the
@@ -222,7 +226,7 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
         "file.save": "Ctrl+Alt+Shift+F5",
-        "a.sibling_app_command": "Ctrl+Alt+X",
+        "a.sibling_app_command": "Ctrl+Alt+Shift+F12",
         "app.command_palette": "Ctrl+S",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
@@ -483,9 +487,12 @@ def test_quote_lines_default_is_ctrl_shift_q() -> None:
     # #608: Quote Lines moved from Ctrl+Q to Ctrl+Shift+Q so Ctrl+Q is
     # free for the system Quit shortcut on macOS (Cmd+Q in wxPython).
     assert DEFAULT_KEYMAP["edit.quote_lines"] == "Ctrl+Shift+Q"
-    # Unquote Lines moves from Ctrl+Shift+Q to Ctrl+Shift+K to keep
-    # the pair on the home row (Q -> K) and free Ctrl+Q entirely.
-    assert DEFAULT_KEYMAP["edit.unquote_lines"] == "Ctrl+Shift+K"
+    # Unquote Lines left Ctrl+Shift+K on 2026-09-18 for one modifier off its
+    # own twin: the blockquote merge freed Ctrl+Alt+Q for Duplicate Selection,
+    # which freed Ctrl+Alt+Shift+Q for this, which freed Ctrl+Shift+K for
+    # lowercase -- QuillLite's chord for it (bad.md P2.5, P1.2, P1.1).
+    assert DEFAULT_KEYMAP["edit.unquote_lines"] == "Ctrl+Alt+Shift+Q"
+    assert DEFAULT_KEYMAP["format.lower_case"] == "Ctrl+Shift+K"
 
 
 def test_app_exit_default_is_ctrl_q_for_macos_quit() -> None:
@@ -503,11 +510,15 @@ def test_legacy_quote_lines_ctrl_q_migrates_to_ctrl_shift_q() -> None:
     assert merged["edit.quote_lines"] == "Ctrl+Shift+Q"
 
 
-def test_legacy_unquote_lines_ctrl_shift_q_migrates_to_ctrl_shift_k() -> None:
-    # #608 mirror: A user who saved Ctrl+Shift+Q on edit.unquote_lines
-    # (the prior default) has it rewritten to Ctrl+Shift+K on load.
-    merged = keymap_module.merge_keymaps({"edit.unquote_lines": "Ctrl+Shift+Q"})
-    assert merged["edit.unquote_lines"] == "Ctrl+Shift+K"
+def test_legacy_unquote_lines_binding_follows_the_command() -> None:
+    """A saved binding from either prior default lands where the command is.
+
+    #608 moved it to Ctrl+Shift+K; the 2026-09-18 blockquote merge moved it on
+    to Ctrl+Alt+Shift+Q. Somebody who saved either one meant "Unquote Lines",
+    not "this key", and the curated rebinding is how they keep the command.
+    """
+    merged = keymap_module.merge_keymaps({"edit.unquote_lines": "Ctrl+Shift+K"})
+    assert merged["edit.unquote_lines"] == "Ctrl+Alt+Shift+Q"
 
 
 # ---------------------------------------------------------------------------
@@ -768,6 +779,10 @@ def test_authoring_chords_are_the_defaults() -> None:
       format.justify             Ctrl+Alt+J -> Ctrl+J (Word, WordPad and
                                  QuillLite all justify there).
 
+    Moved later, by the same authority (2026-09-17): power.insert_image gave
+    Ctrl+Alt+I to format.insert_markdown_tag, which is QuillLite's chord for it
+    and was listed as such in bad.md 3.7 before either moved.
+
     Kept, deliberately: format.insert_table stays on Ctrl+Alt+T, which is Trim
     Trailing Spaces in QuillLite. An authorized chord for a verb that builds
     structure outranks one that strips whitespace, so QUILL's trim took
@@ -782,10 +797,24 @@ def test_authoring_chords_are_the_defaults() -> None:
     assert DEFAULT_KEYMAP["edit.trim_trailing_whitespace"] == "Ctrl+Alt+R"
     assert DEFAULT_KEYMAP["format.toggle_bullet_list"] == "Ctrl+Shift+L"
     assert DEFAULT_KEYMAP["navigate.clear_numbered_bookmarks"] == "Ctrl+Alt+B"
-    assert DEFAULT_KEYMAP["format.toggle_numbered_list"] == "Ctrl+Alt+N"
-    assert DEFAULT_KEYMAP["power.insert_image"] == "Ctrl+Alt+I"
+    # Ctrl+Alt+N changed hands on 2026-09-17 by the 2026-09-16 decision: Numbered
+    # List folded into the Ctrl+Shift+L cycle and its chord went to New Plain
+    # Text Document, which is what QuillLite opens with it (bad.md P1.5a, 3.4).
+    assert DEFAULT_KEYMAP["file.new_plain_text_document"] == "Ctrl+Alt+N"
+    assert DEFAULT_KEYMAP["format.toggle_numbered_list"] == "Ctrl+Shift+Grave, Shift+L"
+    # Ctrl+Alt+I changed hands on 2026-09-17 by the same authorization that
+    # granted it: bad.md 3.7 gives it to Insert Markdown Tag, which is what it
+    # opens in QuillLite, and sends Insert Image one modifier over to the
+    # Ctrl+Shift+I the intake report vacated in the leader reclaim (P1.1, P1.11).
+    assert DEFAULT_KEYMAP["format.insert_markdown_tag"] == "Ctrl+Alt+I"
+    assert DEFAULT_KEYMAP["power.insert_image"] == "Ctrl+Shift+I"
     assert DEFAULT_KEYMAP["format.insert_table"] == "Ctrl+Alt+T"
-    assert DEFAULT_KEYMAP["format.blockquote"] == "Ctrl+Alt+Q"
+    # Block Quote gave Ctrl+Alt+Q to Duplicate Selection on 2026-09-18: it and
+    # Quote Lines were one verb registered twice, and in Markdown they wrote
+    # the identical "> " (bad.md 7.1, P2.5). The command survives for HTML,
+    # where a quote needs a wrapper, and is reached from the Format menu.
+    assert DEFAULT_KEYMAP["format.blockquote"] == ""
+    assert DEFAULT_KEYMAP["edit.duplicate_selection"] == "Ctrl+Alt+Q"
     assert DEFAULT_KEYMAP["format.horizontal_rule"] == "Ctrl+Alt+-"
     assert DEFAULT_KEYMAP["navigate.next_heading"] == "Ctrl+Alt+H"
     for level in range(1, 7):

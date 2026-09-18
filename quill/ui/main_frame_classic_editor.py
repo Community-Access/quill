@@ -116,21 +116,35 @@ class ClassicEditorMixin:
 
     # ----------------------------------- Describe character at cursor
     def describe_character(self) -> None:
-        """Show an accessible dialog describing the character at the cursor.
+        """Say which character is under the cursor.
 
         The screen-reader descendant of "Reveal Codes": it names the exact
-        character under the caret — its Unicode name, code point, category, and
-        plain-language notes for invisibles (no-break space, zero-width
-        characters, smart quotes, line endings). Rendered in the same read-only
-        dialog the F1 context help uses so a screen reader reads it in one pass.
+        character under the caret. Spoken, not shown, because the question this
+        key is pressed for -- hyphen or en dash? which kind of space? -- wants
+        an answer where you stand rather than a window to open, read and close.
+        The status bar gets the same sentence so it can be read again.
+
+        The full description (category, decimal code point, what this character
+        does to a search) is one key along, in ``describe_character_detail``.
+        QuillLite has split them this way since it shipped (bad.md P1.13).
+        """
+        description = describe_character(self.editor.GetValue(), self.editor.GetInsertionPoint())
+        # _set_status speaks it and leaves it in the status bar to be read
+        # again. An _announce beside it would say the same sentence twice
+        # (the #728 double-announce).
+        self._set_status(description.summary)
+
+    def describe_character_detail(self) -> None:
+        """The full character description, in a window that can be read line by line.
+
+        Rendered in the same read-only dialog the F1 context help uses: a screen
+        reader can put a cursor in it and arrow through, which is the difference
+        between a description you can study and one you hear once.
         """
         from quill.core.help import HelpTopic
         from quill.ui.context_help import ContextHelpDialog
 
-        text = self.editor.GetValue()
-        position = self.editor.GetInsertionPoint()
-        description = describe_character(text, position)
-        self._set_status(description.summary)
+        description = describe_character(self.editor.GetValue(), self.editor.GetInsertionPoint())
         topic = HelpTopic(
             id="character_inspector",
             title="Character at Cursor",

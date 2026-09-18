@@ -127,27 +127,49 @@ def test_selection_action_specs_adapt_to_scope_and_surface() -> None:
     assert "Toggle line comment" in line_markup
 
 
-def test_expand_then_shrink_selection_round_trips_through_the_stack() -> None:
+def test_expand_then_shrink_comes_back_without_a_stack() -> None:
+    """Characterises the behaviour, which is unchanged; the mechanism is gone.
+
+    There was a ``_selection_expand_stack`` here, and this test asserted the
+    push and the pop. It was never cleared, so expanding around one paragraph,
+    moving away and selecting something else, then pressing Shrink popped the
+    *earlier* span and jumped you there -- reproduced 2026-09-17 by
+    ``scripts/probe_rich_edits.py`` (bad.md L3).
+
+    Shrink computes from the text now, which is what QuillLite has always done.
+    What a characterization test should hold onto is the round trip a person
+    experiences -- expand, then shrink, and you are back where you were -- not
+    the list that used to implement it.
+    """
     frame = _bare()
     frame.editor = _FakeEditor("hello world", selection=(0, 0))
-    frame._selection_expand_stack = []
     statuses: list[str] = []
     frame._set_status = statuses.append  # type: ignore[method-assign]
     frame._announce_selection_scope = lambda *a, **k: None  # type: ignore[method-assign]
 
+    # Twice: the first expansion takes the word, and a word has nothing
+    # smaller inside it. The old stack would have "shrunk" a word back to the
+    # EMPTY selection it was pushed from and announced that it had shrunk
+    # something -- which is the second half of L3, and is why the round trip
+    # has to be tested from a unit that really contains another one.
     frame.expand_selection()
-    # The pre-expand range is pushed so shrink can restore it.
-    assert frame._selection_expand_stack == [(0, 0)]
+    frame.expand_selection()
     expanded = frame.editor.GetSelection()
     assert expanded != (0, 0)
 
     frame.shrink_selection()
-    assert frame._selection_expand_stack == []
-    assert frame.editor.GetSelection() == (0, 0)
+    shrunk = frame.editor.GetSelection()
+    assert shrunk != expanded, "shrink did nothing"
+    assert shrunk[0] >= expanded[0] and shrunk[1] <= expanded[1], (
+        f"shrank outside what was selected: {expanded} -> {shrunk}"
+    )
 
-    # Shrinking with an empty stack is a no-op that announces, not an error.
+    # And with nothing smaller left it says so rather than raising -- the
+    # sentence changed with the mechanism, because "No selection to shrink" was
+    # about the empty stack and there is no stack to be empty.
+    frame.editor = _FakeEditor("a", selection=(0, 1))
     frame.shrink_selection()
-    assert statuses[-1] == "No selection to shrink"
+    assert statuses[-1] == "Nothing smaller to select"
 
 
 # ---------------------------------------------------------------------------
@@ -201,23 +223,27 @@ def test_prompt_to_save_active_document_decision_table() -> None:
     frame.save_file = lambda: setattr(frame.document, "modified", False)  # type: ignore[method-assign]
 
     # Clean document: returns True and never prompts.
-    frame.document = SimpleNamespace(modified=False)
+    # The stub carries a name because the question names the document now
+    # (bad.md F12): with nine tabs open and no title bar to glance at, "you
+    # have unsaved changes" is the right question about the wrong number of
+    # documents.
+    frame.document = SimpleNamespace(modified=False, name="note.md")
     assert frame._prompt_to_save_active_document("closing") is True
     assert prompt_calls == []
 
     # Cancel: abort the action.
-    frame.document = SimpleNamespace(modified=True)
+    frame.document = SimpleNamespace(modified=True, name="note.md")
     frame._next_prompt_result = frame._wx.ID_CANCEL
     assert frame._prompt_to_save_active_document("closing") is False
 
     # Save: saves, then reports success because the doc is now clean.
-    frame.document = SimpleNamespace(modified=True)
+    frame.document = SimpleNamespace(modified=True, name="note.md")
     frame._next_prompt_result = frame._wx.ID_YES
     assert frame._prompt_to_save_active_document("closing") is True
     assert frame.document.modified is False
 
     # Don't Save: proceed without saving.
-    frame.document = SimpleNamespace(modified=True)
+    frame.document = SimpleNamespace(modified=True, name="note.md")
     frame._next_prompt_result = frame._wx.ID_NO
     assert frame._prompt_to_save_active_document("closing") is True
     assert frame.document.modified is True

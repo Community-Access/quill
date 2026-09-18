@@ -117,23 +117,23 @@ def test_words_function_keys_are_aliases_not_moves(command_id: str, chord: str) 
     assert DEFAULT_KEYMAP[command_id] not in ("", chord)
 
 
-def test_list_bookmarks_promoted_its_alias_rather_than_finding_a_new_chord() -> None:
-    """The one row that left this list, and the reason it is worth a test of
-    its own rather than a deletion.
+def test_list_bookmarks_kept_every_chord_it_has_ever_had() -> None:
+    """Three chords in three days, and not one of them dropped.
 
     ``navigate.list_bookmarks`` held ``Alt+Shift+B`` with ``Ctrl+Shift+F5`` --
-    Word's own Bookmark key -- as an alias beside it. When the whole-bar status
-    switch took ``Alt+Shift+B`` on 2026-09-17 (QuillLite's chord for it, and
-    Notepad's), the displacement cost nothing: the alias was already a chord
-    people could be using, so it was promoted rather than replaced, and the
-    alias row went because a command cannot alias its own primary.
+    Word's own Bookmark key -- as an alias beside it. The whole-bar status
+    switch took ``Alt+Shift+B`` (Notepad's chord for it, and QuillLite's) and
+    the alias was promoted rather than replaced, which is the cheap shape of a
+    move. Then rule 6 gave the command QuillLite's own ``Alt+Shift+G`` as the
+    primary (bad.md P1.15), and Word's key went back to being the alias.
 
-    That is the cheap shape of a move and the one to look for first. This
-    asserts it stayed cheap -- that nobody later gave the command a *third*
-    chord and left this one stranded.
+    Both of the earlier chords still reach it -- one as the live alias, one
+    through ``legacy_rebindings`` -- which is the whole point. A person does not
+    care which of the three they learned; they care that the one in their hands
+    still opens the list.
     """
-    assert DEFAULT_KEYMAP["navigate.list_bookmarks"] == "Ctrl+Shift+F5"
-    assert "navigate.list_bookmarks" not in DEFAULT_ALIASES
+    assert DEFAULT_KEYMAP["navigate.list_bookmarks"] == "Alt+Shift+G"
+    assert DEFAULT_ALIASES["navigate.list_bookmarks"] == "Ctrl+Shift+F5"
 
 
 def test_the_shortcut_list_alias_is_quilllites_chord() -> None:

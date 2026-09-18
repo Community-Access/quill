@@ -68,26 +68,32 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # #1246: Ctrl+T opens a new document tab in the current notebook window
     # (a second entry point to New; Ctrl+N stays bound to file.new).
     "window.new_document_tab": "Ctrl+T",
+    # QuillLite's chords: a document started in the kind you meant, rather than
+    # one you make and convert (bad.md P1.13, 3.7). Ctrl+Alt+N came free when
+    # Numbered List folded into the Ctrl+Shift+L cycle.
+    "file.new_rich_document": "Ctrl+Shift+N",
+    "file.new_plain_text_document": "Ctrl+Alt+N",  # §edsharp-ok — QuillLite's chord
     "file.open": "Ctrl+O",
     "file.save": "Ctrl+S",
     "file.save_as": "Ctrl+Shift+S",
-    "file.open_from_remote": "Ctrl+Shift+Grave, Shift+O",  # QUILL-key chord (R taken by read-aloud)
-    "file.save_to_remote": "Ctrl+Shift+Grave, W",  # QUILL-key chord
-    "file.manage_remote_sites": "Ctrl+Shift+Grave, Shift+M",  # QUILL-key chord
-    # GitHub remote (File > Open from Remote submenu). The single-letter
-    # chord space is nearly full (every unshifted A-Z is taken; see the
-    # github.* block below), so these five take the last free Shift+
-    # letters — I for Items is the one strong mnemonic left.
-    "file.open_github_repository": "Ctrl+Shift+Grave, Shift+Y",  # QUILL-key chord
-    "file.open_github_file_url": "Ctrl+Shift+Grave, Shift+W",  # QUILL-key chord
-    "file.github_save_back": "Ctrl+Shift+Grave, Shift+Q",  # QUILL-key chord
-    "file.github_manage_accounts": "Ctrl+Shift+Grave, Shift+Z",  # QUILL-key chord
-    "file.open_github_items": "Ctrl+Shift+Grave, Shift+I",  # QUILL-key chord (I = Items)
+    # The leader reclaim (bad.md 5.9, P1.11): eight of its sixteen positions.
+    # Nobody presses a chord to rename a repository, and what these gave up is
+    # what section 3's editing-loop relocations needed. Menu and palette only.
+    "file.open_from_remote": "",
+    "file.save_to_remote": "",
+    "file.manage_remote_sites": "",
+    "file.open_github_repository": "",
+    "file.open_github_file_url": "",
+    "file.github_save_back": "",
+    "file.github_manage_accounts": "",
+    "file.open_github_items": "",
     "file.close_document": "Ctrl+W",
     "file.print": "Ctrl+P",
     # Restore points: no default key (assignable); the File menu item is the
     # primary path.
-    "file.restore_previous_version": "",
+    # QuillLite's chord, freed by tools.ai_switch_engine vacating the AI class
+    # (bad.md P1.1, P1.11). The File menu was the only way in before.
+    "file.restore_previous_version": "Ctrl+Alt+Shift+E",
     # On macOS, wx's ACCEL_CTRL maps to Cmd (not the physical Control key) in
     # the accelerator table, so "Ctrl+Tab" here becomes Cmd+Tab -- macOS's own
     # reserved App Switcher shortcut, which never reaches the app. A literal
@@ -153,11 +159,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.match_bracket": "Ctrl+Shift+\\",
     "navigate.next_structure": "Alt+Down",
     "navigate.previous_structure": "Alt+Up",
-    "navigate.heading_organizer": "Ctrl+Shift+Grave, O",
+    # Rule 6, found by the parity table (bad.md P1.15): QuillLite reaches the
+    # heading organiser on Alt+Shift+O and QUILL had it on the leader.
+    "navigate.heading_organizer": "Alt+Shift+O",
     # Word's own Bookmark key. Alt+Shift+B went to view.toggle_status_bar on
     # 2026-09-16, which is Notepad's chord for it and QuillLite's; this was
     # already an alias here, so the displacement cost nothing (bad.md P1.10).
-    "navigate.list_bookmarks": "Ctrl+Shift+F5",
+    # QuillLite's chord as the primary, Word's as the alias below (bad.md 3.5).
+    "navigate.list_bookmarks": "Alt+Shift+G",
     # Notepad's View > Status Bar, and QuillLite's. QUILL could hide any one
     # cell and not the bar itself (bad.md G3, P1.10).
     "view.toggle_status_bar": "Alt+Shift+B",
@@ -193,6 +202,32 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # support#67: bare Alt+Q is a macOS Option deadkey -- disable on darwin
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "tools.ask_quill_chat": "" if sys.platform == "darwin" else "Alt+Q",
+    # Thirteen commands that had no DEFAULT_KEYMAP entry at all and were bound
+    # (or listed unbound) only in the shipped "QUILL Default" profile. That was
+    # backwards: the profile is a delta over these defaults, so a command
+    # absent here is a command the Keyboard Manager and the generated reference
+    # cannot see, and one a profile could silently pin (bad.md P2.6).
+    #
+    # Three take positions the leader reclaim freed, with the mnemonic the
+    # stale profile had chosen: Q for quiet, M for meeting, Z for undo. The
+    # rest ship unbound, which is a decision rather than an omission now.
+    "tools.ask_quill_conversation": "Alt+Shift+Q",
+    "verbosity.toggle_quiet": "Ctrl+Shift+Grave, Shift+Q",
+    "verbosity.toggle_meeting": "Ctrl+Shift+Grave, Shift+M",
+    # NOT Ctrl+Shift+Z, which the profile pinned and which is Quick Nav here
+    # since 2026-09-16 -- the collision that shipped invisibly for a year.
+    "verbosity.undo": "Ctrl+Shift+Grave, Shift+Z",
+    "verbosity.history": "",
+    "verbosity.preferences": "",
+    "verbosity.where_am_i": "",
+    "verbosity.what_changed": "",
+    "verbosity.speak_status": "",
+    "tools.voice_command": "",
+    "tools.voice_conversation": "",
+    "tools.voice_wakeword": "",
+    "tools.voice_status": "",
+    "tools.table_studio": "",
+    "tools.csv_studio": "",
     # Quiet mode. Alt+Shift+M for mute, and the same chord in QuillLite --
     # one key for one idea, in both editors, because "make it stop" is the
     # command somebody reaches for without wanting to think about which
@@ -200,6 +235,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.sound_toggle": "Alt+Shift+M",
     "tools.word_count": "Ctrl+Shift+G",
     "tools.spell_check_dialog": "F7",
+    # The window that decides how a misspelling is SAID (bad.md 3.6, P1.14).
+    # QUILL had the twelve settings and no way to reach them except by finding
+    # twelve rows among four hundred.
+    #
+    # One key below QuillLite's Ctrl+Alt+Shift+F7, and that is the whole
+    # divergence: QUILL carries the QuillVille launchers on
+    # Ctrl+Alt+Shift+F7..F12 and QuillLite, being the editor on its own, has no
+    # siblings to launch. Same modifiers, one F-key down, so the habit still
+    # transfers. Recorded in lite/parity.py DIVERGENCES (rule 11).
+    "tools.spelling_announcements": "Ctrl+Alt+Shift+F6",
     # tools.spell_check_ranked retired 2026-09-16: ranked review is the F7
     # dialog's own checkbox, so it is one dialog with one key instead of the
     # same dialog on two (bad.md P0.3). Alt+Shift+F7 is Spelling for This
@@ -234,8 +279,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.page_setup": "Ctrl+Alt+P",
     "edit.remove_duplicate_lines": "Ctrl+Alt+D",
     "edit.sort_lines_ascending": "Ctrl+Alt+S",
+    # Sort Z to A, on QuillLite's chord, freed by tools.ai_spell_check
+    # vacating the AI class (bad.md P1.1, P1.11).
+    "edit.sort_lines_descending": "Ctrl+Alt+Shift+S",
     "format.upper_case": "Ctrl+Shift+U",
     "format.title_case": "Ctrl+Shift+T",
+    # QuillLite's chord, free at last: the blockquote merge moved Duplicate
+    # Selection to Ctrl+Alt+Q, which moved Unquote Lines to Ctrl+Alt+Shift+Q,
+    # which let go of this one (bad.md P1.1, P1.2, P2.5 -- a four-link chain,
+    # and the reason this command waited two days for a key).
+    "format.lower_case": "Ctrl+Shift+K",
     "navigate.next_heading": "Ctrl+Alt+H",
     # Shift for backwards, which is the pattern every other pair in this file
     # follows. It cost tools.ai_thesaurus its H; that moved one letter over in
@@ -249,6 +302,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.body_text": "Ctrl+Alt+0",
     "navigate.set_language": "Ctrl+Alt+F6",
     "power.describe_character": "Ctrl+Shift+C",
+    # The detail window, on QuillLite's chord: Ctrl+Shift+C speaks the answer,
+    # this one is for studying it (bad.md P1.13).
+    "power.describe_character_detail": "Ctrl+Alt+C",  # §edsharp-ok — QuillLite's chord
     "view.toggle_spellcheck_as_you_type": "Ctrl+Alt+F7",
     "tools.check_updates": "Ctrl+Alt+U",
     "help.about_quill": "Shift+F1",
@@ -312,8 +368,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # menu" is a cost a screen-reader user pays on every visit, not once.
     "tools.keymap_editor": "Ctrl+Alt+Shift+R",
     "tools.sound_events": "Ctrl+Alt+Shift+O",
-    "file.add_favorite_folder": "",
-    "file.remove_favorite_folder": "",
+    # Open is leader G; its two managing verbs take two positions the reclaim
+    # freed (bad.md 3.5). Keyless before, because the leader was full.
+    "file.add_favorite_folder": "Ctrl+Shift+Grave, Shift+F",  # F = Favourite, add
+    "file.remove_favorite_folder": "Ctrl+Shift+Grave, Shift+X",  # X = remove, as elsewhere
     # Folds take the Shift+bracket pair beside Ctrl+[ / Ctrl+] outdent and
     # indent, which is where every code editor puts folding. This frees
     # Ctrl+Alt+Shift+L for List Studio and Ctrl+Alt+Shift+F for Search in
@@ -326,7 +384,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Inline notes (sticky, content-anchored annotations).
     "notes.add_inline_note": "Alt+Shift+I",
     "notes.next_inline_note": "Alt+Shift+J",
-    "notes.previous_inline_note": "Alt+Shift+G",
+    # Alt+Shift+K, because Alt+Shift+G is Go to Bookmark in QuillLite and a
+    # bookmark list is a verb both products have (rule 2; bad.md 3.5, P1.15).
+    # Alt+Shift+K came free when keep_unique_lines retired the same day.
+    "notes.previous_inline_note": "Alt+Shift+K",
     "notes.speak_inline_note": "Alt+Shift+H",
     "tools.read_aloud_start_pause": "Ctrl+Shift+Grave, R",  # §10.8.2: P→R
     "tools.read_aloud_stop": "Ctrl+Shift+Grave, Shift+R",  # §10.8.2: Shift+P→Shift+R
@@ -387,7 +448,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.dictation_emergency_stop": "Escape",  # consumed only while recording
     "tools.dictation_cancel": "Shift+Escape",  # consumed only while recording
     "tools.describe_image": "Ctrl+Shift+Grave, I",
-    "tools.document_intake_report": "Ctrl+Shift+I",
+    # To the leader (bad.md 3.7): read once when a file arrives, not an
+    # editing-loop verb -- and Ctrl+Shift+I is where Insert Image goes, so
+    # Ctrl+Alt+I can be Insert Markdown Tag as it is in QuillLite.
+    "tools.document_intake_report": "Ctrl+Shift+Grave, Shift+I",  # I = Intake
     # #357 keymap consolidation: AI commands move from inline F7/Shift+F7/F8/
     # Shift+F8/Ctrl+Shift+T accelerators (which collided with the selection
     # bindings at F8/Shift+F8/Ctrl+F8) to Ctrl+Alt+Shift+ chords, matching
@@ -396,12 +460,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # reader binding each chord displaces (NVDA review-cursor for the
     # chord class; F7/F8 selection-start/complete for the displaced
     # inline accelerators).
-    "tools.ai_spell_check": "Ctrl+Alt+Shift+S",  # §edsharp-ok — AI reserved chord class
-    "tools.ai_spell_check_interactive": "Ctrl+Alt+Shift+I",  # §edsharp-ok — AI reserved chord class
-    "tools.ai_grammar_style": "Ctrl+Alt+Shift+G",  # §edsharp-ok — AI reserved chord class
-    "tools.ai_translate_selection": "Ctrl+Alt+Shift+T",  # §edsharp-ok — AI reserved chord class
-    "tools.ai_thesaurus": "Ctrl+Alt+Shift+M",  # §edsharp-ok — AI class; M for synonyMs
-    "tools.ai_switch_engine": "Ctrl+Alt+Shift+E",  # §edsharp-ok — AI reserved chord class
+    # The six AI commands vacate Ctrl+Alt+Shift+{S,I,G,T,M,E} (bad.md P1.11,
+    # decided 2026-09-16). QuillLite spends the same six on editing verbs, and
+    # rule 2 gives a chord to the command both products have. AI keeps its
+    # menu, the palette and Alt+Q.
+    "tools.ai_spell_check": "",
+    "tools.ai_spell_check_interactive": "",
+    "tools.ai_grammar_style": "",
+    "tools.ai_translate_selection": "",
+    "tools.ai_thesaurus": "",
+    "tools.ai_switch_engine": "",
     # #357 keymap consolidation: compare commands move from inline
     # F8/Shift+F8/Ctrl+F8 accelerators (colliding with the selection
     # bindings) to the same Ctrl+Alt+Shift+ chord class as the AI
@@ -493,7 +561,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # x.md authoring chord moves by explicit authorization (2026-09-16) and
     # becomes QuillLite's Remove Every Blank Line (bad.md 3.1, 3.2, P0.6).
     "edit.insert_link": "Ctrl+K",
-    "edit.insert_equation": "Ctrl+Shift+E",  # #1197 — math authoring chord
+    # Off Ctrl+Shift+E (Select Line in both since 2026-09-17, bad.md 3.3) to the
+    # sign it draws; an equation is a once-a-document insert.
+    "edit.insert_equation": "Ctrl+Alt+=",  # #1197 — math authoring chord
     # #1304: both ship unbound. The QUILL-key namespace has no free letter left,
     # and taking one from an existing command would cost a binding people already
     # use to buy one they have never had. Both are in the command palette and
@@ -549,12 +619,19 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "view.focus_preview": "Alt+F6",
     # The Document Format switcher (One Editor, Every Format): took over the
     # chord the retired Rich text lens command held.
-    "format.switch_document_format": "Ctrl+Shift+Grave, K",
+    # QuillLite reaches this on a plain chord and QUILL had it on the leader,
+    # which rule 6 forbids: nothing QuillLite reaches on a plain chord lives on
+    # QUILL's leader (bad.md 3.8, P1.2). Leader K is free.
+    "format.switch_document_format": "Alt+Shift+F",
     "edit.set_mark": "Ctrl+Shift+M",
     # Ctrl+M becomes Cmd+M on macOS (system Minimize) -- dead by default. The
     # darwin alternate Cmd+Alt+M avoids Minimize (#31).
     "edit.pop_mark": "Cmd+Alt+M" if sys.platform == "darwin" else "Ctrl+M",
-    "edit.exchange_point_mark": "Ctrl+Shift+X",
+    # QuillLite's three, and the last of the structural six to converge
+    # (bad.md 3.3, P1.2). Exchange moves one modifier over so Expand can have
+    # the chord it has in QuillLite, and Shrink sits beside it where every
+    # other pair in this file puts the reverse of a verb.
+    "edit.exchange_point_mark": "Ctrl+Alt+X",  # §edsharp-ok — QuillLite's chord
     # support#67: bare Alt+M is a macOS Option deadkey -- disable on darwin
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "edit.list_marks": "" if sys.platform == "darwin" else "Alt+M",
@@ -563,8 +640,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # editing loop. The authoring chord moves by explicit authorization
     # (2026-09-16); Ctrl+Alt+Shift+P is now free (bad.md 3.3, P0.5).
     "edit.select_paragraph": "Ctrl+Shift+H",
-    "edit.select_word": "Ctrl+Alt+W",  # §edsharp-ok — authoring chord
-    "edit.select_line": "Ctrl+Alt+E",  # §edsharp-ok — authoring chord
+    # QuillLite's chord, free since Document Statistics took Ctrl+Shift+G, and
+    # it returns Ctrl+Alt+W to Line Statistics (bad.md 3.1, 3.3).
+    "edit.select_word": "Ctrl+Shift+W",
+    # QuillLite's chord (bad.md 3.3); the Ctrl+Alt+E it gives up is File Format
+    # there and now here too.
+    "edit.select_line": "Ctrl+Shift+E",
+    # QuillLite's File Format window: the encoding and the line endings in one
+    # place, which QUILL could read in the status bar and change nowhere
+    # (bad.md 3.7, P1.8, F6).
+    "file.file_format": "Ctrl+Alt+E",  # §edsharp-ok — QuillLite's chord
     # QuillLite's chord for the same command, and Ctrl+Shift+B is Set
     # Bookmark in both from 2026-09-16 (bad.md 3.3, 3.5).
     "edit.select_block": "Ctrl+Alt+Shift+B",
@@ -573,8 +658,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # J and Shift+J were free in the QUILL-key second-key space (verified
     # against DEFAULT_KEYMAP and both profile JSONs); they sit adjacent to
     # the existing I/H/G group of navigate/contrast/chord-prefix neighbours.
-    "edit.expand_selection": "Ctrl+Shift+Grave, J",  # was Alt+Shift+Up (§edsharp-ok)
-    "edit.shrink_selection": "Ctrl+Shift+Grave, Shift+J",  # was Alt+Shift+Down (§edsharp-ok)
+    "edit.expand_selection": "Ctrl+Shift+X",  # was Alt+Shift+Up (§edsharp-ok)
+    "edit.shrink_selection": "Ctrl+Alt+Shift+X",  # was Alt+Shift+Down (§edsharp-ok)
     "format.move_section_up": "Alt+Shift+Up",  # §edsharp-ok — markdown/html only
     "format.move_section_down": "Alt+Shift+Down",  # §edsharp-ok — markdown/html only
     "edit.set_named_mark": "",
@@ -591,11 +676,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # to stay in the home row). The legacy_rebinding entries below
     # rewrite the prior pair on load for users who saved them to disk.
     "edit.quote_lines": "Ctrl+Shift+Q",  # §4.22 advanced-editor parity; #608
-    "edit.unquote_lines": "Ctrl+Shift+K",  # §4.22 advanced-editor parity; #608
-    "edit.duplicate_selection": "Ctrl+Alt+Shift+Q",  # §4.17 avoided Ctrl+D, not this
+    "edit.unquote_lines": "Ctrl+Alt+Shift+Q",  # one modifier off its twin; #608
+    # §edsharp-ok — QuillLite's chord (§4.17 avoided Ctrl+D, not this one).
+    "edit.duplicate_selection": "Ctrl+Alt+Q",
     "edit.reverse_lines": "Alt+Shift+Z",  # §4.22 advanced-editor parity
     "format.toggle_line_comment": "Ctrl+/",
-    "format.toggle_block_comment": "Shift+Alt+A",
+    # Rule 2: Alt+Shift+A is Expand Abbreviations in QuillLite, a verb both
+    # products have, so it goes to the command both have and block comment --
+    # a code-editor verb QuillLite does not have at all -- takes the chord
+    # beside its line-comment twin (bad.md 3.4, 3.7, P1.15).
+    "format.toggle_block_comment": "Ctrl+Shift+/",
     "format.indent": "Ctrl+]",
     "format.outdent": "Ctrl+[",
     # Line surgery. QUILL has registered all five of these for a long time and
@@ -640,7 +730,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Toggle the Tab key between smart indent and literal tab insertion.
     # Bound to a QUILL-key chord: plain Ctrl+M / Ctrl+Shift+M are the mark ring,
     # and Ctrl+Alt+ chords are screen-reader-hostile (§10.8), so neither is usable.
-    "format.toggle_tab_insert_mode": "Ctrl+Shift+Grave, U",
+    # The chord tools.ai_spell_check_interactive vacated, which is what it is
+    # for: this is QuillLite's key for the same toggle (bad.md 3.4, P1.15).
+    "format.toggle_tab_insert_mode": "Ctrl+Alt+Shift+I",
     # Say the caret line's indentation on demand -- the one part of a line a
     # screen reader does not read back, and until now askable in neither
     # product. Ctrl+Alt+Shift+V carries no mnemonic and is not pretending to:
@@ -696,19 +788,29 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Ctrl+Alt+V is Paste from Tray in QuillLite, and the tray chooser takes
     # it here too.
     "edit.paste_plain_text": "Ctrl+Shift+V",
-    "format.toggle_numbered_list": "Ctrl+Alt+N",  # §edsharp-ok — authoring chord (x.md)
+    # Ctrl+Shift+L cycles bullets, numbers and off now (bad.md 0.6, 3.4), so the
+    # direct numbered verb is a once-in-a-while command and moves to a position
+    # the leader reclaim freed. It stays a command because HTML has no strip
+    # path and therefore no cycle. Ctrl+Alt+N goes to New Plain Text Document,
+    # which is what it opens in QuillLite.
+    "format.toggle_numbered_list": "Ctrl+Shift+Grave, Shift+L",
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
-    "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown
+    # QuillLite's chord (bad.md 3.7, P1.1); Insert Image moves one modifier over.
+    "format.insert_markdown_tag": "Ctrl+Alt+I",  # §edsharp-ok — authoring chord (x.md)
     # Format-aware structured inserts: direct authoring chords (x.md),
     # user-authorized; allow-listed in menu_lint, rebindable via editor.
     "format.insert_table": "Ctrl+Alt+T",  # §edsharp-ok — authorized authoring chord (x.md)
-    "format.blockquote": "Ctrl+Alt+Q",  # §edsharp-ok — authorized authoring chord (x.md)
+    # Ctrl+Alt+Q is Duplicate Selection now, which is what it means in QuillLite
+    # (bad.md 3.3, 0.6). Block Quote lost its chord to the merge above it: the
+    # command stays for the HTML branch and is reached from the Format menu and
+    # the palette, which is what a once-a-document structural insert wants.
+    "format.blockquote": "",
     # H is for Heading: Ctrl+Alt+H and Ctrl+Alt+Shift+H walk them in QuillLite,
     # and heading navigation is an editing-loop verb where inserting a rule is
     # a once-a-document one. The authoring chord moves to the key that draws
     # what a rule looks like (bad.md 3.5).
     "format.horizontal_rule": "Ctrl+Alt+-",
-    "power.insert_image": "Ctrl+Alt+I",  # §edsharp-ok — authoring chord (x.md)
+    "power.insert_image": "Ctrl+Shift+I",
     # Table cell navigation: move cell by cell inside a
     # pipe/Markdown table, hearing each cell + its position. Context-sensitive --
     # harmless outside a table. §edsharp-ok authoring/navigation chords.
@@ -744,7 +846,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # so it reaches the Command Palette and can be bound by anyone who wants it.
     "format.quick_insert": "",
     "format.new_abbreviation_from_clipboard": "",
-    "format.toggle_abbreviation_expansion": "Ctrl+Shift+Grave, E",
+    "format.toggle_abbreviation_expansion": "Alt+Shift+A",
     # List Studio had F2 and Insert Special Character Shift+F2. Both move:
     # F2 and Shift+F2 are Next and Previous Bookmark in QuillLite and in
     # every editor people arrive from, and walking bookmarks is an
@@ -774,18 +876,16 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "vault.sync": "",
     "vault.settings": "",
     "sync.sync_folder": "",
-    # GitHub repository admin (Tools > GitHub). Mnemonic where the alphabet
-    # allows it (F=Fork, V=Visibility, B=Branch default, L=Lock/protect,
-    # X=delete/remove, U=mUltiple); the rest take whatever Shift+ letter was
-    # still free once the read-only GitHub commands above claimed theirs.
-    "github.create_repository": "Ctrl+Shift+Grave, Shift+K",  # QUILL-key chord
-    "github.fork_repository": "Ctrl+Shift+Grave, Shift+F",  # QUILL-key chord (F = Fork)
-    "github.rename_repository": "Ctrl+Shift+Grave, Shift+E",  # QUILL-key chord
-    "github.change_repository_visibility": "Ctrl+Shift+Grave, Shift+V",  # V = Visibility
-    "github.change_default_branch": "Ctrl+Shift+Grave, Shift+B",  # B = Branch
-    "github.configure_branch_protection": "Ctrl+Shift+Grave, Shift+L",  # L = Lock/protect
-    "github.delete_branch": "Ctrl+Shift+Grave, Shift+X",  # QUILL-key chord (X = remove)
-    "github.commit_multiple_files": "Ctrl+Shift+Grave, Shift+U",  # U = mUltiple files
+    # GitHub repository admin (Tools > GitHub): the reclaim's other eight. Menu
+    # and palette only, like the Tier 2/3 commands below that never had a chord.
+    "github.create_repository": "",
+    "github.fork_repository": "",
+    "github.rename_repository": "",
+    "github.change_repository_visibility": "",
+    "github.change_default_branch": "",
+    "github.configure_branch_protection": "",
+    "github.delete_branch": "",
+    "github.commit_multiple_files": "",
     # GitHub Tier 2 (Organizations/Releases/Actions dispatch/Notifications/
     # Security alerts). No default chords -- the leader-chord space is fully
     # claimed; reachable via the menu and the Command Palette.
@@ -832,6 +932,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # converge, and it is in the parity gate's exception table.
     "power.remove_blank_lines": "Ctrl+Alt+K",
     "edit.trim_trailing_whitespace": "Ctrl+Alt+R",
+    # QuillLite's chord, freed by the AI class vacating (bad.md P1.1, P1.11).
+    "edit.normalize_whitespace": "Ctrl+Alt+Shift+T",
     # Five verbs QuillLite gave a key on 2026-09-16 and QUILL could only reach
     # by walking a menu, on the chords QuillLite uses -- all four of those were
     # free here, so there was nothing to trade (bad.md P1.1, rule 8). Line
@@ -842,8 +944,20 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.convert_indentation_to_tabs": "Alt+F12",
     "power.delete_lines_containing": "Alt+Shift+X",
     "power.hard_wrap_lines": "Alt+Shift+W",
-    "power.compute_line_statistics": "Ctrl+Alt+G",
-    "power.keep_unique_lines": "Alt+Shift+K",  # §4.22 Keep Unique parity
+    # QuillLite's chord, reachable now Select Word has moved (bad.md 3.7).
+    "power.compute_line_statistics": "Ctrl+Alt+W",
+    # The collector and the clip library, on QuillLite's chords (P1.12).
+    # Paste Collected is absent because QUILL has no such command yet;
+    # Ctrl+Alt+Shift+G is held open for it (C4).
+    "power.toggle_clipboard_collector": "Ctrl+Alt+G",
+    "edit.keep_selection_in_clip_library": "Ctrl+Alt+M",
+    "edit.open_clip_library": "Ctrl+Alt+Shift+M",
+    # power.keep_unique_lines retired 2026-09-18 (bad.md 7.1, P2.5): it and
+    # edit.remove_duplicate_lines called the SAME core function through two
+    # command ids, two chords and two sentences -- "Kept unique lines (removed
+    # duplicates)" and "Removed duplicate lines" -- which is one verb a listener
+    # has to learn twice and two places for the wording to drift. QuillLite has
+    # one, on Ctrl+Alt+D, and that is the one that survives. Alt+Shift+K is free.
     "quill.quick_nav.heading": "H",
     "quill.quick_nav.link": "A",
     "quill.quick_nav.list": "L",
@@ -896,9 +1010,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # One key along from Tutorials, and the family key for the same reason:
     # every app answers it with the same door to a person who can reply.
     "help.report_bug": "Ctrl+Alt+F2",
-    # §10.8 — magic paste moves to QUILL key, V (handled in QuillKeyMixin prefix
-    # state machine).  Ctrl+Alt+V removed — screen readers eat Ctrl+Alt+ chords.
-    "edit.magic_paste": "",
+    # Long said to "move to QUILL key, V"; it never did (leader V is Browser
+    # Preview), so it stayed menu-only. Leader Shift+V now (bad.md C9).
+    "edit.magic_paste": "Ctrl+Shift+Grave, Shift+V",
     # §CopyTray — Copy Tray slot access (12 slots).
     # Paste: Ctrl+Shift+N for N=1-9, Ctrl+Shift+0 for slot 10,
     #        Ctrl+Shift+- for slot 11, Ctrl+Shift+= for slot 12.
@@ -912,6 +1026,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # number: put this somewhere, and empty the whole thing (bad.md 3.7).
     "edit.clear_all_tray_slots": "Ctrl+Alt+Shift+Y",
     "edit.copy_to_next_slot": "Ctrl+Alt+Y",
+    # The chooser beside it, on QuillLite's chord: the next free slot is the
+    # right default and the wrong only option (bad.md P2.1, 5.1).
+    "edit.copy_to_tray_slot": "Alt+Shift+Y",
     "edit.search_tray_slots": "",
     "edit.copy_to_tray_1": "Ctrl+Shift+Grave, Shift+1",
     "edit.copy_to_tray_2": "Ctrl+Shift+Grave, Shift+2",
@@ -986,9 +1103,11 @@ DEFAULT_ALIASES: dict[str, str] = {
     "file.save_as": "F12",
     "file.open": "Ctrl+F12",
     "file.print": "Ctrl+Shift+F12",
-    # QuillLite's List Headings chord, pointed at QUILL's Outline Navigator:
-    # one list of the document's headings, reachable by either habit
-    # (bad.md P1.4). Ctrl+Shift+O remains the primary.
+    # Word's own Bookmark key, kept as a second route when QuillLite's
+    # Alt+Shift+G became the primary (bad.md 3.5, P1.15). It was the primary
+    # itself between 2026-09-16 and 2026-09-18, so legacy_rebindings carries
+    # the hop; anyone who learned it in that window still lands here.
+    "navigate.list_bookmarks": "Ctrl+Shift+F5",
     "navigate.outline_navigator": "Ctrl+Alt+L",
     # QuillLite reaches the shortcut list on Ctrl+F1; QUILL had it on
     # Alt+Shift+/, which is a chord you have to be told about.
@@ -1008,8 +1127,6 @@ def alias_for(command_id: str) -> str:
     """The second chord *command_id* also answers to, or ``""``."""
     return DEFAULT_ALIASES.get(command_id, "")
 
-
-_PROFILES_DIR = Path(__file__).resolve().parent / "keymap"
 
 # Uppercased prefix of the QUILL-key leader chord, used by the 0.8.0 beta
 # Find force in ``merge_keymaps`` to recognize any saved Find binding that
@@ -1116,41 +1233,6 @@ def load_keymap() -> dict[str, str]:
             # map in memory. The cleanup will retry on the next launch.
             logger.debug("Could not persist cleaned keymap to %s: %s", path, exc)
     return cleaned
-
-
-def load_keymap_profile(name: str) -> dict[str, str]:
-    """Return the merged keymap for a named JSON profile in quill/core/keymap/.
-
-    Falls back to DEFAULT_KEYMAP if the profile file is not found.
-    Profile names map to ``profile_<name>.json``; spaces are replaced with
-    underscores and the string is lower-cased.  Example: ``"Minimal"``
-    loads ``profile_minimal.json``.
-    """
-    slug = name.lower().replace(" ", "_")
-    profile_path = _PROFILES_DIR / f"profile_{slug}.json"
-    data = read_json(profile_path, default={})
-    if not isinstance(data, dict):
-        return DEFAULT_KEYMAP.copy()
-    bindings = data.get("bindings", {})
-    if not isinstance(bindings, dict):
-        return DEFAULT_KEYMAP.copy()
-    merged = DEFAULT_KEYMAP.copy()
-    merged.update({k: v for k, v in bindings.items() if isinstance(v, str)})
-    return merged
-
-
-def list_keymap_profiles() -> list[str]:
-    """Return the display names of available JSON profiles."""
-    profiles: list[str] = []
-    if not _PROFILES_DIR.is_dir():
-        return profiles
-    for path in sorted(_PROFILES_DIR.glob("profile_*.json")):
-        data = read_json(path, default={})
-        if isinstance(data, dict) and "_name" in data:
-            profiles.append(str(data["_name"]))
-        else:
-            logger.debug("Dropping malformed keymap profile: %s", path.name)
-    return profiles
 
 
 def save_keymap(keymap: dict[str, str]) -> None:
@@ -1307,10 +1389,21 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         # Ctrl+Shift+K to stay in the home row and free Ctrl+Q entirely.
         # Rewrite the prior pair on load for users who saved them.
         "edit.quote_lines": ("Ctrl+Q", "Ctrl+Shift+Q"),
-        "edit.unquote_lines": ("Ctrl+Shift+Q", "Ctrl+Shift+K"),
+        # Two hops now (#608, then the 2026-09-18 blockquote merge): a saved
+        # Ctrl+Shift+Q or Ctrl+Shift+K both mean "wherever Unquote Lines lives",
+        # and it lives on Ctrl+Alt+Shift+Q since Duplicate Selection took
+        # Ctrl+Alt+Q and lowercase took Ctrl+Shift+K (bad.md P2.5, P1.1).
+        "edit.unquote_lines": ("Ctrl+Shift+K", "Ctrl+Alt+Shift+Q"),
         # window.next_document / previous_document: Ctrl+Tab restored as default
         # in #190; no cross-platform legacy rebinding needed (the macOS-only
         # rewrite lives in the darwin block below).
+        # Three chords in three days (bad.md P1.10 then P1.15): Alt+Shift+B
+        # went to the status-bar switch, Word's Ctrl+Shift+F5 was promoted in
+        # its place, and QuillLite's Alt+Shift+G became the primary two days
+        # later. A saved Alt+Shift+B follows the command rather than colliding
+        # with the switch that now owns it; Ctrl+Shift+F5 needs no hop because
+        # it is still a live alias.
+        "navigate.list_bookmarks": ("ALT+SHIFT+B", "Alt+Shift+G"),
         "view.send_to_tray": ("CTRL+ALT+T", "Ctrl+Shift+Grave, T"),
         "view.toggle_tab_control": ("CTRL+ALT+SHIFT+T", "Ctrl+Shift+Grave, Shift+T"),
         "navigate.heading_organizer": ("CTRL+ALT+SHIFT+H", "Ctrl+Shift+Grave, O"),
@@ -1564,3 +1657,11 @@ def find_keymap_conflict(
         keymap, command_id, binding, quill_key_prefix=quill_key_prefix
     )
     return conflicts[0] if conflicts else None
+
+
+# The profile loader lives in keymap_profiles -- a separate concern, extracted
+# rather than grown (GATE-11). At the bottom: it reads DEFAULT_KEYMAP.
+from quill.core.keymap_profiles import (  # noqa: E402
+    list_keymap_profiles,
+    load_keymap_profile,
+)

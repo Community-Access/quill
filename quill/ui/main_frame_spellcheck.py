@@ -40,6 +40,48 @@ from quill.ui.dialog_contract import (
 
 
 class SpellcheckCommandsMixin:
+    def announce_spelling_state_if_skipped(self) -> bool:
+        """Say once, at open, that this file type is not checked as you type.
+
+        The one announcement this feature makes on its own, and QuillLite has
+        made it since it shipped (bad.md P1.14). Without it the difference
+        between "off for this file type" and "broken" is invisible, and nobody
+        can act on a silence they cannot explain -- which is the shape of every
+        bug report that says the spell checker stopped working.
+
+        The sentence names both ways out, because the person hearing it has
+        just been told a feature is off and will want one of the two.
+        """
+        from quill.core.spellcheck_filetypes import is_code_filename
+
+        if not getattr(self.settings, "spellcheck_as_you_type", False):
+            return False
+        if not getattr(self.settings, "spellcheck_skip_code_files", True):
+            return False
+        if not is_code_filename(getattr(self.document, "path", None)):
+            return False
+        self._set_status(
+            "Spell check while typing is off for this file type. "
+            "Control Alt F7 turns it on, F7 reviews the document."
+        )
+        return True
+
+    def open_spelling_announcements(self) -> None:
+        """How a misspelling is said, in one window (bad.md P1.14, 3.6).
+
+        The same window QuillLite opens, on the same chord, over the same
+        setting names -- so somebody who tunes this in one editor finds the
+        other already tuned. Not gated on spelling being enabled: the settings
+        survive the feature being switched off, and somebody who has just
+        turned it back on should be able to reach the window that decides how
+        loud it is going to be.
+        """
+        from quill.core.settings import save_settings
+        from quill.ui.spelling_voice_dialog import edit_spelling_voice
+
+        if edit_spelling_voice(self.frame, self.settings, announce=self._announce):
+            save_settings(self.settings)
+
     def show_dictionary_status(self) -> None:
         wx = self._wx
         project_root = Path.cwd()

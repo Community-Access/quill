@@ -3,11 +3,18 @@
 Extracted verbatim from ``main_frame.py`` into a cohesive mixin so the UI
 monolith shrinks without any behaviour change. ``MainFrame`` inherits
 ``SelectionMarksMixin`` and every method resolves identically through the MRO;
-the methods reference instance state (``self.editor``, ``self._mark_ring``,
-``self._selection_expand_stack``) and sibling commands via ``self`` exactly as
-before. Covers structural selection (line/paragraph/block, expand/shrink,
-scope-aware selection actions, directional select-to commands) and the
-temporary-jump mark ring (set/pop/exchange/list).
+the methods reference instance state (``self.editor``, ``self._mark_ring``)
+and sibling commands via ``self`` exactly as before. Covers structural
+selection (line/paragraph/block, expand/shrink, scope-aware selection actions,
+directional select-to commands) and the temporary-jump mark ring
+(set/pop/exchange/list).
+
+There was a ``_selection_expand_stack`` here until 2026-09-17 and there is not
+one now: it was never cleared, so Shrink popped a span from a selection you had
+long since moved away from (bad.md L3). Shrink computes from the text, which is
+what QuillLite has always done and is strictly better -- a history can only
+answer for selections you reached by *expanding*, and the text can answer for
+any of them.
 """
 
 from __future__ import annotations
@@ -105,49 +112,41 @@ class SelectionMarksMixin:
             self._set_status("Selection already spans the whole document")
             return
         new_start, new_end, scope = result
-        stack = getattr(self, "_selection_expand_stack", None)
-        if stack is None:
-            stack = []
-            self._selection_expand_stack = stack
-        stack.append((start, end))
         self.editor.SetFocus()
         self.editor.SetSelection(new_start, new_end)
         self._announce_selection_scope(scope, text, new_start, new_end)
 
     def shrink_selection(self) -> None:
-        """Shrink the selection to the previously expanded unit (SEL-2).
+        """Step back inwards, **computed from the text every time** (bad.md L3).
 
-        With no expansion history, fall back to the computed inverse
-        (``quill.core.selection.shrink_selection``) rather than refusing. The
-        stack only knows about selections you reached *by expanding*: select a
-        paragraph outright and ask to shrink, and it has nothing to say, even
-        though "the line the caret is on" is an obvious answer. A listener
-        cannot tell that refusal apart from a broken command.
+        There was an expansion stack, and it was never cleared. Expand around a
+        paragraph, arrow away, select something else entirely, press Shrink --
+        and it popped the span from the *earlier* selection and jumped you
+        there. The stack could also hold an empty pair, so Shrink would collapse
+        the selection and announce "Shrank selection" as though it had done
+        something. Reproduced 2026-09-17 by ``scripts/probe_rich_edits.py``:
+        stack held ``(0, 16)`` while the selection was ``(18, 39)``.
+
+        QuillLite has always computed it, and computing is strictly better
+        rather than merely simpler: a history can only answer for selections you
+        reached *by expanding*, so selecting a paragraph outright and asking to
+        shrink got a refusal a listener cannot tell from a broken command --
+        even though "the line the caret is on" is an obvious answer. There is
+        nothing an expansion history knows that the text does not.
         """
-        stack = getattr(self, "_selection_expand_stack", None)
-        if not stack:
-            text = self.editor.GetValue()
-            start, end = self.editor.GetSelection()
-            smaller = shrink_selection_span(text, start, end)
-            if smaller is None:
-                self._set_status("No selection to shrink")
-                return
-            new_start, new_end, scope = smaller
-            self.editor.SetFocus()
-            self.editor.SetSelection(new_start, new_end)
-            self._announce_selection_scope(scope, text, new_start, new_end)
-            return
-        previous_start, previous_end = stack.pop()
-        text = self.editor.GetValue()
-        self.editor.SetFocus()
-        self.editor.SetSelection(previous_start, previous_end)
-        if previous_start == previous_end:
-            self._set_status("Shrank selection")
-            return
         from quill.core.selection import describe_selection
 
-        self._last_selection = (previous_start, previous_end)
-        self._set_status(describe_selection(text, previous_start, previous_end, prefix="Shrank to"))
+        text = self.editor.GetValue()
+        start, end = self.editor.GetSelection()
+        smaller = shrink_selection_span(text, start, end)
+        if smaller is None:
+            self._set_status("Nothing smaller to select")
+            return
+        new_start, new_end, scope = smaller
+        self.editor.SetFocus()
+        self.editor.SetSelection(new_start, new_end)
+        self._last_selection = (new_start, new_end)
+        self._set_status(describe_selection(text, new_start, new_end, scope=scope))
 
     # ------------------------------------------------------------------ #
     # Clearing one, and reading one back
@@ -384,16 +383,34 @@ class SelectionMarksMixin:
         self._set_status("Selected to end of document")
 
     def set_mark(self) -> None:
+        """Drop a mark that can still be found after the document changes.
+
+        The text is passed so the ring can capture an anchor (bad.md P1.2): a
+        mark that remembers only an offset points at the wrong word after the
+        next Replace All, and says nothing about having moved -- which is the
+        failure a listener has no way to notice.
+        """
         position = self.editor.GetInsertionPoint()
-        self._mark_ring.set_mark(position)
+        self._mark_ring.set_mark(position, self.editor.GetValue())
         line, column = line_column_for_position(self.editor.GetValue(), position)
         self._set_status(f"Mark ring point set at line {line}, column {column} (temporary jump)")
 
     def pop_mark(self) -> None:
+        """Jump to the newest mark, clamped, and remember where you came from.
+
+        Clamped because a mark set before a big deletion can point past the end
+        of the document, and an insertion point past the end is a jump to
+        nowhere. Recorded on the location ring because a jump you cannot come
+        back from is one people stop using (bad.md P1.2).
+        """
         mark = self._mark_ring.pop_mark()
         if mark is None:
             self._set_status("No marks in ring. Marks are temporary jump points.")
             return
+        mark = max(0, min(mark, len(self.editor.GetValue())))
+        ring = getattr(self, "_location_ring", None)
+        if ring is not None:
+            ring.record(self.editor.GetInsertionPoint())
         self.editor.SetInsertionPoint(mark)
         self.editor.SetSelection(mark, mark)
         line, column = line_column_for_position(self.editor.GetValue(), mark)

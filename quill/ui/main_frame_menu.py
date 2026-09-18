@@ -62,6 +62,40 @@ class MenuBuilderMixin:
             if item is not None:
                 menu.DestroyItem(item)
 
+    def _build_search_menu(self):
+        """The Search menu, which is Edit > Search Tools since 2026-09-17.
+
+        Lifted out of the menu-bar builder unchanged (bad.md M1, P1.20): Word
+        has no Search menu, and the two rows this held were a top-level item to
+        walk past on the way to Tools. "Search" remains the contribution parent
+        name, so a Quillin declaring ``"parent": "Search"`` still lands in it.
+        """
+        wx = self._wx
+        search_menu = wx.Menu()
+        # Cross-file search is a regex-level feature; basic profiles only have
+        # in-document Find/Replace (Edit menu). Show Search in Files and Replace
+        # Across Files only when core.search.regex is enabled.
+        if self._feature_enabled("core.search.regex"):
+            search_menu.Append(
+                self._id_search_in_files,
+                self._menu_label(_("Search in &Files..."), "tools.search_in_files"),
+            )
+            search_menu.Append(
+                self._id_replace_in_files,
+                self._menu_label(_("&Replace Across Files..."), "tools.replace_in_files"),
+            )
+        # Regular Expression match count/extract and block set-ops make this the
+        # single find / filter / extract-lines hub (Power Tools recirculation,
+        # menus.md Phase 4).
+        self._append_power_tools_search_items(search_menu)
+        self._append_quillin_menu_items(search_menu, "Search")
+        # #15: the power-tools group's first item declares a separator_before, so
+        # when the regex Find/Replace items above are feature-gated off (basic
+        # profiles) the menu opens with a leading separator the screen reader
+        # reads but can't arrow to. Prune leading/trailing/doubled separators.
+        self._prune_menu_separators(search_menu)
+        return search_menu
+
     def _build_menu(self) -> None:
         wx = self._wx
         menu_bar = wx.MenuBar()
@@ -156,7 +190,22 @@ class MenuBuilderMixin:
         file_menu = wx.Menu()
         # --- Create / open ---
         file_menu.Append(self._id_new, self._menu_label(_("&New"), "file.new"))
+        self._id_new_rich_document = wx.NewIdRef()
+        self._id_new_plain_text_document = wx.NewIdRef()
+        file_menu.Append(
+            self._id_new_rich_document,
+            self._menu_label(_("New &Rich Text Document"), "file.new_rich_document"),
+        )
+        file_menu.Append(
+            self._id_new_plain_text_document,
+            self._menu_label(_("New P&lain Text Document"), "file.new_plain_text_document"),
+        )
         file_menu.Append(self._id_open, self._menu_label(_("&Open..."), "file.open"))
+        self._id_file_format = wx.NewIdRef()
+        file_menu.Append(
+            self._id_file_format,
+            self._menu_label(_("File Fo&rmat..."), "file.file_format"),
+        )
         self._recent_menu = wx.Menu()
         file_menu.AppendSubMenu(self._recent_menu, _("Open &Recent"))
         self._refresh_recent_menu()
@@ -535,6 +584,10 @@ class MenuBuilderMixin:
         self._id_clear_all_tray_slots = wx.NewIdRef()
         self._id_copy_to_next_slot = wx.NewIdRef()
         self._id_search_tray_slots = wx.NewIdRef()
+        search_menu = self._build_search_menu()
+        # Go To is an Edit row now (bad.md M4), so its id is created here rather
+        # than in the Navigate block that used to own it.
+        self._id_go_to_line = wx.NewIdRef()
         edit_menu = wx.Menu()
         edit_menu.Append(self._id_undo, self._menu_label(_("&Undo"), "edit.undo"))
         edit_menu.Append(self._id_redo, self._menu_label(_("&Redo"), "edit.redo"))
@@ -544,6 +597,14 @@ class MenuBuilderMixin:
         edit_menu.Append(wx.ID_CUT, _("Cu&t\tCtrl+X"))
         edit_menu.Append(wx.ID_COPY, _("&Copy\tCtrl+C"))
         edit_menu.Append(wx.ID_PASTE, _("&Paste\tCtrl+V"))
+        # Word's Paste Special, by its plain name. It has had Ctrl+Shift+V since
+        # the rich-paragraph work and no menu row anywhere, so the only way to
+        # find it was to know it existed (bad.md M7, P1.20).
+        self._id_paste_plain_text = wx.NewIdRef()
+        edit_menu.Append(
+            self._id_paste_plain_text,
+            self._menu_label(_("Paste Te&xt Only"), "edit.paste_plain_text"),
+        )
         # Paste variants and New Document from Clipboard (power tools)
         self._append_power_tools_edit_items(edit_menu)
         # Copy Tray submenu — per-slot items use explicit IDs for direct bindings;
@@ -609,6 +670,21 @@ class MenuBuilderMixin:
             self._id_find_all_matches,
             self._menu_label(_("Find All &Matches"), "edit.find_all_matches"),
         )
+        # Word puts Go To under Edit, beneath Find and Replace, and it is one
+        # window with a target kind now (bad.md 5.4, M4, P1.20). It is here
+        # rather than in both places because two menu rows on one chord means
+        # one of them silently never fires, which the accelerator gate rejects
+        # -- so "Go To in Edit as well as Navigate" became "Go To in Edit".
+        edit_menu.Append(
+            self._id_go_to_line,
+            self._menu_label(_("&Go To..."), "navigate.go_to_line"),
+        )
+        # M1: cross-file search and the regular-expression tools, as a submenu
+        # rather than a top-level Search menu. Word has no Search menu and the
+        # two rows it held were a thin top-level item to walk past on the way
+        # to Tools. "Search" stays the contribution parent name, so every
+        # Quillin that declares `"parent": "Search"` still lands here.
+        edit_menu.AppendSubMenu(search_menu, _("&Search Tools"))
         edit_menu.AppendSeparator()
         edit_menu.Append(
             self._id_word_prediction,
@@ -727,30 +803,6 @@ class MenuBuilderMixin:
         )
         edit_menu.AppendSubMenu(selection_menu, _("&Selection"))
         insert_menu = wx.Menu()
-
-        search_menu = wx.Menu()
-        # Cross-file search is a regex-level feature; basic profiles only have
-        # in-document Find/Replace (Edit menu). Show Search in Files and Replace
-        # Across Files only when core.search.regex is enabled.
-        if self._feature_enabled("core.search.regex"):
-            search_menu.Append(
-                self._id_search_in_files,
-                self._menu_label(_("Search in &Files..."), "tools.search_in_files"),
-            )
-            search_menu.Append(
-                self._id_replace_in_files,
-                self._menu_label(_("&Replace Across Files..."), "tools.replace_in_files"),
-            )
-        # Regular Expression match count/extract and block set-ops make Search the single
-        # find / filter / extract-lines hub (Power Tools recirculation, menus.md
-        # Phase 4).
-        self._append_power_tools_search_items(search_menu)
-        self._append_quillin_menu_items(search_menu, "Search")
-        # #15: the power-tools group's first item declares a separator_before, so
-        # when the regex Find/Replace items above are feature-gated off (basic
-        # profiles) the menu opens with a leading separator the screen reader
-        # reads but can't arrow to. Prune leading/trailing/doubled separators.
-        self._prune_menu_separators(search_menu)
         self._id_send_to_tray = wx.NewIdRef()
         self._id_toggle_tray_mode = wx.NewIdRef()
         self._id_toggle_soft_wrap = wx.NewIdRef()
@@ -864,7 +916,6 @@ class MenuBuilderMixin:
             self._id_reveal_codes, bool(getattr(self.settings, "reveal_codes_visible", False))
         )
         navigate_menu = wx.Menu()
-        self._id_go_to_line = wx.NewIdRef()
         self._id_set_bookmark = wx.NewIdRef()
         self._id_go_to_bookmark = wx.NewIdRef()
         self._id_list_bookmarks = wx.NewIdRef()
@@ -904,11 +955,6 @@ class MenuBuilderMixin:
             self._menu_label(_("&Forward Location"), "navigate.forward_location"),
         )
         navigate_menu.AppendSeparator()
-        # One row, because it is one window now (bad.md 5.4, P1.6).
-        navigate_menu.Append(
-            self._id_go_to_line,
-            self._menu_label(_("&Go To..."), "navigate.go_to_line"),
-        )
         # Go to Percent, First/Last Non-Blank, Open Target at Cursor (power tools navigate group)
         self._append_power_tools_navigate_items(navigate_menu)
         navigate_menu.AppendSeparator()
@@ -3436,7 +3482,6 @@ class MenuBuilderMixin:
         menu_bar.Append(insert_menu, _("&Insert"))
         menu_bar.Append(format_menu, _("F&ormat"))
         menu_bar.Append(navigate_menu, _("&Navigate"))
-        menu_bar.Append(search_menu, _("&Search"))
         menu_bar.Append(tools_menu, _("&Tools"))
         menu_bar.Append(ai_menu, _("&AI"))
         # Pre-release top-level Audio Description Project menu, promoted out of

@@ -214,7 +214,7 @@ Selection that grows by structure rather than by character, marks you can return
 *6 steps, about 6 minutes.*
 
 1. **Grow a selection by meaning.** Expand Selection takes the next larger structure -- word, then sentence, then paragraph, then block. It is far more predictable by ear than holding Shift and counting, and Shrink Selection goes back.
-   - Keys: Ctrl+Shift+Grave, J
+   - Keys: Ctrl+Shift+X
    - You should hear: What is now selected, and how much of it.
 
 2. **Select exactly one paragraph or block.** Select Paragraph and Select Block take the unit you mean in one keystroke. Say Selected reads back what you have, which is the check worth making before a destructive edit.
@@ -231,6 +231,7 @@ Selection that grows by structure rather than by character, marks you can return
    - Worth knowing: Clear All Tray Slots asks first and defaults to No, like every destructive question in QUILL.
 
 5. **Paste something that came from the web.** Magic Paste and Paste HTML as Markdown clean up what the clipboard actually contains, rather than dropping styled soup into your document. Copy With Source does the reverse courtesy when you are the one quoting.
+   - Keys: Ctrl+Shift+Grave, Shift+V
    - You should hear: What it pasted, and what it cleaned up.
 
 6. **Tidy lines in place.** Quote Lines, Unquote Lines, Reverse Lines, Keep Unique Lines, Number Lines and Trim Blank Lines each do one obvious thing to the selection. They are the small tools that save an hour when a document arrives badly.
@@ -344,7 +345,6 @@ Spell check as a list rather than a march, the ranked view for a long document, 
    - You should hear: The word, then its alternatives.
 
 6. **Know what an AI check adds.** AI Spell Check and Check Grammar with AI are separate commands, and they never apply anything automatically: the grammar check lists corrections as original phrase, arrow, corrected phrase, and a reason, and you apply what you agree with.
-   - Keys: Ctrl+Alt+Shift+G
    - You should hear: Each correction with its reason, and nothing changed yet.
 
 The list before the march, the ranked list for a long document, and an AI pass only when you ask for one.
@@ -498,7 +498,7 @@ Summaries, folds, compare, and the report tabs that make somebody else's file re
    - You should hear: Each difference, described rather than shown.
 
 4. **Read the extraction report.** When QUILL brings text in from a PDF or a scanned document, the intake report says how it went -- what it was confident about and what it was not. Reading it is how you know whether to trust the text.
-   - Keys: Ctrl+Shift+I
+   - Keys: Ctrl+Shift+Grave, Shift+I
    - You should hear: The report, as an ordinary tab you can arrow through.
 
 5. **Find the characters that do not belong.** The non-ASCII report lists what is unusual in the document, and jumping between the report and the source takes you straight to each one. It is how a stray byte-order mark or a curly quote stops being a mystery.
@@ -599,7 +599,6 @@ The writing assistant, the one-shot question, and the prompt library -- includin
    - You should hear: The prompt saved under your wording.
 
 6. **Check grammar without being rewritten.** Check Grammar with AI lists corrections as original phrase, arrow, corrected phrase, and a reason. It does not rewrite the passage and it applies nothing: you make the changes you agree with.
-   - Keys: Ctrl+Alt+Shift+G
    - You should hear: Each correction with its reason, and your document untouched.
 
 Ask for a question, the library for a job you do often, and neither one changes your document without you.
@@ -613,11 +612,9 @@ Translate, thesaurus, describe an image, and the spell check that asks a model -
 *5 steps, about 4 minutes.*
 
 1. **Translate a selection.** Translate Selection works on what you have highlighted, so you can bring one paragraph across without sending a whole document anywhere.
-   - Keys: Ctrl+Alt+Shift+T
    - You should hear: The translation, as a response you can copy.
 
 2. **Ask for a better word.** The AI thesaurus is the other half of the offline one: it answers with alternatives in the sentence's own context rather than a dictionary list.
-   - Keys: Ctrl+Alt+Shift+M
    - You should hear: The alternatives, with the sense each fits.
 
 3. **Describe an image.** Describe Image is the command that matters most in somebody else's document. It answers what a picture is, which is the one thing a screen reader cannot do for you.
@@ -625,11 +622,9 @@ Translate, thesaurus, describe an image, and the spell check that asks a model -
    - You should hear: The description, as text you can review and copy.
 
 4. **Run an AI spell check.** AI Spell Check and its interactive form are separate from the ordinary dictionary check, because they answer a different question: not is this word in a list, but is this the word you meant.
-   - Keys: Ctrl+Alt+Shift+I
    - You should hear: Each finding, one at a time.
 
 5. **Switch engines deliberately.** Switch AI Engine changes which model answers. QUILL will offer a switch when a call fails and the other kind of engine could take it -- and it never makes that switch for you, always saying when one would send your text to the cloud.
-   - Keys: Ctrl+Alt+Shift+E
    - You should hear: Which engine is now answering.
 
 Every one of these works on a selection, which is the honest unit: you decide how much text leaves the paragraph you are in.
@@ -692,6 +687,7 @@ What QUILL does about crashes, autosave, a screen reader that vanishes, and ever
    - You should hear: The question, with No as the default.
 
 5. **Go back to an earlier version.** Restore Previous Version brings back an earlier save of the document you are in. It is the one to remember when a well-meant edit went wrong two hours ago.
+   - Keys: Ctrl+Alt+Shift+E
    - You should hear: The versions available, with their times.
 
 6. **Read an error properly.** Messages carrying a support code end with the concrete next step -- install this, check that setting, switch to a local model. The code identifies the exact failure branch, so include it when you report a problem.
@@ -720,11 +716,11 @@ One editor for every format, what QUILL does about a document it had to extract,
    - You should hear: What it converted, and where it put the result.
 
 4. **Check what the extraction actually got.** When text has been extracted -- from a PDF, from a scan -- the intake report says how it went. Reading it is how you decide whether to trust what you are reading, which is a question a sighted reader answers by glancing at the page.
-   - Keys: Ctrl+Shift+I
+   - Keys: Ctrl+Shift+Grave, Shift+I
    - You should hear: The report, as an ordinary tab.
 
 5. **Switch the document's own format.** Switch Document Format changes how QUILL treats what is already open -- so a plain-text file you have decided is Markdown starts behaving like Markdown, headings and all.
-   - Keys: Ctrl+Shift+Grave, K
+   - Keys: Alt+Shift+F
    - You should hear: The new format, and the structure it now sees.
 
 One editor, every format, and a report whenever the text had to be extracted rather than read.

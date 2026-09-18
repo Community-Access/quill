@@ -1207,7 +1207,7 @@ Control coverage: 43 audited sites (43 helped).
 #### ProfileRow (`quill/apps/lite_preferences_profile.py`)
 
 - `self.impact`: What the profile above would change: which parts of the app it keeps, which it removes, and anything else it sets.
-#### (module level) (`quill/apps/lite_spelling_voice_dialog.py`)
+#### (module level) (`quill/ui/spelling_voice_dialog.py`)
 
 - `sound`: A short falling blip when a completed word is not in the dictionary. A sound rather than speech on purpose: speech would interrupt the sentence it is commenting on. Turn it off for silence; the status bar still says so, and F7 still finds everything.
 - `speech`: Speak the misspelling as well as the sound. Off by default and deliberately: an interruption while you are composing costs more than it tells you, and the same word is one Shift+F7 away.

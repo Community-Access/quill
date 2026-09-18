@@ -90,9 +90,27 @@ class ClipLibraryMixin:
             announce_cb=self._announce,
             promote_cb=_promote,
             content_format=content_format,
+            paste_cb=self._paste_clip_at_caret,
         )
         dlg.show()
         dlg.close()
+
+    def _paste_clip_at_caret(self, text: str) -> None:
+        """Insert *text* where the caret is, as a single undoable edit.
+
+        ``WriteText`` rather than a whole-document rewrite: the native control
+        keeps its own undo record, so Ctrl+Z takes back the paste and not the
+        paragraph before it.
+
+        The read-back is the accessibility of the command, not decoration: a
+        screen reader says nothing when an app writes text on its own behalf,
+        and the dialog that was focused has just closed (bad.md C9).
+        """
+        if not text:
+            return
+        self.editor.WriteText(text)
+        self.document.set_text(self.editor.GetValue())
+        self._announce_result(f"Pasted {len(text)} characters from the Clip Library")
 
     def _promote_clip_to_tray(self, index: int) -> None:
         from quill.core.copy_tray import CopyTray

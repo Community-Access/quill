@@ -35,11 +35,11 @@
   "quill/apps/lite_preferences.py::edit_preferences::wx.TextCtrl": "helped",
   "quill/apps/lite_preferences_profile.py::ProfileRow.__init__::wx.Choice": "helped",
   "quill/apps/lite_preferences_profile.py::ProfileRow.__init__::wx.TextCtrl": "helped",
-  "quill/apps/lite_spelling_voice_dialog.py::edit_spelling_voice::wx.Choice": "helped",
-  "quill/apps/lite_spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl": "helped",
-  "quill/apps/lite_spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl#2": "helped",
-  "quill/apps/lite_spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl#3": "helped",
-  "quill/apps/lite_spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl#4": "helped",
-  "quill/apps/lite_spelling_voice_dialog.py::edit_spelling_voice::wx.TextCtrl": "helped",
-  "quill/apps/lite_window_status.py::DocumentStatusMixin._init_status_bar::wx.Button": "helped"
+  "quill/apps/lite_window_status.py::DocumentStatusMixin._init_status_bar::wx.Button": "helped",
+  "quill/ui/spelling_voice_dialog.py::edit_spelling_voice::wx.Choice": "helped",
+  "quill/ui/spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl": "helped",
+  "quill/ui/spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl#2": "helped",
+  "quill/ui/spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl#3": "helped",
+  "quill/ui/spelling_voice_dialog.py::edit_spelling_voice::wx.SpinCtrl#4": "helped",
+  "quill/ui/spelling_voice_dialog.py::edit_spelling_voice::wx.TextCtrl": "helped"
 }

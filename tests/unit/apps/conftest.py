@@ -1111,7 +1111,10 @@ class DialogRecorder:
         # Fifth: Restore Deleted Text offers the ring's three entries rather
         # than only the newest (bad.md C9).
         "choose_from_rows_lines": ("quill.apps.lite_window_lines", "choose_from_rows"),
-        "edit_spelling_voice": ("quill.apps.lite_spelling_voice_dialog", "edit_spelling_voice"),
+        # Moved to quill/ui so QUILL can open the same window on the same
+        # chord (bad.md P1.14); imported inside the handler, so patch it
+        # where it is defined.
+        "edit_spelling_voice": ("quill.ui.spelling_voice_dialog", "edit_spelling_voice"),
         "AppFeaturesDialog": ("quill.ui.app_features_dialog", "AppFeaturesDialog"),
         "CommandPaletteDialog": ("quill.ui.palette", "CommandPaletteDialog"),
         "GoToAnythingDialog": ("quill.ui.palette", "GoToAnythingDialog"),

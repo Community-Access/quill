@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Keyboard Reference (default bindings)</title>
   <style>
@@ -209,7 +209,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 415.</p>
+<p>Editor commands with default bindings: 441.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -223,23 +223,63 @@ your own customised keymap.</p>
 <tbody>
 <tr>
 <td>(unbound by default)</td>
-<td>Add Current Folder to Favorites</td>
-<td><code>file.add_favorite_folder</code></td>
+<td>Manage GitHub Accounts…</td>
+<td><code>file.github_manage_accounts</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>Remove Favorite Folder…</td>
-<td><code>file.remove_favorite_folder</code></td>
+<td>Save to GitHub…</td>
+<td><code>file.github_save_back</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>Restore Previous Version…</td>
-<td><code>file.restore_previous_version</code></td>
+<td>Manage Remote Sites…</td>
+<td><code>file.manage_remote_sites</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open from Remote…</td>
+<td><code>file.open_from_remote</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open Remote GitHub File URL…</td>
+<td><code>file.open_github_file_url</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open GitHub Items…</td>
+<td><code>file.open_github_items</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open Remote GitHub Repository…</td>
+<td><code>file.open_github_repository</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Save to Remote</td>
+<td><code>file.save_to_remote</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+E</td>
+<td>File Format</td>
+<td><code>file.file_format</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+N</td>
+<td>New Plain Text Document</td>
+<td><code>file.new_plain_text_document</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+P</td>
 <td>Page Setup…</td>
 <td><code>file.page_setup</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+E</td>
+<td>Restore Previous Version…</td>
+<td><code>file.restore_previous_version</code></td>
 </tr>
 <tr>
 <td>Ctrl+N</td>
@@ -262,6 +302,11 @@ your own customised keymap.</p>
 <td><code>file.save</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+N</td>
+<td>New Rich Text Document</td>
+<td><code>file.new_rich_document</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+S or F12</td>
 <td>Save As…</td>
 <td><code>file.save_as</code></td>
@@ -282,44 +327,14 @@ your own customised keymap.</p>
 <td><code>file.open_from_favorite_folder</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+I</td>
-<td>Open GitHub Items…</td>
-<td><code>file.open_github_items</code></td>
+<td>QUILL Key + Shift+F</td>
+<td>Add Current Folder to Favorites</td>
+<td><code>file.add_favorite_folder</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+M</td>
-<td>Manage Remote Sites…</td>
-<td><code>file.manage_remote_sites</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+O</td>
-<td>Open from Remote…</td>
-<td><code>file.open_from_remote</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+Q</td>
-<td>Save to GitHub…</td>
-<td><code>file.github_save_back</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+W</td>
-<td>Open Remote GitHub File URL…</td>
-<td><code>file.open_github_file_url</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+Y</td>
-<td>Open Remote GitHub Repository…</td>
-<td><code>file.open_github_repository</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+Z</td>
-<td>Manage GitHub Accounts…</td>
-<td><code>file.github_manage_accounts</code></td>
-</tr>
-<tr>
-<td>QUILL Key + W</td>
-<td>Save to Remote</td>
-<td><code>file.save_to_remote</code></td>
+<td>QUILL Key + Shift+X</td>
+<td>Remove Favorite Folder…</td>
+<td><code>file.remove_favorite_folder</code></td>
 </tr>
 </tbody>
 </table>
@@ -337,11 +352,6 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Jump to Named Mark</td>
 <td><code>edit.jump_to_named_mark</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
-<td>Magic Paste</td>
-<td><code>edit.magic_paste</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -399,6 +409,11 @@ your own customised keymap.</p>
 <td><code>edit.open_review_buffer</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+Y</td>
+<td>Copy to tray slot</td>
+<td><code>edit.copy_to_tray_slot</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+Z</td>
 <td>Reverse Lines</td>
 <td><code>edit.reverse_lines</code></td>
@@ -409,19 +424,29 @@ your own customised keymap.</p>
 <td><code>edit.word_prediction</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+=</td>
+<td>Insert Equation…</td>
+<td><code>edit.insert_equation</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+D</td>
 <td>Remove Duplicate Lines</td>
 <td><code>edit.remove_duplicate_lines</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+E</td>
-<td>Select Line</td>
-<td><code>edit.select_line</code></td>
-</tr>
-<tr>
 <td>Ctrl+Alt+F8</td>
 <td>Toggle Selection Marker</td>
 <td><code>edit.toggle_selection_marker</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+M</td>
+<td>Keep selection in clip library</td>
+<td><code>edit.keep_selection_in_clip_library</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Q</td>
+<td>Duplicate Selection</td>
+<td><code>edit.duplicate_selection</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+R</td>
@@ -499,9 +524,29 @@ your own customised keymap.</p>
 <td><code>edit.select_block</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+M</td>
+<td>Open clip library</td>
+<td><code>edit.open_clip_library</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+Q</td>
-<td>Duplicate Selection</td>
-<td><code>edit.duplicate_selection</code></td>
+<td>Unquote Lines</td>
+<td><code>edit.unquote_lines</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+S</td>
+<td>Sort Lines Descending</td>
+<td><code>edit.sort_lines_descending</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+T</td>
+<td>Normalize Whitespace</td>
+<td><code>edit.normalize_whitespace</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+X</td>
+<td>Shrink Selection</td>
+<td><code>edit.shrink_selection</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+Y</td>
@@ -524,9 +569,9 @@ your own customised keymap.</p>
 <td><code>edit.open_copy_tray</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+W</td>
-<td>Select Word</td>
-<td><code>edit.select_word</code></td>
+<td>Ctrl+Alt+X</td>
+<td>Exchange Point and Mark</td>
+<td><code>edit.exchange_point_mark</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Y</td>
@@ -570,8 +615,8 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Shift+E</td>
-<td>Insert Equation…</td>
-<td><code>edit.insert_equation</code></td>
+<td>Select Line</td>
+<td><code>edit.select_line</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+End</td>
@@ -599,11 +644,6 @@ your own customised keymap.</p>
 <td><code>edit.select_to_start_of_document</code></td>
 </tr>
 <tr>
-<td>Ctrl+Shift+K</td>
-<td>Unquote Lines</td>
-<td><code>edit.unquote_lines</code></td>
-</tr>
-<tr>
 <td>Ctrl+Shift+M</td>
 <td>Set Mark</td>
 <td><code>edit.set_mark</code></td>
@@ -619,9 +659,14 @@ your own customised keymap.</p>
 <td><code>edit.paste_plain_text</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+W</td>
+<td>Select Word</td>
+<td><code>edit.select_word</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+X</td>
-<td>Exchange Point and Mark</td>
-<td><code>edit.exchange_point_mark</code></td>
+<td>Expand Selection</td>
+<td><code>edit.expand_selection</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+Y</td>
@@ -667,11 +712,6 @@ your own customised keymap.</p>
 <td>QUILL Key + C</td>
 <td>Copy selection for email</td>
 <td><code>edit.copy_selection_for_email</code></td>
-</tr>
-<tr>
-<td>QUILL Key + J</td>
-<td>Expand Selection</td>
-<td><code>edit.expand_selection</code></td>
 </tr>
 <tr>
 <td>QUILL Key + Shift+-</td>
@@ -734,9 +774,9 @@ your own customised keymap.</p>
 <td><code>edit.copy_to_tray_12</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+J</td>
-<td>Shrink Selection</td>
-<td><code>edit.shrink_selection</code></td>
+<td>QUILL Key + Shift+V</td>
+<td>Magic Paste</td>
+<td><code>edit.magic_paste</code></td>
 </tr>
 <tr>
 <td>QUILL Key + X</td>
@@ -777,8 +817,8 @@ your own customised keymap.</p>
 <tbody>
 <tr>
 <td>(unbound by default)</td>
-<td>Insert Markdown Tag…</td>
-<td><code>format.insert_markdown_tag</code></td>
+<td>Insert Block Quote</td>
+<td><code>format.blockquote</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -796,9 +836,19 @@ your own customised keymap.</p>
 <td><code>format.quick_insert</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+A</td>
+<td>Toggle Abbreviation Expansion</td>
+<td><code>format.toggle_abbreviation_expansion</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+Down</td>
 <td>Move Section Down</td>
 <td><code>format.move_section_down</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+F</td>
+<td>Switch Document Format</td>
+<td><code>format.switch_document_format</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+Left</td>
@@ -881,14 +931,14 @@ your own customised keymap.</p>
 <td><code>format.editor_font</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+N</td>
-<td>Toggle Numbered List</td>
-<td><code>format.toggle_numbered_list</code></td>
+<td>Ctrl+Alt+I</td>
+<td>Insert Markdown Tag…</td>
+<td><code>format.insert_markdown_tag</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Q</td>
-<td>Insert Block Quote</td>
-<td><code>format.blockquote</code></td>
+<td>Ctrl+Alt+Shift+I</td>
+<td>Toggle Tab Key Mode (Indent / Tab Character)</td>
+<td><code>format.toggle_tab_insert_mode</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+J</td>
@@ -966,6 +1016,11 @@ your own customised keymap.</p>
 <td><code>format.grow_font</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+/</td>
+<td>Toggle Block Comment</td>
+<td><code>format.toggle_block_comment</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+D</td>
 <td>Describe Formatting at Cursor</td>
 <td><code>format.describe_formatting</code></td>
@@ -984,6 +1039,11 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+F</td>
 <td>Font for Selection…</td>
 <td><code>format.selection_font</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+K</td>
+<td>Lower Case</td>
+<td><code>format.lower_case</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+L</td>
@@ -1021,19 +1081,9 @@ your own customised keymap.</p>
 <td><code>format.expand_abbreviation</code></td>
 </tr>
 <tr>
-<td>QUILL Key + E</td>
-<td>Toggle Abbreviation Expansion</td>
-<td><code>format.toggle_abbreviation_expansion</code></td>
-</tr>
-<tr>
 <td>QUILL Key + H or Ctrl+Alt+O</td>
 <td>Insert HTML Tag…</td>
 <td><code>format.insert_html_tag</code></td>
-</tr>
-<tr>
-<td>QUILL Key + K</td>
-<td>Switch Document Format</td>
-<td><code>format.switch_document_format</code></td>
 </tr>
 <tr>
 <td>QUILL Key + L</td>
@@ -1051,19 +1101,14 @@ your own customised keymap.</p>
 <td><code>format.manage_abbreviations</code></td>
 </tr>
 <tr>
+<td>QUILL Key + Shift+L</td>
+<td>Toggle Numbered List</td>
+<td><code>format.toggle_numbered_list</code></td>
+</tr>
+<tr>
 <td>QUILL Key + Shift+S</td>
 <td>Manage Snippets…</td>
 <td><code>format.manage_snippets</code></td>
-</tr>
-<tr>
-<td>QUILL Key + U</td>
-<td>Toggle Tab Key Mode (Indent / Tab Character)</td>
-<td><code>format.toggle_tab_insert_mode</code></td>
-</tr>
-<tr>
-<td>Shift+Alt+A</td>
-<td>Toggle Block Comment</td>
-<td><code>format.toggle_block_comment</code></td>
 </tr>
 </tbody>
 </table>
@@ -1096,6 +1141,16 @@ your own customised keymap.</p>
 <td>Alt+Right</td>
 <td>Forward Location</td>
 <td><code>navigate.forward_location</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+G or Ctrl+Shift+F5</td>
+<td>List Bookmarks…</td>
+<td><code>navigate.list_bookmarks</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+O</td>
+<td>Heading Organizer…</td>
+<td><code>navigate.heading_organizer</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+[</td>
@@ -1198,11 +1253,6 @@ your own customised keymap.</p>
 <td><code>navigate.set_numbered_bookmark</code></td>
 </tr>
 <tr>
-<td>Ctrl+Shift+F5</td>
-<td>List Bookmarks…</td>
-<td><code>navigate.list_bookmarks</code></td>
-</tr>
-<tr>
 <td>Ctrl+Shift+J</td>
 <td>Go to Temporary Bookmark</td>
 <td><code>navigate.go_to_temp_bookmark</code></td>
@@ -1236,11 +1286,6 @@ your own customised keymap.</p>
 <td>QUILL Key + F</td>
 <td>Speak Window Title</td>
 <td><code>navigate.speak_window_title</code></td>
-</tr>
-<tr>
-<td>QUILL Key + O</td>
-<td>Heading Organizer…</td>
-<td><code>navigate.heading_organizer</code></td>
 </tr>
 <tr>
 <td>QUILL Key + P</td>
@@ -1382,6 +1427,66 @@ your own customised keymap.</p>
 </thead>
 <tbody>
 <tr>
+<td>(unbound by default)</td>
+<td>AI Grammar and Style Check…</td>
+<td><code>tools.ai_grammar_style</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>AI Spell Check…</td>
+<td><code>tools.ai_spell_check</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>AI Spell Check Interactive…</td>
+<td><code>tools.ai_spell_check_interactive</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Switch AI Engine</td>
+<td><code>tools.ai_switch_engine</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>AI Thesaurus</td>
+<td><code>tools.ai_thesaurus</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Translate Selection…</td>
+<td><code>tools.ai_translate_selection</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Open CSV in Table Studio (Experimental)</td>
+<td><code>tools.csv_studio</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Table Studio (Experimental)</td>
+<td><code>tools.table_studio</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Voice Command (Offline)</td>
+<td><code>tools.voice_command</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Voice Conversation Mode</td>
+<td><code>tools.voice_conversation</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Speak Voice Status</td>
+<td><code>tools.voice_status</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Listen for Hey QUILL (Wake Word)</td>
+<td><code>tools.voice_wakeword</code></td>
+</tr>
+<tr>
 <td>Alt+F9</td>
 <td>Dictation Status</td>
 <td><code>tools.dictation_status</code></td>
@@ -1405,6 +1510,11 @@ your own customised keymap.</p>
 <td>Alt+Shift+M</td>
 <td>Toggle Sound Notifications</td>
 <td><code>tools.sound_toggle</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+Q</td>
+<td>Ask Quill: Voice Conversation</td>
+<td><code>tools.ask_quill_conversation</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+R</td>
@@ -1447,29 +1557,14 @@ your own customised keymap.</p>
 <td><code>tools.compare_announce_difference</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Shift+E</td>
-<td>Switch AI Engine</td>
-<td><code>tools.ai_switch_engine</code></td>
-</tr>
-<tr>
 <td>Ctrl+Alt+Shift+F</td>
 <td>Search in Files…</td>
 <td><code>tools.search_in_files</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Shift+G</td>
-<td>AI Grammar and Style Check…</td>
-<td><code>tools.ai_grammar_style</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+I</td>
-<td>AI Spell Check Interactive…</td>
-<td><code>tools.ai_spell_check_interactive</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+M</td>
-<td>AI Thesaurus</td>
-<td><code>tools.ai_thesaurus</code></td>
+<td>Ctrl+Alt+Shift+F6</td>
+<td>Spelling Announcements</td>
+<td><code>tools.spelling_announcements</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+O</td>
@@ -1480,16 +1575,6 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+R</td>
 <td>Keymap Editor…</td>
 <td><code>tools.keymap_editor</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+S</td>
-<td>AI Spell Check…</td>
-<td><code>tools.ai_spell_check</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+Shift+T</td>
-<td>Translate Selection…</td>
-<td><code>tools.ai_translate_selection</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+U</td>
@@ -1520,11 +1605,6 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+G</td>
 <td>Document Statistics…</td>
 <td><code>tools.word_count</code></td>
-</tr>
-<tr>
-<td>Ctrl+Shift+I</td>
-<td>Document Intake Report…</td>
-<td><code>tools.document_intake_report</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+R</td>
@@ -1565,6 +1645,11 @@ your own customised keymap.</p>
 <td>QUILL Key + Shift+D</td>
 <td>Dictate (Offline)</td>
 <td><code>tools.speech_dictate</code></td>
+</tr>
+<tr>
+<td>QUILL Key + Shift+I</td>
+<td>Document Intake Report…</td>
+<td><code>tools.document_intake_report</code></td>
 </tr>
 <tr>
 <td>QUILL Key + Shift+N</td>
@@ -1801,6 +1886,26 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>GitHub: Change Default Branch…</td>
+<td><code>github.change_default_branch</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>GitHub: Change Repository Visibility…</td>
+<td><code>github.change_repository_visibility</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>GitHub: Commit Multiple Files…</td>
+<td><code>github.commit_multiple_files</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>GitHub: Configure Branch Protection…</td>
+<td><code>github.configure_branch_protection</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>GitHub: Explain a Command…</td>
 <td><code>github.copilot_explain</code></td>
 </tr>
@@ -1821,13 +1926,33 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>GitHub: Create Repository…</td>
+<td><code>github.create_repository</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>GitHub: Delete Branch…</td>
+<td><code>github.delete_branch</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>GitHub: Dispatch Workflow…</td>
 <td><code>github.dispatch_workflow</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>GitHub: Fork Repository…</td>
+<td><code>github.fork_repository</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>GitHub: Codespaces…</td>
 <td><code>github.list_codespaces</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>GitHub: Rename Repository…</td>
+<td><code>github.rename_repository</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -2095,6 +2220,31 @@ your own customised keymap.</p>
 <td><code>vault.unlinked_mentions</code></td>
 </tr>
 <tr>
+<td>(unbound by default)</td>
+<td>Announcement History</td>
+<td><code>verbosity.history</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Verbosity Preferences</td>
+<td><code>verbosity.preferences</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Speak Status Bar</td>
+<td><code>verbosity.speak_status</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>What Changed</td>
+<td><code>verbosity.what_changed</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Where Am I</td>
+<td><code>verbosity.where_am_i</code></td>
+</tr>
+<tr>
 <td>’</td>
 <td>QUILL Quick Nav: Code Block</td>
 <td><code>quill.quick_nav.code_block</code></td>
@@ -2120,11 +2270,6 @@ your own customised keymap.</p>
 <td><code>document.summary</code></td>
 </tr>
 <tr>
-<td>Alt+Shift+G</td>
-<td>Previous Inline Note</td>
-<td><code>notes.previous_inline_note</code></td>
-</tr>
-<tr>
 <td>Alt+Shift+H</td>
 <td>Speak Inline Note (double-press to edit)</td>
 <td><code>notes.speak_inline_note</code></td>
@@ -2141,8 +2286,8 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Alt+Shift+K</td>
-<td>Keep unique lines</td>
-<td><code>power.keep_unique_lines</code></td>
+<td>Previous Inline Note</td>
+<td><code>notes.previous_inline_note</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+N</td>
@@ -2170,6 +2315,11 @@ your own customised keymap.</p>
 <td><code>quill.quick_nav.table_of_contents</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+C</td>
+<td>Describe character detail</td>
+<td><code>power.describe_character_detail</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Down</td>
 <td>Table: Cell Below</td>
 <td><code>table.cell_below</code></td>
@@ -2181,18 +2331,13 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+G</td>
-<td>Compute line statistics</td>
-<td><code>power.compute_line_statistics</code></td>
+<td>Toggle clipboard collector</td>
+<td><code>power.toggle_clipboard_collector</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Home</td>
 <td>Table: First Cell</td>
 <td><code>table.first_cell</code></td>
-</tr>
-<tr>
-<td>Ctrl+Alt+I</td>
-<td>Insert image</td>
-<td><code>power.insert_image</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+K</td>
@@ -2230,6 +2375,11 @@ your own customised keymap.</p>
 <td><code>table.cell_above</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+W</td>
+<td>Compute line statistics</td>
+<td><code>power.compute_line_statistics</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+Backspace</td>
 <td>Delete to line start</td>
 <td><code>power.delete_to_line_start</code></td>
@@ -2248,6 +2398,11 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+F2</td>
 <td>Insert special character</td>
 <td><code>power.insert_special_character</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+I</td>
+<td>Insert image</td>
+<td><code>power.insert_image</code></td>
 </tr>
 <tr>
 <td>H</td>
@@ -2330,49 +2485,24 @@ your own customised keymap.</p>
 <td><code>radio.play_pause</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+B</td>
-<td>GitHub: Change Default Branch…</td>
-<td><code>github.change_default_branch</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+E</td>
-<td>GitHub: Rename Repository…</td>
-<td><code>github.rename_repository</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+F</td>
-<td>GitHub: Fork Repository…</td>
-<td><code>github.fork_repository</code></td>
-</tr>
-<tr>
 <td>QUILL Key + Shift+G</td>
 <td>Snippet Gallery…</td>
 <td><code>power.open_snippet_gallery</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+K</td>
-<td>GitHub: Create Repository…</td>
-<td><code>github.create_repository</code></td>
+<td>QUILL Key + Shift+M</td>
+<td>Toggle Meeting Mode</td>
+<td><code>verbosity.toggle_meeting</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+L</td>
-<td>GitHub: Configure Branch Protection…</td>
-<td><code>github.configure_branch_protection</code></td>
+<td>QUILL Key + Shift+Q</td>
+<td>Toggle Quiet Mode</td>
+<td><code>verbosity.toggle_quiet</code></td>
 </tr>
 <tr>
-<td>QUILL Key + Shift+U</td>
-<td>GitHub: Commit Multiple Files…</td>
-<td><code>github.commit_multiple_files</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+V</td>
-<td>GitHub: Change Repository Visibility…</td>
-<td><code>github.change_repository_visibility</code></td>
-</tr>
-<tr>
-<td>QUILL Key + Shift+X</td>
-<td>GitHub: Delete Branch…</td>
-<td><code>github.delete_branch</code></td>
+<td>QUILL Key + Shift+Z</td>
+<td>Undo Verbosity Change</td>
+<td><code>verbosity.undo</code></td>
 </tr>
 <tr>
 <td>S</td>

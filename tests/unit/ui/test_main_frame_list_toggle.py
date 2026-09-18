@@ -59,6 +59,12 @@ class _Editor:
     def ReplaceSelection(self, text: str) -> None:  # pragma: no cover - trivial
         pass
 
+    def GetLastPosition(self) -> int:
+        return len(self._text)
+
+    def SetSelection(self, start: int, end: int) -> None:
+        self._selection = (start, end)
+
     def Replace(self, start: int, end: int, text: str) -> None:
         self._text = self._text[:start] + text + self._text[end:]
         self.set_value_calls.append(self._text)
@@ -123,13 +129,33 @@ def test_toggle_numbered_list_in_plain_text_skips() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_toggle_bullet_list_inserts_when_caret_is_outside_list() -> None:
+def test_ctrl_shift_l_steps_a_plain_line_to_a_bulleted_one() -> None:
     frame, editor = _make_frame(text="hello\n", caret=0)
+    frame.format_rich_list_style = lambda: False  # type: ignore[method-assign]
     frame.toggle_bullet_list()
-    new_text = editor._text
-    assert new_text != "hello\n"
-    # Inserted body should contain bullet markers.
-    assert "-" in new_text
+    assert editor._text.startswith("- hello")
+    assert frame._status_message == "Bulleted list"
+
+
+def test_the_next_press_makes_it_numbered_rather_than_undoing_it() -> None:
+    """The whole point of the fold: a toggle could not reach this state.
+
+    Numbered List had to be a second command on a second chord, and the two
+    did not know what the caret was sitting in (bad.md P1.5, 3.4).
+    """
+    frame, editor = _make_frame(text="- hello\n", caret=0)
+    frame.format_rich_list_style = lambda: False  # type: ignore[method-assign]
+    frame.toggle_bullet_list()
+    assert editor._text.startswith("1. hello")
+    assert frame._status_message == "Numbered list"
+
+
+def test_the_third_press_takes_the_markers_off_again() -> None:
+    frame, editor = _make_frame(text="1. hello\n", caret=0)
+    frame.format_rich_list_style = lambda: False  # type: ignore[method-assign]
+    frame.toggle_bullet_list()
+    assert editor._text.startswith("hello")
+    assert frame._status_message == "No list"
 
 
 def test_toggle_numbered_list_inserts_with_no_fill_when_setting_off_and_not_markdown() -> None:
@@ -163,19 +189,24 @@ def test_toggle_numbered_list_arms_document_for_five_minutes() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_toggle_bullet_list_strips_when_caret_is_inside_list() -> None:
-    text = "hello\n- a\n- b\n- c\n"
-    caret = text.index("- a") + 3
-    frame, editor = _make_frame(text=text, caret=caret)
+def test_the_cycle_touches_only_the_lines_it_was_given() -> None:
+    """Never the whole document (bad.md R2).
+
+    The old strip path ran over the entire buffer and wrote it back with
+    SetValue, which unmade every other list in the file and cleared the undo
+    stack with them. The shared core helper reads only the span it is given,
+    and this is the test that says so from QUILL's side.
+    """
+    text = "- keep me\n\nhello\n"
+    frame, editor = _make_frame(text=text, caret=text.index("hello"))
+    # wx returns (caret, caret) from GetSelection when nothing is selected, and
+    # the cycle reads the selection: that is what makes "the caret's line" and
+    # "the selected lines" one code path.
+    editor._selection = (editor._caret, editor._caret)
+    frame.format_rich_list_style = lambda: False  # type: ignore[method-assign]
     frame.toggle_bullet_list()
-    new_text = editor._text
-    assert "- a" not in new_text
-    assert "- b" not in new_text
-    # Only this list, and the count -- both new on 2026-09-16. It used to strip
-    # every list in the document and say "Bullet List removed" with no number
-    # (bad.md R2).
-    assert "Bullet List removed, 3 items" == frame._status_message
-    assert new_text.startswith("hello\n")
+    assert editor._text.startswith("- keep me\n")
+    assert "- hello" in editor._text
 
 
 def test_toggle_numbered_list_strips_when_caret_is_inside_list() -> None:

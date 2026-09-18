@@ -51,9 +51,14 @@ def test_dispatch_only_runs_allowlisted_ids() -> None:
 
 
 def test_keymap_entry_present_unbound() -> None:
-    import json
+    """Present in the defaults, deliberately unbound: users bind their own.
 
-    bindings = json.loads(
-        (_ROOT / "quill" / "core" / "keymap" / "profile_default.json").read_text(encoding="utf-8")
-    )["bindings"]
-    assert bindings.get("tools.voice_conversation") == ""
+    Asserted against DEFAULT_KEYMAP rather than profile_default.json, which is
+    where this lived until 2026-09-17. The profiles are deltas over these
+    defaults now (bad.md P2.6), so an entry that exists only in a profile is
+    one the Keyboard Manager and the generated reference never see -- which is
+    the opposite of "discoverable".
+    """
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    assert DEFAULT_KEYMAP["tools.voice_conversation"] == ""

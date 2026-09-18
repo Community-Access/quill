@@ -101,9 +101,12 @@ def test_both_editors_call_the_setting_the_same_thing() -> None:
 
 
 def test_notepads_chord_and_the_displacement_it_cost() -> None:
-    """Alt+Shift+B was List Bookmarks here. It moved to Ctrl+Shift+F5, which
-    was already its alias -- Word's own Bookmark key -- so nothing was lost."""
-    from quill.core.keymap import DEFAULT_KEYMAP
+    """Alt+Shift+B was List Bookmarks here. It moved onto its own alias --
+    Word's Ctrl+Shift+F5 -- so nothing was lost, and two days later onto
+    QuillLite's Alt+Shift+G under rule 6, with Word's key back as the alias and
+    a legacy_rebindings hop for anyone who saved the original."""
+    from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
 
     assert DEFAULT_KEYMAP["view.toggle_status_bar"] == "Alt+Shift+B"
-    assert DEFAULT_KEYMAP["navigate.list_bookmarks"] == "Ctrl+Shift+F5"
+    assert DEFAULT_KEYMAP["navigate.list_bookmarks"] == "Alt+Shift+G"
+    assert DEFAULT_ALIASES["navigate.list_bookmarks"] == "Ctrl+Shift+F5"

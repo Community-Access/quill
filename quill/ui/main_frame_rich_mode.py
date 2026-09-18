@@ -29,6 +29,8 @@ reference instance state via ``self`` and are wired from ``main_frame.py``.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 from quill.io.rtf import markdown_to_rtf, read_rtf_sanitized, rtf_to_markdown
@@ -105,6 +107,48 @@ class RichModeMixin:
         document.modified = False
         self._refresh_statusbar()
 
+    @contextmanager
+    def _theme_colour_off(self, wrapper: object) -> Iterator[None]:
+        """Take the theme's colour off the story for the duration of a save.
+
+        A dark theme calls ``SetForegroundColour`` on the rich control, and
+        wxMSW applies that as an ``SCF_ALL`` character colour -- so it is not a
+        view setting at all, it is **on every run in the document**, and the TOM
+        writes it into the file. Confirmed live on 2026-09-17
+        (``scripts/probe_rich_edits.py``): the saved ``.rtf`` carried a
+        ``\\colortbl`` with the theme grey in it, so anybody working in dark mode
+        had been sending grey-on-white documents to everybody they shared with,
+        and would never see it themselves (bad.md R4).
+
+        ``tomAutoColor`` for the save, the theme back afterwards, and the
+        restore in a ``finally`` -- because a save that raises must not leave
+        the window unreadable, which is the one failure worse than the bug.
+        QuillLite has guarded both directions since it shipped
+        (``lite_window_file._write_rtf``); this is QUILL catching up.
+        """
+        restore = False
+        try:
+            wrapper.set_document_color(None)
+            restore = True
+        except Exception:  # noqa: BLE001 - no TOM means no colour to strip
+            restore = False
+        try:
+            yield
+        finally:
+            if restore:
+                try:
+                    self._apply_rich_theme_colour()
+                except Exception:  # noqa: BLE001 - never leave a save half-failed
+                    pass
+
+    def _apply_rich_theme_colour(self) -> None:
+        """Put the theme's text colour back on the story after a save."""
+        wrapper = self._active_richedit()
+        if wrapper is None:
+            return
+        colour = self.editor.GetForegroundColour()
+        wrapper.set_document_color((colour.Red(), colour.Green(), colour.Blue()))
+
     def _save_rich_document_natively(self, document: object, target: Path | None) -> bool:
         """Save the active rich tab natively. Returns True when handled.
 
@@ -144,7 +188,8 @@ class RichModeMixin:
 
         if suffix == ".rtf":
             try:
-                wrapper.save_rtf(str(target_path))
+                with self._theme_colour_off(wrapper):
+                    wrapper.save_rtf(str(target_path))
             except RichEditRtfError as error:
                 # Surface through the caller's existing save error handling.
                 raise OSError(str(error)) from error
@@ -374,6 +419,46 @@ class RichModeMixin:
     # Mode-polymorphic formatting (Phase 3)
     # ------------------------------------------------------------------ #
 
+    #: The three run attributes whose command is a *toggle*, so the sentence
+    #: has to say which way it went (bad.md R8).
+    _TOGGLING_RUN_ATTRS = {
+        "apply_bold": "Bold",
+        "apply_italic": "Italic",
+        "apply_underline": "Underline",
+    }
+
+    def _rich_toggle_run_attr(self, method: str) -> bool:
+        """Toggle bold/italic/underline in rich mode and say the STATE. True when handled.
+
+        "Bold" is what QUILL said for both directions, so the one thing the
+        keystroke decided -- on or off -- was the one thing it did not say, and
+        a listener with no visual feedback had to type a character to find out.
+        The shared surface has answered this since it shipped
+        (``toggle_font_attr`` returns the state the control ended in) and
+        QuillLite has said "Bold on" all along (bad.md R8, P1.17).
+        """
+        label = self._TOGGLING_RUN_ATTRS[method]
+        if self._current_editor_mode() != "rich":
+            return False
+        wrapper = self._active_richedit()
+        if wrapper is None:
+            return False
+        toggle = getattr(wrapper, "toggle_font_attr", None)
+        if not callable(toggle):
+            return self._rich_format_command(method, label)
+        from quill.ui.richedit_rtf_surface import RichEditRtfError
+
+        try:
+            state = bool(toggle(label))
+        except RichEditRtfError as error:
+            self._set_status(f"Could not apply {label.lower()}: {error}")
+            return True
+        self._mark_rich_formatting_dirty()
+        said = f"{label} {'on' if state else 'off'}"
+        self._set_status_quiet(said)
+        self._announce(said)
+        return True
+
     def _rich_format_command(self, method: str, announce: str, *args: object) -> bool:
         """Run a rich-mode formatting command on the wrapper. True when handled.
 
@@ -509,6 +594,37 @@ class RichModeMixin:
             return None
 
     # ------------------------------------------------------------------ #
+    # Starting a document in a kind (bad.md P1.13, 3.7)
+    # ------------------------------------------------------------------ #
+
+    def new_document_in_format(self, target: str) -> None:
+        """Open a new document already in *target*, a DOCUMENT_FORMATS key.
+
+        QUILL had no seam for this: ``new_file`` made a document in whatever
+        ``default_new_document_format`` said, and the only way to another kind
+        was the switcher afterwards. ``--rich`` / ``--plain`` (bad.md P2.16)
+        wants the same seam, so it is one method rather than two handlers.
+
+        A document that already arrives in the wanted kind is left alone: the
+        switcher would run the bridge and say "Already editing as Markdown",
+        which is noise on a command meant not to make you think about it.
+        """
+        if target not in DOCUMENT_FORMATS:
+            return
+        self.new_file()
+        if self.current_document_format() != target:
+            self.set_document_format(target, announce=False)
+        self._set_status(f"New {DOCUMENT_FORMATS[target][0]} document")
+
+    def new_rich_document(self) -> None:
+        """QuillLite's Ctrl+Shift+N: start a rich text document."""
+        self.new_document_in_format("rtf")
+
+    def new_plain_text_document(self) -> None:
+        """QuillLite's Ctrl+Alt+N: start a plain text document."""
+        self.new_document_in_format("plain")
+
+    # ------------------------------------------------------------------ #
     # The Document Format switcher (Phase 4)
     # ------------------------------------------------------------------ #
 
@@ -563,8 +679,13 @@ class RichModeMixin:
         finally:
             menu.Destroy()
 
-    def set_document_format(self, target: str) -> None:
+    def set_document_format(self, target: str, *, announce: bool = True) -> None:
         """Move the current document to ``target`` format mid-session.
+
+        *announce* is False only when the caller is about to say something
+        better: ``new_document_in_format`` opens a document that has never been
+        in another format, and "Now editing as Rich Text" describes a change
+        that did not happen to the person who just pressed New (bad.md P1.13).
 
         Conversions run through the shipped bridge (Markdown <-> RTF via
         ``quill/io/rtf.py`` and the ``RichDocument`` model). Anything lossy
@@ -586,7 +707,8 @@ class RichModeMixin:
                 # serialization (native RTF vs the docx bridge) changes.
                 tab.docx_rich = target == "docx"
                 self._retarget_format_suffix(tab, suffix)
-                self._set_status(f"Now saving as {label}")
+                if announce:
+                    self._set_status(f"Now saving as {label}")
                 self._refresh_statusbar()
                 return
             markup = self.editor.GetValue()
@@ -607,7 +729,8 @@ class RichModeMixin:
             tab.docx_rich = target == "docx" and tab.editor_mode == "rich"
             self._retarget_format_suffix(tab, suffix)
             self._set_status_quiet(f"Now editing as {label}")
-            self._announce(f"Now editing as {label}. Headings and bold are shown formatted.")
+            if announce:
+                self._announce(f"Now editing as {label}. Headings and bold are shown formatted.")
         else:
             if mode in {"rich", "rich_converted"}:
                 # Leaving rich: honest fidelity first — say what markup cannot
@@ -638,11 +761,11 @@ class RichModeMixin:
             self._pin_markup_kind_for_tab(tab, target)
             self._retarget_format_suffix(tab, suffix)
             self._set_status_quiet(f"Now editing as {label}")
-            if target == "markdown":
+            if announce and target == "markdown":
                 self._announce("Now editing as Markdown. Formatting appears as tags.")
-            elif target == "html":
+            elif announce and target == "html":
                 self._announce("Now editing as HTML. Formatting appears as tags.")
-            else:
+            elif announce:
                 self._announce("Now editing as plain text.")
         self._refresh_statusbar()
         self._request_menu_refresh()

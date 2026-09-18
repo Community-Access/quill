@@ -54,22 +54,50 @@ class WriteSafetyMixin:
         except Exception:  # noqa: BLE001 - a backup must never block a save
             self._set_status("Could not write a backup; saving anyway")
 
-    def _report_save_failure(self, name: str, error: OSError, title: str) -> None:
+    def _report_save_failure(
+        self, name: str, error: OSError | UnicodeEncodeError, title: str
+    ) -> None:
         """Explain a failed save in words that say what to do about it (#1390).
 
-        The disk-full and read-only cases get their own sentence; everything
-        else keeps the errno text, which at least names the fault.
+        The disk-full, read-only and unencodable-character cases get their own
+        sentence; everything else keeps the error text, which at least names the
+        fault. The third one arrived with bad.md P0.9: an encoding that cannot
+        hold a character the writer just typed is not an OSError and used to
+        escape this method entirely, so the save failed with the generic
+        "Command failed: file.save" and no mention of the character at all.
         """
-        if error.errno == errno.ENOSPC:
+        if isinstance(error, OSError) and error.errno == errno.ENOSPC:
             message = (
                 f"The disk is full. QUILL could not save {name}. Free some space "
                 "and try again -- your text is still open and unsaved."
             )
-        elif error.errno in (errno.EACCES, errno.EPERM, errno.EROFS):
+        elif isinstance(error, OSError) and error.errno in (
+            errno.EACCES,
+            errno.EPERM,
+            errno.EROFS,
+        ):
             message = (
                 f"QUILL could not save {name}: the file or folder is read-only, "
                 "or another program has it open. Try File > Save As to a "
                 "different location -- your text is still open and unsaved."
+            )
+        elif isinstance(error, UnicodeEncodeError):
+            # The one save failure that is about the TEXT rather than the disk,
+            # and the one where the fix is a choice only the writer can make
+            # (bad.md P0.9, F3). Name the character: "position 1462" is a number
+            # nobody can act on, and a listener cannot go and look.
+            character = error.object[error.start : error.end]
+            # Not error.encoding: every Windows code page reports itself as
+            # "charmap" there, which names nothing. The document knows what it
+            # was opened as, and that is the word the writer will recognise.
+            codec = str(error.encoding or "").strip()
+            if codec in {"", "charmap"}:
+                codec = str(getattr(getattr(self, "document", None), "encoding", "") or "")
+            where = f" as {codec}" if codec else " in its current encoding"
+            message = (
+                f"QUILL could not save {name}{where}: it cannot hold "
+                f"{character!r}. Save As and choose UTF-8, or take that character "
+                "out -- your text is still open and unsaved."
             )
         else:
             message = f"Could not save {name}: {error}"

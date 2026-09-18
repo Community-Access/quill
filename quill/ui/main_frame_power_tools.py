@@ -30,7 +30,6 @@ from datetime import datetime
 from pathlib import Path
 
 from quill.core import format_ops as _fmt
-from quill.core.clipboard_collector import append_collected
 from quill.core.cursor_address import (
     offset_for_percent,
 )
@@ -57,37 +56,12 @@ from quill.core.regex_ops import RegexError, count_matches, extract_matches
 from quill.core.run_target import classify_target, is_dangerous_executable, target_at_cursor
 from quill.core.set_ops import format_lines, lines_common_to_both, lines_in_first_not_second
 from quill.core.storage import read_json, write_json_atomic
+from quill.ui.main_frame_clipboard_collector import ClipboardCollectorMixin
 from quill.ui.main_frame_line_break import LineBreakMixin
 from quill.ui.main_frame_special_character import SpecialCharacterMixin
 
 
-def _clipboard_change_counter() -> int | None:
-    """The OS clipboard change counter, or None where unavailable.
-
-    Windows: ``GetClipboardSequenceNumber`` — one cheap user32 call, no
-    clipboard open, bumps on every copy from ANY application (#964). macOS:
-    ``NSPasteboard.generalPasteboard().changeCount()`` via PyObjC when
-    present. None (Linux / missing bridge) makes the watcher fall back to
-    reading and comparing the clipboard text each tick.
-    """
-    if sys.platform == "win32":
-        try:
-            import ctypes
-
-            return int(ctypes.windll.user32.GetClipboardSequenceNumber())
-        except Exception:  # noqa: BLE001 - a probe must never raise
-            return None
-    if sys.platform == "darwin":
-        try:
-            from AppKit import NSPasteboard  # type: ignore[import-not-found]
-
-            return int(NSPasteboard.generalPasteboard().changeCount())
-        except Exception:  # noqa: BLE001
-            return None
-    return None
-
-
-class PowerToolsActionsMixin(SpecialCharacterMixin, LineBreakMixin):
+class PowerToolsActionsMixin(ClipboardCollectorMixin, SpecialCharacterMixin, LineBreakMixin):
     """Editor power-tool conveniences mixed into :class:`MainFrame`."""
 
     # ------------------------------------------------------------------ shared
@@ -108,19 +82,87 @@ class PowerToolsActionsMixin(SpecialCharacterMixin, LineBreakMixin):
         self._set_status(status)
 
     def _power_tools_transform_selection_or_document(self, transform, status: str) -> None:
+        """Kept as the name twenty-two call sites use; the work is in one place."""
+        self.apply_line_tool(transform, status)
+
+    def apply_line_tool(self, transform, status: str, *, unit: str = "line") -> None:
+        """Run *transform* over the selection, or the whole document if none.
+
+        The one line-tool helper (bad.md N1-N3, P1.16). QUILL had three, with
+        three different scopes: this one, a second that acted on the *current
+        line* when nothing was selected -- so Sort Lines with no selection
+        sorted one line and said "Sorted lines ascending" -- and a third for
+        case, which takes the word at the caret and is a deliberately different
+        rule (bad.md 3.4). QuillLite has always had one, and this is its shape.
+
+        Three things came with it, and each is a thing a listener cannot see:
+
+        * **A no-op says so.** Running Remove Duplicate Lines on a file with
+          none was indistinguishable from running it on one that had twelve.
+        * **The result carries a count**, chosen by what the tool did:
+          ``quill.core.line_tool_report`` says "Sorted lines ascending, 40
+          lines" for a reordering and "Removed duplicate lines, 2 lines" for a
+          removal.
+        * **A whole-document rewrite in rich text asks first**, because the
+          replaced text takes the formatting of where it lands.
+
+        The write goes through ``_atomic_replace`` -- one undo step, and only
+        over the span that changed -- rather than ``_replace_document_text``,
+        which rewrote the whole buffer and took every other list, note and
+        formatting run in the document with it (bad.md R2, N3).
+        """
+        from quill.core.line_tool_report import (
+            count_for,
+            describe_result,
+            nothing_changed,
+        )
+
         if self._document_is_read_only():
             self._set_status("Document is read-only")
             return
         text = self.editor.GetValue()
         start, end = self.editor.GetSelection()
-        if start == end:
+        whole = end <= start
+        if whole:
             start, end = 0, len(text)
-        block = transform(text[start:end])
-        updated = text[:start] + block + text[end:]
-        self._replace_document_text(updated)
-        self.document.set_text(updated)
-        self.editor.SetSelection(start, start + len(block))
-        self._set_status(status)
+        original = text[start:end]
+        if not original:
+            self._set_status("Nothing to change")
+            return
+        if whole and not self._confirm_whole_document_rewrite():
+            self._set_status("Left unchanged")
+            return
+        updated_block = transform(original)
+        if updated_block == original:
+            self._set_status(nothing_changed(unit))
+            return
+        self._atomic_replace(start, end, updated_block)
+        self.document.set_text(self.editor.GetValue())
+        self.editor.SetSelection(start, start + len(updated_block))
+        self._set_status(
+            describe_result(status, count_for(original, updated_block, unit=unit), unit)
+        )
+
+    def _confirm_whole_document_rewrite(self) -> bool:
+        """Rich mode only: warn that replaced text takes the run's formatting.
+
+        QuillLite's words, and QuillLite's NO_DEFAULT -- Enter must not be the
+        key that rewrites the document.
+        """
+        if self._current_editor_mode() not in {"rich", "rich_converted"}:
+            return True
+        wx = self._wx
+        dialog = wx.MessageDialog(
+            self.frame,
+            "This rewrites the whole document, and in rich text the replaced "
+            "text takes the formatting of where it lands. Continue?",
+            "Rewrite the whole document",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+        )
+        try:
+            return self._show_modal_dialog(dialog, "Rewrite the whole document") == wx.ID_YES
+        finally:
+            dialog.Destroy()
 
     def _power_tools_open_text_in_new_buffer(self, text: str, status: str) -> None:
         self._clear_empty_workspace_state()
@@ -344,8 +386,29 @@ class PowerToolsActionsMixin(SpecialCharacterMixin, LineBreakMixin):
         if flag is not None:
             return bool(flag)
         if self.document.path is not None:
-            return str(self.document.path) in self._read_only_paths()
+            if str(self.document.path) in self._read_only_paths():
+                return True
+            # The file itself, not just the guard somebody switched on: a file
+            # from a read-only share could be typed into for twenty minutes
+            # and refuse at Ctrl+S, which is the worst moment to find out
+            # (bad.md P2.12).
+            from quill.core.file_access import is_read_only
+
+            return is_read_only(self.document.path)
         return False
+
+    def announce_read_only_at_open(self) -> bool:
+        """Say it once, at open, when the file cannot be saved back.
+
+        True when it said something. Named rather than inlined so the open path
+        reads as what it is, and so the sentence has one home in each editor.
+        """
+        from quill.core.file_access import READ_ONLY_NOTICE, is_read_only
+
+        if not is_read_only(getattr(self.document, "path", None)):
+            return False
+        self._set_status(READ_ONLY_NOTICE)
+        return True
 
     def _refresh_read_only_state(self) -> None:
         """Re-apply the persisted read-only guard to the active editor."""
@@ -388,96 +451,6 @@ class PowerToolsActionsMixin(SpecialCharacterMixin, LineBreakMixin):
     # ----------------------------------------------- EDS-10 delete paragraph
     def delete_paragraph(self) -> None:
         self._apply_line_operation(delete_paragraph, "Deleted paragraph")
-
-    # -------------------------------------------- EDS-11 clipboard collector
-    def toggle_clipboard_collector(self) -> None:
-        active = not getattr(self, "_power_tools_clipboard_collector", False)
-        self._power_tools_clipboard_collector = active
-        copy_event = getattr(self._wx, "EVT_TEXT_COPY", None)
-        previous = getattr(self, "_power_tools_collector_editor", None)
-        if copy_event is not None and previous is not None:
-            previous.Unbind(copy_event)
-        self._power_tools_collector_editor = (
-            self.editor if (copy_event is not None and active) else None
-        )
-        if copy_event is not None and active:
-            self.editor.Bind(copy_event, self._on_power_tools_collect_copy)
-        # #964 (Dean Martineau): the collector is system-wide, EdSharp-style —
-        # copy anywhere in Windows and it lands in the QUILL document. The
-        # in-app EVT_TEXT_COPY bind above stays for instant response; this
-        # watcher catches every other application's copies by polling the OS
-        # clipboard change counter (a single cheap Win32 call per tick, no
-        # clipboard open unless it actually changed).
-        if active:
-            self._start_collector_watch()
-        else:
-            self._stop_collector_watch()
-        self._announce(
-            "Clipboard collector on; anything you copy, in any program, appends to this document"
-            if active
-            else "Clipboard collector off"
-        )
-
-    def _start_collector_watch(self) -> None:
-        wx = self._wx
-        timer_cls = getattr(wx, "Timer", None)
-        if timer_cls is None:  # headless tests
-            return
-        self._power_tools_collector_seq = _clipboard_change_counter()
-        timer = getattr(self, "_power_tools_collector_timer", None)
-        if timer is None:
-            timer = timer_cls(self.frame)
-            self.frame.Bind(wx.EVT_TIMER, self._on_collector_tick, timer)
-            self._power_tools_collector_timer = timer
-        timer.Start(750)
-
-    def _stop_collector_watch(self) -> None:
-        timer = getattr(self, "_power_tools_collector_timer", None)
-        if timer is not None:
-            try:
-                timer.Stop()
-            except Exception:  # noqa: BLE001 - teardown is best-effort
-                pass
-
-    def _on_collector_tick(self, _event: object) -> None:
-        if not getattr(self, "_power_tools_clipboard_collector", False):
-            self._stop_collector_watch()
-            return
-        counter = _clipboard_change_counter()
-        if counter is not None and counter == getattr(self, "_power_tools_collector_seq", None):
-            return  # nothing new on the clipboard; no clipboard open needed
-        self._power_tools_collector_seq = counter
-        self.collect_clipboard_now()
-
-    def _on_power_tools_collect_copy(self, event: object) -> None:
-        event.Skip()
-        call_after = getattr(self._wx, "CallAfter", None)
-        if callable(call_after):
-            call_after(self.collect_clipboard_now)
-        else:
-            self.collect_clipboard_now()
-
-    def collect_clipboard_now(self) -> None:
-        if self._document_is_read_only():
-            return
-        clip = self._power_tools_clipboard_text()
-        if not clip:
-            return
-        # The system watcher and the in-app copy event can both fire for one
-        # copy (and the counter ticks for our own writes): collect each
-        # distinct clipboard payload once.
-        if clip == getattr(self, "_power_tools_last_collected", None):
-            return
-        self._power_tools_last_collected = clip
-        updated = append_collected(self.editor.GetValue(), clip)
-        self._replace_document_text(updated)
-        self.document.set_text(updated)
-        end = len(updated)
-        self.editor.SetInsertionPoint(end)
-        self.editor.SetSelection(end, end)
-        if self.document.path is not None:
-            self.save_file()
-        self._set_status("Collected clipboard text")
 
     # ---------------------------------------------------- EDS-12 set operations
     def set_lines_first_not_second(self) -> None:
@@ -1538,12 +1511,6 @@ class PowerToolsActionsMixin(SpecialCharacterMixin, LineBreakMixin):
         self._power_tools_transform_selection_or_document(
             lambda text: _fmt.sort_lines_by_date(text, day_first=day_first),
             "Sorted lines by date",
-        )
-
-    def keep_unique_lines(self) -> None:
-        """Remove duplicate lines (case-sensitive); alias with a discoverable name."""
-        self._power_tools_transform_selection_or_document(
-            _fmt.remove_duplicate_lines, "Kept unique lines (removed duplicates)"
         )
 
     def delete_lines_containing(self) -> None:

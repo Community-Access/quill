@@ -67,7 +67,7 @@ def test_menu_item_ids_have_menu_bindings() -> None:
 def test_top_level_menu_append_order_is_conventional() -> None:
     # MENU-REORDER (menus.md Phase 1): top-level menus are attached in one place
     # in the conventional Windows order: File, Edit, View, Insert, Format,
-    # Navigate, Search, (AI), Tools, Window, Help.
+    # Navigate, (AI), Tools, Window, Help.
     source = _menu_source()
 
     # Accept both i18n-wrapped _("...") and bare string forms.
@@ -84,18 +84,15 @@ def test_top_level_menu_append_order_is_conventional() -> None:
     insert_index = _find_menu("insert", "&Insert")
     format_index = _find_menu("format", "F&ormat")
     navigate_index = _find_menu("navigate", "&Navigate")
-    search_index = _find_menu("search", "&Search")
     tools_index = _find_menu("tools", "&Tools")
+    # Search left the menu bar on 2026-09-17 and is Edit > Search Tools (bad.md
+    # M1, P1.20): Word has no Search menu, and this one held two rows to walk
+    # past on the way to Tools. "Search" is still the contribution parent, so a
+    # Quillin declaring it still lands in the submenu.
+    assert "menu_bar.Append(search_menu" not in source
+    assert 'edit_menu.AppendSubMenu(search_menu, _("&Search Tools"))' in source
 
-    assert (
-        edit_index
-        < view_index
-        < insert_index
-        < format_index
-        < navigate_index
-        < search_index
-        < tools_index
-    )
+    assert edit_index < view_index < insert_index < format_index < navigate_index < tools_index
 
 
 def test_update_toggle_is_in_help_menu_not_view_menu() -> None:

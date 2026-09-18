@@ -38,6 +38,8 @@ from __future__ import annotations
 import os
 import sys
 import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import Any
 
 from quill.core.heading_ladder import (
@@ -165,6 +167,41 @@ if sys.platform == "win32":  # pragma: no cover - Windows + a real HWND only
         _TOM_AVAILABLE = False
 
 _tom_module: Any = None
+
+
+@contextmanager
+def _one_undo_step(hwnd: int) -> Iterator[None]:  # pragma: no cover - needs a live HWND
+    """Group everything inside into a single undo entry (bad.md R14).
+
+    Several TOM assignments in a row are several undo entries, and the user did
+    one thing. Heading 2 is a point size **and** a bold, so one Ctrl+Z took the
+    bold off and left the size -- a 16-point non-bold paragraph that neither the
+    ladder nor the outline calls a heading, and that no amount of pressing
+    Ctrl+Z again turns back into body text in one go. Confirmed live on
+    2026-09-17 by ``scripts/probe_rich_edits.py``: before ``Segoe UI, 9 point``,
+    after the heading ``16 point, heading 2, bold``, after one undo
+    ``Segoe UI, 16 point``.
+
+    ``BeginEditCollection`` / ``EndEditCollection`` is TOM's own answer and is
+    what Word uses. Best effort in both directions: an older Rich Edit without
+    the pair leaves the behaviour exactly as it was rather than failing the
+    edit, and the ``finally`` means a raising edit cannot leave the collection
+    open -- which would silently swallow every subsequent undo entry.
+    """
+    document: Any = None
+    try:
+        document = _get_text_document(hwnd)
+        document.BeginEditCollection()
+    except Exception:  # noqa: BLE001 - grouping is an improvement, never a gate
+        document = None
+    try:
+        yield
+    finally:
+        if document is not None:
+            try:
+                document.EndEditCollection()
+            except Exception:  # noqa: BLE001
+                pass
 
 
 def _get_text_document(hwnd: int) -> Any:  # pragma: no cover - needs a live HWND
@@ -445,16 +482,20 @@ class QuillRichEdit:
         if not 0 <= level <= 6:
             raise RichEditRtfError(f"Heading level out of range: {level}")
         try:
-            selection = self._selection()
-            span = selection.Duplicate
-            span.Expand(_TOM_UNIT_PARAGRAPH)
-            font = span.Font
-            if level == 0:
-                font.Size = BODY_POINT_SIZE
-                font.Bold = _TOM_FALSE
-            else:
-                font.Size = HEADING_POINT_SIZES[level]
-                font.Bold = _TOM_TRUE
+            # One undo step for what the user experienced as one action: the
+            # size and the bold are two TOM assignments and Ctrl+Z used to
+            # separate them (bad.md R14).
+            with _one_undo_step(self.hwnd()):
+                selection = self._selection()
+                span = selection.Duplicate
+                span.Expand(_TOM_UNIT_PARAGRAPH)
+                font = span.Font
+                if level == 0:
+                    font.Size = BODY_POINT_SIZE
+                    font.Bold = _TOM_FALSE
+                else:
+                    font.Size = HEADING_POINT_SIZES[level]
+                    font.Bold = _TOM_TRUE
         except RichEditRtfError:
             raise
         except Exception as exc:  # noqa: BLE001

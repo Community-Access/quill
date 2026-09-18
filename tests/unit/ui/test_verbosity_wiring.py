@@ -52,21 +52,27 @@ def test_mixin_applies_modal_ids() -> None:
     assert "apply_modal_ids" in _src("quill/ui/main_frame_verbosity.py")
 
 
-def test_chords_bound_in_default_profile() -> None:
-    b = json.loads(
-        (_ROOT / "quill" / "core" / "keymap" / "profile_default.json").read_text(encoding="utf-8")
-    )["bindings"]
-    assert b["verbosity.toggle_quiet"] == "Ctrl+Shift+Grave, Q"
-    assert b["verbosity.toggle_meeting"] == "Ctrl+Shift+Grave, Shift+Q"
-    assert b["verbosity.undo"] == "Ctrl+Shift+Z"
-    # No chord collisions among bound bindings.
-    chords = [v for v in b.values() if isinstance(v, str) and v]
-    assert len(chords) == len(set(chords))
+def test_chords_bound_in_the_defaults() -> None:
+    """The three verbosity chords, asserted where they belong.
+
+    They used to be asserted against ``profile_default.json``, which was the
+    only place they were bound -- and a profile is a *delta* over the defaults
+    (bad.md P2.6), so a command bound only there is invisible to the Keyboard
+    Manager and the generated reference, and pinned to whatever it said in
+    2025. Ctrl+Shift+Z is the proof: the profile still claimed it for
+    verbosity.undo months after it became Quick Nav in the defaults.
+    """
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    assert DEFAULT_KEYMAP["verbosity.toggle_quiet"] == "Ctrl+Shift+Grave, Shift+Q"
+    assert DEFAULT_KEYMAP["verbosity.toggle_meeting"] == "Ctrl+Shift+Grave, Shift+M"
+    assert DEFAULT_KEYMAP["verbosity.undo"] == "Ctrl+Shift+Grave, Shift+Z"
+    chords = [v for v in DEFAULT_KEYMAP.values() if v]
+    assert len(chords) == len(set(chords)), "two commands on one chord"
 
 
 def test_quote_lines_binding_preserved() -> None:
     # Regression guard: verbosity must not have stolen Ctrl+Shift+Q from quote_lines.
-    b = json.loads(
-        (_ROOT / "quill" / "core" / "keymap" / "profile_default.json").read_text(encoding="utf-8")
-    )["bindings"]
-    assert b["edit.quote_lines"] == "Ctrl+Shift+Q"
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    assert DEFAULT_KEYMAP["edit.quote_lines"] == "Ctrl+Shift+Q"

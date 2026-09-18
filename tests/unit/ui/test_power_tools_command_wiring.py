@@ -49,7 +49,9 @@ _POWER_TOOLS_COMMAND_IDS = [
     "edit.repeat_command",
     "edit.restore_deletion",
     "power.describe_character",
+    "power.describe_character_detail",
     "power.describe_image_at_cursor",
+    "edit.copy_to_tray_slot",
     "power.paste_html_as_markdown",
     "power.paste_markdown_as_html",
     "power.number_lines",
@@ -117,7 +119,6 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.sort_lines_numeric",
     "power.sort_lines_by_date",
     "power.sort_lines_by_length",
-    "power.keep_unique_lines",
     "power.delete_lines_containing",
     "power.delete_lines_not_containing",
     # Copy Tray (dialog-level commands only; per-slot commands register directly
@@ -206,12 +207,24 @@ def test_menu_items_are_bound() -> None:
 
 
 def test_read_only_guard_protects_edit_helpers() -> None:
+    """Two helpers left in main_frame, and the one they now share.
+
+    `_apply_text_block_operation` gave its guard up on 2026-09-18 along with
+    the rest of its body: it delegates to `apply_line_tool`, which is where the
+    three line-tool helpers became one (bad.md N1, P1.16). The guard did not
+    get weaker -- it got fewer places to be forgotten.
+    """
+    import inspect
+
+    from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
+
     guard = (
         "if self._document_is_read_only():\n"
         '            self._set_status("Document is read-only")\n'
         "            return"
     )
-    assert _SOURCE.count(guard) >= 3, "read-only guard missing from one of the _apply_* helpers"
+    assert _SOURCE.count(guard) >= 2, "read-only guard missing from one of the _apply_* helpers"
+    assert guard in inspect.getsource(PowerToolsActionsMixin.apply_line_tool)
 
 
 def test_event_hooks_are_wired() -> None:
@@ -256,7 +269,12 @@ def test_every_table_handler_exists_on_the_actions_mixin() -> None:
     # The classic-editor trio (Repeat, Restore Deleted Text, Describe Character)
     # lives on ClassicEditorMixin, extracted to keep main_frame_power_tools.py
     # within its GATE-11 budget.
-    classic_ids = {"edit.repeat_command", "edit.restore_deletion", "power.describe_character"}
+    classic_ids = {
+        "edit.repeat_command",
+        "edit.restore_deletion",
+        "power.describe_character",
+        "power.describe_character_detail",
+    }
     # Clip Library (#895) shares the copy_tray menu group but its handlers live
     # on their own mixin, not CopyTrayMixin.
     clip_library_ids = {"edit.keep_selection_in_clip_library", "edit.open_clip_library"}
@@ -331,6 +349,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
         ],
         "copy_tray": [
             "edit.open_copy_tray",
+            "edit.copy_to_tray_slot",
             "edit.clear_all_tray_slots",
             "edit.keep_selection_in_clip_library",
             "edit.open_clip_library",
@@ -352,7 +371,6 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.sort_lines_numeric",
             "power.sort_lines_by_date",
             "power.sort_lines_by_length",
-            "power.keep_unique_lines",
             "power.delete_lines_containing",
             "power.delete_lines_not_containing",
         ],
@@ -410,6 +428,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.infer_indent",
             "power.compute_line_statistics",
             "power.describe_character",
+            "power.describe_character_detail",
             "power.describe_image_at_cursor",
         ],
     }

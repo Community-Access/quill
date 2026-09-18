@@ -326,14 +326,6 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         separator_before=False,
     )
     add(
-        id="power.keep_unique_lines",
-        title="Keep Unique Lines",
-        top_level="Format",
-        group="sort_filter",
-        label="&Keep Unique Lines",
-        separator_before=True,
-    )
-    add(
         id="power.delete_lines_containing",
         title="Delete Lines Containing",
         top_level="Format",
@@ -657,6 +649,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         separator_before=False,
     )
     add(
+        id="edit.copy_to_tray_slot",
+        title="Copy to Tray Slot",
+        top_level="Edit",
+        group="copy_tray",
+        label="Copy to Tray &Slot...",
+        separator_before=False,
+    )
+    add(
         id="edit.clear_all_tray_slots",
         title="Clear All Tray Slots",
         top_level="Edit",
@@ -753,6 +753,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         group="power_tools",
         label="Describe &Character at Cursor",
         separator_before=True,
+    )
+    add(
+        id="power.describe_character_detail",
+        title="Character Details",
+        top_level="Tools",
+        group="power_tools",
+        label="Character De&tails...",
+        separator_before=False,
     )
     add(
         id="power.describe_image_at_cursor",

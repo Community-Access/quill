@@ -85,7 +85,6 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         self.frames: list[DocumentFrame] = []
         self.active_frame: DocumentFrame | None = None
         self.voice = ScreenReaderVoice()
-        self.voice.throttle_ms = int(getattr(self.settings, "announcement_throttle_ms", 0) or 0)
         self.print_settings: PrintSettings | None = None
         self.shell: QuillLiteShell | None = None
         #: Which areas of the app exist at all. Everything unknown is on;
@@ -119,6 +118,13 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         self.SetAppName(APP_NAME)
         self.data_dir = data_dir()
         self.settings = settings_mod.load()
+        # Here and not in __init__, where it was until 2026-09-17 and where it
+        # read self.settings **before OnInit had loaded it** -- so constructing
+        # the app raised AttributeError and QuillLite did not start at all.
+        # Nothing caught it because every unit test builds a stub window rather
+        # than the wx.App, and the one thing that does construct it is the live
+        # probe, which is run by hand.
+        self.voice.throttle_ms = int(getattr(self.settings, "announcement_throttle_ms", 0) or 0)
         inbox_mod.claim_instance_marker()
         # F1 help for the whole app, with QuillLite's own purpose catalogue.
         # Without activate() every SetHelpText in the app stores nothing, because
@@ -199,7 +205,8 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
             self.new_window(self._initial_mode or self.settings.default_mode)
         if recovered:
             # The one thing the screen reader cannot deduce from the windows
-            # that appeared: that they are unsaved work, not files.
+            # that appeared: that they are unsaved work, not files. (The count
+            # was said in the question that produced them.)
             wx.CallAfter(self.voice.speak, "Recovered unsaved work from the last session")
         self._inbox_timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._poll_inbox, self._inbox_timer)
@@ -257,13 +264,47 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         self.save_settings()
 
     def _restore_pending_work(self) -> bool:
-        """Open a window per recovery slot. ``True`` when there was any."""
+        """Offer last session's unsaved work back. ``True`` when any was taken.
+
+        It used to reopen every slot without asking and say one line afterwards
+        (bad.md F14, P2.12). Word's Document Recovery asks, and it asks for a
+        reason a listener feels hardest: after a crash, four windows appearing
+        unbidden is four things to identify before you can work, and the one
+        you actually wanted is not necessarily the first.
+
+        So: say how many there are and what they were, and let the answer be
+        no. Declining keeps the slots -- they are not deleted until the work is
+        restored or the user clears them -- so "not now" cannot lose anything.
+        """
         slots = recovery_mod.pending()
+        if not slots:
+            return False
+        if not self._confirm_recovery(slots):
+            self.voice.speak("Unsaved work kept. It will be offered again next time.")
+            return False
         for slot in slots:
             self.new_window(slot.mode, recovery_slot=slot)
-        return bool(slots)
+        return True
 
-    # -- windows --------------------------------------------------------- #
+    def _confirm_recovery(self, slots: list[recovery_mod.RecoverySlot]) -> bool:
+        """Name what was found, then ask. ``True`` to restore it."""
+        names = [
+            Path(slot.original_path).name if slot.original_path else "an untitled document"
+            for slot in slots
+        ]
+        listed = "\n".join(f"  {name}" for name in names[:10])
+        if len(names) > 10:
+            listed += f"\n  and {len(names) - 10} more"
+        plural = "" if len(names) == 1 else "s"
+        subject = "it" if len(names) == 1 else "them"
+        answer = show_message_box(
+            f"QuillLite has unsaved work from {len(names)} document{plural}:"
+            f"\n\n{listed}\n\nOpen {subject} now? Choosing No keeps it for next time.",
+            APP_NAME,
+            wx.YES_NO | wx.ICON_QUESTION,
+            self.shell,
+        )
+        return answer == wx.YES
 
     def new_window(
         self,

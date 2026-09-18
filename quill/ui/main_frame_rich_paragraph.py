@@ -44,6 +44,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.atomic_edit import replace_as_one_undo
+
 __all__ = ["RichParagraphMixin"]
 
 #: ``ITextPara.SetLineSpacing`` rules, named. Imported lazily with the rest of
@@ -73,6 +75,36 @@ class RichParagraphMixin:
         self.format_align("justify")
 
     # -- lists -------------------------------------------------------------- #
+
+    _LIST_STYLE_WORDS = {
+        "none": "No list",
+        "bullet": "Bulleted list",
+        "numbered": "Numbered list",
+    }
+
+    def format_rich_list_style(self) -> bool:
+        """Step the caret's paragraphs to the next list style. True when handled.
+
+        WordPad's Ctrl+Shift+L and QuillLite's: bulleted, numbered, none, round
+        again. A toggle can only say yes or no, which is why a numbered list was
+        unreachable from the keyboard in a rich QUILL document (bad.md P1.5).
+
+        ``ITextPara.ListType`` is the whole implementation -- in a rich document
+        a list is a paragraph property the control draws and renumbers, not
+        characters in the text.
+        """
+        from quill.core.list_style import LIST_STYLES
+
+        wrapper = self._active_richedit()
+        if self._current_editor_mode() != "rich" or wrapper is None:
+            return False
+        at_caret = getattr(wrapper, "list_style_at_caret", lambda: "none")()
+        if at_caret not in LIST_STYLES:
+            at_caret = "none"
+        style = LIST_STYLES[(LIST_STYLES.index(at_caret) + 1) % len(LIST_STYLES)]
+        return bool(
+            self._rich_format_command("set_list_style", self._LIST_STYLE_WORDS[style], style)
+        )
 
     def format_rich_bullets(self) -> bool:
         """Toggle a real bullet list in rich mode. ``True`` when handled.
@@ -181,7 +213,10 @@ class RichParagraphMixin:
         editor = self.editor
         start, end = editor.GetSelection()
         if end > start:
-            editor.Replace(start, end, text)
+            # Not Replace: one Ctrl+Z has to take the paste back whole, and
+            # over a selection Replace leaves undo on an intermediate state
+            # (bad.md C6).
+            replace_as_one_undo(editor, start, end, text)
         else:
             editor.WriteText(text)
         self._set_status_quiet(f"Pasted {len(text):,} characters as plain text")

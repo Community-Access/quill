@@ -60,9 +60,19 @@ def test_registry_is_not_empty() -> None:
 
 
 def test_scan_is_deterministic() -> None:
-    """Two scans return identical, sorted output (stable keys, no flakiness)."""
-    first = [surface.key for surface in scan_dialog_surfaces()]
-    second = [surface.key for surface in scan_dialog_surfaces()]
+    """Two scans return identical, sorted output (stable keys, no flakiness).
+
+    Both scans run inside one ``source_cache.scope()``, which is what the
+    re-entrant scope is for: a bare pair of calls parses the whole package
+    twice, took ~31 seconds against pytest's 30-second timeout, and failed by
+    the clock rather than by the assertion. A gate that times out sometimes is
+    one people learn to re-run rather than believe.
+    """
+    from quill.tools.source_cache import scope
+
+    with scope():
+        first = [surface.key for surface in scan_dialog_surfaces()]
+        second = [surface.key for surface in scan_dialog_surfaces()]
     assert first == second == sorted(first)
 
 

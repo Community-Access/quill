@@ -40,11 +40,21 @@ from quill.tools.help_audit import (
 
 SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "lite_help_inventory.json"
 
-#: QuillLite has no ``quill/ui`` subpackage: its four modules sit together under
+#: QuillLite has no ``quill/ui`` subpackage: its modules sit together under
 #: ``quill/apps`` (the app, the window, its commands, its dialogs), which is
 #: what ``lite*.py`` picks up -- including any module a future split adds.
+#:
+#: The one exception is a dialog that has been *shared* rather than split: the
+#: Spelling Announcements window moved to ``quill/ui`` so QUILL could open it on
+#: the same chord (bad.md P1.14), and moving it out of this glob silently
+#: dropped twelve authored help sentences from the audit and from the generated
+#: reference. A surface no gate can see is one that rots, so the glob follows
+#: the surface. Keep this in step with ``build_help_reference.APPS``.
 _SCAN_DIRS: tuple[str, ...] = ()
-_SCAN_GLOBS: tuple[str, ...] = ("quill/apps/lite*.py",)
+_SCAN_GLOBS: tuple[str, ...] = (
+    "quill/apps/lite*.py",
+    "quill/ui/spelling_voice_dialog.py",
+)
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason
 #: they are fine. Keyed ``<module>::<qualname>``.

@@ -351,6 +351,29 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("new document", "format", "default"),
     ),
     SettingSpec(
+        "default_line_ending",
+        "Line endings for new documents",
+        "general",
+        "choice",
+        "How a brand-new document ends its lines. A file you open keeps the "
+        "endings it already had, whichever this says.",
+        choices=(
+            ("crlf", "Windows (CR LF)"),
+            ("lf", "Unix (LF)"),
+        ),
+        keywords=("line ending", "crlf", "newline", "new document"),
+    ),
+    SettingSpec(
+        "restore_session",
+        "Reopen last session's documents",
+        "general",
+        "bool",
+        "When on, QUILL reopens the documents that were open when it last "
+        "closed. A file you open from Explorer or the command line always "
+        "wins: it is opened instead, not on top of.",
+        keywords=("session", "restore", "reopen", "startup"),
+    ),
+    SettingSpec(
         "default_export_preset",
         "Default export preset",
         "general",

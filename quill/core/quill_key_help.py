@@ -231,6 +231,19 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     # Took the leader G on 2026-09-17 when favourite folders left the
     # three-modifier chords for the leader (bad.md §0.6, rule 7).
     "file.open_from_favorite_folder": "Open From Favourite Folder",
+    # Its two managing verbs joined it there on 2026-09-17, on positions the
+    # leader reclaim freed (bad.md 3.5, P1.11), together with the intake
+    # report -- a once-per-file reading, not an editing-loop verb.
+    "file.add_favorite_folder": "Add Favourite Folder",
+    "file.remove_favorite_folder": "Remove Favourite Folder",
+    "tools.document_intake_report": "Document Intake Report",
+    "edit.magic_paste": "Magic Paste",
+    "format.toggle_numbered_list": "Numbered List",
+    # The verbosity trio, which had a chord only in the stale default profile
+    # until 2026-09-17 and now has one in DEFAULT_KEYMAP (bad.md P2.6).
+    "verbosity.toggle_quiet": "Toggle Quiet Mode",
+    "verbosity.toggle_meeting": "Toggle Meeting Mode",
+    "verbosity.undo": "Undo The Last Verbosity Change",
     "file.open_from_remote": "Open From Remote",
     "file.save_to_remote": "Save To Remote",
     "file.manage_remote_sites": "Manage Remote Sites",

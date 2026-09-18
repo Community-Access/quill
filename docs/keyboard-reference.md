@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 415.
+Editor commands with default bindings: 441.
 
 ## The QUILL editor
 
@@ -19,33 +19,35 @@ Editor commands with default bindings: 415.
 
 | Key | Command | Command id |
 | --- | --- | --- |
-| (unbound by default) | Add Current Folder to Favorites | `file.add_favorite_folder` |
-| (unbound by default) | Remove Favorite Folder... | `file.remove_favorite_folder` |
-| (unbound by default) | Restore Previous Version... | `file.restore_previous_version` |
+| (unbound by default) | Manage GitHub Accounts... | `file.github_manage_accounts` |
+| (unbound by default) | Save to GitHub... | `file.github_save_back` |
+| (unbound by default) | Manage Remote Sites... | `file.manage_remote_sites` |
+| (unbound by default) | Open from Remote... | `file.open_from_remote` |
+| (unbound by default) | Open Remote GitHub File URL... | `file.open_github_file_url` |
+| (unbound by default) | Open GitHub Items... | `file.open_github_items` |
+| (unbound by default) | Open Remote GitHub Repository... | `file.open_github_repository` |
+| (unbound by default) | Save to Remote | `file.save_to_remote` |
+| Ctrl+Alt+E | File Format | `file.file_format` |
+| Ctrl+Alt+N | New Plain Text Document | `file.new_plain_text_document` |
 | Ctrl+Alt+P | Page Setup... | `file.page_setup` |
+| Ctrl+Alt+Shift+E | Restore Previous Version... | `file.restore_previous_version` |
 | Ctrl+N | New | `file.new` |
 | Ctrl+O or Ctrl+F12 | Open... | `file.open` |
 | Ctrl+P or Ctrl+Shift+F12 | Print... | `file.print` |
 | Ctrl+S | Save | `file.save` |
+| Ctrl+Shift+N | New Rich Text Document | `file.new_rich_document` |
 | Ctrl+Shift+S or F12 | Save As... | `file.save_as` |
 | Ctrl+W | Close Document | `file.close_document` |
 | QUILL Key + B | Batch conversion | `file.batch_conversion` |
 | QUILL Key + G | Open From Favorite Folder... | `file.open_from_favorite_folder` |
-| QUILL Key + Shift+I | Open GitHub Items... | `file.open_github_items` |
-| QUILL Key + Shift+M | Manage Remote Sites... | `file.manage_remote_sites` |
-| QUILL Key + Shift+O | Open from Remote... | `file.open_from_remote` |
-| QUILL Key + Shift+Q | Save to GitHub... | `file.github_save_back` |
-| QUILL Key + Shift+W | Open Remote GitHub File URL... | `file.open_github_file_url` |
-| QUILL Key + Shift+Y | Open Remote GitHub Repository... | `file.open_github_repository` |
-| QUILL Key + Shift+Z | Manage GitHub Accounts... | `file.github_manage_accounts` |
-| QUILL Key + W | Save to Remote | `file.save_to_remote` |
+| QUILL Key + Shift+F | Add Current Folder to Favorites | `file.add_favorite_folder` |
+| QUILL Key + Shift+X | Remove Favorite Folder... | `file.remove_favorite_folder` |
 
 ### Editing
 
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
-| (unbound by default) | Magic Paste | `edit.magic_paste` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
 | Alt+. | Insert Emoji... | `edit.insert_emoji` |
@@ -57,11 +59,14 @@ Editor commands with default bindings: 415.
 | Alt+Shift+F8 | Go to Start of Selection | `edit.go_to_start_of_selection` |
 | Alt+Shift+F9 | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
 | Alt+Shift+U | Open Review Buffer | `edit.open_review_buffer` |
+| Alt+Shift+Y | Copy to tray slot | `edit.copy_to_tray_slot` |
 | Alt+Shift+Z | Reverse Lines | `edit.reverse_lines` |
 | Ctrl+. | Word Prediction... | `edit.word_prediction` |
+| Ctrl+Alt+= | Insert Equation... | `edit.insert_equation` |
 | Ctrl+Alt+D | Remove Duplicate Lines | `edit.remove_duplicate_lines` |
-| Ctrl+Alt+E | Select Line | `edit.select_line` |
 | Ctrl+Alt+F8 | Toggle Selection Marker | `edit.toggle_selection_marker` |
+| Ctrl+Alt+M | Keep selection in clip library | `edit.keep_selection_in_clip_library` |
+| Ctrl+Alt+Q | Duplicate Selection | `edit.duplicate_selection` |
 | Ctrl+Alt+R | Trim Trailing Whitespace | `edit.trim_trailing_whitespace` |
 | Ctrl+Alt+S | Sort Lines Ascending | `edit.sort_lines_ascending` |
 | Ctrl+Alt+Shift+- | Paste from tray 11 | `edit.paste_from_tray_11` |
@@ -77,12 +82,16 @@ Editor commands with default bindings: 415.
 | Ctrl+Alt+Shift+9 | Paste from tray 9 | `edit.paste_from_tray_9` |
 | Ctrl+Alt+Shift+= | Paste from tray 12 | `edit.paste_from_tray_12` |
 | Ctrl+Alt+Shift+B | Select Block | `edit.select_block` |
-| Ctrl+Alt+Shift+Q | Duplicate Selection | `edit.duplicate_selection` |
+| Ctrl+Alt+Shift+M | Open clip library | `edit.open_clip_library` |
+| Ctrl+Alt+Shift+Q | Unquote Lines | `edit.unquote_lines` |
+| Ctrl+Alt+Shift+S | Sort Lines Descending | `edit.sort_lines_descending` |
+| Ctrl+Alt+Shift+T | Normalize Whitespace | `edit.normalize_whitespace` |
+| Ctrl+Alt+Shift+X | Shrink Selection | `edit.shrink_selection` |
 | Ctrl+Alt+Shift+Y | Clear all tray slots | `edit.clear_all_tray_slots` |
 | Ctrl+Alt+Shift+Z | Restore deletion | `edit.restore_deletion` |
 | Ctrl+Alt+Space | Select Token | `edit.select_chunk` |
 | Ctrl+Alt+V | Open copy tray | `edit.open_copy_tray` |
-| Ctrl+Alt+W | Select Word | `edit.select_word` |
+| Ctrl+Alt+X | Exchange Point and Mark | `edit.exchange_point_mark` |
 | Ctrl+Alt+Y | Copy to Next Empty Tray Slot | `edit.copy_to_next_slot` |
 | Ctrl+Enter | Follow Link | `edit.follow_link` |
 | Ctrl+F | Find... | `edit.find` |
@@ -91,17 +100,17 @@ Editor commands with default bindings: 415.
 | Ctrl+K | Insert Link... | `edit.insert_link` |
 | Ctrl+M | Pop Mark | `edit.pop_mark` |
 | Ctrl+Shift+A | Unselect All | `edit.unselect_all` |
-| Ctrl+Shift+E | Insert Equation... | `edit.insert_equation` |
+| Ctrl+Shift+E | Select Line | `edit.select_line` |
 | Ctrl+Shift+End | Select to End of Document | `edit.select_to_end_of_document` |
 | Ctrl+Shift+F3 | Find All Matches | `edit.find_all_matches` |
 | Ctrl+Shift+F8 | Reselect | `edit.reselect` |
 | Ctrl+Shift+H | Select Paragraph | `edit.select_paragraph` |
 | Ctrl+Shift+Home | Select to Start of Document | `edit.select_to_start_of_document` |
-| Ctrl+Shift+K | Unquote Lines | `edit.unquote_lines` |
 | Ctrl+Shift+M | Set Mark | `edit.set_mark` |
 | Ctrl+Shift+Q | Quote Lines | `edit.quote_lines` |
 | Ctrl+Shift+V | Paste Text Only | `edit.paste_plain_text` |
-| Ctrl+Shift+X | Exchange Point and Mark | `edit.exchange_point_mark` |
+| Ctrl+Shift+W | Select Word | `edit.select_word` |
+| Ctrl+Shift+X | Expand Selection | `edit.expand_selection` |
 | Ctrl+Shift+Y | Say Selected | `edit.say_selected` |
 | Ctrl+Shift+[ | Toggle Fold | `edit.toggle_fold` |
 | Ctrl+Space | Select Sentence | `edit.select_sentence` |
@@ -111,7 +120,6 @@ Editor commands with default bindings: 415.
 | F5 | Insert Date and Time | `edit.insert_date_time` |
 | F8 or Ctrl+; | Start Selection | `edit.start_selection` |
 | QUILL Key + C | Copy selection for email | `edit.copy_selection_for_email` |
-| QUILL Key + J | Expand Selection | `edit.expand_selection` |
 | QUILL Key + Shift+- | Copy to tray 11 | `edit.copy_to_tray_11` |
 | QUILL Key + Shift+0 | Copy to tray 10 | `edit.copy_to_tray_10` |
 | QUILL Key + Shift+1 | Copy to tray 1 | `edit.copy_to_tray_1` |
@@ -124,7 +132,7 @@ Editor commands with default bindings: 415.
 | QUILL Key + Shift+8 | Copy to tray 8 | `edit.copy_to_tray_8` |
 | QUILL Key + Shift+9 | Copy to tray 9 | `edit.copy_to_tray_9` |
 | QUILL Key + Shift+= | Copy to tray 12 | `edit.copy_to_tray_12` |
-| QUILL Key + Shift+J | Shrink Selection | `edit.shrink_selection` |
+| QUILL Key + Shift+V | Magic Paste | `edit.magic_paste` |
 | QUILL Key + X | Replace All... | `edit.replace_all` |
 | Shift+End | Select to End of Line | `edit.select_to_end_of_line` |
 | Shift+F3 | Find Previous | `edit.find_previous` |
@@ -135,11 +143,13 @@ Editor commands with default bindings: 415.
 
 | Key | Command | Command id |
 | --- | --- | --- |
-| (unbound by default) | Insert Markdown Tag... | `format.insert_markdown_tag` |
+| (unbound by default) | Insert Block Quote | `format.blockquote` |
 | (unbound by default) | Structured List Studio Settings | `format.list_studio_settings` |
 | (unbound by default) | New Abbreviation from Clipboard... | `format.new_abbreviation_from_clipboard` |
 | (unbound by default) | Quick Insert... | `format.quick_insert` |
+| Alt+Shift+A | Toggle Abbreviation Expansion | `format.toggle_abbreviation_expansion` |
 | Alt+Shift+Down | Move Section Down | `format.move_section_down` |
+| Alt+Shift+F | Switch Document Format | `format.switch_document_format` |
 | Alt+Shift+Left | Decrease Heading Level | `format.decrease_heading_level` |
 | Alt+Shift+Right | Increase Heading Level | `format.increase_heading_level` |
 | Alt+Shift+Up | Move Section Up | `format.move_section_up` |
@@ -156,8 +166,8 @@ Editor commands with default bindings: 415.
 | Ctrl+Alt+5 | Insert Heading 5 | `format.heading_5` |
 | Ctrl+Alt+6 | Insert Heading 6 | `format.heading_6` |
 | Ctrl+Alt+F | Font... | `format.editor_font` |
-| Ctrl+Alt+N | Toggle Numbered List | `format.toggle_numbered_list` |
-| Ctrl+Alt+Q | Insert Block Quote | `format.blockquote` |
+| Ctrl+Alt+I | Insert Markdown Tag... | `format.insert_markdown_tag` |
+| Ctrl+Alt+Shift+I | Toggle Tab Key Mode (Indent / Tab Character) | `format.toggle_tab_insert_mode` |
 | Ctrl+Alt+Shift+J | Join Lines | `format.join_lines` |
 | Ctrl+Alt+Shift+L | Structured List Studio | `format.list_studio` |
 | Ctrl+Alt+Shift+N | Toggle Case | `format.toggle_case` |
@@ -173,10 +183,12 @@ Editor commands with default bindings: 415.
 | Ctrl+R | Align Right | `format.align_right` |
 | Ctrl+Shift+, | Shrink Font | `format.shrink_font` |
 | Ctrl+Shift+. | Grow Font | `format.grow_font` |
+| Ctrl+Shift+/ | Toggle Block Comment | `format.toggle_block_comment` |
 | Ctrl+Shift+D | Describe Formatting at Cursor | `format.describe_formatting` |
 | Ctrl+Shift+Delete | Delete Line | `format.delete_line` |
 | Ctrl+Shift+Down | Move Line Down | `format.move_line_down` |
 | Ctrl+Shift+F | Font for Selection... | `format.selection_font` |
+| Ctrl+Shift+K | Lower Case | `format.lower_case` |
 | Ctrl+Shift+L | Toggle Bullet List | `format.toggle_bullet_list` |
 | Ctrl+Shift+T | Title Case | `format.title_case` |
 | Ctrl+Shift+U | Upper Case | `format.upper_case` |
@@ -184,15 +196,12 @@ Editor commands with default bindings: 415.
 | Ctrl+[ | Outdent | `format.outdent` |
 | Ctrl+] | Indent | `format.indent` |
 | QUILL Key + A | Expand Abbreviation | `format.expand_abbreviation` |
-| QUILL Key + E | Toggle Abbreviation Expansion | `format.toggle_abbreviation_expansion` |
 | QUILL Key + H or Ctrl+Alt+O | Insert HTML Tag... | `format.insert_html_tag` |
-| QUILL Key + K | Switch Document Format | `format.switch_document_format` |
 | QUILL Key + L | List Manager | `format.list_manager` |
 | QUILL Key + S | Insert Snippet... | `format.insert_snippet` |
 | QUILL Key + Shift+A or Ctrl+Alt+A | Manage Abbreviations... | `format.manage_abbreviations` |
+| QUILL Key + Shift+L | Toggle Numbered List | `format.toggle_numbered_list` |
 | QUILL Key + Shift+S | Manage Snippets... | `format.manage_snippets` |
-| QUILL Key + U | Toggle Tab Key Mode (Indent / Tab Character) | `format.toggle_tab_insert_mode` |
-| Shift+Alt+A | Toggle Block Comment | `format.toggle_block_comment` |
 
 ### Navigation
 
@@ -202,6 +211,8 @@ Editor commands with default bindings: 415.
 | Alt+Down | Next Structure | `navigate.next_structure` |
 | Alt+Left | Back Location | `navigate.back_location` |
 | Alt+Right | Forward Location | `navigate.forward_location` |
+| Alt+Shift+G or Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
+| Alt+Shift+O | Heading Organizer... | `navigate.heading_organizer` |
 | Alt+Shift+[ | Previous Fold | `navigate.previous_fold` |
 | Alt+Shift+] | Next Fold | `navigate.next_fold` |
 | Alt+Up | Previous Structure | `navigate.previous_structure` |
@@ -222,7 +233,6 @@ Editor commands with default bindings: 415.
 | Ctrl+Shift+8 | Set numbered bookmark 8 | `navigate.set_numbered_bookmark_8` |
 | Ctrl+Shift+9 | Set numbered bookmark 9 | `navigate.set_numbered_bookmark_9` |
 | Ctrl+Shift+B | Set Bookmark | `navigate.set_numbered_bookmark` |
-| Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
 | Ctrl+Shift+J | Go to Temporary Bookmark | `navigate.go_to_temp_bookmark` |
 | Ctrl+Shift+O or Ctrl+Alt+L | Outline Navigator... | `navigate.outline_navigator` |
 | Ctrl+Shift+Z | Quick Nav (Landmarks) | `navigate.quick_nav` |
@@ -230,7 +240,6 @@ Editor commands with default bindings: 415.
 | F2 | Next Bookmark | `navigate.next_bookmark` |
 | F6 | Next Region | `navigate.next_region` |
 | QUILL Key + F | Speak Window Title | `navigate.speak_window_title` |
-| QUILL Key + O | Heading Organizer... | `navigate.heading_organizer` |
 | QUILL Key + P | Speak Full Path | `navigate.speak_full_path` |
 | QUILL Key + Q | Speak Status Summary | `navigate.speak_status_summary` |
 | Shift+F2 | Previous Bookmark | `navigate.previous_bookmark` |
@@ -264,11 +273,24 @@ Editor commands with default bindings: 415.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | AI Grammar and Style Check... | `tools.ai_grammar_style` |
+| (unbound by default) | AI Spell Check... | `tools.ai_spell_check` |
+| (unbound by default) | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
+| (unbound by default) | Switch AI Engine | `tools.ai_switch_engine` |
+| (unbound by default) | AI Thesaurus | `tools.ai_thesaurus` |
+| (unbound by default) | Translate Selection... | `tools.ai_translate_selection` |
+| (unbound by default) | Open CSV in Table Studio (Experimental) | `tools.csv_studio` |
+| (unbound by default) | Table Studio (Experimental) | `tools.table_studio` |
+| (unbound by default) | Voice Command (Offline) | `tools.voice_command` |
+| (unbound by default) | Voice Conversation Mode | `tools.voice_conversation` |
+| (unbound by default) | Speak Voice Status | `tools.voice_status` |
+| (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill Chat | `tools.ask_quill_chat` |
 | Alt+Shift+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
 | Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |
+| Alt+Shift+Q | Ask Quill: Voice Conversation | `tools.ask_quill_conversation` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
@@ -277,22 +299,16 @@ Editor commands with default bindings: 415.
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
-| Ctrl+Alt+Shift+E | Switch AI Engine | `tools.ai_switch_engine` |
 | Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
-| Ctrl+Alt+Shift+G | AI Grammar and Style Check... | `tools.ai_grammar_style` |
-| Ctrl+Alt+Shift+I | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
-| Ctrl+Alt+Shift+M | AI Thesaurus | `tools.ai_thesaurus` |
+| Ctrl+Alt+Shift+F6 | Spelling Announcements | `tools.spelling_announcements` |
 | Ctrl+Alt+Shift+O | Sound Scheme | `tools.sound_events` |
 | Ctrl+Alt+Shift+R | Keymap Editor... | `tools.keymap_editor` |
-| Ctrl+Alt+Shift+S | AI Spell Check... | `tools.ai_spell_check` |
-| Ctrl+Alt+Shift+T | Translate Selection... | `tools.ai_translate_selection` |
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
 | Ctrl+Shift+F9 | Pause or Resume Dictation | `tools.dictation_pause` |
 | Ctrl+Shift+G | Document Statistics... | `tools.word_count` |
-| Ctrl+Shift+I | Document Intake Report... | `tools.document_intake_report` |
 | Ctrl+Shift+R | Replace Across Files... | `tools.replace_in_files` |
 | Ctrl+Shift+] | List Folds... | `tools.list_folds` |
 | Escape | Stop Dictation (keep speech) | `tools.dictation_emergency_stop` |
@@ -301,6 +317,7 @@ Editor commands with default bindings: 415.
 | QUILL Key + I | Describe Image... | `tools.describe_image` |
 | QUILL Key + R | Read Aloud Start/Pause | `tools.read_aloud_start_pause` |
 | QUILL Key + Shift+D | Dictate (Offline) | `tools.speech_dictate` |
+| QUILL Key + Shift+I | Document Intake Report... | `tools.document_intake_report` |
 | QUILL Key + Shift+N | New Sticky Note... | `tools.sticky_note_capture` |
 | QUILL Key + Shift+P | Post to Mastodon... | `tools.post_to_mastodon` |
 | QUILL Key + Shift+R | Read Aloud Stop | `tools.read_aloud_stop` |
@@ -358,12 +375,20 @@ Editor commands with default bindings: 415.
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | GitHub: Browse Organization Repositories... | `github.browse_organization` |
+| (unbound by default) | GitHub: Change Default Branch... | `github.change_default_branch` |
+| (unbound by default) | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
+| (unbound by default) | GitHub: Commit Multiple Files... | `github.commit_multiple_files` |
+| (unbound by default) | GitHub: Configure Branch Protection... | `github.configure_branch_protection` |
 | (unbound by default) | GitHub: Explain a Command... | `github.copilot_explain` |
 | (unbound by default) | GitHub: Ask Copilot for a Command... | `github.copilot_suggest` |
 | (unbound by default) | GitHub: Create Codespace... | `github.create_codespace` |
 | (unbound by default) | GitHub: Create Release... | `github.create_release` |
+| (unbound by default) | GitHub: Create Repository... | `github.create_repository` |
+| (unbound by default) | GitHub: Delete Branch... | `github.delete_branch` |
 | (unbound by default) | GitHub: Dispatch Workflow... | `github.dispatch_workflow` |
+| (unbound by default) | GitHub: Fork Repository... | `github.fork_repository` |
 | (unbound by default) | GitHub: Codespaces... | `github.list_codespaces` |
+| (unbound by default) | GitHub: Rename Repository... | `github.rename_repository` |
 | (unbound by default) | GitHub: Notifications... | `github.view_notifications` |
 | (unbound by default) | GitHub: Security Alerts... | `github.view_security_alerts` |
 | (unbound by default) | Local Git: End Bisect | `localgit.bisect_reset` |
@@ -417,26 +442,30 @@ Editor commands with default bindings: 415.
 | (unbound by default) | Show Tags... | `vault.tags` |
 | (unbound by default) | Open Today's Note | `vault.today` |
 | (unbound by default) | Unlinked Mentions | `vault.unlinked_mentions` |
+| (unbound by default) | Announcement History | `verbosity.history` |
+| (unbound by default) | Verbosity Preferences | `verbosity.preferences` |
+| (unbound by default) | Speak Status Bar | `verbosity.speak_status` |
+| (unbound by default) | What Changed | `verbosity.what_changed` |
+| (unbound by default) | Where Am I | `verbosity.where_am_i` |
 | ' | QUILL Quick Nav: Code Block | `quill.quick_nav.code_block` |
 | A | QUILL Quick Nav: Link | `quill.quick_nav.link` |
 | Alt+End | Table: Last Cell in Row | `table.row_end` |
 | Alt+Home | Table: First Cell in Row | `table.row_start` |
 | Alt+I | Document Summary | `document.summary` |
-| Alt+Shift+G | Previous Inline Note | `notes.previous_inline_note` |
 | Alt+Shift+H | Speak Inline Note (double-press to edit) | `notes.speak_inline_note` |
 | Alt+Shift+I | Add Inline Note | `notes.add_inline_note` |
 | Alt+Shift+J | Next Inline Note | `notes.next_inline_note` |
-| Alt+Shift+K | Keep unique lines | `power.keep_unique_lines` |
+| Alt+Shift+K | Previous Inline Note | `notes.previous_inline_note` |
 | Alt+Shift+N | Number lines | `power.number_lines` |
 | Alt+Shift+W | Hard wrap lines | `power.hard_wrap_lines` |
 | Alt+Shift+X | Delete lines containing | `power.delete_lines_containing` |
 | B | QUILL Quick Nav: Bookmark | `quill.quick_nav.bookmark` |
 | C | QUILL Quick Nav: Table of Contents | `quill.quick_nav.table_of_contents` |
+| Ctrl+Alt+C | Describe character detail | `power.describe_character_detail` |
 | Ctrl+Alt+Down | Table: Cell Below | `table.cell_below` |
 | Ctrl+Alt+End | Table: Last Cell | `table.last_cell` |
-| Ctrl+Alt+G | Compute line statistics | `power.compute_line_statistics` |
+| Ctrl+Alt+G | Toggle clipboard collector | `power.toggle_clipboard_collector` |
 | Ctrl+Alt+Home | Table: First Cell | `table.first_cell` |
-| Ctrl+Alt+I | Insert image | `power.insert_image` |
 | Ctrl+Alt+K | Remove blank lines | `power.remove_blank_lines` |
 | Ctrl+Alt+Left | Table: Previous Cell | `table.previous_cell` |
 | Ctrl+Alt+Right | Table: Next Cell | `table.next_cell` |
@@ -444,10 +473,12 @@ Editor commands with default bindings: 415.
 | Ctrl+Alt+Shift+Delete | Delete to line end | `power.delete_to_line_end` |
 | Ctrl+Alt+Shift+F3 | Count occurrences | `power.count_occurrences` |
 | Ctrl+Alt+Up | Table: Cell Above | `table.cell_above` |
+| Ctrl+Alt+W | Compute line statistics | `power.compute_line_statistics` |
 | Ctrl+Shift+Backspace | Delete to line start | `power.delete_to_line_start` |
 | Ctrl+Shift+C | Describe character | `power.describe_character` |
 | Ctrl+Shift+Enter | Trim blank lines | `power.trim_blank_lines` |
 | Ctrl+Shift+F2 | Insert special character | `power.insert_special_character` |
+| Ctrl+Shift+I | Insert image | `power.insert_image` |
 | H | QUILL Quick Nav: Heading | `quill.quick_nav.heading` |
 | I | QUILL Quick Nav: List Item | `quill.quick_nav.list_item` |
 | L | QUILL Quick Nav: List | `quill.quick_nav.list` |
@@ -464,15 +495,10 @@ Editor commands with default bindings: 415.
 | QUILL Key + 9 | Radio: Mute/Unmute | `radio.mute_toggle` |
 | QUILL Key + M | Paste html as markdown | `power.paste_html_as_markdown` |
 | QUILL Key + N | Radio: Play/Pause | `radio.play_pause` |
-| QUILL Key + Shift+B | GitHub: Change Default Branch... | `github.change_default_branch` |
-| QUILL Key + Shift+E | GitHub: Rename Repository... | `github.rename_repository` |
-| QUILL Key + Shift+F | GitHub: Fork Repository... | `github.fork_repository` |
 | QUILL Key + Shift+G | Snippet Gallery... | `power.open_snippet_gallery` |
-| QUILL Key + Shift+K | GitHub: Create Repository... | `github.create_repository` |
-| QUILL Key + Shift+L | GitHub: Configure Branch Protection... | `github.configure_branch_protection` |
-| QUILL Key + Shift+U | GitHub: Commit Multiple Files... | `github.commit_multiple_files` |
-| QUILL Key + Shift+V | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
-| QUILL Key + Shift+X | GitHub: Delete Branch... | `github.delete_branch` |
+| QUILL Key + Shift+M | Toggle Meeting Mode | `verbosity.toggle_meeting` |
+| QUILL Key + Shift+Q | Toggle Quiet Mode | `verbosity.toggle_quiet` |
+| QUILL Key + Shift+Z | Undo Verbosity Change | `verbosity.undo` |
 | S | QUILL Quick Nav: Sentence | `quill.quick_nav.sentence` |
 | Shift+Enter | Insert line break | `power.insert_line_break` |
 | T | QUILL Quick Nav: Table | `quill.quick_nav.table` |

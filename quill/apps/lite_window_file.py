@@ -98,6 +98,14 @@ class DocumentFileMixin:
         # be about the document, not about a caret that has already moved.
         self.restore_document_memory()
         self.announce_spelling_state_if_skipped()
+        # Last, because it is the one thing about this file that will cost
+        # something later: a read-only file typed into for twenty minutes
+        # refuses at Ctrl+S, which is the worst moment to learn it. The
+        # sentence is shared with QUILL (bad.md P2.12).
+        from quill.core.file_access import READ_ONLY_NOTICE, is_read_only
+
+        if is_read_only(path):
+            self._announce(READ_ONLY_NOTICE)
         return True
 
     def _load_rich(self, path: Path) -> None:

@@ -34,7 +34,11 @@ def test_paste_html_as_markdown_is_on_quill_key_m_in_keymap() -> None:
     from quill.core.keymap import DEFAULT_KEYMAP
 
     assert DEFAULT_KEYMAP.get("power.paste_html_as_markdown") == "Ctrl+Shift+Grave, M"
-    assert DEFAULT_KEYMAP.get("format.insert_markdown_tag", "") == ""
+    # Insert Markdown Tag must not claim the leader's M, which is Paste HTML as
+    # Markdown. It was keyless until 2026-09-17 and now has QuillLite's chord
+    # for it, Ctrl+Alt+I -- a different key, and the guard is about this one.
+    assert DEFAULT_KEYMAP.get("format.insert_markdown_tag", "") == "Ctrl+Alt+I"
+    assert "Grave" not in DEFAULT_KEYMAP.get("format.insert_markdown_tag", "")
 
 
 def test_prefix_message_mentions_chord_keys() -> None:

@@ -526,7 +526,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         how loud it is going to be. Every other command here acts on a document
         and is rightly refused; this one is a preference.
         """
-        from quill.apps.lite_spelling_voice_dialog import edit_spelling_voice
+        from quill.ui.spelling_voice_dialog import edit_spelling_voice
 
         changed = edit_spelling_voice(self, self.app.settings, announce=self._announce)
         self.control.SetFocus()

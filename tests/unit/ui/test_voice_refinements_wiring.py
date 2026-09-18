@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[3]
@@ -60,10 +59,17 @@ def test_new_voice_settings_round_trip() -> None:
 
 
 def test_voice_status_keymap_present_unbound() -> None:
-    bindings = json.loads(
-        (_ROOT / "quill" / "core" / "keymap" / "profile_default.json").read_text(encoding="utf-8")
-    )["bindings"]
-    assert bindings.get("tools.voice_status") == ""
+    """Present in the defaults, deliberately unbound: users bind their own.
+
+    Asserted against DEFAULT_KEYMAP rather than profile_default.json, which is
+    where this lived until 2026-09-17. The profiles are deltas over these
+    defaults now (bad.md P2.6), so an entry that exists only in a profile is
+    one the Keyboard Manager and the generated reference never see -- which is
+    the opposite of "discoverable".
+    """
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    assert DEFAULT_KEYMAP["tools.voice_status"] == ""
 
 
 def test_voice_engine_choice_round_trips_and_validates() -> None:

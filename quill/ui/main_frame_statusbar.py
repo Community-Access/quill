@@ -789,25 +789,21 @@ class StatusBarMixin:
         self._statusbar_cells[target_index].button.SetFocus()
 
     def _on_statusbar_cell_focus(self, event: object, item: str) -> None:
-        index = self._statusbar_cell_index(item)
-        self._active_statusbar_cell_index = index
-        # The "Status bar" region name is announced only on the F6 landing into
-        # the bar (flagged by _focus_region). Arrowing between cells is
-        # intra-region navigation and clears the flag, so the region name is not
-        # repeated on every keystroke -- the user already heard it on landing.
-        entering = getattr(self, "_statusbar_entry_pending", False)
-        self._statusbar_entry_pending = False
-        self._announce_statusbar_item(item, with_region_prefix=entering)
-        event.Skip()
+        """Track which cell has focus. Say nothing (GATE-13, bad.md H3, P1.18).
 
-    def _announce_statusbar_item(self, item: str, *, with_region_prefix: bool = True) -> None:
-        label = self._STATUS_BAR_LABELS.get(item, item)
-        value = self._statusbar_text_for_item(item)
-        prefix = "Status bar, " if with_region_prefix else ""
-        if value:
-            announce(f"{prefix}{label}, {value}")
-        else:
-            announce(f"{prefix}{label}")
+        Every cell is a real ``wx.Button`` whose name is the label and whose
+        text is the value, so the screen reader announces "Position, line 3 of
+        20" on its own the moment focus lands. This used to announce the same
+        pair itself, which meant every arrow press along the bar was spoken
+        twice -- and over-announcing is the failure nobody files, because it
+        reads as "this app is chatty" rather than as a bug.
+
+        The region name is not said here either: ``_cycle_region`` says
+        "Focused Status Bar region" for this region exactly as it does for
+        every other one, which is the thing the reader genuinely cannot know.
+        """
+        self._active_statusbar_cell_index = self._statusbar_cell_index(item)
+        event.Skip()
 
     def _on_statusbar_key_down(self, event: object, item: str) -> None:
         wx = self._wx
@@ -833,7 +829,9 @@ class StatusBarMixin:
             # nothing. Shift+F6 too -- it is the same journey backwards.
             self.editor.SetFocus()
             self._set_active_region("Editor")
-            announce("Returned to editor")
+            # No "Returned to editor": moving focus into the editor is a focus
+            # move, and a focus move is the first thing on GATE-13's list of
+            # what the screen reader already says (bad.md H3).
             return
         if key_code == wx.WXK_TAB:
             step = -1 if event.ShiftDown() else 1

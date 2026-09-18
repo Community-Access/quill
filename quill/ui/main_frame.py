@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sys
@@ -60,6 +61,7 @@ from quill.core.code_folding import (
     region_line_count,
     smallest_region_containing,
 )
+from quill.core.command_failure import describe_command_failure
 from quill.core.commands import CommandRegistry
 from quill.core.context_menu import (
     CMD_COPY,
@@ -364,6 +366,7 @@ from quill.ui import modal_stack
 from quill.ui.accessible_names import pin_macos_text_area_role
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.context_help import ContextHelpMixin, warm_help_topics
 from quill.ui.csv_grid import CsvGridSurface
 from quill.ui.dialog_contract import (
@@ -1403,7 +1406,6 @@ class MainFrame(
         # True only between the F6 landing into the status bar and the first
         # cell-focus announcement, so "Status bar" is spoken once on entry and
         # never again on intra-bar arrow navigation (see _on_statusbar_cell_focus).
-        self._statusbar_entry_pending = False
         # EdSharp port: per-document arming flag for numbered-list auto-fill.
         # Set to time.monotonic() + _LIST_AUTO_FILL_ARM_SECONDS the first time
         # the user toggles a numbered list on the active document; cleared on
@@ -2421,6 +2423,12 @@ class MainFrame(
         self._refresh_contextual_menu_items()
         self._refresh_sessions_menu()
         self._refresh_read_only_state()
+        # Said once, here, where a file has just been opened: a read-only file
+        # typed into for twenty minutes refuses at Ctrl+S, which is the worst
+        # moment to learn it (bad.md P2.12); and a file type the checker skips
+        # is a silence nobody can explain without being told (P1.14).
+        if not self.announce_read_only_at_open():
+            self.announce_spelling_state_if_skipped()
         self._maybe_auto_side_preview(tab)
         self._start_external_change_watcher()
         doc_path = self.document.path
@@ -2688,10 +2696,13 @@ class MainFrame(
         tab_key = getattr(wx, "WXK_TAB", None)
         if tab_key is not None and event.GetKeyCode() == tab_key:
             self._commit_pending_extend_selection()
-            # Literal-tab mode (QUILL Key + U): forward Tab as a tab character at
-            # the caret instead of running the smart indent. Shift+Tab still
-            # outdents so a stray indent can be undone without leaving the mode.
-            if self._tab_inserts_literal and not event.ShiftDown():
+            # What Tab means here: the document kind decides unless somebody has
+            # said otherwise with the toggle (bad.md T3, P1.21). In Markdown and
+            # HTML indentation is structure, so Tab indents; in plain and rich
+            # text it types a tab, which is what every plain-text editor on
+            # Windows does. Shift+Tab still outdents either way, so a stray
+            # indent can be undone without first changing the mode.
+            if self._tab_types_a_tab() and not event.ShiftDown():
                 self.editor.WriteText("\t")
                 return
             # force_announce so the Tab indent is spoken even under JAWS/NVDA —
@@ -3860,6 +3871,7 @@ class MainFrame(
         # the watchdog timeout the exit is still a committed close, not a crash,
         # and must not false-offer "unclean exit" next launch (Group D).
         _safely("clean-exit marker", lambda: mark_clean_exit(self.session_id))
+        _safely("remember the session", self.remember_session)
         _safely("save settings", lambda: save_settings(self.settings))
         _safely("persistent undo flush", self.flush_persistent_undo)
         # H-3-ui: destroy the modeless Watch Queue Monitor so it does not
@@ -5947,6 +5959,19 @@ class MainFrame(
             title,
             wx.YES_NO | wx.CANCEL | wx.ICON_WARNING,
         )
+        # Word's words, where the platform can take them (bad.md F12). "Yes" and
+        # "No" make somebody work out which of the two irreversible answers "No"
+        # is; the note above is why macOS keeps the native pair.
+        from quill.core import close_prompt
+
+        if close_prompt.can_relabel_buttons():
+            set_labels = getattr(dialog, "SetYesNoCancelLabels", None)
+            if callable(set_labels):
+                set_labels(
+                    close_prompt.SAVE_LABEL,
+                    close_prompt.DISCARD_LABEL,
+                    close_prompt.CANCEL_LABEL,
+                )
         try:
             return self._show_modal_dialog(dialog, title, restore_editor_focus=restore_focus)
         finally:
@@ -6683,9 +6708,14 @@ class MainFrame(
         # raises RuntimeError. The Reload caller
         # (_confirm_discard_changes) keeps the default restore_focus=True
         # because reloading does not destroy the editor.
+        # Name the document (bad.md F12): "You have unsaved changes" is the right
+        # question about the wrong number of documents, and with nine tabs open
+        # and no way to glance at a title bar, which one is the whole answer.
+        from quill.core.close_prompt import unsaved_changes_question, unsaved_changes_title
+
         result = self._prompt_unsaved_changes_action(
-            "Unsaved changes",
-            f"You have unsaved changes. Save before {action_label}?",
+            unsaved_changes_title(),
+            unsaved_changes_question(self.document.name, action_label),
             restore_focus=False,
         )
         if result == wx.ID_CANCEL:
@@ -6721,9 +6751,50 @@ class MainFrame(
                 return False
         return True
 
+    def remember_session(self) -> None:
+        """Record which files are open, for the next launch (bad.md G4, P2.12).
+
+        Saved documents only, in tab order. An untitled tab has nothing to
+        reopen *from*, and whatever is in it belongs to the recovery store --
+        a different promise, with a different guarantee.
+        """
+        paths: list[str] = []
+        for tab in getattr(self, "_document_tabs", []):
+            document = getattr(tab, "document", None)
+            path = getattr(document, "path", None)
+            if path is not None:
+                paths.append(str(path))
+        self.settings.session_files = paths[:20]
+
+    def restore_session(self) -> int:
+        """Reopen last session's documents. Returns how many opened.
+
+        A file that has gone is skipped silently rather than reported: a
+        session list is a convenience, and being told about a file you deleted
+        on purpose is not news. QuillLite has worked this way since it shipped.
+        """
+        if not getattr(self.settings, "restore_session", True):
+            return 0
+        opened = 0
+        for entry in list(getattr(self.settings, "session_files", []))[:20]:
+            candidate = Path(entry)
+            if not candidate.is_file():
+                continue
+            try:
+                self.open_file(candidate, record_recent=False)
+            except Exception:  # noqa: BLE001 - one bad file must not stop launch
+                continue
+            opened += 1
+        return opened
+
     def new_file(self) -> None:
         self._clear_empty_workspace_state()
         document = Document()
+        # CRLF unless the setting says otherwise: what Notepad, WordPad, Word
+        # and QuillLite all write for a new document (bad.md F11, P2.10). An
+        # opened file keeps its own endings -- the readers set them.
+        if str(getattr(self.settings, "default_line_ending", "crlf")).lower() == "lf":
+            document.line_ending = "\n"
         self._create_document_tab(document, select=True)
         self._persistent_undo_history = [""]
         self._persistent_undo_index = 0
@@ -7446,6 +7517,49 @@ class MainFrame(
         self.editor.SetInsertionPoint(0)
         self.toggle_read_aloud()
 
+    def open_file_format_dialog(self) -> None:
+        """Choose the encoding and the line endings together (bad.md P1.8).
+
+        Both halves in one window because they are one question -- how does
+        this file get written? -- and because a file arriving from somewhere
+        else is usually wrong in both ways at once.
+
+        **Changing either marks the document modified** (bad.md F6). It did not
+        before, in either of the two status-bar cells that could change them,
+        so a person who fixed the encoding of a file and pressed nothing else
+        closed it to "no changes to save" and lost the fix without being told.
+        """
+        from quill.ui.file_format_dialog import (
+            FileFormatDialog,
+            describe_encoding,
+            describe_line_ending,
+        )
+
+        before = (self.document.encoding, self.document.line_ending)
+        dialog = FileFormatDialog(
+            self.frame,
+            encoding=self.document.encoding,
+            line_ending=self.document.line_ending,
+        )
+        try:
+            if dialog.show() != self._wx.ID_OK:
+                self._set_status("File format unchanged")
+                return
+            encoding, line_ending = dialog.choices
+        finally:
+            dialog.close()
+        if (encoding, line_ending) == before:
+            self._set_status("File format unchanged")
+            return
+        self.document.encoding = encoding
+        self.document.line_ending = line_ending
+        self.document.modified = True
+        self._refresh_title()
+        self._refresh_statusbar()
+        self._set_status(
+            f"Saving as {describe_encoding(encoding)}, {describe_line_ending(line_ending)}"
+        )
+
     def choose_document_encoding(self) -> None:
         wx = self._wx
         choices = ["utf-8", "utf-16", "cp1252", "latin-1"]
@@ -7467,11 +7581,18 @@ class MainFrame(
         if selected < 0 or selected >= len(choices):
             return
         self.document.encoding = choices[selected]
+        # Dirty: an encoding change is a change to how the file will be written,
+        # and a document that does not know it has changed is one that closes
+        # without offering to save the change (bad.md F6, P1.8).
+        self.document.modified = True
+        self._refresh_title()
         self._refresh_statusbar()
         self._set_status(f"Encoding set to {choices[selected]}")
 
     def toggle_line_endings(self) -> None:
         self.document.line_ending = "\n" if self.document.line_ending == "\r\n" else "\r\n"
+        self.document.modified = True  # bad.md F6, as above
+        self._refresh_title()
         self._refresh_statusbar()
         self._set_status(
             "Line endings set to LF"
@@ -7743,7 +7864,10 @@ class MainFrame(
             self._backup_before_save(self.document)
         try:
             self._write_document_to_disk(self.document)
-        except OSError as error:
+        except (OSError, UnicodeEncodeError) as error:
+            # UnicodeEncodeError since 2026-09-17 (bad.md P0.9): a cp1252
+            # document that gains an em dash used to fail with "Command failed:
+            # file.save" and leave the writer to guess which character did it.
             self._report_save_failure(self.document.name, error, "Save")
             return
         # Persist this document's bookmarks + cursor position under its path now that
@@ -7926,6 +8050,13 @@ class MainFrame(
             )
             return
 
+        # Honest fidelity, before the write and not after it (bad.md F1, P2.11).
+        # The Document Format switcher has warned since it shipped; Save As is
+        # the same conversion reached another way and said nothing at all, so
+        # the one path that writes a FILE was the quiet one.
+        if not self._confirm_lossy_save_as(target):
+            self._set_status("Save as cancelled")
+            return
         # Optional pre-save proofread (off by default), after the user has chosen
         # the destination but before the file is written.
         if getattr(self.settings, "spell_check_before_save", False):
@@ -7959,6 +8090,43 @@ class MainFrame(
         self._refresh_sessions_menu()
         self._set_status(f"Saved as {target.name} ({format_label_for_path(target)})")
         self._announce_save_as_conversion(target)
+
+    #: Suffixes whose file cannot hold real formatting: saving a rich document
+    #: to one of these keeps the words and drops everything else.
+    _FLATTENING_SUFFIXES = frozenset({".txt", ".md", ".markdown", ".text"})
+
+    def _confirm_lossy_save_as(self, target: Path) -> bool:
+        """Ask before a Save As that cannot carry what the document has.
+
+        True to go ahead. One direction is genuinely lossy and it is the one
+        nobody notices until later: a **rich** document saved to plain text or
+        Markdown keeps its words and loses its formatting, and the editing
+        surface stays rich afterwards, so nothing on screen or in speech says
+        the file on disk is now less than what is in front of you.
+
+        Markup to text is NOT lossy and is deliberately not asked about: the
+        asterisks and hashes are characters, and they all survive.
+        """
+        if target.suffix.lower() not in self._FLATTENING_SUFFIXES:
+            return True
+        if self._current_editor_mode() not in {"rich", "rich_converted"}:
+            return True
+        features: list[str] = []
+        wrapper = self._active_richedit()
+        if wrapper is not None:
+            from quill.io.rtf_model import scan_rtf_features
+
+            try:
+                rtf = bytes(wrapper.get_rtf()).decode("utf-8", "replace")
+                features = list(scan_rtf_features(rtf))
+            except Exception:  # noqa: BLE001 - a readback must not block a save
+                features = []
+        label = "plain text" if target.suffix.lower() in {".txt", ".text"} else "Markdown"
+        if features:
+            return self._confirm_lossy_format_switch(label, features)
+        # No inventory to read (converted-rich, or the TOM said nothing): ask
+        # anyway, in the same words, because the formatting is still going.
+        return self._confirm_lossy_format_switch(label, ["formatting"])
 
     def _announce_save_as_conversion(self, target: Path) -> None:
         """Speak what a converting Save As actually did.
@@ -8585,12 +8753,21 @@ class MainFrame(
     _ECHO_DOUBLE_PRESS_WINDOW = 0.5
 
     def _run_command(self, command_id: str) -> None:
+        """Run a command, and if it fails say what failed (bad.md P0.9).
+
+        "Command failed: file.save" was the whole report: it named the command
+        the person had just pressed -- which they knew -- and said nothing about
+        the fault, so a disk-full save, a permission error and a bug in a
+        Quillin were one sentence. The exception's own words are usually the
+        only clue there is, and a listener cannot open a log to find them.
+        """
         if self._maybe_echo_on_double_press(command_id):
             return
         try:
             self.commands.run(command_id)
-        except Exception:  # noqa: BLE001
-            self._set_status(f"Command failed: {command_id}")
+        except Exception as error:  # noqa: BLE001
+            logging.getLogger(__name__).exception("Command %s failed", command_id)
+            self._set_status(describe_command_failure(command_id, error))
 
     def _maybe_echo_on_double_press(self, command_id: str) -> bool:
         """Return True (and open the Echo) on a rapid second press of an
@@ -9907,7 +10084,11 @@ class MainFrame(
             self.open_epub_navigator()
             return
         markup_kind = self._effective_markup_kind()
-        if markup_kind == "plain":
+        if markup_kind == "plain" and not self._rich_headings():
+            # "plain" covers a rich document too -- an .rtf or .docx tab has no
+            # markup, so this refused the outline for the one kind of document
+            # whose headings are real (bad.md R12, P1.17). The surface has
+            # answered `all_headings()` since it shipped.
             self._set_status("Outline is not available for plain text files")
             return
         action_label = "Jump to Key" if markup_kind == "yaml" else "Jump to Heading"
@@ -10508,10 +10689,6 @@ class MainFrame(
 
     def _focus_region(self, label: str) -> None:
         if label == "Status Bar":
-            # Flag the F6 landing so the status-bar cell focus announces the
-            # "Status bar" region name once on entry; arrow moves within the bar
-            # clear the flag and speak only the cell (see _on_statusbar_cell_focus).
-            self._statusbar_entry_pending = True
             self.statusbar.SetFocus()
             return
         if label == "Reveal Codes":
@@ -10555,13 +10732,35 @@ class MainFrame(
             return
         self._set_active_region(next_label)
         self._focus_region(next_label)
-        # The status bar announces its own region name + focused cell on the
-        # landing (_on_statusbar_cell_focus), so skip the generic region
-        # announcement here to avoid saying "Status Bar" twice on entry.
-        if next_label != "Status Bar":
-            self._set_status(f"Focused {next_label} region")
+        # Every region, the status bar included: the cells no longer announce
+        # themselves on focus (GATE-13, bad.md H3), so this is the one line
+        # spoken on a region move, and it is the one thing the screen reader
+        # cannot say -- which region you have landed in.
+        self._set_status(f"Focused {next_label} region")
+
+    def _rich_headings(self) -> list[tuple[int, int, str]]:
+        """The rich document's real headings, or [] when this is not one.
+
+        ``ITextPara``-level headings, read through the shared surface, so the
+        outline and Next Heading walk the same ladder (bad.md R12).
+        """
+        if self._current_editor_mode() != "rich":
+            return []
+        wrapper = self._active_richedit()
+        reader = getattr(wrapper, "all_headings", None) if wrapper is not None else None
+        if not callable(reader):
+            return []
+        try:
+            return list(reader())
+        except Exception:  # noqa: BLE001 - a readback must never break a command
+            return []
 
     def _outline_entries(self) -> list[OutlineEntry]:
+        rich = self._rich_headings()
+        if rich:
+            return [
+                OutlineEntry(level=level, title=text, position=start) for start, level, text in rich
+            ]
         markup_kind = self._effective_markup_kind()
         return extract_outline_entries(self.editor.GetValue(), markup_kind)
 
@@ -15730,7 +15929,7 @@ class MainFrame(
         # One command, one shortcut — the effect follows the document format:
         # rich mode applies real bold via the TOM; Markdown/HTML insert their
         # native tags; plain text gets the one-time transition prompt.
-        if self._rich_format_command("apply_bold", "Bold"):
+        if self._rich_toggle_run_attr("apply_bold"):
             return
         surface = self._active_markup_surface()
         if surface is None:
@@ -15833,7 +16032,7 @@ class MainFrame(
         if not self._feature_enabled("core.format"):
             self._set_status("Italic is unavailable in this profile")
             return
-        if self._rich_format_command("apply_italic", "Italic"):
+        if self._rich_toggle_run_attr("apply_italic"):
             return
         surface = self._active_markup_surface()
         if surface is None:
@@ -15854,7 +16053,7 @@ class MainFrame(
         if not self._feature_enabled("core.format"):
             self._set_status("Underline is unavailable in this profile")
             return
-        if self._rich_format_command("apply_underline", "Underline"):
+        if self._rich_toggle_run_attr("apply_underline"):
             return
         surface = self._active_markup_surface()
         if surface is None:
@@ -15983,14 +16182,58 @@ class MainFrame(
         self._insert_structure("Numbered List", "Inserted numbered list")
 
     def toggle_bullet_list(self) -> None:
-        """Insert a bullet list, or strip one if the caret is inside it.
+        """Ctrl+Shift+L: bulleted list, numbered list, no list, round again.
 
-        Rich text first (see ``format_rich_bullets``); otherwise the Markdown or
-        HTML markers, over the selection or the whole document.
+        WordPad's key and WordPad's behaviour, which is QuillLite's too. It was
+        a *toggle* -- bullets on, bullets off -- so the numbered list needed a
+        second command on a second chord that did not know about this one, and
+        the two could disagree about what the caret was sitting in (bad.md
+        P1.5, 3.4). The command id is historical; the verb is the cycle.
+
+        Three implementations, because a list is three different things:
+
+        * **Rich text**: ``ITextPara.ListType``, a paragraph property the
+          control draws and renumbers (``format_rich_list_style``).
+        * **Markdown**: the ``- `` and ``1. `` markers over the selected lines
+          or the caret's line, through the shared ``quill.core.list_style``
+          -- the same function QuillLite rings on this key.
+        * **HTML**: ``<ul>``/``<ol>`` need a wrapper as well as per-item tags
+          and there is no strip path for them, so the key inserts rather than
+          cycles there and Numbered List keeps its own command for the other
+          kind (leader Shift+L).
         """
-        if self.format_rich_bullets():
+        if self.format_rich_list_style():
+            return
+        if self._active_markup_surface() == "markdown":
+            self._cycle_markdown_list_style()
             return
         self._toggle_list("Bullet List", strip_kind="bullet")
+
+    def _cycle_markdown_list_style(self) -> None:
+        """The Markdown third of the cycle, through the shared core helper."""
+        from quill.core.list_style import cycle_list_style
+
+        if not self._feature_enabled("core.format"):
+            self._set_status("Lists are unavailable in this profile")
+            return
+        try:
+            text = self.editor.GetValue()
+            start, end = self.editor.GetSelection()
+        except RuntimeError:
+            return
+        updated, style, span_start, span_end = cycle_list_style(text, start, end)
+        try:
+            # Replace over the span, never SetValue over the document: SetValue
+            # clears the RichEdit undo stack, which is how turning one list off
+            # used to take every other list in the file with it (bad.md R2).
+            self.editor.Replace(0, self.editor.GetLastPosition(), updated)
+            self.document.set_text(updated)
+            self.editor.SetSelection(span_start, span_end)
+            self.editor.SetFocus()
+        except RuntimeError:
+            return
+        words = {"none": "No list", "bullet": "Bulleted list", "numbered": "Numbered list"}
+        self._announce(words[style])
 
     def toggle_numbered_list(self) -> None:
         """Insert a numbered list with auto-filled markers, or strip one.
@@ -16881,14 +17124,16 @@ class MainFrame(
         it records a single, cleanly reversible edit on every surface — plain
         ``wx.TextCtrl`` and the RTF Markdown lens alike — so one Ctrl+Z restores
         exactly the pre-transform text.
+
+        The mechanism itself now lives in :mod:`quill.ui.atomic_edit`, because
+        QuillLite was promising the same single undo step while using the call
+        this one exists to avoid (bad.md C6).
         """
-        set_selection = getattr(self.editor, "SetSelection", None)
-        write_text = getattr(self.editor, "WriteText", None)
-        if callable(set_selection) and callable(write_text):
-            set_selection(start, end)
-            write_text(updated)
-        else:  # pragma: no cover - defensive fallback for minimal stubs
-            self.editor.Replace(start, end, updated)
+        replace_as_one_undo(self.editor, start, end, updated)
+        # Callers narrow the range to what actually changed
+        # (quill.core.selection.changed_span) before getting here, which is what
+        # keeps this from spreading the format at `start` over a whole document
+        # on the rich surface (bad.md C2/N3).
 
     def _current_word_span_at_caret(self, text: str, caret: int) -> tuple[int, int] | None:
         if not text:
@@ -16916,10 +17161,35 @@ class MainFrame(
         return start, end
 
     def _replace_document_text(self, updated_text: str) -> None:
+        """Put *updated_text* in, touching only the part that actually changed.
+
+        It replaced the whole document for any change at all, and on the rich
+        surface that is destructive rather than merely wasteful: writing over a
+        selection makes the new text adopt the format at the selection's start,
+        so selecting all and writing turns every run into whatever position 0
+        was. Confirmed live on 2026-09-17 -- a document with one Heading 1 and
+        two body lines came back with every line a heading (bad.md C2, N3).
+
+        :func:`~quill.core.selection.changed_span` trims the common prefix and
+        suffix, so a line tool that rewrites one line rewrites one line, and
+        every run outside it is untouched. It is also what makes these commands
+        cheap on a large document, which the whole-document path never was.
+
+        The selection afterwards is the changed span rather than the whole
+        document. That is the honest answer to "what did this command do", and
+        the old behaviour -- select everything -- meant the next keystroke
+        replaced the document.
+        """
+        from quill.core.selection import changed_span
+
         self._browse_navigation_cache = None
         current_text = self.editor.GetValue()
-        self._atomic_replace(0, len(current_text), updated_text)
-        self.editor.SetSelection(0, len(updated_text))
+        start, end, replacement = changed_span(current_text, updated_text)
+        if (start, end, replacement) == (0, 0, ""):
+            self._schedule_browse_prewarm()
+            return
+        self._atomic_replace(start, end, replacement)
+        self.editor.SetSelection(start, start + len(replacement))
         self._schedule_browse_prewarm()
 
     def _apply_selection_operation(
@@ -16966,25 +17236,18 @@ class MainFrame(
         transform: Callable[[str], str],
         status: str,
     ) -> None:
+        """Ten line commands' entry point; the work is in ``apply_line_tool``.
+
+        It used to act on the **current line** when nothing was selected, which
+        is why Sort Lines with no selection sorted one line and announced
+        "Sorted lines ascending" (bad.md N1). Selection, else the whole
+        document, is what QuillLite means and what every other line tool in
+        QUILL already meant.
+        """
         if not self._feature_enabled("core.format"):
             self._set_status(f"{status} is unavailable in this profile")
             return
-        if self._document_is_read_only():
-            self._set_status("Document is read-only")
-            return
-        text = self.editor.GetValue()
-        start, end = self.editor.GetSelection()
-        if start == end:
-            start, end = line_span(text, self.editor.GetInsertionPoint())
-        else:
-            start = line_span(text, start)[0]
-            end = line_span(text, max(0, end - 1))[1]
-        updated_block = transform(text[start:end])
-        updated = text[:start] + updated_block + text[end:]
-        self._replace_document_text(updated)
-        self.document.set_text(updated)
-        self.editor.SetSelection(start, start + len(updated_block))
-        self._set_status(status)
+        self.apply_line_tool(transform, status)
 
     def _apply_line_operation(
         self,
@@ -19034,6 +19297,7 @@ def run_app(
     diagnostics_mode: bool = False,
     cold_import_seconds: float = 0.0,
     persona_name: str | None = None,
+    document_kind: str | None = None,
 ) -> None:
     from quill.ui.mac_open_file_app import MacOpenFileApp
 
@@ -19058,17 +19322,37 @@ def run_app(
             frame.apply_persona_by_name(persona_name)
         except Exception:  # noqa: BLE001 - a bad persona must never block startup
             pass
+    if document_kind:
+        # --rich / --plain (bad.md P2.16). Only for an empty launch: files named
+        # on the command line arrive in their own kind, and converting one
+        # because of a flag would be the flag editing the file.
+        if not (startup_requests or []):
+            try:
+                frame.new_document_in_format(document_kind)
+            except Exception:  # noqa: BLE001 - a flag must never block startup
+                pass
     heartbeat_state = HeartbeatState()
     frame._stability_heartbeat_state = heartbeat_state
     frame._stability_heartbeat_timer = WxHeartbeatTimer(frame.frame, heartbeat_state)
     frame._stability_watchdog = WxHeartbeatWatchdog(heartbeat_state)
     frame._stability_watchdog.start()
+    named_a_file = False
     for request in startup_requests or []:
         if request is None:
             continue
         path = getattr(request, "path", None)
         if isinstance(path, Path) and path.exists() and path.is_file():
             frame._handle_shell_request(request)
+            named_a_file = True
+    if not named_a_file:
+        # Last session's documents, and never over the top of a file named on
+        # the command line: somebody who double-clicked a file asked for that
+        # file, and burying it under yesterday's four answers a different
+        # question (bad.md G4, P2.12 -- QuillLite's rule, and Notepad 11's).
+        try:
+            frame.restore_session()
+        except Exception:  # noqa: BLE001 - a restore must never block launch
+            pass
     # Wire up the frame so any Apple Event that arrived (or arrives from
     # here on) while the frame was still under construction gets dispatched.
     app.main_frame = frame

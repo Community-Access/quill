@@ -85,10 +85,13 @@ class DocumentTypingMixin:
         #: Up only while :meth:`cmd_toggle_overwrite` is handing the control a
         #: synthesised Insert; the watcher must not read that as the user.
         self._synthetic_insert_key = False
-        #: True: Tab types a tab character (Notepad, and QuillLite's default).
-        #: False: Tab runs the smart line indent (QUILL's default). See the
-        #: module docstring for why the two products start on opposite sides.
+        #: True: Tab types a tab character. False: Tab runs the smart line
+        #: indent. Neither is the default any more -- the document kind decides
+        #: through the shared quill.core.tab_behaviour rule QUILL reads too
+        #: (bad.md T3, P1.21) -- and this holds the answer only once somebody
+        #: has used the toggle, which is what _tab_mode_chosen records.
         self._tab_inserts_literal = True
+        self._tab_mode_chosen = False
 
     def _on_key_down(self, event: wx.KeyEvent) -> None:
         """Watch the Insert key go past, and keep the mirror true.
@@ -173,16 +176,31 @@ class DocumentTypingMixin:
         """
         if event.ShiftDown():
             self.cmd_outdent(announce=False)
-        elif self._tab_inserts_literal:
+        elif self._tab_types_a_tab():
             return False
         else:
             self.cmd_indent(announce=False)
         self._announce(self.describe_indent_at_cursor())
         return True
 
+    def _tab_types_a_tab(self) -> bool:
+        """Whether Tab types a tab character right now (bad.md T3, P1.21).
+
+        The toggle wins once it has been used; otherwise the document kind
+        decides, through the rule QUILL reads too. QuillLite typed a tab in
+        every kind and QUILL indented in every kind, and each was wrong in the
+        other's documents -- a tab in a Markdown list item breaks the list.
+        """
+        from quill.core.tab_behaviour import tab_inserts_a_tab
+
+        if self._tab_mode_chosen:
+            return self._tab_inserts_literal
+        return tab_inserts_a_tab(self.markup_surface())
+
     def cmd_toggle_tab_mode(self) -> None:
         """Switch the Tab key between typing a tab and indenting the line."""
-        self._tab_inserts_literal = not self._tab_inserts_literal
+        self._tab_inserts_literal = not self._tab_types_a_tab()
+        self._tab_mode_chosen = True
         self._touch_status()
         self._sync_check_items()
         self._announce(

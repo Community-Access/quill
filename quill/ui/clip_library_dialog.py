@@ -26,11 +26,13 @@ class ClipLibraryDialog:
         announce_cb: Callable[[str], None] | None = None,
         promote_cb: Callable[[int], None] | None = None,
         content_format: FragmentFormat = FragmentFormat.TEXT,
+        paste_cb: Callable[[str], None] | None = None,
     ) -> None:
         self._library = library
         self._announce = announce_cb or (lambda _msg: None)
         self._promote_cb = promote_cb
         self._content_format = content_format
+        self._paste_cb = paste_cb
         self._indices: list[int] = []
 
         self.dialog = wx.Dialog(
@@ -76,15 +78,23 @@ class ClipLibraryDialog:
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
+        # Paste is first and Enter answers to it: putting the clip where the
+        # caret is, is what this dialog is for. Copy to Clipboard stays a real
+        # second verb -- hand this to another app -- just not the default one
+        # (bad.md C9). Promote gives up its P so Paste can have it, because two
+        # controls on one Alt letter means one of them cannot be pressed at all
+        # (GATE-14).
+        self._btn_paste = wx.Button(self.dialog, label="&Paste at the Cursor")
         self._btn_copy = wx.Button(self.dialog, label="&Copy to Clipboard")
         self._btn_favorite = wx.Button(self.dialog, label="&Favorite")
-        self._btn_promote = wx.Button(self.dialog, label="&Promote to Copy Tray...")
+        self._btn_promote = wx.Button(self.dialog, label="Promote to Copy &Tray...")
         self._btn_remove = wx.Button(self.dialog, label="&Remove")
         self._btn_rename = wx.Button(self.dialog, label="Re&name...")
         self._btn_combine = wx.Button(self.dialog, label="Com&bine Marked...")
         self._btn_abbreviation = wx.Button(self.dialog, label="Save as &Abbreviation...")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Close")
         for btn in (
+            self._btn_paste,
             self._btn_copy,
             self._btn_favorite,
             self._btn_promote,
@@ -107,7 +117,8 @@ class ClipLibraryDialog:
 
         self._search.Bind(wx.EVT_TEXT, self._on_search)
         self._listbox.Bind(wx.EVT_LISTBOX, self._on_selection_changed)
-        apply_listbox_activation(self._listbox, lambda _e: self._on_copy(_e))
+        apply_listbox_activation(self._listbox, lambda _e: self._on_paste(_e))
+        self._btn_paste.Bind(wx.EVT_BUTTON, self._on_paste)
         self._btn_copy.Bind(wx.EVT_BUTTON, self._on_copy)
         self._btn_favorite.Bind(wx.EVT_BUTTON, self._on_favorite)
         self._btn_promote.Bind(wx.EVT_BUTTON, self._on_promote)
@@ -170,6 +181,7 @@ class ClipLibraryDialog:
     def _update_buttons(self) -> None:
         index = self._selected_index()
         has_selection = index is not None
+        self._btn_paste.Enable(has_selection and self._paste_cb is not None)
         self._btn_copy.Enable(has_selection)
         self._btn_promote.Enable(has_selection)
         self._btn_remove.Enable(has_selection)
@@ -190,6 +202,20 @@ class ClipLibraryDialog:
     def _on_selection_changed(self, _event: object) -> None:
         self._refresh_preview()
         self._update_buttons()
+
+    def _on_paste(self, _event: object) -> None:
+        """Put the clip where the caret is, and get out of the way.
+
+        Leaving the dialog open would send the next keystroke to a list rather
+        than to the text the person has just pasted into, so this closes --
+        which is also what QuillLite's Recent Clips does.
+        """
+        index = self._selected_index()
+        if index is None or self._paste_cb is None:
+            return
+        text = render_fragment(self._library.entry(index).fragment, self._content_format)
+        self._paste_cb(text)
+        self.dialog.EndModal(wx.ID_OK)
 
     def _on_copy(self, _event: object) -> None:
         index = self._selected_index()

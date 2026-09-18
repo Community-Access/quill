@@ -445,9 +445,14 @@ def test_status_bar_offers_the_format_cell() -> None:
 
 
 def test_default_chord_moved_to_the_switcher() -> None:
+    """QuillLite's Alt+Shift+F since 2026-09-18 (bad.md 3.8, P1.2).
+
+    It was on the leader, and rule 6 does not allow that while QuillLite
+    reaches the same window on a plain chord.
+    """
     from quill.core.keymap import DEFAULT_KEYMAP
 
-    assert DEFAULT_KEYMAP.get("format.switch_document_format") == "Ctrl+Shift+Grave, K"
+    assert DEFAULT_KEYMAP.get("format.switch_document_format") == "Alt+Shift+F"
     assert "view.switch_editing_lens" not in DEFAULT_KEYMAP
 
 

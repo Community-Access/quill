@@ -16,7 +16,6 @@ Three slices:
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
@@ -69,33 +68,30 @@ def test_default_keymap_binds_speech_batch_export() -> None:
     assert binding, "speech_batch_export must have a default binding"
 
 
-def test_keymap_pack_profiles_parse_and_include_batch_export() -> None:
-    """Every keymap pack ships a (possibly empty) binding for the new command.
+def test_keymap_pack_profiles_resolve_batch_export() -> None:
+    """Every profile *resolves* a binding for the command, as it must.
 
-    The merger never produces a delta for a command that is missing from
-    a profile. Empty string in profile_minimal is correct — the minimal
-    pack has no Audio Studio entry by design.
+    This used to assert that each profile file **listed** the command, because
+    the profiles were full snapshots and a command missing from one was a
+    command with no binding at all. They are deltas now (bad.md P2.6): a
+    profile carries only what it changes, and everything it does not name
+    tracks ``DEFAULT_KEYMAP`` -- which is the shape that makes a later default
+    reach a profile user instead of being pinned to its 2025 value.
+
+    So the assertion moves to where it belongs: what the profile *resolves to*.
+    Minimal resolving to "" is still correct and still deliberate -- it is a
+    subtractive profile and it does not keep the Audio Studio commands.
     """
-    # Resolve the keymap pack dir from the imported keymap module: the profiles
-    # live in a sibling data directory named ``keymap`` next to ``keymap.py`` (it
-    # is a data dir, not a package). Works in QUILL (quill.core.keymap) and the
-    # vendored standalone (quillas.core.keymap) alike.
-    import quill.core.keymap as _keymap_pkg
+    from quill.core.keymap import DEFAULT_KEYMAP, load_keymap_profile
 
-    pack_dir = Path(_keymap_pkg.__file__).resolve().parent / "keymap"
-    profiles = ("profile_default.json", "profile_minimal.json", "profile_sr_friendly.json")
-    seen: dict[str, str] = {}
-    for name in profiles:
-        path = pack_dir / name
-        data = json.loads(path.read_text(encoding="utf-8"))
-        bindings = data.get("bindings", {})
-        assert "tools.speech_batch_export" in bindings, (
-            f"{name} must declare tools.speech_batch_export (even if empty)"
-        )
-        seen[name] = bindings["tools.speech_batch_export"]
-    # The default and sr_friendly profiles both bind it.
-    assert seen["profile_default.json"]
-    assert seen["profile_sr_friendly.json"]
+    resolved = {
+        name: load_keymap_profile(name)["tools.speech_batch_export"]
+        for name in ("QUILL Default", "Minimal", "Screen Reader Friendly")
+    }
+    assert resolved["QUILL Default"] == DEFAULT_KEYMAP["tools.speech_batch_export"]
+    assert resolved["Screen Reader Friendly"] == DEFAULT_KEYMAP["tools.speech_batch_export"]
+    assert resolved["QUILL Default"]
+    assert resolved["Minimal"] == ""
 
 
 # ---------------------------------------------------------------- Item 5 -----

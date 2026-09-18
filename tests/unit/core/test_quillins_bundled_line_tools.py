@@ -3,10 +3,12 @@
 Covers:
 - line_ops.py algorithm: duplicate, delete, move up/down, join paragraph,
   and join-with-next-line — including edge cases (first/last line, single line,
-  blank lines, multi-paragraph).
-- manifest.json: validates, declares correct capabilities, six commands, all
-  placed in the Edit menu, no conflicts.
-- extension.py: each handler reads text + cursor offset, applies the transform,
+  blank lines, multi-paragraph). All six stay tested here because all six are
+  still used: five of them by QUILL's own core commands, which is exactly why
+  the Quillin stopped shipping them (bad.md 7.1, P2.5).
+- manifest.json: validates, declares correct capabilities, and contributes the
+  ONE command the core does not register — join with the next line.
+- extension.py: the handler reads text + cursor offset, applies the transform,
   calls set_text only when the document changes, and always calls set_cursor.
 
 No wx is imported and no subprocess is spawned.
@@ -209,18 +211,28 @@ def test_manifest_capabilities() -> None:
     assert "editor.write" in manifest.capabilities
 
 
-def test_six_commands_all_in_edit_menu() -> None:
+def test_it_ships_only_the_verb_the_core_does_not_have() -> None:
+    """A Quillin may *add* a verb and may never re-ship one the core has.
+
+    It shipped six. Five were QUILL core commands with real chords already --
+    Ctrl+D, Ctrl+Shift+Delete, Ctrl+Shift+Up/Down, Ctrl+Alt+Shift+J -- so the
+    same verb was registered twice, which is two places for the behaviour and
+    the wording to drift (bad.md 7.1, P2.5). Join with the next line is the one
+    the core does not register, and it is the one that stayed.
+    """
+    from quill.core.keymap import DEFAULT_KEYMAP
+
     manifest = _load_manifest()
     command_ids = {c.id for c in manifest.contributes.commands}
-    expected = {
-        "ext.lines.duplicate",
-        "ext.lines.delete",
-        "ext.lines.move_up",
-        "ext.lines.move_down",
-        "ext.lines.join",
-        "ext.lines.join_next",
-    }
-    assert command_ids == expected
+    assert command_ids == {"ext.lines.join_next"}
+    for core_id in (
+        "format.duplicate_line",
+        "format.delete_line",
+        "format.move_line_up",
+        "format.move_line_down",
+        "format.join_lines",
+    ):
+        assert DEFAULT_KEYMAP[core_id], core_id
     registry = build_registry([manifest])
     assert registry.conflicts == ()
     parents = {m.parent for m in registry.menus}
@@ -228,57 +240,6 @@ def test_six_commands_all_in_edit_menu() -> None:
 
 
 # -- extension handler behavior -----------------------------------------------
-
-
-def test_handler_duplicate_line_calls_set_text_and_set_cursor() -> None:
-    api = _register_extension()
-    ctx = _FakeCtx(text="alpha\nbeta", cursor=0)
-    api.handlers["duplicate_line"](ctx)
-    assert ctx.set_text_calls == ["alpha\nalpha\nbeta"]
-    assert ctx.set_cursor_calls
-
-
-def test_handler_delete_line_changes_text() -> None:
-    api = _register_extension()
-    ctx = _FakeCtx(text="alpha\nbeta\ngamma", cursor=6)
-    api.handlers["delete_line"](ctx)
-    assert ctx.set_text_calls == ["alpha\ngamma"]
-
-
-def test_handler_move_line_up_changes_text() -> None:
-    api = _register_extension()
-    ctx = _FakeCtx(text="alpha\nbeta\ngamma", cursor=6)
-    api.handlers["move_line_up"](ctx)
-    assert ctx.set_text_calls == ["beta\nalpha\ngamma"]
-
-
-def test_handler_move_line_up_at_top_skips_set_text() -> None:
-    api = _register_extension()
-    ctx = _FakeCtx(text="alpha\nbeta", cursor=0)
-    api.handlers["move_line_up"](ctx)
-    assert ctx.set_text_calls == []
-    assert ctx.set_cursor_calls == [0]
-
-
-def test_handler_move_line_down_changes_text() -> None:
-    api = _register_extension()
-    ctx = _FakeCtx(text="alpha\nbeta\ngamma", cursor=0)
-    api.handlers["move_line_down"](ctx)
-    assert ctx.set_text_calls == ["beta\nalpha\ngamma"]
-
-
-def test_handler_move_line_down_at_bottom_skips_set_text() -> None:
-    api = _register_extension()
-    ctx = _FakeCtx(text="alpha\nbeta", cursor=6)
-    api.handlers["move_line_down"](ctx)
-    assert ctx.set_text_calls == []
-
-
-def test_handler_join_paragraph_collapses_multi_line() -> None:
-    api = _register_extension()
-    ctx = _FakeCtx(text="hello\nworld\n\nother", cursor=0)
-    api.handlers["join_paragraph"](ctx)
-    assert ctx.set_text_calls == ["hello world\n\nother"]
 
 
 def test_handler_join_with_next_line_merges() -> None:
@@ -289,7 +250,9 @@ def test_handler_join_with_next_line_merges() -> None:
 
 
 def test_handler_set_cursor_always_called() -> None:
+    """Even when the text does not change: the caret still has to be placed."""
     api = _register_extension()
-    ctx = _FakeCtx(text="alpha\nbeta", cursor=0)
-    api.handlers["move_line_up"](ctx)
+    ctx = _FakeCtx(text="alpha", cursor=0)
+    api.handlers["join_with_next_line"](ctx)
+    assert ctx.set_text_calls == []
     assert ctx.set_cursor_calls == [0]

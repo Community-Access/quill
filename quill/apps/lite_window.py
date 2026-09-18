@@ -481,8 +481,12 @@ class DocumentFrame(
         if not self.modified:
             return True
         self.Raise()  # ask about the window the question is about
+        # One sentence, written down once, so the two editors cannot drift apart
+        # on the question that decides whether work is lost (bad.md F12).
+        from quill.core.close_prompt import unsaved_changes_question
+
         answer = show_message_box(
-            f"Save changes to {self.document_name()}?",
+            unsaved_changes_question(self.document_name()),
             APP_NAME,
             wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION,
             self,

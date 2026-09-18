@@ -23,9 +23,11 @@ over.
 
 Two rules the whole module keeps:
 
-* **One undoable step.** Changes go in through the control's own ``Replace``,
-  so Ctrl+Z takes back the whole move rather than an insertion and a deletion
-  that have to be undone separately.
+* **One undoable step.** Changes go in through
+  :func:`quill.ui.atomic_edit.replace_as_one_undo`, so Ctrl+Z takes back the
+  whole move rather than an insertion and a deletion that have to be undone
+  separately. This used to say "the control's own ``Replace``", which is
+  exactly the call that splits the edit in two (bad.md C6).
 * **Say what happened.** A line move produces no sound of its own and the
   reader announces nothing for a caret that lands where it already was, so each
   command announces its own outcome -- including the refusals, because "nothing
@@ -40,6 +42,7 @@ from quill.apps.lite_dialogs import choose_from_rows
 from quill.core import line_ops
 from quill.core.deletion_ring import DeletionRing, removed_span
 from quill.core.format_ops import toggle_line_comment
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import RICH
 
 #: ``(text, cursor) -> (text, cursor)`` -- the shape every whole-document line
@@ -69,9 +72,10 @@ class DocumentLineMixin:
             self._announce(refusal)
             return
         removed = self._record_removal(text, changed)
-        # Replace the whole value in one go so the control keeps it as a single
-        # undo step. SetValue would clear the undo history entirely.
-        self.control.Replace(0, self.control.GetLastPosition(), changed)
+        # One undo step for the whole move: select the document and write over
+        # it. Replace records a delete and an insert, and SetValue would clear
+        # the undo history entirely (bad.md C6).
+        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), changed)
         self.control.SetInsertionPoint(min(new_cursor, self.control.GetLastPosition()))
         self._set_modified(True)
         self._touch_status()

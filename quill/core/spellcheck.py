@@ -65,7 +65,22 @@ logger = logging.getLogger(__name__)
 # full of and no dictionary contains: 3D, 2x, MP3's siblings, 1080p, v2beta,
 # and the units in "500ml" and "12pt". Each was a spoken interruption for a
 # screen-reader user and none of them was ever a spelling mistake.
-_WORD_PATTERN = re.compile(r"(?<![0-9])[A-Za-z][A-Za-z']*")
+#: A word, in any language the document might be in (bad.md S4).
+#:
+#: It was ``[A-Za-z][A-Za-z']*``, and the walk-left beside it used
+#: ``str.isalpha()`` -- so the two halves of one checker disagreed about
+#: what a word is: `caf\u00e9` was flagged as `caf`, `na\u00efve` as `na` and `ve`,
+#: and a curly apostrophe split `don\u2019t` in two. The same word was silent
+#: on one path and flagged on another, which reads as a checker that cannot
+#: make up its mind.
+#:
+#: ``\\w`` under Python's default Unicode rules is the letters, and the two
+#: apostrophes are added explicitly: the typographic one is what every word
+#: processor inserts for you, including this one. Digits stay excluded from
+#: the *first* character, which is the ordinal guard the comment above
+#: describes, and the lookbehind still refuses letters that follow digits.
+_APOSTROPHES = "'\u2019"
+_WORD_PATTERN = re.compile(r"(?<![0-9])[^\W\d_][\w" + _APOSTROPHES + r"]*")
 
 # Tiny last-resort corpus. Real validation comes from the bundled wordlist
 # or pyenchant; this only exists so the module never raises if data is
@@ -581,6 +596,28 @@ def no_misspelling_message(text: str, cursor: int, dictionary: set[str], *, ahea
 
 
 def misspelling_at_position(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
+    """The misspelling at *position*, or the one that ends there (bad.md S5).
+
+    A caret sits at the *end* of the word you have just typed, and this needed
+    ``start <= position < end``, so the answer for the word under the cursor
+    was "there is no word" at the one moment somebody most often asks. Two
+    context menus worked around it by retrying at ``position - 1``; the four
+    keyboard commands did not, so the same question got two answers depending
+    on how it was asked. The retry belongs here, once.
+    """
+    if position < 0 or position > len(text):
+        return None
+    found = _misspelling_covering(text, position, dictionary)
+    if found is not None:
+        return found
+    if position > 0 and _is_word_character(text[position - 1]):
+        # The caret is just past the last letter: the word ending here is the
+        # word being asked about.
+        return _misspelling_covering(text, position - 1, dictionary)
+    return None
+
+
+def _misspelling_covering(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
     # Find the word boundary around `position` directly rather than scanning
     # every word in the document. Walk left to the start of the current word,
     # then match forward once.
@@ -601,7 +638,13 @@ def misspelling_at_position(text: str, position: int, dictionary: set[str]) -> M
 
 
 def _is_word_character(character: str) -> bool:
-    return character.isalpha() or character == "'"
+    """One definition of "inside a word", shared with :data:`_WORD_PATTERN`.
+
+    The pair used to disagree -- the pattern was ASCII and this was Unicode --
+    which is how the same word came to be silent on one path and flagged on
+    another (bad.md S4).
+    """
+    return character.isalpha() or character in _APOSTROPHES
 
 
 def suggest_words(word: str, dictionary: set[str], limit: int = 8) -> list[str]:

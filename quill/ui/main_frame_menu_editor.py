@@ -29,7 +29,7 @@ _TOP_MENU_DEFS: tuple[tuple[str, str], ...] = (
     ("insert", "&Insert"),
     ("format", "F&ormat"),
     ("navigate", "&Navigate"),
-    ("search", "&Search"),
+    # Search left the bar on 2026-09-17 and is Edit > Search Tools (bad.md M1).
     ("tools", "&Tools"),
     ("window", "&Window"),
     ("help", "&Help"),

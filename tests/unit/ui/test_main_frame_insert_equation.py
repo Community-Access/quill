@@ -154,7 +154,10 @@ def test_the_command_is_registered_with_a_chord_and_a_feature() -> None:
     from quill.core.keymap import DEFAULT_KEYMAP
     from quill.core.keymap_packs import _PACK_LABELS
 
-    assert DEFAULT_KEYMAP["edit.insert_equation"] == "Ctrl+Shift+E"
+    # Ctrl+Alt+= since 2026-09-18: Ctrl+Shift+E went to edit.select_line, which
+    # QuillLite reaches on it and which is used in the editing loop rather than
+    # once a document (rule 3). An equation is typed beside an equals sign.
+    assert DEFAULT_KEYMAP["edit.insert_equation"] == "Ctrl+Alt+="
     assert _PACK_LABELS["edit.insert_equation"] == "Insert Equation"
     assert COMMAND_FEATURE_MAP["edit.insert_equation"] == "core.format"
 

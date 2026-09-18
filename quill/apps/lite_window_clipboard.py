@@ -39,6 +39,7 @@ from quill.core.clipboard_collector import DEFAULT_DIVIDER, append_collected
 from quill.core.fragment import Fragment
 from quill.core.lite import APP_NAME
 from quill.core.sound_events import SoundEvent
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.dialog_contract import show_message_box
 
 __all__ = ["DocumentClipboardMixin"]
@@ -92,12 +93,17 @@ class DocumentClipboardMixin:
         return str(self.control.GetValue()[start:end]) if end > start else ""
 
     def _insert(self, text: str) -> None:
-        """Put *text* in at the caret, replacing the selection, as one undo step."""
+        """Put *text* in at the caret, replacing the selection, as one undo step.
+
+        It used to say that and call ``Replace``, which is the one call that
+        does not do it -- QUILL had the opposite claim beside the opposite code
+        and a live-wx test proving QUILL right (bad.md C6).
+        """
         if not text:
             return
         start, end = self.control.GetSelection()
         if end > start:
-            self.control.Replace(start, end, text)
+            replace_as_one_undo(self.control, start, end, text)
         else:
             self.control.WriteText(text)
         self._set_modified(True)
