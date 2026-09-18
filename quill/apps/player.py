@@ -115,7 +115,7 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         daisy_id, library_id = wx.NewIdRef(), wx.NewIdRef()
         file_menu.Append(open_id, "&Open File...\tCtrl+O")
-        file_menu.Append(folder_id, "Open F&older as Book...\tCtrl+Shift+O")
+        file_menu.Append(folder_id, "O&pen Folder as Book...\tCtrl+Shift+O")
         file_menu.Append(daisy_id, "Open &DAISY Book...\tCtrl+Alt+D")
         file_menu.Append(library_id, "Book &Library...\tCtrl+L")
         file_menu.Append(goto_id, "&Go to Position...\tCtrl+G")
@@ -154,7 +154,7 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         nav_menu.Append(focus_bm_id, "Go to Book&marks List\tCtrl+Alt+M")
         nav_menu.Append(focus_player_id, "Go to &Player Controls\tCtrl+Alt+P")
         nav_menu.Append(review_field_id, "Review Status &Field\tF6")
-        nav_menu.Append(read_status_id, "Read Status &Bar\tShift+F6")
+        nav_menu.Append(read_status_id, "&Read Status Bar\tShift+F6")
         menu_bar.Append(nav_menu, "&Navigation")
 
         playback_menu = wx.Menu()

@@ -122,7 +122,7 @@ def test_saving_the_playing_station_has_a_menu_home_and_a_key() -> None:
 
     assert APP_KEYMAPS["radio"]["radio.toggle_playing_favorite"] == "Ctrl+Shift+F"
     source = _source()
-    assert "Add Playing Station to &Favorites" in source
+    assert "A&dd Playing Station to Favorites" in source
     assert "_fav_toggle_menu_id" in source
 
 

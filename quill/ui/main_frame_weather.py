@@ -73,7 +73,7 @@ class WeatherMixin:
         menu.Append(alerts_id, "Active &Alerts...\tCtrl+Shift+Alt+A")
         menu.AppendSeparator()
         test_id = wx.NewIdRef()
-        menu.Append(add_id, "&Add Location...\tCtrl+Alt+Shift+L")
+        menu.Append(add_id, "A&dd Location...\tCtrl+Alt+Shift+L")
         menu.Append(settings_id, "&Settings...\tCtrl+Alt+Shift+F")
         menu.Append(test_id, "&Test Alert (preview sound, tray, and dialog)\tCtrl+Alt+Shift+T")
         if self._weather_area_enabled("noaa_radio"):

@@ -1147,7 +1147,7 @@ Control coverage: 43 audited sites (43 helped).
 
 #### (module level) (`quill/apps/lite_dialogs.py`)
 
-- `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in.
+- `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in. A 'keep as is' row means this file arrived in something else, which QuillLite reads and writes back but does not offer as a new choice.
 - `newline_choice`: CRLF is what Windows programs write. LF is what Unix, macOS and most build tools expect. QuillLite writes back whichever the file arrived with unless you change it here.
 - `close_btn`: Close this window and go back to your document.
 - `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Press Enter or Down Arrow to move to the list.

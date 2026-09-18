@@ -99,7 +99,10 @@ def test_go_to_shows_its_key_and_it_is_the_one_radio_uses() -> None:
     the only thing called "Go To" here jumped to a time inside an episode."""
     from quill.core.app_keymaps import APP_KEYMAPS
 
-    assert '_menu_label("&Go To...", "app.go_to")' in MENU
+    # "G&o To..." since the 2026-09-18 mnemonic sweep (bad.md H5): Cast's Help
+    # menu already claimed G, and a duplicated letter is a letter Windows will
+    # not press -- it cycles focus between the two and waits for Enter.
+    assert '_menu_label("G&o To...", "app.go_to")' in MENU
     assert APP_KEYMAPS["cast"]["app.go_to"] == "Ctrl+G"
 
 

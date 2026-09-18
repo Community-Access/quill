@@ -30,6 +30,9 @@ from pathlib import Path
 
 __all__ = [
     "ENCODING_CHOICES",
+    "UTF16_BE_BOM_CODEC",
+    "encoding_rows",
+    "newline_rows",
     "unencodable_characters",
     "unencodable_warning",
     "NEWLINE_CHOICES",
@@ -60,7 +63,17 @@ NEWLINE_CHOICES: tuple[tuple[str, str], ...] = (
 )
 
 _UTF8_BOM = b"\xef\xbb\xbf"
-_UTF16_BOMS = (b"\xff\xfe", b"\xfe\xff")
+_UTF16_LE_BOM = b"\xff\xfe"
+_UTF16_BE_BOM = b"\xfe\xff"
+
+#: Big-endian UTF-16 with a BOM, which Python has no single codec for: the
+#: ``utf-16`` codec always writes little-endian, and ``utf-16-be`` writes no BOM
+#: at all. Named here so the encoding a document carries can say "big-endian",
+#: which is the whole of bad.md F8: both byte orders decoded to "utf-16" and
+#: every big-endian file was quietly rewritten little-endian on a save that
+#: changed nothing else. A byte-order swap is invisible in the editor and
+#: visible to everything downstream that reads the file.
+UTF16_BE_BOM_CODEC = "utf-16-be-bom"
 
 
 @dataclass(frozen=True, slots=True)
@@ -86,8 +99,10 @@ def decode_text(data: bytes) -> DecodedText:
     """
     if data.startswith(_UTF8_BOM):
         text, encoding = data[len(_UTF8_BOM) :].decode("utf-8", errors="replace"), "utf-8-sig"
-    elif data.startswith(_UTF16_BOMS):
+    elif data.startswith(_UTF16_LE_BOM):
         text, encoding = data.decode("utf-16", errors="replace"), "utf-16"
+    elif data.startswith(_UTF16_BE_BOM):
+        text, encoding = data.decode("utf-16", errors="replace"), UTF16_BE_BOM_CODEC
     else:
         try:
             text, encoding = data.decode("utf-8"), "utf-8"
@@ -98,13 +113,54 @@ def decode_text(data: bytes) -> DecodedText:
     return DecodedText(text=normalized, encoding=encoding, newline=newline)
 
 
+#: Encodings and line endings a file can arrive in that the chooser does not
+#: offer: read faithfully, written back faithfully, never offered as a new
+#: choice. ``utf-16-be-bom`` because little-endian is what Windows means by
+#: UTF-16, and classic-Mac CR because no tool has written one this century.
+_READ_ONLY_ENCODING_NAMES: dict[str, str] = {
+    UTF16_BE_BOM_CODEC: "UTF-16 big-endian",
+    "utf-16-be": "UTF-16 big-endian, no BOM",
+    "utf-16-le": "UTF-16 little-endian, no BOM",
+}
+_READ_ONLY_NEWLINE_NAMES: dict[str, str] = {"\r": "CR (classic Mac)"}
+
+
 def _encoding_name(codec: str) -> str:
     """How a codec is named to a person; the raw codec if it is not one of ours.
 
     From the same table the chooser and the status bar read, so the three
     cannot call one encoding three things.
     """
+    if codec in _READ_ONLY_ENCODING_NAMES:
+        return _READ_ONLY_ENCODING_NAMES[codec]
     return dict(ENCODING_CHOICES).get(codec, codec)
+
+
+def encoding_rows(current: str) -> tuple[tuple[str, str], ...]:
+    """The chooser's encoding rows, with the document's own added if it is missing.
+
+    The bug this closes is one line of arithmetic (bad.md F8). The chooser
+    selected the index of the current value and fell back to **0** for anything
+    it did not offer -- and index 0 is UTF-8. So a UTF-16 big-endian file opened
+    the dialog reading "UTF-8", and OK, the safe-looking answer, re-encoded the
+    document. A dialog that cannot show the state it is editing must not be
+    allowed to answer for it, so the state becomes a row.
+    """
+    if any(codec == current for codec, _name in ENCODING_CHOICES):
+        return ENCODING_CHOICES
+    return ((current, f"{_encoding_name(current)} (keep as is)"), *ENCODING_CHOICES)
+
+
+def newline_rows(current: str) -> tuple[tuple[str, str], ...]:
+    """The chooser's line-ending rows, on the same rule as :func:`encoding_rows`.
+
+    The case that bit: a classic-Mac CR file preselected CRLF, so OK converted
+    every line ending in the document and said nothing.
+    """
+    if any(value == current for value, _name in NEWLINE_CHOICES):
+        return NEWLINE_CHOICES
+    name = _READ_ONLY_NEWLINE_NAMES.get(current, "Mixed")
+    return ((current, f"{name} (keep as is)"), *NEWLINE_CHOICES)
 
 
 def unencodable_characters(text: str, encoding: str) -> list[str]:
@@ -153,6 +209,11 @@ def encode_text(text: str, *, encoding: str, newline: str) -> bytes:
     is a save that loses the document, which is the worse of the two.
     """
     restored = text.replace("\n", newline) if newline != "\n" else text
+    if encoding == UTF16_BE_BOM_CODEC:
+        # Python has no codec for "big-endian with a BOM": utf-16 always writes
+        # little-endian and utf-16-be writes no BOM, so the two halves are put
+        # together here (bad.md F8).
+        return _UTF16_BE_BOM + restored.encode("utf-16-be", errors="replace")
     return restored.encode(encoding, errors="replace")
 
 

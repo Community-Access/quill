@@ -90,7 +90,10 @@ def test_top_level_menu_append_order_is_conventional() -> None:
     # past on the way to Tools. "Search" is still the contribution parent, so a
     # Quillin declaring it still lands in the submenu.
     assert "menu_bar.Append(search_menu" not in source
-    assert 'edit_menu.AppendSubMenu(search_menu, _("&Search Tools"))' in source
+    # "S&earch Tools" since the 2026-09-18 mnemonic sweep (bad.md H5): Edit's
+    # "&Selection" submenu already held S, and Windows does not press a
+    # duplicated letter -- it cycles focus between the two and waits.
+    assert 'edit_menu.AppendSubMenu(search_menu, _("S&earch Tools"))' in source
 
     assert edit_index < view_index < insert_index < format_index < navigate_index < tools_index
 
@@ -150,7 +153,11 @@ def test_insert_link_is_not_duplicated_in_edit_menu() -> None:
 def test_publishing_actions_live_in_file_menu_not_top_level_publishing_menu() -> None:
     source = _menu_source()
     assert 'menu_bar.Append(publishing_menu, "P&ublishing")' not in source
-    assert 'file_menu.AppendSubMenu(self._publishing_file_menu, _("P&ublish"))' in source
+    # No mnemonic since the 2026-09-18 sweep (bad.md H5): the File menu claims
+    # twenty-one of twenty-six letters and every letter in "Publish" was taken.
+    # GATE-14's rule decides it -- a duplicate advertises a key that may not
+    # work, while silence is merely silent and Tab still arrives.
+    assert 'file_menu.AppendSubMenu(self._publishing_file_menu, _("Publish"))' in source
     assert (
         "self._publishing_file_menu.Append(\n                self._id_publishing_connections,"
         in source
@@ -230,7 +237,7 @@ def test_publishing_menu_is_split_into_read_and_locked_send_halves() -> None:
     assert (
         "        if publishing_read_enabled or publishing_send_enabled:\n"
         "            file_menu.AppendSeparator()\n"
-        '            file_menu.AppendSubMenu(self._publishing_file_menu, _("P&ublish"))' in source
+        '            file_menu.AppendSubMenu(self._publishing_file_menu, _("Publish"))' in source
     )
 
 

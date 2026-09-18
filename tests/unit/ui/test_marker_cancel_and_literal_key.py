@@ -74,7 +74,7 @@ def test_no_menu_label_in_quill_carries_a_literal_tab_accelerator() -> None:
         literals = re.findall(r'_\("([^"]*\\t[^"]*)"\)', source)
         # The stock clipboard verbs are wx ID_* items whose accelerator IS the
         # label by convention; they have no keymap command to render from.
-        allowed = {"Cu&t\\tCtrl+X", "&Copy\\tCtrl+C", "&Paste\\tCtrl+V", "Select &All\\tCtrl+A"}
+        allowed = {"Cu&t\\tCtrl+X", "&Copy\\tCtrl+C", "&Paste\\tCtrl+V", "&Select All\\tCtrl+A"}
         offenders = [text for text in literals if text not in allowed]
         assert offenders == [], f"{module} carries literal accelerators: {offenders}"
 

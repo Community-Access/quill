@@ -22,6 +22,7 @@ import ctypes
 import logging
 import time
 from ctypes import wintypes
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -83,13 +84,83 @@ def _key(vk: int = 0, scan: int = 0, flags: int = 0) -> _INPUT:
     )
 
 
-def _send(inputs: list[_INPUT]) -> None:
+@dataclass(frozen=True, slots=True)
+class InjectionResult:
+    """How much of one injection Windows actually accepted.
+
+    ``SendInput`` returns the number of events it queued, and that number can
+    be **smaller than what was asked for**: another process holding a low-level
+    hook, an elevated window refusing input from a non-elevated sender, or the
+    target's input queue simply full. The old ``_send`` logged the shortfall and
+    returned ``None``, so every caller carried on as if the whole expansion had
+    landed -- and the one place that matters is the middle of a replacement,
+    where the abbreviation has been erased and its expansion has not arrived.
+    Half of an expansion is a damaged document that nothing reported.
+    """
+
+    requested_events: int
+    sent_events: int
+
+    @property
+    def complete(self) -> bool:
+        """True when every event asked for was accepted."""
+        return self.sent_events >= self.requested_events
+
+
+def _send(inputs: list[_INPUT]) -> InjectionResult:
     if not inputs:
-        return
+        return InjectionResult(0, 0)
     array = (_INPUT * len(inputs))(*inputs)
-    sent = _user32.SendInput(len(inputs), array, ctypes.sizeof(_INPUT))
+    sent = int(_user32.SendInput(len(inputs), array, ctypes.sizeof(_INPUT)))
     if sent != len(inputs):
         logger.warning("SendInput delivered %d of %d events", sent, len(inputs))
+    return InjectionResult(len(inputs), sent)
+
+
+def _text_inputs(text: str) -> list[_INPUT]:
+    inputs: list[_INPUT] = []
+    for unit in utf16_code_units(text):
+        inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE))
+        inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE | _KEYEVENTF_KEYUP))
+    return inputs
+
+
+def _backspace_inputs(count: int) -> list[_INPUT]:
+    inputs: list[_INPUT] = []
+    for _ in range(max(0, count)):
+        inputs.append(_key(vk=_VK_BACK))
+        inputs.append(_key(vk=_VK_BACK, flags=_KEYEVENTF_KEYUP))
+    return inputs
+
+
+def send_text_checked(text: str) -> InjectionResult:
+    """Type *text*, and say how much of it Windows accepted."""
+    return _send(_text_inputs(text))
+
+
+def send_backspaces_checked(count: int) -> InjectionResult:
+    """Press Backspace *count* times, and say how many landed."""
+    return _send(_backspace_inputs(count))
+
+
+def inject_expansion_checked(text: str, *, backspace_count: int) -> InjectionResult:
+    """Erase, then type -- and **stop** if the erase was not fully delivered.
+
+    The order matters and so does the stopping. Typing an expansion on top of
+    an abbreviation that is still half there produces text nobody wrote, in a
+    document QUILL does not own and cannot undo for you. When the backspaces
+    come up short the expansion is not sent at all: the result says so, the
+    abbreviation is still (partly) on screen, and the person can see -- or be
+    told -- that nothing was replaced.
+    """
+    erased = send_backspaces_checked(backspace_count)
+    if not erased.complete:
+        return erased
+    typed = send_text_checked(text)
+    return InjectionResult(
+        erased.requested_events + typed.requested_events,
+        erased.sent_events + typed.sent_events,
+    )
 
 
 def send_text(text: str) -> None:
@@ -97,12 +168,11 @@ def send_text(text: str) -> None:
 
     Characters outside the Basic Multilingual Plane (emoji, some CJK extensions)
     are sent as their two surrogate code units, which is what Windows expects.
+
+    Returns nothing: :func:`send_text_checked` is the one that reports what
+    landed, and is what a replacement should use.
     """
-    inputs: list[_INPUT] = []
-    for unit in utf16_code_units(text):
-        inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE))
-        inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE | _KEYEVENTF_KEYUP))
-    _send(inputs)
+    _send(_text_inputs(text))
 
 
 def utf16_code_units(text: str) -> list[int]:
@@ -119,22 +189,51 @@ def send_backspaces(count: int) -> None:
     """Press Backspace *count* times."""
     if count <= 0:
         return
+    _send(_backspace_inputs(count))
+
+
+def _caret_left_inputs(steps: int) -> list[_INPUT]:
     inputs: list[_INPUT] = []
-    for _ in range(count):
-        inputs.append(_key(vk=_VK_BACK))
-        inputs.append(_key(vk=_VK_BACK, flags=_KEYEVENTF_KEYUP))
-    _send(inputs)
+    for _ in range(max(0, steps)):
+        inputs.append(_key(vk=_VK_LEFT))
+        inputs.append(_key(vk=_VK_LEFT, flags=_KEYEVENTF_KEYUP))
+    return inputs
+
+
+def _paste_inputs() -> list[_INPUT]:
+    return [
+        _key(vk=_VK_CONTROL),
+        _key(vk=_VK_V),
+        _key(vk=_VK_V, flags=_KEYEVENTF_KEYUP),
+        _key(vk=_VK_CONTROL, flags=_KEYEVENTF_KEYUP),
+    ]
 
 
 def move_caret_left(steps: int) -> None:
     """Press Left Arrow *steps* times, to land the caret inside an expansion."""
     if steps <= 0:
         return
-    inputs: list[_INPUT] = []
-    for _ in range(steps):
-        inputs.append(_key(vk=_VK_LEFT))
-        inputs.append(_key(vk=_VK_LEFT, flags=_KEYEVENTF_KEYUP))
-    _send(inputs)
+    _send(_caret_left_inputs(steps))
+
+
+def move_caret_left_checked(steps: int) -> InjectionResult:
+    """As :func:`move_caret_left`, reporting how many presses landed.
+
+    A caret that only travelled half way is not a cosmetic failure: the next
+    thing typed goes into the middle of the expansion rather than where the
+    snippet asked for it.
+    """
+    return _send(_caret_left_inputs(steps))
+
+
+def send_paste_checked() -> InjectionResult:
+    """Press Ctrl+V, reporting whether all four key events were accepted.
+
+    A partial Ctrl+V is the worst shape of failure here -- a Control key that
+    went down and never came up leaves the target believing Control is still
+    held, so the person's next keystroke is a shortcut they did not ask for.
+    """
+    return _send(_paste_inputs())
 
 
 def inject_expansion(
@@ -188,12 +287,7 @@ def paste_text(text: str, *, restore_delay_s: float = 0.2) -> bool:
     except Exception:  # noqa: BLE001
         return False
 
-    _send([
-        _key(vk=_VK_CONTROL),
-        _key(vk=_VK_V),
-        _key(vk=_VK_V, flags=_KEYEVENTF_KEYUP),
-        _key(vk=_VK_CONTROL, flags=_KEYEVENTF_KEYUP),
-    ])
+    _send(_paste_inputs())
 
     # The target needs a moment to read the clipboard before we put it back.
     time.sleep(restore_delay_s)

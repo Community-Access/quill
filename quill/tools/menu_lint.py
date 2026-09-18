@@ -198,15 +198,20 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
 # of an AppendSubMenu(...) call in main_frame_menu.py.  Checks walk the AST
 # (see _check_required_clusters) so a comment mentioning a cluster name
 # cannot satisfy the gate.
+#
+# The Alt letters moved on 2026-09-18 (bad.md H5): Tools already claimed A and
+# C, and Windows does not press a duplicated mnemonic -- it cycles focus
+# between the two and waits. The cluster must exist; which letter it holds is
+# the menu-item access-key gate's business, not this one's.
 _REQUIRED_CLUSTER_LABELS: tuple[tuple[str, str], ...] = (
     ("Reading & Dictation", "R&eading and Dictation"),
     ("Comparison", "C&omparison"),
     ("Watch Folder", "&Watch Folder"),
     # AI was promoted from a Tools cluster to a top-level "&AI" menu (2026-06-27;
     # see PRD section 5.84a), so it is no longer a required Tools-menu cluster.
-    ("Advanced", "&Advanced"),
+    ("Advanced", "A&dvanced"),
     ("Quillins", "&Quillins"),
-    ("Customize & Support", "&Customize and Support"),
+    ("Customize & Support", "C&ustomize and Support"),
     ("Writing & Language", "&Writing and Language"),
 )
 

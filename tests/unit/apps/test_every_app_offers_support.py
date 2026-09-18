@@ -62,7 +62,11 @@ def _source(relative: str) -> str:
 def test_every_app_offers_get_help_from_support(app_key: str, module: str) -> None:
     """Either seam counts: the shared menu helper, or the label written out."""
     text = _source(module)
-    wired = "append_get_help_item" in text or "Get Help from &Support" in text
+    # The mnemonic moved in QUILL's own menu on 2026-09-18 (bad.md H5): S was
+    # taken, so the row is "Get He&lp from Support...". The label the gate
+    # matches on is the words, not the ampersand.
+    plain = text.replace("&", "")
+    wired = "append_get_help_item" in text or "Get Help from Support" in plain
     assert wired, f"{module} has no Get Help from Support item"
 
 

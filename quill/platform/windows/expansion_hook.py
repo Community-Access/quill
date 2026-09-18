@@ -24,7 +24,7 @@ import logging
 import queue
 import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 
 from quill.core.abbreviations import AbbreviationLibrary, resolve_expansion
 from quill.core.expansion.matcher import TRIGGER_CHARS, GlobalMatch, match_buffer
@@ -115,10 +115,19 @@ class ExpansionHook:
         excluded_processes: Callable[[], set[str]] | None = None,
         on_undo: Callable[[UndoPlan], None] | None = None,
         on_unreachable_window: Callable[[], None] | None = None,
+        get_snippet_library: Callable[[], object] | None = None,
+        get_snippet_context: Callable[[], Mapping[str, str]] | None = None,
     ) -> None:
         self._on_match = on_match
         self._get_library = get_library
         self._get_clipboard_text = get_clipboard_text or (lambda: "")
+        # Snippets are a second source of triggers, and both seams are optional
+        # so the hook behaves exactly as before when they are not supplied.
+        # ``get_snippet_context`` reads what is selected in the application in
+        # front -- a cross-process round trip, which is why the matcher asks for
+        # it only after a snippet has already matched rather than on every key.
+        self._get_snippet_library = get_snippet_library
+        self._get_snippet_context = get_snippet_context
         self._excluded_processes = excluded_processes or (lambda: set())
         self._on_undo = on_undo
         self._on_unreachable = on_unreachable_window
@@ -330,11 +339,19 @@ class ExpansionHook:
         # The foreground window is already in hand from the deny-list check
         # above, so scoping an entry to particular applications costs nothing
         # extra per keystroke.
+        snippets = None
+        if self._get_snippet_library is not None:
+            try:
+                snippets = self._get_snippet_library()
+            except Exception:  # noqa: BLE001 - a snippet source must not break typing
+                snippets = None
         match = match_buffer(
             self._buffer,
             library,
             self._get_clipboard_text(),
             process_name=window.process_name,
+            snippet_library=snippets,  # type: ignore[arg-type]
+            snippet_context_provider=self._get_snippet_context,
         )
         if match is None:
             return False

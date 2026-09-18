@@ -34,9 +34,14 @@ class ClipLibraryMixin:
         text = self.editor.GetValue()[start:end]
         frag = Fragment(markup=text, source="Document")
         if self._clip_library().remember(frag):
-            self._set_status("Kept in the Clip Library.")
+            # _announce, not _set_status: the status setter speaks through the
+            # bare announce() and is throttled by announcement_throttle_ms, so
+            # these outcomes reached speech sometimes and braille and the
+            # announcement log never. An outcome a listener cannot re-read is
+            # an outcome they have to remember (bad.md C8).
+            self._announce("Kept in the Clip Library.")
         else:
-            self._set_status("Already in the Clip Library.")
+            self._announce("Already in the Clip Library.")
 
     def _on_editor_text_copy(self, event: object) -> None:
         """Auto-capture a copy **or a cut** into the Clip Library, when opted in.
@@ -66,9 +71,9 @@ class ClipLibraryMixin:
     def keep_fragment_in_clip_library(self, frag: Fragment) -> None:
         """Remember an already-built Fragment (e.g. a Look Up encyclopedia entry)."""
         if self._clip_library().remember(frag):
-            self._set_status(f"Kept {frag.title or 'this'} in the Clip Library.")
+            self._announce(f"Kept {frag.title or 'this'} in the Clip Library.")
         else:
-            self._set_status("Already in the Clip Library.")
+            self._announce("Already in the Clip Library.")
 
     def open_clip_library(self) -> None:
         from quill.core.fragment import FragmentFormat
@@ -127,10 +132,10 @@ class ClipLibraryMixin:
         try:
             slot = int(raw)
         except ValueError:
-            self._set_status("Enter a slot number.")
+            self._announce("Enter a slot number.")
             return
         if not 1 <= slot <= tray.SLOT_COUNT:
-            self._set_status(f"Slot must be 1-{tray.SLOT_COUNT}.")
+            self._announce(f"Slot must be 1-{tray.SLOT_COUNT}.")
             return
         self._clip_library().promote_to_tray(index, tray, slot)
-        self._set_status(f"Promoted to Copy Tray slot {slot}.")
+        self._announce(f"Promoted to Copy Tray slot {slot}.")

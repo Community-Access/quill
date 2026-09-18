@@ -67,7 +67,7 @@ class BrailleProofingCommandsMixin:
         )
         proofing.Append(
             self._id_braille_list_proofed,
-            self._menu_label("List Proofed &Pages...", "braille.list_proofed_pages"),
+            self._menu_label("&List Proofed Pages...", "braille.list_proofed_pages"),
         )
         proofing.Append(
             self._id_braille_list_review,

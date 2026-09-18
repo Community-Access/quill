@@ -121,7 +121,7 @@ class BrailleCommandsMixin:
                 self._id_braille_get_pack = wx.NewIdRef()
                 menu.Append(
                     self._id_braille_get_pack,
-                    "Download Braille &Translation Pack...",
+                    "&Download Braille Translation Pack...",
                 )
                 self.frame.Bind(
                     wx.EVT_MENU,

@@ -1,11 +1,12 @@
 # QUILL and QuillLite: what is left
 
-Five items, audited against the code 2026-09-18. A landed item is deleted; git
+Four items, audited against the code 2026-09-18. A landed item is deleted; git
 history is the record. Audit a row against the code before working it.
 
 ## The rules
 
-Lower number wins when two conflict.
+Lower number wins when two conflict. The numbers are cited by number in
+`keymap.py` and `lite/parity.py`, so they do not get renumbered.
 
 1. **Microsoft's key wins** where Word, WordPad or Notepad bind one for a
    function both editors have. Exceptions, each because another Microsoft
@@ -42,12 +43,9 @@ Answered 2026-09-16; settled, do not re-litigate.
 
 | Question | Answer |
 | --- | --- |
-| Blockquote | **Merges into Quote Lines** on `Ctrl+Shift+Q`; `format.blockquote` retires; `Ctrl+Alt+Q` -> Duplicate Selection (P2.5, P1.2). |
-| `keep_unique_lines` / `remove_duplicate_lines` | **Merge**: one verb, QuillLite's `Ctrl+Alt+D` and its wording. `Alt+Shift+K` freed (P2.5). |
-| `trim_blank_lines` / `remove_blank_lines` | **Both kept, renamed**: "Trim Blank Lines at the Ends" and "Remove Every Blank Line" (P2.5). |
-| Crash recovery and session restore | **Both editors ask, then restore.** Recovery lists what it found; QUILL gains session restore on QuillLite's rule, command-line files winning (P2.12). |
 | `DocumentText` | **Build it fully** (P0.6c). |
 | The QuillLite profile in QUILL | **Build it** (P2.4). |
+| Sharing between the two editors | **Share the content, copy the preferences** (answered 2026-09-18): abbreviations, personal dictionary, copy tray, clip library and bookmarks live in one place both editors read and write; keymap overrides and app preferences stay per-editor (P2.4). |
 | The magical tier | **All four approved**: repeat the last announcement, structure on arrival, "what changed?", spoken undo (P3.7). |
 | QuillLite and braille | Write the position into QuillLite's PRD as a decision. Implementing braille there stays out of scope (P3.3). |
 
@@ -55,25 +53,10 @@ Answered 2026-09-16; settled, do not re-litigate.
 
 | # | Editors | Batch |
 | --- | --- | --- |
-| [P2.8](#p28) the remaining Worse rows | per bug | L |
 | [P2.4](#p24) the QuillLite profile in QUILL | QUILL | M |
 | [P0.6c](#p06c) QUILL adopts `DocumentText` | QUILL | N |
 | [P3.7](#p37) the magical tier | both | N |
 | [P3.3](#p33) documentation drift | docs | Z (last) |
-
-### P2.8
-
-Seven **Worse** rows no other item names. Cheap each.
-
-| # | Editor | Finding | Evidence |
-| --- | --- | --- | --- |
-| F7 | Lite | The status bar's Encoding and Line Endings cells read "UTF-8 / CRLF" for every `.rtf`; they should read the document's own format. (The rest of F7 landed 2026-09-16.) | `lite_window_status.py:390-391` |
-| F8 | Lite | "No Markdown could be made from this HTML; saved unchanged" and "Converted HTML to Markdown" are spoken *before* the save runs. A classic-Mac CR file opens the format dialog with CRLF preselected, so OK silently converts it. UTF-16 big-endian round-trips as little-endian on a no-edit save, against the module's own byte-honesty contract. | `lite_window_markup.py:229, 243`, `lite_dialogs.py:331, 350-355`, `core/lite/textfile.py:87-88, 107` |
-| L7 | QUILL | **List Bookmarks shows stale positions**: jumps re-anchor by snippet but the list prints the raw stored offset, and the resolved offset is written back without saving, so tab and disk keep the old value until the next Set. | `main_frame.py:11533-11549, 11607-11610` |
-| R9 | both | **Native RichEdit hotkeys leak into plain and Markdown documents** because plain documents are `TM_RICHTEXT` controls: in QUILL unbound `Ctrl+U`, `Ctrl+L`, `Ctrl+R` underline or re-align a Markdown buffer natively (not dirty, not announced, not saved, but visible and undo-stacked); in Lite every native chord it does not bind (`Ctrl+Shift+=` and friends) does the same. Paste is guarded; keys are not. | `main_frame.py:2052-2068`, `richedit_editing.py:243-254`, `lite_window_commands.py:223-236` |
-| R11 | QUILL | Choosing "Convert to Rich Text" in the plain-text formatting prompt converts and then **drops the Bold that was asked for**. | `main_frame_rich_mode.py:463-482`, `main_frame.py:16161-16163` |
-| H5 | QUILL | Mnemonic collisions inside Tools > Customize and Support (`&Export...` three times, `&Import...` twice); the access-key test checks only top-level titles. | `main_frame_menu.py:3254-3262`, `test_menu_bar_access_keys.py:82-104` |
-| C8 | QUILL | GATE-13: the Copy Tray dialog announces "Slot N loaded" on every list move. Keep Clip, Copy All, Copy with Source, Restore Deleted Text, Duplicate Selection and every collector message report through `_set_status`, which is throttled and bypasses the verbosity/braille service, so none reach braille or the announcement log. `_copy_to_clipboard` has no retry and no `try` around `SetData`; a locked clipboard raises past the handler. `read_clipboard_text` shows wx's own error dialog on its last retry and is called from the collector timer and from the tray dialog's selection handler, so a modal can appear from a timer or a list move. Open Clip Library bypasses `_show_modal_dialog`. | `copy_tray_dialog.py:174, 208, 218-225`, `main_frame_clip_library.py:296-298, 346`, `main_frame.py:19489-19498`, `clipboard_retry.py:80-81` |
 
 ### P2.4
 
@@ -132,13 +115,14 @@ regenerate per change and are gated, so they are not this row.
    against a ceiling rather than against each other. This is what keeps P0.6c
    from rotting.
 
-The 41 in `platform_report` must stay green.
+The 41 in `platform_report` must stay green, plus the menu-item access-key
+gate added 2026-09-18 (`test_menu_item_access_keys.py`): no two items in one
+menu may claim the same Alt letter.
 
 ## How to work it
 
 | Batch | Rows | One verification covers |
 | --- | --- | --- |
-| **L** | P2.8 | scattered; verify once at the end |
 | **M** | P2.4 | profiles |
 | **N** | P0.6c then P3.7 | the document model, in that order |
 | **Z** | P3.3 | the docs gates |
@@ -151,12 +135,3 @@ The 41 in `platform_report` must stay green.
    killed twice for memory.
 4. **Audit the row before writing it**, against the code.
 5. **Two batches never move at once.**
-
-## Known red, and none of it ours
-
-- `tests/unit/core/expansion/test_matcher.py` -- four tests call
-  `match_buffer(..., snippet_library=...)` and `match_buffer` has no such
-  parameter. Committed in `3aaa96b` ahead of the implementation: snippet
-  expansion in the *global* expander is half-landed.
-- `mypy quill/core quill/io` fails on `quill/core/spelling/session.py:168`
-  (`"object" has no attribute "start"`).

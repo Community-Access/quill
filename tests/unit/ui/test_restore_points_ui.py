@@ -109,5 +109,10 @@ def test_every_save_records_a_restore_point() -> None:
 
 
 def test_file_menu_offers_restore_previous_version() -> None:
-    assert "Restore Previous &Version..." in _MENU_SOURCE
+    # No Alt letter since the 2026-09-18 sweep: the File menu claims
+    # twenty-one of twenty-six letters and every letter in this label was
+    # taken. GATE-14's rule decides it -- a duplicate advertises a key that
+    # may not work, while silence is merely silent (bad.md H5). The row
+    # still carries its chord, rendered by _menu_label.
+    assert "Restore Previous Version..." in _MENU_SOURCE
     assert "self.restore_previous_version()" in _MENU_SOURCE

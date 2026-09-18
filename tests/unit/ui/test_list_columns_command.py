@@ -172,7 +172,19 @@ def test_both_menu_entries_advertise_a_keyboard_route() -> None:
         "quill/apps/podcasts_menu.py",
     ):
         source = (repo_root / relative).read_text(encoding="utf-8")
-        assert r'"Choose Co&lumns...\tCtrl+Alt+Shift+C"' in source, (
-            f"{relative} must give Choose Columns... a key in its label; walking a "
-            "menu to find there is no shortcut is a cost paid on every visit."
+        # The letter differs per app since the 2026-09-18 mnemonic sweep --
+        # each menu had a different set already claimed -- so the contract is
+        # that the row carries SOME Alt letter and its accelerator, not which
+        # letter (bad.md H5).
+        rows = [
+            line
+            for line in source.splitlines()
+            if "Choose Co" in line and r"\tCtrl+Alt+Shift+C" in line
+        ]
+        assert rows, (
+            f"{relative} must offer Choose Columns... with its accelerator; walking "
+            "a menu to find there is no shortcut is a cost paid on every visit."
+        )
+        assert any("&" in line for line in rows), (
+            f"{relative} must give Choose Columns... an Alt letter in its label."
         )

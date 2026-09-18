@@ -181,12 +181,18 @@ class PowerToolsActionsMixin(ClipboardCollectorMixin, SpecialCharacterMixin, Lin
             return str(dialog.GetValue())
 
     def _power_tools_clipboard_text(self) -> str:
+        """The clipboard's text, quietly: the collector polls this every 750 ms.
+
+        wx's error dialog on a sustained lock is right for a command somebody
+        just ran and wrong for a timer tick, where it is a modal nobody asked
+        for, arriving out of nowhere (bad.md C8).
+        """
         wx = self._wx
         if getattr(wx, "TheClipboard", None) is None:
             return ""
         from quill.ui.clipboard_retry import read_clipboard_text
 
-        return read_clipboard_text(wx)
+        return read_clipboard_text(wx, surface_errors=False)
 
     def _power_tools_clipboard_html(self) -> str:
         """Return the clipboard's HTML payload, if any.

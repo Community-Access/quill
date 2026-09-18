@@ -182,8 +182,8 @@ def test_every_command_is_menu_wired() -> None:
     assert '_append_power_tools_group(power_tools_menu, "power_tools")' in _SOURCE
     # Accept both i18n-wrapped _("...") and bare string forms.
     assert (
-        'tools_menu.AppendSubMenu(power_tools_menu, _("&Advanced"))' in _SOURCE
-        or 'tools_menu.AppendSubMenu(power_tools_menu, "&Advanced")' in _SOURCE
+        'tools_menu.AppendSubMenu(power_tools_menu, _("A&dvanced"))' in _SOURCE
+        or 'tools_menu.AppendSubMenu(power_tools_menu, "A&dvanced")' in _SOURCE
     )
     for helper in (
         "_append_power_tools_insert_items",

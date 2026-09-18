@@ -69,7 +69,10 @@ def test_keep_selection_remembers_the_selected_text(tmp_path: Path, monkeypatch)
     monkeypatch.setattr("quill.core.paths.app_data_dir", lambda: tmp_path)
     host = _Host(tmp_path, selection=(0, 5), text="hello world")
     host.keep_selection_in_clip_library()
-    assert host.status == ["Kept in the Clip Library."]
+    # announced, not status: the Clip Library's outcomes go through the
+    # announcement service since 2026-09-18, so they reach braille and the
+    # announcement log rather than only the throttled status line (bad.md C8).
+    assert host.announced == ["Kept in the Clip Library."]
     lib = host._clip_library()
     assert len(lib) == 1
     assert lib.entry(0).fragment.markup == "hello"
@@ -80,7 +83,7 @@ def test_keep_selection_reports_duplicate(tmp_path: Path, monkeypatch) -> None:
     host = _Host(tmp_path, selection=(0, 5), text="hello world")
     host.keep_selection_in_clip_library()
     host.keep_selection_in_clip_library()
-    assert host.status[-1] == "Already in the Clip Library."
+    assert host.announced[-1] == "Already in the Clip Library."
     assert len(host._clip_library()) == 1
 
 
@@ -89,7 +92,7 @@ def test_keep_fragment_in_clip_library_reports_title(tmp_path: Path, monkeypatch
     host = _Host(tmp_path, selection=(0, 0), text="")
     frag = Fragment(markup="Ada Lovelace was a mathematician.", title="Ada Lovelace")
     host.keep_fragment_in_clip_library(frag)
-    assert host.status == ["Kept Ada Lovelace in the Clip Library."]
+    assert host.announced == ["Kept Ada Lovelace in the Clip Library."]
 
 
 def test_clip_library_instance_is_lazy_and_cached(tmp_path: Path, monkeypatch) -> None:

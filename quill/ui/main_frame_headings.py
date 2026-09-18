@@ -49,7 +49,15 @@ class HeadingLevelsMixin:
             return
         surface = self._active_markup_surface()
         if surface is None:
-            if self._offer_plain_text_formatting_choice(f"Heading {level}") != "markdown":
+            choice = self._offer_plain_text_formatting_choice(f"Heading {level}")
+            if choice == "rich":
+                # Converted just now, so apply the heading in the document you
+                # are now in rather than returning and leaving the command you
+                # pressed undone (bad.md R11).
+                if self._rich_format_command("set_heading", f"Heading {level}", level):
+                    self.sync_structure_announcer()
+                return
+            if choice != "markdown":
                 return
             surface = "markdown"
         text = self.editor.GetValue()

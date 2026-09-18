@@ -63,7 +63,15 @@ from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
 from quill.core.metrics import compute_document_stats
 from quill.ui.richedit_editing import RICH
 
-__all__ = ["CELLS", "DocumentStatusMixin", "StatusCell", "encoding_name", "newline_name"]
+__all__ = [
+    "CELLS",
+    "RICH_ENCODING_CELL",
+    "RICH_LINE_ENDINGS_CELL",
+    "DocumentStatusMixin",
+    "StatusCell",
+    "encoding_name",
+    "newline_name",
+]
 
 #: How long caret movement may leave the bar stale. QUILL's own coalescing
 #: window (``StatusBarMixin._STATUSBAR_COALESCE_MS``): a tenth of a second is
@@ -224,12 +232,40 @@ def newline_name(newline: str) -> str:
     return _NEWLINE_NAMES.get(newline, "Mixed")
 
 
+#: What the Encoding and Line Endings cells say about a document that has
+#: neither -- rich text stores its own characters as RTF escapes and its own
+#: breaks as paragraph marks, so there is no text codec and no line ending to
+#: report (bad.md F7).
+RICH_ENCODING_CELL = "RTF (rich text)"
+RICH_LINE_ENDINGS_CELL = "Not applicable (rich text)"
+
+
 class DocumentStatusMixin:
     """The status bar of a :class:`~quill.apps.lite_window.DocumentFrame`.
 
     Mixed into the window, which supplies ``control``, ``editor``, ``modified``,
     ``encoding``, ``newline`` and ``_announce``.
     """
+
+    def _encoding_cell(self) -> str:
+        """The Encoding cell, which must not answer for a document that has none.
+
+        ``self.encoding`` is only ever set by the *plain* load path, so opening
+        a ``.rtf`` left it at the window's birth defaults and the cell read
+        "UTF-8" for every rich document (bad.md F7). Reading a cell aloud and
+        being told a fact about a file that is not true of it is worse than the
+        cell not existing: File Encoding and Line Endings already refuses in
+        rich mode, so the status bar was the only place still claiming it.
+        """
+        if self.editor.mode == RICH:
+            return RICH_ENCODING_CELL
+        return encoding_name(self.encoding)
+
+    def _line_endings_cell(self) -> str:
+        """The Line Endings cell, on the same rule as :meth:`_encoding_cell`."""
+        if self.editor.mode == RICH:
+            return RICH_LINE_ENDINGS_CELL
+        return newline_name(self.newline)
 
     # -- construction -------------------------------------------------------- #
 
@@ -395,8 +431,8 @@ class DocumentStatusMixin:
             "format": self.document_kind_label(),
             "heading": self._heading_text(text),
             "list": self._list_text(text),
-            "encoding": encoding_name(self.encoding),
-            "line_endings": newline_name(self.newline),
+            "encoding": self._encoding_cell(),
+            "line_endings": self._line_endings_cell(),
             "saved": "Modified" if self.modified else "Saved",
         }
 

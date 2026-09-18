@@ -28,7 +28,8 @@ def test_it_offers_the_same_four_encodings_as_quilllite() -> None:
         "UTF-16",
         "Windows-1252 (ANSI)",
     ]
-    assert "from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES" in SOURCE
+    assert "from quill.core.lite.textfile import (" in SOURCE
+    assert "encoding_rows," in SOURCE and "newline_rows," in SOURCE
 
 
 def test_bom_is_reachable_at_last() -> None:
@@ -46,6 +47,10 @@ def test_the_names_are_speakable_both_ways() -> None:
     assert describe_encoding("utf-8-sig") == "UTF-8 with BOM"
     assert describe_encoding("something-else") == "something-else"
     assert describe_line_ending(chr(13) + chr(10)) == "CRLF (Windows)"
+    # A line ending the chooser does not offer is NAMED now rather than called
+    # Unknown -- it becomes a "keep as is" row so OK cannot silently convert
+    # the document (bad.md F8). Only a genuinely unrecognised value is Mixed.
+    assert describe_line_ending(chr(13)) == "CR (classic Mac)"
     assert describe_line_ending("") == "Unknown"
 
 

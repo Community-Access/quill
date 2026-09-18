@@ -832,9 +832,9 @@ class PodcastManagerDialog(
                 from quill.ui.podcasts.folder_menu import append_folder_items
 
                 append_folder_items(self, menu, folder_id)
-                rename_item = menu.Append(wx.ID_ANY, "Rena&me Folder...\tF2")
+                rename_item = menu.Append(wx.ID_ANY, "&Rename Folder...\tF2")
                 menu.Bind(wx.EVT_MENU, lambda _e, f=folder: self._on_rename_folder(f), rename_item)
-                delete_item = menu.Append(wx.ID_ANY, "&Delete Folder...")
+                delete_item = menu.Append(wx.ID_ANY, "D&elete Folder...")
                 menu.Bind(wx.EVT_MENU, lambda _e, f=folder: self._on_delete_folder(f), delete_item)
                 menu.AppendSeparator()
             new_folder_item = menu.Append(wx.ID_ANY, "&New Folder...")

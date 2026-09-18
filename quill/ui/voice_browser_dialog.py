@@ -657,7 +657,7 @@ class VoiceBrowserDialog:
         menu = wx.Menu()
         preview_item = menu.Append(wx.ID_ANY, "&Preview")
         default_item = menu.Append(wx.ID_ANY, "Set as &Default")
-        download_item = menu.Append(wx.ID_ANY, "&Download Voice...")
+        download_item = menu.Append(wx.ID_ANY, "D&ownload Voice...")
         menu.Bind(wx.EVT_MENU, lambda _e: self._do_preview(), preview_item)
         menu.Bind(wx.EVT_MENU, lambda _e: self._do_set_default(), default_item)
         menu.Bind(wx.EVT_MENU, lambda _e: self._do_download(), download_item)

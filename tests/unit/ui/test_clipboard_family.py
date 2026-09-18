@@ -223,7 +223,10 @@ class _CollectorHost(PowerToolsActionsMixin):
     def _replace_document_text(self, text: str) -> None:
         self.editor.SetValue(text)
 
-    def _set_status(self, message: str) -> None:
+    def _announce(self, message: str) -> None:
+        # _announce, not _set_status: the collector's outcomes go through the
+        # announcement service now, so they reach braille and the announcement
+        # log as well as speech (bad.md C8).
         self.status.append(message)
 
     def save_file(self) -> None:  # pragma: no cover - must never be reached

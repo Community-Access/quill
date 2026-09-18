@@ -148,19 +148,19 @@ class ClipboardCollectorMixin:
         """
         if self._document_is_read_only():
             if announce_refusals:
-                self._set_status("This document is read-only; nothing was collected.")
+                self._announce("This document is read-only; nothing was collected.")
             return
         clip = self._power_tools_clipboard_text()
         if not clip:
             if announce_refusals:
-                self._set_status("The clipboard is empty; there is nothing to collect.")
+                self._announce("The clipboard is empty; there is nothing to collect.")
             return
         # The system watcher and the in-app copy event can both fire for one
         # copy (and the counter ticks for our own writes): collect each
         # distinct clipboard payload once.
         if clip == getattr(self, "_power_tools_last_collected", None):
             if announce_refusals:
-                self._set_status("That is already the last thing collected.")
+                self._announce("That is already the last thing collected.")
             return
         self._power_tools_last_collected = clip
         updated = append_collected(self.editor.GetValue(), clip)
@@ -169,4 +169,4 @@ class ClipboardCollectorMixin:
         end = len(updated)
         self.editor.SetInsertionPoint(end)
         self.editor.SetSelection(end, end)
-        self._set_status("Collected clipboard text")
+        self._announce("Collected clipboard text")

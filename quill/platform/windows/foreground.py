@@ -47,6 +47,11 @@ class ForegroundWindow:
     process_name: str = ""
     title: str = ""
     window_class: str = ""
+    #: The owning process id. Read here because it is already in hand -- the
+    #: process NAME is derived from it -- and because a name is not an identity:
+    #: two windows can be "explorer.exe" and an elevation check has to know
+    #: which process it is actually talking to.
+    process_id: int = 0
 
 
 def foreground_window_info() -> ForegroundWindow:
@@ -71,6 +76,7 @@ def foreground_window_info() -> ForegroundWindow:
             process_name=_process_name(int(pid.value)),
             title=title_buf.value,
             window_class=class_buf.value,
+            process_id=int(pid.value),
         )
     except Exception:  # noqa: BLE001
         return ForegroundWindow()

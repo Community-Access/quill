@@ -34,7 +34,10 @@ from typing import Any
 
 import wx
 
-from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
+from quill.core.lite.textfile import (
+    encoding_rows,
+    newline_rows,
+)
 from quill.ui.dialog_contract import (
     apply_listbox_activation,
     apply_modal_ids,
@@ -308,26 +311,36 @@ def edit_file_format(parent: wx.Window, *, encoding: str, newline: str) -> tuple
         _PAD,
     )
 
+    # The rows include the document's OWN encoding and line endings when the
+    # chooser does not offer them, because selecting an index that is not there
+    # fell back to 0 -- UTF-8 and CRLF -- so a UTF-16 big-endian or classic-Mac
+    # CR file opened this dialog describing itself wrongly, and OK converted it
+    # (bad.md F8).
+    encoding_offers = encoding_rows(encoding)
+    newline_offers = newline_rows(newline)
+
     encoding_label = wx.StaticText(dialog, label="&Encoding:")
-    encoding_choice = wx.Choice(dialog, choices=[name for _codec, name in ENCODING_CHOICES])
+    encoding_choice = wx.Choice(dialog, choices=[name for _codec, name in encoding_offers])
     set_accessible_name(encoding_choice, "Encoding")
     encoding_choice.SetHelpText(
         "How characters are stored. UTF-8 is the right answer for anything new. "
         "UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the "
-        "old Western European encoding a lot of existing .txt files are in."
+        "old Western European encoding a lot of existing .txt files are in. A "
+        "'keep as is' row means this file arrived in something else, which "
+        "QuillLite reads and writes back but does not offer as a new choice."
     )
-    encoding_choice.SetSelection(_index_of(ENCODING_CHOICES, encoding))
+    encoding_choice.SetSelection(_index_of(encoding_offers, encoding))
     _stack(root, encoding_label, encoding_choice)
 
     newline_label = wx.StaticText(dialog, label="&Line endings:")
-    newline_choice = wx.Choice(dialog, choices=[name for _value, name in NEWLINE_CHOICES])
+    newline_choice = wx.Choice(dialog, choices=[name for _value, name in newline_offers])
     set_accessible_name(newline_choice, "Line endings")
     newline_choice.SetHelpText(
         "CRLF is what Windows programs write. LF is what Unix, macOS and most "
         "build tools expect. QuillLite writes back whichever the file arrived "
         "with unless you change it here."
     )
-    newline_choice.SetSelection(_index_of(NEWLINE_CHOICES, newline))
+    newline_choice.SetSelection(_index_of(newline_offers, newline))
     _stack(root, newline_label, newline_choice)
 
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
@@ -339,8 +352,8 @@ def edit_file_format(parent: wx.Window, *, encoding: str, newline: str) -> tuple
         if show_modal_dialog(dialog, "File format") != wx.ID_OK:
             return None
         return (
-            ENCODING_CHOICES[max(0, encoding_choice.GetSelection())][0],
-            NEWLINE_CHOICES[max(0, newline_choice.GetSelection())][0],
+            encoding_offers[max(0, encoding_choice.GetSelection())][0],
+            newline_offers[max(0, newline_choice.GetSelection())][0],
         )
     finally:
         dialog.Destroy()

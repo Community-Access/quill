@@ -434,6 +434,7 @@ from quill.ui.main_frame_menu_editor import (
     _normalize_menu_label,
 )
 from quill.ui.main_frame_metadata_ai import MetadataAiMixin
+from quill.ui.main_frame_native_keys import NativeKeyGuardMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_numbered_bookmarks import NumberedBookmarksMixin
 from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
@@ -825,6 +826,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    NativeKeyGuardMixin,
     ExternalChangeMixin,
     ExtendSelectionMixin,
     SelectionSpanMixin,
@@ -2101,6 +2103,8 @@ class MainFrame(
                 return
         if event.GetKeyCode() == wx.WXK_ESCAPE and self._extend_selection_mode:
             event.Skip()
+            return
+        if self._swallow_native_formatting_key(event):
             return
         if self._maybe_autoformat_char(event):
             return
@@ -11092,9 +11096,15 @@ class MainFrame(
         except Exception:  # noqa: BLE001
             return stored
         resolved = resolve_anchor(text, anchor)
-        # Keep the int map in step so a later save/list reflects the new spot.
+        # Keep the int map in step so a later save/list reflects the new spot --
+        # and PERSIST it. The write-back was in memory only, so the tab and the
+        # file on disk kept the pre-edit offset until the next Set Bookmark, and
+        # a bookmark that had re-anchored correctly all session came back in the
+        # wrong place after a restart (bad.md L7).
         if stored != resolved:
             self._bookmarks = set_bookmark(self._bookmarks, name, resolved)
+            self._capture_bookmark_anchor(name, resolved)
+            self._save_active_bookmarks()
         return resolved
 
     def set_bookmark(self) -> None:
@@ -11155,7 +11165,14 @@ class MainFrame(
         text = self.editor.GetValue()
         nodes: list[_NavigatorNode] = []
         for name in names:
-            position = self._bookmarks[name]
+            # Where the bookmark IS, not where it was stored. The list printed
+            # the raw stored offset while jumping re-anchored by snippet, so
+            # every row after an edit named a line the jump would not land on --
+            # and a list of jump points whose numbers are wrong is worse than a
+            # list with no numbers, because it is checkable and wrong (L7).
+            position = self._resolve_bookmark_target(name)
+            if position is None:
+                continue
             line, column = line_column_for_position(text, position)
             nodes.append(
                 _NavigatorNode(
@@ -15720,7 +15737,16 @@ class MainFrame(
             return
         surface = self._active_markup_surface()
         if surface is None:
-            if self._offer_plain_text_formatting_choice("Bold") != "markdown":
+            choice = self._offer_plain_text_formatting_choice("Bold")
+            if choice == "rich":
+                # The document is rich NOW, so do the thing that was asked for.
+                # Choosing "Convert to Rich Text" used to convert and return,
+                # so the bold you pressed Ctrl+B for never happened and nothing
+                # said so -- you were left in a converted document wondering
+                # whether the key had worked (bad.md R11).
+                self._rich_toggle_run_attr("apply_bold")
+                return
+            if choice != "markdown":
                 return
             surface = "markdown"
         selected_text = self.editor.GetStringSelection()
@@ -15823,7 +15849,16 @@ class MainFrame(
             return
         surface = self._active_markup_surface()
         if surface is None:
-            if self._offer_plain_text_formatting_choice("Italic") != "markdown":
+            choice = self._offer_plain_text_formatting_choice("Italic")
+            if choice == "rich":
+                # The document is rich NOW, so do the thing that was asked for.
+                # Choosing "Convert to Rich Text" used to convert and return,
+                # so the bold you pressed Ctrl+B for never happened and nothing
+                # said so -- you were left in a converted document wondering
+                # whether the key had worked (bad.md R11).
+                self._rich_toggle_run_attr("apply_italic")
+                return
+            if choice != "markdown":
                 return
             surface = "markdown"
         selected_text = self.editor.GetStringSelection()
@@ -15844,7 +15879,16 @@ class MainFrame(
             return
         surface = self._active_markup_surface()
         if surface is None:
-            if self._offer_plain_text_formatting_choice("Underline") != "markdown":
+            choice = self._offer_plain_text_formatting_choice("Underline")
+            if choice == "rich":
+                # The document is rich NOW, so do the thing that was asked for.
+                # Choosing "Convert to Rich Text" used to convert and return,
+                # so the bold you pressed Ctrl+B for never happened and nothing
+                # said so -- you were left in a converted document wondering
+                # whether the key had worked (bad.md R11).
+                self._rich_toggle_run_attr("apply_underline")
+                return
+            if choice != "markdown":
                 return
             surface = "markdown"
         selected_text = self.editor.GetStringSelection()
@@ -19062,16 +19106,34 @@ class MainFrame(
         self._set_status("Copied selection with source")
 
     def _copy_to_clipboard(self, text: str) -> bool:
+        """Put *text* on the system clipboard. ``True`` when it is really there.
+
+        Retried, and guarded. The clipboard is a shared, single-owner OS
+        resource: another program holding it for a few milliseconds is ordinary,
+        not exceptional, and a single failed ``Open()`` used to be reported as a
+        flat refusal while a raise from ``SetData`` escaped past the handler
+        entirely and reached the crash reporter (bad.md C8). Everything else
+        that touches the clipboard in QUILL already retries through
+        ``clipboard_retry``; this was the one writer that did not.
+        """
+        from quill.ui.clipboard_retry import with_clipboard_read_retry
+
         wx = self._wx
-        data_object = wx.TextDataObject(text)
-        clipboard = wx.TheClipboard
-        if not clipboard.Open():
+        clipboard = getattr(wx, "TheClipboard", None)
+        if clipboard is None:
             return False
-        try:
-            clipboard.SetData(data_object)
-        finally:
-            clipboard.Close()
-        return True
+
+        def _attempt() -> bool:
+            if not clipboard.Open():
+                return False
+            try:
+                return bool(clipboard.SetData(wx.TextDataObject(text)) or True)
+            except Exception:  # noqa: BLE001 - a busy clipboard is not a crash
+                return False
+            finally:
+                clipboard.Close()
+
+        return bool(with_clipboard_read_retry(wx, _attempt, surface_errors=False))
 
     def exit_app(self) -> None:
         self._is_exiting = True

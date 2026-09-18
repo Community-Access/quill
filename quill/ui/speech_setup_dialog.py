@@ -519,7 +519,7 @@ class SpeechSetupDialog:
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_remove(), remove_item)
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_set_default(), default_item)
         else:
-            download_item = menu.Append(wx.ID_ANY, "&Download")
+            download_item = menu.Append(wx.ID_ANY, "D&ownload")
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_download(), download_item)
         self._model_list.PopupMenu(menu)
         menu.Destroy()

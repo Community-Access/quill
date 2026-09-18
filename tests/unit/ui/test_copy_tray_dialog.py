@@ -23,7 +23,10 @@ def test_ephemeral_status_uses_dedicated_static_text() -> None:
     assert "self._status_label.SetLabel(msg)" in SOURCE
     assert "self._announce(msg)" in SOURCE
     for fragment in (
-        'self._set_status(f"Slot {n}{label_part}{pin_part} loaded")',
+        # Quiet since 2026-09-18 (bad.md C8): this fires on every list move
+        # and the reader has just read the row, so the label changes in
+        # silence. The outcomes below still speak.
+        'self._set_status_quiet(f"Slot {n}{label_part}{pin_part} loaded")',
         'self._set_status(f"Pasted from system clipboard to slot {n}{label_part}")',
         'self._set_status(f"Slot {n} saved{label_part}")',
         'self._set_status(f"Slot {n} cleared")',

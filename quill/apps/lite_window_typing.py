@@ -65,6 +65,7 @@ import wx
 from quill.core.abbreviations import is_trigger_char, try_expand
 from quill.core.autoformat import autoformat_allows, is_dash_merge, smart_quote_for
 from quill.core.sound_events import SoundEvent
+from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentTypingMixin"]
 
@@ -142,7 +143,65 @@ class DocumentTypingMixin:
         if self._is_context_menu_key(event):
             self.open_context_menu_at_caret()
             return
+        if self._swallow_native_formatting_key(event):
+            return
         event.Skip()
+
+    def _swallow_native_formatting_key(self, event: wx.KeyEvent) -> bool:
+        """Stop the control formatting a document that has no formatting.
+
+        QuillLite builds plain and Markdown documents on the same Rich Edit
+        control QUILL does, and for the same reason -- it is what gives braille
+        and the reader a text surface worth reading. The control brings its own
+        chords: every native key QuillLite does not bind (``Ctrl+Shift+=`` for
+        superscript and its friends) applies a formatting run to a document
+        that cannot hold one, so the window and the file it will write disagree
+        and nothing says so (bad.md R9).
+
+        Said once per document, from the same shared sentence QUILL uses, so
+        the two products cannot explain one dead key two ways. A chord
+        QuillLite binds never reaches here: the menu accelerator runs first.
+        """
+        from quill.core.native_richedit_keys import (
+            native_formatting_effect,
+            native_formatting_notice,
+        )
+
+        if getattr(self.editor, "mode", None) == RICH:
+            return False
+        # getattr, not a direct call: a key event reaches this handler from
+        # several places, and the guard must never be the reason a keystroke
+        # raises. No key code means nothing to swallow.
+        unicode_key = getattr(event, "GetUnicodeKey", None)
+        key_code = getattr(event, "GetKeyCode", None)
+        try:
+            raw = (unicode_key() if callable(unicode_key) else 0) or (
+                key_code() if callable(key_code) else 0
+            )
+            key = chr(int(raw))
+        except (ValueError, OverflowError, TypeError):
+            return False
+
+        def held(name: str) -> bool:
+            probe = getattr(event, name, None)
+            return bool(probe()) if callable(probe) else False
+
+        effect = native_formatting_effect(
+            ctrl=held("ControlDown"),
+            shift=held("ShiftDown"),
+            alt=held("AltDown"),
+            key=key,
+        )
+        if effect is None:
+            return False
+        seen = getattr(self, "_native_key_notices", None)
+        if seen is None:
+            seen = set()
+            self._native_key_notices = seen
+        if effect not in seen:
+            seen.add(effect)
+            self._announce(native_formatting_notice(effect, self.document_kind_label().lower()))
+        return True
 
     @staticmethod
     def _is_context_menu_key(event: wx.KeyEvent) -> bool:

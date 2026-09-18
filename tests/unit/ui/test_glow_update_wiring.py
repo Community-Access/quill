@@ -38,7 +38,7 @@ def test_glow_update_command_is_registered() -> None:
 def test_glow_update_menu_item_is_bound() -> None:
     menu = _menu_source()
     assert "self._id_check_glow_updates" in menu
-    assert "Check for &GLOW Updates..." in menu
+    assert "Chec&k for GLOW Updates..." in menu
     assert "self.check_for_glow_updates()" in menu
 
 

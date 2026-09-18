@@ -176,8 +176,14 @@ class ReviewSession:
         self._rescan(advance_past=None)
         self._current_idx = 0
 
-    def _issues_before_start(self) -> list[object]:
-        """Every issue in scope, including the ones the caret start held back."""
+    def _issues_before_start(self) -> list[Misspelling]:
+        """Every issue in scope, including the ones the caret start held back.
+
+        Annotated ``list[object]`` until 2026-09-18, which made ``should_wrap``
+        the one mypy error in quill/core: it reads ``m.start`` off each item,
+        and ``object`` has no such attribute. The list was always Misspellings;
+        only the annotation said otherwise.
+        """
         from quill.core.spellcheck import list_misspellings as _lm
 
         return [

@@ -161,8 +161,20 @@ class CopyTrayDialog:
         return max(1, idx + 1)
 
     def _set_status(self, msg: str) -> None:
+        """The label, and say it. For an OUTCOME -- something the app just did."""
         self._status_label.SetLabel(msg)
         self._announce(msg)
+
+    def _set_status_quiet(self, msg: str) -> None:
+        """The label only, for something the screen reader already said.
+
+        GATE-13's rule: the reader announces selection changes in a list, so
+        announcing the slot again on every arrow press meant moving through
+        twelve slots produced twenty-four sentences, each one half redundant
+        (bad.md C8). The label still changes, which is what a listener can go
+        back and read.
+        """
+        self._status_label.SetLabel(msg)
 
     def _load_slot(self, n: int) -> None:
         self._guard = True
@@ -171,7 +183,9 @@ class CopyTrayDialog:
         self._content_ctrl.SetValue(slot.text)
         pin_part = " [pinned]" if slot.pinned else ""
         label_part = f" ({slot.label})" if slot.label else ""
-        self._set_status(f"Slot {n}{label_part}{pin_part} loaded")
+        # Quiet: this fires on every list move, and the reader has just read
+        # the row (GATE-13, bad.md C8).
+        self._set_status_quiet(f"Slot {n}{label_part}{pin_part} loaded")
         self._guard = False
 
     def _flush_edits(self) -> None:
@@ -209,9 +223,17 @@ class CopyTrayDialog:
         self._btn_pin.SetLabel("Un&pin" if slot.pinned else "P&in")
 
     def _clipboard_text(self) -> str:
+        """What is on the clipboard, without ever raising a dialog about it.
+
+        Called from the slot-selection handler, so it runs on every arrow press
+        -- and the retry helper's last attempt surfaces wx's own error dialog by
+        default. A locked clipboard would put a modal on screen for moving down
+        a list, which for a listener is the application simply stopping
+        (bad.md C8). An empty string just disables the Paste button.
+        """
         from quill.ui.clipboard_retry import read_clipboard_text
 
-        return read_clipboard_text(wx)
+        return read_clipboard_text(wx, surface_errors=False)
 
     # -- event handlers --
 

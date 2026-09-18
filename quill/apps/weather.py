@@ -163,7 +163,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         )
         options_menu.AppendSeparator()
         self._features_item_id = wx.NewIdRef()
-        options_menu.Append(self._features_item_id, "&Customize Features...\tCtrl+Alt+F")
+        options_menu.Append(self._features_item_id, "C&ustomize Features...\tCtrl+Alt+F")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_app_features(), id=self._features_item_id
         )
@@ -209,7 +209,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         )
         help_menu.AppendSeparator()
         updates_id = wx.NewIdRef()
-        help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        help_menu.Append(updates_id, "&Check for Updates...\tCtrl+Alt+U")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(

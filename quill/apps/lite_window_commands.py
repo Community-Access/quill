@@ -157,6 +157,17 @@ class DocumentCommandsMixin(
                 return False
             self.apply_markdown_conversion(markdown)
             return True
+        from quill.core.lite.filetypes import markup_language_for
+
+        if markup_language_for(target.name) == "markdown" and self.document_language() == "html":
+            # The HTML made no Markdown worth writing, so the file is saved
+            # unchanged under a .md name -- which is not what choosing Markdown
+            # in the type list promised, and is invisible unless it is said
+            # (bad.md F8).
+            if not self.save(target):
+                return False
+            self._announce("No Markdown could be made from this HTML. Saved it unchanged.")
+            return True
         return self.save(target)
 
     def _confirm_flatten_to_plain(self) -> bool:

@@ -121,10 +121,10 @@ def test_required_clusters_present() -> None:
         "R&eading and Dictation",
         "C&omparison",
         "&Watch Folder",
-        "&Advanced",
+        "A&dvanced",
         "&Quillins",
         "A&ccessibility",
-        "&Customize and Support",
+        "C&ustomize and Support",
         "&Writing and Language",
     )
     assert _check_required_clusters(fake) == []
@@ -141,10 +141,10 @@ def test_required_clusters_missing_writing_language() -> None:
         "R&eading and Dictation",
         "C&omparison",
         "&Watch Folder",
-        "&Advanced",
+        "A&dvanced",
         "&Quillins",
         "A&ccessibility",
-        "&Customize and Support",
+        "C&ustomize and Support",
     )
     errors = _check_required_clusters(fake)
     assert any("Writing" in e for e in errors)

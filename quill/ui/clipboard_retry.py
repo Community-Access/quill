@@ -42,6 +42,7 @@ def with_clipboard_read_retry(
     *,
     max_attempts: int = _MAX_ATTEMPTS,
     delay: float = _RETRY_DELAY,
+    surface_errors: bool = True,
 ) -> bool:
     """Call ``action`` up to ``max_attempts`` times, retrying on failure.
 
@@ -56,10 +57,19 @@ def with_clipboard_read_retry(
     ``wx.LogNull`` on all but the final attempt; the final attempt is run
     unsuppressed so a genuinely sustained lock still surfaces the existing
     error dialog, unchanged from before this retry loop existed.
+
+    ``surface_errors=False`` suppresses even that last one, and is for callers
+    that are **not** a person asking for something: the clipboard collector's
+    750 ms poll and the Copy Tray dialog's selection handler both read the
+    clipboard, and a wx error dialog raised from a timer tick or from an arrow
+    press is a modal nobody asked for -- appearing, for a listener, as the
+    application simply stopping (bad.md C8). A failure there is a ``False`` the
+    caller can report in a sentence.
     """
     for attempt in range(max_attempts):
         is_last_attempt = attempt == max_attempts - 1
-        log_suppressor = None if is_last_attempt else wx.LogNull()
+        suppress = not is_last_attempt or not surface_errors
+        log_suppressor = wx.LogNull() if suppress else None
         try:
             if action():
                 return True
@@ -72,13 +82,20 @@ def with_clipboard_read_retry(
 
 
 def read_clipboard_text(
-    wx: Any, *, max_attempts: int = _MAX_ATTEMPTS, delay: float = _RETRY_DELAY
+    wx: Any,
+    *,
+    max_attempts: int = _MAX_ATTEMPTS,
+    delay: float = _RETRY_DELAY,
+    surface_errors: bool = True,
 ) -> str:
     """Return plain text from the clipboard, retrying transient read failures.
 
     Returns ``""`` if the clipboard has no text data, or if every retry
     attempt failed to open/read the clipboard (in which case wx's own error
     dialog is shown on the final attempt, same as before this helper existed).
+
+    Pass ``surface_errors=False`` from a timer or a selection handler, where a
+    modal is something nobody asked for (bad.md C8).
     """
     clipboard = getattr(wx, "TheClipboard", None)
     if clipboard is None:
@@ -99,5 +116,7 @@ def read_clipboard_text(
         finally:
             clipboard.Close()
 
-    with_clipboard_read_retry(wx, _attempt, max_attempts=max_attempts, delay=delay)
+    with_clipboard_read_retry(
+        wx, _attempt, max_attempts=max_attempts, delay=delay, surface_errors=surface_errors
+    )
     return text

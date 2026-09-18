@@ -108,4 +108,6 @@ def test_feat19_menu_item_wired() -> None:
     ).read_text(encoding="utf-8")
     assert "_id_check_external_changes" in menu_src
     assert "check_external_changes_now" in menu_src
-    assert "Check for E" in menu_src
+    # The mnemonic moved in the 2026-09-18 sweep (bad.md H5), so match the
+    # words rather than the ampersand.
+    assert "for External Changes" in menu_src

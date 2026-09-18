@@ -274,7 +274,10 @@ def test_menu_items_gated_under_one_flag() -> None:
 
     root = Path(__file__).resolve().parents[4]
     menu = (root / "quill" / "ui" / "main_frame_menu.py").read_text(encoding="utf-8")
-    assert '_("&Table Studio...")' in menu
+    # "Ta&ble Studio..." since the 2026-09-18 mnemonic sweep (bad.md H5): T was
+    # already claimed in the Writing menu, and Windows does not press a
+    # duplicated letter -- it cycles focus between the two and waits.
+    assert '_("Ta&ble Studio...")' in menu
     assert '_("Open CS&V in Table Studio...")' in menu
     assert '_experimental_gate_on("table_studio_experimental_enabled")' in menu
     assert "csv_studio_experimental_enabled" not in menu

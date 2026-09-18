@@ -125,7 +125,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         abbr_menu.AppendSeparator()
         self._pause_item_id = wx.NewIdRef()
         abbr_menu.AppendCheckItem(
-            self._pause_item_id, "&Expand in other applications\tCtrl+Shift+E"
+            self._pause_item_id, "E&xpand in other applications\tCtrl+Shift+E"
         )
         abbr_menu.Check(self._pause_item_id, self._settings.expansion_enabled)
         self.frame.Bind(
