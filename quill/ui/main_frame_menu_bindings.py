@@ -108,6 +108,11 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.forget_external_change_answers(),
+            id=self._id_forget_external_change_answers,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.restore_backup(),
             id=self._id_restore_backup,
         )

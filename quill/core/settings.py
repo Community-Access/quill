@@ -52,6 +52,29 @@ def _coerce_non_negative_float(value: object, default: float) -> float:
     return result if result >= 0 else 0.0
 
 
+def _suffix_list(value: object) -> list[str]:
+    """A clean list of lower-case file suffixes from whatever was on disk.
+
+    Anything that is not a list, and any entry that is not a string, is simply
+    dropped: a settings file somebody hand-edited should cost them the entry
+    they got wrong, not the ability to start the app (bad.md F5).
+    """
+    if not isinstance(value, list):
+        return []
+    cleaned: list[str] = []
+    for item in value:
+        if not isinstance(item, str):
+            continue
+        suffix = item.strip().lower()
+        if not suffix:
+            continue
+        if not suffix.startswith("."):
+            suffix = f".{suffix}"
+        if suffix not in cleaned:
+            cleaned.append(suffix)
+    return cleaned
+
+
 @dataclass(slots=True)
 class Settings:
     theme: str = "system"
@@ -496,8 +519,18 @@ class Settings:
     ocr_capture_geometry: bool = False
     # FEAT-19: external file-change watch and safe reload
     external_change_watch_enabled: bool = True
-    external_change_auto_reload_when_clean: bool = True
+    # Off since 2026-09-18 (bad.md F5). A clean tab used to be replaced in
+    # place whenever the file changed, which destroyed every non-text format it
+    # touched and said nothing. Every change asks now; this is the blanket
+    # escape hatch for somebody who wants the old behaviour for all formats at
+    # once, and the per-format answer below is the usual way.
+    external_change_auto_reload_when_clean: bool = False
     external_change_prompt_on_conflict: bool = True
+    # Answers a person asked to have remembered, by file suffix: the "do not
+    # ask me again for .docx files" checkbox in the File Changed on Disk
+    # dialog. Forgotten again by Tools > Forget Remembered File-Change Answers.
+    external_change_always_reload: list[str] = field(default_factory=list)
+    external_change_always_keep: list[str] = field(default_factory=list)
     external_change_debounce_ms: int = 750
     # SET-3: tunable verbosity and announcements
     announcement_verbosity: str = "normal"
@@ -1222,8 +1255,10 @@ class Settings:
         # FEAT-19: external file-change watch and safe reload
         external_change_watch_enabled = bool(data.get("external_change_watch_enabled", True))
         external_change_auto_reload_when_clean = bool(
-            data.get("external_change_auto_reload_when_clean", True)
+            data.get("external_change_auto_reload_when_clean", False)
         )
+        external_change_always_reload = _suffix_list(data.get("external_change_always_reload", []))
+        external_change_always_keep = _suffix_list(data.get("external_change_always_keep", []))
         external_change_prompt_on_conflict = bool(
             data.get("external_change_prompt_on_conflict", True)
         )
@@ -1763,6 +1798,8 @@ class Settings:
             ocr_capture_geometry=ocr_capture_geometry,
             external_change_watch_enabled=external_change_watch_enabled,
             external_change_auto_reload_when_clean=external_change_auto_reload_when_clean,
+            external_change_always_reload=external_change_always_reload,
+            external_change_always_keep=external_change_always_keep,
             external_change_prompt_on_conflict=external_change_prompt_on_conflict,
             external_change_debounce_ms=external_change_debounce_ms,
             announcement_verbosity=announcement_verbosity,

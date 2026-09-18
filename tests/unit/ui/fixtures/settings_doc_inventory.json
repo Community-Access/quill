@@ -128,6 +128,8 @@
   "docx_write_engine": "documented",
   "edge_read_aloud_enabled": "documented",
   "experimental_acknowledged": "documented",
+  "external_change_always_keep": "internal",
+  "external_change_always_reload": "internal",
   "external_change_auto_reload_when_clean": "grandfathered",
   "external_change_debounce_ms": "grandfathered",
   "external_change_prompt_on_conflict": "grandfathered",

@@ -1,6 +1,6 @@
 # QUILL and QuillLite: what is left
 
-Six items, audited against the code 2026-09-18. A landed item is deleted; git
+Five items, audited against the code 2026-09-18. A landed item is deleted; git
 history is the record. Audit a row against the code before working it.
 
 ## The rules
@@ -55,22 +55,11 @@ Answered 2026-09-16; settled, do not re-litigate.
 
 | # | Editors | Batch |
 | --- | --- | --- |
-| [P0.7](#p07) the save path and the watcher | QUILL | K |
 | [P2.8](#p28) the remaining Worse rows | per bug | L |
 | [P2.4](#p24) the QuillLite profile in QUILL | QUILL | M |
 | [P0.6c](#p06c) QUILL adopts `DocumentText` | QUILL | N |
 | [P3.7](#p37) the magical tier | both | N |
 | [P3.3](#p33) documentation drift | docs | Z (last) |
-
-### P0.7
-
-Both remaining **Broken** rows. The highest-risk surface in the product: slow
-on purpose, and not to be committed without the user.
-
-| # | Editor | Finding | Evidence |
-| --- | --- | --- | --- |
-| F4 | QUILL | **Save As HTML and Save As Plain Text are not atomic and force UTF-8**, discarding the read encoding and BOM; rich-mode `.md`/`.html` saves ignore `document.encoding` and `line_ending` (always UTF-8, LF); the remote save copy is a plain `write_text`. Every other document writer is atomic. | `quill/io/export.py:245-252`, `main_frame_rich_mode.py:170-187`, `main_frame.py:8521` |
-| F5 | QUILL | **The external-change watcher auto-reloads a clean tab of any suffix with `path.read_text()`**: a `.docx`/`.rtf`/`.pdf`/`.epub` tab rewritten by Word is replaced with binary decoded as replacement characters and marked clean. "Open Disk Version in New Tab" selects the existing tab instead of opening a second one, so the compare it promises never happens. | `main_frame.py:3137-3230, 6870-6876` |
 
 ### P2.8
 
@@ -119,8 +108,10 @@ shared-simultaneous, never QuillLite first.
 
 ### P3.3
 
-Documentation drift: both user guides' key tables, the release notes, and the
-QuillLite PRD's braille position. **Last deliberately** -- it documents
+Documentation drift: both user guides' key tables, the release notes, the
+QuillLite PRD's braille position, and the reversed external-change default
+(nothing auto-reloads; the question carries a per-format "do not ask me again",
+stored in the internal `external_change_always_reload` / `_always_keep`). **Last deliberately** -- it documents
 everything above. The generated references (keyboard, F1 help, tutorials)
 regenerate per change and are gated, so they are not this row.
 
@@ -147,7 +138,6 @@ The 41 in `platform_report` must stay green.
 
 | Batch | Rows | One verification covers |
 | --- | --- | --- |
-| **K** | P0.7 | save path and watcher -- alone, deliberately |
 | **L** | P2.8 | scattered; verify once at the end |
 | **M** | P2.4 | profiles |
 | **N** | P0.6c then P3.7 | the document model, in that order |
@@ -160,8 +150,7 @@ The 41 in `platform_report` must stay green.
    `tests/unit/ui`, `tests/unit/apps`): the whole suite in one process has been
    killed twice for memory.
 4. **Audit the row before writing it**, against the code.
-5. **Two batches never move at once.** K is alone: when the save path breaks,
-   nothing saves.
+5. **Two batches never move at once.**
 
 ## Known red, and none of it ours
 

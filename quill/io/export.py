@@ -19,8 +19,9 @@ from pathlib import Path
 from quill.core.browser_preview import contains_math, render_preview_body
 from quill.core.document import Document
 from quill.core.error_codes import CodedError
+from quill.core.storage import write_text_atomic
 from quill.io.rtf import write_rtf_document
-from quill.io.text import _normalize_line_endings, write_text_document
+from quill.io.text import _emit_save_warning, _normalize_line_endings, write_text_document
 
 __all__ = [
     "EXPORT_ONLY_SUFFIXES",
@@ -216,8 +217,15 @@ def markdown_to_plain_text(markdown: str, link_style: str = "text") -> str:
     return re.sub(r"\n{3,}", "\n\n", text)
 
 
-def markdown_to_html(markdown: str, title: str) -> str:
-    """Render QUILL Markdown-style markup as a standalone HTML document."""
+def markdown_to_html(markdown: str, title: str, *, charset: str = "utf-8") -> str:
+    """Render QUILL Markdown-style markup as a standalone HTML document.
+
+    ``charset`` is written into the meta tag and must be the encoding the file
+    is actually written in. It used to be the literal "utf-8" while the writer
+    below forced UTF-8 too, which agreed with itself and disagreed with the
+    document: a file read as cp1252 or UTF-16 was re-encoded on the way out
+    with nothing said (bad.md F4).
+    """
     body = render_preview_body(markdown, "markdown")
     # Only include the remote MathJax CDN when the document actually contains
     # math, so exporting a plain document produces HTML with no third-party
@@ -232,7 +240,7 @@ def markdown_to_html(markdown: str, title: str) -> str:
         "<!doctype html>\n"
         '<html lang="en">\n'
         "<head>\n"
-        '<meta charset="utf-8">\n'
+        f'<meta charset="{html.escape(charset)}">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{html.escape(title)}</title>\n"
         f"{mathjax}"
@@ -242,12 +250,35 @@ def markdown_to_html(markdown: str, title: str) -> str:
     )
 
 
-def _write_utf8(document: Document, target: Path, text: str) -> Path:
-    """Write ``text`` as UTF-8 with the document's line ending and mark it saved."""
+def _write_export(document: Document, target: Path, text: str) -> Path:
+    """Write ``text`` atomically, in the document's own encoding (bad.md F4).
+
+    Two defects, one function. It wrote with a plain ``open()``, so an
+    interrupted Save As Plain Text left a truncated file where the document had
+    been -- alone among QUILL's writers, every other one of which goes through
+    :func:`write_text_atomic`. And it hard-coded UTF-8 and then *assigned*
+    ``document.encoding = "utf-8"``, so a file read as cp1252, Shift-JIS or
+    UTF-16 was silently re-encoded and the document forgot it had ever been
+    anything else -- which is the same loss the save path was fixed for in
+    bad.md F1, arriving by another door.
+
+    The encoding the document was read in is kept. When the text genuinely
+    cannot be expressed in it -- an em dash exported to ASCII -- the file is
+    written as UTF-8 rather than failing, and the save warning says so, because
+    an export that refuses at the last step is worse than one that widens the
+    encoding and tells you.
+    """
     normalized = _normalize_line_endings(text, document.line_ending)
-    with target.open("w", encoding="utf-8", newline="") as handle:
-        handle.write(normalized)
-    document.encoding = "utf-8"
+    encoding = document.encoding or "utf-8"
+    try:
+        normalized.encode(encoding)
+    except (UnicodeEncodeError, LookupError):
+        _emit_save_warning(
+            f"{target.name} was written as UTF-8: its text cannot be expressed in {encoding}."
+        )
+        encoding = "utf-8"
+    write_text_atomic(target, normalized, encoding=encoding, newline="")
+    document.encoding = encoding
     document.mark_saved(target)
     return target
 
@@ -259,7 +290,7 @@ def write_plain_text_document(
     target = path or document.path
     if target is None:
         raise ValueError("A path is required to save this document.")
-    return _write_utf8(document, target, markdown_to_plain_text(document.text, link_style))
+    return _write_export(document, target, markdown_to_plain_text(document.text, link_style))
 
 
 def write_html_document(document: Document, path: Path | None = None) -> Path:
@@ -268,7 +299,11 @@ def write_html_document(document: Document, path: Path | None = None) -> Path:
     if target is None:
         raise ValueError("A path is required to save this document.")
     title = target.stem or "Document"
-    return _write_utf8(document, target, markdown_to_html(document.text, title))
+    return _write_export(
+        document,
+        target,
+        markdown_to_html(document.text, title, charset=document.encoding or "utf-8"),
+    )
 
 
 def write_docx_document(

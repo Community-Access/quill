@@ -23,6 +23,12 @@ class CommandRegistryMixin:
         # P1.13). Both run one seam, new_document_in_format, which is also what
         # --rich / --plain will call (P2.16).
         self.commands.register(
+            "file.forget_external_change_answers",
+            "Forget Remembered File-Change Answers",
+            self.forget_external_change_answers,
+            self._binding_for("file.forget_external_change_answers"),
+        )
+        self.commands.register(
             "tools.spelling_announcements",
             "Spelling Announcements",
             self.open_spelling_announcements,

@@ -124,6 +124,7 @@ class MenuBuilderMixin:
         self._id_save_all = wx.NewIdRef()
         self._id_reload_from_disk = wx.NewIdRef()
         self._id_check_external_changes = wx.NewIdRef()
+        self._id_forget_external_change_answers = wx.NewIdRef()
         self._id_restore_backup = wx.NewIdRef()
         self._id_restore_previous_version = wx.NewIdRef()
         self._id_save_session = wx.NewIdRef()
@@ -469,6 +470,13 @@ class MenuBuilderMixin:
         # --- Restore / reload ---
         file_menu.Append(self._id_reload_from_disk, _("&Reload from Disk"))
         file_menu.Append(self._id_check_external_changes, _("Check for E&xternal Changes..."))
+        file_menu.Append(
+            self._id_forget_external_change_answers,
+            self._menu_label(
+                _("For&get Remembered File-Change Answers"),
+                "file.forget_external_change_answers",
+            ),
+        )
         file_menu.Append(self._id_restore_backup, _("Restore &Backup..."))
         file_menu.Append(
             self._id_restore_previous_version,

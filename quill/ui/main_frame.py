@@ -97,8 +97,6 @@ from quill.core.error_codes import user_facing_message
 from quill.core.external_change import (
     ExternalChangeWatcher,
     FileSnapshot,
-    ReloadAction,
-    decide_reload,
 )
 from quill.core.external_tools import (
     copyable_install_command,
@@ -402,6 +400,7 @@ from quill.ui.main_frame_docconvert import DocConvertMixin
 from quill.ui.main_frame_editor_font import EditorFontMixin
 from quill.ui.main_frame_emoji_picker import EmojiPickerMixin
 from quill.ui.main_frame_equations import EquationsMixin
+from quill.ui.main_frame_external_change import ExternalChangeMixin
 from quill.ui.main_frame_format_codes import FormatCodesMixin
 from quill.ui.main_frame_gh_bridge import GhBridgeMixin
 from quill.ui.main_frame_git_sync import GitSyncMixin
@@ -826,6 +825,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    ExternalChangeMixin,
     ExtendSelectionMixin,
     SelectionSpanMixin,
     RichParagraphMixin,
@@ -3046,235 +3046,6 @@ class MainFrame(
             self.show_thesaurus()
         else:
             self.show_lookup_dialog(word)
-
-    def _start_external_change_watcher(self) -> None:
-        """Start the FEAT-19 external file-change watcher for the open document."""
-        wx = getattr(self, "_wx", None)
-        if wx is None:
-            return
-        if self._external_change_watcher is not None:
-            # Already watching.
-            return
-        if self.document.path is None:
-            # No file to watch.
-            return
-        if not getattr(self.settings, "external_change_watch_enabled", True):
-            # Watching is disabled.
-            return
-
-        self._external_change_watcher = ExternalChangeWatcher(self.document.path)
-        self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
-
-        # Poll every N milliseconds (debounce interval from settings).
-        debounce_ms = int(getattr(self.settings, "external_change_debounce_ms", 1000))
-
-        def poll_external_change() -> None:
-            if self._external_change_watcher is None:
-                return
-            change = self._external_change_watcher.poll()
-            if change == "none":
-                return
-
-            decision = decide_reload(
-                change,
-                buffer_dirty=self.document.modified,
-                watch_enabled=getattr(self.settings, "external_change_watch_enabled", True),
-                auto_reload_when_clean=getattr(
-                    self.settings, "external_change_auto_reload_when_clean", True
-                ),
-                prompt_on_conflict=getattr(
-                    self.settings, "external_change_prompt_on_conflict", True
-                ),
-                file_name=self.document.path.name if self.document.path else "",
-            )
-
-            if decision.action == ReloadAction.RELOAD:
-                self._reload_from_disk_preserving_cursor()
-                self._announce(decision.announcement)
-            elif decision.needs_prompt:
-                # Pause the timer while the dialog is open to prevent re-entrancy.
-                timer = self._external_change_timer
-                if timer is not None:
-                    timer.Stop()
-                self._announce(decision.announcement)
-                self._show_external_change_prompt(decision.action)
-                # Restart the timer unless the user closed or replaced the document.
-                if timer is not None and self._external_change_watcher is not None:
-                    timer.Start(debounce_ms)
-
-        self._external_change_timer = wx.Timer(self.frame)
-        self.frame.Bind(
-            wx.EVT_TIMER, lambda _e: poll_external_change(), self._external_change_timer
-        )
-        self._external_change_timer.Start(debounce_ms)
-
-    def _stop_external_change_watcher(self) -> None:
-        """Stop the FEAT-19 external file-change watcher."""
-        if self._external_change_timer is not None:
-            self._external_change_timer.Stop()
-            self._external_change_timer = None
-        self._external_change_watcher = None
-
-    def _reload_from_disk_preserving_cursor(self) -> None:
-        """Reload the document from disk, preserving the cursor and scroll position (FEAT-19)."""
-        if self.document.path is None:
-            return
-        # Save cursor position before the reload.
-        caret = self.editor.GetInsertionPoint()
-        # Use the document's detected encoding so non-UTF-8 files round-trip cleanly.
-        encoding = getattr(self.document, "encoding", None) or "utf-8"
-        try:
-            reloaded_text = self.document.path.read_text(encoding=encoding)
-        except (UnicodeDecodeError, OSError, ValueError):
-            try:
-                reloaded_text = self.document.path.read_text(encoding="utf-8", errors="replace")
-            except (OSError, ValueError):
-                self._set_status(f"Could not reload '{self.document.path.name}' from disk.")
-                return
-        self.document.set_text(reloaded_text)
-        self.document.modified = False
-        self.editor.SetValue(reloaded_text)
-        # Restore cursor, capped to valid range.
-        capped_caret = max(0, min(caret, len(reloaded_text)))
-        self.editor.SetInsertionPoint(capped_caret)
-        self.editor.SetSelection(capped_caret, capped_caret)
-        # Prime the watcher with the new snapshot so the reload is not re-reported.
-        if self._external_change_watcher is not None:
-            self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
-
-    def _show_external_change_prompt(self, action: ReloadAction) -> None:
-        """Show the FEAT-19 conflict or deleted-file dialog and act on the user's choice.
-
-        PROMPT_CONFLICT: file changed on disk while buffer is dirty.
-          - Reload from Disk: discard edits and reload.
-          - Keep My Version: keep edits; on-disk version is ignored until next save.
-          - Open Disk Version in New Tab: open the on-disk copy alongside.
-
-        PROMPT_DELETED: file deleted or moved on disk.
-          - Keep Text: keep editing; document marked modified/unsaved.
-          - Save As...: immediately open Save As so the user can rescue the text.
-          - Close Tab: discard and close (with dirty-check).
-        """
-        wx = self._wx
-        if self.document.path is None:
-            return
-        file_name = self.document.path.name
-
-        if action == ReloadAction.PROMPT_DELETED:
-            with wx.MessageDialog(
-                self.frame,
-                f"'{file_name}' was deleted or moved by another program.\n\n"
-                "Your text is still open in the editor and has not been lost.\n"
-                "What would you like to do?",
-                "File Deleted from Disk",
-                # dialog_button_contract: exempt -- not a destructive prompt.
-                # The buttons are relabelled Keep Text / Save As... / Close Tab,
-                # so Yes IS the safe answer (keep the user's text). Defaulting
-                # to No here would push the reflexive Enter toward a file
-                # dialog instead of preserving what is already open.
-                wx.YES_NO | wx.CANCEL | wx.ICON_WARNING,
-            ) as dlg:
-                set_labels = getattr(dlg, "SetYesNoCancelLabels", None)
-                if callable(set_labels):
-                    set_labels("Keep Text", "Save As...", "Close Tab")
-                result = self._show_modal_dialog(dlg, "File Deleted from Disk")
-            if result == wx.ID_YES:
-                self.document.modified = True
-                self._refresh_title()
-                self._set_status(
-                    f"'{file_name}' was deleted from disk. "
-                    "Your text is unsaved. Use File > Save As to keep it."
-                )
-                self._stop_external_change_watcher()
-            elif result == wx.ID_NO:
-                self.document.modified = True
-                self._refresh_title()
-                self._stop_external_change_watcher()
-                self.save_file_as()
-            else:
-                if not self.document.modified or self._confirm_discard_changes():
-                    self._close_tab_at(self._active_tab_index)
-            return
-
-        # PROMPT_CONFLICT: file changed on disk, buffer has unsaved edits.
-        with wx.MessageDialog(
-            self.frame,
-            f"'{file_name}' was changed on disk while you have unsaved edits.\n\n"
-            "Reloading will replace your edits with the on-disk version.\n"
-            "Keeping your version will overwrite the disk changes when you save.\n"
-            "Opening in a new tab lets you compare both versions side by side.",
-            "File Changed on Disk",
-            wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_QUESTION,
-        ) as dlg:
-            set_labels = getattr(dlg, "SetYesNoCancelLabels", None)
-            if callable(set_labels):
-                set_labels("Reload from Disk", "Keep My Version", "Open Disk Version in New Tab")
-            result = self._show_modal_dialog(dlg, "File Changed on Disk")
-
-        if result == wx.ID_YES:
-            self._reload_from_disk_preserving_cursor()
-            self._announce("Reloaded from disk.")
-            self._set_status(f"Reloaded '{file_name}' from disk.")
-        elif result == wx.ID_NO:
-            # Prime with the current on-disk snapshot so the watcher doesn't re-fire
-            # immediately; the user's edits will overwrite on next save.
-            if self._external_change_watcher is not None and self.document.path is not None:
-                self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
-            self._set_status(f"Keeping your edits. '{file_name}' will be overwritten on next save.")
-        else:
-            # Open the on-disk version in a new tab.
-            path = self.document.path
-            if path is not None and path.exists():
-                self.open_file(path, refresh_existing=False, record_recent=False)
-                self._set_status(
-                    f"Opened the on-disk version of '{file_name}' in a new tab. "
-                    "Compare and decide which to keep."
-                )
-
-    def check_external_changes_now(self) -> None:
-        """Manually trigger the external file-change check for the active document.
-
-        Useful when the user wants to see whether the file changed on disk without
-        waiting for the next poll cycle, or when auto-reload is on and they want
-        a chance to compare before reloading.
-        """
-        if self.document.path is None:
-            self._set_status("No file to check.")
-            return
-        if not getattr(self.settings, "external_change_watch_enabled", True):
-            self._set_status(
-                "External-change watching is disabled. "
-                "Enable it in Preferences > General to use this feature."
-            )
-            return
-
-        # Ensure a watcher exists (in case the file had no path when opened).
-        if self._external_change_watcher is None:
-            self._start_external_change_watcher()
-            if self._external_change_watcher is None:
-                self._set_status("Could not start external-change watcher.")
-                return
-
-        change = self._external_change_watcher.poll()
-        decision = decide_reload(
-            change,
-            buffer_dirty=self.document.modified,
-            watch_enabled=True,
-            auto_reload_when_clean=False,
-            prompt_on_conflict=True,
-            file_name=self.document.path.name,
-        )
-
-        if decision.action == ReloadAction.NONE:
-            # No external change. force-speak the result -- nothing moves focus,
-            # so the plain status would be silent under a screen reader (#13).
-            self._announce_result(f"'{self.document.path.name}' matches the on-disk version.")
-        elif decision.action == ReloadAction.RELOAD:
-            # Force-prompt even though auto_reload_when_clean would normally reload silently.
-            self._show_external_change_prompt(ReloadAction.PROMPT_CONFLICT)
-        else:
-            self._announce(decision.announcement)
-            self._show_external_change_prompt(decision.action)
 
     def _on_editor_context_menu(self, event: object) -> None:
         wx = self._wx
@@ -8554,7 +8325,23 @@ class MainFrame(
         from quill.core.remote_sites import load_password
 
         local_path = self._alloc_remote_temp_path(remote_path)
-        Path(local_path).write_text(self.editor.GetValue(), encoding="utf-8")
+        # Atomic, and in the document's own encoding and line endings (bad.md
+        # F4). This was the one writer left that opened the target and wrote
+        # straight into it as UTF-8 with Python's newline translation on, so a
+        # file edited over SFTP came back re-encoded and re-lined -- and an
+        # interrupted write left a truncated temp file to upload.
+        from quill.core.storage import write_text_atomic
+        from quill.io.text import _normalize_line_endings
+
+        text = _normalize_line_endings(
+            self.editor.GetValue(), str(getattr(self.document, "line_ending", "") or "\r\n")
+        )
+        encoding = str(getattr(self.document, "encoding", "") or "utf-8")
+        try:
+            text.encode(encoding)
+        except (UnicodeEncodeError, LookupError):
+            encoding = "utf-8"
+        write_text_atomic(Path(local_path), text, encoding=encoding, newline="")
         password = load_password(site.id)
         try:
             self._run_remote_upload(site, local_path, remote_path, password)

@@ -427,6 +427,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "power.count_occurrences": "core.search",
     "power.compute_line_statistics": "core.analysis",
     "file.file_format": "core.file",
+    "file.forget_external_change_answers": "core.file",
     "tools.spelling_announcements": "core.spellcheck",
     "file.new_rich_document": "core.file",
     "file.new_plain_text_document": "core.file",

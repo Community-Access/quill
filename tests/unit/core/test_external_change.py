@@ -83,8 +83,22 @@ def test_watcher_reports_deletion(tmp_path: Path) -> None:
     assert watcher.poll() == CHANGE_NONE
 
 
-def test_decide_reload_clean_buffer_reloads_in_place() -> None:
+def test_decide_reload_clean_buffer_asks_rather_than_replacing() -> None:
+    """Reversed 2026-09-18 (bad.md F5): a clean tab used to be replaced in place.
+
+    That is right for a text file a build regenerates and wrong for everything
+    else -- a .docx rewritten by Word came back as its own bytes decoded into
+    replacement characters, marked clean, with nothing said. The blanket
+    ``auto_reload_when_clean`` switch below is how somebody asks for the old
+    behaviour back for every format at once.
+    """
     decision = decide_reload(CHANGE_MODIFIED, buffer_dirty=False)
+    assert decision.action is ReloadAction.PROMPT_CLEAN
+    assert decision.needs_prompt is True
+
+
+def test_decide_reload_clean_buffer_reloads_in_place_under_the_blanket_switch() -> None:
+    decision = decide_reload(CHANGE_MODIFIED, buffer_dirty=False, auto_reload_when_clean=True)
     assert decision.action is ReloadAction.RELOAD
     assert decision.announcement == "Reloaded from disk."
     assert decision.needs_prompt is False
@@ -112,7 +126,7 @@ def test_decide_reload_quiet_when_watch_disabled() -> None:
 
 def test_decide_reload_clean_prompts_when_auto_reload_off() -> None:
     decision = decide_reload(CHANGE_MODIFIED, buffer_dirty=False, auto_reload_when_clean=False)
-    assert decision.action is ReloadAction.PROMPT_CONFLICT
+    assert decision.action is ReloadAction.PROMPT_CLEAN
     assert decision.needs_prompt is True
 
 

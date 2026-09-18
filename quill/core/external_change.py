@@ -22,6 +22,7 @@ the UI thread; the decision functions are synchronous and side-effect free.
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -37,6 +38,8 @@ class ReloadAction(Enum):
 
     NONE = "none"
     RELOAD = "reload"
+    KEEP_MINE = "keep_mine"
+    PROMPT_CLEAN = "prompt_clean"
     PROMPT_CONFLICT = "prompt_conflict"
     PROMPT_DELETED = "prompt_deleted"
 
@@ -50,7 +53,11 @@ class ReloadDecision:
 
     @property
     def needs_prompt(self) -> bool:
-        return self.action in (ReloadAction.PROMPT_CONFLICT, ReloadAction.PROMPT_DELETED)
+        return self.action in (
+            ReloadAction.PROMPT_CLEAN,
+            ReloadAction.PROMPT_CONFLICT,
+            ReloadAction.PROMPT_DELETED,
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -154,25 +161,78 @@ class ExternalChangeWatcher:
         return change
 
 
+#: The two answers a person can ask to have remembered for a file format.
+REMEMBER_RELOAD = "reload"
+REMEMBER_KEEP = "keep"
+
+
+def format_key(file_name: str) -> str:
+    """The remembered-answer key for a file: its lower-case suffix, or "".
+
+    A file format, not a file. "Do not ask me again about .docx" is a statement
+    about how Word behaves, and the person making it is not thinking about one
+    document.
+    """
+    suffix = Path(file_name).suffix.lower()
+    return suffix if suffix else ""
+
+
+def remembered_answer(
+    file_name: str,
+    *,
+    always_reload: Sequence[str] = (),
+    always_keep: Sequence[str] = (),
+) -> str:
+    """The answer this person asked to have remembered for this file format.
+
+    ``""`` when there is none, which is the normal case and means ask. Reload
+    wins a format listed in both: of the two ways to be wrong, quietly showing
+    text that is no longer on disk is the one nobody notices.
+    """
+    key = format_key(file_name)
+    if not key:
+        return ""
+    if key in {str(item).lower() for item in always_reload}:
+        return REMEMBER_RELOAD
+    if key in {str(item).lower() for item in always_keep}:
+        return REMEMBER_KEEP
+    return ""
+
+
 def decide_reload(
     change: str,
     *,
     buffer_dirty: bool,
     watch_enabled: bool = True,
-    auto_reload_when_clean: bool = True,
+    auto_reload_when_clean: bool = False,
     prompt_on_conflict: bool = True,
     file_name: str = "",
+    remembered: str = "",
 ) -> ReloadDecision:
     """Decide what to do for ``change`` given the buffer state and settings (pure).
 
-    Safe and quiet by default:
+    **Nothing reloads silently by default** (bad.md F5, decided 2026-09-18).
+    QUILL used to replace a clean tab in place whenever the file changed, which
+    is right for a text file a build regenerates and wrong for everything else:
+    a ``.docx`` rewritten by Word came back as its own bytes decoded into
+    replacement characters, marked clean, with nothing said. A person who
+    cannot see the screen change has no cue at all that the text under the
+    caret is no longer the text they were reading.
+
+    So a change asks -- every format, dirty or clean -- and the question
+    carries a "do not ask me again for this format" answer, so somebody whose
+    build rewrites ``.md`` files every few seconds says so once
+    (:func:`remembered_answer`). ``auto_reload_when_clean`` remains as the
+    blanket escape hatch for anyone who wants the old behaviour for every
+    format at once, and now defaults to off.
 
     * Watching off, or no change → do nothing.
-    * Modified while the buffer is clean → reload in place (when enabled), or
-      prompt so nothing is silent (when auto-reload is off).
-    * Modified while the buffer is dirty → never overwrite silently; prompt for
+    * A remembered answer for this format → take it, without asking.
+    * Modified while the buffer is clean → ask (or reload, under the blanket
+      setting).
+    * Modified while the buffer is dirty → never overwrite silently; ask for
       reload / keep-mine / compare (when prompting is on), else stay quiet.
-    * Deleted → prompt; the buffer is kept so the user's text is never lost.
+    * Deleted → ask; the buffer is kept so the user's text is never lost.
     """
     if not watch_enabled or change == CHANGE_NONE:
         return ReloadDecision(ReloadAction.NONE, "")
@@ -188,6 +248,14 @@ def decide_reload(
         return ReloadDecision(ReloadAction.NONE, "")
 
     # change == CHANGE_MODIFIED
+    if remembered == REMEMBER_RELOAD:
+        return ReloadDecision(ReloadAction.RELOAD, f"Reloaded{label} from disk.")
+    if remembered == REMEMBER_KEEP:
+        return ReloadDecision(
+            ReloadAction.KEEP_MINE,
+            f"The file{label} changed on disk. Keeping what is open, as you asked.",
+        )
+
     if buffer_dirty:
         if prompt_on_conflict:
             return ReloadDecision(
@@ -200,6 +268,6 @@ def decide_reload(
     if auto_reload_when_clean:
         return ReloadDecision(ReloadAction.RELOAD, "Reloaded from disk.")
     return ReloadDecision(
-        ReloadAction.PROMPT_CONFLICT,
+        ReloadAction.PROMPT_CLEAN,
         f"The file{label} changed on disk. Reload to see the new version.",
     )

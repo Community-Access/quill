@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 441.
+Editor commands with default bindings: 442.
 
 ## The QUILL editor
 
@@ -35,6 +35,7 @@ Editor commands with default bindings: 441.
 | Ctrl+O or Ctrl+F12 | Open... | `file.open` |
 | Ctrl+P or Ctrl+Shift+F12 | Print... | `file.print` |
 | Ctrl+S | Save | `file.save` |
+| Ctrl+Shift+F11 | Forget Remembered File-Change Answers | `file.forget_external_change_answers` |
 | Ctrl+Shift+N | New Rich Text Document | `file.new_rich_document` |
 | Ctrl+Shift+S or F12 | Save As... | `file.save_as` |
 | Ctrl+W | Close Document | `file.close_document` |

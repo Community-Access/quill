@@ -228,6 +228,7 @@
   "focus_preview",
   "follow_link",
   "follow_wikilink",
+  "forget_external_change_answers",
   "format_align",
   "format_auto_indent_newline",
   "format_blockquote",

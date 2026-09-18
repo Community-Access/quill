@@ -649,7 +649,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # QuillLite's File Format window: the encoding and the line endings in one
     # place, which QUILL could read in the status bar and change nowhere
     # (bad.md 3.7, P1.8, F6).
-    "file.file_format": "Ctrl+Alt+E",  # §edsharp-ok — QuillLite's chord
+    "file.file_format": "Ctrl+Alt+E",
+    # Rule 9: a once-a-year command needs A key, not a short one. This undoes
+    # the "do not ask me again for .docx files" checkbox in the File Changed on
+    # Disk dialog, which is the only way back from it (bad.md F5).
+    "file.forget_external_change_answers": "Ctrl+Shift+F11",  # §edsharp-ok — QuillLite's chord
     # QuillLite's chord for the same command, and Ctrl+Shift+B is Set
     # Bookmark in both from 2026-09-16 (bad.md 3.3, 3.5).
     "edit.select_block": "Ctrl+Alt+Shift+B",

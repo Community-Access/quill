@@ -1,10 +1,19 @@
-"""Source-contract tests for FEAT-19 external change watcher wiring in main_frame."""
+"""Source-contract tests for the FEAT-19 external change watcher wiring.
+
+The watcher moved out of ``main_frame.py`` into
+``quill/ui/main_frame_external_change.py`` on 2026-09-18 (bad.md P0.7, GATE-11),
+so these read both files: the frame still owns the lifecycle calls that have to
+sit beside the tab and save paths, and the mixin owns the watcher itself.
+"""
 
 from pathlib import Path
 
 
 def _source() -> str:
-    return Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    """The frame plus the watcher mixin -- one surface, two files."""
+    return Path("quill/ui/main_frame.py").read_text(encoding="utf-8") + Path(
+        "quill/ui/main_frame_external_change.py"
+    ).read_text(encoding="utf-8")
 
 
 def test_feat19_imports_are_present() -> None:
@@ -50,12 +59,20 @@ def test_feat19_watcher_restarted_after_save_as() -> None:
 
 
 def test_feat19_conflict_dialog_implemented() -> None:
-    """The conflict prompt must be a real dialog, not a stub."""
+    """The prompt must be a real dialog, not a stub.
+
+    It is a purpose-built ``wx.Dialog`` since 2026-09-18 rather than a
+    relabelled ``wx.MessageDialog``: the question now carries a "do not ask me
+    again for this format" checkbox, and a message box cannot hold one
+    (bad.md F5).
+    """
     src = _source()
     assert "_show_external_change_prompt" in src
     assert "PROMPT_DELETED" in src
     assert "PROMPT_CONFLICT" in src
-    # SetYesNoCancelLabels is used for accessible button labels.
+    assert "PROMPT_CLEAN" in src
+    assert "ask_external_change" in src
+    # The deleted-file prompt keeps its relabelled native buttons.
     assert "SetYesNoCancelLabels" in src
     # The old TODO must be gone.
     assert "TODO: implement the conflict dialog" not in src
@@ -67,12 +84,21 @@ def test_feat19_on_demand_check_exists() -> None:
     assert "def check_external_changes_now(self)" in src
 
 
-def test_feat19_reload_uses_document_encoding() -> None:
-    """_reload_from_disk_preserving_cursor must use the document's detected encoding."""
+def test_feat19_reload_goes_through_the_readers() -> None:
+    """A reload must use the reader for the file's format, not ``read_text``.
+
+    This asserted the document's *detected encoding* until 2026-09-18, which
+    was the right fix for a text file and no fix at all for the rest: a .docx
+    has no text encoding to detect, and reading one as text is how a document
+    became a screenful of replacement characters, marked clean (bad.md F5).
+    Every reload now goes through ``read_open_document``, the same funnel the
+    open flow uses.
+    """
     src = _source()
-    assert 'encoding = getattr(self.document, "encoding", None) or "utf-8"' in src
-    # Hard-coded utf-8 as the primary encoding must be gone.
-    assert 'read_text(encoding="utf-8")' not in src or "errors=" in src
+    assert "from quill.io.open_read import read_open_document" in src
+    assert "def _read_disk_version_text(self)" in src
+    # The text-only read it replaced must be gone from the reload path.
+    assert "reloaded_text = self.document.path.read_text(" not in src
 
 
 def test_feat19_menu_item_wired() -> None:

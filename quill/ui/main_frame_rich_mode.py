@@ -221,13 +221,39 @@ class RichModeMixin:
         except RichEditRtfError as error:
             raise OSError(str(error)) from error
         markdown = rich_to_markdown(rtf_to_rich(rtf))
+        # The document's own encoding and line endings, not UTF-8 and LF (bad.md
+        # F4). A Word document opened in rich mode and saved as .md used to come
+        # out re-encoded with its CRLFs flattened, which is a different file from
+        # the one the person thought they were saving -- and on Windows a .md
+        # with LF endings is a file every other tool here will re-save as CRLF,
+        # so the diff belongs to QUILL rather than to the author.
+        from quill.io.text import _normalize_line_endings
+
+        encoding = str(getattr(document, "encoding", "") or "utf-8")
+        line_ending = str(getattr(document, "line_ending", "") or "\r\n")
         if suffix in {".html", ".htm", ".xhtml"}:
             from quill.io.export import markdown_to_html
 
-            content = markdown_to_html(markdown, target.stem)
+            content = markdown_to_html(markdown, target.stem, charset=encoding)
         else:
             content = markdown
-        write_text_atomic(target, content)
+        content = _normalize_line_endings(content, line_ending)
+        try:
+            content.encode(encoding)
+        except (UnicodeEncodeError, LookupError):
+            from quill.io.text import _emit_save_warning
+
+            _emit_save_warning(
+                f"{target.name} was written as UTF-8: its text cannot be expressed in {encoding}."
+            )
+            encoding = "utf-8"
+            if suffix in {".html", ".htm", ".xhtml"}:
+                from quill.io.export import markdown_to_html
+
+                content = _normalize_line_endings(
+                    markdown_to_html(markdown, target.stem, charset=encoding), line_ending
+                )
+        write_text_atomic(target, content, encoding=encoding, newline="")
         document.mark_saved(target)
         return True
 
