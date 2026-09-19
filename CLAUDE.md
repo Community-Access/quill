@@ -88,6 +88,46 @@ extended `RichEditDocument`, and gave QUILL six commands it had the capability
 for and no binding to (`quill/ui/main_frame_rich_paragraph.py`). Where the two
 must diverge on a key, the reason is a comment in `keymap.py`.
 
+**The eleven family rules** live in `quill/core/family_rules.py`, and code cites
+them **by number** (`keymap.py`: "which rule 6 forbids"; `lite/parity.py`: "the
+note keeps the shorter chord (rule 3)"). Add at the end, never renumber --
+`tests/unit/core/test_family_rules_and_gates.py` checks that every citation in
+the tree resolves, which is what stops a reshuffle turning those comments into
+lies. Lower number wins when two conflict. In brief: Microsoft's key wins for a
+function both editors have (1); the command both products have keeps the chord
+(2); frequency breaks ties (3); destructive habits are fixed first (4); a chord
+free in both becomes an alias rather than a move (5); nothing QuillLite reaches
+plainly lives on QUILL's leader (6); editor chords are for the editor (7); every
+command has a key or a written reason (8); once-a-year commands get *a* key, not
+a short one (9); value flows both ways but violations flow one (10); every
+remaining divergence is a comment *and* a parity-table row (11).
+
+**The six parity gates** closed the 2026-09 program (`bad.md`, now empty). Five
+are pytest gates and one is a tool in `platform_report`:
+
+- **Bound-command and Quillin-hotkey** (`tests/unit/core/test_family_rules_and_gates.py`):
+  every editor command has a chord, a per-command reason, or a family exemption
+  under rule 7; and no bundled Quillin claims a chord the editor binds, because
+  whichever loses is silent about losing.
+- **Menu shape** (`tests/unit/ui/test_menu_shape_against_microsoft.py`): the
+  top-level order, and the menu each shared command lives in, against Word,
+  WordPad and Notepad. A wrong guess costs a listener seconds per visit.
+- **Settings vocabulary** (`quill/tools/settings_vocabulary_audit.py`, in
+  `platform_report`): every field on either side is `shared`, `aliased` or a
+  reviewed `one_side`. A new setting is `missing` and fails until somebody asks
+  whether the other product already has it under another name -- which is how
+  `check_updates_on_launch` / `auto_check_updates` went unnoticed twice. Not a
+  name-similarity check: two of the five real pairs share no word at all.
+  Regenerate with `--write`.
+- **Documentation chords** (`tests/unit/ui/test_documentation_chords.py`): a
+  chord a user guide *teaches* must be one something binds. The 2026-09 pass
+  found 46 stale ones, several since taken by a different command -- so
+  following the guide did the wrong thing rather than nothing.
+- **GATE-PERF** (`tests/unit/core/test_large_document_budget.py`, marked
+  `perf`): a synthetic 50 MB buffer, against a ceiling rather than against the
+  other editor -- comparing the two would pass a build where both had become
+  slow together. This is what keeps the shared `DocumentText` from rotting.
+
 ### Key invariants
 
 **Threading:** UI thread owns all wx widgets. Background work runs on `stability.task_manager.QuillTaskManager` (a `ThreadPoolExecutor` wrapper). Cross-thread UI updates always go through `wx.CallAfter`. See `docs/QUILL-PRD.md`.

@@ -1000,6 +1000,69 @@ save as <strong>Markdown</strong> (which keeps the formatting inline) or
 <ul>
 <li><strong>Reload from Disk</strong> throws away in-memory edits and
 reloads the file from storage after confirmation.</li>
+<li><strong>Check for External Changes…</strong> asks the same question
+on demand.</li>
+</ul>
+<h3 id="how-this-file-is-written-encoding-and-line-endings">How this
+file is written: encoding and line endings</h3>
+<p><strong>File ▸ File Format…</strong> (<code>Ctrl+Alt+E</code>) is one
+window for the two facts that decide what bytes land on disk, and it is
+the same window in QuillLite.</p>
+<ul>
+<li><strong>Encoding.</strong> UTF-8 for anything new; UTF-8 with BOM
+for the Windows tools that expect one; UTF-16; and Windows-1252 for the
+older <code>.txt</code> files that are in it. A file opened in something
+else — UTF-16 big-endian, say — appears as a <strong>keep as is</strong>
+row and stays in it, because a chooser that cannot show the format it is
+editing must not answer for it.</li>
+<li><strong>Line endings.</strong> CRLF is what Windows programs write
+and what a new QUILL document is born with, matching Notepad, WordPad,
+Word and QuillLite. LF is what Unix, macOS and most build tools expect.
+A file that arrived with classic-Mac CR keeps it, in its own
+<strong>keep as is</strong> row.</li>
+</ul>
+<p>Neither is applied until you save — the window says so — and a save
+that cannot express a character in the chosen encoding names the
+character and offers Save As rather than replacing it with a question
+mark.</p>
+<h3 id="when-another-program-changes-the-file-you-are-editing">When
+another program changes the file you are editing</h3>
+<p>QUILL watches the file you have open. When something else writes to
+it — Word saving a <code>.docx</code>, a build regenerating a
+<code>.md</code>, a colleague’s sync client — <strong>QUILL
+asks</strong>. It does not reload on its own, and that is a deliberate
+reversal: it used to replace the tab silently whenever you had no
+unsaved edits, which is convenient for a text file being regenerated and
+destructive for everything else. A <code>.docx</code> rewritten by Word
+came back as its own compressed bytes decoded into replacement
+characters, and the tab was marked clean, so the document was gone and
+nothing said so.</p>
+<p>The question offers three answers:</p>
+<ul>
+<li><strong>Reload from Disk</strong> reads the file again, through the
+reader for its format, and keeps your cursor where it is.</li>
+<li><strong>Keep Mine</strong> leaves the tab exactly as it is. The
+version on disk is ignored until you save over it or reload. This is
+also what Escape does, because there is no neutral answer to “the file
+changed” — something has to happen to the buffer, and the safe something
+is nothing.</li>
+<li><strong>Open Disk Version in a New Tab</strong> opens what is on
+disk as a second, read-only tab named
+<code>&lt;name&gt; (on disk)</code>, so you can compare the two and
+decide. Your tab is untouched.</li>
+</ul>
+<p><strong>“Do not ask me again for .docx files.”</strong> The question
+carries a checkbox, and ticking it remembers your answer for every file
+of that format — so a build that rewrites the file you are reading every
+few seconds is answered once rather than every time. Reload and Keep
+Mine can be remembered; opening the disk version in a new tab is a
+one-off comparison and never is. <strong>File &gt; Forget Remembered
+File-Change Answers</strong> (<code>Ctrl+Shift+F11</code>) takes it
+back, because a question you can switch off and not on is a trap.</p>
+<p>If a file changes while you <em>do</em> have unsaved edits, the same
+question comes with the stakes spelled out: reloading discards your
+edits, keeping yours overwrites the disk version on your next save.</p>
+<ul>
 <li><strong>Restore Backup…</strong> lets you restore a saved backup
 version.</li>
 <li><strong>Page Setup…</strong> and <strong>Print…</strong> support
@@ -1158,7 +1221,7 @@ an empty workspace instead of a starter document.</li>
 open rendered views of the current document.</li>
 </ul>
 <p><strong>Live preview while you type.</strong> The side-by-side
-preview (<code>Ctrl+F6</code> to focus it directly — it also joins the
+preview (<code>Alt+F6</code> to focus it directly — it also joins the
 <code>F6</code> region rotation while open — or turn on Auto
 Side-by-Side Preview) updates <em>silently in place</em> as you edit —
 the rendered content is swapped without reloading the page, so your
@@ -1250,11 +1313,14 @@ or plain buffer), QUILL asks <strong>“Markdown or HTML?”</strong> the
 first time, then remembers your answer for that document and stops
 asking. These carry direct authoring shortcuts: <strong>Insert
 Table</strong> is <code>Ctrl+Alt+T</code>, <strong>Insert Block
-Quote</strong> is <code>Ctrl+Alt+Q</code>, and <strong>Insert Horizontal
-Rule</strong> is <code>Ctrl+Alt+H</code> — alongside the
-<code>Ctrl+Alt+1</code>–<code>6</code> heading chords and
-<code>Ctrl+Alt+7</code>/<code>8</code> list chords. All remain
-rebindable in the Keymap Editor.</p></li>
+Quote</strong> is on <strong>Quote Lines</strong>
+(<code>Ctrl+Shift+Q</code>) — the two wrote the identical
+<code>&gt; </code> in Markdown, so they are one command now — and
+<strong>Insert Horizontal Rule</strong> is <code>Ctrl+Alt+-</code>,
+alongside the <code>Ctrl+Alt+1</code>–<code>6</code> heading chords and
+the list toggles on <code>Ctrl+Shift+L</code> and
+<code>Ctrl+Shift+Grave, Shift+L</code>. All remain rebindable in the
+Keymap Editor.</p></li>
 <li><p><strong>Date and Time</strong> (<code>F5</code>) writes the time
 and date at the caret and reads it back to you — Notepad’s key,
 Notepad’s shape (<code>14:07 16/09/2026</code>), and QuillLite’s. It is
@@ -1264,9 +1330,9 @@ submenu (date only, time only, both) come from the bundled Insert Tools
 extension and switch off with the rest of them.</p></li>
 <li><p><strong>Insert Snippet…</strong> and <strong>Manage
 Snippets…</strong> for reusable text with placeholders.</p></li>
-<li><p><strong>Special Character…</strong> (<code>Shift+F2</code>) opens
-a picker for the 357 characters a keyboard has no key for. Search by
-name (<code>dash</code>, <code>euro</code>, <code>acute</code>,
+<li><p><strong>Special Character…</strong> (<code>Ctrl+Shift+F2</code>)
+opens a picker for the 357 characters a keyboard has no key for. Search
+by name (<code>dash</code>, <code>euro</code>, <code>acute</code>,
 <code>arrow</code>) or by a word Unicode does not use but people do
 (<code>gbp</code>, <code>copyright</code>, <code>eszett</code>), or
 clear the box and browse one of fifteen groups: whitespace, dashes,
@@ -1314,9 +1380,9 @@ href="#insert-emoji-browse-or-search-3781-emoji">Insert Emoji: browse or
 search 3,781 emoji</a> below.</p></li>
 <li><p><strong>File Content…</strong> inserts the contents of another
 file at the cursor.</p></li>
-<li><p><strong>Insert Equation…</strong> (<code>Ctrl+Shift+E</code>)
-opens a two-step prompt for inserting a LaTeX or MathML equation. Type
-the formula in LaTeX notation — for example <code>E=mc^2</code> or
+<li><p><strong>Insert Equation…</strong> (<code>Ctrl+Alt+=</code>) opens
+a two-step prompt for inserting a LaTeX or MathML equation. Type the
+formula in LaTeX notation — for example <code>E=mc^2</code> or
 <code>\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code> — or paste a MathML
 fragment. If the input is LaTeX, a second step asks whether to display
 it inline (<code>\(...\)</code>) or as a block (<code>$$...$$</code>).
@@ -24348,12 +24414,13 @@ plain text drops the formatting with the same honest warning.</li>
 undo, search, the outline, word counts, read-aloud, and the AI tools all
 operate on your prose, not on markup.</p>
 <p><strong>Turning a list off turns off the list you are in.</strong>
-<code>Ctrl+Shift+L</code> and <code>Ctrl+Alt+N</code> inside an existing
-list strip the markers from <strong>that</strong> list and leave every
-other list in the document alone, and QUILL says how many items it
-changed — “Bullet list removed, 4 items” — because the count is the fact
-you cannot see. <code>Ctrl+Z</code> puts them back; the change is an
-edit like any other, not a rebuild of the whole document.</p>
+<code>Ctrl+Shift+L</code> and <code>Ctrl+Shift+Grave, Shift+L</code>
+inside an existing list strip the markers from <strong>that</strong>
+list and leave every other list in the document alone, and QUILL says
+how many items it changed — “Bullet list removed, 4 items” — because the
+count is the fact you cannot see. <code>Ctrl+Z</code> puts them back;
+the change is an edit like any other, not a rebuild of the whole
+document.</p>
 <p><strong>Five line tools got a key.</strong> They were reachable only
 by walking a menu, which is a cost you pay on every visit rather than
 once: <strong>Hard-Wrap Lines</strong> (<code>Alt+Shift+W</code>),
@@ -24440,9 +24507,8 @@ href="#fixes-in-070-beta-2">Fixes in 0.7.0 Beta 2</a>)</li>
 <li><strong>Next Block</strong></li>
 <li><strong>Previous Block</strong></li>
 <li><strong>Outline Navigator…</strong></li>
-<li><strong>Heading Organizer…</strong>
-(<code>Ctrl+Shift+Grave, O</code>) for heading-level edits, section
-reorder, and heading validation</li>
+<li><strong>Heading Organizer…</strong> (<code>Alt+Shift+O</code>) for
+heading-level edits, section reorder, and heading validation</li>
 <li><strong>Match Bracket</strong></li>
 <li><strong>Next Structure</strong></li>
 <li><strong>Previous Structure</strong></li>
@@ -24456,7 +24522,7 @@ in the <strong>Bookmarks</strong> submenu:</p>
 <li><strong>Bookmarks &gt; Go To Bookmark…</strong></li>
 <li><strong>Bookmarks &gt; List Bookmarks…</strong></li>
 <li><strong>Bookmarks &gt; Set Temporary Bookmark</strong>
-(<code>Ctrl+J</code>)</li>
+(<code>Ctrl+Alt+J</code>)</li>
 <li><strong>Bookmarks &gt; Go to Temporary Bookmark</strong>
 (<code>Ctrl+Shift+J</code>)</li>
 <li><strong>Go to Percent…</strong></li>
@@ -24508,7 +24574,7 @@ away and come right back.</p>
 <p>Ten fixed jump slots, one per digit, each reachable in a single
 direct keystroke — no menu, no sub-mode to enter first:</p>
 <ul>
-<li><strong>Alt+Shift+0</strong> through <strong>Alt+Shift+9</strong>
+<li><strong>Ctrl+Shift+1</strong> through <strong>Ctrl+Shift+9</strong>
 sets the jump point for that slot at the cursor.</li>
 <li><strong>Ctrl+Alt+Shift+0</strong> through
 <strong>Ctrl+Alt+Shift+9</strong> jumps straight to that slot.</li>
@@ -24662,7 +24728,7 @@ live under <strong>Tools → Writing</strong> and have four commands
 the selected text, or the current line if nothing is selected. Type the
 note and Save.</li>
 <li><strong>Next Inline Note</strong> (<code>Alt+Shift+J</code>) and
-<strong>Previous Inline Note</strong> (<code>Alt+Shift+G</code>) — move
+<strong>Previous Inline Note</strong> (<code>Alt+Shift+K</code>) — move
 the cursor to the next / previous noted text; QUILL announces the
 note.</li>
 <li><strong>Speak Inline Note</strong> (<code>Alt+Shift+H</code>) — read
@@ -24907,6 +24973,33 @@ login your system’s git credential manager already remembers) — QUILL
 does not ask for or store a separate GitHub password or token for this.
 Disabled in Safe Mode.</p>
 <h4 id="writing-and-language">Writing and language</h4>
+<h3 id="three-things-quill-can-now-say-about-itself">Three things QUILL
+can now say about itself</h3>
+<p>A screen reader tells you what is under the cursor. It has no way to
+tell you what the application just did on its own behalf, or what kind
+of document you have arrived in — those are QUILL’s own knowledge, and
+if it does not say them nobody does. Three commands, all in
+<strong>View</strong>:</p>
+<ul>
+<li><strong>What Is This Document?</strong> (<code>Alt+Shift+F1</code>)
+— not the file name, which the title bar has, but the <em>shape</em>:
+how long it is, how many headings and list items, and whether it is
+read-only. The glance at a page before you start reading. An empty
+document says so, because empty and failed-to-load sound identical and
+the difference is whether to start typing.</li>
+<li><strong>What Changed?</strong> (<code>Alt+Shift+F2</code>) — what
+the last command did to the text. Sort Lines, Remove Duplicate Lines,
+Change Case and thirty others rewrite the buffer and your reader says
+nothing, so the only way to find out used to be to read the document
+again.</li>
+<li><strong>Undo and Say What Changed</strong>
+(<code>Alt+Shift+F3</code>) — undo, and then hear what it took back, or
+that there was nothing left to undo. Those two are completely silent on
+ordinary Ctrl+Z and no amount of listening tells them apart.</li>
+</ul>
+<p>The fourth of the set, <strong>Repeat Last Announcement</strong>, has
+been there since 0.9.0: speech is gone the moment it finishes, and this
+says it again.</p>
 <ul>
 <li><strong>Document Statistics…</strong> (<code>Ctrl+Shift+G</code>) —
 words, characters, lines, paragraphs and reading time. It was “Word
@@ -25645,8 +25738,8 @@ documents.</li>
 </ul>
 <h4 id="ai-grammar-and-style-check-ctrlaltshiftg">AI Grammar and Style
 Check (Ctrl+Alt+Shift+G)</h4>
-<p><code>AI &gt; AI Grammar and Style Check...</code>
-(<code>Ctrl+Alt+Shift+G</code>) analyses the document for grammar,
+<p><code>AI &gt; AI Grammar and Style Check...</code> (no default key;
+bind it in the Keymap Editor) analyses the document for grammar,
 punctuation, clarity, style, and word choice. Issues appear in a list
 grouped by category. The same proofread, translate, compare-navigation,
 and dark-mode shortcuts now reach the command they advertise instead of
@@ -25663,10 +25756,9 @@ step.</li>
 <h4
 id="translate-selection-and-translate-document-ctrlaltshiftt">Translate
 Selection and Translate Document (Ctrl+Alt+Shift+T)</h4>
-<p><code>AI &gt; Translate Selection...</code>
-(<code>Ctrl+Alt+Shift+T</code>) and
-<code>AI &gt; Translate Document...</code> translate your text into a
-language you choose from the dialog.</p>
+<p><code>AI &gt; Translate Selection...</code> (no default key; bind it
+in the Keymap Editor) and <code>AI &gt; Translate Document...</code>
+translate your text into a language you choose from the dialog.</p>
 <p><strong>Providers:</strong></p>
 <ul>
 <li><p><strong>AI Assistant</strong> (default): uses your configured
@@ -26330,11 +26422,11 @@ clipped.</p>
 chunks. No audio is stored by QUILL. See AI Privacy Reference for
 opt-out options.</p>
 <h4 id="ai-thesaurus-ctrlaltshifth">AI Thesaurus (Ctrl+Alt+Shift+H)</h4>
-<p><code>AI &gt; AI Thesaurus...</code> (<code>Ctrl+Alt+Shift+H</code>)
-looks up synonyms for the selected word using your configured AI
-provider. Unlike a static thesaurus, it reads the sentence the word
-appears in and returns synonyms that match the actual meaning in
-context.</p>
+<p><code>AI &gt; AI Thesaurus...</code> (no default key; bind it in the
+Keymap Editor) looks up synonyms for the selected word using your
+configured AI provider. Unlike a static thesaurus, it reads the sentence
+the word appears in and returns synonyms that match the actual meaning
+in context.</p>
 <p>To use it:</p>
 <ol type="1">
 <li>Place the cursor on a word, or select it.</li>
@@ -27257,19 +27349,20 @@ them.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>Ctrl+Shift+1</code> through <code>Ctrl+Shift+9</code></td>
+<td><code>Ctrl+Alt+Shift+1</code> through
+<code>Ctrl+Alt+Shift+9</code></td>
 <td>Paste from slots 1–9</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+0</code></td>
+<td><code>Ctrl+Alt+Shift+0</code></td>
 <td>Paste from slot 10</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+-</code></td>
+<td><code>Ctrl+Alt+Shift+-</code></td>
 <td>Paste from slot 11</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+=</code></td>
+<td><code>Ctrl+Alt+Shift+=</code></td>
 <td>Paste from slot 12</td>
 </tr>
 </tbody>
@@ -27335,15 +27428,14 @@ signature)”.</li>
 restarts.</li>
 </ul>
 <p>To pin or unpin a slot, open the Copy Tray dialog
-(<code>Ctrl+Shift+Grave, X</code>), select the slot, and use the
-Pin/Unpin button.</p>
+(<code>Ctrl+Alt+V</code>), select the slot, and use the Pin/Unpin
+button.</p>
 <p><strong>Paste submenu slot labels.</strong> The
 <code>Edit &gt; Copy Tray &gt; Paste from Tray</code> submenu shows the
 label and a text preview for every occupied slot: “1 signature — Hi, I
 wanted to follow…” Screen readers hear both the label and the preview
 when navigating the submenu.</p>
-<p><strong>Open the tray dialog:</strong>
-<code>Ctrl+Shift+Grave, X</code> (or
+<p><strong>Open the tray dialog:</strong> <code>Ctrl+Alt+V</code> (or
 <code>Edit &gt; Copy Tray &gt; Open Copy Tray...</code>).</p>
 <p>The dialog lists all twelve slots. Each row shows the slot number, an
 optional label, and a preview of the stored text. Navigate with arrow
@@ -28062,7 +28154,7 @@ the built-in ones.</p>
 <strong>off by default</strong>; enable it any of these ways (and toggle
 it the same ways later):</p>
 <ul>
-<li>Press <code>Ctrl+Shift+Grave, E</code> — or use
+<li>Press <code>Alt+Shift+A</code> — or use
 <code>Insert &gt; Toggle Abbreviation Expansion</code>.</li>
 <li>Click the <strong>ABR: On / ABR: Off</strong> cell in the status bar
 (if visible; add it via status bar settings).</li>
@@ -28416,10 +28508,10 @@ insertions from other generated content.</p>
 file. That is all — QUILL finds it automatically the next time content
 is generated for that file.</p>
 <h3 id="copy-with-source">Copy With Source</h3>
-<p><code>Ctrl+Shift+C</code> copies the current selection, then appends
-a source reference that captures document context. If nothing is
-selected, Quill uses the current line. This is excellent for notes,
-review workflows, and evidence gathering.</p>
+<p><code>Alt+Shift+C</code> copies the current selection, then appends a
+source reference that captures document context. If nothing is selected,
+Quill uses the current line. This is excellent for notes, review
+workflows, and evidence gathering.</p>
 <h3 id="selection-bindings">Selection bindings</h3>
 <p><strong>F8-based anchor selection</strong></p>
 <p>Quill uses an anchor-based selection model:</p>
@@ -28603,7 +28695,7 @@ Navigation</h2>
 <li><code>F3</code> finds next.</li>
 <li><code>Shift+F3</code> finds previous.</li>
 <li><code>Alt+F3</code> opens a find-all matches summary.</li>
-<li><code>Ctrl+H</code> opens Replace; <code>Ctrl+Shift+H</code>
+<li><code>Ctrl+H</code> opens Replace; <code>Ctrl+Shift+Grave, X</code>
 replaces all.</li>
 </ul>
 <h3 id="search-modes">Search modes</h3>
@@ -29226,21 +29318,20 @@ plain-text documents announce the chord is unavailable and the move is
 skipped. Fenced code blocks are honored, so a <code># fake</code> line
 inside a ``` fence is never promoted to a real sibling.</p>
 <p>The previous <code>Alt+Shift+Up</code> / <code>Alt+Shift+Down</code>
-bindings (expand/shrink selection) live on
-<code>Ctrl+Shift+Grave, J</code> and
-<code>Ctrl+Shift+Grave, Shift+J</code> now; saved keymaps from older
-builds migrate automatically.</p>
-<p>For list toggling, press <code>Ctrl+Alt+7</code> to insert or strip a
-bullet list, or <code>Ctrl+Alt+8</code> to insert or strip a numbered
-list. The chord inspects the caret’s current line: if it is already a
-list item, the markers are stripped and the line returns to plain text;
-otherwise a new list is inserted at the caret. Numbered-list insertion
-honours the <code>list_auto_fill_numbers</code> setting (Preferences
--&gt; Editing -&gt; Lists) — when the setting is on, every item gets
-<code>1. </code>, <code>2. </code>, <code>3. </code> markers; when it is
-off, only the first item does. The chord is always available in markdown
-and HTML surfaces; plain-text documents announce the chord is
-unavailable and the action is skipped.</p>
+bindings (expand/shrink selection) live on <code>Ctrl+Shift+X</code> and
+<code>Ctrl+Alt+Shift+X</code> now; saved keymaps from older builds
+migrate automatically.</p>
+<p>For list toggling, press <code>Ctrl+Shift+L</code> to insert or strip
+a bullet list, or <code>Ctrl+Shift+Grave, Shift+L</code> to insert or
+strip a numbered list. The chord inspects the caret’s current line: if
+it is already a list item, the markers are stripped and the line returns
+to plain text; otherwise a new list is inserted at the caret.
+Numbered-list insertion honours the <code>list_auto_fill_numbers</code>
+setting (Preferences -&gt; Editing -&gt; Lists) — when the setting is
+on, every item gets <code>1. </code>, <code>2. </code>, <code>3. </code>
+markers; when it is off, only the first item does. The chord is always
+available in markdown and HTML surfaces; plain-text documents announce
+the chord is unavailable and the action is skipped.</p>
 <p>The status bar’s <code>Section</code> cell reads
 <code>Section: Heading N (ordinal of total)</code> whenever the caret is
 on a heading in a Markdown or HTML document. The cell is hidden by
@@ -29475,11 +29566,11 @@ or the current heading level, then set font family, point size, and
 alignment. In Markdown documents, styled headings are written as HTML
 heading tags so the formatting is preserved.</p>
 <p>For structure editing, open <strong>Navigate -&gt; Heading
-Organizer…</strong> (<code>Ctrl+Shift+Grave, O</code>). The organizer
-lists each heading as level + title, supports keyboard
-promotion/demotion (<code>Tab</code> and <code>Shift+Tab</code>), lets
-you move sections up/down, rename headings, and validates heading order
-(start level, skipped levels, empty headings) before apply.</p>
+Organizer…</strong> (<code>Alt+Shift+O</code>). The organizer lists each
+heading as level + title, supports keyboard promotion/demotion
+(<code>Tab</code> and <code>Shift+Tab</code>), lets you move sections
+up/down, rename headings, and validates heading order (start level,
+skipped levels, empty headings) before apply.</p>
 <h3 id="markdown-profiles-and-table-of-contents">Markdown profiles and
 table of contents</h3>
 <p>Markdown means different things to different writers: a poet wants
@@ -31321,7 +31412,39 @@ documents.</li>
 <li><strong>Full Quill</strong> — everything visible, including advanced
 and experimental paths, for people who would rather see it all than ask
 “why don’t I see this?”</li>
+<li><strong>QuillLite</strong> — QUILL with QuillLite’s nine menus and
+nothing else: a plain-text editor with rich text, spelling, the line
+tools and the clipboard, and none of the writing environment around
+them. For somebody arriving from the small editor who wants QUILL to be
+the shape they already know.</li>
 </ul>
+<p>The QuillLite profile does two things the others do not, and both are
+worth knowing. It <strong>switches features off rather than hiding
+them</strong> — everything it takes away is still in <strong>Customize
+Features</strong> and the command palette, so wanting one thing back is
+one tick, not a reinstall. And because its name is a promise about what
+you type in and not only about which menus exist, it also sets
+<strong>Ctrl+N to make a plain text document</strong>, which is what
+QuillLite makes.</p>
+<p><strong>Bring my QuillLite settings.</strong> The first time you
+choose the profile, QUILL offers to start from your QuillLite setup, and
+<strong>Tools &gt; Customize and Support &gt; Bring My QuillLite
+Settings…</strong> (<code>Alt+Shift+F11</code>) does it any time — you
+can want your QuillLite abbreviations in QUILL without wanting
+QuillLite’s menus. The question says what it would do before it does it,
+with counts, and what it is leaving behind.</p>
+<p>What comes across, and how, follows one rule: <strong>content is
+shared and preferences are copied.</strong> Your abbreviations, personal
+dictionary, copy tray, clip library and bookmarks are months of work, so
+they are merged into QUILL’s folder and QuillLite is pointed at the same
+copy — add an abbreviation in either editor from then on and it is in
+both. Wrap, autosave, spell-check-while-typing and the rest are about
+the editor you are in, and the two are not the same editor, so they are
+copied once and then allowed to drift. Rebound keys come the same way,
+and a QuillLite command QUILL does not have is left behind rather than
+guessed at. <strong>Nothing already in QUILL is replaced</strong> —
+where both have an entry, QUILL’s wins, because you have been using
+QUILL and what is here is the more recent answer.</p>
 <p>Use <strong>Profiles and Features…</strong> to:</p>
 <ul>
 <li>switch profiles</li>
@@ -33450,9 +33573,9 @@ automatically after the wizard finishes.</li>
 The new default is <code>Ctrl+Q</code> (which maps to <code>Cmd+Q</code>
 on macOS), and Quote Lines has moved from <code>Ctrl+Q</code> to
 <code>Ctrl+Shift+Q</code> to make room. Unquote Lines moved from
-<code>Ctrl+Shift+Q</code> to <code>Ctrl+Shift+K</code> to keep the pair
-on the home row. A saved <code>keymap.json</code> that still has the old
-chords is rewritten on first launch, and the corrected value is
+<code>Ctrl+Shift+Q</code> to <code>Ctrl+Alt+Shift+Q</code> to keep the
+pair on the home row. A saved <code>keymap.json</code> that still has
+the old chords is rewritten on first launch, and the corrected value is
 persisted back so the next launch is clean.</li>
 <li><strong>#609 — <code>Option+Left</code> / <code>Option+Right</code>
 are no longer hijacked by Back / Forward Location on macOS.</strong> On
@@ -33790,9 +33913,9 @@ here:</p>
 <code>Alt+F3</code></li>
 <li><code>Ctrl+G</code> and <code>Ctrl+Shift+G</code></li>
 <li><code>Ctrl+K</code> and <code>Ctrl+Enter</code></li>
-<li><code>Ctrl+Shift+Grave, L</code> for List Manager; <code>F2</code>
-for the Structured List Studio (<code>Shift+F2</code> for Insert Special
-Character)</li>
+<li><code>Ctrl+Shift+Grave, L</code> for List Manager;
+<code>Ctrl+Alt+Shift+L</code> for the Structured List Studio
+(<code>Ctrl+Shift+F2</code> for Insert Special Character)</li>
 <li><code>F9</code> to hold-to-dictate, <code>Ctrl+F9</code> for Locked
 Dictation (<code>Alt+F9</code> speaks the dictation state)</li>
 <li><code>F7</code>, <code>Ctrl+F7</code>, <code>Ctrl+Shift+F7</code>,
@@ -36607,8 +36730,8 @@ Tray)</h2>
 <p><strong>Historical note:</strong> this appendix preserves the
 original nine-slot Copy Tray design document. Copy Tray now has
 <strong>twelve</strong> slots and the Open Copy Tray chord is
-<code>Ctrl+Shift+Grave, X</code>; see the “Copy Tray” section above for
-current behavior and bindings.</p>
+<code>Ctrl+Alt+V</code>; see the “Copy Tray” section above for current
+behavior and bindings.</p>
 </blockquote>
 <h2 id="quill-feature-documentation">QUILL feature documentation</h2>
 <p><em>Consolidated from the former docs/features/ folder on 2026-06-13.
@@ -36641,39 +36764,39 @@ disclaimers, or any text you paste repeatedly.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>Ctrl+Shift+1</code></td>
+<td><code>Ctrl+Alt+Shift+1</code></td>
 <td>Paste from slot 1 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+2</code></td>
+<td><code>Ctrl+Alt+Shift+2</code></td>
 <td>Paste from slot 2 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+3</code></td>
+<td><code>Ctrl+Alt+Shift+3</code></td>
 <td>Paste from slot 3 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+4</code></td>
+<td><code>Ctrl+Alt+Shift+4</code></td>
 <td>Paste from slot 4 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+5</code></td>
+<td><code>Ctrl+Alt+Shift+5</code></td>
 <td>Paste from slot 5 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+6</code></td>
+<td><code>Ctrl+Alt+Shift+6</code></td>
 <td>Paste from slot 6 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+7</code></td>
+<td><code>Ctrl+Alt+Shift+7</code></td>
 <td>Paste from slot 7 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+8</code></td>
+<td><code>Ctrl+Alt+Shift+8</code></td>
 <td>Paste from slot 8 at cursor</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+9</code></td>
+<td><code>Ctrl+Alt+Shift+9</code></td>
 <td>Paste from slot 9 at cursor</td>
 </tr>
 </tbody>
@@ -36743,7 +36866,7 @@ text preview: “Copied to slot 2”.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>Ctrl+Shift+Grave, X</code></td>
+<td><code>Ctrl+Alt+V</code></td>
 <td>Open Copy Tray dialog</td>
 </tr>
 </tbody>
@@ -36771,7 +36894,7 @@ any) and a text preview. Clicking a slot pastes its content into the
 currently active QUILL document. This lets you paste from the tray
 without bringing the main window to the front.</p>
 <h2 id="using-the-dialog">Using the Dialog</h2>
-<p>Open the dialog with <code>Ctrl+Shift+Grave, X</code>,
+<p>Open the dialog with <code>Ctrl+Alt+V</code>,
 <code>Edit &gt; Copy Tray &gt; Open Copy Tray</code>, or the Command
 Palette (<code>edit.open_copy_tray</code>). The dialog shows all nine
 slots in a list. Each row displays:</p>
@@ -36904,7 +37027,8 @@ text is selected.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>Ctrl+Shift+1</code> through <code>Ctrl+Shift+9</code></td>
+<td><code>Ctrl+Alt+Shift+1</code> through
+<code>Ctrl+Alt+Shift+9</code></td>
 <td>Paste from slot 1-9</td>
 </tr>
 <tr>
@@ -36913,7 +37037,7 @@ text is selected.</p>
 <td>Copy selection to slot 1-9</td>
 </tr>
 <tr>
-<td><code>Ctrl+Shift+Grave, X</code></td>
+<td><code>Ctrl+Alt+V</code></td>
 <td>Open Copy Tray dialog</td>
 </tr>
 </tbody>
@@ -36980,17 +37104,17 @@ press <code>Ctrl+Shift+Grave, Shift+1</code>. QUILL says “Copied to slot
 1”. You read another fragment. <code>Ctrl+Shift+Grave, Shift+2</code>.
 “Copied to slot 2”. A third. Slot 3.</p>
 <p>You switch to your draft. Where you want the first quote, press
-<code>Ctrl+Shift+1</code>. QUILL says “Pasted from slot 1” and the text
-is there. The system clipboard was never disturbed. The other two quotes
-are still in their slots.</p>
+<code>Ctrl+Alt+Shift+1</code>. QUILL says “Pasted from slot 1” and the
+text is there. The system clipboard was never disturbed. The other two
+quotes are still in their slots.</p>
 <p>You close QUILL. Come back tomorrow. Slots 1, 2, and 3 still hold
 their contents.</p>
 <h3 id="using-labels">Using labels</h3>
 <p>After a few days you decide to give slot 1 a permanent home: your
-email signature. You open <code>Ctrl+Shift+Grave, X</code>, navigate to
-slot 1, press Set Label…, type “signature”, press Enter. Now when you
-paste, QUILL says “Pasted from slot 1 (signature)”. The slot is
-identifiable without looking at a screen.</p>
+email signature. You open <code>Ctrl+Alt+V</code>, navigate to slot 1,
+press Set Label…, type “signature”, press Enter. Now when you paste,
+QUILL says “Pasted from slot 1 (signature)”. The slot is identifiable
+without looking at a screen.</p>
 <h3 id="from-the-system-tray">From the system tray</h3>
 <p>QUILL is minimized to the system tray while you read in another
 browser. You right-click the QUILL icon. The menu shows:</p>
@@ -37006,12 +37130,12 @@ Exit Quill</code></pre>
 <p>You click slot 3. QUILL restores its window and pastes the import
 block at your cursor. You minimize again.</p>
 <h3 id="screen-reader-workflow">Screen reader workflow</h3>
-<p>Press <code>Ctrl+Shift+5</code>. QUILL says “Slot 5 is empty.” You
-know immediately without opening a dialog or reading the screen. Select
-some text, press <code>Ctrl+Shift+Grave, Shift+5</code>. “Copied to slot
-5.” Move elsewhere. Press <code>Ctrl+Shift+5</code>. “Pasted from slot
-5.” Everything happened through voice, at typing speed, with standard
-modifier+number chords.</p>
+<p>Press <code>Ctrl+Alt+Shift+5</code>. QUILL says “Slot 5 is empty.”
+You know immediately without opening a dialog or reading the screen.
+Select some text, press <code>Ctrl+Shift+Grave, Shift+5</code>. “Copied
+to slot 5.” Move elsewhere. Press <code>Ctrl+Alt+Shift+5</code>. “Pasted
+from slot 5.” Everything happened through voice, at typing speed, with
+standard modifier+number chords.</p>
 <hr />
 <h2
 id="sticky-notes-capture-browse-and-the-keys-that-work-everywhere">Sticky
@@ -37165,8 +37289,8 @@ different pieces of text to individual numbered slots
 (<code>Ctrl+Shift+Grave, Shift+1</code> through <code>Shift+9</code>,
 <code>Shift+0</code>, <code>Shift+-</code>, <code>Shift+=</code>) and
 paste from any slot. Open the Copy Tray dialog with
-<code>Ctrl+Shift+Grave, X</code> or <code>Win+V</code>-style double
-QUILL-key press.</p>
+<code>Ctrl+Alt+V</code> or <code>Win+V</code>-style double QUILL-key
+press.</p>
 <p><strong>Document Tab</strong> A single open file or generated
 artifact inside the QUILL editor area. QUILL is a tabbed editor; each
 file, compare summary, or AI output opens as its own document tab. Tabs
@@ -37279,7 +37403,7 @@ Folder</strong>.</p>
 <p><strong>WebView / Side Preview</strong> The rendered HTML preview
 pane that appears alongside the editor when you open it from the
 <strong>View</strong> menu (or automatically, with Auto Side-by-Side
-Preview on). <code>Ctrl+F6</code> focuses it, and it joins the
+Preview on). <code>Alt+F6</code> focuses it, and it joins the
 <code>F6</code> region rotation while open. The preview is powered by
 Microsoft Edge WebView2 and renders Markdown, HTML, and plain text in
 real time as you type. The preview is read-only and does not affect the

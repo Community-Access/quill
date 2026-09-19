@@ -2,6 +2,35 @@
 
 ## Unreleased
 
+### Changed
+
+- **One shared set of abbreviations, a dictionary and more (2026-09-18).**
+  QuillLite already pointed at QUILL's abbreviations and personal dictionary
+  when you asked it to. QUILL now has the other half: **Tools ▸ Customize and
+  Support ▸ Bring My QuillLite Settings...** merges your QuillLite
+  abbreviations, dictionary, copy tray, clip library and bookmarks into QUILL,
+  turns those switches on for you, and copies your preferences and rebound keys
+  across once. Nothing already in QUILL is replaced and nothing here is removed.
+
+- **A UTF-16 big-endian file stays big-endian.** Both byte orders decoded to the
+  one `utf-16` codec, and that codec always writes little-endian, so a
+  big-endian file was quietly rewritten on a save that changed nothing else. The
+  File Format window also shows the format a file actually has: a classic-Mac CR
+  file used to open it reading "CRLF", so OK converted the document.
+
+- **The status bar stops answering for a rich document.** Encoding and Line
+  Endings read "UTF-8" and "CRLF" for every `.rtf`, which has neither. They now
+  say so.
+
+- **The control's own formatting chords are swallowed** in a document that
+  cannot hold formatting — `Ctrl+Shift+=` and the rest applied a run to a plain
+  or Markdown buffer that was never saved, and never announced. Said once per
+  document, so a dead key explains itself without becoming noise.
+
+- **Suggestions spell themselves as you arrow**, and the keys that could differ
+  from QUILL's no longer do. Choosing between "receive" and "recieve" by ear is
+  as impossible in a list of corrections as it is in the document.
+
 ### Added
 
 - **Tutorials — Ctrl+Alt+F1.** Eight guided lessons in two tracks: opening a

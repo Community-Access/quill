@@ -790,7 +790,7 @@ have selected — and only on those, never on the rest of the file.
 | Key | What it does |
 |---|---|
 | **Ctrl+B**, **Ctrl+I**, **Ctrl+U** | Bold, italic, underline |
-| **Ctrl+Shift+>** / **Ctrl+Shift+<** | Bigger / smaller text |
+| **Ctrl+Shift+.** / **Ctrl+Shift+,** | Bigger / smaller text |
 | **Ctrl+L**, **Ctrl+E**, **Ctrl+R**, **Ctrl+J** | Left, centre, right, justify |
 | **Ctrl+Shift+L** | Lists: bulleted, numbered, none, round again |
 | **Ctrl+1**, **Ctrl+5**, **Ctrl+2** | Single, one-and-a-half, double spacing |
@@ -1966,6 +1966,27 @@ built so that it will not slowly grow into them.
 Both are free, both are built for screen reader users, and they install
 perfectly happily side by side.
 
+**And they can share what you have built up.** QuillLite keeps its own settings
+folder on purpose --- an editor this size should not quietly adopt a writing
+environment's preferences, and uninstalling it should never cost you something
+QUILL owns. But the things you *accumulate* are worth having in one place, so
+each is an opt-in switch rather than a default:
+
+- **Preferences ▸ Share QUILL's abbreviations** and **Share QUILL's personal
+  dictionary** point QuillLite at QUILL's copy, so a short form you add or a word
+  you teach in either editor is there in both.
+- From QUILL's side, **Tools ▸ Customize and Support ▸ Bring My QuillLite
+  Settings...** does the whole thing in one step: it merges your QuillLite
+  abbreviations, dictionary, copy tray, clip library and bookmarks into QUILL,
+  turns those switches on for you, and copies your preferences and rebound keys
+  across once. Nothing already in QUILL is replaced, and nothing in QuillLite is
+  removed.
+
+QUILL also has a **QuillLite profile** now (Preferences ▸ Profiles and Features),
+which makes QUILL show these nine menus and nothing else --- including making
+Ctrl+N a plain text document, the way it does here. It is there for the day you
+want one of QUILL's tools without giving up the shape you are used to.
+
 ---
 
 ## Every key, in one table
@@ -2276,10 +2297,11 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+1** to **Alt+9** | Go to that numbered document |
 | **Alt+Shift+1** to **Alt+Shift+9** | Reopen that recent file |
 
-Two of these read differently on a keyboard than in a table: **Ctrl+Shift+>**
-and **Ctrl+Shift+<** are the keys your fingers know, and they are listed above
-as `Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and
-the spelling wx understands.
+Two of these read differently on a keyboard than in a table. Bigger and smaller
+text are the keys your fingers think of as **Ctrl+Shift+>** and
+**Ctrl+Shift+<** -- and they are those keys -- but they are written above as
+`Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and the
+spelling wx understands.
 
 <!-- keys:end -->
 

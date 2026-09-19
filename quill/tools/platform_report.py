@@ -256,6 +256,11 @@ GATES: tuple[Gate, ...] = (
         "menu labels match their bindings",
         (sys.executable, "-m", "quill.tools._check_binding_label_consistency"),
     ),
+    Gate(
+        "settings-vocabulary",
+        "the two editors do not name one idea two things",
+        (sys.executable, "-m", "quill.tools.settings_vocabulary_audit"),
+    ),
 )
 
 

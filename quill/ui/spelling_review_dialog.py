@@ -265,7 +265,17 @@ class SpellingReviewDialog:
     def _on_suggestion_select(self, event: object) -> None:
         sel = self._suggestions.GetSelection()
         if sel != self._wx.NOT_FOUND:
-            self._change_to.SetValue(self._suggestions.GetString(sel))
+            suggestion = self._suggestions.GetString(sel)
+            self._change_to.SetValue(suggestion)
+            # Spell it out after a pause, which is the whole point of a
+            # suggestion list to somebody listening: choosing between "receive"
+            # and "recieve" by ear is exactly as impossible here as it was in
+            # the document. The announcer has been built with these settings
+            # since it shipped and nothing was calling it, so the twelve
+            # Announcements settings QUILL could reach did nothing on this
+            # list -- and QuillLite had done it all along, which is rule 10
+            # backwards (bad.md P1.14). Arrowing on cancels the pending one.
+            self._announcer.spell_suggestion(str(suggestion))
         event.Skip()  # type: ignore[attr-defined]
 
     def _on_change(self) -> None:

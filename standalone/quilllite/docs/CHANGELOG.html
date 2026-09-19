@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite changelog</title>
   <style>
@@ -198,6 +198,36 @@
 <main id="main-content">
 <h1 id="quilllite-changelog">QuillLite changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><p><strong>One shared set of abbreviations, a dictionary and more
+(2026-09-18).</strong> QuillLite already pointed at QUILL’s
+abbreviations and personal dictionary when you asked it to. QUILL now
+has the other half: <strong>Tools ▸ Customize and Support ▸ Bring My
+QuillLite Settings…</strong> merges your QuillLite abbreviations,
+dictionary, copy tray, clip library and bookmarks into QUILL, turns
+those switches on for you, and copies your preferences and rebound keys
+across once. Nothing already in QUILL is replaced and nothing here is
+removed.</p></li>
+<li><p><strong>A UTF-16 big-endian file stays big-endian.</strong> Both
+byte orders decoded to the one <code>utf-16</code> codec, and that codec
+always writes little-endian, so a big-endian file was quietly rewritten
+on a save that changed nothing else. The File Format window also shows
+the format a file actually has: a classic-Mac CR file used to open it
+reading “CRLF”, so OK converted the document.</p></li>
+<li><p><strong>The status bar stops answering for a rich
+document.</strong> Encoding and Line Endings read “UTF-8” and “CRLF” for
+every <code>.rtf</code>, which has neither. They now say so.</p></li>
+<li><p><strong>The control’s own formatting chords are
+swallowed</strong> in a document that cannot hold formatting —
+<code>Ctrl+Shift+=</code> and the rest applied a run to a plain or
+Markdown buffer that was never saved, and never announced. Said once per
+document, so a dead key explains itself without becoming noise.</p></li>
+<li><p><strong>Suggestions spell themselves as you arrow</strong>, and
+the keys that could differ from QUILL’s no longer do. Choosing between
+“receive” and “recieve” by ear is as impossible in a list of corrections
+as it is in the document.</p></li>
+</ul>
 <h3 id="added">Added</h3>
 <ul>
 <li><p><strong>Tutorials — Ctrl+Alt+F1.</strong> Eight guided lessons in
@@ -253,7 +283,7 @@ going to answer for you.</p></li>
 is now printed by the text control itself, so headings are headings and
 bold is bold on paper. It used to print as flat text.</p></li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed-1">Changed</h3>
 <ul>
 <li><p><strong>Curly quotes and em dashes are two switches, not
 one.</strong> Preferences now has <strong>Curl quotes as I type</strong>
@@ -469,7 +499,7 @@ speech deliberately does not.</p></li>
 <li><p><strong>Customize Features gained a Markdown and HTML
 area</strong> (18, not 17).</p></li>
 </ul>
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed-2">Changed</h3>
 <ul>
 <li><strong>Two downloads, not four.</strong> QuillLite publishes an
 installer and a portable zip. The thin <code>QuillLite-Lite-Setup</code>
@@ -574,7 +604,7 @@ bar is written either way, and F6 reads it back.</li>
 used for a window inside a window since 3.1. Ctrl+W always did; Ctrl+F4
 did nothing.</li>
 </ul>
-<h3 id="changed-2">Changed</h3>
+<h3 id="changed-3">Changed</h3>
 <ul>
 <li><strong>Three keys moved</strong>, and each moved to the one QUILL
 and Word already use. <strong>Set Mark is Ctrl+Shift+M</strong> (it was
@@ -596,7 +626,7 @@ already has, and the autocorrect rule asks for one character instead of
 the document. Nothing looks different; a long file simply behaves like a
 short one.</li>
 </ul>
-<h3 id="changed-3">Changed</h3>
+<h3 id="changed-4">Changed</h3>
 <ul>
 <li><strong>Change Case with nothing selected changes the word you are
 on</strong>, not the whole document – which is what Word’s Shift+F3 has
@@ -780,7 +810,7 @@ has the same picker on Shift+F2.</p>
 <strong>Edit &gt; Insert &gt; Date and Time</strong>. Its key is still
 <strong>F5</strong>.</p></li>
 </ul>
-<h3 id="changed-4">Changed</h3>
+<h3 id="changed-5">Changed</h3>
 <ul>
 <li><strong>The spelling context menu is one submenu.</strong> The
 Applications key on a misspelled word used to add a dozen rows to the
@@ -798,7 +828,7 @@ else.</p>
 href="https://github.com/Community-Access/quill/pull/1490">PR #1490</a>
 by Steven Scott (<code>doubletaponair</code>) under this repository’s
 MIT licence, and adopted into the QuillVille family here.</p>
-<h3 id="changed-5">Changed</h3>
+<h3 id="changed-6">Changed</h3>
 <ul>
 <li><p><strong>Page Setup moved to Ctrl+Alt+P.</strong> It had
 Ctrl+Alt+U, which is Check for Updates in every other app in the family

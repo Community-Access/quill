@@ -344,6 +344,18 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # travels with it, and the shape is unchanged (every field defaults, and
     # a field nobody set is not written).
     "core/abbreviations_store.py::save_abbreviation_library": "content",
+    # "Bring My QuillLite Settings": merges QuillLite's copy of a store into
+    # QUILL's, on an explicit ask, with QUILL winning every collision. It
+    # writes only the five stores listed in SHARED_CONTENT_STORES, and each of
+    # those files is classified content on its own line above -- the merge adds
+    # entries to an existing shape, it does not invent one.
+    "core/lite_bridge.py::merge_json_store": "content",
+    # The same ask, QuillLite's half: flips the share-with-QUILL switches on in
+    # QuillLite's settings.json so the two stop keeping separate copies. It
+    # reads the raw file and writes it back with only those booleans changed,
+    # so the schema stamp core/lite/settings.py::save wrote is preserved and
+    # every other field is left exactly as it was found.
+    "core/lite_bridge.py::enable_lite_sharing": "marker",
     "core/assistant_prompts.py::save_custom_prompts": "content",
     "core/ai/custom_instructions.py::save_instructions": "content",
     "core/ai/sessions.py::save_session": "content",

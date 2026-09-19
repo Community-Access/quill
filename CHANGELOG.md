@@ -2,6 +2,84 @@
 
 ## 1.0.0
 
+### QUILL and QuillLite became one family (2026-09-18)
+
+A twenty-nine item program, closed. The two editors now agree about their keys,
+their capabilities and their words, and where they still differ the reason is
+written down beside the code. What a person will notice:
+
+**The keyboard.** Sixteen commands came off the QUILL-key leader onto the plain
+chords QuillLite already used, thirteen commands that existed only inside a
+keymap profile got real defaults, and every registered editor command now has a
+key or a written reason not to. Three keymap profiles were broken outright: two
+of the three could not be loaded by name at all, SR Friendly remapped nothing,
+and Minimal removed nothing.
+
+**No two menu items claim the same Alt letter.** Windows does not press a
+duplicated mnemonic --- it cycles focus between the matching rows and waits ---
+so the letter stops being a shortcut and becomes a slow, silent walk, paid by
+exactly the person who navigates menus by letter because reading a whole menu
+aloud costs ten seconds. A new gate found **170 collisions across the family**,
+from Tools > Customize offering "Export..." three times to six in Cast's Help
+menu. All 170 are fixed and the gate keeps them fixed.
+
+**The save path.** A UTF-16 file no longer round-trips as UTF-8, and a
+big-endian one stays big-endian --- both byte orders decoded to the one codec,
+and that codec always writes little-endian, so every big-endian file was
+quietly rewritten on a save that changed nothing else. A save that cannot
+encode a character now says which character and offers Save As. Save As to a
+format that flattens the document asks first. Save As Plain Text and Save As
+HTML are atomic and keep the document's own encoding and line endings; the HTML
+charset declaration matches what was written. **File > File Format**
+(`Ctrl+Alt+E`) is one window for encoding and line endings, shared by both
+editors, and it now shows the format your file actually has --- a classic-Mac CR
+file used to open it reading "CRLF", so OK converted the document.
+
+**Nothing reloads under your hands.** When another program writes to the file
+you have open, QUILL asks. It used to replace a clean tab silently for any
+format, so a `.docx` rewritten by Word came back as its own compressed bytes
+decoded into replacement characters --- marked clean, with nothing said. The
+question carries a "do not ask me again for .docx files" checkbox, and **File >
+Forget Remembered File-Change Answers** (`Ctrl+Shift+F11`) takes it back.
+"Open Disk Version in a New Tab" opens an actual second tab, where before it
+selected the tab you were already looking at and announced that it had opened
+one.
+
+**Spelling.** The tokenizer is Unicode in shared code, so a word with an accent
+is one word on every path instead of two on some; the caret sitting just past a
+word finds that word, which is where the caret is when people ask; and the
+Announcements window --- how a misspelling is *said* --- is reachable in QUILL at
+last, on `Ctrl+Alt+Shift+F6`.
+
+**The clipboard.** Editing a tray slot keeps its label and its pin, overwriting
+a pinned slot says so, a single press pastes immediately instead of 400 ms
+later, and the clipboard collector stopped saving the file unasked and speaking
+twice on every copy made in any program.
+
+**Three things QUILL can now say about itself**, all in View: **What Is This
+Document?** (`Alt+Shift+F1`) gives the shape rather than the name --- length,
+headings, list items, read-only; **What Changed?** (`Alt+Shift+F2`) says what
+the last command did to the text, where Sort Lines and thirty others rewrote the
+buffer in silence; and **Undo and Say What Changed** (`Alt+Shift+F3`) tells an
+undo that reversed forty lines apart from an undo at the bottom of the stack ---
+two things ordinary Ctrl+Z reports identically, which is to say not at all.
+
+**A QuillLite profile** (Preferences > Profiles and Features): QUILL with
+QuillLite's nine menus and nothing else, switching features *off* rather than
+hiding them so wanting one back is one tick. **Bring My QuillLite Settings...**
+(`Alt+Shift+F11`) starts you from the setup you already have: your
+abbreviations, dictionary, copy tray, clip library and bookmarks are shared from
+then on, your preferences and rebound keys are copied once, and nothing already
+in QUILL is replaced.
+
+**Under it all, one document model.** QUILL had half of QuillLite's
+`DocumentText` --- a text mirror and a hand-rolled statistics cache --- while the
+smaller product had the whole object, which is the family rule exactly backwards.
+There is one now, owned by shared code and answering both, and the status bar's
+line and column come off its cached line table rather than a fresh scan on every
+arrow press.
+
+
 ### Ctrl+F6 walks documents, and Word Count stopped opening a window (2026-09-17)
 
 **`Ctrl+F6` and `Ctrl+Shift+F6` move between documents.** That is Windows' own

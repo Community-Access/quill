@@ -390,6 +390,62 @@ What happens when you save formatted text as plain text is set by **Settings →
 
 A few things worth knowing: the Illumination travels as a *separate file*, so if you copy or e-mail only the `.txt`, the formatting won't come along — keep the pair together (or use Markdown/Word/RTF, which carry formatting inside one file). And if you edit the `.txt` in another program, Quill notices the text no longer matches the Illumination and opens it as plain text rather than re-applying formatting to the wrong words. If you'd rather a single self-contained file that preserves everything, save as **Markdown** (which keeps the formatting inline) or **Word/RTF** (which turn it into native formatting).
 - **Reload from Disk** throws away in-memory edits and reloads the file from storage after confirmation.
+- **Check for External Changes...** asks the same question on demand.
+
+### How this file is written: encoding and line endings
+
+**File ▸ File Format...** (`Ctrl+Alt+E`) is one window for the two facts that
+decide what bytes land on disk, and it is the same window in QuillLite.
+
+- **Encoding.** UTF-8 for anything new; UTF-8 with BOM for the Windows tools
+  that expect one; UTF-16; and Windows-1252 for the older `.txt` files that are
+  in it. A file opened in something else — UTF-16 big-endian, say — appears as a
+  **keep as is** row and stays in it, because a chooser that cannot show the
+  format it is editing must not answer for it.
+- **Line endings.** CRLF is what Windows programs write and what a new QUILL
+  document is born with, matching Notepad, WordPad, Word and QuillLite. LF is
+  what Unix, macOS and most build tools expect. A file that arrived with
+  classic-Mac CR keeps it, in its own **keep as is** row.
+
+Neither is applied until you save — the window says so — and a save that cannot
+express a character in the chosen encoding names the character and offers Save
+As rather than replacing it with a question mark.
+
+### When another program changes the file you are editing
+
+QUILL watches the file you have open. When something else writes to it —
+Word saving a `.docx`, a build regenerating a `.md`, a colleague's sync
+client — **QUILL asks**. It does not reload on its own, and that is a
+deliberate reversal: it used to replace the tab silently whenever you had no
+unsaved edits, which is convenient for a text file being regenerated and
+destructive for everything else. A `.docx` rewritten by Word came back as
+its own compressed bytes decoded into replacement characters, and the tab
+was marked clean, so the document was gone and nothing said so.
+
+The question offers three answers:
+
+- **Reload from Disk** reads the file again, through the reader for its
+  format, and keeps your cursor where it is.
+- **Keep Mine** leaves the tab exactly as it is. The version on disk is
+  ignored until you save over it or reload. This is also what Escape does,
+  because there is no neutral answer to "the file changed" — something has
+  to happen to the buffer, and the safe something is nothing.
+- **Open Disk Version in a New Tab** opens what is on disk as a second,
+  read-only tab named `<name> (on disk)`, so you can compare the two and
+  decide. Your tab is untouched.
+
+**"Do not ask me again for .docx files."** The question carries a checkbox,
+and ticking it remembers your answer for every file of that format — so a
+build that rewrites the file you are reading every few seconds is answered
+once rather than every time. Reload and Keep Mine can be remembered;
+opening the disk version in a new tab is a one-off comparison and never is.
+**File > Forget Remembered File-Change Answers** (`Ctrl+Shift+F11`) takes it
+back, because a question you can switch off and not on is a trap.
+
+If a file changes while you *do* have unsaved edits, the same question comes
+with the stakes spelled out: reloading discards your edits, keeping yours
+overwrites the disk version on your next save.
+
 - **Restore Backup...** lets you restore a saved backup version.
 - **Page Setup...** and **Print...** support paper and print workflows. **Print Studio...** goes one step further: it reports a spoken/textual preview — "3 pages, Letter, default margins" — the screen-reader equivalent of a visual print preview, then lets you choose **all, odd, or even pages**, **print in reverse order**, or **skip the first page** (handy if page 1 is pre-printed letterhead) before handing off to the same print dialog Print already uses.
 - **Header and Footer...** builds a header and footer for the current document from named presets — **Title left, page number right**, **Filename and date**, **Roman numerals for front matter** — or your own combination of a small set of tokens (title, filename, date, page number) placed left, center, or right. Turn on **Different first page** for its own separate header/footer, and choose **numeric or Roman** page numbering with a starting number of your choice. It's saved with the document and drawn on every printed page, whether you use Print or Print Studio.
@@ -485,7 +541,7 @@ The **View** menu controls how Quill presents your document on screen without ch
 - **Start With No Document Open** makes Quill open into an empty workspace instead of a starter document.
 - **Preview...**, **Preview Side by Side**, **Focus Preview**, and **Browser Preview...** open rendered views of the current document.
 
-**Live preview while you type.** The side-by-side preview (`Ctrl+F6` to focus it directly — it also joins the `F6` region rotation while open — or turn on Auto Side-by-Side Preview) updates *silently in place* as you edit — the rendered content is swapped without reloading the page, so your braille display and screen reader are not interrupted, nothing is re-announced from the top, and your reading position is kept. This is the recommended live preview for screen-reader and braille users. The external **Browser Preview** (in your web browser) can also follow your edits, but because a real browser reload is a full page navigation, QUILL refreshes it only after you pause typing (not on every keystroke) and keeps your place on each refresh — landing back at the section you are editing, or at your previous scroll position — rather than jumping to the top.
+**Live preview while you type.** The side-by-side preview (`Alt+F6` to focus it directly — it also joins the `F6` region rotation while open — or turn on Auto Side-by-Side Preview) updates *silently in place* as you edit — the rendered content is swapped without reloading the page, so your braille display and screen reader are not interrupted, nothing is re-announced from the top, and your reading position is kept. This is the recommended live preview for screen-reader and braille users. The external **Browser Preview** (in your web browser) can also follow your edits, but because a real browser reload is a full page navigation, QUILL refreshes it only after you pause typing (not on every keystroke) and keeps your place on each refresh — landing back at the section you are editing, or at your previous scroll position — rather than jumping to the top.
 
 **Jump from the preview back to the editor.** Reading the side preview and want to edit what you just heard? Open the context menu on a block — a heading, paragraph, list item, quote, table, or code block — with the **Applications key**, **Shift+F10**, or a right-click, and choose **"Go to this location in the editor"**. The editor caret moves to that block's source, focus follows, and QUILL announces where you landed. Pressing **Enter** on a block does the same thing when your screen reader passes the key through, but the context menu is the reliable path: in browse mode there is no way to ask "where is the virtual cursor?", while a context menu always targets the exact element you are on. The jump is offered when the preview matches your document verbatim; a preview that expands Vault links does not offer it, because the positions would no longer line up.
 
@@ -519,7 +575,7 @@ The **Insert** menu adds structured content at the cursor.
 - **List** submenu: **Bullet**, **Numbered**, **Task**, **List Manager...**, and **Structured List Studio...** (F2).
 - **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert Block Quote**, **Insert Horizontal Rule**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
 - **The two tag pickers are dimmed where they do not apply**, and exactly one of them is ever live: **Insert Markdown Tag** in a Markdown document, **Insert HTML Tag** in an HTML one, and neither in a plain document or a rich text one. Markdown used to stay enabled in a *plain* document too, which was the mirror image of the HTML row's rule and worse by ear than by eye: an enabled row promises the command will work, and a document that quietly became half-Markdown is not something you can see you did. **Navigate ▸ Set Document Language...** turns the rows back on in one keystroke.
-- **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. These carry direct authoring shortcuts: **Insert Table** is `Ctrl+Alt+T`, **Insert Block Quote** is `Ctrl+Alt+Q`, and **Insert Horizontal Rule** is `Ctrl+Alt+H` — alongside the `Ctrl+Alt+1`–`6` heading chords and `Ctrl+Alt+7`/`8` list chords. All remain rebindable in the Keymap Editor.
+- **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. These carry direct authoring shortcuts: **Insert Table** is `Ctrl+Alt+T`, **Insert Block Quote** is on **Quote Lines** (`Ctrl+Shift+Q`) — the two wrote the identical `> ` in Markdown, so they are one command now — and **Insert Horizontal Rule** is `Ctrl+Alt+-`, alongside the `Ctrl+Alt+1`–`6` heading chords and the list toggles on `Ctrl+Shift+L` and `Ctrl+Shift+Grave, Shift+L`. All remain rebindable in the Keymap Editor.
 - **Date and Time** (`F5`) writes the time and date at the caret and reads it
   back to you --- Notepad's key, Notepad's shape (`14:07 16/09/2026`), and
   QuillLite's. It is a built-in command rather than an extension, so it also
@@ -527,7 +583,7 @@ The **Insert** menu adds structured content at the cursor.
   (date only, time only, both) come from the bundled Insert Tools extension and
   switch off with the rest of them.
 - **Insert Snippet...** and **Manage Snippets...** for reusable text with placeholders.
-- **Special Character...** (`Shift+F2`) opens a picker for the 357 characters a
+- **Special Character...** (`Ctrl+Shift+F2`) opens a picker for the 357 characters a
   keyboard has no key for. Search by name (`dash`, `euro`, `acute`, `arrow`) or
   by a word Unicode does not use but people do (`gbp`, `copyright`, `eszett`),
   or clear the box and browse one of fifteen groups: whitespace, dashes, quotes,
@@ -562,7 +618,7 @@ The **Insert** menu adds structured content at the cursor.
 - **Date and Time** submenu inserts a date, time, or both at the cursor. The bundled `com.quill.bundled.insert-tools` Quillin owns this submenu; it is the canonical home for date and time snippets. See [Date and Time submenu](#date-and-time-submenu) below.
 - **Insert Emoji...** (`Alt+.`) opens the Accessible Emoji Picker: browse or search all 3,781 standard emoji by name, keyword, symbol, or a typed smiley like `:)`, each with a real spoken description of what it looks like. See [Insert Emoji: browse or search 3,781 emoji](#insert-emoji-browse-or-search-3781-emoji) below.
 - **File Content...** inserts the contents of another file at the cursor.
-- **Insert Equation...** (`Ctrl+Shift+E`) opens a two-step prompt for inserting a LaTeX or MathML equation. Type the formula in LaTeX notation — for example `E=mc^2` or `\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}` — or paste a MathML fragment. If the input is LaTeX, a second step asks whether to display it inline (`\(...\)`) or as a block (`$$...$$`). If a LaTeX equation is already selected when you press `Ctrl+Shift+E`, the delimiters are stripped and the bare formula pre-fills the prompt. MathML input (starting with `<math`) is inserted verbatim without a mode step. Browser Preview and HTML export render equations using MathJax 3; see Math Equations later in this guide for the formula gallery, symbol abbreviations, structural exploration, and Word export.
+- **Insert Equation...** (`Ctrl+Alt+=`) opens a two-step prompt for inserting a LaTeX or MathML equation. Type the formula in LaTeX notation — for example `E=mc^2` or `\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}` — or paste a MathML fragment. If the input is LaTeX, a second step asks whether to display it inline (`\(...\)`) or as a block (`$$...$$`). If a LaTeX equation is already selected when you press `Ctrl+Shift+E`, the delimiters are stripped and the bare formula pre-fills the prompt. MathML input (starting with `<math`) is inserted verbatim without a mode step. Browser Preview and HTML export render equations using MathJax 3; see Math Equations later in this guide for the formula gallery, symbol abbreviations, structural exploration, and Word export.
 
 Quill treats Markdown and HTML as working surfaces, not special-purpose export formats, so tag insertion lives here beside the structural inserts.
 
@@ -4500,7 +4556,7 @@ Inline emphasis:
 Everything that makes Quill fast still works on the same clean text: undo, search, the outline, word counts, read-aloud, and the AI tools all operate on your prose, not on markup.
 
 **Turning a list off turns off the list you are in.** `Ctrl+Shift+L` and
-`Ctrl+Alt+N` inside an existing list strip the markers from **that** list and
+`Ctrl+Shift+Grave, Shift+L` inside an existing list strip the markers from **that** list and
 leave every other list in the document alone, and QUILL says how many items it
 changed --- "Bullet list removed, 4 items" --- because the count is the fact you
 cannot see. `Ctrl+Z` puts them back; the change is an edit like any other, not a
@@ -4556,7 +4612,7 @@ Structural movement commands:
 - **Next Block**
 - **Previous Block**
 - **Outline Navigator...**
-- **Heading Organizer...** (`Ctrl+Shift+Grave, O`) for heading-level edits, section reorder, and heading validation
+- **Heading Organizer...** (`Alt+Shift+O`) for heading-level edits, section reorder, and heading validation
 - **Match Bracket**
 - **Next Structure**
 - **Previous Structure**
@@ -4569,7 +4625,7 @@ Bookmark and position commands. The bookmark commands live together in the
 - **Bookmarks > Set Bookmark...**
 - **Bookmarks > Go To Bookmark...**
 - **Bookmarks > List Bookmarks...**
-- **Bookmarks > Set Temporary Bookmark** (`Ctrl+J`)
+- **Bookmarks > Set Temporary Bookmark** (`Ctrl+Alt+J`)
 - **Bookmarks > Go to Temporary Bookmark** (`Ctrl+Shift+J`)
 - **Go to Percent...**
 - **First Non-Blank**
@@ -4614,7 +4670,7 @@ away and come right back.
 Ten fixed jump slots, one per digit, each reachable in a single direct keystroke —
 no menu, no sub-mode to enter first:
 
-- **Alt+Shift+0** through **Alt+Shift+9** sets the jump point for that slot at the
+- **Ctrl+Shift+1** through **Ctrl+Shift+9** sets the jump point for that slot at the
   cursor.
 - **Ctrl+Alt+Shift+0** through **Ctrl+Alt+Shift+9** jumps straight to that slot.
 
@@ -4751,7 +4807,7 @@ and have four commands (default keys shown; all remappable in the Keymap Editor)
 
 - **Add Inline Note...** (`Alt+Shift+I`) — note the selected text, or the current line
   if nothing is selected. Type the note and Save.
-- **Next Inline Note** (`Alt+Shift+J`) and **Previous Inline Note** (`Alt+Shift+G`) —
+- **Next Inline Note** (`Alt+Shift+J`) and **Previous Inline Note** (`Alt+Shift+K`) —
   move the cursor to the next / previous noted text; QUILL announces the note.
 - **Speak Inline Note** (`Alt+Shift+H`) — read aloud the note at the cursor. **Press it
   again quickly** (a double-press) to open the note to view, edit, or delete it.
@@ -4854,6 +4910,16 @@ QUILL does not run its own sync service — no QUILL cloud account, no QUILL-hos
 This is the exact same engine **Sync Vault** (above) already uses, opened up to any folder rather than only your vault — if you already use Sync Vault, this will feel identical. Both rely on your own git installation and its own saved credentials (an SSH key, or a login your system's git credential manager already remembers) — QUILL does not ask for or store a separate GitHub password or token for this. Disabled in Safe Mode.
 
 #### Writing and language
+
+### Three things QUILL can now say about itself
+
+A screen reader tells you what is under the cursor. It has no way to tell you what the application just did on its own behalf, or what kind of document you have arrived in — those are QUILL's own knowledge, and if it does not say them nobody does. Three commands, all in **View**:
+
+- **What Is This Document?** (`Alt+Shift+F1`) — not the file name, which the   title bar has, but the *shape*: how long it is, how many headings and list   items, and whether it is read-only. The glance at a page before you start   reading. An empty document says so, because empty and failed-to-load sound   identical and the difference is whether to start typing.
+- **What Changed?** (`Alt+Shift+F2`) — what the last command did to the text.   Sort Lines, Remove Duplicate Lines, Change Case and thirty others rewrite the   buffer and your reader says nothing, so the only way to find out used to be   to read the document again.
+- **Undo and Say What Changed** (`Alt+Shift+F3`) — undo, and then hear what it   took back, or that there was nothing left to undo. Those two are completely   silent on ordinary Ctrl+Z and no amount of listening tells them apart.
+
+The fourth of the set, **Repeat Last Announcement**, has been there since 0.9.0: speech is gone the moment it finishes, and this says it again.
 
 - **Document Statistics...** (`Ctrl+Shift+G`) --- words, characters, lines,
   paragraphs and reading time. It was "Word Count" on `Ctrl+Shift+W` until
@@ -5399,7 +5465,7 @@ no text is sent until you invoke the command.
 
 #### AI Grammar and Style Check (Ctrl+Alt+Shift+G)
 
-`AI > AI Grammar and Style Check...` (`Ctrl+Alt+Shift+G`) analyses the document for grammar,
+`AI > AI Grammar and Style Check...` (no default key; bind it in the Keymap Editor) analyses the document for grammar,
 punctuation, clarity, style, and word choice. Issues appear in a list grouped
 by category. The same proofread, translate, compare-navigation, and dark-mode
 shortcuts now reach the command they advertise instead of appearing inert. You can:
@@ -5412,7 +5478,7 @@ shortcuts now reach the command they advertise instead of appearing inert. You c
 
 #### Translate Selection and Translate Document (Ctrl+Alt+Shift+T)
 
-`AI > Translate Selection...` (`Ctrl+Alt+Shift+T`) and `AI > Translate Document...`
+`AI > Translate Selection...` (no default key; bind it in the Keymap Editor) and `AI > Translate Document...`
 translate your text into a language you choose from the dialog.
 
 **Providers:**
@@ -5953,7 +6019,7 @@ stored by QUILL. See AI Privacy Reference for opt-out options.
 
 #### AI Thesaurus (Ctrl+Alt+Shift+H)
 
-`AI > AI Thesaurus...` (`Ctrl+Alt+Shift+H`) looks up synonyms for the selected word
+`AI > AI Thesaurus...` (no default key; bind it in the Keymap Editor) looks up synonyms for the selected word
 using your configured AI provider. Unlike a static thesaurus, it reads the
 sentence the word appears in and returns synonyms that match the actual meaning
 in context.
@@ -6470,10 +6536,10 @@ Copy Tray is **twelve** independently addressable clipboard slots that survive a
 
 | Key | What happens |
 | --- | --- |
-| `Ctrl+Shift+1` through `Ctrl+Shift+9` | Paste from slots 1–9 |
-| `Ctrl+Shift+0` | Paste from slot 10 |
-| `Ctrl+Shift+-` | Paste from slot 11 |
-| `Ctrl+Shift+=` | Paste from slot 12 |
+| `Ctrl+Alt+Shift+1` through `Ctrl+Alt+Shift+9` | Paste from slots 1–9 |
+| `Ctrl+Alt+Shift+0` | Paste from slot 10 |
+| `Ctrl+Alt+Shift+-` | Paste from slot 11 |
+| `Ctrl+Alt+Shift+=` | Paste from slot 12 |
 
 **Copying to a slot uses the QUILL key prefix followed by the same key with Shift:**
 
@@ -6500,11 +6566,11 @@ Copy Tray is **twelve** independently addressable clipboard slots that survive a
 - Are announced with a "pinned" prefix: "Slot 1 (pinned — signature)".
 - Persist the pin flag in `copy_tray.json` across restarts.
 
-To pin or unpin a slot, open the Copy Tray dialog (`Ctrl+Shift+Grave, X`), select the slot, and use the Pin/Unpin button.
+To pin or unpin a slot, open the Copy Tray dialog (`Ctrl+Alt+V`), select the slot, and use the Pin/Unpin button.
 
 **Paste submenu slot labels.** The `Edit > Copy Tray > Paste from Tray` submenu shows the label and a text preview for every occupied slot: "1  signature — Hi, I wanted to follow..." Screen readers hear both the label and the preview when navigating the submenu.
 
-**Open the tray dialog:** `Ctrl+Shift+Grave, X` (or `Edit > Copy Tray > Open Copy Tray...`).
+**Open the tray dialog:** `Ctrl+Alt+V` (or `Edit > Copy Tray > Open Copy Tray...`).
 
 The dialog lists all twelve slots. Each row shows the slot number, an optional label, and a preview of the stored text. Navigate with arrow keys. Buttons:
 
@@ -6742,7 +6808,7 @@ QUILL ships with fifteen built-in abbreviations covering common shorthand. You c
 
 **Enabling and disabling.** Abbreviation expansion is **off by default**; enable it any of these ways (and toggle it the same ways later):
 
-- Press `Ctrl+Shift+Grave, E` — or use `Insert > Toggle Abbreviation Expansion`.
+- Press `Alt+Shift+A` — or use `Insert > Toggle Abbreviation Expansion`.
 - Click the **ABR: On / ABR: Off** cell in the status bar (if visible; add it via status bar settings).
 - Change **Abbreviation expansion** in `Tools > Customize & Support > Preferences > Editing`.
 
@@ -6881,7 +6947,7 @@ A `.LOG` file can use the more specific `QUILL-LOG-APPEND-HERE` anchor to separa
 
 ### Copy With Source
 
-`Ctrl+Shift+C` copies the current selection, then appends a source reference that captures document context. If nothing is selected, Quill uses the current line. This is excellent for notes, review workflows, and evidence gathering.
+`Alt+Shift+C` copies the current selection, then appends a source reference that captures document context. If nothing is selected, Quill uses the current line. This is excellent for notes, review workflows, and evidence gathering.
 
 ### Selection bindings
 
@@ -6955,7 +7021,7 @@ Quill's search tools are both straightforward and layered.
 - `F3` finds next.
 - `Shift+F3` finds previous.
 - `Alt+F3` opens a find-all matches summary.
-- `Ctrl+H` opens Replace; `Ctrl+Shift+H` replaces all.
+- `Ctrl+H` opens Replace; `Ctrl+Shift+Grave, X` replaces all.
 
 ### Search modes
 
@@ -7299,9 +7365,9 @@ For inline heading control, press `Ctrl+Alt+1` through `Ctrl+Alt+6` to convert t
 
 For section-level reorganisation in Markdown and HTML, press `Alt+Shift+Down` while the caret is on a heading to swap that section past its next sibling; `Alt+Shift+Up` swaps it with the previous sibling. The chord is gated on Markdown and HTML — plain-text documents announce the chord is unavailable and the move is skipped. Fenced code blocks are honored, so a `# fake` line inside a ``` fence is never promoted to a real sibling.
 
-The previous `Alt+Shift+Up` / `Alt+Shift+Down` bindings (expand/shrink selection) live on `Ctrl+Shift+Grave, J` and `Ctrl+Shift+Grave, Shift+J` now; saved keymaps from older builds migrate automatically.
+The previous `Alt+Shift+Up` / `Alt+Shift+Down` bindings (expand/shrink selection) live on `Ctrl+Shift+X` and `Ctrl+Alt+Shift+X` now; saved keymaps from older builds migrate automatically.
 
-For list toggling, press `Ctrl+Alt+7` to insert or strip a bullet list, or `Ctrl+Alt+8` to insert or strip a numbered list. The chord inspects the caret's current line: if it is already a list item, the markers are stripped and the line returns to plain text; otherwise a new list is inserted at the caret. Numbered-list insertion honours the `list_auto_fill_numbers` setting (Preferences -> Editing -> Lists) — when the setting is on, every item gets `1. `, `2. `, `3. ` markers; when it is off, only the first item does. The chord is always available in markdown and HTML surfaces; plain-text documents announce the chord is unavailable and the action is skipped.
+For list toggling, press `Ctrl+Shift+L` to insert or strip a bullet list, or `Ctrl+Shift+Grave, Shift+L` to insert or strip a numbered list. The chord inspects the caret's current line: if it is already a list item, the markers are stripped and the line returns to plain text; otherwise a new list is inserted at the caret. Numbered-list insertion honours the `list_auto_fill_numbers` setting (Preferences -> Editing -> Lists) — when the setting is on, every item gets `1. `, `2. `, `3. ` markers; when it is off, only the first item does. The chord is always available in markdown and HTML surfaces; plain-text documents announce the chord is unavailable and the action is skipped.
 
 The status bar's `Section` cell reads `Section: Heading N (ordinal of total)` whenever the caret is on a heading in a Markdown or HTML document. The cell is hidden by default; turn it on via Preferences -> Status Bar. The cell is a no-op for plain-text documents and for carets on a non-heading line, and it inherits the same dead-widget guard as the other live-editor cells.
 
@@ -7480,7 +7546,7 @@ keys are remappable in the Keymap Editor.
 
 For heading presentation control, open **Insert -> Heading -> Style Headings...**. You can style either all heading levels or the current heading level, then set font family, point size, and alignment. In Markdown documents, styled headings are written as HTML heading tags so the formatting is preserved.
 
-For structure editing, open **Navigate -> Heading Organizer...** (`Ctrl+Shift+Grave, O`). The organizer lists each heading as level + title, supports keyboard promotion/demotion (`Tab` and `Shift+Tab`), lets you move sections up/down, rename headings, and validates heading order (start level, skipped levels, empty headings) before apply.
+For structure editing, open **Navigate -> Heading Organizer...** (`Alt+Shift+O`). The organizer lists each heading as level + title, supports keyboard promotion/demotion (`Tab` and `Shift+Tab`), lets you move sections up/down, rename headings, and validates heading order (start level, skipped levels, empty headings) before apply.
 
 ### Markdown profiles and table of contents
 
@@ -8173,6 +8239,13 @@ The first-run Personalise QUILL wizard offers seven of these as curated starting
 - **Braille and Screen Reader Power User** — screen-reader-friendly navigation with advanced text tools surfaced calmly rather than buried.
 - **Accessibility Professional** — reading, inspection, trust, and accessibility diagnostics for auditing other people's documents.
 - **Full Quill** — everything visible, including advanced and experimental paths, for people who would rather see it all than ask "why don't I see this?"
+- **QuillLite** — QUILL with QuillLite's nine menus and nothing else: a plain-text editor with rich text, spelling, the line tools and the clipboard, and none of the writing environment around them. For somebody arriving from the small editor who wants QUILL to be the shape they already know.
+
+The QuillLite profile does two things the others do not, and both are worth knowing. It **switches features off rather than hiding them** — everything it takes away is still in **Customize Features** and the command palette, so wanting one thing back is one tick, not a reinstall. And because its name is a promise about what you type in and not only about which menus exist, it also sets **Ctrl+N to make a plain text document**, which is what QuillLite makes.
+
+**Bring my QuillLite settings.** The first time you choose the profile, QUILL offers to start from your QuillLite setup, and **Tools > Customize and Support > Bring My QuillLite Settings...** (`Alt+Shift+F11`) does it any time — you can want your QuillLite abbreviations in QUILL without wanting QuillLite's menus. The question says what it would do before it does it, with counts, and what it is leaving behind.
+
+What comes across, and how, follows one rule: **content is shared and preferences are copied.** Your abbreviations, personal dictionary, copy tray, clip library and bookmarks are months of work, so they are merged into QUILL's folder and QuillLite is pointed at the same copy — add an abbreviation in either editor from then on and it is in both. Wrap, autosave, spell-check-while-typing and the rest are about the editor you are in, and the two are not the same editor, so they are copied once and then allowed to drift. Rebound keys come the same way, and a QuillLite command QUILL does not have is left behind rather than guessed at. **Nothing already in QUILL is replaced** — where both have an entry, QUILL's wins, because you have been using QUILL and what is here is the more recent answer.
 
 Use **Profiles and Features...** to:
 
@@ -9173,7 +9246,7 @@ user-facing detail. The full list is in the [release notes](../release%20notes/r
 - **#608 — `Cmd+Q` now quits QUILL on macOS.** The new default is
   `Ctrl+Q` (which maps to `Cmd+Q` on macOS), and Quote Lines has
   moved from `Ctrl+Q` to `Ctrl+Shift+Q` to make room.
-  Unquote Lines moved from `Ctrl+Shift+Q` to `Ctrl+Shift+K` to
+  Unquote Lines moved from `Ctrl+Shift+Q` to `Ctrl+Alt+Shift+Q` to
   keep the pair on the home row. A saved `keymap.json` that
   still has the old chords is rewritten on first launch, and the
   corrected value is persisted back so the next launch is clean.
@@ -9413,8 +9486,8 @@ If you want a compact set of shortcuts to remember first, start here:
 - `Ctrl+F`, `F3`, `Shift+F3`, `Alt+F3`
 - `Ctrl+G` and `Ctrl+Shift+G`
 - `Ctrl+K` and `Ctrl+Enter`
-- `Ctrl+Shift+Grave, L` for List Manager; `F2` for the Structured List Studio
-  (`Shift+F2` for Insert Special Character)
+- `Ctrl+Shift+Grave, L` for List Manager; `Ctrl+Alt+Shift+L` for the Structured List Studio
+  (`Ctrl+Shift+F2` for Insert Special Character)
 - `F9` to hold-to-dictate, `Ctrl+F9` for Locked Dictation (`Alt+F9` speaks the
   dictation state)
 - `F7`, `Ctrl+F7`, `Ctrl+Shift+F7`, `Shift+F7`
@@ -11681,7 +11754,7 @@ _Folded in from the former docs/userguide.md on 2026-06-13._
 
 > **Historical note:** this appendix preserves the original nine-slot Copy
 > Tray design document. Copy Tray now has **twelve** slots and the Open Copy
-> Tray chord is `Ctrl+Shift+Grave, X`; see the "Copy Tray" section above for
+> Tray chord is `Ctrl+Alt+V`; see the "Copy Tray" section above for
 > current behavior and bindings.
 
 ## QUILL feature documentation
@@ -11717,15 +11790,15 @@ Hold `Ctrl+Shift` and press a number key. That is all.
 
 | Key | Action |
 | --- | --- |
-| `Ctrl+Shift+1` | Paste from slot 1 at cursor |
-| `Ctrl+Shift+2` | Paste from slot 2 at cursor |
-| `Ctrl+Shift+3` | Paste from slot 3 at cursor |
-| `Ctrl+Shift+4` | Paste from slot 4 at cursor |
-| `Ctrl+Shift+5` | Paste from slot 5 at cursor |
-| `Ctrl+Shift+6` | Paste from slot 6 at cursor |
-| `Ctrl+Shift+7` | Paste from slot 7 at cursor |
-| `Ctrl+Shift+8` | Paste from slot 8 at cursor |
-| `Ctrl+Shift+9` | Paste from slot 9 at cursor |
+| `Ctrl+Alt+Shift+1` | Paste from slot 1 at cursor |
+| `Ctrl+Alt+Shift+2` | Paste from slot 2 at cursor |
+| `Ctrl+Alt+Shift+3` | Paste from slot 3 at cursor |
+| `Ctrl+Alt+Shift+4` | Paste from slot 4 at cursor |
+| `Ctrl+Alt+Shift+5` | Paste from slot 5 at cursor |
+| `Ctrl+Alt+Shift+6` | Paste from slot 6 at cursor |
+| `Ctrl+Alt+Shift+7` | Paste from slot 7 at cursor |
+| `Ctrl+Alt+Shift+8` | Paste from slot 8 at cursor |
+| `Ctrl+Alt+Shift+9` | Paste from slot 9 at cursor |
 
 If a selection is active when you paste, the pasted text replaces it.
 If the slot is empty, QUILL announces "Slot N is empty".
@@ -11755,7 +11828,7 @@ preview: "Copied to slot 2".
 
 | Key | Action |
 | --- | --- |
-| `Ctrl+Shift+Grave, X` | Open Copy Tray dialog |
+| `Ctrl+Alt+V` | Open Copy Tray dialog |
 
 All bindings are reassignable in `Tools > Customize & Support > Keymap Editor` or the Command
 Palette.
@@ -11779,7 +11852,7 @@ paste from the tray without bringing the main window to the front.
 
 ## Using the Dialog
 
-Open the dialog with `Ctrl+Shift+Grave, X`, `Edit > Copy Tray > Open Copy
+Open the dialog with `Ctrl+Alt+V`, `Edit > Copy Tray > Open Copy
 Tray`, or the Command Palette (`edit.open_copy_tray`). The dialog shows all
 nine slots in a list. Each row displays:
 
@@ -11897,9 +11970,9 @@ slots; Copy Selection Here is disabled when no editor text is selected.
 
 | Key | Action |
 | --- | --- |
-| `Ctrl+Shift+1` through `Ctrl+Shift+9` | Paste from slot 1-9 |
+| `Ctrl+Alt+Shift+1` through `Ctrl+Alt+Shift+9` | Paste from slot 1-9 |
 | `Ctrl+Shift+Grave, Shift+1` through `Ctrl+Shift+Grave, Shift+9` | Copy selection to slot 1-9 |
-| `Ctrl+Shift+Grave, X` | Open Copy Tray dialog |
+| `Ctrl+Alt+V` | Open Copy Tray dialog |
 
 The paste bindings use the number row with `Ctrl+Shift`. These keys were
 confirmed free across the entire QUILL keymap. QUILL-key bare digits 1-6 are
@@ -11959,7 +12032,7 @@ sources. You read a quote you want to use, select it, and press
 `Ctrl+Shift+Grave, Shift+1`. QUILL says "Copied to slot 1". You read another
 fragment. `Ctrl+Shift+Grave, Shift+2`. "Copied to slot 2". A third. Slot 3.
 
-You switch to your draft. Where you want the first quote, press `Ctrl+Shift+1`.
+You switch to your draft. Where you want the first quote, press `Ctrl+Alt+Shift+1`.
 QUILL says "Pasted from slot 1" and the text is there. The system clipboard was
 never disturbed. The other two quotes are still in their slots.
 
@@ -11969,7 +12042,7 @@ contents.
 ### Using labels
 
 After a few days you decide to give slot 1 a permanent home: your email
-signature. You open `Ctrl+Shift+Grave, X`, navigate to slot 1, press Set
+signature. You open `Ctrl+Alt+V`, navigate to slot 1, press Set
 Label..., type "signature", press Enter. Now when you paste, QUILL says "Pasted
 from slot 1 (signature)". The slot is identifiable without looking at a screen.
 
@@ -11995,10 +12068,10 @@ your cursor. You minimize again.
 
 ### Screen reader workflow
 
-Press `Ctrl+Shift+5`. QUILL says "Slot 5 is empty." You know immediately
+Press `Ctrl+Alt+Shift+5`. QUILL says "Slot 5 is empty." You know immediately
 without opening a dialog or reading the screen. Select some text, press
 `Ctrl+Shift+Grave, Shift+5`. "Copied to slot 5." Move elsewhere. Press
-`Ctrl+Shift+5`. "Pasted from slot 5." Everything happened through voice, at
+`Ctrl+Alt+Shift+5`. "Pasted from slot 5." Everything happened through voice, at
 typing speed, with standard modifier+number chords.
 
 ---
@@ -12089,7 +12162,7 @@ A temporary navigation state that makes the QUILL key prefix commands available 
 A searchable pop-up listing every registered QUILL command with its current keyboard shortcut. Open with `Ctrl+Shift+P`. Type any part of a command name to filter the list, then press Enter to run it. The fastest way to reach any action without memorising menu paths or key bindings.
 
 **Copy Tray**
-A multi-slot clipboard within QUILL that holds up to twelve named text snippets at once. Unlike the Windows clipboard (which holds only one item), the Copy Tray lets you copy different pieces of text to individual numbered slots (`Ctrl+Shift+Grave, Shift+1` through `Shift+9`, `Shift+0`, `Shift+-`, `Shift+=`) and paste from any slot. Open the Copy Tray dialog with `Ctrl+Shift+Grave, X` or `Win+V`-style double QUILL-key press.
+A multi-slot clipboard within QUILL that holds up to twelve named text snippets at once. Unlike the Windows clipboard (which holds only one item), the Copy Tray lets you copy different pieces of text to individual numbered slots (`Ctrl+Shift+Grave, Shift+1` through `Shift+9`, `Shift+0`, `Shift+-`, `Shift+=`) and paste from any slot. Open the Copy Tray dialog with `Ctrl+Alt+V` or `Win+V`-style double QUILL-key press.
 
 **Document Tab**
 A single open file or generated artifact inside the QUILL editor area. QUILL is a tabbed editor; each file, compare summary, or AI output opens as its own document tab. Tabs are announced by name when you switch between them (`Ctrl+Tab`).
@@ -12140,7 +12213,7 @@ A pre-written document structure that you can use as a starting point for new te
 A directory that QUILL monitors in the background. Any supported file dropped into the watch folder is automatically opened as a new document tab (or processed according to per-folder rules). Useful for transcription pipelines, dictation outputs, and batch review workflows. Configure in **Tools → Watch Folder**.
 
 **WebView / Side Preview**
-The rendered HTML preview pane that appears alongside the editor when you open it from the **View** menu (or automatically, with Auto Side-by-Side Preview on). `Ctrl+F6` focuses it, and it joins the `F6` region rotation while open. The preview is powered by Microsoft Edge WebView2 and renders Markdown, HTML, and plain text in real time as you type. The preview is read-only and does not affect the document.
+The rendered HTML preview pane that appears alongside the editor when you open it from the **View** menu (or automatically, with Auto Side-by-Side Preview on). `Alt+F6` focuses it, and it joins the `F6` region rotation while open. The preview is powered by Microsoft Edge WebView2 and renders Markdown, HTML, and plain text in real time as you type. The preview is read-only and does not affect the document.
 
 **Welcome Guide**
 A lightweight, profile-aware getting-started document that opens inside QUILL as a document tab. Unlike the full User Guide (which opens in your browser), the Welcome Guide adapts its content to show only the features enabled in your current profile. Open it from **Help → Open Welcome Guide**.

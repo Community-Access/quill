@@ -290,6 +290,15 @@ DEFAULT_ALIASES: dict[str, str] = {
     # the dictionary and the same reflex in QUILL merely checked a word. An
     # alias rather than a move: Ctrl+F7 is the primary and keeps working.
     "cmd_next_misspelling": "Alt+F7",
+    # Word's F-keys for the three file verbs, which QUILL has carried as aliases
+    # since 2026-09 and QuillLite did not -- the one place the Microsoft-habit
+    # audit of 2026-09-18 found the two products still disagreeing. Rule 1 says
+    # Microsoft's key wins for a function both editors have, and rule 5 says a
+    # chord free in both is adopted as an ALIAS rather than a move: all three
+    # were free here, so nothing shifted and the primaries keep working.
+    "cmd_save_as": "F12",
+    "cmd_open": "Ctrl+F12",
+    "cmd_print": "Ctrl+Shift+F12",
 }
 
 
