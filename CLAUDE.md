@@ -149,8 +149,9 @@ are pytest gates and one is a tool in `platform_report`:
 **Behavioural coverage (GATE-LITE-COVER):** every handler in QuillLite's command
 table is classified `covered` or `shape_only` in
 `tests/unit/ui/fixtures/lite_command_coverage.json`, and **the `shape_only` list
-is empty** — all 161 handlers have a behavioural test as of 2026-09-11, and the
-gate now asserts zero rather than a ceiling. `covered` means a test in `tests/unit/apps` **calls** the
+is empty** — every handler has a behavioural test (161 of them
+when that became true on 2026-09-11, 198 on 2026-09-18), and the gate now
+asserts zero rather than a ceiling. `covered` means a test in `tests/unit/apps` **calls** the
 handler -- detected by an AST walk, not a grep, because a test that lists handler
 names in a table is exactly the shape of test that let the F8 bug through
 (`cmd_start_extend_selection` had a key, a label, a handler and a passing test,

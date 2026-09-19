@@ -395,7 +395,8 @@ A few things worth knowing: the Illumination travels as a *separate file*, so if
 ### How this file is written: encoding and line endings
 
 **File ▸ File Format...** (`Ctrl+Alt+E`) is one window for the two facts that
-decide what bytes land on disk, and it is the same window in QuillLite.
+decide what bytes land on disk. QuillLite opens the same window on the same key,
+under its own name: **Tools ▸ File Encoding and Line Endings...**.
 
 - **Encoding.** UTF-8 for anything new; UTF-8 with BOM for the Windows tools
   that expect one; UTF-16; and Windows-1252 for the older `.txt` files that are
@@ -5311,9 +5312,12 @@ The pause is the whole mechanism. It is a *second* utterance, not one long one,
 so it can be interrupted: press the next key and the spelling is cancelled
 unheard. A fast reader pays nothing for a feature a careful reader needs.
 
-Twelve settings under **Spelling** in Settings control all of it, and QuillLite
-stores the same twelve under **Tools ▸ Spelling ▸ Announcements**, so tuning
-this once tunes both.
+Twelve settings under **Spelling** in Settings control all of it, and both
+editors also gather them into one window of their own. In QUILL it is
+**Spelling Announcements**, on `Ctrl+Alt+Shift+F6` or by name in the command
+palette (`Ctrl+Shift+P`); in QuillLite it is **Tools ▸ Spelling ▸
+Announcements**. Same twelve settings, same file, so tuning this once tunes
+both.
 
 **While you are typing.** **spelling_alert_sound** plays the falling blip when
 you finish a misspelled word; turn it off for silence. **spelling_alert_speech**

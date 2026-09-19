@@ -9,10 +9,15 @@ in [the PRD](../../standalone/quilllite/docs/prd.md) and
 [the release notes](../../standalone/quilllite/docs/release-notes-1.0.md).
 
 **Why this file exists.** Everything an automated test can answer about
-QuillLite is already answered: 81 unit tests over the wx-free cores, the F1
-audit, the access-key and over-announce gates, and 24 live checks against a real
-`RICHEDIT50W` (`standalone/quilllite/tests/probe_live.py`). What none of them can
-answer is what a person actually *hears*. That is this list.
+QuillLite is already answered: the wx-free core suites (`tests/unit/core/lite`,
+204 tests), the behavioural coverage gate over every handler in its command
+table (198 today, none of them shape-only), the F1 audit, the access-key and over-announce gates, the family gates
+that hold it and QUILL to the same keys and the same words, and 21 live checks
+against a real `RICHEDIT50W` (`standalone/quilllite/tests/probe_live.py`). What
+none of them can answer is what a person actually *hears*. That is this list.
+
+Counts in that paragraph are the kind of thing that rots; `python -m
+quill.tools.platform_report` is the answer that is true today.
 
 ## Before you start (3 minutes)
 
@@ -32,9 +37,9 @@ answer is what a person actually *hears*. That is this list.
 
 ## The 15-minute pass
 
-No time for the whole thing? Run exactly these fifteen and stop:
+No time for the whole thing? Run exactly these sixteen and stop:
 **L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61, L-90, L-105,
-L-121, L-157, L-160.**
+L-121, L-157, L-160, L-226.**
 
 They cover the four things most likely to be wrong and worst if they are: the
 document announces itself, F1 answers, the status bar is reachable, and a file
@@ -53,6 +58,11 @@ because a cue queued behind the screen reader is cancelled outright on a big
 jump. **L-160** is the counterweight -- everything added in Block Q is speech,
 and over-announcing is absorbed as "this app is chatty" and never filed, which
 is exactly why it needs a box to tick.
+
+**L-226** joined on 2026-09-18, and it is the same defect as L-90 one more time:
+the Encoding and Line Endings cells read "UTF-8" and "CRLF" in a rich text
+document, which has neither. A cell stating a fact the document does not have is
+the one thing this status bar must never do.
 
 ---
 
@@ -1839,6 +1849,144 @@ QuillLite even though the work was mostly QUILL's side.
 - Do: read Edit ▸ Selection top to bottom.
 - Pass: every key is the one it was. QuillLite's selection keys were already the
   family's; what changed was QUILL coming into line with them.
+- [ ] pass  [ ] fail: ______
+
+---
+
+## Block R -- The 2026-09-18 additions (10 min)
+
+The family parity program. Most of it landed on QUILL's side; these are the
+QuillLite halves, and the two that are shared behave identically in both by
+design -- so if one of these fails here, check QUILL before filing it as
+QuillLite's.
+
+### The File Encoding and Line Endings window
+
+**L-223. It shows what this file actually is**
+- Do: make a file whose lines end with a single CR (classic Mac); writing
+  `b"one<CR>two<CR>"` as raw bytes is enough. Open it in QuillLite and press
+  **Ctrl+Alt+E**.
+- Pass: the Line Endings list starts on a row saying **keep as is**, naming CR.
+- Fail if it reads "CRLF" or "LF". Until 2026-09-18 it read CRLF -- the list fell
+  back to its first row for anything it could not offer, so the window stated a
+  fact about the file that was not true.
+- [ ] pass  [ ] fail: ______
+
+**L-224. Confirming it does not convert a file you only opened**
+- Do: with that same file open and the window showing **keep as is**, press
+  **Enter** to confirm, then **Ctrl+S**.
+- Pass: the file on disk still has single-CR line endings. Check the byte size,
+  or reopen it -- the line count must not have changed.
+- [ ] pass  [ ] fail: ______
+
+**L-225. A UTF-16 big-endian file is still big-endian afterwards**
+- Do: save a file as UTF-16 big-endian with a BOM (Notepad's "Unicode big
+  endian" will do). Open it in QuillLite, change nothing, press **Ctrl+S**.
+- Pass: the first two bytes are still `FE FF`.
+- Fail if they are `FF FE` -- that is little-endian, every pair of bytes in the
+  file swapped by a save that changed nothing else. Both byte orders used to
+  decode through the one codec that always writes little-endian.
+- [ ] pass  [ ] fail: ______
+
+### The status bar in a rich document
+
+**L-226. Encoding and Line Endings say a rich document has neither**
+- Do: open or make a `.rtf`. Press **F6** and read the **Encoding** and **Line
+  Endings** parts.
+- Pass: **"RTF (rich text)"** and **"Not applicable (rich text)"**.
+- Fail if they read "UTF-8" and "CRLF". Those are a plain file's two answers, and
+  RTF has neither -- it writes an accented letter as an escape sequence of its
+  own and marks a paragraph its own way. This is in the 15-minute pass for the
+  same reason L-90 and L-121 are: a status cell that states a fact the document
+  does not have is the defect this product cannot ship.
+- [ ] pass  [ ] fail: ______
+
+### The keys the editing control brings with it
+
+**L-227. A formatting key that cannot mean anything says so**
+- Do: in a **plain text** document, press **Ctrl+U**.
+- Pass: nothing is underlined, and you hear **"Underline has no meaning in a
+  plain text document."**
+- Fail if the text underlines (the old behaviour: really applied, not marked
+  dirty, never announced, never saved), or if the key is swallowed in silence.
+- [ ] pass  [ ] fail: ______
+
+**L-228. Said once, not on every press**
+- Do: press **Ctrl+U** twice more in the same document.
+- Pass: silence both times. A key that explains itself on every press is noise
+  inside a minute.
+- [ ] pass  [ ] fail: ______
+
+**L-229. Each effect gets its own one explanation**
+- Do: in the same document press **Ctrl+R**, then **Ctrl+R** again.
+- Pass: **"Right alignment has no meaning in a plain text document."** the first
+  time, silence the second. Once per effect, not once per document -- the second
+  key is a different question.
+- [ ] pass  [ ] fail: ______
+
+**L-230. A Markdown document names itself, and so does an HTML one**
+- Do: switch to Markdown (**Ctrl+Shift+M** until the Format part says so) and
+  press **Ctrl+U**. Then switch to HTML and press **Ctrl+E**.
+- Pass: **"... in a Markdown document."** and **"... in an HTML document."**
+- Fail on **"a html document"**: QuillLite lower-cased its own Format label
+  before building the sentence, so an initialism lost the article it needs when
+  spoken aloud. Both editors now name a kind of document from one shared table.
+- [ ] pass  [ ] fail: ______
+
+**L-231. A rich text document still underlines**
+- Do: switch to **Rich text** and press **Ctrl+U**, then type a word.
+- Pass: the word is underlined and nothing is said about meaning. The guard is
+  for documents that cannot hold formatting; in a rich one the control's own key
+  is exactly right.
+- [ ] pass  [ ] fail: ______
+
+### Spelling
+
+**L-232. Suggestions spell themselves as you arrow**
+- Do: type `recieve`, open the spelling review (**F7**), and arrow down the
+  suggestion list.
+- Pass: each suggestion is said and then, after a pause, spelt out.
+- Fail if you hear only the words. "receive" and "recieve" are the same sound,
+  which is the whole reason the list exists; choosing between them by ear is
+  impossible without the letters. Interruptible as always: press the next key and
+  the spelling stops unheard.
+- [ ] pass  [ ] fail: ______
+
+### Word's last three keys
+
+**L-233. F12, Ctrl+F12 and Ctrl+Shift+F12**
+- Do: press **F12**. Escape. Press **Ctrl+F12**. Escape. Press
+  **Ctrl+Shift+F12**.
+- Pass: Save As, then Open, then Print -- Word's keys for all three. They are
+  aliases: **Ctrl+Shift+S**, **Ctrl+O** and **Ctrl+P** still work.
+- Fail if any of the three does nothing. QUILL carried all three and QuillLite
+  carried none, which is a habit that works in one editor and not the other.
+- [ ] pass  [ ] fail: ______
+
+### After QUILL brings your setup across
+
+Run these only if you have also run QUILL's **Bring My QuillLite Settings**
+(**Alt+Shift+F11** there) on the same machine, and answered yes.
+
+**L-234. QuillLite is reading the shared stores from QUILL**
+- Do: in QuillLite, open its preferences and find the two sharing switches
+  (abbreviations, personal dictionary).
+- Pass: both are **on**. QUILL turned them on when it took the copies, because
+  QUILL holding your words while QuillLite still reads its own copy is what makes
+  a "shared" store look broken.
+- [ ] pass  [ ] fail: ______
+
+**L-235. A word added in one editor is there in the other**
+- Do: in QUILL, add an abbreviation. Restart QuillLite and expand it.
+- Pass: it expands. One set of abbreviations, both editors.
+- [ ] pass  [ ] fail: ______
+
+**L-236. Nothing of yours was replaced**
+- Do: check an abbreviation you had in QuillLite before the merge, and one you
+  had in QUILL.
+- Pass: both are still there, with their own expansions. QUILL wins a collision
+  and nothing already in QUILL is overwritten, but neither side loses an entry
+  the other did not have.
 - [ ] pass  [ ] fail: ______
 
 ---

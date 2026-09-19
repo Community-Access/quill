@@ -165,6 +165,7 @@ class DocumentTypingMixin:
         from quill.core.native_richedit_keys import (
             native_formatting_effect,
             native_formatting_notice,
+            notice_kind_label,
         )
 
         if getattr(self.editor, "mode", None) == RICH:
@@ -200,7 +201,12 @@ class DocumentTypingMixin:
             self._native_key_notices = seen
         if effect not in seen:
             seen.add(effect)
-            self._announce(native_formatting_notice(effect, self.document_kind_label().lower()))
+            # Through the shared table, not .lower(): lower-casing this
+            # window's own "HTML" said "a html document" where QUILL said
+            # "an HTML document", for the same key in the same file.
+            self._announce(
+                native_formatting_notice(effect, notice_kind_label(self.document_kind_label()))
+            )
         return True
 
     @staticmethod

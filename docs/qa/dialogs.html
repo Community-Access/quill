@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL dialog regression checklist</title>
   <style>
@@ -276,6 +276,43 @@ menu</label></li>
 menu</label></li>
 <li><label><input type="checkbox" />Choose Encoding: via File
 menu</label></li>
+<li><label><input type="checkbox" />File Format (encoding and line
+endings in one window): <code>Ctrl+Alt+E</code></label>
+<ul class="task-list">
+<li><label><input type="checkbox" />A file in a format neither list
+offers (UTF-16 big-endian, single-CR line endings) starts on a
+<strong>keep as is</strong> row and stays there, so Enter cannot convert
+a file that was only opened to read</label></li>
+<li><label><input type="checkbox" />Neither list is applied until the
+next save, and the window says so</label></li>
+<li><label><input type="checkbox" />QuillLite’s own copy of this window
+is <strong>Tools &gt; File Encoding and Line Endings…</strong> on the
+same key</label></li>
+</ul></li>
+<li><label><input type="checkbox" />File Changed on Disk: <strong>no
+menu path</strong> – shown when another program writes to the file you
+have open (save the same file from Notepad to raise it)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Three buttons: <strong>Reload from
+Disk</strong> (default, focused on open), <strong>Keep Mine</strong>
+(also Escape), <strong>Open Disk Version in a New
+Tab</strong></label></li>
+<li><label><input type="checkbox" />The message says what each answer
+costs, and says something different when the buffer has unsaved
+edits</label></li>
+<li><label><input type="checkbox" /><strong>Do not ask me again for
+.<ext> files</strong> checkbox: remembers Reload or Keep Mine for that
+format only, and is never remembered for the New Tab answer</label></li>
+<li><label><input type="checkbox" />Nothing is reloaded silently, with
+or without unsaved edits</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Forget Remembered File-Change
+Answers: <code>Ctrl+Shift+F11</code>, or File menu</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Says how many formats were
+forgotten, and says so rather than nothing when there were none. The
+only way back from the checkbox above</label></li>
+</ul></li>
 <li><label><input type="checkbox" />Open from URL: via File
 menu</label></li>
 <li><label><input type="checkbox" />Open from Remote…: QUILL key, then
@@ -410,6 +447,17 @@ menu</label></li>
 <code>Alt+Shift+L</code></label></li>
 <li><label><input type="checkbox" />Thesaurus:
 <code>Shift+F7</code></label></li>
+<li><label><input type="checkbox" />Spelling Announcements (how a
+misspelling is said, and when): <code>Ctrl+Alt+Shift+F6</code>, or by
+name in the command palette. No menu row; QuillLite’s copy is
+<strong>Tools &gt; Spelling &gt; Announcements</strong></label>
+<ul class="task-list">
+<li><label><input type="checkbox" />The twelve settings are the same
+twelve in both editors, in one file</label></li>
+<li><label><input type="checkbox" />In the F7 review, arrowing the
+suggestion list says each suggestion and then spells it – interruptibly,
+as a second utterance</label></li>
+</ul></li>
 <li><label><input type="checkbox" />Look Up (definitions/synonyms, with
 Add to Dictionary): editor context menu (<code>Shift+F10</code>) &gt;
 Look Up</label></li>
@@ -540,6 +588,26 @@ menu</label></li>
 <li><label><input type="checkbox" />YAML Structure Editor: via Tools
 menu</label></li>
 </ul>
+<h2 id="o2-tools-the-other-editor">O2. Tools: the other editor</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Bring My QuillLite Settings:
+<code>Alt+Shift+F11</code>, or Tools &gt; Customize and Support</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Describes the plan
+<strong>before</strong> applying it: how many settings, how many rebound
+keys, which stores are merged, and what is being left
+behind</label></li>
+<li><label><input type="checkbox" />Answering No leaves QUILL’s own
+settings alone and says so</label></li>
+<li><label><input type="checkbox" />Answering Yes reports what it
+brought, that QuillLite now reads the shared stores from QUILL, and that
+a restart shows every change</label></li>
+<li><label><input type="checkbox" />Says so plainly when QuillLite has
+never been run on this computer, or has nothing to bring</label></li>
+<li><label><input type="checkbox" />Nothing already in QUILL is replaced
+– QUILL wins every collision</label></li>
+</ul></li>
+</ul>
 <h2 id="p-tools-macros">P. Tools: macros</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Manage Macros: via Tools
@@ -611,7 +679,14 @@ Publishing Connections</label></li>
 <h2 id="s-help-features-and-profile">S. Help: features and profile</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Switch Feature Profile:
-<code>Alt+Shift+P</code></label></li>
+<code>Alt+Shift+P</code></label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Choosing the
+<strong>QuillLite</strong> profile offers to bring a QuillLite setup
+over (native Yes/No), once only, and applies the settings the profile’s
+own name promises – a plain document model, not just a smaller menu
+bar</label></li>
+</ul></li>
 <li><label><input type="checkbox" />Feature Profile Health Check: via
 Help menu</label></li>
 <li><label><input type="checkbox" />Manage Individual Features: via Help

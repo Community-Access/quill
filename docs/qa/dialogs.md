@@ -57,6 +57,25 @@ or the command palette (`Ctrl+Shift+P`).
 - [ ] Print: `Ctrl+P`
 - [ ] Restore Backup: via File menu
 - [ ] Choose Encoding: via File menu
+- [ ] File Format (encoding and line endings in one window): `Ctrl+Alt+E`
+  - [ ] A file in a format neither list offers (UTF-16 big-endian, single-CR line
+        endings) starts on a **keep as is** row and stays there, so Enter cannot
+        convert a file that was only opened to read
+  - [ ] Neither list is applied until the next save, and the window says so
+  - [ ] QuillLite's own copy of this window is **Tools > File Encoding and Line
+        Endings...** on the same key
+- [ ] File Changed on Disk: **no menu path** -- shown when another program writes to
+      the file you have open (save the same file from Notepad to raise it)
+  - [ ] Three buttons: **Reload from Disk** (default, focused on open), **Keep
+        Mine** (also Escape), **Open Disk Version in a New Tab**
+  - [ ] The message says what each answer costs, and says something different when
+        the buffer has unsaved edits
+  - [ ] **Do not ask me again for .<ext> files** checkbox: remembers Reload or Keep
+        Mine for that format only, and is never remembered for the New Tab answer
+  - [ ] Nothing is reloaded silently, with or without unsaved edits
+- [ ] Forget Remembered File-Change Answers: `Ctrl+Shift+F11`, or File menu
+  - [ ] Says how many formats were forgotten, and says so rather than nothing when
+        there were none. The only way back from the checkbox above
 - [ ] Open from URL: via File menu
 - [ ] Open from Remote...: QUILL key, then `Shift+O` (issues #154, #155, #156, #157)
   - [ ] Site list (saved FTP, SFTP, WebDAV, S3 sites) and directory browser
@@ -120,6 +139,12 @@ or the command palette (`Ctrl+Shift+P`).
 - [ ] Spell Check: `F7`
 - [ ] Misspelling List: `Alt+Shift+L`
 - [ ] Thesaurus: `Shift+F7`
+- [ ] Spelling Announcements (how a misspelling is said, and when):
+      `Ctrl+Alt+Shift+F6`, or by name in the command palette. No menu row;
+      QuillLite's copy is **Tools > Spelling > Announcements**
+  - [ ] The twelve settings are the same twelve in both editors, in one file
+  - [ ] In the F7 review, arrowing the suggestion list says each suggestion and
+        then spells it -- interruptibly, as a second utterance
 - [ ] Look Up (definitions/synonyms, with Add to Dictionary): editor context menu (`Shift+F10`) > Look Up
 
 ## E. Tools: accessibility
@@ -199,6 +224,18 @@ state and lists any installed Quillins read-only.
 - [ ] List Manager: QUILL key, then `L`
 - [ ] YAML Structure Editor: via Tools menu
 
+## O2. Tools: the other editor
+
+- [ ] Bring My QuillLite Settings: `Alt+Shift+F11`, or Tools > Customize and Support
+  - [ ] Describes the plan **before** applying it: how many settings, how many
+        rebound keys, which stores are merged, and what is being left behind
+  - [ ] Answering No leaves QUILL's own settings alone and says so
+  - [ ] Answering Yes reports what it brought, that QuillLite now reads the shared
+        stores from QUILL, and that a restart shows every change
+  - [ ] Says so plainly when QuillLite has never been run on this computer, or has
+        nothing to bring
+  - [ ] Nothing already in QUILL is replaced -- QUILL wins every collision
+
 ## P. Tools: macros
 
 - [ ] Manage Macros: via Tools menu
@@ -240,6 +277,9 @@ state and lists any installed Quillins read-only.
 ## S. Help: features and profile
 
 - [ ] Switch Feature Profile: `Alt+Shift+P`
+  - [ ] Choosing the **QuillLite** profile offers to bring a QuillLite setup over
+        (native Yes/No), once only, and applies the settings the profile's own name
+        promises -- a plain document model, not just a smaller menu bar
 - [ ] Feature Profile Health Check: via Help menu
 - [ ] Manage Individual Features: via Help menu (Help > Feature Profiles > Manage Individual Features...)
 - [ ] Why Don't I See a Feature?: via Help menu

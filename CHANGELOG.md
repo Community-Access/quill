@@ -79,6 +79,23 @@ There is one now, owned by shared code and answering both, and the status bar's
 line and column come off its cached line table rather than a fresh scan on every
 arrow press.
 
+**One dead key, one sentence.** A formatting chord the editing control answers
+but the document cannot hold --- `Ctrl+U` in Markdown, say --- is swallowed and
+explained once, in both editors, from one shared table. QuillLite lower-cased its
+own Format label on the way into that sentence, so an HTML document heard "a html
+document" where QUILL said "an HTML document": the article is chosen by *sound*
+because the sentence is spoken, and lower-casing an initialism throws that away.
+
+**The documents caught up.** Both user guides now cover the File Format window's
+**keep as is** rows and what a rich document's Encoding and Line Endings cells
+say, the QuillLite guide explains the swallowed formatting keys, and the QA
+estate covers the whole program: a new **Block R** in
+`docs/qa/quilllite-signoff.md` (L-223 to L-236, with the rich-document status
+cells promoted into the fifteen-minute pass), the four new windows in
+`docs/qa/dialogs.md`, and **PARITY-001** to **PARITY-006** in
+`docs/release/screen-reader-test-plan.md` for everything in this entry that is
+announced rather than shown.
+
 
 ### Ctrl+F6 walks documents, and Word Count stopped opening a window (2026-09-17)
 

@@ -187,6 +187,170 @@ over from the retired `save-as-conversion-fix` plan; converter bake-off verdicts
 - [ ] **Engine preference:** flip `docx_write_engine` to pandoc, Save As .docx, open in
   Word — structure present, fonts absent, matching the documented outcome.
 
+## PARITY-001 — The file changed on disk, and QUILL asks
+
+Fix: QUILL used to reload a tab silently whenever the buffer was clean. Nothing
+announced it, so a document could be replaced under the caret between one key and
+the next. It now always asks, and can be told to stop asking per file format.
+
+- TC-PARITY-001a — The question itself
+  - Steps: open a `.txt` in QUILL, then save the same file from Notepad. Return to
+    QUILL.
+  - Expected: a dialog titled "File Changed on Disk". Focus is on **Reload from
+    Disk**; the message names the file and says what each of the three answers
+    would do. Nothing has changed in the document until you answer.
+- TC-PARITY-001b — With unsaved edits, the wording changes
+  - Steps: as above, but type in QUILL first so the buffer is dirty.
+  - Expected: the message says the edits would be replaced by the version on disk;
+    the three answers are the same three.
+- TC-PARITY-001c — The third answer
+  - Steps: press **Open Disk Version in a New Tab**.
+  - Expected: a second tab opens with the disk version, announced as a new
+    document; the first tab is untouched and still dirty.
+- TC-PARITY-001d — Remembering, per format
+  - Steps: raise the question again, tick **Do not ask me again for .txt files**,
+    and choose **Keep Mine**. Raise it again on a `.txt`, then on a `.md`.
+  - Expected: the `.txt` is kept with no dialog and a spoken status line saying so;
+    the `.md` still asks. The checkbox is reachable by Tab and announced with its
+    own name, not as an unnamed check box.
+- TC-PARITY-001e — The way back
+  - Steps: press `Ctrl+Shift+F11` (File > Forget Remembered File-Change Answers).
+  - Expected: it says how many formats were forgotten. Pressing it again says that
+    no formats are being answered for you — not silence. A question that can be
+    switched off and not on is a trap, and this is the only way back.
+
+## PARITY-002 — Three sentences about the document you are in
+
+Fix: the three "magical tier" commands, each answering a question a listener
+otherwise cannot ask. All three are announcements, so over-announcing is the risk
+to watch as much as under-announcing.
+
+- TC-PARITY-002a — What Is This Document? (`Alt+Shift+F1`)
+  - Steps: open a Markdown file with several headings and a list; press the key.
+  - Expected: one sentence, in this order: kind and size ("Markdown: 412 words, 38
+    lines"), then shape ("6 headings and 14 list items"), then anything that will
+    stop you ("Read-only"). A document with no headings says **"No headings"** —
+    that is why Alt+Down will not move, and a listener who is not told spends the
+    next few presses finding out.
+  - Expected: an empty document says **"Empty document"**. An empty document and a
+    document that failed to load sound identical otherwise, and the difference is
+    whether to start typing.
+- TC-PARITY-002b — What Changed? (`Alt+Shift+F2`)
+  - Steps: with a fresh document, press the key. Then type a sentence, press it
+    again. Then paste a paragraph and press it again.
+  - Expected: first **"Nothing has changed this document yet."**, then a sentence
+    naming the action, where it happened, and how much it was. Never the text
+    itself: the journal records sizes, so a password typed into a document cannot
+    be read back out of it.
+- TC-PARITY-002c — Undo and Say What Changed (`Alt+Shift+F3`)
+  - Steps: type a word, press the key.
+  - Expected: the edit is undone **and** the announcement says what was undone and
+    how the document changed size. Pressing it with nothing to undo says so rather
+    than going silent.
+
+## PARITY-003 — A formatting key that cannot mean anything
+
+Fix: the native Rich Edit control answers `Ctrl+U`, `Ctrl+E`/`L`/`R`/`J`, `Ctrl+=`
+and `Ctrl+Shift+=` whether the document can hold formatting or not. In a Markdown
+or plain document the run was really applied — on screen and on the undo stack —
+and never marked dirty, never announced and never saved.
+
+- TC-PARITY-003a — Plain text
+  - Steps: in a plain document, press `Ctrl+U` and type a word.
+  - Expected: the word is not underlined, and the status line says **"Underline has
+    no meaning in a plain text document."**
+- TC-PARITY-003b — Once per effect, not once per press
+  - Steps: press `Ctrl+U` twice more, then `Ctrl+R` twice.
+  - Expected: silence for the repeated `Ctrl+U`; one sentence for the first
+    `Ctrl+R`, naming right alignment; silence for the second.
+- TC-PARITY-003c — The article is chosen by sound
+  - Steps: do the same in an HTML document.
+  - Expected: **"an HTML document"**, not "a HTML document". The sentence is going
+    to be spoken, and an initialism is read letter by letter. QuillLite says the
+    same sentence from the same shared table.
+- TC-PARITY-003d — Rich text is left alone
+  - Steps: in a `.rtf`, press `Ctrl+U` and type.
+  - Expected: the text underlines and nothing is said. The guard is for documents
+    that cannot hold formatting.
+
+## PARITY-004 — Suggestions are spelled, not just spoken
+
+Fix: QUILL's spelling review never spelled the suggestion you arrowed onto, while
+QuillLite always had.
+
+- TC-PARITY-004 — The F7 review list
+  - Steps: type `recieve`, open the review with `F7`, arrow down the suggestions.
+  - Expected: each suggestion is spoken and then, after a pause, spelled out as a
+    separate utterance — so pressing the next key cancels the spelling unheard.
+    "receive" and "recieve" are the same sound; the letters are the answer.
+
+## PARITY-005 — Bringing a QuillLite setup across
+
+Fix: QuillLite could already read QUILL's abbreviations and dictionary; QUILL had
+no way to take QuillLite's. Now it does, and the two stores become one.
+
+- TC-PARITY-005a — The plan is described before it is applied
+  - Steps: with QuillLite installed and used on the same machine, press
+    `Alt+Shift+F11` (Tools > Customize and Support > Bring My QuillLite
+    Settings...).
+  - Expected: a Yes/No question whose text says how many settings and rebound keys
+    would be copied, which stores would be merged **and shared from then on**, and
+    what is being **left behind**. An import that says nothing about its own limits
+    reads as having brought everything.
+- TC-PARITY-005b — No
+  - Steps: answer No.
+  - Expected: **"Left QUILL's own settings as they are."** Nothing is written.
+- TC-PARITY-005c — Yes
+  - Steps: answer Yes.
+  - Expected: an announcement counting the settings, the keys, the entries added
+    and the stores they went into; that QuillLite now reads those stores from
+    QUILL; and that a restart shows every change. Afterwards, an abbreviation you
+    had only in QuillLite expands in QUILL, and one you had only in QUILL is still
+    there with its own expansion.
+- TC-PARITY-005d — Nothing to bring
+  - Steps: run it on a machine where QuillLite has never run.
+  - Expected: it says so in one sentence rather than opening an empty dialog or
+    doing nothing.
+- TC-PARITY-005e — The profile offers it once
+  - Steps: `Alt+Shift+P`, choose the **QuillLite** profile.
+  - Expected: the same question is offered once, and never again after it has been
+    answered either way; the profile also applies the document model its name
+    promises rather than only renaming the menus.
+
+## PARITY-006 — The status bar in a document that has no encoding
+
+Fix: the Encoding and Line Endings segments read "UTF-8" and "CRLF" for a rich
+text document, which has neither.
+
+- TC-PARITY-006 — Rich text
+  - Steps: open a `.rtf`, press `F6`, read the Encoding and Line Endings segments.
+  - Expected: **"RTF (rich text)"** and **"Not applicable (rich text)"**. A segment
+    stating a fact the document does not have is worse than a segment that is not
+    there. The `Ctrl+Alt+E` window agrees: a file in a format its lists cannot
+    offer shows a **keep as is** row and stays in it.
+
+## PARITY-007 — An export keeps the document's own encoding, and says when it cannot
+
+Fix: Save As Plain Text and Save As HTML hard-coded UTF-8 and wrote
+non-atomically, so an exported copy of a Windows-1252 document came back in a
+different encoding than the document it came from, and a failure mid-write left a
+truncated file where the old one had been.
+
+- TC-PARITY-007a — The encoding survives the export
+  - Steps: open a Windows-1252 `.txt` (the Encoding segment says so), then
+    File > Export > Plain Text.
+  - Expected: the exported file is Windows-1252, not UTF-8.
+- TC-PARITY-007b — When a character will not fit, it is widened out loud
+  - Steps: type an em dash into that document and export again.
+  - Expected: the file is written as UTF-8 **and** a save warning says so, naming
+    the encoding that could not hold the text. Silence here would mean a file
+    whose encoding changed without anybody being told.
+- TC-PARITY-007c — The HTML charset matches the bytes
+  - Steps: File > Export > HTML from the same document; read the `<meta charset>`
+    of the result.
+  - Expected: it names the encoding actually written. A declaration that disagrees
+    with the bytes is worse than none: the browser believes the declaration.
+
 ## Sign-off
 
 - Tester:

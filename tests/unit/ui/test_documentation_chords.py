@@ -29,6 +29,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from quill.core.native_richedit_keys import NATIVE_FORMATTING_CHORDS
+
 _ROOT = Path(__file__).resolve().parents[3]
 
 GUIDES: tuple[Path, ...] = (
@@ -44,8 +46,12 @@ _CHORD = re.compile(
     r"|\*\*((?:Ctrl|Alt|Shift|Win)\+[^*]{0,40}?)\*\*"
 )
 
-#: Keys the operating system or the screen reader owns. QUILL does not bind them
-#: and the guides are right to name them.
+#: Keys the operating system, the screen reader or the editing control owns.
+#: Neither editor binds them and the guides are right to name them -- the last
+#: group is named precisely *because* nothing binds it: the native Rich Edit
+#: control answers those chords itself, and both guides explain that a document
+#: with no formatting swallows them and says so. Taken from the shared table
+#: rather than retyped, so a chord added there cannot make this list wrong.
 _NOT_OURS: frozenset[str] = frozenset({
     "alt+f4",
     "ctrl+alt+f4",
@@ -55,6 +61,7 @@ _NOT_OURS: frozenset[str] = frozenset({
     "shift+tab",
     "alt+tab",
     "ctrl+alt+delete",
+    *(chord.replace(" ", "").lower() for chord in NATIVE_FORMATTING_CHORDS),
 })
 
 #: Prose that is not a chord at all: a placeholder, or a modifier with nothing

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite -- sign-off checklist</title>
   <style>
@@ -208,12 +208,18 @@ PRD</a> and <a
 href="../../standalone/quilllite/docs/release-notes-1.0.md">the release
 notes</a>.</p>
 <p><strong>Why this file exists.</strong> Everything an automated test
-can answer about QuillLite is already answered: 81 unit tests over the
-wx-free cores, the F1 audit, the access-key and over-announce gates, and
-24 live checks against a real <code>RICHEDIT50W</code>
+can answer about QuillLite is already answered: the wx-free core suites
+(<code>tests/unit/core/lite</code>, 204 tests), the behavioural coverage
+gate over every handler in its command table (198 today, none of them
+shape-only), the F1 audit, the access-key and over-announce gates, the
+family gates that hold it and QUILL to the same keys and the same words,
+and 21 live checks against a real <code>RICHEDIT50W</code>
 (<code>standalone/quilllite/tests/probe_live.py</code>). What none of
 them can answer is what a person actually <em>hears</em>. That is this
 list.</p>
+<p>Counts in that paragraph are the kind of thing that rots;
+<code>python -m quill.tools.platform_report</code> is the answer that is
+true today.</p>
 <h2 id="before-you-start-3-minutes">Before you start (3 minutes)</h2>
 <ul>
 <li>Install or launch the build under test. Note the version from
@@ -233,9 +239,9 @@ line endings, a <code>.txt</code> saved with Unix line endings (any file
 from a git checkout will do), and any <code>.rtf</code>.</li>
 </ul>
 <h2 id="the-15-minute-pass">The 15-minute pass</h2>
-<p>No time for the whole thing? Run exactly these fifteen and stop:
+<p>No time for the whole thing? Run exactly these sixteen and stop:
 <strong>L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61,
-L-90, L-105, L-121, L-157, L-160.</strong></p>
+L-90, L-105, L-121, L-157, L-160, L-226.</strong></p>
 <p>They cover the four things most likely to be wrong and worst if they
 are: the document announces itself, F1 answers, the status bar is
 reachable, and a file comes back byte-for-byte. L-90 is there because a
@@ -255,6 +261,11 @@ outright on a big jump. <strong>L-160</strong> is the counterweight –
 everything added in Block Q is speech, and over-announcing is absorbed
 as “this app is chatty” and never filed, which is exactly why it needs a
 box to tick.</p>
+<p><strong>L-226</strong> joined on 2026-09-18, and it is the same
+defect as L-90 one more time: the Encoding and Line Endings cells read
+“UTF-8” and “CRLF” in a rich text document, which has neither. A cell
+stating a fact the document does not have is the one thing this status
+bar must never do.</p>
 <hr />
 <h2 id="block-a--opening-and-where-focus-lands-5-min">Block A – Opening,
 and where focus lands (5 min)</h2>
@@ -3087,6 +3098,209 @@ now; it used to select a “chunk” there.</li>
 <li>Pass: every key is the one it was. QuillLite’s selection keys were
 already the family’s; what changed was QUILL coming into line with
 them.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-r--the-2026-09-18-additions-10-min">Block R – The
+2026-09-18 additions (10 min)</h2>
+<p>The family parity program. Most of it landed on QUILL’s side; these
+are the QuillLite halves, and the two that are shared behave identically
+in both by design – so if one of these fails here, check QUILL before
+filing it as QuillLite’s.</p>
+<h3 id="the-file-encoding-and-line-endings-window">The File Encoding and
+Line Endings window</h3>
+<p><strong>L-223. It shows what this file actually is</strong></p>
+<ul>
+<li>Do: make a file whose lines end with a single CR (classic Mac);
+writing <code>b"one&lt;CR&gt;two&lt;CR&gt;"</code> as raw bytes is
+enough. Open it in QuillLite and press <strong>Ctrl+Alt+E</strong>.</li>
+<li>Pass: the Line Endings list starts on a row saying <strong>keep as
+is</strong>, naming CR.</li>
+<li>Fail if it reads “CRLF” or “LF”. Until 2026-09-18 it read CRLF – the
+list fell back to its first row for anything it could not offer, so the
+window stated a fact about the file that was not true.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-224. Confirming it does not convert a file you only
+opened</strong></p>
+<ul>
+<li>Do: with that same file open and the window showing <strong>keep as
+is</strong>, press <strong>Enter</strong> to confirm, then
+<strong>Ctrl+S</strong>.</li>
+<li>Pass: the file on disk still has single-CR line endings. Check the
+byte size, or reopen it – the line count must not have changed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-225. A UTF-16 big-endian file is still big-endian
+afterwards</strong></p>
+<ul>
+<li>Do: save a file as UTF-16 big-endian with a BOM (Notepad’s “Unicode
+big endian” will do). Open it in QuillLite, change nothing, press
+<strong>Ctrl+S</strong>.</li>
+<li>Pass: the first two bytes are still <code>FE FF</code>.</li>
+<li>Fail if they are <code>FF FE</code> – that is little-endian, every
+pair of bytes in the file swapped by a save that changed nothing else.
+Both byte orders used to decode through the one codec that always writes
+little-endian.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="the-status-bar-in-a-rich-document">The status bar in a rich
+document</h3>
+<p><strong>L-226. Encoding and Line Endings say a rich document has
+neither</strong></p>
+<ul>
+<li>Do: open or make a <code>.rtf</code>. Press <strong>F6</strong> and
+read the <strong>Encoding</strong> and <strong>Line Endings</strong>
+parts.</li>
+<li>Pass: <strong>“RTF (rich text)”</strong> and <strong>“Not applicable
+(rich text)”</strong>.</li>
+<li>Fail if they read “UTF-8” and “CRLF”. Those are a plain file’s two
+answers, and RTF has neither – it writes an accented letter as an escape
+sequence of its own and marks a paragraph its own way. This is in the
+15-minute pass for the same reason L-90 and L-121 are: a status cell
+that states a fact the document does not have is the defect this product
+cannot ship.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="the-keys-the-editing-control-brings-with-it">The keys the
+editing control brings with it</h3>
+<p><strong>L-227. A formatting key that cannot mean anything says
+so</strong></p>
+<ul>
+<li>Do: in a <strong>plain text</strong> document, press
+<strong>Ctrl+U</strong>.</li>
+<li>Pass: nothing is underlined, and you hear <strong>“Underline has no
+meaning in a plain text document.”</strong></li>
+<li>Fail if the text underlines (the old behaviour: really applied, not
+marked dirty, never announced, never saved), or if the key is swallowed
+in silence.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-228. Said once, not on every press</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+U</strong> twice more in the same
+document.</li>
+<li>Pass: silence both times. A key that explains itself on every press
+is noise inside a minute.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-229. Each effect gets its own one explanation</strong></p>
+<ul>
+<li>Do: in the same document press <strong>Ctrl+R</strong>, then
+<strong>Ctrl+R</strong> again.</li>
+<li>Pass: <strong>“Right alignment has no meaning in a plain text
+document.”</strong> the first time, silence the second. Once per effect,
+not once per document – the second key is a different question.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-230. A Markdown document names itself, and so does an HTML
+one</strong></p>
+<ul>
+<li>Do: switch to Markdown (<strong>Ctrl+Shift+M</strong> until the
+Format part says so) and press <strong>Ctrl+U</strong>. Then switch to
+HTML and press <strong>Ctrl+E</strong>.</li>
+<li>Pass: <strong>“… in a Markdown document.”</strong> and <strong>“… in
+an HTML document.”</strong></li>
+<li>Fail on <strong>“a html document”</strong>: QuillLite lower-cased
+its own Format label before building the sentence, so an initialism lost
+the article it needs when spoken aloud. Both editors now name a kind of
+document from one shared table.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-231. A rich text document still underlines</strong></p>
+<ul>
+<li>Do: switch to <strong>Rich text</strong> and press
+<strong>Ctrl+U</strong>, then type a word.</li>
+<li>Pass: the word is underlined and nothing is said about meaning. The
+guard is for documents that cannot hold formatting; in a rich one the
+control’s own key is exactly right.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="spelling">Spelling</h3>
+<p><strong>L-232. Suggestions spell themselves as you arrow</strong></p>
+<ul>
+<li>Do: type <code>recieve</code>, open the spelling review
+(<strong>F7</strong>), and arrow down the suggestion list.</li>
+<li>Pass: each suggestion is said and then, after a pause, spelt
+out.</li>
+<li>Fail if you hear only the words. “receive” and “recieve” are the
+same sound, which is the whole reason the list exists; choosing between
+them by ear is impossible without the letters. Interruptible as always:
+press the next key and the spelling stops unheard.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="words-last-three-keys">Word’s last three keys</h3>
+<p><strong>L-233. F12, Ctrl+F12 and Ctrl+Shift+F12</strong></p>
+<ul>
+<li>Do: press <strong>F12</strong>. Escape. Press
+<strong>Ctrl+F12</strong>. Escape. Press
+<strong>Ctrl+Shift+F12</strong>.</li>
+<li>Pass: Save As, then Open, then Print – Word’s keys for all three.
+They are aliases: <strong>Ctrl+Shift+S</strong>, <strong>Ctrl+O</strong>
+and <strong>Ctrl+P</strong> still work.</li>
+<li>Fail if any of the three does nothing. QUILL carried all three and
+QuillLite carried none, which is a habit that works in one editor and
+not the other.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h3 id="after-quill-brings-your-setup-across">After QUILL brings your
+setup across</h3>
+<p>Run these only if you have also run QUILL’s <strong>Bring My
+QuillLite Settings</strong> (<strong>Alt+Shift+F11</strong> there) on
+the same machine, and answered yes.</p>
+<p><strong>L-234. QuillLite is reading the shared stores from
+QUILL</strong></p>
+<ul>
+<li>Do: in QuillLite, open its preferences and find the two sharing
+switches (abbreviations, personal dictionary).</li>
+<li>Pass: both are <strong>on</strong>. QUILL turned them on when it
+took the copies, because QUILL holding your words while QuillLite still
+reads its own copy is what makes a “shared” store look broken.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-235. A word added in one editor is there in the
+other</strong></p>
+<ul>
+<li>Do: in QUILL, add an abbreviation. Restart QuillLite and expand
+it.</li>
+<li>Pass: it expands. One set of abbreviations, both editors.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-236. Nothing of yours was replaced</strong></p>
+<ul>
+<li>Do: check an abbreviation you had in QuillLite before the merge, and
+one you had in QUILL.</li>
+<li>Pass: both are still there, with their own expansions. QUILL wins a
+collision and nothing already in QUILL is overwritten, but neither side
+loses an entry the other did not have.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>

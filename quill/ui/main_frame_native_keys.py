@@ -102,10 +102,12 @@ class NativeKeyGuardMixin:
         return "+".join(parts)
 
     def _native_key_kind_label(self) -> str:
-        """ "Markdown", "HTML" or "plain text" -- what this document actually is."""
-        kind = str(self._effective_markup_kind() or "").lower()
-        if kind in {"markdown", "md"}:
-            return "Markdown"
-        if kind in {"html", "htm", "xhtml"}:
-            return "HTML"
-        return "plain text"
+        """ "Markdown", "HTML" or "plain text" -- what this document actually is.
+
+        The names come from the shared table so that QuillLite, whose own
+        status cell spells these differently, cannot end up saying a different
+        sentence about the same key in the same file.
+        """
+        from quill.core.native_richedit_keys import notice_kind_label
+
+        return notice_kind_label(str(self._effective_markup_kind() or ""))

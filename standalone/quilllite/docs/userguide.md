@@ -173,6 +173,28 @@ deliberately change them from **Tools ▸ File Encoding and Line Endings**
 copy of an old file in a newer format. The change takes effect the next time you
 save.
 
+### How this file is written: encoding and line endings
+
+**Tools ▸ File Encoding and Line Endings...** (**Ctrl+Alt+E**) is one window for
+the two facts above, and it is the same window QUILL opens from **File ▸ File
+Format...**. Neither list is applied until you save; the window says so.
+
+**Encoding** offers UTF-8 for anything new, UTF-8 with BOM for the Windows tools
+that expect one, UTF-16, and Windows-1252 for the older `.txt` files that are in
+it. **Line endings** offers CRLF, which is what Windows programs write and what a
+new QuillLite document is born with, and LF, which is what Unix, macOS and most
+build tools expect.
+
+A file that arrived in something neither list offers keeps it. A UTF-16
+big-endian file, or a file whose lines end with a single CR the way classic Mac
+OS wrote them, shows a **keep as is** row at the top of the list and starts in
+it — so answering the window with Enter cannot convert a file you only opened to
+read. Until September 2026 the list quietly started on its first row instead: a
+CR file read "CRLF", and confirming the window rewrote every line ending in it.
+A big-endian file had a subtler version of the same problem — both byte orders
+were read through the one codec that always *writes* little-endian, so saving a
+file you had not otherwise touched swapped every pair of bytes in it.
+
 ### When a character will not fit
 
 Older files store only a limited set of letters. If you type an em dash, a
@@ -781,6 +803,31 @@ The rest of the Format menu — alignment, line spacing, font — is rich text o
 and says so when it cannot run. Lists are not: **Ctrl+Shift+L** works in a rich
 text document and in a Markdown one.
 
+**The keys the editing control brings with it.** Every QuillLite document is
+built on the same Windows editing control that WordPad uses, because that is what
+gives your screen reader and your braille display a text surface worth reading.
+The cost is that the control has its own keyboard: **Ctrl+U** underlines,
+**Ctrl+E**, **Ctrl+L**, **Ctrl+R** and **Ctrl+J** re-align, **Ctrl+=** and
+**Ctrl+Shift+=** move the baseline, and a few more besides. In a rich text
+document that is exactly right, and they work.
+
+In a Markdown, HTML or plain document they used to *appear* to work. The
+formatting was really applied — it was on the screen and on the undo stack — but
+the document was not marked as changed, nothing was announced, and none of it
+was saved. A document that differs from the file it is about to become, with
+nothing in the app willing to mention it, is the worst version of this bug for
+somebody who cannot see the screen.
+
+Now the key is swallowed in a document that has no formatting, and QuillLite says
+so once:
+
+> Underline has no meaning in a plain text document.
+
+Once per effect per document, not once per press: a key that does nothing and
+explains nothing is indistinguishable from a key that is broken, and a key that
+explains itself on every press becomes noise inside a minute. QUILL says the same
+sentence for the same key, from the same place in the shared code.
+
 **Ctrl+Shift+L rings**, the way WordPad's own button does: bulleted list,
 numbered list, no list, round again. Each stop says its own name, so you press it
 until you hear the one you meant. In rich text the control draws the markers and
@@ -1195,7 +1242,7 @@ than doing nothing.
 | **Selection** | How much is selected, or "No selection" | repeats it |
 | **Typing Mode** | Whether typing inserts or overwrites | switches between them |
 | **Tab Mode** | Whether the Tab key types a tab or indents the line | switches between them |
-| **Format** | Plain text or rich text | rings on to the next kind of document |
+| **Format** | Which of the four kinds this document is | rings on to the next kind of document |
 | **Heading** | Which heading you are inside | lists every heading |
 | **List** | Which list you are inside, how many items, which one you are on | stops or resumes announcing lists |
 | **Language** | Markdown, HTML, or plain text with no markup | change it |
@@ -1226,6 +1273,18 @@ you did not mean to type can always be taken back without switching modes first.
 file opens properly on somebody else's computer, and almost no other editor
 shows them at all. You will rarely need to change them — but when a file arrives
 looking like nonsense, this is where the answer is.
+
+In a **rich text** document these two read **"RTF (rich text)"** and **"Not
+applicable (rich text)"**, because a rich document has neither: RTF stores an
+accented letter as an escape sequence of its own and marks a paragraph its own
+way. They used to read "UTF-8" and "CRLF" there, which are the two answers a
+plain file gives — a cell stating a fact about a file that has no such fact.
+
+Both cells answer for the file you actually have. A file that arrived in a
+format this window cannot offer — UTF-16 big-endian, say, or the classic-Mac
+single-CR line ending — shows a **keep as is** row and stays in it, so
+pressing Enter and confirming cannot quietly convert a file you only opened to
+read. See [How this file is written](#how-this-file-is-written-encoding-and-line-endings).
 
 **List** answers the question the speech deliberately does not. Entering a list
 you hear "Bulleted list, 5 items"; this cell also tells you **which item you are

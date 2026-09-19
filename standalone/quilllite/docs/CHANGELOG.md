@@ -31,6 +31,21 @@
   from QUILL's no longer do. Choosing between "receive" and "recieve" by ear is
   as impossible in a list of corrections as it is in the document.
 
+- **An HTML document is "an HTML document".** The sentence above about a
+  swallowed formatting key is built from the kind of document you are in, and
+  QuillLite lower-cased its own Format label first --- which turned "HTML" into
+  "html" and so into "a html document", while QUILL said "an HTML document" for
+  the same key in the same file. The article is chosen by the *sound* of the
+  label, because this sentence is spoken and an initialism is read letter by
+  letter. Both editors now take the name from one shared table.
+
+- **The guide covers all of it**: the File Encoding and Line Endings window
+  including its **keep as is** rows, what the Encoding and Line Endings parts of
+  the status bar say in a rich text document, and the formatting keys the editing
+  control brings with it. The sign-off checklist gained **Block R** (L-223 to
+  L-236) for this release's additions, and L-226 --- the rich-document status
+  cells --- joined the fifteen-minute pass.
+
 ### Added
 
 - **Tutorials — Ctrl+Alt+F1.** Eight guided lessons in two tracks: opening a

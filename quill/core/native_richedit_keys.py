@@ -26,7 +26,33 @@ the same question and get the same sentence.
 
 from __future__ import annotations
 
-__all__ = ["native_formatting_effect", "native_formatting_notice"]
+__all__ = [
+    "NATIVE_FORMATTING_CHORDS",
+    "native_formatting_effect",
+    "native_formatting_notice",
+    "notice_kind_label",
+]
+
+#: How each kind of document is *named* in the sentence below. One table,
+#: because the two editors spell their own kinds differently -- QuillLite's
+#: status cell says "Plain text" and QUILL's markup kind says "html" -- and
+#: the sentence has to come out identical either way. QuillLite lower-cased
+#: its own label before handing it over, which turned "HTML" into "html" and
+#: so into "a html document" while QUILL said "an HTML document": the one
+#: thing this module exists to prevent.
+_NOTICE_KIND_LABELS: dict[str, str] = {
+    "markdown": "Markdown",
+    "md": "Markdown",
+    "html": "HTML",
+    "htm": "HTML",
+    "xhtml": "HTML",
+    "rich text": "rich text",
+    "rich": "rich text",
+    "plain text": "plain text",
+    "plain": "plain text",
+    "text": "plain text",
+    "txt": "plain text",
+}
 
 #: ``(ctrl, shift, key)`` -> what the native control would do. Alt is never
 #: part of one of these: the control's own chords are Ctrl and Ctrl+Shift.
@@ -56,6 +82,26 @@ def native_formatting_effect(*, ctrl: bool, shift: bool, alt: bool, key: str) ->
     if not ctrl or alt or len(key) != 1:
         return None
     return _NATIVE_EFFECTS.get((True, bool(shift), key.upper()))
+
+
+#: The same chords written the way a keymap and a user guide write them.
+#: Derived, not retyped: the documentation-chord gate needs to know which
+#: chords a guide may name without anything binding them, and a second
+#: hand-kept copy of this list would be the thing that drifts.
+NATIVE_FORMATTING_CHORDS: tuple[str, ...] = tuple(
+    "+".join(("Ctrl", *(("Shift",) if shift else ()), key)) for _ctrl, shift, key in _NATIVE_EFFECTS
+)
+
+
+def notice_kind_label(raw: str) -> str:
+    """The canonical name for a kind of document, for the notice below.
+
+    Anything unrecognised is ``plain text``, which is what an editor falls
+    back to for a file it has no markup reader for -- and the right answer
+    for the sentence, because a document with no markup is what the notice is
+    about.
+    """
+    return _NOTICE_KIND_LABELS.get(raw.strip().lower(), "plain text")
 
 
 def native_formatting_notice(effect: str, kind_label: str) -> str:

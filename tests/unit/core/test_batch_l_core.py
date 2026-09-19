@@ -24,7 +24,11 @@ from quill.core.lite.textfile import (
     encoding_rows,
     newline_rows,
 )
-from quill.core.native_richedit_keys import native_formatting_effect, native_formatting_notice
+from quill.core.native_richedit_keys import (
+    native_formatting_effect,
+    native_formatting_notice,
+    notice_kind_label,
+)
 
 # -- F8: byte order ------------------------------------------------------------
 
@@ -121,3 +125,36 @@ def test_the_notice_names_the_effect_and_the_kind() -> None:
     )
     assert "an HTML document" in native_formatting_notice("Superscript", "HTML")
     assert "a plain text document" in native_formatting_notice("Centre alignment", "plain text")
+
+
+def test_both_editors_name_a_kind_of_document_the_same_way() -> None:
+    """One dead key, one sentence -- whichever editor's label it starts from.
+
+    QUILL asks its markup kind, which is lower case ("html"); QuillLite asks its
+    own status cell, which is title case ("Plain text"). Before the shared table
+    QuillLite lower-cased its answer on the way in, so an HTML document heard "a
+    html document" in one editor and "an HTML document" in the other -- the same
+    key, the same file, two explanations.
+    """
+    for quill_side, lite_side in (
+        ("html", "HTML"),
+        ("markdown", "Markdown"),
+        ("", "Plain text"),
+        ("text", "Plain text"),
+    ):
+        assert notice_kind_label(quill_side) == notice_kind_label(lite_side)
+
+
+def test_the_article_survives_every_label_either_editor_can_produce() -> None:
+    spoken = {
+        kind: native_formatting_notice("Underline", notice_kind_label(kind))
+        for kind in ("html", "HTML", "markdown", "Markdown", "Plain text", "rich text", "")
+    }
+    assert "an HTML document" in spoken["html"]
+    assert "an HTML document" in spoken["HTML"]
+    assert "a Markdown document" in spoken["markdown"]
+    assert "a plain text document" in spoken["Plain text"]
+    assert "a rich text document" in spoken["rich text"]
+    # Anything unrecognised is the kind with no formatting, which is the kind
+    # this sentence is about.
+    assert "a plain text document" in spoken[""]
