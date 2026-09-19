@@ -113,6 +113,26 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.bring_from_quilllite(),
+            id=self._id_bring_from_quilllite,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.describe_this_document(),
+            id=self._id_describe_this_document,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.describe_last_change(),
+            id=self._id_describe_last_change,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.undo_and_say_what_changed(),
+            id=self._id_undo_and_say,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.restore_backup(),
             id=self._id_restore_backup,
         )

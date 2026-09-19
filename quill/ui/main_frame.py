@@ -422,7 +422,9 @@ from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_library import LibraryMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
+from quill.ui.main_frame_lite_bridge import LiteBridgeMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
+from quill.ui.main_frame_magical import MagicalTierMixin
 from quill.ui.main_frame_mastodon_social import MastodonSocialMixin
 from quill.ui.main_frame_media_player import MediaPlayerMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
@@ -826,6 +828,8 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    MagicalTierMixin,
+    LiteBridgeMixin,
     NativeKeyGuardMixin,
     ExternalChangeMixin,
     ExtendSelectionMixin,
@@ -17019,9 +17023,43 @@ class MainFrame(
         if (start, end, replacement) == (0, 0, ""):
             self._schedule_browse_prewarm()
             return
+        # Recorded before the write, because after it the old text is gone. This
+        # is the one place every command that rewrites text on QUILL's own
+        # behalf passes through, which is what makes "what did that just do?"
+        # answerable at all (bad.md P0.6c; P3.7's spoken undo reads this).
+        self.record_edit(
+            self._current_status_action(),
+            current_text[start:end],
+            replacement,
+            position=start,
+        )
         self._atomic_replace(start, end, replacement)
         self.editor.SetSelection(start, start + len(replacement))
         self._schedule_browse_prewarm()
+
+    def _current_status_action(self) -> str:
+        """The best name available for what is happening, for the journal.
+
+        The status message, which every one of these commands sets moments
+        before or after -- "Sorted lines ascending, 40 lines", "Applied bold".
+        It is not a command id, and that is deliberate: the journal is read back
+        to a person, and the sentence the command chose for itself is better
+        English than any identifier.
+        """
+        message = str(getattr(self, "_status_message", "") or "").strip()
+        return message or "Edit"
+
+    def record_edit(self, action: str, before: str, after: str, *, position: int = -1) -> None:
+        """Put one edit in the shared journal. Never raises.
+
+        Never raises because it is bookkeeping on the edit path: a journal that
+        can break a save is a journal not worth having, and the feature it feeds
+        (being told what changed) is worth strictly less than the edit itself.
+        """
+        try:
+            self.doc_text.record(action, before, after, position=position)
+        except Exception:  # noqa: BLE001 - bookkeeping must never break an edit
+            return
 
     def _apply_selection_operation(
         self,
@@ -18228,7 +18266,10 @@ class MainFrame(
                     self._set_status(f"Already using {name}")
                     return
                 self.features.switch_profile(profile_id)
-                self._set_status(f"Profile changed to {name}. Undo available.")
+                applied = self.apply_profile_settings(profile_id)
+                extra = f" {applied}" if applied else ""
+                self._set_status(f"Profile changed to {name}. Undo available.{extra}")
+                self.offer_bring_from_quilllite(profile_id)
             else:
                 custom_profile = self._load_custom_profiles().get(profile_id)
                 if custom_profile is None:

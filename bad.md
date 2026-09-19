@@ -1,6 +1,6 @@
 # QUILL and QuillLite: what is left
 
-Four items, audited against the code 2026-09-18. A landed item is deleted; git
+One item, audited against the code 2026-09-18. A landed item is deleted; git
 history is the record. Audit a row against the code before working it.
 
 ## The rules
@@ -43,51 +43,13 @@ Answered 2026-09-16; settled, do not re-litigate.
 
 | Question | Answer |
 | --- | --- |
-| `DocumentText` | **Build it fully** (P0.6c). |
-| The QuillLite profile in QUILL | **Build it** (P2.4). |
-| Sharing between the two editors | **Share the content, copy the preferences** (answered 2026-09-18): abbreviations, personal dictionary, copy tray, clip library and bookmarks live in one place both editors read and write; keymap overrides and app preferences stay per-editor (P2.4). |
-| The magical tier | **All four approved**: repeat the last announcement, structure on arrival, "what changed?", spoken undo (P3.7). |
 | QuillLite and braille | Write the position into QuillLite's PRD as a decision. Implementing braille there stays out of scope (P3.3). |
 
 ## The list
 
 | # | Editors | Batch |
 | --- | --- | --- |
-| [P2.4](#p24) the QuillLite profile in QUILL | QUILL | M |
-| [P0.6c](#p06c) QUILL adopts `DocumentText` | QUILL | N |
-| [P3.7](#p37) the magical tier | both | N |
 | [P3.3](#p33) documentation drift | docs | Z (last) |
-
-### P2.4
-
-A QUILL feature profile that shows QuillLite's nine menus in its order with its
-items and nothing else -- AI, companions, Quillins and the leader depth off,
-not hidden -- carrying `default_new_document_format` the way Lite's
-WordPad/Notepad profiles carry `default_mode`, and offering **Bring my
-QuillLite settings** on first activation (settings, keymap overrides,
-abbreviations, personal dictionary, copy tray, clip library, collector,
-per-file bookmarks -- all already sharing on-disk shapes). Unblocked: the
-settings-name mapping it needed is `quill/core/lite/parity.py`.
-
-### P0.6c
-
-QUILL adopts the shared `DocumentText`. The object exists and QuillLite is on
-it; QUILL still has `document.text` plus a stats cache in
-`main_frame_statusbar.py`. Architectural, in the largest module in the tree,
-and P3.7's spoken undo cannot start until its edit journal lands.
-
-V4 (both, Worse): **neither editor's document model is incremental.** QUILL's
-mirror makes reads free but every edit re-sets a whole string; Lite has no
-mirror. One `DocumentText` in core, owned by both, holds the string, bumps a
-revision, answers `line_column_for_position` and `stats` from a cache, and is
-the only thing display code may read. It retires V1-V3, S8 and half of 6.7.
-
-### P3.7
-
-The magical tier, all four approved: "What changed?", a spoken undo over the
-`DocumentText` journal, repeat-the-last-announcement, and a one-sentence
-structure summary on arrival. None has a command yet. QUILL first or
-shared-simultaneous, never QuillLite first.
 
 ### P3.3
 
@@ -123,8 +85,6 @@ menu may claim the same Alt letter.
 
 | Batch | Rows | One verification covers |
 | --- | --- | --- |
-| **M** | P2.4 | profiles |
-| **N** | P0.6c then P3.7 | the document model, in that order |
 | **Z** | P3.3 | the docs gates |
 
 1. **Per item: run only the touched suite.**

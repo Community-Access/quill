@@ -29,6 +29,30 @@ class CommandRegistryMixin:
             self._binding_for("file.forget_external_change_answers"),
         )
         self.commands.register(
+            "view.describe_this_document",
+            "What Is This Document?",
+            self.describe_this_document,
+            self._binding_for("view.describe_this_document"),
+        )
+        self.commands.register(
+            "view.describe_last_change",
+            "What Changed?",
+            self.describe_last_change,
+            self._binding_for("view.describe_last_change"),
+        )
+        self.commands.register(
+            "edit.undo_and_say",
+            "Undo and Say What Changed",
+            self.undo_and_say_what_changed,
+            self._binding_for("edit.undo_and_say"),
+        )
+        self.commands.register(
+            "tools.bring_from_quilllite",
+            "Bring My QuillLite Settings",
+            self.bring_from_quilllite,
+            self._binding_for("tools.bring_from_quilllite"),
+        )
+        self.commands.register(
             "tools.spelling_announcements",
             "Spelling Announcements",
             self.open_spelling_announcements,

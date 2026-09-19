@@ -531,6 +531,12 @@ class Settings:
     # dialog. Forgotten again by Tools > Forget Remembered File-Change Answers.
     external_change_always_reload: list[str] = field(default_factory=list)
     external_change_always_keep: list[str] = field(default_factory=list)
+    # Asked once, on first activating the QuillLite profile (bad.md P2.4): bring
+    # a QuillLite setup over. A profile switched back and forth must not keep
+    # asking, and the sharing itself is QuillLite's own two switches pointed at
+    # QUILL's folder -- QUILL's folder was already the shared home, so there is
+    # no second one here to go stale.
+    quilllite_bring_offered: bool = False
     external_change_debounce_ms: int = 750
     # SET-3: tunable verbosity and announcements
     announcement_verbosity: str = "normal"
@@ -1259,6 +1265,7 @@ class Settings:
         )
         external_change_always_reload = _suffix_list(data.get("external_change_always_reload", []))
         external_change_always_keep = _suffix_list(data.get("external_change_always_keep", []))
+        quilllite_bring_offered = bool(data.get("quilllite_bring_offered", False))
         external_change_prompt_on_conflict = bool(
             data.get("external_change_prompt_on_conflict", True)
         )
@@ -1800,6 +1807,7 @@ class Settings:
             external_change_auto_reload_when_clean=external_change_auto_reload_when_clean,
             external_change_always_reload=external_change_always_reload,
             external_change_always_keep=external_change_always_keep,
+            quilllite_bring_offered=quilllite_bring_offered,
             external_change_prompt_on_conflict=external_change_prompt_on_conflict,
             external_change_debounce_ms=external_change_debounce_ms,
             announcement_verbosity=announcement_verbosity,

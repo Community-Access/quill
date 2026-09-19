@@ -97,6 +97,18 @@ _HTML_LIST_TAGS = {"ul": BULLET, "ol": NUMBERED, "dl": DEFINITION, "menu": BULLE
 _HTML_ITEM_TAGS = {"li": "item", "dt": "term", "dd": "definition"}
 
 
+def count_list_items(text: str) -> int:
+    """How many list items *text* has, off the same scan the cues use.
+
+    For the arrival summary (bad.md P3.7): "six list items" is the difference
+    between a document you read and a document you work through, and it is the
+    kind of fact a glance gives a sighted reader for nothing. Counted from the
+    real Markdown scan rather than by grepping for a hyphen, so a line inside a
+    fenced code block is not a list item and a definition term is not a bullet.
+    """
+    return sum(1 for line in _scan_markdown(text) if line.kind and not line.fenced)
+
+
 def supports_lists(markup_kind: str | None) -> bool:
     """Whether *markup_kind* can express a list that this module can read."""
     return str(markup_kind or "") in _LIST_MARKUPS

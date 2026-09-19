@@ -15,10 +15,9 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 from quill.core.braille_statusbar import short_form_from_resolver
+from quill.core.document_text import DocumentText
 from quill.core.links import infer_markup_kind
 from quill.core.markdown_sections import current_section_at, parse_heading_blocks
-from quill.core.marks import line_column_for_position
-from quill.core.metrics import compute_document_stats
 from quill.core.navigation import estimate_page_count, estimate_page_for_position, page_starts
 from quill.core.palette import load_palette_usage, top_suggestion
 from quill.core.settings import STATUS_BAR_ITEMS, Settings, save_settings
@@ -136,22 +135,33 @@ class StatusBarMixin:
             editor.GetInsertionPoint()
         except RuntimeError:
             return None
-        # #1346 round 3: memoized by document revision. Stats are a full pass
-        # over the text; a caret-movement refresh (arrows, clicks) recomputed
-        # them for text that had not changed. The revision bumps on every real
-        # edit, so a hit is always current; documents without a revision (bare
-        # test stubs) simply skip the cache.
-        revision = getattr(getattr(self, "document", None), "revision", None)
-        cached = getattr(self, "_document_stats_cache", None)
-        if revision is not None and cached is not None and cached[0] == revision:
-            return cached[1]
+        # Through the shared DocumentText since 2026-09-18 (bad.md P0.6c, V4).
+        # QUILL had its own half of this -- document.text plus a stats cache
+        # keyed on document.revision, right here -- and QuillLite had the whole
+        # object, which is backwards: the small product was ahead on the one
+        # piece of machinery that decides how a big document feels. One object
+        # now, owned by core, answering both.
         try:
-            stats = compute_document_stats(self._document_text_for_display())
+            return self.doc_text.stats()
         except RuntimeError:
             return None
-        if revision is not None:
-            self._document_stats_cache = (revision, stats)
-        return stats
+
+    @property
+    def doc_text(self) -> DocumentText:
+        """The document's text and its cached answers, synced to the revision.
+
+        Lazy and per-frame rather than per-tab: the read closure asks
+        ``_document_text_for_display`` for whatever the *active* document says,
+        so switching tabs needs nothing but the revision check the next reader
+        does anyway. Tab-scoped mirrors would be one per tab to invalidate and
+        one per tab to get wrong.
+        """
+        mirror = getattr(self, "_doc_text_mirror", None)
+        if mirror is None:
+            mirror = DocumentText(self._document_text_for_display)
+            self._doc_text_mirror = mirror
+        mirror.sync_to(getattr(getattr(self, "document", None), "revision", None))
+        return mirror
 
     def _document_text_for_display(self) -> str:
         """The document's text for read-only display work, without a marshal.
@@ -216,10 +226,11 @@ class StatusBarMixin:
             # C++ TextCtrl. Treat the dead-widget condition as "no editor"
             # so a queued caret event does not crash the statusbar refresh.
             try:
-                line, column = line_column_for_position(
-                    self._document_text_for_display(),
-                    editor.GetInsertionPoint(),
-                )
+                # Off the shared mirror's cached line table rather than a fresh
+                # scan: this runs on every caret move, and rebuilding the table
+                # per arrow press is an O(N) pass in the middle of somebody
+                # holding the Down arrow (bad.md P0.6c, V4).
+                line, column = self.doc_text.line_column(editor.GetInsertionPoint())
             except RuntimeError:
                 return ""
             return f"Ln {line}, Col {column}"

@@ -125,6 +125,10 @@ class MenuBuilderMixin:
         self._id_reload_from_disk = wx.NewIdRef()
         self._id_check_external_changes = wx.NewIdRef()
         self._id_forget_external_change_answers = wx.NewIdRef()
+        self._id_bring_from_quilllite = wx.NewIdRef()
+        self._id_describe_this_document = wx.NewIdRef()
+        self._id_describe_last_change = wx.NewIdRef()
+        self._id_undo_and_say = wx.NewIdRef()
         self._id_restore_backup = wx.NewIdRef()
         self._id_restore_previous_version = wx.NewIdRef()
         self._id_save_session = wx.NewIdRef()
@@ -902,6 +906,23 @@ class MenuBuilderMixin:
             self._menu_label(_("Announce &Lists"), "view.toggle_list_announcements"),
         )
         self._announce_lists_item.Check(bool(getattr(self.settings, "announce_lists", True)))
+        view_menu.AppendSeparator()
+        # The three things a reader cannot say for itself (bad.md P3.7). In View
+        # rather than Tools because every one of them is a way of looking at the
+        # document you already have, and next to the two Announce switches
+        # because that is where somebody goes to change what they are told.
+        view_menu.Append(
+            self._id_describe_this_document,
+            self._menu_label(_("What Is This Document?"), "view.describe_this_document"),
+        )
+        view_menu.Append(
+            self._id_describe_last_change,
+            self._menu_label(_("What Changed?"), "view.describe_last_change"),
+        )
+        view_menu.Append(
+            self._id_undo_and_say,
+            self._menu_label(_("Undo and Say What Changed"), "edit.undo_and_say"),
+        )
         view_menu.Append(
             self._id_browser_preview,
             self._menu_label(_("&Browser Preview..."), "view.browser_preview"),
@@ -3324,6 +3345,10 @@ class MenuBuilderMixin:
             self._id_menu_editor,
             self._menu_label(_("Customize &Menus..."), "app.menu_editor"),
         )
+        customize_support_menu.Append(
+            self._id_bring_from_quilllite,
+            self._menu_label(_("Bring My Quill&Lite Settings..."), "tools.bring_from_quilllite"),
+        )
         customize_support_menu.AppendSeparator()
         customize_support_menu.Append(
             self._id_profiles_and_features,
@@ -3346,7 +3371,7 @@ class MenuBuilderMixin:
         customize_support_menu.AppendSeparator()
         customize_support_menu.Append(self._id_notifications, _("Show &Notifications"))
         customize_support_menu.Append(self._id_save_diagnostics, _("Save &Diagnostics..."))
-        customize_support_menu.Append(self._id_open_logs_folder, _("Open &Logs Folder"))
+        customize_support_menu.Append(self._id_open_logs_folder, _("Open Lo&gs Folder"))
         self._id_view_startup_logs = wx.NewIdRef()
         customize_support_menu.Append(
             self._id_view_startup_logs,

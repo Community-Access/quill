@@ -21,6 +21,68 @@ PROFILE_AUTHOR_STUDENT = "author_or_student"
 PROFILE_DEVELOPER_POWER_TEXT = "developer_power_text"
 PROFILE_ACCESSIBILITY_PROFESSIONAL = "accessibility_professional"
 PROFILE_FULL_QUILL = "full_quill"
+PROFILE_QUILLLITE = "quilllite"
+
+#: What the QuillLite profile takes away, written as a subtraction so a feature
+#: added to QUILL later is *on* here until somebody decides otherwise -- the same
+#: direction QuillLite's own profiles are written in, and the safe one: a new
+#: feature silently missing is a bug nobody can see, while a new feature
+#: unexpectedly present is one press of Customize Features away.
+#:
+#: **Off, not hidden.** Everything here is reachable from Customize Features and
+#: from the command palette; what the profile changes is what the menus show.
+#: Somebody who chose "the small one" and then wants one thing back should be
+#: able to find it, and a hidden feature cannot be found by looking.
+#:
+#: The list is what QuillLite genuinely does not have: the AI surfaces, the
+#: companion apps, extensions, remote and publishing paths, the notebook, and
+#: the reading and dictation stack. Editing, files, spelling, formatting,
+#: navigation, the clipboard, recovery and help all stay, because QuillLite has
+#: every one of them.
+#: ``core.bundled_quillins`` is deliberately NOT here: it is ``locked_on``,
+#: because the bundled extensions carry commands QUILL itself relies on. What
+#: QuillLite does not have is the Quillins *menu*, which is
+#: ``future.quillins_menu`` and is off below.
+_QUILLLITE_OFF: tuple[str, ...] = (
+    "core.analysis",
+    "core.braille",
+    "core.bw_insights",
+    "core.bw_providers",
+    "core.bw_transcription",
+    "core.bw_whisperer",
+    "core.developer_console",
+    "core.developer_console.typescript",
+    "core.dictation",
+    "core.emmet",
+    "core.github_remote",
+    "core.glow",
+    "core.hygiene",
+    "core.intellisense",
+    "core.library",
+    "core.macros",
+    "core.markdown_profiles",
+    "core.notebook",
+    "core.notes",
+    "core.ocr",
+    "core.podcasts",
+    "core.radio",
+    "core.read_aloud",
+    "core.remote",
+    "core.shell",
+    "core.third_party_plugins",
+    "core.voice_commands",
+    "core.watch_folder",
+    "future.adp_assistant",
+    "future.adp_voice_mode",
+    "future.ai",
+    "future.ai_menu_top_level",
+    "future.cleanup",
+    "future.publishing",
+    "future.publishing_read",
+    "future.quillins_menu",
+    "future.spotify",
+    "future.youtube_oauth",
+)
 
 
 @dataclass(slots=True)
@@ -29,6 +91,17 @@ class FeatureProfile:
     name: str | LazyStr
     description: str | LazyStr
     states: dict[str, str] = field(default_factory=dict)
+    #: Settings the profile's NAME promises, applied when it is activated.
+    #:
+    #: QuillLite's profiles have carried these since they shipped, and for a
+    #: reason worth repeating here: a profile named after another program is a
+    #: statement about what the thing you type in *is*, not merely about which
+    #: menus exist. A "Notepad" profile that removed the Format menu and still
+    #: made a rich text document on Ctrl+N would keep the letter of its name and
+    #: break its promise -- and the user would find out one document later, at
+    #: the Save As dialog, offering a format they thought they had turned off.
+    #: Empty for every profile that is a statement about menus alone.
+    settings: tuple[tuple[str, object], ...] = ()
 
 
 PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
@@ -319,6 +392,19 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
         name=lazy_gettext("Full Quill"),
         description=lazy_gettext("Everything visible, including advanced and experimental paths."),
         states={feature_id: FEATURE_STATE_ON for feature_id in FEATURE_DEFINITIONS},
+    ),
+    PROFILE_QUILLLITE: FeatureProfile(
+        id=PROFILE_QUILLLITE,
+        name=lazy_gettext("QuillLite"),
+        description=lazy_gettext(
+            "QUILL with QuillLite's nine menus and nothing else: a plain-text "
+            "editor with rich text, spelling, the line tools and the clipboard, "
+            "and none of the writing environment around them."
+        ),
+        states=dict.fromkeys(_QUILLLITE_OFF, FEATURE_STATE_OFF),
+        # The half a list of menus cannot say: QuillLite makes a plain text
+        # document on Ctrl+N, so this profile does too (bad.md P2.4).
+        settings=(("default_new_document_format", "txt"),),
     ),
 }
 

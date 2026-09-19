@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 442.
+Editor commands with default bindings: 446.
 
 ## The QUILL editor
 
@@ -57,6 +57,7 @@ Editor commands with default bindings: 442.
 | Alt+F8 | Read All | `edit.read_all` |
 | Alt+M | List Marks | `edit.list_marks` |
 | Alt+Shift+C | Copy With Source | `edit.copy_with_source` |
+| Alt+Shift+F3 | Undo and Say What Changed | `edit.undo_and_say` |
 | Alt+Shift+F8 | Go to Start of Selection | `edit.go_to_start_of_selection` |
 | Alt+Shift+F9 | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
 | Alt+Shift+U | Open Review Buffer | `edit.open_review_buffer` |
@@ -255,6 +256,8 @@ Editor commands with default bindings: 442.
 | Alt+Shift+B | Show Status Bar | `view.toggle_status_bar` |
 | Alt+Shift+D | Toggle Dark Mode | `view.toggle_dark_mode` |
 | Alt+Shift+E | Show Spoken Echo | `view.spoken_echo` |
+| Alt+Shift+F1 | What Is This Document? | `view.describe_this_document` |
+| Alt+Shift+F2 | What Changed? | `view.describe_last_change` |
 | Alt+Shift+V | Preview | `view.preview` |
 | Alt+Z | Toggle Soft Wrap | `view.toggle_soft_wrap` |
 | Ctrl+- | Decrease Text Size | `view.text_size_down` |
@@ -288,6 +291,7 @@ Editor commands with default bindings: 442.
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill Chat | `tools.ask_quill_chat` |
+| Alt+Shift+F11 | Bring My QuillLite Settings | `tools.bring_from_quilllite` |
 | Alt+Shift+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
 | Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |

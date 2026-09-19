@@ -653,7 +653,17 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Rule 9: a once-a-year command needs A key, not a short one. This undoes
     # the "do not ask me again for .docx files" checkbox in the File Changed on
     # Disk dialog, which is the only way back from it (bad.md F5).
-    "file.forget_external_change_answers": "Ctrl+Shift+F11",  # §edsharp-ok — QuillLite's chord
+    "file.forget_external_change_answers": "Ctrl+Shift+F11",
+    # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without
+    # switching profiles, because somebody can want their QuillLite
+    # abbreviations in QUILL without wanting QuillLite's menus (bad.md P2.4).
+    "tools.bring_from_quilllite": "Alt+Shift+F11",
+    # The magical tier (bad.md P3.7): the three things a screen reader cannot
+    # say, because they are the application's own knowledge. Asked often enough
+    # to deserve a real chord, and grouped so learning one teaches the others.
+    "view.describe_this_document": "Alt+Shift+F1",
+    "view.describe_last_change": "Alt+Shift+F2",
+    "edit.undo_and_say": "Alt+Shift+F3",  # §edsharp-ok — QuillLite's chord
     # QuillLite's chord for the same command, and Ctrl+Shift+B is Set
     # Bookmark in both from 2026-09-16 (bad.md 3.3, 3.5).
     "edit.select_block": "Ctrl+Alt+Shift+B",
