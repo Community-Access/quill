@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite 1.0 — What's New</title>
   <style>
@@ -203,8 +203,12 @@ who use a screen reader.</strong></p>
 minute. The keys are the same ones you already press. What is different
 is that QuillLite tells you what is going on — out loud, and in a status
 bar you can actually read.</p>
-<p>It installs alongside QUILL for All. You can have both. Neither one
-changes the other’s settings.</p>
+<p>It installs alongside QUILL for All. You can have both, and they keep
+their own settings unless you ask otherwise — QUILL has a <strong>Bring
+My QuillLite Settings</strong> command that copies your preferences
+across and shares your abbreviations, dictionary, copy tray, clips and
+bookmarks from then on. Nothing happens until you ask for it, and
+nothing you already had is replaced.</p>
 <hr />
 <h2 id="who-this-is-for">Who this is for</h2>
 <p>You want to open a file, change a line, and save it. You do not want
@@ -847,11 +851,60 @@ able only to undo an expansion you had just made; select a paragraph
 outright and ask to shrink and it said there was nothing to shrink. It
 now works out the answer from the text</li>
 </ul>
-<p>Two keys differ between the two apps, on purpose: QUILL for All has
-used <strong>Ctrl+J</strong> and <strong>Ctrl+Shift+V</strong> for other
-things for years, and we would rather not take a key out from under
-somebody’s fingers. In QUILL those two commands are
-<strong>Ctrl+Alt+J</strong> and <strong>Ctrl+Alt+V</strong> instead.</p>
+<p>Two keys used to differ between the two apps —
+<strong>Ctrl+J</strong> for Justify and <strong>Ctrl+Shift+V</strong>
+for Paste Text Only, which QUILL for All had long since spent on other
+things. In September 2026 QUILL moved those other things instead, and
+both keys now mean the same in both products. See the section below for
+what else changed with them.</p>
+<hr />
+<h2 id="september-2026-the-two-editors-became-one-family">September
+2026: the two editors became one family</h2>
+<p>QuillLite shipped first and, for a while, was better than QUILL for
+All at a few things — which is backwards. A twenty-nine item pass fixed
+that in both directions. What you will notice in QuillLite:</p>
+<p><strong>Your keys are the family’s keys.</strong> Sixteen commands
+that QUILL kept behind a leader chord came onto the plain keys you
+already press here, and where QUILL and QuillLite disagreed about a key,
+the one with the better claim won — usually Microsoft’s, because that is
+the key in your hands already. Word’s <strong>F12</strong>,
+<strong>Ctrl+F12</strong> and <strong>Ctrl+Shift+F12</strong> (Save As,
+Open, Print) work in QuillLite now; QUILL had all three and QuillLite
+had none. Eight keys still differ on purpose, and each one has its
+reason written down beside the code.</p>
+<p><strong>No menu offers the same Alt letter twice.</strong> Windows
+does not press a duplicated mnemonic — it moves focus between the
+matching rows and waits — so the letter stops being a shortcut and
+becomes a slow, silent walk. A new check found 170 of these across the
+whole family. All 170 are fixed.</p>
+<p><strong>The formatting keys the editing control brings with
+it</strong> — Ctrl+U, Ctrl+E, Ctrl+L, Ctrl+R, Ctrl+J, Ctrl+= and a few
+more — used to <em>appear</em> to work in a Markdown or plain document.
+The formatting was really applied and never saved, never announced, and
+never marked the document as changed. They are now swallowed in a
+document that cannot hold formatting, and QuillLite says so once:
+“Underline has no meaning in a plain text document.”</p>
+<p><strong>A UTF-16 big-endian file stays big-endian.</strong> Both byte
+orders were read through the one codec that always writes little-endian,
+so saving a file you had not otherwise touched swapped every pair of
+bytes in it. The File Encoding and Line Endings window also shows what
+your file actually is: a file in a format the lists cannot offer —
+big-endian, or classic-Mac CR line endings — shows a <strong>keep as
+is</strong> row and stays in it, where before the list quietly started
+on its first row and confirming the window converted the file.</p>
+<p><strong>The status bar stops answering for a rich document.</strong>
+Encoding and Line Endings read “UTF-8” and “CRLF” for every
+<code>.rtf</code>, which has neither. They now say so.</p>
+<p><strong>Suggestions spell themselves</strong> as you arrow through
+the spelling review, the same way the misspelled word already did.</p>
+<p><strong>One set of abbreviations, if you want one.</strong> QuillLite
+could already read QUILL’s abbreviations and personal dictionary. QUILL
+can now take yours: <strong>Bring My QuillLite Settings</strong> merges
+your abbreviations, dictionary, copy tray, clip library and bookmarks
+into QUILL, turns the sharing switches on here so both editors read the
+one copy, and copies your preferences and rebound keys across. QUILL
+wins any collision, nothing already in QUILL is replaced, and it tells
+you what it is about to do before it does any of it.</p>
 <hr />
 <h2 id="things-worth-knowing-before-you-start">Things worth knowing
 before you start</h2>

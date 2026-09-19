@@ -1101,7 +1101,7 @@ rules.</li>
 <li><strong>Shipped profiles</strong>: Essential, Casual Writer, Author
 or Student, Reader and Student, Office and Admin, Accessibility
 Professional, Developer and Power Text, Low Vision, Braille and Screen
-Reader Power User, Full Quill, and Custom.</li>
+Reader Power User, Full Quill, QuillLite, and Custom.</li>
 <li><strong>Settings UI</strong>: Profiles and Features page with
 search, feature table, explain/related commands, compare profiles, and
 profile management actions.</li>
@@ -1216,7 +1216,7 @@ plugin surfaces.</li>
 <li><strong>Profiles</strong>: Essential, Casual Writer, Author or
 Student, Reader and Student, Office and Admin, Accessibility
 Professional, Developer and Power Text, Low Vision, Braille and Screen
-Reader Power User, Full Quill, Custom.</li>
+Reader Power User, Full Quill, QuillLite, Custom.</li>
 <li><strong>Settings</strong>: a Profiles and Features page lets the
 user switch profiles, compare them, and expose quiet features when
 desired.</li>
@@ -4560,11 +4560,32 @@ active encoding. Auto-detection on open via
 <li><strong>Line endings</strong>: <code>File &gt; Line Endings</code>
 (LF, CRLF, CR). Status bar shows the active style. “Convert on save” is
 an opt-in setting.</li>
+<li><strong>File Format</strong> (<code>File &gt; File Format...</code>,
+<code>Ctrl+Alt+E</code>): encoding and line endings in one window, the
+same window QuillLite opens from <strong>Tools &gt; File Encoding and
+Line Endings…</strong>. Neither list applies until the next save. A file
+in a format the lists cannot offer — UTF-16 big-endian, or classic-Mac
+single-CR line endings — shows a <strong>keep as is</strong> row and
+starts in it, because a chooser that cannot show the format it is
+editing must not answer for it. In a rich text document the two
+status-bar cells read “RTF (rich text)” and “Not applicable (rich text)”
+rather than stating facts RTF does not have.</li>
 <li><strong>Reload from disk</strong>: <code>Ctrl+Shift+R</code>. If the
 editor has unsaved changes, prompt.</li>
 <li><strong>External-change watcher</strong>: detect when the file
-changes outside Quill; offer to reload (auto-reload if the editor is
-unmodified).</li>
+changes outside Quill and <strong>always ask</strong> — Reload from
+Disk, Keep Mine, or Open Disk Version in a New Tab. It used to reload
+silently whenever the buffer was clean, for any format, so a
+<code>.docx</code> rewritten by Word came back as its own compressed
+bytes decoded into replacement characters, marked clean, with nothing
+said. The question carries a <strong>Do not ask me again for .<ext>
+files</strong> checkbox that remembers Reload or Keep Mine per format
+(never the New Tab answer, which is a one-off comparison), and
+<strong>File &gt; Forget Remembered File-Change Answers</strong>
+(<code>Ctrl+Shift+F11</code>) takes it back — a question that can be
+switched off and not on is a trap.
+<code>external_change_auto_reload_when_clean</code> defaults to
+false.</li>
 <li><strong>Insert date / time</strong>: <code>Ctrl+Alt+D</code> (with a
 one-time format chooser that the user can re-open from Settings).</li>
 <li><strong>Templates</strong>:
@@ -4585,6 +4606,46 @@ trailing whitespace on save, ensure final newline, normalise line
 endings on save.</li>
 <li><strong>Smart paste</strong>: by default, strip rich-text formatting
 when pasting from sources that include it.</li>
+<li><strong>Three sentences about the document itself</strong> (View
+menu): <strong>What Is This Document?</strong>
+(<code>Alt+Shift+F1</code>) answers with shape rather than name — size,
+then headings and list items, then anything that will stop you, in that
+order, because the last of those changes what you do next; an empty
+document says so, since an empty document and one that failed to load
+otherwise sound identical. <strong>What Changed?</strong>
+(<code>Alt+Shift+F2</code>) says what the last command did to the text,
+where Sort Lines and thirty others rewrote the buffer in silence.
+<strong>Undo and Say What Changed</strong> (<code>Alt+Shift+F3</code>)
+distinguishes an undo that reversed forty lines from an undo at the
+bottom of the stack — two things <code>Ctrl+Z</code> reports
+identically, which is to say not at all. The journal behind all three
+(<code>DocumentText.journal</code>, 50 entries) records <strong>sizes
+and never text</strong>, so nothing typed into a document can be read
+back out of it.</li>
+<li><strong>The editing control’s own formatting chords are
+swallowed</strong> in a document that cannot hold formatting.
+<code>Ctrl+U</code>,
+<code>Ctrl+E</code>/<code>L</code>/<code>R</code>/<code>J</code>,
+<code>Ctrl+=</code> and <code>Ctrl+Shift+=</code> are answered by the
+native Rich Edit control whether the document is rich or not; in a
+Markdown or plain document the run was really applied, never marked
+dirty, never announced and never saved.
+<code>quill/core/native_richedit_keys.py</code> names the effect and the
+kind of document once per effect per document — “Underline has no
+meaning in a Markdown document” — and both editors build that sentence
+from the one shared table, article chosen by sound so an initialism gets
+“an”.</li>
+<li><strong>Bring My QuillLite Settings</strong>
+(<code>Alt+Shift+F11</code>, Tools &gt; Customize and Support): merges a
+QuillLite setup into QUILL on an explicit ask — five content stores
+(abbreviations, personal dictionary, copy tray, clip library, bookmarks)
+shared from then on, plus settings and rebound keys copied once. The
+plan is described before it is applied, counts first and what is being
+left behind last; QUILL wins every collision and nothing already in
+QUILL is replaced. The <strong>QuillLite</strong> feature profile offers
+it once on activation, and applies the document model its own name
+promises rather than only renaming the menus. Design:
+<code>quill/core/lite_bridge.py</code>; see the QuillLite PRD §5.3.</li>
 <li><strong>Sessions</strong>: <code>File &gt; Save Session…</code> and
 <code>File &gt; Open Session…</code> preserve the set of open documents
 and per-document cursor position.</li>
@@ -17079,9 +17140,14 @@ built)</h3>
 <li><strong>Welcome</strong> — introductory text; no configuration.</li>
 <li><strong>Keyboard and Sound</strong> — keyboard pack and whether
 QUILL plays sounds for mode changes.</li>
-<li><strong>Feature Profile</strong> — choose Essential, Writer,
-Developer and Power Text, Accessibility Professional, or Full
-QUILL.</li>
+<li><strong>Feature Profile</strong> — choose one of the seven
+<em>intent</em> profiles (<code>quill.core.onboarding_profiles</code>),
+which each map onto a technical feature profile plus Quillin and feature
+overrides: Just a Text Editor, Writer, Markdown and Web Author,
+Accessibility Professional, Braille Professional, AI-Powered Author,
+Developer and Power User. The eleven shipped feature profiles themselves
+are chosen from Preferences &gt; Profiles and Features or the
+<code>Alt+Shift+P</code> picker.</li>
 <li><strong>Remote Access</strong> — enable/disable the FTP / SFTP /
 WebDAV / S3 open and save features.</li>
 <li><strong>AI Assistance</strong> — enable/disable AI features (API key

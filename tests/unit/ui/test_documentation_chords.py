@@ -33,9 +33,35 @@ from quill.core.native_richedit_keys import NATIVE_FORMATTING_CHORDS
 
 _ROOT = Path(__file__).resolve().parents[3]
 
+#: Every document that *teaches* a key to somebody who will then press it. The
+#: two user guides came first; the release notes and the announcements were added
+#: on 2026-09-19, when an audit found QuillLite's notes still telling a reader
+#: that Justify and Paste Text Only live on ``Ctrl+Alt+J`` and ``Ctrl+Alt+V`` in
+#: QUILL. They had, until the parity pass moved QUILL's own commands instead, so
+#: following that paragraph reached the temporary bookmark and the copy tray.
+#:
+#: **That particular defect is not one this gate can catch**, and the distinction
+#: matters: both chords are still bound to something, so nothing here is stale --
+#: they are *misattributed*, which needs a claim about which command owns a key
+#: and no document states that machine-readably. What the gate does catch is the
+#: other half of the same class: a key a document teaches that nothing binds at
+#: all. A release note is read by more people than a user guide and was gated by
+#: nobody, which is the argument for widening the corpus even so.
+#:
+#: Two kinds of document are deliberately **not** here. The PRDs are design
+#: documents that quote proposals, rejected options and history, and a chord
+#: inside one is not a promise to a reader that pressing it does something today.
+#: The tutorial books (``tutorials.md`` in each app's docs) are **generated** from
+#: the lesson data inside the app by ``build_tutorials_reference.py`` and gated
+#: for drift against it, so their keys come from the code already -- a second
+#: check would be checking the generator against itself.
 GUIDES: tuple[Path, ...] = (
     _ROOT / "docs" / "user guide" / "userguide.md",
     _ROOT / "standalone" / "quilllite" / "docs" / "userguide.md",
+    _ROOT / "docs" / "release notes" / "release1.0.0.md",
+    _ROOT / "docs" / "release notes" / "announcement-1.0.0.md",
+    _ROOT / "standalone" / "quilllite" / "docs" / "release-notes-1.0.md",
+    _ROOT / "standalone" / "quilllite" / "docs" / "announcement.md",
 )
 
 #: A chord as the guides write it. QUILL's guide uses backticks and QuillLite's
@@ -93,6 +119,18 @@ _READER_KEY = re.compile(r"jaws|nvda|insert|capslock", re.IGNORECASE)
 #: rich text document**". The chord is real; the match is not a chord.
 _RUNS_INTO_PROSE = re.compile(r"\s(?:to|and|or|makes?|opens?|rings?|comes?|sets?|is|the)\b")
 
+#: The same failure, caught by shape rather than by vocabulary: emphasis or a
+#: table cell that swallowed a whole clause. A real chord is one token -- no
+#: sentence punctuation, no line break, and never a second word that is plain
+#: prose. The vocabulary list above cannot keep up with every verb somebody
+#: writes ("Alt+Tab **will not** step between them"), and a wider corpus of
+#: documents is a wider vocabulary.
+_SENTENCE_SHAPE = re.compile(
+    # Sentence punctuation, but NOT the "." and "/" keys themselves: in a real
+    # chord the character before the last one is the "+" that binds it on.
+    r"(?<!\+)[.!?]$|" + chr(10) + r"|\s(?:[a-z]{2,})\s"
+)
+
 #: A family written as one token: a slash pair (``Ctrl+Left/Right``) or a plural
 #: (``Alt+arrows``). Each names two or more bindings, so neither is one.
 _A_FAMILY = re.compile(r"/|arrows|keys|digits|numbers", re.IGNORECASE)
@@ -113,8 +151,30 @@ _NATIVE_NAVIGATION = re.compile(
 _SHIFTED_FACES = {">": ".", "<": ",", "?": "/", "+": "=", "_": "-", ":": ";", '"': "'"}
 
 
+#: Punctuation keys spelled as words. Prose written to be *read aloud* says
+#: "Ctrl+Period", because a screen reader announces a bare "." as nothing at all
+#: or as the end of the sentence; the keymap says ``Ctrl+.`` because that is what
+#: wx parses. Both name one key, and the release notes use the word form
+#: throughout.
+_KEY_WORDS = {
+    "period": ".",
+    "comma": ",",
+    "slash": "/",
+    "backslash": chr(92),
+    "semicolon": ";",
+    "apostrophe": "'",
+    "minus": "-",
+    "hyphen": "-",
+    "plus": "=",
+    "equals": "=",
+}
+
+
 def _normalise(chord: str) -> str:
     text = chord.replace(" ", "").lower()
+    head, _, tail = text.rpartition("+")
+    if head and tail in _KEY_WORDS:
+        text = head + "+" + _KEY_WORDS[tail]
     # Only the final character can be a shifted face; "Ctrl+Shift+" is a modifier.
     if text and text[-1] in _SHIFTED_FACES:
         text = text[:-1] + _SHIFTED_FACES[text[-1]]
@@ -147,6 +207,8 @@ def _is_a_single_chord(chord: str) -> bool:
     if any(part in chord for part in (",", " through ", " to ", " or ", "–")):
         return False
     if _RUNS_INTO_PROSE.search(chord) or _A_FAMILY.search(chord):
+        return False
+    if _SENTENCE_SHAPE.search(chord):
         return False
     key = _normalise(chord)
     if key == _LEADER or _NATIVE_NAVIGATION.match(key):
@@ -221,13 +283,30 @@ def test_every_chord_the_guides_teach_is_a_chord_that_exists() -> None:
 
 
 def test_the_gate_is_actually_reading_the_guides() -> None:
-    """A scan that finds no chords passes every stale table ever written."""
+    """A scan that finds no chords passes every stale table ever written.
+
+    Per-document floors, not one number for all seven: the two user guides teach
+    hundreds of keys and an announcement is allowed to name two or three, so a
+    single threshold would either pass a guide that had stopped being read or
+    fail an announcement for being an announcement.
+    """
     live = _live_chords()
     assert len(live) > 300, f"only {len(live)} live chords found"
+    floors = {
+        "userguide.md": 20,
+        "release1.0.0.md": 20,
+        "release-notes-1.0.md": 20,
+        "announcement.md": 1,
+        "announcement-1.0.0.md": 1,
+    }
+    total = 0
     for guide in GUIDES:
         text = guide.read_text(encoding="utf-8")
         found = [m.group(1) or m.group(2) for m in _CHORD.finditer(text)]
-        assert len(found) > 20, f"{guide.name}: only {len(found)} chords seen"
+        total += len(found)
+        floor = floors[guide.name]
+        assert len(found) >= floor, f"{guide.name}: only {len(found)} chords seen"
+    assert total > 400, f"only {total} chords across the corpus"
 
 
 def test_a_chord_the_product_moved_would_be_caught() -> None:

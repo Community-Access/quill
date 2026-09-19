@@ -208,6 +208,9 @@ is down. One tick box in Settings turns even that off.
 - **Dark mode by default**, because the people this is for are disproportionately
   light-sensitive and a first launch that is bright white is one some of them
   cannot read
+- **One set of abbreviations with QUILL for All**, if you use both — your short
+  forms, your dictionary, your copy tray and your bookmarks can be the same in
+  each, and neither program touches the other's until you ask it to
 
 ---
 

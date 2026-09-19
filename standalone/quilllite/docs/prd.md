@@ -529,6 +529,41 @@ own inbox directory. Uninstalling never removes the data folder either: recovery
 slots are the one thing somebody may not have finished with, and an uninstaller
 is the worst possible moment to discover that.
 
+**The one bridge, and why it does not contradict any of that (2026-09-18).**
+QuillLite has always been able to *read* QUILL's abbreviations and personal
+dictionary, behind a switch the person turns on. QUILL now has the other half:
+`quill/core/lite_bridge.py` and **Tools > Customize and Support > Bring My
+QuillLite Settings...** (`Alt+Shift+F11`) merge QuillLite's copies of five
+content stores into QUILL's folder, copy the settings and rebound keys that
+translate, and turn those sharing switches on so the two editors stop keeping
+separate copies. Five properties keep this inside the principle above rather
+than against it:
+
+* **Nothing moves without an explicit ask.** The command is a menu item and a
+  key. The one place it is offered rather than invoked -- activating the
+  QuillLite feature profile in QUILL -- asks a Yes/No question, once ever, and a
+  No is remembered.
+* **The plan is described before it is applied**, counts first and what is being
+  *left behind* last, because "it copied your settings" is not something a
+  listener can verify afterwards by looking at the screen.
+* **QUILL wins every collision** and nothing already in QUILL is replaced.
+  `merge_json_store` is shape-agnostic on purpose -- these five files are a dict,
+  a list, or a dict with a list in it, and five mergers would be five schemas to
+  keep in step -- and it writes nothing at all when the two sides are different
+  shapes. A merge that cannot be done safely is not done: these files are the
+  user's work.
+* **QuillLite's own settings file is written once, for two booleans.** That is
+  the only thing this module writes into `%LOCALAPPDATA%\QuillLite`, and it is
+  the half without which a "shared" store looks broken -- QUILL holding the words
+  while QuillLite still reads its own copy.
+* **The direction is QuillLite -> QUILL.** A machine that has never had QUILL
+  still grows no Quill folder, because the command lives in QUILL and cannot run
+  where QUILL is not installed.
+
+Both write sites are classified in `quill/tools/persistence_audit.py`
+(`merge_json_store` as content, `enable_lite_sharing` as marker), so neither can
+be added to or moved without somebody re-stating what they do.
+
 ### 5.4 File associations
 
 The full installer offers "Open .txt and .rtf files with QuillLite" as an
@@ -686,6 +721,41 @@ older than QuillLite and both live in every companion app:
   2 — invisibly, from a windowed build. It now carries `-m <module>`, resolved
   from `__main__.__spec__`, whenever the running executable is a generic
   interpreter rather than the app's own exe.
+
+## 6a. The family pass (2026-09-18)
+
+A twenty-nine item audit of the two editors against each other, closed in
+September 2026. It is recorded here because three of its outcomes are now
+constraints on this product rather than one release's work.
+
+**The eleven rules are code.** `quill/core/family_rules.py` holds them and both
+`keymap.py` and `lite/parity.py` cite them **by number**; a test checks that
+every citation resolves, so the rules cannot be renumbered into lies. Lower
+number wins when two conflict. Rule 1 -- Microsoft's key wins for a function both
+editors have -- is itself a gate (`tests/unit/core/test_microsoft_habits.py`),
+checked against both keymaps rather than believed; it found the last disagreement
+on the day it was written, and Word's `F12`, `Ctrl+F12` and `Ctrl+Shift+F12` are
+aliases in both products because of it.
+
+**Divergence is a written argument.** `DIVERGENCES` in `quill/core/lite/parity.py`
+holds the eight handlers whose chord is allowed to differ, each with the reason,
+and the gate prints the reason when it reports the pair -- so the next person
+reads the argument instead of re-having it. `SETTINGS_ALIASES` does the same for
+the five settings one concept is stored under two names for, and the vocabulary
+gate (`quill/tools/settings_vocabulary_audit.py`, in `platform_report`) fails a
+new setting that is neither shared, aliased, nor a reviewed one-sided field. Two
+of the five real pairs share no word at all, which is why it is a reviewed table
+and not a name-similarity check.
+
+**Rule 10 now cuts both ways in practice.** QuillLite may never be ahead of
+QUILL, and the audit found places where it was: QUILL got the `DocumentText`
+model QuillLite already had, the spelled suggestions QuillLite already spoke, the
+Spelling Announcements window, and the swallowed-formatting-key guard. Where
+QuillLite was behind, it gained Word's F12 family and the shared-store bridge
+(5.3). Neither direction is a favour: a capability in one product and not the
+other is invisible to the person who only has the other one.
+
+---
 
 ## 7. The QUILL-side fixes this work produced
 

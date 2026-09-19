@@ -2002,6 +2002,90 @@ manager looks at the window and not at the text. **Ctrl+Shift+E** stops it, the 
 menu stops it, and Safe Mode never starts it.
 
 
+## QuillLite, and one family
+
+**QuillLite** is the editor out of QUILL, on its own: a Notepad-scale product for
+somebody who wants to open a file, change a line and save it, without a writing
+environment in the way. It installs beside QUILL, keeps its own settings in its
+own folder, and is a separate download. It is not a cut-down QUILL so much as the
+same editor with everything else taken out -- the two share the code that does the
+editing, which is why a fix to one arrives in the other.
+
+That sharing is a rule, not an accident: **QuillLite may never be ahead of QUILL.**
+If the small product needs something the big one cannot do, the capability goes
+into shared code and QUILL gets a way to reach it in the same change. A feature
+the small product has and the big one does not is backwards, and invisible --
+nobody opens QUILL and notices the absence of a thing they have only ever seen
+elsewhere.
+
+A twenty-nine item pass in September 2026 made that true rather than aspirational.
+
+**QUILL gained what QuillLite already had.** One document model instead of one and
+a half (QUILL had a text mirror and a hand-rolled statistics cache; QuillLite had
+the whole object). Spelling suggestions that spell themselves as you arrow, which
+is the only way to choose between "receive" and "recieve" by ear. A Spelling
+Announcements window. And a guard on the formatting keys the editing control
+brings with it -- `Ctrl+U` and friends, which used to apply a formatting run to a
+Markdown or plain document that was never marked changed, never announced and
+never saved.
+
+**QuillLite gained what QUILL already had**, where the rule allows it: Word's
+`F12`, `Ctrl+F12` and `Ctrl+Shift+F12` for Save As, Open and Print.
+
+**The keyboards converged.** Sixteen commands came off QUILL's leader chord onto
+the plain keys QuillLite already used, thirteen commands that existed only inside
+a keymap profile got real defaults, and every registered editor command now has a
+key or a written reason not to. Eight keys still differ on purpose, each with its
+reason recorded beside the code and checked by a test. Where Word, WordPad or
+Notepad bind a key for something both editors do, Microsoft's key wins -- and that
+rule is itself a test now, run against both keymaps rather than believed.
+
+**Nothing reloads under your hands.** When another program writes to the file you
+have open, QUILL asks: Reload from Disk, Keep Mine, or Open Disk Version in a New
+Tab. It used to replace a clean tab silently for any format, so a `.docx`
+rewritten by Word came back as its own compressed bytes decoded into replacement
+characters, marked clean, with nothing said. The question carries a "do not ask me
+again for .docx files" checkbox, and **File > Forget Remembered File-Change
+Answers** (`Ctrl+Shift+F11`) takes it back.
+
+**Three things QUILL can now say about itself**, all in View. **What Is This
+Document?** (`Alt+Shift+F1`) gives the shape rather than the name: length, then
+headings and list items, then anything that will stop you -- read-only last,
+because it is the one that changes what you do next. **What Changed?**
+(`Alt+Shift+F2`) says what the last command did to the text, where Sort Lines and
+thirty others rewrote the buffer in silence. **Undo and Say What Changed**
+(`Alt+Shift+F3`) tells an undo that reversed forty lines apart from an undo at the
+bottom of the stack. What is remembered is sizes, never text.
+
+**File > File Format** (`Ctrl+Alt+E`) is one window for encoding and line endings,
+shared by both editors, and it shows the format your file actually has: a file in
+something the lists cannot offer -- UTF-16 big-endian, or classic-Mac CR line
+endings -- keeps it, in a **keep as is** row. A big-endian file used to be
+rewritten little-endian by a save that changed nothing else, and a CR file used to
+open the window reading "CRLF", so confirming it converted the document.
+
+**Start from the setup you already have.** A **QuillLite** feature profile gives
+QUILL QuillLite's nine menus and nothing else -- switching features *off* rather
+than hiding them, so wanting one back is one tick. **Tools > Customize and Support
+> Bring My QuillLite Settings...** (`Alt+Shift+F11`) merges your QuillLite
+abbreviations, dictionary, copy tray, clip library and bookmarks into QUILL and
+shares them from then on, so a change in either editor is a change in both, and
+copies your preferences and rebound keys across once. It tells you what it is
+about to do -- including what it is leaving behind -- before it does any of it,
+nothing already in QUILL is replaced, and nothing happens unless you ask.
+
+**No menu offers the same Alt letter twice.** Windows does not press a duplicated
+mnemonic; it moves focus between the matching rows and waits, so the letter stops
+being a shortcut and becomes a slow, silent walk -- paid by exactly the person who
+navigates by letter because reading a whole menu aloud costs ten seconds. A new
+check found 170 collisions across the family, from Tools > Customize offering
+"Export..." three times to six in Cast's Help menu. All 170 are fixed, and the
+check keeps them fixed.
+
+QuillLite has its own user guide, release notes and sign-off checklist in
+`standalone/quilllite/docs/`.
+
+
 ## Quillins: extending QUILL
 
 Quillins are QUILL's extensions. The model is capability-and-consent: a Quillin declares in its

@@ -7,8 +7,11 @@ If you like Notepad or WordPad, you will feel at home in about a minute. The
 keys are the same ones you already press. What is different is that QuillLite
 tells you what is going on — out loud, and in a status bar you can actually read.
 
-It installs alongside QUILL for All. You can have both. Neither one changes the
-other's settings.
+It installs alongside QUILL for All. You can have both, and they keep their own
+settings unless you ask otherwise — QUILL has a **Bring My QuillLite Settings**
+command that copies your preferences across and shares your abbreviations,
+dictionary, copy tray, clips and bookmarks from then on. Nothing happens until
+you ask for it, and nothing you already had is replaced.
 
 ---
 
@@ -627,10 +630,61 @@ that QUILL could not yet do went into QUILL in the same release:
   expansion you had just made; select a paragraph outright and ask to shrink and
   it said there was nothing to shrink. It now works out the answer from the text
 
-Two keys differ between the two apps, on purpose: QUILL for All has used
-**Ctrl+J** and **Ctrl+Shift+V** for other things for years, and we would rather
-not take a key out from under somebody's fingers. In QUILL those two commands are
-**Ctrl+Alt+J** and **Ctrl+Alt+V** instead.
+Two keys used to differ between the two apps — **Ctrl+J** for Justify and
+**Ctrl+Shift+V** for Paste Text Only, which QUILL for All had long since spent on
+other things. In September 2026 QUILL moved those other things instead, and both
+keys now mean the same in both products. See the section below for what else
+changed with them.
+
+---
+
+## September 2026: the two editors became one family
+
+QuillLite shipped first and, for a while, was better than QUILL for All at a few
+things — which is backwards. A twenty-nine item pass fixed that in both
+directions. What you will notice in QuillLite:
+
+**Your keys are the family's keys.** Sixteen commands that QUILL kept behind a
+leader chord came onto the plain keys you already press here, and where QUILL and
+QuillLite disagreed about a key, the one with the better claim won — usually
+Microsoft's, because that is the key in your hands already. Word's **F12**,
+**Ctrl+F12** and **Ctrl+Shift+F12** (Save As, Open, Print) work in QuillLite now;
+QUILL had all three and QuillLite had none. Eight keys still differ on purpose,
+and each one has its reason written down beside the code.
+
+**No menu offers the same Alt letter twice.** Windows does not press a duplicated
+mnemonic — it moves focus between the matching rows and waits — so the letter
+stops being a shortcut and becomes a slow, silent walk. A new check found 170 of
+these across the whole family. All 170 are fixed.
+
+**The formatting keys the editing control brings with it** — Ctrl+U, Ctrl+E,
+Ctrl+L, Ctrl+R, Ctrl+J, Ctrl+= and a few more — used to *appear* to work in a
+Markdown or plain document. The formatting was really applied and never saved,
+never announced, and never marked the document as changed. They are now swallowed
+in a document that cannot hold formatting, and QuillLite says so once: "Underline
+has no meaning in a plain text document."
+
+**A UTF-16 big-endian file stays big-endian.** Both byte orders were read through
+the one codec that always writes little-endian, so saving a file you had not
+otherwise touched swapped every pair of bytes in it. The File Encoding and Line
+Endings window also shows what your file actually is: a file in a format the
+lists cannot offer — big-endian, or classic-Mac CR line endings — shows a **keep
+as is** row and stays in it, where before the list quietly started on its first
+row and confirming the window converted the file.
+
+**The status bar stops answering for a rich document.** Encoding and Line Endings
+read "UTF-8" and "CRLF" for every `.rtf`, which has neither. They now say so.
+
+**Suggestions spell themselves** as you arrow through the spelling review, the
+same way the misspelled word already did.
+
+**One set of abbreviations, if you want one.** QuillLite could already read
+QUILL's abbreviations and personal dictionary. QUILL can now take yours: **Bring
+My QuillLite Settings** merges your abbreviations, dictionary, copy tray, clip
+library and bookmarks into QUILL, turns the sharing switches on here so both
+editors read the one copy, and copies your preferences and rebound keys across.
+QUILL wins any collision, nothing already in QUILL is replaced, and it tells you
+what it is about to do before it does any of it.
 
 ---
 
