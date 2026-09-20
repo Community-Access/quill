@@ -113,6 +113,11 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.reopen_last_session(),
+            id=self._id_reopen_last_session,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.bring_from_quilllite(),
             id=self._id_bring_from_quilllite,
         )

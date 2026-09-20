@@ -39,6 +39,7 @@ from typing import Any
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.lite.paths import settings_path
 from quill.core.markdown_breaks import normalise_hard_break_style
+from quill.core.session_restore import ASK_MODES, ASK_WHEN_IT_MATTERS
 from quill.core.settings_portable import (
     PortabilityReport,
     portable_export,
@@ -200,6 +201,12 @@ class Settings:
     #: than a surprise. Distinct from crash recovery, which only ever restores
     #: work that was never saved.
     restore_session: bool = True
+    #: Whether reopening asks first: "always", "when_it_matters" or "never".
+    #: Same field name and same three values as QUILL, because it is the same
+    #: question -- see ``quill/core/session_restore.py``, which answers it for
+    #: both. Orthogonal to ``restore_session``, which says whether to reopen at
+    #: all.
+    session_restore_ask: str = "when_it_matters"
     #: The files open at the last clean exit, in the order they were numbered.
     #: Written on exit and read once at start; never used for anything else.
     session_files: list[str] = field(default_factory=list)
@@ -380,6 +387,8 @@ class Settings:
         self.window_height = max(240, int(self.window_height))
         self.recent_files = [str(entry) for entry in self.recent_files][:MAX_RECENT]
         self.session_files = [str(entry) for entry in self.session_files][:MAX_SESSION]
+        if self.session_restore_ask not in ASK_MODES:
+            self.session_restore_ask = ASK_WHEN_IT_MATTERS
         self.markdown_hard_break_style = normalise_hard_break_style(self.markdown_hard_break_style)
         if self.spell_aloud_style not in _LETTER_STYLES:
             self.spell_aloud_style = "letters"

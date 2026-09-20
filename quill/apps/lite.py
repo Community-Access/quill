@@ -43,6 +43,7 @@ import wx
 
 from quill.apps.lite_printing import PrintSettings
 from quill.apps.lite_services import LiteServicesMixin
+from quill.apps.lite_session import LiteSessionMixin
 from quill.apps.lite_shell import QuillLiteShell
 from quill.apps.lite_updates import check_at_launch
 from quill.apps.lite_voice import ScreenReaderVoice
@@ -76,7 +77,7 @@ OPTIONAL_COMPONENTS: tuple[str, ...] = ()
 _INBOX_POLL_MS = 500
 
 
-class QuillLiteApp(LiteServicesMixin, wx.App):
+class QuillLiteApp(LiteSessionMixin, LiteServicesMixin, wx.App):
     """The window registry, the settings owner, and the single-instance inbox."""
 
     def __init__(self, paths: list[Path], mode: str | None) -> None:
@@ -236,32 +237,6 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
                 self.settings.window_width = int(width)
                 self.settings.window_height = int(height)
         event.Skip()
-
-    def _restore_session(self) -> bool:
-        """Reopen last session's documents, in the order they were numbered.
-
-        Files that have gone are skipped silently rather than reported: a
-        session list is a convenience, and being told about a file you deleted
-        on purpose is not news.
-        """
-        opened = False
-        for entry in list(self.settings.session_files):
-            path = Path(entry)
-            if path.is_file() and self.open_path(path):
-                opened = True
-        return opened
-
-    def remember_session(self) -> None:
-        """Record which files are open, for the next launch.
-
-        Saved documents only. An untitled window has nothing to reopen *from*,
-        and its content -- if it has any -- is the recovery store's business,
-        which is a different promise with a different guarantee.
-        """
-        self.settings.session_files = [
-            str(frame.path) for frame in self.frames if frame.path is not None
-        ]
-        self.save_settings()
 
     def _restore_pending_work(self) -> bool:
         """Offer last session's unsaved work back. ``True`` when any was taken.

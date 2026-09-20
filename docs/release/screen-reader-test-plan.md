@@ -351,6 +351,42 @@ truncated file where the old one had been.
   - Expected: it names the encoding actually written. A declaration that disagrees
     with the bytes is worse than none: the browser believes the declaration.
 
+## PARITY-008 — Reopening last session is a conversation
+
+Fix: both editors reopened last session's documents silently and skipped a missing
+one without a word, so four tabs appeared unbidden and a file that had *moved* was
+invisible -- indistinguishable from one that opened and had not been found yet.
+
+- TC-PARITY-008a — It asks when it matters, and not otherwise
+  - Steps: with two remembered documents that are both present, launch. Then with
+    three, launch again.
+  - Expected: two open silently, as before. Three bring up **Reopen Last Session**,
+    whose first line is spoken as a count: "3 documents from last time."
+- TC-PARITY-008b — A missing file is a row, not an omission
+  - Steps: delete one of two remembered files from outside QUILL and launch.
+  - Expected: the window appears on two documents, and the row for the deleted one
+    is announced as "(the file is no longer there)" and cannot be ticked.
+- TC-PARITY-008c — The answer is per document
+  - Steps: untick one row, press Open Checked.
+  - Expected: only the ticked documents open, and the count spoken afterwards
+    matches what you chose -- "Reopened all 2 documents", or "Reopened 1 of 2" if
+    one could not be opened. A shortfall is exactly what the number is for.
+- TC-PARITY-008d — Forget says the files are safe
+  - Steps: tick a row, press Forget Checked.
+  - Expected: "Forgot 1 document. 2 still remembered. The files themselves are
+    untouched." No confirmation box, because nothing destructive happened -- and
+    the reassurance is in the sentence rather than in a warning nobody should be
+    trained to click through.
+- TC-PARITY-008e — Not Now, and the way back
+  - Steps: press Escape. Then press `Alt+Shift+F12`.
+  - Expected: Escape opens nothing, changes nothing and says the same documents are
+    offered next time; the key brings the same window back, which is what makes
+    Not Now safe to press.
+- TC-PARITY-008f — Never Ask Again names the setting
+  - Steps: press Never Ask Again.
+  - Expected: the announcement names **Reopen last session**, so somebody who
+    pressed it in a hurry can find it. Launch twice more: silent both times.
+
 ## Sign-off
 
 - Tester:

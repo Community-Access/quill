@@ -106,6 +106,10 @@ COMMANDS: list[CommandRow] = [
     # QUILL keeps its own Restore Previous Version. Its own area rather than the
     # File menu's, since backups are switchable and the rest of File is not.
     ("&File", "Earlier &Versions...", "Ctrl+Alt+Shift+E", "cmd_browse_backups", ""),
+    # The session chooser on demand. Same key and same window as QUILL, so
+    # "Not Now" at launch is deferrable rather than lost (rule 9: the F-keys
+    # past F9 are where a once-in-a-while command goes).
+    ("&File", "Reopen Last S&ession...", "Alt+Shift+F12", "cmd_reopen_last_session", ""),
     ("&File", "", "", "", "sep"),
     # Ctrl+Alt+P, not the Ctrl+Alt+U it used to hold: that key is Check
     # for Updates in the eight other QuillVille apps, and P suits Page Setup.

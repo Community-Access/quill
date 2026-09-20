@@ -654,6 +654,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # the "do not ask me again for .docx files" checkbox in the File Changed on
     # Disk dialog, which is the only way back from it (bad.md F5).
     "file.forget_external_change_answers": "Ctrl+Shift+F11",
+    # The session chooser on demand, so "Not Now" is deferrable rather than
+    # lost (rule 9: a once-in-a-while command gets a key, not a short one).
+    "file.reopen_last_session": "Alt+Shift+F12",
     # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without
     # switching profiles, because somebody can want their QuillLite
     # abbreviations in QUILL without wanting QuillLite's menus (bad.md P2.4).

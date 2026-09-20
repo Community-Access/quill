@@ -267,6 +267,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_remember_clip": "edit.keep_selection_in_clip_library",
     "cmd_remove_blank_lines": "power.remove_blank_lines",
     "cmd_remove_duplicate_lines": "edit.remove_duplicate_lines",
+    "cmd_reopen_last_session": "file.reopen_last_session",
     "cmd_replace": "edit.replace",
     "cmd_reselect": "edit.reselect",
     "cmd_restore_deletion": "edit.restore_deletion",

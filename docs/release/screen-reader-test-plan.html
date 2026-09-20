@@ -707,6 +707,60 @@ disagrees with the bytes is worse than none: the browser believes the
 declaration.</li>
 </ul></li>
 </ul>
+<h2 id="parity-008--reopening-last-session-is-a-conversation">PARITY-008
+— Reopening last session is a conversation</h2>
+<p>Fix: both editors reopened last session’s documents silently and
+skipped a missing one without a word, so four tabs appeared unbidden and
+a file that had <em>moved</em> was invisible – indistinguishable from
+one that opened and had not been found yet.</p>
+<ul>
+<li>TC-PARITY-008a — It asks when it matters, and not otherwise
+<ul>
+<li>Steps: with two remembered documents that are both present, launch.
+Then with three, launch again.</li>
+<li>Expected: two open silently, as before. Three bring up
+<strong>Reopen Last Session</strong>, whose first line is spoken as a
+count: “3 documents from last time.”</li>
+</ul></li>
+<li>TC-PARITY-008b — A missing file is a row, not an omission
+<ul>
+<li>Steps: delete one of two remembered files from outside QUILL and
+launch.</li>
+<li>Expected: the window appears on two documents, and the row for the
+deleted one is announced as “(the file is no longer there)” and cannot
+be ticked.</li>
+</ul></li>
+<li>TC-PARITY-008c — The answer is per document
+<ul>
+<li>Steps: untick one row, press Open Checked.</li>
+<li>Expected: only the ticked documents open, and the count spoken
+afterwards matches what you chose – “Reopened all 2 documents”, or
+“Reopened 1 of 2” if one could not be opened. A shortfall is exactly
+what the number is for.</li>
+</ul></li>
+<li>TC-PARITY-008d — Forget says the files are safe
+<ul>
+<li>Steps: tick a row, press Forget Checked.</li>
+<li>Expected: “Forgot 1 document. 2 still remembered. The files
+themselves are untouched.” No confirmation box, because nothing
+destructive happened – and the reassurance is in the sentence rather
+than in a warning nobody should be trained to click through.</li>
+</ul></li>
+<li>TC-PARITY-008e — Not Now, and the way back
+<ul>
+<li>Steps: press Escape. Then press <code>Alt+Shift+F12</code>.</li>
+<li>Expected: Escape opens nothing, changes nothing and says the same
+documents are offered next time; the key brings the same window back,
+which is what makes Not Now safe to press.</li>
+</ul></li>
+<li>TC-PARITY-008f — Never Ask Again names the setting
+<ul>
+<li>Steps: press Never Ask Again.</li>
+<li>Expected: the announcement names <strong>Reopen last
+session</strong>, so somebody who pressed it in a hurry can find it.
+Launch twice more: silent both times.</li>
+</ul></li>
+</ul>
 <h2 id="sign-off">Sign-off</h2>
 <ul>
 <li>Tester:</li>

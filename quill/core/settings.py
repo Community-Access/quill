@@ -14,6 +14,7 @@ from quill.core.monitor_policy import (
     clamp_interval_minutes,
 )
 from quill.core.paths import app_data_dir
+from quill.core.session_restore import ASK_MODES
 from quill.core.settings_normalizers import (
     STATUS_BAR_ITEMS,
     _clamp_int,
@@ -583,6 +584,12 @@ class Settings:
     #: QuillLite both do (bad.md G4, P2.12). Files named on the command line
     #: always win: somebody who double-clicked a file asked for that file.
     restore_session: bool = True
+    #: Whether reopening asks first: "always", "when_it_matters" or "never".
+    #: Both editors reopened silently until 2026-09-19, which is right for one
+    #: file and wrong for four -- see ``quill/core/session_restore.py`` for what
+    #: "when it matters" means and why it is the default. Orthogonal to
+    #: ``restore_session``, which says whether to reopen at all.
+    session_restore_ask: str = "when_it_matters"
     #: The paths that were open when QUILL last exited, saved documents only --
     #: an untitled window has nothing to reopen *from*, and its content is the
     #: recovery store's business, which is a different promise.
@@ -1330,6 +1337,11 @@ class Settings:
         if default_line_ending not in {"crlf", "lf"}:
             default_line_ending = "crlf"
         restore_session = bool(data.get("restore_session", True))
+        session_restore_ask = (
+            str(data.get("session_restore_ask", "when_it_matters")).strip().lower()
+        )
+        if session_restore_ask not in ASK_MODES:
+            session_restore_ask = "when_it_matters"
         raw_session = data.get("session_files", [])
         session_files = (
             [str(entry) for entry in raw_session if str(entry).strip()][:20]
@@ -1837,6 +1849,7 @@ class Settings:
             default_new_document_format=default_new_document_format,
             default_line_ending=default_line_ending,
             restore_session=restore_session,
+            session_restore_ask=session_restore_ask,
             session_files=session_files,
             markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,

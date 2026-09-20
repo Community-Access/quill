@@ -242,6 +242,7 @@
   "reveal_codes_view": "documented",
   "reveal_codes_visible": "documented",
   "session_files": "documented",
+  "session_restore_ask": "documented",
   "setup_wizard_completed": "documented",
   "setup_wizard_intent": "grandfathered",
   "setup_wizard_wants_ai": "grandfathered",

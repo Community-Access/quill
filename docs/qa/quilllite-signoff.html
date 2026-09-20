@@ -239,9 +239,9 @@ line endings, a <code>.txt</code> saved with Unix line endings (any file
 from a git checkout will do), and any <code>.rtf</code>.</li>
 </ul>
 <h2 id="the-15-minute-pass">The 15-minute pass</h2>
-<p>No time for the whole thing? Run exactly these sixteen and stop:
+<p>No time for the whole thing? Run exactly these seventeen and stop:
 <strong>L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61,
-L-90, L-105, L-121, L-157, L-160, L-226.</strong></p>
+L-90, L-105, L-121, L-157, L-160, L-226, L-241.</strong></p>
 <p>They cover the four things most likely to be wrong and worst if they
 are: the document announces itself, F1 answers, the status bar is
 reachable, and a file comes back byte-for-byte. L-90 is there because a
@@ -266,6 +266,11 @@ defect as L-90 one more time: the Encoding and Line Endings cells read
 “UTF-8” and “CRLF” in a rich text document, which has neither. A cell
 stating a fact the document does not have is the one thing this status
 bar must never do.</p>
+<p><strong>L-241</strong> joined on 2026-09-19 and is the only test in
+the short run about something <em>not</em> happening: the session
+window’s Forget must never touch a file. Forgetting is safe by design
+and by test, and the one way that could become untrue is a change nobody
+checked – so it is checked on every pass, by hand, in the folder.</p>
 <hr />
 <h2 id="block-a--opening-and-where-focus-lands-5-min">Block A – Opening,
 and where focus lands (5 min)</h2>
@@ -3301,6 +3306,128 @@ one you had in QUILL.</li>
 <li>Pass: both are still there, with their own expansions. QUILL wins a
 collision and nothing already in QUILL is overwritten, but neither side
 loses an entry the other did not have.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-s--reopening-last-session-6-min">Block S – Reopening last
+session (6 min)</h2>
+<p>It reopened everything without asking until 2026-09-19. Everything
+here is about the answer being <strong>partial</strong> and about Forget
+being <strong>safe</strong>: those are the two claims the window makes,
+and a listener cannot check either by looking.</p>
+<p>Set this up once: open three <code>.txt</code> files, close
+QuillLite, then delete or rename one of the three from outside the
+app.</p>
+<p><strong>L-237. Three documents means you are asked</strong></p>
+<ul>
+<li>Do: launch QuillLite.</li>
+<li>Pass: a window titled <strong>Reopen Last Session</strong>, whose
+first line says “3 documents from last time, 1 of which is no longer
+there.”</li>
+<li>Fail if three windows simply appear, or if the missing one is not
+mentioned.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-238. The row for the missing file says so and cannot be
+ticked</strong></p>
+<ul>
+<li>Do: arrow to the row naming the file you deleted. Press
+<strong>Space</strong>.</li>
+<li>Pass: the row reads “(the file is no longer there)” and stays
+unticked.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-239. The answer can be partial</strong></p>
+<ul>
+<li>Do: untick one of the two that are still there. Press <strong>Open
+Checked</strong>.</li>
+<li>Pass: exactly one document opens, and you hear “Reopened all 1
+document.”</li>
+<li>Fail if both open. The whole point of the window is that “yes” and
+“no” are per document.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-240. Not Now changes nothing</strong></p>
+<ul>
+<li>Do: relaunch, and press <strong>Escape</strong> at the window.</li>
+<li>Pass: nothing opens, and you hear that the same documents are
+offered next time. Relaunch again: the same three are offered.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-241. Forget takes a row off the list and leaves the file
+alone</strong></p>
+<ul>
+<li>Do: at the window, tick the missing one, press <strong>Forget
+Checked</strong>, then <strong>Not Now</strong>. Relaunch.</li>
+<li>Pass: two documents are offered, not three. <strong>Every file you
+started with is still on disk</strong> – check the folder.</li>
+<li>Fail if any file is missing. Nothing in this window may delete
+anything.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-242. Forgetting is saved even though nothing
+opened</strong></p>
+<ul>
+<li>Do: as L-241 – the Forget was followed by Not Now.</li>
+<li>Pass: the forgotten row is still gone after the relaunch. A Forget
+that is not written is a Forget that did not happen.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-243. One or two documents still open without a
+question</strong></p>
+<ul>
+<li>Do: with two documents open, close QuillLite and relaunch.</li>
+<li>Pass: both open, no window. The chooser is for the cases where the
+answer is not obvious, and two files that are still there is not one of
+them.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-244. A missing file brings the window up on its
+own</strong></p>
+<ul>
+<li>Do: with two documents remembered, delete one from outside the app
+and relaunch.</li>
+<li>Pass: the window appears even though there are only two. This is the
+case the old silent behaviour hid completely: nothing opened, nothing
+was said, and that is indistinguishable from “it opened and I have not
+found it yet”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-245. The key opens the same window any time</strong></p>
+<ul>
+<li>Do: press <strong>Alt+Shift+F12</strong> (File &gt; Reopen Last
+Session…).</li>
+<li>Pass: the same window. With nothing remembered it says so rather
+than opening empty.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-246. Never Ask Again says what it changed</strong></p>
+<ul>
+<li>Do: press <strong>Never Ask Again</strong>, then relaunch
+twice.</li>
+<li>Pass: you are told the setting’s name, and last session reopens
+silently from then on. Setting it back in preferences brings the window
+back.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>

@@ -390,6 +390,15 @@ class DocumentCommandsMixin(
     def cmd_previous_window(self) -> None:
         self.app.cycle(self, -1)
 
+    def cmd_reopen_last_session(self) -> None:
+        """File > Reopen Last Session: the chooser the launch may have shown.
+
+        On the app rather than on this window, because the answer opens windows
+        and forgets rows for the whole application. The work is QuillLiteApp's;
+        this is the command table's way in.
+        """
+        self.app.choose_session_documents()
+
     def cmd_close_mdi(self) -> None:
         """Ctrl+F4, the Windows MDI convention. The same move as Ctrl+W.
 

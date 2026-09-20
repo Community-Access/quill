@@ -125,6 +125,7 @@
   "cmd_remember_clip": "covered",
   "cmd_remove_blank_lines": "covered",
   "cmd_remove_duplicate_lines": "covered",
+  "cmd_reopen_last_session": "covered",
   "cmd_replace": "covered",
   "cmd_reselect": "covered",
   "cmd_restore_deletion": "covered",

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 446.
+Editor commands with default bindings: 447.
 
 ## The QUILL editor
 
@@ -27,6 +27,7 @@ Editor commands with default bindings: 446.
 | (unbound by default) | Open GitHub Items... | `file.open_github_items` |
 | (unbound by default) | Open Remote GitHub Repository... | `file.open_github_repository` |
 | (unbound by default) | Save to Remote | `file.save_to_remote` |
+| Alt+Shift+F12 | Reopen Last Session | `file.reopen_last_session` |
 | Ctrl+Alt+E | File Format | `file.file_format` |
 | Ctrl+Alt+N | New Plain Text Document | `file.new_plain_text_document` |
 | Ctrl+Alt+P | Page Setup... | `file.page_setup` |

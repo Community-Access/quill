@@ -37,9 +37,9 @@ quill.tools.platform_report` is the answer that is true today.
 
 ## The 15-minute pass
 
-No time for the whole thing? Run exactly these sixteen and stop:
+No time for the whole thing? Run exactly these seventeen and stop:
 **L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61, L-90, L-105,
-L-121, L-157, L-160, L-226.**
+L-121, L-157, L-160, L-226, L-241.**
 
 They cover the four things most likely to be wrong and worst if they are: the
 document announces itself, F1 answers, the status bar is reachable, and a file
@@ -63,6 +63,12 @@ is exactly why it needs a box to tick.
 the Encoding and Line Endings cells read "UTF-8" and "CRLF" in a rich text
 document, which has neither. A cell stating a fact the document does not have is
 the one thing this status bar must never do.
+
+**L-241** joined on 2026-09-19 and is the only test in the short run about
+something *not* happening: the session window's Forget must never touch a file.
+Forgetting is safe by design and by test, and the one way that could become untrue
+is a change nobody checked -- so it is checked on every pass, by hand, in the
+folder.
 
 ---
 
@@ -1987,6 +1993,81 @@ Run these only if you have also run QUILL's **Bring My QuillLite Settings**
 - Pass: both are still there, with their own expansions. QUILL wins a collision
   and nothing already in QUILL is overwritten, but neither side loses an entry
   the other did not have.
+- [ ] pass  [ ] fail: ______
+
+---
+
+## Block S -- Reopening last session (6 min)
+
+It reopened everything without asking until 2026-09-19. Everything here is about
+the answer being **partial** and about Forget being **safe**: those are the two
+claims the window makes, and a listener cannot check either by looking.
+
+Set this up once: open three `.txt` files, close QuillLite, then delete or rename
+one of the three from outside the app.
+
+**L-237. Three documents means you are asked**
+- Do: launch QuillLite.
+- Pass: a window titled **Reopen Last Session**, whose first line says "3
+  documents from last time, 1 of which is no longer there."
+- Fail if three windows simply appear, or if the missing one is not mentioned.
+- [ ] pass  [ ] fail: ______
+
+**L-238. The row for the missing file says so and cannot be ticked**
+- Do: arrow to the row naming the file you deleted. Press **Space**.
+- Pass: the row reads "(the file is no longer there)" and stays unticked.
+- [ ] pass  [ ] fail: ______
+
+**L-239. The answer can be partial**
+- Do: untick one of the two that are still there. Press **Open Checked**.
+- Pass: exactly one document opens, and you hear "Reopened all 1 document."
+- Fail if both open. The whole point of the window is that "yes" and "no" are per
+  document.
+- [ ] pass  [ ] fail: ______
+
+**L-240. Not Now changes nothing**
+- Do: relaunch, and press **Escape** at the window.
+- Pass: nothing opens, and you hear that the same documents are offered next time.
+  Relaunch again: the same three are offered.
+- [ ] pass  [ ] fail: ______
+
+**L-241. Forget takes a row off the list and leaves the file alone**
+- Do: at the window, tick the missing one, press **Forget Checked**, then **Not
+  Now**. Relaunch.
+- Pass: two documents are offered, not three. **Every file you started with is
+  still on disk** -- check the folder.
+- Fail if any file is missing. Nothing in this window may delete anything.
+- [ ] pass  [ ] fail: ______
+
+**L-242. Forgetting is saved even though nothing opened**
+- Do: as L-241 -- the Forget was followed by Not Now.
+- Pass: the forgotten row is still gone after the relaunch. A Forget that is not
+  written is a Forget that did not happen.
+- [ ] pass  [ ] fail: ______
+
+**L-243. One or two documents still open without a question**
+- Do: with two documents open, close QuillLite and relaunch.
+- Pass: both open, no window. The chooser is for the cases where the answer is not
+  obvious, and two files that are still there is not one of them.
+- [ ] pass  [ ] fail: ______
+
+**L-244. A missing file brings the window up on its own**
+- Do: with two documents remembered, delete one from outside the app and relaunch.
+- Pass: the window appears even though there are only two. This is the case the
+  old silent behaviour hid completely: nothing opened, nothing was said, and that
+  is indistinguishable from "it opened and I have not found it yet".
+- [ ] pass  [ ] fail: ______
+
+**L-245. The key opens the same window any time**
+- Do: press **Alt+Shift+F12** (File > Reopen Last Session...).
+- Pass: the same window. With nothing remembered it says so rather than opening
+  empty.
+- [ ] pass  [ ] fail: ______
+
+**L-246. Never Ask Again says what it changed**
+- Do: press **Never Ask Again**, then relaunch twice.
+- Pass: you are told the setting's name, and last session reopens silently from
+  then on. Setting it back in preferences brings the window back.
 - [ ] pass  [ ] fail: ______
 
 ---

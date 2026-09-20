@@ -2,6 +2,38 @@
 
 ## 1.0.0
 
+### Reopening last session became a conversation (2026-09-19)
+
+Both editors reopened last session's documents **silently**, and skipped one whose
+file had gone without a word. That is right for one document and wrong for four:
+four tabs appearing unbidden is four things to identify before you can start, and
+the one you wanted is not necessarily the first. A file that had *moved* was the
+worst case --- nothing opened, nothing was said, and that is indistinguishable
+from "it opened and I have not found it yet".
+
+There is a chooser now, and it appears **when it matters**: one or two documents
+that are all still there open as before; three or more, or anything whose file has
+moved or gone, gets the window. It lists what was open with a checkbox per row, so
+the answer can be *partial* --- which is the thing a boolean could never express.
+**Open Checked**, **Open All**, **Not Now** (also Escape, and it changes nothing),
+**Forget Checked**, **Clear the List**, **Never Ask Again**.
+
+**Forgetting is not deleting.** Forget and Clear take rows off the list and touch
+no file, and the window says so in a line under the buttons rather than in a
+warning box --- a warning on a harmless action is how people learn to click
+through the warnings that matter. Afterwards you hear what happened: "Reopened
+all 3 documents", "Reopened 1 of 2", "Forgot 2 documents. 1 still remembered. The
+files themselves are untouched."
+
+**File > Reopen Last Session...** (`Alt+Shift+F12`) opens the same window on
+demand, which is what makes Not Now safe: the answer is deferred rather than lost.
+`session_restore_ask` holds the preference --- always, when_it_matters (the
+default) or never --- a separate question from `restore_session`, which decides
+whether last session is reopened at all. One shared core
+(`quill/core/session_restore.py`), one shared window, and QuillLite has both on
+the same key.
+
+
 ### QUILL and QuillLite became one family (2026-09-18)
 
 A twenty-nine item program, closed. The two editors now agree about their keys,

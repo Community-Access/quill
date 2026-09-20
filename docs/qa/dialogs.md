@@ -91,6 +91,20 @@ or the command palette (`Ctrl+Shift+P`).
   - [ ] Site editor Save button disabled until the required fields are filled
 - [ ] Save Session: via File menu
 - [ ] Open Session: via File menu
+- [ ] Reopen Last Session: `Alt+Shift+F12`, or File menu. Also appears at launch
+      when it matters -- three or more remembered documents, or any whose file has
+      moved or gone
+  - [ ] The list is a check list: Space ticks a row, openable rows start ticked,
+        and a row whose file has gone says so and cannot be ticked
+  - [ ] Six answers work: Open Checked, Open All, Not Now (also Escape), Forget
+        Checked, Clear the List, Never Ask Again
+  - [ ] **Forget touches no file.** After Forget Checked and after Clear the List,
+        every file named in the list is still on disk
+  - [ ] Forget and Clear are saved even when nothing is opened -- reopen the window
+        and the forgotten rows are still gone
+  - [ ] Never Ask Again names the setting it changed
+  - [ ] The count is spoken afterwards: "Reopened all 3 documents", "Reopened 1 of
+        2", "Forgot 2 documents. 1 still remembered."
 
 ### A.1. Edit over SSH (issue #139)
 

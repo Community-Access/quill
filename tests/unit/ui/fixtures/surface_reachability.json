@@ -294,6 +294,7 @@
   "quill.ui.regex_helper_dialog": "reachable",
   "quill.ui.remote_sites_dialog": "reachable",
   "quill.ui.session_browser": "reachable",
+  "quill.ui.session_restore_dialog": "reachable",
   "quill.ui.setup_transfer_ui": "reachable",
   "quill.ui.setup_wizard": "reachable",
   "quill.ui.setup_wizard_pages": "reachable",

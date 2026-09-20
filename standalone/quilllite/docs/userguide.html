@@ -2622,6 +2622,65 @@ Endings</strong> stays, because getting a file to save back
 byte-for-byte the way it arrived is most of what a Notepad replacement
 is for.</p>
 <hr />
+<h2 id="reopening-what-you-had-open">Reopening what you had open</h2>
+<p>QuillLite remembers the saved documents you had open and offers them
+back next time. Until September 2026 it simply opened all of them
+without asking, and skipped any whose file had gone without saying so.
+That is right for one document and wrong for four: four windows
+appearing unbidden is four things to identify before you can start, and
+the one you wanted is not necessarily the first.</p>
+<p>So it asks — <strong>when it matters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Last time you had</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one or two documents, both still there</td>
+<td>they open, as before</td>
+</tr>
+<tr>
+<td>three or more</td>
+<td>you are asked</td>
+</tr>
+<tr>
+<td>any document whose file has moved or gone</td>
+<td>you are asked</td>
+</tr>
+</tbody>
+</table>
+<p>The window lists what was open, one row each, with a checkbox.
+Everything that can be opened starts ticked, so <strong>Enter</strong>
+is “all of it” and unticking two is “not those two”. A row whose file
+has gone says so and cannot be ticked.</p>
+<ul>
+<li><strong>Open Checked</strong> opens the ticked rows and leaves the
+list alone.</li>
+<li><strong>Open All</strong> opens everything still on disk, ticked or
+not.</li>
+<li><strong>Not Now</strong> opens nothing and changes nothing. The same
+documents are offered next time. Escape does the same.</li>
+<li><strong>Forget Checked</strong> takes the ticked rows off the list
+so they stop being offered, and <strong>Clear the List</strong> does it
+to all of them. <strong>Neither touches a file.</strong> Forgetting is
+about what QuillLite offers you, not about what is on your disk, and the
+window says so in a line under the buttons.</li>
+<li><strong>Never Ask Again</strong> opens the ticked documents and
+stops asking from then on. It names the setting it changed, so you can
+find it again.</li>
+</ul>
+<p>Then it tells you what happened — “Reopened all 3 documents”,
+“Reopened 1 of 2”, “Forgot 2 documents. 1 still remembered. The files
+themselves are untouched.” A count is the one thing you cannot go and
+read off the screen.</p>
+<p><strong>File ▸ Reopen Last Session…</strong>
+(<strong>Alt+Shift+F12</strong>) opens the same window whenever you want
+it. That is what makes Not Now safe to press: the answer is put off
+rather than lost, and a list that needs tidying can be tidied without
+waiting for a restart. QUILL has the same window on the same key.</p>
 <h2 id="settings">Settings</h2>
 <p><strong>Tools ▸ Preferences</strong> (<strong>Ctrl+,</strong>) has
 everything in one place.</p>
@@ -2630,6 +2689,10 @@ whether you start with a blank document at all, how often unsaved work
 is copied aside, whether last session’s documents reopen, whether
 spelling is checked as you type, and whether your abbreviations and your
 taught words are shared with QUILL for All.</p>
+<p><strong>Whether reopening asks first</strong> is there too, with
+three answers: always ask, ask when it matters, or never ask and just
+reopen. See <a href="#reopening-what-you-had-open">Reopening what you
+had open</a>.</p>
 <p><strong>Start with a blank document</strong> is on, the way Notepad
 and WordPad do it. Turn it off if you always open an existing file:
 without it you are handed an empty Untitled to close on every launch.

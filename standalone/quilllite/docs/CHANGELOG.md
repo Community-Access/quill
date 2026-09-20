@@ -506,6 +506,27 @@ in the same release.
 
 #### Windows, sessions and recovering unsaved work
 
+- **A say in what reopens — File ▸ Reopen Last Session... (Alt+Shift+F12).**
+  QuillLite reopened last session's documents without asking and skipped one whose
+  file had gone without saying so. Right for one document, wrong for four: four
+  windows appearing unbidden is four things to identify before you can start, and
+  a file that has *moved* is the case where silence is worst — nothing opened,
+  nothing said, and no way to tell that from "it opened and I have not found it".
+
+  It asks **when it matters** now: one or two documents that are all still there
+  open as before; three or more, or anything missing, gets a window listing what
+  was open with a checkbox on each row. **Open Checked**, **Open All**, **Not
+  Now** (Escape, and it changes nothing), **Forget Checked**, **Clear the List**,
+  **Never Ask Again**. Forgetting only removes a row from the list — no file is
+  ever touched, and the window says so under the buttons rather than in a warning,
+  because a warning on a harmless action teaches people to click through the ones
+  that matter. Afterwards you hear the count: "Reopened all 3 documents",
+  "Reopened 1 of 2", "Forgot 2 documents. 1 still remembered."
+
+  The same window, the same key and the same setting in QUILL, from one shared
+  core (`quill/core/session_restore.py`). Three answers live in preferences:
+  always ask, ask when it matters, or never ask.
+
 - **Ctrl+F4 closes the document**, the key Windows has used for a window inside
   a window since 3.1. Ctrl+W always did; Ctrl+F4 did nothing.
 

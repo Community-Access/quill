@@ -83,8 +83,16 @@ def test_quill_remembers_and_restores() -> None:
     # Saved documents only: an untitled tab has nothing to reopen *from*.
     assert 'getattr(document, "path", None)' in remember
 
+    # A deleted file used to be skipped in silence here. Since 2026-09-19 it is a
+    # row in the chooser instead -- "it did not open" and "it opened and I have
+    # not found it" sound identical, which is the one case silence actively
+    # misled. What this test can still hold is that the restore consults the
+    # shared decision rather than reimplementing it: the behaviour itself is
+    # tested against real files in tests/unit/ui/test_session_restore_frame.py
+    # and tests/unit/apps/test_lite_session_restore.py.
     restore = inspect.getsource(MainFrame.restore_session)
-    assert "if not candidate.is_file():" in restore  # a deleted file is skipped silently
+    assert "should_ask(" in restore
+    assert 'getattr(self.settings, "restore_session", True)' in restore
 
 
 def test_a_file_on_the_command_line_wins() -> None:

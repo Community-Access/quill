@@ -31600,7 +31600,9 @@ heading, quote, or list bullet is stripped). Off by default.</li>
 QuillLite both behave. The list of what was open is kept in
 <code>session_files</code>; a file you open from Explorer or the command
 line always wins, and is opened <em>instead</em> of the session rather
-than on top of it.</li>
+than on top of it. <strong>Whether it asks first</strong> is
+<code>session_restore_ask</code> – see <a
+href="#reopening-last-session">Reopening last session</a>.</li>
 <li><strong>line endings for new documents</strong>
 (<code>default_line_ending</code>) – Windows (CR LF) by default, which
 is what Notepad, WordPad, Word and QuillLite all write. Set it to Unix
@@ -31621,6 +31623,72 @@ Preferences…</strong>). Others live in <strong>Profiles and
 Features…</strong>, <strong>Status Bar Layout…</strong>, <strong>Keymap
 Editor…</strong>, and the related customization commands under
 <strong>Tools -&gt; Customize &amp; Support</strong>.</p>
+<h3 id="reopening-last-session">Reopening last session</h3>
+<p>QUILL remembers the saved documents you had open and offers them back
+the next time you start. Until September 2026 it simply opened all of
+them, silently, and skipped any whose file had gone without a word. That
+is the right behaviour for one document and the wrong one for four: four
+tabs appearing unbidden is four things to identify before you can start,
+and the one you actually wanted is not necessarily the first.</p>
+<p>So there is a chooser now, and it appears <strong>when it
+matters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Last time you had</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one or two documents, both still there</td>
+<td>they open, as before</td>
+</tr>
+<tr>
+<td>three or more</td>
+<td>the chooser</td>
+</tr>
+<tr>
+<td>any document whose file has moved or gone</td>
+<td>the chooser</td>
+</tr>
+</tbody>
+</table>
+<p>The chooser lists what was open, with a checkbox on each row.
+Everything that can be opened starts ticked, so <strong>Enter</strong>
+is “all of it” and unticking two is “not those”. A row whose file has
+gone says so and cannot be ticked.</p>
+<ul>
+<li><strong>Open Checked</strong> opens the ticked rows and leaves the
+list alone.</li>
+<li><strong>Open All</strong> opens everything still on disk, ticked or
+not.</li>
+<li><strong>Not Now</strong> opens nothing and changes nothing; the same
+documents are offered next time. It is also what Escape does.</li>
+<li><strong>Forget Checked</strong> takes the ticked rows off the list
+so they stop being offered. <strong>Clear the List</strong> does that to
+all of them. Neither touches a file: forgetting is about what QUILL
+offers you, not about what is on your disk, and the window says so under
+the buttons.</li>
+<li><strong>Never Ask Again</strong> opens the ticked documents and sets
+the preference to reopen without asking from then on. It tells you which
+setting it changed, so you can find it again.</li>
+</ul>
+<p>Afterwards you hear what happened – “Reopened all 3 documents”,
+“Reopened 1 of 2”, “Forgot 2 documents. 1 still remembered. The files
+themselves are untouched.” A count is the one thing you cannot get by
+exploring the screen.</p>
+<p><strong>File ▸ Reopen Last Session…</strong>
+(<code>Alt+Shift+F12</code>) opens the same window whenever you want it,
+which is what makes Not Now safe to press: the answer is deferred rather
+than lost, and a list that wants tidying can be tidied without waiting
+for a restart.</p>
+<p><code>session_restore_ask</code> holds the preference:
+<strong>always</strong>, <strong>when_it_matters</strong> (the default)
+or <strong>never</strong>. It is a separate question from
+<code>restore_session</code>, which decides whether last session is
+reopened at all. QuillLite has the same window on the same key and the
+same setting under the same name.</p>
 <h2 id="trust-recovery-sessions-and-safety">Trust, Recovery, Sessions,
 and Safety</h2>
 <p>Quill is serious about recovery and user control.</p>

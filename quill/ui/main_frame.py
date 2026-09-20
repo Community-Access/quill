@@ -459,6 +459,7 @@ from quill.ui.main_frame_search import SearchCommandsMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
 from quill.ui.main_frame_selection_span import SelectionSpanMixin
+from quill.ui.main_frame_session_restore import SessionRestoreMixin
 from quill.ui.main_frame_sessions import SessionsMixin
 from quill.ui.main_frame_simple_open import SimpleOpenMixin
 from quill.ui.main_frame_speech import SpeechCommandsMixin
@@ -828,6 +829,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    SessionRestoreMixin,
     MagicalTierMixin,
     LiteBridgeMixin,
     NativeKeyGuardMixin,
@@ -6545,26 +6547,9 @@ class MainFrame(
                 paths.append(str(path))
         self.settings.session_files = paths[:20]
 
-    def restore_session(self) -> int:
-        """Reopen last session's documents. Returns how many opened.
-
-        A file that has gone is skipped silently rather than reported: a
-        session list is a convenience, and being told about a file you deleted
-        on purpose is not news. QuillLite has worked this way since it shipped.
-        """
-        if not getattr(self.settings, "restore_session", True):
-            return 0
-        opened = 0
-        for entry in list(getattr(self.settings, "session_files", []))[:20]:
-            candidate = Path(entry)
-            if not candidate.is_file():
-                continue
-            try:
-                self.open_file(candidate, record_recent=False)
-            except Exception:  # noqa: BLE001 - one bad file must not stop launch
-                continue
-            opened += 1
-        return opened
+    # restore_session and reopen_last_session live in SessionRestoreMixin
+    # (main_frame_session_restore.py). They used to be here and reopened every
+    # remembered file silently, skipping a missing one without a word.
 
     def new_file(self) -> None:
         self._clear_empty_workspace_state()

@@ -8360,11 +8360,58 @@ Quill's current settings and customization surface covers the things you are mos
 - active keyboard pack
 - custom keybindings through the keymap editor
 - status-bar order and status-bar visibility
-- **reopen last session's documents** (`restore_session`) -- on by default, the way Notepad 11 and QuillLite both behave. The list of what was open is kept in `session_files`; a file you open from Explorer or the command line always wins, and is opened *instead* of the session rather than on top of it.
+- **reopen last session's documents** (`restore_session`) -- on by default, the way Notepad 11 and QuillLite both behave. The list of what was open is kept in `session_files`; a file you open from Explorer or the command line always wins, and is opened *instead* of the session rather than on top of it. **Whether it asks first** is `session_restore_ask` -- see [Reopening last session](#reopening-last-session).
 - **line endings for new documents** (`default_line_ending`) -- Windows (CR LF) by default, which is what Notepad, WordPad, Word and QuillLite all write. Set it to Unix (LF) if you would rather. A file you *open* always keeps the line endings it already had, whichever this says; the choice only decides what a brand-new document starts with.
 - **the format a new document starts in** (`default_new_document_format`) -- Markdown, plain text or HTML. **File -> New Rich Text Document** (Ctrl+Shift+N) and **New Plain Text Document** (Ctrl+Alt+N) start one in that kind whatever the setting says, and `quill --rich` / `quill --plain` do the same from a command line.
 
 Some of these live in the View menu for quick toggling; the preference-style toggles now live in the **Settings** dialog (**Tools -> Customize & Support -> Preferences...**). Others live in **Profiles and Features...**, **Status Bar Layout...**, **Keymap Editor...**, and the related customization commands under **Tools -> Customize & Support**.
+
+### Reopening last session
+
+QUILL remembers the saved documents you had open and offers them back the next
+time you start. Until September 2026 it simply opened all of them, silently, and
+skipped any whose file had gone without a word. That is the right behaviour for
+one document and the wrong one for four: four tabs appearing unbidden is four
+things to identify before you can start, and the one you actually wanted is not
+necessarily the first.
+
+So there is a chooser now, and it appears **when it matters**:
+
+| Last time you had | What happens |
+| --- | --- |
+| one or two documents, both still there | they open, as before |
+| three or more | the chooser |
+| any document whose file has moved or gone | the chooser |
+
+The chooser lists what was open, with a checkbox on each row. Everything that can
+be opened starts ticked, so **Enter** is "all of it" and unticking two is "not
+those". A row whose file has gone says so and cannot be ticked.
+
+- **Open Checked** opens the ticked rows and leaves the list alone.
+- **Open All** opens everything still on disk, ticked or not.
+- **Not Now** opens nothing and changes nothing; the same documents are offered
+  next time. It is also what Escape does.
+- **Forget Checked** takes the ticked rows off the list so they stop being
+  offered. **Clear the List** does that to all of them. Neither touches a file:
+  forgetting is about what QUILL offers you, not about what is on your disk, and
+  the window says so under the buttons.
+- **Never Ask Again** opens the ticked documents and sets the preference to
+  reopen without asking from then on. It tells you which setting it changed, so
+  you can find it again.
+
+Afterwards you hear what happened -- "Reopened all 3 documents", "Reopened 1 of
+2", "Forgot 2 documents. 1 still remembered. The files themselves are untouched."
+A count is the one thing you cannot get by exploring the screen.
+
+**File ▸ Reopen Last Session...** (`Alt+Shift+F12`) opens the same window whenever
+you want it, which is what makes Not Now safe to press: the answer is deferred
+rather than lost, and a list that wants tidying can be tidied without waiting for
+a restart.
+
+`session_restore_ask` holds the preference: **always**, **when_it_matters** (the
+default) or **never**. It is a separate question from `restore_session`, which
+decides whether last session is reopened at all. QuillLite has the same window on
+the same key and the same setting under the same name.
 
 ## Trust, Recovery, Sessions, and Safety
 

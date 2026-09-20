@@ -481,6 +481,14 @@ class MenuBuilderMixin:
                 "file.forget_external_change_answers",
             ),
         )
+        self._id_reopen_last_session = wx.NewIdRef()
+        # No access key: this menu claims 21 of 26 letters and every one in the
+        # phrase is taken (S is Snapshots), so GATE-14's out-of-letters rule
+        # applies -- silence beats a duplicate. Alt+Shift+F12 is in the label.
+        file_menu.Append(
+            self._id_reopen_last_session,
+            self._menu_label(_("Reopen Last Session..."), "file.reopen_last_session"),
+        )
         file_menu.Append(self._id_restore_backup, _("Restore &Backup..."))
         file_menu.Append(
             self._id_restore_previous_version,
