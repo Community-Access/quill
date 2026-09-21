@@ -89,6 +89,16 @@ _FIRST_STATS_CEILING_S = 12.0
 #: costs -- and it must not scale with the document at all.
 _CACHED_CEILING_S = 0.01
 
+#: A *thousand* invalidations, which is a different measurement wearing the same
+#: units. At 0.01s it asked for ten microseconds per call, and a Python method
+#: call plus two attribute writes on a loaded Windows runner is not reliably that
+#: fast -- CI measured 0.0167s and failed a pull request that changed a lockfile.
+#: This file says its ceilings are generous on purpose, because "a gate that
+#: fails on a bad afternoon gets deleted"; that one was not, so it is now. Two
+#: hundred microseconds per call still catches what this test is for: an
+#: invalidation that walks the 50 MB buffer comes in seconds, not double.
+_THOUSAND_INVALIDATIONS_CEILING_S = 0.2
+
 #: One line/column lookup off the cached table: a binary search, so flat.
 _LINE_COLUMN_CEILING_S = 0.01
 
@@ -147,7 +157,7 @@ def test_an_edit_costs_nothing_until_something_reads(mirror: DocumentText) -> No
     """Invalidation is O(1) on purpose: the typist must not pay the reader's bill."""
     mirror.stats()
     elapsed = _seconds(lambda: [mirror.invalidate() for _ in range(1000)])
-    assert elapsed < _CACHED_CEILING_S, f"1000 invalidations took {elapsed:.4f}s"
+    assert elapsed < _THOUSAND_INVALIDATIONS_CEILING_S, f"1000 invalidations took {elapsed:.4f}s"
 
 
 @pytest.mark.perf
