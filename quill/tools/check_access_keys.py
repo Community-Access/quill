@@ -38,6 +38,16 @@ Scoping, and why it is shaped this way:
   needs the gate to learn which argument of which helper is a label -- a
   different design, not a bigger regex.
 
+* Also invisible: a **wizard page and the wizard's own chrome** share one
+  top-level window, so a page control and the ``&Next >`` button really do
+  compete, while the gate scopes them to different classes. That is not
+  theoretical -- the Audio Studio's Voices page claimed ``N`` for "Remove
+  language", Alt+N cycled instead of pressing Next, and the wizard could not
+  be advanced past step 3 from the keyboard at all. It is why that label is
+  now ``R&emove language`` and ``&Engine:`` is ``Eng&ine:``. Both pages_documents.py
+  and chapter_workbench.py sit exactly on their GATE-11 budgets, so neither
+  could carry the comment; this is where it lives.
+
 The EdSharp companion rule is worth honouring while fixing: **OK, Cancel and
 Close need no access key at all** -- Enter and Escape already serve them
 (the dialog contract binds both), and every letter they give up resolves a

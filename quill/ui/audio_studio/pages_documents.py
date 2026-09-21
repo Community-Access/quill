@@ -294,7 +294,7 @@ class VoicesPage(StudioPage):
         # Translation targets: ordered (lang_code, engine, voice_id, display_label).
         self._tr_targets: list[tuple[str, str, str, str]] = []
 
-        self.add_label(_("&Engine:"))
+        self.add_label(_("Eng&ine:"))
         self.engine = wx.Choice(
             self, choices=[self._engine_label(lbl, eid) for lbl, eid in engine_options]
         )
@@ -493,7 +493,7 @@ class VoicesPage(StudioPage):
         apply_listbox_activation(self.tr_list, lambda _e: self.tr_lang.SetFocus())
         self.sizer.Add(self.tr_list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         tr_btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        tr_remove = wx.Button(self, label=_("Remove la&nguage"))
+        tr_remove = wx.Button(self, label=_("R&emove language"))
         tr_remove.SetHelpText("Drops the highlighted language from the translated exports.")
         tr_remove.Bind(wx.EVT_BUTTON, lambda _e: self.tr_remove())
         tr_btn_row.Add(tr_remove, 0, wx.RIGHT, 6)
