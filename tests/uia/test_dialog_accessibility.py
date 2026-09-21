@@ -14,6 +14,9 @@ def _open_dialog_via_keys(quill_app, keys: str, title_fragment: str, attempts: i
     # race (seen on CI runners), so the keystroke is retried, never assumed.
     last_error: Exception | None = None
     for _ in range(attempts):
+        gone = quill_app.exit_status()
+        if gone:
+            raise AssertionError(f"{gone}, so {keys!r} has nothing to type into")
         quill_app.main_window.set_focus()
         quill_app.main_window.type_keys(keys)
         dialog = quill_app.main_window.child_window(

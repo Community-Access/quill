@@ -79,6 +79,9 @@ def _open_audio_studio(quill_app):
             # is the point: the thing in front may be a menu, not a control.
             send_keys("{ESC}{ESC}")
             time.sleep(0.3)
+        gone = quill_app.exit_status()
+        if gone:
+            raise AssertionError(f"{gone}, so there is no window to open the Audio Studio from")
         quill_app.main_window.set_focus()
         if not quill_app.main_window.wrapper_object().is_enabled():
             raise AssertionError(
@@ -337,8 +340,17 @@ def test_audio_studio_workbench_opens_from_edit_journey(quill_app) -> None:
                 "Chapter Workbench: unnamed focusable controls detected:\n"
                 + "\n".join(summarize(offenders))
             )
-            # The Workbench announces itself when it opens.
-            quill_app.wait_spoken("Workbench", timeout=10.0)
+            # No announcement is asserted here, and that is deliberate.
+            # This used to require the Workbench to announce itself on open,
+            # which is precisely what GATE-13 forbids: "the screen reader
+            # already announces window and dialog titles ... the app must
+            # announce only what it alone knows". The Workbench obeys that --
+            # it speaks actions ("Renamed chapter to X") and not its own
+            # name -- so the test was demanding a violation of a shipped gate
+            # and failing because the product was right.
+            #
+            # The window opening, and opening fully named, is what this test
+            # is for, and both are asserted above.
         finally:
             workbench.type_keys("{ESC}")
             _wait_for_close(workbench)

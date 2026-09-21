@@ -67,6 +67,21 @@ class QuillApp:
     def announcement_trace(self) -> Path:
         return self.data_dir / "diagnostics" / "announcement-trace.log"
 
+    def exit_status(self) -> str:
+        """Why the app is gone, or ``""`` if it is still running.
+
+        A window lookup against a dead process raises
+        ``ElementNotFoundError: {'title_re': '.*QUILL for All.*', ...}``, which
+        says the window is missing and nothing about the reason -- and "the
+        window is missing" looks identical whether QUILL crashed, exited
+        cleanly, or never drew. Three separate failures in this suite were that
+        exception, chased for hours as UI problems. Ask the process instead.
+        """
+        code = self.process.poll()
+        if code is None:
+            return ""
+        return f"the QUILL process is gone (exit code {code})"
+
     @property
     def corpus_audiobook(self) -> Path:
         """The chaptered MP3 the edit-journey tests open.
@@ -142,8 +157,48 @@ def _seed_profile(data_dir: Path) -> None:
         )
 
 
+#: Where a failed test's QUILL profile is kept for the workflow to upload.
+#: Repo-relative so ``actions/upload-artifact`` can find it by a fixed path.
+_DIAGNOSTICS_OUT = Path(__file__).resolve().parents[2] / "uia-diagnostics"
+
+
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo):  # noqa: ANN201
+    """Let the fixture see how the test went, so it can keep the evidence."""
+    outcome = yield
+    report = outcome.get_result()
+    setattr(item, f"rep_{report.when}", report)
+
+
+def _preserve_profile(item: pytest.Item, data_dir: Path, pid: int, exit_code: int | None) -> None:
+    """Keep the failed test's logs, crash bundles and exit code for upload.
+
+    The profile is otherwise deleted at teardown, which means the one place
+    QUILL writes an explanation for its own death -- ``diagnostics/`` gets the
+    crash bundle, ``logs/`` the app log -- was being wiped before anybody could
+    read it. Several runs of this suite lost the main window mid-test with
+    nothing in captured stderr and no artifact to open; this is what would
+    have answered the question.
+    """
+    safe = "".join(ch if ch.isalnum() or ch in "-_." else "_" for ch in item.nodeid)[-120:]
+    target = _DIAGNOSTICS_OUT / safe
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+        for sub in ("logs", "diagnostics"):
+            src = data_dir / sub
+            if src.is_dir():
+                shutil.copytree(src, target / sub, dirs_exist_ok=True)
+        # exit_code was read *before* terminate(); None means QUILL was still
+        # running when the test ended, so the lost window was not an exit.
+        (target / "process.txt").write_text(
+            f"pid={pid}\nexit_code_before_teardown={exit_code}\n", encoding="utf-8"
+        )
+    except OSError:  # pragma: no cover - preserving evidence must never fail a teardown
+        pass
+
+
 @pytest.fixture
-def quill_app(tmp_path_factory: pytest.TempPathFactory) -> Iterator[QuillApp]:
+def quill_app(request: pytest.FixtureRequest) -> Iterator[QuillApp]:
     """Launch QUILL on an isolated profile; yield the connected UIA app."""
     from pywinauto import Application
 
@@ -183,10 +238,18 @@ def quill_app(tmp_path_factory: pytest.TempPathFactory) -> Iterator[QuillApp]:
 
         yield QuillApp(process=process, data_dir=data_dir, main_window=window)
     finally:
+        # Read the exit code *before* terminating: after terminate() every
+        # process reports 1, which would hide "it died on its own with 0xC0000005"
+        # behind "we killed it". This is the single most useful number this
+        # suite can record about a window that vanished.
+        died_on_its_own = process.poll()
         if process.poll() is None:
             process.terminate()
             try:
                 process.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 process.kill()
+        report = getattr(request.node, "rep_call", None)
+        if (report is not None and report.failed) or died_on_its_own is not None:
+            _preserve_profile(request.node, data_dir, process.pid, died_on_its_own)
         shutil.rmtree(data_dir, ignore_errors=True)
