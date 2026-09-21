@@ -201,7 +201,7 @@ docx = ["python-docx>=1.1.0"]
 # quietly resolve elevenlabs 3.0.0a1 -- an alpha of a major version, chosen by
 # a lock refresh rather than by anybody. A major bump of a provider SDK is a
 # decision; raise the ceiling when it is made.
-elevenlabs = ["elevenlabs>=2.67.0,<3"]
+elevenlabs = ["elevenlabs>=2.68.0,<3"]
 # Native Windows OCR (OCR-1): thin pip wheels projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
 # OS component, so end users install nothing extra — bundling these wheels makes
