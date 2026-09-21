@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.32.0"]
+requires = ["hatchling>=1.32.3"]
 build-backend = "hatchling.build"
 
 [project]
@@ -44,7 +44,7 @@ dependencies = [
     # AES-GCM for Quill Beacon's encrypted sync (apps/beacon/quillsync/crypto.py)
     # and PuTTY private-key parsing (core/ssh/putty_key.py). Hard-imported by the
     # beacon sync module, so it is a base dependency, not an optional extra.
-    "cryptography>=50.0.0",
+    "cryptography>=50.0.1",
     # Windows COM. Not a UI concern despite living in the [ui] extra until now:
     # quill/core/persona_launcher.py builds persona .lnk shortcuts through
     # WScript.Shell, and quill/platform/windows (sapi5, narrator_announce,
@@ -152,13 +152,13 @@ dictation = ["SpeechRecognition>=3.17.0"]
 # Offline speech-to-text (#617). The whisper.cpp executable + GGML models are
 # managed out-of-band (AI > Speech > Manage Speech Models); this optional extra
 # adds microphone capture for offline dictate-at-cursor via PortAudio.
-speech = ["sounddevice>=0.5.5"]
+speech = ["sounddevice>=0.5.6"]
 # Optional higher-throughput offline speech engine (#617 S4). Faster Whisper is
 # a CTranslate2-based library that uses the GPU when available; huggingface_hub
 # fetches its CTranslate2 model repositories. Users opt in via AI > Speech >
 # Manage Speech Models > Speech Engine; the bundled whisper.cpp engine remains
 # the default and needs none of this.
-fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.30.0"]
+fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.32.0"]
 # Optional very-low-resource offline English engine: Vosk (Kaldi) (#669). Tiny
 # CPU-only models (~40 MB) for old/constrained machines. Models download from
 # alphacephei.com via Manage Speech Models; no GPU needed.
@@ -224,17 +224,20 @@ ocr = [
 # Kokoro neural TTS (offline, no GPU/torch required). kokoro-onnx runs the Kokoro
 # voice model through onnxruntime (CPU). Voice model files (~114 MB) are downloaded
 # on first use via Voice Picker > Download Kokoro and stored in the app data dir.
-# phonemizer-fork and espeakng-loader (transitive deps of kokoro-onnx) are
+# phonemizer and espeakng-loader (transitive deps of kokoro-onnx) are
 # self-contained — they bundle eSpeak-NG phoneme data and do not require a system install.
 # soundfile writes the synthesized PCM to WAV; it bundles libsndfile on Windows.
 kokoro = [
-    "kokoro-onnx>=0.5.0",
+    "kokoro-onnx>=0.6.1",
     "soundfile>=0.14.0",
-    # Runtime dep of the Kokoro phonemizer chain
-    # (kokoro-onnx -> phonemizer -> segments -> csvw -> babel.numbers). csvw
-    # normally pulls it transitively, but declaring it here makes the Kokoro
-    # runtime chain self-contained so a pruned/partial install can't leave the
-    # ONNX voice path importing a missing 'babel'. Keep in sync with [dev].
+    # Declared so the Kokoro runtime chain is self-contained: a pruned or
+    # partial install must not leave the ONNX voice path importing a missing
+    # 'babel'. It used to arrive transitively as
+    # kokoro-onnx -> phonemizer-fork -> segments -> csvw -> babel.numbers;
+    # kokoro-onnx 0.6.1 swapped phonemizer-fork for upstream phonemizer and
+    # that whole chain (segments, csvw, rdflib) left the lockfile, so this
+    # line is now the only thing putting Babel on the Kokoro path rather
+    # than a belt beside a brace. Keep in sync with [dev].
     "Babel>=2.18.0",
 ]
 pages = ["keynote-parser>=1.14.5.0"]
@@ -447,7 +450,7 @@ dev = [
   "hypothesis>=6.165.2",
   # Randomized test ordering, DISABLED by default via addopts (-p no:randomly).
   # Opt in with `pytest -p randomly ...` to hunt order-dependent coupling.
-  "pytest-randomly>=4.1.0",
+  "pytest-randomly>=5.0.0",
   "ruff>=0.16.8",
   "mypy>=2.3.0",
   # I18N: string extraction, .po update, .mo compile
