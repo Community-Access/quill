@@ -152,10 +152,11 @@ def test_audio_studio_wizard_escape_closes_it(quill_app) -> None:
 # + Workbench on the corpus sample + silence-params modal.
 # ---------------------------------------------------------------------------
 #
-# The wizard's journey radio carries no ``&`` mnemonic on its choices, so
-# selecting a non-default journey is done by ``Down`` arrow keys. The
-# ``Next`` button uses the ``&`` mnemonic from its label ("&Next >") and
-# is reached by ``Alt+N``.
+# The ``Next`` button uses the ``&`` mnemonic from its label ("&Next >") and is
+# reached by ``Alt+N``, which is safe because no wizard page claims ``N`` --
+# ``test_audio_studio_wizard_mnemonics.py`` keeps it that way. The journey radio
+# is selected by the option's own text instead of by arrow keys; see
+# ``_select_journey_edit`` for what arrow keys actually did.
 
 
 def _next_page(dialog) -> None:
@@ -164,14 +165,60 @@ def _next_page(dialog) -> None:
     dialog.type_keys("%n")  # Alt+N matches the &Next > mnemonic
 
 
+#: The third choice of the start page's journey radio, by its own words.
+_EDIT_JOURNEY_CHOICE = "Edit an existing audiobook"
+
+
 def _select_journey_edit(dialog) -> None:
-    """Switch the StartPage radio from documents to edit (third option)."""
+    """Switch the StartPage radio from documents to edit, and check it took.
+
+    This used to press ``{TAB}{TAB}{DOWN}{DOWN}`` and hope. It did not work:
+    the radio box is already the first focusable control when the page opens,
+    so two Tabs move *past* it -- to "Load a job file...", then to Back -- and
+    the two Downs then land on a button, where they do nothing. The journey
+    stayed on documents, so the Start button never became "Open in Workbench",
+    Alt+O pressed nothing, and both edit-journey tests failed ten seconds later
+    as a timeout waiting for a Workbench that was never asked for.
+
+    A timeout is the worst failure a UI test can give you: it names the thing
+    that did not appear and nothing about why. So the radio is selected by the
+    option's own text through the UIA selection pattern, and the selection is
+    asserted before anything depends on it.
+    """
     dialog.set_focus()
-    # Focus the radio first (Alt+W matches the '&What would you like to make?'
-    # group label in many builds; if the mnemonic doesn't fire, two Tab
-    # presses from the dialog body land on the radio).
-    dialog.type_keys("{TAB}{TAB}")
-    dialog.type_keys("{DOWN}{DOWN}")
+    choice = dialog.child_window(title_re=f".*{_EDIT_JOURNEY_CHOICE}.*", control_type="RadioButton")
+    try:
+        choice.wait("exists visible", timeout=6)
+    except Exception as exc:  # noqa: BLE001 - the page no longer offers it
+        raise AssertionError(
+            f"the start page has no {_EDIT_JOURNEY_CHOICE!r} journey to select: {exc}"
+        ) from exc
+    choice.select()
+    assert choice.is_selected(), (
+        f"selecting {_EDIT_JOURNEY_CHOICE!r} did not take, so the wizard is still "
+        "on the documents journey and the Start button will not open the Workbench"
+    )
+
+
+def _press_open_in_workbench(dialog) -> None:
+    """Press the Start button in its edit-journey guise, by name.
+
+    On the edit journey the Start button's label becomes "&Open in Workbench"
+    (``wizard.py``). Pressing it by mnemonic was a second guess stacked on the
+    journey guess: if the journey had not switched, Alt+O pressed nothing and
+    the failure arrived ten seconds later as "no window called Workbench",
+    which names the symptom and hides the cause. Finding the button by its
+    label asserts the wizard really is in the state the test thinks it is.
+    """
+    button = dialog.child_window(title_re=".*Open in Workbench.*", control_type="Button")
+    try:
+        button.wait("exists visible enabled", timeout=6)
+    except Exception as exc:  # noqa: BLE001 - not the edit journey, or not ready
+        raise AssertionError(
+            "the wizard is not offering 'Open in Workbench', so either the edit "
+            f"journey did not take or the page will not accept the book: {exc}"
+        ) from exc
+    button.click_input()
 
 
 def test_audio_studio_wizard_documents_journey_has_named_pages(quill_app) -> None:
@@ -246,14 +293,12 @@ def test_audio_studio_workbench_opens_from_edit_journey(quill_app) -> None:
     try:
         _select_journey_edit(dialog)
         _next_page(dialog)  # start -> edit_source
-        time.sleep(0.5)
-        # The EditSourcePage ComboBox is pre-seeded with the corpus
-        # sample. Press Enter to confirm the current value, then click
-        # Open in Workbench (Alt+O is the &Open... mnemonic on the
-        # Start button for the edit journey).
+        quill_app.wait_spoken("Open a book", timeout=10.0)
+        # The EditSourcePage ComboBox is pre-seeded with the corpus sample by
+        # the conftest fixture; Enter confirms the current value.
         dialog.type_keys("{ENTER}")
         time.sleep(0.2)
-        dialog.type_keys("%o")
+        _press_open_in_workbench(dialog)
         # The wizard closes, the Workbench opens. Wait for the Workbench
         # dialog by title fragment.
         workbench = quill_app.main_window.child_window(
@@ -295,10 +340,10 @@ def test_audio_studio_workbench_silence_params_dialog_is_fully_named(quill_app) 
     try:
         _select_journey_edit(dialog)
         _next_page(dialog)
-        time.sleep(0.5)
+        quill_app.wait_spoken("Open a book", timeout=10.0)
         dialog.type_keys("{ENTER}")
         time.sleep(0.2)
-        dialog.type_keys("%o")
+        _press_open_in_workbench(dialog)
         workbench = quill_app.main_window.child_window(
             title_re=".*Workbench.*", control_type="Window"
         )
