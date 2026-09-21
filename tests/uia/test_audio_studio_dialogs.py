@@ -40,30 +40,65 @@ def _open_dialog_via_keys(quill_app, keys: str, title_fragment: str, attempts: i
     raise AssertionError(f"dialog {title_fragment!r} never opened via {keys!r}: {last_error}")
 
 
-def _open_audio_studio(quill_app):
-    """Reach the wizard through Tools > Speech > Audio Studio by keyboard.
+#: Tools > Speech > Audiobook & Batch Speech, which is what opens the wizard.
+#:
+#: Every letter is read off a menu label, and the two that look wrong are the
+#: right ones. In the Tools menu ``S`` belongs to "Story &Studio...", so the
+#: Speech submenu is titled "Speec&h" and answers to ``H``; inside it the Audio
+#: Studio entry is "Audiobook && &Batch Speech...", so ``B``. Both letters are
+#: unique in their own menu, which is what ``test_menu_item_access_keys.py``
+#: guarantees and what makes a single deterministic path possible here.
+_AUDIO_STUDIO_MENU_PATH = "%thb"
 
-    Tools is reached by Alt+T on the QUILL main window. The exact accelerator
-    sequence is captured from the menu accelerator labels rather than
-    hard-coded.
+
+def _open_audio_studio(quill_app):
+    """Reach the wizard through Tools > Speech > Audiobook & Batch Speech.
+
+    This used to try ``%t``, ``%t``, ``%ts`` and ``%tsa`` in a loop and keep
+    whichever opened a window called "Audio Studio". None of them does. The
+    menu has no "Speech > Audio Studio" row -- ``%ts`` lands on "Story
+    &Studio...", which is *modal*, which disables the main window, so the next
+    iteration's ``type_keys`` raised ``ElementNotEnabled`` and every one of the
+    seven tests in this file failed on a misspelled menu path rather than on
+    anything about the Audio Studio.
+
+    So: one path, and it is asserted rather than swallowed. The retry stays,
+    because a freshly launched window really can lose the first accelerator to
+    a foreground race on a CI runner -- but each attempt first presses Escape
+    twice to dismiss a half-open menu, and refuses to type into a main window
+    that something has disabled, because that is a modal we did not mean to
+    open and reporting it is more use than dying inside pywinauto.
     """
-    quill_app.main_window.set_focus()
-    # Alt+T to open Tools. The Speech submenu and Audio Studio entry
-    # carry "S" and "A" accelerators respectively; the wizard announces
-    # itself with the title fragment "Audio Studio".
-    for keys in ("%t", "%t", "%ts", "%tsa"):
-        quill_app.main_window.type_keys(keys, with_spaces=False)
+    from pywinauto.keyboard import send_keys
+
+    last_error: Exception | None = None
+    for attempt in range(3):
+        if attempt:
+            # Close whatever the previous attempt left open. send_keys goes to
+            # the foreground window without pywinauto's actionable check, which
+            # is the point: the thing in front may be a menu, not a control.
+            send_keys("{ESC}{ESC}")
+            time.sleep(0.3)
+        quill_app.main_window.set_focus()
+        if not quill_app.main_window.wrapper_object().is_enabled():
+            raise AssertionError(
+                "the QUILL main window is disabled, so a modal dialog is open "
+                "that this test did not ask for; the Audio Studio menu path "
+                f"({_AUDIO_STUDIO_MENU_PATH!r}) cannot be typed"
+            )
+        quill_app.main_window.type_keys(_AUDIO_STUDIO_MENU_PATH, with_spaces=False)
         dialog = quill_app.main_window.child_window(
             title_re=".*Audio Studio.*", control_type="Window"
         )
         try:
-            dialog.wait("exists visible", timeout=4)
+            dialog.wait("exists visible", timeout=8)
             return dialog
-        except Exception:
-            continue
-    # Final attempt with the title fragment alone — sometimes the wizard
-    # opens with a localized title on the first run.
-    raise AssertionError("Audio Studio wizard never opened via Tools > Speech menu")
+        except Exception as exc:  # noqa: BLE001 - retry the keystroke
+            last_error = exc
+    raise AssertionError(
+        "the Audio Studio wizard never opened via Tools > Speech > Audiobook "
+        f"&& Batch Speech ({_AUDIO_STUDIO_MENU_PATH!r}): {last_error}"
+    )
 
 
 def _wait_for_close(window: object, timeout: float = 8.0) -> None:
@@ -275,16 +310,24 @@ def test_audio_studio_workbench_silence_params_dialog_is_fully_named(quill_app) 
             modal = quill_app.main_window.child_window(
                 title_re=".*silences.*", control_type="Window"
             )
+            # Not opening is tolerated -- the proposal pool does not surface on
+            # every CI runner. Once it *is* open, the scan is an assertion.
+            # It used to share an ``except Exception`` with the wait, which
+            # swallowed its own AssertionError: a test that could not fail.
             try:
                 modal.wait("exists visible", timeout=6.0)
-                records = scan_window(modal)
-                offenders = unnamed_focusable(records)
-                assert not offenders, (
-                    "SilenceParamsDialog: unnamed focusable controls detected:\n"
-                    + "\n".join(summarize(offenders))
-                )
-            except Exception:  # noqa: BLE001 - the dialog may not open on every CI runner
-                pass
+            except Exception:  # noqa: BLE001 - no pool on this runner, nothing to scan
+                opened = False
+            else:
+                opened = True
+            try:
+                if opened:
+                    records = scan_window(modal)
+                    offenders = unnamed_focusable(records)
+                    assert not offenders, (
+                        "SilenceParamsDialog: unnamed focusable controls detected:\n"
+                        + "\n".join(summarize(offenders))
+                    )
             finally:
                 # Close whatever modal opened (or the Workbench itself if
                 # the silence params dialog didn't surface).
