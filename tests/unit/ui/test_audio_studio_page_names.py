@@ -133,6 +133,45 @@ def test_publishing_is_idempotent_and_did_real_work(wx_app, tmp_path) -> None:
         frame.Destroy()
 
 
+def test_a_spin_controls_parts_are_named_too(wx_app, tmp_path) -> None:
+    """A spin control is not one window, and UIA focuses the parts.
+
+    ``wx.SpinCtrlDouble`` is a real composite -- a child ``TextCtrl`` and a
+    child ``SpinButton`` -- which UIA reports as two focusable elements, Edit
+    and Spinner. Naming only the composite left both nameless, and that is
+    what the nightly run kept reporting on the Voices page after the Choice
+    controls were fixed. (``wx.SpinCtrl`` on MSW reports no wx children at
+    all, so there is nothing to assert about its parts here.)
+    """
+    frame, dialog = _wizard(tmp_path)
+    try:
+        composites = [
+            (page, child)
+            for page, child in _controls(dialog)
+            if isinstance(child, wx.SpinCtrlDouble)
+        ]
+        assert composites, "no SpinCtrlDouble found; the wizard no longer has one to check"
+        for page, spin in composites:
+            parts = [c for c in spin.GetChildren() if isinstance(c, wx.TextCtrl | wx.SpinButton)]
+            assert parts, f"{page.GetName()}: {spin.GetName()!r} reports no parts to name"
+            # Asserted against the anchor on the parent, not an attribute on the
+            # child: wxPython hands out a fresh proxy per GetChildren() call, so
+            # a helper stashed on the child is collected and the name is lost.
+            # The first version of this test looked at the child and failed for
+            # exactly that reason, which is how the leak was found.
+            anchored = getattr(spin, "_a11y_part_helpers", [])
+            assert len(anchored) == len(parts), (
+                f"{page.GetName()}: {spin.GetName()!r} has {len(parts)} focusable parts "
+                f"but {len(anchored)} anchored names; UIA would see an unnamed "
+                "Edit or Spinner"
+            )
+            for helper in anchored:
+                assert helper.GetName(0)[1] == spin.GetName()
+    finally:
+        dialog.Destroy()
+        frame.Destroy()
+
+
 def test_publishing_never_invents_a_name(wx_app, tmp_path) -> None:
     """The authored name survives verbatim; nothing is derived from a neighbour.
 
