@@ -310,16 +310,24 @@ def test_audio_studio_workbench_silence_params_dialog_is_fully_named(quill_app) 
             modal = quill_app.main_window.child_window(
                 title_re=".*silences.*", control_type="Window"
             )
+            # Not opening is tolerated -- the proposal pool does not surface on
+            # every CI runner. Once it *is* open, the scan is an assertion.
+            # It used to share an ``except Exception`` with the wait, which
+            # swallowed its own AssertionError: a test that could not fail.
             try:
                 modal.wait("exists visible", timeout=6.0)
-                records = scan_window(modal)
-                offenders = unnamed_focusable(records)
-                assert not offenders, (
-                    "SilenceParamsDialog: unnamed focusable controls detected:\n"
-                    + "\n".join(summarize(offenders))
-                )
-            except Exception:  # noqa: BLE001 - the dialog may not open on every CI runner
-                pass
+            except Exception:  # noqa: BLE001 - no pool on this runner, nothing to scan
+                opened = False
+            else:
+                opened = True
+            try:
+                if opened:
+                    records = scan_window(modal)
+                    offenders = unnamed_focusable(records)
+                    assert not offenders, (
+                        "SilenceParamsDialog: unnamed focusable controls detected:\n"
+                        + "\n".join(summarize(offenders))
+                    )
             finally:
                 # Close whatever modal opened (or the Workbench itself if
                 # the silence params dialog didn't surface).
