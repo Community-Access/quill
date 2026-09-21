@@ -200,6 +200,34 @@ def _select_journey_edit(dialog) -> None:
     )
 
 
+def _choose_audiobook(dialog, path) -> None:
+    """Put *path* into the Open-a-book drop-down, the way a person would.
+
+    Seeding the audiobooks MRU fills this ``wx.ComboBox``'s **choices**; it
+    does not set its **value**, and ``EditSourcePage.is_valid`` reads the
+    value::
+
+        path = self.chosen_path()            # GetValue().strip()
+        if path is None or not path.is_file():
+            return False, _("Choose an audiobook file that exists.")
+
+    So the wizard was refusing to leave the page, exactly as designed, and the
+    test's bare ``{ENTER}`` -- which assumed the seeded MRU had also selected
+    something -- pressed Start against an empty field. The failure arrived ten
+    seconds later as "no window called Workbench".
+    """
+    combo = dialog.child_window(title_re=".*Audiobook file.*", control_type="ComboBox")
+    try:
+        combo.wait("exists visible enabled", timeout=6)
+    except Exception as exc:  # noqa: BLE001 - the page is not the one we think
+        raise AssertionError(f"the Open-a-book page has no audiobook field: {exc}") from exc
+    combo.set_focus()
+    # Select-all then overwrite: the field may carry a remembered value, and
+    # appending to it would make a path that exists into one that does not.
+    combo.type_keys("^a{DEL}", with_spaces=False)
+    combo.type_keys(str(path), with_spaces=True, with_tabs=False, with_newlines=False)
+
+
 def _press_open_in_workbench(dialog) -> None:
     """Press the Start button in its edit-journey guise, by name.
 
@@ -294,10 +322,7 @@ def test_audio_studio_workbench_opens_from_edit_journey(quill_app) -> None:
         _select_journey_edit(dialog)
         _next_page(dialog)  # start -> edit_source
         quill_app.wait_spoken("Open a book", timeout=10.0)
-        # The EditSourcePage ComboBox is pre-seeded with the corpus sample by
-        # the conftest fixture; Enter confirms the current value.
-        dialog.type_keys("{ENTER}")
-        time.sleep(0.2)
+        _choose_audiobook(dialog, quill_app.corpus_audiobook)
         _press_open_in_workbench(dialog)
         # The wizard closes, the Workbench opens. Wait for the Workbench
         # dialog by title fragment.
@@ -341,8 +366,7 @@ def test_audio_studio_workbench_silence_params_dialog_is_fully_named(quill_app) 
         _select_journey_edit(dialog)
         _next_page(dialog)
         quill_app.wait_spoken("Open a book", timeout=10.0)
-        dialog.type_keys("{ENTER}")
-        time.sleep(0.2)
+        _choose_audiobook(dialog, quill_app.corpus_audiobook)
         _press_open_in_workbench(dialog)
         workbench = quill_app.main_window.child_window(
             title_re=".*Workbench.*", control_type="Window"
