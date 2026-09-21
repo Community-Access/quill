@@ -21,6 +21,8 @@ import ast
 from functools import cache
 from pathlib import Path
 
+import pytest
+
 from quill.core.podcasts.chapter_inference import (
     TimedCue,
     segment_transcript,
@@ -266,8 +268,18 @@ def _reachable() -> frozenset[str]:
     return frozenset(seen)
 
 
+@pytest.mark.timeout(180)
 def test_every_chapter_module_is_reached_from_the_application() -> None:
     """A tested, documented, unreachable subsystem is worse than none at all.
+
+    The 180-second ceiling is the same one ``test_check_banned_patterns.py``
+    takes, and for the same reason: this reads every ``.py`` under ``quill/``
+    to build the import map. That lands around 24 seconds against the repo's
+    30-second default -- close enough that on a loaded machine the default
+    fires and kills the whole ``pytest -q`` session, which is the run CLAUDE.md
+    calls the answer that counts. CI never saw it (``--timeout=300`` there), so
+    the suite was unrunnable locally and green remotely. The default exists to
+    catch a wx modal loop that will never finish; a whole-tree scan is not that.
 
     It reads as shipped, so the next person to touch chapters believes the
     confidence scores and the effort setting exist. Five of these eight modules
