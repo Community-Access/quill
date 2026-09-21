@@ -80,6 +80,77 @@ class _Named(wx.Accessible):
         return (wx.ACC_OK, self._name)
 
 
+#: Focusable controls with no label of their own, which therefore need their
+#: ``SetName`` published to the accessibility layer. A CheckBox, RadioButton or
+#: Button is not here: its label *is* its name and already reaches the reader.
+_UNLABELLED_CONTROLS = (
+    wx.Choice,
+    wx.ComboBox,
+    wx.ListBox,
+    wx.SpinCtrl,
+    wx.SpinCtrlDouble,
+    wx.TextCtrl,
+)
+
+#: The names wx gives a control nobody named. They say what the widget is,
+#: which the reader already announces from the role, so they are not names.
+_WX_DEFAULT_NAMES = frozenset({
+    "choice",
+    "combobox",
+    "listbox",
+    "text",
+    "wxspinctrl",
+    "wxspinctrldouble",
+    "panel",
+    "",
+})
+
+
+def publish_accessible_names(page: wx.Window) -> int:
+    """State each control's existing name to the accessibility layer.
+
+    The wizard pages already name their controls -- "Engine", "Voice", "Rate
+    (WPM)", "Casting rules" -- with ``SetName``. That call sets the internal
+    ``FindWindowByName`` key; it does **not** reliably reach MSAA/UIA. The
+    nightly UIA run found six focusable controls on the Voices page reporting
+    an empty ``Name`` (a spin control's Edit and Spinner, two Choice controls
+    with their inner Text), so a screen reader arriving at one has nothing to
+    say but "combo box" even though the name was written years ago.
+
+    So this publishes what is already there, through
+    :func:`set_accessible_name`, which attaches the ``wx.Accessible`` that
+    states the name outright. It does **not** invent names: an earlier draft
+    derived them from the preceding ``wx.StaticText`` and made things worse --
+    the casting pattern field, authored as "Casting pattern (title glob or
+    #number)", would have been renamed to the entire three-sentence paragraph
+    above it, which a reader would then say in full on every visit.
+
+    Run once per page by the wizard rather than as a call beside each of a
+    hundred constructions -- which is also impossible in
+    ``pages_documents.py``, a file sitting exactly on its GATE-11 budget.
+
+    Skipped: a control still carrying wx's class default ("choice", "text"),
+    because publishing that would turn "unnamed" into "named badly" and silence
+    the gate that would otherwise catch it; and a control that already has a
+    helper, so a deliberate ``set_accessible_name`` upstream always wins.
+
+    Returns the number published, so a test can tell "nothing needed doing"
+    from "the walk found nothing".
+    """
+    published = 0
+    for child in page.GetChildren():
+        if not isinstance(child, _UNLABELLED_CONTROLS):
+            continue
+        if getattr(child, "_a11y_helper", None) is not None:
+            continue
+        name = (child.GetName() or "").strip()
+        if name.lower() in _WX_DEFAULT_NAMES:
+            continue
+        set_accessible_name(child, name)
+        published += 1
+    return published
+
+
 def set_accessible_name(ctrl: wx.Window, name: str) -> None:
     """Name a control for screen readers, three ways, because one is not enough.
 
