@@ -9,6 +9,6 @@ pygithub==2.10.0
 python-dotenv==1.2.2
 Werkzeug==3.1.8
 bandit==1.9.4
-gunicorn==22.0.0
+gunicorn==26.2.0
 # Direct requirement: quill.tools.signing uses nacl.signing for Ed25519.
 PyNaCl>=1.6.2
