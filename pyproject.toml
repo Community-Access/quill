@@ -21,7 +21,7 @@ classifiers = [
   "Operating System :: MacOS",
 ]
 dependencies = [
-    "regex>=2026.7.19",
+    "regex>=2026.9.10",
     "defusedxml>=0.7.1",
     # RadioDNS (Quill Radio 3.0, core/radio/radiodns.py). The standard library
     # resolves A records and nothing else; RadioDNS needs CNAME chasing and an
