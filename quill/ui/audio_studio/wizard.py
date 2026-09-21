@@ -26,7 +26,7 @@ import wx
 
 from quill.core.i18n import _
 from quill.ui.audio_studio.pages_audio import AudioSourcePage, EditSourcePage
-from quill.ui.audio_studio.pages_base import StudioPage
+from quill.ui.audio_studio.pages_base import StudioPage, publish_accessible_names
 from quill.ui.audio_studio.pages_documents import (
     ChaptersPage,
     DocSourcePage,
@@ -145,6 +145,10 @@ class AudioStudioWizard(wx.Dialog):
         self._page_container = wx.BoxSizer(wx.VERTICAL)
         for page in self._all_pages:
             self._page_container.Add(page, proportion=1, flag=wx.EXPAND)
+            # Every page, once: SetName does not reliably reach MSAA/UIA, so
+            # the names these pages already author have to be stated to the
+            # accessibility layer outright. See pages_base.
+            publish_accessible_names(page)
             page.Hide()
             page.Disable()
         outer.Add(self._page_container, proportion=1, flag=wx.EXPAND | wx.ALL, border=4)
