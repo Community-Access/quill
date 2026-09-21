@@ -54,6 +54,20 @@ the simpler fixes somebody will reach for first:
 
 Install is best-effort and never fatal: off Windows, or if anything at all fails,
 the editor is exactly what it was.
+
+**The trampoline's lifetime is the sharp edge here**, and getting it wrong does
+not misreport a line -- it ends the process. Two rules, both learned from an
+access violation inside ``DefSubclassProc`` that crashed QUILL repeatedly in the
+nightly UIA run:
+
+* The subclass comes off at ``WM_NCDESTROY``, in the procedure itself. That is
+  the documented place and the only moment after which no further message can
+  arrive. Detaching from a wx destroy event -- which this module used to do --
+  runs while the HWND is still alive and still being sent messages.
+* A detached callback is **retired, never freed**. ``RemoveWindowSubclass``
+  unhooks the trampoline; it does not promise nobody is *inside* it, and a
+  cross-process ``SendMessage`` blocks in the window procedure, which is a
+  screen reader's situation exactly. See :data:`_RETIRED`.
 """
 
 from __future__ import annotations
@@ -64,6 +78,7 @@ from ctypes import wintypes
 from typing import Any
 
 _WM_USER = 0x0400
+_WM_NCDESTROY = 0x0082
 _EM_GETSEL = 0x00B0
 _EM_GETLINECOUNT = 0x00BA
 _EM_LINEINDEX = 0x00BB
@@ -137,6 +152,25 @@ if _AVAILABLE:  # pragma: no cover - exercised on Windows only
 #: here for exactly as long as the subclass is installed.
 _INSTALLED: dict[int, Any] = {}
 
+#: Callbacks that have been detached and are never freed.
+#:
+#: ``RemoveWindowSubclass`` unhooks the trampoline; it does not promise nobody is
+#: *inside* it. A cross-process ``SendMessage`` -- which is a screen reader's
+#: situation, and the whole reason this module subclasses at all -- blocks in the
+#: window procedure, so a message can be sitting in our frame at the instant the
+#: subclass comes off. Dropping the last reference there frees the trampoline
+#: under the caller and the process dies with an access violation inside
+#: ``DefSubclassProc``.
+#:
+#: That is not hypothetical: it is what took QUILL down mid-run in the nightly
+#: UIA suite, over and over ("access violation reading 0xFFFFFFFFFFFFFFFF"),
+#: which read as a robot failure rather than as a crash.
+#:
+#: The cost of never freeing is a few dozen bytes per editor ever opened, for the
+#: life of the process. The cost of freeing it at the wrong moment is the
+#: document the user had not saved.
+_RETIRED: list[Any] = []
+
 
 def _default(hwnd: Any, msg: int, wparam: int = 0, lparam: int = 0) -> int:
     """Ask the control itself, below our correction."""
@@ -205,7 +239,14 @@ def install_final_line_fix(surface: Any) -> bool:
         return False
 
     def _proc(hwnd_: Any, msg: int, wparam: int, lparam: int, _id: int, _data: int) -> int:
-        if msg in _WATCHED:
+        if msg == _WM_NCDESTROY:
+            # The documented place to come off, and the only safe one: the
+            # window is going for good and no further message can reach us
+            # after this one returns. Detaching from a wx destroy event instead
+            # (which is what this module used to do) runs while the HWND is
+            # still alive and still being sent messages.
+            remove_final_line_fix(hwnd_)
+        elif msg in _WATCHED:
             try:
                 answer = _correction(hwnd_, msg, wparam, lparam)
             except Exception:  # noqa: BLE001 - never take the message loop down
@@ -222,37 +263,35 @@ def install_final_line_fix(surface: Any) -> bool:
     if not took:
         return False
     _INSTALLED[hwnd] = callback
-    _bind_removal(surface, hwnd)
     return True
 
 
-def _bind_removal(surface: Any, hwnd: int) -> None:
-    """Take the subclass off when the control goes, so the callback can be freed."""
-    try:
-        import wx
-    except Exception:  # noqa: BLE001 - no wx means no event to bind
-        return
-
-    def _on_destroy(event: Any) -> None:
-        event.Skip()
-        if event.GetWindow() is surface:
-            remove_final_line_fix(hwnd)
-
-    try:
-        surface.Bind(wx.EVT_WINDOW_DESTROY, _on_destroy)
-    except Exception:  # noqa: BLE001 - the cost of not binding is one leaked callback
-        pass
-
-
 def remove_final_line_fix(hwnd: int) -> bool:
-    """Uninstall the correction for ``hwnd`` (idempotent)."""
-    callback = _INSTALLED.pop(int(hwnd), None)
+    """Uninstall the correction for ``hwnd`` (idempotent).
+
+    Order matters, and the old order was the bug. This used to ``pop`` the
+    callback out of :data:`_INSTALLED` and *then* call
+    ``RemoveWindowSubclass`` -- so if that call failed or raised, the only
+    strong reference was already gone and Python freed a trampoline the window
+    still pointed at. The next message into it was an access violation.
+
+    Now the subclass comes off first, and the callback is retired rather than
+    released even on success: see :data:`_RETIRED` for why a successful removal
+    still does not mean nobody is inside it.
+    """
+    key = int(hwnd) if hwnd else 0
+    callback = _INSTALLED.get(key)
     if callback is None or not _AVAILABLE:
         return False
     try:
-        _comctl32.RemoveWindowSubclass(ctypes.c_void_p(int(hwnd)), callback, _SUBCLASS_ID)
+        _comctl32.RemoveWindowSubclass(ctypes.c_void_p(key), callback, _SUBCLASS_ID)
     except Exception:  # noqa: BLE001 - the window is going away regardless
         return False
+    finally:
+        # Unconditionally: whether or not the removal took, this hwnd is done
+        # with, and the trampoline must outlive whatever may still be in it.
+        _INSTALLED.pop(key, None)
+        _RETIRED.append(callback)
     return True
 
 
