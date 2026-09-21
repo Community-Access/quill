@@ -71,7 +71,7 @@ class BookPage(StudioPage):
         )
         self.narrator = self._field(
             grid,
-            _("Narra&tor:"),
+            _("Narrat&or:"),
             defaults.book_narrator,
             help_text=(
                 "The narrator credit, written into the book's tags. For a "
@@ -86,7 +86,7 @@ class BookPage(StudioPage):
         )
         self.year = self._field(
             grid,
-            _("Yea&r:"),
+            _("&Year:"),
             defaults.book_year,
             help_text="The release year tag. Leave blank to omit it.",
         )
@@ -121,7 +121,7 @@ class BookPage(StudioPage):
         self.sizer.Add(cover_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
         fmt_row = wx.BoxSizer(wx.HORIZONTAL)
-        fmt_row.Add(wx.StaticText(self, label=_("Book for&mat:")), 0, wx.ALIGN_CENTER_VERTICAL)
+        fmt_row.Add(wx.StaticText(self, label=_("Book &format:")), 0, wx.ALIGN_CENTER_VERTICAL)
         self.format = wx.Choice(
             self,
             choices=[_("M4B audiobook (native chapters)"), _("MP3 (with chapter markers)")],
@@ -164,7 +164,7 @@ class BookPage(StudioPage):
             ),
         )
         polish_grid.Add(
-            wx.StaticText(self, label=_("Book temp&o (1.0 = as recorded):")),
+            wx.StaticText(self, label=_("Book tem&po (1.0 = as recorded):")),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
@@ -192,7 +192,7 @@ class BookPage(StudioPage):
         else:
             self.sizer.Add(self.credits, 0, wx.LEFT | wx.TOP, 12)
         self.review = wx.CheckBox(
-            self, label=_("&Review chapters (rename/reorder/merge) before building")
+            self, label=_("Review c&hapters (rename/reorder/merge) before building")
         )
         self.review.SetValue(True if forced else defaults.book_review_chapters)
         if forced:
@@ -220,7 +220,7 @@ class BookPage(StudioPage):
             "default) saves it into the source folder, named after the book "
             "title; the extension follows the format choice above."
         )
-        out_browse = wx.Button(self, label=_("&Browse book..."))
+        out_browse = wx.Button(self, label=_("Bro&wse book..."))
         out_browse.SetHelpText("Picks where to save the book with the system file chooser.")
         out_browse.Bind(wx.EVT_BUTTON, self._on_browse_output)
         out_row.Add(self.output, 1, wx.EXPAND | wx.RIGHT, 6)

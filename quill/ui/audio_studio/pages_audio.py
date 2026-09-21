@@ -53,7 +53,7 @@ class AudioSourcePage(StudioPage):
         row.Add(browse, 0)
         self.sizer.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
-        self.recursive = wx.CheckBox(self, label=_("Include su&bfolders"))
+        self.recursive = wx.CheckBox(self, label=_("&Include subfolders"))
         self.recursive.SetValue(defaults.recursive)
         self.sizer.Add(self.recursive, 0, wx.LEFT | wx.TOP, 12)
 

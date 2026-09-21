@@ -83,7 +83,7 @@ class DocSourcePage(StudioPage):
         row.Add(browse, 0)
         self.sizer.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
-        self.recursive = wx.CheckBox(self, label=_("Include su&bfolders"))
+        self.recursive = wx.CheckBox(self, label=_("&Include subfolders"))
         self.recursive.SetValue(defaults.recursive)
         self.sizer.Add(self.recursive, 0, wx.LEFT | wx.TOP, 12)
 
@@ -138,7 +138,7 @@ class DocSourcePage(StudioPage):
         self.sizer.Add(size_row, 0, wx.LEFT | wx.TOP, 12)
 
         count_row = wx.BoxSizer(wx.HORIZONTAL)
-        count_btn = wx.Button(self, label=_("Coun&t documents"))
+        count_btn = wx.Button(self, label=_("&Count documents"))
         count_btn.SetHelpText(
             "Counts the documents and words the current folder, types, and "
             "filters would narrate, and announces the result -- a preview of "
@@ -351,7 +351,7 @@ class VoicesPage(StudioPage):
         self.sizer.Add(pace_row, 0, wx.LEFT | wx.TOP, 12)
 
         # --- Round-robin voices (optional) ---
-        self.add_label(_("Round-&robin voices (each article gets the next voice; optional):"))
+        self.add_label(_("Round-robin voice&s (each article gets the next voice; optional):"))
         rr_add_row = wx.BoxSizer(wx.HORIZONTAL)
         self.rr_pick = wx.Choice(self, choices=[])
         self.rr_pick.SetName(_("Round-robin voice to add"))
@@ -387,7 +387,7 @@ class VoicesPage(StudioPage):
         rr_up.SetHelpText("Moves the highlighted voice one place earlier in the rotation.")
         rr_down = wx.Button(self, label=_("Move Do&wn"))
         rr_down.SetHelpText("Moves the highlighted voice one place later in the rotation.")
-        rr_remove = wx.Button(self, label=_("Re&move"))
+        rr_remove = wx.Button(self, label=_("Remove"))
         rr_remove.SetHelpText("Takes the highlighted voice out of the rotation.")
         rr_up.Bind(wx.EVT_BUTTON, lambda _e: self.rr_move(-1))
         rr_down.Bind(wx.EVT_BUTTON, lambda _e: self.rr_move(1))
@@ -498,7 +498,7 @@ class VoicesPage(StudioPage):
         tr_remove.Bind(wx.EVT_BUTTON, lambda _e: self.tr_remove())
         tr_btn_row.Add(tr_remove, 0, wx.RIGHT, 6)
         tr_btn_row.Add(
-            wx.StaticText(self, label=_("Trans&late with:")), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self, label=_("Translate wit&h:")), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self.tr_provider = wx.Choice(
             self, choices=[_("AI provider (cloud)"), _("LibreTranslate (local)")]
@@ -747,7 +747,7 @@ class ChaptersPage(StudioPage):
         )
         self._source_provider = source_provider
         self._preview_generation = 0
-        self.add_label(_("Chapter &mode:"))
+        self.add_label(_("Chapter mo&de:"))
         self.mode = wx.Choice(
             self,
             choices=[_("Single chaptered file"), _("Separate file per article")],
@@ -763,7 +763,7 @@ class ChaptersPage(StudioPage):
 
         level_row = wx.BoxSizer(wx.HORIZONTAL)
         level_row.Add(
-            wx.StaticText(self, label=_("Chapters start at heading le&vel:")),
+            wx.StaticText(self, label=_("Chapters start at heading &level:")),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
@@ -840,7 +840,7 @@ class ChaptersPage(StudioPage):
         )
         self.sentence_gap = self.add_ms_spin(
             gap_grid,
-            _("Pause between se&ntences (ms):"),
+            _("Pause between &sentences (ms):"),
             defaults.sentence_gap_ms,
             help_text=(
                 "Extra silence added after each sentence, in milliseconds, up "
@@ -987,7 +987,7 @@ class OutputPage(StudioPage):
         self.dry_run.SetValue(defaults.dry_run)
         self.sizer.Add(self.dry_run, 0, wx.LEFT | wx.TOP, 12)
         self.save_spoken = wx.CheckBox(
-            self, label=_("Save the te&xt sent to speech (one sidecar per document)")
+            self, label=_("S&ave the text sent to speech (one sidecar per document)")
         )
         self.save_spoken.SetValue(defaults.save_spoken_text)
         self.sizer.Add(self.save_spoken, 0, wx.LEFT | wx.TOP, 12)
