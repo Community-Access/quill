@@ -427,7 +427,7 @@ packaging = [
   "pyinstaller>=6.22.0",
   # Ships the upstream hooks for third-party packages (wx, babel, huggingface);
   # a stale copy silently drops data files from the frozen tree.
-  "pyinstaller-hooks-contrib>=2026.6",
+  "pyinstaller-hooks-contrib>=2026.7",
 ]
 # NOTE on PEP 735 [dependency-groups] (evaluated 2026-08-17, deliberately not
 # adopted yet): dev tooling would naturally live there, but duplicating this
