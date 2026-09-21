@@ -294,7 +294,7 @@ class VoicesPage(StudioPage):
         # Translation targets: ordered (lang_code, engine, voice_id, display_label).
         self._tr_targets: list[tuple[str, str, str, str]] = []
 
-        self.add_label(_("&Engine:"))
+        self.add_label(_("Eng&ine:"))
         self.engine = wx.Choice(
             self, choices=[self._engine_label(lbl, eid) for lbl, eid in engine_options]
         )
@@ -383,9 +383,9 @@ class VoicesPage(StudioPage):
         apply_listbox_activation(self.rr_list, lambda _e: self.rr_pick.SetFocus())
         self.sizer.Add(self.rr_list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         rr_btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        rr_up = wx.Button(self, label=_("Move U&p"))
+        rr_up = wx.Button(self, label=_("M&ove Up"))
         rr_up.SetHelpText("Moves the highlighted voice one place earlier in the rotation.")
-        rr_down = wx.Button(self, label=_("Move Dow&n"))
+        rr_down = wx.Button(self, label=_("Move Do&wn"))
         rr_down.SetHelpText("Moves the highlighted voice one place later in the rotation.")
         rr_remove = wx.Button(self, label=_("Re&move"))
         rr_remove.SetHelpText("Takes the highlighted voice out of the rotation.")
@@ -431,7 +431,7 @@ class VoicesPage(StudioPage):
         cast_add_row.Add(self.cast_pick, 1, wx.EXPAND | wx.RIGHT, 6)
         cast_add_row.Add(cast_add, 0)
         self.sizer.Add(cast_add_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
-        self.add_label(_("Casting rules (first match &wins):"))
+        self.add_label(_("Casting rules (&first match wins):"))
         self.cast_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self.cast_list.SetName(_("Casting rules"))
         self.cast_list.SetHelpText(
@@ -493,7 +493,7 @@ class VoicesPage(StudioPage):
         apply_listbox_activation(self.tr_list, lambda _e: self.tr_lang.SetFocus())
         self.sizer.Add(self.tr_list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         tr_btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        tr_remove = wx.Button(self, label=_("Remove la&nguage"))
+        tr_remove = wx.Button(self, label=_("R&emove language"))
         tr_remove.SetHelpText("Drops the highlighted language from the translated exports.")
         tr_remove.Bind(wx.EVT_BUTTON, lambda _e: self.tr_remove())
         tr_btn_row.Add(tr_remove, 0, wx.RIGHT, 6)

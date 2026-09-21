@@ -87,7 +87,7 @@ class PlayQueueDialog(wx.Dialog):
         self._remove_btn.SetHelpText(
             "Takes the highlighted book out of the queue. The audio file on disk is untouched."
         )
-        self._clear_btn = wx.Button(self, label=str(_("Clea&r")))
+        self._clear_btn = wx.Button(self, label=str(_("&Clear")))
         self._clear_btn.SetHelpText("Empties the whole queue. No audio files are touched.")
         for btn in (self._add_btn, self._next_btn, self._remove_btn, self._clear_btn):
             button_row.Add(btn, 0, wx.RIGHT, 4)

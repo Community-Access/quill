@@ -304,9 +304,14 @@ def test_audio_studio_workbench_silence_params_dialog_is_fully_named(quill_app) 
         )
         workbench.wait("exists visible", timeout=10.0)
         try:
-            # Alt+I = "&ilences" on "Propose chapters from s&ilences..."
+            # Alt+C = "silen&ces" on "Propose chapters from silen&ces...".
+            # It was Alt+I until GATE-14 learned to read translated labels and
+            # found "Chapter t&itle:" claiming the same letter in this window:
+            # Windows cycles a duplicated mnemonic instead of pressing it, so
+            # Alt+I moved focus to the title field and this step quietly did
+            # nothing.
             workbench.set_focus()
-            workbench.type_keys("%i")
+            workbench.type_keys("%c")
             modal = quill_app.main_window.child_window(
                 title_re=".*silences.*", control_type="Window"
             )

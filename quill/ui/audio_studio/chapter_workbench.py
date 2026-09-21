@@ -178,14 +178,14 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
         surgery_row = wx.BoxSizer(wx.HORIZONTAL)
         for label, handler, help_text in (
             (
-                _("&Split at playhead"),
+                _("Split at playhead"),  # keyless on purpose: check_access_keys.py
                 self._on_split,
                 "Cuts the chapter the playhead is in into two at the playhead's "
                 "exact position; the new second half is titled New chapter. Play "
                 "to the boundary you want by ear, then press this.",
             ),
             (
-                _("Set st&art to playhead"),
+                _("Set start to playhea&d"),
                 self._on_retime,
                 "Moves the highlighted chapter's start to the playhead's exact "
                 "position -- the fix for a boundary that lands mid-sentence. The "
@@ -213,7 +213,7 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
         build_chapter_edit_rows(self, root)
 
         analysis_row = wx.BoxSizer(wx.HORIZONTAL)
-        propose_btn = wx.Button(self, label=_("Propose chapters from s&ilences..."))
+        propose_btn = wx.Button(self, label=_("Propose chapters from silen&ces..."))
         propose_btn.SetToolTip(
             _(
                 "Scan the recording for silences with ffmpeg and propose chapter "
@@ -228,7 +228,7 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
             "and Restore original undoes it."
         )
         propose_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_propose_from_silences())
-        acx_btn = wx.Button(self, label=_("Check against &ACX"))
+        acx_btn = wx.Button(self, label=_("Chec&k against ACX"))
         acx_btn.SetToolTip(
             _(
                 "Measure the book against Audible's ACX submission window and hear "
@@ -317,7 +317,7 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
         grid.AddGrowableCol(1, 1)
         self._tag_album = self._tag_field(
             grid,
-            _("Book ti&tle (album):"),
+            _("&Book title (album):"),
             book.tags.album,
             help_text=(
                 "The book's title, written to the album tag (and the title tag) "
@@ -338,7 +338,7 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
         )
         self._tag_genre = self._tag_field(
             grid,
-            _("&Genre:"),
+            _("Genr&e:"),
             book.tags.genre,
             help_text='The genre tag, written on Save; audiobooks usually say "Audiobook".',
         )
