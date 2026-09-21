@@ -55,27 +55,46 @@ the simpler fixes somebody will reach for first:
 Install is best-effort and never fatal: off Windows, or if anything at all fails,
 the editor is exactly what it was.
 
-**The trampoline's lifetime is the sharp edge here**, and getting it wrong does
-not misreport a line -- it ends the process. Two rules, both learned from an
-access violation inside ``DefSubclassProc`` that crashed QUILL repeatedly in the
-nightly UIA run:
+**Sitting in a window procedure is the sharp edge here**, and getting it wrong
+does not misreport a line -- it ends the process, with whatever was unsaved in
+it. ``DefSubclassProc`` was observed faulting under this module in the nightly
+UIA suite (an out-of-process client driving the editor, which is a screen
+reader's situation exactly), and it presented as a robot failing to find the
+main window rather than as a crash.
 
-* The subclass comes off at ``WM_NCDESTROY``, in the procedure itself. That is
-  the documented place and the only moment after which no further message can
-  arrive. Detaching from a wx destroy event -- which this module used to do --
-  runs while the HWND is still alive and still being sent messages.
+Four rules came out of that, in the order they were learned:
+
+* The subclass comes off at ``WM_NCDESTROY``, in the procedure itself -- the
+  documented place, and the only moment after which no further message can
+  arrive. Detaching from a wx destroy event, which this module used to do, runs
+  while the HWND is still alive and still being sent messages.
 * A detached callback is **retired, never freed**. ``RemoveWindowSubclass``
   unhooks the trampoline; it does not promise nobody is *inside* it, and a
-  cross-process ``SendMessage`` blocks in the window procedure, which is a
-  screen reader's situation exactly. See :data:`_RETIRED`.
+  cross-process ``SendMessage`` blocks in the window procedure. See
+  :data:`_RETIRED`.
+* The registry entry is dropped **only when removal actually succeeded**.
+  A window that still carries the subclass must stay recorded, or the next
+  install adds a second entry under the same id with a different procedure
+  pointer: two links in one chain, one of them retired.
+* And the call into the chain is **guarded**. The first three rules made the
+  fault rarer -- four occurrences in a run became one -- and rarer is not
+  fixed; one crash loses the document just as thoroughly. So a fault is caught,
+  logged with the message number that caused it, and answered by detaching from
+  that control. The correction is lost for it, which is a line number; the
+  alternative was the editor. This module's contract has always been
+  best-effort and never fatal, and that contract now covers the call where
+  every observed crash actually happened.
 """
 
 from __future__ import annotations
 
 import ctypes
+import logging
 import sys
 from ctypes import wintypes
 from typing import Any
+
+_log = logging.getLogger(__name__)
 
 _WM_USER = 0x0400
 _WM_NCDESTROY = 0x0082
@@ -144,6 +163,8 @@ if _AVAILABLE:  # pragma: no cover - exercised on Windows only
             ctypes.c_longlong,
             ctypes.c_longlong,
         ]
+        _user32.IsWindow.restype = wintypes.BOOL
+        _user32.IsWindow.argtypes = [wintypes.HWND]
     except Exception:  # noqa: BLE001 - no corrector is better than no editor
         _AVAILABLE = False
 
@@ -170,6 +191,30 @@ _INSTALLED: dict[int, Any] = {}
 #: life of the process. The cost of freeing it at the wrong moment is the
 #: document the user had not saved.
 _RETIRED: list[Any] = []
+
+
+#: Windows we have stopped correcting because the chain faulted under us. Kept
+#: so the fault is reported once per control rather than on every keystroke, and
+#: so a reinstall cannot put us back into a chain that has already misbehaved.
+_FAULTED: set[int] = set()
+
+
+def _fault_detach(hwnd: Any) -> None:
+    """Come off a window whose subclass chain has faulted, and stay off.
+
+    Best-effort twice over: the detach itself may fault, and if it does there is
+    nothing further to try -- the control keeps whatever behaviour it has and
+    the editor keeps running, which is the only outcome that matters here.
+    """
+    try:
+        key = int(hwnd) if hwnd else 0
+    except (TypeError, ValueError):  # pragma: no cover - a handle we cannot read
+        return
+    _FAULTED.add(key)
+    try:
+        remove_final_line_fix(key)
+    except Exception:  # noqa: BLE001 - a failed detach must not raise into the loop
+        _INSTALLED.pop(key, None)
 
 
 def _default(hwnd: Any, msg: int, wparam: int = 0, lparam: int = 0) -> int:
@@ -235,8 +280,17 @@ def install_final_line_fix(surface: Any) -> bool:
         hwnd = int(surface.GetHandle())
     except Exception:  # noqa: BLE001 - no handle yet, nothing to subclass
         return False
-    if not hwnd or hwnd in _INSTALLED:
+    if not hwnd or hwnd in _FAULTED:
         return False
+    if hwnd in _INSTALLED:
+        # A live window we are already on. A *dead* one whose handle Windows has
+        # since recycled is a different matter: the entry is stale, and refusing
+        # to install would leave the new editor uncorrected forever with no sign
+        # of why. Ask the OS which it is rather than assuming.
+        if _user32 is not None and not _user32.IsWindow(ctypes.c_void_p(hwnd)):
+            _RETIRED.append(_INSTALLED.pop(hwnd))
+        else:
+            return False
 
     def _proc(hwnd_: Any, msg: int, wparam: int, lparam: int, _id: int, _data: int) -> int:
         if msg == _WM_NCDESTROY:
@@ -253,7 +307,27 @@ def install_final_line_fix(surface: Any) -> bool:
                 answer = None
             if answer is not None:
                 return answer
-        return int(_comctl32.DefSubclassProc(hwnd_, msg, wparam, lparam))
+        try:
+            return int(_comctl32.DefSubclassProc(hwnd_, msg, wparam, lparam))
+        except OSError as exc:
+            # The subclass chain faulted underneath us. ctypes turns the
+            # structured exception into an OSError, which is the only reason
+            # this is catchable at all -- and catching it is the difference
+            # between "the final empty line stops being corrected" and "the
+            # editor is gone, with whatever was unsaved in it".
+            #
+            # This module's contract is best-effort and never fatal. It was
+            # honoured for `_correction` and not for the call below, which is
+            # where every observed crash actually happened.
+            _log.warning(
+                "RichEdit subclass faulted on message 0x%04X for hwnd %s (%s); "
+                "detaching and leaving the control uncorrected",
+                msg,
+                hwnd_,
+                exc,
+            )
+            _fault_detach(hwnd_)
+            return 0
 
     callback = _SUBCLASSPROC(_proc)
     try:
@@ -283,16 +357,20 @@ def remove_final_line_fix(hwnd: int) -> bool:
     callback = _INSTALLED.get(key)
     if callback is None or not _AVAILABLE:
         return False
+    # Retire first, always. From here the trampoline can never be collected,
+    # whatever happens to the removal below.
+    _RETIRED.append(callback)
     try:
-        _comctl32.RemoveWindowSubclass(ctypes.c_void_p(key), callback, _SUBCLASS_ID)
+        took = bool(_comctl32.RemoveWindowSubclass(ctypes.c_void_p(key), callback, _SUBCLASS_ID))
     except Exception:  # noqa: BLE001 - the window is going away regardless
         return False
-    finally:
-        # Unconditionally: whether or not the removal took, this hwnd is done
-        # with, and the trampoline must outlive whatever may still be in it.
+    if took:
+        # Only on success. A window that still carries our subclass must stay in
+        # the registry, or the next install would add a *second* entry under the
+        # same id with a different procedure pointer -- two links in one chain,
+        # one of them retired, which is its own way to fault.
         _INSTALLED.pop(key, None)
-        _RETIRED.append(callback)
-    return True
+    return took
 
 
 def is_installed(hwnd: int) -> bool:

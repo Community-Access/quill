@@ -90,13 +90,19 @@ def test_a_failed_removal_still_keeps_the_callback_alive(registry) -> None:
 
     It popped first and removed second, so a raising ``RemoveWindowSubclass``
     left the window pointing at a trampoline with no reference anywhere.
+
+    Note what this asserts about the registry, because an earlier version of
+    this test asserted the opposite and was wrong: a removal that *raised* has
+    not detached anything, so the window still carries our subclass and must
+    stay recorded. Forgetting it would let the next install add a second entry
+    under the same id with a different procedure pointer.
     """
     registry(remove_raises=True)
     sentinel = object()
     fix._INSTALLED[99] = sentinel
 
     assert fix.remove_final_line_fix(99) is False
-    assert 99 not in fix._INSTALLED
+    assert fix._INSTALLED.get(99) is sentinel, "a raising removal must not forget the window"
     assert sentinel in fix._RETIRED, "a failed removal must never release the callback"
 
 
@@ -144,3 +150,62 @@ def test_the_procedure_detaches_on_wm_ncdestroy() -> None:
         "WM_NCDESTROY must pass through to DefSubclassProc after detaching, "
         "not be answered as one of the four questions"
     )
+
+
+class _FaultingComctl(_StubComctl):
+    """A chain that faults the way comctl32 did, once, then behaves."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.def_calls = 0
+
+    def DefSubclassProc(self, hwnd, msg, wparam, lparam):  # noqa: N802,ANN001
+        self.def_calls += 1
+        raise OSError("exception: access violation reading 0x0000000000000077")
+
+
+def test_a_faulting_chain_detaches_instead_of_crashing(registry, monkeypatch, caplog) -> None:
+    """The guard that actually stops the editor dying.
+
+    The lifetime rules made the fault rarer -- four in a run became one -- and
+    rarer is not fixed: one crash loses the document just as thoroughly. A
+    fault now costs the correction on that control and nothing else.
+    """
+    stub = registry()
+    monkeypatch.setattr(fix, "_comctl32", _FaultingComctl())
+    monkeypatch.setattr(fix, "_FAULTED", set())
+    fix._INSTALLED[808] = object()
+
+    with caplog.at_level("WARNING"):
+        fix._fault_detach(808)
+
+    assert 808 in fix._FAULTED, "a window that faulted must be remembered"
+    assert 808 not in fix._INSTALLED or fix._INSTALLED.get(808) is None
+    assert stub is not None
+
+
+def test_a_faulted_window_is_never_reinstalled(registry, monkeypatch) -> None:
+    """Putting ourselves back into a chain that misbehaved invites it again."""
+    registry()
+    monkeypatch.setattr(fix, "_FAULTED", {4242})
+
+    class _Surface:
+        def GetHandle(self):  # noqa: N802
+            return 4242
+
+    assert fix.install_final_line_fix(_Surface()) is False
+
+
+def test_the_entry_survives_a_removal_that_did_not_take(registry) -> None:
+    """A window still carrying our subclass must stay recorded.
+
+    Otherwise the next install adds a *second* entry under the same id with a
+    different procedure pointer -- two links in one chain, one of them retired.
+    """
+    registry(remove_returns=False)
+    sentinel = object()
+    fix._INSTALLED[55] = sentinel
+
+    assert fix.remove_final_line_fix(55) is False
+    assert fix._INSTALLED.get(55) is sentinel, "a failed removal must not forget the window"
+    assert sentinel in fix._RETIRED
