@@ -183,7 +183,7 @@ class BookPage(StudioPage):
         polish_grid.Add(self.tempo, 0)
         self.sizer.Add(polish_grid, 0, wx.LEFT | wx.TOP, 12)
         self.credits = wx.CheckBox(
-            self, label=_("Add spo&ken opening and closing credits (uses the chosen voice)")
+            self, label=_("Add spoken opening and closing &credits (uses the chosen voice)")
         )
         self.credits.SetValue(defaults.book_credits)
         if forced:
@@ -220,7 +220,7 @@ class BookPage(StudioPage):
             "default) saves it into the source folder, named after the book "
             "title; the extension follows the format choice above."
         )
-        out_browse = wx.Button(self, label=_("Browse boo&k..."))
+        out_browse = wx.Button(self, label=_("&Browse book..."))
         out_browse.SetHelpText("Picks where to save the book with the system file chooser.")
         out_browse.Bind(wx.EVT_BUTTON, self._on_browse_output)
         out_row.Add(self.output, 1, wx.EXPAND | wx.RIGHT, 6)

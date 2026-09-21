@@ -19,13 +19,41 @@ Scoping, and why it is shaped this way:
   invent collisions between controls that never share a screen.
 * Labels are read from ``label="..."`` keywords and the positional label
   argument of ``Button``, ``ToggleButton``, ``CheckBox``, ``RadioButton``
-  and ``StaticText`` constructions. ``&&`` is a literal ampersand, not a
-  mnemonic. Dynamic labels are invisible here, as everywhere source-level.
+  and ``StaticText`` constructions, **including** a label wrapped in a
+  translation call -- ``label=_("&Save")`` and ``label=str(_("&Save"))``
+  count exactly as ``label="&Save"`` does. ``&&`` is a literal ampersand,
+  not a mnemonic. Dynamic labels are invisible here, as everywhere
+  source-level.
+
+  The translation unwrap arrived on 2026-09-21 and it was not a refinement:
+  without it a module that translates its labels was invisible control by
+  control, so whole windows reported clean while carrying duplicates. Nine
+  collisions surfaced the moment it landed, five of them in one window.
+
+* Still invisible, and worth knowing before trusting a clean run: a label
+  handed to a **helper** (``self._tag_field(grid, _("&Genre:"), ...)``) or
+  read from a **tuple table** the constructor loops over. Those are not
+  ``wx.<Control>(...)`` calls, so no amount of unwrapping reaches them, and
+  the Chapter Workbench builds most of its window that way. Attributing them
+  needs the gate to learn which argument of which helper is a label -- a
+  different design, not a bigger regex.
 
 The EdSharp companion rule is worth honouring while fixing: **OK, Cancel and
 Close need no access key at all** -- Enter and Escape already serve them
 (the dialog contract binds both), and every letter they give up resolves a
 collision somewhere else in the window.
+
+And when a window genuinely runs out, the loser gets **no** mnemonic rather
+than a duplicate: a duplicate advertises a key that cycles instead of pressing
+and nothing announces the loss, while silence is merely silent and Tab still
+arrives. One control is in that state today and it is the only one --
+``chapter_workbench.py``'s **Split at playhead**, in a window with
+twenty-two mnemonic-bearing controls where every letter of that label is
+claimed by a better claim (S by Save, P by Publish, A by Save As, L by
+"Propose AI titles", H by the chapter list, and D/E/T by the controls that
+moved to resolve their own collisions). Its label carries a one-line comment
+pointing here; the file sits exactly on its GATE-11 budget, which is why the
+reasoning lives in this docstring instead of at the site.
 
 Run directly::
 
@@ -85,21 +113,42 @@ def mnemonic_of(label: str) -> str:
     return char.upper() if char.isalnum() else ""
 
 
+def _string_within(node: ast.AST) -> str | None:
+    """The string literal *node* is, or the one a translation call wraps.
+
+    Labels are written three ways in this tree and all three plant the same
+    mnemonic in the same window::
+
+        wx.Button(self, label="&Save")
+        wx.Button(self, label=_("&Save"))
+        wx.Button(self, label=str(_("&Save")))
+
+    Only the first used to count. That is not a small gap: the modules that
+    translate their labels are whole windows, and the gate reported them as
+    clean because it could not read a single control in them. The Chapter
+    Workbench had five duplicated letters and passed.
+
+    Recursing through the call's arguments handles ``_``, ``str(_(...))``,
+    ``lazy_gettext`` and anything else shaped like a wrapper, without the gate
+    needing to know their names.
+    """
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.Call):
+        for argument in node.args:
+            found = _string_within(argument)
+            if found is not None:
+                return found
+    return None
+
+
 def _label_of(node: ast.Call) -> str | None:
     for keyword in node.keywords:
-        if (
-            keyword.arg == "label"
-            and isinstance(keyword.value, ast.Constant)
-            and isinstance(keyword.value.value, str)
-        ):
-            return keyword.value.value
+        if keyword.arg == "label":
+            return _string_within(keyword.value)
     # wx.Button(parent, id, "label") / wx.StaticText(parent, id, "label")
-    if (
-        len(node.args) >= 3
-        and isinstance(node.args[2], ast.Constant)
-        and isinstance(node.args[2].value, str)
-    ):
-        return node.args[2].value
+    if len(node.args) >= 3:
+        return _string_within(node.args[2])
     return None
 
 

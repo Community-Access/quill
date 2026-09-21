@@ -195,7 +195,7 @@ class CrashReportDialog:
         self._btn_copy = wx.Button(self.dialog, self._ID_COPY, label=_("&Copy to clipboard"))
         self._btn_copy.SetName("Copy to clipboard")
 
-        self._btn_cancel = wx.Button(self.dialog, wx.ID_CANCEL, label=_("Don't &send"))
+        self._btn_cancel = wx.Button(self.dialog, wx.ID_CANCEL, label=_("&Don't send"))
         self._btn_cancel.SetName("Don't send")
         self._btn_cancel.SetDefault()
 

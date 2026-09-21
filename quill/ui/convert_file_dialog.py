@@ -163,7 +163,7 @@ class ConvertFileDialog:
         out_label = wx.StaticText(self.dialog, label=_("Output f&older"))
         self.output_field = wx.TextCtrl(self.dialog)
         self.output_field.SetName(_("Output folder path"))
-        browse_output = wx.Button(self.dialog, label=_("Br&owse..."))
+        browse_output = wx.Button(self.dialog, label=_("&Browse..."))
         out_row.Add(out_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         out_row.Add(self.output_field, 1, wx.RIGHT | wx.EXPAND, 8)
         out_row.Add(browse_output, 0)
