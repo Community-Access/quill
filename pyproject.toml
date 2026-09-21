@@ -285,7 +285,7 @@ social-app = ["quill-social>=0.3.0"]
 # LaTeX -> MathML conversion for quill/core/math/ (docs/planning/math.md, Tier 1-B).
 # Pure Python, no native build. Optional: the math bridge degrades to accepting
 # MathML input only (no LaTeX typing) when this is absent.
-math = ["latex2mathml>=3.81.0"]
+math = ["latex2mathml>=3.81.1"]
 # macOS build + runtime. py2app 0.28.x is incompatible with setuptools >= 83
 # (the build aborts with "install_requires is no longer supported"), so pin it.
 # Security note (Dependabot alert 14, GHSA setuptools < 85 MANIFEST.in exclusion
