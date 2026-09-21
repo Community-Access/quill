@@ -151,23 +151,18 @@ def publish_accessible_names(page: wx.Window) -> int:
     return published
 
 
-def set_accessible_name(ctrl: wx.Window, name: str) -> None:
-    """Name a control for screen readers, three ways, because one is not enough.
+def _state_name(ctrl: wx.Window, name: str) -> _Named | None:
+    """Attach a ``wx.Accessible`` to *ctrl* answering with *name*; return it.
 
-    ``wx.SpinCtrl``/``wx.SpinCtrlDouble`` wrap a child ``TextCtrl`` (the
-    focusable edit); the composite's own name does not propagate to it, so a
-    screen reader reads the field unnamed unless the child is named too.
+    ``SetAccessible`` does not take ownership, so the helper is stashed on the
+    control -- without a live reference it is garbage collected and the name
+    silently disappears, which is the worst shape of accessibility bug: one
+    that tests as present and speaks as absent. The helper is returned as well
+    so a caller can anchor it somewhere more durable than the control it was
+    attached to, which matters for a composite's children.
 
-    On top of that the control gets a ``wx.Accessible`` helper stating the
-    name directly. ``SetAccessible`` does not take ownership, so the helper is
-    stashed on the control -- without that reference it is garbage collected
-    and the name silently disappears, which is the worst shape of
-    accessibility bug: one that tests as present and speaks as absent.
+    Returns ``None`` where ``wx.Accessible`` is unavailable (it is Windows-only).
     """
-    ctrl.SetName(name)
-    for child in getattr(ctrl, "GetChildren", list)():
-        if isinstance(child, wx.TextCtrl):
-            child.SetName(name)
     try:
         helper = _Named(name)
         ctrl.SetAccessible(helper)
@@ -175,4 +170,42 @@ def set_accessible_name(ctrl: wx.Window, name: str) -> None:
     except (AttributeError, NotImplementedError):
         # wx.Accessible is Windows-only; elsewhere the label heuristic and the
         # platform's own defaults apply, exactly as they did before this.
-        pass
+        return None
+    return helper
+
+
+def set_accessible_name(ctrl: wx.Window, name: str) -> None:
+    """Name a control for screen readers, and name the parts it is made of.
+
+    A spin control is not one window. ``wx.SpinCtrlDouble`` is a real composite
+    -- a child ``TextCtrl`` and a child ``SpinButton`` -- and UIA sees those two
+    as separate focusable elements, ``Edit`` and ``Spinner``. Naming only the
+    composite leaves both of them nameless, which is exactly what the nightly
+    UIA run kept reporting on the Voices page after the Choice controls were
+    fixed: ``Edit: (unnamed)``, ``Spinner: (unnamed)``.
+
+    So every part is named, and every part gets its own ``wx.Accessible``.
+    ``SetName`` alone is not enough for any of them: it sets the internal
+    ``FindWindowByName`` key and does not reliably reach MSAA/UIA.
+
+    ``wx.SpinCtrl`` on MSW reports no wx children at all -- it is a single
+    native composite -- so there is nothing to recurse into and the helper on
+    the composite is the whole story for it.
+    """
+    ctrl.SetName(name)
+    # The child helpers are anchored on the *parent*, not on the child. wxPython
+    # hands out a fresh Python proxy for a child window on each GetChildren()
+    # call, so an attribute set on the proxy dies with it and the helper is
+    # collected -- the name tests as present and speaks as absent, which is the
+    # failure this whole function exists to avoid. The parent is a stable object
+    # we already hold.
+    anchored: list[_Named] = []
+    for child in getattr(ctrl, "GetChildren", list)():
+        if isinstance(child, wx.TextCtrl | wx.SpinButton):
+            child.SetName(name)
+            helper = _state_name(child, name)
+            if helper is not None:
+                anchored.append(helper)
+    if anchored:
+        ctrl._a11y_part_helpers = anchored  # noqa: SLF001 - keep the parts' names alive
+    _state_name(ctrl, name)
