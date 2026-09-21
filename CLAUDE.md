@@ -102,7 +102,11 @@ command has a key or a written reason (8); once-a-year commands get *a* key, not
 a short one (9); value flows both ways but violations flow one (10); every
 remaining divergence is a comment *and* a parity-table row (11).
 
-**The six parity gates** closed the 2026-09 program (`bad.md`, now empty). Five
+**The six parity gates** closed the 2026-09 family-parity program. Its worklist
+lived in a root `bad.md`, which was spent and deleted on 2026-09-20 (the root
+layout gate sanctions no such file); the `bad.md <row>` citations scattered
+through the source name rows of that closed program and resolve in git history,
+not on disk. Five
 are pytest gates and one is a tool in `platform_report`:
 
 - **Bound-command and Quillin-hotkey** (`tests/unit/core/test_family_rules_and_gates.py`):
