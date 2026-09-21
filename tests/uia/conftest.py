@@ -67,6 +67,17 @@ class QuillApp:
     def announcement_trace(self) -> Path:
         return self.data_dir / "diagnostics" / "announcement-trace.log"
 
+    @property
+    def corpus_audiobook(self) -> Path:
+        """The chaptered MP3 the edit-journey tests open.
+
+        The same file this fixture seeds into the audiobooks MRU. Exposed
+        because seeding the MRU fills the Open-a-book drop-down's *choices*
+        and not its *value*, so a test that means to open this book has to say
+        so -- exactly as a person would.
+        """
+        return _corpus_sample_path()
+
     def spoken(self) -> list[str]:
         """Every announcement QUILL has made so far, oldest first."""
         try:
