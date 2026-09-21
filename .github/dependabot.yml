@@ -21,3 +21,19 @@ updates:
     labels:
       - "dependencies"
       - "security"
+
+  # uv.lock is the resolved dev/test environment (CLAUDE.md's fast install
+  # path). It was outside every ecosystem above, so its transitive pins were
+  # the only place in the repo Dependabot could see a vulnerability and not
+  # open a pull request -- five alerts (anyio, soupsieve) sat open with no
+  # branch to merge. The "uv" ecosystem reads uv.lock directly.
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "Community-Access/maintainers"
+    labels:
+      - "dependencies"
+      - "security"
