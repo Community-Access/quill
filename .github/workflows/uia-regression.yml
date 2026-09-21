@@ -61,3 +61,16 @@ jobs:
           name: uia-results
           path: uia-results.xml
           if-no-files-found: ignore
+
+      # A failed test keeps its QUILL profile's logs/, diagnostics/ (crash
+      # bundles) and the process exit code read before teardown. Without this
+      # the one place QUILL explains its own death was wiped before anyone
+      # could read it, and a lost main window was indistinguishable from a
+      # crash, a clean exit, or a title change.
+      - name: Upload diagnostics from failed tests
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: uia-diagnostics
+          path: uia-diagnostics/
+          if-no-files-found: ignore

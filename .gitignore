@@ -211,3 +211,7 @@ quill/native/optilab/build/
 quill/native/optilab/quill-optilab
 quill/native/optilab/quill-optilab.exe
 platform-report.md
+
+# The UIA suite keeps a failed test's QUILL profile (logs, crash bundles,
+# exit code) here for the workflow to upload. Evidence, never source.
+/uia-diagnostics/
