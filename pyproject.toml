@@ -447,7 +447,7 @@ dev = [
   "hypothesis>=6.165.2",
   # Randomized test ordering, DISABLED by default via addopts (-p no:randomly).
   # Opt in with `pytest -p randomly ...` to hunt order-dependent coupling.
-  "pytest-randomly>=4.1.0",
+  "pytest-randomly>=5.0.0",
   "ruff>=0.16.8",
   "mypy>=2.3.0",
   # I18N: string extraction, .po update, .mo compile
