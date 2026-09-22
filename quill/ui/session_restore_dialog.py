@@ -34,6 +34,7 @@ import wx
 from quill.core.session_restore import (
     ASK_NEVER,
     SessionEntry,
+    describe_session_plan,
     missing,
     summarise,
 )
@@ -144,6 +145,31 @@ def ask_session_restore(
     panel.SetSizer(rows)
     root.Add(panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, _PAD)
 
+    # The twin of the recovery chooser's field, added the same day and for the
+    # same reason: the checkboxes say what is here, one row at a time, and
+    # nothing in the window says what pressing a button would actually do. A
+    # read-only multiline TextCtrl rather than a StaticText, because a text
+    # control is focusable -- it can be Tabbed to and read at the reader's own
+    # pace with the arrow keys, where a long StaticText can only be heard once,
+    # whole, if it happens to be announced at all.
+    summary_label = wx.StaticText(dialog, label="What this woul&d do:")
+    root.Add(summary_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    summary = wx.TextCtrl(
+        dialog,
+        value="",
+        style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
+        size=(-1, 160),
+    )
+    summary.SetHelpText(
+        "A read-only description of this whole window: every remembered "
+        "document, whether its file is still there, and exactly what each "
+        "button would do with the boxes as they are ticked right now. It is "
+        "rewritten every time you tick or untick a row. Read it with the arrow "
+        "keys; nothing here can be typed into or changed."
+    )
+    set_accessible_name(summary, "What this would do")
+    root.Add(summary, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+
     note = wx.StaticText(
         dialog,
         label=(
@@ -231,6 +257,25 @@ def ask_session_restore(
     def _checked() -> tuple[SessionEntry, ...]:
         return tuple(entry for entry, box in zip(live, boxes, strict=False) if box.GetValue())
 
+    def _refresh_summary(_event: object = None) -> None:
+        """Rewrite the read-only description for the boxes as they stand now.
+
+        ``ChangeValue`` rather than ``SetValue``: the latter fires a text event,
+        and a read-only field that announced itself on every tick would talk
+        over the reader saying "checked" -- which is the announcement the person
+        asked for by pressing Space (GATE-13).
+        """
+        summary.ChangeValue(
+            describe_session_plan(
+                tuple(live),
+                tuple(box.GetValue() for box in boxes),
+            )
+        )
+
+    for box in boxes:
+        box.Bind(wx.EVT_CHECKBOX, _refresh_summary)
+    _refresh_summary()
+
     def _refill() -> None:
         """Rebuild the rows after a Forget, and put focus somewhere real.
 
@@ -245,11 +290,13 @@ def ask_session_restore(
             box = wx.CheckBox(panel, label=entry.label)
             box.SetValue(entry.exists)
             set_accessible_name(box, entry.label)
+            box.Bind(wx.EVT_CHECKBOX, _refresh_summary)
             rows.Add(box, 0, wx.ALL, _PAD // 2)
             boxes.append(box)
         panel.SetSizer(rows)
         panel.Layout()
         rows.Layout()
+        _refresh_summary()
         if boxes:
             boxes[0].SetFocus()
         else:

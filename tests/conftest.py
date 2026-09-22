@@ -216,6 +216,25 @@ def _enable_dev_build_for_tests() -> None:
     paths_mod._DEV_BUILD = True
 
 
+@pytest.fixture
+def lite_recovery_store(tmp_path, monkeypatch):
+    """QuillLite's recovery folder, redirected into *tmp_path*.
+
+    ``quill.core.lite.recovery`` did ``from ... import recovery_dir``, so it
+    holds its own reference and patching the paths module does nothing -- the
+    exact failure ``_never_write_to_the_real_profile`` was written about. Two
+    tests called ``new_slot`` without isolation and left a slot in the
+    developer's live store on every run; those slots were part of the
+    sixty-nine unsaved documents a user was offered in one Yes/No on launch.
+
+    Any test that creates a real slot wants this.
+    """
+    store = tmp_path / "recovery-store"
+    store.mkdir()
+    monkeypatch.setattr("quill.core.lite.recovery.recovery_dir", lambda: store)
+    return store
+
+
 @pytest.fixture(autouse=True, scope="session")
 def _never_write_to_the_real_profile() -> None:
     """Make the developer's own data directory read-only to the test suite.
@@ -234,8 +253,20 @@ def _never_write_to_the_real_profile() -> None:
     So the real directory is refused outright. Any write beneath it raises,
     naming the test that tried, which turns a silent data loss into a failure
     on the line that caused it.
+
+    **Both profiles, since 2026-09-21.** The guard only ever covered QUILL's
+    roaming profile, and QuillLite keeps its own under ``%LOCALAPPDATA%``. That
+    gap had a cost with a number on it: ``quill.core.lite.recovery.new_slot``
+    resolves the *real* recovery folder, and two tests in
+    ``test_lite_save_path.py`` called it without isolation on every run, leaving
+    a slot behind each time. Those slots were part of the sixty-nine unsaved
+    documents a user was offered in one Yes/No on launch -- a test suite filling
+    a developer's crash-recovery store, invisibly, for months.
     """
     import builtins
+    import io
+    import shutil
+    import sys
     from pathlib import Path
 
     # The profile the *app* would use, computed the way app_data_dir computes
@@ -245,7 +276,14 @@ def _never_write_to_the_real_profile() -> None:
     if not appdata:
         yield
         return
-    real = (Path(appdata) / "Quill").resolve()
+    guarded = [(Path(appdata) / "Quill").resolve()]
+    # QuillLite's own profile, which lives under LOCALAPPDATA rather than
+    # APPDATA and was unguarded until 2026-09-21. Resolved the way
+    # quill.core.lite.paths computes it, deliberately not by calling into that
+    # module, which a test may already have redirected.
+    local = os.environ.get("LOCALAPPDATA")
+    if local:
+        guarded.append((Path(local) / "QuillLite").resolve())
     original_open = builtins.open
 
     def _guarded_open(file, mode="r", *args, **kwargs):  # type: ignore[no-untyped-def]
@@ -254,20 +292,98 @@ def _never_write_to_the_real_profile() -> None:
                 target = Path(file).resolve()
             except (TypeError, ValueError, OSError):
                 target = None
-            if target is not None and target.is_relative_to(real):
+            if target is not None and any(target.is_relative_to(one) for one in guarded):
                 raise AssertionError(
-                    f"A test tried to write to the real QUILL profile: {target}. "
+                    f"A test tried to write to a real profile: {target}. "
                     "Isolate it with the quill_data_dir fixture (or patch "
-                    "app_data_dir in *every* module that imported the name), "
-                    "never the developer's own data."
+                    "app_data_dir / recovery_dir in *every* module that "
+                    "imported the name), never the developer's own data."
                 )
         return original_open(file, mode, *args, **kwargs)
 
+    # Both names, and that is the second half of the 2026-09-21 fix.
+    # ``builtins.open is io.open`` is the same object, but ``pathlib`` calls
+    # ``io.open`` by attribute lookup on the module -- so patching only
+    # ``builtins`` left every ``Path.write_text`` / ``write_bytes`` unguarded,
+    # which is how ``write_json_atomic`` walked straight past this fixture.
+    # Deleting is the other half, and it was never guarded at all. Writing is
+    # what the fixture was written about, but a test that *removes* something
+    # under a real profile loses data just as completely and leaves nothing
+    # behind to notice -- there is no stray file afterwards to wonder about.
+    #
+    # It is guarded now because the recovery work of 2026-09-21 gave QUILL a
+    # reason to delete: `begin_session` prunes autosave directories past the
+    # keep window, so any test that builds a real MainFrame without isolating
+    # its paths would take a month of a developer's crash-recovery snapshots
+    # with it. That is a strictly worse failure than the one this fixture
+    # already existed to prevent.
+    original_rmtree = shutil.rmtree
+    original_unlink = os.unlink
+    original_remove = os.remove
+    original_rmdir = os.rmdir
+    original_path_unlink = Path.unlink
+
+    def _refuse(target: object, verb: str) -> None:
+        try:
+            resolved = Path(target).resolve()  # type: ignore[arg-type]
+        except (TypeError, ValueError, OSError):
+            return
+        if not any(resolved.is_relative_to(one) for one in guarded):
+            return
+        # Named on stderr *before* it is raised, because a refusal that is
+        # caught tells nobody anything. Both leaks found on 2026-09-21 were
+        # swallowed by a broad ``except Exception`` in the code under test --
+        # the data was saved and the test still passed, so the guard protected
+        # the profile and taught nothing about which test to fix. The line
+        # below is the teaching half, and PYTEST_CURRENT_TEST is how it knows
+        # whose fault it is.
+        culprit = os.environ.get("PYTEST_CURRENT_TEST", "unknown test")
+        message = (
+            f"A test tried to {verb} a real profile: {resolved}. "
+            "Isolate it with the quill_data_dir fixture (or patch "
+            "app_data_dir / recovery_dir in *every* module that imported "
+            "the name), never the developer's own data."
+        )
+        print(f"PROFILE GUARD: {culprit}: {message}", file=sys.stderr)
+        raise AssertionError(message)
+
+    def _guarded_rmtree(path, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _refuse(path, "delete a directory tree in")
+        return original_rmtree(path, *args, **kwargs)
+
+    def _guarded_unlink(path, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _refuse(path, "delete a file in")
+        return original_unlink(path, *args, **kwargs)
+
+    def _guarded_remove(path, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _refuse(path, "delete a file in")
+        return original_remove(path, *args, **kwargs)
+
+    def _guarded_rmdir(path, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _refuse(path, "remove a directory in")
+        return original_rmdir(path, *args, **kwargs)
+
+    def _guarded_path_unlink(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _refuse(self, "delete a file in")
+        return original_path_unlink(self, *args, **kwargs)
+
     builtins.open = _guarded_open
+    io.open = _guarded_open  # type: ignore[assignment]
+    shutil.rmtree = _guarded_rmtree  # type: ignore[assignment]
+    os.unlink = _guarded_unlink  # type: ignore[assignment]
+    os.remove = _guarded_remove  # type: ignore[assignment]
+    os.rmdir = _guarded_rmdir  # type: ignore[assignment]
+    Path.unlink = _guarded_path_unlink  # type: ignore[assignment,method-assign]
     try:
         yield
     finally:
         builtins.open = original_open
+        io.open = original_open  # type: ignore[assignment]
+        shutil.rmtree = original_rmtree  # type: ignore[assignment]
+        os.unlink = original_unlink  # type: ignore[assignment]
+        os.remove = original_remove  # type: ignore[assignment]
+        os.rmdir = original_rmdir  # type: ignore[assignment]
+        Path.unlink = original_path_unlink  # type: ignore[assignment,method-assign]
 
 
 #: Environment variables the leak guard ignores, and why. Everything else is a

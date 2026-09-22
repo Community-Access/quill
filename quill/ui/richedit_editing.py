@@ -42,11 +42,14 @@ from typing import Any
 from quill.ui.richedit_rtf_surface import (
     _MAX_HEADING_SCAN_PARAGRAPHS,
     _TOM_AVAILABLE,
+    _TOM_FALSE,
     _TOM_TOGGLE,
     _TOM_UNIT_PARAGRAPH,
+    BODY_POINT_SIZE,
     QuillRichEdit,
     RichEditRtfError,
     _get_text_document,
+    _one_undo_step,
     heading_level_for_font,
 )
 
@@ -310,6 +313,59 @@ class RichEditDocument(QuillRichEdit):
                 pass
 
     # -- formatting readback ------------------------------------------------ #
+
+    def clear_formatting(self) -> None:
+        """Put the selection back to plain body text -- Word's Normal style.
+
+        Asked for directly: "we also need a normal text command ... something
+        like Word's Ctrl+Shift+N to set text to normal mode in an RTF
+        document." There was no way back. Every formatting command in a rich
+        document was a *toggle* or a *set*: bold off needed you to know bold was
+        on, a twenty-point run needed the size ladder walked back down by hand,
+        and a colour, a highlight or a list had no "none" at all. For somebody
+        who cannot glance at the page to see what is still applied, one key
+        meaning "whatever is on this, take it off" is not a convenience -- it is
+        the only reliable way to know what the text now looks like.
+
+        Character formatting and paragraph formatting both, which is what Word's
+        Normal style does and what a person means by "make this normal": bold,
+        italic, underline and strikethrough off; the size back to the ladder's
+        body size; colour and highlight back to automatic; left aligned, single
+        spaced, and out of any list.
+
+        The **face is deliberately left alone**. A document's typeface is part
+        of the document rather than a stray attribute, and a command that
+        silently retyped somebody's Georgia into Segoe UI would be an edit
+        nobody asked for -- Editor Font is where a face is chosen.
+
+        One undo step, because the user did one thing (bad.md R14): nine
+        assignments as nine undo entries would take nine Ctrl+Z presses to walk
+        back through, each landing on a state nobody ever chose.
+        """
+        try:
+            with _one_undo_step(self.hwnd()):
+                font = self._selection().Font
+                for attr in ("Bold", "Italic", "Underline", "StrikeThrough"):
+                    try:
+                        setattr(font, attr, _TOM_FALSE)
+                    except Exception:  # noqa: BLE001 - an older control may lack one
+                        continue
+                font.Size = BODY_POINT_SIZE
+                font.ForeColor = _TOM_AUTOCOLOR
+                try:
+                    font.BackColor = _TOM_AUTOCOLOR
+                except Exception:  # noqa: BLE001 - highlight is not on every build
+                    pass
+                # The three paragraph resets go through the methods the menu
+                # commands use, so "normal" cannot come to mean something
+                # different from what Align Left and Single Spacing mean.
+                self.set_alignment("left")
+                self.set_line_spacing(LINE_SPACING_SINGLE)
+                self.set_list_style("none")
+        except RichEditRtfError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            raise RichEditRtfError(f"Could not return the text to normal: {exc}") from exc
 
     def toggle_font_attr(self, attr: str) -> bool:
         """Toggle ``Bold``/``Italic``/``Underline`` and report the resulting state.

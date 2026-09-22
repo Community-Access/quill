@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 447.
+Editor commands with default bindings: 448.
 
 ## The QUILL editor
 
@@ -28,6 +28,7 @@ Editor commands with default bindings: 447.
 | (unbound by default) | Open Remote GitHub Repository... | `file.open_github_repository` |
 | (unbound by default) | Save to Remote | `file.save_to_remote` |
 | Alt+Shift+F12 | Reopen Last Session | `file.reopen_last_session` |
+| Alt+Shift+T | New Rich Text Document | `file.new_rich_document` |
 | Ctrl+Alt+E | File Format | `file.file_format` |
 | Ctrl+Alt+N | New Plain Text Document | `file.new_plain_text_document` |
 | Ctrl+Alt+P | Page Setup... | `file.page_setup` |
@@ -37,7 +38,6 @@ Editor commands with default bindings: 447.
 | Ctrl+P or Ctrl+Shift+F12 | Print... | `file.print` |
 | Ctrl+S | Save | `file.save` |
 | Ctrl+Shift+F11 | Forget Remembered File-Change Answers | `file.forget_external_change_answers` |
-| Ctrl+Shift+N | New Rich Text Document | `file.new_rich_document` |
 | Ctrl+Shift+S or F12 | Save As... | `file.save_as` |
 | Ctrl+W | Close Document | `file.close_document` |
 | QUILL Key + B | Batch conversion | `file.batch_conversion` |
@@ -193,6 +193,7 @@ Editor commands with default bindings: 447.
 | Ctrl+Shift+F | Font for Selection... | `format.selection_font` |
 | Ctrl+Shift+K | Lower Case | `format.lower_case` |
 | Ctrl+Shift+L | Toggle Bullet List | `format.toggle_bullet_list` |
+| Ctrl+Shift+N | Clear Formatting | `format.clear_formatting` |
 | Ctrl+Shift+T | Title Case | `format.title_case` |
 | Ctrl+Shift+U | Upper Case | `format.upper_case` |
 | Ctrl+Shift+Up | Move Line Up | `format.move_line_up` |

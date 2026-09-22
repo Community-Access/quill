@@ -26,8 +26,28 @@ import pytest
 wx = pytest.importorskip("wx")
 
 
-@pytest.fixture(scope="module")
-def radio_frame():
+@pytest.fixture
+def _isolated_profile(quill_data_dir):
+    """A data directory of this test's own.
+
+    Building a real ``RadioAppFrame`` reads and *writes* the profile: it sweeps
+    the undo-holding directory (deleting stale media as it goes), and the
+    fixture below seeds twelve favorites into it. Against the developer's own
+    profile that is exactly the incident ``tests/conftest.py`` was written
+    about -- and on 2026-09-21 the guard there learned to watch deletions and
+    caught this doing it.
+
+    Function-scoped, and so is the frame it serves. The frame was module-scoped
+    to build once; it cannot be, because ``QUILL_DATA_DIR`` set for a whole
+    module outlives the first test and the environment-leak guard rightly fails
+    it. One frame per test costs a fraction of a second and buys an isolation
+    that is actually honest.
+    """
+    return quill_data_dir
+
+
+@pytest.fixture
+def radio_frame(_isolated_profile):
     app = wx.App()
     from quill.apps.radio import RadioAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy

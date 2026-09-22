@@ -42,6 +42,7 @@ from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
 from quill.core.selection import word_span
 from quill.core.wrap_ops import hard_wrap
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import RICH
 
@@ -102,7 +103,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
             if count == "scope"
             else _difference(text, changed_text, unit=unit)
         )
-        self.control.Replace(start, end, changed_text)
+        replace_as_one_undo(self.control, start, end, changed_text)
         self.control.SetSelection(start, start + len(changed_text))
         self._set_modified(True)
         self._touch_status()
@@ -193,7 +194,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         if changed == word:
             self._announce(f"{word} is already like that")
             return
-        self.control.Replace(word_start, word_end, changed)
+        replace_as_one_undo(self.control, word_start, word_end, changed)
         self.control.SetSelection(word_start, word_start + len(changed))
         self._set_modified(True)
         self._touch_status()
@@ -382,7 +383,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         if changed == text:
             self._announce("Nothing to outdent")
             return
-        self.control.Replace(0, self.control.GetLastPosition(), changed)
+        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), changed)
         self.control.SetSelection(new_start, new_end)
         self._set_modified(True)
         self._touch_status()

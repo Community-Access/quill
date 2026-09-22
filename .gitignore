@@ -77,6 +77,11 @@ msg.txt
 # exact patterns only.
 /list.md
 
+# LRCLIB integration plan (2026-09-22). Describes work rather than being it,
+# like the notes above; untracked, and listed explicitly because
+# tests/unit/structure/test_repo_layout.py reads exact patterns only.
+/xplan2.md
+
 # Local research lab for the chapter work (2026-08-20): the evaluation harness
 # plus 22 GB of vendored engines, episode audio and result sweeps. The findings
 # it produced are in quill/core/podcasts/; the lab itself is a workbench, not a

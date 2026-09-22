@@ -43,6 +43,7 @@ __all__ = [
     "SessionEntry",
     "describe_forgotten",
     "describe_opened",
+    "describe_session_plan",
     "forget",
     "missing",
     "openable",
@@ -215,6 +216,64 @@ def describe_opened(opened: int, total: int) -> str:
         noun = "document" if total == 1 else "documents"
         return f"Reopened all {total} {noun}."
     return f"Reopened {opened} of {total}."
+
+
+def describe_session_plan(
+    entries: tuple[SessionEntry, ...],
+    checked: tuple[bool, ...],
+) -> str:
+    """The whole window as a paragraph, kept in step with the checkboxes.
+
+    The recovery chooser's twin (``quill/core/recovery_triage.py``), and it
+    exists for the same reason: a list of checkboxes answers "what is here" one
+    row at a time and never answers "what happens when I press the button".
+    Sighted users assemble that by glancing down the list; by ear it costs a
+    pass through every row, repeated after every tick. So it is written out and
+    rewritten whenever a box changes.
+    """
+    lines: list[str] = []
+    ticked = [entry for entry, on in zip(entries, checked, strict=False) if on]
+    gone = missing(entries)
+
+    lines.append(summarise(entries))
+    lines.append("")
+    for index, entry in enumerate(entries, start=1):
+        on = checked[index - 1] if index - 1 < len(checked) else False
+        mark = "Ticked" if on else "Not ticked"
+        lines.append(f"{index}. {mark}. {entry.label}")
+    lines.append("")
+
+    openable_ticked = [entry for entry in ticked if entry.exists]
+    lines.append("If you press a button now:")
+    if openable_ticked:
+        names = ", ".join(entry.name for entry in openable_ticked)
+        lines.append(f"  Open Checked reopens {len(openable_ticked)}: {names}.")
+    else:
+        lines.append("  Open Checked opens nothing: no row that still has a file is ticked.")
+    skipped = [entry for entry in ticked if not entry.exists]
+    if skipped:
+        names = ", ".join(entry.name for entry in skipped)
+        lines.append(
+            f"  {len(skipped)} ticked cannot be opened, because the files have gone: {names}."
+        )
+    still_there = [entry for entry in entries if entry.exists]
+    lines.append(f"  Open All reopens the {len(still_there)} whose files are still there.")
+    if ticked:
+        lines.append(
+            f"  Forget Checked removes {len(ticked)} from this list. "
+            "No file is touched -- only what is offered next time."
+        )
+    else:
+        lines.append("  Forget Checked does nothing: no rows are ticked.")
+    lines.append(f"  Clear the List forgets all {len(entries)}. Again, no file is touched.")
+    if gone:
+        verb = "is" if len(gone) == 1 else "are"
+        lines.append(
+            f"  {len(gone)} of these files {verb} no longer where they were, which "
+            "is what Forget is usually for."
+        )
+    lines.append("  Not Now changes nothing. The same list is offered next time.")
+    return "\n".join(lines)
 
 
 def describe_forgotten(forgotten: int, remaining: int) -> str:

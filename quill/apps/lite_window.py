@@ -152,7 +152,10 @@ class DocumentFrame(
         #: This document's number inside the shell. Stable for the life of the
         #: window, because a number that changes when a sibling closes is a
         #: number nobody can rely on -- and it is in the title, which is the one
-        #: string the screen reader reads on arrival.
+        #: string the screen reader reads on arrival. Closing *this* window puts
+        #: the number back in the pool for the next new one
+        #: (:meth:`~quill.apps.lite.QuillLiteApp.next_document_number`); nothing
+        #: open is ever renumbered.
         self.number = app.next_document_number()
         self.path: Path | None = None
         self.modified = False
@@ -302,13 +305,27 @@ class DocumentFrame(
         return self.path.name if self.path else "Untitled"
 
     def _update_title(self) -> None:
-        """Retitle after the document. The reader announces this; nothing else does."""
+        """Retitle after the document. The reader announces this; nothing else does.
+
+        **Skipped when the string has not changed**, which QUILL has done since
+        it learned the same thing (``_refresh_title_bar``) and QuillLite did
+        not. Retitling fires ``EVT_OBJECT_NAMECHANGE`` through MSAA and UIA, and
+        a screen reader has no use for being told a window was renamed to the
+        name it already had -- and on an MDI child the call reaches all the way
+        up to the parent's caption, so it is not free even when nothing is
+        listening. ``_set_modified`` and the mode switch both land here, and
+        most of what they pass is what is already there.
+        """
         mode = "rich text" if self.editor.mode == RICH else "plain text"
         star = "*" if self.modified else ""
         # The number leads, because it is the handle a person uses to come back
         # here ("document 3"), and because an MDI child is not in Alt+Tab -- so
         # the title is the only place the number can be announced from.
-        self.SetTitle(f"{self.number}: {star}{self.document_name()} - {APP_NAME} ({mode})")
+        title = f"{self.number}: {star}{self.document_name()} - {APP_NAME} ({mode})"
+        if title == getattr(self, "_last_title", None):
+            return
+        self._last_title = title
+        self.SetTitle(title)
 
     def _set_modified(self, modified: bool) -> None:
         if modified == self.modified:

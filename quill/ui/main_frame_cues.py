@@ -65,6 +65,56 @@ class CueMixin:
         except Exception:  # noqa: BLE001 - an earcon must never break the action
             return
 
+    def cue_deletion_key(self, event: object) -> None:
+        """Sound Delete and Backspace, which never reach a command to be cued.
+
+        Reported against QuillLite and true of both editors: the earcon for a
+        deletion lives in the delete *command*, and the delete command is the
+        menu item. The keys go straight into the control, which removes the
+        character itself and tells nobody -- so Edit > Delete chimed and the key
+        everybody actually presses did not. The same shape as cut, copy and
+        paste, which are cued from the control's own events for exactly this
+        reason (:meth:`bind_clipboard_cues`).
+
+        The **earcon only**, never :meth:`action`'s spoken half. A deletion is a
+        keystroke, it repeats while the key is held, and the screen reader
+        already says the character that went; a sentence per press is the
+        over-announcement GATE-13 exists for. Somebody who wants no tone here
+        turns ``text_deleted`` off, which is the control every earcon has.
+
+        Silent when the press removes nothing -- Delete at the end of the
+        document, Backspace at the start, either in a read-only one. A tone
+        claiming something went when nothing did is worse than no tone, because
+        it is what somebody is listening to instead of looking.
+
+        Never consumes the event and never raises: the control does the
+        deleting, and a cue must not be able to stop it.
+        """
+        wx = self._wx
+        # getattr, like the F8 and Menu-key guards beside this one: _wx is a
+        # stub in a good deal of the suite, and a cue is never worth an
+        # AttributeError on a keypress.
+        delete_key = getattr(wx, "WXK_DELETE", None)
+        back_key = getattr(wx, "WXK_BACK", None)
+        code = event.GetKeyCode()
+        if code not in (delete_key, back_key) or code is None:
+            return
+        try:
+            editor = self.editor
+            if not editor.IsEditable():
+                return
+            start, end = editor.GetSelection()
+            if end > start:
+                pass
+            elif code == back_key:
+                if start <= 0:
+                    return
+            elif start >= editor.GetLastPosition():
+                return
+        except Exception:  # noqa: BLE001 - a cue never speaks for the editor
+            return
+        self.cue(SoundEvent.TEXT_DELETED)
+
     def action(self, event: str, message: str) -> None:
         """Report an action that landed, in whichever channel the user chose.
 

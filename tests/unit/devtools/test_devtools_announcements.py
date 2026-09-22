@@ -6,6 +6,12 @@ These tests pin the requirement from PRD §7.3:
 - Errors are announced with the "Error:" prefix.
 - Silent success (no output, no return value) announces "Done."
 - Result values are announced with the "Result:" prefix.
+
+The five tests that actually run a script take ``quill_data_dir``: running one
+appends to the console history under the data directory, and without isolation
+that is the developer's own ``%APPDATA%\Quill\console\history.jsonl``. It
+was, silently, until the profile guard in ``tests/conftest.py`` learned to watch
+``pathlib`` writes on 2026-09-21.
 """
 
 from __future__ import annotations
@@ -88,14 +94,14 @@ def _dt() -> _FakeDT:
 # Output announcement tests
 
 
-def test_short_stdout_is_announced_verbatim():
+def test_short_stdout_is_announced_verbatim(quill_data_dir):
     dt = _dt()
     result = ScriptSuccess(value=None, output="hello world\n")
     dt._dt_ts_done(result, "print('hello world')", dt._win)
     assert any("hello world" in ann for ann in dt._announcements)
 
 
-def test_long_stdout_is_summarized_not_flood_spoken():
+def test_long_stdout_is_summarized_not_flood_spoken(quill_data_dir):
     dt = _dt()
     many_lines = "\n".join(f"line {i}" for i in range(20))
     result = ScriptSuccess(value=None, output=many_lines)
@@ -107,21 +113,21 @@ def test_long_stdout_is_summarized_not_flood_spoken():
     assert any("lines" in ann.lower() and "transcript" in ann.lower() for ann in dt._announcements)
 
 
-def test_silent_success_announces_done():
+def test_silent_success_announces_done(quill_data_dir):
     dt = _dt()
     result = ScriptSuccess(value=None, output="")
     dt._dt_ts_done(result, "q.goto_line(1)", dt._win)
     assert any("Done" in ann or "done" in ann for ann in dt._announcements)
 
 
-def test_result_value_announced_with_prefix():
+def test_result_value_announced_with_prefix(quill_data_dir):
     dt = _dt()
     result = ScriptSuccess(value=42, output="")
     dt._dt_ts_done(result, "1 + 41", dt._win)
     assert any("Result" in ann and "42" in ann for ann in dt._announcements)
 
 
-def test_error_announced_with_error_prefix():
+def test_error_announced_with_error_prefix(quill_data_dir):
     dt = _dt()
     result = ScriptError(message="NameError: name 'foo' is not defined")
     dt._dt_ts_done(result, "foo", dt._win)

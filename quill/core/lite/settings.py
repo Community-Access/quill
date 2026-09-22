@@ -39,6 +39,7 @@ from typing import Any
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.lite.paths import settings_path
 from quill.core.markdown_breaks import normalise_hard_break_style
+from quill.core.recovery_triage import DEFAULT_KEEP_DAYS as RECOVERY_KEEP_DAYS
 from quill.core.session_restore import ASK_MODES, ASK_WHEN_IT_MATTERS
 from quill.core.settings_portable import (
     PortabilityReport,
@@ -210,6 +211,19 @@ class Settings:
     #: The files open at the last clean exit, in the order they were numbered.
     #: Written on exit and read once at start; never used for anything else.
     session_files: list[str] = field(default_factory=list)
+    #: Offer unsaved work back from windows that never had a file. On by
+    #: default, because an untitled window is where a lot of real work starts.
+    #: Off means those copies are **discarded** rather than kept -- keeping
+    #: something that is never offered is a promise nothing can redeem -- and
+    #: the preference's own wording says so. Same field name as QUILL, which
+    #: can tell an untitled snapshot by its document key.
+    recover_untitled_documents: bool = True
+    #: How many days a copy of unsaved work is kept before it stops being
+    #: offered. 0 keeps everything for ever, which is what both editors did
+    #: until 2026-09-21 -- and is how one user arrived at sixty-nine documents
+    #: offered in a single yes-or-no question. See
+    #: ``quill/core/recovery_triage.py``.
+    recovery_keep_days: int = RECOVERY_KEEP_DAYS
     #: Read abbreviations from QUILL's shared library instead of QuillLite's own.
     #: Off by default and deliberately so: Inkwell shares that library because
     #: one library is its entire value, while QuillLite is offered as an
@@ -389,6 +403,10 @@ class Settings:
         self.session_files = [str(entry) for entry in self.session_files][:MAX_SESSION]
         if self.session_restore_ask not in ASK_MODES:
             self.session_restore_ask = ASK_WHEN_IT_MATTERS
+        # Clamped, never refused: a hand-edited negative here would otherwise
+        # mean "expire everything immediately", which is the one value of this
+        # field that can destroy work. 0 (never expire) is the floor.
+        self.recovery_keep_days = max(0, int(self.recovery_keep_days))
         self.markdown_hard_break_style = normalise_hard_break_style(self.markdown_hard_break_style)
         if self.spell_aloud_style not in _LETTER_STYLES:
             self.spell_aloud_style = "letters"

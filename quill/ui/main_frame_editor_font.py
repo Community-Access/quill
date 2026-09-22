@@ -45,6 +45,20 @@ from quill.core.i18n import _
 __all__ = ["EditorFontMixin"]
 
 
+def _is_empty(editor: Any) -> bool:
+    """Whether *editor* has nothing in it. Never raises, never scans.
+
+    ``GetLastPosition`` rather than ``GetValue``: this is asked for every tab
+    on every font change, and marshalling whole documents out of the native
+    controls to find out whether they are empty is exactly the full-buffer read
+    the typing path is budgeted against.
+    """
+    try:
+        return int(editor.GetLastPosition()) == 0
+    except (AttributeError, RuntimeError, TypeError, ValueError):
+        return False
+
+
 class EditorFontMixin:
     """Editor Font, Font for Selection, and the three text-size keys."""
 
@@ -110,10 +124,15 @@ class EditorFontMixin:
         points = clamp_font_points(getattr(self.settings, "font_size", DEFAULT_FONT_POINTS))
         for editor, rich in self._editors_with_mode():
             try:
-                # Never SetFont on a rich control: wxMSW applies it to the whole
-                # control, so it would flatten the heading ladder whatever size
-                # is passed. There the zoom is the entire answer (bad.md R5).
-                if sets_font(rich=rich):
+                # Never SetFont on a rich control with anything in it: wxMSW
+                # applies it to the whole control, so it would flatten the
+                # heading ladder whatever size is passed. There the zoom is the
+                # entire answer (bad.md R5). An *empty* rich control is the
+                # exception and needs it: a rich heading is a ladder point size
+                # plus bold, Heading 4 is twelve point, and twelve point is the
+                # default editor size -- so a control left on the reading size
+                # turns a bolded line into a heading nobody applied.
+                if sets_font(rich=rich, empty=_is_empty(editor)):
                     editor.SetFont(
                         wx.Font(
                             int(editor_points_for(points, rich=rich)),

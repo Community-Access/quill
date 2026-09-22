@@ -374,6 +374,28 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("session", "restore", "reopen", "startup"),
     ),
     SettingSpec(
+        "recover_untitled_documents",
+        "Offer untitled unsaved work",
+        "general",
+        "bool",
+        "After an unclean exit, QUILL offers back the work that was never "
+        "saved. When this is off, it offers back only documents that had a "
+        "file, and the copies of untitled ones are discarded rather than kept "
+        "-- keeping something that is never offered is a promise nothing can "
+        "redeem. QuillLite has the same setting under the same name.",
+        keywords=("recovery", "unsaved", "untitled", "crash", "autosave"),
+    ),
+    SettingSpec(
+        "recovery_keep_days",
+        "Days of unsaved work to keep",
+        "general",
+        "int",
+        "How long a copy of unsaved work is kept before it is deleted. Only "
+        "the previous session is ever offered back, so older copies are "
+        "unreachable and simply accumulate. 0 keeps everything for ever.",
+        keywords=("recovery", "autosave", "cleanup", "days", "unsaved"),
+    ),
+    SettingSpec(
         "default_export_preset",
         "Default export preset",
         "general",

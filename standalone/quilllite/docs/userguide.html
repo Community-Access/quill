@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite — User Guide</title>
   <style>
@@ -1329,7 +1329,11 @@ have selected — and only on those, never on the rest of the file.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+0</strong></td>
-<td>Back to ordinary text</td>
+<td>Back to ordinary text (removes the heading)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>Normal Text: take <em>all</em> formatting off</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+D</strong></td>
@@ -1347,6 +1351,20 @@ Every level has a size of its own on purpose: levels 5 and 6 used to
 share the 11-point body size, which meant QuillLite could apply them and
 then could not find them again — heading navigation and the headings
 list both walked straight past them.</p>
+<p><strong>Ctrl+Shift+N</strong> is Normal Text, and it is the way back.
+Every other command in this menu is a toggle or a setting, so each one
+needs you to already know what is applied: turning bold off means
+knowing bold is on, and a twenty-point run means walking the size back
+down a step at a time. Normal Text does not ask. It takes off bold,
+italic, underline and strikethrough, puts the size back to ordinary body
+text, clears the colour and the highlight, returns the paragraph to left
+aligned and single spaced, and takes it out of any list – all in one
+press, and one <strong>Ctrl+Z</strong> puts it all back. It leaves the
+<em>typeface</em> alone, because the face a document is written in is
+part of the document; <strong>Format ▸ Editor Font</strong> is where
+that is chosen. It is Word’s key for the same idea. In a Markdown or
+HTML document the same key takes the heading marks off the line instead,
+which is what “normal” means to a line written in markup.</p>
 <p><strong>Ctrl+Shift+D</strong> is the one worth remembering. It tells
 you what you are standing in — “Arial, 16 point, heading 2, bold” —
 which is the question a formatted document raises and that nothing else
@@ -2250,6 +2268,35 @@ is one keystroke to change and QuillLite will not ask again.</p>
 Cast, Weather, Audio Studio, Inkwell, the Converter, the Media Player
 and Beacon.</p>
 <hr />
+<h2 id="closing-a-lot-of-windows-at-once">Closing a lot of windows at
+once</h2>
+<p><strong>Window &gt; Close Other Documents (Ctrl+Shift+F4)</strong>
+keeps the document you are in and closes every other one. QUILL has had
+it since 2026-06; QuillLite has it now too, on the same key, because a
+key you learn in one editor should work in the other.</p>
+<p>If any of those documents has unsaved changes, you are asked about it
+– and the question carries two answers that settle the rest at once:</p>
+<ul>
+<li><strong>Save All</strong> saves this document and every other one
+waiting behind it, without asking again. A document that has never been
+saved still asks you where to put it.</li>
+<li><strong>Don’t Save Any</strong> closes the rest and loses their
+changes, without asking again. There is no undo for that one.</li>
+<li><strong>Save</strong> and <strong>Don’t Save</strong> apply to the
+document in front of you only, and you are asked about the next
+one.</li>
+<li><strong>Cancel</strong> stops the whole thing. Whatever is still
+open stays open, and you are told how many closed before you stopped
+it.</li>
+</ul>
+<p>The question says how many more documents are waiting, so you know at
+the first prompt whether this is one more keystroke or sixty-seven.</p>
+<p><strong>Enter answers Save</strong>, never one of the two that lose
+work. If a save fails – a full disk, a file that has gone read-only –
+the close stops there rather than treating a failed save as permission
+to throw the document away, and “Save All” stops meaning “save all”
+until you say so again.</p>
+<hr />
 <h2 id="changing-what-a-key-does">Changing what a key does</h2>
 <p><strong>Tools ▸ Keyboard Manager</strong>
 (<strong>Ctrl+Alt+Shift+R</strong>) is where every key in QuillLite can
@@ -2870,7 +2917,7 @@ list inside the app.</p>
 <td>New</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Shift+N</strong></td>
+<td><strong>Alt+Shift+T</strong></td>
 <td>New Rich Text Document</td>
 </tr>
 <tr>
@@ -2894,8 +2941,16 @@ list inside the app.</p>
 <td>Earlier Versions…</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+F12</strong></td>
+<td>Reopen Last Session…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+P</strong></td>
 <td>Page Setup…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+P</strong></td>
+<td>Print Preview…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+P</strong></td>
@@ -3083,10 +3138,6 @@ list inside the app.</p>
 <td>Trim Trailing Spaces</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+Shift+T</strong></td>
-<td>Tidy Whitespace</td>
-</tr>
-<tr>
 <td><strong>Ctrl+/</strong></td>
 <td>Toggle Line Comment</td>
 </tr>
@@ -3105,6 +3156,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+Shift+W</strong></td>
 <td>Hard Wrap Lines…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+T</strong></td>
+<td>Tidy Whitespace</td>
 </tr>
 </tbody>
 </table>
@@ -3135,6 +3190,10 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F8</strong></td>
+<td>Toggle Selection Marker</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F9</strong></td>
 <td>Extend Selection Mode</td>
 </tr>
 <tr>
@@ -3190,12 +3249,12 @@ list inside the app.</p>
 <td>Say Selection</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+Q</strong></td>
-<td>Duplicate Selection</td>
-</tr>
-<tr>
 <td><strong>Alt+Shift+U</strong></td>
 <td>Review Buffer…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Q</strong></td>
+<td>Duplicate Selection</td>
 </tr>
 </tbody>
 </table>
@@ -3406,6 +3465,10 @@ list inside the app.</p>
 <td>Font for Selection…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>Normal Text</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Shift+D</strong></td>
 <td>Describe Formatting at Cursor</td>
 </tr>
@@ -3506,6 +3569,10 @@ list inside the app.</p>
 <td><strong>Alt+Shift+Down</strong></td>
 <td>Move Section Down</td>
 </tr>
+<tr>
+<td><strong>Alt+Shift+O</strong></td>
+<td>Heading Organizer…</td>
+</tr>
 </tbody>
 </table>
 <h3 id="navigate">Navigate</h3>
@@ -3536,6 +3603,22 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+L</strong></td>
 <td>List Headings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F9</strong></td>
+<td>Fold or Unfold Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Down</strong></td>
+<td>Next Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Up</strong></td>
+<td>Previous Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F10</strong></td>
+<td>Unfold Everything</td>
 </tr>
 <tr>
 <td><strong>F6</strong></td>
@@ -3636,6 +3719,10 @@ list inside the app.</p>
 <td>File Encoding and Line Endings…</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+I</strong></td>
+<td>Snippets…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+A</strong></td>
 <td>Manage Abbreviations…</td>
 </tr>
@@ -3679,12 +3766,12 @@ list inside the app.</p>
 <td>Check Spelling…</td>
 </tr>
 <tr>
-<td><strong>Alt+Shift+L</strong></td>
-<td>List Misspellings…</td>
-</tr>
-<tr>
 <td><strong>Alt+Shift+F7</strong></td>
 <td>Spelling for This Word</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+L</strong></td>
+<td>List Misspellings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+F7</strong></td>
@@ -3810,6 +3897,10 @@ list inside the app.</p>
 <td><strong>Ctrl+Shift+Tab</strong></td>
 <td>Previous Window</td>
 </tr>
+<tr>
+<td><strong>Ctrl+Shift+F4</strong></td>
+<td>Close Other Documents</td>
+</tr>
 </tbody>
 </table>
 <h3 id="help">Help</h3>
@@ -3824,6 +3915,10 @@ list inside the app.</p>
 <tr>
 <td><strong>F1</strong></td>
 <td>Help for This Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F1</strong></td>
+<td>Tutorials…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+F1</strong></td>
@@ -3862,10 +3957,9 @@ list inside the app.</p>
 </tr>
 </tbody>
 </table>
-<p>Two of these read differently on a keyboard than in a table. Bigger
-and smaller text are the keys your fingers think of as
-<strong>Ctrl+Shift+&gt;</strong> and <strong>Ctrl+Shift+&lt;</strong> –
-and they are those keys – but they are written above as
+<p>Two of these read differently on a keyboard than in a table:
+<strong>Ctrl+Shift+&gt;</strong> and <strong>Ctrl+Shift+&lt;</strong>
+are the keys your fingers know, and they are listed above as
 <code>Ctrl+Shift+.</code> and <code>Ctrl+Shift+,</code> because that is
 the same physical key and the spelling wx understands.</p>
 <!-- keys:end -->

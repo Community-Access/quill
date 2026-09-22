@@ -44,6 +44,15 @@ second line instead: the bar gets taller on a narrow window and nothing clips at
 any width. The one text with no natural ceiling -- the message itself -- is
 capped in the label and read in full by Enter on the cell.
 
+The row also has to hold **still**. Nothing clipping is only half of what that
+same Insert+Page Down needs: a cell that changes width shoves every cell after
+it sideways, and text drawn at one position and then redrawn ninety pixels along
+leaves both in the screen model the reader is reading out of. That is what came
+back as "Line 1, colu Line 1, c ... No selectio", on a maximised window with room
+to spare. So a cell's width is a high-water mark -- it may grow, never shrink
+(:func:`_widen_to_label`) -- and a cell whose text has not changed is not written
+to at all.
+
 The one performance rule is QUILL's as well. Counting words is O(document) and a
 refresh per keystroke is several full scans per keypress, so refreshes are
 **coalesced** through a restarting ``wx.CallLater``: a held arrow key costs one
@@ -52,16 +61,15 @@ refresh after the caret stops, not one per repeat.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 import wx
 
 from quill.core.heading_levels import heading_level_at
 from quill.core.list_structure import list_context_at
-from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
 from quill.core.metrics import compute_document_stats
 from quill.ui.richedit_editing import RICH
+from quill.ui.status_bar_role import mark_as_status_bar, mark_as_status_cell
 
 __all__ = [
     "CELLS",
@@ -73,171 +81,22 @@ __all__ = [
     "newline_name",
 ]
 
-#: How long caret movement may leave the bar stale. QUILL's own coalescing
-#: window (``StatusBarMixin._STATUSBAR_COALESCE_MS``): a tenth of a second is
-#: imperceptible, and refreshing synchronously on every caret event was several
-#: full-buffer scans per keystroke.
-_COALESCE_MS = 90
-
-#: The message cell is the one whose text has no natural ceiling.
-_MESSAGE = "message"
-
-#: How many characters of a status message the *label* shows. The message cell
-#: is the only one whose text is unbounded -- a path, an OS error, a sentence --
-#: and a button label wider than its button is ellipsised by wxMSW, which is
-#: what JAWS's Insert+Page Down then reads off the screen. Capped here and read
-#: in full by Enter on the cell (and by the F6 landing announcement), which is
-#: the trade the fixed cells never have to make: Position and Encoding say two
-#: facts nothing else in the app will tell you, so they are never shortened.
-_MESSAGE_LABEL_CHARS = 90
-
-#: The margin each cell button is added with, and the slack left under the last
-#: row when the bar's height is measured.
-_CELL_GAP = 2
-
-#: A height no wrapped row can reach, used to lay the cells out at a known width
-#: so their real extent can be measured. ``wx.WrapSizer.CalcMin`` reports one
-#: row whatever it is told (``InformFirstDirection`` returns False and changes
-#: nothing), so the wrapped height has to come from an actual layout pass.
-_REFLOW_PROBE_HEIGHT = 10_000
-
-
-def _clip_message(message: str) -> str:
-    """*message* shortened to what a status button can show without ellipsising.
-
-    Cut at the last space inside the budget so a half-word is never left
-    dangling, and mark the cut so the label does not read as the whole message.
-    The full text is still one Enter away on the cell.
-    """
-    if len(message) <= _MESSAGE_LABEL_CHARS:
-        return message
-    head = message[:_MESSAGE_LABEL_CHARS].rstrip()
-    space = head.rfind(" ")
-    if space > _MESSAGE_LABEL_CHARS // 2:
-        head = head[:space]
-    return f"{head.rstrip()}..."
-
-
-@dataclass(frozen=True, slots=True)
-class StatusCell:
-    """One cell: its key, the name it announces, and what F1 says about it."""
-
-    key: str
-    label: str
-    help_text: str
-
-
-CELLS: tuple[StatusCell, ...] = (
-    StatusCell(
-        _MESSAGE,
-        "Status Message",
-        "The last thing QuillLite announced. Speech is gone once it is spoken; "
-        "this is where it can be read again.",
-    ),
-    StatusCell(
-        "position",
-        "Position",
-        "Where the cursor is: line and column, out of how many lines. "
-        "Press Enter to go to a line by number.",
-    ),
-    StatusCell(
-        "words",
-        "Word Count",
-        "How many words the whole document has. A word is a run of characters with "
-        "a space or a line break on each side, which is how QUILL counts them too, "
-        "so the two products never disagree about the length of the same file.",
-    ),
-    StatusCell(
-        "characters",
-        "Character Count",
-        "How many characters the whole document has, spaces and line breaks "
-        "included. This counts characters as you would read them, not bytes on "
-        "disk: an accented letter is one character here whatever the encoding.",
-    ),
-    StatusCell(
-        "selection",
-        "Selection",
-        "How much text is selected. It reads 'No selection' when there is none.",
-    ),
-    StatusCell(
-        "typing_mode",
-        "Typing Mode",
-        "Whether typing inserts characters or overwrites the ones already there. "
-        "The native editing control keeps this mode and will not report it, so "
-        "this cell is the only way to ask. Press Enter to switch.",
-    ),
-    StatusCell(
-        "tab_mode",
-        "Tab Mode",
-        "What the Tab key does: type a tab character, or indent the whole line. "
-        "Shift+Tab outdents either way. Press Enter to switch.",
-    ),
-    StatusCell(
-        "format",
-        "Format",
-        "What kind of document this is: plain text, Markdown, HTML or rich "
-        "text. It decides what Bold writes, what the heading keys write, which "
-        "of the two tag pickers the Insert menu offers, and whether the cursor "
-        "can tell you what list you are in. Press Enter to ring on to the next "
-        "kind; press Control Alt F6 to go straight to one.",
-    ),
-    StatusCell(
-        "heading",
-        "Heading",
-        "The heading the cursor is inside -- the point-size ladder in a rich "
-        "text document, the Markdown hashes in a plain one. "
-        "Press Enter for the list of every heading.",
-    ),
-    StatusCell(
-        "list",
-        "List",
-        "The list the cursor is inside, how many items it has at this level, "
-        "and how far down you are -- the three facts a screen reader gives you "
-        "about a list on a web page and cannot give you about one in an editor. "
-        "It reads 'Not in a list' when you are not. Press Enter to stop or "
-        "resume announcing lists as you move.",
-    ),
-    StatusCell(
-        "encoding",
-        "Encoding",
-        "The character encoding this file was read with and will be written back "
-        "with: UTF-8, UTF-8 with a byte order mark, UTF-16, or Windows-1252. "
-        "Press Enter to change it.",
-    ),
-    StatusCell(
-        "line_endings",
-        "Line Endings",
-        "Whether this file uses Windows line endings (CRLF) or Unix ones (LF). "
-        "QuillLite writes back whichever it read, so a file does not change shape "
-        "just because it was opened. Press Enter to change it.",
-    ),
-    StatusCell("saved", "Saved State", "Whether this document has unsaved changes."),
+# The cells themselves, their labels and their sizing rule live next door: a
+# catalogue and a controller grow for different reasons.
+from quill.apps.lite_status_cells import (
+    _CELL_GAP,
+    _COALESCE_MS,
+    _MESSAGE,
+    _REFLOW_PROBE_HEIGHT,
+    CELLS,
+    RICH_ENCODING_CELL,
+    RICH_LINE_ENDINGS_CELL,
+    StatusCell,
+    _clip_message,
+    _widen_to_label,
+    encoding_name,
+    newline_name,
 )
-
-#: Codec and line-ending names, read from the same table the File Format
-#: dialog offers, so the status bar and the chooser can never call the same
-#: thing two different things. The one extra entry is what the chooser does
-#: not offer: classic-Mac CR, which can be read but is not worth writing.
-_ENCODING_NAMES = dict(ENCODING_CHOICES)
-_NEWLINE_NAMES = dict(NEWLINE_CHOICES) | {"\r": "CR (classic Mac)"}
-
-
-def encoding_name(codec: str) -> str:
-    """How a codec is named to a person; the raw codec if it is not one of ours."""
-    return _ENCODING_NAMES.get(codec, codec)
-
-
-def newline_name(newline: str) -> str:
-    """How a line ending is named to a person."""
-    return _NEWLINE_NAMES.get(newline, "Mixed")
-
-
-#: What the Encoding and Line Endings cells say about a document that has
-#: neither -- rich text stores its own characters as RTF escapes and its own
-#: breaks as paragraph marks, so there is no text codec and no line ending to
-#: report (bad.md F7).
-RICH_ENCODING_CELL = "RTF (rich text)"
-RICH_LINE_ENDINGS_CELL = "Not applicable (rich text)"
 
 
 class DocumentStatusMixin:
@@ -284,6 +143,9 @@ class DocumentStatusMixin:
 
         self.status_panel = wx.Panel(self)
         self.status_panel.SetName("Status bar")
+        # ...and say so to Windows, which is what makes JAWS's Insert+Page Down
+        # find it instead of scraping the bottom line of the screen.
+        mark_as_status_bar(wx, self.status_panel)
         # A wrapping row, not a stretching one. With a horizontal box sizer the
         # Message cell was the only cell with a proportion, so it was the only
         # cell that *grew* -- and the only one that got squeezed when twelve
@@ -300,10 +162,12 @@ class DocumentStatusMixin:
         for cell in CELLS:
             button = wx.Button(self.status_panel, label=cell.label, style=wx.BU_EXACTFIT)
             button.SetName(cell.label)
+            mark_as_status_cell(wx, button)
             button.SetHelpText(cell.help_text)
             button.Bind(wx.EVT_BUTTON, lambda _e, key=cell.key: self._activate_status_cell(key))
             button.Bind(wx.EVT_KEY_DOWN, lambda e, key=cell.key: self._on_status_key(e, key))
             button.Bind(wx.EVT_SET_FOCUS, lambda e, key=cell.key: self._on_status_focus(e, key))
+            _widen_to_label(button)
             sizer.Add(button, 0, wx.ALL, _CELL_GAP)
             self._status_buttons[cell.key] = button
         self.status_panel.SetSizer(sizer)
@@ -378,7 +242,21 @@ class DocumentStatusMixin:
         self._status_refresh_timer = wx.CallLater(_COALESCE_MS, self._refresh_status)
 
     def _refresh_status(self) -> None:
-        """Recompute every cell's text, from one read of the document."""
+        """Recompute every cell's text, from one read of the document.
+
+        Two things keep the row **still**, which is what a screen reader needs
+        from it more than anything else (:func:`_widen_to_label` has the story).
+
+        A cell whose text has not changed is not touched at all -- which is most
+        cells on most refreshes. ``SetLabel`` fires a name change through
+        MSAA/UIA, and a reader has no use for being told that Encoding was
+        renamed to "UTF-8" again after every keystroke.
+
+        A cell whose text *has* changed keeps the width it had unless the new
+        text genuinely needs more, so the ninety-pixel swing between "No
+        selection" and "1 words, 8 characters selected" moves the nine cells
+        after it exactly once instead of on every selection.
+        """
         self._status_refresh_timer = None
         if not self._status_dirty:
             return
@@ -389,10 +267,20 @@ class DocumentStatusMixin:
             return
         self._status_dirty = False
         try:
-            values = self._cell_values()
-            for key, text in values.items():
-                self._status_buttons[key].SetLabel(text)
-            self.status_panel.Layout()
+            widened = False
+            for key, text in self._cell_values().items():
+                button = self._status_buttons[key]
+                if button.GetLabel() == text:
+                    continue
+                button.SetLabel(text)
+                widened = _widen_to_label(button) or widened
+            if widened:
+                # Only a cell that grew can have moved the ones after it, and
+                # only a move leaves the old text on the screen for JAWS to
+                # read back. Repainted explicitly: wxMSW moves the children and
+                # does not always erase what they vacated.
+                self.status_panel.Layout()
+                self.status_panel.Refresh()
         except (RuntimeError, KeyError):
             return  # a window mid-teardown; there is nothing left to update
         # A label that grew can need a row the bar does not have yet.

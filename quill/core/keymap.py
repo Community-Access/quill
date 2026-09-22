@@ -71,7 +71,20 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # QuillLite's chords: a document started in the kind you meant, rather than
     # one you make and convert (bad.md P1.13, 3.7). Ctrl+Alt+N came free when
     # Numbered List folded into the Ctrl+Shift+L cycle.
-    "file.new_rich_document": "Ctrl+Shift+N",
+    # Alt+Shift+T since 2026-09-22, because Ctrl+Shift+N is **Word's Normal
+    # style** and format.clear_formatting now has it (rule 1, Microsoft's key
+    # wins; rule 3, frequency breaks the tie -- Normal Text is pressed all day
+    # in a rich document and this once per document).
+    #
+    # T for Text, and the keymap left almost no choice: four chords were free in
+    # both editors and this is the only one that means anything. Ctrl+Alt+Shift+N
+    # would have kept the two News a pair and is Invert Case, one of five Change
+    # Case chords worth more as a family; Ctrl+Alt+R is QUILL's Trim Trailing
+    # Whitespace, a divergence from QuillLite decided on 2026-09-16 and written
+    # down. It sits beside format.switch_document_mode on Alt+Shift+F, which is
+    # the neighbouring idea: that one changes what this document is, this one
+    # starts a new one already being it.
+    "file.new_rich_document": "Alt+Shift+T",
     "file.new_plain_text_document": "Ctrl+Alt+N",  # §edsharp-ok — QuillLite's chord
     "file.open": "Ctrl+O",
     "file.save": "Ctrl+S",
@@ -794,6 +807,13 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.align_center": "Ctrl+E",
     "format.align_right": "Ctrl+R",
     "format.justify": "Ctrl+J",
+    # Word's Ctrl+Shift+N, and the only way back out of formatting. Every other
+    # command in the Format menu is a toggle or a set, so each one needs you to
+    # already know what is applied; somebody who cannot glance at the page to
+    # see what is still on it had no way to be sure. QuillLite asked for it
+    # first and QUILL gets it in the same change -- the small product may never
+    # be ahead of the editor.
+    "format.clear_formatting": "Ctrl+Shift+N",
     "format.line_spacing_single": "Ctrl+1",
     "format.line_spacing_one_and_a_half": "Ctrl+5",
     "format.line_spacing_double": "Ctrl+2",

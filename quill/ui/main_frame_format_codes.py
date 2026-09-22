@@ -328,9 +328,30 @@ class FormatCodesMixin:
         self._apply_run_attribute({"subscript": "1"}, "Subscript applied", label="Subscript")
 
     def format_clear_formatting(self) -> None:
-        """Strip run formatting from the selection (or current paragraph)."""
+        """Word's Ctrl+Shift+N: take the formatting off and leave ordinary text.
+
+        Two mechanisms, one idea, the way the heading commands already work. In
+        a **rich** document the Text Object Model does it -- bold, italic,
+        underline and strikethrough off, the size back to the ladder's body
+        size, colour and highlight automatic, left aligned, single spaced, out
+        of any list, all as one undo step. In a **Markdown** one the emphasis
+        codes come off the selected text, which is what this command has always
+        done and the only thing it could do.
+
+        The rich half is new, and it arrived from QuillLite: "we also need a
+        normal text command ... something like Word's Ctrl+Shift+N to set text
+        to normal mode in an RTF document." Every other command in this menu is
+        a toggle or a set, so each one needs you to already know what is
+        applied -- bold off needs bold to be on, a twenty-point run needs the
+        size ladder walked back down by hand, and a colour, a highlight or a
+        list had no "none" at all. Somebody who cannot glance at the page to
+        see what is still on it had no way to be sure. The small product may
+        never be ahead of the editor, so both got it in the same change.
+        """
         if not self._feature_enabled("core.format"):
             self._set_status("Clear formatting is unavailable in this profile")
+            return
+        if self._rich_format_command("clear_formatting", "Normal text"):
             return
         if self._active_markup_surface() != "markdown":
             self._set_status("Clear formatting is only available in Markdown documents")

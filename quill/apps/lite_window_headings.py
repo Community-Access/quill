@@ -54,6 +54,7 @@ from quill.core.structure_announce import (
     heading_first_from,
     point_from_text,
 )
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import RICH
 
 
@@ -307,7 +308,7 @@ class DocumentHeadingsMixin:
         # One Replace over the whole document, which is one undo step: the
         # organizer's changes are a single edit as far as the person is
         # concerned, and Ctrl+Z should treat them that way.
-        self.control.Replace(0, self.control.GetLastPosition(), transformed)
+        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), transformed)
         self.doc_text.invalidate()
         self._set_modified(True)
         self.reset_structure_announcer()

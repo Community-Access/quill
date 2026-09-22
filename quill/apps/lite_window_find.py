@@ -44,6 +44,7 @@ from quill.core.find_model import (
     find_next,
 )
 from quill.core.lite import APP_NAME
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import RICH
 
@@ -312,7 +313,7 @@ class DocumentFindMixin:
         start, end = self.control.GetSelection()
         selected = self.control.GetValue()[start:end]
         if pattern is not None and end > start and pattern.fullmatch(selected):
-            self.control.Replace(start, end, str(options.get("replacement", "")))
+            replace_as_one_undo(self.control, start, end, str(options.get("replacement", "")))
             self._set_modified(True)
         self._do_find(options, False)
 
@@ -367,6 +368,8 @@ class DocumentFindMixin:
         """
         if self.editor.mode == RICH:
             for match in reversed(list(pattern.finditer(text))):
-                self.control.Replace(match.start(), match.end(), replacement)
+                replace_as_one_undo(self.control, match.start(), match.end(), replacement)
             return
-        self.control.Replace(0, self.control.GetLastPosition(), pattern.sub(replacement, text))
+        replace_as_one_undo(
+            self.control, 0, self.control.GetLastPosition(), pattern.sub(replacement, text)
+        )

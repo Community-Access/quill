@@ -114,6 +114,12 @@ class FakeControl:
         self._text = text
         self._clamp()
 
+    def IsEditable(self) -> bool:  # noqa: N802 - wx API shape
+        """Always true here. The read-only case has its own tests, and a stub
+        that lacked this method at all made a guard that consults it look like
+        a guard that refuses everything."""
+        return True
+
     def GetLastPosition(self) -> int:
         return len(self._text)
 
@@ -422,6 +428,16 @@ class FakeEditor:
         self.mode = mode
         self.calls.append(("set_text_mode", mode))
 
+    def clear_formatting(self) -> None:
+        """Everything off at once -- the real surface's Normal Text (Word's
+        Ctrl+Shift+N). Recorded rather than simulated: what the command owes
+        the user is that it reached the surface and said so, and what the
+        surface does with the Text Object Model is its own test
+        (tests/unit/ui/test_rich_format_fidelity.py, on the real control)."""
+        self.attrs.clear()
+        self.list_style = "none"
+        self.calls.append(("clear_formatting", None))
+
     def set_heading(self, level: int) -> bool:
         self.calls.append(("set_heading", level))
         return True
@@ -607,6 +623,29 @@ class FakeApp:
         #: app. Only identity matters here -- the commands read it, hand it to
         #: wx and write it back -- so a bare object is the honest stand-in.
         self.print_settings = FakePrintSettings()
+        #: Windows this app was asked to bring forward, in order. Close Other
+        #: Documents focuses each child before asking about it -- an MDI child
+        #: cannot be raised -- and a prompt that names a document other than the
+        #: one on screen is simply the wrong question for a listener.
+        self.focused: list[Any] = []
+        #: The MDI shell, which is what a modal dialog parents to. ``None`` is
+        #: the honest stand-in: wx accepts a parentless dialog, and no test here
+        #: puts a real one up.
+        self.shell = None
+
+    def focus_frame(self, frame: Any) -> None:
+        self.focused.append(frame)
+
+    def close_other_documents(self, keep: Any) -> int:
+        """The shipped implementation, run against these fakes.
+
+        Imported rather than restated: a copy here could agree with a bug, and
+        the thing under test is what the real method does when a window refuses
+        to close.
+        """
+        from quill.apps.lite import QuillLiteApp
+
+        return QuillLiteApp.close_other_documents(self, keep)
 
     def command_registry(self, _frame: Any) -> list[Any]:
         """What the palette and Go To Anything are built from. Empty is fine:
@@ -653,9 +692,6 @@ class FakeApp:
 
     def open_path(self, *args: Any, **kwargs: Any) -> Any:
         self.opened.append((args, kwargs))
-        return None
-
-    def focus_frame(self, *_args: Any, **_kwargs: Any) -> None:
         return None
 
     def binding_for(self, _command: str) -> str:
@@ -805,6 +841,7 @@ def lite_window(tmp_path, lite_settings):
             self.path = None
             self.number = 1
             self.closed = 0
+            self.discard_asked = 0
             self.encoding = "utf-8"
             # ``newline``, not ``line_ending``: that is the attribute name the
             # real DocumentFrame uses and the one cmd_file_format reads. The
@@ -937,7 +974,18 @@ def lite_window(tmp_path, lite_settings):
 
         def Close(self, force: bool = False) -> bool:  # noqa: N802 - wx API shape
             self.closed += 1
+            self.app.frames.remove(self) if self in self.app.frames else None
             return True
+
+        #: What this window's save prompt answers. The real one is a message
+        #: box; what callers depend on is the True/False, and False -- the
+        #: answer people forget to write a test for -- is what stops a bulk
+        #: close dead.
+        discard_answer = True
+
+        def confirm_discard(self) -> bool:
+            self.discard_asked += 1
+            return self.discard_answer
 
         def describe_indent_at_cursor(self) -> str:
             return "no indent"

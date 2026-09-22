@@ -207,7 +207,9 @@ def test_html_that_converts_to_nothing_is_saved_unchanged(lite_window) -> None:
 # --------------------------------------------------------------------------- #
 
 
-def test_a_recovered_document_keeps_the_encoding_it_came_from(tmp_path) -> None:
+def test_a_recovered_document_keeps_the_encoding_it_came_from(
+    tmp_path, lite_recovery_store
+) -> None:
     """The slot is always UTF-8 with LF, because a copy of unsaved work has to
     hold whatever was typed. The window used to adopt *that*, so a cp1252/CRLF
     file recovered after a crash was saved back as UTF-8/LF (bad.md F2)."""
@@ -225,7 +227,7 @@ def test_a_recovered_document_keeps_the_encoding_it_came_from(tmp_path) -> None:
     assert found[0].newline == "\r\n"
 
 
-def test_a_slot_from_an_older_build_reads_as_unknown(tmp_path) -> None:
+def test_a_slot_from_an_older_build_reads_as_unknown(tmp_path, lite_recovery_store) -> None:
     """Empty, not wrong: the window then falls through to what the bytes say,
     which is exactly what it did before."""
     from quill.core.lite import recovery

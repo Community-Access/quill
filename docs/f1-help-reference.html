@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>The Quill family F1 help reference</title>
   <style>
@@ -2922,6 +2922,12 @@ only and is never saved into your documents.</li>
 <li><code>restore</code>: Reopen last session’s files, in the same
 numbered order. Different from recovering unsaved work, which happens
 whether this is on or not.</li>
+<li><code>keep_untitled</code>: On: work you never saved is offered back
+whether or not the window had a file. Off: only documents with a file
+are offered, and the copies of untitled ones are deleted rather than
+kept – keeping something that is never offered would be a promise
+nothing can redeem. Identical copies are folded into one either way, and
+anything older than a month is dropped. QUILL has the same setting.</li>
 <li><code>blank</code>: On: a new Untitled document is waiting when the
 app opens, the way Notepad and WordPad do it. Off: the app opens with
 nothing, and Control N or Open makes the first document – which is what

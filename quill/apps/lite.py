@@ -42,12 +42,14 @@ from typing import Any
 import wx
 
 from quill.apps.lite_printing import PrintSettings
+from quill.apps.lite_recovery import LiteRecoveryMixin
 from quill.apps.lite_services import LiteServicesMixin
 from quill.apps.lite_session import LiteSessionMixin
 from quill.apps.lite_shell import QuillLiteShell
 from quill.apps.lite_updates import check_at_launch
 from quill.apps.lite_voice import ScreenReaderVoice
 from quill.apps.lite_window import DocumentFrame
+from quill.apps.lite_windows import LiteWindowsMixin
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite import features as features_mod
 from quill.core.lite import inbox as inbox_mod
@@ -77,7 +79,9 @@ OPTIONAL_COMPONENTS: tuple[str, ...] = ()
 _INBOX_POLL_MS = 500
 
 
-class QuillLiteApp(LiteSessionMixin, LiteServicesMixin, wx.App):
+class QuillLiteApp(
+    LiteWindowsMixin, LiteRecoveryMixin, LiteSessionMixin, LiteServicesMixin, wx.App
+):
     """The window registry, the settings owner, and the single-instance inbox."""
 
     def __init__(self, paths: list[Path], mode: str | None) -> None:
@@ -109,10 +113,6 @@ class QuillLiteApp(LiteSessionMixin, LiteServicesMixin, wx.App):
         #: divider made that count wrong (bad.md C7).
         self.collected_pieces = 0
         self.shutting_down = False
-        #: Documents are numbered in the order they were opened, and a number is
-        #: never reused inside one session: reusing it would mean "document 3"
-        #: silently became a different document while somebody was away from it.
-        self._next_number = 0
         super().__init__(redirect=False)
 
     def OnInit(self) -> bool:  # noqa: N802 - wx API shape
@@ -204,11 +204,6 @@ class QuillLiteApp(LiteSessionMixin, LiteServicesMixin, wx.App):
             not opened and self.settings.open_blank_document_at_startup
         ):
             self.new_window(self._initial_mode or self.settings.default_mode)
-        if recovered:
-            # The one thing the screen reader cannot deduce from the windows
-            # that appeared: that they are unsaved work, not files. (The count
-            # was said in the question that produced them.)
-            wx.CallAfter(self.voice.speak, "Recovered unsaved work from the last session")
         self._inbox_timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._poll_inbox, self._inbox_timer)
         self._inbox_timer.Start(_INBOX_POLL_MS)
@@ -219,9 +214,26 @@ class QuillLiteApp(LiteSessionMixin, LiteServicesMixin, wx.App):
         return True
 
     def next_document_number(self) -> int:
-        """The next document number, counting from 1 and never reused."""
-        self._next_number += 1
-        return self._next_number
+        """The lowest number no open document is using.
+
+        Numbers are a **handle**, not a history: Alt+1 to Alt+9 reach the first
+        nine of them, the Window menu is written in them, and every title leads
+        with one. A counter that only ever went up spent that handle -- open and
+        close a document ten times in a morning and the next one is "document 11",
+        with no Alt+digit and no short way back to it, while documents 1 to 10 are
+        numbers nothing can have. So a closed document's number goes back in the
+        pool and the next new document takes the lowest one free.
+
+        What does **not** happen is renumbering: an open document keeps the number
+        it was given for as long as it is open, because a number that changes while
+        somebody is away from that window is a number nobody can rely on. Only a
+        number nothing is using is ever handed out again.
+        """
+        taken = {int(getattr(frame, "number", 0) or 0) for frame in self.frames}
+        number = 1
+        while number in taken:
+            number += 1
+        return number
 
     def _remember_shell_size(self, event: wx.SizeEvent) -> None:
         """Keep the shell's geometry, which is what reopens next session.
@@ -237,49 +249,6 @@ class QuillLiteApp(LiteSessionMixin, LiteServicesMixin, wx.App):
                 self.settings.window_width = int(width)
                 self.settings.window_height = int(height)
         event.Skip()
-
-    def _restore_pending_work(self) -> bool:
-        """Offer last session's unsaved work back. ``True`` when any was taken.
-
-        It used to reopen every slot without asking and say one line afterwards
-        (bad.md F14, P2.12). Word's Document Recovery asks, and it asks for a
-        reason a listener feels hardest: after a crash, four windows appearing
-        unbidden is four things to identify before you can work, and the one
-        you actually wanted is not necessarily the first.
-
-        So: say how many there are and what they were, and let the answer be
-        no. Declining keeps the slots -- they are not deleted until the work is
-        restored or the user clears them -- so "not now" cannot lose anything.
-        """
-        slots = recovery_mod.pending()
-        if not slots:
-            return False
-        if not self._confirm_recovery(slots):
-            self.voice.speak("Unsaved work kept. It will be offered again next time.")
-            return False
-        for slot in slots:
-            self.new_window(slot.mode, recovery_slot=slot)
-        return True
-
-    def _confirm_recovery(self, slots: list[recovery_mod.RecoverySlot]) -> bool:
-        """Name what was found, then ask. ``True`` to restore it."""
-        names = [
-            Path(slot.original_path).name if slot.original_path else "an untitled document"
-            for slot in slots
-        ]
-        listed = "\n".join(f"  {name}" for name in names[:10])
-        if len(names) > 10:
-            listed += f"\n  and {len(names) - 10} more"
-        plural = "" if len(names) == 1 else "s"
-        subject = "it" if len(names) == 1 else "them"
-        answer = show_message_box(
-            f"QuillLite has unsaved work from {len(names)} document{plural}:"
-            f"\n\n{listed}\n\nOpen {subject} now? Choosing No keeps it for next time.",
-            APP_NAME,
-            wx.YES_NO | wx.ICON_QUESTION,
-            self.shell,
-        )
-        return answer == wx.YES
 
     def new_window(
         self,

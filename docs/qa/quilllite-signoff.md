@@ -2072,6 +2072,69 @@ one of the three from outside the app.
 
 ---
 
+## Block T -- The 2026-09-21 additions (5 min)
+
+The braille fix (#616/#813) is on by default, and it costs the control its
+answer for the caret's line whenever the caret sits on a final empty line. A
+window subclass supplies the right answer, and on 2026-09-21 that subclass
+stopped being able to end the process when the message chain under it faults.
+Both halves are invisible until you listen: one is a line number, the other is
+your document.
+
+Run this block with a screen reader speaking, and with **Braille selection
+support** left at its default (on). If it has been turned off, turn it back on
+and restart QuillLite -- the flag is set once, when the editor is built, so the
+setting does nothing until the editor is rebuilt.
+
+**L-247. The final empty line is blank**
+- Do: in a new document, type `This is a test.` then press **Enter**. Do not
+  type anything else.
+- Pass: your reader says the new line is **blank** (JAWS "blank", NVDA "blank").
+- Fail if it repeats `This is a test.` -- that is the control answering line 0
+  for a caret that is on line 1, and it happens on every empty line at the end
+  of every document.
+- [ ] pass  [ ] fail: ______
+
+**L-248. The reader agrees about which line you are on**
+- Do: with the caret still on that empty line, ask your reader to say the
+  current line (JAWS **Insert+Up**, NVDA **NVDA+Up**), then press **F6** and
+  read **Position**.
+- Pass: both say line **2**. The point is agreement: the status bar is wx
+  counting, the reader is asking the window, and until the subclass existed
+  those two disagreed.
+- [ ] pass  [ ] fail: ______
+
+**L-249. An empty line in the middle is unaffected**
+- Do: type `alpha`, **Enter**, **Enter**, `beta`. Arrow up to the blank line
+  between them.
+- Pass: **blank**, on line 2. Interior blank lines were always answered
+  correctly; this check is here so a regression in the correction cannot hide
+  behind the one case it was written for.
+- [ ] pass  [ ] fail: ______
+
+**L-250. Opening and closing many documents does not end the app**
+- Do: open and close ten documents in a row -- **Ctrl+O**, **Ctrl+W**, ten
+  times -- typing a character into each before you close it. Then repeat
+  L-247.
+- Pass: QuillLite is still running, nothing was lost, and the final empty line
+  is still blank. Each editor installs a subclass and each close takes one off;
+  a mistake in that pairing does not misreport anything, it ends the process
+  with whatever was unsaved in it.
+- Fail loudly if the app disappears. Keep the crash report, and say how many
+  documents in it happened.
+- [ ] pass  [ ] fail: ______
+
+**L-251. If the correction ever gives up, it gives up quietly**
+- Do: nothing to trigger this -- read it so you recognise it. Should the
+  message chain fault, QuillLite detaches from that one control and logs a
+  warning naming the message number, rather than going down.
+- Pass: the symptom to report is **one** editor that has started repeating the
+  last line on its final empty line while the rest of the app behaves. That is
+  the fallback working, and it is still a bug worth a report, with the log.
+- [ ] pass  [ ] fail: ______
+
+---
+
 ## Sign-off
 
 | | |

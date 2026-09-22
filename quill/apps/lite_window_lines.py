@@ -218,7 +218,7 @@ class DocumentLineMixin:
 
     def _restore_deleted(self, restored: str) -> None:
         at = self.control.GetInsertionPoint()
-        self.control.Replace(at, at, restored)
+        replace_as_one_undo(self.control, at, at, restored)
         self.control.SetInsertionPoint(at + len(restored))
         self._set_modified(True)
         self._touch_status()
@@ -263,7 +263,7 @@ class DocumentLineMixin:
         count = sum(
             1 for pair in zip(before_lines, after_lines, strict=False) if pair[0] != pair[1]
         )
-        self.control.Replace(0, self.control.GetLastPosition(), updated)
+        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), updated)
         self.control.SetSelection(span_start, span_end)
         self._set_modified(True)
         self._touch_status()

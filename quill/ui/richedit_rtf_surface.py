@@ -47,6 +47,7 @@ from quill.core.heading_ladder import (
     HEADING_POINT_SIZES,
     heading_level_for_font,
 )
+from quill.io.rtf_heading_promotion import promote_heading_styles_in_file
 
 SURFACE_KIND = "richedit_rtf"
 
@@ -295,6 +296,7 @@ class QuillRichEdit:
             itd.Save(str(path), _TOM_CREATE_ALWAYS | _TOM_RTF, 0)
         except Exception as exc:  # noqa: BLE001
             raise RichEditRtfError(f"Could not save RTF file: {exc}") from exc
+        promote_heading_styles_in_file(str(path))
 
     def get_rtf(self) -> bytes:
         """Return the document as RTF bytes (TOM Save to a temp file)."""

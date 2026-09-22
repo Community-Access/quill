@@ -842,7 +842,8 @@ have selected — and only on those, never on the rest of the file.
 | **Ctrl+Shift+L** | Lists: bulleted, numbered, none, round again |
 | **Ctrl+1**, **Ctrl+5**, **Ctrl+2** | Single, one-and-a-half, double spacing |
 | **Ctrl+Alt+1** to **Ctrl+Alt+6** | Heading 1 to 6 |
-| **Ctrl+Alt+0** | Back to ordinary text |
+| **Ctrl+Alt+0** | Back to ordinary text (removes the heading) |
+| **Ctrl+Shift+N** | Normal Text: take *all* formatting off |
 | **Ctrl+Shift+D** | Describe the formatting where the cursor is |
 
 They are gathered in **Format ▸ Headings**, where the digit in the menu is the
@@ -855,6 +856,19 @@ headings when somebody opens it in Word. Every level has a size of its own on
 purpose: levels 5 and 6 used to share the 11-point body size, which meant
 QuillLite could apply them and then could not find them again — heading
 navigation and the headings list both walked straight past them.
+
+**Ctrl+Shift+N** is Normal Text, and it is the way back. Every other command
+in this menu is a toggle or a setting, so each one needs you to already know
+what is applied: turning bold off means knowing bold is on, and a twenty-point
+run means walking the size back down a step at a time. Normal Text does not
+ask. It takes off bold, italic, underline and strikethrough, puts the size back
+to ordinary body text, clears the colour and the highlight, returns the
+paragraph to left aligned and single spaced, and takes it out of any list --
+all in one press, and one **Ctrl+Z** puts it all back. It leaves the *typeface*
+alone, because the face a document is written in is part of the document;
+**Format ▸ Editor Font** is where that is chosen. It is Word's key for the same
+idea. In a Markdown or HTML document the same key takes the heading marks off
+the line instead, which is what "normal" means to a line written in markup.
 
 **Ctrl+Shift+D** is the one worth remembering. It tells you what you are
 standing in — "Arial, 16 point, heading 2, bold" — which is the question a
@@ -1597,6 +1611,36 @@ Weather, Audio Studio, Inkwell, the Converter, the Media Player and Beacon.
 
 ---
 
+## Closing a lot of windows at once
+
+**Window > Close Other Documents (Ctrl+Shift+F4)** keeps the document you are in
+and closes every other one. QUILL has had it since 2026-06; QuillLite has it now
+too, on the same key, because a key you learn in one editor should work in the
+other.
+
+If any of those documents has unsaved changes, you are asked about it -- and the
+question carries two answers that settle the rest at once:
+
+- **Save All** saves this document and every other one waiting behind it,
+  without asking again. A document that has never been saved still asks you
+  where to put it.
+- **Don't Save Any** closes the rest and loses their changes, without asking
+  again. There is no undo for that one.
+- **Save** and **Don't Save** apply to the document in front of you only, and
+  you are asked about the next one.
+- **Cancel** stops the whole thing. Whatever is still open stays open, and you
+  are told how many closed before you stopped it.
+
+The question says how many more documents are waiting, so you know at the first
+prompt whether this is one more keystroke or sixty-seven.
+
+**Enter answers Save**, never one of the two that lose work. If a save fails --
+a full disk, a file that has gone read-only -- the close stops there rather than
+treating a failed save as permission to throw the document away, and "Save All"
+stops meaning "save all" until you say so again.
+
+---
+
 ## Changing what a key does
 
 **Tools ▸ Keyboard Manager** (**Ctrl+Alt+Shift+R**) is where every key in
@@ -2104,13 +2148,15 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+N** | New |
-| **Ctrl+Shift+N** | New Rich Text Document |
+| **Alt+Shift+T** | New Rich Text Document |
 | **Ctrl+Alt+N** | New Plain Text Document |
 | **Ctrl+O** | Open... |
 | **Ctrl+S** | Save |
 | **Ctrl+Shift+S** | Save As... |
 | **Ctrl+Alt+Shift+E** | Earlier Versions... |
+| **Alt+Shift+F12** | Reopen Last Session... |
 | **Ctrl+Alt+P** | Page Setup... |
+| **Ctrl+Alt+Shift+P** | Print Preview... |
 | **Ctrl+P** | Print... |
 | **Ctrl+W** | Close Window |
 | **Ctrl+F4** | Close Window (MDI) |
@@ -2164,12 +2210,12 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+K** | Remove Every Blank Line |
 | **Ctrl+Alt+D** | Remove Duplicate Lines |
 | **Ctrl+Alt+T** | Trim Trailing Spaces |
-| **Ctrl+Alt+Shift+T** | Tidy Whitespace |
 | **Ctrl+/** | Toggle Line Comment |
 | **Ctrl+Shift+Q** | Quote Lines |
 | **Ctrl+Alt+Shift+Q** | Remove Quote Marks |
 | **Alt+Shift+X** | Delete Lines Containing... |
 | **Alt+Shift+W** | Hard Wrap Lines... |
+| **Ctrl+Alt+Shift+T** | Tidy Whitespace |
 
 ### Edit ▸ Selection
 
@@ -2179,7 +2225,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Shift+F8** | Complete Selection |
 | **Ctrl+Shift+F8** | Reselect Last Selection |
 | **Alt+Shift+F8** | Go to Start of Selection |
-| **Ctrl+Alt+F8** | Extend Selection Mode |
+| **Ctrl+Alt+F8** | Toggle Selection Marker |
+| **Alt+Shift+F9** | Extend Selection Mode |
 | **Ctrl+Shift+W** | Select Word |
 | **Ctrl+Shift+E** | Select Line |
 | **Ctrl+Shift+H** | Select Paragraph |
@@ -2193,8 +2240,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+M** | List Marks |
 | **Ctrl+Alt+X** | Exchange Cursor and Mark |
 | **Ctrl+Shift+Y** | Say Selection |
-| **Ctrl+Alt+Q** | Duplicate Selection |
 | **Alt+Shift+U** | Review Buffer... |
+| **Ctrl+Alt+Q** | Duplicate Selection |
 
 ### Edit ▸ Clipboard
 
@@ -2256,6 +2303,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+L** | Lists |
 | **Ctrl+Alt+F** | Editor Font... |
 | **Ctrl+Shift+F** | Font for Selection... |
+| **Ctrl+Shift+N** | Normal Text |
 | **Ctrl+Shift+D** | Describe Formatting at Cursor |
 | **Alt+Shift+F** | Switch Document Mode |
 | **Ctrl+Alt+F6** | Document Language... |
@@ -2288,6 +2336,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+Right** | Demote Heading |
 | **Alt+Shift+Up** | Move Section Up |
 | **Alt+Shift+Down** | Move Section Down |
+| **Alt+Shift+O** | Heading Organizer... |
 
 ### Navigate
 
@@ -2298,6 +2347,10 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+H** | Next Heading |
 | **Ctrl+Alt+Shift+H** | Previous Heading |
 | **Ctrl+Alt+L** | List Headings... |
+| **Ctrl+Shift+F9** | Fold or Unfold Section |
+| **Ctrl+Alt+Shift+Down** | Next Section |
+| **Ctrl+Alt+Shift+Up** | Previous Section |
+| **Ctrl+Shift+F10** | Unfold Everything |
 | **F6** | Status Bar |
 | **Ctrl+Alt+Shift+A** | Go To Anything... |
 
@@ -2327,6 +2380,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
+| **Alt+Shift+I** | Snippets... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
 | **Alt+Shift+A** | Expand Abbreviations |
 | **Ctrl+,** | Preferences... |
@@ -2340,8 +2394,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **F7** | Check Spelling... |
-| **Alt+Shift+L** | List Misspellings... |
 | **Alt+Shift+F7** | Spelling for This Word |
+| **Alt+Shift+L** | List Misspellings... |
 | **Ctrl+F7** | Next Misspelling |
 | **Ctrl+Shift+F7** | Previous Misspelling |
 | **Ctrl+Alt+F9** | Add Word to Dictionary |
@@ -2382,12 +2436,14 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Tab** | Next Window |
 | **Ctrl+F6** | Next Window (MDI) |
 | **Ctrl+Shift+Tab** | Previous Window |
+| **Ctrl+Shift+F4** | Close Other Documents |
 
 ### Help
 
 | Key | Command |
 |---|---|
 | **F1** | Help for This Window |
+| **Ctrl+Alt+F1** | Tutorials... |
 | **Ctrl+F1** | Keyboard Shortcuts |
 | **Ctrl+Alt+F2** | Get Help from Support... |
 | **Ctrl+Alt+U** | Check for Updates... |
@@ -2400,11 +2456,10 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+1** to **Alt+9** | Go to that numbered document |
 | **Alt+Shift+1** to **Alt+Shift+9** | Reopen that recent file |
 
-Two of these read differently on a keyboard than in a table. Bigger and smaller
-text are the keys your fingers think of as **Ctrl+Shift+>** and
-**Ctrl+Shift+<** -- and they are those keys -- but they are written above as
-`Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and the
-spelling wx understands.
+Two of these read differently on a keyboard than in a table: **Ctrl+Shift+>**
+and **Ctrl+Shift+<** are the keys your fingers know, and they are listed above
+as `Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and
+the spelling wx understands.
 
 <!-- keys:end -->
 

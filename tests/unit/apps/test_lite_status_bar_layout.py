@@ -14,13 +14,8 @@ from __future__ import annotations
 import pytest
 import wx
 
-from quill.apps.lite_window_status import (
-    _MESSAGE,
-    _MESSAGE_LABEL_CHARS,
-    CELLS,
-    DocumentStatusMixin,
-    _clip_message,
-)
+from quill.apps.lite_status_cells import _MESSAGE, _MESSAGE_LABEL_CHARS, CELLS, _clip_message
+from quill.apps.lite_window_status import DocumentStatusMixin
 from quill.core.document_text import DocumentText
 
 
@@ -139,6 +134,60 @@ def test_a_narrow_window_makes_the_bar_taller_instead(bar: _Bar, wx_app) -> None
     short = bar.status_panel.GetSize().height
 
     assert short > tall, "a narrow window should wrap the row, not squeeze a cell"
+
+
+# ---------------------------------------------------------------------------
+# the row holds still
+
+
+def _cell_geometry(frame: _Bar) -> dict[str, tuple[int, int]]:
+    return {
+        key: (button.GetPosition().x, button.GetSize().width)
+        for key, button in frame._status_buttons.items()
+    }
+
+
+def _cells_that_moved(frame: _Bar, before: dict[str, tuple[int, int]]) -> list[str]:
+    after = _cell_geometry(frame)
+    return sorted(key for key in before if before[key] != after[key])
+
+
+def _select(frame: _Bar, wx_app, start: int, end: int) -> None:
+    frame.control.SetInsertionPoint(start)
+    frame.control.SetSelection(start, end)
+    frame.doc_text.invalidate()
+    frame.fill_cells()
+    wx_app.Yield()
+
+
+def test_a_cell_never_gives_width_back(bar: _Bar, wx_app) -> None:
+    """Selecting and deselecting must not move the row twice.
+
+    Reported from JAWS, which read the bar as "Line 1, colu Line 1, c ... No
+    selectio ... B ody text" on a *maximised* window. Nothing was clipped --
+    Insert+Page Down reads the bottom line off the screen, and the cells were
+    moving under it: "No selection" to "1 words, 8 characters selected" is
+    ninety pixels, and it shoved the nine cells after it sideways every time.
+    """
+    bar.fill_cells()
+    wx_app.Yield()
+    _select(bar, wx_app, 2, 20)  # the first wide selection settles the width
+    settled = _cell_geometry(bar)
+
+    _select(bar, wx_app, 0, 0)  # back to "No selection"
+    assert _cells_that_moved(bar, settled) == []
+
+    _select(bar, wx_app, 2, 20)  # and out again
+    assert _cells_that_moved(bar, settled) == []
+
+
+def test_a_cell_still_grows_for_text_that_needs_it(bar: _Bar, wx_app) -> None:
+    """The ratchet may never turn into clipping: growing is still allowed."""
+    bar.fill_cells()
+    wx_app.Yield()
+    _select(bar, wx_app, 0, 4)
+    _select(bar, wx_app, 0, 51)
+    assert _widest_overflow(bar) <= 0
 
 
 def test_reflow_is_idempotent(bar: _Bar) -> None:

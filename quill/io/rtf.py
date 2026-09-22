@@ -270,11 +270,18 @@ def markdown_to_rtf(markdown: str) -> str:
             )
             continue
         body.append(f"\\pard{prefix} {_inline_to_rtf(line, tables)}\\par")
+    # A size in the preamble, before the first paragraph: it is what every
+    # paragraph that never names one is written at. Without it that size was
+    # the *reader's* default, which RTF puts at twelve points -- and twelve
+    # points is Heading 4 on the editor's ladder, so body text in every file
+    # QUILL wrote was indistinguishable from a heading as soon as somebody
+    # bolded it.
     header = (
         "{\\rtf1\\ansi\\deff0"
         + tables.font_table()
         + tables.color_table()
         + heading_stylesheet()
+        + f"\\fs{DEFAULT_HALF_POINTS}"
         + "\n"
     )
     return header + "\n".join(body) + "\n}"

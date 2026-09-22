@@ -82,6 +82,29 @@ SEARCH_MODES: tuple[tuple[str, str, str], ...] = (
 )
 
 
+def make_default(button: wx.Button) -> None:
+    """Make *button* the one Enter presses, which is not what an id does.
+
+    Reported: "I moved to the top, typed frog and pressed Enter, nothing
+    happened. I had to Tab to the Next button." Nothing happened because
+    nothing was listening. ``SetAffirmativeId(wx.ID_OK)`` says which id means
+    yes *when a modal dialog closes*; the Enter key presses the **default
+    item**, which is a different thing and is only ever set by
+    ``wxButton::SetDefault``. Find is modeless and never closes on yes, so the
+    affirmative id did nothing at all here and the dialog went out with no
+    default item: ``GetDefaultItem()`` was ``None``, and Enter fell through the
+    text field into a dialog with nothing to press.
+
+    Every Find and Replace box in Windows -- Notepad's, WordPad's, Word's, and
+    the Win32 common dialog all three are modelled on -- answers Enter with
+    Find Next. It is the one keystroke of that dialog anybody learns.
+    """
+    try:
+        button.SetDefault()
+    except (AttributeError, RuntimeError):  # a stub, or a window mid-teardown
+        return
+
+
 def _add_mode_choice(dialog: wx.Dialog, sizer: wx.Sizer) -> wx.Choice:
     """A labelled Search-mode chooser, built the same way in both dialogs.
 
@@ -173,6 +196,7 @@ class FindDialog(wx.Dialog):
             cancel_id=wx.ID_CANCEL,
             cancel_label="Close",
         )
+        make_default(self.next_btn)
         self.next_btn.Bind(wx.EVT_BUTTON, lambda _event: self._find(False))
         self.prev_btn.Bind(wx.EVT_BUTTON, lambda _event: self._find(True))
         bind_close_button(self, close_btn, modeless=True)
@@ -188,8 +212,13 @@ class FindDialog(wx.Dialog):
 
     def _on_key(self, event: wx.KeyEvent) -> None:
         key = event.GetKeyCode()
-        if key == wx.WXK_RETURN and event.ShiftDown():
-            self._find(True)
+        if key == wx.WXK_RETURN:
+            # Handled here as well as by the default button, deliberately.
+            # Whether a plain Enter inside a text field reaches the default
+            # item is a platform detail -- it depends on the control's style
+            # flags and on the dialog being modal -- and this box is modeless.
+            # The key that everybody presses is not a thing to leave to luck.
+            self._find(event.ShiftDown())
             return
         if key == wx.WXK_ESCAPE:
             self.Close()
@@ -292,13 +321,35 @@ class ReplaceDialog(wx.Dialog):
             cancel_id=wx.ID_CANCEL,
             cancel_label="Close",
         )
+        self._on_find = on_find
+        make_default(find_btn)
         find_btn.Bind(wx.EVT_BUTTON, lambda _event: on_find(self.options(), False))
         replace_btn.Bind(wx.EVT_BUTTON, lambda _event: on_replace(self.options()))
         all_btn.Bind(wx.EVT_BUTTON, lambda _event: on_replace_all(self.options()))
         bind_close_button(self, close_btn, modeless=True)
         self.Bind(wx.EVT_CLOSE, lambda _event: self.Destroy())
+        for field in (self.text, self.replacement):
+            field.Bind(wx.EVT_KEY_DOWN, self._on_key)
         self.text.SetFocus()
         self.text.SelectAll()
+
+    def _on_key(self, event: wx.KeyEvent) -> None:
+        """Enter finds the next one here too, from either field.
+
+        Replace had no key handler at all, so Enter did nothing in it for the
+        same reason it did nothing in Find -- see :func:`make_default`. Enter
+        is **Find next** rather than Replace, which is the Win32 Replace
+        dialog's own answer and the safe one either way: the keystroke somebody
+        presses by reflex should move the cursor, never edit the document.
+        """
+        key = event.GetKeyCode()
+        if key == wx.WXK_RETURN:
+            self._on_find(self.options(), event.ShiftDown())
+            return
+        if key == wx.WXK_ESCAPE:
+            self.Close()
+            return
+        event.Skip()
 
     def options(self) -> dict[str, Any]:
         return {

@@ -39,6 +39,7 @@ from quill.core.list_style import LIST_STYLES, cycle_list_style
 from quill.core.lite.filetypes import language_label
 from quill.core.lite.keymap import spoken_key_for
 from quill.core.markdown_sections import MoveResult, move_section
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import (
     LINE_SPACING_DOUBLE,
     LINE_SPACING_ONE_AND_A_HALF,
@@ -125,6 +126,51 @@ class DocumentFormatCommandsMixin:
         self._set_modified(True)
         self._announce(f"{label} on" if state else f"{label} off")
 
+    def cmd_normal_text(self) -> None:
+        """Word's Ctrl+Shift+N: take everything off this text and leave it plain.
+
+        Asked for directly, while testing rich text: "we also need a normal text
+        command ... something like Word's Ctrl+Shift+N to set text to normal
+        mode in an RTF document."
+
+        Every other formatting command is a toggle or a set, which means each
+        one needs you to already know what is applied. Bold off needs bold to be
+        on; a twenty-point run needs the size ladder walked back down; a colour,
+        a highlight or a list had no "none" at all. Somebody who cannot glance
+        at the page to see what is still on it was left with no way to be sure,
+        and "no way to be sure what this text looks like" is the whole problem
+        this editor exists to solve. One key that means "whatever is on this,
+        take it off" is the answer, and it is Word's key for it.
+
+        Spoken, because nothing else will say it. Formatting coming *off* is
+        invisible and silent: the text does not move, the caret does not move,
+        no control gains or loses focus, and a screen reader reports none of it.
+        The one thing GATE-13 asks is that the app says what only the app
+        knows, and this is exactly that.
+
+        In a Markdown or HTML document the same key removes the heading marks,
+        because that is what "normal" means to a line that is written in
+        markup -- the emphasis around a word is text the user typed, and a
+        command that silently deleted their asterisks would be doing something
+        they did not ask for.
+        """
+        if self.apply_markup_heading(0):
+            self._announce("Normal text")
+            self.sync_structure_announcer()
+            return
+        if not self._require_rich():
+            return
+        try:
+            self.editor.clear_formatting()
+        except RichEditRtfError as exc:
+            self._announce(str(exc))
+            return
+        self._set_modified(True)
+        self._announce("Normal text")
+        # Said already; latch it so the caret hook does not repeat it a moment
+        # later now that the paragraph is no longer a heading.
+        self.sync_structure_announcer()
+
     def cmd_bold(self) -> None:
         self._toggle_attr("Bold", "Bold")
 
@@ -209,7 +255,7 @@ class DocumentFormatCommandsMixin:
             self._announce("Already Heading 6")
             return
         caret = self.control.GetInsertionPoint()
-        self.control.Replace(change.start, change.end, change.replacement)
+        replace_as_one_undo(self.control, change.start, change.end, change.replacement)
         # Hold the caret's place in the line rather than in the document: the
         # line just grew or shrank by one hash in front of it.
         moved = len(change.replacement) - (change.end - change.start)
@@ -260,7 +306,7 @@ class DocumentFormatCommandsMixin:
         if result is not MoveResult.OK:
             self._announce(announce)
             return
-        self.control.Replace(0, self.control.GetLastPosition(), new_text)
+        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), new_text)
         self.control.SetInsertionPoint(min(new_caret, self.control.GetLastPosition()))
         self.control.ShowPosition(self.control.GetInsertionPoint())
         self._set_modified(True)
@@ -364,7 +410,7 @@ class DocumentFormatCommandsMixin:
         text = self.control.GetValue()
         start, end = self.control.GetSelection()
         updated, style, span_start, span_end = cycle_list_style(text, start, end)
-        self.control.Replace(0, self.control.GetLastPosition(), updated)
+        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), updated)
         self.control.SetSelection(span_start, span_end)
         self._set_modified(True)
         self._touch_status()

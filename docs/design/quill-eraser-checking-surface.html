@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>one key, one list — Quill Eraser as the whole checking
+surface</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="one-key-one-list--quill-eraser-as-the-whole-checking-surface">one
+key, one list — Quill Eraser as the whole checking surface</h1>
+<p><strong>Status:</strong> proposal / scoping. Nothing here is built.
+<strong>Started:</strong> 2026-09-22. Revised the same day after two
+corrections.</p>
+<p><strong>The ask, in three parts, in the order they
+arrived:</strong></p>
+<ol type="1">
+<li>“It would be cool if we had something like JAWS’s Text Analyzer for
+markdown and HTML.”</li>
+<li>“Treat this similar to spell checking — move to next and previous
+error, get a listing of errors, move through errors like
+spell-check-type scenarios.”</li>
+<li>“We should merge all of this into Eraser.” · “Can we extend this for
+grammar checking, or is that too far of a reach — and is there not a way
+to do this that is <em>magical</em>?”</li>
+</ol>
+<hr />
+<h2 id="0-two-corrections-to-the-first-draft-of-this-document">0. Two
+corrections to the first draft of this document</h2>
+<p><strong>Correction one: GLOW already does a third of it.</strong> The
+first draft of this plan proposed building a markdown and HTML
+accessibility rule engine from scratch. It already exists.
+<code>quill/core/glow.py</code> is 810 lines with thirteen live rules —
+<code>GLOW-MD-HEADING-JUMP</code>, <code>GLOW-MD-IMAGE-ALT</code>,
+<code>GLOW-MD-LINK-TEXT</code>, <code>GLOW-MD-HEADING-SPACING</code>,
+<code>GLOW-HTML-HEADING-JUMP</code>, <code>GLOW-HTML-IMG-ALT</code>,
+<code>GLOW-HTML-LINK-TEXT</code>, <code>GLOW-HTML-LANG</code>,
+<code>GLOW-HTML-TABLE-HEADERS</code>, <code>GLOW-PLAIN-LANGUAGE</code>,
+<code>GLOW-DENSE-PARAGRAPH</code>, <code>GLOW-TAB-INDENT</code> — with a
+<code>GlowFinding</code> that already carries <code>severity</code>
+<em>and</em> <code>fixable</code>, a deterministic
+<code>fix_text</code>, a non-destructive file-level audit/fix path for
+DOCX, PPTX, XLSX, PDF and EPUB through an external engine seam, and six
+commands wired into the Tools menu behind the <code>core.glow</code>
+experimental flag.</p>
+<p>What GLOW does <strong>not</strong> have is the thing the ask is
+actually about: its output is a <strong>report written into a scratch
+tab</strong>. There is no next, no previous, no “issue 3 of 17”, no
+per-finding fix, no ignore, no undo. You read a list of line numbers and
+then go find them yourself. That is the entire gap, and it is an
+interaction gap, not a detection gap.</p>
+<p><strong>Correction two: the merge decision is made.</strong> The
+first draft left “merge with Quill Eraser or sit beside it?” open and
+leaned toward a sibling engine. Jeff’s answer: merge all of it into
+Eraser. That is the right call and it makes the rest of this document
+much simpler — and, as §7 argues, the merge <em>is</em> the magic. The
+consequence is larger than it sounds: <strong>Quill Eraser becomes the
+single checking surface in QUILL</strong>, and spelling, hygiene, GLOW’s
+accessibility rules, markup structure and grammar all become families of
+findings inside one list.</p>
+<h2 id="1-the-thesis">1. The thesis</h2>
+<p>Right now, a QUILL user who wants to know what is wrong with their
+document has to choose an engine before they get an answer:</p>
+<table>
+<thead>
+<tr>
+<th>To find</th>
+<th>You press</th>
+<th>And you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Misspellings</td>
+<td><code>F7</code></td>
+<td>A guided review session — next, previous, change, change all,
+ignore, undo</td>
+</tr>
+<tr>
+<td>Extra spaces, punctuation spacing, blank-line runs</td>
+<td>Tools ▸ Quill Eraser (no chord)</td>
+<td>A findings list dialog — apply fix, ignore, go to, rescan</td>
+</tr>
+<tr>
+<td>Missing alt text, heading jumps, generic link text</td>
+<td>Tools ▸ GLOW Audit Document</td>
+<td>A report in a scratch tab. Line numbers. Go find them yourself.</td>
+</tr>
+<tr>
+<td>Grammar, clarity, style</td>
+<td>Tools ▸ AI Grammar &amp; Style (no chord)</td>
+<td>A separate AI dialog, a separate result shape</td>
+</tr>
+<tr>
+<td>Suspect spellings the dictionary missed</td>
+<td>Tools ▸ AI Spell Check (no chord)</td>
+<td>A third AI dialog</td>
+</tr>
+</tbody>
+</table>
+<p>Five entry points, four result shapes, and a decision the user has to
+make before they have any information to make it with. Nobody opens a
+document thinking “I would like an accessibility audit specifically.”
+They think <em>is this any good yet.</em></p>
+<p><strong>The proposal is one key, one list, every engine.</strong> You
+press one key. You get one ordered list of everything wrong with the
+document — a misspelling, a double space, a heading that skips a level,
+an image with no alt text, a their/there, a passive sentence — in
+document order, each with a plain sentence saying what it is and why it
+matters, each with fixes you can apply, ignore, or turn off forever. You
+work it to zero. You never learn which engine found which item, because
+that is QUILL’s problem and not yours.</p>
+<p>That is the whole design. Everything below is in service of it.</p>
+<h2 id="2-prior-art-what-to-take-what-to-leave">2. Prior art: what to
+take, what to leave</h2>
+<h3 id="21-jaws-text-analyzer--the-origin-of-the-idea">2.1 JAWS Text
+Analyzer — the origin of the idea</h3>
+<p>Text Analyzer flags <em>inconsistencies</em> as you read: runs of
+extra spaces, mismatched or unclosed punctuation, font and attribute
+changes mid-word, capitalisation oddities, highlighted text. You choose
+how it tells you — a sound, a spoken message, both, or nothing — and a
+keystroke describes the error at the cursor once you have heard the
+cue.</p>
+<p>Three things matter for us:</p>
+<ol type="1">
+<li><strong>Its vocabulary is typographic, not structural.</strong> It
+has to be: JAWS reads a rendered surface through an accessibility API,
+so “unclosed bracket” is reachable and “this heading skips a level in
+the source” is not. QUILL holds the source and can do strictly
+better.</li>
+<li><strong>Its delivery is ambient.</strong> Excellent for proofreading
+something somebody sent you; poor for auditing something you are
+writing, where you want a list, a count, and a path to zero. Hence the
+user’s own redirection to the spell-check model.</li>
+<li><strong>It knows nothing about the file.</strong> It cannot tell a
+fenced code block from prose, so in a markdown file half of what it says
+is noise — the same false-positive problem
+<code>spellcheck_live.py</code> already solves for the live spelling
+alert.</li>
+</ol>
+<p>So: take the idea (<em>the editor owes you the defects you cannot
+see</em>), take the delivery choices (sound / speech / both / silent,
+which <code>action_feedback.py</code> already models exactly), and keep
+the review session as the primary interaction. The ambient tier survives
+as phase 4, off by default.</p>
+<h3 id="22-vs-code--the-closest-thing-to-a-model-for-us">2.2 VS Code —
+the closest thing to a model for us</h3>
+<p>VS Code’s diagnostics model is the right abstraction and its
+accessibility work is the right delivery. Worth copying, in order of
+value:</p>
+<ul>
+<li><strong>The diagnostic shape itself</strong> (from the
+language-server <code>publishDiagnostics</code> contract): a range, a
+severity, a source, a machine-readable <code>code</code> with a help
+URI, a human message, and optional <em>related information</em> pointing
+at a second location. That last field is why
+<code>Finding.related</code> exists in §4.1 — “this link text is used
+twice for different targets” and “this anchor matches no heading” are
+both two-place findings and all three of QUILL’s current finding types
+are structurally incapable of expressing them.</li>
+<li><strong>Code actions as a concept separate from the
+diagnostic.</strong> One diagnostic can offer several fixes, and some
+need input. This is why <code>Finding.fixes</code> is a tuple and not a
+<code>suggested_text: str | None</code> — “image has no alt text” has at
+least three answers (draft it with vision, write it myself, mark it
+decorative) and a single replacement string cannot hold that.</li>
+<li><strong>Go to Next / Previous Problem in File</strong> (F8 and
+Shift+F8 there) with the diagnostic <em>spoken on arrival</em>, no panel
+required. This is precisely the interaction the ask names, and §8’s
+traversal chords are the same thing.</li>
+<li><strong>Accessibility signals</strong>
+(<code>accessibility.signals.*</code>): per-event, independently
+configurable sound <em>and</em> announcement, including an “error on
+line” cue as the caret moves. This is the phase-4 ambient tier done
+properly, and it maps one-to-one onto
+<code>action_feedback.resolve</code> — which means QUILL already has the
+setting vocabulary for it and must not invent a second enum.</li>
+<li><strong>The Accessible View</strong> (Alt+F2): take what would
+otherwise be a hover or a squiggle and put it in a plain readable buffer
+you can arrow through. QUILL’s equivalent already exists in spirit — it
+is what the spelling review’s Detail box is, and §4.2 keeps it.</li>
+<li><strong>The Problems panel</strong> as a filterable, sortable,
+<em>navigable</em> list separate from the editor. Eraser’s
+<code>wx.ListCtrl</code> is already this and needs only a Severity
+column and a family filter.</li>
+</ul>
+<p>What <strong>not</strong> to copy: squiggles as the primary signal,
+hover-dependent detail, and the badge that says “47 problems” while
+offering no path through them.</p>
+<h3 id="23-jetbrains-ides">2.3 JetBrains IDEs</h3>
+<ul>
+<li><strong>Inspection profiles</strong> — named bundles of rules with
+per-rule severity, switchable per project. Strictly better than Eraser’s
+current flat <code>hygiene_rules_disabled</code> CSV string, and it is
+the same shape <code>markdown_profiles.py</code> already uses for
+extensions, so the house pattern exists. Proposed starting set:
+<strong>Everyday writing</strong> (structure, inline, prose, spelling;
+media and ARIA off), <strong>Publishing</strong> (adds links, media,
+tables — the default when the document has a publishing target
+configured), <strong>Accessibility review</strong> (every WCAG-mapped
+rule at every severity, nothing suppressed — the one you run before you
+ship), <strong>Documentation</strong> (adds anchor validity,
+fenced-code-language, duplicate headings, plain language), and
+<strong>Strict</strong>.</li>
+<li><strong>Alt+Enter at the caret</strong> — one key offering every
+available fix for whatever is under the cursor, with no dialog at all.
+This is the single best keyboard affordance in any editor for this job
+and QUILL has nothing like it. It is §7.6, and the chord is confirmed
+free.</li>
+<li><strong>A batch “Inspect Code” producing a tree you work
+down</strong>, distinct from the in-editor experience. Two entry points,
+one rule engine — which is exactly the phase-1/phase-5 split in
+§10.</li>
+</ul>
+<h3
+id="24-microsoft-word--the-accessibility-checker-and-the-editor-pane">2.4
+Microsoft Word — the accessibility checker and the Editor pane</h3>
+<p>Word is the mainstream product closest to this feature’s <em>subject
+matter</em>, and its lessons run both ways.</p>
+<ul>
+<li><strong>Take:</strong> “Keep accessibility checker running while I
+work” — a background scan with a status readout rather than a modal
+event. And the Inspection Results pane’s grouping into Errors / Warnings
+/ Tips with a <strong>“Why Fix”</strong> and <strong>“How To
+Fix”</strong> explanation on every single finding. The why-sentence is
+non-negotiable and it is why <code>Finding.why</code> is a mandatory
+field with a gate behind it (§9.1): <em>a rule with no rationale is a
+rule that gets switched off and never switched back on.</em></li>
+<li><strong>Leave:</strong> the pane is a tree you must mouse or tab
+into, the fix is usually in a context menu buried on the item, and a
+status-bar line is the only ambient signal. We beat all three with a
+review session and a chord.</li>
+<li><strong>The real lesson is Word’s own inconsistency.</strong> Its
+<em>Editor</em> pane — spelling, grammar, style and clarity in one
+reviewable stream with a per-issue card — is already the interaction
+this plan proposes, and Microsoft shipped it <em>beside</em> a separate
+Accessibility Checker with a separate pane, separate vocabulary and
+separate verbs. Same document, same user, same question, two products.
+That split is precisely what §1 refuses to reproduce, and Word is the
+proof that it happens by default unless someone decides otherwise.</li>
+</ul>
+<h3 id="25-the-lint-ecosystems--where-the-rules-come-from">2.5 The lint
+ecosystems — where the rules come from</h3>
+<p>We do not have to invent the catalogue. Four bodies of prior art, all
+with published, stable rule IDs:</p>
+<ul>
+<li><strong>markdownlint</strong> (<code>MD001</code> onwards) — heading
+increment, first-line heading, multiple top-level headings,
+no-duplicate-heading, ol-prefix, ul-style, list-indent,
+blanks-around-lists, no-bare-urls, fenced-code-language,
+table-column-count, no-empty-links, link-fragments, no-alt-text,
+no-emphasis-as-heading, no-trailing-spaces. Roughly two dozen of its
+rules are about things a screen-reader user cannot see; those are the
+starred ones in §5.</li>
+<li><strong>remark-lint and retext</strong> (the unified ecosystem) —
+the same for markdown syntax trees, plus the <code>retext-*</code> prose
+family: repeated words, indefinite article agreement, passive voice,
+readability, simplify, equality. This is where grammar tier 1 (§6.1)
+gets its rule list.</li>
+<li><strong>Vale</strong> — severity levels, project-level config, and
+<strong>inline <code>&lt;!-- vale off --&gt;</code> suppression
+comments</strong>. That convention is worth adopting wholesale (ESLint
+and markdownlint use the same idea, so users already know it): §10 phase
+2 ships <code>&lt;!-- quill-disable md.heading-increment --&gt;</code>,
+<code>&lt;!-- quill-disable-next-line --&gt;</code> and
+<code>&lt;!-- quill-enable --&gt;</code>. Suppressions that live in the
+file travel with it and explain themselves to the next person who opens
+it, which session-scoped Ignore cannot do.</li>
+<li><strong>HTML</strong> — html-validate, HTMLHint and the Nu Html
+Checker for well-formedness; <strong>axe-core</strong> and
+HTML_CodeSniffer for the accessibility half. Every axe rule carries a
+WCAG success criterion, a severity and a help URL, and that mapping
+<em>is</em> the “why fix” text we need anyway.</li>
+</ul>
+<p><strong>The licensing and packaging line: rule IDs are cited, never
+vendored.</strong> No Node toolchain, no Java, no bundled binary. A
+finding whose description says <code>MD001</code> and WCAG 1.3.1 is one
+the user can look up, and that costs us nothing.</p>
+<h3 id="26-everything-else-briefly">2.6 Everything else, briefly</h3>
+<p><strong>Emacs Flycheck/Flymake and Vim ALE</strong>
+(<code>:lnext</code>, <code>]d</code>) — next-diagnostic traversal,
+keyboard-only, no panel: proof the model works with no pointing device
+anywhere in it. <strong>Visual Studio’s Error List</strong> and
+<strong>Sublime’s SublimeLinter</strong> — nothing new. <strong>Obsidian
+and Typora</strong>, the two best-known markdown editors — nothing at
+all to learn, because neither has an analysis layer; the space is
+genuinely empty. <strong>Grammarly and Hemingway</strong> — prose
+scoring, worth having as a readability <em>rule family</em> but a bad
+model for the interaction (a grade is not a path to zero, which is why
+§11 refuses to ship a score). <strong>LanguageTool</strong> — discussed
+and rejected in §6.2.</p>
+<h2 id="3-what-already-exists">3. What already exists</h2>
+<p>This is an assembly job, not a greenfield one. The inventory is the
+plan.</p>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Where</th>
+<th>What it gives us</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GLOW audit engine</strong></td>
+<td><code>quill/core/glow.py</code>,
+<code>quill/ui/main_frame_glow.py</code></td>
+<td>Thirteen markdown/HTML/prose rules, <code>severity</code> +
+<code>fixable</code>, deterministic <code>fix_text</code>, a file-level
+audit/fix seam for Office and PDF and EPUB, and the non-destructive
+<code>-accessible</code> copy convention</td>
+</tr>
+<tr>
+<td><strong>Quill Eraser</strong></td>
+<td><code>quill/core/hygiene/{engine,rules,findings,ignored_ranges}.py</code>,
+<code>quill/ui/hygiene_dialog.py</code>,
+<code>main_frame_hygiene.py</code></td>
+<td>A <code>HygieneRule</code> ABC, findings with offsets / line /
+column / suggestion / <code>can_auto_fix</code>, per-rule disable, a
+confidence floor, code-vs-prose file classification, and a list dialog
+with Apply Fix / Ignore / Go To / Previous / Next / Rescan</td>
+</tr>
+<tr>
+<td><strong>Spelling review session</strong></td>
+<td><code>quill/core/spelling/session.py</code>, <code>models.py</code>,
+<code>announcements.py</code>,
+<code>quill/ui/spelling_review_dialog.py</code></td>
+<td>The exact interaction requested: <code>current()</code> /
+<code>total()</code> / <code>position()</code>, change-all, ignore-all,
+add-to-dictionary, <code>undo_last</code>, wrap-to-beginning,
+rescan-after-edit with offset shifting, counters, an accessibility
+announcer</td>
+</tr>
+<tr>
+<td><strong>AI grammar and style</strong></td>
+<td><code>quill/core/ai/grammar_check.py</code></td>
+<td>Already returns structured
+<code>GrammarIssue(category, original, suggestion, explanation, context)</code>
+across grammar / punctuation / clarity / style / word choice, chunked at
+40k chars</td>
+</tr>
+<tr>
+<td><strong>AI vision</strong></td>
+<td><code>quill/core/ai/vision.py</code> —
+<code>describe_image()</code></td>
+<td>Describes an image file for a blind reader, through the same secured
+POST path as chat, with an Ollama local-model route and a capability
+pre-flight. <strong>This is the crown jewel; see §7.3</strong></td>
+</tr>
+<tr>
+<td><strong>Image at the caret</strong></td>
+<td><code>quill/core/inline_image_alt.py</code></td>
+<td>Already answers “what image is the caret inside, and does it have
+alt text” for markdown <em>and</em> HTML</td>
+</tr>
+<tr>
+<td><strong>Link inventory</strong></td>
+<td><code>quill/core/link_inventory.py</code></td>
+<td>Parses markdown and HTML links and images into
+<code>LinkRecord</code> / <code>ImageAltRecord</code></td>
+</tr>
+<tr>
+<td><strong>Preview-matching slugs</strong></td>
+<td><code>markdown_extensions.slugify</code>,
+<code>browser_preview._slugify</code></td>
+<td>Anchor validation is free — we can compute the exact id the preview
+will emit</td>
+</tr>
+<tr>
+<td><strong>Plain-language lint</strong></td>
+<td><code>quill/core/plain_language.py</code></td>
+<td>Controlled vocabulary with line/column output; GLOW already consumes
+it</td>
+</tr>
+<tr>
+<td><strong>Live-alert suppression</strong></td>
+<td><code>quill/core/spellcheck_live.py</code></td>
+<td>URL, code-span and fence suppression — every prose and grammar rule
+needs this</td>
+</tr>
+<tr>
+<td><strong>Feedback channels</strong></td>
+<td><code>quill/core/action_feedback.py</code></td>
+<td><code>sound</code> / <code>speech</code> / <code>both</code> /
+<code>silent</code> via one shared
+<code>resolve(mode, *, has_sound)</code> — this <em>is</em> JAWS’s
+indicate-with-sound/message/both, already built and already
+governed</td>
+</tr>
+<tr>
+<td><strong>Optional components</strong></td>
+<td><code>quill/core/optional_components.py</code></td>
+<td>A single status model and download flow already carrying node,
+ffmpeg, pandoc, braille, voices and dictionaries — the shelf a POS
+tagger goes on (§6.2)</td>
+</tr>
+<tr>
+<td><strong>Background work</strong></td>
+<td><code>quill/stability/task_manager.py</code></td>
+<td><code>QuillTaskManager</code> + <code>wx.CallAfter</code>, which is
+how AI findings arrive without blocking (§7.2)</td>
+</tr>
+<tr>
+<td><strong>Contrast, ACR, Reveal Codes</strong></td>
+<td><code>contrast.py</code>, <code>acr.py</code>,
+<code>reveal_codes.py</code></td>
+<td>Colour maths for HTML rules, a conformance-report renderer for phase
+5, and a second place to surface a finding at its position</td>
+</tr>
+</tbody>
+</table>
+<p>The genuine gaps are three, and only three:</p>
+<ol type="1">
+<li><strong>One finding vocabulary.</strong> There are currently three —
+<code>HygieneFinding</code>, <code>GlowFinding</code>,
+<code>GrammarIssue</code> — plus <code>SpellingIssue</code>. None can
+express two locations or more than one possible fix.</li>
+<li><strong>One review session over all of them.</strong> The spelling
+session is the model and it is already written; it needs generalising
+off <code>Misspelling</code>.</li>
+<li><strong>Structural markup rules beyond GLOW’s thirteen</strong>, and
+grammar rules at all without an AI provider.</li>
+</ol>
+<h2 id="4-the-merge-quill-eraser-as-the-one-surface">4. The merge: Quill
+Eraser as the one surface</h2>
+<p>The name is already right. An eraser removes mistakes; it does not
+care what kind of mistake. So:</p>
+<ul>
+<li><strong>Quill Eraser is the product.</strong> One Tools entry, one
+key, one dialog, one list. Tools ▸ Quill Eraser.</li>
+<li><strong>GLOW keeps its identity where it earns it</strong> — the
+file-level audit and repair of DOCX / PPTX / XLSX / PDF / EPUB on disk
+is a genuinely different job with a genuinely different output (a
+repaired copy next to the original), and it is partly an external
+engine. Those two commands stay as they are. GLOW’s <em>in-editor</em>
+audit and fix commands are absorbed: <code>GLOW-MD-IMAGE-ALT</code>
+becomes a rule family inside Eraser and
+<code>Tools ▸ GLOW Audit Document</code> goes away.</li>
+<li><strong>The AI spelling and grammar dialogs are absorbed
+too.</strong> They stop being destinations and become contributors
+(§7.2).</li>
+<li><strong>F7 spelling stays exactly where it is.</strong> It is thirty
+years of muscle memory and it must not move. Spelling <em>also</em>
+appears in the Eraser list — the same issues, reachable two ways —
+because the person who wants only spelling should not have to wade past
+passive voice to get it.</li>
+</ul>
+<h3 id="41-the-finding-vocabulary">4.1 The finding vocabulary</h3>
+<p>One dataclass, in <code>quill/core/eraser/findings.py</code>,
+absorbing all three:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>, slots<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Finding:</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    rule_id: <span class="bu">str</span>              <span class="co"># &quot;md.heading-increment&quot;, &quot;grammar.their-there&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    family: <span class="bu">str</span>               <span class="co"># spelling | hygiene | structure | media | links |</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                              <span class="co"># tables | aria | grammar | clarity</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    severity: Severity        <span class="co"># error | warning | suggestion</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    confidence: Confidence    <span class="co"># high | medium | low</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    title: <span class="bu">str</span>                <span class="co"># short, spoken first</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    why: <span class="bu">str</span>                  <span class="co"># ONE plain sentence. Mandatory. See §9.1.</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    reference: <span class="bu">str</span>            <span class="co"># &quot;MD001&quot;, &quot;WCAG 1.3.1&quot;, &quot;&quot; — cited, not vendored</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    start: <span class="bu">int</span><span class="op">;</span> end: <span class="bu">int</span><span class="op">;</span> line: <span class="bu">int</span><span class="op">;</span> column: <span class="bu">int</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    fixes: <span class="bu">tuple</span>[FixOption, ...]      <span class="co"># zero or more; not one replacement string</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    related: RelatedLocation <span class="op">|</span> <span class="va">None</span>   <span class="co"># the *other* place, for two-place findings</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    engine: <span class="bu">str</span>               <span class="co"># &quot;rules&quot; | &quot;ai&quot; — internal only, never spoken</span></span></code></pre></div>
+<p>Two things it buys that none of the current three have.
+<strong><code>fixes</code> is a tuple</strong>, because “image has no
+alt text” has at least three answers — draft it with vision (§7.3),
+write it myself, or mark it decorative — and a single
+<code>suggested_text: str | None</code> cannot hold that.
+<strong><code>related</code> exists</strong>, because “this link text is
+used twice for different targets” and “this anchor matches no heading”
+are both two-place findings and both currently inexpressible.</p>
+<p><code>engine</code> is diagnostic only. It never appears in the UI,
+never in speech, never in the list. That is the point of §7.2.</p>
+<h3 id="42-the-session">4.2 The session</h3>
+<p>Generalise <code>quill/core/spelling/session.py</code> off
+<code>Misspelling</code> and onto <code>Finding</code>. Every verb
+survives unchanged, which is why this is the cheap half:</p>
+<table>
+<thead>
+<tr>
+<th>Spelling review today</th>
+<th>Quill Eraser</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>current()</code> / <code>total()</code> /
+<code>position()</code> — “issue 3 of 17”</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>Next / Previous, with the wrap-to-beginning prompt</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>Change / Change All</td>
+<td><strong>Fix</strong> / <strong>Fix All of This Kind</strong></td>
+</tr>
+<tr>
+<td>Ignore Once / Ignore All</td>
+<td>Same wording, same semantics</td>
+</tr>
+<tr>
+<td>Add to Dictionary (persistent, scoped)</td>
+<td><strong>Never Flag This</strong> — document / folder /
+everywhere</td>
+</tr>
+<tr>
+<td><code>undo_last</code> with <code>_UndoRecord</code></td>
+<td>Same, unchanged</td>
+</tr>
+<tr>
+<td>Rescan-after-edit, advancing past the applied change, shifting later
+offsets</td>
+<td>Same, unchanged — and this is the fiddly part that is already
+debugged</td>
+</tr>
+<tr>
+<td>Detail box, issue in context</td>
+<td>Same, plus <strong>why it matters</strong> and the rule id</td>
+</tr>
+</tbody>
+</table>
+<p>Plus three things spelling does not need: a <strong>findings
+list</strong> the user can arrow into (Eraser’s <code>wx.ListCtrl</code>
+already, with a Severity column added, sortable and filterable by
+family); <strong>Go to Issue</strong>, which closes the dialog and
+leaves the caret on the range; and <strong>Next / Previous Issue from
+the editor with no dialog at all</strong>, spoken on arrival — the
+<code>Ctrl+F7</code> habit, which is how most people will actually use
+this.</p>
+<h3 id="43-quill-and-quilllite--every-eraser-feature-both-products">4.3
+QUILL and QuillLite — every Eraser feature, both products</h3>
+<p><strong>Decision: all Eraser features ship in both.</strong> Not the
+shared core with a reduced Lite surface — the whole thing, both places.
+That is stricter than the standing family rule requires and it is the
+right call here, because every argument for the feature applies at least
+as hard to the smaller product: a QuillLite user writing a README is
+exactly the person who will never see the missing <code>alt</code>.</p>
+<p>This is also the direction the family rules already push. The rule is
+that QuillLite may never be ahead of QUILL, and that anything Lite needs
+goes in the shared package with a QUILL route added in the same change.
+Building <code>quill/core/eraser/</code> shared by construction
+satisfies the core half automatically; §4.3 is the commitment that the
+<em>surface</em> half is satisfied too, in the same commit rather than
+in a follow-up nobody schedules.</p>
+<p>What that means concretely, per layer:</p>
+<ul>
+<li><strong><code>quill/core/eraser/</code></strong> — shared by
+construction. Findings, rules, session, suppression, every rule family
+including HTML and ARIA. No product branches in core.</li>
+<li><strong>The review dialog</strong> — one implementation, reached
+from both. It must not import <code>MainFrame</code>;
+<code>quill/ui/spell_review.py</code> is the existing precedent for
+running the spelling session against an arbitrary
+<code>wx.TextCtrl</code> from outside the frame, and the Eraser dialog
+follows it.</li>
+<li><strong>Commands and chords</strong> — the same ids and the same
+chords in both keymaps. <code>F4</code>, <code>Shift+F4</code>,
+<code>Ctrl+Alt+F4</code> and <code>Alt+Enter</code> are free in both, so
+there is no divergence to justify. If one ever appears, rule 11 requires
+it be a comment in <code>keymap.py</code> <strong>and</strong> a
+parity-table row, not one or the other.</li>
+<li><strong>Grammar</strong> — all three tiers, both products. Tier 2’s
+optional POS component is a download, not a product tier; if it is
+absent the rules are absent, in both, identically.</li>
+<li><strong>Vision-drafted alt text (§7.3)</strong> — both. This one is
+worth stating out loud because it is the feature most likely to get
+quietly scoped to “the big product”: it is the single highest-value
+thing in the plan and it is also the cheapest to reach, since
+<code>vision.describe_image()</code> is already shared core.</li>
+<li><strong>The one real asymmetry</strong> is GLOW’s file-level audit
+and repair of DOCX / PPTX / XLSX / PDF / EPUB (§12.2). That is an
+external engine seam and a different job from in-editor checking, and it
+is <em>not</em> an Eraser feature — so it is outside this commitment
+rather than an exception to it. Flag it in the parity table as
+<code>one_side</code> with that reason, so the settings-vocabulary audit
+does not report it as a gap.</li>
+</ul>
+<p><strong>Gate.</strong> The parity claim needs a test or it is a
+sentence. Add a fixture asserting that every <code>eraser.*</code>
+command id present in QUILL’s keymap is present in QuillLite’s with the
+same chord, and that every rule family enabled by default in one is
+enabled by default in the other — the same shape as the existing
+bound-command and settings-vocabulary gates, and for the same reason:
+this is exactly the kind of promise that decays silently.</p>
+<h2 id="5-the-rule-catalogue">5. The rule catalogue</h2>
+<p>GLOW’s thirteen are the seed. Starred (★) rules below are the
+“invisible to a screen reader by definition” core — the ones a sighted
+author catches with their eyes in half a second and a blind author
+ships. External IDs are <strong>cited, not vendored</strong>: no
+markdownlint, no Vale, no axe binary, no Node toolchain. A rule whose
+description says <code>MD001</code> and WCAG 1.3.1 is a rule the user
+can look up, and that costs us nothing.</p>
+<p><strong>Markdown — structure.</strong> ★ Heading level skipped
+(<code>MD001</code>, WCAG 1.3.1 — <em>already GLOW-MD-HEADING-JUMP</em>)
+· ★ no top-level heading or more than one (<code>MD025</code>,
+<code>MD041</code>) · ★ <strong>a bold or italic line used where a
+heading was meant</strong> (<code>MD036</code>) — it reads identically
+and is invisible to H navigation; high value, very common · duplicate
+heading text producing ambiguous anchors (<code>MD024</code>) · heading
+with trailing punctuation (<code>MD026</code>) · missing space after the
+<code>#</code> markers (<em>already GLOW-MD-HEADING-SPACING</em>).</p>
+<p><strong>Markdown — links and anchors.</strong> ★ Non-descriptive link
+text (WCAG 2.4.4 — <em>already GLOW-MD-LINK-TEXT</em>) · ★
+<strong>broken in-document anchor</strong>, <code>[x](#slug)</code>
+where no heading slugifies to <code>slug</code> — free, because
+<code>slugify</code> already matches the preview · ★ empty link
+(<code>MD042</code>) · the same text pointing at two different targets,
+and the reverse (needs <code>related</code>) · a bare URL as link text
+(<code>MD034</code>) — the reader spells out every character · a
+reference link with no definition.</p>
+<p><strong>Markdown — media.</strong> ★ Image with no alt
+(<code>MD045</code>, WCAG 1.1.1 — <em>already GLOW-MD-IMAGE-ALT</em>) ·
+★ <strong>alt text that is a filename, a bare extension, or the word
+“image”</strong> — a false pass that automated checkers count as
+compliant · alt opening “image of” / “picture of” · alt over ~150
+characters with no long description · emoji as meaningful content with
+no alternative · an ASCII-art or Mermaid block with no prose
+alternative.</p>
+<p><strong>Markdown — tables.</strong> ★ No header row, or a delimiter
+row in the wrong place · ★ <strong>ragged table</strong>
+(<code>MD056</code>) — the renderer silently drops or merges cells and
+the announced column headers stop matching the data under them · no
+caption · a table nested in a list, which most flavours will not
+render.</p>
+<p><strong>Markdown — lists.</strong> ★ <strong>A list broken by a stray
+blank line</strong>, so it renders as two lists and “list with 5 items”
+becomes “list with 2 items” then “list with 3 items” · mixed bullet
+markers (<code>MD004</code>) · inconsistent ordered prefix
+(<code>MD029</code>) · indentation that silently changes nesting depth
+(<code>MD005</code>, <code>MD007</code>).</p>
+<p><strong>Markdown — inline.</strong> ★ <strong>Unclosed
+emphasis</strong> — a <code>**</code> or <code>_</code> with no partner
+on the line; the direct descendant of JAWS’s unmatched-punctuation
+check, and in markdown it is worse than cosmetic because the rest of the
+paragraph changes meaning · ★ unmatched bracket, parenthesis or quote,
+suppressed inside code · a trailing double-space hard break
+(<code>MD009</code>), invisible and the usual answer to “why did this
+line break” · mixed straight and curly quotes · raw HTML the target
+flavour will escape (<code>MD033</code>) · a fenced block with no
+language (<code>MD040</code>) · front matter that is not valid YAML
+(<code>yaml_structure.py</code> exists).</p>
+<p><strong>HTML.</strong> Everything above, plus: ★ missing
+<code>lang</code> on <code>&lt;html&gt;</code> (<em>already
+GLOW-HTML-LANG</em>), missing or empty <code>&lt;title&gt;</code>,
+duplicate <code>id</code> · ★ no <code>&lt;main&gt;</code> or more than
+one · ★ <code>&lt;a&gt;</code> with no accessible name — the icon link
+that reads as “link” and nothing else · ★ a <code>&lt;div&gt;</code>
+with a click handler, no role, no <code>tabindex</code> and no key
+handler (WCAG 2.1.1) · ★ input with no label, and placeholder-as-only-
+label (WCAG 1.3.1, 3.3.2) · a radio group with no
+<code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code> · ★
+<code>aria-labelledby</code> / <code>aria-describedby</code> /
+<code>aria-controls</code> pointing at an id that does not exist · ★
+<code>aria-hidden="true"</code> on a focusable element or containing one
+· an invalid role, a role forbidden on that element, a role duplicating
+native semantics · required child roles missing · ★
+<code>&lt;table&gt;</code> with no <code>&lt;th&gt;</code> (<em>already
+GLOW-HTML-TABLE-HEADERS</em>), <code>&lt;th&gt;</code> with no
+<code>scope</code>, a layout table carrying <code>&lt;th&gt;</code> ·
+<code>&lt;iframe&gt;</code> with no <code>title</code>,
+<code>&lt;video&gt;</code> with no captions track ·
+<code>&lt;b&gt;</code>/<code>&lt;i&gt;</code> where
+<code>&lt;strong&gt;</code>/<code>&lt;em&gt;</code> was meant,
+<code>&lt;br&gt;&lt;br&gt;</code> as a paragraph break · an inline
+<code>style</code> whose colours fall below 4.5:1
+(<code>contrast.py</code> already does the maths) · ★
+<strong>well-formedness</strong> — an unclosed tag, a mis-nested tag, a
+stray <code>&lt;/div&gt;</code>; the most Text-Analyzer-like HTML rule
+we can ship and the one most likely to explain a “why does this page
+look wrong” mystery.</p>
+<p><strong>Hygiene and prose.</strong> Eraser’s seven existing rules,
+unchanged, plus GLOW’s <code>GLOW-PLAIN-LANGUAGE</code>,
+<code>GLOW-DENSE-PARAGRAPH</code> and <code>GLOW-TAB-INDENT</code>.</p>
+<h2 id="6-grammar--is-it-too-far-a-reach">6. Grammar — is it too far a
+reach?</h2>
+<p><strong>No. Grammar is not an extension of this feature, it is the
+same feature.</strong> A grammar finding has a range, a severity, a
+message, a suggestion and a reason. So does a missing <code>alt</code>.
+The <code>Finding</code> above holds both without a field changing. What
+differs is only the <em>engine</em> that produces it — and §7.2 is the
+argument that the engine should be invisible.</p>
+<p>What <em>would</em> be a reach is trying to build an offline
+LanguageTool. Don’t. The honest shape is three tiers, and two of them
+are nearly free.</p>
+<h3 id="61-tier-1--deterministic-pure-python-no-dependency-no-model">6.1
+Tier 1 — deterministic, pure Python, no dependency, no model</h3>
+<p>About fifteen rules, high confidence, no new anything. These are the
+errors that survive a spell check because every word in them is spelled
+correctly, which is exactly why they are worth catching first:</p>
+<ul>
+<li><strong>Repeated word</strong> — “the the”, “and and” across a line
+break, where it hides best.</li>
+<li><strong>Indefinite article agreement</strong> — “a hour”, “an user”.
+Sound-based, not letter-based, with a small exception lexicon.</li>
+<li><strong>Confused homophones in unambiguous contexts</strong> —
+<code>its</code>/<code>it's</code>,
+<code>your</code>/<code>you're</code>,
+<code>their</code>/<code>there</code>/<code>they're</code>,
+<code>then</code>/<code>than</code>,
+<code>lose</code>/<code>loose</code>,
+<code>affect</code>/<code>effect</code>,
+<code>to</code>/<code>too</code>. Only fired where the surrounding two
+tokens make it certain; anything ambiguous is left alone. <strong>This
+pair is the single highest yield in the whole grammar family</strong> —
+it is the most common error in written English and a spell checker is
+structurally incapable of seeing it.</li>
+<li><strong>Comma splice</strong> — two independent clauses joined by a
+comma, detected conservatively by looking for a subject pronoun after
+the comma.</li>
+<li><strong>Double negative</strong>; <strong>double
+punctuation</strong> (<code>,,</code>, <code>..</code> outside an
+ellipsis); <strong>sentence starting lowercase</strong> (Eraser has this
+already).</li>
+<li><strong>Subject–verb agreement in simple, local cases</strong> — “he
+don’t”, “they was”, “the data is” (flagged as a suggestion, since usage
+is genuinely split).</li>
+<li><strong>Missing terminal punctuation</strong> on a paragraph that is
+clearly a sentence.</li>
+<li><strong>Mismatched quotes across a paragraph</strong> — Text
+Analyzer’s rule again.</li>
+</ul>
+<p>A week of work, the same rule shape as everything else, and it makes
+grammar real for every user including those with AI switched off and
+those in Safe Mode.</p>
+<h3 id="62-tier-2--part-of-speech-tagging-one-optional-component">6.2
+Tier 2 — part-of-speech tagging, one optional component</h3>
+<p>Everything genuinely grammatical past tier 1 needs to know what the
+words <em>are</em>. Passive voice, agreement across an intervening
+phrase (“the <em>list</em> of files <em>are</em> missing”), tense
+consistency, dangling modifiers — none of these are reachable with
+regular expressions and pretending otherwise produces a false-positive
+machine.</p>
+<p>The dependency is small and, importantly,
+<strong>torch-free</strong>: spaCy’s <code>en_core_web_sm</code> is
+around 12 MB and runs on numpy/Thinc on CPU, which satisfies the
+standing rule that local language engines must not require torch. It
+goes on the <code>optional_components.py</code> shelf next to node,
+ffmpeg, pandoc and the dictionaries — the download flow, the status
+model and the “not installed, here is what you are missing” copy all
+already exist. NLTK’s perceptron tagger is the lighter fallback if even
+that is too much.</p>
+<p>The user-facing contract: <strong>tier 2 rules simply do not appear
+if the component is not installed.</strong> No nag, no greyed-out row,
+no “install this to unlock”. The list is shorter and nothing else
+changes. One line in Download Optional Components says what it adds.</p>
+<p><strong>LanguageTool</strong> deserves a mention and a rejection. It
+is the best rule-based grammar engine in existence, roughly five
+thousand rules, and <code>language_tool_python</code> makes it reachable
+— but it needs a JVM, which is a heavy packaging ask, and its convenient
+mode talks to a public API, which would be an outbound call on document
+text and is a hard no under the network-egress policy regardless of
+consent UI. If it is ever revisited, it must be local-server-only and an
+explicit opt-in component. Not in this plan.</p>
+<h3 id="63-tier-3--the-model-which-already-exists">6.3 Tier 3 — the
+model, which already exists</h3>
+<p><code>quill/core/ai/grammar_check.py</code> already returns exactly
+the right shape across grammar, punctuation, clarity, style and word
+choice. <strong>It needs no engine work at all.</strong> It needs to
+stop being a destination and start being a contributor.</p>
+<p>And the division of labour is the honest one: rules do the
+mechanical, the model does the judgment. Some things are only ever
+reachable by a model —</p>
+<ul>
+<li>Is this sentence ambiguous about who did what?</li>
+<li>Does this link text mean anything <strong>in the context of the
+sentence it is in</strong>? A rule can catch “click here”; only a model
+can catch “the report” appearing four times pointing at four different
+reports.</li>
+<li><strong>Does this alt text actually describe this image?</strong> A
+rule can catch alt that is a filename. Only a model that can see the
+image can catch alt that is confidently, fluently wrong — and that is
+worse than missing alt, because every automated checker scores it as a
+pass.</li>
+</ul>
+<h2 id="7-the-magical-part">7. The magical part</h2>
+<p>The magic is not any single rule. It is five mechanisms, and they
+compound.</p>
+<h3 id="71-one-key-one-list-no-decision">7.1 One key, one list, no
+decision</h3>
+<p>This is the whole thing and it is worth restating plainly:
+<strong>the user never picks an engine.</strong> Today they must choose
+between five commands before they have any information with which to
+choose. After this, there is one key and one list in document order, and
+“misspelled word” and “heading skips a level” and “their should be
+there” sit next to each other because they are all just <em>things wrong
+with line 40</em>. No product does this. Word makes you run Spelling,
+then Editor, then Accessibility Checker — three panes, three mental
+models, three vocabularies for the same verb.</p>
+<p>The ordering is document order, not severity order, because the user
+is walking the document and the caret is a place. Severity is a filter
+and a spoken adjective, never a sort key that makes you jump around the
+file.</p>
+<h3 id="72-progressive-arrival--two-engines-no-mode">7.2 Progressive
+arrival — two engines, no mode</h3>
+<p>The deterministic rules finish in milliseconds. So:</p>
+<ol type="1">
+<li>You press the key. <strong>The list is already there</strong> and
+already navigable. You start working. Nothing spins, nothing blocks,
+nothing asks.</li>
+<li>If AI is configured, the model runs on <code>QuillTaskManager</code>
+in the background over the same text. Its findings <strong>merge into
+the same list at their document positions</strong>, and you hear one
+short line — <em>“four more issues found”</em> — once, never
+interrupting what you are reading, and never again for that scan.</li>
+<li>If AI is off, offline, rate-limited or in Safe Mode, <strong>the
+list is just shorter</strong> and the interaction is byte-for-byte
+identical. No error, no degraded-mode banner, no “AI unavailable”
+dialog. The <code>engine</code> field never reaches the UI.</li>
+</ol>
+<p>That is the trick: <strong>the user never switches modes, never
+waits, and never learns which engine found what.</strong> A findings
+list that grows while you work it sounds like a problem, but the session
+already handles exactly this — <code>_rescan</code> with offset shifting
+after an applied fix is the same operation, and it is already written
+and already debugged.</p>
+<h3 id="73-draft-the-alt-text-you-cannot-write">7.3 Draft the alt text
+you cannot write</h3>
+<p>This is the crown jewel, and it is most of the way built.</p>
+<p>Eraser finds <code>![](screenshot.png)</code> on line 40. The fix it
+offers is <strong>not</strong> an empty box labelled “write alt text”.
+It is a drafted sentence — already written, read aloud, editable in
+place, applied with one key:</p>
+<blockquote>
+<p><em>Issue 3 of 17. Line 40. Image with no alt text: screenshot.png.
+Suggested description: “The QUILL Settings window, with the
+Accessibility page open and the Announcements section expanded.” Press
+Enter to use it, E to edit, D to mark the image decorative.</em></p>
+</blockquote>
+<p><code>vision.describe_image()</code> already exists, already reads a
+file from disk, already base64-encodes it, already goes through the
+secured POST path with retries, and already has an <strong>Ollama
+local-model route with a capability pre-flight</strong> — so this can
+run entirely on the user’s machine with no document or image leaving it.
+<code>inline_image_alt.image_at_position()</code> already resolves the
+image reference at any offset for markdown and HTML both. The prompt is
+already written and is already addressed to a blind reader.</p>
+<p>Think about who this is for. A blind author writing documentation
+with a screenshot in it <strong>cannot write that alt text at
+all</strong> — not badly, not approximately, not with effort. Today the
+options are ship it empty, ask a sighted person, or don’t use images. No
+product in this space solves that, because every product in this space
+assumes the author can see the image and is merely being lazy. This is
+the one feature where QUILL’s whole premise pays off, and it is a dialog
+away.</p>
+<p>The same mechanism extends: describe a chart that has no text
+alternative, transcribe text inside a screenshot (the prompt already
+asks for verbatim transcription), and — the inverse, which is arguably
+as valuable — <strong>verify existing alt text against the actual
+image</strong> and flag the confidently-wrong ones that every automated
+checker scores as a pass.</p>
+<h3 id="74-speak-the-difference-not-the-sentence">7.4 Speak the
+difference, not the sentence</h3>
+<p>When offering a fix, say what <strong>changes</strong>. Not:</p>
+<blockquote>
+<p><em>“Suggested replacement: The list of files that the converter
+produced are missing from the output folder, which means the batch did
+not complete.”</em></p>
+</blockquote>
+<p>but:</p>
+<blockquote>
+<p><em>“are, should be, is.”</em></p>
+</blockquote>
+<p>Three seconds instead of thirty. Press Enter and it is done; press a
+key to hear the full sentence if you want it. This is not a nicety — it
+is the difference between a feature people use on a long document and
+one they turn off after the fourth finding.
+<code>quill/core/diffing.py</code> already exists to compute the
+delta.</p>
+<p>The same discipline everywhere: the title is spoken first and is
+short, the <em>why</em> sentence is spoken only on request or at higher
+verbosity, and the rule id is never spoken unless asked.</p>
+<h3 id="75-the-list-gets-quieter-the-more-you-use-it">7.5 The list gets
+quieter the more you use it</h3>
+<p>Every linter dies of noise. Three mechanisms against it, in order of
+how often they will fire:</p>
+<ul>
+<li><strong>Suppression is total and automatic</strong> inside fenced
+blocks, code spans, URLs, HTML <code>&lt;pre&gt;</code>, and front
+matter. <code>spellcheck_live.live_alert_suppressed</code> is the
+precedent, <code>hygiene/ignored_ranges.py</code> is the mechanism, and
+<strong>every rule ships with a test proving it stays quiet in a code
+fence</strong> (§9.2).</li>
+<li><strong>Ignore teaches.</strong> Ignore the same rule three times in
+one document and Eraser offers, once, to turn it off for this document.
+Not a dialog — a line in the detail pane and a key.</li>
+<li><strong>The model triages, it does not only generate.</strong> The
+highest-value AI job in this whole design is not finding new issues; it
+is <strong>killing false positives</strong> — “this rule fired on line
+12 but it is fine there” — and ranking: “of these forty, these six
+actually matter.” Noise is what kills linters, judgment is what models
+are good at, and nobody points the model at that job.</li>
+</ul>
+<h3 id="76-and-one-key-at-the-caret">7.6 And one key at the caret</h3>
+<p><code>Alt+Enter</code>, free, borrowed from JetBrains: no dialog at
+all. You are typing, you sense something is off, one key tells you what
+is under the caret and offers every fix for it. Combined with §7.3 that
+means writing an image reference and immediately getting a drafted
+description, without leaving the line.</p>
+<h2 id="8-keyboard">8. Keyboard</h2>
+<p>The F7 row is full and the F9 row belongs to dictation. The
+<strong>F4 row is very nearly empty</strong> — only
+<code>Ctrl+Shift+F4</code> (Close Other Documents) is taken — and
+<code>Ctrl+Alt+F4</code> and <code>Alt+Enter</code> are confirmed
+free.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Chord</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools.eraser_document</code></td>
+<td><strong>F4</strong></td>
+<td>Word’s F4 is Repeat Last Action, which QUILL does not bind, so rule
+1 does not bite. Gives Quill Eraser the chord it has never had. Needs
+sign-off.</td>
+</tr>
+<tr>
+<td><code>tools.eraser_selection</code></td>
+<td><strong>Shift+F4</strong></td>
+<td>Mirrors the existing document/selection pair.</td>
+</tr>
+<tr>
+<td><code>tools.next_issue</code> /
+<code>tools.previous_issue</code></td>
+<td><em>unsettled</em></td>
+<td>Both natural candidates collide: <code>Ctrl+F4</code> is the MDI
+close-child convention and QUILL is multi-document;
+<code>Ctrl+Shift+F9</code> is dictation pause. See §12.1.</td>
+</tr>
+<tr>
+<td><code>tools.describe_issue_at_cursor</code></td>
+<td><strong>Ctrl+Alt+F4</strong></td>
+<td>JAWS’s “describe the error” key, restated.</td>
+</tr>
+<tr>
+<td><code>tools.fix_at_cursor</code></td>
+<td><strong>Alt+Enter</strong></td>
+<td>§7.6. Free. Likely the best part of the feature.</td>
+</tr>
+</tbody>
+</table>
+<p><code>F10</code> is the menu-bar key and <code>Shift+F10</code> the
+context-menu key; both reserved, neither touched. <code>F7</code> does
+not move. Every chord must pass <code>test_menu_accelerators.py</code> —
+including being parseable by <code>wx.AcceleratorEntry</code>, since
+<code>Ctrl+Shift+Plus</code>-style chords are silently dropped and leave
+the menu advertising a key that does nothing — plus the bound-command
+and Quillin-hotkey gates. Labels come from
+<code>self._menu_label(...)</code>, never a literal.</p>
+<h2 id="9-gates">9. Gates</h2>
+<ol type="1">
+<li><strong>Rule catalogue snapshot.</strong> A fixture listing every
+rule’s id, family, severity, default state, external reference and
+<strong>its one-sentence <code>why</code></strong>. A new rule fails the
+build until it is classified and explained. Same shape as
+<code>lite_command_coverage.json</code> and for the same reason: <em>a
+rule with no rationale is a rule that gets switched off and never
+switched back on.</em></li>
+<li><strong>Behavioural coverage.</strong> Every rule gets a positive
+case, a negative case, and <strong>a suppression case inside a code
+fence</strong>. The third is what actually keeps the feature from
+becoming annoying.</li>
+<li><strong>Fix idempotence.</strong> Apply a fix, rescan: the same
+finding must not reappear and a new one must not be created. Eraser’s
+rescan-with-offset-shift is both the precedent and the trap.</li>
+<li><strong>Engine invisibility.</strong> A test asserting that no
+user-facing string — dialog label, announcement, list column, help text
+— contains the word “AI”, “model” or the <code>engine</code> value. §7.2
+is a promise and promises need gates.</li>
+<li><strong>AI-off parity.</strong> The full session runs, and every
+test passes, with the AI provider set to Off and in Safe Mode. The list
+is shorter; nothing else differs.</li>
+<li><strong>Product parity (§4.3).</strong> Every <code>eraser.*</code>
+command id in QUILL’s keymap is present in QuillLite’s with the same
+chord, and every rule family enabled by default in one is enabled by
+default in the other. Divergence requires a <code>keymap.py</code>
+comment <strong>and</strong> a parity-table row, per rule 11.</li>
+<li><strong>GATE-LITE-COVER</strong> — QuillLite’s handlers classified
+<code>covered</code>, with lambda-shaped parametrisation so the AST scan
+sees the calls.</li>
+<li><strong>GATE-REACH</strong> — the dialog reachable from an app entry
+point and snapshotted.</li>
+<li><strong>Dialog inventory, button contract, access keys, menu
+accelerators</strong> — the dialog is dense (Fix, Fix All, Ignore,
+Ignore All, Never Flag, Go To, Previous, Next, Rescan, Close). Ten
+buttons in one window: expect GATE-14 collisions and plan for
+OK/Cancel/Close carrying no mnemonic at all.</li>
+<li><strong>F1 help</strong> inline at every construction site, a
+<code>surface_help</code> entry, and a regenerated
+<code>docs/f1-help-reference.md</code>. <strong>GATE-SETDOC /
+GATE-KEYREF</strong> for every new setting and chord.</li>
+<li><strong>Module size budget</strong> entries — markdown, HTML and
+grammar rules each want their own ceiling rather than one
+<code>rules.py</code> that grows forever.</li>
+<li><strong>Performance.</strong> Rules sweep the whole buffer;
+GATE-PERF’s 50 MB synthetic document is the ceiling. The scan runs on
+<code>QuillTaskManager</code>, is cancellable, and phase 2 introduces a
+single tokenisation pass the rules read from — a regex-per-rule
+full-document sweep will not survive a large file.</li>
+<li><strong>Network egress.</strong> The vision and grammar calls are
+existing audited call sites; confirm no new entry is needed, and that
+the Ollama route is the documented local path.</li>
+</ol>
+<h2 id="10-phasing">10. Phasing</h2>
+<ul>
+<li><strong>Phase 1 — the merge and the session.</strong>
+<code>quill/core/eraser/</code> with the unified <code>Finding</code>,
+the generalised session, GLOW’s thirteen rules moved in, Eraser’s seven
+kept, spelling joining the list, one dialog, <code>F4</code>. <strong>No
+new rules at all.</strong> This is the whole interaction win and it
+ships on existing detection. Lands in <strong>both products in the same
+commit</strong> (§4.3) — every phase does, and the parity gate is
+written in this phase so no later phase can quietly skip it.</li>
+<li><strong>Phase 2 — the starred markdown rules and grammar tier
+1.</strong> Plus inline suppression directives
+(<code>&lt;!-- quill-disable md.heading-increment --&gt;</code>, the
+convention every other linter uses so it is already learned), the
+tokenisation pass, and the performance work.</li>
+<li><strong>Phase 3 — the magic.</strong> Progressive AI arrival (§7.2),
+vision-drafted alt text (§7.3), speak-the-delta (§7.4), AI triage of
+rule findings (§7.5), <code>Alt+Enter</code> (§7.6).</li>
+<li><strong>Phase 4 — HTML and ARIA in full</strong>, plus grammar tier
+2 behind the optional POS component, plus the ambient tier: a setting
+resolved through <code>action_feedback.resolve</code>, firing only when
+the caret <em>enters a line that has a finding</em>, once per line per
+visit, never on typing, never for <code>suggestion</code> severity,
+sound by default because a tone costs a quarter-second and a sentence
+costs three.</li>
+<li><strong>Phase 5 — beyond the editor.</strong> Folder scans, a report
+through the existing ACR renderer, and
+<code>python -m quill.tools.eraser</code> so the same engine runs in CI.
+Note the recursion: QUILL’s own <code>docs/</code> tree is a large
+markdown corpus and would be the first real test.</li>
+</ul>
+<h2 id="11-what-this-deliberately-is-not">11. What this deliberately is
+not</h2>
+<ul>
+<li><strong>Not a mode.</strong> No “accessibility mode”, no “grammar
+mode”. One list.</li>
+<li><strong>Not AI-dependent.</strong> Every phase works with AI off and
+in Safe Mode; the AI adds findings and judgment, never the
+interaction.</li>
+<li><strong>Not a formatter.</strong> It never reflows a document you
+did not ask it to. Every fix is per-finding and undoable.</li>
+<li><strong>Not a Node or Java toolchain.</strong> Rule IDs are cited,
+not vendored.</li>
+<li><strong>Not a score.</strong> No grade, no percentage. A count and a
+path to zero.</li>
+</ul>
+<h2 id="12-open-decisions">12. Open decisions</h2>
+<ol type="1">
+<li><strong>Next / previous chords.</strong> Both candidates collide
+(§8). Recommendation: ship phase 1 with <code>F4</code> and
+<code>Shift+F4</code> only, and settle traversal when the ambient tier
+lands and we know how people actually use it.</li>
+<li><strong>Does GLOW’s name survive in the editor at all?</strong> The
+proposal removes <code>Tools ▸ GLOW Audit Document</code> and keeps
+<code>Tools ▸ GLOW Audit File</code>. That is coherent — in-editor
+checking is Eraser, on-disk document repair is GLOW — but it means one
+product name spans two menus and the <code>core.glow</code> experimental
+flag now gates only half of what it used to. Wants a call before phase
+1.</li>
+<li><strong>Does spelling really join the list, or only appear
+there?</strong> Recommendation: both — <code>F7</code> stays a
+spelling-only session, and the same issues also appear in Eraser as the
+<code>spelling</code> family. Costs one filter; avoids taking anything
+away.</li>
+<li><strong>HTML parser.</strong> The stdlib <code>html.parser</code> is
+present, lenient, and gives positions; <code>lxml</code> is faster and
+stricter but is a new dependency. The well-formedness rules specifically
+<em>need</em> the lenient parser’s error recovery to report “unclosed
+tag” usefully. Leaning: stdlib with a position-tracking subclass, no new
+dependency.</li>
+<li><strong>Phase 2 rule count.</strong> The starred list is roughly
+twenty markdown rules plus fifteen grammar tier-1 rules — sixty-plus
+test cases under gate 2. Is that the target, or is phase 2 the eight
+highest-yield ones (skipped heading, bold-as-heading, missing alt,
+filename alt, broken anchor, ragged table, unclosed emphasis,
+their/there)?</li>
+</ol>
+<h2 id="13-why-this-is-worth-building">13. Why this is worth
+building</h2>
+<p>Every other product in this space is built for someone who can see
+the document and wants a second opinion. This one is built for someone
+who cannot, and for whom the defect and the absence of the defect sound
+exactly alike. Three quarters of the machinery already exists and is
+scattered across five commands that each answer a different quarter of
+the same question. Putting it behind one key is mostly deletion — and
+the thing that comes out the other side, a blind author getting a usable
+description drafted for an image they cannot see, in the same list as
+their typos, is something nobody else is building.</p>
+</main>
+</body>
+</html>

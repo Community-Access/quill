@@ -8582,6 +8582,49 @@ How this fits with QUILL's other safety nets: **undo** (and persistent undo) cov
 
 If Quill closes unexpectedly, it can offer a recovery snapshot on the next launch. That is not a dramatic feature. It is a humane one.
 
+Two settings shape what it offers, and both are shared with QuillLite so the
+answer is the same in either editor.
+
+- **Offer untitled unsaved work** (`recover_untitled_documents`) -- on by
+  default. A window that never had a file is where a lot of real work starts,
+  so it is offered back like any other. Turn it off and only documents that had
+  a file are offered; the copies of untitled ones are deleted rather than kept,
+  because keeping something that is never offered is a promise nothing can
+  redeem. The setting's own description says so.
+- **Days of unsaved work to keep** (`recovery_keep_days`) -- 30 by default.
+  Only the previous session's work can ever be offered back, so a copy older
+  than that is unreachable by design and simply accumulates: one real install
+  had eighty-six days of them. Set it to 0 to keep everything for ever.
+
+Identical copies are folded into one before you are asked anything. That is
+what turns "unsaved work from 69 documents" -- sixty-seven of which were the
+same few characters left behind by repeated crashes -- into a list of three you
+can actually read.
+
+Both windows that can appear at startup -- the one about unsaved work and the
+one about last session's documents -- carry a read-only **What this would do**
+field. Tab to it and read it with the arrow keys: it names every row, says how
+much text it holds and when it was written, and then says exactly what each
+button would do with the boxes as they are ticked at that moment, including
+which ones would be left alone. It is rewritten every time you tick or untick a
+row, so it never describes a window you have already changed.
+
+### Closing every tab but this one
+
+**Window > Close Other Documents (Ctrl+Shift+F4)** keeps the tab you are in and
+closes the rest. QuillLite has the same command on the same key.
+
+When one of those tabs has unsaved changes you are asked about it, and the
+question carries two answers that settle every remaining tab at once: **Save
+All** and **Don't Save Any**. **Save** and **Don't Save** apply only to the tab
+in front of you; **Cancel** stops the whole thing and tells you how many closed
+before you stopped it. The question also says how many more tabs are waiting, so
+you know at the first prompt whether this is one more keystroke or sixty-seven.
+
+Enter answers Save, never one of the two that lose work. If a save fails, the
+close stops there rather than treating a failed save as permission to throw the
+document away -- and "Save All" stops meaning "save all" until you say so again.
+
 ### Persistent undo
 
 When enabled, persistent undo stores undo history for saved files across sessions. Quill now throttles those writes so the feature stays practical on large documents.

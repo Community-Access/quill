@@ -67,6 +67,7 @@ import wx
 from quill.apps.lite_window_spelling_navigation import DocumentSpellingNavigationMixin
 from quill.core.lite import spelling as spelling_mod
 from quill.core.spelling.voicing import LiveAlertPolicy, SpellAloudPolicy, SpellAloudVoice
+from quill.ui.atomic_edit import replace_as_one_undo
 
 __all__ = ["DocumentSpellingMixin"]
 
@@ -464,7 +465,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         if not isinstance(chosen, str):
             self.control.SetFocus()
             return
-        self.control.Replace(item.start, item.end, chosen)
+        replace_as_one_undo(self.control, item.start, item.end, chosen)
         self.control.SetInsertionPoint(item.start + len(chosen))
         self._set_modified(True)
         self._touch_status()

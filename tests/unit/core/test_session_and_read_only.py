@@ -107,24 +107,43 @@ def test_a_file_on_the_command_line_wins() -> None:
 
 
 def test_quilllite_asks_before_restoring_unsaved_work() -> None:
+    """The question is a list now, not a Yes/No. It is still a question.
+
+    Rewritten 2026-09-21: the Yes/No could only ever say "all of them" or
+    "none", which is how one user was asked about sixty-nine documents at
+    once. What holds either way is that something is asked, and that declining
+    keeps every slot -- "not now" must not be able to lose anything.
+    """
     import inspect
 
     from quill.apps.lite import QuillLiteApp
 
     source = inspect.getsource(QuillLiteApp._restore_pending_work)
-    assert "self._confirm_recovery(slots)" in source
-    # Declining keeps the slots: "not now" must not be able to lose anything.
-    assert "It will be offered again next time." in source
+    assert "self._offer_recovery(result)" in source
+    assert "triage(" in source
+    assert "It will be offered again next time." in inspect.getsource(QuillLiteApp._offer_recovery)
 
 
 def test_the_question_names_what_it_found() -> None:
+    """Each row says what it is, how much of it there is, and when.
+
+    A count is the one thing a listener cannot get by exploring the screen, and
+    "67 identical copies, kept as one" is the fact that turns an alarming list
+    into an obvious decision. The behaviour is tested against a real store in
+    tests/unit/apps/test_lite_recovery_triage.py and the wording in
+    tests/unit/core/test_recovery_triage.py; what is held here is that the two
+    halves are wired to each other.
+    """
     import inspect
 
     from quill.apps.lite import QuillLiteApp
+    from quill.core.recovery_triage import row_label
 
-    source = inspect.getsource(QuillLiteApp._confirm_recovery)
-    assert "an untitled document" in source
-    assert "unsaved work from" in source
+    source = inspect.getsource(QuillLiteApp._offer_recovery)
+    assert "ask_recovery" in source
+    assert "describe_restored" in source
+    label = inspect.getsource(row_label)
+    assert "identical copies, kept as one" in label
 
 
 def test_read_only_detection_survives_a_permission_error(tmp_path: Path, monkeypatch) -> None:

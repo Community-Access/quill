@@ -101,3 +101,63 @@ def latest_autosave(document: Document, session_id: str) -> Path | None:
 def _document_key(document: Document) -> str:
     seed = str(document.path.resolve()) if document.path else "untitled"
     return sha1(seed.encode("utf-8")).hexdigest()
+
+
+#: The document key an untitled document snapshots under. A constant, because
+#: :func:`_document_key` seeds on the literal ``"untitled"`` when a document has
+#: no path -- which is what lets recovery tell a scratch window's snapshot from a
+#: file's without opening either (``recover_untitled_documents``).
+UNTITLED_KEY = sha1(b"untitled").hexdigest()
+
+
+def is_untitled_snapshot(path: Path) -> bool:
+    """Whether *path* is a snapshot of a document that never had a file."""
+    return path.name.startswith(f"{UNTITLED_KEY}-")
+
+
+def prune_stale_autosave(keep_days: int, now: float | None = None) -> int:
+    """Delete autosave directories nobody can come back to. Returns how many.
+
+    One directory per session, and nothing ever removed one: this machine had
+    thirteen, the oldest eighty-six days old, holding snapshots of sessions that
+    ended cleanly months ago. Only the *previous* session is ever offered back
+    (:func:`quill.core.recovery.begin_session`), so every older directory is
+    unreachable by design -- it is not a safety net, it is the lint left behind
+    by one.
+
+    ``keep_days`` of 0 or less keeps everything, which is what QUILL did until
+    2026-09-21. Never raises: housekeeping that can fail a launch is worse than
+    housekeeping that does not happen.
+    """
+    if keep_days <= 0:
+        return 0
+    import shutil
+    import time as _time
+
+    moment = _time.time() if now is None else now
+    cutoff = moment - keep_days * 86400.0
+    root = app_data_dir() / "autosave"
+    removed = 0
+    try:
+        candidates = [entry for entry in root.iterdir() if entry.is_dir()]
+    except OSError:
+        return 0
+    for directory in candidates:
+        try:
+            # The newest thing inside, not the directory's own mtime: on
+            # Windows a directory's mtime moves when a file is *deleted* from
+            # it, so a session pruned by max_snapshots would look freshly used.
+            newest = max(
+                (child.stat().st_mtime for child in directory.iterdir()),
+                default=directory.stat().st_mtime,
+            )
+        except OSError:
+            continue
+        if newest >= cutoff:
+            continue
+        try:
+            shutil.rmtree(directory)
+        except OSError:
+            continue
+        removed += 1
+    return removed

@@ -10,7 +10,11 @@ before any body text does.
 
 from __future__ import annotations
 
-from quill.core.heading_ladder import HEADING_POINT_SIZES, HEADING_STYLE_NAMES
+from quill.core.heading_ladder import (
+    BODY_POINT_SIZE,
+    HEADING_POINT_SIZES,
+    HEADING_STYLE_NAMES,
+)
 
 __all__ = [
     "DEFAULT_HALF_POINTS",
@@ -107,11 +111,21 @@ class RtfTables:
         return "{\\colortbl;" + body + "}"
 
 
-#: RTF's own default character size, in half-points (12 pt). The writer emitted
-#: no size at all before headings gained one, so this is what a heading must
-#: return the font to for every other paragraph to render exactly as it always
-#: has -- the alternative is a document that grows one heading at a time.
-DEFAULT_HALF_POINTS = 24
+#: Body text, in half-points -- :data:`~quill.core.heading_ladder.BODY_POINT_SIZE`
+#: and not RTF's own default, which is where this started and what it had to
+#: stop being. A heading returns the font to this after its own size, because
+#: ``\pard`` resets the paragraph and not the font; the writer also states it
+#: once in the preamble, so every paragraph that never says a size is this size
+#: rather than whatever the reader's default happens to be.
+#:
+#: It was 24 -- twelve points -- and that was a reported bug: twelve points is
+#: :data:`~quill.core.heading_ladder.HEADING_POINT_SIZES`\ ``[4]``, so body text
+#: in every file QUILL wrote was exactly the size of a Heading 4. Bold a line of
+#: it and ``heading_level_for_font`` had no way left to tell the two apart, and
+#: both editors announced "Heading 4" to somebody who had pressed Ctrl+B.
+#: Eleven points is what the ladder has always called body text, and it is also
+#: Word's own default body size, so the file opens elsewhere looking right.
+DEFAULT_HALF_POINTS = int(round(BODY_POINT_SIZE * 2))
 
 
 def heading_stylesheet() -> str:

@@ -77,6 +77,7 @@ from quill.core.tagging import (
     search_html_tag_choices,
     search_markdown_tag_choices,
 )
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import PLAIN, RICH
 
 __all__ = ["DOCUMENT_KINDS", "DocumentMarkupMixin", "MARKUP_COMMANDS"]
@@ -355,7 +356,7 @@ class DocumentMarkupMixin:
             return True
         if change.result is not LevelResult.OK:
             return False
-        self.control.Replace(change.start, change.end, change.replacement)
+        replace_as_one_undo(self.control, change.start, change.end, change.replacement)
         # Hold the caret's place *in the line*, which has just grown or shrunk in
         # front of it by however many hashes or tag characters changed.
         moved = len(change.replacement) - (change.end - change.start)
@@ -581,7 +582,7 @@ class DocumentMarkupMixin:
         word after the closing tag and cannot see that they have.
         """
         start, end = self.control.GetSelection()
-        self.control.Replace(start, end, result.inserted_text)
+        replace_as_one_undo(self.control, start, end, result.inserted_text)
         self.control.SetInsertionPoint(start + int(result.caret_offset))
         self._set_modified(True)
         self._touch_status()

@@ -48,23 +48,36 @@ MAX_FONT_POINTS = 72
 DEFAULT_FONT_POINTS = 12
 
 
-def sets_font(*, rich: bool) -> bool:
+def sets_font(*, rich: bool, empty: bool = False) -> bool:
     """Whether the shell may call ``SetFont`` on this editor at all.
 
-    False in a rich document, and this is the whole of bad.md R5. ``SetFont``
-    on wxMSW applies to **the entire control**, existing runs included -- so
-    calling it on a populated rich document flattens every heading to one size
-    no matter which size is passed, the body size included. Heading navigation
-    and the headings list read that ladder, so the document also stops being
-    navigable. Both editors had this call; both now skip it and change only the
-    zoom, which scales what is drawn and writes nothing.
+    False in a rich document that **has something in it**, and that half is the
+    whole of bad.md R5. ``SetFont`` on wxMSW applies to **the entire control**,
+    existing runs included -- so calling it on a populated rich document
+    flattens every heading to one size no matter which size is passed, the body
+    size included. Heading navigation and the headings list read that ladder, so
+    the document also stops being navigable. Both editors had this call; both
+    now skip it and change only the zoom, which scales what is drawn and writes
+    nothing.
 
     A rich document's face is its own, carried in its runs. That is the right
     answer as well as the safe one: the face in a `.docx` is part of the
     document, not a reading preference, and overwriting it on every theme
     change would be an edit nobody asked for.
+
+    True for an **empty** rich control, though, and that half is a bug report:
+    "if I bold and underline a line it gets announced as heading level 4, and I
+    did not use a heading command". A rich heading *is* its point size plus bold
+    (:func:`~quill.core.heading_ladder.heading_level_for_font`), and Heading 4 is
+    twelve point -- which is also ``DEFAULT_FONT_POINTS``, the size a plain
+    document is drawn at. The control is the same control in both modes, so a
+    document that had been plain was still carrying ``SetFont(12)`` when it
+    became rich, every character typed into it was twelve point, and bolding a
+    line made it indistinguishable from a Heading 4. A rich control with nothing
+    in it has no runs to flatten, so it can be -- must be -- put back on the
+    ladder's body size before anything is typed into it.
     """
-    return not rich
+    return (not rich) or empty
 
 
 def clamp_font_points(points: object, fallback: int = DEFAULT_FONT_POINTS) -> int:

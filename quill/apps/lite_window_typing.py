@@ -65,6 +65,7 @@ import wx
 from quill.core.abbreviations import is_trigger_char, try_expand
 from quill.core.autoformat import autoformat_allows, is_dash_merge, smart_quote_for
 from quill.core.sound_events import SoundEvent
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentTypingMixin"]
@@ -94,6 +95,47 @@ class DocumentTypingMixin:
         self._tab_inserts_literal = True
         self._tab_mode_chosen = False
 
+    def _cue_deletion(self, code: int) -> None:
+        """Sound the Delete and Backspace keys, which never reached a command.
+
+        Reported: "the delete key does not play a sound, or I do not hear one."
+        It did not. ``cmd_delete`` posts the earcon and ``cmd_delete`` is the
+        *menu item*; the Del key goes straight into the control, which deletes
+        the character itself and tells nobody. Edit > Delete chimed and the key
+        that everybody actually presses did not -- the same shape as cut, copy
+        and paste, which is why ``bind_clipboard_cues`` exists.
+
+        The **earcon only**, never the spoken half of ``_action``. A deletion is
+        a keystroke, repeats while the key is held, and the screen reader
+        already says the character that went; a sentence per press would be the
+        over-announcement GATE-13 is about, and a status message per press would
+        bury whatever the bar was actually reporting. Somebody who wants no
+        sound here switches ``text_deleted`` off in the sound pack, which is the
+        control that already exists for every other earcon.
+
+        Silent when the press deletes nothing -- Delete at the end of the
+        document, Backspace at the start, anything at all in a read-only one. A
+        tone that says something went when nothing did is worse than no tone,
+        because it is the tone somebody is listening to instead of looking.
+        """
+        if not self._deletes_something(code):
+            return
+        self._cue(SoundEvent.TEXT_DELETED)
+
+    def _deletes_something(self, code: int) -> bool:
+        """Whether this press will actually remove text. Never raises."""
+        try:
+            if not self.control.IsEditable():
+                return False
+            start, end = self.control.GetSelection()
+            if end > start:
+                return True
+            if code == wx.WXK_BACK:
+                return start > 0
+            return start < self.control.GetLastPosition()
+        except (AttributeError, RuntimeError, TypeError):
+            return False
+
     def _on_key_down(self, event: wx.KeyEvent) -> None:
         """Watch the Insert key go past, and keep the mirror true.
 
@@ -102,6 +144,10 @@ class DocumentTypingMixin:
         to do. All this adds is that the status cell knows.
         """
         code = event.GetKeyCode()
+        # A side effect, not a branch: the key goes on to the control, which
+        # does the deleting. All this adds is that it is audible.
+        if code in (wx.WXK_DELETE, wx.WXK_BACK):
+            self._cue_deletion(code)
         if code == wx.WXK_INSERT and not self._synthetic_insert_key:
             self._overwrite_mode = not self._overwrite_mode
             self._touch_status()
@@ -405,7 +451,7 @@ class DocumentTypingMixin:
         # a key for it -- and a screen reader says nothing at all, because no
         # focus moved and no control was named.
         self._cue(SoundEvent.ABBREVIATION_EXPANDED)
-        self.control.Replace(match.token_start, match.token_end, match.resolved_text)
+        replace_as_one_undo(self.control, match.token_start, match.token_end, match.resolved_text)
         landing = match.token_start + (
             match.cursor_offset if match.has_cursor else len(match.resolved_text)
         )

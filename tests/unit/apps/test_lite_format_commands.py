@@ -273,3 +273,56 @@ def test_the_list_key_is_refused_in_plain_text(lite_window):
     win.cmd_cycle_list_style()
     assert win.announcements[-1] == PLAIN_REFUSAL
     assert win.editor.calls == []
+
+
+# ---------------------------------------------------------------------------
+# Normal Text (Word's Ctrl+Shift+N)
+
+
+def test_normal_text_takes_everything_off_in_one_go(lite_window):
+    """Asked for while testing rich text: "we also need a normal text command".
+
+    Every other command in this menu is a toggle or a set, so each one needs
+    you to already know what is applied. This is the only one that does not.
+    """
+    win = lite_window("hello", mode="rich")
+    win.cmd_normal_text()
+    assert ("clear_formatting", None) in win.editor.calls
+
+
+def test_normal_text_says_so(lite_window):
+    """Spoken because nothing else will say it.
+
+    Formatting coming off is invisible and silent: the text does not move, the
+    caret does not move, and no control gains or loses focus, so a screen
+    reader reports none of it. GATE-13 asks the app to say what only the app
+    knows, and this is exactly that.
+    """
+    win = lite_window("hello", mode="rich")
+    win.cmd_normal_text()
+    assert win.announcements[-1] == "Normal text"
+
+
+def test_normal_text_marks_the_document_modified(lite_window):
+    win = lite_window("hello", mode="rich")
+    win.cmd_normal_text()
+    assert win.modified is True
+
+
+def test_normal_text_in_a_markup_document_removes_the_heading(lite_window):
+    """What "normal" means to a line written in markup.
+
+    The emphasis around a word is text the user typed; a command that silently
+    deleted their asterisks would be doing something they did not ask for.
+    """
+    win = lite_window("## A heading", cursor=3, mode="plain")
+    win.set_document_language("markdown", announce=False)
+    win.cmd_normal_text()
+    assert win.control.GetValue() == "A heading"
+    assert win.announcements[-1] == "Normal text"
+
+
+def test_normal_text_is_refused_in_plain_text(lite_window):
+    win = plain(lite_window("hello", mode="plain"))
+    win.cmd_normal_text()
+    assert win.announcements[-1] == PLAIN_REFUSAL

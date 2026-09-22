@@ -14,7 +14,7 @@ import pytest
 
 from quill.core.heading_ladder import HEADING_POINT_SIZES, heading_level_for_font
 from quill.io.rtf import markdown_to_rtf, rtf_to_markdown
-from quill.io.rtf_styles import heading_stylesheet
+from quill.io.rtf_styles import DEFAULT_HALF_POINTS, heading_stylesheet
 
 
 def test_the_document_declares_a_stylesheet() -> None:
@@ -54,7 +54,7 @@ def test_a_heading_does_not_enlarge_the_paragraph_after_it() -> None:
     # body text following a Heading 1 would render at 20 point.
     rtf = markdown_to_rtf("# Title\nbody text\n")
     heading_line = next(line for line in rtf.split("\n") if "Title" in line)
-    assert heading_line.endswith("\\b0\\fs24\\par")
+    assert heading_line.endswith(f"\\b0\\fs{DEFAULT_HALF_POINTS}\\par")
 
 
 def test_the_stylesheet_does_not_disturb_the_round_trip() -> None:
@@ -65,4 +65,22 @@ def test_the_stylesheet_does_not_disturb_the_round_trip() -> None:
 def test_body_paragraphs_are_left_exactly_as_they_were() -> None:
     rtf = markdown_to_rtf("just a paragraph\n")
     assert "\\pard just a paragraph\\par" in rtf
-    assert "\\s1" not in rtf.split("\\stylesheet", 1)[1].split("}\n", 1)[-1]
+    # The preamble is one line -- tables, stylesheet and the body size -- so
+    # everything after the first newline is the document itself.
+    assert "\\s1" not in rtf.split("\n", 1)[1]
+
+
+def test_body_text_is_written_at_the_ladders_body_size() -> None:
+    """Body text must not be the size of a heading.
+
+    Reported from QuillLite: bold a line and it was announced as "heading
+    level 4" by a user who had pressed Ctrl+B and nothing else. A rich
+    heading *is* its point size plus bold, Heading 4 is twelve point, and
+    twelve point is what RTF gives a paragraph that names no size -- so body
+    text in every file QUILL wrote was a Heading 4 waiting for somebody to
+    embolden it. The writer states the ladder's own body size instead.
+    """
+    rtf = markdown_to_rtf("just a paragraph\n")
+    preamble = rtf.split("\n", 1)[0]
+    assert f"\\fs{DEFAULT_HALF_POINTS}" in preamble
+    assert heading_level_for_font(DEFAULT_HALF_POINTS / 2, bold=True) is None

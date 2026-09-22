@@ -247,8 +247,32 @@ def _prune_orphaned_session_state(state: dict[str, object]) -> None:
         }
 
 
-def begin_session(session_id: str) -> list[RecoveryOffer]:
+def begin_session(
+    session_id: str,
+    *,
+    offer_untitled: bool = True,
+    keep_days: int = 0,
+) -> list[RecoveryOffer]:
+    """Open a session: prune what has expired, then offer what is left.
+
+    ``keep_days`` deletes autosave directories older than that many days and
+    defaults to 0 (keep everything) so every existing caller and test behaves
+    exactly as before; QUILL passes the user's setting. Only the previous
+    session is ever offered back, so every older directory is unreachable by
+    design -- see :func:`quill.core.autosave.prune_stale_autosave`.
+
+    ``offer_untitled`` is the ``recover_untitled_documents`` preference, and it
+    is applied to the *choice of snapshot*: with it off, a session whose only
+    unsaved work was a scratch window offers nothing.
+    """
     _validate_session_id(session_id)
+    if keep_days > 0:
+        from quill.core.autosave import prune_stale_autosave
+
+        try:
+            prune_stale_autosave(keep_days)
+        except Exception:  # noqa: BLE001 - housekeeping must never fail a launch
+            pass
     fd = _acquire_file_lock()
     try:
         with _state_lock:
@@ -263,7 +287,7 @@ def begin_session(session_id: str) -> list[RecoveryOffer]:
                 and not previous_clean
                 and _log_shows_actionable_error(app_data_dir() / "logs")
             ):
-                latest = latest_session_snapshot(previous_session)
+                latest = latest_session_snapshot(previous_session, include_untitled=offer_untitled)
                 if latest is not None and not _is_offer_dismissed(state, previous_session, latest):
                     cursor_position = _load_cursor_position(state, previous_session)
                     dismissal_count = _load_dismissal_count(state, previous_session)
@@ -283,6 +307,29 @@ def begin_session(session_id: str) -> list[RecoveryOffer]:
         if fd is not None:
             _release_file_lock(fd)
     return offers
+
+
+def begin_session_for(
+    settings: object, session_id: str, safe_mode: bool = False
+) -> list[RecoveryOffer]:
+    """:func:`begin_session` with the recovery policy read off *settings*.
+
+    All three parts of that policy in one place -- the two preferences and the
+    safe-mode answer, which is no offers and no housekeeping: safe mode exists so
+    a broken install can be started without touching anything it might be broken
+    by, and deleting a month of autosave directories on the way in is exactly
+    what it promises not to do.
+
+    Here rather than at the call site so ``main_frame.py`` stays one line wide,
+    which GATE-11 requires of a module that is already the largest in the tree.
+    """
+    if safe_mode:
+        return []
+    return begin_session(
+        session_id,
+        offer_untitled=bool(getattr(settings, "recover_untitled_documents", True)),
+        keep_days=int(getattr(settings, "recovery_keep_days", 0)),
+    )
 
 
 def mark_clean_exit(session_id: str) -> None:
@@ -311,19 +358,30 @@ def mark_recovery_offer_recovered(offer: RecoveryOffer) -> None:
     _record_offer_outcome(offer, outcome="recovered")
 
 
-def latest_session_snapshot(session_id: str) -> Path | None:
+def latest_session_snapshot(session_id: str, *, include_untitled: bool = True) -> Path | None:
     """Return the newest non-empty autosave ``.snap`` for *session_id*.
 
     Calls ``stat()`` exactly once per candidate file (#356 / #289): the
     previous implementation paid two syscalls per file (one to filter
     non-empty, one to sort by mtime).
+
+    ``include_untitled`` is the ``recover_untitled_documents`` preference, which
+    QuillLite answers the same way: a document that never had a file is a
+    different promise from one that did, and a user is allowed to say they only
+    want the second kind back. It is expressible here at all because an untitled
+    document snapshots under a known key -- see
+    :data:`quill.core.autosave.UNTITLED_KEY`.
     """
     _validate_session_id(session_id)
     root = app_data_dir() / "autosave" / session_id
     if not root.exists():
         return None
+    from quill.core.autosave import is_untitled_snapshot
+
     candidates: list[tuple[Path, float, int]] = []
     for path in root.glob("*.snap"):
+        if not include_untitled and is_untitled_snapshot(path):
+            continue
         try:
             info = path.stat()
         except OSError:

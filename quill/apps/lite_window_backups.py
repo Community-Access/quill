@@ -13,6 +13,7 @@ yours. A safety net nobody can reach is not a safety net.
 from __future__ import annotations
 
 from quill.apps.lite_dialogs import choose_from_rows
+from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentBackupsMixin"]
@@ -128,7 +129,7 @@ class DocumentBackupsMixin:
         has just replaced their document needs to hear that they can still
         change their mind.
         """
-        self.control.Replace(0, self.control.GetLastPosition(), text)
+        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), text)
         self.control.SetInsertionPoint(0)
         self._set_modified(True)
         self._touch_status()

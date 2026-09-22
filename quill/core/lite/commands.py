@@ -90,7 +90,19 @@ COMMANDS: list[CommandRow] = [
     # Ctrl+Shift+S, Ctrl+P. Notepad's Ctrl+Shift+N is "New Window" -- here every
     # New *is* a new window, so the chord names the mode instead.
     ("&File", "&New", "Ctrl+N", "cmd_new", ""),
-    ("&File", "New &Rich Text Document", "Ctrl+Shift+N", "cmd_new_rich", ""),
+    # Alt+Shift+T, not Ctrl+Shift+N, since 2026-09-22. Ctrl+Shift+N is
+    # **Word's Normal style** and a rich document is where somebody reaches for
+    # it -- family rule 1, Microsoft's key wins for a function both editors
+    # have, and rule 3, frequency breaks the tie: Normal Text is pressed all
+    # day in an RTF document and New Rich Document once per document.
+    #
+    # T for Text, and the keymap left almost no choice: four chords were free in
+    # both editors and this is the only one that means anything. Ctrl+Alt+Shift+N
+    # would have kept the two News a pair and is Invert Case, one of five Change
+    # Case chords worth more as a family; Ctrl+Alt+R is QUILL's Trim Trailing
+    # Whitespace, a divergence decided on 2026-09-16 and written down, and taking
+    # it would have left that row with no keyboard route at all.
+    ("&File", "New &Rich Text Document", "Alt+Shift+T", "cmd_new_rich", ""),
     ("&File", "New P&lain Text Document", "Ctrl+Alt+N", "cmd_new_plain", ""),
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
     ("&File", "", "", "", "sep"),
@@ -517,6 +529,13 @@ COMMANDS: list[CommandRow] = [
     ("F&ormat", "&Underline", "Ctrl+U", "cmd_underline", ""),
     ("F&ormat", "Gro&w Font", "Ctrl+Shift+.", "cmd_grow_font", ""),
     ("F&ormat", "Shrin&k Font", "Ctrl+Shift+,", "cmd_shrink_font", ""),
+    # Word's Ctrl+Shift+N, and the only way back. Every other command here is a
+    # toggle or a set, so each one needs you to already know what is applied --
+    # bold off needs bold to be on, a twenty-point run needs the ladder walked
+    # back down, and a colour, a highlight or a list had no "none" at all.
+    # Somebody who cannot glance at the page to see what is still on it had no
+    # way to be sure, which is the whole problem this editor exists to solve.
+    ("F&ormat", "Normal &Text", "Ctrl+Shift+N", "cmd_normal_text", ""),
     ("F&ormat", "", "", "", "sep"),
     ("F&ormat", "&Headings", "", "", "sub"),
     ("F&ormat", "Structur&e", "", "", "sub"),
@@ -901,6 +920,12 @@ COMMANDS: list[CommandRow] = [
     ("&Window", "&Next Window", "Ctrl+Tab", "cmd_next_window", ""),
     ("&Window", "Ne&xt Window (MDI)", "Ctrl+F6", "cmd_next_window_mdi", ""),
     ("&Window", "&Previous Window", "Ctrl+Shift+Tab", "cmd_previous_window", ""),
+    ("&Window", "", "", "", "sep"),
+    # QUILL's command, on QUILL's key (family rule 2). Reported by somebody who
+    # opened QuillLite to sixty-nine restored windows and found that the only
+    # route back to one document was Ctrl+W sixty-eight times, with a save
+    # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
+    ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
     # -- Help ---------------------------------------------------------------
     # F1 belongs to the family's context help (quill.ui.app_context_help): it
     # answers with what *this* window is for and then what the focused control

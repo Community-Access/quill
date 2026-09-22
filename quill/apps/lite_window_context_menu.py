@@ -73,6 +73,7 @@ import wx
 
 from quill.core.links import find_link_at_cursor
 from quill.core.spelling.context_menu import IgnoreList, SpellingContext, spelling_context
+from quill.ui.atomic_edit import replace_as_one_undo
 
 __all__ = ["DocumentContextMenuMixin"]
 
@@ -394,7 +395,7 @@ class DocumentContextMenuMixin:
         if not self._context_still_valid(context):
             self._announce("That word has changed. Nothing was replaced.")
             return
-        self.control.Replace(context.start, context.end, replacement)
+        replace_as_one_undo(self.control, context.start, context.end, replacement)
         self.control.SetInsertionPoint(context.start + len(replacement))
         self._set_modified(True)
         self._touch_status()

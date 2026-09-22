@@ -298,11 +298,17 @@ class DocumentMenuMixin:
         "document 3" keeps meaning the same document after document 1 is closed.
         Alt+1 to Alt+9 land on the first nine numbers; past that the list still
         names every document and Ctrl+F6 still walks them all.
+
+        Listed **in number order**, which is not always the order the documents
+        were opened in: a closed document's number goes back in the pool, so the
+        newest window can be number 2. The numbers are what this menu is written
+        in and what Alt+digit presses, so a list that counts 1, 2, 3 down the
+        menu is the one a person can follow; open-order would read 1, 3, 2.
         """
         for item_id in self._window_menu_items:
             self._window_menu.Delete(item_id)
         self._window_menu_items = []
-        for frame in self.app.frames:
+        for frame in sorted(self.app.frames, key=lambda f: f.number):
             label = f"{frame.number}: {frame.document_name()}"
             if frame.number <= MAX_NUMBERED:
                 label = f"&{frame.number} {frame.document_name()}	Alt+{frame.number}"

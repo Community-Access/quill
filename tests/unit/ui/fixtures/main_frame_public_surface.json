@@ -143,6 +143,7 @@
   "cue_app_exiting",
   "cue_app_started",
   "cue_conversation",
+  "cue_deletion_key",
   "cue_dictation",
   "cue_document_closed",
   "cue_document_opened",

@@ -235,7 +235,7 @@ from quill.core.recent import (
     save_recent_files,
 )
 from quill.core.recovery import (
-    begin_session,
+    begin_session_for,
     latest_crash_report,
     mark_clean_exit,
     mark_recovery_offer_dismissed,
@@ -390,6 +390,7 @@ from quill.ui.main_frame_browse import BrowseModeMixin
 from quill.ui.main_frame_bw import BwSpeechMixin
 from quill.ui.main_frame_classic_editor import ClassicEditorMixin
 from quill.ui.main_frame_clip_library import ClipLibraryMixin
+from quill.ui.main_frame_close_others import CloseOthersMixin
 from quill.ui.main_frame_commands import CommandRegistryMixin
 from quill.ui.main_frame_compare import CompareMixin
 from quill.ui.main_frame_copy_tray import CopyTrayMixin
@@ -488,6 +489,7 @@ from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.sound_manager import post_sound
+from quill.ui.status_bar_role import mark_as_status_bar
 from quill.ui.word_view import WordDocumentSurface
 
 
@@ -829,6 +831,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    CloseOthersMixin,
     SessionRestoreMixin,
     MagicalTierMixin,
     LiteBridgeMixin,
@@ -1187,7 +1190,7 @@ class MainFrame(
                 save_recent_files(self.recent_files)
         self._trusted_locations = set() if safe_mode else load_trusted_locations()
         self.session_id = str(uuid4())
-        self._recovery_offers = [] if safe_mode else begin_session(self.session_id)
+        self._recovery_offers = begin_session_for(self.settings, self.session_id, safe_mode)
         self._last_autosave_at: datetime | None = None
         self._autosave_interval = timedelta(
             seconds=int(getattr(self.settings, "autosave_interval_seconds", 30))
@@ -1438,6 +1441,12 @@ class MainFrame(
         layout.Add(self._reveal_pane.panel, 0, wx.EXPAND)
         self._reveal_pane.panel.Show(bool(getattr(self.settings, "reveal_codes_visible", False)))
         self.statusbar = wx.Panel(self.frame)
+        # A status bar that says so to Windows. Without the role MSAA and UIA
+        # see an anonymous box of buttons, and JAWS's Insert+Page Down -- which
+        # means "read the status bar" -- falls back to scraping the bottom line
+        # of the window. Reported against QuillLite; both bars are the same
+        # wx.Panel and both get the role.
+        mark_as_status_bar(wx, self.statusbar)
         self.statusbar.SetName("Status bar")
         self.statusbar.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
         self._apply_silent_accessible(self.statusbar)
@@ -2607,6 +2616,9 @@ class MainFrame(
 
     def _on_editor_key_down(self, event: object) -> None:
         wx = self._wx
+        # A side effect, not a branch: Delete and Backspace go on to the
+        # control, which does the deleting. See cue_deletion_key.
+        self.cue_deletion_key(event)
         if self._dictation_handle_key_down(event):
             return
         if (
@@ -3419,28 +3431,6 @@ class MainFrame(
             return
         self._close_tab(index)
         self._set_status("Closed document")
-
-    def _close_other_tabs(self, keep_index: int) -> None:
-        if keep_index < 0 or keep_index >= len(self._document_tabs):
-            return
-        keep_tab = self._document_tabs[keep_index]
-        # Close from the end backwards so indices stay valid.
-        closed = 0
-        for index in range(len(self._document_tabs) - 1, -1, -1):
-            if self._document_tabs[index] is keep_tab:
-                continue
-            self._select_tab(index)
-            if not self._prompt_to_save_active_document("closing"):
-                self._set_status("Close other tabs cancelled")
-                # Restore focus to the tab we wanted to keep, if it still exists.
-                if keep_tab in self._document_tabs:
-                    self._select_tab(self._document_tabs.index(keep_tab))
-                return
-            self._close_tab(index)
-            closed += 1
-        if keep_tab in self._document_tabs:
-            self._select_tab(self._document_tabs.index(keep_tab))
-        self._set_status(f"Closed {closed} other tab(s)")
 
     def _close_tabs_to_right(self, anchor_index: int) -> None:
         if anchor_index < 0 or anchor_index >= len(self._document_tabs):
@@ -7109,9 +7099,6 @@ class MainFrame(
             self._set_status(f"Switched to {self.document.name}")
         else:
             self._set_status(f"No document {position} open")
-
-    def close_other_documents(self) -> None:
-        self._close_other_tabs(self._active_tab_index)
 
     def close_current_document(self) -> None:
         if not self._prompt_to_save_active_document("Close"):

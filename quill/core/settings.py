@@ -14,6 +14,7 @@ from quill.core.monitor_policy import (
     clamp_interval_minutes,
 )
 from quill.core.paths import app_data_dir
+from quill.core.recovery_triage import DEFAULT_KEEP_DAYS as RECOVERY_KEEP_DAYS
 from quill.core.session_restore import ASK_MODES
 from quill.core.settings_normalizers import (
     STATUS_BAR_ITEMS,
@@ -594,6 +595,17 @@ class Settings:
     #: an untitled window has nothing to reopen *from*, and its content is the
     #: recovery store's business, which is a different promise.
     session_files: list[str] = field(default_factory=list)
+    #: Offer unsaved work back from a document that never had a file. On by
+    #: default; off means such a snapshot is not offered after an unclean exit.
+    #: Same field name and same meaning in QuillLite, which is where the need
+    #: showed up first -- see ``quill/core/recovery_triage.py``. QUILL can
+    #: answer it because an untitled document autosaves under a known key.
+    recover_untitled_documents: bool = True
+    #: How many days of autosave history to keep. Only the previous session is
+    #: ever offered back, so older directories are unreachable by design and
+    #: were nevertheless kept for ever -- a real install had eighty-six days of
+    #: them. 0 keeps everything, which is the pre-2026-09-21 behaviour.
+    recovery_keep_days: int = RECOVERY_KEEP_DAYS
     # How QUILL writes a hard line break in Markdown: "backslash" (audible,
     # survives a trailing-whitespace strip) or "spaces" (the older two-space
     # spelling). Both are always *read*; this chooses what is written (#1488).
@@ -1342,6 +1354,12 @@ class Settings:
         )
         if session_restore_ask not in ASK_MODES:
             session_restore_ask = "when_it_matters"
+        recover_untitled_documents = bool(data.get("recover_untitled_documents", True))
+        # Upper bound of ten years rather than none: this field deletes, and a
+        # hand-edited 1e999 would otherwise become an int() crash at launch.
+        recovery_keep_days = _clamp_int(
+            data.get("recovery_keep_days", RECOVERY_KEEP_DAYS), RECOVERY_KEEP_DAYS, 0, 3650
+        )
         raw_session = data.get("session_files", [])
         session_files = (
             [str(entry) for entry in raw_session if str(entry).strip()][:20]
@@ -1851,6 +1869,8 @@ class Settings:
             restore_session=restore_session,
             session_restore_ask=session_restore_ask,
             session_files=session_files,
+            recover_untitled_documents=recover_untitled_documents,
+            recovery_keep_days=recovery_keep_days,
             markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,
             autoformat_dashes=autoformat_dashes,

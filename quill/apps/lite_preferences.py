@@ -151,6 +151,21 @@ def edit_preferences(
     restore.SetValue(bool(settings.restore_session))
     root.Add(restore, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
 
+    # Directly under it, because the two are constantly confused and the guide
+    # above already has to say "different from recovering unsaved work". &U:
+    # every other letter in the phrase is taken in this window (GATE-14).
+    keep_untitled = wx.CheckBox(dialog, label="Offer &untitled unsaved work back after a crash")
+    keep_untitled.SetHelpText(
+        "On: work you never saved is offered back whether or not the window had "
+        "a file. Off: only documents with a file are offered, and the copies of "
+        "untitled ones are deleted rather than kept -- keeping something that is "
+        "never offered would be a promise nothing can redeem. Identical copies "
+        "are folded into one either way, and anything older than a month is "
+        "dropped. QUILL has the same setting."
+    )
+    keep_untitled.SetValue(bool(getattr(settings, "recover_untitled_documents", True)))
+    root.Add(keep_untitled, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+
     # Beside Reopen last session's documents, because the two together are the
     # whole answer to "what do I get when I start?" -- and somebody turning one
     # off is often reaching for the other.
@@ -426,11 +441,13 @@ def edit_preferences(
             getattr(settings, "find_not_found_feedback", "sound"),
             getattr(settings, "wrap_find", True),
             getattr(settings, "announcement_throttle_ms", 0),
+            getattr(settings, "recover_untitled_documents", True),
         )
         settings.default_mode = "rich" if mode_choice.GetSelection() == 1 else "plain"
         settings.theme = "dark" if theme_choice.GetSelection() == 0 else "system"
         settings.word_wrap = bool(wrap.GetValue())
         settings.restore_session = bool(restore.GetValue())
+        settings.recover_untitled_documents = bool(keep_untitled.GetValue())
         settings.share_quill_abbreviations = bool(share.GetValue())
         settings.share_quill_dictionary = bool(share_dict.GetValue())
         settings.clip_library_autocapture = bool(keep_clips.GetValue())
@@ -473,6 +490,7 @@ def edit_preferences(
                 settings.find_not_found_feedback,
                 settings.wrap_find,
                 settings.announcement_throttle_ms,
+                settings.recover_untitled_documents,
             ),
             features_changed,
         )

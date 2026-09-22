@@ -54,11 +54,27 @@ class DocumentAppearanceMixin:
         # key in the new buffer from announcing a heading the user never left.
         self.reset_structure_announcer()
 
+    def _control_is_empty(self) -> bool:
+        """Whether there is nothing in the buffer. Never raises, never scans.
+
+        ``GetLastPosition`` rather than ``GetValue``: this is asked on every
+        font, theme and mode change, and marshalling a whole document out of
+        the native control to find out whether it is empty is the kind of
+        full-buffer read the status bar was taught not to do.
+        """
+        try:
+            return int(self.control.GetLastPosition()) == 0
+        except (AttributeError, RuntimeError, TypeError, ValueError):
+            return False
+
     def _apply_editor_font(self) -> None:
         """Apply the chosen face and size, through the rule QUILL now shares.
 
         In a rich document the size is a **zoom** and ``SetFont`` is not called
-        at all. It used to be called with the ladder's body size, on the theory
+        -- unless the buffer is empty, which is the one moment the control's
+        base size can be put back on the ladder (see the comment below and
+        :func:`~quill.core.editor_font.sets_font`). It used to be called
+        unconditionally with the ladder's body size, on the theory
         that passing the body size was harmless -- but wxMSW applies ``SetFont``
         to the *whole control*, existing runs included, so every ``Ctrl+=``,
         every dark-mode toggle and every font change flattened a Heading 1 and a
@@ -70,7 +86,15 @@ class DocumentAppearanceMixin:
         """
         settings = self.app.settings
         rich = self.editor.mode == RICH
-        if sets_font(rich=rich):
+        # An *empty* rich control is the one time SetFont is allowed in rich
+        # mode, and it is required rather than merely safe: the control is the
+        # same control in both modes, so a document that had been plain carried
+        # the user's size (twelve points by default) into rich text, where
+        # twelve point and bold *is* Heading 4. Bolding a line announced a
+        # heading nobody applied. With nothing in the buffer there are no runs
+        # to flatten, so the base goes back to the ladder's body size.
+        empty = self._control_is_empty()
+        if sets_font(rich=rich, empty=empty):
             self.control.SetFont(
                 wx.Font(
                     int(editor_points_for(settings.font_size, rich=rich)),

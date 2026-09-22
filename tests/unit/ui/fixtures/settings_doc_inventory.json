@@ -234,6 +234,8 @@
   "reading_order_max_pages": "documented",
   "recent_files_auto_clear_missing": "documented",
   "recent_files_limit": "documented",
+  "recover_untitled_documents": "documented",
+  "recovery_keep_days": "documented",
   "restore_points_enabled": "grandfathered",
   "restore_points_max_mb": "documented",
   "restore_session": "documented",

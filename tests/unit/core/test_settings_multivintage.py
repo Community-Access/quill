@@ -130,9 +130,14 @@ def test_future_schema_file_not_rewritten(tmp_path):
     assert before == after  # an older build must never downgrade a newer file
 
 
-def test_legacy_flat_file_still_migrates(tmp_path):
+def test_legacy_flat_file_still_migrates(tmp_path, quill_data_dir):
     # A stamp-less flat legacy document is unaffected by the new preservation
     # path (it has no "groups"); it migrates to the canonical v2 shape as before.
+    #
+    # ``quill_data_dir`` because migrating writes a backup under the *data*
+    # directory and then prunes the older ones -- which, unisolated, deletes
+    # backups out of the developer's own profile. Caught 2026-09-21, when the
+    # profile guard in tests/conftest.py learned to watch deletions.
     path = tmp_path / "settings.json"
     _write(path, {"some_legacy_flat_key": "v"})
     _load(path)

@@ -399,6 +399,15 @@ class DocumentCommandsMixin(
         """
         self.app.choose_session_documents()
 
+    def cmd_close_other_windows(self) -> None:
+        """Window > Close Other Documents: keep this one, close the rest.
+
+        On the app rather than on this window, because it closes windows for the
+        whole application; this is the command table's way in, like
+        ``cmd_reopen_last_session`` above.
+        """
+        self.app.close_other_documents(self)
+
     def cmd_close_mdi(self) -> None:
         """Ctrl+F4, the Windows MDI convention. The same move as Ctrl+W.
 

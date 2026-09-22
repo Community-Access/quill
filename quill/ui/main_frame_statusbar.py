@@ -21,8 +21,11 @@ from quill.core.markdown_sections import current_section_at, parse_heading_block
 from quill.core.navigation import estimate_page_count, estimate_page_for_position, page_starts
 from quill.core.palette import load_palette_usage, top_suggestion
 from quill.core.settings import STATUS_BAR_ITEMS, Settings, save_settings
+from quill.core.status_cell_width import ratchet_width
 from quill.platform.sr_announce import announce
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.status_bar_role import mark_as_status_cell
+from quill.ui.statusbar_cell_help import STATUS_BAR_CELL_HELP
 
 
 @dataclass(slots=True)
@@ -572,46 +575,7 @@ class StatusBarMixin:
             return (
                 f"{self._STATUS_BAR_LABELS.get(item, item)} is unavailable in the current profile"
             )
-        labels = {
-            "message": "Open notifications",
-            "line_column": "Go to line",
-            "page": "Page position. Press Enter for Go To Page.",
-            "word_count": "Show document statistics",
-            "mode": "Toggle overwrite mode",
-            "tab_mode": "Toggle Tab key mode (QUILL Key + U). Indent or insert a tab character.",
-            "document_format": (
-                "Current document format. Press Enter to switch between Plain "
-                "text, Markdown, HTML, and Rich Text."
-            ),
-            "selection": "Show selection statistics",
-            "encoding": "Choose document encoding",
-            "line_endings": "Toggle line endings",
-            "spell_check": "Open spell check dialog",
-            "background_tasks": "Open notifications",
-            "notifications": "Open notifications",
-            "read_aloud": "Start or pause read aloud",
-            "autosave": "Cycle autosave interval",
-            "search_term": "Reopen Find",
-            "file_path": "Open containing folder",
-            "quill_key_mode": "QUILL key mode state",
-            "extend_mode": "Extend selection mode active. Press F7 to toggle.",
-            "abbreviations": "Abbreviation expansion. Press Enter to toggle on/off.",
-            "copy_tray_slots": "Copy tray slots in use. Press Enter to open Copy Tray.",
-            "language_profile": "Active language profile. Press Enter to change language.",
-            "sr_name": "Detected screen reader. Press Enter to re-detect.",
-            "suggestion": "Frequently used command. Press Enter to run it.",
-            "braille": "Braille position. Press Enter for Read Braille Status.",
-            "ai_engine": "Active AI engine. Press Enter to switch engines.",
-            "radio_player": (
-                "Internet Radio. Press Enter to play or pause; right-click for "
-                "Stop, Mute, and Favorite Stations."
-            ),
-            "podcast_player": (
-                "Podcasts. Press Enter to play or pause; right-click for Stop "
-                "and download controls."
-            ),
-        }
-        return labels.get(item, self._STATUS_BAR_LABELS.get(item, item))
+        return STATUS_BAR_CELL_HELP.get(item, self._STATUS_BAR_LABELS.get(item, item))
 
     def _build_statusbar_cells(self) -> None:
         if not hasattr(self, "_wx") or not hasattr(self, "statusbar"):
@@ -631,6 +595,7 @@ class StatusBarMixin:
             )
             button.SetName(self._STATUS_BAR_LABELS.get(item, item))
             button.SetHelpText(self._statusbar_help_text(item))
+            mark_as_status_cell(wx, button)
             button.Bind(wx.EVT_BUTTON, lambda _e, cell=item: self._activate_statusbar_cell(cell))
             button.Bind(
                 wx.EVT_KEY_DOWN, lambda event, cell=item: self._on_statusbar_key_down(event, cell)
@@ -742,6 +707,15 @@ class StatusBarMixin:
         )
 
     def _refresh_statusbar(self) -> None:
+        """Put every cell's current text in, and let no cell shrink.
+
+        ``_STATUS_BAR_WIDTHS`` is a **floor**, not a width -- set as a width it
+        ellipsised "Line 1, column 1 of 50,000" into 140 pixels, and a screen
+        reader reading the bottom line of the window off the screen read the
+        half that was drawn. Above the floor a cell may grow and may not shrink;
+        :func:`~quill.core.status_cell_width.ratchet_width` is that rule and the
+        two bug reports behind it.
+        """
         if not hasattr(self, "_statusbar_cells") or not hasattr(self, "_wx"):
             self._refresh_legacy_statusbar()
             return
@@ -754,16 +728,28 @@ class StatusBarMixin:
                 # statusbar was torn down mid-refresh. Treat the dead-widget
                 # condition as a transient skip and let the next refresh
                 # try again (#269).
-                cell.button.SetLabel(self._statusbar_button_label(item))
+                label = self._statusbar_button_label(item)
+                # An unchanged label is left alone: SetLabel fires a name change
+                # through MSAA/UIA, and a reader has no use for hearing that
+                # Encoding was renamed to "UTF-8" again after every keystroke.
+                if cell.button.GetLabel() != label:
+                    cell.button.SetLabel(label)
                 cell.button.SetHelpText(self._statusbar_help_text(item))
                 cell.button.SetName(self._STATUS_BAR_LABELS.get(item, item))
             except RuntimeError:
                 continue
+            if item == "message":
+                # The one cell added with a proportion: the sizer hands it the
+                # slack, so it has no width of its own to hold.
+                continue
             try:
-                cell.button.SetMinSize((-1, -1))
-                if item != "message":
-                    width = self._STATUS_BAR_WIDTHS.get(item, 120)
-                    cell.button.SetMinSize((width, -1))
+                cell.button.InvalidateBestSize()
+                width = ratchet_width(
+                    cell.button.GetBestSize().width,
+                    cell.button.GetMinSize().width,
+                    self._STATUS_BAR_WIDTHS.get(item, 120),
+                )
+                cell.button.SetMinSize((width, -1))
             except Exception:
                 pass
         self._relayout_statusbar()

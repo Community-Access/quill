@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import NamedTuple
+
 import pytest
 
 from quill.core.settings import Settings
@@ -132,15 +134,43 @@ class _DeadButton:
         raise RuntimeError("wrapped C/C++ object of type TextCtrl has been deleted")
 
 
+class _Size(NamedTuple):
+    """What wx hands back from GetBestSize/GetMinSize: indexable, and ``.width``."""
+
+    width: int
+    height: int
+
+
 class _LiveButton:
+    """A button of the shape ``_refresh_statusbar`` actually drives.
+
+    The readbacks are here because the refresh reads before it writes: it
+    leaves an unchanged label alone (a rewrite is an MSAA name change a reader
+    would have to sit through), and it sizes a cell to the widest it has ever
+    needed rather than to a fixed allotment that would clip it.
+    """
+
+    #: Pixels per character, so a wider label measures wider. Nothing depends
+    #: on the real font; what is asserted is the ordering.
+    _CHARACTER_WIDTH = 7
+
     def __init__(self) -> None:
         self.label = ""
         self.help_text = ""
         self.name = ""
-        self.min_size: tuple[int, int] | None = None
+        self.min_size = _Size(-1, -1)
+        self.labels_written = 0
+        #: Set to measure as this wide whatever the label says, which is how
+        #: a test stands in for a long position readout without having to
+        #: build the document that would produce one.
+        self.best_width: int | None = None
+
+    def GetLabel(self) -> str:
+        return self.label
 
     def SetLabel(self, label: str) -> None:
         self.label = label
+        self.labels_written += 1
 
     def SetHelpText(self, text: str) -> None:
         self.help_text = text
@@ -148,8 +178,19 @@ class _LiveButton:
     def SetName(self, name: str) -> None:
         self.name = name
 
+    def InvalidateBestSize(self) -> None:
+        return None
+
+    def GetBestSize(self) -> _Size:
+        if self.best_width is not None:
+            return _Size(self.best_width, 24)
+        return _Size(len(self.label) * self._CHARACTER_WIDTH, 24)
+
+    def GetMinSize(self) -> _Size:
+        return self.min_size
+
     def SetMinSize(self, size: tuple[int, int]) -> None:
-        self.min_size = size
+        self.min_size = _Size(*size)
 
 
 def test_refresh_statusbar_skips_dead_widget_cell(frame: MainFrame) -> None:
@@ -175,6 +216,55 @@ def test_refresh_statusbar_skips_dead_widget_cell(frame: MainFrame) -> None:
 
     # The live cell still gets its label written (skipped cells do not).
     assert live.label != ""
+
+
+def test_refresh_statusbar_leaves_an_unchanged_cell_alone(frame: MainFrame) -> None:
+    """A rewrite is an MSAA name change; a reader should not sit through one."""
+    live = _LiveButton()
+    frame._statusbar_cells = [_StatusBarCell(item="line_column", button=live)]
+
+    class _Statusbar:
+        def Layout(self) -> None:
+            pass
+
+    frame.statusbar = _Statusbar()
+
+    frame._refresh_statusbar()
+    written = live.labels_written
+    assert written == 1
+
+    frame._refresh_statusbar()
+    assert live.labels_written == written
+
+
+def test_refresh_statusbar_widens_for_a_label_the_floor_would_clip(
+    frame: MainFrame,
+) -> None:
+    """``_STATUS_BAR_WIDTHS`` is a floor, not a clip, and it never drops back.
+
+    Set as a width it ellipsised the text, and a screen reader reading the
+    bottom line of the window off the screen reads what was drawn -- half a
+    cell. Set as a floor the cell grows; kept as a high-water mark it does not
+    then shove the rest of the row sideways when the text gets shorter again.
+    """
+    live = _LiveButton()
+    frame._statusbar_cells = [_StatusBarCell(item="line_column", button=live)]
+
+    class _Statusbar:
+        def Layout(self) -> None:
+            pass
+
+    frame.statusbar = _Statusbar()
+    floor = frame._STATUS_BAR_WIDTHS["line_column"]
+
+    live.best_width = floor * 2  # a long-document position, far past the floor
+    frame._refresh_statusbar()
+    grown = live.min_size[0]
+    assert grown > floor
+
+    live.best_width = 10  # back to line 1 of 1
+    frame._refresh_statusbar()
+    assert live.min_size[0] == grown
 
 
 def test_statusbar_text_for_item_returns_empty_when_editor_is_dead() -> None:
