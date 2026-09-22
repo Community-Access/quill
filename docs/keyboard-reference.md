@@ -464,6 +464,7 @@ Editor commands with default bindings: 448.
 | Alt+Shift+J | Next Inline Note | `notes.next_inline_note` |
 | Alt+Shift+K | Previous Inline Note | `notes.previous_inline_note` |
 | Alt+Shift+N | Number lines | `power.number_lines` |
+| Alt+Shift+S | Toggle clipboard collector | `power.toggle_clipboard_collector` |
 | Alt+Shift+W | Hard wrap lines | `power.hard_wrap_lines` |
 | Alt+Shift+X | Delete lines containing | `power.delete_lines_containing` |
 | B | QUILL Quick Nav: Bookmark | `quill.quick_nav.bookmark` |
@@ -471,7 +472,6 @@ Editor commands with default bindings: 448.
 | Ctrl+Alt+C | Describe character detail | `power.describe_character_detail` |
 | Ctrl+Alt+Down | Table: Cell Below | `table.cell_below` |
 | Ctrl+Alt+End | Table: Last Cell | `table.last_cell` |
-| Ctrl+Alt+G | Toggle clipboard collector | `power.toggle_clipboard_collector` |
 | Ctrl+Alt+Home | Table: First Cell | `table.first_cell` |
 | Ctrl+Alt+K | Remove blank lines | `power.remove_blank_lines` |
 | Ctrl+Alt+Left | Table: Previous Cell | `table.previous_cell` |

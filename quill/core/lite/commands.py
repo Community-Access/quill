@@ -396,7 +396,13 @@ COMMANDS: list[CommandRow] = [
     ("&Edit|Clip&board", "&Paste from Tray...", "Ctrl+Alt+V", "cmd_paste_from_tray", ""),
     ("&Edit|Clip&board", "C&lear Copy Tray", "Ctrl+Alt+Shift+Y", "cmd_clear_copy_tray", ""),
     ("&Edit|Clip&board", "", "", "", "sep"),
-    ("&Edit|Clip&board", "C&ollect Selection", "Ctrl+Alt+G", "cmd_collect_selection", ""),
+    # Alt+Shift+S, not Ctrl+Alt+G: Google Drive for desktop owns Ctrl+Alt+G
+    # system-wide, and Windows hands a system-wide hotkey to its owner before a
+    # focused application sees the key -- so this was unreachable from the
+    # keyboard on any machine with Drive installed, and went silent rather than
+    # saying so. The two Shift variants below keep the G, because only the base
+    # chord is claimed.
+    ("&Edit|Clip&board", "C&ollect Selection", "Alt+Shift+S", "cmd_collect_selection", ""),
     (
         "&Edit|Clip&board",
         "Paste &Everything Collected",

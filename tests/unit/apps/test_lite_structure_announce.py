@@ -289,22 +289,47 @@ def test_the_heading_cue_never_interrupts_the_reader() -> None:
     assert win.interrupted == [False]
 
 
-def test_the_status_bar_heading_cell_reads_a_plain_documents_headings() -> None:
-    """The cell used to read "Not in rich text" in a plain document.
+def _status_frame(text: str, caret: int, surface: str | None):
+    """A status mixin over a document of a given markup language.
 
-    Wrong twice over: those documents have real Markdown headings, and pressing
-    Enter on the cell has always opened a list of them.
+    The language is not the mode: a Markdown document and a plain text one are
+    both ``PLAIN`` to the control, and only one of them has headings.
     """
     from quill.apps.lite_window_status import DocumentStatusMixin
 
     class _Frame(DocumentStatusMixin):
-        def __init__(self, text: str, caret: int) -> None:
+        def __init__(self) -> None:
             self.control = _Control(text, caret)
             self.editor = _Editor(PLAIN)
 
-    frame = _Frame(MARKDOWN, MARKDOWN.find("## Two"))
+        def markup_surface(self):
+            return surface
+
+    return _Frame()
+
+
+def test_the_status_bar_heading_cell_reads_a_markdown_documents_headings() -> None:
+    """The cell used to read "Not in rich text" in a Markdown document.
+
+    Wrong twice over: those documents have real headings, and pressing Enter on
+    the cell has always opened a list of them.
+    """
+    frame = _status_frame(MARKDOWN, MARKDOWN.find("## Two"), "markdown")
     assert frame._heading_text(MARKDOWN) == "Heading 2"
     frame.control.SetInsertionPoint(MARKDOWN.find("body"))
+    assert frame._heading_text(MARKDOWN) == "Body text"
+
+
+def test_a_plain_document_has_no_headings_however_the_line_starts() -> None:
+    """Reported: the editor was "misleading about markdown ... in plain text we
+    are not writing markdown, just plain text".
+
+    ``heading_level_at`` defaults to reading Markdown and the cell did not say
+    otherwise, so a plain document whose line begins with two hashes announced
+    "Heading 2" -- when the hashes are the text. A plain document has no
+    headings at all, and the cell says so.
+    """
+    frame = _status_frame(MARKDOWN, MARKDOWN.find("## Two"), None)
     assert frame._heading_text(MARKDOWN) == "Body text"
 
 

@@ -986,7 +986,17 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The collector and the clip library, on QuillLite's chords (P1.12).
     # Paste Collected is absent because QUILL has no such command yet;
     # Ctrl+Alt+Shift+G is held open for it (C4).
-    "power.toggle_clipboard_collector": "Ctrl+Alt+G",
+    # Alt+Shift+S, not Ctrl+Alt+G, since 2026-09-22. Google Drive for desktop
+    # registers Ctrl+Alt+G **system-wide**, and a system-wide hotkey is handed
+    # to its owner before a focused application sees the key at all -- so this
+    # command could not be reached from the keyboard on any machine with Drive
+    # installed, and nothing said why. An in-app accelerator cannot outrank
+    # RegisterHotKey; the only fix that works out of the box is not to sit on
+    # the chord. Ctrl+Alt+<letter> is where third-party global hotkeys live,
+    # which is why Drive chose it, so this one leaves that space entirely.
+    # (The detection that makes the *next* one of these say so rather than go
+    # silent lives in quill/platform/windows/hotkey_owner.py.)
+    "power.toggle_clipboard_collector": "Alt+Shift+S",
     "edit.keep_selection_in_clip_library": "Ctrl+Alt+M",
     "edit.open_clip_library": "Ctrl+Alt+Shift+M",
     # power.keep_unique_lines retired 2026-09-18 (bad.md 7.1, P2.5): it and

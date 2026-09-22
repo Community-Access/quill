@@ -19,7 +19,7 @@ from typing import Protocol
 from quill.core.fragment import Fragment
 from quill.core.storage import write_json_atomic
 
-__all__ = ["ClipEntry", "ClipLibrary"]
+__all__ = ["ClipEntry", "ClipLibrary", "empty_reason"]
 
 
 class _TraySlotTarget(Protocol):
@@ -257,3 +257,38 @@ class ClipLibrary:
     def _check(self, index: int) -> None:
         if not 0 <= index < len(self._entries):
             raise ValueError(f"Clip index out of range: {index!r}")
+
+
+def empty_reason(*, autocapture: bool, keep_clip_key: str = "") -> str:
+    """Why the library is empty, and what fills it. One sentence, both editors.
+
+    Reported while testing: "recent clips says nothing defined when there are."
+    There were not -- and that is the whole problem. The library is **off by
+    default on purpose**: a rolling history of everything you copy is a file on
+    your disk holding whatever you last took out of a document, and nobody
+    should acquire one by installing a text editor. But the command is called
+    Recent Clips and its help says "everything copied recently", so somebody who
+    has just copied four things and is told the library is empty has every
+    reason to believe the feature is broken.
+
+    "Empty" was true and useless. A person cannot tell a feature that is off
+    from a feature that is failing, and the difference is the only thing they
+    need. So the sentence names which of the two it is and how to fill it --
+    deliberately, one clip at a time, or by turning the history on.
+
+    *keep_clip_key* is the chord Keep Clip is actually bound to, which is not
+    assumed: it is rebindable in both editors, and naming a key somebody has
+    moved is how a helpful sentence becomes a wrong one.
+    """
+    keep = f" ({keep_clip_key})" if keep_clip_key else ""
+    if autocapture:
+        return (
+            "No clips yet. Copying adds to the library from now on, "
+            f"or Keep Clip{keep} adds the selection straight away."
+        )
+    return (
+        "No clips yet. Copying does not fill the library unless you turn on "
+        "Keep every copy in Preferences -- it is off so that a history of "
+        f"everything you copy is never written without asking. Keep Clip{keep} "
+        "adds the selection without turning anything on."
+    )

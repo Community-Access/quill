@@ -79,6 +79,12 @@ _CHORD = re.compile(
 #: with no formatting swallows them and says so. Taken from the shared table
 #: rather than retyped, so a chord added there cannot make this list wrong.
 _NOT_OURS: frozenset[str] = frozenset({
+    # A third-party global hotkey, named for the same reason: Google Drive for
+    # desktop registers Ctrl+Alt+G across the whole of Windows, so the key never
+    # reaches a focused editor at all. The collector moved off it on 2026-09-22
+    # and the guide names the chord to explain what happened -- which is a guide
+    # doing its job, not teaching a shortcut.
+    "ctrl+alt+g",
     "alt+f4",
     "ctrl+alt+f4",
     "win+v",

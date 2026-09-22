@@ -77,14 +77,21 @@ def test_the_heading_organizer_refuses_a_plain_document(lite_window) -> None:
     assert "Markdown or HTML" in win.announcements[-1]
 
 
-def test_the_heading_organizer_refuses_a_rich_document(lite_window) -> None:
-    """Rich headings are point sizes on runs, so reordering them means moving
-    formatted ranges rather than lines. A different job."""
+def test_the_heading_organizer_no_longer_refuses_a_rich_document(lite_window) -> None:
+    """It used to, and the report was one sentence long: "it should work there".
+
+    It was right. A rich document has headings, ``all_headings`` already listed
+    them, and the only thing missing was a way to move a *formatted* range
+    rather than a line. What a rich document without the native control gets is
+    an honest "needs the Windows Rich Edit control", never the old "needs a
+    Markdown or HTML document" -- which was a statement about this editor's
+    limits dressed up as a statement about the document.
+    """
     win = lite_window("", cursor=0, mode="rich")
 
     win.cmd_heading_organizer()
 
-    assert "Markdown or HTML" in win.announcements[-1]
+    assert "Markdown or HTML" not in win.announcements[-1]
 
 
 def test_a_cancelled_organizer_changes_nothing_and_says_so(markdown_window, monkeypatch) -> None:

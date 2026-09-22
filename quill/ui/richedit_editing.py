@@ -52,6 +52,7 @@ from quill.ui.richedit_rtf_surface import (
     _one_undo_step,
     heading_level_for_font,
 )
+from quill.ui.richedit_structure import RichEditStructureMixin
 
 __all__ = [
     "LINE_SPACING_DOUBLE",
@@ -84,6 +85,11 @@ _TM_MULTICODEPAGE = 32
 
 # tom.h, for the parts of the object model the base surface has no use for.
 _TOM_UNIT_STORY = 6
+
+#: ``tomSelOvertype`` from tom.h: the bit ``ITextSelection.Flags`` carries when
+#: typing will overwrite. The control keeps it accurate whoever changed the
+#: mode, which is why nothing here needs to mirror it any more.
+_TOM_SEL_OVERTYPE = 4
 _TOM_AUTOCOLOR = -9999997
 _TOM_SUSPEND = -9999995
 _TOM_RESUME = -9999994
@@ -161,7 +167,7 @@ def _colorref(red: int, green: int, blue: int) -> int:
     return (int(red) & 0xFF) | ((int(green) & 0xFF) << 8) | ((int(blue) & 0xFF) << 16)
 
 
-class RichEditDocument(QuillRichEdit):
+class RichEditDocument(RichEditStructureMixin, QuillRichEdit):
     """A :class:`QuillRichEdit` that also owns its mode, its view, and its theme."""
 
     def __init__(self, surface: Any, mode: str = PLAIN) -> None:
@@ -171,6 +177,43 @@ class RichEditDocument(QuillRichEdit):
         self.mode = RICH if mode == RICH else PLAIN
 
     # -- overtype ----------------------------------------------------------- #
+
+    def overtype_active(self) -> bool | None:
+        """Whether typing will overwrite. ``None`` when the control cannot say.
+
+        Reported as "insert and typeover are being reversed on me -- the status
+        bar shows insert when it is overwrite and vice versa". The status bar was
+        reading a **mirror**: a flag this side of the wall, flipped by whichever
+        routes into the control somebody had thought of. Every route that was not
+        thought of -- a screen reader passing the Insert key through in its own
+        way, a key repeat, anything reaching the control without going past the
+        flag -- leaves the mirror describing a mode the control is not in. And a
+        mirror that is wrong is wrong in *both* directions at once, which is
+        exactly what "reversed" describes.
+
+        The mirror existed because :meth:`toggle_overtype` says the control "will
+        not report which mode it is in". That is not true, and this is the
+        method that proves it: ``ITextSelection.Flags`` carries ``tomSelOvertype``
+        and the control keeps it accurate whoever changed the mode. Measured on
+        the live RICHEDIT50W -- false while inserting, true after one toggle,
+        false again after another.
+
+        So nothing needs to guess any more. Asking costs one COM call on a
+        status refresh that already reads the document, and it cannot disagree
+        with the control because it *is* the control.
+
+        ``None`` rather than ``False`` where there is no native control: "I
+        cannot tell" and "it is inserting" are different answers, and a status
+        cell that turns the first into the second is the misreporting this
+        method exists to end.
+        """
+        if not self.rtf_available():
+            return None
+        try:
+            document = _get_text_document(self.hwnd())
+            return bool(int(document.Selection.Flags) & _TOM_SEL_OVERTYPE)
+        except Exception:  # noqa: BLE001 - a readback must never break a keypress
+            return None
 
     def toggle_overtype(self) -> bool:
         """Flip the control between inserting and overwriting, and say whether it took.

@@ -271,6 +271,46 @@ class DocumentHeadingsMixin:
         self._announce(describe_heading_arrival(level, title))
         self.sync_structure_announcer()
 
+    def _organize_rich_headings(self, organize: Any) -> None:
+        """The rich half of :meth:`cmd_heading_organizer`.
+
+        Separate only because the two halves have nothing in common past the
+        dialog: one hands a string in and puts a string back, the other hands
+        the control in and lets formatted ranges move inside it.
+        """
+        from quill.ui.richedit_rtf_surface import RichEditRtfError
+
+        if not self.editor.rtf_available():
+            self._announce("The Heading Organizer needs the Windows Rich Edit control")
+            return
+        try:
+            changed = organize(
+                self,
+                wrapper=self.editor,
+                text=self.control.GetValue(),
+                say=self._announce,
+                warn_duplicate_h1=bool(
+                    getattr(self.app.settings, "heading_organizer_warn_duplicate_h1", False)
+                ),
+            )
+        except RichEditRtfError as exc:
+            self._announce(str(exc))
+            return
+        if not changed:
+            return
+        self.doc_text.invalidate()
+        self._set_modified(True)
+        self.reset_structure_announcer()
+        # Latched, like the markup path: the caret is inside a heading whose
+        # level may have changed, and the hook that fires next must not read it
+        # out on top of the sentence below.
+        self.sync_structure_announcer()
+        self._touch_status()
+        # The markup path's wording, not a second phrasing of it. One outcome
+        # said two ways is how a listener starts wondering whether the two
+        # branches did two different things.
+        self._announce("Applied heading organizer changes")
+
     def cmd_heading_organizer(self) -> None:
         """Ctrl+Alt+Shift+O: every heading in one list, reordered with arrows.
 
@@ -281,14 +321,22 @@ class DocumentHeadingsMixin:
         organizer the list *is* the shape (bad.md P2.13, Tier 2).
 
         The window is :mod:`quill.ui.heading_organizer_dialog`, shared with
-        QUILL rather than written a second time. Rich text is not offered it:
-        its headings are point sizes on runs, so reordering means moving
-        formatted ranges rather than lines, which is a different job.
+        QUILL rather than written a second time -- and since 2026-09-22 shared
+        with **rich text** as well. It used to refuse there, on the grounds that
+        a rich heading is a point size on a run and reordering it means moving a
+        formatted range rather than a line. That was true about the mechanism
+        and wrong about the conclusion: those documents have headings, the list
+        was already there, and the answer was to move formatted ranges
+        (:mod:`quill.ui.heading_organizer_rich`), not to withhold the window.
         """
-        from quill.ui.heading_organizer_dialog import ORGANIZER_KINDS, organize_headings
+        from quill.ui.heading_organizer_dialog import (
+            ORGANIZER_KINDS,
+            organize_headings,
+            organize_rich_headings,
+        )
 
         if self.editor.mode == RICH:
-            self._announce("The Heading Organizer needs a Markdown or HTML document")
+            self._organize_rich_headings(organize_rich_headings)
             return
         surface = self.markup_surface()
         if surface not in ORGANIZER_KINDS:

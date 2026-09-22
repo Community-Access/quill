@@ -447,11 +447,32 @@ def test_cancelling_the_tray_pastes_nothing(lite_window, lite_dialogs):
     assert win.control.GetValue() == "hello"
 
 
-def test_paste_clip_says_so_when_the_library_is_empty(lite_window, lite_dialogs):
+def test_paste_clip_says_why_the_library_is_empty(lite_window, lite_dialogs):
+    """Reported: "recent clips says nothing defined when there are."
+
+    There were not, and "empty" was true and useless. The library is off by
+    default on purpose -- a history of everything you copy is a file on your
+    disk -- so somebody who has just copied four things and is told it is empty
+    reads the feature as broken. A person cannot tell a feature that is off
+    from one that is failing, and that difference is the only thing they need.
+    """
     win = lite_window("hello")
     win.cmd_paste_clip()
-    assert win.announcements[-1] == "The clip library is empty"
+    said = win.announcements[-1]
+    assert "No clips yet" in said
+    assert "Keep every copy" in said, "it must name the setting that is off"
+    assert "Keep Clip" in said, "and the way to fill it without turning that on"
     assert lite_dialogs.names() == []
+
+
+def test_paste_clip_does_not_blame_a_setting_that_is_already_on(lite_window, lite_dialogs):
+    """With the history on, an empty library is just an empty library."""
+    win = lite_window("hello")
+    win.app.settings.clip_library_autocapture = True
+    win.cmd_paste_clip()
+    said = win.announcements[-1]
+    assert "No clips yet" in said
+    assert "Keep every copy" not in said
 
 
 def test_paste_clip_inserts_the_chosen_entry(lite_window, lite_dialogs):

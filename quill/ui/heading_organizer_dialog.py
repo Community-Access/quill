@@ -38,7 +38,7 @@ from quill.core.markdown_sections import (
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_modal_dialog
 
-__all__ = ["ORGANIZER_KINDS", "organize_headings"]
+__all__ = ["ORGANIZER_KINDS", "organize_headings", "organize_rich_headings"]
 
 #: The document kinds that have a heading *syntax* to rewrite. Rich text is
 #: excluded deliberately: its headings are point sizes on runs, and reordering
@@ -86,6 +86,56 @@ def organize_headings(
         say("Heading Organizer closed without changes")
         return None
     return transformed
+
+
+def organize_rich_headings(
+    parent: Any,
+    *,
+    wrapper: Any,
+    text: str,
+    say: Callable[[str], None],
+    show_modal: Callable[[Any, str], int] = show_modal_dialog,
+    warn_duplicate_h1: bool = False,
+) -> bool:
+    """The organizer over a rich text document. ``True`` if the document changed.
+
+    The same window as :func:`organize_headings`, over the same blocks, with the
+    same promote, demote, reorder and rename -- only the two ends differ. The
+    headings come from the control's own point-size ladder rather than from
+    parsing markers out of a string, and the edits go back through formatted
+    range moves rather than a rewritten string, so a section keeps its sizes and
+    weights on the way (:mod:`quill.ui.heading_organizer_rich`).
+
+    Sharing the dialog is the point. A rich-text organizer written separately
+    would be a second set of keys to learn and a second place for the
+    duplicate-Heading-1 rule to drift.
+    """
+    from quill.ui.heading_organizer_rich import (
+        apply_rich_organizer_edits,
+        rich_heading_blocks,
+        unchanged,
+    )
+
+    headings = wrapper.all_headings()
+    if not headings:
+        say("No headings found for Heading Organizer")
+        return False
+    blocks = rich_heading_blocks(text, headings)
+    updated = _show_dialog(
+        parent,
+        headings=blocks,
+        source_text=text,
+        show_modal=show_modal,
+        say=say,
+        warn_duplicate_h1=warn_duplicate_h1,
+    )
+    if updated is None:
+        say("Heading Organizer cancelled")
+        return False
+    if unchanged(blocks, updated):
+        say("Heading Organizer closed without changes")
+        return False
+    return bool(apply_rich_organizer_edits(wrapper, blocks, updated))
 
 
 def _show_dialog(

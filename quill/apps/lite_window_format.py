@@ -238,7 +238,17 @@ class DocumentFormatCommandsMixin:
         # The document's own markup, so Alt+Shift+Right walks an ``<h2>`` down
         # to an ``<h3>`` in an HTML file rather than looking for hashes that a
         # well-formed HTML document will never contain.
-        surface = self.markup_surface() or "markdown"
+        #
+        # And **no fallback to Markdown**. A plain text document has no markup
+        # at all, so asking for hashes in one found none and answered "put the
+        # cursor on a heading line" -- which tells somebody their plain document
+        # has heading lines somewhere. It does not. Reported as the editor being
+        # "misleading about markdown ... in plain text we are not writing
+        # markdown, just plain text".
+        surface = self.markup_surface()
+        if not surface:
+            self._announce(self._no_formatting_here())
+            return
         change = adjust_heading_level(
             text, self.control.GetInsertionPoint(), delta, markup_kind=surface
         )
@@ -300,8 +310,14 @@ class DocumentFormatCommandsMixin:
         # has headings too, and move_section was looking for hashes it would
         # never find in one -- so Alt+Shift+Up in a .html said "not in a
         # section" about a section (bad.md R13).
+        # No Markdown fallback here either: "No section to move" in a plain
+        # text document is a sentence about sections that document cannot have.
+        surface = self.markup_surface()
+        if not surface:
+            self._announce(self._no_formatting_here())
+            return
         new_text, new_caret, result, announce = move_section(
-            text, caret, direction, markup_kind=self.markup_surface() or "markdown"
+            text, caret, direction, markup_kind=surface
         )
         if result is not MoveResult.OK:
             self._announce(announce)

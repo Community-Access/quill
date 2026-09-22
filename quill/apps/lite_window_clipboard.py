@@ -380,7 +380,17 @@ class DocumentClipboardMixin:
         """Choose from everything copied recently and paste it."""
         entries = self.app.clip_library.all_entries()
         if not entries:
-            self._announce("The clip library is empty")
+            # "Empty" was true and useless: the library is off by default, so
+            # somebody who has just copied four things has every reason to read
+            # it as broken. empty_reason says which of the two it is.
+            from quill.core.clip_library import empty_reason
+
+            self._announce(
+                empty_reason(
+                    autocapture=bool(getattr(self.app.settings, "clip_library_autocapture", False)),
+                    keep_clip_key=self.spoken_key_for("cmd_remember_clip"),
+                )
+            )
             return
         rows = [
             (index, f"{'Favourite: ' if entry.favorite else ''}{entry.preview(_PREVIEW_CHARS)}")

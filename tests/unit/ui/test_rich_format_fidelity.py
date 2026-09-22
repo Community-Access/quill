@@ -276,3 +276,66 @@ def test_normal_text_leaves_the_typeface_alone(editors, wx_app) -> None:
     _round_trip(wrapper, reader, wx_app)
     reader_control.SetInsertionPoint(2)
     assert "georgia" in reader.caret_format_description().lower()
+
+
+# --------------------------------------------------------------------------- #
+# Overtype: asked of the control, never remembered
+
+
+def test_the_control_reports_its_own_typing_mode(editors, wx_app) -> None:
+    r"""Reported as insert and overwrite being "reversed".
+
+    The status bar read a **mirror** -- a flag this side of the wall, flipped by
+    whichever routes into the control somebody had thought of. Any route that
+    was not thought of leaves the mirror describing a mode the control is not
+    in, and a wrong mirror is wrong in both directions at once, which is exactly
+    what "reversed" describes.
+
+    The mirror existed because ``toggle_overtype`` said the control "will not
+    report which mode it is in". It does: ``ITextSelection.Flags`` carries
+    ``tomSelOvertype`` and the control keeps it accurate whoever changed the
+    mode. This is the measurement that retired the mirror.
+    """
+    control, wrapper, _reader_control, _reader = editors
+    control.SetValue("abcdef")
+    control.SetInsertionPoint(0)
+    control.SetFocus()
+    wx_app.Yield()
+
+    assert wrapper.overtype_active() is False
+    wrapper.toggle_overtype()
+    wx_app.Yield()
+    assert wrapper.overtype_active() is True
+    wrapper.toggle_overtype()
+    wx_app.Yield()
+    assert wrapper.overtype_active() is False
+
+
+def test_what_it_reports_is_what_typing_actually_does(editors, wx_app) -> None:
+    """The readout and the behaviour, measured together in one place.
+
+    A status cell that misreports what typing is about to do, to somebody who
+    cannot check by looking, is the one failure this bar exists to prevent. The
+    only way to be sure it cannot is to type and see.
+    """
+    from quill.ui.richedit_rtf_surface import _SendMessageW
+
+    control, wrapper, _reader_control, _reader = editors
+    wm_char = 0x0102
+
+    def type_one() -> str:
+        control.SetValue("abcdef")
+        control.SetInsertionPoint(0)
+        control.SetFocus()
+        wx_app.Yield()
+        _SendMessageW(wrapper.hwnd(), wm_char, ord("X"), 0)
+        wx_app.Yield()
+        return control.GetValue()
+
+    assert wrapper.overtype_active() is False
+    assert type_one() == "Xabcdef", "reports inserting, so it must insert"
+
+    wrapper.toggle_overtype()
+    wx_app.Yield()
+    assert wrapper.overtype_active() is True
+    assert type_one() == "Xbcdef", "reports overwriting, so it must overwrite"

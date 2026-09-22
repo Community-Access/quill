@@ -47,6 +47,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
     show_modal_dialog,
 )
+from quill.ui.hotkey_conflict import claim_sentence
 
 __all__ = ["DocumentKeymapMixin", "KeymapEditorDialog", "row_text", "sort_key"]
 
@@ -334,7 +335,15 @@ class KeymapEditorDialog:
             self._say(f"{chord} is {names}.")
             return
         problem = keymap_mod.describe_binding_problem(chord)
-        self._say(problem if problem else f"{chord} is free.")
+        if problem:
+            self._say(problem)
+            return
+        # "Free" used to mean "free inside QuillLite", which is the wrong half
+        # of the question: another application holding a chord system-wide gets
+        # the key before this window sees it, so the chord is not free at all
+        # and pressing it does nothing. Reported as "Ctrl+Alt+G interferes with
+        # Google Drive".
+        self._say(claim_sentence(chord, wx) or f"{chord} is free.")
 
     # -- changing a key ------------------------------------------------------ #
 
@@ -371,6 +380,13 @@ class KeymapEditorDialog:
             self._say(refusal)
             show_message_box(refusal, "Cannot use that key", wx.OK | wx.ICON_WARNING, self.dialog)
             return
+        claimed = claim_sentence(chord, wx)
+        if claimed:
+            # Warned rather than refused: the chord may be free again tomorrow
+            # when that application is not running, and it is not this editor's
+            # place to forbid a key somebody has chosen deliberately.
+            self._say(claimed)
+            show_message_box(claimed, "Key already in use", wx.OK | wx.ICON_WARNING, self.dialog)
         owners = keymap_mod.conflicting_handlers(self._keymap, handler, chord)
         if owners and not self._confirm_move(chord, owners):
             self._say(f"{title} still answers to {self._keymap.get(handler, '') or _UNBOUND}.")

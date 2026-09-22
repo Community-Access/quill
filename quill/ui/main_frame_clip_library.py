@@ -76,6 +76,7 @@ class ClipLibraryMixin:
             self._announce("Already in the Clip Library.")
 
     def open_clip_library(self) -> None:
+        from quill.core.clip_library import empty_reason
         from quill.core.fragment import FragmentFormat
         from quill.ui.clip_library_dialog import ClipLibraryDialog
 
@@ -96,6 +97,20 @@ class ClipLibraryMixin:
             promote_cb=_promote,
             content_format=content_format,
             paste_cb=self._paste_clip_at_caret,
+            # An empty list says nothing, and the history is off by default on
+            # purpose -- so an empty library reads as a broken feature to
+            # somebody who has just copied four things (reported 2026-09-22).
+            empty_message=empty_reason(
+                autocapture=bool(getattr(self.settings, "clip_library_autocapture", False)),
+                # getattr: the binding lookup is a MainFrame service, and this
+                # mixin is exercised against hosts that do not have it.
+                keep_clip_key=str(
+                    getattr(self, "_binding_for", lambda _id: "")(
+                        "edit.keep_selection_in_clip_library"
+                    )
+                    or ""
+                ),
+            ),
         )
         dlg.show()
         dlg.close()

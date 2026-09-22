@@ -74,6 +74,34 @@ class RichParagraphMixin:
         """
         self.format_align("justify")
 
+    def _organize_rich_headings(self, wrapper: object, organize: object) -> None:
+        """The rich half of :meth:`open_heading_organizer`.
+
+        Separate because the two halves share only the dialog: one hands a
+        string in and puts a string back through the undo-aware apply, the
+        other hands the control in and lets formatted ranges move inside it.
+        """
+        from quill.ui.richedit_rtf_surface import RichEditRtfError
+
+        try:
+            changed = organize(  # type: ignore[operator]
+                self.frame,
+                wrapper=wrapper,
+                text=self.editor.GetValue(),
+                show_modal=self._show_modal_dialog,
+                say=self._set_status,
+                warn_duplicate_h1=bool(
+                    getattr(self.settings, "heading_organizer_warn_duplicate_h1", False)
+                ),
+            )
+        except RichEditRtfError as error:
+            self._set_status(f"Heading Organizer failed: {error}")
+            return
+        if not changed:
+            return
+        self._mark_rich_formatting_dirty()
+        self._announce_result("Applied heading organizer changes")
+
     # -- lists -------------------------------------------------------------- #
 
     _LIST_STYLE_WORDS = {

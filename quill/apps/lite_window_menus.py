@@ -42,7 +42,9 @@ import wx
 
 from quill.apps.lite_shell import MAX_NUMBERED
 from quill.apps.lite_window_markup import MARKUP_COMMANDS
+from quill.apps.lite_window_typing import overwrite_now
 from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
+from quill.core.lite.format_kinds import FORMAT_COMMAND_KINDS, applies_to
 from quill.core.lite.keymap import default_aliases, resolved_commands
 from quill.ui.richedit_editing import RICH
 
@@ -215,7 +217,7 @@ class DocumentMenuMixin:
             "cmd_toggle_extend_mode": getattr(self, "_selection_anchor", None) is not None,
             "cmd_toggle_extend_selection_mode": self.extend_selection_active(),
             # Per document too: the control keeps overtype per control.
-            "cmd_toggle_overwrite": getattr(self, "_overwrite_mode", False),
+            "cmd_toggle_overwrite": overwrite_now(self),
             # Checked means Tab types a tab, which is how QuillLite starts.
             "cmd_toggle_tab_mode": getattr(self, "_tab_inserts_literal", True),
             # Per app, both of them: the status bar is either on screen or not,
@@ -269,6 +271,16 @@ class DocumentMenuMixin:
                 # bold is real bold, so a markup tag inserted into one would put
                 # literal angle brackets next to text that is already formatted.
                 item.Enable(not rich and current in languages)
+        # The Format menu, which in a plain text document was thirty-one enabled
+        # rows of which sixteen could only refuse ("if in plain text mode,
+        # shouldn't the format menu go away?"). Dimmed rather than removed: the
+        # menu bar's shape is what a listener navigates by, and Switch Document
+        # Mode and Document Language stay live because they are the way out.
+        kind = "rich" if rich else current
+        for handler in FORMAT_COMMAND_KINDS:
+            item = self._menu_items.get(handler)
+            if item is not None:
+                item.Enable(applies_to(handler, kind))
 
     def refresh_recent_menu(self) -> None:
         """Rebuild Open Recent, skipping files that are no longer there.

@@ -27,6 +27,7 @@ class ClipLibraryDialog:
         promote_cb: Callable[[int], None] | None = None,
         content_format: FragmentFormat = FragmentFormat.TEXT,
         paste_cb: Callable[[str], None] | None = None,
+        empty_message: str = "",
     ) -> None:
         self._library = library
         self._announce = announce_cb or (lambda _msg: None)
@@ -34,6 +35,11 @@ class ClipLibraryDialog:
         self._content_format = content_format
         self._paste_cb = paste_cb
         self._indices: list[int] = []
+        #: What to say when the library is empty and nothing is being
+        #: searched for -- the caller owns it, because only the caller
+        #: knows whether the history setting is on and what Keep Clip is
+        #: bound to. Empty string keeps the old silence.
+        self._empty_message = empty_message
 
         self.dialog = wx.Dialog(
             parent, title="Clip Library", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -167,6 +173,14 @@ class ClipLibraryDialog:
             self._listbox.Append(f"{tag}{entry.display_label()}")
         if self._indices:
             self._listbox.SetSelection(0)
+        elif not query:
+            # An empty list says nothing at all, and the library is off by
+            # default on purpose -- so somebody who has just copied four things
+            # reads the silence as a broken feature. Reported against QuillLite;
+            # the same sentence, from the same place, so the two editors cannot
+            # explain one thing two ways.
+            if self._empty_message:
+                self._set_status(self._empty_message)
         self._refresh_preview()
         self._update_buttons()
 

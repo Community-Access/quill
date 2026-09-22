@@ -65,6 +65,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.lite_window_typing import overwrite_now
 from quill.core.heading_levels import heading_level_at
 from quill.core.list_structure import list_context_at
 from quill.core.metrics import compute_document_stats
@@ -312,7 +313,7 @@ class DocumentStatusMixin:
             "words": f"{stats.words:,} words",
             "characters": f"{stats.characters:,} characters",
             "selection": selection,
-            "typing_mode": "Overwrite" if getattr(self, "_overwrite_mode", False) else "Insert",
+            "typing_mode": "Overwrite" if overwrite_now(self) else "Insert",
             # QUILL's own wording for the same cell, so the two products do not
             # describe one mode two ways.
             "tab_mode": "Tab char" if getattr(self, "_tab_inserts_literal", True) else "Indent",
@@ -328,17 +329,30 @@ class DocumentStatusMixin:
         """Which heading the caret is in, in either kind of document.
 
         Rich text asks the control's Text Object Model about the point-size
-        ladder; plain text reads the Markdown hashes off the line, through the
-        same :func:`~quill.core.heading_levels.heading_level_at` the caret cue
-        and Alt+Shift+Right use. The cell used to read "Not in rich text" in a
-        plain document, which was wrong twice over: those documents have real
-        headings, and pressing Enter on the cell opens a working list of them.
+        ladder; a **Markdown or HTML** document reads its own markers off the
+        line, through the same :func:`~quill.core.heading_levels.heading_level_at`
+        the caret cue and Alt+Shift+Right use. The cell used to read "Not in
+        rich text" in those documents, which was wrong twice over: they have
+        real headings, and pressing Enter on the cell opens a working list.
+
+        A **plain text** document has none, and saying so is the fix for the
+        other half of that. ``heading_level_at`` defaults to reading Markdown,
+        and this call did not say otherwise -- so a plain document containing a
+        line of literal hashes was announced as "Heading 2" when the hashes are
+        the text. Reported as the editor being "misleading about markdown when
+        in plain text we are not writing markdown, just plain text". The surface
+        is passed now, and a plain document reads "Body text" because that is
+        all a plain document has.
 
         One call, on the coalesced refresh rather than per keystroke. A failure
         reads as "Body text", never as the bar stopping.
         """
         if self.editor.mode != RICH:
-            level = heading_level_at(text, self.control.GetInsertionPoint())
+            level = heading_level_at(
+                text,
+                self.control.GetInsertionPoint(),
+                markup_kind=self.markup_surface() or "",
+            )
         else:
             level = self.editor.heading_level_at_caret()
         return f"Heading {level}" if level else "Body text"

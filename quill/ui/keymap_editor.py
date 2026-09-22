@@ -38,6 +38,7 @@ from quill.core.keymap_query import (
 from quill.core.platform_nouns import primary_command_chord_label
 from quill.core.reserved_keys import reservation_for
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.hotkey_conflict import claim_sentence
 
 #: Commands that take part in the QUILL Quick Nav single-key browse layer. They
 #: are appended to the editable command list even though they are not registry
@@ -349,6 +350,15 @@ class KeymapEditorMixin:
                     wx.ICON_ERROR | wx.OK,
                 )
                 return False
+        # Another *application* holding the chord system-wide, which is not a
+        # conflict QUILL could win either: Windows hands a registered hotkey to
+        # its owner before a focused window sees it. Warned rather than refused
+        # -- the chord may be free again when that application is not running,
+        # and the screen-reader list above is the only one worth refusing over.
+        # Reported as "Ctrl+Alt+G interferes with Google Drive".
+        claimed = claim_sentence(canonical, wx)
+        if claimed:
+            self._show_message_box(claimed, "Keymap Editor", wx.ICON_WARNING | wx.OK)
         conflicts = find_keymap_conflicts(
             self.keymap, command_id, canonical, quill_key_prefix=prefix
         )

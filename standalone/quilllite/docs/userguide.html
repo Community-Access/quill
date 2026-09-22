@@ -2022,7 +2022,7 @@ remember. <strong>Alt+Shift+Y</strong> offers all twelve, each row
 saying what is in that slot now, so nothing gets overwritten
 unheard.</p>
 <p><strong>The collector</strong> gathers things up. Each
-<strong>Ctrl+Alt+G</strong> adds what you have selected to one growing
+<strong>Alt+Shift+S</strong> adds what you have selected to one growing
 pile, and <strong>Ctrl+Alt+Shift+G</strong> pastes the whole pile. This
 is what you want when you are pulling five quotes out of a long
 document. <strong>Ctrl+Alt+Shift+C</strong> empties the pile.</p>
@@ -2317,6 +2317,24 @@ and asks. If you say yes, that command is left with <strong>no
 key</strong> until you give it one – which is the honest outcome,
 because a key claimed twice means one of the pair never fires and
 nothing tells you which.</p>
+<h3 id="when-another-program-has-the-key">When another program has the
+key</h3>
+<p>Some programs claim a key across the whole of Windows – Google Drive
+takes <strong>Ctrl+Alt+G</strong>, and it is not the only one. A key
+claimed that way never reaches QuillLite at all: Windows hands it to the
+program that registered it, even while QuillLite is the window you are
+typing in. The command is not broken and the key is not misassigned; the
+keystroke simply goes somewhere else.</p>
+<p>This used to be invisible, which made it look like a bug in the
+editor. Record a Key now says so – “already claimed by another
+application running on this computer” – and so does the Keyboard Manager
+if you assign a key somebody else has taken. It is a warning rather than
+a refusal: the key may be yours again tomorrow when that program is not
+running, and it is not this editor’s place to forbid a key you chose
+deliberately.</p>
+<p>QuillLite cannot say <em>which</em> program. Windows does not offer
+the owner’s name, and guessing from a list of the usual suspects would
+be wrong the first time you installed something that was not on it.</p>
 <h3 id="what-cannot-be-changed">What cannot be changed</h3>
 <p><strong>Insert is never bindable.</strong> It is the key NVDA and
 JAWS use as their own modifier, and taking it would take away the key
@@ -3284,7 +3302,7 @@ list inside the app.</p>
 <td>Clear Copy Tray</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+G</strong></td>
+<td><strong>Alt+Shift+S</strong></td>
 <td>Collect Selection</td>
 </tr>
 <tr>

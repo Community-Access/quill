@@ -75,6 +75,24 @@ __all__ = ["DocumentTypingMixin"]
 _QUOTES = {'"', "'"}
 
 
+def overwrite_now(frame: object) -> bool:
+    """Whether typing overwrites, asked of the control rather than remembered.
+
+    A module function because three places need the answer -- the status cell,
+    the View menu's check mark and the command itself -- and two of them are
+    called unbound against stub frames, where a method on a sibling mixin is not
+    there to be called. Falls back to the mirror when the host cannot be asked.
+    """
+    ask = getattr(getattr(frame, "editor", None), "overtype_active", None)
+    live = ask() if callable(ask) else None
+    if live is None:
+        return bool(getattr(frame, "_overwrite_mode", False))
+    # Keep the fallback honest, so a surface that stops answering does not
+    # start answering with something years out of date.
+    frame._overwrite_mode = bool(live)  # type: ignore[attr-defined]
+    return bool(live)
+
+
 class DocumentTypingMixin:
     """Abbreviation expansion and autocorrect, on the way through EVT_CHAR."""
 

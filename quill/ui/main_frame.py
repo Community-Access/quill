@@ -10066,8 +10066,20 @@ class MainFrame(
         how to put text back through the undo-aware apply, and the setting that
         decides whether a second Heading 1 is a warning.
         """
-        from quill.ui.heading_organizer_dialog import organize_headings
+        from quill.ui.heading_organizer_dialog import (
+            organize_headings,
+            organize_rich_headings,
+        )
 
+        # Rich text since 2026-09-22. It used to fall through to the markup
+        # path and be refused there, which was a statement about the organizer
+        # dressed up as one about the document: a rich document has headings,
+        # and what was missing was a way to move a *formatted* range rather
+        # than a line (quill/ui/heading_organizer_rich.py).
+        wrapper = self._active_richedit()
+        if self._current_editor_mode() == "rich" and wrapper is not None:
+            self._organize_rich_headings(wrapper, organize_rich_headings)
+            return
         transformed = organize_headings(
             self.frame,
             markup_kind=self._effective_markup_kind(),

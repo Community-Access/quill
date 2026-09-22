@@ -1345,7 +1345,7 @@ the number — and choosing is the whole point of a numbered slot, because a num
 you picked is one you can remember. **Alt+Shift+Y** offers all twelve, each row
 saying what is in that slot now, so nothing gets overwritten unheard.
 
-**The collector** gathers things up. Each **Ctrl+Alt+G** adds what you have
+**The collector** gathers things up. Each **Alt+Shift+S** adds what you have
 selected to one growing pile, and **Ctrl+Alt+Shift+G** pastes the whole pile.
 This is what you want when you are pulling five quotes out of a long document.
 **Ctrl+Alt+Shift+C** empties the pile.
@@ -1662,6 +1662,25 @@ silently refuse. QuillLite names the command that owns it and asks. If you say
 yes, that command is left with **no key** until you give it one -- which is the
 honest outcome, because a key claimed twice means one of the pair never fires and
 nothing tells you which.
+
+### When another program has the key
+
+Some programs claim a key across the whole of Windows -- Google Drive takes
+**Ctrl+Alt+G**, and it is not the only one. A key claimed that way never reaches
+QuillLite at all: Windows hands it to the program that registered it, even while
+QuillLite is the window you are typing in. The command is not broken and the key
+is not misassigned; the keystroke simply goes somewhere else.
+
+This used to be invisible, which made it look like a bug in the editor. Record a
+Key now says so -- "already claimed by another application running on this
+computer" -- and so does the Keyboard Manager if you assign a key somebody else
+has taken. It is a warning rather than a refusal: the key may be yours again
+tomorrow when that program is not running, and it is not this editor's place to
+forbid a key you chose deliberately.
+
+QuillLite cannot say *which* program. Windows does not offer the owner's name,
+and guessing from a list of the usual suspects would be wrong the first time you
+installed something that was not on it.
 
 ### What cannot be changed
 
@@ -2251,7 +2270,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+Y** | Copy to Tray Slot... |
 | **Ctrl+Alt+V** | Paste from Tray... |
 | **Ctrl+Alt+Shift+Y** | Clear Copy Tray |
-| **Ctrl+Alt+G** | Collect Selection |
+| **Alt+Shift+S** | Collect Selection |
 | **Ctrl+Alt+Shift+G** | Paste Everything Collected |
 | **Ctrl+Alt+Shift+C** | Clear the Collector |
 | **Ctrl+Alt+M** | Keep Clip |
