@@ -214,3 +214,26 @@ def test_junk_in_the_store_is_a_fresh_state_not_a_crash() -> None:
     assert RadioOnboardingState.from_dict("nonsense") == RadioOnboardingState()
     assert RadioOnboardingState.from_dict(None) == RadioOnboardingState()
     assert RadioOnboardingState.from_dict({"seen_tips": "not a list"}).seen_tips == set()
+
+
+def test_the_welcome_screen_does_not_promise_more_privacy_than_the_code_delivers() -> None:
+    """The first screen said "nothing you listen to leaves this computer" while
+    every play of a RadioBrowser station told RadioBrowser -- with no setting to
+    stop it. Nobody caught it because no test read the sentence.
+
+    This pins the shape of the claim, not its wording: it may not promise that
+    nothing leaves the machine, and having raised the subject it has to say
+    where the switch is. The audience cannot inspect their own network traffic,
+    so an unverifiable promise is the one thing this screen must not make.
+    """
+    from quill.core.radio.onboarding import SCREEN_BODIES, WELCOME
+
+    body = SCREEN_BODIES[WELCOME].lower()
+    for forbidden in (
+        "nothing you listen to leaves",
+        "nothing leaves this computer",
+        "no network",
+    ):
+        assert forbidden not in body, f"welcome screen over-promises: {forbidden!r}"
+    assert "preferences" in body, "having raised it, say where the switch is"
+    assert "radiobrowser" in body, "name who is told, not just that somebody is"

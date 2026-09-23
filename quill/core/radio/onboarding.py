@@ -13,10 +13,20 @@ same words: the app is excellent and the first minute is a locked door.
 
 So: **three screens, not seven**, exactly the shape
 :mod:`quill.core.podcasts.onboarding` uses for QUILL Cast. Welcome, find a
-station, keep it. Radio has no account, no tracker and no cloud, so it needs
-none of the consent screens a phone app needs -- and a first-run flow that asks
-somebody to page through permissions they never granted is how people learn to
-dismiss dialogs without reading them.
+station, keep it. Radio has no account and no tracker, so it needs none of the
+consent screens a phone app needs -- and a first-run flow that asks somebody to
+page through permissions they never granted is how people learn to dismiss
+dialogs without reading them.
+
+It is **not** true that Radio contacts nothing, and the welcome screen used to
+say so ("nothing you listen to leaves this computer"). It asks around twenty
+public directories what stations exist, checks for its own updates at launch,
+refreshes its station catalogue in the background, and tells RadioBrowser when
+you play one of RadioBrowser's stations. What it has none of is an account, a
+tracker, an advertisement or a usage report. Saying the stronger thing was the
+easier sentence to write and the one a listener cannot verify, which is
+precisely why it had to go: the audience here cannot watch their own network
+traffic and is being asked to take a sentence on trust.
 
 Then **one-shot tips**: one sentence, the first time somebody reaches a place
 where knowing one non-obvious thing changes what they can do. Each fires once,
@@ -68,8 +78,13 @@ SCREEN_BODIES: dict[str, str] = {
         "screen reader. Everything is a list you can arrow through, every "
         "station reads as a whole sentence, and every command has a key you can "
         "change.\n\n"
-        "Nothing here needs an account, and nothing you listen to leaves this "
-        "computer.\n\n"
+        "Nothing here needs an account, and nothing you write or record leaves "
+        "this computer. Finding stations does use the internet: Quill Radio asks "
+        "public station directories what exists, and it tells RadioBrowser's "
+        "community directory when you play one of its stations, which is how "
+        "that directory ranks them. You can turn that off in Preferences, and "
+        "Help has the full list of what is contacted and when. There is no "
+        "account, no tracking and no advertising anywhere in it.\n\n"
         "One key carries most of the app: {browse} opens the station browser, "
         "and What's Playing (in the Playback menu) says what is on, wherever "
         "you are."

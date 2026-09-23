@@ -51,6 +51,7 @@ def load_history(data_dir: Path) -> RadioHistory:
     if isinstance(raw, dict):
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
+        history.share_play_counts = bool(raw.get("share_play_counts", True))
         history.show_station_details = bool(raw.get("show_station_details", True))
         history.confirm_browse_delete = bool(raw.get("confirm_browse_delete", True))
         history.explain_browse_delete = bool(raw.get("explain_browse_delete", True))
@@ -240,6 +241,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
         {
             "resume_on_launch": history.resume_on_launch,
             "announce_track_titles": history.announce_track_titles,
+            "share_play_counts": history.share_play_counts,
             "show_station_details": history.show_station_details,
             "confirm_browse_delete": history.confirm_browse_delete,
             "explain_browse_delete": history.explain_browse_delete,

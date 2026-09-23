@@ -361,3 +361,37 @@ def test_youtube_consent_defaults_off_and_round_trips(tmp_path) -> None:
     save_history(tmp_path, history)
 
     assert load_history(tmp_path).youtube_consented is True
+
+
+def test_play_count_sharing_is_on_by_default_and_survives_a_round_trip(tmp_path: Path) -> None:
+    """The community play count needs a switch, not only a Safe-Mode blanket.
+
+    Radio's first-run text used to promise "nothing you listen to leaves this
+    computer" while every play of a RadioBrowser station sent that station's id
+    to RadioBrowser -- true of the audio, false of the request, and with no
+    preference to turn it off. On by default (the count is what keeps a
+    community directory ranked), off if the listener says so.
+    """
+    history = RadioHistory()
+    assert history.share_play_counts is True
+
+    history.share_play_counts = False
+    save_history(tmp_path, history)
+    assert load_history(tmp_path).share_play_counts is False
+
+    history.share_play_counts = True
+    save_history(tmp_path, history)
+    assert load_history(tmp_path).share_play_counts is True
+
+
+def test_a_store_written_before_the_preference_existed_defaults_to_on(tmp_path: Path) -> None:
+    """An upgrade must not read a missing key as a refusal."""
+    history = RadioHistory()
+    save_history(tmp_path, history)
+    path = next(tmp_path.rglob("*.json"))
+    import json
+
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    raw.pop("share_play_counts", None)
+    path.write_text(json.dumps(raw), encoding="utf-8", newline="\n")
+    assert load_history(tmp_path).share_play_counts is True

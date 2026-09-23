@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import random
+import re
 import socket
 import ssl
 import urllib.error
@@ -35,6 +36,9 @@ from quill.core.radio.models import RadioStation, _coerce_int
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _ALL_HOSTS = "all.api.radio-browser.info"
+#: A RadioBrowser station id. Used to keep other directories' ids out of the
+#: click-count call -- see :func:`is_radio_browser_uuid`.
+_UUID_SHAPE = re.compile(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}")
 _TIMEOUT_SECONDS = 10.0
 _DEFAULT_LIMIT = 50
 
@@ -473,15 +477,37 @@ def recently_changed_stations(limit: int = 100, *, safe_mode: bool = False) -> l
     return stations_from_json(_http_json(path))
 
 
+def is_radio_browser_uuid(station_uuid: str) -> bool:
+    """True only for an id that really came from RadioBrowser's directory.
+
+    RadioBrowser ids are UUIDs; every other directory's id has a different
+    shape -- TuneIn's is ``s25439``, iHeart's is ``iheart:1234``, the NOAA
+    index's is ``wxindex:KEC49``. The distinction matters because
+    :func:`register_click` posts this field to RadioBrowser, so an id from
+    somewhere else is both a station identity sent to a directory that has no
+    business with it and a vote RadioBrowser cannot count.
+    """
+    return bool(_UUID_SHAPE.fullmatch(station_uuid.strip()))
+
+
 def register_click(station_uuid: str, *, safe_mode: bool = False) -> None:
     """Tell RadioBrowser the station was played (community click-count vote).
 
     Best-effort: called once playback actually starts, from a background
     thread; failures are swallowed by the caller (a missed vote is not worth
     interrupting playback over).
+
+    **Only RadioBrowser's own stations.** Six directories blank
+    ``station_uuid`` specifically to stay out of this call, each with a comment
+    saying so -- which means the protection was every future source author's
+    job to remember, and three of them did not: TuneIn guide ids, iHeart ids
+    and NOAA callsigns were all being posted here. Checking the id's shape
+    moves that from an opt-out somebody can forget to a rule this function
+    enforces, so a new source is silent by default rather than leaking by
+    default.
     """
     refuse_in_safe_mode(safe_mode)
-    if not station_uuid:
+    if not is_radio_browser_uuid(station_uuid):
         return
     path = f"/json/url/{urllib.parse.quote(station_uuid)}"
     _http_json(path)

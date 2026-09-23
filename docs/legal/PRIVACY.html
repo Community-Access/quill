@@ -201,13 +201,86 @@
 AI-assisted workflows.</p>
 <h2 id="core-privacy-commitments">Core privacy commitments</h2>
 <ol type="1">
-<li>QUILL is local-first by design.</li>
+<li>QUILL is local-first by design. Your documents stay on your
+computer; nothing you write, dictate or record is sent anywhere unless
+you choose an action that sends it.</li>
 <li>QUILL does not persist AI chat session transcripts by default.</li>
-<li>QUILL does not send network requests without explicit user
-action.</li>
+<li><strong>QUILL contains no tracking, analytics, advertising or usage
+reporting of any kind, and no identifier for your copy or your
+machine.</strong> There is nothing that reports that you installed it,
+opened it, or what you did in it.</li>
 <li>QUILL does not store document content in API-key storage or
 credential vault records.</li>
+<li>A few features do contact the internet before you press anything,
+and they are listed under “Network requests you did not press a button
+for” below. QUILL used to claim here that it sent no network request
+without explicit user action; that was not true of every app in the
+family, and an unverifiable promise is worth less than an accurate
+list.</li>
 </ol>
+<h2 id="network-requests-you-did-not-press-a-button-for">Network
+requests you did not press a button for</h2>
+<p>Every one of these can be switched off, and all of them are off in
+Safe Mode (<code>--safe-mode</code>).</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Where it goes</th>
+<th>Default</th>
+<th>Switch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Update check at launch</td>
+<td><code>api.github.com</code> – asks for the list of releases; sends
+no version, account or machine detail</td>
+<td>On</td>
+<td><em>Check for updates on launch</em>, in Preferences (each app has
+its own)</td>
+</tr>
+<tr>
+<td>Quill Radio’s station-catalogue refresh</td>
+<td><code>radio-browser.info</code> (and SomaFM) – refreshes the local
+catalogue when the copy on disk is over six hours old, at launch and
+then daily</td>
+<td>On</td>
+<td><em>Keep a local station catalogue</em> and <em>Check for station
+catalogue updates when Quill Radio starts</em></td>
+</tr>
+<tr>
+<td>Quill Radio’s community play count</td>
+<td><code>radio-browser.info</code> – when you play one of that
+directory’s own stations, tells it so; sends the station’s id and
+nothing about you</td>
+<td>On</td>
+<td><em>Share play counts with the RadioBrowser directory</em></td>
+</tr>
+<tr>
+<td>Quill Radio’s now-playing title</td>
+<td>The station you are already listening to – re-reads the current
+track title every 30 seconds. No third party is involved</td>
+<td>On while playing</td>
+<td>Stops with playback</td>
+</tr>
+<tr>
+<td>Quill Radio’s stream recovery</td>
+<td>The failing station’s own website, plus its provider’s public
+address service – only after a stream fails to play, once per station
+per session</td>
+<td>On</td>
+<td><em>Recover failed streams from the station’s website</em></td>
+</tr>
+</tbody>
+</table>
+<p>Everything else – every directory search, every AI request, every
+file transfer, every podcast feed – happens because you asked for
+it.</p>
+<p>Every outbound call site in QUILL is inventoried in a build gate
+(<code>quill/tools/network_egress_audit.py</code>): a new network call
+that is not reviewed and listed fails the build. That is the mechanism
+this statement rests on, rather than a promise to be careful.</p>
 <h2 id="ai-interaction-data">AI interaction data</h2>
 <p>When you use cloud AI providers, the prompt content you choose to
 send is transmitted to that provider. Provider-side storage, retention,

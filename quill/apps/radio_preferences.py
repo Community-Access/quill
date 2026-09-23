@@ -128,6 +128,16 @@ def open_preferences(app: Any) -> None:
                 history.recover_from_website,
             ),
             PreferenceCheckbox(
+                "Share play counts with the RadioBrowser director&y",
+                "When you play a station from RadioBrowser's community "
+                "directory, tell it so -- that count is how the directory ranks "
+                "stations, and a directory everyone takes from and nobody gives "
+                "back to fills up with dead streams. It sends that station's id "
+                "and nothing about you, and only ever for RadioBrowser's own "
+                "stations. On by default; turn it off and nothing is sent",
+                history.share_play_counts,
+            ),
+            PreferenceCheckbox(
                 "Alt+F&4 minimizes to the system tray",
                 "When on, Alt+F4 sends Quill Radio to the system tray, still "
                 "playing, instead of closing the window. The titlebar X and "
@@ -328,6 +338,7 @@ def open_preferences(app: Any) -> None:
         history.check_updates_on_startup,
         history.announce_dialog_transitions,
         history.recover_from_website,
+        history.share_play_counts,
         history.alt_f4_to_tray,
         history.debug_mode,
         history.prevent_sleep,

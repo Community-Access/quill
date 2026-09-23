@@ -34,6 +34,11 @@ REPORT = REPO / "quill" / "tools" / "platform_report.py"
 #: one should require saying why in this list rather than in a silent pass).
 EXEMPT: frozenset[str] = frozenset()
 
+#: The fake entry key the egress test swaps in. Named, and asserted absent by
+#: tests/unit/structure, so a run that is killed before its restore leaves
+#: something a later run recognises instead of a diff that reads as deliberate.
+_SENTINEL_KEY = "core/nowhere.py::gone"
+
 
 def _module_gates() -> list[str]:
     """Every ``python -m quill.tools.X`` the scorecard shells out to."""
@@ -71,13 +76,29 @@ def test_the_egress_gate_fails_when_a_site_is_unreviewed(tmp_path: Path) -> None
     runs it can tell the difference.
     """
     entries = REPO / "quill" / "tools" / "network_egress_entries.py"
+    # Self-heal first. This test edits a *tracked source file* and restores it
+    # in a finally, which covers an assertion failure but not being killed --
+    # a pytest timeout, a Ctrl+C or a superseded background run all skip
+    # finally, and 2026-09-23 is the day one did: the sentinel key sat in
+    # quill/tools/network_egress_entries.py looking like a legitimate diff,
+    # and the egress gate stayed red for half an hour before anybody connected
+    # the two. Restoring on the way IN means the damage outlives nothing but
+    # the run that caused it.
+    if _SENTINEL_KEY in entries.read_text(encoding="utf-8"):
+        subprocess.run(
+            ["git", "checkout", "--", str(entries.relative_to(REPO))],
+            cwd=REPO,
+            capture_output=True,
+            check=False,
+        )
     original = entries.read_bytes()
     text = original.decode("utf-8")
     first = re.search(r'^    "([^"]+)": \(', text, re.MULTILINE)
     assert first is not None, "the entries table changed shape"
+    assert _SENTINEL_KEY not in text, "the tree is still dirty; restore it by hand"
     try:
         entries.write_bytes(
-            text.replace(f'"{first.group(1)}": (', '"core/nowhere.py::gone": (', 1).encode("utf-8")
+            text.replace(f'"{first.group(1)}": (', f'"{_SENTINEL_KEY}": (', 1).encode("utf-8")
         )
         result = subprocess.run(
             [sys.executable, "-m", "quill.tools.network_egress_cli"],

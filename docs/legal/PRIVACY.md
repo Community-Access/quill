@@ -4,10 +4,32 @@ This document describes how QUILL handles privacy for local and AI-assisted work
 
 ## Core privacy commitments
 
-1. QUILL is local-first by design.
+1. QUILL is local-first by design. Your documents stay on your computer; nothing you write, dictate or record is sent anywhere unless you choose an action that sends it.
 2. QUILL does not persist AI chat session transcripts by default.
-3. QUILL does not send network requests without explicit user action.
+3. **QUILL contains no tracking, analytics, advertising or usage reporting of any kind, and no identifier for your copy or your machine.** There is nothing that reports that you installed it, opened it, or what you did in it.
 4. QUILL does not store document content in API-key storage or credential vault records.
+5. A few features do contact the internet before you press anything, and they are listed under "Network requests you did not press a button for" below. QUILL used to claim here that it sent no network request without explicit user action; that was not true of every app in the family, and an unverifiable promise is worth less than an accurate list.
+
+## Network requests you did not press a button for
+
+Every one of these can be switched off, and all of them are off in Safe Mode
+(`--safe-mode`).
+
+| What | Where it goes | Default | Switch |
+|---|---|---|---|
+| Update check at launch | `api.github.com` -- asks for the list of releases; sends no version, account or machine detail | On | *Check for updates on launch*, in Preferences (each app has its own) |
+| Quill Radio's station-catalogue refresh | `radio-browser.info` (and SomaFM) -- refreshes the local catalogue when the copy on disk is over six hours old, at launch and then daily | On | *Keep a local station catalogue* and *Check for station catalogue updates when Quill Radio starts* |
+| Quill Radio's community play count | `radio-browser.info` -- when you play one of that directory's own stations, tells it so; sends the station's id and nothing about you | On | *Share play counts with the RadioBrowser directory* |
+| Quill Radio's now-playing title | The station you are already listening to -- re-reads the current track title every 30 seconds. No third party is involved | On while playing | Stops with playback |
+| Quill Radio's stream recovery | The failing station's own website, plus its provider's public address service -- only after a stream fails to play, once per station per session | On | *Recover failed streams from the station's website* |
+
+Everything else -- every directory search, every AI request, every file
+transfer, every podcast feed -- happens because you asked for it.
+
+Every outbound call site in QUILL is inventoried in a build gate
+(`quill/tools/network_egress_audit.py`): a new network call that is not
+reviewed and listed fails the build. That is the mechanism this statement rests
+on, rather than a promise to be careful.
 
 ## AI interaction data
 

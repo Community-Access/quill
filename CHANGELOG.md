@@ -2,6 +2,53 @@
 
 ## 1.0.0
 
+### Quill Radio says what it actually sends (2026-09-23)
+
+The first thing Quill Radio told a new listener was *"Nothing here needs an
+account, and nothing you listen to leaves this computer."* The first half was
+true. The second half was not: every time you played a station from
+RadioBrowser's community directory, Radio told RadioBrowser --- which is
+precisely "what you listen to" leaving the computer --- and **there was no
+setting that turned it off.**
+
+That sentence is now accurate, and the thing it describes now has a switch.
+**Share play counts with the RadioBrowser directory** (Preferences, on by
+default) controls the community play count: the number that directory ranks
+stations by, sent as that station's id and nothing about you. On by default
+because a community directory everyone takes from and nobody gives back to
+fills up with dead streams; a checkbox because it is still a request naming a
+station, and "on unless you say otherwise" is only honest when saying otherwise
+is possible.
+
+**And it was reporting stations that were none of RadioBrowser's business.**
+Six directories blank the station id specifically to stay out of that call,
+each with a comment in the source saying so --- which made the protection every
+future source author's job to remember, and three of them did not. TuneIn guide
+ids, iHeart ids and NOAA callsigns were all being posted to RadioBrowser: a
+station identity sent to a directory with no interest in it, and a vote it
+cannot count. `register_click` now checks that the id is RadioBrowser-shaped, so
+a new source is silent by default instead of leaking by default.
+
+The **user guide** claimed station search used "four keyless directories" and
+that "no other network calls exist". It is about twenty, they are now all named,
+and the three things that happen before you press anything --- the launch update
+check, the station-catalogue refresh, the thirty-second now-playing re-read ---
+are described with their switches. The guide also said *"Quill Radio does not
+use Podcast Index, deliberately"* while Podcast Index shipped as a default-on
+browse branch; it is now documented as what it is. **PRIVACY.md** said QUILL
+"does not send network requests without explicit user action", which was false
+for Radio; it now carries a table of exactly what fires unprompted, where it
+goes, and how to stop it.
+
+What none of this was: telemetry. There is no tracking, no analytics, no
+advertising, no usage reporting and no identifier for your copy or your machine
+anywhere in the family --- verified, and now stated plainly rather than implied
+by a stronger claim that could not survive contact with the code. The audience
+here cannot watch their own network traffic, which is exactly why the
+unverifiable promise had to go and the checkable list had to replace it. Three
+rationales in the egress audit that asserted "explicit user action only" about
+paths with four automatic callers between them were corrected in the same pass.
+
 ### A manual you can listen to, and a site whose links all work (2026-09-23)
 
 Issue #1558, from a reader with ADHD, said what nobody inside the project

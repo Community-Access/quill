@@ -19,7 +19,7 @@ from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.paths import app_data_dir
 from quill.core.radio import favorites as radio_favorites
 from quill.core.radio import history as radio_history
-from quill.core.radio import now_playing_source, radio_browser, wake_timer
+from quill.core.radio import now_playing_source, play_counts, wake_timer
 from quill.core.radio.favorites import FavoriteStation
 from quill.core.radio.models import RadioStation
 from quill.core.radio.recording import (
@@ -422,10 +422,9 @@ class RadioMixin(RadioStatusWindowsMixin):
             podcast.stop()
 
     def _radio_register_click(self, station_uuid: str) -> None:
-        try:
-            radio_browser.register_click(station_uuid, safe_mode=self._safe_mode)
-        except Exception:  # noqa: BLE001 - a missed click-vote must never surface
-            pass
+        play_counts.report_play(
+            station_uuid, history=self._radio_history, safe_mode=self._safe_mode
+        )
 
     def _save_radio_favorites(self) -> None:
         radio_favorites.save_favorites(app_data_dir(), self._radio_favorites)

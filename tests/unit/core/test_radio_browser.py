@@ -206,6 +206,41 @@ def test_register_click_noop_without_uuid(monkeypatch: pytest.MonkeyPatch) -> No
     register_click("")  # no raise, no network call
 
 
+def test_only_radio_browser_ids_reach_the_click_endpoint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Six directories blank station_uuid to stay out of this call and three
+    forgot, so TuneIn guide ids, iHeart ids and NOAA callsigns were being posted
+    to RadioBrowser -- a station identity sent to a directory with no business
+    with it, and a vote it cannot count. Checking the id's shape makes a new
+    source silent by default rather than leaking by default.
+    """
+    sent: list[str] = []
+    monkeypatch.setattr(rb, "_http_json", lambda path: sent.append(path))
+
+    radio_browser_uuid = "9617a958-0601-11e8-ae97-52543be04c81"
+    register_click(radio_browser_uuid)
+    assert sent == [f"/json/url/{radio_browser_uuid}"]
+
+    sent.clear()
+    for foreign in (
+        "s25439",  # a TuneIn guide id
+        "iheart:1234",  # iHeart
+        "wxindex:KEC49",  # NOAA weather radio
+        "librivoxbook:99",  # LibriVox
+        "   ",
+        "not-a-uuid-at-all",
+    ):
+        register_click(foreign)
+    assert sent == [], f"these must never be posted to RadioBrowser: {sent}"
+
+
+def test_the_uuid_shape_test_is_exposed_for_callers() -> None:
+    assert rb.is_radio_browser_uuid("9617A958-0601-11E8-AE97-52543BE04C81")
+    assert not rb.is_radio_browser_uuid("iheart:1234")
+    assert not rb.is_radio_browser_uuid("")
+
+
 # -- Browse-tree "genres" adapters (Radio Browser by Genre node) -------------
 
 

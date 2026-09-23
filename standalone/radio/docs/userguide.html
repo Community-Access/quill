@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -975,8 +975,10 @@ account and no sign-in at any step, and the top podcasts in Ireland,
 Japan or Brazil are one folder away. Apple is only how the show is
 <em>found</em>: opening a show resolves it to the publisher’s own RSS
 feed, and the episode list, the audio and the transcripts all come from
-there. Quill Radio does not use Podcast Index, deliberately – Apple
-answers the same questions with nothing to register for.</p>
+there. Apple is the branch to reach for first, because it answers these
+questions with nothing to register for; <strong>Podcast Index</strong>
+is a second, independent branch beside it, and the one to try when
+Apple’s storefront does not list a show.</p>
 <p><strong>Subscribing, and finding what you subscribed to.</strong>
 <strong>Shift+F10</strong> on a show offers <strong>Subscribe to This
 Podcast</strong>, which files it in the shared podcast library – the
@@ -3899,31 +3901,69 @@ stream, a loopback-only web server on your own machine hands the
 filtered audio to the player) – nothing about it is reachable off your
 computer; on the mpv engine the same filters run inside the player
 itself, no relay at all.</li>
-<li><strong>Station search</strong> talks to four keyless, account-free
-directories, blended into one results list: the community
-<strong>RadioBrowser</strong> directory, the free
-<strong>SomaFM</strong> directory, <strong>iHeart</strong> (search reads
-its public station sitemap, <code>www.iheart.com</code>, with each
-chosen station’s real stream resolved on demand from its own page;
-browsing iHeart by genre reads its free, keyless content directory,
-<code>us.api.iheart.com</code>, which already includes the stream), and
+<li><strong>Station search and browsing</strong> talk to about twenty
+public directories, all keyless and account-free, blended into one
+results list. The main ones: the community <strong>RadioBrowser</strong>
+directory, the free <strong>SomaFM</strong> directory,
+<strong>iHeart</strong> (search reads its public station sitemap,
+<code>www.iheart.com</code>, with each chosen station’s real stream
+resolved on demand from its own page; browsing by genre reads its free,
+keyless content directory, <code>us.api.iheart.com</code>), and
 <strong>TuneIn</strong> (through RadioTime’s open OPML directory,
 <code>opml.radiotime.com</code> – the same service TuneIn’s own web
-player uses). <strong>Find Streams</strong> fetches only the one page
-you type (following its “Listen Live” link one level and, if it’s a
+player uses). Alongside them: SHOUTcast, Live365, Radio Paradise, a
+community M3U catalogue on GitHub, television listings from iptv.org,
+the Internet Archive, LibriVox, Project Gutenberg’s
+<code>gutendex.com</code>, AudioPub, Audius, Mixcloud, ccMixter, Apple’s
+podcast storefront and <strong>Podcast Index</strong>. Two more,
+<code>dir.xiph.org</code> and Wikidata, ship switched off.
+<strong>Choose Browse Sources</strong> lists every one of them with a
+checkbox, and a source you switch off is never contacted – not for
+browsing and not for its background catalogue refresh either.</li>
+<li><strong>Podcast Index</strong> is one of those sources and it is on
+by default. It is the one directory here that authenticates: Quill Radio
+ships an application key so it works without you registering for
+anything. The key identifies <em>the app</em>, not you, and you can put
+your own in its place.</li>
+<li><strong>Three things happen without you pressing anything.</strong>
+At launch, Quill Radio checks GitHub for its own updates (one request,
+no version or machine details sent – just “list the releases”), and
+refreshes its local station catalogue from RadioBrowser if the copy on
+disk is more than six hours old. While a station plays, it re-reads the
+current track title every thirty seconds from <strong>the stream you are
+already listening to</strong> – the same server, never a third party.
+Each of the three has a switch: <em>Check for updates automatically on
+launch</em>, <em>Keep a local station catalogue</em> and its companion
+<em>Check for station catalogue updates when Quill Radio starts</em>, in
+Preferences.</li>
+<li><strong>Playing a RadioBrowser station tells RadioBrowser.</strong>
+That is its community play count – the number its directory ranks
+stations by – and it sends that station’s id and nothing about you. It
+is on by default because a community directory everyone takes from and
+nobody gives back to fills up with dead streams, and it is one checkbox
+in Preferences (<em>Share play counts with the RadioBrowser
+directory</em>) if you would rather not. It happens only for
+RadioBrowser’s own stations; nothing is reported when you play anything
+from any other source.</li>
+<li><strong>Find Streams</strong> fetches only the one page you type
+(following its “Listen Live” link one level and, if it’s a
 Triton/StreamTheWorld player or an iHeart/TuneIn page, one lookup to
 that provider’s own public address service) – and that is the same
 single fetch used when you type a web address into any search box, so
-typing an address never contacts a directory at all; <strong>stream
-recovery</strong> does the same lookups against a failing station’s own
-website only when a stream won’t play (and only if you leave the setting
-on); <strong>What’s Playing</strong> reads metadata from the stream you
-are already playing, and as a last resort reads the current title from
-that same stream server’s own public status page (its Icecast or
-SHOUTcast now-playing endpoint – the same host, never a third party).
-All network features are off in Safe Mode. No other network calls exist,
-and every one of them is inventoried in QUILL’s network-egress
-audit.</li>
+typing an address never contacts a directory at all. <strong>Stream
+recovery</strong> does those same lookups against a failing station’s
+own website, automatically and without asking, when a stream won’t play
+– it is on by default and has its own checkbox. <strong>What’s
+Playing</strong> reads metadata from the stream you are already playing,
+and as a last resort the current title from that same stream server’s
+own status page.</li>
+<li><strong>What Quill Radio has none of:</strong> no account, no
+sign-in, no advertising, no tracking, no analytics, no usage reporting,
+and no unique identifier for your copy or your machine. Nothing you
+type, write or record is ever sent anywhere. Every network call the app
+can make is inventoried in QUILL’s network-egress audit, which is a
+build gate rather than a promise – a new call that is not in it fails
+the build. All network features are off in Safe Mode.</li>
 <li><strong>NOAA Weather Radio</strong> browsing, search, and the
 local-transmitter lookup use the keyless <strong>WeatherIndex</strong>
 directory (api.wxindex.org) when online, with the complete directory

@@ -68,6 +68,15 @@ class RadioHistory:
     #: Off by default -- in QUILL it would interrupt writing; turning it on
     #: is one check item on the radio menus.
     announce_track_titles: bool = False
+    #: Send the community play count ("click") to RadioBrowser when a station
+    #: from its directory starts playing. On by default, because the count is
+    #: how RadioBrowser's community ranks stations and a directory every
+    #: listener takes from and nobody gives back to decays -- but it is a
+    #: request naming a station, so it needs a switch rather than only a
+    #: Safe-Mode blanket. Only ever fires for RadioBrowser's own stations
+    #: (every other source leaves ``station_uuid`` empty on purpose); it sends
+    #: that station's id and nothing about the listener.
+    share_play_counts: bool = True
     #: Show the read-only Station Details pane in Browse/Search Stations. On by
     #: default; View > Show Station Details toggles it, honored by every surface.
     show_station_details: bool = True

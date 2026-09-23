@@ -7519,9 +7519,31 @@ onboarding.</li>
 linter (9.8): Flesch ≥ 60, controlled vocabulary, one idea per
 sentence.</li>
 <li>Says explicitly: documents never leave the machine without an
-explicit per-action confirmation; the only outbound calls v1.0 makes
-without confirmation are the manual update check and the optional
-crash-report upload (5.71), both opt-in.</li>
+explicit per-action confirmation, and the product contains no tracking,
+analytics, advertising, usage reporting or per-install identifier of any
+kind.</li>
+<li><strong>Names every unprompted call rather than claiming there are
+none</strong> (corrected 2026-09-23). The editor’s own list is short –
+the launch update check and the opt-in crash-report upload (5.71) – but
+the companion apps’ is not, and for two years this section and
+<code>docs/legal/PRIVACY.md</code> both asserted that QUILL “does not
+send network requests without explicit user action”, which was false for
+Quill Radio: it checks for updates at launch, refreshes its station
+catalogue in the background, re-reads the now-playing title from the
+playing stream every thirty seconds, scans a failing station’s website
+to recover a stream, and reported every play of a RadioBrowser station
+to RadioBrowser with no preference to stop it. The statement is now a
+table of what fires unprompted, where it goes, and which checkbox
+governs it.</li>
+<li>The governing rule, stated in the document itself: a claim a user
+cannot verify is worth less than a list they can check against the
+network-egress audit, which is a build gate. This audience –
+screen-reader users who cannot watch their own traffic – has no way to
+audit a promise, so the promise must be replaced by the enumeration.
+Corollary for future work: an unprompted call is acceptable and a
+<em>silent</em> one is not; each needs a named switch before it ships,
+and the community play count (<code>history.share_play_counts</code>) is
+the worked example.</li>
 </ul>
 <h3 id="558-licenses-screen">5.58 Licenses screen</h3>
 <ul>
