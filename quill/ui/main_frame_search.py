@@ -313,6 +313,9 @@ class SearchCommandsMixin(FileSearchPromptMixin):
         wrap_suffix = (
             " (wrapped)" if wrapped and getattr(self.settings, "announce_wrap", True) else ""
         )
+        # A match ends the run of misses: the next one is a fresh question and
+        # gets a spoken answer rather than another tone.
+        self._last_search_miss = None
         self._set_status(f"Found {direction} at position {start + 1}{wrap_suffix}")
         from quill.core.sound_events import SoundEvent
         from quill.ui.sound_manager import post_sound
@@ -325,21 +328,30 @@ class SearchCommandsMixin(FileSearchPromptMixin):
         ``settings.find_not_found_feedback`` -- sound (the default), speech, both
         or neither -- resolved through the shared rule in
         :mod:`quill.core.action_feedback` so QuillLite cannot answer this
-        differently. The tone alone by default because F3 is pressed in runs, and
-        "Not found" spoken on every press is what makes somebody switch speech off.
+        differently.
+
+        The **first** miss speaks whatever the mode says, and a repeat of the
+        same miss does not: see
+        :func:`~quill.core.action_feedback.resolve_failure` for why those are
+        two different presses. A miss counts as a repeat only while the wording
+        is unchanged, so changing what you are looking for gets you an answer
+        again rather than another unexplained tone.
 
         The status bar is set either way: ``_set_status`` speaks what it is given,
         so the quiet path uses ``_set_status_quiet`` and the bar still carries the
         record for anyone who goes and reads it.
         """
-        from quill.core.action_feedback import resolve
+        from quill.core.action_feedback import resolve_failure
         from quill.core.sound_events import SoundEvent
         from quill.ui.sound_manager import has_sound_for, post_sound
 
+        repeated = getattr(self, "_last_search_miss", None) == message
+        self._last_search_miss = message
         try:
-            play, speak = resolve(
+            play, speak = resolve_failure(
                 getattr(self.settings, "find_not_found_feedback", "sound"),
                 has_sound=has_sound_for(SoundEvent.SEARCH_NOT_FOUND),
+                repeated=repeated,
             )
         except Exception:  # noqa: BLE001 - feedback must never break a search
             play, speak = True, False

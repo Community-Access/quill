@@ -48,6 +48,7 @@ __all__ = [
     "ActionFeedback",
     "coerce",
     "resolve",
+    "resolve_failure",
 ]
 
 
@@ -101,3 +102,36 @@ def resolve(mode: object, *, has_sound: bool) -> tuple[bool, bool]:
     if resolved is ActionFeedback.SPEECH:
         return (False, True)
     return (True, False) if has_sound else (False, True)
+
+
+def resolve_failure(mode: object, *, has_sound: bool, repeated: bool) -> tuple[bool, bool]:
+    """``(play_sound, speak)`` for a moment that *failed*, not one that worked.
+
+    The rule this module opens with -- "a command that could not do what was
+    asked says so in words" -- was written and then not applied to the one
+    failure anybody meets daily. A search that found nothing played a tone and
+    said nothing, and the report was the obvious one: "QuillLite made a sound
+    but did not announce the error, is this due to a setting?"
+
+    It was a setting, and the setting had a real argument behind it: F3 is
+    pressed in runs, and "Not found" spoken on every press of it is the fastest
+    way to make somebody turn speech off altogether. Both things are true, and
+    they are true of *different presses*. So the split is by repetition rather
+    than by mode:
+
+    * The **first** failure speaks, whatever the mode says, because that press
+      is somebody asking a question and getting no answer. A tone can mean "not
+      found" only to a person who already knows it does.
+    * A **repeat** of the same failure falls back to :func:`resolve`, which is
+      where the F3-in-runs argument belongs: the second press already knows
+      what the first one was told.
+    * ``silent`` stays silent throughout. Somebody recording audio asked for an
+      editor that does not talk, and a failure is not an exception to that --
+      the status bar still carries the words.
+    """
+    if coerce(mode) is ActionFeedback.SILENT:
+        return (False, False)
+    play, speak = resolve(mode, has_sound=has_sound)
+    if repeated:
+        return (play, speak)
+    return (play, True)

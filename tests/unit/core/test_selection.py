@@ -126,3 +126,25 @@ def test_selection_scope_reports_lines_for_multi_line_span() -> None:
 def test_selection_scope_reports_span_for_arbitrary_single_line() -> None:
     text = "alpha beta gamma"
     assert selection_scope(text, 2, 9) == "span"
+
+
+# ---------------------------------------------------------------------------
+# the classifier's own names are not for saying out loud
+
+
+def test_a_scope_that_names_the_document_is_spoken() -> None:
+    from quill.core.selection import spoken_scope
+
+    for scope in ("word", "line", "sentence", "paragraph", "block", "document"):
+        assert spoken_scope(scope) == scope
+
+
+def test_a_scope_that_names_the_classifier_is_not() -> None:
+    """QuillLite's Say Selection read "9696 words, lines." and QUILL's Selection
+    Actions dialog titled itself "(lines, 180 words)" -- a bare noun with no
+    number in front of it, in two products, from two call sites that each
+    forgot the rule describe_selection had always applied."""
+    from quill.core.selection import spoken_scope
+
+    for scope in ("none", "span", "lines"):
+        assert spoken_scope(scope) == ""

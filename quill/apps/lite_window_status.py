@@ -61,6 +61,7 @@ refresh after the caret stops, not one per repeat.
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 import wx
@@ -69,6 +70,17 @@ from quill.apps.lite_window_typing import overwrite_now
 from quill.core.heading_levels import heading_level_at
 from quill.core.list_structure import list_context_at
 from quill.core.metrics import compute_document_stats
+from quill.core.status_message import (
+    IDLE_MESSAGE,
+    MESSAGE_TTL_SECONDS,
+    StatusMessage,
+    current_message,
+)
+from quill.ui.native_status_bar import (
+    native_status_text,
+    show_native_status_bar,
+    sync_native_status_bar,
+)
 from quill.ui.richedit_editing import RICH
 from quill.ui.status_bar_role import mark_as_status_bar, mark_as_status_cell
 
@@ -96,6 +108,7 @@ from quill.apps.lite_status_cells import (
     _clip_message,
     _widen_to_label,
     encoding_name,
+    native_cell_labels,
     newline_name,
 )
 
@@ -137,6 +150,12 @@ class DocumentStatusMixin:
         screen reader reads, focuses and activates without being taught how.
         """
         self._status_message = ""
+        #: When the message was set, and what the document's revision was then.
+        #: ``None`` means nothing has been said yet, which is not the same as a
+        #: message set a long time ago -- see :meth:`_live_status_message`.
+        self._status_message_at: float | None = None
+        self._status_message_revision = 0
+        self._status_expiry_timer: Any = None
         self._status_dirty = True
         self._status_refresh_timer: Any = None
         self._active_cell_index = 0
@@ -173,6 +192,11 @@ class DocumentStatusMixin:
             self._status_buttons[cell.key] = button
         self.status_panel.SetSizer(sizer)
         self.status_panel.Bind(wx.EVT_SIZE, self._on_status_panel_size)
+        # And a real native status bar underneath the row, carrying the same
+        # text unclipped. It is the control JAWS's Insert+Page Down actually
+        # looks for; see quill/ui/native_status_bar.py for why the role on the
+        # panel above was never going to be enough.
+        sync_native_status_bar(self, "")
 
     # -- height ------------------------------------------------------------- #
 
@@ -229,6 +253,10 @@ class DocumentStatusMixin:
         if self.status_panel.IsShown() == visible:
             return
         self.status_panel.Show(visible)
+        # The native mirror goes with it. A bar the user has turned off must
+        # not still answer Insert+Page Down: the setting means "no status bar",
+        # not "no status bar unless you ask a different way".
+        show_native_status_bar(self, visible)
         self.Layout()
         if visible:
             self._reflow_status_bar()
@@ -269,7 +297,9 @@ class DocumentStatusMixin:
         self._status_dirty = False
         try:
             widened = False
-            for key, text in self._cell_values().items():
+            values = self._cell_values()
+            self._sync_native_status_bar(values)
+            for key, text in values.items():
                 button = self._status_buttons[key]
                 if button.GetLabel() == text:
                     continue
@@ -308,7 +338,7 @@ class DocumentStatusMixin:
         else:
             selection = "No selection"
         return {
-            _MESSAGE: _clip_message(self._status_message) or "Ready",
+            _MESSAGE: _clip_message(self._live_status_message()),
             "position": f"Line {line:,}, column {column:,} of {max(1, stats.lines):,}",
             "words": f"{stats.words:,} words",
             "characters": f"{stats.characters:,} characters",
@@ -383,15 +413,80 @@ class DocumentStatusMixin:
         where = f"{context.label}, {context.index} of {context.size}"
         return where if context.depth <= 1 else f"{where}, level {context.depth}"
 
+    def _sync_native_status_bar(self, values: dict[str, str]) -> None:
+        """Mirror the row onto the native bar, message unclipped and last.
+
+        The label the button shows is cut to what fits a button; the native bar
+        is read with ``SB_GETTEXT`` and has no such limit, so it carries the
+        whole message. Never raises -- ``sync_native_status_bar`` swallows a
+        dead frame, and the visible row is the one that matters.
+        """
+        native = dict(values)
+        native[_MESSAGE] = self._live_status_message()
+        sync_native_status_bar(self, native_status_text(native_cell_labels(native)))
+
+    # -- the message cell ---------------------------------------------------- #
+
+    def _document_revision(self) -> int:
+        """The document's revision, or 0 for a window that has no mirror yet."""
+        try:
+            return int(self.doc_text.revision)
+        except Exception:  # noqa: BLE001 - a status cell must never break typing
+            return 0
+
+    def _live_status_message(self) -> str:
+        """The message cell's text *now*, which is not always what was set.
+
+        A message describes a moment, and the moment passes: the next edit
+        clears it and so does a minute going by. See
+        :mod:`quill.core.status_message` for why, and for the report -- a
+        "String not found" that sat in the bar through a page of editing.
+
+        A message set without a timestamp never expires. Nothing in the app
+        does that; a test assigning ``_status_message`` directly does, and it
+        should get the message it assigned rather than a clock it never set.
+        """
+        if self._status_message_at is None:
+            return self._status_message or IDLE_MESSAGE
+        stamped = StatusMessage(
+            self._status_message, self._status_message_at, self._status_message_revision
+        )
+        return current_message(stamped, now=time.monotonic(), revision=self._document_revision())
+
     def _set_status_message(self, message: str) -> None:
         """Put a spoken message in the message cell so it can be read back.
 
         Speech is gone the moment it is spoken. A listener who missed it -- or
         who wants the exact wording of an error -- arrows to this cell and hears
         it again.
+
+        Stamped with the clock and the revision, because it is only worth
+        reading back for as long as it is still true.
         """
         self._status_message = message
+        self._status_message_at = time.monotonic()
+        self._status_message_revision = self._document_revision()
+        self._arm_message_expiry()
         self._touch_status()
+
+    def _arm_message_expiry(self) -> None:
+        """Refresh the bar once the message is due to age out.
+
+        Without this the cell would hold an expired message until something
+        else happened to refresh it -- and "nothing else is happening" is
+        exactly the case the timeout is for. Silent: the label changes on an
+        unfocused control, which is what a reader does not announce (GATE-13).
+        """
+        timer = self._status_expiry_timer
+        self._status_expiry_timer = None
+        if timer is not None:
+            try:
+                timer.Stop()
+            except RuntimeError:
+                pass
+        self._status_expiry_timer = wx.CallLater(
+            int(MESSAGE_TTL_SECONDS * 1000) + _COALESCE_MS, self._touch_status
+        )
 
     # -- navigation ---------------------------------------------------------- #
 
@@ -436,8 +531,8 @@ class DocumentStatusMixin:
         the full wording of an error rather than the first ninety characters of
         it.
         """
-        if key == _MESSAGE and self._status_message:
-            return self._status_message
+        if key == _MESSAGE:
+            return self._live_status_message()
         button = self._status_buttons.get(key)
         value = button.GetLabel() if button is not None else ""
         return str(value) or CELLS[self._cell_index(key)].label
@@ -494,6 +589,13 @@ class DocumentStatusMixin:
     def _stop_status_timer(self) -> None:
         """Cancel a pending refresh as the window closes."""
         self._cancel_status_refresh()
+        timer = self._status_expiry_timer
+        self._status_expiry_timer = None
+        if timer is not None:
+            try:
+                timer.Stop()
+            except RuntimeError:
+                pass
 
 
 #: What Enter does on each cell. Absent means "say it again".

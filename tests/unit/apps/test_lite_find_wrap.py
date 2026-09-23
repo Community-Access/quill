@@ -115,13 +115,44 @@ def test_running_out_backwards_names_the_start(lite_window) -> None:
     assert "start of the document" in win.status_messages[-1]
 
 
-def test_a_miss_is_a_tone_and_not_speech_by_default(lite_window) -> None:
-    """F3 is pressed in runs. "Not found" on every press is what makes people
-    turn the speech off altogether."""
+def test_the_first_miss_is_spoken_even_on_the_tone_default(lite_window) -> None:
+    """Reported: "QuillLite made a sound but did not announce the error, is
+    this due to a setting?" It was, and the setting was answering the wrong
+    press. The one that starts a run is somebody asking a question, and a tone
+    means "not found" only to a person who already knows it does."""
     win = lite_window(DOC, cursor=0)
     _find(win, "zulu")
     assert SoundEvent.SEARCH_NOT_FOUND in win.cues
-    assert win.app.voice.said == []
+    assert win.app.voice.said == ["Not found: zulu"]
+
+
+def test_the_same_miss_again_is_a_tone_and_nothing_else(lite_window) -> None:
+    """Which is what the tone default was protecting: F3 is pressed in runs,
+    and "Not found" on every press is what makes people turn speech off."""
+    win = lite_window(DOC, cursor=0)
+    _find(win, "zulu")
+    _find(win, "zulu")
+    _find(win, "zulu")
+    assert win.app.voice.said == ["Not found: zulu"]
+    assert win.cues.count(str(SoundEvent.SEARCH_NOT_FOUND)) == 3
+
+
+def test_looking_for_something_else_is_a_fresh_question(lite_window) -> None:
+    """A repeat is the same miss said twice, not any second miss. Changing the
+    needle and getting another unexplained tone is the original bug again."""
+    win = lite_window(DOC, cursor=0)
+    _find(win, "zulu")
+    _find(win, "yankee")
+    assert win.app.voice.said == ["Not found: zulu", "Not found: yankee"]
+
+
+def test_a_match_in_between_starts_the_run_over(lite_window) -> None:
+    win = lite_window(DOC, cursor=0)
+    _find(win, "zulu")
+    _find(win, "zulu")
+    _find(win, "alpha")
+    _find(win, "zulu")
+    assert win.app.voice.said == ["Not found: zulu", "Not found: zulu"]
 
 
 def test_a_miss_can_be_spoken_when_asked(lite_window) -> None:
@@ -159,5 +190,6 @@ def test_the_find_miss_setting_is_independent_of_action_feedback(lite_window) ->
     win.app.settings.action_feedback = "speech"
     win.app.settings.find_not_found_feedback = "sound"
     _find(win, "zulu")
+    _find(win, "zulu")
     assert SoundEvent.SEARCH_NOT_FOUND in win.cues
-    assert win.app.voice.said == []
+    assert win.app.voice.said == ["Not found: zulu"]

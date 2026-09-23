@@ -57,7 +57,6 @@ from quill.core.marks import MarkRing, line_column_for_position
 from quill.core.selection import (
     block_span,
     describe_selection,
-    selection_scope,
     sentence_span,
     shrink_selection,
 )
@@ -441,17 +440,25 @@ class DocumentSelectionMixin:
         if end <= start:
             self._announce("Nothing is selected")
             return
-        selected = self.control.GetValue()[start:end]
-        scope = selection_scope(self.control.GetValue(), start, end)
+        text = self.control.GetValue()
+        selected = text[start:end]
         if len(selected) <= 200:
             self._announce(selected)
             return
-        head = selected[:100].replace("\n", " ").strip()
-        tail = selected[-60:].replace("\n", " ").strip()
-        self._announce(
-            f"{len(selected)} characters, {len(selected.split())} words, {scope}. "
-            f"Begins: {head}. Ends: {tail}"
-        )
+        # The summary comes from describe_selection, which is the sentence both
+        # editors say about a selection -- and which knows that "lines" and
+        # "span" are names for the *classifier*, not for anything a listener
+        # can use (_UNSPOKEN_SCOPES). This used to interpolate the raw scope,
+        # so a multi-line selection was reported as "9696 words, lines." with
+        # nothing in front of the noun. Reported exactly that way.
+        #
+        # Short, too. The whole sentence also lands in the status bar's message
+        # cell, and two hundred characters of it is what pushed the other
+        # eleven cells onto rows a screen reader could not reach
+        # (quill/apps/lite_status_cells.py, _MESSAGE_LABEL_CHARS). Alt+Shift+U
+        # opens the Review Buffer for anybody who wants the whole thing.
+        head = " ".join(selected[:60].split())
+        self._announce(f"{describe_selection(text, start, end)}. Begins: {head}")
 
     def cmd_duplicate_selection(self) -> None:
         """Ctrl+Alt+Q: put a second copy in, right after the first.

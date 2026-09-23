@@ -102,3 +102,51 @@ def test_both_settings_that_use_the_rule_default_to_a_tone() -> None:
     settings = Settings()
     assert settings.action_feedback == "sound"
     assert settings.find_not_found_feedback == "sound"
+
+
+# ---------------------------------------------------------------------------
+# a failure is not an action that worked
+
+
+def test_the_first_failure_speaks_on_the_tone_default() -> None:
+    """The rule this module opens with, finally applied to the one failure
+    anybody meets daily. Reported as "QuillLite made a sound but did not
+    announce the error"."""
+    from quill.core.action_feedback import resolve_failure
+
+    assert resolve_failure("sound", has_sound=True, repeated=False) == (True, True)
+
+
+def test_a_repeated_failure_falls_back_to_the_mode() -> None:
+    """Which is where the F3-in-runs argument belongs: the second press already
+    knows what the first one was told."""
+    from quill.core.action_feedback import resolve_failure
+
+    assert resolve_failure("sound", has_sound=True, repeated=True) == (True, False)
+
+
+def test_silent_stays_silent_through_a_failure() -> None:
+    """Somebody recording audio asked for an editor that does not talk, and a
+    failure is not an exception to that. The status bar still has the words."""
+    from quill.core.action_feedback import resolve_failure
+
+    assert resolve_failure("silent", has_sound=True, repeated=False) == (False, False)
+    assert resolve_failure("silent", has_sound=True, repeated=True) == (False, False)
+
+
+def test_speech_and_both_are_unchanged_by_repetition() -> None:
+    """Somebody who asked for the words gets them every time; nothing about the
+    first-press rule is allowed to take feedback away."""
+    from quill.core.action_feedback import resolve_failure
+
+    for repeated in (False, True):
+        assert resolve_failure("speech", has_sound=True, repeated=repeated) == (False, True)
+        assert resolve_failure("both", has_sound=True, repeated=repeated) == (True, True)
+
+
+def test_a_failure_with_no_clip_in_the_pack_still_speaks() -> None:
+    """The fall-through the plain rule already has, kept intact here."""
+    from quill.core.action_feedback import resolve_failure
+
+    assert resolve_failure("sound", has_sound=False, repeated=False) == (False, True)
+    assert resolve_failure("sound", has_sound=False, repeated=True) == (False, True)

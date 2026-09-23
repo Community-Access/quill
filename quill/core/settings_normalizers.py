@@ -15,7 +15,6 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # _default_status_bar_hidden below), placed right after line_column
     # since both are "where am I" position cells -- not first, but adjacent.
     "page",
-    "message",
     "word_count",
     # Character count of the whole document.
     "char_count",
@@ -73,6 +72,14 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # Podcasts mini-player + download activity. Hidden by default;
     # auto-surfaces the first time an episode plays or downloads.
     "podcast_player",
+    # Last, and deliberately. The message is the one cell whose text has no
+    # ceiling, and the one that is a *replay* of something already spoken
+    # rather than a fact you cannot otherwise get -- so it goes after the
+    # facts, in the row and in the native bar alike. It used to be third, and
+    # _statusbar_items() forced it to first whenever it was not already in the
+    # list. Somebody who has saved a status_bar_order keeps the order they
+    # chose; this is only what a new one starts as.
+    "message",
 )
 
 

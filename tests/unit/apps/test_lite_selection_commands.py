@@ -335,9 +335,32 @@ def test_say_selection_summarises_a_long_one_instead_of_reading_it(lite_window) 
     win.control.SetSelection(0, 900)
     win.cmd_say_selection()
     spoken = win.announcements[-1]
-    assert spoken.startswith("900 characters")
-    assert "Begins:" in spoken and "Ends:" in spoken
-    assert len(spoken) < 400
+    assert spoken.startswith("Selected 180 words")
+    assert "Begins:" in spoken
+    assert len(spoken) < 150
+
+
+def test_say_selection_never_speaks_the_name_of_the_classifier(lite_window) -> None:
+    """Reported as "52039 characters, 9696 words, lines." -- a bare noun with
+    no number in front of it. "lines" and "span" are names selection_scope uses
+    for its own bookkeeping (_UNSPOKEN_SCOPES); describe_selection knows to
+    leave them out and this used to interpolate the raw value instead."""
+    win = lite_window("word " * 200, cursor=0)
+    win.control.SetSelection(0, 900)
+    win.cmd_say_selection()
+    spoken = win.announcements[-1]
+    assert "words, lines" not in spoken
+    assert not spoken.startswith("900 characters")
+
+
+def test_say_selection_stays_short_enough_for_the_status_bar(lite_window) -> None:
+    """The sentence also lands in the message cell, and two hundred characters
+    of it is what pushed the other eleven cells onto rows a screen reader could
+    not reach (quill/apps/lite_status_cells.py, _MESSAGE_LABEL_CHARS)."""
+    win = lite_window("word " * 2000, cursor=0)
+    win.control.SetSelection(0, 9000)
+    win.cmd_say_selection()
+    assert len(win.announcements[-1]) < 150
 
 
 def test_say_selection_with_nothing_selected_says_so(lite_window) -> None:

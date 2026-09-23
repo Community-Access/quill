@@ -28,6 +28,7 @@ from quill.core.selection import (
     line_span,
     paragraph_span,
     selection_scope,
+    spoken_scope,
     word_span,
 )
 from quill.core.selection import (
@@ -250,7 +251,14 @@ class SelectionMarksMixin:
         word_count = len(text[start:end].split())
         from quill.core.announcements import pluralize
 
-        title = f"Selection actions ({scope}, {pluralize(word_count, 'word')})"
+        # The scope only goes in the title when it names something a person
+        # can picture. "lines" and "span" name the classifier, not the
+        # document, and this title is announced on open -- so it read
+        # "Selection actions (lines, 180 words)" out loud.
+        named = spoken_scope(scope)
+        counted = pluralize(word_count, "word")
+        inside = f"{named}, {counted}" if named else counted
+        title = f"Selection actions ({inside})"
         with wx.SingleChoiceDialog(
             self.frame,
             "Choose an action for the selection:",
