@@ -6,9 +6,33 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "abbreviation_manager.category_field",
+    "title": "Category",
+    "body": "An optional group for this abbreviation -- Work, Personal, Email, whatever suits you. The category filter above the list narrows it to one group at a time, and abbreviations with no category are listed under Uncategorised. A category never changes how an abbreviation expands; it exists to keep a long list navigable.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "abbreviation_manager.expansion_field",
     "title": "Expansion Text",
     "body": "The full text that replaces the trigger. You can include newlines and special characters. Use ${cursor} to place the cursor at a specific point after expansion; ${date}, ${time}, ${datetime}, ${day}, ${month}, ${year}, ${username} and ${clipboard} to insert those values; and ${field:Label} to be asked for a value before the text is inserted.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "abbreviation_manager.sound_field",
+    "title": "Sound",
+    "body": "Whether expanding this abbreviation plays a sound: follow the global setting, always play, or never play.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "abbreviation_manager.speak_field",
+    "title": "Speak",
+    "body": "What is announced when this abbreviation expands: nothing, the abbreviation itself, or the expanded text. Set per abbreviation, because a short everyday one usually needs no announcement while a long template sometimes does.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "abbreviation_manager.trailing_space_field",
+    "title": "Add A Trailing Space After Punctuation",
+    "body": "Adds one space after the punctuation that expanded this abbreviation, so typing 'co.' gives 'Company, ' rather than 'Company ,'. It has no effect when a space expanded it, because a space is already there.",
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -26,6 +50,12 @@
       "Alt+E - Edit selected",
       "Delete - Remove selected"
     ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "abbreviation_manager.triggers_field",
+    "title": "Expand After",
+    "body": "Which characters expand this abbreviation: a space or punctuation, a space only, punctuation only, or never. Never means it will not expand as you type at all and is reachable only from Quick Insert -- the safe home for a long expansion, or one you would not want appearing by accident.",
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -63,6 +93,11 @@
     "see_also": [
       "ai.model"
     ]
+  },
+  {
+    "id": "ai.suggest_metadata",
+    "title": "Suggest Document Metadata",
+    "body": "Asks your AI assistant to propose front matter for the document -- a title, a summary, tags and a category -- then walks you through the suggestions one field at a time so you accept or reject each on its own. What you accept is written in as a single undo step. It needs a configured AI connection, refuses an empty document, and abandons the result if you edit while it is thinking rather than applying suggestions to text that has moved on. Replacing a field that already has a value asks first, and the safe answer is the default."
   },
   {
     "id": "ai.system_prompt",
@@ -129,6 +164,11 @@
     "user_guide_section": "accessibility"
   },
   {
+    "id": "app.braille_ab",
+    "title": "Braille A/B: System Edit Fix",
+    "body": "Opens a test window with two real editors holding the same sample text and differing by one setting: A is what QUILL ships, B has the braille system-edit fix switched off. Buttons select the same word in both and report what each thinks the current line is. It exists because that setting can only be chosen when an editor is created, so comparing them any other way means restarting -- and you need an actual braille display to learn anything here."
+  },
+  {
     "id": "app.command_palette",
     "title": "Command Palette...",
     "body": "Open a searchable list of every QUILL command. Type part of a command name, arrow to the one you want, and press Enter to run it. This is the fastest way to reach any feature without hunting through menus.",
@@ -166,6 +206,11 @@
     "title": "Repeat Last Announcement",
     "body": "Say the most recent announcement again, on every channel you have turned on. Speech is gone the moment it finishes, so if you were reading something else when a status message passed, this brings it back instead of leaving you to guess. Works the same in QUILL, Quill Radio, Quill Cast, Audio Studio, Quill Converter, Quill Weather and QuillBeacon. Unbound by default; give it a shortcut in the Keymap Editor if you use it often.",
     "user_guide_section": "accessibility"
+  },
+  {
+    "id": "app.report_editor_surface",
+    "title": "Report Editor Surface",
+    "body": "Says which editing surface is live and the settings that decide how it reaches a braille display -- the surface kind, the window class, the system-edit and border fixes, and which announcement backend is in use. Nothing from your document is included, deliberately: this is for filing a bug report you cannot take a screenshot of. Details specific to Windows Rich Edit report as unavailable elsewhere."
   },
   {
     "id": "braille.back_translate",
@@ -519,6 +564,14 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "edit.insert_equation",
+    "title": "Insert Equation",
+    "body": "Inserts mathematics at the cursor from a two-field form: the equation itself, and whether it sits inline in the sentence or as a block on its own lines. LaTeX is wrapped in the right delimiters for you; MathML is inserted as written. If your selection already looks like an equation, its delimiters are stripped and the text pre-filled, so the command edits that equation rather than nesting a new one. The rendered result appears in the HTML preview and export, not in the editor itself.",
+    "keystrokes": [
+      "Ctrl+Alt+="
+    ]
+  },
+  {
     "id": "edit.insert_link",
     "title": "Insert Link...",
     "body": "Insert a link at the cursor. QUILL asks for the address and the visible text and writes it in the correct format for your document type (Markdown, HTML, or plain).",
@@ -552,6 +605,12 @@
     "id": "edit.open_review_buffer",
     "title": "Open Review Buffer",
     "body": "Open a separate, read-only buffer holding text for review (for example AI or comparison output) so you can read it beside your document.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "edit.paste_plain_text",
+    "title": "Paste Text Only",
+    "body": "Paste what is on the clipboard with none of its formatting -- the words without the web page. In a rich text document an ordinary paste brings the fonts, colours and sizes of wherever the text came from; this brings the text and nothing else.",
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -699,6 +758,14 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "edit.select_word",
+    "title": "Select Word",
+    "body": "Selects the word the cursor is in and says what was selected. The smallest rung of the selection ladder -- word, line, paragraph, block -- so pressing Expand Selection afterwards grows outward from here.",
+    "keystrokes": [
+      "Ctrl+Shift+W"
+    ]
+  },
+  {
     "id": "edit.selection_actions",
     "title": "Selection Actions",
     "body": "Open a menu of actions that apply to the current selection — copy variants, case changes, sorting, and more — gathered in one place.",
@@ -756,6 +823,14 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "edit.toggle_fold",
+    "title": "Toggle Fold",
+    "body": "Folds or unfolds the smallest foldable region containing the cursor, and says which it did and how many lines are involved. Folding hides a region so you can move past it as one item. If the cursor is not inside a foldable region it says so rather than doing nothing quietly.",
+    "keystrokes": [
+      "Ctrl+Shift+["
+    ]
+  },
+  {
     "id": "edit.trim_trailing_whitespace",
     "title": "Trim Trailing Whitespace",
     "body": "Remove trailing spaces and tabs from the end of every line in the document.",
@@ -769,6 +844,14 @@
       "Ctrl+Z"
     ],
     "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "edit.undo_and_say",
+    "title": "Undo and Say What Changed",
+    "body": "Undoes one step and then says what was taken back, or tells you nothing was undone. Plain Ctrl+Z is silent either way, so an undo that reversed forty lines and an undo that did nothing sound identical; this is the one to use when you are unwinding several edits by ear.",
+    "keystrokes": [
+      "Alt+Shift+F3"
+    ]
   },
   {
     "id": "edit.unselect_all",
@@ -789,6 +872,14 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "file.add_favorite_folder",
+    "title": "Add Current Folder to Favorites",
+    "body": "Adds the folder holding the current document to your Favorite Folders -- a short list you curate, separate from the Recent Folders QUILL fills in for you. An unsaved document has no folder yet, so it asks you to save first; a folder already on the list is named rather than added twice.",
+    "keystrokes": [
+      "QUILL Key + Shift+F"
+    ]
+  },
+  {
     "id": "file.choose_encoding",
     "title": "Choose Encoding...",
     "body": "Reopen the current file interpreting its bytes with a character encoding you choose, for when text looks garbled because it was saved in a different encoding.",
@@ -802,6 +893,22 @@
       "Ctrl+W"
     ],
     "user_guide_section": "files"
+  },
+  {
+    "id": "file.file_format",
+    "title": "File Format",
+    "body": "Sets how this file will be written to disk: its character encoding and its line endings, in one dialog. Changing either marks the document modified on purpose -- otherwise fixing an encoding and closing the document would throw the fix away without a word. Cancelling, or choosing the values it already had, reports that nothing changed.",
+    "keystrokes": [
+      "Ctrl+Alt+E"
+    ]
+  },
+  {
+    "id": "file.forget_external_change_answers",
+    "title": "Forget Remembered File-Change Answers",
+    "body": "Clears every \"don't ask me again\" answer you have given to the question QUILL asks when a file changes on disk while you have it open. After this, QUILL asks again. This is the only way to undo that checkbox; if you have not answered it for any file format, it tells you there is nothing to forget.",
+    "keystrokes": [
+      "Ctrl+Shift+F11"
+    ]
   },
   {
     "id": "file.github_manage_accounts",
@@ -858,6 +965,22 @@
     "user_guide_section": "files"
   },
   {
+    "id": "file.new_plain_text_document",
+    "title": "New Plain Text Document",
+    "body": "Opens a new, empty document in plain text mode -- no formatting, nothing stored but the characters you type. The right start for notes, code, configuration files and anything another program will read.",
+    "keystrokes": [
+      "Ctrl+Alt+N"
+    ]
+  },
+  {
+    "id": "file.new_rich_document",
+    "title": "New Rich Text Document",
+    "body": "Opens a new, empty document already in rich text mode, so bold, headings, colour and alignment work immediately. Saves you making a plain document and then switching it -- no format dialog, and no \"already editing as rich text\" to listen to.",
+    "keystrokes": [
+      "Alt+Shift+T"
+    ]
+  },
+  {
     "id": "file.open",
     "title": "Open File...",
     "body": "Open an existing file from your computer in a new tab. QUILL detects the format and opens it in the right view.",
@@ -873,6 +996,14 @@
     "user_guide_section": "files"
   },
   {
+    "id": "file.open_from_favorite_folder",
+    "title": "Open From Favorite Folder",
+    "body": "Finds a file across your favorite folders: type part of a filename, arrow the results, press Enter to open. It looks at the top level of each favorite; tick Include subfolders to search deeper. If you have not added any favorites yet it says so and points at Add Favorite Folder.",
+    "keystrokes": [
+      "QUILL Key + G"
+    ]
+  },
+  {
     "id": "file.open_from_remote",
     "title": "Open From Remote",
     "body": "Open a file from one of your saved remote sites (such as SFTP), editing it in place and saving back over the connection.",
@@ -886,6 +1017,11 @@
     "title": "Open Remote GitHub File URL...",
     "body": "Open a single file directly from a GitHub file URL you paste in, without cloning the whole repository.",
     "user_guide_section": "files"
+  },
+  {
+    "id": "file.open_github_items",
+    "title": "GitHub Items",
+    "body": "A keyboard-first, read-only view of one repository's issues, pull requests, branches, commits, tags, releases and workflow runs, pre-filled with the repository the current file belongs to. You can ask QUILL's AI to summarise a long thread. Like every GitHub command it needs a signed-in account and is refused in Safe Mode."
   },
   {
     "id": "file.open_github_repository",
@@ -931,6 +1067,14 @@
     "title": "Reload from Disk",
     "body": "Discard your unsaved changes and reload the file from disk as it currently is — useful when another program has changed it.",
     "user_guide_section": "files"
+  },
+  {
+    "id": "file.remove_favorite_folder",
+    "title": "Remove Favorite Folder",
+    "body": "Takes a folder off your Favorite Folders list, chosen from a list of the ones you have. Only the list entry goes -- the folder and everything in it are untouched on disk.",
+    "keystrokes": [
+      "QUILL Key + Shift+X"
+    ]
   },
   {
     "id": "file.restore_backup",
@@ -1000,6 +1144,17 @@
     "title": "Toggle Line Endings",
     "body": "Switch the document between Windows (CRLF) and Unix (LF) line endings and report which is now in use.",
     "user_guide_section": "files"
+  },
+  {
+    "id": "fill_in_fields",
+    "title": "Fill In",
+    "body": "This expansion asks for one or more values before it is inserted. There is one box per field, in the order the template asks for them, and a field used more than once is asked for only once. Cancelling leaves what you typed exactly as it was.",
+    "keystrokes": [
+      "Tab - Move between fields",
+      "Enter - Move to the next field, or insert on the last",
+      "Escape - Cancel without inserting"
+    ],
+    "user_guide_section": "writing-and-editing"
   },
   {
     "id": "find_replace",
@@ -1091,6 +1246,14 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.describe_indent_depth",
+    "title": "Describe Indent Depth",
+    "body": "Says how far the current line is indented -- \"4 spaces\", \"1 tab\", \"1 tab, 3 spaces\", or \"No indentation\" -- in the same words the Tab key speaks. The point is being able to ask before you type, instead of only learning the answer as a side effect of moving.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+V"
+    ]
+  },
+  {
     "id": "format.duplicate_line",
     "title": "Duplicate Line",
     "body": "Copy the current line and insert the copy directly below it.",
@@ -1109,6 +1272,12 @@
     "id": "format.font_dialog",
     "title": "Font Dialog",
     "body": "Open the Font dialog to set font family, size, colour, and highlight for the selection through an accessible form.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.grow_font",
+    "title": "Grow Font",
+    "body": "Make the selected text one step larger, in a rich text document. The step is a ladder of real point sizes rather than one point at a time, so it lands on sizes people recognise -- and the ladder includes the heading sizes, so growing a heading stays on the heading ladder instead of becoming a paragraph that merely looks large. This changes the document; the View menu's text size changes only the view.",
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1268,6 +1437,30 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.justify",
+    "title": "Justify",
+    "body": "Spread the paragraph so both edges line up, in a rich text document. The fourth alignment, beside Align Left, Centre and Align Right. Markdown and HTML have no paragraph justification, so in those formats QUILL says where the command does work rather than doing nothing quietly.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.line_spacing_double",
+    "title": "Double Line Spacing",
+    "body": "Set the paragraphs under the cursor to double line spacing, in a rich text document. Useful for a draft somebody is going to mark up.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.line_spacing_one_and_a_half",
+    "title": "One and a Half Line Spacing",
+    "body": "Set the paragraphs under the cursor to one and a half line spacing, in a rich text document.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.line_spacing_single",
+    "title": "Single Line Spacing",
+    "body": "Set the paragraphs under the cursor to single line spacing, in a rich text document. WordPad's own chord, so it is already in your hands if you have used it.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.lower_case",
     "title": "Lower Case",
     "body": "Change the selected text to all lower case.",
@@ -1325,6 +1518,12 @@
     "id": "format.sentence_case",
     "title": "Sentence Case",
     "body": "Change the selected text to sentence case: capitalise the first letter of each sentence, lower-case the rest.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.shrink_font",
+    "title": "Shrink Font",
+    "body": "Make the selected text one step smaller, in a rich text document, down the same ladder Grow Font climbs.",
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -1406,46 +1605,95 @@
     "user_guide_section": "writing-and-editing"
   },
   {
-    "id": "format.justify",
-    "title": "Justify",
-    "body": "Spread the paragraph so both edges line up, in a rich text document. The fourth alignment, beside Align Left, Centre and Align Right. Markdown and HTML have no paragraph justification, so in those formats QUILL says where the command does work rather than doing nothing quietly.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "format.grow_font",
-    "title": "Grow Font",
-    "body": "Make the selected text one step larger, in a rich text document. The step is a ladder of real point sizes rather than one point at a time, so it lands on sizes people recognise -- and the ladder includes the heading sizes, so growing a heading stays on the heading ladder instead of becoming a paragraph that merely looks large. This changes the document; the View menu's text size changes only the view.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "format.shrink_font",
-    "title": "Shrink Font",
-    "body": "Make the selected text one step smaller, in a rich text document, down the same ladder Grow Font climbs.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "format.line_spacing_single",
-    "title": "Single Line Spacing",
-    "body": "Set the paragraphs under the cursor to single line spacing, in a rich text document. WordPad's own chord, so it is already in your hands if you have used it.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "format.line_spacing_one_and_a_half",
-    "title": "One and a Half Line Spacing",
-    "body": "Set the paragraphs under the cursor to one and a half line spacing, in a rich text document.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "format.line_spacing_double",
-    "title": "Double Line Spacing",
-    "body": "Set the paragraphs under the cursor to double line spacing, in a rich text document. Useful for a draft somebody is going to mark up.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
     "id": "format.upper_case",
     "title": "Upper Case",
     "body": "Change the selected text to ALL UPPER CASE.",
     "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "github.browse_organization",
+    "title": "GitHub: Browse Organization Repositories",
+    "body": "Lists the organisations your account belongs to, then the repositories in the one you choose that you are allowed to see, then opens the repository you pick in GitHub Items. An account in no organisations is told so. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.change_default_branch",
+    "title": "GitHub: Change Default Branch",
+    "body": "Lists the repository's branches and makes the one you choose its default -- the branch people get when they clone it and the one pull requests target by default. If the repository has no branches yet, it says so. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.change_repository_visibility",
+    "title": "GitHub: Change Repository Visibility",
+    "body": "Looks up whether the repository is private or public and offers to switch it to the other. You must type the owner and name to confirm. Making a repository public exposes its entire history, not just its current contents, and the confirmation says so. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.commit_multiple_files",
+    "title": "GitHub: Commit Multiple Files",
+    "body": "Commits several local files to GitHub as one commit: pick the files, choose the branch, write one message, review the list, and QUILL reports the commit it made. One thing to know before you use it -- every file lands at the top of the repository under its own filename, so the folder structure they had locally is not preserved. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.configure_branch_protection",
+    "title": "GitHub: Configure Branch Protection",
+    "body": "Sets the rules a branch enforces: how many approving reviews a pull request needs, which status checks must pass, and whether administrators are held to the same rules. The same dialog can remove all protection from a branch, which is confirmed before it happens. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.copilot_explain",
+    "title": "GitHub: Explain a Command",
+    "body": "Paste a git or GitHub command you do not recognise and Copilot explains what it does, before you run it somewhere it matters. Needs the GitHub command-line tool and Copilot access on your account. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.copilot_suggest",
+    "title": "GitHub: Ask Copilot for a Command",
+    "body": "Describe in ordinary words what you are trying to do -- \"undo my last commit but keep the changes\" -- and Copilot answers with the command that would do it. QUILL only shows you the command; nothing runs, so you can read it before deciding. Needs the GitHub command-line tool and Copilot access on your account. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.create_codespace",
+    "title": "GitHub: Create Codespace",
+    "body": "Creates a codespace -- a development machine GitHub runs for you -- for a repository and optional branch. Unlike every other GitHub command here, this one can cost money: codespaces use compute and storage time on your account, and the confirmation says so before anything is created. Needs the GitHub command-line tool. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.create_release",
+    "title": "GitHub: Create Release",
+    "body": "Publishes a release: a tag, an optional title, and notes -- which QUILL can generate for you from the pull requests merged since the last release, or which you can write yourself. You can save it as a draft instead of publishing, and QUILL reports the address of what it created. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.create_repository",
+    "title": "GitHub: Create Repository",
+    "body": "Creates a repository from a short form: name, description, private or public, and optionally an organisation to own it. Afterwards it offers to pick a local folder and wire it up for syncing, so the new repository is usable from QUILL without a second trip. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.delete_branch",
+    "title": "GitHub: Delete Branch",
+    "body": "Deletes a branch, chosen from a list that deliberately excludes the default branch. You must type the branch name to confirm, and QUILL warns that it cannot undo this for you. A repository with only its default branch reports that there is nothing deletable. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.dispatch_workflow",
+    "title": "GitHub: Dispatch Workflow",
+    "body": "Starts a GitHub Actions workflow by hand. Give it the workflow's file name -- ci.yml, not the title shown on the website -- and the branch or tag to run against. The workflow has to allow manual runs, and QUILL only reports that it started one: watch its progress in GitHub Items. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.fork_repository",
+    "title": "GitHub: Fork Repository",
+    "body": "Forks a repository you name as owner slash name. Leave the organisation box empty to fork into your own account. As with Create Repository, it then offers to set up a local folder for it. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.list_codespaces",
+    "title": "GitHub: Codespaces",
+    "body": "Lists your codespaces with the repository each belongs to and whether it is running, and offers to stop or delete the one you choose -- deleting asks first and cannot be undone from QUILL. This command needs the GitHub command-line tool installed, which Download Optional Components can fetch for you. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.rename_repository",
+    "title": "GitHub: Rename Repository",
+    "body": "Renames a repository. Because this is hard to undo, you must type the current owner and name exactly to confirm -- clicking Yes is not enough. GitHub redirects the old address afterwards, but anything that has the old name written into it needs updating by hand. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.view_notifications",
+    "title": "GitHub: Notifications",
+    "body": "Lists your GitHub notifications, each saying whether it is unread, which repository it came from, its subject and why you received it. Choosing one marks it read and opens GitHub's notifications page in your browser -- GitHub does not tell QUILL the address of the individual conversation, so it cannot take you straight to the thread. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+  },
+  {
+    "id": "github.view_security_alerts",
+    "title": "GitHub: Security Alerts",
+    "body": "Lists a repository's open security alerts with their severity, the package affected and a summary; choosing one opens that alert in your browser. It needs an account with permission to see the repository's alerts, and says so plainly when the repository has none open. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
   },
   {
     "id": "glow_audit.detail_text",
@@ -1686,15 +1934,6 @@
     "user_guide_section": "navigation"
   },
   {
-    "id": "navigate.go_to_temp_bookmark",
-    "title": "Go to Temporary Bookmark",
-    "body": "Jump straight back to the temporary bookmark with no list and no dialog. If none is set, QUILL says so and the cursor stays put.",
-    "keystrokes": [
-      "Ctrl+Shift+J"
-    ],
-    "user_guide_section": "navigation"
-  },
-  {
     "id": "navigate.go_to_bookmark_in_notebook",
     "title": "Go To Bookmark In Notebook",
     "body": "Jump to a bookmark located in any entry of the current notebook.",
@@ -1737,6 +1976,15 @@
     "user_guide_section": "navigation"
   },
   {
+    "id": "navigate.go_to_temp_bookmark",
+    "title": "Go to Temporary Bookmark",
+    "body": "Jump straight back to the temporary bookmark with no list and no dialog. If none is set, QUILL says so and the cursor stays put.",
+    "keystrokes": [
+      "Ctrl+Shift+J"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
     "id": "navigate.list_bookmarks",
     "title": "List Bookmarks...",
     "body": "Show all bookmarks in the current document as a list you can review and jump from.",
@@ -1759,6 +2007,14 @@
     "title": "Next Block",
     "body": "Move the cursor to the next block — the next paragraph, list item, or code block.",
     "user_guide_section": "navigation"
+  },
+  {
+    "id": "navigate.next_fold",
+    "title": "Next Fold",
+    "body": "Moves the cursor to the next foldable region and says its name, whether it is folded, and how many lines it covers. Your previous position goes on the jump-back trail, so Back Location returns you. It distinguishes \"this document has no foldable regions\" from \"there are none ahead of you\" -- different facts with different next moves.",
+    "keystrokes": [
+      "Alt+Shift+]"
+    ]
   },
   {
     "id": "navigate.next_heading",
@@ -1806,6 +2062,14 @@
     "user_guide_section": "navigation"
   },
   {
+    "id": "navigate.previous_fold",
+    "title": "Previous Fold",
+    "body": "The same as Next Fold, in the other direction, and with the same distinction between a document that has no foldable regions and one where there are none behind you.",
+    "keystrokes": [
+      "Alt+Shift+["
+    ]
+  },
+  {
     "id": "navigate.previous_heading",
     "title": "Previous Heading",
     "body": "Move the cursor to the previous heading.",
@@ -1848,18 +2112,18 @@
     "user_guide_section": "navigation"
   },
   {
+    "id": "navigate.set_language",
+    "title": "Set Document Language...",
+    "body": "Set the language profile for this document, which controls editing behaviour like comment syntax and structure navigation. It does not rename the file.",
+    "user_guide_section": "navigation"
+  },
+  {
     "id": "navigate.set_temp_bookmark",
     "title": "Set Temporary Bookmark",
     "body": "Drop a single unnamed jump point at the cursor. No dialog appears; setting it again silently moves it, and it is forgotten when QUILL closes. Use it for a quick come-right-back-here marker.",
     "keystrokes": [
       "Ctrl+J"
     ],
-    "user_guide_section": "navigation"
-  },
-  {
-    "id": "navigate.set_language",
-    "title": "Set Document Language...",
-    "body": "Set the language profile for this document, which controls editing behaviour like comment syntax and structure navigation. It does not rename the file.",
     "user_guide_section": "navigation"
   },
   {
@@ -1888,6 +2152,12 @@
       "Ctrl+Shift+Grave, F"
     ],
     "user_guide_section": "navigation"
+  },
+  {
+    "id": "player_information",
+    "title": "Player Information",
+    "body": "Everything about what is playing, as text you can review at your own pace: title, show, position, duration, time remaining, progress, speed, whether it is streaming or a file on this computer, whether that file is kept or temporary, notes, where it will resume, and the current chapter. Read it with the arrow keys; Copy puts the whole report on the clipboard.",
+    "user_guide_section": "media"
   },
   {
     "id": "power.analyze_encoding_requirements",
@@ -1936,6 +2206,14 @@
     "title": "Describe Character at Cursor",
     "body": "Opens an accessible dialog describing the exact character under the cursor: its name, Unicode code point (hexadecimal and decimal), general category, and plain-language notes for invisibles that are easy to miss, such as a no-break space, a zero-width space, a smart quote, a tab, or a line ending. This is the screen-reader descendant of the classic 'Reveal Codes' view.",
     "user_guide_section": "tools-for-reading-review-and-inspection"
+  },
+  {
+    "id": "power.describe_character_detail",
+    "title": "Character Details",
+    "body": "Opens the full description of the character at the cursor -- its name, its category, its code point, and what it does to a search -- in a read-only window you can arrow through line by line. Describe Character speaks a one-line summary instead; use this when you want to study the answer rather than hear it once.",
+    "keystrokes": [
+      "Ctrl+Alt+C"
+    ]
   },
   {
     "id": "power.encode_all_non_ascii",
@@ -2327,6 +2605,41 @@
     "user_guide_section": "publishing"
   },
   {
+    "id": "quick_insert",
+    "title": "Quick Insert",
+    "body": "Find an abbreviation by name and insert its expansion, without needing to remember the trigger. The list starts with the ones you use most and filters as you type; the box below shows the full expansion of the selected entry. This is also the only way to use an abbreviation whose Expand After setting is Never.",
+    "keystrokes": [
+      "Down Arrow - Move from the filter box into the list",
+      "Enter - Insert the selected expansion",
+      "Escape - Close without inserting"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "radio_recordings_winamp_keys",
+    "title": "Winamp Playback Keys (Radio Recordings)",
+    "body": "The Recordings window answers to Winamp's classic-skin main-window keys, so the transport muscle memory of a long-time Winamp user works here unchanged. Every key announces what it did. Two deliberate differences from Winamp: Ctrl+T stays What's Playing (the more useful meaning in a radio app), so the elapsed/remaining toggle is on plain T; and Up and Down arrow move through the list rather than changing the volume, which is what Winamp itself does in its Playlist Editor. Seeking needs a finished recording on the mpv engine -- on a live stream the seek keys say why they cannot move rather than doing nothing. Letters typed into a text field are never swallowed. Turn the letter keys off with 'Winamp-style playback keys in the Recordings player' in Preferences; Ctrl+Up and Ctrl+Down are unaffected. Shuffle, repeat, and stop-after-current are not bound: all three need a play queue the recordings list does not have yet.",
+    "keystrokes": [
+      "X - Play the selected recording, or resume a paused one",
+      "C - Pause or unpause",
+      "V - Stop",
+      "Shift+V - Stop (Winamp's fade-out; this player stops cleanly instead)",
+      "B - Next recording, and play it",
+      "Z - Previous recording, and play it",
+      "Left - Back 5 seconds",
+      "Right - Forward 5 seconds",
+      "Shift+Left - Back 30 seconds",
+      "Shift+Right - Forward 30 seconds",
+      "T - Elapsed time, or time remaining; press again to swap",
+      "J - Jump to a recording by typing part of its name",
+      "Ctrl+J - Jump to a time (90, 1:30, or 1:02:03)",
+      "L - Open (the same as Play)",
+      "Ctrl+Up - Volume up",
+      "Ctrl+Down - Volume down"
+    ],
+    "user_guide_section": "media"
+  },
+  {
     "id": "remote_site.host",
     "title": "Remote Host",
     "body": "Hostname or IP address for this remote site. For SFTP, this is your SSH server. For S3, this is your bucket endpoint. For WebDAV, enter the full base URL.",
@@ -2531,6 +2844,11 @@
     "user_guide_section": "remote-access"
   },
   {
+    "id": "studio.play_queue",
+    "title": "Play Queue",
+    "body": "The audiobook play queue: add files, move to the next one, remove an entry, or clear the lot. Changes are saved as you make them, so the queue is still there next time. This command belongs to QUILL Audio Studio rather than the editor."
+  },
+  {
     "id": "tools.ai_assistant",
     "title": "Writing Assistant",
     "body": "Open the Writing Assistant, which can rewrite, summarise, expand, or improve your text. Every proposed change is shown as an accept-or-reject preview and applied as a single undo step.",
@@ -2571,6 +2889,14 @@
     "title": "Toggle Announcement Trace Capture",
     "body": "Turn on or off capturing a trace of QUILL's announcements, for diagnosing speech and verbosity issues.",
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.bring_from_quilllite",
+    "title": "Bring My QuillLite Settings",
+    "body": "Finds an existing QuillLite setup and describes exactly what it would copy -- settings, key bindings, saved stores -- and what it would leave alone, before importing anything. Nothing moves until you say yes. Your own rebound keys win over QuillLite's, some changes need a restart to appear, and afterwards it names the stores the two products will now share, so a change in one is a change in both.",
+    "keystrokes": [
+      "Alt+Shift+F11"
+    ]
   },
   {
     "id": "tools.check_glow_updates",
@@ -2783,6 +3109,14 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.list_folds",
+    "title": "List Folds",
+    "body": "Lists every foldable region in the document with its name, whether it is folded, and its length; choosing one jumps there. This is the spoken equivalent of glancing down a margin full of fold markers. An empty document says it has no foldable regions.",
+    "keystrokes": [
+      "Ctrl+Shift+]"
+    ]
+  },
+  {
     "id": "tools.manage_macros",
     "title": "Manage Macros...",
     "body": "Manage your saved macros — recorded sequences of commands you can replay.",
@@ -2802,6 +3136,14 @@
       "Alt+Shift+L"
     ],
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.misspelling_list_ranked",
+    "title": "Misspelling List (Ranked by Frequency)",
+    "body": "Lists the document's misspellings ordered by how often each one recurs, with counts, rather than by where they appear. A typo you made forty times sits at the top, so one fix clears most of the list -- which is why this exists alongside the positional Misspelling List. Choosing an entry jumps to that word and selects it.",
+    "keystrokes": [
+      "Alt+Shift+R"
+    ]
   },
   {
     "id": "tools.next_misspelling",
@@ -3029,6 +3371,24 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.speech_batch_export",
+    "title": "Audiobook and Batch Speech",
+    "body": "Opens the Audio Studio wizard for work on a whole folder -- turning a folder of documents into an audiobook, or processing a folder of audio -- then runs it in the background and tells you when it finishes. It remembers the folder and saves your choices as a profile you can reuse. For the one document you are editing, use Export to Speech Audio instead.",
+    "keystrokes": [
+      "QUILL Key + Y"
+    ]
+  },
+  {
+    "id": "tools.speech_export_audio",
+    "title": "Export to Speech Audio",
+    "body": "Reads your selection -- or the whole document if nothing is selected -- into an audio file using your read-aloud voice, stripping Markdown symbols first so the voice does not pronounce them. WAV is always available; MP3, M4A, M4B, OGG, Opus and FLAC appear only when ffmpeg is installed, which Download Optional Components can fetch. An empty document is refused with a message rather than producing a silent file."
+  },
+  {
+    "id": "tools.speech_export_translated",
+    "title": "Export to Translated Speech Audio",
+    "body": "Translates the document into each language you pick and reads each translation into its own audio file, named after the document and the language, beside the original. Because the export reads the file on disk rather than your unsaved buffer, it offers to save first when there are unsaved edits, and asks where to put the output for a document that has never been saved. A button hands the whole job to Audio Studio instead if you would rather work there."
+  },
+  {
     "id": "tools.spell_check_dialog",
     "title": "Spell Check...",
     "body": "Open the Spell Check dialog to step through misspellings with suggested corrections.",
@@ -3036,6 +3396,22 @@
       "F7"
     ],
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.spell_check_word_at_cursor",
+    "title": "Spell Check Word",
+    "body": "Checks one word -- the one at the cursor, or your selection -- and offers suggestions, Add to Dictionary and Ignore. Choosing a suggestion replaces the word where it stands. If the word is spelled correctly it says so and opens nothing, which is the point: you can check a word you are unsure of without starting a pass over the whole document.",
+    "keystrokes": [
+      "Alt+Shift+F7"
+    ]
+  },
+  {
+    "id": "tools.spelling_announcements",
+    "title": "Spelling Announcements",
+    "body": "Controls how a misspelling is spoken to you -- the same settings QuillLite uses, so both editors behave alike. It opens even when spell checking is switched off, on purpose: the settings should outlive turning the feature off and on.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+F6"
+    ]
   },
   {
     "id": "tools.start_macro_recording",
@@ -3153,6 +3529,22 @@
     "title": "Yaml Structure Editor",
     "body": "Open an accessible editor for the YAML front matter or structure at the top of the document.",
     "user_guide_section": "tools"
+  },
+  {
+    "id": "view.describe_last_change",
+    "title": "What Changed?",
+    "body": "Reads back what the last QUILL editing command did to your text -- what Sort Lines actually reordered, what Trim Trailing Whitespace actually removed. It reports QUILL's own rewriting commands, not ordinary typing, which is exactly the case where a command ran and the result was too large or too subtle to hear.",
+    "keystrokes": [
+      "Alt+Shift+F2"
+    ]
+  },
+  {
+    "id": "view.describe_this_document",
+    "title": "What Is This Document?",
+    "body": "Speaks a summary of what you are working on: whether it is rich text, Markdown, HTML or plain text, how big it is, how many headings and list items it holds, and whether it is read-only. Useful when you have returned to a document and want its shape before you start reading it. The answer is spoken rather than only shown, so it interrupts whatever is being read; with no document open it says so.",
+    "keystrokes": [
+      "Alt+Shift+F1"
+    ]
   },
   {
     "id": "view.send_to_tray",
@@ -3483,93 +3875,5 @@
       "Ctrl+Shift+W - Open Word Count"
     ],
     "user_guide_section": "tools-for-reading-review-and-inspection"
-  },
-  {
-    "id": "abbreviation_manager.category_field",
-    "title": "Category",
-    "body": "An optional group for this abbreviation -- Work, Personal, Email, whatever suits you. The category filter above the list narrows it to one group at a time, and abbreviations with no category are listed under Uncategorised. A category never changes how an abbreviation expands; it exists to keep a long list navigable.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "abbreviation_manager.triggers_field",
-    "title": "Expand After",
-    "body": "Which characters expand this abbreviation: a space or punctuation, a space only, punctuation only, or never. Never means it will not expand as you type at all and is reachable only from Quick Insert -- the safe home for a long expansion, or one you would not want appearing by accident.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "abbreviation_manager.speak_field",
-    "title": "Speak",
-    "body": "What is announced when this abbreviation expands: nothing, the abbreviation itself, or the expanded text. Set per abbreviation, because a short everyday one usually needs no announcement while a long template sometimes does.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "abbreviation_manager.sound_field",
-    "title": "Sound",
-    "body": "Whether expanding this abbreviation plays a sound: follow the global setting, always play, or never play.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "abbreviation_manager.trailing_space_field",
-    "title": "Add A Trailing Space After Punctuation",
-    "body": "Adds one space after the punctuation that expanded this abbreviation, so typing 'co.' gives 'Company, ' rather than 'Company ,'. It has no effect when a space expanded it, because a space is already there.",
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "quick_insert",
-    "title": "Quick Insert",
-    "body": "Find an abbreviation by name and insert its expansion, without needing to remember the trigger. The list starts with the ones you use most and filters as you type; the box below shows the full expansion of the selected entry. This is also the only way to use an abbreviation whose Expand After setting is Never.",
-    "keystrokes": [
-      "Down Arrow - Move from the filter box into the list",
-      "Enter - Insert the selected expansion",
-      "Escape - Close without inserting"
-    ],
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "fill_in_fields",
-    "title": "Fill In",
-    "body": "This expansion asks for one or more values before it is inserted. There is one box per field, in the order the template asks for them, and a field used more than once is asked for only once. Cancelling leaves what you typed exactly as it was.",
-    "keystrokes": [
-      "Tab - Move between fields",
-      "Enter - Move to the next field, or insert on the last",
-      "Escape - Cancel without inserting"
-    ],
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "player_information",
-    "title": "Player Information",
-    "body": "Everything about what is playing, as text you can review at your own pace: title, show, position, duration, time remaining, progress, speed, whether it is streaming or a file on this computer, whether that file is kept or temporary, notes, where it will resume, and the current chapter. Read it with the arrow keys; Copy puts the whole report on the clipboard.",
-    "user_guide_section": "media"
-  },
-  {
-    "id": "radio_recordings_winamp_keys",
-    "title": "Winamp Playback Keys (Radio Recordings)",
-    "body": "The Recordings window answers to Winamp's classic-skin main-window keys, so the transport muscle memory of a long-time Winamp user works here unchanged. Every key announces what it did. Two deliberate differences from Winamp: Ctrl+T stays What's Playing (the more useful meaning in a radio app), so the elapsed/remaining toggle is on plain T; and Up and Down arrow move through the list rather than changing the volume, which is what Winamp itself does in its Playlist Editor. Seeking needs a finished recording on the mpv engine -- on a live stream the seek keys say why they cannot move rather than doing nothing. Letters typed into a text field are never swallowed. Turn the letter keys off with 'Winamp-style playback keys in the Recordings player' in Preferences; Ctrl+Up and Ctrl+Down are unaffected. Shuffle, repeat, and stop-after-current are not bound: all three need a play queue the recordings list does not have yet.",
-    "keystrokes": [
-      "X - Play the selected recording, or resume a paused one",
-      "C - Pause or unpause",
-      "V - Stop",
-      "Shift+V - Stop (Winamp's fade-out; this player stops cleanly instead)",
-      "B - Next recording, and play it",
-      "Z - Previous recording, and play it",
-      "Left - Back 5 seconds",
-      "Right - Forward 5 seconds",
-      "Shift+Left - Back 30 seconds",
-      "Shift+Right - Forward 30 seconds",
-      "T - Elapsed time, or time remaining; press again to swap",
-      "J - Jump to a recording by typing part of its name",
-      "Ctrl+J - Jump to a time (90, 1:30, or 1:02:03)",
-      "L - Open (the same as Play)",
-      "Ctrl+Up - Volume up",
-      "Ctrl+Down - Volume down"
-    ],
-    "user_guide_section": "media"
-  },
-  {
-    "id": "edit.paste_plain_text",
-    "title": "Paste Text Only",
-    "body": "Paste what is on the clipboard with none of its formatting -- the words without the web page. In a rich text document an ordinary paste brings the fonts, colours and sizes of wherever the text came from; this brings the text and nothing else.",
-    "user_guide_section": "writing-and-editing"
   }
 ]

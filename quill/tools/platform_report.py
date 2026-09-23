@@ -229,7 +229,12 @@ GATES: tuple[Gate, ...] = (
     Gate(
         "help-coverage",
         "shipped features have help coverage",
-        (sys.executable, "-m", "quill.tools.check_help_coverage"),
+        # --strict, since 2026-09-23. Without it the gate printed WARNING and
+        # exited 0, so 47 commands answered F1 with "No help available" while
+        # the scorecard read 42 of 42 -- a gap that can only be found by
+        # running the tool by hand, which is the shape of defect a gate exists
+        # to prevent. Every command has authored help now, so the ratchet holds.
+        (sys.executable, "-m", "quill.tools.check_help_coverage", "--strict"),
     ),
     Gate(
         "listbox-activation",
