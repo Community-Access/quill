@@ -1,0 +1,122 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Fixed by code{% endblock %}
+{% block content %}
+<h1>Fixed by code, not by this console</h1>
+
+<p>Everything on this page affects what the service costs or whether it is safe,
+  and none of it can be changed here. That is deliberate. Each one changes what
+  a paid request actually does, so changing it is a code review and a deploy,
+  not a text box.</p>
+
+<p>It is shown anyway — read-only, with the reason and the file — because a
+  protection an operator cannot see is one they will assume is missing, or worse,
+  assume is a dial they have already checked.</p>
+
+<section class="card" aria-labelledby="effort-h">
+  <h2 id="effort-h">How hard the model is allowed to think</h2>
+  <p>Thinking time is billed at the same rate as the answer and never appears in
+    it. Left at the provider's default, this roughly <strong>doubles the entire
+    bill</strong> — and because thinking comes out of the same budget as the
+    reply, it can consume the whole allowance and hand somebody a blank answer
+    they have been charged for. Every feature is pinned to the floor.</p>
+
+  <table class="data-table">
+    <caption>Reasoning effort per feature (read-only)</caption>
+    <thead>
+      <tr>
+        <th scope="col">Feature</th>
+        <th scope="col">Effort</th>
+        <th scope="col">Why</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in shipped %}
+      <tr>
+        <th scope="row">{{ row.label }}</th>
+        <td><span class="code">{{ row.effort }}</span></td>
+        <td>
+          {% if row.effort == "none" %}
+            Transforms text the person supplied. There is nothing to reason
+            about, so paying for thinking is pure loss.
+          {% else %}
+            The one feature with real synthesis to do. Measure it against
+            <span class="code">none</span> before keeping it here.
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="text-secondary">Set in <span class="code">app/prompts.py</span>,
+    <span class="code">REASONING_EFFORT</span>. Nothing above
+    <span class="code">low</span> is reachable from that table.</p>
+</section>
+
+<section class="card" aria-labelledby="allowed-h">
+  <h2 id="allowed-h">What may be sent to the provider</h2>
+  <p>Exactly these four things, and nothing else:</p>
+  <ul>
+    {% for key in allowed_keys %}
+    <li><span class="code">{{ key }}</span></li>
+    {% endfor %}
+  </ul>
+  <p><strong>No web search. No tools. No file search. No attachments.</strong>
+    Web search alone bills at $10 per thousand calls — on this service's traffic
+    that would cost roughly sixteen times everything else put together, arriving
+    as a line nobody was watching for. A test fails the build if any other key
+    is ever added, so it cannot happen by accident.</p>
+  <p class="text-secondary">Enforced in
+    <span class="code">app/openai_client.py</span> and
+    <span class="code">tests/test_openai_request_shape.py</span>.</p>
+</section>
+
+<section class="card" aria-labelledby="prompts-h">
+  <h2 id="prompts-h">What this service asks the model, word for word</h2>
+  <p>The desktop app sends only the person's own text. It never sends its own
+    instructions — these do, and they are the same every time. That is what
+    stops a modified copy of QUILL using this service for something it was not
+    opened for.</p>
+  <p>All five are printed in full below so you can read exactly what is being
+    asked on every user's behalf. <span class="code">{prompt}</span> is where
+    their text goes; <span class="code">{context}</span> is where document
+    excerpts go.</p>
+
+  {% for row in shipped %}
+  <h3 id="prompt-{{ row.feature }}">{{ row.label }}</h3>
+  <pre class="prompt-template" tabindex="0"
+       aria-label="The instruction sent for {{ row.label }}">{{ row.template }}</pre>
+  {% endfor %}
+
+  <p class="text-secondary">Set in <span class="code">app/prompts.py</span>,
+    <span class="code">TEMPLATES</span>.</p>
+</section>
+
+<section class="card" aria-labelledby="deferred-h">
+  <h2 id="deferred-h">Features that exist but are not shipped</h2>
+  <p>These have an id and an instruction, and are switched off. They are kept
+    rather than deleted so that anyone who reaches them is told the real reason
+    — "this was never built" and "temporarily paused" are completely different
+    facts, and confusing them sends somebody to support over a feature that does
+    not exist.</p>
+  <dl>
+    {% for row in deferred %}
+    <dt>{{ row.label }} — off</dt>
+    <dd>{{ row.reason }}</dd>
+    {% endfor %}
+  </dl>
+</section>
+
+<section class="card" aria-labelledby="storage-h">
+  <h2 id="storage-h">What is never stored</h2>
+  <p>No prompt text, no document text, no answers. There is no column in the
+    database that could hold them, which is a stronger statement than a policy:
+    it cannot be changed by a setting, only by a migration and a code review.</p>
+  <p>The single exception is a troubleshooting record that a person opts into
+    per incident. It is scrubbed before it is written and deleted after 30 days
+    by a scheduled job rather than by a promise — see
+    <a href="{{ url_for('dashboard.safety') }}">Safety checks</a> for when that
+    job last ran.</p>
+  <p class="text-secondary">Enforced by the schema in
+    <span class="code">app/models.py</span>.</p>
+</section>
+{% endblock %}

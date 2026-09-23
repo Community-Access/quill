@@ -1,0 +1,182 @@
+"""Sign-up throttling and the new-account ramp.
+
+Every per-user quota in ``app/limits.py`` is sound, and none of it bounds cost
+while accounts are free to mint. Registration is anonymous and unauthenticated
+on purpose -- "no account, no password, no email" is the accessibility premise
+the whole product rests on -- so an allowance is not a cost bound, it is a cost
+*quantum*: three HTTP requests and fifteen lines of script produce another
+hundred free requests, and the only thing that eventually stops it is the global
+budget cap switching hosted AI off for everybody.
+
+These two measures are what close that, and neither of them asks a blind user
+to solve a picture puzzle.
+"""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime, timedelta
+
+from tests.conftest import seed_config_rows
+
+
+def test_a_burst_of_signups_from_one_address_is_refused(app, client, db):
+    seed_config_rows(db.session)  # hourly cap of 5
+
+    accepted = 0
+    for _ in range(8):
+        response = client.post("/v1/device/code", headers={"X-Forwarded-For": "198.51.100.7"})
+        if response.status_code == 200:
+            accepted += 1
+        else:
+            assert response.status_code == 429
+            assert response.json["status"] == "throttled"
+            assert "Retry-After" in response.headers
+
+    assert accepted == 5
+
+
+def test_the_refusal_does_not_blame_the_users_computer(app, client, db):
+    """The person who hits this is usually an ordinary user behind a shared
+    address -- an office, a library, a school -- not the scripted abuse it is
+    aimed at. The message must not read as a fault on their end."""
+    seed_config_rows(db.session)
+    for _ in range(6):
+        response = client.post("/v1/device/code", headers={"X-Forwarded-For": "198.51.100.8"})
+
+    message = response.json["message"]
+    assert "network" in message
+    assert "Try again" in message
+    for blame in ("error", "invalid", "failed", "denied", "rejected"):
+        assert blame not in message.lower()
+
+
+def test_a_different_address_is_unaffected(app, client, db):
+    seed_config_rows(db.session)
+    for _ in range(6):
+        client.post("/v1/device/code", headers={"X-Forwarded-For": "198.51.100.9"})
+
+    other = client.post("/v1/device/code", headers={"X-Forwarded-For": "203.0.113.4"})
+    assert other.status_code == 200
+
+
+def test_an_unknown_address_is_allowed_rather_than_refused(app, client, db):
+    """A proxy misconfiguration must not take sign-ups down. The failure mode
+    of guessing wrong in the other direction is an outage nobody can diagnose
+    from the client end."""
+    seed_config_rows(db.session)
+    for _ in range(20):
+        response = client.post("/v1/device/code", environ_overrides={"REMOTE_ADDR": ""})
+    assert response.status_code == 200
+
+
+def test_blocked_signups_are_counted_for_the_console(app, client, db):
+    from app.limits import registrations_blocked_today
+
+    seed_config_rows(db.session)
+    for _ in range(8):
+        client.post("/v1/device/code", headers={"X-Forwarded-For": "198.51.100.10"})
+
+    with app.app_context():
+        assert registrations_blocked_today(app) >= 1
+
+
+# --- The new-account ramp --------------------------------------------------------
+
+
+def test_a_brand_new_account_gets_the_smaller_allowance(app, db):
+    from app.limits import _effective_user_cap, is_new_account
+    from app.models import User
+
+    seed_config_rows(db.session)
+    user = User()
+    db.session.add(user)
+    db.session.commit()
+
+    with app.app_context():
+        assert is_new_account(app, user) is True
+        assert _effective_user_cap(app, user) == 15
+
+
+def test_an_established_account_gets_the_full_allowance(app, db):
+    from app.limits import _effective_user_cap, is_new_account
+    from app.models import User
+
+    seed_config_rows(db.session)
+    user = User(created_at=datetime.now(UTC) - timedelta(days=7))
+    db.session.add(user)
+    db.session.commit()
+
+    with app.app_context():
+        assert is_new_account(app, user) is False
+        assert _effective_user_cap(app, user) == 100
+
+
+def test_an_admin_override_beats_the_ramp(app, db):
+    """The override is the only number somebody deliberately typed for this
+    person, so it wins over both the ramp and the global default -- otherwise
+    granting a new user more would silently do nothing for two days."""
+    from app.limits import _effective_user_cap
+    from app.models import User
+
+    seed_config_rows(db.session)
+    user = User(monthly_request_cap=250)
+    db.session.add(user)
+    db.session.commit()
+
+    with app.app_context():
+        assert _effective_user_cap(app, user) == 250
+
+
+def test_setting_the_window_to_zero_disables_the_ramp(app, db):
+    from app.limits import is_new_account
+    from app.models import GatewayConfig, User
+
+    seed_config_rows(db.session)
+    db.session.get(GatewayConfig, "new_account_hours").value = 0
+    db.session.commit()
+
+    user = User()
+    db.session.add(user)
+    db.session.commit()
+
+    with app.app_context():
+        assert is_new_account(app, user) is False
+
+
+def test_the_ramp_makes_a_farmed_account_worth_a_fraction_of_a_real_one(app, db):
+    """The whole economic point, asserted as a ratio so that tuning the numbers
+    cannot quietly remove the protection."""
+    from app.limits import resolve_limit
+
+    seed_config_rows(db.session)
+    with app.app_context():
+        full = resolve_limit(app, "monthly_request_cap")
+        new = resolve_limit(app, "new_account_request_cap")
+    assert new < full / 3, (
+        "A throwaway account should be worth well under a third of a real one, "
+        "or farming them stays economic."
+    )
+
+
+def test_the_ramp_never_gives_a_new_account_more_than_an_established_one(app, db):
+    """Regression. The two values are independent dials, so lowering the
+    monthly cap below the ramp used to hand new accounts a *larger* allowance
+    than everybody else -- turning the anti-farming measure into a reason to
+    keep making fresh accounts. Found by an existing monthly-cap test that set
+    the cap to 2 and watched a brand-new user sail straight past it.
+    """
+    from app.limits import _effective_user_cap
+    from app.models import GatewayConfig, User
+
+    seed_config_rows(db.session)
+    db.session.get(GatewayConfig, "monthly_request_cap").value = 2  # below the ramp's 15
+    db.session.commit()
+
+    new_user = User()
+    established = User(created_at=datetime.now(UTC) - timedelta(days=30))
+    db.session.add_all([new_user, established])
+    db.session.commit()
+
+    with app.app_context():
+        assert _effective_user_cap(app, new_user) <= _effective_user_cap(app, established)
+        assert _effective_user_cap(app, new_user) == 2

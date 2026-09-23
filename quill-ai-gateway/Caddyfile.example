@@ -1,22 +1,61 @@
-# Caddyfile.example -- append this block to the same Caddy instance
-# already reverse-proxying GLOW on this server (see
-# /s/code/glow/web/Caddyfile.example for that precedent).
+# Caddy site block for the QUILL AI Gateway.
 #
-# Usage:
-#   Add this block to the server's existing Caddyfile, replacing the
-#   domain with your real one, then `caddy reload`.
+# Append this to the Caddyfile the shared host already uses --
+# on lp.csedesigns.com ("bishoplink") that is /home/jeffbis/app/web/Caddyfile,
+# mounted into the `web-caddy-1` container -- then reload:
+#
+#     docker exec web-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+#
+# Do not reload until the DNS record resolves. Caddy asks Let's Encrypt for a
+# certificate the moment the block loads, and a name that does not yet point at
+# this machine fails that challenge, backs off, and retries on a lengthening
+# timer -- so the site stays broken for a while after DNS is fixed.
+#
+# ---------------------------------------------------------------------------
+# A SUBDOMAIN OF ITS OWN, NOT A PATH UNDER lp.csedesigns.com
+# ---------------------------------------------------------------------------
+# lp.csedesigns.com is already a permanent-redirect block pointing at
+# letitglow.app, with a couple of path matchers pinned inside it for the
+# feedback and picks endpoints. Hanging an API off another path in there means
+# every new route has to out-rank a `redir` that matches everything -- which is
+# exactly the trap that cost an afternoon when the picks endpoint went in. A
+# separate name has no ordering to reason about, gets its own certificate, and
+# can be moved to another machine later by changing one DNS record.
 
-gateway.quillforall.org {
-    reverse_proxy web:8000
+ai.csedesigns.com {
     encode gzip
+
+    # `quill-ai-gateway-web-1` is the container name docker compose gives the
+    # `web` service under the project name set in docker-compose.prod.yml.
+    # Caddy resolves it over the shared `web_default` network, the same way it
+    # already reaches askbits-web.
+    reverse_proxy quill-ai-gateway-web-1:8000
 
     header {
         X-Content-Type-Options nosniff
         X-Frame-Options SAMEORIGIN
         Referrer-Policy strict-origin-when-cross-origin
-        # The dashboard's session cookie is already Secure/HttpOnly/SameSite=Lax
-        # (app/config.py) -- HSTS here is an additional, server-level guarantee
-        # that the browser never even attempts a plain-HTTP connection.
+        # The dashboard's session cookie is already Secure, HttpOnly and
+        # SameSite=Lax (app/config.py). HSTS is the additional, server-level
+        # guarantee that a browser never even attempts plain HTTP -- which
+        # matters here because the thing being carried is a bearer token.
         Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+
+    # The sign-up throttle in app/limits.py counts per client address, and it
+    # reads X-Forwarded-For. That header is only trustworthy because this block
+    # is the sole route in: Caddy overwrites it with the real peer. If the
+    # container is ever published on a host port as well, the header becomes
+    # attacker-controlled and the throttle becomes decorative.
+
+    log {
+        output file /var/log/caddy/quill-ai-gateway.log {
+            roll_size 10MiB
+            roll_keep 5
+        }
+        # Bearer tokens travel in the Authorization header and device codes in
+        # request bodies. Neither is logged by Caddy's default common_log
+        # format, and neither should be added to it.
+        format console
     }
 }

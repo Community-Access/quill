@@ -380,3 +380,142 @@ form.settings-form button.danger {
 .pill.is-default {
   color: var(--series-blue);
 }
+
+/* ---------------------------------------------------------------------------
+   Additions for the plain-language Limits page, the read-only reference pages,
+   the safety board and the per-person actions.
+
+   Two rules run through all of it, and both are requirements rather than
+   preferences:
+
+   - **No status is ever carried by colour alone.** Every .status-badge has a
+     word inside it, and the words are chosen to survive being read out of
+     context ("NOT CONFIGURED", not a red dot).
+   - **Focus is always visible and never removed.** The :focus-visible rule
+     near the top of this file applies to everything added here; nothing below
+     sets `outline: none`.
+   --------------------------------------------------------------------------- */
+
+/* Visually hidden, still read aloud. For labels on controls whose purpose is
+   obvious on screen from a neighbouring cell but not to a screen reader --
+   the raw-key rows on the Limits page. Never used to hide a real instruction. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Monospace for identifiers a person has to read character by character: a
+   support ID, a database key, a config value. */
+.code {
+  font-family: ui-monospace, "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.95em;
+  padding: 0.05em 0.3em;
+  border-radius: 3px;
+  background: rgba(127, 127, 127, 0.14);
+}
+
+/* One tunable limit on the Limits page. The left border is decoration; the
+   <h3> is what actually separates them, so heading navigation works. */
+.config-row {
+  padding: 1rem 0 1.25rem 1rem;
+  border-left: 3px solid rgba(127, 127, 127, 0.3);
+  margin: 1.25rem 0;
+}
+.config-row h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+.config-current {
+  margin: 0 0 0.5rem;
+}
+.config-key {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+}
+.config-form {
+  margin: 0.75rem 0 0;
+}
+
+/* A checkbox that sits inline with its own label text, rather than being
+   stretched by .settings-form's full-width input rule. */
+.inline-checkbox {
+  width: auto;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+/* A form that is one control and a button, sitting inside a table cell or
+   beside prose. */
+.inline-form {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.25rem 0;
+}
+
+/* The verbatim prompt templates on the "Fixed by code" page. tabindex="0" in
+   the markup makes each block focusable so a keyboard user can scroll one that
+   overflows; without it an overflowing <pre> is unreachable without a mouse. */
+.prompt-template {
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 4px;
+  background: rgba(127, 127, 127, 0.08);
+  max-height: 22rem;
+  overflow: auto;
+  font-size: 0.92rem;
+}
+
+/* Term lists: the glossary, and the deferred-feature list. */
+.glossary dt,
+.card dl dt {
+  font-weight: 600;
+  margin-top: 1rem;
+}
+.glossary dd,
+.card dl dd {
+  margin: 0.25rem 0 0 1.25rem;
+}
+
+/* One connected computer on a person's page. */
+.device-row {
+  padding: 0.75rem 0 1rem 1rem;
+  border-left: 3px solid rgba(127, 127, 127, 0.3);
+  margin: 1rem 0;
+}
+.device-row h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+/* The summary of problems at the top of the safety page, and the permanent
+   removal block. Both carry their meaning in their heading text; the border is
+   reinforcement, not the message. */
+.needs-attention {
+  border-left: 5px solid;
+}
+.danger-zone {
+  border-left: 5px solid;
+  margin-top: 2.5rem;
+}
+
+.flash-area {
+  margin-bottom: 1rem;
+}
+
+.site-footer {
+  margin: 3rem auto 2rem;
+  padding: 1rem 1.25rem 0;
+  max-width: 62rem;
+  border-top: 1px solid rgba(127, 127, 127, 0.3);
+  font-size: 0.9rem;
+}

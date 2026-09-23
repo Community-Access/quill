@@ -15,26 +15,41 @@
       <nav aria-label="Dashboard sections">
         <ul>
           <li><a href="{{ url_for('dashboard.overview') }}" {% if request.endpoint == 'dashboard.overview' %}aria-current="page"{% endif %}>Overview</a></li>
-          <li><a href="{{ url_for('dashboard.models') }}" {% if request.endpoint == 'dashboard.models' %}aria-current="page"{% endif %}>Models</a></li>
-          <li><a href="{{ url_for('dashboard.config') }}" {% if request.endpoint == 'dashboard.config' %}aria-current="page"{% endif %}>Limits</a></li>
           <li><a href="{{ url_for('dashboard.users') }}" {% if request.endpoint in ('dashboard.users', 'dashboard.user_detail') %}aria-current="page"{% endif %}>Users</a></li>
-          <li><a href="{{ url_for('dashboard.feature_flags') }}" {% if request.endpoint == 'dashboard.feature_flags' %}aria-current="page"{% endif %}>Feature flags</a></li>
+          <li><a href="{{ url_for('dashboard.config') }}" {% if request.endpoint == 'dashboard.config' %}aria-current="page"{% endif %}>Limits</a></li>
+          <li><a href="{{ url_for('dashboard.models') }}" {% if request.endpoint == 'dashboard.models' %}aria-current="page"{% endif %}>Models</a></li>
+          <li><a href="{{ url_for('dashboard.feature_flags') }}" {% if request.endpoint == 'dashboard.feature_flags' %}aria-current="page"{% endif %}>Switches</a></li>
+          <li><a href="{{ url_for('dashboard.safety') }}" {% if request.endpoint == 'dashboard.safety' %}aria-current="page"{% endif %}>Safety checks</a></li>
+          <li><a href="{{ url_for('dashboard.locked') }}" {% if request.endpoint == 'dashboard.locked' %}aria-current="page"{% endif %}>Fixed by code</a></li>
           <li><a href="{{ url_for('dashboard.audit_log') }}" {% if request.endpoint == 'dashboard.audit_log' %}aria-current="page"{% endif %}>Audit log</a></li>
         </ul>
       </nav>
       <form method="post" action="{{ url_for('dashboard.logout') }}">
-        <button type="submit">Sign out</button>
+        <button type="submit">Sign out of the dashboard</button>
       </form>
     </div>
   </header>
   {% endif %}
   <main id="main">
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <p class="flash" data-kind="{{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
-      {% endfor %}
+      {% if messages %}
+      {# Errors are announced; successes are stated. A page that shouts every
+         time something worked trains people to ignore it shouting. #}
+      <div class="flash-area">
+        {% for category, message in messages %}
+          <p class="flash" data-kind="{{ category }}"
+             role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
   </main>
+  {% if session.get('admin_token') %}
+  <footer class="site-footer">
+    <p>Not sure what a word on this page means?
+      <a href="{{ url_for('dashboard.glossary') }}">Read the glossary</a>.</p>
+  </footer>
+  {% endif %}
 </body>
 </html>

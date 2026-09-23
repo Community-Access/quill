@@ -80,6 +80,19 @@ class User(db.Model):
         """False for ``blocked`` -- the one status that short-circuits everything."""
         return self.status != "blocked"
 
+    @property
+    def support_id(self) -> str:
+        """The short, speakable handle this account is known by in support.
+
+        Accounts are pseudonymous UUIDs, which is the right privacy default and
+        makes "somebody wrote in and I cannot find them" unanswerable. The
+        client shows the first eight characters of the id, grouped, and this is
+        the same string -- short enough to read down a phone line, long enough
+        that a prefix search lands on one account.
+        """
+        flat = self.id.replace("-", "").upper()
+        return f"{flat[:4]}-{flat[4:8]}"
+
 
 class Device(db.Model):
     """One registered client install, belonging to exactly one :class:`User`.
@@ -128,6 +141,11 @@ class UsageEvent(db.Model):
     model: Mapped[str] = mapped_column(String(64), nullable=False)
     tokens_in: Mapped[int] = mapped_column(nullable=False)
     tokens_out: Mapped[int] = mapped_column(nullable=False)
+    reasoning_tokens: Mapped[int] = mapped_column(nullable=False, default=0)
+    """How much of ``tokens_out`` the model spent thinking rather than
+    answering. Billed at the output rate and never shown to the user, so it is
+    the one component of a bill that can grow without anybody noticing -- which
+    is why it is a column of its own rather than folded into the total."""
     estimated_cost_usd: Mapped[float] = mapped_column(Numeric(10, 6), nullable=False)
     status: Mapped[str] = mapped_column(String(16), nullable=False)
     """allowed | throttled | blocked."""
@@ -156,7 +174,23 @@ class MonthlyUsageSummary(db.Model):
     year_month: Mapped[str] = mapped_column(String(7), primary_key=True)
     """'2026-07' -- a plain string, not a date, so equality/grouping is trivial."""
     request_count: Mapped[int] = mapped_column(default=0)
-    total_cost_usd: Mapped[float] = mapped_column(Numeric(10, 4), default=0)
+    total_cost_usd: Mapped[float] = mapped_column(Numeric(14, 8), default=0)
+    """Eight decimal places, and it has to be.
+
+    This was ``Numeric(10, 4)``, and at four places it did not work at all. One
+    request costs about **$0.000028** at the shipped limits, and
+    ``record_usage`` accumulates by reading this column back, adding, and
+    writing it again -- so every write rounded the new total straight back down
+    to ``0.0000`` and the running cost stayed at zero forever. The per-user cost
+    ceiling is checked against this column, which meant that fence was inert:
+    the request caps in Redis were the only thing actually bounding anybody.
+
+    Four places is a sensible precision for money. It is the wrong precision for
+    *this* money: at $0.10 per million input tokens a single token is
+    $0.0000001, and a column has to hold the sum of hundreds of those before it
+    reaches a cent. Found by reading the first real request back out of the
+    database on the host -- the usage event said $0.000028 and the summary said
+    $0.000000."""
 
 
 class FeatureFlag(db.Model):

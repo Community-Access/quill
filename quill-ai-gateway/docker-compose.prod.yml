@@ -1,0 +1,96 @@
+# Production compose for the shared host (lp.csedesigns.com / "bishoplink").
+#
+# Differs from docker-compose.yml in three ways that matter on that host:
+#
+# 1. **It joins the existing `web_default` network** instead of publishing a
+#    port. Caddy already terminates TLS for every site on this machine from a
+#    container called `web-caddy-1`, and it reaches other services by container
+#    name over that network -- exactly how `askbits-web` is wired today (it sits
+#    on both `askbits_default` and `web_default`). Publishing 8000 on the host
+#    would work and would also expose the service directly, bypassing the
+#    headers, HSTS and rate limiting Caddy applies.
+#
+# 2. **Nothing is bind-mounted from the source tree.** The image is the
+#    artifact; a running container never reads the checkout.
+#
+# 3. **Logs are rotated.** A shared host with eighteen containers on it does not
+#    need a nineteenth writing an unbounded JSON log.
+#
+# Usage on the host:
+#     cd ~/quill-ai-gateway
+#     docker compose -f docker-compose.prod.yml up -d --build
+#     docker compose -f docker-compose.prod.yml exec web flask --app run.py init-db
+#     docker compose -f docker-compose.prod.yml exec web flask --app run.py seed-config
+#     docker compose -f docker-compose.prod.yml exec web flask --app run.py check-config
+
+name: quill-ai-gateway
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  redis:
+    image: redis:7-alpine
+    # No persistence: everything in here is a rate-limit counter, a config
+    # cache entry or an in-flight sign-in. Losing the lot on a restart costs
+    # somebody a re-typed device code, never data.
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru --save ""
+    expose:
+      - "6379"
+    restart: unless-stopped
+    logging: *default-logging
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=quill_ai_gateway
+      - POSTGRES_USER=quill_ai_gateway
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    expose:
+      - "5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quill_ai_gateway"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    expose:
+      - "8000"
+    environment:
+      - DATABASE_URL=postgresql://quill_ai_gateway:${POSTGRES_PASSWORD}@postgres:5432/quill_ai_gateway
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY:?set OPENAI_API_KEY in .env}
+      - GATEWAY_SECRET_KEY=${GATEWAY_SECRET_KEY:?set GATEWAY_SECRET_KEY in .env}
+      - GATEWAY_ADMIN_ALLOWLIST=${GATEWAY_ADMIN_ALLOWLIST:-}
+      - GATEWAY_PUBLIC_BASE_URL=${GATEWAY_PUBLIC_BASE_URL:?set GATEWAY_PUBLIC_BASE_URL in .env}
+      - GATEWAY_OPENAI_MODEL=${GATEWAY_OPENAI_MODEL:-gpt-6-luna}
+      - GATEWAY_ALERT_WEBHOOK_URL=${GATEWAY_ALERT_WEBHOOK_URL:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    logging: *default-logging
+    networks:
+      - default
+      - web_default
+
+volumes:
+  postgres-data:
+
+networks:
+  # The shared Caddy network. Declared external because it belongs to the
+  # long-running `web` compose project in ~/app/web, not to this one -- this
+  # service joins it, and must never be able to create or destroy it.
+  web_default:
+    external: true

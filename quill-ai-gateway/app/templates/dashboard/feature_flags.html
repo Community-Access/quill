@@ -1,34 +1,107 @@
 {% extends "dashboard/base.html" %}
-{% block title %}Feature flags{% endblock %}
+{% block title %}Switches{% endblock %}
 {% block content %}
-<h1>Feature flags</h1>
-<p><strong>Hosted AI</strong> is the emergency kill switch — disabling it
-  pauses every hosted request for every user immediately. The other flags
-  pause one feature at a time, leaving the rest available.</p>
+<h1>Switches</h1>
 
-<ul class="flag-list">
-  {% for flag in flags %}
+{% if auto_paused %}
+<section class="card needs-attention" aria-labelledby="autopause-h">
+  <h2 id="autopause-h">All AI is off — and nobody turned it off by hand</h2>
+  <p>It switched itself off
+    {%- if global_updated_at %} at
+    {{ global_updated_at.strftime("%H:%M on %d %B") }} UTC{% endif %},
+    because spending reached the ${{ "%.2f"|format(budget_cap) }} monthly cap.
+    ${{ "%.2f"|format(spend) }} has been spent this month.</p>
+  <p><strong>Before switching it back on, raise the cap</strong> on the
+    <a href="{{ url_for('dashboard.config') }}">Limits</a> page, or look at
+    what is driving the spending. Turning it back on without changing anything
+    will pause it again within the hour, which looks exactly like the switch
+    being broken.</p>
+</section>
+{% endif %}
+
+<h2 id="shipped-h">The five features</h2>
+<p>Switching one off pauses it for everybody and leaves the rest working.
+  Nobody's allowance is spent while something is off, and switching it back on
+  restores everything exactly as it was.</p>
+
+<ul class="flag-list" aria-labelledby="shipped-h">
+  {% for flag in shipped %}
   <li>
     <div>
-      <span class="model-name">
-        {{ "⚠ Hosted AI (global kill switch)" if flag.is_global else flag.feature.replace("_", " ").title() }}
+      <span class="model-name">{{ flag.label }}</span>
+      <span class="status-badge" data-status="{{ 'good' if flag.enabled else 'warning' }}">
+        {{ "On" if flag.enabled else "Off" }}
       </span>
-      <span class="pill {{ 'is-default' if flag.enabled }}">{{ "Enabled" if flag.enabled else "Disabled" }}</span>
       {% if not flag.enabled and flag.disabled_reason %}
-      <div class="flag-meta">Reason: {{ flag.disabled_reason }}</div>
+      <div class="flag-meta">People are told: “{{ flag.disabled_reason }}”</div>
       {% endif %}
     </div>
-    <form method="post" action="{{ url_for('dashboard.toggle_feature_flag', feature=flag.feature) }}">
+    <form class="settings-form" method="post"
+          action="{{ url_for('dashboard.toggle_feature_flag', feature=flag.feature) }}">
       <input type="hidden" name="enabled" value="{{ '0' if flag.enabled else '1' }}">
       {% if flag.enabled %}
-      <label for="reason-{{ flag.feature }}" class="field-description">Reason (shown to users)</label>
-      <input type="text" id="reason-{{ flag.feature }}" name="reason" placeholder="e.g. reviewing unusual activity">
+      <div>
+        <label for="reason-{{ flag.feature }}">
+          What should people be told? (shown to them when they try to use it)
+        </label>
+        <input type="text" id="reason-{{ flag.feature }}" name="reason"
+               autocomplete="off"
+               aria-describedby="reason-help-{{ flag.feature }}">
+        <p id="reason-help-{{ flag.feature }}" class="field-description">
+          Leave it blank and they get a general "temporarily paused" message.
+          A specific sentence saves them writing to support.
+        </p>
+      </div>
       {% endif %}
       <button type="submit" class="{{ 'danger' if flag.enabled else 'primary' }}">
-        {{ "Disable" if flag.enabled else "Enable" }}
+        {{ "Switch off" if flag.enabled else "Switch on" }} {{ flag.label }}
       </button>
     </form>
   </li>
   {% endfor %}
 </ul>
+
+<h2 id="deferred-h">Features that were never built</h2>
+<p>These are off, and they are not waiting for you to switch them on — there is
+  no way to reach them from QUILL or QuillLite. They are listed so that nobody
+  wonders whether something is broken. See
+  <a href="{{ url_for('dashboard.locked') }}">Fixed by code</a> for why.</p>
+<dl aria-labelledby="deferred-h">
+  {% for flag in deferred %}
+  <dt>{{ flag.label }} — {{ "ON (this is unexpected)" if flag.enabled else "off" }}</dt>
+  <dd>{{ flag.reason }}</dd>
+  {% endfor %}
+</dl>
+
+<section class="card danger-zone" aria-labelledby="global-h">
+  <h2 id="global-h">Turn everything off</h2>
+  <p>Stops every AI request from every person, immediately. They are told the
+    service is paused, pointed at the status page, and reminded that their own
+    API key still works. Nothing is lost and nobody's allowance is spent while
+    it is off.</p>
+  <p>Currently:
+    <span class="status-badge" data-status="{{ 'good' if global_enabled else 'critical' }}">
+      {{ "All AI is ON" if global_enabled else "All AI is OFF" }}
+    </span>
+    {%- if not global_enabled and global_reason %}
+    <br>Reason recorded: {{ global_reason }}
+    {%- endif %}
+  </p>
+  <form class="settings-form" method="post"
+        action="{{ url_for('dashboard.toggle_feature_flag', feature='hosted_ai') }}">
+    <input type="hidden" name="enabled" value="{{ '0' if global_enabled else '1' }}">
+    {% if global_enabled %}
+    <div>
+      <label for="reason-hosted_ai">Why are you turning everything off?</label>
+      <input type="text" id="reason-hosted_ai" name="reason" autocomplete="off"
+             aria-describedby="reason-help-hosted_ai">
+      <p id="reason-help-hosted_ai" class="field-description">Shown to every
+        person who tries to use AI until you turn it back on.</p>
+    </div>
+    {% endif %}
+    <button type="submit" class="{{ 'danger' if global_enabled else 'primary' }}">
+      {{ "Turn off all AI for everyone" if global_enabled else "Turn all AI back on" }}
+    </button>
+  </form>
+</section>
 {% endblock %}

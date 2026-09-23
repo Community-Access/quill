@@ -2,28 +2,80 @@
 {% block title %}Users{% endblock %}
 {% block content %}
 <h1>Users</h1>
-<p>Most recent 200 registrations. Pseudonymous by design — there is no
-  name or email to show unless a user has linked one (PRD §4.2).</p>
-<table class="data-table">
-  <caption>Registered users</caption>
+
+<section class="card" aria-labelledby="find-h">
+  <h2 id="find-h">Find somebody</h2>
+  <p>Accounts have no name and no email by design. When somebody writes in, ask
+    them for the <strong>support ID</strong> QUILL shows them — a short code like
+    <span class="code">A1B2-C3D4</span> — and type it here. A few characters is
+    enough.</p>
+  <form class="settings-form" method="get" action="{{ url_for('dashboard.users') }}"
+        role="search">
+    <div>
+      <label for="q">Support ID</label>
+      <input type="search" id="q" name="q" value="{{ query }}"
+             autocomplete="off" spellcheck="false"
+             aria-describedby="q-help" placeholder="A1B2-C3D4">
+      <p id="q-help" class="field-description">Dashes are optional. Leave it
+        empty to list the most recent registrations instead.</p>
+    </div>
+    <button type="submit" class="primary">Find</button>
+    {% if query %}
+    <p><a href="{{ url_for('dashboard.users') }}">Clear the search</a></p>
+    {% endif %}
+  </form>
+</section>
+
+<h2 id="results-h">
+  {%- if query -%}
+    {{ users|length }} account{{ "" if users|length == 1 else "s" }} matching "{{ query }}"
+  {%- else -%}
+    Most recent registrations
+  {%- endif -%}
+</h2>
+{% if query and not users %}
+<p>Nothing matched that support ID. Check the characters — the codes never
+  contain the letters I, L, O or U, or the digits 0, 1, 5 or 8, because those
+  are the ones people mishear.</p>
+{% elif not query %}
+<p>The 200 most recent. Pseudonymous by design — there is no name or email to
+  show unless somebody has linked one.</p>
+{% endif %}
+
+<table class="data-table" aria-labelledby="results-h">
+  <caption>Registered accounts</caption>
   <thead>
     <tr>
-      <th scope="col">User</th>
+      <th scope="col">Support ID</th>
       <th scope="col">Status</th>
       <th scope="col">Registered</th>
-      <th scope="col"></th>
+      <th scope="col">Open</th>
     </tr>
   </thead>
   <tbody>
     {% for user in users %}
     <tr>
-      <td>{{ user.email or user.id }}</td>
-      <td>{{ user.status }}</td>
-      <td>{{ user.created_at.strftime("%Y-%m-%d") }}</td>
-      <td><a class="button" href="{{ url_for('dashboard.user_detail', user_id=user.id) }}">View</a></td>
+      <th scope="row"><span class="code">{{ user.support_id }}</span></th>
+      <td>
+        {% if user.status == "active" %}
+        <span class="status-badge" data-status="good">Active</span>
+        {% elif user.status == "review" %}
+        <span class="status-badge" data-status="warning">Under review</span>
+        {% elif user.status == "reduced" %}
+        <span class="status-badge" data-status="warning">Reduced</span>
+        {% else %}
+        <span class="status-badge" data-status="serious">Paused</span>
+        {% endif %}
+      </td>
+      <td>{{ user.created_at.strftime("%d %B %Y") }}</td>
+      <td>
+        <a class="button" href="{{ url_for('dashboard.user_detail', user_id=user.id) }}">
+          Open {{ user.support_id }}
+        </a>
+      </td>
     </tr>
     {% else %}
-    <tr><td colspan="4">No users registered yet.</td></tr>
+    <tr><td colspan="4">No accounts to show.</td></tr>
     {% endfor %}
   </tbody>
 </table>

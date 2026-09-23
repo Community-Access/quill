@@ -2,38 +2,134 @@
 {% block title %}Limits{% endblock %}
 {% block content %}
 <h1>Limits</h1>
-<p>Every number here takes effect on the very next request — no restart,
-  no deploy. See the PRD's "start small and learn" section for why the
-  initial values are conservative.</p>
+<p>Every number here takes effect on the very next request — no restart, no
+  deploy. Each one says what it does, what it may be set to, and what changing
+  it costs.</p>
 
-<div class="card">
+{% if cost %}
+<section class="card" aria-labelledby="cost-h">
+  <h2 id="cost-h">What today's settings cost</h2>
+  <p>One request, if it uses every token it is allowed:
+    <strong>${{ "%.5f"|format(cost.per_request_usd) }}</strong>
+    ({{ "{:,}".format(cost.max_input_tokens) }} tokens in at
+    ${{ "%.2f"|format(cost.input_per_million_usd) }} per million,
+    {{ "{:,}".format(cost.max_output_tokens) }} out at
+    ${{ "%.2f"|format(cost.output_per_million_usd) }} per million, using
+    {{ cost.model_label }}).</p>
+
   <table class="data-table">
-    <caption>Tunable limits (gateway_config)</caption>
+    <caption>Estimated monthly cost at the current limits, by number of people</caption>
     <thead>
       <tr>
-        <th scope="col">Limit</th>
-        <th scope="col">Current value</th>
-        <th scope="col">Update</th>
+        <th scope="col">People</th>
+        <th scope="col">If everyone uses everything</th>
+        <th scope="col">If about a third do</th>
       </tr>
     </thead>
     <tbody>
-      {% for row in rows %}
+      {% for row in cost.projections() %}
       <tr>
-        <td>
-          <label for="value-{{ row.key }}">{{ row.description }}</label><br>
-          <span class="model-meta">{{ row.key }}</span>
-        </td>
+        <th scope="row">{{ "{:,}".format(row.people) }}</th>
+        <td>${{ "%.2f"|format(row.full_use_usd) }} a month</td>
+        <td>${{ "%.2f"|format(row.realistic_usd) }} a month</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p>{{ cost.headroom_sentence(budget_cap) }}</p>
+  <p class="text-secondary">{{ pricing_caveat }}</p>
+</section>
+{% else %}
+<p class="flash" data-kind="error" role="alert">No model is enabled and marked
+  default, so there is nothing to price these limits against — and every request
+  is currently failing. Set a default on the
+  <a href="{{ url_for('dashboard.models') }}">Models</a> page.</p>
+{% endif %}
+
+{% for group in groups %}
+<section class="card" aria-labelledby="group-{{ group.id }}">
+  <h2 id="group-{{ group.id }}">{{ group.heading }}</h2>
+  <p>{{ group.blurb }}</p>
+
+  {% for member in group.members %}
+  {% set meta = member.meta %}
+  {% set row = member.row %}
+  <div class="config-row">
+    <h3 id="h-{{ meta.key }}">{{ meta.name }}</h3>
+    <p class="config-current">Currently <strong>{{ member.display }}</strong></p>
+    <p id="what-{{ meta.key }}">{{ meta.sentence }}</p>
+    <p id="range-{{ meta.key }}" class="text-secondary">
+      Must be {{ meta.format_range() }}. {{ meta.consequence }}
+    </p>
+
+    <form class="settings-form config-form" method="post"
+          action="{{ url_for('dashboard.update_config', key=meta.key) }}">
+      <div>
+        <label for="value-{{ meta.key }}">New value for {{ meta.name }}</label>
+        <input type="number" step="{{ meta.step }}"
+               min="{{ meta.minimum }}" max="{{ meta.maximum }}"
+               id="value-{{ meta.key }}" name="value" value="{{ row.value }}"
+               aria-describedby="what-{{ meta.key }} range-{{ meta.key }}">
+      </div>
+      {% if meta.cost_relevant %}
+      <div>
+        <label for="confirm-{{ meta.key }}">
+          <input type="checkbox" id="confirm-{{ meta.key }}" name="confirm" value="yes"
+                 class="inline-checkbox">
+          Yes, I mean it, even if this more than doubles what the service costs
+        </label>
+      </div>
+      {% endif %}
+      <button type="submit" class="primary">Save {{ meta.name }}</button>
+    </form>
+
+    <p class="config-key text-secondary">
+      Database key <span class="code">{{ meta.key }}</span>{% if row.updated_by %},
+      last changed by {{ row.updated_by }} on
+      {{ row.updated_at.strftime("%d %B %Y") }}{% endif %}
+    </p>
+  </div>
+  {% endfor %}
+</section>
+{% endfor %}
+
+{% if undescribed %}
+<section class="card" aria-labelledby="undescribed-h">
+  <h2 id="undescribed-h">Limits this version does not have a description for</h2>
+  <p>These are in the database but this build has no plain-language entry for
+    them. They are shown rather than hidden, because a limit nobody can see is a
+    limit nobody can fix. They are editable, but without a safe range to check
+    against — so change them carefully.</p>
+  <table class="data-table">
+    <caption>Undescribed configuration keys</caption>
+    <thead>
+      <tr>
+        <th scope="col">Key</th>
+        <th scope="col">Current value</th>
+        <th scope="col">Change it</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in undescribed %}
+      <tr>
+        <th scope="row"><span class="code">{{ row.key }}</span></th>
         <td>{{ row.value }}</td>
         <td>
-          <form method="post" action="{{ url_for('dashboard.update_config', key=row.key) }}" style="display:flex; gap:0.5rem;">
-            <input type="number" step="any" id="value-{{ row.key }}" name="value" value="{{ row.value }}"
-                   aria-label="New value for {{ row.description }}">
-            <button type="submit" class="primary">Save</button>
+          <form method="post" action="{{ url_for('dashboard.update_config', key=row.key) }}"
+                class="inline-form">
+            <label for="raw-{{ row.key }}" class="visually-hidden">
+              New value for {{ row.key }}
+            </label>
+            <input type="number" step="any" id="raw-{{ row.key }}" name="value"
+                   value="{{ row.value }}">
+            <button type="submit">Save</button>
           </form>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-</div>
+</section>
+{% endif %}
 {% endblock %}

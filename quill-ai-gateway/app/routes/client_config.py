@@ -13,6 +13,7 @@ from flask import Blueprint, current_app, g, jsonify
 from app.auth import require_auth
 from app.limits import remaining_quota, resolve_limit
 from app.models import FeatureFlag, db
+from app.prompts import DEFERRED_FEATURES, SHIPPED_FEATURES
 
 bp = Blueprint("client_config", __name__)
 
@@ -25,10 +26,19 @@ def get_config():
     hosted_flag = db.session.get(FeatureFlag, "hosted_ai")
     hosted_enabled = hosted_flag.enabled if hosted_flag is not None else True
 
+    # Driven from the feature table rather than a list written out here. A
+    # hardcoded tuple went stale the moment Proofread and Explain were added:
+    # the client asked what was available, was told about five features, and
+    # two of them were ones it could no longer reach while two it *could* reach
+    # went unmentioned.
     feature_flags = {}
-    for feature in ("document_qna", "summarize", "rewrite", "alt_text", "chat"):
+    for feature in (*SHIPPED_FEATURES, *DEFERRED_FEATURES):
         flag = db.session.get(FeatureFlag, feature)
-        feature_flags[feature] = flag.enabled if flag is not None else True
+        # A deferred feature defaults to off when no row exists; a shipped one
+        # defaults to on. Erring the other way would have the client offering a
+        # button for something that was never built.
+        default = feature in SHIPPED_FEATURES
+        feature_flags[feature] = flag.enabled if flag is not None else default
 
     return jsonify({
         "max_input_tokens": int(resolve_limit(current_app, "max_input_tokens")),

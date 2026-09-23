@@ -1,0 +1,88 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Glossary{% endblock %}
+{% block content %}
+<h1>Glossary</h1>
+<p>Plain definitions for the words used elsewhere in this console. This service
+  is operated by whoever is awake, not only by whoever built it.</p>
+
+<div class="card">
+  <dl class="glossary">
+    <dt id="token">Token</dt>
+    <dd>The unit the AI provider bills in. Roughly three quarters of an English
+      word, so 1,500 tokens is about 1,100 words. Every size limit in this
+      console is shown in words as well, because nobody thinks in tokens.</dd>
+
+    <dt id="input-token">Input token</dt>
+    <dd>A token in the text sent <em>to</em> the model — the passage somebody
+      selected, plus the fixed instruction. Charged at the lower rate.</dd>
+
+    <dt id="output-token">Output token</dt>
+    <dd>A token in the answer the model sends <em>back</em>. Charged at five
+      times the input rate, which is why the answer-length limit matters more
+      than its size suggests.</dd>
+
+    <dt id="reasoning-token">Reasoning token</dt>
+    <dd>Thinking the model does before answering. Billed as an output token and
+      never shown to anybody, so it is the one part of a bill that can grow
+      without being noticed. Every feature here is pinned to the lowest setting
+      in code — see <a href="{{ url_for('dashboard.locked') }}">Fixed by code</a>.</dd>
+
+    <dt id="request">Request</dt>
+    <dd>One press of one AI command by one person: a summary, a rewrite, a
+      proofread, an explanation, or a question about a document. A request that
+      is refused before anything is sent does not count against anybody.</dd>
+
+    <dt id="allowance">Allowance</dt>
+    <dd>How many requests one person gets in a month. It starts again by itself
+      on the 1st. You can also give it back early on a person's page.</dd>
+
+    <dt id="cap">Cap</dt>
+    <dd>A limit on a count — requests per hour, per day, per month, or per
+      feature. Hitting a cap refuses the request and tells the person exactly
+      when it resets.</dd>
+
+    <dt id="ceiling">Ceiling</dt>
+    <dd>A limit on money rather than on a count. The per-person ceiling is a
+      second fence behind the request cap, for the case where something has gone
+      wrong in a way the count would not catch.</dd>
+
+    <dt id="budget">Budget</dt>
+    <dd>The total this service may spend across everybody in a month. Reaching
+      it switches hosted AI off for everyone until an admin turns it back on.
+      You are alerted at 50%, 75% and 90% first.</dd>
+
+    <dt id="throttle">Throttle</dt>
+    <dd>A limit that slows something down rather than stopping it outright. The
+      sign-up throttle limits how many computers one internet address may
+      connect in an hour; review mode throttles one person's daily requests
+      without blocking them.</dd>
+
+    <dt id="device">Device, or computer</dt>
+    <dd>One QUILL install that has been connected. A person may have several.
+      Each holds its own token, and each can be signed out on its own.</dd>
+
+    <dt id="token-bearer">Bearer token</dt>
+    <dd>The long secret string a connected computer sends with every request to
+      prove who it is. This service only ever stores a one-way hash of it, so a
+      token cannot be read back out of the database — which is also why a new
+      one is shown exactly once when it is issued.</dd>
+
+    <dt id="support-id">Support ID</dt>
+    <dd>A short code like <span class="code">A1B2-C3D4</span> that QUILL shows
+      each person. Accounts have no name or email by design, so this is what
+      somebody quotes when they write in, and what you search for on the
+      <a href="{{ url_for('dashboard.users') }}">Users</a> page.</dd>
+
+    <dt id="feature-flag">Switch, or feature flag</dt>
+    <dd>An on/off control for one feature, or for the whole service. Switching
+      something off is instant, reversible, and costs nobody their allowance
+      while it is off.</dd>
+
+    <dt id="byok">Your own API key, or BYOK</dt>
+    <dd>Short for "bring your own key". A QUILL user who has an account with an
+      AI provider can use that instead of this service, with no limits from us.
+      Every refusal message here points at it, so running out is never a dead
+      end.</dd>
+  </dl>
+</div>
+{% endblock %}

@@ -54,7 +54,7 @@ class Config:
     # gateway_config row, deliberately (see the PRD's §8 rationale: the
     # model string becomes part of a billed API call, so changing it is a
     # reviewed code change, never a runtime admin dial).
-    OPENAI_MODEL = os.environ.get("GATEWAY_OPENAI_MODEL", "gpt-5-nano")
+    OPENAI_MODEL = os.environ.get("GATEWAY_OPENAI_MODEL", "gpt-6-luna")
     OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
     OPENAI_TIMEOUT_SECONDS = float(os.environ.get("GATEWAY_OPENAI_TIMEOUT", "30"))
 
@@ -83,13 +83,20 @@ class Config:
     ALERT_WEBHOOK_URL = os.environ.get("GATEWAY_ALERT_WEBHOOK_URL", "")
 
     def validate(self) -> list[str]:
-        """Return a list of human-readable problems with this config.
+        """Problems that must stop the process starting.
 
-        Called once at app startup (see ``app/__init__.py``); a non-empty
-        list means the process refuses to start rather than run with a
-        half-configured, silently-broken setup (e.g. no OpenAI key means
-        every chat request would fail anyway -- better to fail loudly at
-        boot than to accept traffic and fail per-request).
+        Called once at startup (``app/__init__.py``). A non-empty list means
+        the process refuses to boot rather than accept traffic it cannot
+        serve: with no provider key every request would fail anyway, and with
+        no session key the dashboard's cookie would be unsigned.
+
+        **An empty admin allowlist is deliberately not in here** -- see
+        :meth:`warnings`. Refusing to boot on it made the documented first-run
+        sequence impossible: you register the first admin device through the
+        ordinary device-code flow, which needs the service *running*, and then
+        put its id in the allowlist. Failing closed on that is not caution, it
+        is a deadlock on a brand-new deployment, and it cost a confused fifteen
+        minutes the first time this was stood up.
         """
         problems: list[str] = []
         if not self.OPENAI_API_KEY:
@@ -104,15 +111,33 @@ class Config:
                 '`python -c "import secrets; print(secrets.token_hex(32))"` '
                 "and set it via your host's secret mechanism."
             )
-        if not self.ADMIN_ALLOWLIST:
-            problems.append(
-                "GATEWAY_ADMIN_ALLOWLIST is empty -- no one will be able to "
-                "reach the /admin/* routes. This is allowed (e.g. for a "
-                "brand-new deployment before the first admin registers "
-                "their device), but is almost always a configuration "
-                "mistake if you're reading this in production."
-            )
         return problems
+
+    def warnings(self) -> list[str]:
+        """Problems worth shouting about at startup that must not stop it.
+
+        Logged at ERROR level so they are impossible to miss in the first
+        screen of ``docker compose logs``, but the process still serves
+        traffic -- because in every case here, a running service with a loud
+        log is more useful than no service at all.
+        """
+        notes: list[str] = []
+        if not self.ADMIN_ALLOWLIST:
+            notes.append(
+                "GATEWAY_ADMIN_ALLOWLIST is empty, so nobody can reach the "
+                "/admin/* routes or the dashboard. That is expected on a "
+                "brand-new deployment: register a device through the ordinary "
+                "device-code flow, put its device_id in this variable, and "
+                "restart. If you are past first-run, this is a configuration "
+                "mistake."
+            )
+        if not self.ALERT_WEBHOOK_URL:
+            notes.append(
+                "GATEWAY_ALERT_WEBHOOK_URL is not set, so the 50%, 75% and 90% "
+                "budget warnings go only to this log. The first anyone would "
+                "hear of a runaway month is hosted AI switching itself off."
+            )
+        return notes
 
 
 class TestingConfig(Config):

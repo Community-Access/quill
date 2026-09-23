@@ -4,17 +4,24 @@ A small, boring, private Flask service that lets the open-source [QUILL](https:/
 desktop client offer free, hosted AI features **without ever embedding a
 shared provider API key in the open-source client**.
 
-**Read this first:** [`docs/planning/openai.md`](../docs/planning/openai.md)
-at the repository root is the full product requirements document this
-service implements — the *why* behind every decision here. This README is
-the *how to run it*; the PRD is the *why it works this way*. If something
-here seems arbitrary, the PRD almost certainly explains the reasoning.
+**Read these first, in this order:**
+
+1. [`../ai.md`](../ai.md) — the current plan and the authority on every
+   number, the deployment runbook (section 14), and the task list (section
+   16). Where it and the PRD disagree about a value, this document wins.
+2. [`../docs/planning/openai.md`](../docs/planning/openai.md) — the original
+   product requirements document, and still the authority on *why* the
+   architecture looks the way it does.
+
+This README is the *how to run it*. If something here seems arbitrary, one of
+those two almost certainly explains the reasoning.
 
 ## The one-sentence version
 
 QUILL's desktop client holds a QUILL-issued token, never an OpenAI key;
-this service is the only thing that ever holds the real key, and it
-checks a user's quota *before* every OpenAI call, not after.
+this service is the only thing that ever holds the real key, it checks a
+user's quota *before* every OpenAI call rather than after, and it never
+charges anybody for a request that did not happen.
 
 ## Architecture at a glance
 
@@ -22,11 +29,23 @@ checks a user's quota *before* every OpenAI call, not after.
 QUILL desktop client
       │  HTTPS, Bearer <gateway-token>
       ▼
-This Flask app  ──────────────────────────►  OpenAI (one nano-class model)
-      │
+This Flask app  ──────────────────────────►  OpenAI (GPT-6 Luna)
+      │                                       no tools, no web search, ever
       ├── PostgreSQL   (users, devices, usage history, admin config)
-      └── Redis        (rate-limit counters, config cache)
+      └── Redis        (rate-limit counters, config cache, pending sign-ins)
 ```
+
+**Five features**, all of them working on a passage the user selected or a
+question about a document they have open: summarize, rewrite, proofread,
+explain, and questions-about-documents. Open-ended chat and describing
+pictures both exist as ids in the schema and ship **switched off**, each with
+a stored reason the refusal path actually shows — "this was never built" and
+"temporarily paused" are completely different facts, and confusing them sends
+somebody to support over a feature that does not exist.
+
+**This service sends no email.** No SMTP, no mail provider, nothing that needs
+one. Sign-in is the device-code flow, so there is no address to verify and no
+password to reset; alerts go to a webhook. See `../ai.md` section 14.3.
 
 - **`app/config.py`** — every environment variable this service reads, and
   nothing else. Read this to see exactly what a deployment must configure.
@@ -42,17 +61,40 @@ This Flask app  ─────────────────────�
   which one is the active default. An admin can add a model, disable one
   that's misbehaving, or switch the default, all without a deploy.
 - **`app/prompts.py`** — the fixed, server-side-only system prompt per
-  feature. The client only ever supplies a user prompt/question, never a
-  system prompt — this is what stops a modified client from smuggling an
-  unapproved use through an approved feature.
+  feature, **and how hard the model may think about it**. The client only
+  ever supplies a user prompt or question, never a system prompt — that is
+  what stops a modified client smuggling an unapproved use through an
+  approved feature. Reasoning effort is in this file for the same reason and
+  is the more expensive one to get wrong: reasoning tokens bill at the output
+  rate and never appear in the answer, so a model left at its provider's
+  default roughly **doubles the entire bill** invisibly.
+- **`app/config_schema.py`** — what every tunable limit *means* in plain
+  language, and what it may be set to. This is what stops `0.15` typed as
+  `15` raising every user's cost ceiling a hundredfold behind a green success
+  message, and what lets the console group and explain limits instead of
+  listing raw database keys.
+- **`app/costing.py`** — what the current settings actually cost, and what a
+  proposed change would cost. Every figure derives from the Models page's
+  price columns, which are what this gateway was *told* the provider charges,
+  not what it charges.
 - **`app/openai_client.py`** — the *only* place this codebase ever talks to
-  OpenAI. If you're auditing "does the key ever leak," this is the one
-  file to check.
+  OpenAI. If you are auditing "does the key ever leak", this is the one file
+  to check. It is also where the outgoing request body is built, and that
+  body is a fixed allowlist of four keys: `model`, `messages`,
+  `max_completion_tokens`, `reasoning_effort`. No tools, no web search, no
+  file search, no attachments. `tests/test_openai_request_shape.py` fails the
+  build if anything else appears — web search alone bills at $10 per thousand
+  calls, which on this traffic would be roughly sixteen times the entire rest
+  of the bill.
 - **`app/routes/`** — the four blueprints: `device` (auth), `chat` (the one
   inference endpoint), `client_config` (read-only config/quota for the
   client's status display), `admin` (everything an operator needs).
 - **`app/cli.py`** — operational commands (`init-db`, `seed-config`,
-  `cleanup-expired`, `reconcile-usage`) — see "Running scheduled jobs" below.
+  `check-config`, `cleanup-expired`, `reconcile-usage`). Run `check-config`
+  after every deploy: it reports out-of-range limits, a budget cap that normal
+  use can reach, a missing default model, and an unconfigured alert webhook,
+  and exits non-zero so it can be a deploy step rather than something somebody
+  remembers.
 
 ## Quick start (local development)
 
@@ -102,6 +144,15 @@ second password — see `app/dashboard_auth.py`'s docstring). From there:
   kill switch.
 - **Audit log** — every admin action taken anywhere (API or dashboard),
   who did it, and when.
+- **Safety checks** — the protections that are not rows in a table, and
+  whether they are holding: the no-tools gate, the no-charge-for-nothing rule,
+  sign-up throttling, the budget auto-pause, whether alerts actually reach a
+  human, and when the scheduled jobs last ran.
+- **Fixed by code** — everything that affects cost or safety and is
+  deliberately *not* editable here, shown read-only with the reason and the
+  file: reasoning effort per feature, all five prompt templates verbatim, and
+  the outgoing-request allowlist. A protection an operator cannot see is one
+  they will assume is missing.
 
 The dashboard is plain, server-rendered HTML — no JavaScript, no build
 step, fully keyboard- and screen-reader-operable. See
@@ -119,9 +170,21 @@ pytest
 ```
 
 The suite uses an in-memory SQLite database and `fakeredis` — no external
-services required (see `tests/conftest.py`). 45 tests cover the quota
-engine, the large-document safeguards, the device-code auth flow, the
-model registry, the admin API, and the admin dashboard.
+services required (see `tests/conftest.py`). **141 tests** cover the quota
+engine, the large-document safeguards, the device-code auth flow, the model
+registry, the admin API, the admin dashboard, and four things worth naming
+because each one was a live bug:
+
+- `test_openai_request_shape.py` — the outgoing body never grows a `tools` key.
+- `test_refunds.py` — nobody is charged for a request that did not happen. The
+  counters increment *before* the size check, the model lookup and the
+  upstream call, so all four failure paths refund.
+- `test_signup_protection.py` — registration throttling and the new-account
+  ramp, including that the ramp can never give a new account a *larger*
+  allowance than an established one.
+- `test_config_guardrails.py` — `0.15` typed as `15` is refused with a
+  sentence, and a change that more than doubles the bill needs explicit
+  confirmation.
 
 ## Deployment
 
@@ -212,6 +275,26 @@ and your device must be in `GATEWAY_ADMIN_ALLOWLIST`.
 | Pause one feature (e.g. images) while keeping others on | `PUT /admin/feature-flags/alt_text` `{"enabled": false, "reason": "..."}` |
 | **Pause everything** (the emergency kill switch) | `PUT /admin/feature-flags/hosted_ai` `{"enabled": false, "reason": "..."}` |
 | Check current spend against the budget cap | `GET /admin/spend` |
+| **Find someone from the support ID they quoted** | `GET /admin/users?q=A1B2` |
+| **Give someone their allowance back** | `POST /admin/users/<user_id>/usage/reset` `{"reason": "..."}` |
+| **Give someone different limits** | `PUT /admin/users/<user_id>/caps` `{"monthly_request_cap": 250}` (null clears an override) |
+| **Replace a device's token without signing it out** | `POST /admin/devices/<device_id>/rotate` |
+| **Check the provider key actually works** | `POST /admin/test-key` |
+
+Two of those deserve a note.
+
+**Reset** clears the Redis request counters *and* the running cost total in one
+transaction. Doing either alone produces a reset that appears to have silently
+failed: counters alone leaves the per-user cost ceiling still refusing them,
+cost alone leaves them still out of requests. It deliberately does **not** touch
+the global spend counter — that money was really spent, and a per-person
+courtesy must never quietly edit the number the budget cap protects everybody
+with.
+
+**Config writes are range-checked**, and a change that more than doubles the
+modelled monthly bill is refused with `409 needs_confirmation` unless you send
+`"confirm": true`. A script that really means it says so; a mistyped decimal
+point does not.
 
 Every one of these writes an `admin_actions` audit row — "who did what and
 when" is always answerable later (`SELECT * FROM admin_actions ORDER BY

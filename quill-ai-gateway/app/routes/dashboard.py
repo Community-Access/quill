@@ -29,6 +29,9 @@ from flask import (
     url_for,
 )
 
+from app.config_schema import describe as describe_config_key
+from app.config_schema import validate as validate_config_value
+from app.costing import describe_change
 from app.dashboard_auth import dashboard_login_required, verify_admin_token
 from app.limits import _month_key, _redis, resolve_limit
 from app.model_registry import list_models, set_default_model, set_model_enabled
@@ -182,8 +185,44 @@ def make_default_model(model_id: str):
 @bp.get("/config")
 @dashboard_login_required
 def config():
-    rows = db.session.query(GatewayConfig).order_by(GatewayConfig.key).all()
-    return render_template("dashboard/config.html", rows=rows)
+    """Every tunable limit, grouped the way an operator thinks about them and
+    priced so the consequence of a change is on the same page as the field
+    that makes it (``app/config_schema.py``, ``app/costing.py``)."""
+    from app.config_schema import grouped_keys
+    from app.costing import load_cost_model, pricing_caveat
+    from app.limits import resolve_limit
+
+    rows = {row.key: row for row in db.session.query(GatewayConfig).all()}
+    described_keys = set()
+    groups = []
+    for group_id, heading, blurb, entries in grouped_keys():
+        members = []
+        for entry in entries:
+            row = rows.get(entry.key)
+            if row is None:
+                continue
+            described_keys.add(entry.key)
+            members.append({
+                "meta": entry,
+                "row": row,
+                "display": entry.format_value(float(row.value)),
+            })
+        if members:
+            groups.append({"id": group_id, "heading": heading, "blurb": blurb, "members": members})
+
+    # Anything in the database this build has no description for. Shown rather
+    # than hidden: a key nobody can see is a key nobody can fix, and the
+    # fail-safe path in limits.py can invent one.
+    undescribed = [row for key, row in sorted(rows.items()) if key not in described_keys]
+
+    return render_template(
+        "dashboard/config.html",
+        groups=groups,
+        undescribed=undescribed,
+        cost=load_cost_model(current_app),
+        budget_cap=resolve_limit(current_app, "global_monthly_budget_usd"),
+        pricing_caveat=pricing_caveat(),
+    )
 
 
 @bp.post("/config/<key>")
@@ -200,6 +239,28 @@ def update_config(key: str):
         flash("Value must be a number.", "error")
         return redirect(url_for("dashboard.config"))
 
+    # Range check. Before this existed, 0.15 typed as 15 raised every user's
+    # cost ceiling a hundredfold behind a green success message.
+    problem = validate_config_value(key, new_value)
+    if problem is not None:
+        flash(problem, "error")
+        return redirect(url_for("dashboard.config"))
+
+    impact = describe_change(current_app, key, new_value)
+    if impact is not None and impact.needs_confirmation and request.form.get("confirm") != "yes":
+        flash(
+            f"That change was not saved, because it more than doubles the cost. "
+            f"{impact.sentence()} Tick the confirmation box beside the field and "
+            f"save again if you meant it.",
+            "error",
+        )
+        return redirect(url_for("dashboard.config"))
+
+    described = describe_config_key(key)
+    old_display = described.format_value(float(row.value)) if described else f"{float(row.value):g}"
+    new_display = described.format_value(new_value) if described else f"{new_value:g}"
+    name = described.name if described else key
+
     row.value = new_value
     row.updated_by = session["admin_device_id"]
     db.session.add(
@@ -207,12 +268,16 @@ def update_config(key: str):
             admin_id=session["admin_device_id"],
             action="set_config",
             target=key,
-            reason=str(new_value),
+            reason=f"{old_display} -> {new_display}",
         )
     )
     db.session.commit()
     _redis(current_app).delete(f"gwcfg:{key}")
-    flash(f"{key} updated to {new_value:g}.", "success")
+
+    message = f"{name} changed from {old_display} to {new_display}."
+    if impact is not None:
+        message += f" {impact.sentence()}"
+    flash(message, "error" if (impact and impact.exceeds_budget) else "success")
     return redirect(url_for("dashboard.config"))
 
 
@@ -222,8 +287,16 @@ def update_config(key: str):
 @bp.get("/users")
 @dashboard_login_required
 def users():
-    all_users = db.session.query(User).order_by(User.created_at.desc()).limit(200).all()
-    return render_template("dashboard/users.html", users=all_users)
+    """Find an account by the support ID the person was shown, or browse the
+    most recent. Without the search, a pseudonymous account id makes "somebody
+    wrote to support" an unanswerable question."""
+    query = (request.args.get("q") or "").strip()
+    normalized = query.replace("-", "").replace(" ", "").lower()
+    rows = db.session.query(User)
+    if normalized:
+        rows = rows.filter(User.id.ilike(f"{normalized}%"))
+    all_users = rows.order_by(User.created_at.desc()).limit(200).all()
+    return render_template("dashboard/users.html", users=all_users, query=query)
 
 
 @bp.get("/users/<user_id>")
@@ -241,7 +314,17 @@ def user_detail(user_id: str):
         .limit(13)
         .all()
     )
-    return render_template("dashboard/user_detail.html", user=user, summaries=summaries)
+    from app.limits import _month_key, is_new_account, remaining_quota
+
+    return render_template(
+        "dashboard/user_detail.html",
+        user=user,
+        summaries=summaries,
+        devices=list(user.devices),
+        quota=remaining_quota(current_app, user),
+        is_new=is_new_account(current_app, user),
+        month_key=_month_key(),
+    )
 
 
 @bp.post("/users/<user_id>/status")
@@ -303,16 +386,60 @@ def delete_user(user_id: str):
 @bp.get("/feature-flags")
 @dashboard_login_required
 def feature_flags():
-    flags = []
-    for feature in ("hosted_ai", *_FEATURES):
+    """The switches, in plain language, with the global one kept apart.
+
+    Two things this page has to get right. A feature that was **never built**
+    and one **paused for an hour** are completely different facts, so the
+    deferred ones are listed separately rather than mixed in with switches an
+    operator might reasonably flip. And when the budget cap pauses the service
+    automatically, the page must say *that* -- not show a switch somebody
+    appears to have thrown -- because resuming without raising the cap re-pauses
+    within the hour, and an operator who does not know that will think the
+    switch is broken.
+    """
+    from app.limits import _month_key, resolve_limit
+    from app.prompts import DEFERRED_FEATURES, FEATURE_LABELS, SHIPPED_FEATURES
+
+    shipped = []
+    for feature in SHIPPED_FEATURES:
         flag = db.session.get(FeatureFlag, feature)
-        flags.append({
+        shipped.append({
             "feature": feature,
+            "label": FEATURE_LABELS.get(feature, feature),
             "enabled": flag.enabled if flag is not None else True,
             "disabled_reason": flag.disabled_reason if flag is not None else "",
-            "is_global": feature == "hosted_ai",
         })
-    return render_template("dashboard/feature_flags.html", flags=flags)
+
+    deferred = []
+    for feature, reason in DEFERRED_FEATURES.items():
+        flag = db.session.get(FeatureFlag, feature)
+        deferred.append({
+            "feature": feature,
+            "label": FEATURE_LABELS.get(feature, feature),
+            "enabled": flag.enabled if flag is not None else False,
+            "reason": (flag.disabled_reason if flag is not None else "") or reason,
+        })
+
+    global_flag = db.session.get(FeatureFlag, "hosted_ai")
+    global_enabled = global_flag.enabled if global_flag is not None else True
+    global_reason = (global_flag.disabled_reason if global_flag is not None else "") or ""
+    # _auto_pause_hosted_ai writes exactly this sentence.
+    auto_paused = (not global_enabled) and "budget cap reached" in global_reason.lower()
+
+    budget_cap = resolve_limit(current_app, "global_monthly_budget_usd")
+    spend = float(_redis(current_app).get(f"gwspend:{_month_key()}") or 0.0)
+
+    return render_template(
+        "dashboard/feature_flags.html",
+        shipped=shipped,
+        deferred=deferred,
+        global_enabled=global_enabled,
+        global_reason=global_reason,
+        global_updated_at=global_flag.updated_at if global_flag is not None else None,
+        auto_paused=auto_paused,
+        budget_cap=budget_cap,
+        spend=spend,
+    )
 
 
 @bp.post("/feature-flags/<feature>")
@@ -342,8 +469,303 @@ def toggle_feature_flag(feature: str):
 # --- Admin action log -----------------------------------------------------------
 
 
+#: What each recorded action reads as in a sentence. ``{target}`` is the user,
+#: device, feature or config key it was done to.
+_ACTION_SENTENCES: dict[str, str] = {
+    "set_config": "changed the limit {target}",
+    "set_quota": "changed the limits for {target}",
+    "reset_usage": "gave {target} their allowance back",
+    "set_user_status": "changed the account status of {target}",
+    "delete_user": "permanently removed {target}",
+    "set_device_status": "changed the status of computer {target}",
+    "rotate_device_token": "issued a new token for computer {target}",
+    "enable_feature": "switched {target} back on",
+    "disable_feature": "switched {target} off",
+    "enable_model": "enabled the model {target}",
+    "disable_model": "disabled the model {target}",
+    "set_default_model": "made {target} the default model",
+    "test_key": "tested the provider key against {target}",
+}
+
+
 @bp.get("/audit-log")
 @dashboard_login_required
 def audit_log():
+    """Every admin action, most recent first, as sentences.
+
+    The structured columns are underneath for filtering, but the sentence is
+    what is read. "18 October, 09:14 -- admin f3a8 gave A1B2-C3D4 their
+    allowance back. Reason: ran out during a demo." answers the question in one
+    pass; five columns of identifiers make the reader assemble it themselves,
+    every row, out loud.
+    """
     actions = db.session.query(AdminAction).order_by(AdminAction.created_at.desc()).limit(100).all()
-    return render_template("dashboard/audit_log.html", actions=actions)
+    rows = []
+    for action in actions:
+        target = action.target
+        user = db.session.get(User, target) if len(target) > 20 else None
+        if user is not None:
+            target = user.support_id
+        template = _ACTION_SENTENCES.get(action.action, "did " + action.action + " to {target}")
+        rows.append({
+            "action": action,
+            "sentence": template.format(target=target),
+            "admin_short": action.admin_id[:8],
+        })
+    return render_template("dashboard/audit_log.html", rows=rows)
+
+
+# --- Users: give an allowance back, change one person's limits ----------------
+
+
+@bp.post("/users/<user_id>/reset-usage")
+@dashboard_login_required
+def reset_usage(user_id: str):
+    """Put one person's month back to zero.
+
+    Clears the request counters and the running cost total together. Doing
+    either alone produces a reset that looks as though it silently failed --
+    see :func:`app.limits.reset_user_usage`.
+    """
+    from app.limits import reset_user_usage
+
+    user = db.session.get(User, user_id)
+    if user is None:
+        flash("User not found.", "error")
+        return redirect(url_for("dashboard.users"))
+
+    reason = (request.form.get("reason") or "").strip()
+    if not reason:
+        flash("Give a reason for the reset — it goes in the audit log.", "error")
+        return redirect(url_for("dashboard.user_detail", user_id=user_id))
+
+    cleared = reset_user_usage(current_app, user)
+    db.session.add(
+        AdminAction(
+            admin_id=session["admin_device_id"],
+            action="reset_usage",
+            target=user_id,
+            reason=reason,
+        )
+    )
+    db.session.commit()
+    flash(
+        f"Allowance reset. Cleared {cleared['requests_cleared']} request(s) and "
+        f"${cleared['cost_cleared_usd']:.4f} of recorded cost for this month. "
+        "They can use the service again immediately.",
+        "success",
+    )
+    return redirect(url_for("dashboard.user_detail", user_id=user_id))
+
+
+@bp.post("/users/<user_id>/caps")
+@dashboard_login_required
+def set_user_caps(user_id: str):
+    """Override one person's limits, or clear the overrides.
+
+    An empty field means "no override" and returns them to the live global
+    default, which is what makes every change here reversible.
+    """
+    user = db.session.get(User, user_id)
+    if user is None:
+        flash("User not found.", "error")
+        return redirect(url_for("dashboard.users"))
+
+    raw_requests = (request.form.get("monthly_request_cap") or "").strip()
+    raw_cost = (request.form.get("monthly_cost_cap_usd") or "").strip()
+
+    if raw_requests == "":
+        user.monthly_request_cap = None
+    else:
+        try:
+            parsed = int(raw_requests)
+        except ValueError:
+            flash("Requests per month must be a whole number, or blank.", "error")
+            return redirect(url_for("dashboard.user_detail", user_id=user_id))
+        if parsed < 0 or parsed > 10_000:
+            flash("Requests per month must be between 0 and 10,000.", "error")
+            return redirect(url_for("dashboard.user_detail", user_id=user_id))
+        user.monthly_request_cap = parsed
+
+    if raw_cost == "":
+        user.monthly_cost_cap_usd = None
+    else:
+        try:
+            parsed_cost = float(raw_cost)
+        except ValueError:
+            flash("The cost ceiling must be a number, or blank.", "error")
+            return redirect(url_for("dashboard.user_detail", user_id=user_id))
+        if parsed_cost < 0 or parsed_cost > 1000:
+            flash("The cost ceiling must be between $0 and $1,000.", "error")
+            return redirect(url_for("dashboard.user_detail", user_id=user_id))
+        user.monthly_cost_cap_usd = parsed_cost
+
+    db.session.add(
+        AdminAction(
+            admin_id=session["admin_device_id"],
+            action="set_quota",
+            target=user_id,
+            reason=(request.form.get("reason") or "").strip() or "no reason given",
+        )
+    )
+    db.session.commit()
+    flash("This person's limits were updated.", "success")
+    return redirect(url_for("dashboard.user_detail", user_id=user_id))
+
+
+@bp.post("/devices/<device_id>/revoke")
+@dashboard_login_required
+def revoke_device(device_id: str):
+    device = db.session.get(Device, device_id)
+    if device is None:
+        flash("Computer not found.", "error")
+        return redirect(url_for("dashboard.users"))
+    device.status = "revoked"
+    db.session.add(
+        AdminAction(
+            admin_id=session["admin_device_id"],
+            action="set_device_status",
+            target=device_id,
+            reason="revoked",
+        )
+    )
+    db.session.commit()
+    flash(
+        "That computer is signed out. It stops working on its very next request; "
+        "the person can connect it again from QUILL whenever they like.",
+        "success",
+    )
+    return redirect(url_for("dashboard.user_detail", user_id=device.user_id))
+
+
+@bp.post("/devices/<device_id>/rotate")
+@dashboard_login_required
+def rotate_device(device_id: str):
+    """Issue a new token without signing the computer out.
+
+    The answer to "this may have leaked but I am not certain". The new token is
+    shown once, here, and never again -- only its hash is stored.
+    """
+    from app.auth import rotate_device_token
+
+    device = db.session.get(Device, device_id)
+    if device is None:
+        flash("Computer not found.", "error")
+        return redirect(url_for("dashboard.users"))
+    token = rotate_device_token(device)
+    db.session.add(
+        AdminAction(
+            admin_id=session["admin_device_id"],
+            action="rotate_device_token",
+            target=device_id,
+            reason=(request.form.get("reason") or "").strip() or "no reason given",
+        )
+    )
+    db.session.commit()
+    flash(
+        f"New token issued. It is shown once and never again: {token} — the old "
+        "one stopped working the moment this was saved.",
+        "success",
+    )
+    return redirect(url_for("dashboard.user_detail", user_id=device.user_id))
+
+
+# --- Reference pages ----------------------------------------------------------
+
+
+@bp.get("/locked")
+@dashboard_login_required
+def locked():
+    """Everything that affects cost or safety and is deliberately in code.
+
+    A protection the operator cannot see is one they will assume is missing --
+    or, worse, assume is a dial they have already checked.
+    """
+    from app.openai_client import ALLOWED_BODY_KEYS
+    from app.prompts import (
+        DEFERRED_FEATURES,
+        FEATURE_LABELS,
+        REASONING_EFFORT,
+        SHIPPED_FEATURES,
+        TEMPLATES,
+    )
+
+    return render_template(
+        "dashboard/locked.html",
+        shipped=[
+            {
+                "feature": f,
+                "label": FEATURE_LABELS.get(f, f),
+                "effort": REASONING_EFFORT.get(f, "none"),
+                "template": TEMPLATES[f],
+            }
+            for f in SHIPPED_FEATURES
+        ],
+        deferred=[
+            {"feature": f, "label": FEATURE_LABELS.get(f, f), "reason": reason}
+            for f, reason in DEFERRED_FEATURES.items()
+        ],
+        allowed_keys=sorted(ALLOWED_BODY_KEYS),
+    )
+
+
+@bp.get("/safety")
+@dashboard_login_required
+def safety():
+    """The checks that hold this service together, and whether they are holding.
+
+    Two rows have a live state rather than a fixed one -- whether alerts reach a
+    human, and when the scheduled jobs last ran -- and both are the kind of
+    thing that rots silently. An alert webhook that was never configured is not
+    a missing nicety: it is the difference between noticing at 50% of budget and
+    noticing when the service switches itself off.
+    """
+    from app.costing import load_cost_model
+    from app.limits import _month_key, registrations_blocked_today, resolve_limit
+    from app.model_registry import NoDefaultModel, resolve_default_model
+    from app.models import DiagnosticRecord, UsageEvent
+
+    try:
+        resolve_default_model()
+        model_ok = True
+    except NoDefaultModel:
+        model_ok = False
+
+    cost = load_cost_model(current_app)
+    budget_cap = resolve_limit(current_app, "global_monthly_budget_usd")
+    spend = float(_redis(current_app).get(f"gwspend:{_month_key()}") or 0.0)
+
+    # "No column can hold document text" is an invariant worth checking against
+    # the live mapping rather than trusting a docstring: a migration that added
+    # one would be the single worst regression this service could ship.
+    content_columns = [
+        c.name
+        for c in UsageEvent.__table__.columns
+        if c.name in {"prompt", "response", "text", "content", "document"}
+    ]
+
+    return render_template(
+        "dashboard/safety.html",
+        allowed_keys_count=4,
+        blocked_today=registrations_blocked_today(current_app),
+        new_account_hours=int(resolve_limit(current_app, "new_account_hours")),
+        new_account_cap=int(resolve_limit(current_app, "new_account_request_cap")),
+        reg_hourly=int(resolve_limit(current_app, "registration_hourly_cap_per_ip")),
+        reg_daily=int(resolve_limit(current_app, "registration_daily_cap_per_ip")),
+        budget_cap=budget_cap,
+        spend=spend,
+        budget_percent=round((spend / budget_cap * 100) if budget_cap else 0),
+        alerts_configured=bool(current_app.config.get("ALERT_WEBHOOK_URL")),
+        model_ok=model_ok,
+        cost=cost,
+        content_columns=content_columns,
+        pending_diagnostics=db.session.query(DiagnosticRecord).count(),
+    )
+
+
+@bp.get("/glossary")
+@dashboard_login_required
+def glossary():
+    """Plain definitions. The console is operated by whoever is awake, not
+    only by whoever built it."""
+    return render_template("dashboard/glossary.html")

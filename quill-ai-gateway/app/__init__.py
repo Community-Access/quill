@@ -34,9 +34,9 @@ def create_app(config_object: type[Config] | Config | None = None) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_object or Config())
 
+    cfg = config_object if isinstance(config_object, Config) else Config()
     problems = app.config.get("_validated_problems")
     if problems is None:
-        cfg = config_object if isinstance(config_object, Config) else Config()
         problems = cfg.validate()
     if problems and not app.config.get("TESTING"):
         for problem in problems:
@@ -44,6 +44,14 @@ def create_app(config_object: type[Config] | Config | None = None) -> Flask:
         raise RuntimeError(
             "Refusing to start with an invalid configuration:\n- " + "\n- ".join(problems)
         )
+
+    # Loud, but not fatal. See Config.warnings() for why the empty-allowlist
+    # case in particular must never stop the process: the first admin device is
+    # registered through the running service, so refusing to boot without one
+    # is a deadlock rather than a safeguard.
+    if not app.config.get("TESTING"):
+        for note in cfg.warnings():
+            logging.getLogger("gateway.startup").error("STARTUP WARNING: %s", note)
 
     db.init_app(app)
 

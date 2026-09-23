@@ -22,7 +22,7 @@ Reading order for a newcomer:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import redis as redis_lib
 
@@ -40,25 +40,56 @@ _FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "daily_request_cap": 20,
     "hourly_request_cap": 8,
     "device_hourly_request_cap": 8,
+    "review_daily_request_cap": 5,
     "max_input_tokens": 1500,
     "max_output_tokens": 500,
     "max_chunks_per_request": 3,
     "max_image_bytes": 3 * 1024 * 1024,
     "max_image_edge_px": 1600,
-    "daily_image_cap": 5,
-    "monthly_cost_cap_usd": 0.15,
+    "daily_image_cap": 0,
+    "monthly_cost_cap_usd": 0.08,
     "global_monthly_budget_usd": 25.0,
+    # Sign-up protection. The fail-safes here are deliberately *permissive
+    # enough to work* rather than at the floor: a zero registration cap would
+    # refuse every new user, and an unseeded database that silently did that
+    # would look exactly like an outage.
+    "new_account_hours": 48,
+    "new_account_request_cap": 15,
+    "registration_hourly_cap_per_ip": 5,
+    "registration_daily_cap_per_ip": 20,
+}
+
+#: What ``flask seed-config`` writes into a fresh database.
+#:
+#: Deliberately **not** the same table as the fail-safes above, and the
+#: difference is the point. A fail-safe is what a missing row falls back to, so
+#: it must never be more permissive than intended -- the global budget cap's
+#: fail-safe stays at the original $25 for that reason. A seed value is a
+#: recommendation for a real deployment, and the recommended cap is $40: the
+#: 500-user worst case at the shipped limits is $20 a month, and a cap only 25%
+#: above the worst case is one that normal operation leans on rather than a
+#: backstop that never fires.
+SEED_DEFAULTS: dict[str, float] = {
+    **_FAIL_SAFE_DEFAULTS,
+    "global_monthly_budget_usd": 40.0,
 }
 
 # Per-feature monthly caps are a distinct family of config keys
-# (feature_cap.<feature>) with their own fail-safes, since they're
-# ceilings *within* the overall monthly total, not standalone limits.
+# (feature_cap.<feature>) with their own fail-safes, since they're ceilings
+# *within* the overall monthly total, not standalone limits.
+#
+# The two deferred features (app/prompts.py's DEFERRED_FEATURES) get a cap of
+# zero as well as a disabled flag. Belt and braces on purpose: a feature that is
+# switched off in one place and uncapped in another is one flag flip away from
+# being live and unlimited at the same time.
 _FEATURE_CAP_FAIL_SAFE_DEFAULTS: dict[str, float] = {
-    "document_qna": 60,
     "summarize": 60,
     "rewrite": 60,
-    "alt_text": 15,
-    "chat": 60,
+    "proofread": 60,
+    "explain": 60,
+    "document_qna": 60,
+    "alt_text": 0,
+    "chat": 0,
 }
 
 _CONFIG_CACHE_TTL_SECONDS = 30
@@ -98,6 +129,22 @@ class FeatureUnavailable(Exception):
         super().__init__(message)
         self.scope = scope
         self.message = message
+
+
+class RegistrationThrottled(Exception):
+    """Raised when one internet address has started too many sign-ups.
+
+    A distinct exception rather than a :class:`QuotaExceeded`, because it
+    happens *before* any account exists -- there is no user to attribute it to
+    and no allowance to report. The message must never read as a fault in the
+    caller's computer: the person hitting it is usually an ordinary user behind
+    a shared address, not the scripted abuse it is aimed at.
+    """
+
+    def __init__(self, message: str, retry_after_seconds: int) -> None:
+        super().__init__(message)
+        self.message = message
+        self.retry_after_seconds = retry_after_seconds
 
 
 def _redis(app) -> redis_lib.Redis:
@@ -142,12 +189,47 @@ def resolve_feature_cap(app, feature: str) -> float:
     return value
 
 
+def is_new_account(app, user: User, now: datetime | None = None) -> bool:
+    """True while *user* is inside the new-account window.
+
+    The window exists because anonymous registration is free to script: nothing
+    stops somebody minting accounts, and each one used to arrive with a full
+    monthly allowance. A ramp makes a throwaway account worth a fraction of a
+    real one, which is what makes farming them uneconomic -- while a genuine
+    new user, who is exploring rather than grinding, rarely reaches even the
+    reduced number on their first day.
+    """
+    hours = resolve_limit(app, "new_account_hours")
+    if hours <= 0:
+        return False
+    created = user.created_at
+    if created is None:
+        return False
+    if created.tzinfo is None:  # SQLite hands back naive datetimes
+        created = created.replace(tzinfo=UTC)
+    return (now or datetime.now(UTC)) - created < timedelta(hours=hours)
+
+
 def _effective_user_cap(app, user: User) -> int:
-    """The monthly request cap that actually applies to *this* user: their
-    own override if an admin set one, else the live global default."""
+    """The monthly request cap that actually applies to *this* user.
+
+    In order: an admin's explicit per-user override always wins, because it is
+    the only value somebody deliberately typed for this person. Otherwise a
+    brand-new account gets the ramp (:func:`is_new_account`), and everyone else
+    gets the live global default.
+    """
+    normal = int(resolve_limit(app, "monthly_request_cap"))
     if user.monthly_request_cap is not None:
         return user.monthly_request_cap
-    return int(resolve_limit(app, "monthly_request_cap"))
+    if is_new_account(app, user):
+        # Never *more* than an established account would get. The two values are
+        # independent dials, so an operator who lowers the monthly cap below the
+        # ramp would otherwise hand new accounts a larger allowance than
+        # everybody else -- turning the anti-farming measure into an incentive
+        # to keep making fresh accounts. Caught by an existing monthly-cap test
+        # that set the cap to 2 and watched a brand-new user sail past it.
+        return min(int(resolve_limit(app, "new_account_request_cap")), normal)
+    return normal
 
 
 def _effective_feature_cap(app, user_id: str, feature: str) -> int:
@@ -214,10 +296,23 @@ def check_feature_flags(app) -> None:
 
 
 def check_feature_enabled(app, feature: str) -> None:
+    """Refuse a switched-off feature, saying *why* it is off.
+
+    The stored ``disabled_reason`` is used when there is one, which matters more
+    than it looks: a feature that was never shipped and a feature paused for an
+    hour are completely different facts, and telling somebody their request is
+    "temporarily paused while we review unusual activity" when it is actually
+    "this was never built" sends them to support for no reason. The deferred
+    features (``app/prompts.py``'s ``DEFERRED_FEATURES``) are seeded with their
+    own explanation for exactly this.
+    """
     from app.models import FeatureFlag
 
     flag = db.session.get(FeatureFlag, feature)
     if flag is not None and not flag.enabled:
+        reason = (flag.disabled_reason or "").strip()
+        if reason:
+            raise FeatureUnavailable("feature", reason)
         raise FeatureUnavailable(
             "feature",
             f"{feature.replace('_', ' ').title()} is temporarily paused while "
@@ -259,7 +354,7 @@ def check_request_allowed(app, user: User, device: Device, feature: str) -> None
         # Reduced, not zero -- PRD §9's "review mode" is a soft throttle,
         # never a silent hard block, so a legitimate user under review
         # barely notices while determined abuse gets uneconomical.
-        reduced_cap = 5
+        reduced_cap = int(resolve_limit(app, "review_daily_request_cap"))
         _increment_and_check(
             app,
             f"ratelimit:{user.id}:review_daily",
@@ -361,6 +456,180 @@ def check_request_allowed(app, user: User, device: Device, feature: str) -> None
             "unusual activity — check quillforall.org/status, or use "
             "your own API key in the meantime.",
         )
+
+
+# --- Undoing a charge for something that never happened -----------------------
+
+
+def refund_request(
+    app, user: User, device: Device, feature: str, now: datetime | None = None
+) -> None:
+    """Give back the counters :func:`check_request_allowed` took.
+
+    The counters are incremented *up front*, before the size check, before the
+    model is resolved and before anything is sent, because a rate limiter that
+    reads before it writes can be raced past its own cap by two concurrent
+    requests. That ordering is correct and it has a consequence: every failure
+    path after the gate has already charged somebody for a request that was
+    never made. An oversized selection, an upstream outage, a misconfigured
+    model, a reply that spent its whole budget thinking -- all of them used to
+    quietly cost the user one of their hundred.
+
+    They cannot see the counter move, so they have no way to notice and no way
+    to argue. That is precisely why this exists, and why every message on those
+    paths is allowed to say "nothing was used": because it is now true.
+
+    Decrements are floored at zero. Redis has no atomic "decrement but not below
+    zero", and a counter driven negative by a double refund would hand out free
+    requests -- the exact failure this whole module exists to prevent.
+    """
+    now = now or datetime.now(UTC)
+    month_key = _month_key(now)
+    client = _redis(app)
+
+    keys = [
+        f"ratelimit:{user.id}:hour:{now.strftime('%Y%m%d%H')}",
+        f"ratelimit:device:{device.id}:hour:{now.strftime('%Y%m%d%H')}",
+        f"ratelimit:{user.id}:day:{now.strftime('%Y%m%d')}",
+        f"ratelimit:{user.id}:month:{month_key}",
+        f"ratelimit:{user.id}:{feature}:month:{month_key}",
+    ]
+    if user.status == "review":
+        keys.append(f"ratelimit:{user.id}:review_daily")
+
+    for key in keys:
+        try:
+            if client.decr(key) < 0:
+                client.set(key, 0, keepttl=True)
+        except Exception:  # noqa: BLE001 - a failed refund must not fail the response
+            app.logger.warning("Could not refund rate-limit key %s", key, exc_info=True)
+
+
+# --- Sign-up protection ------------------------------------------------------
+
+
+def check_registration_allowed(app, client_ip: str) -> None:
+    """Gate on ``POST /v1/device/code`` before a sign-up flow may start.
+
+    This is the hole every per-user quota in this module would otherwise leave
+    open. Registration is anonymous and unauthenticated on purpose -- "no
+    account, no password, no email" is the accessibility win the whole product
+    rests on -- but it means an allowance is not a cost bound, it is a cost
+    *quantum*: anyone who can script three HTTP requests can mint as many
+    allowances as they like, and the only thing that would eventually stop them
+    is the global budget cap switching hosted AI off for every legitimate user.
+
+    Two fixed windows per address, both live-tunable. An empty or unknown
+    address is *allowed* rather than refused: a proxy misconfiguration must not
+    take sign-ups down, and the cost of the alternative is a wrong-looking
+    outage nobody can diagnose from the client end.
+    """
+    ip = (client_ip or "").strip()
+    if not ip:
+        return
+
+    now = datetime.now(UTC)
+    client = _redis(app)
+
+    hourly_cap = int(resolve_limit(app, "registration_hourly_cap_per_ip"))
+    if hourly_cap > 0:
+        key = f"reg:ip:{ip}:hour:{now.strftime('%Y%m%d%H')}"
+        current = client.incr(key)
+        if current == 1:
+            client.expire(key, 3600)
+        if current > hourly_cap:
+            raise RegistrationThrottled(
+                "Too many computers have connected from this network recently. "
+                "Try again in an hour.",
+                3600,
+            )
+
+    daily_cap = int(resolve_limit(app, "registration_daily_cap_per_ip"))
+    if daily_cap > 0:
+        key = f"reg:ip:{ip}:day:{now.strftime('%Y%m%d')}"
+        current = client.incr(key)
+        if current == 1:
+            client.expire(key, 24 * 3600)
+        if current > daily_cap:
+            raise RegistrationThrottled(
+                "Too many computers have connected from this network today. Try again tomorrow.",
+                24 * 3600,
+            )
+
+
+def note_registration_blocked(app) -> None:
+    """Count one refused sign-up, for the console's safety-checks page."""
+    key = f"reg:blocked:{datetime.now(UTC).strftime('%Y%m%d')}"
+    client = _redis(app)
+    if client.incr(key) == 1:
+        client.expire(key, 3 * 24 * 3600)
+
+
+def registrations_blocked_today(app) -> int:
+    """How many sign-ups the throttle refused today.
+
+    A protection with no visible effect is indistinguishable from one that is
+    switched off, which is why this number is on the safety-checks page rather
+    than only in a log.
+    """
+    value = _redis(app).get(f"reg:blocked:{datetime.now(UTC).strftime('%Y%m%d')}")
+    return int(value) if value is not None else 0
+
+
+# --- Giving somebody their allowance back ------------------------------------
+
+
+def reset_user_usage(app, user: User, now: datetime | None = None) -> dict[str, float]:
+    """Put *user* back to zero for the current month. Returns what was cleared.
+
+    **Both halves, always.** The request counters live in Redis and the running
+    cost total lives in Postgres, and they are checked by different fences: the
+    counters by the monthly, daily and hourly caps, the cost total by the
+    per-user cost ceiling. Clearing only the counters leaves the cost ceiling
+    still refusing the person, so the reset looks like it silently did nothing;
+    clearing only the total leaves them still out of requests. Either half on
+    its own is a support ticket, which is why this is one function and not two
+    buttons.
+
+    The global spend counter is deliberately *not* touched. That money was
+    really spent, and a per-user courtesy must never quietly edit the number the
+    budget cap protects everybody with.
+    """
+    from app.prompts import FEATURES
+
+    now = now or datetime.now(UTC)
+    month_key = _month_key(now)
+    client = _redis(app)
+
+    keys = [
+        f"ratelimit:{user.id}:month:{month_key}",
+        f"ratelimit:{user.id}:day:{now.strftime('%Y%m%d')}",
+        f"ratelimit:{user.id}:hour:{now.strftime('%Y%m%d%H')}",
+        f"ratelimit:{user.id}:review_daily",
+    ]
+    keys.extend(f"ratelimit:{user.id}:{feature}:month:{month_key}" for feature in sorted(FEATURES))
+    for device in list(user.devices):
+        keys.append(f"ratelimit:device:{device.id}:hour:{now.strftime('%Y%m%d%H')}")
+
+    counters_cleared = 0
+    for key in keys:
+        counters_cleared += int(client.delete(key) or 0)
+
+    summary = db.session.get(MonthlyUsageSummary, {"user_id": user.id, "year_month": month_key})
+    requests_cleared = 0
+    cost_cleared = 0.0
+    if summary is not None:
+        requests_cleared = int(summary.request_count)
+        cost_cleared = float(summary.total_cost_usd)
+        summary.request_count = 0
+        summary.total_cost_usd = 0
+        db.session.commit()
+
+    return {
+        "counters_cleared": counters_cleared,
+        "requests_cleared": requests_cleared,
+        "cost_cleared_usd": cost_cleared,
+    }
 
 
 # --- Large-document safeguards (PRD §14.1) -----------------------------------
@@ -466,6 +735,7 @@ def record_usage(
     estimated_cost_usd: float,
     status: str,
     abuse_flag: str | None = None,
+    reasoning_tokens: int = 0,
 ) -> None:
     """Write one :class:`~app.models.UsageEvent` and update the running
     monthly aggregate + the global spend counter, all in one transaction.
@@ -491,6 +761,7 @@ def record_usage(
         model=model,
         tokens_in=tokens_in,
         tokens_out=tokens_out,
+        reasoning_tokens=reasoning_tokens,
         estimated_cost_usd=estimated_cost_usd,
         status=status,
         abuse_flag=abuse_flag,

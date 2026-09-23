@@ -2,30 +2,35 @@
 {% block title %}Audit log{% endblock %}
 {% block content %}
 <h1>Audit log</h1>
-<p>Every admin action, most recent first — "who did what and when" is
-  always answerable (PRD §10).</p>
+<p>Every administrative action, most recent first. Nothing here is ever deleted
+  — an audit trail that expires is not much of an audit trail.</p>
+<p>Each line is written as a sentence; the columns underneath it carry the exact
+  identifiers if you need to match something up.</p>
+
 <table class="data-table">
-  <caption>Last 100 admin actions</caption>
+  <caption>The last 100 administrative actions</caption>
   <thead>
     <tr>
-      <th scope="col">When</th>
-      <th scope="col">Admin</th>
-      <th scope="col">Action</th>
-      <th scope="col">Target</th>
-      <th scope="col">Reason</th>
+      <th scope="col">What happened</th>
+      <th scope="col">When (UTC)</th>
+      <th scope="col">Exact target</th>
     </tr>
   </thead>
   <tbody>
-    {% for action in actions %}
+    {% for row in rows %}
     <tr>
-      <td>{{ action.created_at.strftime("%Y-%m-%d %H:%M") }} UTC</td>
-      <td>{{ action.admin_id }}</td>
-      <td>{{ action.action }}</td>
-      <td>{{ action.target }}</td>
-      <td>{{ action.reason or "" }}</td>
+      <th scope="row">
+        Admin <span class="code">{{ row.admin_short }}</span> {{ row.sentence }}.
+        {%- if row.action.reason %} Reason: {{ row.action.reason }}.{% endif %}
+      </th>
+      <td>{{ row.action.created_at.strftime("%d %b %Y, %H:%M") }}</td>
+      <td>
+        <span class="code">{{ row.action.action }}</span>
+        <br><span class="code">{{ row.action.target }}</span>
+      </td>
     </tr>
     {% else %}
-    <tr><td colspan="5">No admin actions recorded yet.</td></tr>
+    <tr><td colspan="3">No administrative actions have been recorded yet.</td></tr>
     {% endfor %}
   </tbody>
 </table>

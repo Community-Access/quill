@@ -1,0 +1,163 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Safety checks{% endblock %}
+{% block content %}
+<h1>Safety checks</h1>
+
+{% set problems = [] %}
+{% if not alerts_configured %}{% set _ = problems.append("Budget alerts are not configured, so nobody is told before the service switches itself off.") %}{% endif %}
+{% if not model_ok %}{% set _ = problems.append("No model is enabled and marked default, so every request is failing right now.") %}{% endif %}
+{% if content_columns %}{% set _ = problems.append("The usage table has gained a column that could hold document text. This should never happen.") %}{% endif %}
+
+{% if problems %}
+<section class="card needs-attention" aria-labelledby="attention-h">
+  <h2 id="attention-h">Needs attention ({{ problems|length }})</h2>
+  <ul>
+    {% for problem in problems %}
+    <li>{{ problem }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% else %}
+<p>Everything below is in its normal state.</p>
+{% endif %}
+
+<p>These are the protections that are not rows in a table. Most of them are code
+  or configuration that holds quietly; two of them can rot without anybody
+  noticing, which is why they are listed here with a live state rather than only
+  in a log.</p>
+
+<table class="data-table">
+  <caption>What each check protects, and whether it is holding</caption>
+  <thead>
+    <tr>
+      <th scope="col">Check</th>
+      <th scope="col">State</th>
+      <th scope="col">What it protects</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">No web search, no tools</th>
+      <td><span class="status-badge" data-status="good">Holding</span></td>
+      <td>The only things ever sent are the model name, the text, and two size
+        limits ({{ allowed_keys_count }} fields in all). Web search alone would
+        bill at $10 per thousand calls — more than everything else put together.
+        A test fails the build if that changes.</td>
+    </tr>
+    <tr>
+      <th scope="row">Nobody is charged for a blank answer</th>
+      <td><span class="status-badge" data-status="good">On</span></td>
+      <td>If the model spends its whole budget thinking and returns nothing, the
+        request is not counted against anybody. The real cost is still recorded
+        against the budget, because the provider still billed us.</td>
+    </tr>
+    <tr>
+      <th scope="row">Nobody is charged for a request that failed</th>
+      <td><span class="status-badge" data-status="good">On</span></td>
+      <td>A passage that was too long, an outage, or a missing model all give
+        the person their request back. The counters are taken before any of
+        those are checked, so without this they would quietly lose one.</td>
+    </tr>
+    <tr>
+      <th scope="row">Sign-ups are throttled</th>
+      <td>
+        {% if reg_hourly > 0 or reg_daily > 0 %}
+        <span class="status-badge" data-status="good">On</span>
+        <span class="text-secondary">{{ blocked_today }} refused today</span>
+        {% else %}
+        <span class="status-badge" data-status="serious">OFF</span>
+        {% endif %}
+      </td>
+      <td>Anyone can connect a computer without an account, which is deliberate
+        — it is what makes this usable for somebody who has never had an API
+        key. These limits ({{ reg_hourly }} an hour, {{ reg_daily }} a day per
+        internet address) are what stop one person scripting a thousand of
+        them.</td>
+    </tr>
+    <tr>
+      <th scope="row">New accounts start small</th>
+      <td>
+        {% if new_account_hours > 0 %}
+        <span class="status-badge" data-status="good">On</span>
+        {% else %}
+        <span class="status-badge" data-status="warning">Off</span>
+        {% endif %}
+      </td>
+      <td>{{ new_account_cap }} requests for the first {{ new_account_hours }}
+        hours, then the full allowance. A throwaway account is worth a fraction
+        of a real one, which is what makes farming them uneconomic. It can never
+        give a new account more than an established one gets.</td>
+    </tr>
+    <tr>
+      <th scope="row">Spending pauses itself</th>
+      <td>
+        {% if budget_cap > 0 %}
+        <span class="status-badge" data-status="good">Armed at ${{ "%.2f"|format(budget_cap) }}</span>
+        <span class="text-secondary">at {{ budget_percent }}% now</span>
+        {% else %}
+        <span class="status-badge" data-status="critical">NOT SET</span>
+        {% endif %}
+      </td>
+      <td>If total spending reaches the cap, everything switches off without
+        waiting for anyone to read an alert. ${{ "%.2f"|format(spend) }} spent
+        this month.</td>
+    </tr>
+    <tr>
+      <th scope="row">Alerts reach a human</th>
+      <td>
+        {% if alerts_configured %}
+        <span class="status-badge" data-status="good">Configured</span>
+        {% else %}
+        <span class="status-badge" data-status="serious">NOT CONFIGURED</span>
+        {% endif %}
+      </td>
+      <td>Without this, the 50%, 75% and 90% warnings go to a log nobody reads,
+        and the first you hear of a runaway month is the service switching
+        itself off. Set <span class="code">GATEWAY_ALERT_WEBHOOK_URL</span> in
+        the server's environment file.</td>
+    </tr>
+    <tr>
+      <th scope="row">A default model is set</th>
+      <td>
+        {% if model_ok %}
+        <span class="status-badge" data-status="good">Yes</span>
+        {% else %}
+        <span class="status-badge" data-status="critical">NO — everything is failing</span>
+        {% endif %}
+      </td>
+      <td>Without one, every request is refused as though the service were
+        paused. Set it on the
+        <a href="{{ url_for('dashboard.models') }}">Models</a> page.</td>
+    </tr>
+    <tr>
+      <th scope="row">Nothing anyone wrote is stored</th>
+      <td>
+        {% if content_columns %}
+        <span class="status-badge" data-status="critical">BROKEN</span>
+        {% else %}
+        <span class="status-badge" data-status="good">Holding</span>
+        {% endif %}
+      </td>
+      <td>The usage table has no column that can hold document text, prompts or
+        answers. Checked against the live database mapping rather than trusting
+        a comment, because a migration that added one would be the worst thing
+        this service could ship.
+        {%- if content_columns %} Found:
+        <span class="code">{{ content_columns|join(", ") }}</span>.{% endif %}</td>
+    </tr>
+    <tr>
+      <th scope="row">Troubleshooting records expire</th>
+      <td><span class="status-badge" data-status="good">{{ pending_diagnostics }} held</span></td>
+      <td>The one exception to the line above. Each is scrubbed before it is
+        written and deleted after 30 days by a scheduled job, not by a promise.
+        Run <span class="code">flask --app run.py cleanup-expired</span> daily
+        from cron.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Two of these are worth checking by hand rather than trusting: whether the
+  alert webhook really delivers, and whether the cron jobs really run. Both fail
+  silently, and both matter most at the moment something else has already gone
+  wrong.</p>
+{% endblock %}
