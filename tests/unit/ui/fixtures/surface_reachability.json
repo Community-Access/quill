@@ -96,6 +96,7 @@
   "quill.ui.list_studio_dialog": "reachable",
   "quill.ui.list_studio_prompts": "reachable",
   "quill.ui.list_studio_settings_dialog": "reachable",
+  "quill.ui.local_ai_wizard": "reachable",
   "quill.ui.local_git_dialogs": "reachable",
   "quill.ui.main_frame": "reachable",
   "quill.ui.main_frame_abbreviations": "reachable",

@@ -57,6 +57,7 @@ _ROOT = Path(__file__).resolve().parents[3]
 #: check would be checking the generator against itself.
 GUIDES: tuple[Path, ...] = (
     _ROOT / "docs" / "user guide" / "userguide.md",
+    _ROOT / "docs" / "user guide" / "quill-step-by-step.md",
     _ROOT / "standalone" / "quilllite" / "docs" / "userguide.md",
     _ROOT / "docs" / "release notes" / "release1.0.0.md",
     _ROOT / "docs" / "release notes" / "announcement-1.0.0.md",
@@ -300,6 +301,9 @@ def test_the_gate_is_actually_reading_the_guides() -> None:
     assert len(live) > 300, f"only {len(live)} live chords found"
     floors = {
         "userguide.md": 20,
+        # The listen-along manual teaches by prose rather than by table, but a
+        # book whose whole point is keystrokes still names scores of them.
+        "quill-step-by-step.md": 20,
         "release1.0.0.md": 20,
         "release-notes-1.0.md": 20,
         "announcement.md": 1,

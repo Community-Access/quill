@@ -5601,9 +5601,12 @@ strongly recommended free paths and picks good defaults for you:
 
 - **Most private, free** — pick **Ollama (on your device)**. It runs a model on
   your own computer: no account, no key, works offline, and nothing you write ever
-  leaves your machine. Quality is more modest than the big cloud models. (You'll
-  need Ollama installed from ollama.com with a model pulled; the wizard checks this
-  for you.)
+  leaves your machine. Quality is more modest than the big cloud models. If Ollama
+  is not on your computer yet, don't install it by hand: **AI > Set Up Local AI
+  (Ollama)...** walks the whole journey — it reports your machine's memory, graphics
+  card and free disk space, downloads and starts the official installer for you,
+  downloads a model that fits your computer, and connects QUILL to it. Each step
+  says what to do next, and the dialog never moves on without you.
 - **Best quality, free** — pick **OpenRouter**. Choose **Get API key** to open
   OpenRouter's key page in your browser, create a free key, paste it back, and
   QUILL preselects a strong free writing model for you (currently a Llama 3.3 70B
@@ -9239,6 +9242,14 @@ Weather each have their own set, opened with the same **Ctrl+Alt+F1** in
 every app, and QUILL's set covers the first hour, the writing, the
 reading, how much the app says, the assistant, and the parts you meet in
 the second week. The menus and the command palette cover the rest.
+
+**Prefer to learn by listening?** [QUILL, Step by Step](quill-step-by-step.md)
+is a separate, deliberately slower manual written to be read aloud: seventeen
+short chapters, one skill each, with practice moments and recaps, and none of
+this guide's reference tables. It ships beside this guide as Markdown, HTML
+and EPUB -- the EPUB imports directly into ElevenReader, Voice Dream, or any
+reading app, so it can talk you through QUILL while your hands stay on the
+keyboard.
 
 ## Help, Learning, and Daily Confidence
 

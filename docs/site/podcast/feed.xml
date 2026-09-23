@@ -5,7 +5,7 @@
     <link>https://community-access.github.io/quill/podcast/</link>
     <description>A 54-episode, two-host audio course on QUILL, the free, screen-reader-first writing studio from Community Access. Liam and Jessica lead you from your very first launch to mastery of every feature family: the editor and keyboard, documents and formats, document rescue and OCR, the private speech suite, optional AI, the Accessible Vault, Story Studio, GLOW accessibility review, braille production, extensions, and the trust architecture underneath it all. Episode voices are generated with QUILL&#x27;s own on-device Kokoro neural speech engine.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Jul 2026 19:59:52 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 23 Sep 2026 12:56:09 +0000</lastBuildDate>
     <atom:link href="https://community-access.github.io/quill/podcast/feed.xml" rel="self" type="application/rss+xml"/>
     <itunes:author>Community Access / BITS</itunes:author>
     <itunes:subtitle>A complete audio course on the screen-reader-first writing studio</itunes:subtitle>
@@ -25,7 +25,7 @@
       <link>https://community-access.github.io/quill/podcast/transcripts/ep01-welcome-to-quill.html</link>
       <guid isPermaLink="false">quill-cast-ep01-welcome-to-quill</guid>
       <pubDate>Thu, 02 Jul 2026 08:01:00 +0000</pubDate>
-      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep01-welcome-to-quill.mp3" length="0" type="audio/mpeg"/>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep01-welcome-to-quill.mp3" length="9692373" type="audio/mpeg"/>
       <itunes:duration>00:03:19</itunes:duration>
       <itunes:explicit>false</itunes:explicit>
     </item>

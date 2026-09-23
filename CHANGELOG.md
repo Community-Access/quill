@@ -2,6 +2,59 @@
 
 ## 1.0.0
 
+### A manual you can listen to, and a site whose links all work (2026-09-23)
+
+Issue #1558, from a reader with ADHD, said what nobody inside the project
+could see: the user guide never *sits* with a topic --- half of it is an
+enumerated menu reference --- and the learning material keeps interrupting
+itself to say how accessible everything is, which teaches nothing. What was
+asked for was a manual "designed to be read by an app", importable into
+ElevenReader or Voice Dream, to follow along with at the computer.
+
+**QUILL, Step by Step** is that manual: seventeen chapters, one skill each, at
+a deliberate walking pace --- try it, try it again, keep two keys, stop here if
+you like. No tables, no feature tours, and not one sentence praising the
+product's accessibility. It ships as Markdown, HTML and EPUB beside the user
+guide (`docs/user guide/quill-step-by-step.md`), is downloadable from the
+site's documentation hub and landing page, and is wired into the
+documentation-chords gate, so every keystroke it teaches is checked against
+the live keymap on every build.
+
+The same issue said QUILL Cast episodes carried broken links, and it was
+right: the show's renumbering from 36 to 54 episodes left **32 orphaned
+transcript pages** live on the site, each linking an MP3 that no longer
+exists. `build_feed.py` prunes stale transcripts now, and the two finished
+tutorials (Internet Radio, Podcasts) that existed in the repo but were never
+published are on the site --- along with tutorial links from the documentation
+hub, which had none. Behind all of it is the gate that was missing: nothing in
+the repo had ever validated a single href, so **GATE-SITE-LINKS**
+(`tests/unit/docs/test_site_links.py`) now models the Pages deploy --- shell,
+flattened renders, deploy-time governance pages --- and fails the build on any
+internal link that resolves to nothing, any transcript without an episode, and
+any episode without a transcript. Its first run found nine more stale links,
+all fixed in the same change.
+
+And the third ask: *"I was looking at getting the ai set up and locally running
+on my device, but I got a little lost during that process... Checking your
+specs, downloading and installing the model and connecting the 2."* They got
+lost honestly --- the wizard's provider list puts **Ollama (on your device)**
+one row above **Ollama Cloud**, two names apart by one word, and its answer to
+Ollama not being installed was a sentence telling you to go install it.
+**AI > Set Up Local AI (Ollama)...** is now that whole journey in one guided
+window: it reports the machine's RAM, graphics card and free disk space in one
+spoken line, downloads the official installer from ollama.com and starts it
+(spoken at 25/50/75 percent, never per tick), downloads a model chosen to fit
+the machine, and connects QUILL to it --- each stage a "Step N of 3" banner
+with the single next action, announced only when the step actually changes
+(GATE-13). "Installed but not running" is its own state with its own advice,
+because "install it" is wrong advice to somebody who already did. The status
+machine is wx-free (`quill/core/ai/local_setup.py`, mirroring the guided
+dictation setup) so the whole journey is unit-tested without a display; the
+installer download rides `release_assets.download_verified` (HTTPS-only,
+Safe-Mode gated, atomic), and Safe Mode refuses the door before any window
+opens. The AI menu's two setup rows moved to `quill/ui/ai_menu_setup.py`
+under GATE-11 rather than growing the menu module.
+
 ### Reopening last session became a conversation (2026-09-19)
 
 Both editors reopened last session's documents **silently**, and skipped one whose

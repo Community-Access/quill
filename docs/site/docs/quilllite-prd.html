@@ -471,14 +471,23 @@ needed it, and it lives in QUILL’s module rather than in a copy of
 it.</li>
 </ul>
 <p>Where the two must differ, they differ <strong>on purpose and in
-writing</strong>. QUILL takes <code>Ctrl+Alt+J</code> and
-<code>Ctrl+Alt+V</code> where QuillLite uses WordPad’s
-<code>Ctrl+J</code> and <code>Ctrl+Shift+V</code>, because
-<code>Ctrl+J</code> has been Set Temporary Bookmark and
-<code>Ctrl+Shift+V</code> has been Preview in QUILL for far longer. An
-existing binding somebody’s hands already know outranks a new command’s
-convention, and the reason is a comment in <code>keymap.py</code> rather
-than folklore.</p>
+writing</strong>, and the reason is a comment in <code>keymap.py</code>
+rather than folklore.</p>
+<p>That principle stands; the example it used to give does not. This
+paragraph recorded <code>Ctrl+Alt+J</code> and <code>Ctrl+Alt+V</code>
+as deliberate divergences from WordPad’s <code>Ctrl+J</code> and
+<code>Ctrl+Shift+V</code>, on the grounds that an existing binding
+somebody’s hands already know outranks a new command’s convention. The
+family keymap reversed both (bad.md §3, rule 1: Microsoft’s key wins
+where Word, WordPad or Notepad bind one for a function both editors
+have). Keeping the paragraph would have left the PRD describing a
+divergence the products no longer have – which is worse than describing
+none, because somebody reads it and writes code to match.</p>
+<p>The divergences that remain are listed in the family keymap’s
+exception table and each carries its own reason. <strong>QuillLite may
+never be ahead of QUILL</strong> remains the rule
+(<code>CLAUDE.md</code>); value crosses both ways, violations cross
+one.</p>
 <h3 id="23-what-quilllite-adds-to-the-shared-package">2.3 What QuillLite
 adds to the shared package</h3>
 <p><code>quill/ui/richedit_editing.py</code> is a subclass of QUILL’s
@@ -587,8 +596,13 @@ above</td>
 </table>
 <h3 id="32-what-it-drops-and-why">3.2 What it drops, and why</h3>
 <p>Tabs, AI, dictation, self-voicing, preview, Quillins, remote files,
-GitHub, braille tooling, the setup wizard, the command palette,
-comparison, publishing, and every companion app.</p>
+GitHub, braille tooling, the setup wizard, comparison, publishing, and
+every companion app.</p>
+<p><strong>The command palette is not on that list any more</strong>,
+and was listed here in error: §3.1 and the command table have always had
+it, and it ships. A document that says a shipped feature was dropped is
+worse than one that says nothing, because somebody reads it and does not
+go looking for the key.</p>
 <p>Two of those deserve their reasoning stated rather than assumed:</p>
 <ul>
 <li><strong>No tabs.</strong> Documents are numbered children of one
@@ -809,6 +823,39 @@ collision elsewhere (GATE-14) — and <strong>dark mode is the
 default</strong>, because the users this editor is for are
 disproportionately light-sensitive and a first launch that is bright
 white is a first launch some of them cannot read.</p>
+<h3 id="45-speech-and-not-braille">4.5 Speech, and not braille</h3>
+<p>QuillLite announces through a running screen reader and nowhere else.
+<code>ScreenReaderVoice</code> reaches NVDA and JAWS through Prism or
+accessible_output2 and Narrator through a UIA notification, and hands
+nothing to the engine unless a reader is actually running. There is
+<strong>no self-voicing fallback</strong> and there is <strong>no
+braille output</strong>: nothing in the QuillLite tree routes an
+announcement to a braille display, where QUILL has a braille service
+that does.</p>
+<p>This is a decision, recorded so it stops reading as an oversight.</p>
+<p><strong>Why.</strong> A braille route is not a line of code; it is a
+delivery channel with its own verbosity rules, its own truncation
+problems, and its own way of being wrong – QUILL’s braille surface is
+several modules and a settings group. The editor this PRD describes is
+meant to stay small enough to be read in an afternoon, and adding a
+second output channel is the kind of thing that makes a Notepad-scale
+product stop being one.</p>
+<p><strong>What a deafblind user gets instead, and why it is not
+nothing.</strong> Every message QuillLite speaks also lands in the
+status bar’s message cell (4.3), and the status bar is a row of real
+focusable buttons rather than a painted strip. A braille display reaches
+it by cursor routing like any other control, and F6 puts the caret there
+in one keystroke. So the information is available; it is pull rather
+than push. What is genuinely lost is the <em>unprompted</em>
+announcement – a background result a listener would have heard, a
+deafblind user has to go and look for.</p>
+<p><strong>What would have to change.</strong> The announcement path is
+one seam (<code>ScreenReaderVoice.speak</code>), so the work is not in
+QuillLite: it is deciding whether QUILL’s braille service can be lifted
+into the shared package without bringing its settings group with it. If
+it can, QuillLite gets braille for the cost of one call. Until somebody
+has answered that question, this section is the honest description of
+where the product stands.</p>
 <h2 id="5-safety-and-data">5. Safety and data</h2>
 <h3 id="51-byte-honesty">5.1 Byte honesty</h3>
 <p>Open a file, change nothing, save it, and the bytes must be the bytes
@@ -850,6 +897,47 @@ file to go stale) plus its own inbox directory. Uninstalling never
 removes the data folder either: recovery slots are the one thing
 somebody may not have finished with, and an uninstaller is the worst
 possible moment to discover that.</p>
+<p><strong>The one bridge, and why it does not contradict any of that
+(2026-09-18).</strong> QuillLite has always been able to <em>read</em>
+QUILL’s abbreviations and personal dictionary, behind a switch the
+person turns on. QUILL now has the other half:
+<code>quill/core/lite_bridge.py</code> and <strong>Tools &gt; Customize
+and Support &gt; Bring My QuillLite Settings…</strong>
+(<code>Alt+Shift+F11</code>) merge QuillLite’s copies of five content
+stores into QUILL’s folder, copy the settings and rebound keys that
+translate, and turn those sharing switches on so the two editors stop
+keeping separate copies. Five properties keep this inside the principle
+above rather than against it:</p>
+<ul>
+<li><strong>Nothing moves without an explicit ask.</strong> The command
+is a menu item and a key. The one place it is offered rather than
+invoked – activating the QuillLite feature profile in QUILL – asks a
+Yes/No question, once ever, and a No is remembered.</li>
+<li><strong>The plan is described before it is applied</strong>, counts
+first and what is being <em>left behind</em> last, because “it copied
+your settings” is not something a listener can verify afterwards by
+looking at the screen.</li>
+<li><strong>QUILL wins every collision</strong> and nothing already in
+QUILL is replaced. <code>merge_json_store</code> is shape-agnostic on
+purpose – these five files are a dict, a list, or a dict with a list in
+it, and five mergers would be five schemas to keep in step – and it
+writes nothing at all when the two sides are different shapes. A merge
+that cannot be done safely is not done: these files are the user’s
+work.</li>
+<li><strong>QuillLite’s own settings file is written once, for two
+booleans.</strong> That is the only thing this module writes into
+<code>%LOCALAPPDATA%\QuillLite</code>, and it is the half without which
+a “shared” store looks broken – QUILL holding the words while QuillLite
+still reads its own copy.</li>
+<li><strong>The direction is QuillLite -&gt; QUILL.</strong> A machine
+that has never had QUILL still grows no Quill folder, because the
+command lives in QUILL and cannot run where QUILL is not installed.</li>
+</ul>
+<p>Both write sites are classified in
+<code>quill/tools/persistence_audit.py</code>
+(<code>merge_json_store</code> as content,
+<code>enable_lite_sharing</code> as marker), so neither can be added to
+or moved without somebody re-stating what they do.</p>
 <h3 id="54-file-associations">5.4 File associations</h3>
 <p>The full installer offers “Open .txt and .rtf files with QuillLite”
 as an <strong>optional</strong> component that registers an <em>Open
@@ -1035,6 +1123,45 @@ build. It now carries <code>-m &lt;module&gt;</code>, resolved from
 <code>__main__.__spec__</code>, whenever the running executable is a
 generic interpreter rather than the app’s own exe.</li>
 </ul>
+<h2 id="6a-the-family-pass-2026-09-18">6a. The family pass
+(2026-09-18)</h2>
+<p>A twenty-nine item audit of the two editors against each other,
+closed in September 2026. It is recorded here because three of its
+outcomes are now constraints on this product rather than one release’s
+work.</p>
+<p><strong>The eleven rules are code.</strong>
+<code>quill/core/family_rules.py</code> holds them and both
+<code>keymap.py</code> and <code>lite/parity.py</code> cite them
+<strong>by number</strong>; a test checks that every citation resolves,
+so the rules cannot be renumbered into lies. Lower number wins when two
+conflict. Rule 1 – Microsoft’s key wins for a function both editors have
+– is itself a gate
+(<code>tests/unit/core/test_microsoft_habits.py</code>), checked against
+both keymaps rather than believed; it found the last disagreement on the
+day it was written, and Word’s <code>F12</code>, <code>Ctrl+F12</code>
+and <code>Ctrl+Shift+F12</code> are aliases in both products because of
+it.</p>
+<p><strong>Divergence is a written argument.</strong>
+<code>DIVERGENCES</code> in <code>quill/core/lite/parity.py</code> holds
+the eight handlers whose chord is allowed to differ, each with the
+reason, and the gate prints the reason when it reports the pair – so the
+next person reads the argument instead of re-having it.
+<code>SETTINGS_ALIASES</code> does the same for the five settings one
+concept is stored under two names for, and the vocabulary gate
+(<code>quill/tools/settings_vocabulary_audit.py</code>, in
+<code>platform_report</code>) fails a new setting that is neither
+shared, aliased, nor a reviewed one-sided field. Two of the five real
+pairs share no word at all, which is why it is a reviewed table and not
+a name-similarity check.</p>
+<p><strong>Rule 10 now cuts both ways in practice.</strong> QuillLite
+may never be ahead of QUILL, and the audit found places where it was:
+QUILL got the <code>DocumentText</code> model QuillLite already had, the
+spelled suggestions QuillLite already spoke, the Spelling Announcements
+window, and the swallowed-formatting-key guard. Where QuillLite was
+behind, it gained Word’s F12 family and the shared-store bridge (5.3).
+Neither direction is a favour: a capability in one product and not the
+other is invisible to the person who only has the other one.</p>
+<hr />
 <h2 id="7-the-quill-side-fixes-this-work-produced">7. The QUILL-side
 fixes this work produced</h2>
 <p>Both were isolated by PR #1490 and both ship in
@@ -1143,8 +1270,22 @@ which is not a test anybody should have to run.</p>
 area, so turning the submenu off can never remove the one selection
 command that predates all of it.</p>
 <h2 id="8-future-directions">8. Future directions</h2>
-<h3 id="81-accepted-for-a-later-release-decided-2026-09-08">8.1 Accepted
-for a later release (decided 2026-09-08)</h3>
+<h3
+id="81-accepted-for-a-later-release-decided-2026-09-08-shipped-2026-09">8.1
+Accepted for a later release (decided 2026-09-08; shipped 2026-09)</h3>
+<p><strong>Everything in this section has shipped.</strong> It is kept
+as the record of <em>why</em> each item was accepted, because the
+reasoning is the part worth having and the list itself is now the
+command table. Overwrite mode, tab mode, the line operations, the
+deletion ring, persistent bookmarks, back and forward, Earlier Versions,
+promote and demote, sentence and toggle case, reverse and number lines
+are all in the shipped product; so, since 2026-09-17, are three of the
+four things the last paragraph declined — Extend Selection Mode, the
+Heading Organizer and folding over Markdown sections — which arrived by
+the other route, as crossings from QUILL rather than as inventions here
+(bad.md 4.2).</p>
+<p>Read it as history. The live list of what is still open is the family
+parity plan, not this section.</p>
 <p>QUILL’s editor surface was diffed against QuillLite’s, command table
 against command table and user guide against user guide, and the result
 reviewed against one test: does the absence read as a <strong>defect
@@ -1238,7 +1379,7 @@ app shape.</li>
 <code>probe_live.py</code> against a real <code>RICHEDIT50W</code> in a
 Windows desktop session (manual).</li>
 <li>A JAWS and NVDA pass by hand, against <a
-href="../../../docs/qa/quilllite-signoff.md"><code>docs/qa/quilllite-signoff.md</code></a>
+href="https://github.com/Community-Access/quill/blob/main/docs/qa/quilllite-signoff.md"><code>docs/qa/quilllite-signoff.md</code></a>
 – 80 numbered steps, each saying what to press and what decides pass or
 fail, with a fifteen-minute subset named at the top. Matching Studio
 (#839) and Inkwell, this is <strong>not</strong> required for the change

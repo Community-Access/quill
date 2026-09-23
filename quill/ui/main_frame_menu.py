@@ -2901,19 +2901,14 @@ class MenuBuilderMixin:
         # See PRD sections 5.84a (the four-pillar menu) and 5.84c (AI onboarding).
         ai_menu = wx.Menu()
         from quill.core.ai.model_manager import load_ai_enabled
-        from quill.core.ai.onboarding import ai_needs_setup
         from quill.ui.agent_editor_host import append_action_ring_menu, append_agent_menu
-        from quill.ui.ai_setup_wizard import run_ai_setup_wizard
+        from quill.ui.ai_menu_setup import append_ai_setup_items
         from quill.ui.concierge_menu import append_concierge_action
 
-        # -- Set Up AI (the gentle on-ramp) -----------------------------------
-        # Always reachable; labeled "start here" and shown first until AI is set
-        # up, then it stays as a quiet re-run point. Direct-bound so the
-        # size-budgeted main_frame module does not need to grow.
-        _setup_id = wx.NewIdRef()
-        _setup_label = _("&Set Up AI... (start here)") if ai_needs_setup() else _("&Set Up AI...")
-        ai_menu.Append(_setup_id, _setup_label)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: run_ai_setup_wizard(self), id=_setup_id)
+        # -- Set Up AI, general and local (the gentle on-ramps) ----------------
+        # Both rows live in quill/ui/ai_menu_setup.py (GATE-11 extraction);
+        # the local row is the guided Ollama path issue #1558 asked for.
+        append_ai_setup_items(self, ai_menu)
         ai_menu.AppendSeparator()
 
         # -- The conversation (the front door) --------------------------------

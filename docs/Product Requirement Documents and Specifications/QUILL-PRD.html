@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill: Product Requirements Document</title>
   <style>
@@ -16826,6 +16826,14 @@ reference auto-generation pipeline.</label></li>
 report (ACR/VPAT) generation toolchain.</label></li>
 <li><label><input type="checkbox" checked="" />Diagnostics bundle
 specification and support runbook.</label></li>
+<li><label><input type="checkbox" checked="" />Listen-along manual
+(<code>docs/user guide/quill-step-by-step.md</code>): linear, one skill
+per chapter, written to be read aloud by a reading app; EPUB published
+on the site; chords held by the documentation-chords gate. Site link
+integrity held by GATE-SITE-LINKS
+(<code>tests/unit/docs/test_site_links.py</code>), which models the
+Pages deploy and fails on any internal href that resolves to nothing
+(issue #1558).</label></li>
 </ul>
 <h3 id="2113-profile-safety-and-recovery">21.13 Profile safety and
 recovery</h3>

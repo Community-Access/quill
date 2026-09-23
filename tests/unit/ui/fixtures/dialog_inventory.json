@@ -264,6 +264,7 @@
   "quill/ui/list_studio_prompts.py::prompt_definition_fallback::wx.SingleChoiceDialog#2": "native",
   "quill/ui/list_studio_settings_dialog.py::ListStudioSettingsDialog._on_export::wx.FileDialog": "native",
   "quill/ui/list_studio_settings_dialog.py::ListStudioSettingsDialog._on_import::wx.FileDialog": "native",
+  "quill/ui/local_ai_wizard.py::LocalAISetupWizard.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/local_git_dialogs.py::InteractiveRebaseDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/local_git_dialogs.py::MergeConflictDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/local_git_dialogs.py::UncommittedChangesDialog.__init__::wx.Dialog": "hardened_custom",

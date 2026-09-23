@@ -9184,6 +9184,12 @@ Deferred to v1.1:
 - [x] User guide and keyboard reference auto-generation pipeline.
 - [x] Accessibility conformance report (ACR/VPAT) generation toolchain.
 - [x] Diagnostics bundle specification and support runbook.
+- [x] Listen-along manual (`docs/user guide/quill-step-by-step.md`): linear,
+      one skill per chapter, written to be read aloud by a reading app;
+      EPUB published on the site; chords held by the documentation-chords
+      gate. Site link integrity held by GATE-SITE-LINKS
+      (`tests/unit/docs/test_site_links.py`), which models the Pages deploy
+      and fails on any internal href that resolves to nothing (issue #1558).
 
 ### 21.13 Profile safety and recovery
 

@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Tutorials - 08-github-inside-quill</title>
+  <title>QUILL Tutorials - Tutorial 8: GitHub inside QUILL</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -91,14 +91,26 @@ fetches it directly.</p>
 The Items viewer: issues, PRs, branches, and everything else</h2>
 <p><strong>File &gt; Open from Remote &gt; GitHub Items...</strong>
 opens a list-over-detail browser for one repository's issues, pull
-requests, branches, commits, tags, releases, and workflow runs.</p>
+requests, branches, commits, tags, releases, workflows, and workflow
+runs. This viewer is built on, and owes real credit to, <a
+href="https://github.com/kellylford/GHManage">GHManage</a> — Kelly
+Ford's open-source, screen-reader-first GitHub browser, which QUILL has
+used as its reference since this integration began. Every feature below
+with a GHManage ancestor keeps its idea and extends it with something
+specific to QUILL.</p>
 <ol type="1">
-<li>Type <code>owner/repo</code> and press <strong>Load</strong>. (If
-your current document lives inside a git checkout whose origin points at
-GitHub, the field is already filled in.)</li>
+<li>Type <code>owner/repo</code>, an
+<code>https://github.com/owner/repo</code> URL, or a
+<code>git@github.com:owner/repo.git</code> remote, then press
+<strong>Load</strong> — QUILL normalizes any of those to
+<code>owner/repo</code>. (If your current document lives inside a git
+checkout whose origin points at GitHub, the field is already filled
+in.)</li>
 <li>Pick a <strong>View</strong> — start with Issues &amp; PRs.
 <strong>Show</strong>, <strong>State</strong>, and <strong>Sort</strong>
-filter that view further.</li>
+filter that view further. <strong>Columns...</strong> picks which fields
+show as list columns for the current view — uncheck ones you don't need,
+and the choice is remembered next time you open the viewer.</li>
 <li>Select a row; the details pane loads its full text, then its comment
 thread. <strong>Alt+N</strong> / <strong>Alt+P</strong> jump between
 comments — the navigator announces "Comment 2 of 5."</li>
@@ -108,10 +120,23 @@ between Quick (compact) and Full (every cell spoken as
 </ol>
 <p><strong>Search</strong> (Ctrl+F) takes full GitHub search syntax
 scoped to the loaded repo: try <code>label:bug is:open</code>.
-<strong>Pinned...</strong> keeps a short list of repos you jump back to
-often; <strong>Ctrl+D</strong> favorites the selected row from any repo,
-and <strong>Favorites...</strong> lists everything you've bookmarked
-across all of them.</p>
+<strong>Quick filter</strong> (Ctrl+Shift+F) is different — it narrows
+the list you already loaded as you type, instantly and with no network
+request; Escape clears it. <strong>Pinned...</strong> keeps a short list
+of repos you jump back to often; <strong>Ctrl+D</strong> favorites the
+selected row from any repo, and <strong>Favorites...</strong> lists
+everything you've bookmarked across all of them.</p>
+<h3 id="running-a-workflow">Running a workflow</h3>
+<p>Switch to the <strong>Workflows</strong> view to see the repository's
+workflow definitions (the <code>.yml</code> files themselves, not their
+run history). Select one and press <strong>Enter</strong> (or
+<strong>Actions... &gt; Run ... on Branch...</strong>) to dispatch it —
+QUILL asks for the branch, confirms, and reports whether GitHub accepted
+the run. This needs a signed-in account, and GitHub tells you plainly if
+a workflow doesn't accept manual (<code>workflow_dispatch</code>) runs
+rather than QUILL guessing. The separate <strong>Workflow Runs</strong>
+view still shows run history and lets you re-run or inspect artifacts
+from a past run.</p>
 <h3 id="reading-a-pull-requests-actual-changes">Reading a pull request's
 actual changes</h3>
 <p>Select a PR row and press <strong>Diff...</strong>. QUILL fetches
@@ -119,6 +144,17 @@ both sides of every changed file and runs them through the same compare
 engine as <strong>Compare Documents</strong>, so you hear a real
 difference walk — "Difference 2 of 5, text changed at line 41" — instead
 of a raw patch.</p>
+<h3 id="comparing-two-branches">Comparing two branches</h3>
+<p>Switch to the <strong>Branches</strong> view, select one, and press
+<strong>Compare...</strong> (or <strong>Ctrl+Shift+B</strong>) — this
+works without signing in, since it never writes to GitHub. Type the base
+branch, then the branch to compare against it (the selected row prefills
+the second prompt). QUILL reports how far the two have diverged, lists
+every commit between them, and — on the <strong>Changed Files</strong>
+tab — walks each file's differences the same accessible way
+<strong>Diff...</strong> does. Enter on a branch drills into its
+<strong>Commits</strong>; <strong>Backspace</strong> in the Commits view
+steps back out to the branch list.</p>
 <h3 id="getting-a-tldr">Getting a TL;DR</h3>
 <p>Select a long issue or PR and press <strong>Summarize</strong>.
 QUILL's AI condenses the whole discussion into what it's about, where it
@@ -155,8 +191,8 @@ Workflow</strong> appears.</li>
 <p>Try it: load a repo you maintain, select <strong>New
 Issue...</strong>, give it a title, and watch it appear in the list
 after you confirm.</p>
-<h2 id="4-repository-administration-tools--github">4. Repository
-administration (Tools &gt; GitHub)</h2>
+<h2 id="4-repository-administration-tools--git-and-github--github">4.
+Repository administration (Tools &gt; Git and GitHub &gt; GitHub)</h2>
 <p>Everything above works on repositories that already exist.
 <strong>Tools &gt; GitHub</strong> creates and configures them.</p>
 <ol type="1">
@@ -189,7 +225,8 @@ Shift+L, Delete Branch = Shift+X, Commit Multiple Files = Shift+U.</p>
 <h3
 id="organizations-releases-workflows-notifications-security">Organizations,
 releases, workflows, notifications, security</h3>
-<p>Five more commands round out <strong>Tools &gt; GitHub</strong>:</p>
+<p>Five more commands round out <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong>:</p>
 <ul>
 <li><strong>Browse Organization Repositories...</strong> — pick an
 organization you belong to, then one of its repositories, and QUILL
@@ -208,12 +245,12 @@ needs attention without a browser.</li>
 </ul>
 <h2 id="5-local-git-resolving-conflicts-and-rebasing-out-loud">5. Local
 Git: resolving conflicts and rebasing, out loud</h2>
-<p>Switch gears entirely — <strong>Tools &gt; Local Git</strong> needs
-no GitHub account and touches no network. It works on the working copy
-of any git repository on your machine, and it exists because two of
-git's most common tasks — resolving a merge conflict and reordering
-commits with an interactive rebase — are notoriously hard with a screen
-reader everywhere else.</p>
+<p>Switch gears entirely — <strong>Tools &gt; Git and GitHub &gt; Local
+Git</strong> needs no GitHub account and touches no network. It works on
+the working copy of any git repository on your machine, and it exists
+because two of git's most common tasks — resolving a merge conflict and
+reordering commits with an interactive rebase — are notoriously hard
+with a screen reader everywhere else.</p>
 <p>Try this with a real (or throwaway test) repository:</p>
 <ol type="1">
 <li><strong>Uncommitted Changes...</strong> — lists everything you've
@@ -262,9 +299,9 @@ automatically; resolve it and the rebase continues on its own.
 you change your mind.</p>
 <p>None of the ten Local Git commands have a default keyboard shortcut —
 every letter on the QUILL Key leader is already claimed elsewhere — but
-all ten are in the Command Palette and the <strong>Tools &gt; Local
-Git</strong> menu, and you can assign your own shortcuts in
-<strong>Preferences &gt; Keyboard Shortcuts</strong>.</p>
+all ten are in the Command Palette and the <strong>Tools &gt; Git and
+GitHub &gt; Local Git</strong> menu, and you can assign your own
+shortcuts in <strong>Preferences &gt; Keyboard Shortcuts</strong>.</p>
 <h2 id="6-syncing-a-whole-folder">6. Syncing a whole folder</h2>
 <p>One more command, adjacent to everything above: <strong>Tools &gt;
 Sync Folder with GitHub...</strong> commits, pulls, and pushes an entire
@@ -278,10 +315,10 @@ at.</p>
 <p>Browse and save individual files without an account; sign in once for
 everything else. The Items viewer's <strong>Batch...</strong> and
 <strong>Actions...</strong> menus cover day-to-day issue/PR work;
-<strong>Tools &gt; GitHub</strong> covers repository lifecycle and the
-rest of the API; <strong>Tools &gt; Local Git</strong> covers the parts
-that were never about GitHub at all — and are, as far as we can tell,
-the first genuinely accessible interactive rebase and merge-conflict
-experience anywhere.</p>
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong> covers repository
+lifecycle and the rest of the API; <strong>Tools &gt; Git and GitHub
+&gt; Local Git</strong> covers the parts that were never about GitHub at
+all — and are, as far as we can tell, the first genuinely accessible
+interactive rebase and merge-conflict experience anywhere.</p>
 </body>
 </html>

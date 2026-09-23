@@ -219,6 +219,9 @@ window is for and what the thing you are on does.</li>
 useful facts live. Arrow along it, press <strong>Escape</strong> to come
 back.</li>
 <li><strong>Ctrl+F1</strong> lists every key QuillLite has.</li>
+<li><strong>Ctrl+Alt+F1</strong> opens <strong>Tutorials…</strong>:
+eight short lessons that walk you through the things that are hard to
+work out by pressing keys.</li>
 </ul>
 <hr />
 <h2 id="your-documents-are-numbered">Your documents are numbered</h2>
@@ -336,7 +339,7 @@ script would be exhausting.</p>
 file is an entirely reasonable thing to do, and there are three ways to
 say so:</p>
 <ul>
-<li><strong>Ctrl+Shift+M</strong> rings through all four kinds — plain
+<li><strong>Alt+Shift+F</strong> rings through all four kinds — plain
 text, Markdown, HTML, rich text, and round again. Each stop says its own
 name, so you press it until you hear the one you meant. This is the fast
 way.</li>
@@ -349,8 +352,33 @@ wrong.</li>
 </ul>
 <p>Moving between plain, Markdown and HTML changes <strong>nothing in
 your document</strong> — it changes what the keys write from now on.
-Going to or from rich text is a real conversion, and going <em>from</em>
-it throws the formatting away, so it asks first.</p>
+Going to or from rich text is a real conversion, and it asks first,
+because it rewrites what is in the window.</p>
+<h3 id="what-the-conversion-keeps">What the conversion keeps</h3>
+<p>Going <strong>out of rich text</strong> turns the formatting into
+Markdown rather than throwing it away. A Heading 2 becomes
+<code>## </code>, a bold word becomes <code>**bold**</code>, a bullet
+list becomes <code>- </code> lines. The document is then a Markdown
+document, and says so in the <strong>Format</strong> cell — so heading
+navigation, the headings list and the outline all still find everything
+they found a moment ago. If the document holds something Markdown cannot
+carry — a table, a picture, a footnote — QuillLite names it before it
+asks.</p>
+<p>Until version 1.0 this direction took the letters and left everything
+else. An afternoon of headings and bold became a wall of unmarked text,
+and the only announcement was “Plain text mode”.</p>
+<p>Going <strong>into rich text</strong> converts in the other
+direction: a Markdown document’s <code>## Title</code> becomes a real
+Heading 1, <code>**bold**</code> becomes really bold, and an HTML
+document goes through Markdown on the way. A <strong>plain text</strong>
+document is left as characters, deliberately — the asterisks in a
+shopping list are not bold, and there would be no way back from deciding
+they were.</p>
+<p>Your file keeps its name. Because a rich document cannot be written
+over a <code>.txt</code>, the next <strong>Ctrl+S</strong> offers you
+<code>notes.rtf</code> instead of <code>notes.txt</code> — the name
+filled in, ready to accept. Nothing is written under a name that does
+not match what is in it.</p>
 <p>The choice lasts as long as the window. It describes what you are
 typing, not what the file is.</p>
 <hr />
@@ -378,12 +406,96 @@ did not, it will not suddenly start.</li>
 (<strong>Ctrl+Alt+E</strong>) when you actually want to — for instance
 when somebody needs a copy of an old file in a newer format. The change
 takes effect the next time you save.</p>
+<h3 id="how-this-file-is-written-encoding-and-line-endings">How this
+file is written: encoding and line endings</h3>
+<p><strong>Tools ▸ File Encoding and Line Endings…</strong>
+(<strong>Ctrl+Alt+E</strong>) is one window for the two facts above, and
+it is the same window QUILL opens from <strong>File ▸ File
+Format…</strong>. Neither list is applied until you save; the window
+says so.</p>
+<p><strong>Encoding</strong> offers UTF-8 for anything new, UTF-8 with
+BOM for the Windows tools that expect one, UTF-16, and Windows-1252 for
+the older <code>.txt</code> files that are in it. <strong>Line
+endings</strong> offers CRLF, which is what Windows programs write and
+what a new QuillLite document is born with, and LF, which is what Unix,
+macOS and most build tools expect.</p>
+<p>A file that arrived in something neither list offers keeps it. A
+UTF-16 big-endian file, or a file whose lines end with a single CR the
+way classic Mac OS wrote them, shows a <strong>keep as is</strong> row
+at the top of the list and starts in it — so answering the window with
+Enter cannot convert a file you only opened to read. Until September
+2026 the list quietly started on its first row instead: a CR file read
+“CRLF”, and confirming the window rewrote every line ending in it. A
+big-endian file had a subtler version of the same problem — both byte
+orders were read through the one codec that always <em>writes</em>
+little-endian, so saving a file you had not otherwise touched swapped
+every pair of bytes in it.</p>
+<h3 id="when-a-character-will-not-fit">When a character will not
+fit</h3>
+<p>Older files store only a limited set of letters. If you type an em
+dash, a curly quote or an emoji into a file that cannot hold one,
+QuillLite asks before it saves rather than after:</p>
+<blockquote>
+<p>3 characters cannot be saved as Windows-1252. Save as UTF-8
+instead?</p>
+</blockquote>
+<ul>
+<li><strong>Yes</strong> saves the file as UTF-8 and keeps every
+character. The <strong>Encoding</strong> cell in the status bar changes
+to match, because from now on the file really is UTF-8.</li>
+<li><strong>No</strong> saves it the way it already was, and those
+characters become question marks. Sometimes that is what you want — a
+file something else has to read back.</li>
+<li><strong>Cancel</strong> stops, and nothing is written.</li>
+</ul>
+<p>Until version 1.0 there was no question. The characters became
+question marks, QuillLite said “Saved”, and the only way to find out was
+to read that line again.</p>
+<h3 id="saving-an-html-page-as-markdown">Saving an HTML page as
+Markdown</h3>
+<p><strong>Ctrl+Shift+S</strong> offers <strong>Markdown (*.md)</strong>
+in its list of types, and in one case that is a real conversion rather
+than a new name: if the document you are saving is
+<strong>HTML</strong>, the tags are turned into Markdown as it saves. A
+heading becomes <code>#</code>, bold becomes <code>**bold**</code>, a
+list becomes <code>-</code> lines, and links keep both their text and
+their address. QuillLite says <strong>“Converted HTML to
+Markdown”</strong> when it happens, and the document in front of you
+changes to match the file – the window and the file never disagree about
+what you just saved.</p>
+<p>Tags Markdown has no way to write are dropped and their text kept, so
+nothing you typed disappears. If the conversion would produce nothing at
+all – a page that is only a comment, say – QuillLite keeps your text
+exactly as it was and tells you so, rather than writing an empty
+file.</p>
+<p>The conversion happens <strong>to the file</strong>, and the window
+follows only once the file is safely written. If the save fails — the
+file is locked, the disk is full — the document in front of you is
+untouched, still HTML, with its undo history intact. The same is true of
+flattening a rich text document to plain: QuillLite asks, writes the
+plain file, and only then drops the formatting from the window.</p>
+<p>Saving a plain text or Markdown document as <code>.md</code> changes
+nothing at all: plain text is already what it claims to be, and Markdown
+already is Markdown. A <strong>rich text</strong> document is not
+offered Markdown, because turning real formatting back into
+<code>#</code> and <code>**</code> means guessing which bold lines were
+meant as headings. Save it as plain text first – QuillLite asks before
+it drops the formatting – and the Markdown row is waiting.</p>
 <h3 id="if-something-goes-wrong">If something goes wrong</h3>
 <p>While a document has changes you have not saved, QuillLite keeps a
-copy of it aside, about once a minute. That copy sits
+copy of it aside, about every thirty seconds. That copy sits
 <strong>beside</strong> your file and never on top of it.</p>
 <p>If QuillLite or your computer stops unexpectedly, that work is
-offered back to you the next time you start, in its own document.</p>
+offered back to you the next time you start, in its own document. It
+comes back <strong>the way it was</strong>: a file stored in an older
+encoding, or written with Unix line endings, is still that file after a
+recovery. The copy kept aside is always written in one format, because
+it has to hold whatever you typed — but what it records alongside is
+what <em>your</em> document was, and that is what is put back.</p>
+<p>If a copy cannot be read back — a damaged disk, a file something else
+is holding — QuillLite says so and leaves it exactly where it is. The
+window does not take your file’s name, and the copy is offered again
+next time. It is still the only copy of that work.</p>
 <p>Save it, or close normally, and the copy is deleted. So there is
 never anything in there except work you actually need.</p>
 <h3 id="going-back-to-an-earlier-version">Going back to an earlier
@@ -440,7 +552,7 @@ everything from before this version is in the list too.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+G</strong></td>
-<td>Go to a line by number</td>
+<td>Go To: a line, a bookmark or a heading</td>
 </tr>
 </tbody>
 </table>
@@ -750,6 +862,19 @@ retyping.</p>
 the whole pattern, so <code>cat|dog</code> means “the word cat or the
 word dog”, not “the word cat, or dog anywhere”.</p>
 <hr />
+<h2 id="going-somewhere">Going somewhere</h2>
+<p><strong>Ctrl+G</strong> opens <strong>Go To</strong>, which is Word’s
+rather than Notepad’s: one window, and a choice of what to go to. Arrow
+between <strong>Line</strong>, <strong>Bookmark</strong> and
+<strong>Heading</strong> at the top, and what is below follows — a
+number box for a line, a list of places for the other two. Bookmark rows
+are led by their digit and heading rows by their level, so you can pick
+one out by its first word.</p>
+<p><strong>Alt+Shift+G</strong> and <strong>Ctrl+Alt+L</strong> still go
+straight to the bookmark list and the heading list. Those are faster
+when you already know which kind you want; Ctrl+G is the one to press
+when you do not.</p>
+<hr />
 <h2 id="bookmarks">Bookmarks</h2>
 <p>A bookmark is a place you meant to come back to.</p>
 <table>
@@ -809,6 +934,36 @@ nowhere.</li>
 <p>You can turn all of this off with the rest of bookmarks in
 <strong>Tools ▸ Customize Features</strong>, and then nothing is written
 at all.</p>
+<h3 id="the-one-with-no-number">The one with no number</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+J</strong></td>
+<td>Set Temporary Bookmark — drop a pin where the cursor is</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+J</strong></td>
+<td>Go to Temporary Bookmark — go back to it</td>
+</tr>
+</tbody>
+</table>
+<p>There is one more bookmark, and it is a different kind of thing. Use
+it when you are about to go and look something up and you want to come
+straight back: press Ctrl+Alt+J before you go, Ctrl+Shift+J when you are
+done.</p>
+<p>It has no number, no label and no row in the list, and setting it
+again simply moves it — nothing asks whether you meant to. It is not
+kept when you close the document. That is the point: a place you did not
+name is a place you did not mean to keep, and having to name one is
+exactly the interruption you were trying to avoid.</p>
+<p>QUILL has had these two keys for years and they are the same two keys
+here.</p>
 <h3 id="going-back-where-you-came-from">Going back where you came
 from</h3>
 <table>
@@ -882,7 +1037,8 @@ or a paragraph.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F8</strong></td>
-<td>Turn selecting-as-you-move on or off without moving</td>
+<td><strong>Toggle Selection Marker</strong> — drop or pick it up,
+without moving the cursor</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+F8</strong></td>
@@ -894,9 +1050,44 @@ or a paragraph.</p>
 </tr>
 </tbody>
 </table>
+<h4 id="a-shift-that-stays-down--altshiftf9">A Shift that stays down —
+Alt+Shift+F9</h4>
+<p><strong>Extend Selection Mode</strong> is the other way to do the
+same job, and which one suits you is a matter of taste rather than of
+which is better.</p>
+<p>Press <strong>Alt+Shift+F9</strong> and QuillLite says “Extend
+selection mode on” and tells you where you are. From then on every
+arrow, Home, End, Page Down and Ctrl+arrow <em>extends</em> instead of
+moving — no modifier held, and, the part that matters, <strong>no
+“selected” from your screen reader on every press</strong>. That is what
+makes holding Shift and pressing Down forty times so unpleasant, and it
+is the whole reason this mode exists.</p>
+<p>Press it again, or <strong>Escape</strong>, to stop. Typing anything
+that is not a movement key finishes the selection and replaces it,
+exactly as it would have if you had been holding Shift.</p>
+<p>The difference from <strong>F8</strong>: F8 marks a spot and computes
+the span when you press Shift+F8, so between the two you can use
+<em>anything</em> — Find, Go To Line, a bookmark. This mode is live, so
+what you have is always what is highlighted. Both are here because both
+are genuinely the better answer sometimes.</p>
 <p><strong>Ctrl+Shift+F8</strong> is worth remembering for the moment an
 arrow key has just thrown away a selection that took six keystrokes to
-build.</p>
+build. It puts back whatever you last selected, however you selected it
+— F8, Select Word, Select Paragraph, Grow, or simply clearing one by
+accident.</p>
+<h4 id="what-you-hear-when-something-is-selected">What you hear when
+something is selected</h4>
+<p>Every selection says the same thing in the same order:
+<strong>what</strong> it took and <strong>how many words</strong> —
+“Selected paragraph, 41 words”. A word count is a size you can picture;
+a character count is a number you then have to divide.</p>
+<p>The <strong>F8</strong> span is the one exception, and it says more
+because it has to: it reaches between two arbitrary points, so “Selected
+120 words, lines 14 to 31” is the only way to know how far it went.
+Everything else is named by its scope already.</p>
+<p>QUILL says exactly the same sentences. One of the two used to add a
+character count and the other did not, so the same key reported the same
+fact two ways depending on which editor you happened to be in.</p>
 <h3 id="take-a-whole-word-line-or-paragraph-at-once">Take a whole word,
 line or paragraph at once</h3>
 <table>
@@ -964,7 +1155,7 @@ something.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Ctrl+Alt+Shift+K</strong></td>
+<td><strong>Ctrl+Shift+M</strong></td>
 <td>Set a mark here</td>
 </tr>
 <tr>
@@ -981,6 +1172,15 @@ something.</p>
 </tr>
 </tbody>
 </table>
+<p>Twenty marks are kept, and marking the same place twice does not use
+up two of them.</p>
+<p>A mark <strong>moves with your text</strong>. Drop one on a
+paragraph, insert three paragraphs above it, and Ctrl+M still takes you
+to that paragraph — the mark remembers the words around it, not a count
+of characters from the top.</p>
+<p>And <strong>Alt+Left comes back</strong>. Every way of reaching a
+mark — Ctrl+M, choosing one from the list, Ctrl+Alt+X — is a jump the
+Back key can undo, the same as a bookmark or a Go To.</p>
 <h3 id="two-more">Two more</h3>
 <p><strong>Ctrl+Shift+Y</strong> reads back what is currently selected.
 There is no glance that confirms you took what you meant to, and the
@@ -1001,9 +1201,9 @@ document |</p>
 <h2 id="formatting">Formatting</h2>
 <p>These are WordPad’s keys, deliberately unchanged.</p>
 <p><strong>The same key, the document’s own answer.</strong> Ctrl+B used
-to say “Not available in plain text. Press Control Shift M to switch to
-rich text”, which is true and unhelpful — somebody writing Markdown does
-not want rich text, they want two asterisks, and they know it. So what
+to say “Not available in plain text. Press Alt Shift F to switch to rich
+text”, which is true and unhelpful — somebody writing Markdown does not
+want rich text, they want two asterisks, and they know it. So what
 Ctrl+B writes now depends on what kind of document you are in:</p>
 <table>
 <thead>
@@ -1055,8 +1255,43 @@ adding to it. Pressing Ctrl+Alt+2 on a line that is already
 <code>## ### Notes</code> — and an <code>id=</code> on an HTML heading
 is carried across, because it is very often the anchor somebody else’s
 link points at.</p>
-<p>The rest of the Format menu — alignment, bullets, line spacing, font
-— is rich text only, and says so when it cannot run.</p>
+<p>The rest of the Format menu — alignment, line spacing, font — is rich
+text only, and says so when it cannot run. Lists are not:
+<strong>Ctrl+Shift+L</strong> works in a rich text document and in a
+Markdown one.</p>
+<p><strong>The keys the editing control brings with it.</strong> Every
+QuillLite document is built on the same Windows editing control that
+WordPad uses, because that is what gives your screen reader and your
+braille display a text surface worth reading. The cost is that the
+control has its own keyboard: <strong>Ctrl+U</strong> underlines,
+<strong>Ctrl+E</strong>, <strong>Ctrl+L</strong>,
+<strong>Ctrl+R</strong> and <strong>Ctrl+J</strong> re-align,
+<strong>Ctrl+=</strong> and <strong>Ctrl+Shift+=</strong> move the
+baseline, and a few more besides. In a rich text document that is
+exactly right, and they work.</p>
+<p>In a Markdown, HTML or plain document they used to <em>appear</em> to
+work. The formatting was really applied — it was on the screen and on
+the undo stack — but the document was not marked as changed, nothing was
+announced, and none of it was saved. A document that differs from the
+file it is about to become, with nothing in the app willing to mention
+it, is the worst version of this bug for somebody who cannot see the
+screen.</p>
+<p>Now the key is swallowed in a document that has no formatting, and
+QuillLite says so once:</p>
+<blockquote>
+<p>Underline has no meaning in a plain text document.</p>
+</blockquote>
+<p>Once per effect per document, not once per press: a key that does
+nothing and explains nothing is indistinguishable from a key that is
+broken, and a key that explains itself on every press becomes noise
+inside a minute. QUILL says the same sentence for the same key, from the
+same place in the shared code.</p>
+<p><strong>Ctrl+Shift+L rings</strong>, the way WordPad’s own button
+does: bulleted list, numbered list, no list, round again. Each stop says
+its own name, so you press it until you hear the one you meant. In rich
+text the control draws the markers and renumbers them for you; in
+Markdown it writes <code>- </code> and <code>1. </code> on the lines you
+have selected — and only on those, never on the rest of the file.</p>
 <table>
 <thead>
 <tr>
@@ -1071,8 +1306,7 @@ link points at.</p>
 <td>Bold, italic, underline</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Shift+&gt;</strong> /
-<strong>Ctrl+Shift+&lt;</strong></td>
+<td><strong>Ctrl+Shift+.</strong> / <strong>Ctrl+Shift+,</strong></td>
 <td>Bigger / smaller text</td>
 </tr>
 <tr>
@@ -1082,7 +1316,7 @@ link points at.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+L</strong></td>
-<td>Bullet points</td>
+<td>Lists: bulleted, numbered, none, round again</td>
 </tr>
 <tr>
 <td><strong>Ctrl+1</strong>, <strong>Ctrl+5</strong>,
@@ -1095,7 +1329,11 @@ link points at.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+0</strong></td>
-<td>Back to ordinary text</td>
+<td>Back to ordinary text (removes the heading)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>Normal Text: take <em>all</em> formatting off</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+D</strong></td>
@@ -1113,6 +1351,20 @@ Every level has a size of its own on purpose: levels 5 and 6 used to
 share the 11-point body size, which meant QuillLite could apply them and
 then could not find them again — heading navigation and the headings
 list both walked straight past them.</p>
+<p><strong>Ctrl+Shift+N</strong> is Normal Text, and it is the way back.
+Every other command in this menu is a toggle or a setting, so each one
+needs you to already know what is applied: turning bold off means
+knowing bold is on, and a twenty-point run means walking the size back
+down a step at a time. Normal Text does not ask. It takes off bold,
+italic, underline and strikethrough, puts the size back to ordinary body
+text, clears the colour and the highlight, returns the paragraph to left
+aligned and single spaced, and takes it out of any list – all in one
+press, and one <strong>Ctrl+Z</strong> puts it all back. It leaves the
+<em>typeface</em> alone, because the face a document is written in is
+part of the document; <strong>Format ▸ Editor Font</strong> is where
+that is chosen. It is Word’s key for the same idea. In a Markdown or
+HTML document the same key takes the heading marks off the line instead,
+which is what “normal” means to a line written in markup.</p>
 <p><strong>Ctrl+Shift+D</strong> is the one worth remembering. It tells
 you what you are standing in — “Arial, 16 point, heading 2, bold” —
 which is the question a formatted document raises and that nothing else
@@ -1146,6 +1398,48 @@ for <strong>Alt+Shift+Right</strong> to change their level, and only
 <em>navigation</em> pretended the document had no shape. A
 <code>#</code> inside a fenced code block is not treated as a
 heading.</p>
+<h3 id="skimming-a-long-one--folding">Skimming a long one — folding</h3>
+<p>A sighted reader finds out what is in a long document by scrolling
+and glancing. Folding is the same thing for somebody who cannot.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+F9</strong></td>
+<td><strong>Fold or Unfold Section</strong> — the one you are in</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Down</strong></td>
+<td><strong>Next Section</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Up</strong></td>
+<td><strong>Previous Section</strong></td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F10</strong></td>
+<td><strong>Unfold Everything</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Walking between sections says the heading, whether it is folded, and
+how many lines are under it — “Installing, expanded, 34 lines”. That
+sentence is the skim: it is what a glance down the page would have told
+you.</p>
+<p><strong>Nothing is hidden from your cursor.</strong> A folded section
+reads exactly as it reads unfolded, arrow for arrow, and Find still
+finds things in it. A fold that really hid your text would be a document
+whose contents depend on how you happen to be looking at it, and the
+first thing that breaks is Find. What a fold <em>is</em> here is a note
+to yourself that you have dealt with that section, and you hear it when
+you pass by.</p>
+<p>Markdown documents, where a <code>#</code> heading marks where a
+section starts.</p>
 <h3 id="hearing-that-you-have-arrived-at-one">Hearing that you have
 arrived at one</h3>
 <p>Arrow onto a heading and QuillLite says <strong>“Heading
@@ -1262,8 +1556,34 @@ level 2”. Saying that aloud on every arrow press would be too much;
 never being able to find out is its own problem, and a cell answers on
 demand and costs nothing until you read it. <strong>Enter</strong> on
 the cell turns the spoken cue off and on.</p>
-<h3 id="rearranging-them--format--structure">Rearranging them — Format ▸
-Structure</h3>
+<h3 id="all-of-them-at-once--the-heading-organizer">All of them at once
+— the Heading Organizer</h3>
+<p><strong>Alt+Shift+O</strong> opens <strong>Heading
+Organizer…</strong>: every heading in the document as one list.</p>
+<p>Arrow through it and each row says its level and its text — “Heading
+2: Installing”. <strong>Tab</strong> demotes the one you are on,
+<strong>Shift+Tab</strong> promotes it, and <strong>Move Up</strong> and
+<strong>Move Down</strong> take the heading <em>and everything under
+it</em> past its neighbour. <strong>Rename</strong> changes the wording
+without moving anything, and <strong>Validate</strong> checks the result
+against the rules a screen reader relies on: it must start at Heading 1,
+and it must not skip a level on the way down.</p>
+<p>There is a preview beside the list showing the section under
+whichever heading you are on, which is how you tell two similarly named
+headings apart before you move either of them.</p>
+<p>Nothing happens to your document until you press
+<strong>Apply</strong>, and everything that does happen is one change —
+one <strong>Ctrl+Z</strong> puts it all back.</p>
+<p>This is the same window QUILL has, and it is here for the reason
+everything else in this section is: restructuring a document with four
+separate commands means holding its shape in your head while you change
+it, because nothing reads the result back to you. In the list, the list
+<em>is</em> the shape.</p>
+<p>Markdown and HTML documents only. Rich text headings are a font size
+rather than a marker, so reordering them means moving formatted text
+rather than lines, which is a different job.</p>
+<h3 id="rearranging-them-one-at-a-time--format--structure">Rearranging
+them one at a time — Format ▸ Structure</h3>
 <table>
 <thead>
 <tr>
@@ -1323,6 +1643,12 @@ QuillLite has one, and it is the same one QUILL for All uses.</p>
 it one word at a time with suggestions you can arrow through. For each
 word you can change it, change every one like it, skip it, or add it to
 your dictionary so it is never questioned again.</p>
+<p>It <strong>starts where your cursor is</strong>, the way F7 has in
+Word since there was an F7, and when it reaches the end it says so and
+carries on from the beginning. Before version 1.0 it always started at
+the top, which walked you back through everything you had already
+checked to reach the paragraph you were working in. You can turn the
+wrap off in Preferences if you would rather it simply stopped.</p>
 <table>
 <thead>
 <tr>
@@ -1336,7 +1662,7 @@ your dictionary so it is never questioned again.</p>
 <td>Check the whole document</td>
 </tr>
 <tr>
-<td><strong>Shift+F7</strong></td>
+<td><strong>Alt+Shift+F7</strong></td>
 <td>Suggestions for the word you are on</td>
 </tr>
 <tr>
@@ -1344,7 +1670,11 @@ your dictionary so it is never questioned again.</p>
 <td>Go to the next / previous mistake</td>
 </tr>
 <tr>
-<td><strong>Alt+F7</strong></td>
+<td><strong>Alt+Shift+L</strong></td>
+<td>List every misspelling, with its line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F9</strong></td>
 <td>Add this word to your dictionary</td>
 </tr>
 <tr>
@@ -1364,8 +1694,13 @@ pause, <strong>spells it out</strong>. That is the part that matters:
 you nothing, and the letters are the answer. Press the next key and the
 spelling is cancelled unheard, so it costs you nothing when you did not
 need it.</p>
-<p><strong>Shift+F7</strong> and <strong>Alt+F7</strong> work from
-anywhere in a word, not only from its first letter.</p>
+<p><strong>Alt+Shift+L</strong> lists every misspelling at once, with
+the line each one is on, and Enter on a row goes there. That answers a
+different question from Ctrl+F7: that one moves you to the next mistake,
+and this one tells you how many there are and lets you choose which.
+Words you have chosen to ignore are left out.</p>
+<p><strong>Alt+Shift+F7</strong> and <strong>Ctrl+Alt+F9</strong> work
+from anywhere in a word, not only from its first letter.</p>
 <h3 id="while-you-type">While you type</h3>
 <p>When you finish a word that is not in the dictionary – finish it, so
 a space or a comma or a new line, not while you are still in the middle
@@ -1402,16 +1737,22 @@ its Settings window, so tuning this once tunes both.</p>
 <h3 id="the-word-you-are-on-the-applications-key">The word you are on:
 the Applications key</h3>
 <p>With the cursor in a word QuillLite thinks is misspelled, press the
-<strong>Applications key</strong> (or Shift+F10, or right-click) and the
-menu grows a <strong>Spelling</strong> submenu at the top, named after
-the word: <em>Spelling: “wrold”</em>. One <strong>Down</strong> arrow,
-then <strong>Right</strong>, and you are on the first suggestion;
-<strong>Enter</strong> replaces the word. No dialog opens and the cursor
-does not move.</p>
-<p>Everything about the word is in that one submenu, so the ordinary
-rows below it – Undo, Redo, Cut, Copy, Paste, Delete, Select All – are
-in the same place whether the word is misspelled or not.</p>
-<p>Inside the submenu, under the suggestions:</p>
+<strong>Applications key</strong> (or Shift+F10, or right-click) and
+<strong>the first Down arrow lands on a suggestion</strong>.
+<strong>Enter</strong> replaces the word. No dialog opens, the cursor
+does not move, and there is nothing to arrow past first.</p>
+<p>That is the whole point of this menu. A sighted person finds a
+misspelling by looking for a red squiggle and right-clicking it; you
+have no squiggle, so the Applications key <em>is</em> the squiggle, and
+what it says first should be the answer.</p>
+<p>Under the suggestions there is a separator and then <strong>one
+row</strong> — <em>Spelling Actions for “wrold”</em> — and then the
+ordinary rows: Undo, Redo, Cut, Copy, Paste, Delete, Select All. That
+order never changes. The part that varies in length is at the
+<strong>top</strong>, so everything below the suggestions is always
+where you left it, and what you learn is not a row number but “after the
+suggestions, the menu is the menu”.</p>
+<p>Inside <strong>Spelling Actions</strong>:</p>
 <table>
 <thead>
 <tr>
@@ -1453,6 +1794,8 @@ too.</td>
 </tr>
 </tbody>
 </table>
+<p>QUILL’s menu is the same menu, in the same order, with one extra
+dictionary in it (it has projects; QuillLite opens files).</p>
 <p>Every row names the word it is about, so a menu you reached by
 keyboard still tells you what it is going to do. On a word that is
 spelled correctly there is no Spelling submenu at all – just the
@@ -1508,7 +1851,10 @@ its own name and value.</p>
 <p><strong>View ▸ Status Bar</strong> (<strong>Alt+Shift+B</strong>)
 takes the bar off the screen altogether, the way Notepad’s does, and
 puts it back. Nothing is lost when it is away:
-<strong>Ctrl+Alt+W</strong> speaks the counts, and
+<strong>Ctrl+Shift+G</strong> speaks the counts,
+<strong>Ctrl+Alt+W</strong> speaks the line widths — the longest line,
+which line it is, and the average, which is what you want when you are
+formatting for a braille display or a narrow window — and
 <strong>Ctrl+G</strong> asks for the line number the Position part would
 have shown you. F6 with the bar hidden says so rather than doing
 nothing.</p>
@@ -1559,7 +1905,7 @@ again</td>
 </tr>
 <tr>
 <td><strong>Format</strong></td>
-<td>Plain text or rich text</td>
+<td>Which of the four kinds this document is</td>
 <td>rings on to the next kind of document</td>
 </tr>
 <tr>
@@ -1619,6 +1965,19 @@ two things that decide whether your file opens properly on somebody
 else’s computer, and almost no other editor shows them at all. You will
 rarely need to change them — but when a file arrives looking like
 nonsense, this is where the answer is.</p>
+<p>In a <strong>rich text</strong> document these two read <strong>“RTF
+(rich text)”</strong> and <strong>“Not applicable (rich text)”</strong>,
+because a rich document has neither: RTF stores an accented letter as an
+escape sequence of its own and marks a paragraph its own way. They used
+to read “UTF-8” and “CRLF” there, which are the two answers a plain file
+gives — a cell stating a fact about a file that has no such fact.</p>
+<p>Both cells answer for the file you actually have. A file that arrived
+in a format this window cannot offer — UTF-16 big-endian, say, or the
+classic-Mac single-CR line ending — shows a <strong>keep as is</strong>
+row and stays in it, so pressing Enter and confirming cannot quietly
+convert a file you only opened to read. See <a
+href="#how-this-file-is-written-encoding-and-line-endings">How this file
+is written</a>.</p>
 <p><strong>List</strong> answers the question the speech deliberately
 does not. Entering a list you hear “Bulleted list, 5 items”; this cell
 also tells you <strong>which item you are on</strong> — “Bulleted list,
@@ -1636,6 +1995,18 @@ href="#four-kinds-of-document">Four kinds of document</a>.</p>
 moment it is spoken. If you missed something QuillLite said, this is
 where you go to read it again.</p>
 <hr />
+<h2 id="reading-a-selection-without-risking-it">Reading a selection
+without risking it</h2>
+<p><strong>Alt+Shift+U</strong> opens the <strong>Review
+Buffer</strong>: a copy of what you have selected, in a window of its
+own, that cannot be edited.</p>
+<p>The point is what you cannot do in it. Reading a long selection back
+means arrowing through it, and arrowing through your own document while
+a selection is live means the next character you type replaces all of
+it. A copy that refuses to be edited removes that whole class of
+accident. Escape closes it and puts you back where you were, with the
+selection intact.</p>
+<hr />
 <h2 id="copying-and-pasting-more-than-one-thing">Copying and pasting
 more than one thing</h2>
 <p>The Windows clipboard holds one thing at a time. QuillLite gives you
@@ -1644,18 +2015,55 @@ three ways around that, in <strong>Edit ▸ Clipboard</strong>.</p>
 closing the app. Copy into a slot with <strong>Ctrl+Alt+Y</strong>, and
 paste from any of them an hour later with <strong>Ctrl+Alt+V</strong>.
 <strong>Ctrl+Alt+Shift+Y</strong> empties it.</p>
+<p><strong>Ctrl+Alt+Y</strong> takes the next free slot, which is fine
+until you want to <em>choose</em> the number — and choosing is the whole
+point of a numbered slot, because a number you picked is one you can
+remember. <strong>Alt+Shift+Y</strong> offers all twelve, each row
+saying what is in that slot now, so nothing gets overwritten
+unheard.</p>
 <p><strong>The collector</strong> gathers things up. Each
-<strong>Ctrl+Alt+G</strong> adds what you have selected to one growing
+<strong>Alt+Shift+S</strong> adds what you have selected to one growing
 pile, and <strong>Ctrl+Alt+Shift+G</strong> pastes the whole pile. This
 is what you want when you are pulling five quotes out of a long
 document. <strong>Ctrl+Alt+Shift+C</strong> empties the pile.</p>
-<p><strong>The clip library</strong> happens by itself — a rolling
-history of what you have copied, whether or not you decided at the time
-that it mattered. <strong>Ctrl+Alt+M</strong> keeps the current clip
-deliberately, and <strong>Ctrl+Alt+Shift+M</strong> opens the list.</p>
+<p><strong>The clip library</strong> is where clips you want to keep go.
+<strong>Ctrl+Alt+M</strong> keeps what you have selected, and
+<strong>Ctrl+Alt+Shift+M</strong> opens the list to paste one back.</p>
+<p>It can also fill itself. <strong>Preferences ▸ Keep everything I copy
+in the clip library</strong> turns that on, and then every copy and
+every cut you make inside a QuillLite document is added automatically,
+up to the last two hundred. It is off until you ask, and the reason is
+worth stating plainly: a history of everything you copy is a file on
+your disk holding whatever you last took out of a document, a password
+you had pasted somewhere included. It never sees what you copy in other
+programs.</p>
 <p>And <strong>Ctrl+Shift+V</strong> pastes text with none of its
 formatting, which is what you want when something copied from a web page
 arrives wearing its own fonts and colours.</p>
+<p><strong>Ctrl+F8</strong> copies the whole document. Select All then
+Copy does the same thing in two keys and leaves the document selected
+afterwards, which is a hazard when you cannot glance at it: the next
+character you type replaces everything.</p>
+<hr />
+<h2 id="links">Links</h2>
+<p><strong>Ctrl+K</strong> puts a link in, in whatever markup the
+document is written in — <code>[text](address)</code> in Markdown,
+<code>&lt;a href="address"&gt;text&lt;/a&gt;</code> in HTML. Select the
+words first and they arrive in the box already; leave the display box
+empty and the address shows as its own text.</p>
+<p>Rich text says so instead: a link there is something the control
+owns, and writing brackets into one would just put brackets on the
+page.</p>
+<hr />
+<h2 id="links-1">Links</h2>
+<p><strong>Ctrl+K</strong> puts a link in, in whatever markup the
+document is written in — <code>[text](address)</code> in Markdown,
+<code>&lt;a href="address"&gt;text&lt;/a&gt;</code> in HTML. Select the
+words first and they arrive in the box already; leave the display box
+empty and the address shows as its own text.</p>
+<p>Rich text says so instead: a link there is something the control
+owns, and writing brackets into one would just put brackets on the
+page.</p>
 <hr />
 <h2 id="working-on-lines">Working on lines</h2>
 <p><strong>Edit ▸ Lines</strong> is everything that happens to whole
@@ -1709,21 +2117,65 @@ the blank lines before the first line of text and after the last;
 QuillLite has just the one.</p>
 <p>Each one counts as a single undo, so <strong>Ctrl+Z</strong> takes
 back the whole sort rather than putting back one line at a time.</p>
+<h3 id="quoting-wrapping-and-throwing-lines-away">Quoting, wrapping, and
+throwing lines away</h3>
+<p><strong>Ctrl+Shift+Q</strong> puts <code>&gt; </code> in front of the
+lines you have selected, the way an email reply does, and
+<strong>Ctrl+Alt+Shift+Q</strong> takes the marks off again.</p>
+<p><strong>Alt+Shift+W</strong> is <strong>Hard Wrap Lines</strong>. It
+asks for a width and re-flows the lines so none is longer than that,
+keeping paragraphs apart and never breaking a word. This changes the
+document, so it is saved – which is what makes it different from
+<strong>View ▸ Word Wrap</strong>, which only changes what you see.</p>
+<p><strong>Alt+Shift+X</strong> is <strong>Delete Lines
+Containing</strong>. Type what the lines to go have in them – taken
+exactly, not as a pattern – and they are removed. It says how many went,
+and <strong>Ctrl+Z</strong> takes them all back in one step. This is log
+triage, which by ear otherwise means reading the whole file twice.</p>
+<p>All three work on what you have selected, or on the whole document if
+you have selected nothing.</p>
+<h3 id="commenting-lines-out">Commenting lines out</h3>
+<p><strong>Ctrl+/</strong> comments the lines you have selected out, and
+pressing it again brings them back. The prefix comes from the file’s
+name — <code># </code> in a <code>.py</code>, <code>.yml</code>,
+<code>.ini</code> or <code>.conf</code>, <code>-- </code> in a
+<code>.sql</code>, <code>&lt;!-- --&gt;</code> in HTML and Markdown,
+<code>// </code> in anything else — which is the same rule QUILL
+follows, so a file commented in one uncomments in the other. It says how
+many lines it changed.</p>
+<p>An unsaved document gets <code>// </code>, because there is nothing
+else to go on. Save it once under the name you mean and the key gets it
+right from then on.</p>
+<h3 id="tabs-or-spaces">Tabs or spaces</h3>
+<p><strong>Tools ▸ Indenting</strong> has <strong>Convert to
+Spaces</strong> (<strong>Alt+F11</strong>) and <strong>Convert to
+Tabs</strong> (<strong>Alt+F12</strong>), which rewrite the indentation
+at the start of each line without touching anything else. Four spaces to
+a tab. It is the single most common change anybody makes to somebody
+else’s file.</p>
 <h3 id="changing-case">Changing case</h3>
 <p><strong>Tools ▸ Change Case</strong> has five. UPPERCASE
 (<strong>Ctrl+Shift+U</strong>), lowercase
 (<strong>Ctrl+Shift+K</strong>) and Title Case
-(<strong>Ctrl+Shift+G</strong>) are the ones you would expect.
+(<strong>Ctrl+Shift+T</strong>) are the ones you would expect.
 <strong>Sentence case</strong> (<strong>Ctrl+Alt+Shift+U</strong>) puts
 a capital at the start and lowers the rest, which is what a heading
 typed in shouting needs, and <strong>Invert Case</strong>
 (<strong>Ctrl+Alt+Shift+N</strong>) swaps every letter, which is the
 cure for a sentence typed with Caps Lock on.</p>
+<p>All five work on what you have selected. <strong>With nothing
+selected they change the word the cursor is in</strong>, which is what
+Word’s Shift+F3 has always done – and which matters here more than it
+does for a sighted user: a whole document that has changed case reads
+exactly the same out loud, so a chord half-pressed would be a change you
+could not hear.</p>
 <h3 id="getting-deleted-text-back-somewhere-else">Getting deleted text
 back somewhere else</h3>
 <p><strong>Restore Deleted Text</strong>
-(<strong>Ctrl+Alt+Shift+Z</strong>) puts your most recent deletion back
-<strong>at the cursor</strong>, wherever the cursor now is.</p>
+(<strong>Ctrl+Alt+Shift+Z</strong>) puts a recent deletion back
+<strong>at the cursor</strong>, wherever the cursor now is. QuillLite
+remembers the last three, so if what you want is not the last thing you
+deleted it offers a list with a preview of each.</p>
 <p>That is what makes it different from undo, and it is the reason it
 exists. Ctrl+Z puts text back where it came from; this puts it where you
 are now, so deleting a paragraph and restoring it further down is a way
@@ -1771,6 +2223,17 @@ with one keystroke, without first working out which mode you were
 in.</p>
 <p>The status bar’s <strong>Tab Mode</strong> part always says which one
 is on.</p>
+<h3 id="snippets--altshifti">Snippets — Alt+Shift+I</h3>
+<p><strong>Alt+Shift+I</strong> opens <strong>Snippets…</strong>: every
+abbreviation you have, most used first, with a preview of what each one
+writes. Choose one, press Enter, and it goes in at the cursor.</p>
+<p>This is the way in when you cannot remember the trigger.
+Abbreviations expanding as you type is perfect for the six you use every
+day and no help at all for the fortieth one, which you set up in March —
+and a manager is for <em>editing</em> them, not for reaching them.</p>
+<p>It is the same list either way. Anything here expands from its
+trigger too, and anything you add in Manage Abbreviations appears
+here.</p>
 <h3 id="abbreviations">Abbreviations</h3>
 <p>Type a short form, press space, and get the long one. Useful for an
 address, a sign off, or anything you type often and would rather not
@@ -1805,6 +2268,35 @@ is one keystroke to change and QuillLite will not ask again.</p>
 Cast, Weather, Audio Studio, Inkwell, the Converter, the Media Player
 and Beacon.</p>
 <hr />
+<h2 id="closing-a-lot-of-windows-at-once">Closing a lot of windows at
+once</h2>
+<p><strong>Window &gt; Close Other Documents (Ctrl+Shift+F4)</strong>
+keeps the document you are in and closes every other one. QUILL has had
+it since 2026-06; QuillLite has it now too, on the same key, because a
+key you learn in one editor should work in the other.</p>
+<p>If any of those documents has unsaved changes, you are asked about it
+– and the question carries two answers that settle the rest at once:</p>
+<ul>
+<li><strong>Save All</strong> saves this document and every other one
+waiting behind it, without asking again. A document that has never been
+saved still asks you where to put it.</li>
+<li><strong>Don’t Save Any</strong> closes the rest and loses their
+changes, without asking again. There is no undo for that one.</li>
+<li><strong>Save</strong> and <strong>Don’t Save</strong> apply to the
+document in front of you only, and you are asked about the next
+one.</li>
+<li><strong>Cancel</strong> stops the whole thing. Whatever is still
+open stays open, and you are told how many closed before you stopped
+it.</li>
+</ul>
+<p>The question says how many more documents are waiting, so you know at
+the first prompt whether this is one more keystroke or sixty-seven.</p>
+<p><strong>Enter answers Save</strong>, never one of the two that lose
+work. If a save fails – a full disk, a file that has gone read-only –
+the close stops there rather than treating a failed save as permission
+to throw the document away, and “Save All” stops meaning “save all”
+until you say so again.</p>
+<hr />
 <h2 id="changing-what-a-key-does">Changing what a key does</h2>
 <p><strong>Tools ▸ Keyboard Manager</strong>
 (<strong>Ctrl+Alt+Shift+R</strong>) is where every key in QuillLite can
@@ -1825,6 +2317,24 @@ and asks. If you say yes, that command is left with <strong>no
 key</strong> until you give it one – which is the honest outcome,
 because a key claimed twice means one of the pair never fires and
 nothing tells you which.</p>
+<h3 id="when-another-program-has-the-key">When another program has the
+key</h3>
+<p>Some programs claim a key across the whole of Windows – Google Drive
+takes <strong>Ctrl+Alt+G</strong>, and it is not the only one. A key
+claimed that way never reaches QuillLite at all: Windows hands it to the
+program that registered it, even while QuillLite is the window you are
+typing in. The command is not broken and the key is not misassigned; the
+keystroke simply goes somewhere else.</p>
+<p>This used to be invisible, which made it look like a bug in the
+editor. Record a Key now says so – “already claimed by another
+application running on this computer” – and so does the Keyboard Manager
+if you assign a key somebody else has taken. It is a warning rather than
+a refusal: the key may be yours again tomorrow when that program is not
+running, and it is not this editor’s place to forbid a key you chose
+deliberately.</p>
+<p>QuillLite cannot say <em>which</em> program. Windows does not offer
+the owner’s name, and guessing from a list of the usual suspects would
+be wrong the first time you installed something that was not on it.</p>
 <h3 id="what-cannot-be-changed">What cannot be changed</h3>
 <p><strong>Insert is never bindable.</strong> It is the key NVDA and
 JAWS use as their own modifier, and taking it would take away the key
@@ -2096,7 +2606,7 @@ from the box moves straight into the list.</p>
 </tr>
 <tr>
 <td><strong>Copy Tray and the clip library</strong></td>
-<td>Edit ▸ Clipboard (Cut, Copy and Paste stay)</td>
+<td>Edit ▸ Clipboard (Cut, Copy, Paste and Copy All stay)</td>
 <td>on</td>
 </tr>
 <tr>
@@ -2177,6 +2687,65 @@ Endings</strong> stays, because getting a file to save back
 byte-for-byte the way it arrived is most of what a Notepad replacement
 is for.</p>
 <hr />
+<h2 id="reopening-what-you-had-open">Reopening what you had open</h2>
+<p>QuillLite remembers the saved documents you had open and offers them
+back next time. Until September 2026 it simply opened all of them
+without asking, and skipped any whose file had gone without saying so.
+That is right for one document and wrong for four: four windows
+appearing unbidden is four things to identify before you can start, and
+the one you wanted is not necessarily the first.</p>
+<p>So it asks — <strong>when it matters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Last time you had</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>one or two documents, both still there</td>
+<td>they open, as before</td>
+</tr>
+<tr>
+<td>three or more</td>
+<td>you are asked</td>
+</tr>
+<tr>
+<td>any document whose file has moved or gone</td>
+<td>you are asked</td>
+</tr>
+</tbody>
+</table>
+<p>The window lists what was open, one row each, with a checkbox.
+Everything that can be opened starts ticked, so <strong>Enter</strong>
+is “all of it” and unticking two is “not those two”. A row whose file
+has gone says so and cannot be ticked.</p>
+<ul>
+<li><strong>Open Checked</strong> opens the ticked rows and leaves the
+list alone.</li>
+<li><strong>Open All</strong> opens everything still on disk, ticked or
+not.</li>
+<li><strong>Not Now</strong> opens nothing and changes nothing. The same
+documents are offered next time. Escape does the same.</li>
+<li><strong>Forget Checked</strong> takes the ticked rows off the list
+so they stop being offered, and <strong>Clear the List</strong> does it
+to all of them. <strong>Neither touches a file.</strong> Forgetting is
+about what QuillLite offers you, not about what is on your disk, and the
+window says so in a line under the buttons.</li>
+<li><strong>Never Ask Again</strong> opens the ticked documents and
+stops asking from then on. It names the setting it changed, so you can
+find it again.</li>
+</ul>
+<p>Then it tells you what happened — “Reopened all 3 documents”,
+“Reopened 1 of 2”, “Forgot 2 documents. 1 still remembered. The files
+themselves are untouched.” A count is the one thing you cannot go and
+read off the screen.</p>
+<p><strong>File ▸ Reopen Last Session…</strong>
+(<strong>Alt+Shift+F12</strong>) opens the same window whenever you want
+it. That is what makes Not Now safe to press: the answer is put off
+rather than lost, and a list that needs tidying can be tidied without
+waiting for a restart. QUILL has the same window on the same key.</p>
 <h2 id="settings">Settings</h2>
 <p><strong>Tools ▸ Preferences</strong> (<strong>Ctrl+,</strong>) has
 everything in one place.</p>
@@ -2185,6 +2754,10 @@ whether you start with a blank document at all, how often unsaved work
 is copied aside, whether last session’s documents reopen, whether
 spelling is checked as you type, and whether your abbreviations and your
 taught words are shared with QUILL for All.</p>
+<p><strong>Whether reopening asks first</strong> is there too, with
+three answers: always ask, ask when it matters, or never ask and just
+reopen. See <a href="#reopening-what-you-had-open">Reopening what you
+had open</a>.</p>
 <p><strong>Start with a blank document</strong> is on, the way Notepad
 and WordPad do it. Turn it off if you always open an existing file:
 without it you are handed an empty Untitled to close on every launch.
@@ -2203,14 +2776,31 @@ somebody.</p>
 <hr />
 <h2 id="printing">Printing</h2>
 <p><strong>Ctrl+P</strong> prints. <strong>Ctrl+Alt+P</strong> is Page
-Setup.</p>
+Setup, and what you set there — paper size, orientation and all four
+margins — is remembered for next time.</p>
 <p>Long lines are wrapped to fit the page whatever your Word Wrap
 setting says, because a printed line that runs off the edge of the paper
 is simply gone.</p>
-<p><strong>In this version, rich formatting does not print.</strong>
-Your text prints in the editor’s font, with headings marked rather than
-styled. We would rather tell you that here than have you find it on
-paper.</p>
+<p><strong>Rich text prints as rich text.</strong> A rich document is
+printed by the editor itself, so a heading arrives on paper as a heading
+and a bold word arrives bold. This was not true before version 1.0:
+everything printed flat, in one size.</p>
+<p>A plain text or Markdown document prints as it reads, which is the
+right answer — a Markdown heading already carries its own <code>#</code>
+onto the page.</p>
+<h3 id="print-preview--ctrlaltshiftp">Print Preview… —
+Ctrl+Alt+Shift+P</h3>
+<p>Not a picture of a page. A picture of a page is the one kind of
+preview that answers nothing at all if you cannot see it, which is why
+WordPad’s and Word’s have never been much use here.</p>
+<p>This one answers the questions you actually have: <strong>how many
+pages</strong>, on what paper, with what margins — and then, page by
+page, what is at the top of each one. “Page 3 of 7: Installing” is how
+you find out whether the section you care about starts where you wanted
+it to, without printing anything.</p>
+<p>The page count is worked out against your real printer, using the
+same measurements the print itself uses, so the number here is the
+number that comes out.</p>
 <hr />
 <h2 id="speech">Speech</h2>
 <p>QuillLite talks through <strong>NVDA or JAWS</strong>, and nothing
@@ -2225,6 +2815,14 @@ bold went on, that four things were replaced.</p>
 so <strong>F6</strong> will bring back a message you missed.</p>
 <p>If you have no screen reader running, QuillLite says nothing out loud
 — but every message is still there in the status bar.</p>
+<h3 id="if-it-says-too-much">If it says too much</h3>
+<p>Holding a key down can make QuillLite speak faster than anybody can
+listen. <strong>Preferences ▸ Shortest gap between spoken
+messages</strong> sets a floor, in milliseconds: anything it would say
+too soon after the last thing it said is dropped. Zero, the default,
+says everything as it happens. Nothing is lost by turning it up — the
+status bar is written either way, and <strong>F6</strong> reads it
+back.</p>
 <hr />
 <h2 id="where-your-files-are-kept">Where your files are kept</h2>
 <p>Your settings, recent files, copy tray and any recovered work are
@@ -2293,6 +2891,29 @@ comparing two documents, publishing or braille tools, those are QUILL,
 and QuillLite is built so that it will not slowly grow into them.</p>
 <p>Both are free, both are built for screen reader users, and they
 install perfectly happily side by side.</p>
+<p><strong>And they can share what you have built up.</strong> QuillLite
+keeps its own settings folder on purpose — an editor this size should
+not quietly adopt a writing environment’s preferences, and uninstalling
+it should never cost you something QUILL owns. But the things you
+<em>accumulate</em> are worth having in one place, so each is an opt-in
+switch rather than a default:</p>
+<ul>
+<li><strong>Preferences ▸ Share QUILL’s abbreviations</strong> and
+<strong>Share QUILL’s personal dictionary</strong> point QuillLite at
+QUILL’s copy, so a short form you add or a word you teach in either
+editor is there in both.</li>
+<li>From QUILL’s side, <strong>Tools ▸ Customize and Support ▸ Bring My
+QuillLite Settings…</strong> does the whole thing in one step: it merges
+your QuillLite abbreviations, dictionary, copy tray, clip library and
+bookmarks into QUILL, turns those switches on for you, and copies your
+preferences and rebound keys across once. Nothing already in QUILL is
+replaced, and nothing in QuillLite is removed.</li>
+</ul>
+<p>QUILL also has a <strong>QuillLite profile</strong> now (Preferences
+▸ Profiles and Features), which makes QUILL show these nine menus and
+nothing else — including making Ctrl+N a plain text document, the way it
+does here. It is there for the day you want one of QUILL’s tools without
+giving up the shape you are used to.</p>
 <hr />
 <h2 id="every-key-in-one-table">Every key, in one table</h2>
 <!-- keys:start -->
@@ -2314,7 +2935,7 @@ list inside the app.</p>
 <td>New</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Shift+N</strong></td>
+<td><strong>Alt+Shift+T</strong></td>
 <td>New Rich Text Document</td>
 </tr>
 <tr>
@@ -2338,8 +2959,16 @@ list inside the app.</p>
 <td>Earlier Versions…</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+F12</strong></td>
+<td>Reopen Last Session…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+P</strong></td>
 <td>Page Setup…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+P</strong></td>
+<td>Print Preview…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+P</strong></td>
@@ -2348,6 +2977,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+W</strong></td>
 <td>Close Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F4</strong></td>
+<td>Close Window (MDI)</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Q</strong></td>
@@ -2397,6 +3030,10 @@ list inside the app.</p>
 <td>Select All</td>
 </tr>
 <tr>
+<td><strong>Ctrl+F8</strong></td>
+<td>Copy All</td>
+</tr>
+<tr>
 <td><strong>Ctrl+F</strong></td>
 <td>Find…</td>
 </tr>
@@ -2414,7 +3051,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+G</strong></td>
-<td>Go to Line…</td>
+<td>Go To…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+C</strong></td>
@@ -2519,6 +3156,26 @@ list inside the app.</p>
 <td>Trim Trailing Spaces</td>
 </tr>
 <tr>
+<td><strong>Ctrl+/</strong></td>
+<td>Toggle Line Comment</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Q</strong></td>
+<td>Quote Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Q</strong></td>
+<td>Remove Quote Marks</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+X</strong></td>
+<td>Delete Lines Containing…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+W</strong></td>
+<td>Hard Wrap Lines…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+T</strong></td>
 <td>Tidy Whitespace</td>
 </tr>
@@ -2551,6 +3208,10 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F8</strong></td>
+<td>Toggle Selection Marker</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F9</strong></td>
 <td>Extend Selection Mode</td>
 </tr>
 <tr>
@@ -2586,7 +3247,7 @@ list inside the app.</p>
 <td>Unselect All</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+Shift+K</strong></td>
+<td><strong>Ctrl+Shift+M</strong></td>
 <td>Set Mark</td>
 </tr>
 <tr>
@@ -2604,6 +3265,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+Y</strong></td>
 <td>Say Selection</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+U</strong></td>
+<td>Review Buffer…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Q</strong></td>
@@ -2625,6 +3290,10 @@ list inside the app.</p>
 <td>Copy to Tray</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+Y</strong></td>
+<td>Copy to Tray Slot…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+V</strong></td>
 <td>Paste from Tray…</td>
 </tr>
@@ -2633,7 +3302,7 @@ list inside the app.</p>
 <td>Clear Copy Tray</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+G</strong></td>
+<td><strong>Alt+Shift+S</strong></td>
 <td>Collect Selection</td>
 </tr>
 <tr>
@@ -2704,8 +3373,12 @@ list inside the app.</p>
 <td>Reset Text Size</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+W</strong></td>
+<td><strong>Ctrl+Shift+G</strong></td>
 <td>Document Statistics</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+W</strong></td>
+<td>Line Statistics</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+P</strong></td>
@@ -2737,6 +3410,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Shift+Enter</strong></td>
 <td>Line Break</td>
+</tr>
+<tr>
+<td><strong>Ctrl+K</strong></td>
+<td>Link…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+I</strong></td>
@@ -2795,7 +3472,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+L</strong></td>
-<td>Bullets</td>
+<td>Lists</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F</strong></td>
@@ -2806,11 +3483,15 @@ list inside the app.</p>
 <td>Font for Selection…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>Normal Text</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Shift+D</strong></td>
 <td>Describe Formatting at Cursor</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Shift+M</strong></td>
+<td><strong>Alt+Shift+F</strong></td>
 <td>Switch Document Mode</td>
 </tr>
 <tr>
@@ -2906,6 +3587,10 @@ list inside the app.</p>
 <td><strong>Alt+Shift+Down</strong></td>
 <td>Move Section Down</td>
 </tr>
+<tr>
+<td><strong>Alt+Shift+O</strong></td>
+<td>Heading Organizer…</td>
+</tr>
 </tbody>
 </table>
 <h3 id="navigate">Navigate</h3>
@@ -2936,6 +3621,22 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+L</strong></td>
 <td>List Headings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F9</strong></td>
+<td>Fold or Unfold Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Down</strong></td>
+<td>Next Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Up</strong></td>
+<td>Previous Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F10</strong></td>
+<td>Unfold Everything</td>
 </tr>
 <tr>
 <td><strong>F6</strong></td>
@@ -2975,6 +3676,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+B</strong></td>
 <td>Clear All Bookmarks</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+J</strong></td>
+<td>Set Temporary Bookmark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+J</strong></td>
+<td>Go to Temporary Bookmark</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+1</strong></td>
@@ -3028,6 +3737,10 @@ list inside the app.</p>
 <td>File Encoding and Line Endings…</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+I</strong></td>
+<td>Snippets…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+A</strong></td>
 <td>Manage Abbreviations…</td>
 </tr>
@@ -3040,15 +3753,15 @@ list inside the app.</p>
 <td>Preferences…</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+Shift+Q</strong></td>
+<td><strong>Ctrl+Alt+F11</strong></td>
 <td>Back Up Settings…</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+Shift+D</strong></td>
+<td><strong>Ctrl+Alt+F12</strong></td>
 <td>Restore Settings…</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Alt+Shift+F</strong></td>
+<td><strong>Ctrl+Alt+F10</strong></td>
 <td>Customize Features…</td>
 </tr>
 <tr>
@@ -3071,8 +3784,12 @@ list inside the app.</p>
 <td>Check Spelling…</td>
 </tr>
 <tr>
-<td><strong>Shift+F7</strong></td>
+<td><strong>Alt+Shift+F7</strong></td>
 <td>Spelling for This Word</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+L</strong></td>
+<td>List Misspellings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+F7</strong></td>
@@ -3083,7 +3800,7 @@ list inside the app.</p>
 <td>Previous Misspelling</td>
 </tr>
 <tr>
-<td><strong>Alt+F7</strong></td>
+<td><strong>Ctrl+Alt+F9</strong></td>
 <td>Add Word to Dictionary</td>
 </tr>
 <tr>
@@ -3133,7 +3850,7 @@ list inside the app.</p>
 <td>lowercase</td>
 </tr>
 <tr>
-<td><strong>Ctrl+Shift+G</strong></td>
+<td><strong>Ctrl+Shift+T</strong></td>
 <td>Title Case</td>
 </tr>
 <tr>
@@ -3167,6 +3884,14 @@ list inside the app.</p>
 <td><strong>Ctrl+Alt+Shift+V</strong></td>
 <td>Describe Indent Depth</td>
 </tr>
+<tr>
+<td><strong>Alt+F11</strong></td>
+<td>Convert to Spaces</td>
+</tr>
+<tr>
+<td><strong>Alt+F12</strong></td>
+<td>Convert to Tabs</td>
+</tr>
 </tbody>
 </table>
 <h3 id="window">Window</h3>
@@ -3190,6 +3915,10 @@ list inside the app.</p>
 <td><strong>Ctrl+Shift+Tab</strong></td>
 <td>Previous Window</td>
 </tr>
+<tr>
+<td><strong>Ctrl+Shift+F4</strong></td>
+<td>Close Other Documents</td>
+</tr>
 </tbody>
 </table>
 <h3 id="help">Help</h3>
@@ -3204,6 +3933,10 @@ list inside the app.</p>
 <tr>
 <td><strong>F1</strong></td>
 <td>Help for This Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F1</strong></td>
+<td>Tutorials…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+F1</strong></td>

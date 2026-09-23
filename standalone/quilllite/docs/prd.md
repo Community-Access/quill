@@ -969,7 +969,7 @@ oversight:
 - `standalone/quilllite/tests/repro_tom_true.py` and `probe_live.py` against a
   real `RICHEDIT50W` in a Windows desktop session (manual).
 - A JAWS and NVDA pass by hand, against
-  [`docs/qa/quilllite-signoff.md`](../../../docs/qa/quilllite-signoff.md) -- 80
+  [`docs/qa/quilllite-signoff.md`](https://github.com/Community-Access/quill/blob/main/docs/qa/quilllite-signoff.md) -- 80
   numbered steps, each saying what to press and what decides pass or fail, with
   a fifteen-minute subset named at the top. Matching Studio (#839) and Inkwell,
   this is **not** required for the change to merge but **is** required for the

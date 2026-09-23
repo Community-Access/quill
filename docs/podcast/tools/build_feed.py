@@ -185,7 +185,18 @@ def main() -> int:
         durations = json.loads(durations_path.read_text(encoding="utf-8"))
 
     SITE_DIR.mkdir(parents=True, exist_ok=True)
-    (SITE_DIR / "transcripts").mkdir(exist_ok=True)
+    transcripts_dir = SITE_DIR / "transcripts"
+    transcripts_dir.mkdir(exist_ok=True)
+
+    # Prune transcripts for episodes that no longer exist. The 36-episode to
+    # 54-episode renumbering left 32 stale pages live on the site, each linking
+    # an MP3 slug absent from the release -- a build that only ever adds cannot
+    # notice a rename, so removal has to be part of the build.
+    current_slugs = {episode["slug"] for episode in episodes}
+    for stale in sorted(transcripts_dir.glob("*.html")):
+        if stale.stem not in current_slugs:
+            stale.unlink()
+            print(f"Pruned stale transcript {stale.relative_to(REPO_ROOT)}")
 
     items: list[str] = []
     index_rows: list[tuple[int, str]] = []
@@ -227,7 +238,9 @@ def main() -> int:
             "</li>",
         ))
         (SITE_DIR / "transcripts" / f"{slug}.html").write_text(
-            _transcript_html(slug, title, show["title"], audio_url), encoding="utf-8"
+            _transcript_html(slug, title, show["title"], audio_url),
+            encoding="utf-8",
+            newline="\n",
         )
 
     feed = (
@@ -253,7 +266,7 @@ def main() -> int:
         + "\n".join(items)
         + "\n  </channel>\n</rss>\n"
     )
-    (SITE_DIR / "feed.xml").write_text(feed, encoding="utf-8")
+    (SITE_DIR / "feed.xml").write_text(feed, encoding="utf-8", newline="\n")
 
     total_minutes = round(sum(durations.values()) / 60) if durations else 0
     sections: list[str] = []
@@ -295,7 +308,7 @@ def main() -> int:
         "</section>\n" + "\n".join(sections)
     )
     (SITE_DIR / "index.html").write_text(
-        _page_shell(show["title"], body, depth=0), encoding="utf-8"
+        _page_shell(show["title"], body, depth=0), encoding="utf-8", newline="\n"
     )
 
     print(f"Wrote {SITE_DIR / 'feed.xml'}")

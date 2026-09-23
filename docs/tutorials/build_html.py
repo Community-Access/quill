@@ -33,6 +33,17 @@ def main() -> int:
         target = SITE_DIR / (
             "index.html" if source.name == "README.md" else source.with_suffix(".html").name
         )
+        # Title from the document's own H1, not the filename: a screen reader
+        # announces the title on every tab switch, and "09-internet-radio" is
+        # read as a hyphenated slug.
+        h1 = next(
+            (
+                match.group(1)
+                for line in source.read_text(encoding="utf-8").splitlines()
+                if (match := re.match(r"^#\s+(.+?)\s*$", line))
+            ),
+            source.stem,
+        )
         html = subprocess.run(
             [
                 pandoc,
@@ -47,7 +58,7 @@ def main() -> int:
                 "--metadata",
                 "lang=en",
                 "--metadata",
-                f"pagetitle=QUILL Tutorials - {source.stem}",
+                f"pagetitle=QUILL Tutorials - {h1}",
             ],
             capture_output=True,
             encoding="utf-8",
@@ -72,7 +83,9 @@ def main() -> int:
         html = html.replace('href="../user%20guide/userguide.md"', 'href="../docs.html"').replace(
             'href="../podcast/README.md"', 'href="../podcast/index.html"'
         )
-        target.write_text(html, encoding="utf-8")
+        # LF explicitly: the committed pages are LF and core.autocrlf is off,
+        # so the platform default (CRLF here) would rewrite every line.
+        target.write_text(html, encoding="utf-8", newline="\n")
         print(f"wrote {target.relative_to(REPO_ROOT)}")
     print(f"{len(sources)} tutorial pages published.")
     return 0
