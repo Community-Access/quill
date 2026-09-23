@@ -19,7 +19,7 @@ from typing import Any
 
 import wx
 
-from quill.apps.lite_ai_dialogs import _PAD, _close_row, _read_only
+from quill.apps.lite_ai_dialogs import _PAD, _close_row, _read_only, focus_on
 from quill.core.ai import gateway_context as ctx
 from quill.ui.accessible_names import set_accessible_name
 
@@ -157,7 +157,7 @@ class AiResultFrame(wx.Frame):
         # Focus lands on the answer, so the reader reads it. Nothing is
         # announced on top of that (GATE-13): the window title and the focused
         # field are both things it already says.
-        body.SetFocus()
+        focus_on(self, body)
 
     def _apply(self, action: Callable[[str], None], said: str) -> None:
         action(self._text)
@@ -278,7 +278,7 @@ class AiPadFrame(wx.Frame):
         self.Centre()
         # Focus on the preview: the reader reads it, which is what somebody
         # wants to hear first, and nothing is announced on top (GATE-13).
-        self._preview.SetFocus()
+        focus_on(self, self._preview)
 
     # -- state ------------------------------------------------------------ #
 

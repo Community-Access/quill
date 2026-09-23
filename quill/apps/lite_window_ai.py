@@ -102,13 +102,11 @@ class DocumentAiMixin:
         three read and write the same stored version, so none of them can
         disagree with the others.
         """
-        if not self.app.feature_enabled("hosted_ai"):
-            self._announce("AI help is switched off. Turn it on in Tools, Customize Features.")
-            return
         if self._ai_privacy_accepted():
             self._withdraw_ai_privacy()
             return
-        self._ask_ai_privacy()
+        if self._ask_ai_privacy():
+            self._light_up_ai()
 
     # ------------------------------------------------------------------ #
     # The agreement
@@ -134,6 +132,23 @@ class DocumentAiMixin:
         self.app.settings.ai_privacy_accepted_version = AGREEMENT_VERSION
         self.app.save_settings()
         return True
+
+    def _light_up_ai(self) -> None:
+        """Switch the area on, because accepting here means accepting here.
+
+        Whichever of the three doors somebody came through, saying yes should
+        leave them with a working feature. Arriving at the agreement from a menu
+        that is visible while the area is off -- and it is visible, deliberately --
+        and then being told to go and find a second switch would be a yes that
+        did nothing.
+        """
+        features = getattr(self.app, "features", None)
+        if features is None or self.app.feature_enabled("hosted_ai"):
+            return
+        features.set_enabled("hosted_ai", True)
+        self.app.save_features()
+        self.app.rebuild_all_menus()
+        self._announce("AI help is on. Choose Tools, AI, Sign In or Out to connect this computer.")
 
     def _withdraw_ai_privacy(self) -> None:
         """Take the agreement back, and the sign-in with it.
@@ -190,8 +205,29 @@ class DocumentAiMixin:
         return True
 
     def _show_ai_window(self, frame: wx.Frame) -> None:
+        """Show a window and actually give it focus.
+
+        The focus half is deferred to the next idle cycle rather than done here,
+        because wx has not finished realising the window yet -- and a frame
+        parented to an MDI child is not activated by ``Show()`` the way a dialog
+        is. Without it the window appears, the caret stays in the document, and
+        a screen-reader user is told nothing at all about the thing that just
+        opened.
+        """
+        from quill.apps.lite_ai_dialogs import take_focus
+
         frame.Show()
         frame.Raise()
+        self._last_shown_ai_window = frame
+        # Deferred through CallAfter when there is a running app, and called
+        # straight through when there is not. ``wx.CallAfter`` *asserts* without
+        # one rather than degrading, so the guard is not a test accommodation:
+        # it is the difference between a missed focus and a crash in any context
+        # that has a window but no loop yet.
+        if wx.GetApp() is not None:
+            wx.CallAfter(take_focus, frame)
+        else:
+            take_focus(frame)
 
     def _open_ai_pad(self, action: str = "") -> None:
         if not self._ai_ready():

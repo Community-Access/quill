@@ -34,6 +34,9 @@ class _FakeFrame:
     def Raise(self):  # noqa: N802 - wx API shape
         pass
 
+    def SetFocus(self):  # noqa: N802 - wx API shape
+        self.focused = True
+
 
 @pytest.fixture
 def ai_frames(monkeypatch):
@@ -498,3 +501,123 @@ def test_the_agreement_says_what_is_sent_and_what_is_kept():
     # And it always says how to say no.
     assert "If you would rather not" in text
     assert "OpenAI" in SUMMARY
+
+
+# --------------------------------------------------------------------------- #
+# Focus, and the door that is always open
+# --------------------------------------------------------------------------- #
+
+
+def test_every_ai_window_says_where_focus_should_land(lite_window, monkeypatch, signed_in):
+    """Reported from actually running it: the Sign In window did not take focus.
+
+    The cause was ``SetFocus()`` in a constructor. On wxMSW focus given to a
+    control in a window that has not been shown yet is discarded when the window
+    finally is -- so every one of those calls was silently doing nothing. The
+    other dialogs in QuillLite get away with it because they are ``wx.Dialog``s,
+    which ``Show()`` activates; these are ``wx.Frame``s parented to an MDI child,
+    which it does not.
+    """
+    from quill.apps.lite_ai_dialogs import focus_on
+
+    class Frame:
+        pass
+
+    class Control:
+        pass
+
+    frame, control = Frame(), Control()
+    focus_on(frame, control)
+    assert frame._focus_target is control
+
+
+def test_showing_a_window_actually_gives_it_focus(lite_window, ai_frames, monkeypatch, signed_in):
+    """The outcome, not the mechanism.
+
+    An earlier version of this asserted that ``wx.CallAfter`` was used, which is
+    a detail that changed the moment the no-running-app path was added. What has
+    to stay true is that the window somebody opened ends up with focus -- the
+    thing that was broken.
+    """
+    win = lite_window("some text")
+    monkeypatch.setattr(win, "_ai_service", lambda: signed_in)
+
+    (lambda w: w.cmd_ai_assistant())(win)
+
+    pad = ai_frames["AiPadFrame"].last
+    assert pad is not None
+    # _show_ai_window keeps the instance it showed; the recorder only keeps the
+    # construction, so reach for the frame through the call it made.
+    assert getattr(win, "_last_shown_ai_window", None) is not None
+    assert win._last_shown_ai_window.focused is True
+
+
+def test_taking_focus_survives_a_window_closed_in_the_meantime(lite_window):
+    """A user can close a window between Show() and the next idle cycle, and a
+    focus call into a destroyed control is a crash rather than a missed focus."""
+    from quill.apps.lite_ai_dialogs import take_focus
+
+    class Gone:
+        def __bool__(self):
+            return False
+
+    take_focus(Gone())  # must not raise
+
+
+def test_the_privacy_agreement_is_reachable_with_the_feature_switched_off():
+    """Reported: the privacy option should work whether or not AI is enabled.
+
+    A consent control that disappears along with the feature it governs is a
+    consent control you cannot withdraw from -- and somebody has to be able to
+    read what they would be agreeing to *before* agreeing to it.
+    """
+    from quill.core.lite.command_areas import visible_commands
+
+    off = visible_commands(lambda area: area != "hosted_ai")
+    rows = [row for row in off if row[0] == "&Tools|&AI"]
+    assert [row[3] for row in rows] == ["cmd_ai_privacy"]
+    # And the submenu that holds it survives with it.
+    assert any(row[4] == "sub" and row[1] == "&AI" for row in off)
+
+
+def test_the_privacy_command_runs_with_the_feature_switched_off(
+    lite_window, agreement, monkeypatch
+):
+    c = lite_window("text")
+    monkeypatch.setattr(c.app, "feature_enabled", lambda area: area != "hosted_ai")
+    c.app.settings.ai_privacy_accepted_version = 0
+
+    (lambda w: w.cmd_ai_privacy())(c)
+
+    assert agreement["shown"] == 1
+
+
+def test_accepting_from_the_privacy_command_switches_the_feature_on(
+    lite_window, agreement, monkeypatch
+):
+    """Whichever door you came through, saying yes leaves you with a working
+    feature. Being sent to find a second switch would be a yes that did
+    nothing."""
+    from quill.core.ai.gateway_privacy import AGREEMENT_VERSION
+
+    class Features:
+        def __init__(self):
+            self.disabled = {"hosted_ai"}
+
+        def is_enabled(self, area):
+            return area not in self.disabled
+
+        def set_enabled(self, area, enabled):
+            self.disabled.discard(area) if enabled else self.disabled.add(area)
+
+    win = lite_window("text")
+    win.app.features = Features()
+    monkeypatch.setattr(win.app, "feature_enabled", lambda a: win.app.features.is_enabled(a))
+    win.app.settings.ai_privacy_accepted_version = 0
+    agreement["answer"] = True
+
+    (lambda w: w.cmd_ai_privacy())(win)
+
+    assert win.app.settings.ai_privacy_accepted_version == AGREEMENT_VERSION
+    assert win.app.features.is_enabled("hosted_ai") is True
+    assert any("AI help is on" in said for said in win.announcements)

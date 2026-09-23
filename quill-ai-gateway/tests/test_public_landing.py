@@ -140,7 +140,9 @@ def test_a_paused_service_says_so_at_the_top(app, client, db):
     html = client.get("/").get_data(as_text=True)
     assert "paused right now" in html
     assert "We are looking into unusual activity." in html
-    assert 'role="alert"' in html
+    # Unmissable by position rather than by a live region -- see
+    # test_the_page_does_not_announce_its_own_arrival.
+    assert html.index("paused right now") < html.index("What it does")
     # And it says what still works, so it is not a dead end.
     assert "own API key" in html
 
@@ -165,6 +167,87 @@ def test_the_page_has_the_structure_a_screen_reader_navigates_by(busy):
     assert html.count("<h2") >= 5  # headings to jump between
     assert "<caption>" in html
     assert 'lang="en"' in html
+
+
+def test_the_page_does_not_bury_itself_in_landmarks(busy):
+    """Regression. This shipped with seven named <section>s.
+
+    A <section> with an accessible name is a *region* landmark, so that was nine
+    landmarks on a page holding one article's worth of prose -- and somebody
+    rotoring through them has to walk past all nine to find anything. The
+    headings already give that navigation and give it better, because a heading
+    list says what each part is about.
+
+    Two landmarks is the whole budget here: where the content is, and the footer.
+    """
+    html = busy.get("/").get_data(as_text=True)
+    assert "aria-labelledby" not in html
+    assert "aria-label" not in html
+    assert html.count("<main") == 1
+    assert html.count("<footer") == 1
+    assert html.count("<nav") == 0
+
+
+def test_the_page_does_not_announce_its_own_arrival(app, client, db):
+    """A live region announces a *change*. The paused banner is the state of the
+    service when somebody arrived, reached by reading -- firing a live region for
+    it competes with the screen reader's own announcement of the page, which is
+    the same over-announcing GATE-13 catches on the desktop side."""
+    from app.models import FeatureFlag
+
+    seed_default_model(db.session)
+    db.session.add(FeatureFlag(feature="hosted_ai", enabled=False, disabled_reason="Maintenance."))
+    db.session.commit()
+
+    html = client.get("/").get_data(as_text=True)
+    assert 'role="alert"' not in html
+    assert 'role="status"' not in html
+    # Still unmissable, by position and by wording rather than by a live region.
+    assert html.index("paused right now") < html.index("What it does")
+
+
+def test_the_paused_state_is_not_conveyed_by_colour_alone(app, client, db):
+    """WCAG 1.4.1. The banner is styled red; the sentence has to carry it."""
+    from app.models import FeatureFlag
+
+    seed_default_model(db.session)
+    db.session.add(FeatureFlag(feature="hosted_ai", enabled=False, disabled_reason="Maintenance."))
+    db.session.commit()
+
+    html = client.get("/").get_data(as_text=True)
+    assert "<strong>The free AI is paused right now.</strong>" in html
+
+
+def test_every_link_says_where_it_goes(busy):
+    """WCAG 2.4.4. No "click here", no bare URLs read out character by
+    character."""
+    import re
+
+    html = busy.get("/").get_data(as_text=True)
+    for text in re.findall(r"<a [^>]*>(.*?)</a>", html, re.S):
+        words = re.sub(r"<[^>]+>", " ", text).strip()
+        assert words, "a link with no text in it"
+        assert words.lower() not in {"here", "click here", "read more", "more", "link"}
+
+
+def test_the_heading_order_never_skips_a_level(busy):
+    """WCAG 1.3.1. A jump from h1 to h3 tells a listener a level exists that
+    does not."""
+    import re
+
+    html = busy.get("/").get_data(as_text=True)
+    levels = [int(m) for m in re.findall(r"<h([1-6])[ >]", html)]
+    assert levels[0] == 1
+    for previous, current in zip(levels, levels[1:], strict=False):
+        assert current <= previous + 1
+
+
+def test_the_page_carries_its_own_title_and_language(busy):
+    """WCAG 2.4.2 and 3.1.1 -- the two a screen reader uses before anything
+    else on the page is read at all."""
+    html = busy.get("/").get_data(as_text=True)
+    assert "<title>QUILL AI" in html
+    assert '<html lang="en">' in html
 
 
 def test_the_figures_are_cached_so_the_page_cannot_hammer_the_database(app, busy, db):

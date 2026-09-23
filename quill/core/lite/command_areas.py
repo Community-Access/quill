@@ -162,6 +162,17 @@ COMMAND_AREA: dict[str, str] = {
     # would only ever be able to say "no earlier versions".
     "cmd_browse_backups": "backups",
 }
+# Always present, even with the AI area switched off -- the one row in that
+# submenu that is not gated by it. Somebody has to be able to read what they
+# would be agreeing to *before* agreeing, and somebody who has switched the area
+# off has to be able to check what they once agreed to and take it back. A
+# consent control that disappears with the feature it governs is a consent
+# control you cannot withdraw from.
+#
+# Membership with "" rather than absence: absence would fall through to
+# MENU_AREA and be hidden with the rest of the submenu.
+COMMAND_AREA["cmd_ai_privacy"] = ""
+
 COMMAND_AREA.update({f"cmd_set_bookmark_{n}": "bookmarks" for n in range(1, 10)})
 
 

@@ -36,9 +36,52 @@ import wx
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
-__all__ = ["AiSignInFrame", "AiUsageFrame", "ask_ai_privacy_agreement"]
+__all__ = [
+    "AiSignInFrame",
+    "AiUsageFrame",
+    "ask_ai_privacy_agreement",
+    "focus_on",
+    "take_focus",
+]
 
 _PAD = 8
+
+
+def focus_on(frame: wx.Frame, control: wx.Window) -> None:
+    """Remember which control should have focus once *frame* is on screen.
+
+    Setting it now would not stick. On wxMSW focus given to a control in a
+    window that has not been shown yet is discarded when the window finally is,
+    so every ``SetFocus()`` in a constructor here was silently doing nothing --
+    which is exactly what "the Sign In window did not take focus" looked like
+    from the outside.
+
+    The other windows in this family get away with the same mistake because
+    they are ``wx.Dialog``s, and showing a dialog activates it. These are
+    ``wx.Frame``s parented to an MDI child, and a child frame is not activated
+    by ``Show()``.
+    """
+    frame._focus_target = control  # noqa: SLF001 - one family, one attribute
+
+
+def take_focus(frame: wx.Frame) -> None:
+    """Bring *frame* forward and put focus where :func:`focus_on` asked.
+
+    Called through ``wx.CallAfter`` once the window is shown, so it runs after
+    wx has finished realising it. Guarded throughout: the user can close a
+    window between ``Show()`` and the next idle cycle, and a focus call into a
+    destroyed control is a crash rather than a missed focus.
+    """
+    try:
+        if not frame:
+            return
+        frame.Raise()
+        frame.SetFocus()
+        target = getattr(frame, "_focus_target", None)
+        if target:
+            target.SetFocus()
+    except RuntimeError:  # the wx object went away while we waited
+        pass
 
 
 def _frame(parent: wx.Window, title: str) -> wx.Frame:
@@ -149,7 +192,7 @@ class AiSignInFrame(wx.Frame):
         show.Bind(wx.EVT_BUTTON, self._on_show_code)
         _close_row(self, self._sizer, show)
         self._panel.Layout()
-        body.SetFocus()
+        focus_on(self, body)
 
     # -- step 2: the code -------------------------------------------------- #
 
@@ -191,7 +234,8 @@ class AiSignInFrame(wx.Frame):
         copy.Bind(wx.EVT_BUTTON, lambda _e: self._copy(code.user_code))
         _close_row(self, self._sizer, say, copy)
         panel.Layout()
-        field.SetFocus()
+        focus_on(self, field)
+        take_focus(self)
         # The content changed under a window that is already open, which the
         # reader does not announce. Say the code rather than "ready": the code
         # is the thing they need, and they are about to type it elsewhere.
@@ -226,7 +270,8 @@ class AiSignInFrame(wx.Frame):
         )
         close = _close_row(self, self._sizer)
         panel.Layout()
-        close.SetFocus()
+        focus_on(self, close)
+        take_focus(self)
         if not already:
             self._announce(f"Connected. Your support ID is {support_id}.")
 
@@ -395,8 +440,10 @@ def ask_ai_privacy_agreement(parent: wx.Window, announce: Callable[[str], None])
     dialog.Centre()
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     # Focus the text, not the button: the reader then reads the agreement rather
-    # than announcing "I Agree" to somebody who has not heard it yet.
-    body.SetFocus()
+    # than announcing "I Agree" to somebody who has not heard it yet. Deferred,
+    # because ShowModal is what puts the dialog on screen -- setting focus before
+    # it is the same mistake focus_on() exists to prevent.
+    wx.CallAfter(body.SetFocus)
 
     try:
         accepted = dialog.ShowModal() == wx.ID_OK
