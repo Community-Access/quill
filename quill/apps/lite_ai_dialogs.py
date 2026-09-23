@@ -1,0 +1,411 @@
+"""The four windows QuillLite's hosted AI is reached through.
+
+All four are **modeless** ``wx.Frame``s, and that is the decision the rest of
+this module follows from. A modal dialog blocks the editor, and an editor that
+stops accepting keystrokes because a server is thinking has lost the thing it is
+for. So somebody can ask for a summary and keep typing, save, switch documents,
+or close the pad while the answer is on its way.
+
+Being a frame rather than a dialog costs two things that have to be paid back by
+hand, and both have bitten this family before:
+
+* **A frame does not answer ``ID_CANCEL``.** A Close button wired to nothing
+  still *works* in a ``wx.Dialog`` and silently does nothing in a ``wx.Frame`` --
+  which is exactly how four of Quill Radio's converted windows shipped with a
+  button that looked like the way out and was not. Every Close here goes through
+  :func:`~quill.ui.dialog_contract.bind_close_button`.
+* **Nothing may be shown modally from a close handler.** ``ShowModal`` inside
+  ``EVT_CLOSE`` on wxMSW is what made Alt+F4 do nothing in Radio while playing.
+  So closing the pad discards whatever was in it. No "are you sure", ever.
+
+What each window announces, and what it deliberately does not, is GATE-13
+applied one surface at a time: the screen reader already says a window's title,
+the control that has focus and the text of a field that just received it, so
+none of that is repeated here. What is announced is what the reader cannot
+know -- an outcome, a state change on something that does not have focus, and a
+result that arrived while the person was somewhere else entirely.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable
+from typing import Any
+
+import wx
+
+from quill.ui.accessible_names import set_accessible_name
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+
+__all__ = ["AiSignInFrame", "AiUsageFrame", "ask_ai_privacy_agreement"]
+
+_PAD = 8
+
+
+def _frame(parent: wx.Window, title: str) -> wx.Frame:
+    return wx.Frame(
+        parent,
+        title=title,
+        style=wx.DEFAULT_FRAME_STYLE & ~(wx.MAXIMIZE_BOX | wx.RESIZE_BORDER) | wx.RESIZE_BORDER,
+    )
+
+
+def _read_only(parent: wx.Window, sizer: wx.Sizer, label: str, value: str, help_text: str):
+    """A labelled, read-only, multi-line field.
+
+    Read-only but **not** a static label, and the difference matters: a text
+    control can be arrowed through character by character, selected and copied.
+    A ``StaticText`` can be read once, as a lump, and nothing else -- which is
+    no way to check an eight-character code you are about to type into a phone.
+    """
+    static = wx.StaticText(parent, label=label)
+    field = wx.TextCtrl(parent, value=value, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
+    set_accessible_name(field, label.replace("&", "").rstrip(": "))
+    field.SetHelpText(help_text)
+    sizer.Add(static, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    sizer.Add(field, 1, wx.EXPAND | wx.ALL, _PAD)
+    return field
+
+
+def _close_row(frame: wx.Frame, sizer: wx.Sizer, *extra: wx.Button) -> wx.Button:
+    """The button row, with Close last and carrying no access key.
+
+    Close, OK and Cancel never take a mnemonic anywhere in this family: Escape
+    already reaches them, and every letter they give up resolves a collision
+    somewhere else in a window that has run out (GATE-14).
+    """
+    row = wx.BoxSizer(wx.HORIZONTAL)
+    for button in extra:
+        row.Add(button, 0, wx.RIGHT, _PAD)
+    close = wx.Button(frame, wx.ID_CLOSE, "Close")
+    row.Add(close, 0)
+    sizer.Add(row, 0, wx.ALL | wx.ALIGN_RIGHT, _PAD)
+    bind_close_button(frame, close, modeless=True)
+    return close
+
+
+# --------------------------------------------------------------------------- #
+# Sign in
+# --------------------------------------------------------------------------- #
+
+
+class AiSignInFrame(wx.Frame):
+    """Connect this computer. No account, no password, no email address.
+
+    Three states in one window rather than three windows: what is about to
+    happen, the code, and the confirmation. Replacing the content in place means
+    focus never jumps to a window somebody did not open, and the status line
+    changing is a label change on unfocused text -- exactly the case a screen
+    reader does *not* announce, and therefore exactly the case QuillLite should.
+    """
+
+    def __init__(self, parent: wx.Window, service: Any, announce: Callable[[str], None]) -> None:
+        super().__init__(parent, title="QUILL AI Sign-In")
+        self._service = service
+        self._announce = announce
+
+        panel = wx.Panel(self)
+        self._sizer = wx.BoxSizer(wx.VERTICAL)
+        panel.SetSizer(self._sizer)
+        self._panel = panel
+
+        if service.signed_in:
+            self._show_connected(service.support_id, already=True)
+        else:
+            self._show_intro()
+
+        self.SetInitialSize((560, 440))
+        self.Centre()
+
+    # -- step 1: what is about to happen, before any network call ---------- #
+
+    def _clear(self) -> None:
+        self._sizer.Clear(delete_windows=True)
+
+    def _show_intro(self) -> None:
+        self._clear()
+        panel = self._panel
+        body = _read_only(
+            panel,
+            self._sizer,
+            "About connecting this computer",
+            "QUILL's free AI is hosted by QUILL. To use it you need to connect "
+            "this computer once.\n\n"
+            "There is no account, no password and no email address. QUILL will "
+            "show you an eight-character code. Open the web page on any device "
+            "-- this one, a phone, anything with a browser -- and type the "
+            "code.\n\n"
+            "When you use AI, the text you selected is sent to QUILL and on to "
+            "OpenAI, which writes the answer. QUILL records how many requests "
+            "you make and how big they were. QUILL does not record what you "
+            "wrote or what came back.",
+            "What connecting this computer does, and what is sent when you use AI. "
+            "Nothing has been sent yet.",
+        )
+        show = wx.Button(panel, label="&Show My Code")
+        show.SetHelpText(
+            "Asks QUILL for a code to connect this computer. This is the first "
+            "time anything is sent."
+        )
+        show.Bind(wx.EVT_BUTTON, self._on_show_code)
+        _close_row(self, self._sizer, show)
+        self._panel.Layout()
+        body.SetFocus()
+
+    # -- step 2: the code -------------------------------------------------- #
+
+    def _on_show_code(self, _event: wx.CommandEvent) -> None:
+        self._clear()
+        self._status = wx.StaticText(self._panel, label="Asking QUILL for a code...")
+        self._sizer.Add(self._status, 0, wx.ALL, _PAD)
+        _close_row(self, self._sizer)
+        self._panel.Layout()
+        self._service.start_sign_in(
+            on_code=self._show_code, on_done=self._show_connected, on_error=self._show_error
+        )
+
+    def _show_code(self, code: Any) -> None:
+        if not self:
+            return
+        self._clear()
+        panel = self._panel
+        field = _read_only(
+            panel,
+            self._sizer,
+            "Your code",
+            code.user_code,
+            "The code to type into the web page. Use the arrow keys to hear it "
+            "one character at a time.",
+        )
+        where = wx.StaticText(
+            panel,
+            label=f"Go to {code.verification_uri} and type the code. "
+            "QUILL is waiting; this window will say when you are connected.",
+        )
+        self._sizer.Add(where, 0, wx.ALL, _PAD)
+
+        say = wx.Button(panel, label="Say the Code &Again")
+        say.SetHelpText("Reads the code out one character at a time.")
+        say.Bind(wx.EVT_BUTTON, lambda _e: self._announce(code.spoken))
+        copy = wx.Button(panel, label="&Copy the Code")
+        copy.SetHelpText("Puts the code on the clipboard.")
+        copy.Bind(wx.EVT_BUTTON, lambda _e: self._copy(code.user_code))
+        _close_row(self, self._sizer, say, copy)
+        panel.Layout()
+        field.SetFocus()
+        # The content changed under a window that is already open, which the
+        # reader does not announce. Say the code rather than "ready": the code
+        # is the thing they need, and they are about to type it elsewhere.
+        self._announce(f"Your code is {code.spoken}. Go to {code.verification_uri}.")
+
+    def _copy(self, text: str) -> None:
+        if wx.TheClipboard.Open():
+            try:
+                wx.TheClipboard.SetData(wx.TextDataObject(text))
+            finally:
+                wx.TheClipboard.Close()
+            self._announce("Code copied.")
+
+    # -- step 3: connected, or not --------------------------------------- #
+
+    def _show_connected(self, support_id: str, already: bool = False) -> None:
+        if not self:
+            return
+        self._clear()
+        panel = self._panel
+        lead = "This computer is already connected to QUILL's free AI." if already else "Connected."
+        _read_only(
+            panel,
+            self._sizer,
+            "Connected",
+            f"{lead}\n\nYour support ID is {support_id}. QUILL support will ask "
+            "for this if you ever need help.\n\n"
+            "Choose Tools, AI, Usage to see how much of this month's allowance "
+            "is left, or to sign this computer out again.",
+            "Confirms this computer is connected, and gives the support ID to "
+            "quote if you ever contact support.",
+        )
+        close = _close_row(self, self._sizer)
+        panel.Layout()
+        close.SetFocus()
+        if not already:
+            self._announce(f"Connected. Your support ID is {support_id}.")
+
+    def _show_error(self, message: str) -> None:
+        if not self:
+            return
+        self._clear()
+        _read_only(
+            self._panel,
+            self._sizer,
+            "Could not connect",
+            message,
+            "What went wrong, and what to do about it.",
+        )
+        retry = wx.Button(self._panel, label="&Show My Code")
+        retry.SetHelpText("Asks QUILL for a fresh code and tries again.")
+        retry.Bind(wx.EVT_BUTTON, self._on_show_code)
+        _close_row(self, self._sizer, retry)
+        self._panel.Layout()
+        self._announce(message)
+
+
+# --------------------------------------------------------------------------- #
+# Usage
+# --------------------------------------------------------------------------- #
+
+
+class AiUsageFrame(wx.Frame):
+    """How much is left, and the way to sign this computer out."""
+
+    def __init__(self, parent: wx.Window, service: Any, announce: Callable[[str], None]) -> None:
+        super().__init__(parent, title="AI Usage")
+        self._service = service
+        self._announce = announce
+        self._confirming = False
+
+        panel = wx.Panel(self)
+        self._sizer = wx.BoxSizer(wx.VERTICAL)
+        panel.SetSizer(self._sizer)
+        self._panel = panel
+
+        self._body = _read_only(
+            panel,
+            self._sizer,
+            "Your allowance",
+            "Asking QUILL how much is left...",
+            "How many free AI requests you have left this month and today, when "
+            "the count starts again, and this computer's support ID.",
+        )
+        self._buttons = wx.BoxSizer(wx.HORIZONTAL)
+        self._sign_out = wx.Button(panel, label="Sign &Out This Computer")
+        self._sign_out.SetHelpText(
+            "Disconnects this computer from QUILL's free AI. You can connect it again at any time."
+        )
+        self._sign_out.Bind(wx.EVT_BUTTON, self._on_sign_out)
+        copy = wx.Button(panel, label="Copy Support &ID")
+        copy.SetHelpText("Puts this computer's support ID on the clipboard.")
+        copy.Bind(wx.EVT_BUTTON, self._on_copy)
+        _close_row(self, self._sizer, self._sign_out, copy)
+
+        self.SetInitialSize((520, 380))
+        self.Centre()
+        service.fetch_quota(on_done=self._show, on_error=self._failed)
+
+    def _show(self, quota: Any) -> None:
+        if not self:
+            return
+        reset = (quota.reset_at or "")[:10] or "the 1st"
+        self._body.SetValue(
+            f"This month\n"
+            f"{quota.monthly_left} of {quota.monthly_cap} requests left. "
+            f"Starts again {reset}.\n\n"
+            f"Today\n{quota.daily_left} of {quota.daily_cap} left.\n\n"
+            f"This computer\nSupport ID {self._service.support_id}."
+        )
+        # A label change on an unfocused control, which the reader does not say.
+        self._announce(f"{quota.monthly_left} of {quota.monthly_cap} requests left this month.")
+
+    def _failed(self, message: str) -> None:
+        if not self:
+            return
+        self._body.SetValue(message)
+        self._announce(message)
+
+    def _on_copy(self, _event: wx.CommandEvent) -> None:
+        if wx.TheClipboard.Open():
+            try:
+                wx.TheClipboard.SetData(wx.TextDataObject(self._service.support_id))
+            finally:
+                wx.TheClipboard.Close()
+            self._announce("Support ID copied.")
+
+    def _on_sign_out(self, _event: wx.CommandEvent) -> None:
+        """Confirm in place, with a second press -- never a modal.
+
+        A message box raised from this window would be a modal over a modeless
+        frame, and the family already knows where that road goes on wxMSW. Two
+        presses of one button is the whole confirmation, and the label says
+        which press you are on.
+        """
+        if not self._confirming:
+            self._confirming = True
+            self._sign_out.SetLabel("Yes, Sign &Out")
+            self._announce("Press again to sign this computer out.")
+            return
+        self._service.sign_out()
+        self._body.SetValue(
+            "This computer is signed out of QUILL's free AI.\n\n"
+            "Choose Tools, AI, Sign In or Out to connect it again whenever you like."
+        )
+        self._sign_out.Disable()
+        self._announce("Signed out.")
+
+
+# --------------------------------------------------------------------------- #
+# The agreement
+# --------------------------------------------------------------------------- #
+
+
+def ask_ai_privacy_agreement(parent: wx.Window, announce: Callable[[str], None]) -> bool:
+    """Show the agreement and return whether it was accepted.
+
+    **Modal, unlike every other window here**, and for the opposite reason to
+    the rest: those are modeless because work is happening and the editor must
+    stay live. Nothing is happening yet here. This is a question that has to be
+    answered before anything can, and a consent prompt somebody can leave open
+    behind the editor and forget is a consent prompt that gets clicked through
+    later without being read.
+
+    Declining leaves the feature **present and unusable** rather than switching
+    the area back off. A switch that flips itself back is a switch somebody will
+    fight, and they would be right to: they did turn it on, and what they
+    declined was the sending, not the menu.
+    """
+    from quill.core.ai.gateway_privacy import AGREEMENT_TITLE, agreement_text
+
+    dialog = wx.Dialog(
+        parent, title=AGREEMENT_TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+    )
+    sizer = wx.BoxSizer(wx.VERTICAL)
+
+    body = _read_only(
+        dialog,
+        sizer,
+        "What you are agreeing to",
+        agreement_text(),
+        "The whole agreement. Read it with the arrow keys; nothing is sent unless you accept.",
+    )
+
+    # No mnemonics on either: Enter and Escape already reach them, and GATE-14
+    # would rather those letters went to something that needs them. The labels
+    # say which is which, and the reader announces the default.
+    buttons = wx.BoxSizer(wx.HORIZONTAL)
+    agree = wx.Button(dialog, wx.ID_OK, "I Agree")
+    agree.SetHelpText(
+        "Turns on AI help. You can withdraw this later in Tools, AI, or in Preferences."
+    )
+    decline = wx.Button(dialog, wx.ID_CANCEL, "No Thanks")
+    decline.SetHelpText("Leaves AI help switched off. Everything else in QuillLite is unchanged.")
+    buttons.Add(agree, 0, wx.RIGHT, _PAD)
+    buttons.Add(decline, 0)
+    sizer.Add(buttons, 0, wx.ALL | wx.ALIGN_RIGHT, _PAD)
+
+    dialog.SetSizer(sizer)
+    dialog.SetInitialSize((620, 520))
+    dialog.Centre()
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+    # Focus the text, not the button: the reader then reads the agreement rather
+    # than announcing "I Agree" to somebody who has not heard it yet.
+    body.SetFocus()
+
+    try:
+        accepted = dialog.ShowModal() == wx.ID_OK
+    finally:
+        dialog.Destroy()
+
+    announce(
+        "AI help is on. Choose Tools, AI, Sign In or Out to connect this computer."
+        if accepted
+        else "AI help stays off. Nothing is sent anywhere."
+    )
+    return accepted

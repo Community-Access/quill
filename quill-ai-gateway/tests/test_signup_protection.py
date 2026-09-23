@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
+import pytest
+
 from tests.conftest import seed_config_rows
 
 
@@ -180,3 +182,103 @@ def test_the_ramp_never_gives_a_new_account_more_than_an_established_one(app, db
     with app.app_context():
         assert _effective_user_cap(app, new_user) <= _effective_user_cap(app, established)
         assert _effective_user_cap(app, new_user) == 2
+
+
+# --- Standing caps per network ---------------------------------------------------
+
+
+def test_one_address_may_not_connect_unlimited_computers(app, client, db):
+    """The rate throttle stops a burst. It does not stop somebody connecting
+    one more machine every few days -- and because confirming a code creates a
+    whole new *account*, five computers is five full allowances, not one shared
+    between them."""
+    from app.limits import RegistrationThrottled as Throttled
+    from app.limits import check_device_budget, note_device_registered
+
+    seed_config_rows(db.session)  # cap of 6
+    with app.app_context():
+        for _ in range(6):
+            check_device_budget(app, "203.0.113.9")
+            note_device_registered(app, "203.0.113.9")
+
+        with pytest.raises(Throttled) as caught:
+            check_device_budget(app, "203.0.113.9")
+
+    # And it says what to do about it rather than just refusing.
+    assert "Sign one of them out" in caught.value.message
+
+
+def test_signing_a_computer_out_frees_its_place(app, client, db):
+    """Otherwise the cap is a lifetime total, and somebody who dutifully signs
+    out an old laptop before connecting a new one is refused for doing exactly
+    the right thing."""
+    from app.limits import RegistrationThrottled as Throttled
+    from app.limits import check_device_budget, note_device_registered, release_device_slot
+
+    seed_config_rows(db.session)
+    with app.app_context():
+        for _ in range(6):
+            note_device_registered(app, "203.0.113.10")
+        with pytest.raises(Throttled):
+            check_device_budget(app, "203.0.113.10")
+
+        release_device_slot(app, "203.0.113.10")
+        check_device_budget(app, "203.0.113.10")  # must not raise
+
+
+def test_a_shared_monthly_ceiling_bounds_a_whole_network(app, db):
+    """The measure that makes sponging pointless: it does not care how many
+    accounts sit behind the address."""
+    from app.limits import QuotaExceeded, check_network_budget
+    from app.models import GatewayConfig
+
+    seed_config_rows(db.session)
+    db.session.get(GatewayConfig, "network_monthly_request_cap").value = 3
+    db.session.commit()
+
+    with app.app_context():
+        for _ in range(3):
+            check_network_budget(app, "198.51.100.30")
+        with pytest.raises(QuotaExceeded) as caught:
+            check_network_budget(app, "198.51.100.30")
+
+    assert caught.value.scope == "network"
+    assert "starts again on the 1st" in caught.value.message
+
+
+def test_a_network_request_that_failed_is_given_back(app, db):
+    """Counted up front like every other limit, so it needs the same undo."""
+    from app.limits import check_network_budget, refund_network_request
+    from app.models import GatewayConfig
+
+    seed_config_rows(db.session)
+    db.session.get(GatewayConfig, "network_monthly_request_cap").value = 2
+    db.session.commit()
+
+    with app.app_context():
+        check_network_budget(app, "198.51.100.31")
+        refund_network_request(app, "198.51.100.31")
+        check_network_budget(app, "198.51.100.31")
+        check_network_budget(app, "198.51.100.31")  # must not raise
+
+
+def test_the_network_ceiling_is_several_times_one_persons_allowance(app, db):
+    """So a family or a small office is never the one it catches."""
+    from app.limits import resolve_limit
+
+    seed_config_rows(db.session)
+    with app.app_context():
+        per_person = resolve_limit(app, "monthly_request_cap")
+        per_network = resolve_limit(app, "network_monthly_request_cap")
+    assert per_network >= per_person * 4
+
+
+def test_an_unknown_address_is_never_refused_by_either_cap(app, db):
+    """A proxy misconfiguration must not look like an outage."""
+    from app.limits import check_device_budget, check_network_budget
+
+    seed_config_rows(db.session)
+    with app.app_context():
+        for _ in range(50):
+            check_device_budget(app, "")
+            check_network_budget(app, "")

@@ -17,8 +17,11 @@ from app.auth import (
 )
 from app.limits import (
     RegistrationThrottled,
+    check_device_budget,
     check_registration_allowed,
+    note_device_registered,
     note_registration_blocked,
+    release_device_slot,
 )
 from app.models import Device, db
 
@@ -74,6 +77,10 @@ def device_code():
     unauthenticated, account-free registration endpoint has to be)."""
     try:
         check_registration_allowed(current_app, client_ip())
+        # How fast, and how many at once. The second is what stops somebody
+        # connecting one more machine every few days -- each of which is a
+        # whole new account with a whole new allowance.
+        check_device_budget(current_app, client_ip())
     except RegistrationThrottled as exc:
         note_registration_blocked(current_app)
         return (
@@ -115,6 +122,9 @@ def connect():
 
     code = request.form.get("code", "").strip().upper()
     if confirm_device_code(current_app, code):
+        # Counted here rather than at /v1/device/code: a code that is minted and
+        # never confirmed has cost nobody a slot.
+        note_device_registered(current_app, client_ip())
         return render_template_string(_CONNECT_PAGE, prefill="", error=None, confirmed=True)
     return render_template_string(
         _CONNECT_PAGE,
@@ -137,4 +147,7 @@ def revoke_device(device_id: str):
         return jsonify({"status": "not_found"}), 404
     device.status = "revoked"
     db.session.commit()
+    # Give the slot back, so somebody who signs an old laptop out before
+    # connecting a new one is not refused for doing exactly the right thing.
+    release_device_slot(current_app, client_ip())
     return "", 204

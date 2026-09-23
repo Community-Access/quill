@@ -25,13 +25,15 @@ from __future__ import annotations
 
 from flask import Blueprint, current_app, g, jsonify, request
 
-from app.auth import require_auth
+from app.auth import client_ip, require_auth
 from app.limits import (
     FeatureUnavailable,
     QuotaExceeded,
     RequestTooLarge,
+    check_network_budget,
     check_request_allowed,
     record_usage,
+    refund_network_request,
     refund_request,
     reject_if_too_large,
     remaining_quota,
@@ -78,6 +80,9 @@ def chat():
     #    charges; everything after it may have to give the charge back.
     try:
         check_request_allowed(current_app, g.user, g.device, feature)
+        # One shared ceiling for everybody behind one address. Per-user caps
+        # cannot bound a person who can mint users; this can.
+        check_network_budget(current_app, client_ip())
     except FeatureUnavailable as exc:
         return jsonify({"status": "unavailable", "scope": exc.scope, "message": exc.message}), 503
     except QuotaExceeded as exc:
@@ -100,6 +105,7 @@ def chat():
         reject_if_too_large(current_app, prompt, chunks)
     except RequestTooLarge as exc:
         refund_request(current_app, g.user, g.device, feature)
+        refund_network_request(current_app, client_ip())
         return (
             jsonify({
                 "status": "rejected",
@@ -116,6 +122,7 @@ def chat():
         model = resolve_default_model()
     except NoDefaultModel:
         refund_request(current_app, g.user, g.device, feature)
+        refund_network_request(current_app, client_ip())
         current_app.logger.error(
             "No enabled model is marked default -- every /v1/chat request is failing. "
             "Set one on the Models page."
@@ -145,6 +152,7 @@ def chat():
         )
     except OpenAICallError:
         refund_request(current_app, g.user, g.device, feature)
+        refund_network_request(current_app, client_ip())
         current_app.logger.exception("OpenAI call failed for feature=%s", feature)
         return (
             jsonify({
@@ -168,6 +176,7 @@ def chat():
     #     really spent. Only the user's own counters are given back.
     if completion.is_empty:
         refund_request(current_app, g.user, g.device, feature)
+        refund_network_request(current_app, client_ip())
         record_usage(
             current_app,
             g.user,

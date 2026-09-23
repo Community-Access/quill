@@ -757,6 +757,10 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&Spelling", "", "", "sub"),
     ("&Tools", "&Change Case", "", "", "sub"),
     ("&Tools", "Indentin&g", "", "", "sub"),
+    # A submenu, not a tenth top-level menu: Clipboard and Spelling were demoted
+    # from the bar for exactly this reason. Why these four chords and no others,
+    # in quill/apps/lite_window_ai.py's docstring.
+    ("&Tools", "&AI", "", "", "sub"),
     ("&Tools", "", "", "", "sep"),
     # Both are shown in the status bar and both used to be read-only: QuillLite
     # wrote back whatever it read, which is the right default and a dead end for
@@ -886,6 +890,16 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&Quiet Mode", "Alt+Shift+M", "cmd_toggle_quiet_mode", "check"),
     ("&Tools", "S&ound Scheme...", "Ctrl+Alt+Shift+O", "cmd_sound_scheme", ""),
     # -- Tools > Change Case -------------------------------------------------
+    # -- Tools > AI. Four rows, four chords (rule 2 and rule 9 chose them; the
+    # measurement is in lite_window_ai.py). Ctrl+Alt+Shift+K stays unspent.
+    ("&Tools|&AI", "AI &Assistant...", "Ctrl+Alt+G", "cmd_ai_assistant", ""),
+    ("&Tools|&AI", "As&k About This Document...", "Ctrl+Alt+Z", "cmd_ai_ask_document", ""),
+    ("&Tools|&AI", "", "", "", "sep"),
+    ("&Tools|&AI", "&Usage...", "Ctrl+Alt+Shift+F9", "cmd_ai_usage", ""),
+    ("&Tools|&AI", "&Sign In or Out...", "Ctrl+Alt+Shift+F10", "cmd_ai_sign_in", ""),
+    # The chord held back when this family was laid out, spent on the one
+    # command that has to be reachable without agreeing to anything first.
+    ("&Tools|&AI", "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),
     ("&Tools|&Change Case", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools|&Change Case", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     # Ctrl+Shift+T since 2026-09-16: Ctrl+Shift+G is Word Count in Word, and

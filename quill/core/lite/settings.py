@@ -202,6 +202,19 @@ class Settings:
     #: than a surprise. Distinct from crash recovery, which only ever restores
     #: work that was never saved.
     restore_session: bool = True
+
+    #: Which version of the AI privacy agreement this person has accepted, or 0.
+    #:
+    #: Deliberately a *version* rather than a boolean. A material change to what
+    #: is sent or kept bumps ``gateway_privacy.AGREEMENT_VERSION`` and everybody
+    #: is asked again, which a boolean could not express -- an old yes would
+    #: silently cover a new thing.
+    #:
+    #: Separate from the ``hosted_ai`` feature area on purpose: the area answers
+    #: "does this feature exist in my copy", this answers "have I agreed to what
+    #: it does". Conflating them gets one wrong -- an area switched on by a
+    #: profile or a settings import would otherwise be consent nobody gave.
+    ai_privacy_accepted_version: int = 0
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
     #: Same field name and same three values as QUILL, because it is the same
     #: question -- see ``quill/core/session_restore.py``, which answers it for

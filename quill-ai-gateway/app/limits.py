@@ -57,6 +57,8 @@ _FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "new_account_request_cap": 15,
     "registration_hourly_cap_per_ip": 5,
     "registration_daily_cap_per_ip": 20,
+    "active_devices_cap_per_ip": 6,
+    "network_monthly_request_cap": 600,
 }
 
 #: What ``flask seed-config`` writes into a fresh database.
@@ -555,6 +557,136 @@ def check_registration_allowed(app, client_ip: str) -> None:
                 "Too many computers have connected from this network today. Try again tomorrow.",
                 24 * 3600,
             )
+
+
+def check_device_budget(app, client_ip: str) -> None:
+    """Refuse a sign-up from an address that already has plenty of computers.
+
+    The rate throttle above stops a *burst*. It does not stop somebody
+    connecting one more machine every few days, and that matters here more than
+    it would elsewhere, because of a design decision further up: confirming a
+    device code creates a brand-new pseudonymous **user**, not another device on
+    an existing account. Two computers are therefore two accounts with a full
+    allowance each, and five are five.
+
+    That is the right trade for the accessibility premise -- no account, no
+    password, no email -- and it means the honest place to bound a *person* is
+    the one thing their computers have in common. A standing cap on how many
+    active devices one address holds is that bound.
+
+    Set generously. This is aimed at one household quietly running six laptops
+    through the free tier, not at an office, and the number is a live
+    ``gateway_config`` row precisely because the first report of it catching a
+    real workplace should be answerable in one edit rather than one release.
+    """
+    ip = (client_ip or "").strip()
+    if not ip:
+        return
+    cap = int(resolve_limit(app, "active_devices_cap_per_ip"))
+    if cap <= 0:
+        return
+
+    count = int(_redis(app).get(f"reg:devices:{ip}") or 0)
+    if count >= cap:
+        raise RegistrationThrottled(
+            "There are already several computers connected to QUILL's free AI "
+            "from this network. Sign one of them out first -- in QuillLite, "
+            "Tools, AI, Usage -- and this one can connect.",
+            24 * 3600,
+        )
+
+
+def note_device_registered(app, client_ip: str) -> None:
+    """Count one more active device against this address.
+
+    Kept in Redis with a long expiry rather than derived from the database on
+    every sign-up: the address a device registered from is not stored on the
+    device row, and adding it would put a piece of network metadata into a
+    schema whose whole claim is that it holds no more about a person than it
+    must.
+    """
+    ip = (client_ip or "").strip()
+    if not ip:
+        return
+    client = _redis(app)
+    key = f"reg:devices:{ip}"
+    client.incr(key)
+    client.expire(key, 400 * 24 * 3600)
+
+
+def release_device_slot(app, client_ip: str) -> None:
+    """Give a slot back when a device is signed out.
+
+    Without this the cap is a lifetime total rather than a standing one, and
+    somebody who dutifully signs out an old laptop before connecting a new one
+    would be refused for doing exactly the right thing.
+    """
+    ip = (client_ip or "").strip()
+    if not ip:
+        return
+    client = _redis(app)
+    key = f"reg:devices:{ip}"
+    try:
+        if client.decr(key) < 0:
+            client.set(key, 0, keepttl=True)
+    except Exception:  # noqa: BLE001 - a lost slot must not fail a sign-out
+        app.logger.warning("Could not release a device slot for %s", key, exc_info=True)
+
+
+def check_network_budget(app, client_ip: str) -> None:
+    """One shared monthly request ceiling for everybody behind one address.
+
+    The measure that actually makes sponging uneconomic. Per-user caps cannot,
+    because a user is free to mint: five computers are five accounts and five
+    allowances. A ceiling counted per *network* is indifferent to how many
+    accounts sit behind it.
+
+    Deliberately several times a single person's allowance, so a genuinely
+    shared address -- a family, a small office -- is never the one this catches.
+    An unknown address is allowed rather than refused, for the same reason the
+    sign-up throttle allows it: a proxy misconfiguration must not look like an
+    outage.
+    """
+    ip = (client_ip or "").strip()
+    if not ip:
+        return
+    cap = int(resolve_limit(app, "network_monthly_request_cap"))
+    if cap <= 0:
+        return
+
+    month_key = _month_key()
+    key = f"ratelimit:net:{ip}:month:{month_key}"
+    client = _redis(app)
+    current = client.incr(key)
+    if current == 1:
+        client.expire(key, 32 * 24 * 3600)
+    if current > cap:
+        raise QuotaExceeded(
+            "network",
+            "This network has used its share of QUILL's free AI for this month. "
+            "It starts again on the 1st, or you can add your own API key to "
+            "keep going now.",
+            _month_reset_at(),
+        )
+
+
+def refund_network_request(app, client_ip: str) -> None:
+    """Give back a network request that never happened.
+
+    Counted up front like every other limit here, so it needs the same undo --
+    see :func:`refund_request` for why the counters are taken before the work
+    rather than after it.
+    """
+    ip = (client_ip or "").strip()
+    if not ip:
+        return
+    key = f"ratelimit:net:{ip}:month:{_month_key()}"
+    client = _redis(app)
+    try:
+        if client.decr(key) < 0:
+            client.set(key, 0, keepttl=True)
+    except Exception:  # noqa: BLE001 - a failed refund must not fail the response
+        app.logger.warning("Could not refund network key %s", key, exc_info=True)
 
 
 def note_registration_blocked(app) -> None:

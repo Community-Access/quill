@@ -29,6 +29,7 @@ from sqlalchemy import (
     Index,
     Numeric,
     String,
+    func,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -209,7 +210,7 @@ class FeatureFlag(db.Model):
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     disabled_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow
+        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow, server_default=func.now()
     )
 
 
@@ -233,7 +234,7 @@ class GatewayConfig(db.Model):
     description: Mapped[str] = mapped_column(String(500), nullable=False)
     updated_by: Mapped[str | None] = mapped_column(String(255), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow
+        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow, server_default=func.now()
     )
 
 
@@ -263,7 +264,7 @@ class GatewayModel(db.Model):
     input_cost_per_million_usd: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
     output_cost_per_million_usd: Mapped[float] = mapped_column(Numeric(10, 4), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow
+        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow, server_default=func.now()
     )
 
 

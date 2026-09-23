@@ -754,6 +754,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_keymap_editor import DocumentKeymapMixin
     from quill.apps.lite_printing import DocumentPrintMixin
     from quill.apps.lite_updates import DocumentUpdatesMixin
+    from quill.apps.lite_window_ai import DocumentAiMixin
     from quill.apps.lite_window_clipboard import DocumentClipboardMixin
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
@@ -773,6 +774,11 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
 
     class LiteWindowStub(
+        # Tools > AI, added 2026-09-23. The four handlers open modeless
+        # frames, which is the same shape as the dialog commands above --
+        # what is reached here is the handler the menu binds, with the
+        # frames themselves patched at their own module.
+        DocumentAiMixin,
         DocumentSelectionMixin,
         DocumentMarksMixin,
         DocumentLineMixin,

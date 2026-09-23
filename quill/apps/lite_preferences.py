@@ -412,6 +412,49 @@ def edit_preferences(
 
     choose_btn.Bind(wx.EVT_BUTTON, _pick_font)
 
+    # --- AI help ------------------------------------------------------- #
+    #
+    # Door three of three. The other two are Tools > AI > Privacy Agreement and
+    # switching the area on in Customize Features; all three read and write the
+    # same stored version, so none of them can disagree with the others.
+    #
+    # It is here as well as there because "where do I turn that off again" is a
+    # question people answer by opening Preferences, whatever the app's own
+    # opinion about where the switch lives.
+    from quill.core.ai.gateway_privacy import AGREEMENT_VERSION, SUMMARY, is_accepted
+
+    ai_accepted = is_accepted(int(getattr(settings, "ai_privacy_accepted_version", 0)))
+    ai_check = wx.CheckBox(dialog, label="Use QUILL's free A&I help")
+    ai_check.SetValue(ai_accepted)
+    ai_check.SetHelpText(SUMMARY + " Turning this on shows the full agreement first.")
+    root.Add(ai_check, 0, wx.ALL, _PAD)
+
+    ai_note = wx.StaticText(dialog, label=SUMMARY)
+    root.Add(ai_note, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+
+    def _toggle_ai(_event: wx.CommandEvent) -> None:
+        """Ticking it asks; unticking it withdraws, and both take effect at once.
+
+        Not deferred to OK like the rest of this window. The other controls here
+        are preferences and a preference can wait; this is consent, and consent
+        recorded because somebody pressed OK on an unrelated dialog is consent
+        of a worse kind. Cancelling the agreement puts the tick back where it
+        was rather than leaving a box that claims something untrue.
+        """
+        from quill.apps.lite_ai_dialogs import ask_ai_privacy_agreement
+
+        speak = announce or (lambda _message: None)
+        if not ai_check.GetValue():
+            settings.ai_privacy_accepted_version = 0
+            speak("AI help is off. Nothing is sent anywhere.")
+            return
+        if ask_ai_privacy_agreement(dialog, speak):
+            settings.ai_privacy_accepted_version = AGREEMENT_VERSION
+            return
+        ai_check.SetValue(False)
+
+    ai_check.Bind(wx.EVT_CHECKBOX, _toggle_ai)
+
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
     root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)

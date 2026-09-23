@@ -204,11 +204,38 @@ AREAS: tuple[AppArea, ...] = (
         "size only; it changes nothing about the file and nothing about what a "
         "screen reader says.",
     ),
+    # The description is the consent notice. Somebody arriving on this row in
+    # the features list hears the whole trade before anything is switched on,
+    # rather than meeting it later in a dialog they have to get past to reach
+    # the feature they already decided they wanted.
+    AppArea(
+        "hosted_ai",
+        "AI help (sends your text to QUILL's servers)",
+        "Summarize, rewrite, proofread or explain the passage you have "
+        "selected, and ask questions about the document you have open. The "
+        "text you select is sent over the internet to QUILL, and on to "
+        "OpenAI, which writes the answer. QUILL records how many requests you "
+        "made and how big they were -- never the text itself, and never the "
+        "answer. It is free, with a monthly allowance. Off until you turn it "
+        "on.",
+    ),
 )
 
 #: Areas that start disabled. Everything else starts enabled, because
 #: AppFeatureSettings stores only explicit "off".
-DEFAULT_OFF: frozenset[str] = frozenset({"autoformat", "backups", "go_to_anything"})
+#: ``hosted_ai`` is here for a different reason from the other three. They start
+#: off because they would be *wrong* on -- autocorrect rewriting a config file's
+#: quotes, backups quietly filling a folder. This one starts off because it
+#: sends the user's writing to a third party, and that is not a default anybody
+#: gets to choose on their behalf. A switched-off area owns nothing, so until
+#: somebody turns it on there is no menu, no status cell, no token on disk and
+#: no network call of any kind.
+DEFAULT_OFF: frozenset[str] = frozenset({
+    "autoformat",
+    "backups",
+    "go_to_anything",
+    "hosted_ai",
+})
 
 #: Named starting points, so somebody can ask for "the small one" without
 #: ticking eighteen boxes. Applying one sets every box and then the boxes are
@@ -233,24 +260,28 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: 15 of the 18 areas on. The three "
+        "What a new install is: 15 of the 19 areas on. The four "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
-        "backups quietly filling a folder, and a second 'go to' front door "
-        "before anyone asked for one. Everything else is here, including rich "
-        "text, spell check, the line tools and the clipboard. Choose this to "
-        "get back to the shipped answer after experimenting.",
+        "backups quietly filling a folder, a second 'go to' front door "
+        "before anyone asked for one, and AI help, which would send what you "
+        "write to a server before you had agreed to it. Everything else is "
+        "here, including rich text, spell check, the line tools and the "
+        "clipboard. Choose this to get back to the shipped answer after "
+        "experimenting.",
         frozenset(DEFAULT_OFF),
     ),
     AppProfile(
         "everything",
         "Everything",
-        "All 18 areas on, including the three a new install leaves off. "
+        "All 19 areas on, including the four a new install leaves off. "
         "Autocorrect will straighten your quotes and capitalise your sentences, "
         "every save keeps a dated copy, and Go To Anything joins the command "
-        "palette and the two lists as a fourth way to jump. Choose this if you "
-        "would rather turn things off as they annoy you than find them one at a "
-        "time.",
+        "palette and the two lists as a fourth way to jump. It also switches on "
+        "AI help, which sends the passage you ask about to QUILL's servers -- "
+        "the one area here that does something outside this computer, so choose "
+        "this only if that is what you meant. Choose it if you would rather turn "
+        "things off as they annoy you than find them one at a time.",
         frozenset(),
     ),
     AppProfile(
@@ -261,7 +292,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "spacing -- and none of the writing tools behind them. No line "
         "operations, no clipboard history, no bookmarks, no abbreviations, no "
         "command palette. Ctrl+N makes a rich text document, which is the half "
-        "of this name a list of menus cannot say. Five of the 18 areas, "
+        "of this name a list of menus cannot say. Five of the 19 areas, "
         "plus a spell checker WordPad never had.",
         frozenset({
             "abbreviations",
@@ -273,6 +304,11 @@ PROFILES: tuple[AppProfile, ...] = (
             "command_palette",
             "go_to_anything",
             "history",
+            # Neither of these profiles is named after a program that had
+            # anything of the sort, and the promise each makes is about what
+            # it does *not* have. "WordPad, but it sends your writing to a
+            # server" is a profile whose name has stopped being true.
+            "hosted_ai",
             "markup",
             "matches",
             "selection",
@@ -285,7 +321,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QuillLite gets, and the one most people are replacing "
-        "something with. Two of the 18 areas: printing and text size. No "
+        "something with. Two of the 19 areas: printing and text size. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
         "history, no spell check -- nothing Notepad does not have, which is the "
         "point of choosing it. Ctrl+N makes a plain text document. What stays "
@@ -304,6 +340,7 @@ PROFILES: tuple[AppProfile, ...] = (
             "go_to_anything",
             "headings",
             "history",
+            "hosted_ai",
             # Markdown bold in a .md would be a genuine improvement on Notepad,
             # which is exactly why it is off here: this profile's promise is
             # "nothing Notepad does not have", and a profile that quietly keeps

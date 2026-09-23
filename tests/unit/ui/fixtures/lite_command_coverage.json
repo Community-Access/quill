@@ -1,6 +1,11 @@
 {
   "cmd_about": "covered",
   "cmd_add_word_to_dictionary": "covered",
+  "cmd_ai_ask_document": "covered",
+  "cmd_ai_assistant": "covered",
+  "cmd_ai_privacy": "covered",
+  "cmd_ai_sign_in": "covered",
+  "cmd_ai_usage": "covered",
   "cmd_align_center": "covered",
   "cmd_align_justify": "covered",
   "cmd_align_left": "covered",

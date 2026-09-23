@@ -187,6 +187,7 @@ class DocumentViewCommandsMixin:
         from quill.core.lite.features import AREAS, PROFILES
         from quill.ui.app_features_dialog import AppFeaturesDialog
 
+        ai_was_on = self.app.feature_enabled("hosted_ai")
         dialog = AppFeaturesDialog(
             self,
             app_title=APP_NAME,
@@ -210,6 +211,13 @@ class DocumentViewCommandsMixin:
         self.app.rebuild_all_menus()
         self.control.SetFocus()
         self._announce("Features saved. The menus have been rebuilt.")
+        # Switching AI help on here is one of the three doors to the agreement,
+        # and the only one somebody can arrive at without meaning to -- a profile
+        # can turn the area on, and a profile is not consent. Asked *after* the
+        # features are saved, so declining leaves the area on and unusable rather
+        # than undoing a change they did make.
+        if not ai_was_on and self.app.feature_enabled("hosted_ai"):
+            self._offer_ai_privacy_on_enable()
 
     def cmd_toggle_quiet_mode(self) -> None:
         """Alt+Shift+M: silence every sound at once, and bring them back.

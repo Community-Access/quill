@@ -1535,13 +1535,13 @@ the first screen of `docker compose logs`, but never fatal — and
 
 ```bash
 # On the host, with the service running:
-curl -s -X POST https://ai.csedesigns.com/v1/device/code
+curl -s -X POST https://ai.community-access.org/v1/device/code
 #  -> note "user_code": e.g. "BKRT-3927"
 
-# In a browser, anywhere: https://ai.csedesigns.com/connect?code=BKRT-3927
+# In a browser, anywhere: https://ai.community-access.org/connect?code=BKRT-3927
 # Click Confirm.
 
-curl -s -X POST https://ai.csedesigns.com/v1/device/token \
+curl -s -X POST https://ai.community-access.org/v1/device/token \
      -H 'Content-Type: application/json' \
      -d '{"device_code":"<the device_code from the first call>"}'
 #  -> {"status":"authorized","token":"<KEEP THIS>","device_id":"<THIS GOES IN THE ALLOWLIST>"}
@@ -1555,7 +1555,7 @@ sed -i 's/^GATEWAY_ADMIN_ALLOWLIST=.*/GATEWAY_ADMIN_ALLOWLIST=<device_id>/' .env
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-Sign in at `https://ai.csedesigns.com/dashboard/` by pasting the **token**, not
+Sign in at `https://ai.community-access.org/dashboard/` by pasting the **token**, not
 the device id.
 
 **If you lose the token**, you are not locked out of the machine — you have SSH.
@@ -1685,13 +1685,14 @@ certificate, and can move to another machine later by changing one DNS record.
 
 ### 14.5 DNS: exactly what you need to do
 
-**One record.** In the DNS for `csedesigns.com`:
+**Done, 2026-09-23.** `ai.community-access.org` resolves to `107.175.91.158`
+and the service answers on it over HTTPS.
 
-| Type | Name | Value | TTL |
-|---|---|---|---|
-| `A` | `ai` | `107.175.91.158` | 300 while setting up, then 3600 |
+| Type | Name | Value |
+|---|---|---|
+| `A` | `ai` (in `community-access.org`) | `107.175.91.158` |
 
-That is the whole DNS change. Three things *not* to do:
+Three things *not* to do:
 
 - **No `AAAA` record.** The host has no public IPv6. An `AAAA` pointing at
   nothing gives every IPv6-capable client a broken first attempt and a delay
@@ -1701,30 +1702,32 @@ That is the whole DNS change. Three things *not* to do:
   name's fate to a hostname that already has a redirect block and its own
   history. An `A` record to the address is one hop and one thing to reason about.
 - **Nothing else.** No MX (the service sends no mail, 14.3), no TXT, no CAA
-  change needed unless `csedesigns.com` already publishes a CAA that excludes
-  Let's Encrypt — worth a one-line check: `dig CAA csedesigns.com +short` should
-  be empty or include `letsencrypt.org`.
+  change needed unless `community-access.org` already publishes a CAA that
+  excludes Let's Encrypt — worth a one-line check:
+  `dig CAA community-access.org +short` should be empty or include
+  `letsencrypt.org`. It was, and the certificate issued first time.
 
-**`ai.csedesigns.com` is the suggested name** because you demonstrably control
-that domain and it is short to read aloud — which matters, because it is printed
-in QUILL's sign-in window and read by a screen reader to somebody who is about to
-type it on a phone. `gateway.quillforall.org` is what the PRD assumed and what is
-currently the default in `app/config.py`; if you own `quillforall.org` and prefer
-it, everything below is identical with the name changed in two places (the `.env`
-and the Caddy block).
+**Why this name.** `community-access.org` rather than `csedesigns.com`: the
+support address is already `support@community-access.org` and the help desk is
+already `helpdesk.community-access.org`, so the name somebody is asked to type
+into a phone belongs to the same organisation as the name they write to when it
+goes wrong. It is short, which matters because it is printed in QUILL's sign-in
+window and read aloud to somebody about to type it on a different device.
+`gateway.quillforall.org` was the PRD's assumption and is no longer used
+anywhere.
 
 **Then, in order — and the order matters:**
 
 ```bash
 # 1. Wait for the record. Do not skip this.
-dig +short ai.csedesigns.com          # must print 107.175.91.158
+dig +short ai.community-access.org          # must print 107.175.91.158
 
 # 2. Append the site block and reload Caddy.
 cat ~/quill-ai-gateway/Caddyfile.example >> ~/app/web/Caddyfile
 docker exec web-caddy-1 caddy reload --config /etc/caddy/Caddyfile
 
 # 3. Confirm the certificate and the service together.
-curl -s https://ai.csedesigns.com/healthz     # {"database":"ok","redis":"ok"}
+curl -s https://ai.community-access.org/healthz     # {"database":"ok","redis":"ok"}
 ```
 
 **Do not reload Caddy before DNS resolves.** Caddy asks Let's Encrypt for a
@@ -1739,7 +1742,7 @@ twenty minutes to spend.
 cd ~/quill-ai-gateway
 cp .env.example .env
 nano .env         # OPENAI_API_KEY, GATEWAY_SECRET_KEY, POSTGRES_PASSWORD,
-                  # GATEWAY_PUBLIC_BASE_URL=https://ai.csedesigns.com
+                  # GATEWAY_PUBLIC_BASE_URL=https://ai.community-access.org
 chmod 600 .env
 
 docker compose -f docker-compose.prod.yml up -d --build
@@ -1770,7 +1773,7 @@ the provider key works before a single user ever touches it.
 
 # Logs, health, and a config sanity check.
 docker compose -f docker-compose.prod.yml logs -f web
-curl -s https://ai.csedesigns.com/healthz
+curl -s https://ai.community-access.org/healthz
 docker compose -f docker-compose.prod.yml exec web flask --app run.py check-config
 ```
 
@@ -1876,6 +1879,25 @@ The gateway test suite is **205 passing** (was 45).
 - [x] **Deployment files** — `docker-compose.prod.yml` (joins the host's shared
       `web_default` Caddy network, publishes no port), `Caddyfile.example`,
       `.env.example`, `migrations/003`.
+- [x] **Two standing caps per network** (`migrations/005`), because of something
+      worth writing down plainly: confirming a device code creates a brand-new
+      pseudonymous **user**, not another device on an existing account. Two
+      computers are therefore two accounts with a full allowance each, and five
+      are five. The per-IP throttle limits how *fast* somebody connects
+      machines and does nothing about connecting one more every few days. So:
+      a standing cap on active devices per address (6, and signing one out frees
+      its place), and a monthly request ceiling shared by everybody behind one
+      address (600) which does not care how many accounts sit behind it. Both
+      set generously — they are aimed at one household running six laptops
+      through the free tier, never at an office.
+- [x] **A schema divergence, found by running a migration.** `init-db`
+      (SQLAlchemy) and the `.sql` migrations produced *different* schemas: the
+      SQL declares `updated_at NOT NULL DEFAULT now()`, the models carried only
+      a Python-side default. So a database created the documented way failed any
+      plain-`psql` insert that did not name the column, while the identical
+      insert through SQLAlchemy succeeded — a trap for whoever next reaches for
+      psql, which `migrations/README.md` tells them to do. Models now declare
+      `server_default`; migration 005 brings existing databases into line.
 - [x] **Two more bugs, found only by running it on the real host.** Neither was
       reachable from the test suite, which is the argument for standing a thing
       up before believing it works:
@@ -1937,18 +1959,20 @@ The gateway test suite is **205 passing** (was 45).
 
 ### 16.3 Deployment — what only you can do
 
-- [ ] **Add one DNS record:** `A` · `ai` · `107.175.91.158` · TTL 300.
-      No `AAAA` (the host has no IPv6 and a dead one adds a delay to every
-      IPv6-capable client). See 14.5.
+- [x] **DNS done** (2026-09-23): `ai.community-access.org` → `107.175.91.158`,
+      Caddy block appended and reloaded, certificate issued, and a real
+      `summarize` request answered over HTTPS end to end. No `AAAA`, because the
+      host has no IPv6 and a dead one adds a delay to every IPv6-capable
+      client.
 - [x] **The OpenAI API key is installed** (2026-09-23), taken from the "Open
       AI Key" entry in `D:\keys.txt` and piped straight into the host's `.env`
       over SSH — never printed, never written to a local file, never passed as
       a command-line argument (which would have put it in the process list and
       the shell history). `.env` is `0600`. `POST /admin/test-key` answers
       **ok**.
-- [ ] Choose the public hostname for good: `ai.csedesigns.com` (recommended,
-      you control the domain, short to read aloud) or `gateway.quillforall.org`
-      (what the PRD assumed and what `config.py` currently defaults to).
+- [x] Public hostname settled: **`ai.community-access.org`**, which is now the
+      default in `app/config.py`, in the client's `DEFAULT_BASE_URL`, and in
+      `Caddyfile.example`.
 - [ ] Pick where budget alerts go (14.3). **ntfy** is the recommendation — no
       account, pushes to a phone, no mail provider.
 - [x] **`gpt-6-luna` is confirmed real** — it answered a live request. That
@@ -1999,28 +2023,77 @@ The gateway test suite is **205 passing** (was 45).
 - [ ] `POST /admin/test-key`.
 - [ ] Add the two cron jobs (14.7).
 
-### 16.5 Client — not started
+### 16.5 Client — QuillLite is done
 
-None of this exists yet. Section 12 is the specification.
+Built 2026-09-23. **QUILL's existing AI was not touched**: no change to
+`ALL_PROVIDERS`, none to `make_default_backend()`'s cascade, none to any BYOK,
+agent or local-model path. Either of the first two would alter what an installed
+QUILL does on its next launch, which is a decision to take deliberately rather
+than as a side effect of shipping QuillLite's version.
 
-- [ ] `quill/core/ai/gateway_client.py`, `gateway_backend.py`,
-      `gateway_session.py`, `gateway_context.py`, `gateway_errors.py` (7.1).
-- [ ] `"quill_gateway"` in `ALL_PROVIDERS`; `provider_requires_api_key` False.
-- [ ] `GatewayBackend` in `make_default_backend()`'s cascade
-      (`assistant.py:149`), respecting `_note_backend_fallback`.
-- [ ] One GATE-9 `_REVIEWED_EGRESS` entry.
-- [ ] QuillLite: `hosted_ai` feature area, **off by default**; Tools > AI
-      submenu; `Ctrl+Alt+G` pad; `Ctrl+Alt+Z` ask-about-document; result window;
-      sign-in frame; usage frame; 13th status cell.
-- [ ] QUILL gets the same five commands in the same change — family rule: the
-      small product may never be ahead of the big one.
-- [ ] Local chunking and keyword retrieval (no embeddings, no extra call).
-- [ ] GATE-LITE-COVER behavioural tests (`(lambda w: w.cmd_ai_summarize(), ...)`
-      — a parametrized handler *name* is invisible to the AST scan).
-- [ ] GATE-REACH snapshot, inline `SetHelpText` on every control, menu
-      accelerators, access keys, Key Describer titles, keyboard-reference
-      regeneration.
-- [ ] Support ID shown in the AI panel and in About.
+**Shared, in `quill/core/ai/` — so QUILL can reach all of it:**
+
+- [x] `gateway_errors.py` — the `QUILL-AI-GATEWAY-*` family. Every one carries a
+      `user_hint` naming the next step, because a screen-reader user hears only
+      the sentence we wrote.
+- [x] `gateway_context.py` — what gets sent, decided before a request exists:
+      selection → paragraph → section (**never the document**), local chunking
+      and keyword retrieval for document questions, and a size refusal phrased
+      in *words* rather than tokens.
+- [x] `gateway_client.py` — the one egress site, with every HTTP failure mapped
+      to a coded error that keeps the server's own sentence. The device-code
+      flow **reuses** `device_login.py` through a twenty-line dialect adapter
+      rather than growing a second RFC 8628 state machine.
+- [x] `gateway_session.py` — token in the OS credential store under the existing
+      `QUILL:assistant:<provider>:api-key` shape (no new secure-storage code),
+      everything non-secret in `<data>/ai/gateway.json`.
+- [x] `gateway_backend.py` — an `AIBackend` so QUILL can reach the hosted tier.
+      Deliberately unregistered; see above.
+
+**QuillLite:**
+
+- [x] `hosted_ai` switchable area, **off by default**, whose description *is* the
+      consent notice. An area that is off owns nothing — no menu, no keys, no
+      token on disk, no network call of any kind.
+- [x] Tools > **AI** submenu (not a tenth top-level menu — Clipboard and
+      Spelling were demoted from the bar for exactly this reason).
+- [x] Four chords. Both keymaps are saturated: measured across Ctrl+Alt,
+      Ctrl+Shift, Alt+Shift and Ctrl+Alt+Shift, the chords free in *both*
+      editors are `Ctrl+Alt+G`, `Ctrl+Alt+Z` and a few Ctrl+Alt+Shift function
+      keys. So family rule 2 decided this, not taste: the two short ones went to
+      the daily commands and rule 9 sent the once-per-computer pair to
+      `Ctrl+Alt+Shift+F9`/`F10`. QuillLite has **no** keyless command rows, so a
+      chord each was not optional.
+- [x] Four modeless `wx.Frame` windows — pad, result, sign-in, usage. Modeless
+      because a modal blocks the editor, which is the one thing a writing tool
+      may not do; every Close goes through `bind_close_button`, and nothing is
+      ever shown modally from a close handler.
+- [x] The pad shows **what will be sent** before it is sent, including the actual
+      excerpts chosen for a document question — the only way somebody can tell
+      "the AI got it wrong" from "it never saw the right paragraph".
+- [x] An answer never reaches a document on its own, and Replace is withheld
+      when the text it came from moved while the request was in flight.
+- [x] GATE-LITE-COVER: **205 handlers, 205 covered, 0 shape-only.** Tests written
+      as `(lambda w: w.cmd_ai_assistant(), ...)` — a parametrized handler *name*
+      is invisible to the AST scan.
+- [x] GATE-9 egress entry, F1 purposes for all four windows, the feature area in
+      the user guide, profile counts corrected (18 → 19 areas) and `hosted_ai`
+      explicitly removed from the WordPad and Notepad profiles — "WordPad, but it
+      sends your writing to a server" is a profile whose name has stopped being
+      true.
+- [x] 40 core tests and 14 behavioural ones. `mypy quill/core quill/io` clean
+      across 1,067 files.
+
+**Deviations from section 12, stated rather than quietly dropped:**
+
+- [ ] **No status-bar cell.** Section 12.8 specified a thirteenth cell. QuillLite's
+      status bar is deliberately a *fixed* twelve, and a cell that appears only
+      when an area is on needs rebuild-on-toggle machinery that module was
+      explicitly not built for. The allowance shows in the pad, the result
+      window and the Usage window instead. Worth doing properly later; not worth
+      half-doing now.
+- [ ] **QUILL's own menu wiring.** The capability is shared and reachable; the
+      provider registration and cascade entry are a separate, deliberate change.
 
 ### 16.6 Before anyone outside the team uses it
 
@@ -2146,7 +2219,7 @@ ssh lp 'cd ~/quill-ai-gateway && docker compose -f docker-compose.prod.yml exec 
 
 ### 17.3 Signing in once DNS is up
 
-`https://ai.csedesigns.com/dashboard/`, paste the token. That is the whole
+`https://ai.community-access.org/dashboard/`, paste the token. That is the whole
 thing, and it is how it should be done from then on — the tunnel above is
 scaffolding for the gap between "the service runs" and "the service has a name".
 

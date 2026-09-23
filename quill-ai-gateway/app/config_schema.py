@@ -423,6 +423,49 @@ KEYS: dict[str, ConfigKey] = {
                 "building. Raise it if legitimate sign-ups are being refused."
             ),
         ),
+        ConfigKey(
+            key="active_devices_cap_per_ip",
+            name="Computers one internet address may have connected",
+            group="signup",
+            unit="computers",
+            minimum=0,
+            maximum=200,
+            step=1,
+            sentence=(
+                "How many computers may be connected to the free tier from one "
+                "address at once. Signing one out frees its place. Zero means no "
+                "limit."
+            ),
+            consequence=(
+                "This is the standing version of the sign-up throttle above, and "
+                "it exists because connecting a computer creates a whole new "
+                "account: two computers are two allowances, not one shared "
+                "between them. Set it too low and a family or a small office "
+                "cannot all use it; too high and one person can quietly run six "
+                "machines through the free tier."
+            ),
+        ),
+        ConfigKey(
+            key="network_monthly_request_cap",
+            name="Requests one internet address may make, per month",
+            group="signup",
+            unit="requests",
+            minimum=0,
+            maximum=100_000,
+            step=10,
+            sentence=(
+                "A ceiling shared by everybody behind one address, however many "
+                "accounts they have. Zero means no limit."
+            ),
+            consequence=(
+                "The measure that actually makes using several computers to get "
+                "several allowances pointless, because it does not care how many "
+                "accounts are behind the address. Keep it a few times one "
+                "person's monthly allowance so a genuinely shared address is "
+                "never the one it catches."
+            ),
+            cost_relevant=False,
+        ),
         # --- Not in use yet --------------------------------------------------
         ConfigKey(
             key="max_image_bytes",

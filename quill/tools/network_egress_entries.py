@@ -29,6 +29,25 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "(url_import.download_audio refuses when QUILL_SAFE_MODE=1) and gated off "
         "when the future.url_import feature is disabled."
     ),
+    "core/ai/gateway_client.py::_urlopen_json": (
+        "QuillLite's free hosted AI (ai.md sections 12 and 14). The single "
+        "outbound call for the whole feature: fetching the service's current "
+        "limits, connecting this computer through the RFC 8628 device-code "
+        "flow, reading how much of the monthly allowance is left, and sending "
+        "one selected passage (or up to three locally-chosen excerpts and a "
+        "question) to QUILL's own gateway, which holds the provider key and "
+        "forwards to OpenAI. Never silent and never scheduled: every call is a "
+        "Tools > AI command the user pressed or a sign-in they started, there "
+        "is no polling and no launch-time check, and the whole feature lives "
+        "behind the 'hosted_ai' switchable area which ships OFF -- an area "
+        "that is off owns nothing, so an install that has not turned it on "
+        "makes no call from here at all. No provider key ever passes through "
+        "this code; the client holds only a QUILL-issued device token. TLS is "
+        "verified (ssl.create_default_context, never relaxed) because what "
+        "travels is that token and the user's own writing. What is sent is "
+        "shown to the user in the AI Assistant window before Send, and the "
+        "consent notice is the feature area's own description."
+    ),
     "core/library/http.py::fetch_bytes": (
         "Single egress site for the accessible book libraries (Part 4): keyword "
         "search of Project Gutenberg (Gutendex), Google Books, the NLS BARD "

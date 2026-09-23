@@ -1766,12 +1766,12 @@ and change your mind.
 Under the box is a **read-only description you can read line by line**, and it
 answers two different questions. First, what the profile *is*, in its own words.
 Then what it would actually *do* to the app in front of you: how many of the
-18 areas it keeps and which, which ones it removes, and anything else it
+19 areas it keeps and which, which ones it removes, and anything else it
 changes -- Notepad, for instance, also makes **Ctrl+N** create a plain text
 document. **F1** on the Profile box reads the same thing.
 
 What is spoken when you choose a profile is the short version -- "Notepad
-profile: 2 of 18 features on. New documents will be plain text." -- because your
+profile: 2 of 19 features on. New documents will be plain text." -- because your
 screen reader is already reading the name and the description is there to be
 read at your own pace.
 
@@ -1795,14 +1795,14 @@ Here is what each one is, at a glance and then in full.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 15 of 18 | plain text (unchanged) |
-| **Everything** | 18 of 18 | plain text (unchanged) |
-| **WordPad** | 5 of 18 | **rich text** |
-| **Notepad** | 2 of 18 | **plain text** |
+| **Recommended** | 15 of 19 | plain text (unchanged) |
+| **Everything** | 19 of 19 | plain text (unchanged) |
+| **WordPad** | 5 of 19 | **rich text** |
+| **Notepad** | 2 of 19 | **plain text** |
 
 #### Recommended
 
-**What a new install is.** 15 of the 18 areas: rich text, headings, Markdown and
+**What a new install is.** 15 of the 19 areas: rich text, headings, Markdown and
 HTML, bookmarks, the line tools, the clipboard history, printing, abbreviations,
 the Selection submenu, spell check, Matches, Go Back and Go Forward, the Command
 Palette, Describe Character and text size.
@@ -1817,7 +1817,7 @@ palette, the headings list and the bookmark list already cover it.
 
 #### Everything
 
-**All 18 areas on**, including those three. Autocorrect will straighten
+**All 19 areas on**, including those four -- and that includes **AI help**, which is the one area here that sends anything off this computer, so choose this profile only if that is what you meant. Autocorrect will straighten
 your quotes and capitalise your sentences, every save keeps a dated copy under
 your data folder, and Go To Anything joins the palette and the two lists.
 
@@ -1828,7 +1828,7 @@ them one at a time.
 
 **What WordPad was.** Rich text you can format, print, and check the spelling
 of: bold, italic, underline, headings, alignment, bullets, indenting and line
-spacing, plus Find and Replace, printing and text size. Five of the 18
+spacing, plus Find and Replace, printing and text size. Five of the 19
 areas.
 
 **Off:** the writing tools behind the formatting. No Edit ▸ Lines, no clipboard
@@ -1848,7 +1848,7 @@ without one in 2026 is a surprise rather than a simplification.
 #### Notepad
 
 **The smallest QuillLite gets**, and the one most people arriving here are
-replacing something with. Two of the 18 areas: **printing** and **text
+replacing something with. Two of the 19 areas: **printing** and **text
 size**.
 
 **Off:** the Format menu and everything under it, headings, bookmarks, the line
@@ -1888,7 +1888,7 @@ is called, so typing "curly quotes" finds Autocorrect and typing "dictionary"
 finds Spell check. The line under the box says how many are left, and **Down**
 from the box moves straight into the list.
 
-### The 18 areas
+### The 19 areas
 
 | Area | What goes | Starts |
 |---|---|---|
@@ -1910,9 +1910,42 @@ from the box moves straight into the list.
 | **Autocorrect while typing** | Curly quotes, long dashes, sentence capitals | **off** |
 | **Timestamped backups** | A dated copy kept every time you save | **off** |
 | **Go To Anything** | One box that searches everything at once | **off** |
+| **AI help (sends your text to QUILL's servers)** | Tools ▸ AI: summarize, rewrite, proofread, explain, and questions about a document | **off** |
 
-The last three start switched off, and they sit in this same list rather than
+The last four start switched off, and they sit in this same list rather than
 being hidden away, because something you cannot find might as well not exist.
+
+**AI help is off for a different reason from the other three.** Those would be
+*wrong* on -- autocorrect rewriting a configuration file's quotes, backups
+quietly filling a folder. This one is off because using it sends the passage
+you ask about over the internet, and that is not a choice anybody else gets to
+make for you. Its row in Customize Features spells out the whole trade before
+you switch it on, and an area that is off owns nothing: no menu, no keys, no
+sign-in stored on disk, and no connection of any kind.
+
+**And switching it on is not enough.** Before anything is sent, QuillLite shows
+you the whole agreement -- what is sent, what QUILL keeps, what it does not
+keep, what OpenAI does with it, and how to say no -- and nothing happens until
+you accept it. Turning the area on and declining the agreement leaves the menu
+there and the feature unusable, which is deliberate: you did turn it on, and
+what you declined was the sending. The switch does not flip itself back behind
+you.
+
+There are **three ways to the same agreement**, because the place you look for
+it depends on which part of the app you already know:
+
+- **Tools ▸ AI ▸ Privacy Agreement...** (**Ctrl+Alt+Shift+K**) -- read it, accept
+  it, or take it back. Taking it back also signs this computer out, because
+  keeping the sign-in for a service you have just withdrawn from would be
+  keeping the key to the thing you declined.
+- **Preferences**, where a tick box says *Use QUILL's free AI help*. Ticking it
+  shows the agreement; unticking it withdraws.
+- **Customize Features**, where switching the area on asks you straight away.
+
+All three read and write the same answer, so none of them can disagree with the
+others. If the agreement ever changes in a way that matters -- what is sent, or
+what is kept -- you will be asked again rather than the old answer being taken
+to cover the new thing.
 
 Autocorrect is off because curly quotes are lovely in a letter and unhelpful in
 a settings file. Backups are off because they quietly fill a folder. Go To
@@ -2315,6 +2348,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+U** | Underline |
 | **Ctrl+Shift+.** | Grow Font |
 | **Ctrl+Shift+,** | Shrink Font |
+| **Ctrl+Shift+N** | Normal Text |
 | **Ctrl+L** | Align Left |
 | **Ctrl+E** | Centre |
 | **Ctrl+R** | Align Right |
@@ -2322,7 +2356,6 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+L** | Lists |
 | **Ctrl+Alt+F** | Editor Font... |
 | **Ctrl+Shift+F** | Font for Selection... |
-| **Ctrl+Shift+N** | Normal Text |
 | **Ctrl+Shift+D** | Describe Formatting at Cursor |
 | **Alt+Shift+F** | Switch Document Mode |
 | **Ctrl+Alt+F6** | Document Language... |
@@ -2427,6 +2460,16 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Alt+Shift+M** | Quiet Mode |
 | **Ctrl+Alt+Shift+O** | Sound Scheme... |
+
+### Tools ▸ AI
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+G** | AI Assistant... |
+| **Ctrl+Alt+Z** | Ask About This Document... |
+| **Ctrl+Alt+Shift+F9** | Usage... |
+| **Ctrl+Alt+Shift+F10** | Sign In or Out... |
+| **Ctrl+Alt+Shift+K** | Privacy Agreement... |
 
 ### Tools ▸ Change Case
 

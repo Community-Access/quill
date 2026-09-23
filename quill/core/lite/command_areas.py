@@ -66,6 +66,11 @@ MENU_AREA: dict[str, str] = {
     "&Tools|&Change Case": "tools",
     "&Edit|Clip&board": "clipboard",
     "&Tools|&Spelling": "spelling",
+    # The whole submenu, so switching the area off takes the keys and the
+    # Command Palette entries with it and not merely the menu rows. A chord that
+    # still fires for a feature somebody has switched off is the feature not
+    # being off -- and for this one that would mean a network call they declined.
+    "&Tools|&AI": "hosted_ai",
     "&Edit|Selectio&n": "selection",
     # The half of Find that answers "how many" and "where else". Find, Find
     # Next and Replace are in Edit itself and are not switchable: an editor

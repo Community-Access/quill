@@ -34,6 +34,7 @@
   "quill/apps/converter.py::QuillConverterFrame._on_browse::wx.DirDialog": "native",
   "quill/apps/inkwell.py::QuillInkwellFrame.edit_exclusions::wx.TextEntryDialog": "native",
   "quill/apps/lite.py::QuillLiteApp.open_from_dialog::wx.FileDialog": "native",
+  "quill/apps/lite_ai_dialogs.py::ask_ai_privacy_agreement::wx.Dialog": "hardened_custom",
   "quill/apps/lite_dialogs.py::ask_line_number::wx.Dialog": "hardened_custom",
   "quill/apps/lite_dialogs.py::choose_document_language::wx.Dialog": "hardened_custom",
   "quill/apps/lite_dialogs.py::choose_from_rows::wx.Dialog": "hardened_custom",

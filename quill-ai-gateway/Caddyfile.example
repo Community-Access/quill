@@ -22,7 +22,7 @@
 # separate name has no ordering to reason about, gets its own certificate, and
 # can be moved to another machine later by changing one DNS record.
 
-ai.csedesigns.com {
+ai.community-access.org {
     encode gzip
 
     # `quill-ai-gateway-web-1` is the container name docker compose gives the

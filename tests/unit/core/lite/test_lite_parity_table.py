@@ -102,6 +102,13 @@ def test_every_quilllite_field_is_either_shared_mapped_or_its_own() -> None:
         "restore_session",
         "session_files",
         # "Use QUILL's" only makes sense in the product that is not QUILL.
+        # QuillLite's own, for now and on purpose. QUILL has AI already -- five
+        # bring-your-own-key providers, local models, the agent harness -- and
+        # reaches none of it through QUILL's hosted gateway, so it has nothing
+        # this agreement would be about. The day it does, this becomes a shared
+        # field and the agreement text is already shared
+        # (quill/core/ai/gateway_privacy.py) so the two cannot drift apart.
+        "ai_privacy_accepted_version",
         "share_quill_abbreviations",
         "share_quill_dictionary",
         # The MDI shell remembers its own frame; QUILL's is the app shell's.

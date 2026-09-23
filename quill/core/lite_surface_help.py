@@ -42,6 +42,33 @@ __all__ = [
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    # -- The AI windows. Off until somebody turns the area on, so most people
+    # will never meet these; the ones who do are meeting them for the first
+    # time, which is what the wording is for.
+    "AI Assistant": (
+        "Ask QUILL's free AI to summarize, rewrite, proofread or explain the "
+        "passage shown here, or to answer a question about this document. "
+        "What you see in 'What will be sent' is exactly what leaves your "
+        "computer -- nothing else from the document goes with it. Each answer "
+        "uses one of your free requests, and you keep typing while it works."
+    ),
+    "QUILL AI Sign-In": (
+        "Connect this computer to QUILL's free AI. There is no account, no "
+        "password and no email address: QUILL shows you an eight-character "
+        "code, you type it into a web page on any device, and this window says "
+        "when you are connected. Nothing is sent until you choose Show My Code."
+    ),
+    "AI Usage": (
+        "How many free AI requests you have left this month and today, and "
+        "when the count starts again. Your support ID is here too -- that is "
+        "what QUILL support will ask for. You can also sign this computer out "
+        "from here, and connect it again whenever you like."
+    ),
+    "Summary": (
+        "What the AI sent back. It is read-only on purpose: nothing goes into "
+        "your document until you choose Replace My Selection or Insert Below, "
+        "and either of those is a single edit that Control Z takes back."
+    ),
     "QuillLite": (
         "Your document. This is the whole editor: type, and Control S saves. The "
         "title bar leads with this document's number, then its name, whether it "
@@ -227,6 +254,14 @@ PURPOSES: dict[str, str] = {
 }
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
+# The result window is titled after what was asked for, so every one of its
+# titles needs an entry. Same sentence for all five: the window is the same
+# window, and a different paragraph per verb would be five things to keep in
+# step for no gain to anybody listening.
+for _result_title in ("Rewrite", "Proofread", "Explanation", "Answer", "AI Result"):
+    PURPOSES[_result_title] = PURPOSES["Summary"]
+
+
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
     (
         "Help:",
