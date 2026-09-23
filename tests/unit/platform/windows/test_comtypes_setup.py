@@ -43,3 +43,40 @@ def test_second_call_skips_the_filesystem_work(monkeypatch: pytest.MonkeyPatch) 
 
     monkeypatch.setattr("quill.core.paths.app_data_dir", _boom)
     comtypes_setup.ensure_comtypes_gen_dir_redirected()  # must not raise
+
+
+def test_the_suite_never_points_comtypes_at_the_real_profile() -> None:
+    """GATE: the test session's comtypes cache is outside %APPDATA%\Quill.
+
+    The shipped redirect puts the cache in the running app's data folder,
+    which is correct for the app and refused for the suite -- the real profile
+    is read-only to tests. A developer never saw it, because the wrappers were
+    already on disk from running the app; a fresh CI runner had to generate
+    them, was refused, and reported it as
+    ``RichEditRtfError: Could not reach the Rich Edit text object model``.
+    Thirteen GATE-RICH-ROUNDTRIP tests failed that way on every CI run for
+    weeks while passing on every developer machine.
+
+    ``tests/conftest.py`` redirects the cache at ``pytest_configure`` time.
+    This asserts the redirect actually took, because the failure it prevents
+    is invisible anywhere the cache already exists -- which is everywhere the
+    suite is usually run.
+    """
+    import os
+    from pathlib import Path
+
+    if comtypes_setup._cc is None:
+        pytest.skip("comtypes is not available on this platform")
+    gen_dir = comtypes_setup._cc.gen_dir
+    if gen_dir is None:
+        return  # in-memory codegen writes nothing at all, which is also fine
+    appdata = os.environ.get("APPDATA")
+    if not appdata:
+        return
+    resolved = Path(gen_dir).resolve()
+    profile = (Path(appdata) / "Quill").resolve()
+    assert not resolved.is_relative_to(profile), (
+        f"the suite's comtypes cache is inside the real profile ({resolved}). "
+        "Every wrapper it has to generate will be refused by the profile "
+        "guard, and the refusal is reported as a missing Rich Edit control."
+    )
