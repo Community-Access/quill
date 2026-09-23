@@ -89,7 +89,11 @@ class DocumentFileMixin:
         # after the path is set and not at construction: a window is built
         # empty and only then told which file it holds.
         self._init_spelling()
+        # Both sweeps, not just the marks: the file name is what decides the
+        # language for a document with no override, so opening notes.md into a
+        # window that was plain has to light the Markdown rows too.
         self._sync_check_items()
+        self._sync_menu_rows()
         self._touch_status()
         # After the path is set, for the same reason spelling is: the store is
         # keyed by file path, and a window is built empty and only then told
@@ -172,6 +176,9 @@ class DocumentFileMixin:
         self._slot = slot
         self.modified = True
         self._update_title()
+        # A restored slot brings its original name with it, and the name is
+        # what decides the language for a document with no override.
+        self._sync_menu_rows()
         self._touch_status()
 
     def _remember(self, path: Path) -> None:
@@ -244,6 +251,10 @@ class DocumentFileMixin:
         self._cue(SoundEvent.DOCUMENT_SAVED)
         # Whatever the name was wrong about, it is not wrong now.
         self._pending_suffix = ""
+        # Save As can change the language as well as the spell check: an
+        # untitled document saved as notes.md is a Markdown document from here
+        # on, and its Format rows have to say so without waiting for a restart.
+        self._sync_menu_rows()
         self._announce(f"Saved {destination.name}")
         return True
 

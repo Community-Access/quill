@@ -88,6 +88,23 @@ class QuillLiteShell(wx.MDIParentFrame):
 
         app_context_help.install(self, wx=wx)
         self.Bind(wx.EVT_CLOSE, self._on_close)
+        # The child's bar is *this* window's bar: wxMSW merges an MDI child's
+        # menus into the parent, so EVT_MENU_OPEN is delivered here and never
+        # to the document that built the rows. The child binds it too, and
+        # harmlessly, but this is the binding that actually fires -- without it
+        # a document's Format rows were only ever right at build time.
+        self.Bind(wx.EVT_MENU_OPEN, self._on_menu_open)
+
+    def _on_menu_open(self, event: wx.MenuEvent) -> None:
+        """Hand the opening menu to the document whose rows it holds."""
+        child = self.GetActiveChild()
+        sync = getattr(child, "sync_menu_state", None)
+        if callable(sync):
+            try:
+                sync()
+            except RuntimeError:
+                pass  # a child mid-destruction; its bar is about to go
+        event.Skip()
 
     def _build_placeholder_menu(self) -> None:
         """The bar shown when no document is open.

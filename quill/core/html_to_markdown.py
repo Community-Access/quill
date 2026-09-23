@@ -25,7 +25,61 @@ import re
 from dataclasses import dataclass
 from html.parser import HTMLParser
 
-__all__ = ["extract_cf_html_fragment", "html_to_markdown"]
+__all__ = ["contains_html_markup", "extract_cf_html_fragment", "html_to_markdown"]
+
+#: The tags whose presence means a buffer is HTML rather than Markdown that
+#: happens to contain a tag. Block-level only, deliberately: QuillLite writes
+#: ``<u>`` into *Markdown* documents (there is no native syntax for underline),
+#: so an inline tag proves nothing, while a ``<p>`` or an ``<h2>`` is structure
+#: no Markdown writer produces. The same set QUILL sniffs content with.
+_HTML_BLOCK_TAGS = (
+    "html",
+    "head",
+    "body",
+    "div",
+    "p",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "ul",
+    "ol",
+    "li",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "section",
+    "article",
+    "header",
+    "footer",
+    "blockquote",
+    "pre",
+    "br",
+    "hr",
+)
+
+_HTML_BLOCK_RE = re.compile(
+    r"<\s*/?\s*(?:" + "|".join(_HTML_BLOCK_TAGS) + r")\b[^>]*>", re.IGNORECASE
+)
+
+
+def contains_html_markup(text: str) -> bool:
+    """Whether *text* really is HTML, as opposed to being *called* HTML.
+
+    Asked before anything flattens a buffer with :func:`html_to_markdown`. The
+    converter is an HTML parser, and HTML has no significant newlines: run it
+    over Markdown and every blank line between paragraphs disappears, leaving
+    one enormous line with the ``#`` markers still in it. That is not a
+    theoretical failure -- ringing Alt+Shift+F round the document kinds did
+    exactly it, because the ring re-labels a Markdown buffer "HTML" without
+    rewriting a character of it (markup-to-markup switches keep the text; the
+    label decides how the *next* insertion is spelled). The next stop then
+    believed the label and converted a document that had nothing to convert.
+    """
+    return _HTML_BLOCK_RE.search(text) is not None
 
 
 @dataclass
