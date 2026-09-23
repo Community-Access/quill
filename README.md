@@ -348,6 +348,17 @@ rebuilds the `docs/` tree as part of the release flow -- rather than
 calling pandoc by hand, and `scripts/check_docs_artifacts.py` fails any
 commit that changes a Markdown source without its regenerated siblings.
 
+The published site has a gate of its own.
+`tests/unit/docs/test_site_links.py` models what the GitHub Pages workflow
+assembles -- the hand-built shell under `docs/site/`, every `docs/**/*.html`
+flattened into `/docs/` by bare basename, and the governance pages rendered
+at deploy time -- then fails on any internal link that resolves to nothing.
+It exists because nothing here had ever validated an href, and 32 podcast
+transcript pages from a renumbering sat live for months linking audio that
+no longer existed. A new document needs a globally unique basename: the
+deploy flattens by filename, so a second `README.html` anywhere under
+`docs/` silently overwrites the first.
+
 ## Support and issue reporting
 
 Use **Help -> Get Help from Support...** (Ctrl+Alt+F2) inside any of the
