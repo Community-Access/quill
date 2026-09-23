@@ -10,12 +10,14 @@ rates, and the controller is the one that has to stay readable.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 import wx
 
 from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
 from quill.core.status_cell_width import ratchet_width
+from quill.core.status_message import IDLE_MESSAGE
 
 __all__ = [
     "CELLS",
@@ -23,6 +25,7 @@ __all__ = [
     "RICH_LINE_ENDINGS_CELL",
     "StatusCell",
     "encoding_name",
+    "native_cell_labels",
     "newline_name",
 ]
 
@@ -37,12 +40,21 @@ _MESSAGE = "message"
 
 #: How many characters of a status message the *label* shows. The message cell
 #: is the only one whose text is unbounded -- a path, an OS error, a sentence --
-#: and a button label wider than its button is ellipsised by wxMSW, which is
-#: what JAWS's Insert+Page Down then reads off the screen. Capped here and read
-#: in full by Enter on the cell (and by the F6 landing announcement), which is
-#: the trade the fixed cells never have to make: Position and Encoding say two
-#: facts nothing else in the app will tell you, so they are never shortened.
-_MESSAGE_LABEL_CHARS = 90
+#: and a button label wider than its button is ellipsised by wxMSW. Capped here
+#: and read in full by Enter on the cell (and by the F6 landing announcement),
+#: which is the trade the fixed cells never have to make: Position and Encoding
+#: say two facts nothing else in the app will tell you, so they are never
+#: shortened.
+#:
+#: It was ninety, and ninety was too many. The row wraps, so one cell wide
+#: enough to hold a sentence pushes the eleven after it onto further rows --
+#: and the bottom row is what a reader scraping the window finds. The report
+#: that fixed this number read ``"CRLF (Windows) Modified"``: the last two
+#: cells of twelve, alone on the last row, because Ctrl+Shift+Y had just put
+#: two hundred characters in the first one. The scrape itself is answered by
+#: the native bar (:mod:`quill.ui.native_status_bar`); this is the other half,
+#: which is that the visible row should not wrap in the first place.
+_MESSAGE_LABEL_CHARS = 40
 
 #: The margin each cell button is added with, and the slack left under the last
 #: row when the bar's height is measured.
@@ -102,12 +114,6 @@ class StatusCell:
 
 
 CELLS: tuple[StatusCell, ...] = (
-    StatusCell(
-        _MESSAGE,
-        "Status Message",
-        "The last thing QuillLite announced. Speech is gone once it is spoken; "
-        "this is where it can be read again.",
-    ),
     StatusCell(
         "position",
         "Position",
@@ -186,6 +192,20 @@ CELLS: tuple[StatusCell, ...] = (
         "just because it was opened. Press Enter to change it.",
     ),
     StatusCell("saved", "Saved State", "Whether this document has unsaved changes."),
+    # Last, and the position is load-bearing twice over. The row **wraps**, so
+    # the one cell whose width has no ceiling has to be the one with nothing
+    # after it to push -- it was first, and a two-hundred-character message
+    # shoved the other eleven cells onto rows a screen reader scraping the
+    # window could not see ("CRLF (Windows) Modified"). And the native bar
+    # reads the message last, after the facts somebody pressed the key for, so
+    # the row and the native bar now walk in the same order. F6 landing on
+    # Position rather than on "Ready" is the third thing this bought.
+    StatusCell(
+        _MESSAGE,
+        "Status Message",
+        "The last thing QuillLite announced. Speech is gone once it is spoken; "
+        "this is where it can be read again.",
+    ),
 )
 
 #: Codec and line-ending names, read from the same table the File Format
@@ -204,6 +224,49 @@ def encoding_name(codec: str) -> str:
 def newline_name(newline: str) -> str:
     """How a line ending is named to a person."""
     return _NEWLINE_NAMES.get(newline, "Mixed")
+
+
+#: The cells whose value already names itself. "9,696 words" and "Line 3,
+#: column 1 of 200" need no label in front of them; "Insert" and "UTF-8" are
+#: not sentences on their own and get one. This matters only for the native
+#: bar, which is read as one line with no control names in it -- on the button
+#: row the reader announces each cell's name for us.
+_SELF_NAMING = frozenset({
+    _MESSAGE,
+    "position",
+    "selection",
+    "words",
+    "characters",
+    "heading",
+    "list",
+    "saved",
+})
+
+
+def native_cell_labels(values: Mapping[str, str]) -> list[str]:
+    """The cells' text for the native status bar, in the order they are shown.
+
+    Two departures from the visible row, both about it being read as a single
+    sentence rather than walked control by control. A cell whose value does not
+    name itself is prefixed with its label, and the **message goes last** --
+    it is the one cell holding something that already *was* spoken, so the
+    facts somebody pressed the key for come first. An idle message is left out
+    altogether rather than read as "Ready" at the end of every answer.
+    """
+    ordered: list[str] = []
+    message = ""
+    for cell in CELLS:
+        value = str(values.get(cell.key) or "").strip()
+        if not value:
+            continue
+        if cell.key == _MESSAGE:
+            if value != IDLE_MESSAGE:
+                message = value
+            continue
+        ordered.append(value if cell.key in _SELF_NAMING else f"{cell.label}: {value}")
+    if message:
+        ordered.append(message)
+    return ordered
 
 
 #: What the Encoding and Line Endings cells say about a document that has

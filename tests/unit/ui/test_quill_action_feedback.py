@@ -231,7 +231,10 @@ def recorded_sounds(monkeypatch):
 @pytest.mark.parametrize(
     ("mode", "tone", "loud"),
     [
-        ("sound", True, False),
+        # "sound" speaks here because this is the *first* miss -- see
+        # resolve_failure. The run of repeats below is where the tone-only
+        # default still applies.
+        ("sound", True, True),
         ("speech", False, True),
         ("both", True, True),
         ("silent", False, False),
@@ -242,6 +245,26 @@ def test_a_missed_search_reports_in_the_chosen_channel(recorded_sounds, mode, to
     host._report_search_missed("Not found: widget")
     assert bool(recorded_sounds) is tone
     assert host.status == (["Not found: widget"] if loud else [])
+
+
+def test_the_first_miss_speaks_and_the_same_miss_again_does_not(recorded_sounds):
+    """Both halves of the report in one test. QuillLite "made a sound but did
+    not announce the error" on the press that asked the question; F3 pressed in
+    runs after that is what the tone default was always protecting."""
+    host = _Search(find_not_found_feedback="sound")
+    host._report_search_missed("Not found: widget")
+    host._report_search_missed("Not found: widget")
+    host._report_search_missed("Not found: widget")
+    assert host.status == ["Not found: widget"]
+    assert host.quiet_status == ["Not found: widget", "Not found: widget"]
+
+
+def test_a_different_miss_is_a_fresh_question(recorded_sounds):
+    """A repeat is the same miss said twice, not any second miss."""
+    host = _Search(find_not_found_feedback="sound")
+    host._report_search_missed("Not found: widget")
+    host._report_search_missed("Not found: sprocket")
+    assert host.status == ["Not found: widget", "Not found: sprocket"]
 
 
 @pytest.mark.parametrize("mode", ["sound", "speech", "both", "silent"])
@@ -260,14 +283,24 @@ def test_the_status_bar_carries_the_words_in_every_mode(recorded_sounds, mode):
 def test_speech_off_still_writes_the_bar_quietly(recorded_sounds):
     host = _Search(find_not_found_feedback="sound")
     host._report_search_missed("Not found: widget")
+    host._report_search_missed("Not found: widget")
     assert host.quiet_status == ["Not found: widget"]
-    assert host.status == []
+    assert host.status == ["Not found: widget"]
 
 
 def test_the_miss_sound_is_the_search_one(recorded_sounds):
     host = _Search(find_not_found_feedback="sound")
     host._report_search_missed("Not found: widget")
     assert recorded_sounds == [str(SoundEvent.SEARCH_NOT_FOUND)]
+
+
+def test_the_status_bar_is_still_written_on_a_repeat(recorded_sounds):
+    """A quiet repeat is quiet, not absent: somebody who then goes and reads
+    the bar must not find the previous search's answer sitting in it."""
+    host = _Search(find_not_found_feedback="sound")
+    host._report_search_missed("Not found: widget")
+    host._report_search_missed("Not found: widget")
+    assert host.status + host.quiet_status == ["Not found: widget", "Not found: widget"]
 
 
 def test_a_pack_with_no_miss_clip_speaks_instead(monkeypatch):

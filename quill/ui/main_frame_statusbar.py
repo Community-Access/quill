@@ -22,8 +22,19 @@ from quill.core.navigation import estimate_page_count, estimate_page_for_positio
 from quill.core.palette import load_palette_usage, top_suggestion
 from quill.core.settings import STATUS_BAR_ITEMS, Settings, save_settings
 from quill.core.status_cell_width import ratchet_width
+from quill.core.status_message import (
+    IDLE_MESSAGE,
+    MESSAGE_TTL_SECONDS,
+    StatusMessage,
+    current_message,
+)
 from quill.platform.sr_announce import announce
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.native_status_bar import (
+    native_status_text,
+    show_native_status_bar,
+    sync_native_status_bar,
+)
 from quill.ui.status_bar_role import mark_as_status_cell
 from quill.ui.statusbar_cell_help import STATUS_BAR_CELL_HELP
 
@@ -105,7 +116,12 @@ class StatusBarMixin:
         if not visible:
             return ["message"]
         if "message" not in visible:
-            visible.insert(0, "message")
+            # At the end, not the front. The message is a replay of something
+            # already spoken rather than a fact you cannot otherwise get, and
+            # it is the one cell whose text has no ceiling -- put first in a
+            # wrapping row it shoves every fixed cell onto a row a reader
+            # scraping the window cannot see.
+            visible.append("message")
         # The generic Message cell has nothing left to say once another
         # visible cell already shows the exact same text -- saying it twice
         # through two different cells is confusing noise, not information.
@@ -211,9 +227,9 @@ class StatusBarMixin:
         notifications = getattr(self, "_notifications", [])
         autosave_interval = getattr(self, "_autosave_interval", timedelta(seconds=30))
         if item == "message":
-            message = getattr(self, "_status_message", "Ready")
+            message = self._live_status_message()
             if message == "Modified" and self._dirty_title_suffix():
-                return "Ready"
+                return IDLE_MESSAGE
             return message
         if item == "file_path":
             document = getattr(self, "document", None)
@@ -686,7 +702,11 @@ class StatusBarMixin:
         if bar is None:
             return
         try:
-            bar.Show(bool(getattr(self.settings, "show_status_bar", True)))
+            visible = bool(getattr(self.settings, "show_status_bar", True))
+            bar.Show(visible)
+            # The native mirror goes with it: the setting means "no status
+            # bar", not "no status bar unless you ask a different way".
+            show_native_status_bar(getattr(self, "frame", None), visible)
             self.frame.Layout()
         except Exception:  # noqa: BLE001 - see the docstring
             pass
@@ -721,6 +741,8 @@ class StatusBarMixin:
             return
         if not self._statusbar_cells:
             self._build_statusbar_cells()
+        native: list[str] = []
+        message_label = ""
         for cell in self._statusbar_cells:
             item = cell.item
             try:
@@ -739,9 +761,14 @@ class StatusBarMixin:
             except RuntimeError:
                 continue
             if item == "message":
+                # Held back rather than dropped: on the native bar the message
+                # reads last, after the facts somebody pressed the key for.
+                if label and label != IDLE_MESSAGE:
+                    message_label = label
                 # The one cell added with a proportion: the sizer hands it the
                 # slack, so it has no width of its own to hold.
                 continue
+            native.append(label)
             try:
                 cell.button.InvalidateBestSize()
                 width = ratchet_width(
@@ -752,6 +779,12 @@ class StatusBarMixin:
                 cell.button.SetMinSize((width, -1))
             except Exception:
                 pass
+        if message_label:
+            native.append(message_label)
+        # The same text, on the control JAWS's Insert+Page Down actually looks
+        # for. See quill/ui/native_status_bar.py: the role on the panel was
+        # never going to answer a command that searches by window class.
+        sync_native_status_bar(getattr(self, "frame", None), native_status_text(native))
         self._relayout_statusbar()
 
     def _refresh_legacy_statusbar(self) -> None:
@@ -964,8 +997,63 @@ class StatusBarMixin:
             popup_target = self.statusbar
         self._popup_context_menu(popup_target, menu, event)
 
-    def _set_status(self, message: str) -> None:
+    def _live_status_message(self) -> str:
+        """The message cell's text *now*, which is not always what was set.
+
+        A message describes a moment, and the moment passes: the next edit
+        clears it and so does a minute going by. :mod:`quill.core.status_message`
+        has the rules and the report behind them -- a "String not found" still
+        sitting in the bar after a page of editing.
+
+        A message set without a timestamp never expires, which is the case for
+        a stub frame in a test assigning ``_status_message`` directly: it
+        should read back what it assigned rather than a clock it never set.
+        """
+        text = getattr(self, "_status_message", "") or ""
+        set_at = getattr(self, "_status_message_at", None)
+        if set_at is None:
+            return text or IDLE_MESSAGE
+        return current_message(
+            StatusMessage(text, set_at, getattr(self, "_status_message_revision", 0)),
+            now=time.monotonic(),
+            revision=self._status_document_revision(),
+        )
+
+    def _status_document_revision(self) -> int:
+        """The active document's revision, or 0 for a frame without one."""
+        try:
+            return int(self.doc_text.revision)
+        except Exception:  # noqa: BLE001 - a status cell must never break typing
+            return 0
+
+    def _note_status_message(self, message: str) -> None:
+        """Stamp a message with the clock and revision that will expire it."""
         self._status_message = message
+        self._status_message_at = time.monotonic()
+        self._status_message_revision = self._status_document_revision()
+        wx = getattr(self, "_wx", None)
+        timer = getattr(self, "_status_expiry_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001
+                pass
+        self._status_expiry_timer = None
+        if wx is None:
+            return
+        # Refresh once the message is due out, because "nothing else is
+        # happening" is exactly the case the timeout exists for. Silent: a
+        # label changing on an unfocused control is what a reader does not
+        # announce (GATE-13).
+        try:
+            self._status_expiry_timer = wx.CallLater(
+                int(MESSAGE_TTL_SECONDS * 1000) + 100, self._schedule_statusbar_refresh
+            )
+        except Exception:  # noqa: BLE001 - a timer is never worth a crash
+            self._status_expiry_timer = None
+
+    def _set_status(self, message: str) -> None:
+        self._note_status_message(message)
         self._record_spoken(message)
         self._refresh_statusbar()
         throttle_ms = int(getattr(self.settings, "announcement_throttle_ms", 0) or 0)
@@ -989,7 +1077,7 @@ class StatusBarMixin:
         Every caller is a one-shot status message; a ~90 ms display delay on a
         cell that is deliberately never spoken is imperceptible.
         """
-        self._status_message = message
+        self._note_status_message(message)
         self._schedule_statusbar_refresh()
 
     def _on_statusbar_context_menu(self, event: object) -> None:

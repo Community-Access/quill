@@ -143,12 +143,17 @@ class DocumentFindMixin:
         answer is to go to the other end and press again -- so the sentence says
         which end it stopped at rather than claiming the text is not there.
 
-        The channel is ``settings.find_not_found_feedback``, defaulting to the tone
-        alone: F3 is pressed in runs, and "Not found" spoken on every press of it
-        is the fastest way to make somebody switch the speech off altogether. The
-        status bar is written whatever the mode, because it is the record.
+        The channel is ``settings.find_not_found_feedback``. The **first** miss
+        speaks whatever the mode says, and a repeat of the same miss does not:
+        F3 is pressed in runs, and "Not found" on every press of it is the
+        fastest way to make somebody switch the speech off altogether -- but the
+        press that started the run is somebody asking a question, and answering
+        it with an unexplained tone is what got this reported ("QuillLite made a
+        sound but did not announce the error"). See
+        :func:`~quill.core.action_feedback.resolve_failure`. The status bar is
+        written whatever the mode, because it is the record.
         """
-        from quill.core.action_feedback import resolve
+        from quill.core.action_feedback import resolve_failure
         from quill.core.sound_events import SoundEvent
 
         if getattr(self.app.settings, "wrap_find", True):
@@ -156,9 +161,14 @@ class DocumentFindMixin:
         else:
             edge = "start" if reverse else "end"
             message = f"No more matches. Reached the {edge} of the document, and wrapping is off."
-        play, speak = resolve(
+        # Only the same miss said twice is a repeat. Looking for something else
+        # is a fresh question and gets an answer rather than another tone.
+        repeated = getattr(self, "_last_search_miss", None) == message
+        self._last_search_miss = message
+        play, speak = resolve_failure(
             getattr(self.app.settings, "find_not_found_feedback", "sound"),
             has_sound=self._has_sound_for(SoundEvent.SEARCH_NOT_FOUND),
+            repeated=repeated,
         )
         if play:
             self._cue(SoundEvent.SEARCH_NOT_FOUND)
@@ -183,6 +193,9 @@ class DocumentFindMixin:
         if match is None:
             self._report_not_found(str(options.get("needle", "")), reverse=reverse)
             return False
+        # A match ends the run of misses: the next one is a fresh question and
+        # gets a spoken answer rather than another tone.
+        self._last_search_miss = None
         # A search hit is a jump like any other, and the one people most often
         # want to come back from: F3 walks you away from what you were writing.
         self._record_location()

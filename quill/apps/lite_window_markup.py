@@ -143,6 +143,17 @@ class DocumentMarkupMixin:
     #: The user's override, or ``""`` to follow the file name.
     _language_override: str = ""
 
+    def _sync_menu_rows(self) -> None:
+        """Re-dim the menu for the kind of document this now is.
+
+        Guarded: a window still being built, or a test stub, has no menu bar.
+        The sweep is ``DocumentMenuMixin.sync_menu_state``, whose docstring has
+        the reason it cannot be left to the menu-open event.
+        """
+        sync = getattr(self, "sync_menu_state", None)
+        if callable(sync):
+            sync()
+
     # -- the language ------------------------------------------------------- #
 
     def document_language(self) -> str:
@@ -198,6 +209,7 @@ class DocumentMarkupMixin:
         self.reset_structure_announcer()
         self.sync_structure_announcer()
         self._touch_status()
+        self._sync_menu_rows()
         if announce:
             self._announce(f"Document language: {language_label(self.document_language())}")
 
@@ -224,9 +236,20 @@ class DocumentMarkupMixin:
         if self.editor.mode == RICH or self.document_language() != "html":
             return None
 
-        from quill.core.html_to_markdown import html_to_markdown
+        from quill.core.html_to_markdown import contains_html_markup, html_to_markdown
 
-        markdown = html_to_markdown(self.control.GetValue())
+        body = self.control.GetValue()
+        # Labelled HTML is not the same as *being* HTML: the ring and the
+        # Language cell both re-label a buffer without rewriting it, so a
+        # Markdown document can arrive here calling itself HTML. The HTML parser
+        # would flatten every blank line out of it -- newlines are the
+        # document's structure and HTML has no use for them -- and write the
+        # wreckage under the name just chosen. Nothing to convert is the second
+        # of the three None cases above.
+        if not contains_html_markup(body):
+            return None
+
+        markdown = html_to_markdown(body)
         return markdown if markdown.strip() else None
 
     def apply_markdown_conversion(self, markdown: str) -> None:
@@ -251,6 +274,7 @@ class DocumentMarkupMixin:
         self.reset_structure_announcer()
         self.sync_structure_announcer()
         self._touch_status()
+        self._sync_menu_rows()
         self._announce("Converted HTML to Markdown")
 
     def cmd_switch_document_kind(self) -> None:
@@ -274,8 +298,14 @@ class DocumentMarkupMixin:
         conversion produces Markdown. Ringing on to "Plain text" and clearing
         the language would leave a buffer full of ``##`` and ``**`` being called
         text that has no markup in it -- the Format cell lying about the very
-        thing it exists to report. One more press reaches plain text, and then
-        it is true.
+        thing it exists to report.
+
+        **Plain text is therefore the one stop the ring does not come back
+        to**: landing on Markdown puts it at position 1, and position 2 is HTML,
+        so after a visit to rich the key cycles Markdown, HTML, rich. Plain text
+        stays one keystroke away *by name* -- Ctrl+Alt+F6, or the status bar's
+        Language cell -- which is the right shape for it. (This paragraph used
+        to end "one more press reaches plain text". It does not.)
         """
         current = ("rich", "") if self.editor.mode == RICH else ("plain", self.document_language())
         try:

@@ -1664,13 +1664,20 @@ def test_spellcheck_hint_bell_debounces_same_word(monkeypatch: pytest.MonkeyPatc
     frame._last_live_misspelling_feedback = None
     frame._last_live_misspelling_feedback_at = 0.0
     frame._spell_dictionary = lambda: {"alpha"}  # type: ignore[method-assign]
-    ticks = iter([10.0, 10.1, 11.2])
+    # A clock that is *set*, not consumed. It used to be a three-item iterator,
+    # which silently assumed the hint reads the clock exactly once per call --
+    # so the moment anything else on the path took a reading (the status
+    # message stamping itself for expiry, 2026-09-22) the test died of
+    # StopIteration rather than of the behaviour it is about.
+    now = [10.0]
     # The hint moved to main_frame_spell_voice when "how a misspelling is
     # voiced" became one subject in one module.
-    monkeypatch.setattr(main_frame_spell_voice.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(main_frame_spell_voice.time, "monotonic", lambda: now[0])
 
     frame._announce_spellcheck_hint()
+    now[0] = 10.1
     frame._announce_spellcheck_hint()
+    now[0] = 11.2
     frame._announce_spellcheck_hint()
 
     assert bells == ["bell", "bell"]

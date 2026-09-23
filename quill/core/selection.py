@@ -206,6 +206,21 @@ def selection_scope(text: str, start: int, end: int) -> str:
 _UNSPOKEN_SCOPES = frozenset({"none", "span", "lines"})
 
 
+def spoken_scope(scope: str) -> str:
+    """*scope* if it is worth saying aloud, otherwise the empty string.
+
+    :func:`describe_selection` has always applied this rule to the sentence it
+    builds, and every other place that put a scope in front of a person had to
+    remember to do the same. Two did not. QuillLite's Say Selection read
+    "52039 characters, 9696 words, lines." -- a bare noun with no number in
+    front of it, reported exactly that way -- and QUILL's Selection Actions
+    dialog titled itself "Selection actions (lines, 180 words)", which a screen
+    reader announces on open. One function now, so the next caller cannot leak
+    the classifier either.
+    """
+    return "" if scope in _UNSPOKEN_SCOPES else scope
+
+
 def describe_selection(
     text: str,
     start: int,

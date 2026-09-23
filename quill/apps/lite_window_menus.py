@@ -329,7 +329,32 @@ class DocumentMenuMixin:
             self._window_menu_items.append(item.GetId())
             self.Bind(wx.EVT_MENU, lambda _e, f=frame: self.app.focus_frame(f), item)
 
-    def _on_menu_open(self, event: wx.MenuEvent) -> None:
+    def sync_menu_state(self) -> None:
+        """Both sweeps: the marks, and the rows this document can support.
+
+        Public, and called from every moment that changes the answer rather
+        than from the menu-open event alone -- because on an MDI child the
+        menu-open event is not one of those moments. wxMSW merges a child's bar
+        into the **parent** frame, which is where ``EVT_MENU_OPEN`` is then
+        delivered; a child that bound it and nothing else refreshed once, at
+        build time, and never again.
+
+        That is what was reported. A document created plain and switched to
+        Markdown with Alt+Shift+F kept every markup row dimmed -- Promote and
+        Demote Heading, both section moves, the six headings, Normal Text, the
+        Heading Organizer, bold, italic, underline, lists, and both tag pickers
+        -- so Alt+Shift+Left and its neighbours were dead keys in a document
+        that could have answered every one of them. Worse by ear than by eye: a
+        dimmed row's accelerator does not fire and nothing says why.
+
+        The shell forwards the menu-open event here as well
+        (:meth:`quill.apps.lite_shell.QuillLiteShell._on_menu_open`), but the
+        sweep no longer depends on that arriving: the state is correct the
+        instant the document changes, whether or not a menu is ever opened.
+        """
         self._sync_check_items()
         self._sync_enabled_items()
+
+    def _on_menu_open(self, event: wx.MenuEvent) -> None:
+        self.sync_menu_state()
         event.Skip()

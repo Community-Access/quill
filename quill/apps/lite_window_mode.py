@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import wx
 
+from quill.core.html_to_markdown import contains_html_markup, html_to_markdown
 from quill.core.lite import APP_NAME
 from quill.core.lite.filetypes import is_rich_path
 from quill.io.rtf import markdown_to_rtf, rtf_to_markdown
@@ -109,6 +110,11 @@ class DocumentModeMixin:
             # sentences for one key is exactly what GATE-13 is about.
             self.set_document_language("markdown", announce=False)
         self._retarget_after_mode_switch(mode)
+        # Rich text dims every markup row and plain text lights the ones the
+        # language supports, and neither is the language change above: going
+        # *to* rich never touches the override, so nothing else would tell the
+        # menu that Promote Heading has just stopped meaning anything.
+        self._sync_menu_rows()
         self._set_modified(True)
         self.reset_structure_announcer()
         self.sync_structure_announcer()
@@ -169,13 +175,21 @@ class DocumentModeMixin:
         """RTF for the plain document, when the plain document is known markup."""
         text = self.control.GetValue()
         language = self.document_language()
-        if language == "html":
-            from quill.core.html_to_markdown import html_to_markdown
-
+        if language == "html" and contains_html_markup(text):
             markdown = html_to_markdown(text)
             if not markdown.strip():
                 return text, None
-        elif language == "markdown":
+        elif language in {"markdown", "html"}:
+            # Including a document merely *labelled* HTML. Ringing Alt+Shift+F
+            # from Markdown to HTML changes the label and not one character of
+            # the buffer, so the text arriving here is still Markdown -- and
+            # html_to_markdown is an HTML parser, in which newlines are
+            # insignificant whitespace. It used to run anyway, and the round
+            # trip came back as a single enormous line with the ``#`` markers
+            # still in it, which markdown_to_rtf then read as one heading and
+            # the way home wrapped in ``**``. Reported after "a couple of loops
+            # around" the ring. Markdown is what the buffer holds; convert it
+            # as Markdown.
             markdown = text
         else:
             # A .txt is characters, not markup. See the module docstring.

@@ -33,6 +33,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
+from quill.core.html_to_markdown import contains_html_markup, html_to_markdown
 from quill.io.rtf import markdown_to_rtf, read_rtf_sanitized, rtf_to_markdown
 from quill.io.rtf_model import rich_to_rtf, rtf_to_rich, scan_rtf_features
 
@@ -738,6 +739,17 @@ class RichModeMixin:
                 self._refresh_statusbar()
                 return
             markup = self.editor.GetValue()
+            # An HTML document becomes Markdown first, which QuillLite has done
+            # since it learned the switch and QUILL never had: markdown_to_rtf
+            # reads ``<h1>`` as four characters, so switching an HTML page to
+            # Rich Text used to put the tags on the page as literal text beside
+            # the words they were supposed to be formatting. Guarded on the
+            # content rather than the label, because the label travels without
+            # the text -- see quill.core.html_to_markdown.contains_html_markup.
+            if self._current_markup_context() == "html" and contains_html_markup(markup):
+                converted = html_to_markdown(markup)
+                if converted.strip():
+                    markup = converted
             rtf = markdown_to_rtf(markup)
             wrapper = self._active_richedit()
             if wrapper is not None and self._rich_capable():

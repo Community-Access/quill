@@ -5173,13 +5173,6 @@ class MainFrame(
             item_id
             for item_id in (
                 self._id_insert_markdown_tag,
-                self._id_heading_1,
-                self._id_heading_2,
-                self._id_heading_3,
-                self._id_heading_4,
-                self._id_heading_5,
-                self._id_heading_6,
-                getattr(self, "_id_style_headings", None),
                 getattr(self, "_id_insert_bullet_list", None),
                 getattr(self, "_id_insert_numbered_list", None),
                 getattr(self, "_id_toggle_bullet_list", None),
@@ -5191,7 +5184,27 @@ class MainFrame(
             )
             if item_id is not None
         )
-        structured_markup_ids = (self._id_insert_table,)
+        # Headings, which are markdown *or* HTML. They sat in markdown_ids
+        # until 2026-09-22 and were therefore dimmed in an HTML document --
+        # where ``format_heading`` and ``style_headings`` both work, because
+        # quill.core.heading_levels has spelled ``<h2>`` for as long as it has
+        # spelled ``##``, and both handlers gate on _active_markup_surface()
+        # rather than on Markdown. A row dimmed where the command would have
+        # worked is a feature taken away with nothing said about it.
+        structured_markup_ids = tuple(
+            item_id
+            for item_id in (
+                self._id_insert_table,
+                self._id_heading_1,
+                self._id_heading_2,
+                self._id_heading_3,
+                self._id_heading_4,
+                self._id_heading_5,
+                self._id_heading_6,
+                getattr(self, "_id_style_headings", None),
+            )
+            if item_id is not None
+        )
         html_ids = (self._id_insert_html_tag,)
         for item_id in markdown_ids:
             menu_item = menu_bar.FindItemById(item_id)
