@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QUILL AI — free AI help for QuillLite and QUILL</title>
+  <meta name="description"
+        content="Free, hosted AI help built into QuillLite and QUILL, two
+                 accessibility-first text editors. No account, no password, no
+                 charge.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body class="public">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <main id="main">
+    <h1>QUILL AI</h1>
+    <p class="lede">Free AI help, built into
+      <strong>QuillLite</strong> and <strong>QUILL</strong> — two text editors
+      made for people who use a screen reader.</p>
+
+    {% if not stats.available %}
+    <p class="flash" data-kind="error" role="alert">
+      <strong>The free AI is paused right now.</strong>
+      {%- if stats.paused_reason %} {{ stats.paused_reason }}{% endif %}
+      The editors themselves are unaffected, and your own API key still works if
+      you have one.
+    </p>
+    {% endif %}
+
+    <section aria-labelledby="what-h">
+      <h2 id="what-h">What it does</h2>
+      <p>Select a passage in your document and ask for one of five things. The
+        answer comes back in its own window, and nothing goes into your document
+        until you put it there.</p>
+      <ul>
+        <li><strong>Summarize</strong> — a few plain sentences saying what the passage says.</li>
+        <li><strong>Rewrite</strong> — the same meaning, clearer and shorter.</li>
+        <li><strong>Proofread</strong> — spelling, grammar and punctuation, wording left alone.</li>
+        <li><strong>Explain</strong> — what the passage means, in plain language.</li>
+        <li><strong>Ask a question about your document</strong> — your editor finds the
+          parts that answer it, on your own computer, and sends only those.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="privacy-h">
+      <h2 id="privacy-h">What happens to your writing</h2>
+      <p>The passage you ask about is sent here, and on to OpenAI, which writes
+        the answer.</p>
+      <p><strong>What is kept:</strong> how many requests you made, how big they
+        were, which feature you used, and what it cost.</p>
+      <p><strong>What is not kept:</strong> what you wrote. What came back. Your
+        name, your email address, or anything else that identifies you —
+        connecting a computer creates an account with no name on it at all.</p>
+      <p>Your editor shows you the whole agreement before anything is sent, and
+        nothing is sent until you accept it. You can withdraw at any time.</p>
+    </section>
+
+    <section aria-labelledby="cost-h">
+      <h2 id="cost-h">What it costs you</h2>
+      <p><strong>Nothing.</strong> There is no account, no password, no card and
+        no trial. You connect a computer once by reading an eight-character code
+        into a web page, and after that it works.</p>
+      <p>There is a monthly allowance so that one person cannot use up what
+        everybody else needs. Your editor says how much of it is left, and it
+        starts again by itself on the 1st.</p>
+    </section>
+
+    {% if stats.started %}
+    <section aria-labelledby="numbers-h">
+      <h2 id="numbers-h">What it has cost us</h2>
+      <p>This service is paid for by <strong>Community Access</strong>. It seems
+        fair to say what that amounts to.</p>
+
+      <table class="data-table">
+        <caption>QUILL AI in numbers, updated every few minutes</caption>
+        <tbody>
+          <tr>
+            <th scope="row">People using it</th>
+            <td>{{ "{:,}".format(stats.people) }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Answers written this month</th>
+            <td>{{ "{:,}".format(stats.requests_this_month) }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Answers written altogether</th>
+            <td>{{ "{:,}".format(stats.requests_all_time) }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Words read by the AI</th>
+            <td>about {{ "{:,}".format(stats.words_read) }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Spent this month</th>
+            <td>{{ stats.money(stats.spend_this_month_usd) }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Spent altogether</th>
+            <td>{{ stats.money(stats.spend_all_time_usd) }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Cost of one answer</th>
+            <td>{{ "%.3f"|format(stats.cost_per_request_cents) }} of a cent</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>That last number is the whole reason this can be free. An answer costs a
+        fraction of a penny, so a few hundred people writing every day cost less
+        to help than a single monthly subscription would.</p>
+    </section>
+    {% else %}
+    <section aria-labelledby="numbers-h">
+      <h2 id="numbers-h">What it has cost us</h2>
+      <p>This service is paid for by <strong>Community Access</strong>, and it is
+        just getting started — there is nothing to report yet. Once people begin
+        using it, what it costs will be published here.</p>
+    </section>
+    {% endif %}
+
+    <section aria-labelledby="get-h">
+      <h2 id="get-h">How to get it</h2>
+      <p>The AI is part of the editors rather than something separate, so there
+        is nothing to install here. Get <strong>QuillLite</strong> or
+        <strong>QUILL</strong> from
+        <a href="https://github.com/Community-Access/quill">the QUILL project</a>,
+        then in QuillLite:</p>
+      <ol>
+        <li>Open <strong>Tools</strong>, then <strong>Customize Features</strong>,
+          and switch on <strong>AI help</strong>. It is off until you do.</li>
+        <li>Read the agreement it shows you, and accept it if you are happy.</li>
+        <li>Open <strong>Tools</strong>, <strong>AI</strong>,
+          <strong>Sign In or Out</strong>, and follow the eight-character code
+          to <a href="{{ connect_url }}">the connect page</a>.</li>
+      </ol>
+      <p>If you already have an account with an AI provider of your own, both
+        editors can use that instead, and then nothing goes through this service
+        at all.</p>
+    </section>
+
+    <section aria-labelledby="help-h">
+      <h2 id="help-h">If something goes wrong</h2>
+      <p>Write to <a href="mailto:support@community-access.org">support@community-access.org</a>.
+        A person reads it.</p>
+      <p>Your editor shows you a <strong>support ID</strong> — a short code like
+        <span class="code">A1B2-C3D4</span> — in <strong>Tools</strong>,
+        <strong>AI</strong>, <strong>Usage</strong>. Quoting it lets support find
+        your account, which is otherwise impossible: there is no name on it to
+        search for.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>QUILL AI is run by <strong>Community Access</strong>. The editors are open
+      source; so is the service behind this page.</p>
+  </footer>
+</body>
+</html>

@@ -519,3 +519,38 @@ form.settings-form button.danger {
   border-top: 1px solid rgba(127, 127, 127, 0.3);
   font-size: 0.9rem;
 }
+
+/* ---------------------------------------------------------------------------
+   The public landing page.
+
+   Shares this stylesheet rather than growing a second one: the two pages want
+   the same table, the same skip link, the same focus ring and the same status
+   colours, and one design system that both use is one place to fix a contrast
+   problem. What the public page adds is reading width and a little more air --
+   it is prose, where the console is a control panel.
+   --------------------------------------------------------------------------- */
+
+body.public main {
+  max-width: 44rem;
+}
+
+body.public .lede {
+  font-size: 1.15rem;
+  margin-bottom: 2rem;
+}
+
+body.public section {
+  margin: 2.5rem 0;
+}
+
+body.public h2 {
+  margin-bottom: 0.5rem;
+}
+
+body.public li {
+  margin: 0.35rem 0;
+}
+
+body.public ol {
+  padding-left: 1.4rem;
+}
