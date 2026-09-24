@@ -8,7 +8,7 @@ is invisible to it. A table of handler names that never calls one is exactly the
 shape of test that let the F8 bug ship -- a key, a label, a handler, a passing
 test, and extend mode that had never once worked from the keyboard.
 
-The frames are patched at :mod:`quill.apps.lite_ai_dialogs`, which is where the
+The frames are patched at :mod:`quill.ui.hosted_ai_dialogs`, which is where the
 mixin imports them from (inside the methods, so that is also where they are
 looked up). What is being exercised is the handler: the guard, the resolution of
 what to send, and what it hands the window.
@@ -37,12 +37,23 @@ class _FakeFrame:
     def SetFocus(self):  # noqa: N802 - wx API shape
         self.focused = True
 
+    def Bind(self, _event, handler):  # noqa: N802 - wx API shape
+        # The mixin attaches an EVT_CLOSE handler so a closed window stops
+        # counting as open. Kept so close() below can fire it.
+        self._on_close = handler
+
+    def close(self):
+        """Close this window the way wx would, handler and all."""
+        handler = getattr(self, "_on_close", None)
+        if handler is not None:
+            handler(type("_Event", (), {"Skip": lambda _self: None})())
+
 
 @pytest.fixture
 def ai_frames(monkeypatch):
     """Every AI window, replaced by a recorder. Returns the four classes."""
-    import quill.apps.lite_ai_dialogs as dialogs
-    import quill.apps.lite_ai_pad as pad
+    import quill.ui.hosted_ai_dialogs as dialogs
+    import quill.ui.hosted_ai_pad as pad
 
     # Patched where each is looked up, not where it is defined -- the mixin
     # imports them inside its methods, so the defining module is the lookup
@@ -70,9 +81,9 @@ def signed_in(monkeypatch):
     gate has its own tests further down, and they are the ones that matter for
     it.
     """
-    from quill.apps.lite_window_ai import DocumentAiMixin
+    from quill.ui.hosted_ai_commands import HostedAiMixin
 
-    monkeypatch.setattr(DocumentAiMixin, "_ai_privacy_accepted", lambda _self: True)
+    monkeypatch.setattr(HostedAiMixin, "_ai_privacy_accepted", lambda _self: True)
 
     class Service:
         signed_in = True
@@ -155,9 +166,9 @@ def test_the_assistant_offers_sign_in_when_this_computer_is_not_connected(
     thing they need is the one window that gets them there."""
     win = lite_window("some text")
 
-    from quill.apps.lite_window_ai import DocumentAiMixin
+    from quill.ui.hosted_ai_commands import HostedAiMixin
 
-    monkeypatch.setattr(DocumentAiMixin, "_ai_privacy_accepted", lambda _self: True)
+    monkeypatch.setattr(HostedAiMixin, "_ai_privacy_accepted", lambda _self: True)
 
     class SignedOut:
         signed_in = False
@@ -175,9 +186,9 @@ def test_usage_does_not_open_when_signed_out(lite_window, ai_frames, monkeypatch
     """A usage window for an account that does not exist has nothing to show."""
     win = lite_window("text")
 
-    from quill.apps.lite_window_ai import DocumentAiMixin
+    from quill.ui.hosted_ai_commands import HostedAiMixin
 
-    monkeypatch.setattr(DocumentAiMixin, "_ai_privacy_accepted", lambda _self: True)
+    monkeypatch.setattr(HostedAiMixin, "_ai_privacy_accepted", lambda _self: True)
 
     class SignedOut:
         signed_in = False
@@ -336,11 +347,11 @@ def agreement(monkeypatch):
     is the branch people forget to write, and it is the branch that must leave
     the feature unusable.
     """
-    import quill.apps.lite_ai_dialogs as dialogs
+    import quill.ui.hosted_ai_dialogs as dialogs
 
     calls = {"shown": 0, "answer": False}
 
-    def fake(parent, announce):
+    def fake(parent):
         calls["shown"] += 1
         return calls["answer"]
 
@@ -518,7 +529,7 @@ def test_every_ai_window_says_where_focus_should_land(lite_window, monkeypatch, 
     which ``Show()`` activates; these are ``wx.Frame``s parented to an MDI child,
     which it does not.
     """
-    from quill.apps.lite_ai_dialogs import focus_on
+    from quill.ui.hosted_ai_dialogs import focus_on
 
     class Frame:
         pass
@@ -555,7 +566,7 @@ def test_showing_a_window_actually_gives_it_focus(lite_window, ai_frames, monkey
 def test_taking_focus_survives_a_window_closed_in_the_meantime(lite_window):
     """A user can close a window between Show() and the next idle cycle, and a
     focus call into a destroyed control is a crash rather than a missed focus."""
-    from quill.apps.lite_ai_dialogs import take_focus
+    from quill.ui.hosted_ai_dialogs import take_focus
 
     class Gone:
         def __bool__(self):
@@ -621,3 +632,82 @@ def test_accepting_from_the_privacy_command_switches_the_feature_on(
     assert win.app.settings.ai_privacy_accepted_version == AGREEMENT_VERSION
     assert win.app.features.is_enabled("hosted_ai") is True
     assert any("AI help is on" in said for said in win.announcements)
+
+
+# --------------------------------------------------------------------------- #
+# What the agreement says on the way past, and what the windows do twice
+# --------------------------------------------------------------------------- #
+
+
+def test_escaping_the_agreement_says_nothing(lite_window, ai_frames, agreement, monkeypatch):
+    """Escape changed nothing, and the reader announces the caret arriving back
+    in the document. A sentence on top of that is the over-announcing GATE-13
+    exists to catch -- and it was said on every Escape from every door."""
+    win = lite_window("text")
+    win.app.settings.ai_privacy_accepted_version = 0
+    agreement["answer"] = False
+
+    (lambda w: w.cmd_ai_privacy())(win)
+
+    assert agreement["shown"] == 1
+    assert win.announcements == []
+
+
+def test_accepting_on_the_way_to_sign_in_does_not_send_you_back_to_sign_in(
+    lite_window, ai_frames, agreement, monkeypatch, connected
+):
+    """The agreement used to answer "choose Tools, AI, Sign In or Out" to
+    somebody who had just chosen exactly that. The window they asked for is the
+    answer; the reader announces it when it takes focus."""
+    win = lite_window("text")
+    monkeypatch.setattr(win, "_ai_service", lambda: connected)
+    win.app.settings.ai_privacy_accepted_version = 0
+    agreement["answer"] = True
+
+    (lambda w: w.cmd_ai_sign_in())(win)
+
+    assert ai_frames["AiSignInFrame"].last is not None
+    assert win.announcements == []
+
+
+def test_the_privacy_door_says_it_took_even_when_the_area_was_already_on(
+    lite_window, agreement, monkeypatch
+):
+    """The sentence moved out of the dialog and into the caller, and this is the
+    case that proves it had to: nothing about the *features* changed, so a
+    message built around switching the area on could not be said here at all."""
+    win = lite_window("text")
+    win.app.settings.ai_privacy_accepted_version = 0
+    agreement["answer"] = True
+
+    (lambda w: w.cmd_ai_privacy())(win)
+
+    assert any("AI help is on" in said for said in win.announcements)
+
+
+def test_asking_for_a_window_twice_raises_the_one_that_is_open(
+    lite_window, ai_frames, monkeypatch, signed_in
+):
+    """A second Sign-In window built over the first announces nothing, because
+    a frame opening where a frame already is announces nothing -- so the second
+    press was indistinguishable by ear from a key that is not bound."""
+    win = lite_window("text")
+
+    (lambda w: w.cmd_ai_sign_in())(win)
+    first = ai_frames["AiSignInFrame"].last
+    (lambda w: w.cmd_ai_sign_in())(win)
+
+    assert ai_frames["AiSignInFrame"].last is first, "no second window was built"
+
+
+def test_closing_a_window_lets_the_next_press_open_it_again(
+    lite_window, ai_frames, monkeypatch, signed_in
+):
+    win = lite_window("text")
+
+    (lambda w: w.cmd_ai_sign_in())(win)
+    win._ai_windows["sign_in"].close()
+    ai_frames["AiSignInFrame"].last = None
+    (lambda w: w.cmd_ai_sign_in())(win)
+
+    assert ai_frames["AiSignInFrame"].last is not None

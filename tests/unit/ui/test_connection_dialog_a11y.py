@@ -22,7 +22,18 @@ def _assistant_tools_source() -> str:
 
 
 def _menu_source() -> str:
-    return Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8")
+    """The menu bar's source, both halves of it.
+
+    The AI menu's two halves moved into ``main_frame_ai_menu.py`` on 2026-09-23,
+    when QUILL's own free AI became the front door and the provider-and-agent
+    surface went behind Show advanced AI features (GATE-11 extraction). Reading
+    only the original module would have quietly stopped checking the AI rows
+    rather than failing, which is the worse of the two outcomes.
+    """
+    return "".join(
+        Path(rel).read_text(encoding="utf-8")
+        for rel in ("quill/ui/main_frame_menu.py", "quill/ui/main_frame_ai_menu.py")
+    )
 
 
 def _connection_dialog_source() -> str:

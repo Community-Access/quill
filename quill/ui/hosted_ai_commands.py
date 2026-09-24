@@ -1,7 +1,17 @@
-"""Tools > AI: four commands, and the rule that AI never edits on its own.
+"""The hosted-AI commands, shared by QUILL and QuillLite.
+
+Five commands -- the pad, Ask About This Document, Usage, Sign In or Out and the
+Privacy Agreement -- plus the rule that AI never edits on its own.
+
+**Both editors mix this in.** Three things differ between them and nothing else
+does, so those three are hooks: which window a new frame is parented to, which
+text control the document lives in, and which object holds the settings and the
+feature switch. Everything about what the commands *do* -- what they act on,
+when an answer may still be applied, what is announced -- is here once. See
+:meth:`_ai_parent`, :meth:`_ai_control` and :meth:`_ai_host`.
 
 The feature is switched off until somebody turns it on, so most of what this
-module does is open one of the windows in :mod:`quill.apps.lite_ai_dialogs` and
+module does is open one of the windows in :mod:`quill.ui.hosted_ai_dialogs` and
 get out of the way. Three things are decided here rather than there, because
 they are about the *document* and the windows deliberately know nothing about
 one:
@@ -31,11 +41,54 @@ import wx
 
 from quill.ui.atomic_edit import replace_as_one_undo
 
-__all__ = ["DocumentAiMixin"]
+__all__ = ["HostedAiMixin"]
 
 
-class DocumentAiMixin:
-    """The Tools > AI commands. Mixed into QuillLite's document window."""
+class HostedAiMixin:
+    """The hosted-AI commands. Mixed into both editors' document windows."""
+
+    # ------------------------------------------------------------------ #
+    # The three hooks -- the only things the two editors do differently
+    # ------------------------------------------------------------------ #
+
+    def _ai_parent(self):  # noqa: ANN201 - wx.Window
+        """The window new AI frames are parented to.
+
+        QuillLite's document window *is* a ``wx.Frame``, so it is its own
+        parent. QUILL's ``MainFrame`` is a controller that owns one, so it
+        overrides this with ``self.frame``. Parenting matters more than it
+        looks: a frame parented to nothing is a frame Windows can bury behind
+        the editor with no way back to it by keyboard.
+        """
+        return self
+
+    def _ai_control(self):  # noqa: ANN201 - a text control
+        """The control the document is in. ``self.control`` in QuillLite,
+        ``self.editor`` in QUILL."""
+        return self.control
+
+    def _ai_host(self):  # noqa: ANN201 - the app-ish object
+        """Whatever holds the settings, the feature switch and the data dir.
+
+        QuillLite passes its ``app``. QUILL passes a small adapter
+        (:class:`~quill.ui.main_frame_hosted_ai.QuillAiHost`) that answers the
+        same five questions against QUILL's own settings and its Use AI switch,
+        so neither editor has to learn the other's vocabulary and this module
+        does not have to know which one it is running in.
+        """
+        return self.app
+
+    def _ai_switch_route(self) -> str:
+        """Where the switch that turns this feature on lives, in words.
+
+        The one sentence in this module that cannot be written once for both
+        editors, because the switch genuinely is in two different places: a
+        feature area in QuillLite's Customize Features, and the Use AI item in
+        QUILL's own AI menu. Every *other* route sentence here names a row that
+        exists in both ("Connect or Sign Out in the AI menu"), which is why this
+        is the only hook of its kind.
+        """
+        return "Tools, Customize Features"
 
     # ------------------------------------------------------------------ #
     # Commands
@@ -57,22 +110,26 @@ class DocumentAiMixin:
     def cmd_ai_usage(self) -> None:
         if not self._ai_ready():
             return
-        from quill.apps.lite_ai_dialogs import AiUsageFrame
+        from quill.ui.hosted_ai_dialogs import AiUsageFrame
 
         if not self._ai_service().signed_in:
             self._announce(
                 "This computer is not connected to QUILL's free AI. "
-                "Choose Tools, AI, Sign In or Out to connect it."
+                "Choose Connect or Sign Out in the AI menu to connect it."
             )
             return
-        self._show_ai_window(AiUsageFrame(self, self._ai_service(), self._announce))
+        self._open_ai_window(
+            "usage", lambda: AiUsageFrame(self._ai_parent(), self._ai_service(), self._announce)
+        )
 
     def cmd_ai_sign_in(self) -> None:
         if not self._ai_ready():
             return
-        from quill.apps.lite_ai_dialogs import AiSignInFrame
+        from quill.ui.hosted_ai_dialogs import AiSignInFrame
 
-        self._show_ai_window(AiSignInFrame(self, self._ai_service(), self._announce))
+        self._open_ai_window(
+            "sign_in", lambda: AiSignInFrame(self._ai_parent(), self._ai_service(), self._announce)
+        )
 
     # ------------------------------------------------------------------ #
     # Plumbing
@@ -85,12 +142,12 @@ class DocumentAiMixin:
         on but never used should cost nothing, and constructing this reads the
         credential store.
         """
-        service = getattr(self.app, "ai_service", None)
+        service = getattr(self._ai_host(), "ai_service", None)
         if service is None:
-            from quill.apps.lite_ai import AiService
+            from quill.ui.hosted_ai_service import AiService
 
-            service = AiService(self.app)
-            self.app.ai_service = service
+            service = AiService(self._ai_host())
+            self._ai_host().ai_service = service
         return service
 
     def cmd_ai_privacy(self) -> None:
@@ -107,6 +164,12 @@ class DocumentAiMixin:
             return
         if self._ask_ai_privacy():
             self._light_up_ai()
+            # This door opens onto the document, so this is the only thing that
+            # will say the decision took. Declining says nothing at all: nothing
+            # changed, and the reader announces the caret arriving back.
+            self._announce(
+                "AI help is on. Choose Connect or Sign Out in the AI menu to connect this computer."
+            )
 
     # ------------------------------------------------------------------ #
     # The agreement
@@ -115,7 +178,7 @@ class DocumentAiMixin:
     def _ai_privacy_accepted(self) -> bool:
         from quill.core.ai.gateway_privacy import is_accepted
 
-        return is_accepted(int(getattr(self.app.settings, "ai_privacy_accepted_version", 0)))
+        return is_accepted(int(getattr(self._ai_host().settings, "ai_privacy_accepted_version", 0)))
 
     def _ask_ai_privacy(self) -> bool:
         """Show the agreement. Returns whether it is now accepted.
@@ -123,14 +186,23 @@ class DocumentAiMixin:
         Stored immediately rather than at the next settings save: a decision
         somebody made and a crash lost is a decision they have to make again,
         and this is the one decision in the app it would be rude to ask twice.
-        """
-        from quill.apps.lite_ai_dialogs import ask_ai_privacy_agreement
-        from quill.core.ai.gateway_privacy import AGREEMENT_VERSION
 
-        if not ask_ai_privacy_agreement(self, self._announce):
+        **The dialog says nothing; its caller does.** The agreement is reached
+        through three doors and on the way to two commands, and what happens
+        next is different at every one of them -- so the sentence belongs to
+        whoever knows. Announcing it here told somebody who had chosen Sign In
+        to "choose Connect or Sign Out in the AI menu", said the same sentence twice
+        the Privacy door accepted it, and spoke on a plain Escape, which changes
+        nothing and is exactly what GATE-13 says not to say.
+        """
+        from quill.core.ai.gateway_privacy import AGREEMENT_VERSION
+        from quill.ui.hosted_ai_dialogs import ask_ai_privacy_agreement
+
+        self._ai_agreement_just_asked = True
+        if not ask_ai_privacy_agreement(self._ai_parent()):
             return False
-        self.app.settings.ai_privacy_accepted_version = AGREEMENT_VERSION
-        self.app.save_settings()
+        self._ai_host().settings.ai_privacy_accepted_version = AGREEMENT_VERSION
+        self._ai_host().save_settings()
         return True
 
     def _light_up_ai(self) -> None:
@@ -141,14 +213,17 @@ class DocumentAiMixin:
         that is visible while the area is off -- and it is visible, deliberately --
         and then being told to go and find a second switch would be a yes that
         did nothing.
+
+        Silent: the caller says what changed, because "the area was already on
+        and only the agreement is new" is still a change worth hearing, and a
+        sentence in here could not be said in that case.
         """
-        features = getattr(self.app, "features", None)
-        if features is None or self.app.feature_enabled("hosted_ai"):
+        features = getattr(self._ai_host(), "features", None)
+        if features is None or self._ai_host().feature_enabled("hosted_ai"):
             return
         features.set_enabled("hosted_ai", True)
-        self.app.save_features()
-        self.app.rebuild_all_menus()
-        self._announce("AI help is on. Choose Tools, AI, Sign In or Out to connect this computer.")
+        self._ai_host().save_features()
+        self._ai_host().rebuild_all_menus()
 
     def _withdraw_ai_privacy(self) -> None:
         """Take the agreement back, and the sign-in with it.
@@ -157,14 +232,14 @@ class DocumentAiMixin:
         agree to use would be keeping the credential for exactly the thing they
         withdrew from.
         """
-        self.app.settings.ai_privacy_accepted_version = 0
-        self.app.save_settings()
-        service = getattr(self.app, "ai_service", None)
+        self._ai_host().settings.ai_privacy_accepted_version = 0
+        self._ai_host().save_settings()
+        service = getattr(self._ai_host(), "ai_service", None)
         if service is not None and service.signed_in:
             service.sign_out()
         self._announce(
             "AI help is off and this computer is signed out. Nothing is sent "
-            "anywhere. Choose Tools, AI, Privacy Agreement to turn it on again."
+            "anywhere. Choose Privacy Agreement in the AI menu to turn it on again."
         )
 
     def _offer_ai_privacy_on_enable(self) -> None:
@@ -178,11 +253,15 @@ class DocumentAiMixin:
         """
         if self._ai_privacy_accepted():
             return
-        if not self._ask_ai_privacy():
+        if self._ask_ai_privacy():
             self._announce(
-                "AI help is in the menus but will not send anything until you "
-                "accept the agreement. Tools, AI, Privacy Agreement has it again."
+                "AI help is on. Choose Connect or Sign Out in the AI menu to connect this computer."
             )
+            return
+        self._announce(
+            "AI help is in the menus but will not send anything until you "
+            "accept the agreement. Privacy Agreement in the AI menu has it again."
+        )
 
     def _ai_ready(self) -> bool:
         """Whether AI may run: the area is on **and** the agreement is accepted.
@@ -197,12 +276,71 @@ class DocumentAiMixin:
         pressed the AI key wants AI, and the next thing they need is the
         decision itself -- not a message telling them they cannot have it.
         """
-        if not self.app.feature_enabled("hosted_ai"):
-            self._announce("AI help is switched off. Turn it on in Tools, Customize Features.")
+        if not self._ai_host().feature_enabled("hosted_ai"):
+            self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
             return False
         if not self._ai_privacy_accepted():
             return self._ask_ai_privacy()
         return True
+
+    def _open_ai_window(self, name: str, build: Any) -> None:
+        """Open one of the *named* AI windows, and only one of each.
+
+        Choosing Sign In a second time built a **second** Sign-In window over
+        the first. A frame opening where a frame already is announces nothing,
+        so the second press was indistinguishable by ear from a key that is not
+        bound. An already-open window is raised and focused instead, which the
+        reader does announce.
+
+        Only the windows that are *about this computer* rather than about this
+        selection are named: the pad and the result window are built from what
+        was selected when the command ran, so a second press must build a second
+        one rather than raise a stale one.
+        """
+        windows = getattr(self, "_ai_windows", None)
+        if windows is None:
+            windows = {}
+            self._ai_windows = windows
+        already = windows.get(name)
+        if already:
+            from quill.ui.hosted_ai_dialogs import take_focus
+
+            take_focus(already)
+            return
+
+        def _open() -> None:
+            frame = build()
+            windows[name] = frame
+
+            def _forget(event: Any) -> None:
+                windows.pop(name, None)
+                event.Skip()
+
+            frame.Bind(wx.EVT_CLOSE, _forget)
+            self._show_ai_window(frame)
+
+        self._after_agreement(_open)
+
+    def _after_agreement(self, open_window: Any) -> None:
+        """Run *open_window* once the agreement dialog is fully out of the way.
+
+        The agreement is the one modal surface in this family, and wxMSW hands
+        focus back to the **parent** as it tears a modal dialog down -- after a
+        focus call made in the same turn of the event loop. A window opened in
+        that turn appeared with the caret still in the document: nothing was
+        announced, and what the person heard was the command they had just run
+        dropping them back where they started.
+
+        Only when the agreement was actually asked for. Every other press opens
+        the window straight away, because a deferred window is a window that
+        opens after the next keystroke.
+        """
+        asked = getattr(self, "_ai_agreement_just_asked", False)
+        self._ai_agreement_just_asked = False
+        if asked and wx.GetApp() is not None:
+            wx.CallAfter(open_window)
+            return
+        open_window()
 
     def _show_ai_window(self, frame: wx.Frame) -> None:
         """Show a window and actually give it focus.
@@ -214,7 +352,7 @@ class DocumentAiMixin:
         a screen-reader user is told nothing at all about the thing that just
         opened.
         """
-        from quill.apps.lite_ai_dialogs import take_focus
+        from quill.ui.hosted_ai_dialogs import take_focus
 
         frame.Show()
         frame.Raise()
@@ -237,7 +375,7 @@ class DocumentAiMixin:
         if not service.signed_in:
             self._announce(
                 "This computer is not connected to QUILL's free AI. "
-                "Choose Tools, AI, Sign In or Out to connect it."
+                "Choose Connect or Sign Out in the AI menu to connect it."
             )
             self.cmd_ai_sign_in()
             return
@@ -247,25 +385,28 @@ class DocumentAiMixin:
         # compiled in months ago.
         service.refresh_limits()
 
-        from quill.apps.lite_ai_pad import AiPadFrame
+        from quill.ui.hosted_ai_pad import AiPadFrame
 
-        start, end = self.control.GetSelection()
-        document = self.control.GetValue()
+        start, end = self._ai_control().GetSelection()
+        document = self._ai_control().GetValue()
         selection = document[start:end] if end > start else ""
 
         pad = AiPadFrame(
-            self,
+            self._ai_parent(),
             service,
             document_text=document,
             selection=selection,
-            position=self.control.GetInsertionPoint(),
+            position=self._ai_control().GetInsertionPoint(),
             announce=self._announce,
             on_result=lambda feature, text, used: self._show_ai_result(
                 feature, text, used, start, end, selection, action
             ),
             initial_action=action,
         )
-        self._show_ai_window(pad)
+        # Built now, shown once the agreement (if one was just asked for) has
+        # finished handing focus back: the pad reads the selection as it is at
+        # the moment the command ran, not at the next idle cycle.
+        self._after_agreement(lambda: self._show_ai_window(pad))
 
     def _show_ai_result(
         self,
@@ -277,12 +418,12 @@ class DocumentAiMixin:
         original: str,
         action: str,
     ) -> None:
-        from quill.apps.lite_ai_pad import AiResultFrame
+        from quill.ui.hosted_ai_pad import AiResultFrame
 
         can_replace = bool(original) and self._selection_unchanged(start, end, original)
 
         frame = AiResultFrame(
-            self,
+            self._ai_parent(),
             action=feature,
             text=text,
             used=used,
@@ -304,7 +445,7 @@ class DocumentAiMixin:
         it as something the user did.
         """
         try:
-            current = self.control.GetValue()
+            current = self._ai_control().GetValue()
         except Exception:  # noqa: BLE001 - a closed control is "changed"
             return False
         return 0 <= start <= end <= len(current) and current[start:end] == original
@@ -317,7 +458,7 @@ class DocumentAiMixin:
         second check here. One check, at the point where the button is decided
         on, rather than two that could disagree.
         """
-        replace_as_one_undo(self.control, start, end, answer)
+        replace_as_one_undo(self._ai_control(), start, end, answer)
 
     def _insert_below(self, answer: str) -> None:
         """Put the answer under the paragraph the cursor is in.
@@ -326,10 +467,10 @@ class DocumentAiMixin:
         answer somebody has to tidy up, and summaries and answers usually want
         to live beside the text rather than inside it.
         """
-        text = self.control.GetValue()
-        position = self.control.GetInsertionPoint()
+        text = self._ai_control().GetValue()
+        position = self._ai_control().GetInsertionPoint()
         end = self._paragraph_end(text, position)
-        replace_as_one_undo(self.control, end, end, f"\n\n{answer}")
+        replace_as_one_undo(self._ai_control(), end, end, f"\n\n{answer}")
 
     @staticmethod
     def _paragraph_end(text: str, position: int) -> int:

@@ -644,6 +644,25 @@ COMMANDS: list[CommandRow] = [
     ("F&ormat|Structur&e", "D&emote Heading", "Alt+Shift+Right", "cmd_demote_heading", ""),
     ("F&ormat|Structur&e", "Move Section &Up", "Alt+Shift+Up", "cmd_move_section_up", ""),
     ("F&ormat|Structur&e", "Move Section Do&wn", "Alt+Shift+Down", "cmd_move_section_down", ""),
+    # Select Section hands the section to the clipboard, which is how it gets
+    # somewhere there is no heading to move past. Alt+Shift+F5 because every
+    # Alt+Shift letter is spoken for in one editor or the other and this is a
+    # rule 9 command -- it earns *a* key, not a short one -- and because the
+    # rest of this submenu is Alt+Shift, so the family stays together.
+    ("F&ormat|Structur&e", "Se&lect Section", "Alt+Shift+F5", "cmd_select_section", ""),
+    # Move Section To: the two Move Section keys above, asked as a destination
+    # instead of a direction, because pressing one of them forty times to cross
+    # a long document is forty announcements you have to count. Same chord
+    # arithmetic as Select Section -- no Alt+Shift or Ctrl+Alt+Shift *letter* is
+    # free in both editors -- so it takes Select Section's F-key with one more
+    # modifier: the bigger version of the same idea, and free in both.
+    (
+        "F&ormat|Structur&e",
+        "Move Section &To...",
+        "Ctrl+Alt+Shift+F5",
+        "cmd_move_section_to",
+        "",
+    ),
     ("F&ormat|Structur&e", "", "", "", "sep"),
     # The four rows above, in one window. QUILL has had this since #303 and
     # QuillLite already had both halves of it -- a headings list and section
@@ -759,7 +778,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "Indentin&g", "", "", "sub"),
     # A submenu, not a tenth top-level menu: Clipboard and Spelling were demoted
     # from the bar for exactly this reason. Why these four chords and no others,
-    # in quill/apps/lite_window_ai.py's docstring.
+    # in quill/ui/hosted_ai_commands.py's docstring.
     ("&Tools", "&AI", "", "", "sub"),
     ("&Tools", "", "", "", "sep"),
     # Both are shown in the status bar and both used to be read-only: QuillLite
@@ -890,13 +909,21 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&Quiet Mode", "Alt+Shift+M", "cmd_toggle_quiet_mode", "check"),
     ("&Tools", "S&ound Scheme...", "Ctrl+Alt+Shift+O", "cmd_sound_scheme", ""),
     # -- Tools > Change Case -------------------------------------------------
-    # -- Tools > AI. Four rows, four chords (rule 2 and rule 9 chose them; the
-    # measurement is in lite_window_ai.py). Ctrl+Alt+Shift+K stays unspent.
+    # -- Tools > AI. Five rows, five chords (rule 2 and rule 9 chose them; the
+    # measurement is in hosted_ai_commands.py). QUILL has the same five
+    # commands on the same five chords since 2026-09-23, from the same shared
+    # module -- see quill/ui/main_frame_hosted_ai.py.
     ("&Tools|&AI", "AI &Assistant...", "Ctrl+Alt+G", "cmd_ai_assistant", ""),
     ("&Tools|&AI", "As&k About This Document...", "Ctrl+Alt+Z", "cmd_ai_ask_document", ""),
     ("&Tools|&AI", "", "", "", "sep"),
     ("&Tools|&AI", "&Usage...", "Ctrl+Alt+Shift+F9", "cmd_ai_usage", ""),
-    ("&Tools|&AI", "&Sign In or Out...", "Ctrl+Alt+Shift+F10", "cmd_ai_sign_in", ""),
+    # "Connect or Sign Out" rather than "Sign In or Out": the window this opens
+    # talks about connecting *this computer*, and the word had to be settled
+    # anyway -- QUILL shows the same five rows now, and every sentence that
+    # names this row ("Choose Connect or Sign Out in the AI menu") is composed
+    # once in the shared module for both editors to speak. A row named two ways
+    # is a sentence that is wrong in one of the two products.
+    ("&Tools|&AI", "&Connect or Sign Out...", "Ctrl+Alt+Shift+F10", "cmd_ai_sign_in", ""),
     # The chord held back when this family was laid out, spent on the one
     # command that has to be reachable without agreeing to anything first.
     ("&Tools|&AI", "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),

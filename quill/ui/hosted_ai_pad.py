@@ -1,6 +1,9 @@
 """The two windows the work happens in: the pad, and what came back.
 
-Split from :mod:`quill.apps.lite_ai_dialogs` under GATE-11, and the seam is a
+Shared by both editors -- see :mod:`quill.ui.hosted_ai_dialogs` for why these
+live in ``quill/ui`` rather than beside QuillLite's own modules.
+
+Split from :mod:`quill.ui.hosted_ai_dialogs` under GATE-11, and the seam is a
 real one rather than a line count: that module is about the *account* -- getting
 connected, and seeing what is left -- while this is about a single request.
 They change for different reasons and at different rates.
@@ -19,9 +22,9 @@ from typing import Any
 
 import wx
 
-from quill.apps.lite_ai_dialogs import _PAD, _close_row, _read_only, focus_on
 from quill.core.ai import gateway_context as ctx
 from quill.ui.accessible_names import set_accessible_name
+from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on
 
 __all__ = ["ACTIONS", "AiPadFrame", "AiResultFrame"]
 

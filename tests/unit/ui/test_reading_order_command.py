@@ -81,7 +81,14 @@ def test_command_is_registered_menu_wired_and_bound() -> None:
     assert "ReadingOrderMixin," in _MAIN
     assert '"tools.ai_reading_order"' in _COMMANDS
     assert "self.open_ai_improve_reading_order" in _COMMANDS
-    assert 'self._menu_label(_("Improve &Reading Order..."), "tools.ai_reading_order")' in _MENU
+    # The AI menu's rows moved to main_frame_ai_menu.py on 2026-09-23, when
+    # QUILL's own free AI became the front door and the provider-and-agent
+    # surface went behind Show advanced AI features. Read both halves, or this
+    # assertion quietly stops checking anything.
+    from pathlib import Path as _Path
+
+    menus = _MENU + _Path("quill/ui/main_frame_ai_menu.py").read_text(encoding="utf-8")
+    assert 'self._menu_label(_("Improve &Reading Order..."), "tools.ai_reading_order")' in menus
     assert "self.open_ai_improve_reading_order()" in _BINDINGS
 
 

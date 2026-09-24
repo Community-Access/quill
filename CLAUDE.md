@@ -85,8 +85,14 @@ notices the absence of a thing they have only ever seen elsewhere. Applying that
 rule in 2026-09 moved numbered bookmarks to `quill/core/numbered_bookmarks.py`,
 deleted a duplicate of `format_ops`, made `create_richedit_rtf` build the
 extended `RichEditDocument`, and gave QUILL six commands it had the capability
-for and no binding to (`quill/ui/main_frame_rich_paragraph.py`). Where the two
-must diverge on a key, the reason is a comment in `keymap.py`.
+for and no binding to (`quill/ui/main_frame_rich_paragraph.py`). Applying it again
+in 2026-09 moved the **hosted free AI** out of `quill/apps/lite_ai*.py` into
+`quill/ui/hosted_ai_*.py`, where QUILL reaches the same five commands on the same
+five chords through one small adapter (`quill/ui/main_frame_hosted_ai.py`) that
+has no commands of its own — and a test asserts that absence, because a second
+implementation is how this rule gets broken quietly, far more easily than a
+missing feature. Where the two must diverge on a key, the reason is a comment in
+`keymap.py`.
 
 **The eleven family rules** live in `quill/core/family_rules.py`, and code cites
 them **by number** (`keymap.py`: "which rule 6 forbids"; `lite/parity.py`: "the

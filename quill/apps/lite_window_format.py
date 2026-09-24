@@ -38,7 +38,6 @@ from quill.core.heading_levels import LevelResult, adjust_heading_level
 from quill.core.list_style import LIST_STYLES, cycle_list_style
 from quill.core.lite.filetypes import language_label
 from quill.core.lite.keymap import spoken_key_for
-from quill.core.markdown_sections import MoveResult, move_section
 from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import (
     LINE_SPACING_DOUBLE,
@@ -282,58 +281,6 @@ class DocumentFormatCommandsMixin:
     def cmd_demote_heading(self) -> None:
         """Alt+Shift+Right: one level deeper."""
         self._shift_heading(1)
-
-    def _move_section(self, direction: str) -> None:
-        """Move the whole section the cursor is in, heading and body together.
-
-        QUILL's own :func:`~quill.core.markdown_sections.move_section`, over
-        Markdown, and therefore plain text only: rich-text headings are a font
-        size rather than markup, and moving formatted runs through the Text
-        Object Model is a different piece of work that QUILL has not done
-        either. Saying so is better than a key that quietly does nothing in
-        half the documents somebody opens.
-
-        This is the operation cut-and-paste is worst at. Reorganising by hand
-        means selecting from a heading to the start of the next one -- a
-        boundary you cannot see and have to find by ear -- and the usual result
-        of getting it wrong is losing your place in the document you were
-        halfway through reorganising.
-        """
-        if self.editor.mode == RICH:
-            self._announce(
-                "Moving sections works in plain text documents, where headings are Markdown"
-            )
-            return
-        text = self.control.GetValue()
-        caret = self.control.GetInsertionPoint()
-        # The document's own markup, not an assumed "markdown". An HTML document
-        # has headings too, and move_section was looking for hashes it would
-        # never find in one -- so Alt+Shift+Up in a .html said "not in a
-        # section" about a section (bad.md R13).
-        # No Markdown fallback here either: "No section to move" in a plain
-        # text document is a sentence about sections that document cannot have.
-        surface = self.markup_surface()
-        if not surface:
-            self._announce(self._no_formatting_here())
-            return
-        new_text, new_caret, result, announce = move_section(
-            text, caret, direction, markup_kind=surface
-        )
-        if result is not MoveResult.OK:
-            self._announce(announce)
-            return
-        replace_as_one_undo(self.control, 0, self.control.GetLastPosition(), new_text)
-        self.control.SetInsertionPoint(min(new_caret, self.control.GetLastPosition()))
-        self.control.ShowPosition(self.control.GetInsertionPoint())
-        self._set_modified(True)
-        self._touch_status()
-        self._announce(announce)
-
-    def cmd_move_section_up(self) -> None:
-        self._move_section("up")
-
-    def cmd_move_section_down(self) -> None:
-        self._move_section("down")
 
     def cmd_heading_0(self) -> None:
         self._heading(0)

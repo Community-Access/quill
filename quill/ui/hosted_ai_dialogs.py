@@ -1,4 +1,11 @@
-"""The four windows QuillLite's hosted AI is reached through.
+"""The four windows the family's hosted AI is reached through.
+
+Shared by **both** editors, which is why these modules live in ``quill/ui``
+rather than beside QuillLite's. The hosted service shipped in QuillLite first,
+and a feature the small product has and the big one does not is backwards and
+invisible -- nobody opens QUILL and notices the absence of a thing they have
+only ever seen elsewhere. So the windows moved here and QUILL reaches them on
+the same day, which is the standing family rule rather than a favour.
 
 All four are **modeless** ``wx.Frame``s, and that is the decision the rest of
 this module follows from. A modal dialog blocks the editor, and an editor that
@@ -84,14 +91,6 @@ def take_focus(frame: wx.Frame) -> None:
         pass
 
 
-def _frame(parent: wx.Window, title: str) -> wx.Frame:
-    return wx.Frame(
-        parent,
-        title=title,
-        style=wx.DEFAULT_FRAME_STYLE & ~(wx.MAXIMIZE_BOX | wx.RESIZE_BORDER) | wx.RESIZE_BORDER,
-    )
-
-
 def _read_only(parent: wx.Window, sizer: wx.Sizer, label: str, value: str, help_text: str):
     """A labelled, read-only, multi-line field.
 
@@ -117,11 +116,19 @@ def _close_row(frame: wx.Frame, sizer: wx.Sizer, *extra: wx.Button) -> wx.Button
     somewhere else in a window that has run out (GATE-14).
     """
     row = wx.BoxSizer(wx.HORIZONTAL)
+    # A stretch spacer pushes the row right, rather than wx.ALIGN_RIGHT doing it.
+    # The two look identical until the window is narrow, at which point
+    # ALIGN_RIGHT inside an EXPAND-less sizer lets wxMSW *clip* the row instead
+    # of moving it -- and a clipped button is one nothing can reach. Banned in
+    # quill/ui for exactly that reason (A11Y-4 dialog contract); these two lines
+    # were invisible to the gate while this module lived under quill/apps.
+    row.AddStretchSpacer(1)
     for button in extra:
         row.Add(button, 0, wx.RIGHT, _PAD)
     close = wx.Button(frame, wx.ID_CLOSE, "Close")
+    close.SetHelpText("Closes this window. Nothing is sent, and nothing in your document changes.")
     row.Add(close, 0)
-    sizer.Add(row, 0, wx.ALL | wx.ALIGN_RIGHT, _PAD)
+    sizer.Add(row, 0, wx.EXPAND | wx.ALL, _PAD)
     bind_close_button(frame, close, modeless=True)
     return close
 
@@ -263,7 +270,7 @@ class AiSignInFrame(wx.Frame):
             "Connected",
             f"{lead}\n\nYour support ID is {support_id}. QUILL support will ask "
             "for this if you ever need help.\n\n"
-            "Choose Tools, AI, Usage to see how much of this month's allowance "
+            "Choose Usage in the AI menu to see how much of this month's allowance "
             "is left, or to sign this computer out again.",
             "Confirms this computer is connected, and gives the support ID to "
             "quote if you ever contact support.",
@@ -380,7 +387,7 @@ class AiUsageFrame(wx.Frame):
         self._service.sign_out()
         self._body.SetValue(
             "This computer is signed out of QUILL's free AI.\n\n"
-            "Choose Tools, AI, Sign In or Out to connect it again whenever you like."
+            "Choose Connect or Sign Out in the AI menu to connect it again whenever you like."
         )
         self._sign_out.Disable()
         self._announce("Signed out.")
@@ -391,8 +398,15 @@ class AiUsageFrame(wx.Frame):
 # --------------------------------------------------------------------------- #
 
 
-def ask_ai_privacy_agreement(parent: wx.Window, announce: Callable[[str], None]) -> bool:
+def ask_ai_privacy_agreement(parent: wx.Window) -> bool:
     """Show the agreement and return whether it was accepted.
+
+    **Announces nothing, either way.** The agreement is reached through three
+    doors and on the way to two commands, and what happens next differs at every
+    one of them -- so the caller says it, or says nothing. Speaking here told
+    somebody who had just chosen Sign In to "choose Connect or Sign Out",
+    said the same sentence twice when the Privacy door accepted it, and spoke on
+    a plain Escape that had changed nothing at all.
 
     **Modal, unlike every other window here**, and for the opposite reason to
     the rest: those are modeless because work is happening and the editor must
@@ -427,13 +441,15 @@ def ask_ai_privacy_agreement(parent: wx.Window, announce: Callable[[str], None])
     buttons = wx.BoxSizer(wx.HORIZONTAL)
     agree = wx.Button(dialog, wx.ID_OK, "I Agree")
     agree.SetHelpText(
-        "Turns on AI help. You can withdraw this later in Tools, AI, or in Preferences."
+        "Turns on AI help. You can withdraw this later in the AI menu, or in Preferences."
     )
     decline = wx.Button(dialog, wx.ID_CANCEL, "No Thanks")
     decline.SetHelpText("Leaves AI help switched off. Everything else in QuillLite is unchanged.")
+    # A stretch spacer, not wx.ALIGN_RIGHT -- see _close_row for why.
+    buttons.AddStretchSpacer(1)
     buttons.Add(agree, 0, wx.RIGHT, _PAD)
     buttons.Add(decline, 0)
-    sizer.Add(buttons, 0, wx.ALL | wx.ALIGN_RIGHT, _PAD)
+    sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
 
     dialog.SetSizer(sizer)
     dialog.SetInitialSize((620, 520))
@@ -446,13 +462,6 @@ def ask_ai_privacy_agreement(parent: wx.Window, announce: Callable[[str], None])
     wx.CallAfter(body.SetFocus)
 
     try:
-        accepted = dialog.ShowModal() == wx.ID_OK
+        return dialog.ShowModal() == wx.ID_OK
     finally:
         dialog.Destroy()
-
-    announce(
-        "AI help is on. Choose Tools, AI, Sign In or Out to connect this computer."
-        if accepted
-        else "AI help stays off. Nothing is sent anywhere."
-    )
-    return accepted

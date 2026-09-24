@@ -441,17 +441,22 @@ def edit_preferences(
         of a worse kind. Cancelling the agreement puts the tick back where it
         was rather than leaving a box that claims something untrue.
         """
-        from quill.apps.lite_ai_dialogs import ask_ai_privacy_agreement
+        from quill.ui.hosted_ai_dialogs import ask_ai_privacy_agreement
 
         speak = announce or (lambda _message: None)
         if not ai_check.GetValue():
             settings.ai_privacy_accepted_version = 0
             speak("AI help is off. Nothing is sent anywhere.")
             return
-        if ask_ai_privacy_agreement(dialog, speak):
+        if ask_ai_privacy_agreement(dialog):
             settings.ai_privacy_accepted_version = AGREEMENT_VERSION
             return
+        # The tick goes back by itself, and a checkbox changed in code is not a
+        # checkbox the reader announces -- so this is the one door where
+        # declining has to be spoken. It says what the box now says, not
+        # "cancelled": the state is the part that cannot be heard.
         ai_check.SetValue(False)
+        speak("AI help stays off. Nothing is sent anywhere.")
 
     ai_check.Bind(wx.EVT_CHECKBOX, _toggle_ai)
 

@@ -41,7 +41,7 @@ import wx
 
 from quill.core.html_to_markdown import contains_html_markup, html_to_markdown
 from quill.core.lite import APP_NAME
-from quill.core.lite.filetypes import is_rich_path
+from quill.core.lite.filetypes import is_rich_path, save_suffix_for_language
 from quill.io.rtf import markdown_to_rtf, rtf_to_markdown
 from quill.io.rtf_model import scan_rtf_features
 from quill.ui.dialog_contract import show_message_box
@@ -243,9 +243,18 @@ class DocumentModeMixin:
         self._pending_suffix = _SUFFIX_FOR_MODE[mode]
 
     def proposed_name_for_mode(self) -> str:
-        """The file name Save As should offer, honouring a pending mode switch."""
+        """The file name Save As should offer, honouring a pending mode switch.
+
+        An untitled document is offered under the extension of the language it
+        has been *told* it is, not always ``.txt``: somebody who rang
+        Ctrl+Shift+M round to Markdown and then pressed Ctrl+S was offered a
+        text file, which is the app forgetting the one thing it had just been
+        told about the document.
+        """
         if self.path is None:
-            return "Untitled.rtf" if self.editor.mode == RICH else "Untitled.txt"
+            if self.editor.mode == RICH:
+                return "Untitled.rtf"
+            return "Untitled" + save_suffix_for_language(self.document_language())
         if not self._pending_suffix:
             return self.path.name
         return self.path.with_suffix(self._pending_suffix).name

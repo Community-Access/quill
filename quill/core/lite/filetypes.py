@@ -50,6 +50,8 @@ __all__ = [
     "is_rich_path",
     "language_label",
     "markup_language_for",
+    "save_filter_index_for_language",
+    "save_suffix_for_language",
 ]
 
 #: The one extension that means rich text.
@@ -165,6 +167,45 @@ def markup_language_for(name: str | None) -> str:
 def language_label(language: str) -> str:
     """``"HTML"`` -- how a language is named on screen and aloud."""
     return LANGUAGE_LABELS.get(str(language), "Plain text")
+
+
+#: The extension a document of each language should be *offered* under.
+_SAVE_SUFFIX_FOR_LANGUAGE: dict[str, str] = {
+    "markdown": ".md",
+    "html": ".html",
+    "plain": ".txt",
+}
+
+#: Which row of :data:`SAVE_WILDCARD_PLAIN` each language should arrive on.
+#:
+#: HTML lands on **All files** rather than a row of its own, and that is not an
+#: oversight: a row in the type list is a promise about what gets written, and
+#: QuillLite has no Markdown-to-HTML writer, so an "HTML (*.html)" row would
+#: offer to turn a Markdown document into HTML and then write the Markdown
+#: unchanged -- exactly the broken promise the Markdown row was once removed
+#: for. An HTML document still arrives with ``.html`` proposed in the name box,
+#: which is the part that was actually wrong.
+_SAVE_FILTER_INDEX_FOR_LANGUAGE: dict[str, int] = {
+    "plain": 0,
+    "markdown": 1,
+    "html": 3,
+}
+
+
+def save_suffix_for_language(language: str) -> str:
+    """The extension Save As should propose for a document in *language*."""
+    return _SAVE_SUFFIX_FOR_LANGUAGE.get(str(language), ".txt")
+
+
+def save_filter_index_for_language(language: str) -> int:
+    """The :data:`SAVE_WILDCARD_PLAIN` row to preselect for *language*.
+
+    Without this, a document somebody has deliberately declared to be Markdown
+    arrived at Save As with "Text files (*.txt)" selected, and wx appends the
+    selected row's extension to a name typed without one -- so the answer to
+    "save my Markdown" was a ``.txt``.
+    """
+    return _SAVE_FILTER_INDEX_FOR_LANGUAGE.get(str(language), 0)
 
 
 #: The plain-text documents whose ``#`` lines are headings rather than comments.

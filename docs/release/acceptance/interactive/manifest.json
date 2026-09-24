@@ -20,7 +20,7 @@
   "boxes": 0
  },
  "section-format": {
-  "scenarios": 56,
+  "scenarios": 58,
   "boxes": 0
  },
  "section-view": {
@@ -36,7 +36,7 @@
   "boxes": 0
  },
  "section-tools-ai": {
-  "scenarios": 31,
+  "scenarios": 32,
   "boxes": 0
  },
  "section-tools-speech": {
@@ -48,7 +48,7 @@
   "boxes": 0
  },
  "section-power": {
-  "scenarios": 75,
+  "scenarios": 76,
   "boxes": 0
  },
  "section-braille": {
@@ -84,7 +84,7 @@
   "boxes": 0
  },
  "section-accessibility": {
-  "scenarios": 13,
+  "scenarios": 18,
   "boxes": 0
  },
  "app-radio": {

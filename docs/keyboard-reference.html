@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Keyboard Reference (default bindings)</title>
   <style>
@@ -209,7 +209,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 448.</p>
+<p>Editor commands with default bindings: 455.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -407,6 +407,11 @@ your own customised keymap.</p>
 <td>Alt+Shift+F3</td>
 <td>Undo and Say What Changed</td>
 <td><code>edit.undo_and_say</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+F5</td>
+<td>Select Section</td>
+<td><code>edit.select_section</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+F8</td>
@@ -951,6 +956,11 @@ your own customised keymap.</p>
 <td><code>format.insert_markdown_tag</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+F5</td>
+<td>Move Section To</td>
+<td><code>format.move_section_to</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+I</td>
 <td>Toggle Tab Key Mode (Indent / Tab Character)</td>
 <td><code>format.toggle_tab_insert_mode</code></td>
@@ -1458,17 +1468,17 @@ your own customised keymap.</p>
 <tbody>
 <tr>
 <td>(unbound by default)</td>
-<td>AI Grammar and Style Check…</td>
+<td>Grammar and Style Check…</td>
 <td><code>tools.ai_grammar_style</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>AI Spell Check…</td>
+<td>Spell Check…</td>
 <td><code>tools.ai_spell_check</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>AI Spell Check Interactive…</td>
+<td>Spell Check Interactive…</td>
 <td><code>tools.ai_spell_check_interactive</code></td>
 </tr>
 <tr>
@@ -1478,7 +1488,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>AI Thesaurus</td>
+<td>AI Thesaurus…</td>
 <td><code>tools.ai_thesaurus</code></td>
 </tr>
 <tr>
@@ -1523,7 +1533,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Alt+Q</td>
-<td>Ask Quill Chat</td>
+<td>Ask Quill…</td>
 <td><code>tools.ask_quill_chat</code></td>
 </tr>
 <tr>
@@ -1548,7 +1558,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Alt+Shift+Q</td>
-<td>Ask Quill: Voice Conversation</td>
+<td>Ask Quill by Voice…</td>
 <td><code>tools.ask_quill_conversation</code></td>
 </tr>
 <tr>
@@ -1577,6 +1587,11 @@ your own customised keymap.</p>
 <td><code>tools.add_word_to_dictionary</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+G</td>
+<td>Free AI Assistant…</td>
+<td><code>tools.hosted_ai_assistant</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+,</td>
 <td>Previous Difference</td>
 <td><code>tools.compare_previous_difference</code></td>
@@ -1597,9 +1612,24 @@ your own customised keymap.</p>
 <td><code>tools.search_in_files</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>Free AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F4</td>
+<td>Connect or Sign Out…</td>
+<td><code>tools.hosted_ai_sign_in</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+F6</td>
 <td>Spelling Announcements</td>
 <td><code>tools.spelling_announcements</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+K</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+O</td>
@@ -1615,6 +1645,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+U</td>
 <td>Check for Updates…</td>
 <td><code>tools.check_updates</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Z</td>
+<td>Ask About This Document…</td>
+<td><code>tools.hosted_ai_ask_document</code></td>
 </tr>
 <tr>
 <td>Ctrl+F7 or Alt+F7</td>

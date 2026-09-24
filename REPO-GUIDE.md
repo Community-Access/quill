@@ -197,8 +197,18 @@ the human sign-off phase is what the acceptance run completes.
   `build-all` builds in the order that keeps artifacts honest — runtime,
   runtime installer, then apps — for the reason spelled out under "The build
   process" in `README.md`.
-- `run-from-source.bat` / `.sh` / `.command`, `run-current-build.bat`,
-  `run-quill-radio.bat`, `run-quill-cast.bat` — convenience launchers.
+- `run-from-source.bat` / `.sh` / `.command`, `run-current-build.bat` —
+  convenience launchers for QUILL itself.
+- `run-quill-<app>.bat` — the same thing for each QuillVille app, one per
+  runnable module: `radio`, `cast`, `lite`, `studio`, `weather`, `inkwell`,
+  `converter`, `player`, `beacon`. Each forwards its arguments to the app, and
+  `--print-python` answers "which interpreter would this use?" without opening
+  a window. They run the **source**; `standalone/<app>/dist/` holds a frozen
+  build with its own copy of the `quill` package, which no source edit reaches.
+  All but the two oldest are shims over `scripts/run_app.cmd`, which holds the
+  interpreter search and the dev-build flags once — the same shape as
+  `build-<product>.cmd` over `build.ps1`. (Quill Social is absent on purpose:
+  it is its own codebase under `standalone/social/`, not a `quill.apps` module.)
 - `installer/`-adjacent root helpers: `quill-pub.key` (the public update
   signing key), `babel.cfg` (translation extraction).
 - Config: `.gitignore`, `.gitattributes`, `.pre-commit-config.yaml`,

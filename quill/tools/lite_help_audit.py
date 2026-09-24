@@ -54,6 +54,14 @@ _SCAN_DIRS: tuple[str, ...] = ()
 _SCAN_GLOBS: tuple[str, ...] = (
     "quill/apps/lite*.py",
     "quill/ui/spelling_voice_dialog.py",
+    # The hosted-AI windows went the same way as the Spelling Announcements
+    # one, and for the stronger reason: QUILL now opens them too (they are its
+    # *default* AI), so they could not stay in a QuillLite-only module without
+    # breaking the rule that QuillLite is never ahead of QUILL. They stay in
+    # this glob because QuillLite is still a caller, and a surface no gate can
+    # see is one that rots -- QUILL's own help audit covers them as well, which
+    # is correct: two callers, two gates, one set of sentences.
+    "quill/ui/hosted_ai*.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason
@@ -81,6 +89,13 @@ TITLE_EXEMPT: dict[str, str] = {
         "the argument choose_from_rows makes: the alternative is two copies of a "
         "search-and-choose dialog, which is two places to get the "
         "Enter-moves-to-the-list handling wrong in."
+    ),
+    "quill/ui/hosted_ai_dialogs.py::ask_ai_privacy_agreement": (
+        "The title is quill.core.ai.gateway_privacy.AGREEMENT_TITLE, not a "
+        "literal, and deliberately: the window is titled by the same module "
+        "that owns the agreement's text and its version number, so a change to "
+        "what is being agreed to cannot leave the window announcing the old "
+        "thing. The catalogue answers that constant's current value."
     ),
     "quill/apps/lite_dialogs_entry.py::ask_text": (
         "One labelled-box window whose three callers pass literals the catalogue "

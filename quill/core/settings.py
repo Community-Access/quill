@@ -266,6 +266,22 @@ class Settings:
     announce_screen_reader_detected: bool = False
     assistant_enabled: bool = False
     assistant_prompt_style: str = "balanced"
+    #: Which version of the hosted-AI privacy agreement this person has
+    #: accepted, or 0. **Same field name and same meaning as QuillLite's**
+    #: (``quill/core/lite/settings.py``), because it is the same agreement about
+    #: the same service -- the two products must not be able to disagree about
+    #: whether it was accepted.
+    #:
+    #: Deliberately a *version* rather than a boolean: a material change to what
+    #: is sent or kept bumps ``gateway_privacy.AGREEMENT_VERSION`` and everybody
+    #: is asked again, which a boolean could not express -- an old yes would
+    #: silently cover a new thing.
+    #:
+    #: Separate from the Use AI master switch on purpose. The switch answers
+    #: "is AI turned on in my copy"; this answers "have I agreed to what the
+    #: hosted service does". A switch flipped by a profile, a settings import or
+    #: somebody else using the machine is not consent.
+    ai_privacy_accepted_version: int = 0
     markdown_clipboard_format: str = "html"
     markdown_profile_id: str = "standard"
     citation_style: str = "footnotes"
@@ -1050,6 +1066,9 @@ class Settings:
         verbosity_speech_enabled = bool(data.get("verbosity_speech_enabled", True))
         announce_screen_reader_detected = bool(data.get("announce_screen_reader_detected", False))
         assistant_enabled = bool(data.get("assistant_enabled", False))
+        ai_privacy_accepted_version = _clamp_int(
+            data.get("ai_privacy_accepted_version", 0), 0, 0, 1_000_000
+        )
         assistant_prompt_style = str(data.get("assistant_prompt_style", "balanced")).strip().lower()
         if assistant_prompt_style not in {"balanced", "concise", "gentle", "technical"}:
             assistant_prompt_style = "balanced"
@@ -1727,6 +1746,7 @@ class Settings:
             announce_screen_reader_detected=announce_screen_reader_detected,
             assistant_enabled=assistant_enabled,
             assistant_prompt_style=assistant_prompt_style,
+            ai_privacy_accepted_version=ai_privacy_accepted_version,
             markdown_clipboard_format=markdown_clipboard_format,
             dictation_engine=dictation_engine,
             dictation_language=dictation_language,

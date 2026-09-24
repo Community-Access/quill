@@ -163,16 +163,16 @@ from quill.core.language_profile import (
 )
 from quill.core.lexical_preload import start_lexical_preload
 from quill.core.links import build_link_text, find_link_at_cursor, infer_markup_kind
-from quill.core.list_style import strip_list_block
-from quill.core.locations import LocationRing
-from quill.core.macros import MacroManager
-from quill.core.markdown_sections import (
+from quill.core.list_markers import (
     _LIST_AUTO_FILL_ARM_SECONDS,
     fill_numbered_markers,
-    heading_context_at,
     is_caret_inside_list,
     should_auto_fill_numbers,
 )
+from quill.core.list_style import strip_list_block
+from quill.core.locations import LocationRing
+from quill.core.macros import MacroManager
+from quill.core.markdown_sections import heading_context_at
 from quill.core.marks import MarkRing, NamedMarks, line_column_for_position
 from quill.core.menu_customization import (
     MenuCustomization,
@@ -381,6 +381,7 @@ from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_abbreviations import AbbreviationsMixin
 from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_ai_actions import AiActionsMixin
+from quill.ui.main_frame_ai_menu import AiMenuMixin
 from quill.ui.main_frame_ai_reading_order import ReadingOrderMixin
 from quill.ui.main_frame_braille import BrailleCommandsMixin
 from quill.ui.main_frame_braille_phase2 import BraillePhase2CommandsMixin
@@ -412,6 +413,7 @@ from quill.ui.main_frame_github_items import GitHubItemsMixin
 from quill.ui.main_frame_glow import GlowFileMixin
 from quill.ui.main_frame_go_to import GoToMixin
 from quill.ui.main_frame_headings import HeadingLevelsMixin
+from quill.ui.main_frame_hosted_ai import HostedAiCommandsMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_hygiene import HygieneMixin
 from quill.ui.main_frame_image import ImageCaptureMixin
@@ -874,6 +876,11 @@ class MainFrame(
     SimpleOpenMixin,
     ImageCaptureMixin,
     BrowseModeMixin,
+    # The AI menu's two halves, extracted from the menu builder under GATE-11.
+    # Keep every comment in this base list free of brackets: three tests read
+    # the list by splitting the source on the first closing bracket after the
+    # class name, so one in a comment silently truncates what they check.
+    AiMenuMixin,
     MenuBuilderMixin,
     MenuBindingsMixin,
     MastodonSocialMixin,
@@ -903,6 +910,9 @@ class MainFrame(
     GlowFileMixin,
     DocConvertMixin,
     DictationHotkeysMixin,
+    # QUILL's own free AI: the shared hosted-AI commands, wired to QUILL's
+    # frame and editor. Five commands, no implementation of its own.
+    HostedAiCommandsMixin,
     SectionMoveMixin,
     CopyTrayMixin,
     ClipLibraryMixin,
@@ -7762,6 +7772,23 @@ class MainFrame(
                     return title
         return fallback
 
+    def _save_filter_index_for_new_document(self) -> int:
+        """Which "Save as type" row an untitled document opens on.
+
+        A tab whose markup kind has been **pinned** -- by the Document Format
+        switcher, or by answering "Markdown or HTML?" for a structured insert --
+        has already said what this document is, so the list opens there. The
+        ``default_new_document_format`` setting is what to do when nobody has
+        said; it cannot outrank an answer already given. wx appends the selected
+        row's extension to a name typed without one, so this decides the file's
+        name as much as the name box does.
+        """
+        pinned = self._pinned_markup_kind()
+        chosen = pinned or getattr(self.settings, "default_new_document_format", "markdown")
+        return {"text": 0, "txt": 0, "plain": 0, "markdown": 1, "md": 1, "html": 2}.get(
+            str(chosen), 1
+        )
+
     def save_file_as(self) -> None:
         wx = self._wx
         with wx.FileDialog(
@@ -7778,11 +7805,9 @@ class MainFrame(
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dialog:
             if self.document.path is None:
-                default_format = getattr(self.settings, "default_new_document_format", "markdown")
-                filter_index = {"text": 0, "markdown": 1, "html": 2}.get(default_format, 1)
                 set_filter_index = getattr(dialog, "SetFilterIndex", None)
                 if callable(set_filter_index):
-                    set_filter_index(filter_index)
+                    set_filter_index(self._save_filter_index_for_new_document())
             if self._show_modal_dialog(dialog, "Save file as") != wx.ID_OK:
                 return
             get_filter_index = getattr(dialog, "GetFilterIndex", None)
@@ -14468,10 +14493,19 @@ class MainFrame(
             self._id_ai_continue_writing,
             self._id_ai_fix_grammar,
             self._id_train_style,
+            # QUILL's own free AI: the two rows that spend a request. Usage and
+            # Connect are *about* the account rather than uses of it, so they
+            # stay live -- somebody has to be able to see what they have left,
+            # and to sign out, with the switch off.
+            self._id_hosted_ai_assistant,
+            self._id_hosted_ai_ask_document,
         )
         for item_id in ai_item_ids:
             if bar.FindItemById(item_id) is not None:
                 bar.Enable(item_id, enabled)
+        # The Privacy Agreement is never dimmed, in either direction: it is the
+        # door somebody turns the feature *on* through, and a door that appears
+        # only once you are already inside is not a door.
 
         # "Forget API Key" is gated on whether a key is actually stored, not on
         # the AI on/off toggle (#128): a user must be able to forget a key even

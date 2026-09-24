@@ -2,6 +2,74 @@
 
 ## 1.0.0
 
+### Move a section to where you want it, not one step at a time (2026-09-23)
+
+`Alt+Shift+Up` and `Alt+Shift+Down` move a section one step. That is the right
+tool for swapping two adjacent sections and the wrong one for crossing a long
+document: forty presses is forty announcements, and by ear you have to count
+them, because there is no page to glance at to see how far you have got.
+
+**Move Section To…** (`Ctrl+Alt+Shift+F5`, Format menu, both editors) asks where
+instead. Two questions, both answered from a list you can type into:
+
+1. **Which heading?** Every heading in the document, in document order, each row
+   reading `3 of 7, level 2 - Bread`. The position leads the row so that two
+   sections called "Notes" are two different choices rather than a coin toss, and
+   the list never re-ranks itself as you type — an outline that reshuffles is one
+   you cannot navigate by position.
+2. **Before, after, or inside it?** Three rows, because "next to that heading" is
+   genuinely ambiguous and guessing is worse than asking. **After** puts the
+   section past the chosen heading *and everything under it*, which is the one
+   people get wrong, so the row says so.
+
+The whole thing is one edit and one `Ctrl+Z`. It says where the section landed —
+"Moved Salad before Bread. Now 1 of 3 at this level" — which is the half a
+listener cannot get any other way: the screen reader says the text changed, never
+where in the outline the thing now sits.
+
+**Only "Inside" changes a level**, and it says so out loud: the moved section
+becomes the last one under the heading you chose, its subtree is renumbered one
+step deeper, and the announcement names the new level. Everything else leaves your
+heading levels exactly as they were, because a key that says "move" and also
+renumbers has edited more than it said. It refuses to move a section into its own
+subtree, and refuses to push a heading past Heading 6, and explains both rather
+than just declining — *"Sourdough is inside Bread, so Bread cannot move into it.
+Promote Sourdough first if you want them side by side."*
+
+### QUILL's own free AI is what the AI menu opens with (2026-09-23)
+
+You do not need an account, an API key, or a decision about which company sees
+your writing. QUILL runs its own free AI service, and it is now the **front
+door** of the AI menu:
+
+- **Free AI Assistant…** (`Ctrl+Alt+G`) — summarise, rewrite, proofread, shorten
+  or explain the passage you are in.
+- **Ask About This Document…** (`Ctrl+Alt+Z`) — ask a question about what you are
+  writing.
+- **Free AI Usage…**, **Connect or Sign Out…**, **Privacy Agreement…**
+
+These are the same five commands on the same five keys as QuillLite's, running
+the same shared code, so anything you learn in one editor you have learned in
+both. It acts on the selection, else the paragraph, else the section — never the
+whole file. Nothing is applied without a keystroke, and every AI edit goes through
+the ordinary undo stack, so one `Ctrl+Z` takes it back. The editor never waits:
+you can keep typing, save or switch documents while an answer is on its way. And
+nothing leaves your computer until you have read the agreement and accepted it —
+there is no request on launch, on typing, on save, on idle or on focus.
+
+**The rest of the AI menu is now one checkbox away.** Provider setup, Ask Quill,
+the agents, Proofread, Transform, Translate, Read Aloud, Transcribe, the AI
+Library and the AI Hub are all still there, all still on their own keys, all still
+in the Command Palette — behind **Show advanced AI features** near the bottom of
+the menu. A new install starts with the short menu, because the long one assumes
+you have already chosen a company and found somewhere to paste a key, and that is
+a wall in front of somebody who wanted a paragraph tidied up. Nothing is removed
+in Basic; the checkbox changes what is *offered*.
+
+If you already had AI set up — you ran the wizard, or you have a provider key
+stored — QUILL leaves you with the full menu. An update should never take working
+menus away from somebody who was using them.
+
 ### Quill Radio says what it actually sends (2026-09-23)
 
 The first thing Quill Radio told a new listener was *"Nothing here needs an

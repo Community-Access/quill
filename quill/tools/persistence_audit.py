@@ -359,6 +359,13 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/assistant_prompts.py::save_custom_prompts": "content",
     "core/ai/custom_instructions.py::save_instructions": "content",
     "core/ai/sessions.py::save_session": "content",
+    # Which device this computer is, which gateway it talks to, and when it
+    # connected -- and nothing else. **The token is not here**: it lives in the
+    # credential store (``gateway_session.save_token``), which is why this file
+    # is a marker rather than a secret. Trivially defaulted: an empty
+    # GatewaySession reads as "not connected", which is exactly what a lost or
+    # unreadable file should mean, and the next sign-in rewrites it.
+    "core/ai/gateway_session.py::save_session": "marker",
     "core/ai/style.py::save_style": "content",
     "core/bookmarks.py::save": "content",
     # Per-book media time-point bookmarks (position_ms + optional label/note),

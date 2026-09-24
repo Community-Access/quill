@@ -112,7 +112,15 @@ APPS: tuple[AppConfig, ...] = (
         # help sentences straight out of the reference and out of every gate
         # that watches them, which is precisely the rot GATE-REACH exists to
         # stop. The audit follows the surface, not the folder.
-        ("quill/apps/lite*.py", "quill/ui/spelling_voice_dialog.py"),
+        # The hosted-AI windows moved the same way, and for a stronger reason:
+        # QUILL opens them too now -- they are its *default* AI -- so they could
+        # not stay in a QuillLite-only module. Keep in step with
+        # lite_help_audit._SCAN_GLOBS.
+        (
+            "quill/apps/lite*.py",
+            "quill/ui/spelling_voice_dialog.py",
+            "quill/ui/hosted_ai*.py",
+        ),
         "lite_help_inventory.json",
     ),
 )

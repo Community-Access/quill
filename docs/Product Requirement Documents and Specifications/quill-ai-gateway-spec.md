@@ -1,7 +1,10 @@
-# QUILL free hosted AI: Luna 6, QuillLite, and the gateway that already exists
+# QUILL free hosted AI: Luna 6, the two editors, and the gateway that already exists
 
-Status: plan, 2026-09-23. Supersedes nothing; it is the execution layer under
-[`docs/planning/openai.md`](docs/planning/openai.md) (the QUILL AI Gateway PRD,
+Status: **partly shipped**, 2026-09-23. Moved here from the repository root the
+same day (the root-layout gate sanctions no design notes there, and this is the
+design of record for a live service rather than a scratch plan). Supersedes
+nothing; it is the execution layer under
+[`docs/planning/openai.md`](../planning/openai.md) (the QUILL AI Gateway PRD,
 1,466 lines, still correct in every structural decision) and re-prices it for
 GPT-6 Luna.
 
@@ -9,7 +12,9 @@ Read this if you are about to build any part of free hosted AI. Read the PRD if
 you want to know *why* the server looks the way it does. This document answers
 three questions the PRD does not: **what is actually built today**, **what the
 new model economics change**, and **what the smallest product that delivers real
-value looks like** — which, on the current evidence, is QuillLite.
+value looks like** — which, on the current evidence, was QuillLite. It shipped
+there first and reached QUILL on 2026-09-23; section 5.4 records how, and what
+that cost.
 
 ---
 
@@ -363,6 +368,48 @@ elsewhere. So:
 
 This is family rule 10 working as designed: value flows both ways, violations flow
 one.
+
+**Status, 2026-09-23: QUILL has it, and it is QUILL's *default* AI.** The debt
+this section anticipated was real for about two weeks and is now paid, and it was
+paid further than "surfaced through the AI Hub next to the BYOK providers" — which
+would have buried a free, zero-configuration service one dialog deep behind the
+very providers it exists to make unnecessary.
+
+- The four wx modules moved out of `quill/apps/lite_ai*.py` into
+  `quill/ui/hosted_ai_service.py`, `hosted_ai_dialogs.py`, `hosted_ai_pad.py` and
+  `hosted_ai_commands.py`. `DocumentAiMixin` became `HostedAiMixin` with three
+  hooks — which window a frame is parented to, which control holds the document,
+  and which object holds the settings and the switch — because those are the only
+  three things the two editors do differently.
+- `quill/ui/main_frame_hosted_ai.py` is QUILL's adapter and its three overrides.
+  It has **no commands of its own**, and a test asserts that absence: a second
+  implementation is how this rule gets broken quietly, far more easily than a
+  missing feature.
+- Three of the five chords are QuillLite's, unchanged: `Ctrl+Alt+G` (the pad),
+  `Ctrl+Alt+Z` (ask about this document) and `Ctrl+Alt+Shift+K` (the agreement).
+  All three were free on QUILL's side, so family rule 2 applied with nothing to
+  arbitrate. **Usage and Sign In could not keep theirs**: `Ctrl+Alt+Shift+F7` to
+  `F12` are the six QuillVille sibling launchers in QUILL
+  (`app_keymaps.SIBLING_APP_ACCELERATORS`), and QuillLite — being the editor on
+  its own — has none to launch, so F9 and F10 are free over there and spoken for
+  here. QUILL uses `Ctrl+Alt+Shift+F2` and `F4`, and both divergences carry a
+  `DIVERGENCES` row in `lite/parity.py` plus a comment in `keymap.py` (rule 11).
+  A chord claimed twice means one of the pair silently never fires, which is worse
+  than a divergence somebody can read about — exactly the argument
+  `cmd_spelling_voice_settings` already made about the same six keys.
+- **The AI menu now opens with them**, and the whole provider-and-agent surface
+  moved behind `Show advanced AI features`. A fresh install starts in Basic; an
+  install that had already run the wizard or stored a provider key stays in
+  Advanced, because an update must never take working menus away from somebody
+  using them. The derived answer is written to the onboarding state once rather
+  than re-derived, so a menu cannot lengthen as a side effect of a key pasted into
+  an unrelated feature.
+- One sentence could not be shared and is a hook rather than a literal: the
+  feature switch is a Customize Features area in QuillLite and the Use AI item in
+  QUILL's own menu. Every *other* route sentence was rewritten to name a row that
+  exists in both ("Connect or Sign Out in the AI menu"), and QuillLite's row was
+  renamed from "Sign In or Out" to match — a row named two ways is a sentence that
+  is wrong in one of the two products.
 
 ### 5.5 The five commands, and nothing else
 

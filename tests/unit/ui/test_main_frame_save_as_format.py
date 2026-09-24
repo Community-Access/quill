@@ -161,3 +161,37 @@ def test_reload_in_place_reads_before_closing() -> None:
     read_at = body.index("read_open_document(")
     delete_at = body.index("DeletePage(")
     assert read_at < delete_at
+
+
+# --------------------------------------------------------------------------- #
+# which type row an untitled document opens on
+# --------------------------------------------------------------------------- #
+
+
+class _Tab:
+    def __init__(self, kind: str | None) -> None:
+        self._language_profile_pinned = kind is not None
+        self._language_profile = type("_Profile", (), {"markup_kind": kind})()
+
+
+def _frame_with(kind: str | None, setting: str = "markdown") -> MainFrame:
+    frame = _frame()
+    # _current_tab is a property over _active_tab(), so the tab goes in there.
+    frame._active_tab = lambda: _Tab(kind)  # type: ignore[assignment,method-assign]
+    frame.settings = type("_Settings", (), {"default_new_document_format": setting})()
+    return frame
+
+
+def test_new_document_opens_on_the_format_setting() -> None:
+    assert _frame_with(None, "markdown")._save_filter_index_for_new_document() == 1
+    assert _frame_with(None, "text")._save_filter_index_for_new_document() == 0
+    assert _frame_with(None, "html")._save_filter_index_for_new_document() == 2
+
+
+def test_a_pinned_markup_kind_outranks_the_setting() -> None:
+    """Somebody who has said "this is HTML" has said it; the setting is only
+    what to do when nobody has. wx appends the selected row's extension to a
+    name typed without one, so this row decides the file's name."""
+    assert _frame_with("html", "markdown")._save_filter_index_for_new_document() == 2
+    assert _frame_with("plain", "markdown")._save_filter_index_for_new_document() == 0
+    assert _frame_with("markdown", "text")._save_filter_index_for_new_document() == 1

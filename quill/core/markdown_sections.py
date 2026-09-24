@@ -1,179 +1,85 @@
-"""Section-move primitives for Markdown and plain-text documents.
+"""The section verbs: select one, move one, and rewrite a document around it.
 
-This module is the single source of truth for heading parsing, section
-boundaries, and the heading regex (#359 / consolidation of the former
-``quill.core.heading_organizer`` and ``quill.core.heading_styles``).
+This module used to be everything -- the heading parser, the section
+arithmetic, the sentences both editors speak, and the list-marker helpers --
+and at 1085 lines it had become a grab-bag whose name described only a third of
+it. It is now the *verbs* only, and the three jobs it was carrying live beside
+it:
+
+* :mod:`quill.core.section_tree` -- the shapes (``HeadingBlock``, ``Section``,
+  ``SectionSelection``, ``MoveResult``) and the arithmetic: parse, boundaries,
+  siblings, subtree ends, swapping two spans.
+* :mod:`quill.core.section_speech` -- the one sentence each outcome gets, so
+  that QUILL and QuillLite cannot word the same action two ways.
+* :mod:`quill.core.list_markers` -- numbered- and bulleted-list markers, which
+  were never about sections at all.
+* :mod:`quill.core.section_move_to` -- Move Section To, the destination picker.
+
+Every name this module exported before it was split is still exported from it,
+so no caller outside the package changed.
 
 Public API:
 
-* :class:`Section` — frozen dataclass describing a heading section.
-* :class:`HeadingBlock` — frozen dataclass describing a parsed heading
-  (used by the Heading Organizer dialog and the section-move UI).
-* :class:`HeadingContext` — frozen dataclass with the level, ordinal, and
-  total count for the heading at a caret offset.
-* :class:`MoveResult` — ``OK | NO_SECTION | TOP | BOTTOM | NO_SIBLING``.
-* :func:`current_section_at` — find the section containing the caret.
-* :func:`move_section` — apply a one-step move and return the new text, new
+* :func:`current_section_at` -- find the section containing the caret.
+* :func:`section_selection_at` -- the same section *including* its
+  subsections, for Select Section and the clipboard.
+* :func:`move_section` -- apply a one-step move and return the new text, new
   caret, the result code, and a screen-reader-friendly announce string.
-* :func:`parse_heading_blocks` — fence-aware markdown / html heading parser.
-* :func:`apply_heading_organizer_edits` — rewrite a document after the
+* :func:`apply_heading_organizer_edits` -- rewrite a document after the
   Heading Organizer dialog has reordered or renamed its sections.
-* :func:`heading_context_at` — describe the heading containing a caret.
-* :func:`validate_heading_sequence` — check a list of parsed headings for
+* :func:`heading_context_at` -- describe the heading containing a caret.
+* :func:`validate_heading_sequence` -- check a list of parsed headings for
   common structural problems.
 
 The Markdown path is fence-aware so ``# not a heading`` lines inside a
 ````` or ``~~~`` block are never matched.  For plain text (no Markdown),
-the section-move code falls back to form-feed (``\\f``) delimited blocks,
+the section-move code falls back to form-feed (``\f``) delimited blocks,
 which the main editor produces when text is pasted from certain sources.
 """
 
 from __future__ import annotations
 
-import re
-import time
-from dataclasses import dataclass, replace
-from enum import StrEnum
 from typing import Literal
 
-# ---------------------------------------------------------------------------
-# Heading patterns and parser (consolidated from heading_organizer.py).
-# ---------------------------------------------------------------------------
-
-_MD_HEADING_PATTERN = re.compile(r"^(?P<marker>#{1,6})[ \t]*(?P<title>.*)$", re.MULTILINE)
-_HTML_HEADING_PATTERN = re.compile(
-    r"<h(?P<level>[1-6])(?P<attrs>[^>]*)>(?P<body>.*?)</h(?P=level)>",
-    re.IGNORECASE | re.DOTALL,
+from quill.core.section_speech import (
+    announce_edge,
+    describe_move,
+    describe_section_selection,
 )
-_HTML_TAG_PATTERN = re.compile(r"<[^>]+>")
-# Recognise the opening line of a fenced code block.  The closing fence is any
-# line that contains only the same fence character (``` or ~~~), optionally
-# preceded by up to three spaces of indentation and followed by optional
-# trailing whitespace.  We deliberately use a permissive regex here because
-# indented closing fences (CommonMark §4.5) are common in real-world docs.
-_FENCE_PATTERN = re.compile(r"^(?P<indent>[ ]{0,3})(?P<fence>`{3,}|~{3,})[ \t]*(?P<info>.*)$")
+from quill.core.section_tree import (
+    HTML_HEADING_PATTERN,
+    MD_HEADING_PATTERN,
+    HeadingBlock,
+    HeadingContext,
+    MoveResult,
+    Section,
+    SectionSelection,
+    caret_after_move,
+    contains_the_rest,
+    find_sibling,
+    outer_neighbour,
+    parent_title,
+    parse_heading_blocks,
+    section_for_caret,
+    subtree_end,
+    swap_sections,
+)
 
-
-@dataclass(frozen=True, slots=True)
-class HeadingBlock:
-    source_index: int
-    level: int
-    title: str
-    start: int
-    end: int
-    section_start: int
-    section_end: int
-    attributes: str = ""
-
-
-@dataclass(frozen=True, slots=True)
-class HeadingContext:
-    level: int
-    ordinal: int
-    total: int
-    title: str
-
-
-def parse_heading_blocks(text: str, markup_kind: str) -> list[HeadingBlock]:
-    if markup_kind == "markdown":
-        return _parse_markdown_heading_blocks(text)
-    if markup_kind == "html":
-        return _parse_html_heading_blocks(text)
-    return []
-
-
-def _is_fence_close(line: str, open_fence: str) -> bool:
-    """Return True if ``line`` closes the fence opened with ``open_fence``.
-
-    CommonMark §4.5: a closing fence must use the same character (``` or ~~~)
-    as the opening fence and be at least as long.  Indentation up to three
-    spaces is allowed.  Anything after the fence is treated as info-string
-    content and ignored.
-    """
-    stripped = line.lstrip(" ")
-    indent = len(line) - len(stripped)
-    if indent > 3:
-        return False
-    if not stripped.startswith(open_fence[0]):
-        return False
-    char = open_fence[0]
-    count = 0
-    for ch in stripped:
-        if ch == char:
-            count += 1
-        else:
-            break
-    return count >= len(open_fence) and stripped[count:].strip() == ""
-
-
-def _parse_markdown_heading_blocks(text: str) -> list[HeadingBlock]:
-    # Walk the document line by line so we can recognise fenced code blocks
-    # (``` or ~~~) and skip any `# ...` lines that appear inside them.
-    # CommonMark §4.5: an opening fence is 3+ backticks or tildes; a closing
-    # fence must use the same character and be at least as long.
-    blocks: list[HeadingBlock] = []
-    open_fence: str | None = None
-    block_index = 0
-    line_start = 0
-    for line in text.splitlines(keepends=True):
-        stripped = line.lstrip(" ")
-        indent = len(line) - len(stripped)
-        if open_fence is not None:
-            if _is_fence_close(line, open_fence):
-                open_fence = None
-        else:
-            fence_match = _FENCE_PATTERN.match(line) if indent <= 3 else None
-            if fence_match is not None:
-                open_fence = fence_match.group("fence")
-            else:
-                heading_match = _MD_HEADING_PATTERN.match(line)
-                if heading_match is not None:
-                    start = line_start
-                    end = line_start + len(line)
-                    blocks.append(
-                        HeadingBlock(
-                            source_index=block_index,
-                            level=len(heading_match.group("marker")),
-                            title=(heading_match.group("title") or "").strip(),
-                            start=start,
-                            end=end,
-                            section_start=start,
-                            section_end=0,  # filled in once the next block is found
-                        )
-                    )
-                    block_index += 1
-        line_start += len(line)
-    # Fill in section_end for every block: the last block's section runs to
-    # end-of-text; earlier blocks end where the next block begins.
-    for index, block in enumerate(blocks):
-        if index + 1 < len(blocks):
-            blocks[index] = replace(block, section_end=blocks[index + 1].start)
-        else:
-            blocks[index] = replace(block, section_end=len(text))
-    return blocks
-
-
-def _parse_html_heading_blocks(text: str) -> list[HeadingBlock]:
-    matches = list(_HTML_HEADING_PATTERN.finditer(text))
-    blocks: list[HeadingBlock] = []
-    for index, match in enumerate(matches):
-        start = match.start()
-        end = match.end()
-        section_end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        raw_title = _HTML_TAG_PATTERN.sub("", match.group("body"))
-        blocks.append(
-            HeadingBlock(
-                source_index=index,
-                level=int(match.group("level")),
-                title=" ".join(raw_title.split()),
-                start=start,
-                end=end,
-                section_start=start,
-                section_end=section_end,
-                attributes=match.group("attrs") or "",
-            )
-        )
-    return blocks
+__all__ = [
+    "HeadingBlock",
+    "HeadingContext",
+    "MoveResult",
+    "Section",
+    "SectionSelection",
+    "apply_heading_organizer_edits",
+    "current_section_at",
+    "describe_section_selection",
+    "heading_context_at",
+    "move_section",
+    "parse_heading_blocks",
+    "section_selection_at",
+    "validate_heading_sequence",
+]
 
 
 def validate_heading_sequence(
@@ -338,7 +244,7 @@ def _rewrite_first_heading(
     normalized_level = min(6, max(1, int(level)))
     normalized_title = title.strip()
     if markup_kind == "markdown":
-        return _MD_HEADING_PATTERN.sub(
+        return MD_HEADING_PATTERN.sub(
             f"{'#' * normalized_level} {normalized_title}",
             section,
             count=1,
@@ -347,52 +253,52 @@ def _rewrite_first_heading(
         replacement = (
             f"<h{normalized_level}{original.attributes}>{normalized_title}</h{normalized_level}>"
         )
-        return _HTML_HEADING_PATTERN.sub(replacement, section, count=1)
+        return HTML_HEADING_PATTERN.sub(replacement, section, count=1)
     return section
 
 
-# ---------------------------------------------------------------------------
-# Section-move primitives (the original content of this module).
-# ---------------------------------------------------------------------------
+def section_selection_at(
+    text: str, caret: int, *, markup_kind: str = "markdown"
+) -> SectionSelection | None:
+    """The section the caret is in, **including its subsections**, or ``None``.
 
+    The span :func:`move_section` moves, offered to the clipboard: select it and
+    ordinary Control X and Control V put a section anywhere, in this document or
+    another one or another program. That is the answer to "move it somewhere
+    there is no heading to move past", and it needs no new mental model --
+    which is why it is a selection rather than a fifth kind of move.
 
-@dataclass(frozen=True, slots=True)
-class Section:
-    level: int
-    title: str
-    start: int
-    end: int
-
-    @property
-    def length(self) -> int:
-        return self.end - self.start
-
-
-class MoveResult(StrEnum):
-    OK = "ok"
-    NO_SECTION = "no_section"
-    TOP = "top"
-    BOTTOM = "bottom"
-    NO_SIBLING = "no_sibling"
-
-
-def _section_for_caret(blocks: list, caret: int) -> tuple[int, int, int, int] | None:
-    """Return ``(index, level, section_start, section_end)`` for the section
-    whose start is at or before ``caret`` and whose end is after ``caret``.
-
-    If the caret is past the last section's end, return that last section.
-    Returns ``None`` if there are no sections at all.
+    Selecting from a heading to exactly the start of the next one is the
+    operation this exists to replace: by ear that boundary is invisible, it has
+    to be found by trial, and getting it wrong loses your place in the document
+    you were halfway through reorganising.
     """
+    if markup_kind not in {"markdown", "html"}:
+        return None
+    blocks = parse_heading_blocks(text, markup_kind)
     if not blocks:
         return None
-    chosen_index = 0
-    for index, block in enumerate(blocks):
-        if block.start <= caret:
-            chosen_index = index
-        else:
-            break
-    block = blocks[chosen_index]
-    return chosen_index, block.level, block.section_start, block.section_end
+    found = section_for_caret(blocks, caret)
+    if found is None:
+        return None
+    index, level, start, _own_end = found
+    end = subtree_end(blocks, index, len(text))
+    nested = sum(1 for block in blocks[index + 1 :] if block.section_start < end)
+    span = text[start:end]
+    # Trailing blank lines belong to the gap between sections rather than to
+    # this one, so they are neither selected nor counted. Selecting them would
+    # make a cut-and-paste swallow the separation between two sections and run
+    # the next heading onto the end of this one.
+    span = span.rstrip("\n")
+    end = start + len(span)
+    return SectionSelection(
+        start=start,
+        end=end,
+        title=blocks[index].title,
+        level=level,
+        sections=nested + 1,
+        lines=span.count("\n") + 1 if span else 0,
+    )
 
 
 def current_section_at(text: str, caret: int, *, markup_kind: str = "markdown") -> Section | None:
@@ -406,7 +312,7 @@ def current_section_at(text: str, caret: int, *, markup_kind: str = "markdown") 
         blocks = parse_heading_blocks(text, markup_kind)
         if not blocks:
             return None
-        found = _section_for_caret(blocks, caret)
+        found = section_for_caret(blocks, caret)
         if found is None:
             return None
         _, level, start, end = found
@@ -431,108 +337,13 @@ def current_section_at(text: str, caret: int, *, markup_kind: str = "markdown") 
     return None
 
 
-def _find_sibling(blocks: list, section_index: int, direction: Literal["up", "down"]) -> int | None:
-    """Return the index of the closest sibling (same ``level``) of
-    ``blocks[section_index]`` in the requested direction, or ``None``.
-
-    A sibling shares the same level and has the same parent (the nearest
-    preceding heading whose level is strictly less).  Top-level headings
-    (``level == 1``) all share an implicit parent of 0, so any other
-    ``level == 1`` heading is a sibling.
-    """
-    if not blocks or section_index < 0 or section_index >= len(blocks):
-        return None
-    current = blocks[section_index]
-    if direction == "up":
-        for index in range(section_index - 1, -1, -1):
-            other = blocks[index]
-            if other.level < current.level:
-                return None
-            if other.level == current.level:
-                return index
-        return None
-    # direction == "down"
-    for index in range(section_index + 1, len(blocks)):
-        other = blocks[index]
-        if other.level < current.level:
-            return None
-        if other.level == current.level:
-            return index
-    return None
-
-
-def _swap_sections(text: str, first: tuple[int, int], second: tuple[int, int]) -> str:
-    """Swap two ``(start, end)`` ranges in ``text``.
-
-    Ranges must be non-overlapping and ordered such that ``first`` precedes
-    ``second``.  The whitespace gap between the two ranges is attached to
-    whichever section ends up on top so the moved heading keeps its
-    surrounding blank lines.
-    """
-    a_start, a_end = first
-    b_start, b_end = second
-    if a_end > b_start:
-        raise ValueError("ranges must be ordered and non-overlapping")
-    a_text = text[a_start:a_end]
-    b_text = text[b_start:b_end]
-    gap = text[a_end:b_start]
-    # The gap (whitespace between the sections) rides with whichever
-    # section now comes first.  For "up" we want the moved-up heading to
-    # keep the gap above it; for "down" we want it below.
-    if a_text.endswith("\n") and not b_text.endswith("\n"):
-        b_text = b_text.rstrip("\n") + "\n"
-    if not b_text.endswith("\n") and gap.endswith("\n"):
-        # CommonMark headings should end with a newline.
-        b_text = b_text + "\n"
-    return text[:a_start] + b_text + gap + a_text + text[b_end:]
-
-
-def _caret_after_move(
-    caret: int,
-    section_start: int,
-    new_text: str,
-    moved_heading_line: str,
-) -> int:
-    """Compute the caret position after a section has been moved.
-
-    The caret is preserved as an offset from the heading line start (column
-    within the heading) so it lands on the same column of the moved heading.
-    We look the moved heading up in ``new_text`` rather than relying on a
-    precomputed destination, because the swap helper can shift the section
-    by an arbitrary offset (the gap between the swapped sections rides
-    with the moved section).
-    """
-    column = max(0, caret - section_start)
-    heading_pos = new_text.find(moved_heading_line)
-    if heading_pos == -1:
-        return caret
-    heading_line_end = moved_heading_line.find("\n")
-    if heading_line_end == -1:
-        heading_line_end = len(moved_heading_line)
-    column = min(column, heading_line_end)
-    return heading_pos + column
-
-
-def _announce(result: MoveResult, sibling_title: str = "") -> str:
-    if result == MoveResult.TOP:
-        return "Top!"
-    if result == MoveResult.BOTTOM:
-        return "Bottom!"
-    if result == MoveResult.NO_SECTION:
-        return "No section to move"
-    if result == MoveResult.NO_SIBLING:
-        return "No sibling to swap with"
-    if sibling_title:
-        return sibling_title
-    return ""
-
-
 def move_section(
     text: str,
     caret: int,
     direction: Literal["up", "down"],
     *,
     markup_kind: str = "markdown",
+    promote_key: str = "",
 ) -> tuple[str, int, MoveResult, str]:
     """Move the section containing ``caret`` one step in ``direction``.
 
@@ -550,19 +361,63 @@ def move_section(
     if markup_kind in {"markdown", "html"}:
         blocks = parse_heading_blocks(text, markup_kind)
         if not blocks:
-            return text, caret, MoveResult.NO_SECTION, _announce(MoveResult.NO_SECTION)
-        found = _section_for_caret(blocks, caret)
+            return text, caret, MoveResult.NO_SECTION, announce_edge(MoveResult.NO_SECTION)
+        found = section_for_caret(blocks, caret)
         if found is None:
-            return text, caret, MoveResult.NO_SECTION, _announce(MoveResult.NO_SECTION)
-        section_index, _level, section_start, section_end = found
-        sibling_index = _find_sibling(blocks, section_index, direction)
-        if direction == "up" and section_index == 0:
-            return text, caret, MoveResult.TOP, _announce(MoveResult.TOP)
-        if direction == "down" and section_index == len(blocks) - 1:
-            return text, caret, MoveResult.BOTTOM, _announce(MoveResult.BOTTOM)
-        if sibling_index is None:
-            return text, caret, MoveResult.NO_SIBLING, _announce(MoveResult.NO_SIBLING)
-        sibling = blocks[sibling_index]
+            return text, caret, MoveResult.NO_SECTION, announce_edge(MoveResult.NO_SECTION)
+        section_index, _level, section_start, _section_end = found
+        # Subsections included, on both sides of the swap: moving "## A1" moves
+        # the "### A1a" under it, and jumping over "## A2" jumps over all of
+        # A2's children too.  See :func:`subtree_end`.
+        section_end = subtree_end(blocks, section_index, len(text))
+        sibling_index = find_sibling(blocks, section_index, direction)
+        if sibling_index is not None:
+            # A sibling: trade places with it, subtrees and all.  This is the
+            # hierarchy-preserving move and the common case, and it is what
+            # this command has always done.
+            sibling = blocks[sibling_index]
+            sibling_start = sibling.section_start
+            sibling_end = subtree_end(blocks, sibling_index, len(text))
+            jumped = sibling.title
+        else:
+            # No sibling that way, so move past whatever *is* there -- which is
+            # what Word's Move Up / Move Down does on this same chord, and what
+            # "move this section somewhere else" means to the person pressing
+            # it.  Refusing here is what made a strictly nested outline
+            # (# / ## / ###, where no heading has a sibling anywhere) answer
+            # every press with a sentence and no movement.
+            #
+            # The moved section keeps its level: it does not renumber itself to
+            # fit its new surroundings.  That keeps every move exactly
+            # reversible, and keeps a key that says "move" from also editing.
+            # Changing level is what Alt+Shift+Left/Right is for, and the two
+            # compose.
+            neighbour = outer_neighbour(blocks, section_index, direction, len(text))
+            if neighbour is None:
+                # Genuinely nothing that way.  The first section in a document
+                # cannot rise; a section whose subtree runs to the end of the
+                # file cannot sink, because everything below it is *inside* it.
+                # Name the parent it is already first or last inside: "Bottom!"
+                # is not true of a document that plainly continues above.
+                edge = MoveResult.TOP if direction == "up" else MoveResult.BOTTOM
+                parent = parent_title(blocks, section_index)
+                contained = (
+                    contains_the_rest(blocks, section_index, len(text))
+                    if edge is MoveResult.BOTTOM
+                    else ""
+                )
+                return (
+                    text,
+                    caret,
+                    edge,
+                    announce_edge(
+                        edge,
+                        parent_title=parent,
+                        contained=contained,
+                        promote_key=promote_key,
+                    ),
+                )
+            sibling_start, sibling_end, jumped = neighbour
         # ``heading_line`` is the unique span we use to locate the moved
         # heading in the new text.  For Markdown it is the full heading line
         # up to the next newline; for HTML (no newlines) it is the
@@ -573,38 +428,48 @@ def move_section(
         else:
             heading_line = text[section_start:newline_at]
         if direction == "up":
-            new_text = _swap_sections(
+            new_text = swap_sections(
                 text,
-                (sibling.section_start, sibling.section_end),
+                (sibling_start, sibling_end),
                 (section_start, section_end),
             )
-            new_caret = _caret_after_move(
+            new_caret = caret_after_move(
                 caret,
                 section_start,
                 new_text,
                 heading_line,
             )
-            return new_text, new_caret, MoveResult.OK, sibling.title.strip()
+            return (
+                new_text,
+                new_caret,
+                MoveResult.OK,
+                describe_move(new_text, new_caret, markup_kind, "above", jumped),
+            )
         # direction == "down"
-        new_text = _swap_sections(
+        new_text = swap_sections(
             text,
             (section_start, section_end),
-            (sibling.section_start, sibling.section_end),
+            (sibling_start, sibling_end),
         )
-        new_caret = _caret_after_move(
+        new_caret = caret_after_move(
             caret,
             section_start,
             new_text,
             heading_line,
         )
-        return new_text, new_caret, MoveResult.OK, sibling.title.strip()
+        return (
+            new_text,
+            new_caret,
+            MoveResult.OK,
+            describe_move(new_text, new_caret, markup_kind, "below", jumped),
+        )
 
     # Plain-text form-feed fallback.
     if "\f" not in text:
-        return text, caret, MoveResult.NO_SECTION, _announce(MoveResult.NO_SECTION)
+        return text, caret, MoveResult.NO_SECTION, announce_edge(MoveResult.NO_SECTION)
     section = current_section_at(text, caret, markup_kind="plain")
     if section is None:
-        return text, caret, MoveResult.NO_SECTION, _announce(MoveResult.NO_SECTION)
+        return text, caret, MoveResult.NO_SECTION, announce_edge(MoveResult.NO_SECTION)
     boundaries: list[int] = [0]
     for index, ch in enumerate(text):
         if ch == "\f":
@@ -617,11 +482,11 @@ def move_section(
             section_index = index
             break
     if section_index < 0:
-        return text, caret, MoveResult.NO_SECTION, _announce(MoveResult.NO_SECTION)
+        return text, caret, MoveResult.NO_SECTION, announce_edge(MoveResult.NO_SECTION)
     if direction == "up" and section_index == 0:
-        return text, caret, MoveResult.TOP, _announce(MoveResult.TOP)
+        return text, caret, MoveResult.TOP, announce_edge(MoveResult.TOP)
     if direction == "down" and section_index == len(boundaries) - 2:
-        return text, caret, MoveResult.BOTTOM, _announce(MoveResult.BOTTOM)
+        return text, caret, MoveResult.BOTTOM, announce_edge(MoveResult.BOTTOM)
     if direction == "up":
         target = section_index - 1
     else:
@@ -629,9 +494,9 @@ def move_section(
     target_start = boundaries[target]
     target_end = boundaries[target + 1]
     if direction == "up":
-        new_text = _swap_sections(text, (target_start, target_end), (section.start, section.end))
+        new_text = swap_sections(text, (target_start, target_end), (section.start, section.end))
     else:
-        new_text = _swap_sections(text, (section.start, section.end), (target_start, target_end))
+        new_text = swap_sections(text, (section.start, section.end), (target_start, target_end))
     # For plain text, "heading line" doesn't apply; preserve the caret
     # offset within the moved section by looking for the first character
     # of the moved section in the new text.
@@ -646,134 +511,3 @@ def move_section(
     else:
         new_caret = caret
     return new_text, new_caret, MoveResult.OK, ""
-
-
-# --- Numbered-list auto-fill gate ------------------------------------------
-#
-# The EdSharp port toggle for numbered lists (Ctrl+Alt+8) inserts a list
-# with leading "1. ", "2. ", "3. " markers when (and only when) one of
-# the three OR'd conditions below holds:
-#
-#   1. the active document surface is markdown (the default-experience
-#      rule -- a user who explicitly authored a Markdown file wants
-#      markers, and we honour that without an extra click),
-#   2. settings.list_auto_fill_numbers is on (explicit opt-in),
-#   3. the user just ran toggle_numbered_list on the active document
-#      (per-document arming flag with a 5-minute lifetime; cleared on
-#      document close).
-#
-# In every other case the inserted list uses today's no-fill behaviour:
-# only the first item gets a marker and the rest are bare lines.
-#
-# We model this as a single helper that takes a frame-like object so it
-# can be exercised from pure unit tests without spinning up a real
-# MainFrame.
-
-_LIST_AUTO_FILL_ARM_SECONDS = 300.0
-
-
-def should_auto_fill_numbers(
-    settings: object | None,
-    surface: str,
-    *,
-    armed_until: float = 0.0,
-    now: float | None = None,
-) -> bool:
-    """Return True if a numbered-list insertion should auto-fill markers.
-
-    Parameters mirror the live conditions:
-
-    * ``settings`` — a Settings-like object exposing
-      ``list_auto_fill_numbers``; ``None`` disables the explicit opt-in.
-    * ``surface`` — the active document surface (``"markdown"``,
-      ``"html"``, ``"plain"``).
-    * ``armed_until`` — the value of the per-document arming flag (a
-      monotonic-clock timestamp); ``0.0`` means no arming.
-    * ``now`` — the current monotonic-clock value (defaults to the real
-      clock in production; pass a fixed value from tests).
-    """
-    if surface == "markdown":
-        return True
-    explicit = bool(getattr(settings, "list_auto_fill_numbers", False))
-    if explicit:
-        return True
-    if armed_until > 0.0:
-        current = time.monotonic() if now is None else now
-        if current <= armed_until:
-            return True
-    return False
-
-
-# --- Numbered-list marker helpers -----------------------------------------
-#
-# The toggle commands and the auto-fill gate produce Markdown like:
-#
-#     1. item one
-#     2. item two
-#     3. item three
-#
-# so we keep the rewrite pure: fill_numbered_markers scans the inserted
-# list and rewrites the leading "1. " markers to "1. ", "2. ", "3. ", ...
-# without touching body text.  strip_list_markers removes both bullet
-# ("- ") and numbered ("1. ") markers so the toggle can collapse a list
-# back to plain text.
-
-_NUMBERED_MARKER_RE = re.compile(r"^(?P<indent>\s*)\d+\.\s")
-
-
-def fill_numbered_markers(text: str) -> str:
-    """Rewrite consecutive '1. ' markers to 1., 2., 3., ... .
-
-    Only the first item of each consecutive numbered run is renumbered.
-    Existing non-numbered lines (blank lines, indented sub-items) are
-    preserved as-is.
-    """
-    out_lines: list[str] = []
-    counter = 0
-    for line in text.splitlines():
-        match = _NUMBERED_MARKER_RE.match(line)
-        if match is None:
-            counter = 0
-            out_lines.append(line)
-            continue
-        counter += 1
-        out_lines.append(f"{match.group('indent')}{counter}. {line[match.end() :]}")
-    return "\n".join(out_lines)
-
-
-_BULLET_MARKER_RE = re.compile(r"^(?P<indent>\s*)[-*+]\s")
-
-
-def strip_list_markers(text: str) -> str:
-    """Remove leading '-' / '*' / '+' / 'N. ' markers from each line.
-
-    Blank lines and lines without a recognised marker pass through
-    unchanged so the caller's surrounding whitespace is preserved.
-    """
-    out_lines: list[str] = []
-    for line in text.splitlines():
-        bullet = _BULLET_MARKER_RE.match(line)
-        if bullet is not None:
-            out_lines.append(f"{bullet.group('indent')}{line[bullet.end() :]}")
-            continue
-        numbered = _NUMBERED_MARKER_RE.match(line)
-        if numbered is not None:
-            out_lines.append(f"{numbered.group('indent')}{line[numbered.end() :]}")
-            continue
-        out_lines.append(line)
-    return "\n".join(out_lines)
-
-
-def is_caret_inside_list(text: str, caret: int, *, markup_kind: str = "markdown") -> bool:
-    """Return True if ``caret`` is on or inside a recognised list item.
-
-    Used by the toggle commands to decide whether to insert or strip.
-    """
-    if markup_kind != "markdown":
-        return False
-    line_start = text.rfind("\n", 0, caret) + 1
-    line_end = text.find("\n", caret)
-    if line_end == -1:
-        line_end = len(text)
-    line = text[line_start:line_end]
-    return _BULLET_MARKER_RE.match(line) is not None or _NUMBERED_MARKER_RE.match(line) is not None

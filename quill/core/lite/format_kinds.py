@@ -45,6 +45,13 @@ _MARKUP = frozenset({"markdown", "html", "rich"})
 #: is no markup spelling of them to fall back to.
 _RICH = frozenset({"rich"})
 
+#: Markup only, and *not* rich text -- the mirror of ``_RICH``. A section is a
+#: heading line plus the body under it, which needs a heading the parser can
+#: find: a hash or an ``<h2>``. A rich-text heading is a point size, so there is
+#: nothing to parse and nothing to move, and the commands say so rather than
+#: quietly doing nothing.
+_MARKUP_TEXT = frozenset({"markdown", "html"})
+
 FORMAT_COMMAND_KINDS: dict[str, frozenset[str]] = {
     # Emphasis: asterisks, a <strong>, or real bold.
     "cmd_bold": _MARKUP,
@@ -63,8 +70,10 @@ FORMAT_COMMAND_KINDS: dict[str, frozenset[str]] = {
     # has no sections to promote, demote or move.
     "cmd_promote_heading": _MARKUP,
     "cmd_demote_heading": _MARKUP,
-    "cmd_move_section_up": _MARKUP,
-    "cmd_move_section_down": _MARKUP,
+    "cmd_move_section_up": _MARKUP_TEXT,
+    "cmd_move_section_down": _MARKUP_TEXT,
+    "cmd_select_section": _MARKUP_TEXT,
+    "cmd_move_section_to": _MARKUP_TEXT,
     # Rich text too, since 2026-09-22. It used to refuse there and the report
     # was one sentence long -- "it should work there" -- and correct: a rich
     # document has headings, ``all_headings`` already lists them, and the only

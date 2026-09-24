@@ -708,6 +708,33 @@ class MenuBindingsMixin:
             lambda _e: self.open_ai_document_qa(),
             id=self._id_ai_document_qa,
         )
+        # QUILL's own free AI: the shared handlers, bound to the five rows the
+        # AI menu opens with (quill/ui/main_frame_hosted_ai.py).
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.cmd_ai_assistant(),
+            id=self._id_hosted_ai_assistant,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.cmd_ai_ask_document(),
+            id=self._id_hosted_ai_ask_document,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.cmd_ai_usage(),
+            id=self._id_hosted_ai_usage,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.cmd_ai_sign_in(),
+            id=self._id_hosted_ai_sign_in,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.cmd_ai_privacy(),
+            id=self._id_hosted_ai_privacy,
+        )
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.open_ask_quill_chat(),
@@ -1303,6 +1330,8 @@ class MenuBindingsMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.move_section_down(), id=self._id_move_section_down
         )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.select_section(), id=self._id_select_section)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.move_section_to(), id=self._id_move_section_to)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.duplicate_line(), id=self._id_duplicate_line)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.delete_line(), id=self._id_delete_line)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.join_lines(), id=self._id_join_lines)

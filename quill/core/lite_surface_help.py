@@ -64,6 +64,17 @@ PURPOSES: dict[str, str] = {
         "what QUILL support will ask for. You can also sign this computer out "
         "from here, and connect it again whenever you like."
     ),
+    # Keyed by the value of quill.core.ai.gateway_privacy.AGREEMENT_TITLE. The
+    # window sets its title from that constant rather than from a literal, so
+    # the title and the agreement text cannot drift apart -- and so this key
+    # has to be kept in step by hand if the constant ever changes, which is
+    # what the TITLE_EXEMPT note in lite_help_audit.py says out loud.
+    "QUILL AI: what is sent, and what is kept": (
+        "The agreement, in full, before anything is sent. Read it with the "
+        "arrow keys. I Agree turns AI help on; No Thanks leaves it off and "
+        "changes nothing else. You can read this again, or withdraw it, from "
+        "Tools, AI, Privacy Agreement at any time."
+    ),
     "Summary": (
         "What the AI sent back. It is read-only on purpose: nothing goes into "
         "your document until you choose Replace My Selection or Insert Below, "
