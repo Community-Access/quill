@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>userguide</title>
+  <title>QuillLite — User Guide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quilllite--user-guide">QuillLite — User Guide</h1>
 <p>QuillLite is a text editor. It opens a file, lets you change it, and
 saves it back exactly as it found it.</p>
@@ -195,7 +219,7 @@ window is for and what the thing you are on does.</li>
 useful facts live. Arrow along it, press <strong>Escape</strong> to come
 back.</li>
 <li><strong>Ctrl+F1</strong> lists every key QuillLite has.</li>
-<li><strong>Ctrl+Alt+F1</strong> opens <strong>Tutorials...</strong>:
+<li><strong>Ctrl+Alt+F1</strong> opens <strong>Tutorials…</strong>:
 eight short lessons that walk you through the things that are hard to
 work out by pressing keys.</li>
 </ul>
@@ -251,7 +275,7 @@ monitor, say — start it with the extra option
 <hr />
 <h2 id="four-kinds-of-document">Four kinds of document</h2>
 <p>Every document is one of four kinds. The title bar names the first
-two; the status bar's <strong>Format</strong> and
+two; the status bar’s <strong>Format</strong> and
 <strong>Language</strong> cells name all four.</p>
 <p><strong>Plain text</strong> is like Notepad. One font, no formatting,
 no markup. Text you paste in arrives as plain text. This is what a
@@ -266,11 +290,11 @@ five.</p>
 <p><strong>HTML</strong> is the same idea in tags:
 <code>&lt;h2&gt;</code>, <code>&lt;ul&gt;</code>,
 <code>&lt;strong&gt;</code>. Everything Markdown gets, HTML gets, in
-HTML's own spelling.</p>
+HTML’s own spelling.</p>
 <p><strong>Rich text</strong> is like WordPad. Bold, italic, headings,
 alignment, bullet points, line spacing. It saves as a Rich Text file,
 which Word and WordPad both open.</p>
-<p>QuillLite chooses the kind from the file's name, and it is only ever
+<p>QuillLite chooses the kind from the file’s name, and it is only ever
 a first guess:</p>
 <table>
 <thead>
@@ -308,7 +332,7 @@ and <code>.txt</code></td>
 is what somebody typing <code>## Notes</code> into one means. A
 <code>.py</code> or a <code>.conf</code> is plain text because in those
 a <code>#</code> is a <strong>comment</strong> and a <code>-</code> is a
-flag, and an editor that announced "Heading 1" on most lines of a build
+flag, and an editor that announced “Heading 1” on most lines of a build
 script would be exhausting.</p>
 <h3 id="saying-otherwise">Saying otherwise</h3>
 <p>The guess is not binding. Writing HTML in a <code>.txt</code> scratch
@@ -322,7 +346,7 @@ way.</li>
 <li><strong>Ctrl+Alt+F6</strong> (<strong>Format ▸ Document
 Language</strong>) goes straight to one, and tells you what each choice
 will do before you make it.</li>
-<li><strong>Enter on the status bar's Language cell</strong> opens that
+<li><strong>Enter on the status bar’s Language cell</strong> opens that
 same chooser, because the bar is where you notice the answer is
 wrong.</li>
 </ul>
@@ -342,9 +366,9 @@ carry — a table, a picture, a footnote — QuillLite names it before it
 asks.</p>
 <p>Until version 1.0 this direction took the letters and left everything
 else. An afternoon of headings and bold became a wall of unmarked text,
-and the only announcement was "Plain text mode".</p>
+and the only announcement was “Plain text mode”.</p>
 <p>Going <strong>into rich text</strong> converts in the other
-direction: a Markdown document's <code>## Title</code> becomes a real
+direction: a Markdown document’s <code>## Title</code> becomes a real
 Heading 1, <code>**bold**</code> becomes really bold, and an HTML
 document goes through Markdown on the way. A <strong>plain text</strong>
 document is left as characters, deliberately — the asterisks in a
@@ -384,10 +408,10 @@ when somebody needs a copy of an old file in a newer format. The change
 takes effect the next time you save.</p>
 <h3 id="how-this-file-is-written-encoding-and-line-endings">How this
 file is written: encoding and line endings</h3>
-<p><strong>Tools ▸ File Encoding and Line Endings...</strong>
+<p><strong>Tools ▸ File Encoding and Line Endings…</strong>
 (<strong>Ctrl+Alt+E</strong>) is one window for the two facts above, and
 it is the same window QUILL opens from <strong>File ▸ File
-Format...</strong>. Neither list is applied until you save; the window
+Format…</strong>. Neither list is applied until you save; the window
 says so.</p>
 <p><strong>Encoding</strong> offers UTF-8 for anything new, UTF-8 with
 BOM for the Windows tools that expect one, UTF-16, and Windows-1252 for
@@ -401,7 +425,7 @@ way classic Mac OS wrote them, shows a <strong>keep as is</strong> row
 at the top of the list and starts in it — so answering the window with
 Enter cannot convert a file you only opened to read. Until September
 2026 the list quietly started on its first row instead: a CR file read
-"CRLF", and confirming the window rewrote every line ending in it. A
+“CRLF”, and confirming the window rewrote every line ending in it. A
 big-endian file had a subtler version of the same problem — both byte
 orders were read through the one codec that always <em>writes</em>
 little-endian, so saving a file you had not otherwise touched swapped
@@ -425,7 +449,7 @@ file something else has to read back.</li>
 <li><strong>Cancel</strong> stops, and nothing is written.</li>
 </ul>
 <p>Until version 1.0 there was no question. The characters became
-question marks, QuillLite said "Saved", and the only way to find out was
+question marks, QuillLite said “Saved”, and the only way to find out was
 to read that line again.</p>
 <h3 id="saving-an-html-page-as-markdown">Saving an HTML page as
 Markdown</h3>
@@ -435,13 +459,13 @@ than a new name: if the document you are saving is
 <strong>HTML</strong>, the tags are turned into Markdown as it saves. A
 heading becomes <code>#</code>, bold becomes <code>**bold**</code>, a
 list becomes <code>-</code> lines, and links keep both their text and
-their address. QuillLite says <strong>"Converted HTML to
-Markdown"</strong> when it happens, and the document in front of you
-changes to match the file -- the window and the file never disagree
-about what you just saved.</p>
+their address. QuillLite says <strong>“Converted HTML to
+Markdown”</strong> when it happens, and the document in front of you
+changes to match the file – the window and the file never disagree about
+what you just saved.</p>
 <p>Tags Markdown has no way to write are dropped and their text kept, so
 nothing you typed disappears. If the conversion would produce nothing at
-all -- a page that is only a comment, say -- QuillLite keeps your text
+all – a page that is only a comment, say – QuillLite keeps your text
 exactly as it was and tells you so, rather than writing an empty
 file.</p>
 <p>The conversion happens <strong>to the file</strong>, and the window
@@ -455,8 +479,8 @@ nothing at all: plain text is already what it claims to be, and Markdown
 already is Markdown. A <strong>rich text</strong> document is not
 offered Markdown, because turning real formatting back into
 <code>#</code> and <code>**</code> means guessing which bold lines were
-meant as headings. Save it as plain text first -- QuillLite asks before
-it drops the formatting -- and the Markdown row is waiting.</p>
+meant as headings. Save it as plain text first – QuillLite asks before
+it drops the formatting – and the Markdown row is waiting.</p>
 <h3 id="if-something-goes-wrong">If something goes wrong</h3>
 <p>While a document has changes you have not saved, QuillLite keeps a
 copy of it aside, about every thirty seconds. That copy sits
@@ -470,7 +494,7 @@ it has to hold whatever you typed — but what it records alongside is
 what <em>your</em> document was, and that is what is put back.</p>
 <p>If a copy cannot be read back — a damaged disk, a file something else
 is holding — QuillLite says so and leaves it exactly where it is. The
-window does not take your file's name, and the copy is offered again
+window does not take your file’s name, and the copy is offered again
 next time. It is still the only copy of that work.</p>
 <p>Save it, or close normally, and the copy is deleted. So there is
 never anything in there except work you actually need.</p>
@@ -481,9 +505,9 @@ version</h3>
 every time you save. That is for the paragraph you deleted an hour ago
 rather than for a crash. It starts switched off, because it does fill up
 a folder.</p>
-<p>Turn it on and <strong>File ▸ Earlier Versions...</strong>
-(<strong>Ctrl+Alt+Shift+E</strong>) lists them, newest first, as "Today
-at 4:12 PM — 2,341 words". Up to twenty are kept per document; after
+<p>Turn it on and <strong>File ▸ Earlier Versions…</strong>
+(<strong>Ctrl+Alt+Shift+E</strong>) lists them, newest first, as “Today
+at 4:12 PM — 2,341 words”. Up to twenty are kept per document; after
 that the oldest go.</p>
 <p>The word count is there to be compared rather than read. Two saves a
 minute apart are otherwise almost impossible to tell apart by ear, and
@@ -497,8 +521,8 @@ until you decide, and <strong>Ctrl+Z</strong> undoes it. A restore
 chosen by mistake costs you one keystroke.</li>
 <li><strong>Open a Copy</strong> puts the old version in a new untitled
 window and leaves the document you are working on completely alone. Use
-this one when the question is "what did this say yesterday" rather than
-"put yesterday back".</li>
+this one when the question is “what did this say yesterday” rather than
+“put yesterday back”.</li>
 </ul>
 <p>Until version 1.0 QuillLite wrote these files and gave you no way to
 read one: they were there, correctly dated, and reachable only if you
@@ -541,7 +565,7 @@ with none, every time you press F3.</p>
 before you press anything. Type three letters and it says how many
 matches there are; add a fourth and the number changes. Your screen
 reader reads it as it changes, because it is a label rather than an
-announcement -- a count spoken on every keystroke would talk over the
+announcement – a count spoken on every keystroke would talk over the
 typing it is describing.</p>
 <p><strong>Ctrl+Down</strong> and <strong>Ctrl+Up</strong> step through
 the matches <em>without leaving the search box</em>, so you can hear the
@@ -566,7 +590,7 @@ typing.</p>
 <tbody>
 <tr>
 <td><strong>F5</strong></td>
-<td>Today's date and the time</td>
+<td>Today’s date and the time</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+F2</strong></td>
@@ -596,7 +620,7 @@ sits <strong>before Format</strong> on the bar for the reason Word puts
 it there: you insert a thing and then you format it, so the menus are in
 the order the work happens. Every key is unchanged.</p>
 <h3 id="emoji--alt">Emoji — Alt+.</h3>
-<p>QUILL's own picker, and the same key. Search by name, by keyword, by
+<p>QUILL’s own picker, and the same key. Search by name, by keyword, by
 what it <em>looks like</em>, or by a typed smiley — <code>:)</code>
 finds the smiling face and <code>&lt;3</code> finds the heart. Or browse
 by category, starting with <strong>Favourites</strong> and
@@ -611,7 +635,7 @@ anything from its own name to silence depending on your synthesiser.</p>
 character, not markup.</p>
 <h3 id="the-two-tag-pickers">The two tag pickers</h3>
 <p><strong>Exactly one of them is ever available</strong>, and it is
-whichever your document's language is. The other is <strong>greyed out
+whichever your document’s language is. The other is <strong>greyed out
 rather than hidden</strong> — a greyed row tells your reader it is
 unavailable the moment you arrive on it, while a row that has vanished
 leaves you hunting the menus for something you know the app has. Press
@@ -624,10 +648,10 @@ Type to narrow the list. Link and Image ask for the address
 afterwards.</p>
 <p><strong>HTML Tag (Ctrl+Alt+O)</strong> offers <strong>111 tags and 20
 whole form fields</strong>, and <strong>searches by what they do as well
-as what they are called</strong>: type "dropdown" and find both a
+as what they are called</strong>: type “dropdown” and find both a
 finished labelled dropdown and the bare <code>select</code>, type
-"glossary" and find <code>&lt;dl&gt;</code>, type "acronym" and find
-<code>&lt;abbr&gt;</code>, type "subtitles" and find
+“glossary” and find <code>&lt;dl&gt;</code>, type “acronym” and find
+<code>&lt;abbr&gt;</code>, type “subtitles” and find
 <code>&lt;track&gt;</code>. For a bare tag you can then give it
 attributes — <code>class=note; id=summary; aria-label=Summary</code> —
 and Enter on an empty box skips that step, because an
@@ -636,9 +660,9 @@ entirely: it arrives with the attributes that make it work.</p>
 <p>Anything selected is wrapped. Otherwise the cursor lands between the
 tags.</p>
 <h3 id="whole-form-fields-wired-up">Whole form fields, wired up</h3>
-<p>The HTML picker's top rows are not tags — they are <strong>finished
+<p>The HTML picker’s top rows are not tags — they are <strong>finished
 controls</strong>. Choose <strong>Form field: dropdown</strong> and you
-get a label, a <code>for</code> that matches the field's
+get a label, a <code>for</code> that matches the field’s
 <code>id</code>, the <code>&lt;select&gt;</code> and three
 <code>&lt;option&gt;</code>s, all at once.</p>
 <p>This is where the picker earns its place. Inserting
@@ -724,7 +748,7 @@ have</td>
 </table>
 <p><strong>Select a word first and it becomes the label</strong> — and
 the <code>id</code> is made from it, so the two agree. Select
-"Postcode", choose <strong>Form field: text</strong>, and you get a
+“Postcode”, choose <strong>Form field: text</strong>, and you get a
 Postcode field with <code>id="postcode"</code> and
 <code>for="postcode"</code> already matching.</p>
 <p><strong>The <code>id</code> is checked against your document
@@ -737,14 +761,14 @@ bare tag is what you meant.</p>
 <hr />
 <h3 id="typing-things-there-is-no-key-for">Typing things there is no key
 for</h3>
-<p><strong>Edit ▸ Insert ▸ Special Character...</strong>
+<p><strong>Edit ▸ Insert ▸ Special Character…</strong>
 (<strong>Ctrl+Shift+F2</strong>) opens a picker for the 357 characters a
 keyboard has no key for. Two ways in, and the window opens on the first
 one:</p>
 <ul>
 <li><strong>Type what you are after.</strong> The search box takes part
-of a name -- <code>dash</code>, <code>euro</code>, <code>acute</code>,
-<code>arrow</code>, <code>apostrophe</code> -- or one of the words
+of a name – <code>dash</code>, <code>euro</code>, <code>acute</code>,
+<code>arrow</code>, <code>apostrophe</code> – or one of the words
 Unicode does not use but people do: <code>gbp</code>,
 <code>sterling</code>, <code>copyright</code>, <code>eszett</code>,
 <code>micro</code>. Press <strong>Enter</strong> to move into the
@@ -756,15 +780,15 @@ Fractions, Superscripts and ordinals, Arrows, Accented letters (small
 and capital, listed separately), Greek letters, and Punctuation from
 other languages.</li>
 </ul>
-<p>The results list has three columns -- the character, its name, and
-its code point -- and the <strong>Description</strong> pane below
-updates on every row you arrow onto, with the same detail
-<strong>Character Details...</strong> gives for a character already in
-the document. The code point column is what tells apart rows that sound
-the same: "Thin space" and "Hair space" are U+2009 and U+200A.</p>
+<p>The results list has three columns – the character, its name, and its
+code point – and the <strong>Description</strong> pane below updates on
+every row you arrow onto, with the same detail <strong>Character
+Details…</strong> gives for a character already in the document. The
+code point column is what tells apart rows that sound the same: “Thin
+space” and “Hair space” are U+2009 and U+200A.</p>
 <p><strong>Enter inserts the character you are on</strong>, and
-QuillLite <strong>reads back what it put in</strong> -- "Inserted —
-U+2014 Em dash". That is not a nicety: most of this list is invisible on
+QuillLite <strong>reads back what it put in</strong> – “Inserted —
+U+2014 Em dash”. That is not a nicety: most of this list is invisible on
 the page, so without the read-back the command would be a keystroke
 after which something you cannot see may or may not have appeared.</p>
 <p><strong>The search box is also a code-point box.</strong> Type
@@ -776,9 +800,9 @@ not only the 357 that are grouped.</p>
 list.</p>
 <h3 id="moving-your-settings-to-another-computer">Moving your settings
 to another computer</h3>
-<p><strong>Tools ▸ Back Up Settings...</strong>
+<p><strong>Tools ▸ Back Up Settings…</strong>
 (<strong>Ctrl+Alt+Shift+Q</strong>) writes your configuration to a
-<code>.qsf</code> file. <strong>Tools ▸ Restore Settings...</strong>
+<code>.qsf</code> file. <strong>Tools ▸ Restore Settings…</strong>
 (<strong>Ctrl+Alt+Shift+D</strong>) reads one back.</p>
 <p>The file holds preferences, not a picture of this computer. Your
 recent-files list, the session QuillLite restores at startup, the window
@@ -792,7 +816,7 @@ across, how many have been added to QuillLite since the file was written
 does not recognise. If the file has nothing QuillLite recognises at all,
 nothing is changed — a wrong file should not reset your editor.</p>
 <p>QUILL has the same thing, on buttons in its Preferences window. The
-two products use the same file extension but do not read each other's
+two products use the same file extension but do not read each other’s
 backups: they are different editors with different settings.</p>
 <h3 id="ending-a-line-without-starting-a-paragraph">Ending a line
 without starting a paragraph</h3>
@@ -827,7 +851,7 @@ companion to <strong>Describe Character</strong>: that tells you which
 invisible character you are standing on, and this is how you then find
 every other one like it, or replace them all with an ordinary space.</p>
 <p><strong>Regular expression</strong> treats what you typed as a search
-pattern -- <code>.</code> matches any character, <code>*</code> repeats
+pattern – <code>.</code> matches any character, <code>*</code> repeats
 the thing before it, <code>[abc]</code> matches any one of those,
 <code>^</code> and <code>$</code> are the start and end of a line. If
 the pattern is not valid, QuillLite says which character is wrong rather
@@ -835,12 +859,12 @@ than quietly finding nothing: a search that failed and a search that
 found nothing are different problems, and only one of them is fixed by
 retyping.</p>
 <p>Whole word works with all three. In regular expression mode it wraps
-the whole pattern, so <code>cat|dog</code> means "the word cat or the
-word dog", not "the word cat, or dog anywhere".</p>
+the whole pattern, so <code>cat|dog</code> means “the word cat or the
+word dog”, not “the word cat, or dog anywhere”.</p>
 <hr />
 <h2 id="going-somewhere">Going somewhere</h2>
-<p><strong>Ctrl+G</strong> opens <strong>Go To</strong>, which is Word's
-rather than Notepad's: one window, and a choice of what to go to. Arrow
+<p><strong>Ctrl+G</strong> opens <strong>Go To</strong>, which is Word’s
+rather than Notepad’s: one window, and a choice of what to go to. Arrow
 between <strong>Line</strong>, <strong>Bookmark</strong> and
 <strong>Heading</strong> at the top, and what is below follows — a
 number box for a line, a list of places for the other two. Bookmark rows
@@ -892,7 +916,7 @@ left them, along with the place the cursor was. You do not have to do
 anything to keep them.</p>
 <p>This matters more than it sounds. The reason to have bookmarks at all
 is that there is no scrollbar thumb to glance at and no way to see at a
-glance where you are in a long file -- and that does not stop being true
+glance where you are in a long file – and that does not stop being true
 when you close the window. Marking nine places and losing them on the
 way out is the same loss as never marking them, just later.</p>
 <p>Two details worth knowing:</p>
@@ -901,8 +925,8 @@ way out is the same loss as never marking them, just later.</p>
 There is no filename to remember it by. Save it once and its bookmarks
 are kept from then on.</li>
 <li><strong>Nothing is written next to your file.</strong> No stray
-sidecar file appears in your folder; the list lives in QuillLite's own
-settings folder, keyed by the file's location. If the file has been
+sidecar file appears in your folder; the list lives in QuillLite’s own
+settings folder, keyed by the file’s location. If the file has been
 shortened by something else since you last had it open, bookmarks past
 the new end are pulled back to the end rather than sending you
 nowhere.</li>
@@ -983,7 +1007,7 @@ time. That is right for two letters and miserable for four paragraphs —
 you press, and press, and have no idea where you have got to.</p>
 <p>So <strong>Edit ▸ Selection</strong> gives you three better ways.
 Everything in it tells you how much it took, which is the part that
-matters: "Selected paragraph, 412 characters" is something you can act
+matters: “Selected paragraph, 412 characters” is something you can act
 on, where a silent selection is one you have to test by pressing
 something you might regret.</p>
 <h3 id="start-a-selection-and-walk-to-the-end-of-it">Start a selection
@@ -1031,11 +1055,11 @@ Alt+Shift+F9</h4>
 <p><strong>Extend Selection Mode</strong> is the other way to do the
 same job, and which one suits you is a matter of taste rather than of
 which is better.</p>
-<p>Press <strong>Alt+Shift+F9</strong> and QuillLite says "Extend
-selection mode on" and tells you where you are. From then on every
+<p>Press <strong>Alt+Shift+F9</strong> and QuillLite says “Extend
+selection mode on” and tells you where you are. From then on every
 arrow, Home, End, Page Down and Ctrl+arrow <em>extends</em> instead of
 moving — no modifier held, and, the part that matters, <strong>no
-"selected" from your screen reader on every press</strong>. That is what
+“selected” from your screen reader on every press</strong>. That is what
 makes holding Shift and pressing Down forty times so unpleasant, and it
 is the whole reason this mode exists.</p>
 <p>Press it again, or <strong>Escape</strong>, to stop. Typing anything
@@ -1055,11 +1079,11 @@ accident.</p>
 something is selected</h4>
 <p>Every selection says the same thing in the same order:
 <strong>what</strong> it took and <strong>how many words</strong> —
-"Selected paragraph, 41 words". A word count is a size you can picture;
+“Selected paragraph, 41 words”. A word count is a size you can picture;
 a character count is a number you then have to divide.</p>
 <p>The <strong>F8</strong> span is the one exception, and it says more
-because it has to: it reaches between two arbitrary points, so "Selected
-120 words, lines 14 to 31" is the only way to know how far it went.
+because it has to: it reaches between two arbitrary points, so “Selected
+120 words, lines 14 to 31” is the only way to know how far it went.
 Everything else is named by its scope already.</p>
 <p>QUILL says exactly the same sentences. One of the two used to add a
 character count and the other did not, so the same key reported the same
@@ -1175,10 +1199,10 @@ to the start / end of the line | | <strong>Ctrl+Shift+Home</strong> /
 document |</p>
 <hr />
 <h2 id="formatting">Formatting</h2>
-<p>These are WordPad's keys, deliberately unchanged.</p>
-<p><strong>The same key, the document's own answer.</strong> Ctrl+B used
-to say "Not available in plain text. Press Alt Shift F to switch to rich
-text", which is true and unhelpful — somebody writing Markdown does not
+<p>These are WordPad’s keys, deliberately unchanged.</p>
+<p><strong>The same key, the document’s own answer.</strong> Ctrl+B used
+to say “Not available in plain text. Press Alt Shift F to switch to rich
+text”, which is true and unhelpful — somebody writing Markdown does not
 want rich text, they want two asterisks, and they know it. So what
 Ctrl+B writes now depends on what kind of document you are in:</p>
 <table>
@@ -1217,7 +1241,7 @@ markup goes in empty and <strong>the cursor lands in the middle of
 it</strong>, ready to type — which matters, because otherwise you would
 be typing after the closing tag with no way to see that you were.</p>
 <p>In Markdown and HTML the announcement names the <em>markup</em>
-rather than the effect — "Bold in Markdown", not "Bold on". Nothing on
+rather than the effect — “Bold in Markdown”, not “Bold on”. Nothing on
 the screen went bold; two asterisks appeared, and you need to know which
 of the two happened.</p>
 <p>HTML gets <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code>,
@@ -1229,7 +1253,7 @@ carries importance into the accessibility tree, and
 adding to it. Pressing Ctrl+Alt+2 on a line that is already
 <code>### Notes</code> gives you <code>## Notes</code>, not
 <code>## ### Notes</code> — and an <code>id=</code> on an HTML heading
-is carried across, because it is very often the anchor somebody else's
+is carried across, because it is very often the anchor somebody else’s
 link points at.</p>
 <p>The rest of the Format menu — alignment, line spacing, font — is rich
 text only, and says so when it cannot run. Lists are not:
@@ -1262,7 +1286,7 @@ nothing and explains nothing is indistinguishable from a key that is
 broken, and a key that explains itself on every press becomes noise
 inside a minute. QUILL says the same sentence for the same key, from the
 same place in the shared code.</p>
-<p><strong>Ctrl+Shift+L rings</strong>, the way WordPad's own button
+<p><strong>Ctrl+Shift+L rings</strong>, the way WordPad’s own button
 does: bulleted list, numbered list, no list, round again. Each stop says
 its own name, so you press it until you hear the one you meant. In rich
 text the control draws the markers and renumbers them for you; in
@@ -1334,15 +1358,15 @@ knowing bold is on, and a twenty-point run means walking the size back
 down a step at a time. Normal Text does not ask. It takes off bold,
 italic, underline and strikethrough, puts the size back to ordinary body
 text, clears the colour and the highlight, returns the paragraph to left
-aligned and single spaced, and takes it out of any list -- all in one
+aligned and single spaced, and takes it out of any list – all in one
 press, and one <strong>Ctrl+Z</strong> puts it all back. It leaves the
 <em>typeface</em> alone, because the face a document is written in is
 part of the document; <strong>Format ▸ Editor Font</strong> is where
-that is chosen. It is Word's key for the same idea. In a Markdown or
+that is chosen. It is Word’s key for the same idea. In a Markdown or
 HTML document the same key takes the heading marks off the line instead,
-which is what "normal" means to a line written in markup.</p>
+which is what “normal” means to a line written in markup.</p>
 <p><strong>Ctrl+Shift+D</strong> is the one worth remembering. It tells
-you what you are standing in — "Arial, 16 point, heading 2, bold" —
+you what you are standing in — “Arial, 16 point, heading 2, bold” —
 which is the question a formatted document raises and that nothing else
 can answer for you.</p>
 <h3 id="moving-between-headings">Moving between headings</h3>
@@ -1368,7 +1392,7 @@ can answer for you.</p>
 they walk the point-size ladder above; in Markdown they walk the lines
 that start with <code>#</code>; in HTML they walk
 <code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code>. They used to refuse
-in a plain document ("Headings are only available in rich text"), which
+in a plain document (“Headings are only available in rich text”), which
 was wrong in the way that matters: plain-text headings are real enough
 for <strong>Alt+Shift+Right</strong> to change their level, and only
 <em>navigation</em> pretended the document had no shape. A
@@ -1404,7 +1428,7 @@ and glancing. Folding is the same thing for somebody who cannot.</p>
 </tbody>
 </table>
 <p>Walking between sections says the heading, whether it is folded, and
-how many lines are under it — "Installing, expanded, 34 lines". That
+how many lines are under it — “Installing, expanded, 34 lines”. That
 sentence is the skim: it is what a glance down the page would have told
 you.</p>
 <p><strong>Nothing is hidden from your cursor.</strong> A folded section
@@ -1418,12 +1442,12 @@ you pass by.</p>
 section starts.</p>
 <h3 id="hearing-that-you-have-arrived-at-one">Hearing that you have
 arrived at one</h3>
-<p>Arrow onto a heading and QuillLite says <strong>"Heading
-2"</strong>.</p>
+<p>Arrow onto a heading and QuillLite says <strong>“Heading
+2”</strong>.</p>
 <p>It has to, because your screen reader cannot. <strong>No Windows edit
 control has paragraph styles</strong> — the control QuillLite hosts can
 tell JAWS or NVDA the font name, the size and the weight, and has no way
-to say "this paragraph is a heading". Word manages it only by shipping
+to say “this paragraph is a heading”. Word manages it only by shipping
 an accessibility provider of its own.</p>
 <p>The rules are narrow on purpose:</p>
 <ul>
@@ -1437,13 +1461,13 @@ heading announce alike.</li>
 </ul>
 <p>Applying a heading already tells you so, and the two do not double
 up. Opening a document whose first line is its title does not greet you
-with "Heading 1".</p>
+with “Heading 1”.</p>
 <p><strong>Turning it off — View ▸ Announce Headings
 (Ctrl+Alt+F3).</strong> Sometimes you are reading a document <em>as
 text</em> and the levels are one sentence too many. The key turns the
-cue off and on where you stand, and says which way it went — "Headings
-will not be announced", or "Headings announced on arrival" — rather than
-"off" and "on", so a key pressed by accident is never a mystery. The
+cue off and on where you stand, and says which way it went — “Headings
+will not be announced”, or “Headings announced on arrival” — rather than
+“off” and “on”, so a key pressed by accident is never a mystery. The
 choice is remembered, but it is meant to be pressed rather than set: it
 is a decision per document.</p>
 <p><strong>A <code>#</code> is not always a heading.</strong> In a
@@ -1451,16 +1475,16 @@ is a decision per document.</p>
 named yet, a line starting with <code>#</code> is a heading. In a
 <code>.py</code>, <code>.sh</code>, <code>.ini</code>, <code>.yml</code>
 or <code>.conf</code> it is a comment, and QuillLite says nothing and
-lists nothing — otherwise a build script would announce "Heading 1" on
+lists nothing — otherwise a build script would announce “Heading 1” on
 most of its lines. In an HTML document it is neither: there the headings
 are <code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code>, and QuillLite
 reads and writes those instead.</p>
 <h3 id="hearing-that-you-are-in-a-list">Hearing that you are in a
 list</h3>
-<p>Arrow into a list and QuillLite says <strong>"Bulleted list, 5
-items"</strong>. Go a level deeper and it says <strong>"Level 2, 3
-items"</strong>. Arrow out and it says <strong>"Out of
-list"</strong>.</p>
+<p>Arrow into a list and QuillLite says <strong>“Bulleted list, 5
+items”</strong>. Go a level deeper and it says <strong>“Level 2, 3
+items”</strong>. Arrow out and it says <strong>“Out of
+list”</strong>.</p>
 <p>This is the one cue in the set your screen reader gives you
 <strong>everywhere except here</strong>. On a web page a list reaches
 the reader as a list with a count, and NVDA says almost exactly this. In
@@ -1496,15 +1520,15 @@ kinds of list:</p>
 </tr>
 </tbody>
 </table>
-<p>A definition list also says <strong>"Term"</strong> and
-<strong>"Definition"</strong> as you move between the two, because which
+<p>A definition list also says <strong>“Term”</strong> and
+<strong>“Definition”</strong> as you move between the two, because which
 of them you are standing in decides what the words mean — and a
 definition list written inside out is not something you can see you have
 done.</p>
 <p>The counting rule matters and is easy to get wrong: <strong>items are
 counted at your own level, inside your own list.</strong> A three-item
-list whose second item has four sub-items is "3 items" at level one and
-"4 items" at level two, never "7". Two sub-lists under two different
+list whose second item has four sub-items is “3 items” at level one and
+“4 items” at level two, never “7”. Two sub-lists under two different
 bullets are two lists, not one.</p>
 <p>What it never says:</p>
 <ul>
@@ -1524,20 +1548,20 @@ than help.</li>
 (Ctrl+Alt+F5).</strong> Its own switch, next to the heading one and
 deliberately separate from it: reorganising an outline, the level is the
 work; proof-reading the same file, it is a phrase between you and every
-item. Like its sibling it says which way it went — "Lists will not be
-announced", or "Lists announced as you enter them".</p>
-<p><strong>And the status bar's List cell says something the speech
-never does:</strong> which item you are on. "Bulleted list, 4 of 9,
-level 2". Saying that aloud on every arrow press would be too much;
+item. Like its sibling it says which way it went — “Lists will not be
+announced”, or “Lists announced as you enter them”.</p>
+<p><strong>And the status bar’s List cell says something the speech
+never does:</strong> which item you are on. “Bulleted list, 4 of 9,
+level 2”. Saying that aloud on every arrow press would be too much;
 never being able to find out is its own problem, and a cell answers on
 demand and costs nothing until you read it. <strong>Enter</strong> on
 the cell turns the spoken cue off and on.</p>
 <h3 id="all-of-them-at-once--the-heading-organizer">All of them at once
 — the Heading Organizer</h3>
 <p><strong>Alt+Shift+O</strong> opens <strong>Heading
-Organizer...</strong>: every heading in the document as one list.</p>
-<p>Arrow through it and each row says its level and its text — "Heading
-2: Installing". <strong>Tab</strong> demotes the one you are on,
+Organizer…</strong>: every heading in the document as one list.</p>
+<p>Arrow through it and each row says its level and its text — “Heading
+2: Installing”. <strong>Tab</strong> demotes the one you are on,
 <strong>Shift+Tab</strong> promotes it, and <strong>Move Up</strong> and
 <strong>Move Down</strong> take the heading <em>and everything under
 it</em> past its neighbour. <strong>Rename</strong> changes the wording
@@ -1578,11 +1602,19 @@ them one at a time — Format ▸ Structure</h3>
 </tr>
 <tr>
 <td><strong>Alt+Shift+Up</strong></td>
-<td>Move this whole section up, past the one before it</td>
+<td>Move this whole section up, past whatever is above it</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+Down</strong></td>
-<td>Move this whole section down, past the one after it</td>
+<td>Move this whole section down, past whatever is below it</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F5</strong></td>
+<td>Select this section, subsections and all</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F5</strong></td>
+<td>Move Section To… — pick a destination instead of a direction</td>
 </tr>
 </tbody>
 </table>
@@ -1594,23 +1626,116 @@ of the next: a boundary you cannot see, that you have to find by ear,
 and that takes your place in the document with it when you get it wrong.
 <strong>Alt+Shift+Up</strong> does the same thing in one keystroke and
 tells you it happened.</p>
-<p>"Section" means the heading you are in plus everything under it, down
+<p>“Section” means the heading you are in plus everything under it, down
 to the next heading at the same level or higher. Moving a Heading 2
 takes its Heading 3s with it.</p>
-<p>Two things to know:</p>
+<p><strong>The keys always move.</strong> They used to look for a
+heading at the same level under the same parent and refuse when there
+wasn’t one, which meant a document whose headings step <code>#</code>,
+<code>##</code>, <code>###</code> never moved at all — in one of those,
+no heading has a sibling anywhere. Now, when there is no sibling that
+way, the section trades places with whatever <em>is</em> next to it,
+exactly as Word’s outline Move Up and Move Down do on these same keys. A
+first section inside its parent rises above the parent’s own
+heading.</p>
+<p><strong>The moved section keeps its level.</strong> Moving never
+renumbers your headings: press the other key and you are exactly back
+where you were. A key that said “move” and also rewrote <code>##</code>
+as <code>#</code> would have edited more than it said. Changing a level
+is what Alt+Shift+Left and Alt+Shift+Right are for, and the two compose
+— move it, then promote it.</p>
+<p><strong>It says where the section landed</strong>, not just what it
+jumped: <em>“Section moved below Soup. Now 2 of 3 at this level.”</em>
+That last part is what somebody looking at the page gets for free and a
+listener cannot get any other way — the screen reader says the text
+changed, never where in the outline the thing now sits.</p>
+<p>There is one refusal no rule can fix, and it explains itself rather
+than closing the door. In a strictly nested document everything below
+the heading you are in is <em>inside</em> it, so there is nothing left
+for it to move below: <em>“Bottom of Heading 1. Everything below is
+inside this section. Alt+Shift+Left promotes Heading 3 to make it a
+sibling.”</em> The key named in that sentence is read out of your own
+keymap, so it stays right if you rebind it.</p>
+<h4 id="select-section--altshiftf5">Select Section — Alt+Shift+F5</h4>
+<p><strong>Alt+Shift+F5</strong> selects the section you are in,
+including every subsection, and stops just before the blank line that
+separates it from the next one. Then ordinary <strong>Ctrl+X</strong>
+and <strong>Ctrl+V</strong> put it anywhere — somewhere else in this
+document, another document, or another program altogether. No new idea
+to learn, and it is the honest answer to “move it somewhere there is no
+heading to move past”.</p>
+<p>It announces how much you now have: <em>“Selected Bread and 1 section
+under it, 7 lines”</em>, or <em>“Selected Bread, 4 lines”</em> when
+nothing is nested inside. The counts are the point. Your screen reader
+tells you a selection changed; it does not tell you how much is in it,
+and “did that take the sub-headings with it?” is the whole question at
+that moment.</p>
+<h4 id="move-section-to--ctrlaltshiftf5">Move Section To… —
+Ctrl+Alt+Shift+F5</h4>
+<p>Pressing Alt+Shift+Up forty times is not a way to move a section
+across a long document, and it is worse by ear than by eye: every press
+is a fresh announcement, and you have to count them, because there is no
+page to glance at to see how far you have got.
+<strong>Ctrl+Alt+Shift+F5</strong> asks where instead.</p>
+<p>Two questions, both answered from a list you can type into:</p>
+<ol type="1">
+<li><strong>Which heading?</strong> Every heading in the document, in
+the order they appear, one row each:
+<code>3 of 7, level 2 - Bread</code>. The position comes first so that
+two sections both called “Notes” are two different choices rather than a
+coin toss, and the level is there because “before Bread” means something
+different depending on whether Bread is a chapter or a paragraph
+heading. Type to narrow the list; the order never reshuffles itself as
+you type, because a list that reorders is one you cannot navigate by
+position. Focus starts in the search box, and <strong>Enter</strong>
+there moves you into the results rather than accepting whatever happens
+to be highlighted.</li>
+<li><strong>Before it, after it, or inside it?</strong> Three rows,
+because “next to that heading” is genuinely ambiguous and guessing would
+be worse than asking. <strong>After it</strong> is the one people expect
+to mean something narrower than it does: it puts your section below that
+heading <em>and everything under it</em>.</li>
+</ol>
+<p>The whole move is <strong>one edit and one Ctrl+Z</strong>, and it
+says where the section landed: <em>“Moved Salad before Bread. Now 1 of 3
+at this level.”</em></p>
+<p><strong>Inside it is the only one that changes a level.</strong> It
+makes your section the last one under the heading you chose, renumbers
+it and everything under it one step deeper, and says the new level out
+loud: <em>“Moved Bread inside Soup, now Heading 3. Now 1 of 2 at this
+level.”</em> A renumbering nobody was told about would be a silent edit,
+which is the one thing these keys must never do.</p>
+<p>Two things it will not do, and it explains both rather than just
+declining:</p>
+<ul>
+<li><strong>A section cannot move inside itself.</strong> Choose a
+heading that sits under the one you are moving and it says
+<em>“Sourdough is inside Bread, so Bread cannot move into it. Promote
+Sourdough first if you want them side by side.”</em> Those headings are
+still listed rather than hidden — a heading you can see in your document
+and cannot find in the list has no way to explain itself.</li>
+<li><strong>Nothing goes deeper than Heading 6</strong>, because
+Markdown cannot write one. It names the limit and offers <strong>After
+it</strong> instead.</li>
+</ul>
+<p><strong>Escape at either question changes nothing and says
+nothing.</strong> Nothing happened, so there is nothing to announce.</p>
+<p>Two more things to know about all six keys:</p>
 <ul>
 <li><strong>Promoting a Heading 1 leaves it a Heading 1.</strong> It
 does not turn into ordinary text — losing a heading altogether is not
 what Alt+Shift+Left is for, and it would quietly drop the paragraph out
 of your headings list.</li>
-<li><strong>Moving sections works in plain text documents</strong>,
-where headings are Markdown <code>#</code> lines. In a rich text
-document a heading is a font size rather than something written in the
-text, and there is nothing there to move; QuillLite says so rather than
-doing nothing. Promoting and demoting work in both.</li>
+<li><strong>Moving and selecting sections need a Markdown or HTML
+document</strong>, where a heading is written in the text. In a rich
+text document a heading is a font size rather than something the text
+says, so there is nothing to find and nothing to move; QuillLite says so
+rather than doing nothing. Promoting and demoting work in both.</li>
 </ul>
-<p>These are QUILL for All's own four keys, so they behave the same in
-both.</p>
+<p>These are QUILL for All’s own six keys, and all six behave the same
+in both editors. Anything you learn here you have learned in QUILL, and
+the sentences you hear are composed in one place, so the two products
+cannot describe the same action two different ways.</p>
 <hr />
 <h2 id="spell-check">Spell check</h2>
 <p>WordPad never had a spell checker. Notepad only got one recently.
@@ -1664,9 +1789,9 @@ wrap off in Preferences if you would rather it simply stopped.</p>
 </tbody>
 </table>
 <p><strong>Ctrl+F7</strong> selects the word it lands on, so your screen
-reader reads it to you when you get there -- and then, after a short
+reader reads it to you when you get there – and then, after a short
 pause, <strong>spells it out</strong>. That is the part that matters:
-"receive" and "recieve" are the same sound, so hearing the word tells
+“receive” and “recieve” are the same sound, so hearing the word tells
 you nothing, and the letters are the answer. Press the next key and the
 spelling is cancelled unheard, so it costs you nothing when you did not
 need it.</p>
@@ -1678,9 +1803,9 @@ Words you have chosen to ignore are left out.</p>
 <p><strong>Alt+Shift+F7</strong> and <strong>Ctrl+Alt+F9</strong> work
 from anywhere in a word, not only from its first letter.</p>
 <h3 id="while-you-type">While you type</h3>
-<p>When you finish a word that is not in the dictionary -- finish it, so
+<p>When you finish a word that is not in the dictionary – finish it, so
 a space or a comma or a new line, not while you are still in the middle
-of typing it -- you hear a <strong>short falling blip</strong> and the
+of typing it – you hear a <strong>short falling blip</strong> and the
 status bar says which word it was. It is a sound rather than speech on
 purpose: speech there would interrupt the sentence you are writing,
 which is the one moment you can least afford it.</p>
@@ -1692,14 +1817,14 @@ is in <strong>Tools ▸ Spelling ▸ Announcements</strong>
 <p>Twelve settings, in one window, in three groups.</p>
 <p><strong>While you are typing.</strong> Whether the sound plays at
 all, whether the word is spoken too (off by default), and the shortest
-gap before the same word is reported again -- zero means every time.</p>
+gap before the same word is reported again – zero means every time.</p>
 <p><strong>Spelling a word out.</strong> Whether words are spelled at
 all, and how. Plain <strong>letters</strong> are fastest. The
-<strong>phonetic alphabet</strong> -- romeo, echo, charlie -- is
+<strong>phonetic alphabet</strong> – romeo, echo, charlie – is
 unambiguous where B, D, E, P, T and V are one sound with a rumour
 attached: a fast voice, a poor speaker, a noisy room.
 <strong>Both</strong> is for learning a word rather than checking one.
-You can also have capitals named, so "cap M, A, C, cap D" tells
+You can also have capitals named, so “cap M, A, C, cap D” tells
 MacDonald from Macdonald. An example box shows what your choices sound
 like and says it out loud as you change them.</p>
 <p><strong>When the letters follow.</strong> Three pauses, because the
@@ -1722,12 +1847,12 @@ misspelling by looking for a red squiggle and right-clicking it; you
 have no squiggle, so the Applications key <em>is</em> the squiggle, and
 what it says first should be the answer.</p>
 <p>Under the suggestions there is a separator and then <strong>one
-row</strong> — <em>Spelling Actions for "wrold"</em> — and then the
+row</strong> — <em>Spelling Actions for “wrold”</em> — and then the
 ordinary rows: Undo, Redo, Cut, Copy, Paste, Delete, Select All. That
 order never changes. The part that varies in length is at the
 <strong>top</strong>, so everything below the suggestions is always
-where you left it, and what you learn is not a row number but "after the
-suggestions, the menu is the menu".</p>
+where you left it, and what you learn is not a row number but “after the
+suggestions, the menu is the menu”.</p>
 <p>Inside <strong>Spelling Actions</strong>:</p>
 <table>
 <thead>
@@ -1748,7 +1873,7 @@ window.</td>
 it.</td>
 </tr>
 <tr>
-<td><strong>Add "word" to My Dictionary</strong></td>
+<td><strong>Add “word” to My Dictionary</strong></td>
 <td>Keep it for good, in your own dictionary.</td>
 </tr>
 <tr>
@@ -1757,11 +1882,11 @@ it.</td>
 too.</td>
 </tr>
 <tr>
-<td><strong>More Suggestions...</strong></td>
+<td><strong>More Suggestions…</strong></td>
 <td>The full list, in a window you can arrow through.</td>
 </tr>
 <tr>
-<td><strong>Check Document...</strong></td>
+<td><strong>Check Document…</strong></td>
 <td>The F7 review, from here.</td>
 </tr>
 <tr>
@@ -1770,11 +1895,11 @@ too.</td>
 </tr>
 </tbody>
 </table>
-<p>QUILL's menu is the same menu, in the same order, with one extra
+<p>QUILL’s menu is the same menu, in the same order, with one extra
 dictionary in it (it has projects; QuillLite opens files).</p>
 <p>Every row names the word it is about, so a menu you reached by
 keyboard still tells you what it is going to do. On a word that is
-spelled correctly there is no Spelling submenu at all -- just the
+spelled correctly there is no Spelling submenu at all – just the
 ordinary edit rows.</p>
 <p>Ignoring is honoured everywhere: a word you have ignored stops being
 announced as you type, stops being a stop for <strong>Ctrl+F7</strong>,
@@ -1800,7 +1925,7 @@ way it is set.</p>
 only about what happens when you have not asked. If you ask for a check,
 you get one.</p>
 <h3 id="your-dictionary">Your dictionary</h3>
-<p>Words you teach QuillLite are yours, kept in QuillLite's own folder.
+<p>Words you teach QuillLite are yours, kept in QuillLite’s own folder.
 If you also use QUILL for All, one setting in Preferences makes both
 share the same list, so a word taught in either is known to both.</p>
 <p>A single document can also have its own short list of words, kept in
@@ -1811,7 +1936,7 @@ piece of work and nowhere else.</p>
 <p><strong>Ctrl+Shift+C</strong> tells you exactly which character the
 cursor is on — its name, and what it does to a search.</p>
 <p>This sounds like a small thing and is not. Your screen reader says
-"space" for several different characters that look identical and behave
+“space” for several different characters that look identical and behave
 differently, and one of them is very often the reason a search is not
 finding something you can plainly see is there.</p>
 <p><strong>Ctrl+Alt+C</strong> opens the full description in a window
@@ -1825,7 +1950,7 @@ move along it, <strong>Enter</strong> acts on the part you are on, and
 <strong>Escape</strong> puts you back in your document. Each part says
 its own name and value.</p>
 <p><strong>View ▸ Status Bar</strong> (<strong>Alt+Shift+B</strong>)
-takes the bar off the screen altogether, the way Notepad's does, and
+takes the bar off the screen altogether, the way Notepad’s does, and
 puts it back. Nothing is lost when it is away:
 <strong>Ctrl+Shift+G</strong> speaks the counts,
 <strong>Ctrl+Alt+W</strong> speaks the line widths — the longest line,
@@ -1866,7 +1991,7 @@ again</td>
 </tr>
 <tr>
 <td><strong>Selection</strong></td>
-<td>How much is selected, or "No selection"</td>
+<td>How much is selected, or “No selection”</td>
 <td>repeats it</td>
 </tr>
 <tr>
@@ -1926,7 +2051,7 @@ typing over a sentence you meant to keep. Press
 on this part of the status bar.</p>
 <p>The <strong>Insert</strong> key switches it too, because the editing
 control answers that key whether QuillLite asks it to or not. QuillLite
-does not claim the key — it is NVDA's and JAWS's own modifier and taking
+does not claim the key — it is NVDA’s and JAWS’s own modifier and taking
 it would fight your screen reader — but it does watch for it, so this
 part of the status bar stays right either way.</p>
 <p><strong>Tab Mode</strong> is the same idea. QuillLite starts where
@@ -1938,14 +2063,14 @@ so a tab you did not mean to type can always be taken back without
 switching modes first.</p>
 <p><strong>Encoding</strong> and <strong>Line Endings</strong> are the
 two things that decide whether your file opens properly on somebody
-else's computer, and almost no other editor shows them at all. You will
+else’s computer, and almost no other editor shows them at all. You will
 rarely need to change them — but when a file arrives looking like
 nonsense, this is where the answer is.</p>
-<p>In a <strong>rich text</strong> document these two read <strong>"RTF
-(rich text)"</strong> and <strong>"Not applicable (rich text)"</strong>,
+<p>In a <strong>rich text</strong> document these two read <strong>“RTF
+(rich text)”</strong> and <strong>“Not applicable (rich text)”</strong>,
 because a rich document has neither: RTF stores an accented letter as an
 escape sequence of its own and marks a paragraph its own way. They used
-to read "UTF-8" and "CRLF" there, which are the two answers a plain file
+to read “UTF-8” and “CRLF” there, which are the two answers a plain file
 gives — a cell stating a fact about a file that has no such fact.</p>
 <p>Both cells answer for the file you actually have. A file that arrived
 in a format this window cannot offer — UTF-16 big-endian, say, or the
@@ -1955,9 +2080,9 @@ convert a file you only opened to read. See <a
 href="#how-this-file-is-written-encoding-and-line-endings">How this file
 is written</a>.</p>
 <p><strong>List</strong> answers the question the speech deliberately
-does not. Entering a list you hear "Bulleted list, 5 items"; this cell
-also tells you <strong>which item you are on</strong> — "Bulleted list,
-4 of 9, level 2". Saying that aloud on every arrow press would be too
+does not. Entering a list you hear “Bulleted list, 5 items”; this cell
+also tells you <strong>which item you are on</strong> — “Bulleted list,
+4 of 9, level 2”. Saying that aloud on every arrow press would be too
 much to listen to, and having no way at all to find out is its own
 problem when you are halfway through reordering nine things.</p>
 <p><strong>Language</strong> is what decides the rest. It says whether
@@ -2051,7 +2176,7 @@ usually the one you want.</p>
 <p><strong>Move Line Up</strong> (<strong>Ctrl+Shift+Up</strong>) and
 <strong>Move Line Down</strong> (<strong>Ctrl+Shift+Down</strong>) move
 the current line past its neighbour. Reordering two lines any other way
-means selecting one, cutting it, finding the new place and pasting --
+means selecting one, cutting it, finding the new place and pasting –
 four steps, each of which leaves the cursor somewhere the last one did
 not. <strong>Duplicate Line</strong> is <strong>Ctrl+D</strong>, and
 <strong>Join Lines</strong> (<strong>Ctrl+Alt+Shift+J</strong>) pulls
@@ -2064,8 +2189,8 @@ to one side of the cursor, and <strong>Delete Paragraph</strong>
 (<strong>Ctrl+Alt+Shift+Backspace</strong>) takes the whole
 paragraph.</p>
 <p>Each of these tells you what it did, and tells you when it did
-nothing -- "Already the first line" is a different fact from silence,
-and you should not have to press an arrow key to find out which one you
+nothing – “Already the first line” is a different fact from silence, and
+you should not have to press an arrow key to find out which one you
 got.</p>
 <h3 id="putting-lines-in-order-and-tidying-them-up">Putting lines in
 order, and tidying them up</h3>
@@ -2083,14 +2208,14 @@ Lines</strong> (<strong>Alt+Shift+N</strong>) change the order;
 which collapses the runs of spaces and tabs that arrive with pasted-in
 text, clean them up.</p>
 <p><strong>Remove Every Blank Line</strong> means every one, including
-the blank lines between your paragraphs -- it is the cure for text
-copied out of a web page that arrives double-spaced, not a tidy-up you
-want on prose. A line of nothing but spaces counts as blank, because it
-is blank to everyone reading the document and to every tool that will
-ever open it. QUILL has this command under the same name, beside a
-second one called <strong>Trim Blank Lines at the Ends</strong>, which
-takes only the blank lines before the first line of text and after the
-last; QuillLite has just the one.</p>
+the blank lines between your paragraphs – it is the cure for text copied
+out of a web page that arrives double-spaced, not a tidy-up you want on
+prose. A line of nothing but spaces counts as blank, because it is blank
+to everyone reading the document and to every tool that will ever open
+it. QUILL has this command under the same name, beside a second one
+called <strong>Trim Blank Lines at the Ends</strong>, which takes only
+the blank lines before the first line of text and after the last;
+QuillLite has just the one.</p>
 <p>Each one counts as a single undo, so <strong>Ctrl+Z</strong> takes
 back the whole sort rather than putting back one line at a time.</p>
 <h3 id="quoting-wrapping-and-throwing-lines-away">Quoting, wrapping, and
@@ -2101,19 +2226,18 @@ lines you have selected, the way an email reply does, and
 <p><strong>Alt+Shift+W</strong> is <strong>Hard Wrap Lines</strong>. It
 asks for a width and re-flows the lines so none is longer than that,
 keeping paragraphs apart and never breaking a word. This changes the
-document, so it is saved -- which is what makes it different from
+document, so it is saved – which is what makes it different from
 <strong>View ▸ Word Wrap</strong>, which only changes what you see.</p>
 <p><strong>Alt+Shift+X</strong> is <strong>Delete Lines
-Containing</strong>. Type what the lines to go have in them -- taken
-exactly, not as a pattern -- and they are removed. It says how many
-went, and <strong>Ctrl+Z</strong> takes them all back in one step. This
-is log triage, which by ear otherwise means reading the whole file
-twice.</p>
+Containing</strong>. Type what the lines to go have in them – taken
+exactly, not as a pattern – and they are removed. It says how many went,
+and <strong>Ctrl+Z</strong> takes them all back in one step. This is log
+triage, which by ear otherwise means reading the whole file twice.</p>
 <p>All three work on what you have selected, or on the whole document if
 you have selected nothing.</p>
 <h3 id="commenting-lines-out">Commenting lines out</h3>
 <p><strong>Ctrl+/</strong> comments the lines you have selected out, and
-pressing it again brings them back. The prefix comes from the file's
+pressing it again brings them back. The prefix comes from the file’s
 name — <code># </code> in a <code>.py</code>, <code>.yml</code>,
 <code>.ini</code> or <code>.conf</code>, <code>-- </code> in a
 <code>.sql</code>, <code>&lt;!-- --&gt;</code> in HTML and Markdown,
@@ -2129,7 +2253,7 @@ Spaces</strong> (<strong>Alt+F11</strong>) and <strong>Convert to
 Tabs</strong> (<strong>Alt+F12</strong>), which rewrite the indentation
 at the start of each line without touching anything else. Four spaces to
 a tab. It is the single most common change anybody makes to somebody
-else's file.</p>
+else’s file.</p>
 <h3 id="changing-case">Changing case</h3>
 <p><strong>Tools ▸ Change Case</strong> has five. UPPERCASE
 (<strong>Ctrl+Shift+U</strong>), lowercase
@@ -2142,7 +2266,7 @@ typed in shouting needs, and <strong>Invert Case</strong>
 cure for a sentence typed with Caps Lock on.</p>
 <p>All five work on what you have selected. <strong>With nothing
 selected they change the word the cursor is in</strong>, which is what
-Word's Shift+F3 has always done -- and which matters here more than it
+Word’s Shift+F3 has always done – and which matters here more than it
 does for a sighted user: a whole document that has changed case reads
 exactly the same out loud, so a chord half-pressed would be a change you
 could not hear.</p>
@@ -2156,7 +2280,7 @@ deleted it offers a list with a preview of each.</p>
 <p>That is what makes it different from undo, and it is the reason it
 exists. Ctrl+Z puts text back where it came from; this puts it where you
 are now, so deleting a paragraph and restoring it further down is a way
-to <em>move</em> it that never touches the clipboard -- which means
+to <em>move</em> it that never touches the clipboard – which means
 whatever you were already carrying on the clipboard is still there
 afterwards.</p>
 <p>It remembers your last three deletions, and only the deliberate ones:
@@ -2169,42 +2293,41 @@ touches, or on the line the cursor is on if nothing is selected, and
 they say how many lines moved.</p>
 <p>These matter more here than they look. QuillLite already goes quiet
 about spelling in a <code>.json</code> or a <code>.py</code> file, which
-is an admission that people edit configuration and code in it -- and for
+is an admission that people edit configuration and code in it – and for
 that person, moving a block in or out a level is the single most common
 thing to want and the most tedious to do by arrow key.</p>
 <h4 id="asking-how-deep-a-line-is">Asking how deep a line is</h4>
 <p><strong>Describe Indent Depth</strong>
 (<strong>Ctrl+Alt+Shift+V</strong>) says how far the line you are on is
-indented: "4 spaces", "1 tab", "1 tab, 3 spaces", or "No
-indentation".</p>
+indented: “4 spaces”, “1 tab”, “1 tab, 3 spaces”, or “No
+indentation”.</p>
 <p>This is the one question about a line that nothing else will answer.
-A screen reader reads a line's <em>words</em>; it does not read the
+A screen reader reads a line’s <em>words</em>; it does not read the
 spaces and tabs in front of them. So in a YAML file, a Python file or a
-deeply nested list, the shape of the document -- which is most of its
-meaning -- is simply not there when you listen to it, and there has
-never been a way to ask.</p>
+deeply nested list, the shape of the document – which is most of its
+meaning – is simply not there when you listen to it, and there has never
+been a way to ask.</p>
 <p>It also tells you something the words cannot: whether this line is
 indented with the same <em>kind</em> of whitespace as its neighbours. A
 file where one line uses a tab and the rest use spaces looks identical
 however carefully you read it, and in a Python file it will not run.</p>
 <h4 id="making-tab-indent-instead">Making Tab indent instead</h4>
 <p>By default the <strong>Tab</strong> key types a tab character, the
-way Notepad's does. <strong>View ▸ Tab Key Inserts a Tab
-Character</strong> is ticked to say so. Clear that tick --
-<strong>Ctrl+Alt+Shift+I</strong> -- and Tab indents the whole line
+way Notepad’s does. <strong>View ▸ Tab Key Inserts a Tab
+Character</strong> is ticked to say so. Clear that tick –
+<strong>Ctrl+Alt+Shift+I</strong> – and Tab indents the whole line
 instead, announcing the new depth as it goes. Working on code, that is
 usually the one you want.</p>
 <p><strong>Shift+Tab</strong> outdents in <em>either</em> mode. That is
 deliberate: it means a tab you typed by accident can always be undone
 with one keystroke, without first working out which mode you were
 in.</p>
-<p>The status bar's <strong>Tab Mode</strong> part always says which one
+<p>The status bar’s <strong>Tab Mode</strong> part always says which one
 is on.</p>
 <h3 id="snippets--altshifti">Snippets — Alt+Shift+I</h3>
-<p><strong>Alt+Shift+I</strong> opens <strong>Snippets...</strong>:
-every abbreviation you have, most used first, with a preview of what
-each one writes. Choose one, press Enter, and it goes in at the
-cursor.</p>
+<p><strong>Alt+Shift+I</strong> opens <strong>Snippets…</strong>: every
+abbreviation you have, most used first, with a preview of what each one
+writes. Choose one, press Enter, and it goes in at the cursor.</p>
 <p>This is the way in when you cannot remember the trigger.
 Abbreviations expanding as you type is perfect for the six you use every
 day and no help at all for the fortieth one, which you set up in March —
@@ -2216,7 +2339,7 @@ here.</p>
 <p>Type a short form, press space, and get the long one. Useful for an
 address, a sign off, or anything you type often and would rather not
 spell out every time.</p>
-<p><strong>Ctrl+Alt+A</strong> manages your list. It is QuillLite's own
+<p><strong>Ctrl+Alt+A</strong> manages your list. It is QuillLite’s own
 list to begin with; if you also use QUILL for All or Quill Inkwell,
 Preferences has a switch that makes all three share one list.</p>
 <p><strong>Alt+Shift+A</strong> turns expansion off and on again, and
@@ -2229,7 +2352,7 @@ one keystroke.</p>
 <hr />
 <h2 id="finding-a-command">Finding a command</h2>
 <p><strong>Ctrl+Shift+P</strong> opens a search box for commands. Type
-part of what you want — "sort", "bookmark", "print" — and pick it from
+part of what you want — “sort”, “bookmark”, “print” — and pick it from
 the list. You do not have to remember which menu it lives in.</p>
 <p>Each command shows its keyboard shortcut beside it, which is a
 comfortable way to learn the keys over time.</p>
@@ -2240,8 +2363,8 @@ the way you left it. Make it smaller and that size comes back next time;
 put it back to full screen and so does that.</p>
 <p>Maximized is the default because a small window is where text gets
 cut off and where a list shows four rows on a screen with room for
-thirty -- and neither costs anything to the person who chose the size.
-It is one keystroke to change and QuillLite will not ask again.</p>
+thirty – and neither costs anything to the person who chose the size. It
+is one keystroke to change and QuillLite will not ask again.</p>
 <p>Every app in the family behaves the same way now: QUILL, Quill Radio,
 Cast, Weather, Audio Studio, Inkwell, the Converter, the Media Player
 and Beacon.</p>
@@ -2253,15 +2376,14 @@ keeps the document you are in and closes every other one. QUILL has had
 it since 2026-06; QuillLite has it now too, on the same key, because a
 key you learn in one editor should work in the other.</p>
 <p>If any of those documents has unsaved changes, you are asked about it
--- and the question carries two answers that settle the rest at
-once:</p>
+– and the question carries two answers that settle the rest at once:</p>
 <ul>
 <li><strong>Save All</strong> saves this document and every other one
 waiting behind it, without asking again. A document that has never been
 saved still asks you where to put it.</li>
-<li><strong>Don't Save Any</strong> closes the rest and loses their
+<li><strong>Don’t Save Any</strong> closes the rest and loses their
 changes, without asking again. There is no undo for that one.</li>
-<li><strong>Save</strong> and <strong>Don't Save</strong> apply to the
+<li><strong>Save</strong> and <strong>Don’t Save</strong> apply to the
 document in front of you only, and you are asked about the next
 one.</li>
 <li><strong>Cancel</strong> stops the whole thing. Whatever is still
@@ -2271,54 +2393,54 @@ it.</li>
 <p>The question says how many more documents are waiting, so you know at
 the first prompt whether this is one more keystroke or sixty-seven.</p>
 <p><strong>Enter answers Save</strong>, never one of the two that lose
-work. If a save fails -- a full disk, a file that has gone read-only --
+work. If a save fails – a full disk, a file that has gone read-only –
 the close stops there rather than treating a failed save as permission
-to throw the document away, and "Save All" stops meaning "save all"
+to throw the document away, and “Save All” stops meaning “save all”
 until you say so again.</p>
 <hr />
 <h2 id="changing-what-a-key-does">Changing what a key does</h2>
 <p><strong>Tools ▸ Keyboard Manager</strong>
 (<strong>Ctrl+Alt+Shift+R</strong>) is where every key in QuillLite can
 be changed. The list has every command with the key it answers to; type
-part of a command's name to find it, and press <strong>Enter</strong> on
+part of a command’s name to find it, and press <strong>Enter</strong> on
 a row to give it a different key.</p>
 <h3 id="finding-out-what-a-key-already-does">Finding out what a key
 already does</h3>
 <p>The other question is the harder one: <em>is this key free?</em>
 Press <strong>Record a Key</strong>, then press the combination you are
-thinking of. QuillLite says what it does today -- "Ctrl+S is File ▸
-Save" -- or says it is free. That is faster and more reliable than
-reading a list of two hundred rows.</p>
+thinking of. QuillLite says what it does today – “Ctrl+S is File ▸ Save”
+– or says it is free. That is faster and more reliable than reading a
+list of two hundred rows.</p>
 <h3 id="when-a-key-is-taken">When a key is taken</h3>
 <p>Assigning a key somebody else already has does not silently steal it
 and does not silently refuse. QuillLite names the command that owns it
 and asks. If you say yes, that command is left with <strong>no
-key</strong> until you give it one -- which is the honest outcome,
+key</strong> until you give it one – which is the honest outcome,
 because a key claimed twice means one of the pair never fires and
 nothing tells you which.</p>
 <h3 id="when-another-program-has-the-key">When another program has the
 key</h3>
-<p>Some programs claim a key across the whole of Windows -- Google Drive
+<p>Some programs claim a key across the whole of Windows – Google Drive
 takes <strong>Ctrl+Alt+G</strong>, and it is not the only one. A key
 claimed that way never reaches QuillLite at all: Windows hands it to the
 program that registered it, even while QuillLite is the window you are
 typing in. The command is not broken and the key is not misassigned; the
 keystroke simply goes somewhere else.</p>
 <p>This used to be invisible, which made it look like a bug in the
-editor. Record a Key now says so -- "already claimed by another
-application running on this computer" -- and so does the Keyboard
-Manager if you assign a key somebody else has taken. It is a warning
-rather than a refusal: the key may be yours again tomorrow when that
-program is not running, and it is not this editor's place to forbid a
-key you chose deliberately.</p>
+editor. Record a Key now says so – “already claimed by another
+application running on this computer” – and so does the Keyboard Manager
+if you assign a key somebody else has taken. It is a warning rather than
+a refusal: the key may be yours again tomorrow when that program is not
+running, and it is not this editor’s place to forbid a key you chose
+deliberately.</p>
 <p>QuillLite cannot say <em>which</em> program. Windows does not offer
-the owner's name, and guessing from a list of the usual suspects would
+the owner’s name, and guessing from a list of the usual suspects would
 be wrong the first time you installed something that was not on it.</p>
 <h3 id="what-cannot-be-changed">What cannot be changed</h3>
 <p><strong>Insert is never bindable.</strong> It is the key NVDA and
 JAWS use as their own modifier, and taking it would take away the key
-you would need to get it back. QuillLite watches it go past -- that is
-what the Typing Mode cell reads -- but never claims it. A key on its own
+you would need to get it back. QuillLite watches it go past – that is
+what the Typing Mode cell reads – but never claims it. A key on its own
 with no Ctrl, Alt or Shift is refused too: it would type itself
 instead.</p>
 <h3 id="putting-things-back">Putting things back</h3>
@@ -2328,8 +2450,8 @@ for all of them, after asking. Nothing is saved until you press
 <strong>Save</strong>, so Escape leaves your keys exactly as they
 were.</p>
 <p><strong>Check for Problems</strong> reports anything wrong with the
-set as a whole: a key claimed twice, a key QuillLite cannot read, and --
-the one you would otherwise never find out about -- a key Windows will
+set as a whole: a key claimed twice, a key QuillLite cannot read, and –
+the one you would otherwise never find out about – a key Windows will
 accept and then never actually send to a menu, so it is assigned and
 inert.</p>
 <p>Your changes live in your own settings folder and only what you
@@ -2341,20 +2463,20 @@ larger)</h2>
 <h2 id="sounds">Sounds</h2>
 <h3 id="quiet-mode">Quiet mode</h3>
 <p><strong>Alt+Shift+M</strong> silences every sound at once, and
-pressing it again brings them back. One key, because "make it stop" is
-something you need <em>while</em> the noise is happening -- on a call,
-in a quiet room, or having simply had enough of an earcon today. A
-feature you have to go and find is one that does not help at the moment
-you need it.</p>
+pressing it again brings them back. One key, because “make it stop” is
+something you need <em>while</em> the noise is happening – on a call, in
+a quiet room, or having simply had enough of an earcon today. A feature
+you have to go and find is one that does not help at the moment you need
+it.</p>
 <p>It is the blunt instrument on purpose; the per-event answer is one
 menu item away. It is shared with QUILL, so silencing one editor
-silences both -- which is what somebody who wanted quiet meant.
+silences both – which is what somebody who wanted quiet meant.
 <strong>Tools ▸ Quiet Mode</strong> carries a check mark that reads the
 true state.</p>
 <p><strong>Tools ▸ Sound Scheme</strong>
 (<strong>Ctrl+Alt+Shift+O</strong>) is every sound QuillLite can make,
 in a list you can hear. Arrow through it and each event plays as you
-land on it -- that is what turns a list of names into a catalogue, and
+land on it – that is what turns a list of names into a catalogue, and
 you can turn it off with the checkbox under the list if you would rather
 move in silence.</p>
 <p>Each row says everything about itself: the event, whether it is
@@ -2370,14 +2492,14 @@ underneath act on whichever row you are on:</p>
 <tbody>
 <tr>
 <td><strong>Play</strong></td>
-<td>Play this event's sound now, even if the event is switched off</td>
+<td>Play this event’s sound now, even if the event is switched off</td>
 </tr>
 <tr>
 <td><strong>Switched on</strong></td>
 <td>Silence this one event without changing which sound it has</td>
 </tr>
 <tr>
-<td><strong>Browse...</strong></td>
+<td><strong>Browse…</strong></td>
 <td>Use a WAV file of your own</td>
 </tr>
 <tr>
@@ -2394,7 +2516,7 @@ underneath act on whichever row you are on:</p>
 your own. A scheme is an ordinary folder with the sounds in it, so you
 can copy it, back it up, or send it to somebody. <strong>Restore All
 Defaults</strong> puts every event back and switches them all on, and it
-cannot half-succeed -- the sounds QuillLite ships are never overwritten,
+cannot half-succeed – the sounds QuillLite ships are never overwritten,
 so getting back to them is always one press.</p>
 <p>QUILL opens the same window over the same schemes, so a scheme you
 build in one is offered in the other.</p>
@@ -2409,32 +2531,32 @@ what you do not want, rather than learning to ignore it.</p>
 say it in one word</h3>
 <p>The <strong>Profile</strong> box at the top is the short way.
 <strong>Choosing one sets every checkbox below, there and then</strong>
--- there is no second button to find. Nothing is saved until you press
+– there is no second button to find. Nothing is saved until you press
 <strong>Save</strong>, so you can look at what a profile would do and
 change your mind.</p>
 <p>Under the box is a <strong>read-only description you can read line by
 line</strong>, and it answers two different questions. First, what the
 profile <em>is</em>, in its own words. Then what it would actually
 <em>do</em> to the app in front of you: how many of the 19 areas it
-keeps and which, which ones it removes, and anything else it changes --
+keeps and which, which ones it removes, and anything else it changes –
 Notepad, for instance, also makes <strong>Ctrl+N</strong> create a plain
 text document. <strong>F1</strong> on the Profile box reads the same
 thing.</p>
-<p>What is spoken when you choose a profile is the short version --
-"Notepad profile: 2 of 19 features on. New documents will be plain
-text." -- because your screen reader is already reading the name and the
+<p>What is spoken when you choose a profile is the short version –
+“Notepad profile: 2 of 19 features on. New documents will be plain
+text.” – because your screen reader is already reading the name and the
 description is there to be read at your own pace.</p>
 <p><strong>Custom puts everything back.</strong> Arrow onto a profile
 you did not mean and select <strong>Custom</strong>: every checkbox
 returns to how you found it when the window opened. Custom is also what
 the box reads back as soon as you tick or untick anything yourself,
-which is not a warning -- picking your own is what the list is for.</p>
+which is not a warning – picking your own is what the list is for.</p>
 <p>Afterwards the boxes are just boxes again: change any one of them
 without having to leave the profile first. <strong>Use Profile</strong>
 is still there for when you have hand-edited a profile and want to start
 it over.</p>
 <p><strong>The same four profiles are in Preferences</strong>, at the
-top, with the same description box. "Make this Notepad" is a preference
+top, with the same description box. “Make this Notepad” is a preference
 like any other, and you should not have to know that a dialog called
 Customize Features is where it lives. Preferences offers the whole
 answers; the 18 individual checkboxes stay in Customize Features.</p>
@@ -2479,13 +2601,13 @@ Character and text size.</p>
 <p><strong>Off:</strong> autocorrect, timestamped backups, Go To
 Anything. Those three are not missing features; they are the ones that
 would be <em>wrong</em> on by default rather than merely unused.
-Autocorrect rewrites a configuration file's quotes. Backups quietly fill
+Autocorrect rewrites a configuration file’s quotes. Backups quietly fill
 a folder. Go To Anything is a fourth way to jump when the command
 palette, the headings list and the bookmark list already cover it.</p>
 <p><strong>Choose this</strong> to get back to the shipped answer after
 experimenting.</p>
 <h4 id="everything">Everything</h4>
-<p><strong>All 19 areas on</strong>, including those four -- and that
+<p><strong>All 19 areas on</strong>, including those four – and that
 includes <strong>AI help</strong>, which is the one area here that sends
 anything off this computer, so choose this profile only if that is what
 you meant. Autocorrect will straighten your quotes and capitalise your
@@ -2519,7 +2641,7 @@ arriving here are replacing something with. Two of the 19 areas:
 headings, bookmarks, the line tools, Change Case, the clipboard history,
 abbreviations, the Selection submenu, spell check, Matches, Back and
 Forward, the Command Palette, Describe Character, autocorrect, backups
-and Go To Anything. Nothing Notepad does not have -- which is the point
+and Go To Anything. Nothing Notepad does not have – which is the point
 of choosing it.</p>
 <p><strong>Ctrl+N makes a plain text document</strong>, and the Save As
 dialog stops offering you formats you have turned off.</p>
@@ -2537,7 +2659,7 @@ would be a problem.</p>
 <p>Nothing is one-way. Choosing <strong>Notepad</strong> and then
 <strong>Everything</strong> puts it all back, including the Format menu
 and the keys that go with it. The one thing a profile does <em>not</em>
-put back is a setting you changed by hand afterwards -- profiles only
+put back is a setting you changed by hand afterwards – profiles only
 ever set what they claim.</p>
 <p>Two things are never switchable whatever you choose: <strong>Tools ▸
 Preferences</strong> and <strong>Customize Features</strong> themselves,
@@ -2546,8 +2668,8 @@ locks from the inside.</p>
 <h3 id="searching-the-list">Searching the list</h3>
 <p>Seventeen checkboxes is a long way to Tab through, so the box below
 the profile row filters them as you type. It matches what an area
-<strong>does</strong> as well as what it is called, so typing "curly
-quotes" finds Autocorrect and typing "dictionary" finds Spell check. The
+<strong>does</strong> as well as what it is called, so typing “curly
+quotes” finds Autocorrect and typing “dictionary” finds Spell check. The
 line under the box says how many are left, and <strong>Down</strong>
 from the box moves straight into the list.</p>
 <h3 id="the-19-areas">The 19 areas</h3>
@@ -2651,7 +2773,7 @@ from the box moves straight into the list.</p>
 <td><strong>off</strong></td>
 </tr>
 <tr>
-<td><strong>AI help (sends your text to QUILL's servers)</strong></td>
+<td><strong>AI help (sends your text to QUILL’s servers)</strong></td>
 <td>Tools ▸ AI: summarize, rewrite, proofread, explain, and questions
 about a document</td>
 <td><strong>off</strong></td>
@@ -2662,17 +2784,17 @@ about a document</td>
 rather than being hidden away, because something you cannot find might
 as well not exist.</p>
 <p><strong>AI help is off for a different reason from the other
-three.</strong> Those would be <em>wrong</em> on -- autocorrect
-rewriting a configuration file's quotes, backups quietly filling a
-folder. This one is off because using it sends the passage you ask about
-over the internet, and that is not a choice anybody else gets to make
-for you. Its row in Customize Features spells out the whole trade before
-you switch it on, and an area that is off owns nothing: no menu, no
-keys, no sign-in stored on disk, and no connection of any kind.</p>
+three.</strong> Those would be <em>wrong</em> on – autocorrect rewriting
+a configuration file’s quotes, backups quietly filling a folder. This
+one is off because using it sends the passage you ask about over the
+internet, and that is not a choice anybody else gets to make for you.
+Its row in Customize Features spells out the whole trade before you
+switch it on, and an area that is off owns nothing: no menu, no keys, no
+sign-in stored on disk, and no connection of any kind.</p>
 <p><strong>And switching it on is not enough.</strong> Before anything
-is sent, QuillLite shows you the whole agreement -- what is sent, what
+is sent, QuillLite shows you the whole agreement – what is sent, what
 QUILL keeps, what it does not keep, what OpenAI does with it, and how to
-say no -- and nothing happens until you accept it. Turning the area on
+say no – and nothing happens until you accept it. Turning the area on
 and declining the agreement leaves the menu there and the feature
 unusable, which is deliberate: you did turn it on, and what you declined
 was the sending. The switch does not flip itself back behind you.</p>
@@ -2680,12 +2802,12 @@ was the sending. The switch does not flip itself back behind you.</p>
 the place you look for it depends on which part of the app you already
 know:</p>
 <ul>
-<li><strong>Tools ▸ AI ▸ Privacy Agreement...</strong>
-(<strong>Ctrl+Alt+Shift+K</strong>) -- read it, accept it, or take it
+<li><strong>Tools ▸ AI ▸ Privacy Agreement…</strong>
+(<strong>Ctrl+Alt+Shift+K</strong>) – read it, accept it, or take it
 back. Taking it back also signs this computer out, because keeping the
 sign-in for a service you have just withdrawn from would be keeping the
 key to the thing you declined.</li>
-<li><strong>Preferences</strong>, where a tick box says <em>Use QUILL's
+<li><strong>Preferences</strong>, where a tick box says <em>Use QUILL’s
 free AI help</em>. Ticking it shows the agreement; unticking it
 withdraws.</li>
 <li><strong>Customize Features</strong>, where switching the area on
@@ -2693,8 +2815,8 @@ asks you straight away.</li>
 </ul>
 <p>All three read and write the same answer, so none of them can
 disagree with the others. If the agreement ever changes in a way that
-matters -- what is sent, or what is kept -- you will be asked again
-rather than the old answer being taken to cover the new thing.</p>
+matters – what is sent, or what is kept – you will be asked again rather
+than the old answer being taken to cover the new thing.</p>
 <p>Autocorrect is off because curly quotes are lovely in a letter and
 unhelpful in a settings file. Backups are off because they quietly fill
 a folder. Go To Anything is off because the command search, the headings
@@ -2740,7 +2862,7 @@ the one you wanted is not necessarily the first.</p>
 </table>
 <p>The window lists what was open, one row each, with a checkbox.
 Everything that can be opened starts ticked, so <strong>Enter</strong>
-is "all of it" and unticking two is "not those two". A row whose file
+is “all of it” and unticking two is “not those two”. A row whose file
 has gone says so and cannot be ticked.</p>
 <ul>
 <li><strong>Open Checked</strong> opens the ticked rows and leaves the
@@ -2758,11 +2880,11 @@ window says so in a line under the buttons.</li>
 stops asking from then on. It names the setting it changed, so you can
 find it again.</li>
 </ul>
-<p>Then it tells you what happened — "Reopened all 3 documents",
-"Reopened 1 of 2", "Forgot 2 documents. 1 still remembered. The files
-themselves are untouched." A count is the one thing you cannot go and
+<p>Then it tells you what happened — “Reopened all 3 documents”,
+“Reopened 1 of 2”, “Forgot 2 documents. 1 still remembered. The files
+themselves are untouched.” A count is the one thing you cannot go and
 read off the screen.</p>
-<p><strong>File ▸ Reopen Last Session...</strong>
+<p><strong>File ▸ Reopen Last Session…</strong>
 (<strong>Alt+Shift+F12</strong>) opens the same window whenever you want
 it. That is what makes Not Now safe to press: the answer is put off
 rather than lost, and a list that needs tidying can be tidied without
@@ -2772,7 +2894,7 @@ waiting for a restart. QUILL has the same window on the same key.</p>
 everything in one place.</p>
 <p>Seven settings live only there: what <strong>Ctrl+N</strong> creates,
 whether you start with a blank document at all, how often unsaved work
-is copied aside, whether last session's documents reopen, whether
+is copied aside, whether last session’s documents reopen, whether
 spelling is checked as you type, and whether your abbreviations and your
 taught words are shared with QUILL for All.</p>
 <p><strong>Whether reopening asks first</strong> is there too, with
@@ -2782,7 +2904,7 @@ had open</a>.</p>
 <p><strong>Start with a blank document</strong> is on, the way Notepad
 and WordPad do it. Turn it off if you always open an existing file:
 without it you are handed an empty Untitled to close on every launch.
-Files you open by double-clicking, last session's documents and
+Files you open by double-clicking, last session’s documents and
 recovered work all still appear either way. QUILL has the same setting
 under <strong>General</strong>.</p>
 <p>The rest are a keystroke away instead: dark mode and word wrap are on
@@ -2809,14 +2931,14 @@ everything printed flat, in one size.</p>
 <p>A plain text or Markdown document prints as it reads, which is the
 right answer — a Markdown heading already carries its own <code>#</code>
 onto the page.</p>
-<h3 id="print-preview--ctrlaltshiftp">Print Preview... —
+<h3 id="print-preview--ctrlaltshiftp">Print Preview… —
 Ctrl+Alt+Shift+P</h3>
 <p>Not a picture of a page. A picture of a page is the one kind of
 preview that answers nothing at all if you cannot see it, which is why
-WordPad's and Word's have never been much use here.</p>
+WordPad’s and Word’s have never been much use here.</p>
 <p>This one answers the questions you actually have: <strong>how many
 pages</strong>, on what paper, with what margins — and then, page by
-page, what is at the top of each one. "Page 3 of 7: Installing" is how
+page, what is at the top of each one. “Page 3 of 7: Installing” is how
 you find out whether the section you care about starts where you wanted
 it to, without printing anything.</p>
 <p>The page count is worked out against your real printer, using the
@@ -2850,7 +2972,7 @@ back.</p>
 kept in a QuillLite folder inside your own Windows user folder.
 <strong>Help ▸ About QuillLite</strong> shows you the exact
 location.</p>
-<p>It is deliberately <strong>not</strong> inside QUILL for All's
+<p>It is deliberately <strong>not</strong> inside QUILL for All’s
 folder. QuillLite is offered as an alternative to QUILL, not as part of
 it, and installing or removing one should never affect the other.</p>
 <p>Uninstalling QuillLite does not delete that folder. Recovered work is
@@ -2858,8 +2980,8 @@ the one thing you might not have finished with, and an uninstaller is
 the worst possible moment to discover that.</p>
 <h3 id="the-portable-copy-keeps-everything-on-the-stick">The portable
 copy keeps everything on the stick</h3>
-<p>If you are running the <strong>portable</strong> QuillLite -- the
-<code>.zip</code> you unpack rather than the installer -- then none of
+<p>If you are running the <strong>portable</strong> QuillLite – the
+<code>.zip</code> you unpack rather than the installer – then none of
 the above applies. Everything goes into the <code>data\QuillLite</code>
 folder inside the bundle, right next to <code>QuillLite.exe</code>, and
 nothing at all is written to the computer you are plugged into. That is
@@ -2867,17 +2989,17 @@ what portable means, and QuillLite does it from the very first launch:
 there is no setting to find first.</p>
 <p>Until version 1.0 it did not. A portable QuillLite quietly used
 <code>%LOCALAPPDATA%\QuillLite</code> on the host machine instead, and
-said nothing about it -- so settings did not travel with the stick, and,
+said nothing about it – so settings did not travel with the stick, and,
 worse, recovered copies of documents you had not saved were left behind
-on someone else's computer. If you have been carrying a portable
+on someone else’s computer. If you have been carrying a portable
 QuillLite, that folder is where anything you seem to have lost will be,
 and it is worth deleting once you have what you want out of it.</p>
 <p>Delete the <code>data</code> folder from the bundle and QuillLite
-goes back to using this computer's own profile -- that folder is what
+goes back to using this computer’s own profile – that folder is what
 marks the copy as portable.</p>
 <hr />
 <h2 id="keeping-quilllite-up-to-date">Keeping QuillLite up to date</h2>
-<p><strong>Help &gt; Check for Updates...</strong>
+<p><strong>Help &gt; Check for Updates…</strong>
 (<strong>Ctrl+Alt+U</strong>) asks whether a newer QuillLite has been
 published. It is the same key, and the same window, in every app in the
 family.</p>
@@ -2885,8 +3007,8 @@ family.</p>
 deliberate: a key that answers with silence is indistinguishable from a
 key that is not bound.</p>
 <p>If there <strong>is</strong> something newer, the window opens on
-<strong>what changed</strong> -- the release notes for that version, in
-a read-only box you can arrow through like a document. Tab from there
+<strong>what changed</strong> – the release notes for that version, in a
+read-only box you can arrow through like a document. Tab from there
 reaches two buttons:</p>
 <ul>
 <li><strong>Update</strong> downloads the new version and then offers to
@@ -2898,11 +3020,11 @@ until you press Update.</li>
 <p>While the download runs you hear it reach a quarter, a half and three
 quarters, and then that it has finished.</p>
 <p>QuillLite also looks once a day when it starts, and says
-<strong>nothing</strong> unless there is something -- not while it
+<strong>nothing</strong> unless there is something – not while it
 checks, not when there is nothing, and not when the network is down.
 Only a genuine new version speaks, and even then it only offers. Turn
-the daily look off in <strong>Settings</strong> ("Look for updates when
-QuillLite starts"); Ctrl+Alt+U still works either way.</p>
+the daily look off in <strong>Settings</strong> (“Look for updates when
+QuillLite starts”); Ctrl+Alt+U still works either way.</p>
 <hr />
 <h2 id="what-quilllite-is-not">What QuillLite is not</h2>
 <p>QuillLite is a companion to <strong>QUILL for All</strong>, not a
@@ -2913,28 +3035,28 @@ and QuillLite is built so that it will not slowly grow into them.</p>
 <p>Both are free, both are built for screen reader users, and they
 install perfectly happily side by side.</p>
 <p><strong>And they can share what you have built up.</strong> QuillLite
-keeps its own settings folder on purpose --- an editor this size should
-not quietly adopt a writing environment's preferences, and uninstalling
+keeps its own settings folder on purpose — an editor this size should
+not quietly adopt a writing environment’s preferences, and uninstalling
 it should never cost you something QUILL owns. But the things you
 <em>accumulate</em> are worth having in one place, so each is an opt-in
 switch rather than a default:</p>
 <ul>
-<li><strong>Preferences ▸ Share QUILL's abbreviations</strong> and
-<strong>Share QUILL's personal dictionary</strong> point QuillLite at
-QUILL's copy, so a short form you add or a word you teach in either
+<li><strong>Preferences ▸ Share QUILL’s abbreviations</strong> and
+<strong>Share QUILL’s personal dictionary</strong> point QuillLite at
+QUILL’s copy, so a short form you add or a word you teach in either
 editor is there in both.</li>
-<li>From QUILL's side, <strong>Tools ▸ Customize and Support ▸ Bring My
-QuillLite Settings...</strong> does the whole thing in one step: it
-merges your QuillLite abbreviations, dictionary, copy tray, clip library
-and bookmarks into QUILL, turns those switches on for you, and copies
-your preferences and rebound keys across once. Nothing already in QUILL
-is replaced, and nothing in QuillLite is removed.</li>
+<li>From QUILL’s side, <strong>Tools ▸ Customize and Support ▸ Bring My
+QuillLite Settings…</strong> does the whole thing in one step: it merges
+your QuillLite abbreviations, dictionary, copy tray, clip library and
+bookmarks into QUILL, turns those switches on for you, and copies your
+preferences and rebound keys across once. Nothing already in QUILL is
+replaced, and nothing in QuillLite is removed.</li>
 </ul>
 <p>QUILL also has a <strong>QuillLite profile</strong> now (Preferences
 ▸ Profiles and Features), which makes QUILL show these nine menus and
-nothing else --- including making Ctrl+N a plain text document, the way
-it does here. It is there for the day you want one of QUILL's tools
-without giving up the shape you are used to.</p>
+nothing else — including making Ctrl+N a plain text document, the way it
+does here. It is there for the day you want one of QUILL’s tools without
+giving up the shape you are used to.</p>
 <hr />
 <h2 id="every-key-in-one-table">Every key, in one table</h2>
 <!-- keys:start -->
@@ -2965,7 +3087,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+O</strong></td>
-<td>Open...</td>
+<td>Open…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+S</strong></td>
@@ -2973,27 +3095,27 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+S</strong></td>
-<td>Save As...</td>
+<td>Save As…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+E</strong></td>
-<td>Earlier Versions...</td>
+<td>Earlier Versions…</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+F12</strong></td>
-<td>Reopen Last Session...</td>
+<td>Reopen Last Session…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+P</strong></td>
-<td>Page Setup...</td>
+<td>Page Setup…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+P</strong></td>
-<td>Print Preview...</td>
+<td>Print Preview…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+P</strong></td>
-<td>Print...</td>
+<td>Print…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+W</strong></td>
@@ -3056,7 +3178,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+F</strong></td>
-<td>Find...</td>
+<td>Find…</td>
 </tr>
 <tr>
 <td><strong>F3</strong></td>
@@ -3068,11 +3190,11 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+H</strong></td>
-<td>Replace...</td>
+<td>Replace…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+G</strong></td>
-<td>Go To...</td>
+<td>Go To…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+C</strong></td>
@@ -3080,7 +3202,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+C</strong></td>
-<td>Character Details...</td>
+<td>Character Details…</td>
 </tr>
 </tbody>
 </table>
@@ -3095,7 +3217,7 @@ list inside the app.</p>
 <tbody>
 <tr>
 <td><strong>Ctrl+Shift+F3</strong></td>
-<td>All Matches...</td>
+<td>All Matches…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F3</strong></td>
@@ -3190,11 +3312,11 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+X</strong></td>
-<td>Delete Lines Containing...</td>
+<td>Delete Lines Containing…</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+W</strong></td>
-<td>Hard Wrap Lines...</td>
+<td>Hard Wrap Lines…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+T</strong></td>
@@ -3289,7 +3411,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+U</strong></td>
-<td>Review Buffer...</td>
+<td>Review Buffer…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Q</strong></td>
@@ -3312,11 +3434,11 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+Y</strong></td>
-<td>Copy to Tray Slot...</td>
+<td>Copy to Tray Slot…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+V</strong></td>
-<td>Paste from Tray...</td>
+<td>Paste from Tray…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+Y</strong></td>
@@ -3340,7 +3462,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+M</strong></td>
-<td>Recent Clips...</td>
+<td>Recent Clips…</td>
 </tr>
 </tbody>
 </table>
@@ -3403,7 +3525,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+P</strong></td>
-<td>Command Palette...</td>
+<td>Command Palette…</td>
 </tr>
 </tbody>
 </table>
@@ -3422,11 +3544,11 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+F2</strong></td>
-<td>Special Character...</td>
+<td>Special Character…</td>
 </tr>
 <tr>
 <td><strong>Alt+.</strong></td>
-<td>Emoji...</td>
+<td>Emoji…</td>
 </tr>
 <tr>
 <td><strong>Shift+Enter</strong></td>
@@ -3434,15 +3556,15 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+K</strong></td>
-<td>Link...</td>
+<td>Link…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+I</strong></td>
-<td>Markdown Tag...</td>
+<td>Markdown Tag…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+O</strong></td>
-<td>HTML Tag...</td>
+<td>HTML Tag…</td>
 </tr>
 </tbody>
 </table>
@@ -3501,11 +3623,11 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F</strong></td>
-<td>Editor Font...</td>
+<td>Editor Font…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+F</strong></td>
-<td>Font for Selection...</td>
+<td>Font for Selection…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+D</strong></td>
@@ -3517,7 +3639,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F6</strong></td>
-<td>Document Language...</td>
+<td>Document Language…</td>
 </tr>
 </tbody>
 </table>
@@ -3609,8 +3731,16 @@ list inside the app.</p>
 <td>Move Section Down</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+F5</strong></td>
+<td>Select Section</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F5</strong></td>
+<td>Move Section To…</td>
+</tr>
+<tr>
 <td><strong>Alt+Shift+O</strong></td>
-<td>Heading Organizer...</td>
+<td>Heading Organizer…</td>
 </tr>
 </tbody>
 </table>
@@ -3641,7 +3771,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+L</strong></td>
-<td>List Headings...</td>
+<td>List Headings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+F9</strong></td>
@@ -3665,7 +3795,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+A</strong></td>
-<td>Go To Anything...</td>
+<td>Go To Anything…</td>
 </tr>
 </tbody>
 </table>
@@ -3684,7 +3814,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+G</strong></td>
-<td>Go to Bookmark...</td>
+<td>Go to Bookmark…</td>
 </tr>
 <tr>
 <td><strong>F2</strong></td>
@@ -3755,15 +3885,15 @@ list inside the app.</p>
 <tbody>
 <tr>
 <td><strong>Ctrl+Alt+E</strong></td>
-<td>File Encoding and Line Endings...</td>
+<td>File Encoding and Line Endings…</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+I</strong></td>
-<td>Snippets...</td>
+<td>Snippets…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+A</strong></td>
-<td>Manage Abbreviations...</td>
+<td>Manage Abbreviations…</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+A</strong></td>
@@ -3771,23 +3901,23 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+,</strong></td>
-<td>Preferences...</td>
+<td>Preferences…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F11</strong></td>
-<td>Back Up Settings...</td>
+<td>Back Up Settings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F12</strong></td>
-<td>Restore Settings...</td>
+<td>Restore Settings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F10</strong></td>
-<td>Customize Features...</td>
+<td>Customize Features…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+R</strong></td>
-<td>Keyboard Manager...</td>
+<td>Keyboard Manager…</td>
 </tr>
 </tbody>
 </table>
@@ -3802,7 +3932,7 @@ list inside the app.</p>
 <tbody>
 <tr>
 <td><strong>F7</strong></td>
-<td>Check Spelling...</td>
+<td>Check Spelling…</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+F7</strong></td>
@@ -3810,7 +3940,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+L</strong></td>
-<td>List Misspellings...</td>
+<td>List Misspellings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+F7</strong></td>
@@ -3830,7 +3960,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F7</strong></td>
-<td>Announcements...</td>
+<td>Announcements…</td>
 </tr>
 </tbody>
 </table>
@@ -3849,7 +3979,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+O</strong></td>
-<td>Sound Scheme...</td>
+<td>Sound Scheme…</td>
 </tr>
 </tbody>
 </table>
@@ -3864,23 +3994,23 @@ list inside the app.</p>
 <tbody>
 <tr>
 <td><strong>Ctrl+Alt+G</strong></td>
-<td>AI Assistant...</td>
+<td>AI Assistant…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Z</strong></td>
-<td>Ask About This Document...</td>
+<td>Ask About This Document…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F9</strong></td>
-<td>Usage...</td>
+<td>Usage…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F10</strong></td>
-<td>Sign In or Out...</td>
+<td>Connect or Sign Out…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+K</strong></td>
-<td>Privacy Agreement...</td>
+<td>Privacy Agreement…</td>
 </tr>
 </tbody>
 </table>
@@ -3988,7 +4118,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F1</strong></td>
-<td>Tutorials...</td>
+<td>Tutorials…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+F1</strong></td>
@@ -3996,11 +4126,11 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+F2</strong></td>
-<td>Get Help from Support...</td>
+<td>Get Help from Support…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+U</strong></td>
-<td>Check for Updates...</td>
+<td>Check for Updates…</td>
 </tr>
 <tr>
 <td><strong>Shift+F1</strong></td>
@@ -4040,21 +4170,22 @@ is <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>.
 A person reads it, and replies come back by email.</p>
 <p>The quickest way there is <strong>Help &gt; Get Help from
-Support...</strong> (Ctrl+Alt+F2), which every app in the family answers
+Support…</strong> (Ctrl+Alt+F2), which every app in the family answers
 with the same form: what kind of message this is, a subject, what
-happened, and -- if you want an answer -- an email address to reply to.
+happened, and – if you want an answer – an email address to reply to.
 What you expected and how to reproduce it are optional, and worth more
 than anything else when you can give them.</p>
 <p>Press Send and your <strong>own mail program opens with the whole
-message already written</strong>, addressed to support, with QuillLite's
+message already written</strong>, addressed to support, with QuillLite’s
 name and version and your Windows version filled in at the bottom.
 Nothing is sent until you send it there, so you can read it over, add
 anything, or change your mind.</p>
-<p>If this machine has no mail program set up -- webmail only, say --
-the app puts the whole message on your clipboard and tells you the
-address, so nothing you typed is lost. And writing to <strong><a
+<p>If this machine has no mail program set up – webmail only, say – the
+app puts the whole message on your clipboard and tells you the address,
+so nothing you typed is lost. And writing to <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>
 yourself always works just as well: there is no form you have to use.
 Say which app you were using and what happened.</p>
+</main>
 </body>
 </html>

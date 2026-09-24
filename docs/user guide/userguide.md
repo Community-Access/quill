@@ -5563,6 +5563,75 @@ every action is always available. The finished document opens in a new window so
 your original transcript is never overwritten. Transcript Actions use whichever AI
 provider you have configured in the AI Hub.
 
+### QUILL's own free AI — what the AI menu opens with
+
+You do not need an account, a key, or a decision about which company sees your
+writing. QUILL runs its own AI service, it is free, and it is the first thing in
+the `&AI` menu:
+
+| Key | Command | What it does |
+|---|---|---|
+| **Ctrl+Alt+G** | Free AI Assistant... | Summarise, rewrite, proofread, shorten or explain the passage you are in |
+| **Ctrl+Alt+Z** | Ask About This Document... | Ask a question about what you are writing |
+| **Ctrl+Alt+Shift+F2** | Free AI Usage... | What you have used and what is left |
+| **Ctrl+Alt+Shift+F4** | Connect or Sign Out... | Connect this computer, or disconnect it |
+| **Ctrl+Alt+Shift+K** | Privacy Agreement... | Read what is sent, and accept or withdraw |
+
+These are the same five commands as QuillLite's — one feature, shared, so
+anything you learn in one editor you have learned in both. Three of the five keys
+are identical too. Usage and Connect differ because `Ctrl+Alt+Shift+F7` to `F12`
+open the other QuillVille apps from inside QUILL, and QuillLite, being the editor
+on its own, has none to open — so it uses `Ctrl+Alt+Shift+F9` and `F10` for those
+two, and QUILL uses `F2` and `F4`.
+
+**What it acts on.** The selection, or else the paragraph, or else the section —
+never the whole file. A summary of a whole document is rarely what somebody
+pressing Summarize on a paragraph wanted.
+
+**Nothing is applied without a keystroke.** Every answer arrives in a window with
+Replace and Insert buttons, and both go through the ordinary undo stack, so
+Ctrl+Z takes an AI edit back exactly like any other edit. If you typed over the
+text while the answer was on its way, Replace is not offered and QUILL says so
+rather than writing the answer somewhere it does not belong.
+
+**The editor never waits.** Requests run in the background: you can keep typing,
+save, switch documents or close the window while an answer is on its way.
+
+**Nothing happens until you ask.** There is no request on launch, on typing, on
+save, on idle or on focus. An install with the feature on and never used makes no
+network call at all.
+
+**You have to accept the agreement first.** The first time you reach for it,
+QUILL shows exactly what is sent and what is kept, and nothing leaves your
+computer until you say yes. Three doors lead to the same decision — the AI menu's
+**Privacy Agreement...**, Preferences, and Customize Features — and all three
+read and write the same record, so none of them can disagree with the others.
+Withdrawing signs this computer out as well, because keeping a credential for a
+service you have just withdrawn from would be keeping it for the thing you
+withdrew from. The accepted version is stored as
+`ai_privacy_accepted_version`: a **version**, not a yes/no, so that if what is
+sent ever materially changes you are asked again rather than an old yes quietly
+covering a new thing.
+
+### Basic and Advanced — the short menu and the long one
+
+The AI menu opens **Basic**: the five free-AI rows above, the **Use Artificial
+Intelligence** switch, and **Show advanced AI features**. That is deliberate. The
+full surface — provider setup, Ask Quill, the agents, Proofread, Transform,
+Translate, Read Aloud, Transcribe, More, the AI Library and the AI Hub — is
+excellent and assumes you have already decided which company should see your
+writing and found somewhere to paste an API key. Basic is the menu for everybody
+who just wants a paragraph tidied up.
+
+**Nothing is removed in Basic.** Every advanced command keeps its keyboard
+shortcut and stays in the Command Palette; Basic changes what is *offered*, not
+what exists. Tick **Show advanced AI features** near the bottom of the AI menu
+and the whole surface returns at once; the choice is remembered.
+
+If you already had AI set up — you ran the wizard, or you have a provider key
+stored — QUILL leaves you in Advanced. An update must never take working menus
+away from somebody who was using them.
+
 ### Setting up AI — the gentle wizard
 
 The first item in the `&AI` menu is **Set Up AI...** (labeled "start here" until
@@ -5587,12 +5656,10 @@ QUILL also offers this wizard at the moment you reach for AI before it's set up 
 example, choosing to make minutes from a transcript — so you are never stuck at a
 dead end. You can re-run **Set Up AI** any time to change providers or switch modes.
 
-**Basic mode** keeps the AI menu small for newcomers: the everyday features (Ask
-Quill, Transcribe, Proofread, Translate, Read Aloud, the AI Library) stay, while the
-power-user, agentic entries ("What can I do here?", "Rewrite & Improve", and "Run
-Agent") are hidden until you're ready. Turn them on any time with **Show advanced AI
-features** near the bottom of the AI menu. Existing users keep the full menu — Basic
-mode applies only if you choose it.
+**Basic mode** is now the default for a new install, and it hides the whole
+advanced surface rather than only the agentic entries — see "Basic and Advanced"
+above. The wizard's **Keep it simple** checkbox still sets it, and **Show
+advanced AI features** near the bottom of the AI menu still un-sets it.
 
 ### Using AI for free
 
@@ -6978,8 +7045,9 @@ Quill uses an anchor-based selection model:
 | --- | --- | --- |
 | (unassigned by default) | Select paragraph | Selects the paragraph at the cursor; announces scope and word count. Assign a key in the Keymap Editor or run it from the command palette. |
 | Ctrl+Shift+B | Select block | Selects the indented block at the cursor. |
-| Alt+Shift+Up | Expand selection | Grows the selection to the next structural unit (line to paragraph to block to document). |
-| Alt+Shift+Down | Shrink selection | Reverses the last expand step. |
+| Ctrl+Shift+X | Expand selection | Grows the selection to the next structural unit (line to paragraph to block to document). |
+| Ctrl+Alt+Shift+X | Shrink selection | Reverses the last expand step. |
+| Alt+Shift+F5 | Select section | Selects the section at the cursor, subsections and all, and says how many sections and lines that is. Cut and paste then move it anywhere. |
 
 **Extend Selection Mode**
 
@@ -7371,6 +7439,28 @@ The heading tools do more than insert decoration. They help you maintain usable 
 For inline heading control, press `Ctrl+Alt+1` through `Ctrl+Alt+6` to convert the current line to the matching heading level in Markdown and HTML surfaces. Press the same chord again on an already-matching heading to clear the level. The chord is documented in §10.2 of `docs/keybinding-standard.md` and overrides NVDA's switch-to-synth-1..6; if you use NVDA's synth switcher, you can rebind the QUILL heading chord via the Keymap Editor.
 
 For section-level reorganisation in Markdown and HTML, press `Alt+Shift+Down` while the caret is on a heading to swap that section past its next sibling; `Alt+Shift+Up` swaps it with the previous sibling. The chord is gated on Markdown and HTML — plain-text documents announce the chord is unavailable and the move is skipped. Fenced code blocks are honored, so a `# fake` line inside a ``` fence is never promoted to a real sibling.
+
+When there is no sibling that way, the section trades places with whatever *is* next to it instead of refusing — the same thing Word's outline Move Up and Move Down do on this chord. A first child rises above its parent's own heading; a section whose subtree runs to the end of the file cannot sink, and QUILL says so and names the key that would promote the child to make it a sibling. **The moved section keeps its level**: moving never renumbers your headings, because a key that says "move" and also edits is a key that did more than it said. `Alt+Shift+Left` and `Alt+Shift+Right` are for changing a level, and the two compose.
+
+Three keys, not two, and the third is the one that scales:
+
+- `Alt+Shift+Up` / `Alt+Shift+Down` — one step, which is right for tidying two adjacent sections.
+- `Alt+Shift+F5` — **Select Section**: the section and everything under it, selected, so ordinary Ctrl+X and Ctrl+V put it anywhere, in this document or another one or another program. It announces "Selected Bread and 1 section under it, 7 lines", because the screen reader tells you a selection changed and not how much is in it.
+- `Ctrl+Alt+Shift+F5` — **Move Section To...**: a destination instead of a direction. Pressing Alt+Shift+Up forty times to cross a long document is forty announcements you have to count. This asks two questions from filtered lists — which heading (every heading in the document, each row reading "3 of 7, level 2 - Bread" so two sections with the same name are still two different rows), then **Before**, **After** or **Inside** it — and does the whole move as one undoable edit. Only **Inside** changes a level: it makes the section the last one under the heading you chose, renumbers its subtree one level deeper, and says the new level out loud. It refuses to move a section into its own subtree, and to push a heading past level 6, and explains both rather than just declining.
+
+Three details about the two Move Section To lists, because they are what makes the
+command usable by ear. **Focus starts in the search box**, and Enter there moves you
+into the results rather than accepting whatever happens to be highlighted — filtering
+and choosing are two deliberate acts. **The list never re-ranks itself** as you type:
+it is the document's outline in document order, and a list that reorders is one you
+cannot navigate by position. And **a heading inside the section you are moving is
+still listed**, marked as such, rather than hidden — choosing it produces "Sourdough
+is inside Bread, so Bread cannot move into it. Promote Sourdough first if you want
+them side by side", which teaches the rule; a heading you can see in your document
+and cannot find in the list has no way to explain itself.
+
+**Escape at either question changes nothing and says nothing.** Nothing happened, so
+there is nothing to announce.
 
 The previous `Alt+Shift+Up` / `Alt+Shift+Down` bindings (expand/shrink selection) live on `Ctrl+Shift+X` and `Ctrl+Alt+Shift+X` now; saved keymaps from older builds migrate automatically.
 

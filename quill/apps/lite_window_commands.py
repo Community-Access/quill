@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
+from typing import Any
 
 import wx
 
@@ -39,6 +40,7 @@ from quill.core.lite.filetypes import (
     SAVE_WILDCARD_PLAIN,
     SAVE_WILDCARD_RICH,
     is_rich_path,
+    save_filter_index_for_language,
 )
 from quill.core.lite.keymap import key_for, spoken_key_for
 from quill.core.support_message import SUPPORT_EMAIL
@@ -128,6 +130,12 @@ class DocumentCommandsMixin(
             wildcard=SAVE_WILDCARD_RICH if rich else SAVE_WILDCARD_PLAIN,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dialog:
+            if not rich:
+                # The type list opens on the document's own language. wx appends
+                # the selected row's extension to a name typed without one, so a
+                # list that always opened on "Text files" was answering "save my
+                # Markdown" with a .txt -- and the person had said which it was.
+                self._preselect_save_type(dialog)
             if dialog.ShowModal() != wx.ID_OK:
                 return False
             target = Path(dialog.GetPath())
@@ -169,6 +177,18 @@ class DocumentCommandsMixin(
             self._announce("No Markdown could be made from this HTML. Saved it unchanged.")
             return True
         return self.save(target)
+
+    def _preselect_save_type(self, dialog: Any) -> None:
+        """Open the Save As type list on the row this document belongs in.
+
+        ``SetFilterIndex`` is looked up rather than called, because the test
+        doubles that drive every other branch of this command are plain stand-ins
+        for ``wx.FileDialog`` and a missing method here would fail the save
+        rather than the styling of it.
+        """
+        set_filter_index = getattr(dialog, "SetFilterIndex", None)
+        if callable(set_filter_index):
+            set_filter_index(save_filter_index_for_language(self.document_language()))
 
     def _confirm_flatten_to_plain(self) -> bool:
         """Ask before a Save As that throws the formatting away. Asks only.

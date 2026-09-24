@@ -10,6 +10,7 @@
   "adp_user_name": "grandfathered",
   "ai_chat_default_model": "documented",
   "ai_chat_default_provider": "documented",
+  "ai_privacy_accepted_version": "documented",
   "ai_prompt_default_model": "documented",
   "ai_tts_model": "grandfathered",
   "ai_tts_provider": "documented",

@@ -518,6 +518,40 @@ class CommandRegistryMixin:
             self.check_grammar_with_ai,
             None,
         )
+        # QUILL's own free AI: the five commands the AI menu now opens with.
+        # The handlers are the *shared* ones in quill.ui.hosted_ai_commands --
+        # the same code QuillLite runs, on the same chords -- so a fix to either
+        # editor's hosted AI is a fix to both. See quill/ui/main_frame_hosted_ai.py.
+        self.commands.register(
+            "tools.hosted_ai_assistant",
+            "Free AI Assistant",
+            self.cmd_ai_assistant,
+            self._binding_for("tools.hosted_ai_assistant"),
+        )
+        self.commands.register(
+            "tools.hosted_ai_ask_document",
+            "Ask Free AI About This Document",
+            self.cmd_ai_ask_document,
+            self._binding_for("tools.hosted_ai_ask_document"),
+        )
+        self.commands.register(
+            "tools.hosted_ai_usage",
+            "Free AI Usage",
+            self.cmd_ai_usage,
+            self._binding_for("tools.hosted_ai_usage"),
+        )
+        self.commands.register(
+            "tools.hosted_ai_sign_in",
+            "Connect or Sign Out of Free AI",
+            self.cmd_ai_sign_in,
+            self._binding_for("tools.hosted_ai_sign_in"),
+        )
+        self.commands.register(
+            "tools.hosted_ai_privacy",
+            "Free AI Privacy Agreement",
+            self.cmd_ai_privacy,
+            self._binding_for("tools.hosted_ai_privacy"),
+        )
         self.commands.register(
             "tools.ask_quill_chat",
             "Ask Quill Chat",
@@ -2262,6 +2296,22 @@ class CommandRegistryMixin:
             self.move_section_down,
             self._binding_for("format.move_section_down"),
         )
+        # Select Section: the clipboard route out of the section family, and
+        # the answer to "move it somewhere there is no heading to move past".
+        self.commands.register(
+            "edit.select_section",
+            "Select Section",
+            self.select_section,
+            self._binding_for("edit.select_section"),
+        )
+        # Move Section To: a destination instead of a direction, which is the
+        # only one of the three that scales to a long document.
+        self.commands.register(
+            "format.move_section_to",
+            "Move Section To",
+            self.move_section_to,
+            self._binding_for("format.move_section_to"),
+        )
         self.commands.register(
             "format.duplicate_line",
             "Duplicate Line",
@@ -2625,6 +2675,11 @@ class CommandRegistryMixin:
             "tools.skill_library": self._id_skill_library,
             "tools.check_grammar_ai": self._id_check_grammar_ai,
             "tools.ask_quill_chat": self._id_ask_quill_chat,
+            "tools.hosted_ai_assistant": self._id_hosted_ai_assistant,
+            "tools.hosted_ai_ask_document": self._id_hosted_ai_ask_document,
+            "tools.hosted_ai_usage": self._id_hosted_ai_usage,
+            "tools.hosted_ai_sign_in": self._id_hosted_ai_sign_in,
+            "tools.hosted_ai_privacy": self._id_hosted_ai_privacy,
             "tools.ask_quill_conversation": self._id_ask_quill_voice,
             "tools.ai_model": self._id_ai_model,
             "tools.ai_switch_engine": self._id_ai_switch_engine,
@@ -2805,6 +2860,8 @@ class CommandRegistryMixin:
             # PR1 (EdSharp port): section-move command ids.
             "format.move_section_up": self._id_move_section_up,
             "format.move_section_down": self._id_move_section_down,
+            "edit.select_section": self._id_select_section,
+            "format.move_section_to": self._id_move_section_to,
             "format.duplicate_line": self._id_duplicate_line,
             "format.delete_line": self._id_delete_line,
             "format.insert_html_tag": self._id_insert_html_tag,

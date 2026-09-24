@@ -33,6 +33,7 @@ __all__ = [
     "FREE_PATH_GUIDANCE",
     "cloud_provider_option",
     "onboarding_path",
+    "default_experience_mode",
     "load_experience_mode",
     "save_experience_mode",
     "is_basic_mode",
@@ -280,16 +281,60 @@ def _save_state(state: dict[str, object]) -> None:
     write_json_atomic(path, state)
 
 
+def default_experience_mode() -> str:
+    """Which mode an install that has never chosen should start in.
+
+    **Basic**, now, and that is a reversal. It used to be Advanced, on the
+    reasoning that nothing should ever be hidden from somebody who did not ask
+    for it to be. That reasoning was about the *menu* and ignored the person:
+    what the full AI surface actually shows a newcomer is seven submenus, an
+    Hub, a Library and an agent catalogue, every one of which assumes they have
+    already decided which company should see their writing and found somewhere
+    to paste an API key. QUILL now has its own free service that needs none of
+    that, so Basic is not a reduced experience any more -- it is the working
+    one, and Advanced is the specialist one.
+
+    **The exception is an install that had already made those decisions.**
+    Somebody who has run the wizard, or who has a provider key stored, is using
+    the advanced surface right now; demoting them would take working menus away
+    from them in an update, which is the one thing a default must never do. They
+    stay in Advanced and can choose Basic if they want it.
+
+    Read once: :func:`load_experience_mode` settles the answer into the state
+    file the first time it is asked, so this does not get re-derived on every
+    menu build, and so somebody's menu cannot quietly grow the day they paste a
+    key into an unrelated feature.
+    """
+    state = _load_state()
+    if bool(state.get("completed", False)):
+        return EXPERIENCE_ADVANCED
+    try:
+        if configured_cloud_providers():
+            return EXPERIENCE_ADVANCED
+    except Exception:  # noqa: BLE001 - an unreadable credential store is not "configured"
+        pass
+    return EXPERIENCE_BASIC
+
+
 def load_experience_mode() -> str:
     """The current AI experience mode: 'basic' (gentle) or 'advanced' (everything).
 
-    Defaults to **advanced** when the user has never chosen — so nothing is ever
-    hidden from someone who did not opt into Basic (e.g. an existing user who has not
-    run the wizard). The AI Setup Wizard's "keep it simple" checkbox is what puts a
-    newcomer into Basic.
+    When nobody has chosen, :func:`default_experience_mode` decides and the
+    answer is **written down**. Settling it once rather than re-deriving it is
+    what keeps the mode stable: the derivation reads the credential store, and a
+    mode that re-derived itself would let a menu grow or shrink as a side effect
+    of something the person did somewhere else entirely.
     """
-    mode = str(_load_state().get("experience_mode", EXPERIENCE_ADVANCED)).strip().lower()
-    return mode if mode in _VALID_MODES else EXPERIENCE_ADVANCED
+    state = _load_state()
+    stored = str(state.get("experience_mode", "")).strip().lower()
+    if stored in _VALID_MODES:
+        return stored
+    mode = default_experience_mode()
+    try:
+        save_experience_mode(mode)
+    except Exception:  # noqa: BLE001 - a read-only profile still gets the right answer
+        pass
+    return mode
 
 
 def save_experience_mode(mode: str) -> None:

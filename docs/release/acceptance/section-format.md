@@ -1,4 +1,4 @@
-# Section — Format & Insert (`format.*`, 56 commands)
+# Section — Format & Insert (`format.*`, 57 commands)
 
 Everything about **shaping** a document: making words bold or italic, adding
 headings, lists, tables, quotes and code, changing case, moving lines and
@@ -1073,23 +1073,31 @@ line. No default shortcut.
 
 ## FMT-51 — Move Section Up (`format.move_section_up`, Alt+Shift+Up)
 
-*What & why.* Move an entire heading section (the heading and everything under it,
-down to the next sibling) above its previous sibling — restructuring by ear.
-Markdown/HTML only.
+*What & why.* Move an entire heading section — the heading, its body **and every
+subsection under it** — above whatever is before it. Restructuring by ear, on
+Word's own chord for Move Up. Markdown/HTML only.
 
 **Before you start**
 - Open **`formatting.md`**. Put the caret on the **"Heading Two — Lists"** heading
   line (it has a sibling section above and below it).
+- Then a second document, three headings deep and one per level: `# One`,
+  `## Two`, `### Three`, each with a line of body text. Nothing in it has a
+  sibling, which is the case that used to refuse.
 
 **Do this**
 1. Press **Alt+Shift+Up**, or **Format menu ▸ Move Section Up**.
+2. In the second document, caret on `## Two`, press **Alt+Shift+Up**.
 
 **You should see and hear**
-- The whole "Heading Two" section swaps above the section before it; QUILL speaks
-  "Section moved above <sibling>" (naming the section it jumped over). At the top it
-  says "Top!"; with no sibling, "No sibling to swap with"; off a heading, "No section
-  to move"; in a non-markup document, "Section move is only available in Markdown or
-  HTML documents".
+- The whole "Heading Two" section swaps above the section before it, **taking its
+  sub-headings with it** — check a `###` under it travels too. QUILL speaks
+  "Section moved above <sibling>. Now <n> of <total> at this level".
+- In the second document, `## Two` rises above `# One`'s heading and body, taking
+  `### Three` with it. It **keeps its level** — it is still `##` — so pressing
+  Alt+Shift+Down puts it back exactly.
+- At the very top of the document: "Top!". Off a heading: "No section to move". In
+  a non-markup document: "Section move is only available in Markdown or HTML
+  documents".
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
@@ -1098,19 +1106,29 @@ Markdown/HTML only.
 
 ## FMT-52 — Move Section Down (`format.move_section_down`, Alt+Shift+Down)
 
-*What & why.* Move a heading section below its next sibling. Markdown/HTML only.
+*What & why.* Move a heading section, subsections and all, below whatever is
+after it. Markdown/HTML only.
 
 **Before you start**
 - `formatting.md` open; caret on the **"Heading Two — Lists"** heading line (or wherever
   it now sits after FMT-51).
+- The three-deep document from FMT-51 as well, caret on `## Two`.
 
 **Do this**
 1. Press **Alt+Shift+Down**, or **Format menu ▸ Move Section Down**.
+2. In the three-deep document, caret on `## Two`, press **Alt+Shift+Down**.
 
 **You should see and hear**
-- The section swaps below the next one; QUILL speaks "Section moved below
-  <sibling>". At the bottom it says "Bottom!"; the same no-op / non-markup messages
-  as FMT-51 apply.
+- The section swaps below the next one, children included; QUILL speaks "Section
+  moved below <sibling>. Now <n> of <total> at this level".
+- In the three-deep document **nothing moves**, and that is correct: everything
+  below `## Two` is *inside* `## Two`, so there is nothing left for it to move
+  below. It must say so rather than refuse blankly — "Bottom of One. Everything
+  below is inside this section. Alt+Shift+Left promotes Three to make it a
+  sibling." The key it names must be the one actually bound to Promote Heading;
+  rebind that and this sentence must follow.
+- At the very bottom of the document: "Bottom!". The same no-op / non-markup
+  messages as FMT-51 apply.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
@@ -1225,3 +1243,93 @@ commands above insert Markdown markup or apply real styling.
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:
+
+## FMT-57 — Select Section (`edit.select_section`, Alt+Shift+F5)
+
+*What & why.* Select this section and everything under it, so the ordinary
+clipboard can move it anywhere — another part of the document, another document,
+another program. The keys above reorder a section against its neighbours; this
+is how it gets somewhere there is no heading to move past. Markdown/HTML only.
+
+**Before you start**
+- `formatting.md` open, caret anywhere inside a section that has sub-headings —
+  on the heading line or down in its body, both must work.
+
+**Do this**
+1. Press **Alt+Shift+F5**, or **Format menu ▸ Structure ▸ Select Section**.
+2. Press **Ctrl+X**, move elsewhere, **Ctrl+V**.
+
+**You should see and hear**
+- The selection runs from the heading line to the last line under it, **including
+  every sub-heading**, and stops before the blank line that separates it from
+  what follows — paste must not run the next heading onto the end of it.
+- Spoken: "Selected <heading> and <n> sections under it, <n> lines", or
+  "Selected <heading>, <n> lines" when nothing is nested inside. The counts are
+  the point: the screen reader says a selection changed, never how much is in it.
+- Off any heading: "Put the cursor in a section to select it". In a non-markup
+  document: a refusal naming the reason, not silence.
+- **QuillLite must do all of the above identically**, on the same key, with the
+  same sentences.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---
+
+## FMT-58 — Move Section To… (`format.move_section_to`, Ctrl+Alt+Shift+F5)
+
+*What & why.* A destination instead of a direction. FMT-51 and FMT-52 move one
+step, which is right for two adjacent sections and useless across a long
+document: forty presses is forty announcements you have to count, because there
+is no page to glance at to check how far you have got. This asks two questions
+and does the whole move as one undoable edit. Markdown/HTML only.
+
+**Before you start**
+- A document with at least five headings at mixed levels, one of them with a
+  sub-heading under it. Caret inside a section that is *not* the first one.
+
+**Do this**
+1. Press **Ctrl+Alt+Shift+F5**, or **Format menu ▸ Line ▸ Move Section To…**
+   (QuillLite: **Format ▸ Structure ▸ Move Section To…**).
+2. In the first list, type part of a heading, press **Down Arrow** or **Enter**
+   to move into the results, choose one, **Enter**.
+3. In the second list choose **Before it**, **After it** or **Inside it**,
+   **Enter**.
+4. Press **Ctrl+Z**.
+
+**You should see and hear**
+- **The first list is the document's outline, in document order**, one row per
+  heading reading `3 of 7, level 2 - Bread`. The position leads the row so that
+  two sections with the same title are still two distinguishable choices. Typing
+  filters; the order never re-ranks itself.
+- Focus starts in the search box, and **Enter there moves to the list** rather
+  than accepting whatever happened to be selected.
+- The section you are moving is listed too, marked
+  `(the section you are moving)`.
+- **Before** puts it directly above the chosen heading. **After** puts it below
+  that heading *and everything under it*. **Inside** makes it the last section
+  under that heading.
+- **Only Inside changes a level**, and it says so: "Moved Bread inside Soup, now
+  Heading 3. Now 1 of 2 at this level". Before and After never renumber
+  anything.
+- Every move that happens says where it landed: "Moved Salad before Bread. Now 1
+  of 3 at this level" — the clause a listener cannot get any other way.
+- **Ctrl+Z takes the whole move back in one press**, including the renumbering.
+- Choosing the section itself: "…is the section you are moving, so it cannot be
+  its own destination." Choosing something *inside* it: "Sourdough is inside
+  Bread, so Bread cannot move into it. Promote Sourdough first if you want them
+  side by side." Inside something too deep: a refusal naming level 6 and
+  offering After instead.
+- **Escape at either question changes nothing and says nothing.** Nothing
+  happened, so there is nothing to announce (GATE-13).
+- A document with one heading: "This document has only one section, so there is
+  nowhere to move it to." A non-markup document: a refusal naming the reason.
+- The document keeps its shape: exactly one blank line at each seam, no heading
+  jammed onto the line above, and the file's own ending unchanged.
+- **QuillLite must do all of the above identically**, on the same key, with the
+  same sentences.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---

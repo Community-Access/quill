@@ -42,7 +42,6 @@ import wx
 from quill.apps.lite_keymap_editor import DocumentKeymapMixin
 from quill.apps.lite_printing import DocumentPrintMixin
 from quill.apps.lite_updates import DocumentUpdatesMixin
-from quill.apps.lite_window_ai import DocumentAiMixin
 from quill.apps.lite_window_clipboard import DocumentClipboardMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
@@ -56,6 +55,7 @@ from quill.apps.lite_window_marks import DocumentMarksMixin
 from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
 from quill.apps.lite_window_mode import DocumentModeMixin
+from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
 from quill.apps.lite_window_status import DocumentStatusMixin
@@ -71,6 +71,7 @@ from quill.core.numbered_bookmarks import BookmarkSet
 from quill.core.sound_events import SoundEvent
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.extend_selection_mode import ExtendSelectionMixin
+from quill.ui.hosted_ai_commands import HostedAiMixin
 from quill.ui.richedit_editing import RICH, create_richedit_document
 
 __all__ = ["DocumentFrame"]
@@ -82,9 +83,13 @@ _TITLE = APP_NAME
 
 
 class DocumentFrame(
-    DocumentAiMixin,
+    HostedAiMixin,
     DocumentCommandsMixin,
     DocumentFormatCommandsMixin,
+    # The outline commands: Select Section, Move Section Up/Down, Move
+    # Section To. Split from the Format mixin (GATE-11) because a section is
+    # a different idea from a run of bold text.
+    DocumentSectionCommandsMixin,
     DocumentViewCommandsMixin,
     DocumentPrintMixin,
     DocumentUpdatesMixin,

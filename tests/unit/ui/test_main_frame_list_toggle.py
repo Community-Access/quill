@@ -13,7 +13,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from quill.core.markdown_sections import (
+from quill.core.list_markers import (
     _LIST_AUTO_FILL_ARM_SECONDS,
     should_auto_fill_numbers,
 )

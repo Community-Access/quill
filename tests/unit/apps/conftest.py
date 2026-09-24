@@ -754,7 +754,6 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_keymap_editor import DocumentKeymapMixin
     from quill.apps.lite_printing import DocumentPrintMixin
     from quill.apps.lite_updates import DocumentUpdatesMixin
-    from quill.apps.lite_window_ai import DocumentAiMixin
     from quill.apps.lite_window_clipboard import DocumentClipboardMixin
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
@@ -767,24 +766,29 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_marks import DocumentMarksMixin
     from quill.apps.lite_window_markup import DocumentMarkupMixin
     from quill.apps.lite_window_mode import DocumentModeMixin
+    from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_spelling import DocumentSpellingMixin
     from quill.apps.lite_window_tools import DocumentToolsMixin
     from quill.apps.lite_window_typing import DocumentTypingMixin
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
+    from quill.ui.hosted_ai_commands import HostedAiMixin
 
     class LiteWindowStub(
         # Tools > AI, added 2026-09-23. The four handlers open modeless
         # frames, which is the same shape as the dialog commands above --
         # what is reached here is the handler the menu binds, with the
         # frames themselves patched at their own module.
-        DocumentAiMixin,
+        HostedAiMixin,
         DocumentSelectionMixin,
         DocumentMarksMixin,
         DocumentLineMixin,
         DocumentToolsMixin,
         DocumentClipboardMixin,
         DocumentFormatCommandsMixin,
+        # The outline commands, split out of the Format mixin on 2026-09-23
+        # (GATE-11): Select Section, Move Section Up/Down, Move Section To.
+        DocumentSectionCommandsMixin,
         DocumentHistoryMixin,
         DocumentTypingMixin,
         # The View menu and the Spelling menu, added 2026-09-10. Both are the

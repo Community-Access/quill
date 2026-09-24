@@ -809,6 +809,62 @@ alt text on demand. Behind `future.ai` for 1.0.
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
 
+## TAI-32 — QUILL's own free AI, and the Basic menu it opens with
+
+*What & why.* QUILL now runs its own free AI service, and it is the **front
+door**: the AI menu opens with five rows that need no account, no API key and no
+decision about which company sees your writing. Everything TAI-01 to TAI-31 test
+is behind one remembered checkbox. Same five commands, same five chords and the
+same shared code as QuillLite, so a difference between the two products here is
+itself the defect.
+
+**Before you start**
+- A profile that has never run the AI Setup Wizard and has no provider key
+  stored, so you see what a new install sees. (An install that *had* either of
+  those stays in Advanced deliberately — check that too, with a second profile.)
+
+**Do this**
+1. Open the **AI** menu and read it top to bottom.
+2. Press **Ctrl+Alt+G**.
+3. Read and accept the agreement; then **Ctrl+Alt+Shift+F4** and connect
+   (QuillLite: **Ctrl+Alt+Shift+F10** — the launcher row is spoken for in QUILL).
+4. Select a paragraph, **Ctrl+Alt+G**, choose Summarize, **Enter**. Keep typing
+   while it thinks.
+5. In the result window press **Replace**, then **Ctrl+Z**.
+6. **Ctrl+Alt+Shift+F2** (QuillLite: **Ctrl+Alt+Shift+F9**); then tick **Show
+   advanced AI features**; then untick it.
+7. **Ctrl+Alt+Shift+K** and withdraw.
+
+**You should see and hear**
+- The menu opens with **Free AI Assistant…**, **Ask About This Document…**,
+  **Free AI Usage…**, **Connect or Sign Out…** and **Privacy Agreement…**, then
+  **Use Artificial Intelligence** and **Show advanced AI features** — and nothing
+  else. Every row says its key; no two rows in the menu claim the same Alt
+  letter.
+- Nothing leaves the machine before the agreement is accepted. The agreement
+  states what is sent and what is kept.
+- **The editor never blocks.** Typing, saving and switching documents all work
+  while an answer is on its way.
+- The request acts on the **selection**, else the paragraph, else the section —
+  never the whole file.
+- **Replace and Insert go through the ordinary undo stack**: one Ctrl+Z takes the
+  AI edit back. If you typed over the source text while the answer was in
+  flight, Replace is not offered and QUILL says why rather than writing the
+  answer over whatever now occupies those offsets.
+- Ticking **Show advanced AI features** brings the whole surface back at once;
+  unticking it hides it again. Nothing is *lost* in Basic: every advanced command
+  still runs from the Command Palette and still answers its chord.
+- With **Use Artificial Intelligence** off, the two rows that spend a request are
+  dimmed, **Usage and Connect or Sign Out stay live**, and **Privacy Agreement is
+  never dimmed** — it is the door the feature is turned on through.
+- Withdrawing signs this computer out as well, and says so.
+- **QuillLite must do all of the above identically**, with the same sentences.
+  Three of the five keys are identical; Usage and Connect differ, because
+  Ctrl+Alt+Shift+F9 and F10 are QuillVille launchers in QUILL. Check both.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
 ---
 
 ### Section sign-off
@@ -817,7 +873,7 @@ alt text on demand. Behind `future.ai` for 1.0.
 - Build / commit tested:
 - Environment (E1–E6):
 - Date:
-- Scenarios passed / total: ___ / 31
+- Scenarios passed / total: ___ / 32
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:

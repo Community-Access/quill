@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>The Quill family F1 help reference</title>
   <style>
@@ -2676,14 +2676,32 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quilllite">QuillLite</h2>
-<p>Control coverage: 43 audited sites (43 helped).</p>
+<p>Control coverage: 61 audited sites (61 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
+<p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
+rewrite, proofread or explain the passage shown here, or to answer a
+question about this document. What you see in ‘What will be sent’ is
+exactly what leaves your computer – nothing else from the document goes
+with it. Each answer uses one of your free requests, and you keep typing
+while it works.</p>
+<p><strong>AI Result.</strong> What the AI sent back. It is read-only on
+purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
+<p><strong>AI Usage.</strong> How many free AI requests you have left
+this month and today, and when the count starts again. Your support ID
+is here too – that is what QUILL support will ask for. You can also sign
+this computer out from here, and connect it again whenever you like.</p>
 <p><strong>About QuillLite.</strong> What this copy is, and where it
 keeps your settings and your recovered work. QuillLite is a small
 companion to QUILL for All, not a replacement for it: anything to do
 with AI, dictation, conversion, comparison or publishing lives in
 QUILL.</p>
+<p><strong>Answer.</strong> What the AI sent back. It is read-only on
+purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Bookmarks.</strong> The places you marked in this document,
 in the order they appear. Choose one and press Enter to go there; Remove
 takes one out of the list without touching the document. Bookmarks last
@@ -2717,6 +2735,10 @@ cursor can tell you what list you are in. QuillLite reads it from the
 file name; this is where you say otherwise. Nothing in your document
 changes – only what the keys write from now on. The choice lasts as long
 as this window is open.</p>
+<p><strong>Explanation.</strong> What the AI sent back. It is read-only
+on purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>File format.</strong> How this document will be written back
 to disk: which character encoding, and which line endings. QuillLite
 normally writes back exactly what it read, so these only change when you
@@ -2793,6 +2815,20 @@ window. Two of them live only here: what Control N creates, and how
 often unsaved work is copied aside. The rest – theme, word wrap, and the
 editor font – are also on the View menu, where you will reach them
 faster.</p>
+<p><strong>Proofread.</strong> What the AI sent back. It is read-only on
+purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
+<p><strong>QUILL AI Sign-In.</strong> Connect this computer to QUILL’s
+free AI. There is no account, no password and no email address: QUILL
+shows you an eight-character code, you type it into a web page on any
+device, and this window says when you are connected. Nothing is sent
+until you choose Show My Code.</p>
+<p><strong>QUILL AI: what is sent, and what is kept.</strong> The
+agreement, in full, before anything is sent. Read it with the arrow
+keys. I Agree turns AI help on; No Thanks leaves it off and changes
+nothing else. You can read this again, or withdraw it, from Tools, AI,
+Privacy Agreement at any time.</p>
 <p><strong>QuillLite.</strong> Your document. This is the whole editor:
 type, and Control S saves. The title bar leads with this document’s
 number, then its name, whether it is plain text or rich text, and
@@ -2808,6 +2844,10 @@ place. Replace changes the match you are on and moves to the next;
 Replace All changes every one and tells you how many. In a rich text
 document Replace All asks first, because replaced text takes the
 formatting of the run it lands in.</p>
+<p><strong>Rewrite.</strong> What the AI sent back. It is read-only on
+purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Spelling Announcements.</strong> How a misspelled word is
 reported to you. A misspelling is the one thing an editor cannot convey
 by speech alone – receive and recieve sound identical – so the letters
@@ -2822,6 +2862,10 @@ your dictionary so it is never questioned again.</p>
 the cursor was in, closest first. Choose one and press Enter to replace
 the word; press Escape to leave it as you wrote it. Alt F7 adds it to
 your dictionary instead, if it was right all along.</p>
+<p><strong>Summary.</strong> What the AI sent back. It is read-only on
+purpose: nothing goes into your document until you choose Replace My
+Selection or Insert Below, and either of those is a single edit that
+Control Z takes back.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
@@ -3057,6 +3101,67 @@ suggestion before spelling it.</li>
 the top suggestion as well as the word. Off by default: it doubles the
 arrival announcement, which is welcome when you are learning a word and
 noise when you are checking one.</li>
+</ul>
+<h4 id="module-level-quilluihosted_ai_dialogspy">(module level)
+(<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
+<ul>
+<li><code>close</code>: Closes this window. Nothing is sent, and nothing
+in your document changes.</li>
+<li><code>agree</code>: Turns on AI help. You can withdraw this later in
+the AI menu, or in Preferences.</li>
+<li><code>decline</code>: Leaves AI help switched off. Everything else
+in QuillLite is unchanged.</li>
+</ul>
+<h4 id="aisigninframe-quilluihosted_ai_dialogspy">AiSignInFrame
+(<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
+<ul>
+<li><code>show</code>: Asks QUILL for a code to connect this computer.
+This is the first time anything is sent.</li>
+<li><code>say</code>: Reads the code out one character at a time.</li>
+<li><code>copy</code>: Puts the code on the clipboard.</li>
+<li><code>retry</code>: Asks QUILL for a fresh code and tries
+again.</li>
+</ul>
+<h4 id="aiusageframe-quilluihosted_ai_dialogspy">AiUsageFrame
+(<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
+<ul>
+<li><code>self._sign_out</code>: Disconnects this computer from QUILL’s
+free AI. You can connect it again at any time.</li>
+<li><code>copy</code>: Puts this computer’s support ID on the
+clipboard.</li>
+</ul>
+<h4 id="airesultframe-quilluihosted_ai_padpy">AiResultFrame
+(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<ul>
+<li><code>copy</code>: Puts the answer on the clipboard.</li>
+</ul>
+<h4 id="aipadframe-quilluihosted_ai_padpy">AiPadFrame
+(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<ul>
+<li><code>self._actions</code>: Choose what the AI should do with the
+text above. Each choice has its own description – press F1 on one to
+hear it.</li>
+<li><code>self._question</code>: What you want to know about this
+document. QuillLite finds the parts that answer it and sends only
+those.</li>
+<li><code>self._send</code>: Sends the text above and uses one of your
+free requests.</li>
+</ul>
+<h4 id="airesultframe-quilluihosted_ai_padpy-1">AiResultFrame
+(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<ul>
+<li><code>replace</code>: Puts this in place of the text you had
+selected. Control Z takes it back.</li>
+<li><code>insert</code>: Puts this into your document underneath the
+current paragraph. Control Z takes it back.</li>
+<li><code>again</code>: Sends the same text again. This uses one more of
+your free requests.</li>
+</ul>
+<h4 id="aipadframe-quilluihosted_ai_padpy-1">AiPadFrame
+(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<ul>
+<li><code>choice</code>: Which part of your document to send: what you
+selected, the paragraph you are in, or the whole section.</li>
 </ul>
 </main>
 </body>

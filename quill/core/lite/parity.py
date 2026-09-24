@@ -113,6 +113,20 @@ DIVERGENCES: dict[str, str] = {
         "finger shape, so the habit transfers even though the key cannot "
         "(bad.md P1.14)."
     ),
+    "cmd_ai_usage": (
+        "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the six siblings "
+        "sit on Ctrl+Alt+Shift+F7 through F12 (app_keymaps.SIBLING_APP_ACCELERATORS) "
+        "-- and QuillLite, being the editor on its own, has none to launch. QUILL's "
+        "Free AI Usage is Ctrl+Alt+Shift+F2: same modifiers, same finger shape, and "
+        "a rule 9 command either way. Exactly the argument "
+        "cmd_spelling_voice_settings makes below."
+    ),
+    "cmd_ai_sign_in": (
+        "As cmd_ai_usage: Ctrl+Alt+Shift+F10 is a QuillVille launcher in QUILL. "
+        "QUILL's Connect or Sign Out is Ctrl+Alt+Shift+F4. The other three hosted-AI "
+        "commands kept QuillLite's chords unchanged (rule 2); these two could not, "
+        "and a chord claimed twice means one of the pair silently never fires."
+    ),
     "cmd_snippet_gallery": (
         "Alt+Shift+I is Add Inline Note in QUILL -- one of four note chords "
         "QuillLite does not have (bad.md 3.9) -- and a snippet gallery is a "
@@ -151,6 +165,16 @@ DIVERGENCES: dict[str, str] = {
 COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_about": "help.about_quill",
     "cmd_add_word_to_dictionary": "tools.add_word_to_dictionary",
+    # The hosted free AI: five commands both editors now have, on the same five
+    # chords, running the same shared code (quill/ui/hosted_ai_commands.py).
+    # QUILL's ids are prefixed tools.hosted_ai_ rather than reusing the older
+    # tools.ai_ namespace, which belongs to the BYOK provider surface -- two
+    # different services under one prefix would be one prefix meaning two things.
+    "cmd_ai_ask_document": "tools.hosted_ai_ask_document",
+    "cmd_ai_assistant": "tools.hosted_ai_assistant",
+    "cmd_ai_privacy": "tools.hosted_ai_privacy",
+    "cmd_ai_sign_in": "tools.hosted_ai_sign_in",
+    "cmd_ai_usage": "tools.hosted_ai_usage",
     "cmd_align_center": "format.align_center",
     "cmd_align_justify": "format.justify",
     "cmd_align_left": "format.align_left",
@@ -235,6 +259,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_move_line_down": "format.move_line_down",
     "cmd_move_line_up": "format.move_line_up",
     "cmd_move_section_down": "format.move_section_down",
+    "cmd_select_section": "edit.select_section",
+    "cmd_move_section_to": "format.move_section_to",
     "cmd_move_section_up": "format.move_section_up",
     "cmd_new": "file.new",
     "cmd_new_plain": "file.new_plain_text_document",

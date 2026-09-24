@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 448.
+Editor commands with default bindings: 455.
 
 ## The QUILL editor
 
@@ -59,6 +59,7 @@ Editor commands with default bindings: 448.
 | Alt+M | List Marks | `edit.list_marks` |
 | Alt+Shift+C | Copy With Source | `edit.copy_with_source` |
 | Alt+Shift+F3 | Undo and Say What Changed | `edit.undo_and_say` |
+| Alt+Shift+F5 | Select Section | `edit.select_section` |
 | Alt+Shift+F8 | Go to Start of Selection | `edit.go_to_start_of_selection` |
 | Alt+Shift+F9 | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
 | Alt+Shift+U | Open Review Buffer | `edit.open_review_buffer` |
@@ -170,6 +171,7 @@ Editor commands with default bindings: 448.
 | Ctrl+Alt+6 | Insert Heading 6 | `format.heading_6` |
 | Ctrl+Alt+F | Font... | `format.editor_font` |
 | Ctrl+Alt+I | Insert Markdown Tag... | `format.insert_markdown_tag` |
+| Ctrl+Alt+Shift+F5 | Move Section To | `format.move_section_to` |
 | Ctrl+Alt+Shift+I | Toggle Tab Key Mode (Indent / Tab Character) | `format.toggle_tab_insert_mode` |
 | Ctrl+Alt+Shift+J | Join Lines | `format.join_lines` |
 | Ctrl+Alt+Shift+L | Structured List Studio | `format.list_studio` |
@@ -279,11 +281,11 @@ Editor commands with default bindings: 448.
 
 | Key | Command | Command id |
 | --- | --- | --- |
-| (unbound by default) | AI Grammar and Style Check... | `tools.ai_grammar_style` |
-| (unbound by default) | AI Spell Check... | `tools.ai_spell_check` |
-| (unbound by default) | AI Spell Check Interactive... | `tools.ai_spell_check_interactive` |
+| (unbound by default) | Grammar and Style Check... | `tools.ai_grammar_style` |
+| (unbound by default) | Spell Check... | `tools.ai_spell_check` |
+| (unbound by default) | Spell Check Interactive... | `tools.ai_spell_check_interactive` |
 | (unbound by default) | Switch AI Engine | `tools.ai_switch_engine` |
-| (unbound by default) | AI Thesaurus | `tools.ai_thesaurus` |
+| (unbound by default) | AI Thesaurus... | `tools.ai_thesaurus` |
 | (unbound by default) | Translate Selection... | `tools.ai_translate_selection` |
 | (unbound by default) | Open CSV in Table Studio (Experimental) | `tools.csv_studio` |
 | (unbound by default) | Table Studio (Experimental) | `tools.table_studio` |
@@ -292,25 +294,30 @@ Editor commands with default bindings: 448.
 | (unbound by default) | Speak Voice Status | `tools.voice_status` |
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
-| Alt+Q | Ask Quill Chat | `tools.ask_quill_chat` |
+| Alt+Q | Ask Quill... | `tools.ask_quill_chat` |
 | Alt+Shift+F11 | Bring My QuillLite Settings | `tools.bring_from_quilllite` |
 | Alt+Shift+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
 | Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |
-| Alt+Shift+Q | Ask Quill: Voice Conversation | `tools.ask_quill_conversation` |
+| Alt+Shift+Q | Ask Quill by Voice... | `tools.ask_quill_conversation` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |
 | Ctrl+Alt+F9 | Add Word to Dictionary | `tools.add_word_to_dictionary` |
+| Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
 | Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
+| Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+F4 | Connect or Sign Out... | `tools.hosted_ai_sign_in` |
 | Ctrl+Alt+Shift+F6 | Spelling Announcements | `tools.spelling_announcements` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+O | Sound Scheme | `tools.sound_events` |
 | Ctrl+Alt+Shift+R | Keymap Editor... | `tools.keymap_editor` |
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
+| Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |

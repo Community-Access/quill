@@ -141,7 +141,7 @@ class AiService:
         if not self.signed_in:
             return (
                 "This computer is not connected to QUILL's free AI. "
-                "Choose Tools, AI, Sign In or Out to connect it."
+                "Choose Connect or Sign Out in the AI menu to connect it."
             )
         if self._limits is not None and not self._limits.hosted_ai_enabled:
             return (

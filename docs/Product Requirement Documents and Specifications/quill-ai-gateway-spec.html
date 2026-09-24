@@ -1,0 +1,3441 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL free hosted AI: Luna 6, the two editors, and the gateway
+that already exists</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="quill-free-hosted-ai-luna-6-the-two-editors-and-the-gateway-that-already-exists">QUILL
+free hosted AI: Luna 6, the two editors, and the gateway that already
+exists</h1>
+<p>Status: <strong>partly shipped</strong>, 2026-09-23. Moved here from
+the repository root the same day (the root-layout gate sanctions no
+design notes there, and this is the design of record for a live service
+rather than a scratch plan). Supersedes nothing; it is the execution
+layer under <a
+href="../planning/openai.md"><code>docs/planning/openai.md</code></a>
+(the QUILL AI Gateway PRD, 1,466 lines, still correct in every
+structural decision) and re-prices it for GPT-6 Luna.</p>
+<p>Read this if you are about to build any part of free hosted AI. Read
+the PRD if you want to know <em>why</em> the server looks the way it
+does. This document answers three questions the PRD does not:
+<strong>what is actually built today</strong>, <strong>what the new
+model economics change</strong>, and <strong>what the smallest product
+that delivers real value looks like</strong> — which, on the current
+evidence, was QuillLite. It shipped there first and reached QUILL on
+2026-09-23; section 5.4 records how, and what that cost.</p>
+<hr />
+<h2 id="1-the-single-most-important-fact">1. The single most important
+fact</h2>
+<p><strong>The server is built. The client is not.</strong></p>
+<p><code>quill-ai-gateway/</code> is 47 tracked files, roughly 3,450
+lines of application code and tests: device-code auth, a quota engine, a
+model registry, an admin JSON API, a server-rendered admin dashboard,
+Docker and Caddy deployment files, migrations, and a test suite that
+runs on in-memory SQLite and fakeredis with no external services.</p>
+<p>On the QUILL side of the wire there is <strong>nothing</strong>. No
+<code>GatewayBackend</code>, no <code>"quill_gateway"</code> provider
+id, no sign-in surface, no quota display, no settings field, no
+egress-audit entry. A code search for <code>quillforall</code>,
+<code>ai_gateway</code> or <code>hosted_ai</code> across
+<code>quill/</code> returns only unrelated hits on
+<code>tool_gateway</code>.</p>
+<p>And QuillLite has no AI at all — not a backend, not a command, not a
+menu item, not one import of <code>quill.core.ai</code> across its 45
+modules.</p>
+<p>So the work is not “design a hosted AI service.” It is:
+<strong>re-price the built service for Luna 6, close four specific holes
+in it, and build the client half for the first time — starting with the
+product that has none.</strong></p>
+<hr />
+<h2 id="2-what-exists-today-precisely">2. What exists today,
+precisely</h2>
+<h3 id="21-the-gateway-server-quill-ai-gateway">2.1 The gateway server
+(<code>quill-ai-gateway/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th style="text-align: right;">Lines</th>
+<th>What it already does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/models.py</code></td>
+<td style="text-align: right;">290</td>
+<td>Full schema: <code>users</code>, <code>devices</code>,
+<code>usage_events</code>, <code>monthly_usage_summary</code>,
+<code>feature_flags</code>, <code>gateway_config</code>,
+<code>gateway_models</code>, <code>user_feature_caps</code>,
+<code>diagnostic_records</code>, <code>admin_actions</code></td>
+</tr>
+<tr>
+<td><code>app/limits.py</code></td>
+<td style="text-align: right;">575</td>
+<td>The quota engine: hourly, daily and monthly caps per user
+<em>and</em> per device, per-feature monthly sub-caps, a per-user cost
+ceiling, a global budget cap with auto-pause, 50/75/90/100% alerting,
+and input-token and chunk-count rejection</td>
+</tr>
+<tr>
+<td><code>app/auth.py</code></td>
+<td style="text-align: right;">207</td>
+<td>RFC 8628 device-code flow, SHA-256 token hashing (the raw token is
+never stored), <code>require_auth</code>, <code>require_admin</code>
+against an environment allowlist</td>
+</tr>
+<tr>
+<td><code>app/routes/admin.py</code></td>
+<td style="text-align: right;">309</td>
+<td>Models on/off/default, every config key, user usage, user status,
+user delete, device revoke, feature flags, spend</td>
+</tr>
+<tr>
+<td><code>app/routes/dashboard.py</code></td>
+<td style="text-align: right;">349</td>
+<td>Server-rendered HTML admin console, no JavaScript</td>
+</tr>
+<tr>
+<td><code>app/routes/chat.py</code></td>
+<td style="text-align: right;">163</td>
+<td>The one inference endpoint, <code>POST /v1/chat</code></td>
+</tr>
+<tr>
+<td><code>app/prompts.py</code></td>
+<td style="text-align: right;">57</td>
+<td>Five fixed server-side system prompts; the client supplies only a
+user prompt</td>
+</tr>
+<tr>
+<td><code>app/openai_client.py</code></td>
+<td style="text-align: right;">58</td>
+<td>The only file that ever reads <code>OPENAI_API_KEY</code></td>
+</tr>
+<tr>
+<td><code>tests/</code></td>
+<td style="text-align: right;">585</td>
+<td>45 tests over the quota engine, the size safeguards, the auth flow,
+the registry, the admin API and the dashboard</td>
+</tr>
+</tbody>
+</table>
+<p>Three design decisions in there are worth naming, because everything
+below depends on them holding.</p>
+<ol type="1">
+<li><strong>The client never sends a system prompt.</strong>
+<code>app/prompts.py</code>’s <code>TEMPLATES</code> live in code, not
+in the admin-tunable config table, precisely so a patched client cannot
+smuggle an unapproved use through an approved <code>feature</code>
+id.</li>
+<li><strong>The client never picks a model.</strong>
+<code>resolve_default_model()</code> reads the one enabled default row;
+the request body has no model field at all.</li>
+<li><strong>Every number is a database row, not a constant.</strong>
+<code>resolve_limit()</code> reads <code>gateway_config</code> through a
+30-second Redis cache, with hardcoded fail-safes used only against an
+unseeded database — and those fail-safes are deliberately the
+<em>conservative</em> values, so a missing row can never make the
+service more permissive than intended.</li>
+</ol>
+<h3 id="22-the-seams-on-the-quill-side">2.2 The seams on the QUILL
+side</h3>
+<p>The PRD’s section 0 inventory is still accurate. Verified today:</p>
+<ul>
+<li><code>quill/core/ai/backend.py</code> — the <code>AIBackend</code>
+ABC (<code>is_available</code>, <code>respond</code>,
+<code>respond_stream</code>). A <code>GatewayBackend</code> is a drop-in
+subclass.</li>
+<li><code>quill/core/ai/assistant.py:149</code> —
+<code>make_default_backend()</code>, the cascade a gateway backend slots
+into.</li>
+<li><code>quill/core/ai/providers.py</code> —
+<code>ALL_PROVIDERS</code>, currently
+<code>off, ollama, ollama_cloud, openai, claude, openrouter, gemini, custom</code>.</li>
+<li><code>quill/core/assistant_ai.py</code> —
+<code>save_provider_api_key</code> / <code>load_provider_api_key</code>:
+Windows Credential Manager first, DPAPI-encrypted JSON fallback, target
+<code>QUILL:assistant:&lt;provider&gt;:api-key</code>.</li>
+<li><code>quill/core/ai/device_login.py</code> (174 lines) — a working,
+wx-free, injected-poster RFC 8628 state machine using the exact
+<code>pending / slow_down / authorized / denied / expired</code>
+vocabulary that the gateway’s <code>poll_device_token()</code> returns.
+The two halves were written against each other and have never been
+connected.</li>
+<li><code>quill/core/auth/</code> — the Token Manager package (PKCE,
+flows, provider registry, <code>QUILL-AUTH-*</code> coded errors,
+refresh) from the BARD program.</li>
+<li><code>quill/core/ai/admin_policy.py</code> — organization
+allow/block over provider ids.</li>
+<li><code>quill/tools/network_egress_audit.py</code> — GATE-9. One new
+reviewed entry needed.</li>
+</ul>
+<h3 id="23-quilllite">2.3 QuillLite</h3>
+<p><code>quill/apps/lite*.py</code> is 45 modules and does not import
+<code>quill.core.ai</code> once. Feature areas live in
+<code>quill/core/lite/features.py</code> (<code>AREAS</code>,
+<code>APP_ID = "quilllite"</code>), so a new switchable area is the
+established way to add a surface a user can turn off entirely.</p>
+<hr />
+<h2 id="3-the-economics-recomputed-against-what-we-actually-enforce">3.
+The economics, recomputed against what we actually enforce</h2>
+<p>The briefing models 3,500 input and 500 output tokens per request.
+<strong>The gateway does not permit that.</strong>
+<code>max_input_tokens</code> is seeded at 1,500
+(<code>migrations/002_seed_gateway_config.sql</code>). So the real
+per-request worst case is lower than modelled:</p>
+<table>
+<thead>
+<tr>
+<th>Assumption</th>
+<th style="text-align: right;">Input cost</th>
+<th style="text-align: right;">Output cost</th>
+<th style="text-align: right;">Cost per request</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Briefing model (3,500 in / 500 out)</td>
+<td style="text-align: right;">$0.00035</td>
+<td style="text-align: right;">$0.00025</td>
+<td style="text-align: right;"><strong>$0.00060</strong></td>
+</tr>
+<tr>
+<td>Gateway cap (1,500 in / 500 out)</td>
+<td style="text-align: right;">$0.00015</td>
+<td style="text-align: right;">$0.00025</td>
+<td style="text-align: right;"><strong>$0.00040</strong></td>
+</tr>
+</tbody>
+</table>
+<p>At the enforced cap, with the seeded 100 requests per user per
+month:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Users</th>
+<th style="text-align: right;">Utilization</th>
+<th style="text-align: right;">Requests per month</th>
+<th style="text-align: right;">Luna 6 cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">30% (realistic)</td>
+<td style="text-align: right;">15,000</td>
+<td style="text-align: right;"><strong>$6.00</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">100% (worst case)</td>
+<td style="text-align: right;">50,000</td>
+<td style="text-align: right;"><strong>$20.00</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">30%</td>
+<td style="text-align: right;">30,000</td>
+<td style="text-align: right;"><strong>$12.00</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">1,000</td>
+<td style="text-align: right;">100%</td>
+<td style="text-align: right;">100,000</td>
+<td style="text-align: right;"><strong>$40.00</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The pricing row already seeded in
+<code>migrations/002_seed_gateway_config.sql</code> is
+<code>('gpt-5-nano', 'GPT-5 Nano', true, true, 0.10, 0.50)</code> —
+<strong>$0.10 and $0.50 per million, which is exactly Luna 6’s
+price.</strong> The cost math needs no change at all. Only the
+<code>model_id</code> and <code>label</code> change, and that is one
+<code>UPDATE</code>, or one click in the admin dashboard.</p>
+<h3 id="31-the-two-numbers-that-are-wrong-today">3.1 The two numbers
+that are wrong today</h3>
+<p><strong>The global budget cap is too tight.</strong>
+<code>global_monthly_budget_usd</code> is seeded at $25.00, and the
+500-user worst case is $20.00. That is 25% headroom. Any reasoning-token
+leakage (below) doubles the bill and trips the auto-pause, which turns
+hosted AI off <em>for everyone</em> — the loudest possible failure.
+Raise it to <strong>$40 at 500 users, $80 at 1,000</strong> and keep the
+alert thresholds where they are. A budget cap should be a backstop that
+never fires in normal operation, not a ceiling normal operation leans
+on.</p>
+<p><strong>The per-user cost ceiling never binds.</strong>
+<code>monthly_cost_cap_usd</code> is $0.15, but a user who exhausts all
+100 requests at the full input cap spends $0.040. The ceiling sits 3.75x
+above anything reachable, so it is decoration. Tighten it to
+<strong>$0.08</strong> — still double the reachable worst case, so it
+cannot false-trip a legitimate user, but now a genuine anomaly (a model
+change, a pricing change, a bug that stops counting requests) meets a
+second fence before the global one.</p>
+<h3 id="32-reasoning-tokens-are-the-whole-risk">3.2 Reasoning tokens are
+the whole risk</h3>
+<p>Luna 6 defaults to <strong>medium</strong> reasoning, and reasoning
+tokens bill as output tokens. At roughly 800 reasoning tokens per
+request — a modest estimate for medium on a short task — per-request
+cost goes from $0.00040 to $0.00080. <strong>Reasoning at its default
+setting doubles the entire service bill</strong>, invisibly, with
+nothing in the response to show for it.</p>
+<p>There is a second, worse failure mode. <code>max_output_tokens</code>
+caps <em>total</em> output including reasoning. If reasoning consumes
+the 500-token budget, the user receives an <strong>empty response and is
+charged for it</strong>. That reads as “QUILL’s AI is broken,” and it is
+exactly the shape of bug that never gets filed, only abandoned.</p>
+<p>The decision (section 5.3) is therefore: reasoning effort is a
+per-feature <strong>code constant</strong> set at the floor, and the
+gateway detects an empty completion and refuses to charge for it.</p>
+<h3 id="33-things-not-worth-doing">3.3 Things not worth doing</h3>
+<ul>
+<li><strong>Prompt caching.</strong> Cached input is $0.01 per million,
+a 90% saving — on a cache hit. Our prefix is a roughly 60-token fixed
+template followed by unique user text. It will never hit. Skip it; do
+not add a <code>cached_tokens</code> column for it.</li>
+<li><strong>Batch and Flex at 50%.</strong> Saves $3 to $10 a month on
+an interactive product, and the latency disqualifies every feature in
+scope. Revisit only if a background “summarize this folder overnight”
+feature is ever built.</li>
+<li><strong>A multi-provider cost router.</strong> Groq GPT-OSS-20B
+saves about $9 a month and costs a 131K context window plus a second
+integration to maintain. The briefing’s call is correct: keep the
+abstraction, do not build the router. See section 8.3 for the
+one-click-fallback version, which is worth building for
+<em>availability</em>, not for cost.</li>
+</ul>
+<hr />
+<h2 id="4-the-threat-that-actually-costs-money">4. The threat that
+actually costs money</h2>
+<p>Per-user quotas are solved. The gateway’s
+<code>check_request_allowed()</code> is a good piece of work: it fails
+closed, increments atomically so concurrent requests cannot race past a
+cap, and rejects a blocked user before incrementing anything so their
+retries do not pollute rate-limit windows meant for legitimate
+traffic.</p>
+<p><strong>None of that matters if accounts are free to
+mint.</strong></p>
+<p><code>POST /v1/device/code</code> requires no authentication, is not
+rate limited, and <code>confirm_device_code()</code> creates a brand-new
+pseudonymous <code>User</code> — with a fresh 100-request, $0.08
+allowance — for anyone who posts a form to <code>/connect</code>. The
+whole flow is three HTTP requests and scripts in about fifteen lines.
+The per-user cap is not a cost bound; it is a cost <em>quantum</em>. The
+only real bound today is the global budget cap, which means the first
+sustained abuse ends with hosted AI switched off for every legitimate
+user.</p>
+<p>This is the one hole that must close before any public beta. In order
+of cost to build:</p>
+<ol type="1">
+<li><strong>Rate-limit registration by IP.</strong> Redis counters on
+<code>/v1/device/code</code> and <code>/connect</code> — say 5 per hour
+and 20 per day per IP, 50 per day per /24. Cheap, reuses the
+<code>_increment_and_check</code> primitive that already exists, and
+stops the unsophisticated case outright.</li>
+<li><strong>A new-account allowance ramp.</strong> A user’s first 48
+hours carry a reduced cap (15 requests); the full 100 unlocks afterward.
+A throwaway-account farm then yields 15 requests per account instead of
+100 — a 6.7x cost increase for the attacker — and a legitimate new user,
+who is exploring rather than grinding, almost never notices. One
+<code>resolve_limit</code> branch on <code>User.created_at</code>, with
+<code>new_account_hours</code> and <code>new_account_request_cap</code>
+as ordinary <code>gateway_config</code> rows.</li>
+<li><strong>A human step on <code>/connect</code> that is not free to
+script.</strong> A constraint, not a preference: <strong>no image
+CAPTCHA and no audio CAPTCHA, ever.</strong> This is an
+accessibility-first product and those are the canonical accessibility
+failure. Two acceptable options: a hashcash-style proof-of-work the
+browser computes (fully accessible, no third party, no data leaves us,
+costs an attacker CPU per account), or Cloudflare Turnstile in managed
+mode (usually invisible, has a real accessibility story, but puts a
+third party in the sign-in path). <strong>Recommend
+proof-of-work</strong> — it keeps the sign-in page self-contained and
+dependency-free, which matters for a page a screen-reader user may reach
+from an unfamiliar device.</li>
+<li><strong>Email verification as an unlock, not a gate.</strong>
+Anonymous registration keeps the small allowance forever; verifying an
+email raises it to the full 100 and makes the quota follow the person
+across devices. <code>User.email</code> and
+<code>email_verified_at</code> already exist in the schema for exactly
+this. Deliberately last — “no account required” is the accessibility
+win, and it must survive.</li>
+</ol>
+<p>Measures 1 and 2 are a day of work between them and remove most of
+the exposure. Ship those with Phase 1, measure 3 before public beta, and
+measure 4 only if the data says so.</p>
+<h3 id="41-the-rest-of-the-token-model">4.1 The rest of the token
+model</h3>
+<p><strong>The provider key.</strong> Never in the client, never in the
+repository, read in exactly one file
+(<code>app/openai_client.py</code>). This is already right, and it is
+the reason the gateway exists at all. The contrast worth keeping in
+mind: the bundled GitHub feedback token
+(<code>quill/core/feedback_token.py</code>) <em>is</em> in every
+installer, and its own docstring explains that this is only tolerable
+because its scope bounds the damage to issue spam. An OpenAI key has no
+such bound. It never ships.</p>
+<p><strong>The gateway session token.</strong> Opaque, 32 bytes from
+<code>secrets.token_urlsafe</code>, stored server-side only as a SHA-256
+hash, and revocable with effect on the very next request because
+<code>require_auth</code> looks the device row up every time.
+Client-side it goes into the existing secure store at
+<code>QUILL:assistant:quill_gateway:api-key</code> — Credential Manager
+first, DPAPI-encrypted JSON fallback. No new secure-storage code, one
+new target string.</p>
+<p><strong>Replay from another machine.</strong> A leaked token works
+anywhere. Do <em>not</em> hard-bind it to an IP: that breaks roaming,
+mobile tethering, and every user behind carrier-grade NAT, and locking
+someone out of their assistive tooling because they moved rooms is a
+worse outcome than the abuse it prevents. Instead: record first-seen and
+last-seen coarse network (/16 and ASN) on the device row, set
+<code>abuse_flag = "anomalous_device"</code> when one token is used from
+many distinct /16s in a day, and let the existing
+<code>device_hourly_request_cap</code> bound the blast radius to 8
+requests an hour. Flag, review, revoke — never auto-lock.</p>
+<p><strong>Rotation.</strong> Missing entirely. Add
+<code>POST /v1/device/rotate</code> (authenticated by the current token,
+returns a new one, replaces the hash in a single transaction) and have
+the client rotate any token older than 180 days. Without it there is no
+answer to “a token may have leaked but I am not sure” short of forcing a
+full re-registration.</p>
+<p><strong>Extraction from the client machine.</strong> DPAPI ties the
+ciphertext to the logged-in Windows user, so extraction requires already
+being that user. The blast radius is one user’s monthly allowance,
+revocable in one dashboard click. Accepted risk, documented, not further
+engineered.</p>
+<hr />
+<h2 id="5-decisions">5. Decisions</h2>
+<h3
+id="51-no-tools-no-web-search-no-file-search-ever-on-the-free-tier">5.1
+No tools. No web search. No file search. Ever, on the free tier.</h3>
+<p>The briefing is right that tool calls are now the dominant financial
+risk: OpenAI web search at $10 per 1,000 calls would be $500 a month
+against $30 of inference on the same 50,000 requests — <strong>sixteen
+times the model cost.</strong></p>
+<p>The decision is stronger than “do not enable it by default.” The free
+hosted tier sends a chat completion with a <code>messages</code> array
+and nothing else. No <code>tools</code>, no <code>tool_choice</code>, no
+<code>web_search_options</code>, no hosted file search, no attachments,
+no <code>store</code>.</p>
+<p>This is not left to reviewer discipline. <strong>Build a
+request-shape gate:</strong> a test in
+<code>quill-ai-gateway/tests/test_openai_request_shape.py</code> that
+captures the JSON body <code>app/openai_client.complete()</code> would
+send and asserts its top-level keys are exactly the allowlist —
+<code>model</code>, <code>messages</code>,
+<code>max_completion_tokens</code>, <code>reasoning_effort</code> — and
+fails on any addition. A key that costs $10 per thousand calls should
+not be addable without a test turning red.</p>
+<p>BYOK users keep everything. Web research
+(<code>quill/core/ai/web_research.py</code>), the agent tool loop, the
+whole gateway of editor tools — all of that stays exactly as it is for
+someone using their own key. The free tier is a narrower product, not a
+crippled one, and the difference is stated plainly in the UI.</p>
+<h3
+id="52-context-is-scoped-on-the-client-before-the-request-exists">5.2
+Context is scoped on the client, before the request exists</h3>
+<p>The cheapest token is the one never sent. Three rules, enforced
+client-side and re-checked server-side:</p>
+<ul>
+<li><strong>Selection first.</strong> Summarize, Rewrite, Proofread and
+Explain operate on the <strong>selection</strong>. With no selection
+they use the <strong>current paragraph, or the current heading’s
+section</strong> — never the document. If the resolved text exceeds the
+client’s cached <code>max_input_tokens</code>, the command says so and
+offers either the first N characters or a switch to a BYOK provider. It
+never silently truncates.</li>
+<li><strong>Local retrieval for document Q&amp;A.</strong> “Ask about
+this document” chunks the document <strong>locally</strong>, scores
+chunks against the question with plain keyword overlap (BM25-shaped; no
+embeddings, no extra dependency, no extra API call), and sends the best
+three. Three is <code>max_chunks_per_request</code>, already enforced
+server-side, and already un-routable-around because the chunk count is
+checked independently of the token count.</li>
+<li><strong>Nothing is implicit.</strong> No AI call on typing, on save,
+on open, on idle, or on focus. Every request is a command the user
+invoked. This is a cost rule, a trust rule and a screen-reader rule at
+once.</li>
+</ul>
+<p>The client reads its thresholds from <code>GET /v1/config</code> once
+per session, so an admin raising a limit takes effect without a client
+release.</p>
+<h3
+id="53-reasoning-effort-is-a-code-constant-per-feature-at-the-floor">5.3
+Reasoning effort is a code constant, per feature, at the floor</h3>
+<p>Same rationale as <code>app/prompts.py</code>: a dial that changes
+what a billed API call costs is a reviewed code change, not a runtime
+admin knob. Add a <code>REASONING_EFFORT</code> mapping beside
+<code>TEMPLATES</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rewrite</code></td>
+<td><code>none</code></td>
+<td>Transformation, not inference</td>
+</tr>
+<tr>
+<td><code>proofread</code></td>
+<td><code>none</code></td>
+<td>Transformation, not inference</td>
+</tr>
+<tr>
+<td><code>summarize</code></td>
+<td><code>none</code></td>
+<td>Extraction from supplied text</td>
+</tr>
+<tr>
+<td><code>explain</code></td>
+<td><code>none</code></td>
+<td>Short explanation of supplied text</td>
+</tr>
+<tr>
+<td><code>document_qna</code></td>
+<td><code>low</code></td>
+<td>The one feature with genuine synthesis; measure before keeping it
+above <code>none</code></td>
+</tr>
+<tr>
+<td><code>chat</code></td>
+<td><code>none</code></td>
+<td><strong>Not shipped.</strong> Open-ended chat is not part of the
+free tier</td>
+</tr>
+<tr>
+<td><code>alt_text</code></td>
+<td><code>none</code></td>
+<td><strong>Not shipped.</strong> Switched off in the database; see
+5.7</td>
+</tr>
+</tbody>
+</table>
+<p>Two mechanical changes in <code>app/openai_client.py</code> go with
+this: <code>max_tokens</code> becomes <code>max_completion_tokens</code>
+(reasoning models reject the older parameter), and
+<code>reasoning_effort</code> is passed explicitly rather than left to
+default.</p>
+<p>And one guard: if the response text is empty while
+<code>usage.completion_tokens_details.reasoning_tokens</code> is greater
+than zero, <strong>do not charge the user’s quota</strong>. Log it,
+return the ordinary “having trouble, try again” error, and alert.
+Billing a user for a blank answer is worse than the outage it
+disguises.</p>
+<h3 id="54-quilllite-ships-first-and-quill-ships-in-the-same-change">5.4
+QuillLite ships first, and QUILL ships in the same change</h3>
+<p>QuillLite is the right first client. It has no AI at all, so there is
+no existing surface to reconcile, no provider picker to extend, no agent
+harness to reason about, and no BYOK user whose configuration might
+break. It is the smallest honest test of “does free hosted AI deliver
+value.”</p>
+<p>But <strong>CLAUDE.md is explicit: QuillLite may never be ahead of
+QUILL.</strong> A capability the small product has and the big one does
+not is backwards, and invisible — nobody opens QUILL and notices the
+absence of a thing they have only ever seen elsewhere. So:</p>
+<ul>
+<li><code>GatewayBackend</code> and the five feature calls live in
+<strong><code>quill/core/ai/</code></strong>, shared.</li>
+<li>QUILL gets the same five commands and <code>"quill_gateway"</code>
+in <code>ALL_PROVIDERS</code> <strong>in the same change</strong>,
+surfaced through the AI Hub next to the BYOK providers.</li>
+<li>Any divergence in chords is a comment in <code>keymap.py</code>
+<em>and</em> a parity-table row (family rule 11).</li>
+</ul>
+<p>This is family rule 10 working as designed: value flows both ways,
+violations flow one.</p>
+<p><strong>Status, 2026-09-23: QUILL has it, and it is QUILL’s
+<em>default</em> AI.</strong> The debt this section anticipated was real
+for about two weeks and is now paid, and it was paid further than
+“surfaced through the AI Hub next to the BYOK providers” — which would
+have buried a free, zero-configuration service one dialog deep behind
+the very providers it exists to make unnecessary.</p>
+<ul>
+<li>The four wx modules moved out of <code>quill/apps/lite_ai*.py</code>
+into <code>quill/ui/hosted_ai_service.py</code>,
+<code>hosted_ai_dialogs.py</code>, <code>hosted_ai_pad.py</code> and
+<code>hosted_ai_commands.py</code>. <code>DocumentAiMixin</code> became
+<code>HostedAiMixin</code> with three hooks — which window a frame is
+parented to, which control holds the document, and which object holds
+the settings and the switch — because those are the only three things
+the two editors do differently.</li>
+<li><code>quill/ui/main_frame_hosted_ai.py</code> is QUILL’s adapter and
+its three overrides. It has <strong>no commands of its own</strong>, and
+a test asserts that absence: a second implementation is how this rule
+gets broken quietly, far more easily than a missing feature.</li>
+<li>Three of the five chords are QuillLite’s, unchanged:
+<code>Ctrl+Alt+G</code> (the pad), <code>Ctrl+Alt+Z</code> (ask about
+this document) and <code>Ctrl+Alt+Shift+K</code> (the agreement). All
+three were free on QUILL’s side, so family rule 2 applied with nothing
+to arbitrate. <strong>Usage and Sign In could not keep theirs</strong>:
+<code>Ctrl+Alt+Shift+F7</code> to <code>F12</code> are the six
+QuillVille sibling launchers in QUILL
+(<code>app_keymaps.SIBLING_APP_ACCELERATORS</code>), and QuillLite —
+being the editor on its own — has none to launch, so F9 and F10 are free
+over there and spoken for here. QUILL uses
+<code>Ctrl+Alt+Shift+F2</code> and <code>F4</code>, and both divergences
+carry a <code>DIVERGENCES</code> row in <code>lite/parity.py</code> plus
+a comment in <code>keymap.py</code> (rule 11). A chord claimed twice
+means one of the pair silently never fires, which is worse than a
+divergence somebody can read about — exactly the argument
+<code>cmd_spelling_voice_settings</code> already made about the same six
+keys.</li>
+<li><strong>The AI menu now opens with them</strong>, and the whole
+provider-and-agent surface moved behind
+<code>Show advanced AI features</code>. A fresh install starts in Basic;
+an install that had already run the wizard or stored a provider key
+stays in Advanced, because an update must never take working menus away
+from somebody using them. The derived answer is written to the
+onboarding state once rather than re-derived, so a menu cannot lengthen
+as a side effect of a key pasted into an unrelated feature.</li>
+<li>One sentence could not be shared and is a hook rather than a
+literal: the feature switch is a Customize Features area in QuillLite
+and the Use AI item in QUILL’s own menu. Every <em>other</em> route
+sentence was rewritten to name a row that exists in both (“Connect or
+Sign Out in the AI menu”), and QuillLite’s row was renamed from “Sign In
+or Out” to match — a row named two ways is a sentence that is wrong in
+one of the two products.</li>
+</ul>
+<h3 id="55-the-five-commands-and-nothing-else">5.5 The five commands,
+and nothing else</h3>
+<p>“Lite, simplistic, but enough that it provides value.” Five:</p>
+<ol type="1">
+<li><strong>Summarize</strong> — selection or current section, a few
+plain sentences.</li>
+<li><strong>Rewrite</strong> — clearer and shorter, meaning and tone
+preserved, replacing the selection through the ordinary undo stack.</li>
+<li><strong>Proofread</strong> — spelling, grammar and punctuation,
+returning corrected text.</li>
+<li><strong>Explain</strong> — what this passage means, in plain
+language.</li>
+<li><strong>Ask about this document</strong> — one question, answered
+from the three best-matching local chunks, with “the document does not
+say” as an allowed and expected answer.</li>
+</ol>
+<p>Deliberately excluded from the free tier: chat with history, agents
+and the tool loop, translation, cloud TTS, streaming, and any multi-turn
+context. Each of those is a multiplier on cost, a multiplier on
+complexity, or both.</p>
+<p><strong>And images. Not in QuillLite at all</strong> — see 5.7, which
+is a decision rather than an omission.</p>
+<p>Every result lands in a <strong>result window, not the
+document</strong>: the text, the tokens used, the remaining allowance,
+and three buttons — Replace selection, Copy, Close. AI never edits a
+document without a keystroke saying so. Section 12 is the full
+screen-by-screen specification.</p>
+<h3 id="56-no-images-in-quilllite-tracked-not-forgotten">5.6 No images
+in QuillLite. Tracked, not forgotten.</h3>
+<p>QuillLite is a text editor. It has no image model, no picture
+control, nowhere an image lives, and adding one to reach a
+describe-this-picture feature would be building an image pipeline in
+order to justify an AI call — which is the wrong order to do anything
+in.</p>
+<p>So images are out of QuillLite entirely, and the server reflects that
+rather than merely not offering it:</p>
+<ul>
+<li>The <code>alt_text</code> feature keeps its id and its prompt
+template, but ships with its flag <strong>off</strong>, its per-feature
+cap at <strong>zero</strong>, and <code>daily_image_cap</code> at
+<strong>zero</strong>. Off in one place and uncapped in another is one
+flag flip away from being live and unlimited at the same time.</li>
+<li>It carries a stored <code>disabled_reason</code>, and the refusal
+path now uses it. Being told <em>“describing pictures is not a shipped
+feature yet”</em> is a completely different fact from <em>“temporarily
+paused while we review unusual activity”</em>, and the second sends
+somebody to support over a feature that does not exist.</li>
+<li>The three image-sized limits (<code>max_image_bytes</code>,
+<code>max_image_edge_px</code>, <code>daily_image_cap</code>) are
+grouped on the console’s Limits page under <strong>Not in use
+yet</strong>, shown rather than hidden, so nobody has to wonder whether
+they are doing something. They are not.</li>
+</ul>
+<p><strong>Tracked as a future feature</strong>, with its own entry in
+the task list at the end of this document. When it is built it belongs
+in QUILL first — Glow and Inkwell are where pictures actually live — and
+it needs its own cap tuning informed by real Phase 3 usage data, because
+a vision call costs several times what a text call does. Two open
+questions travel with it: whether the client resizes before sending (it
+must), and whether alt text is a <em>free-tier</em> feature at all or a
+bring-your-own-key one.</p>
+<h3
+id="57-privacy-text-must-be-written-before-the-first-byte-is-sent">5.7
+Privacy text must be written before the first byte is sent</h3>
+<p>This feature transmits the user’s own writing to OpenAI. That is a
+fair trade for a free service and most users will take it, but only if
+we describe it exactly.</p>
+<p>We have got this wrong before — shipped privacy text that claimed
+more than the code did was a Radio 3.0 ship blocker. Do not repeat it.
+Before Phase 1 ships to anyone outside the team:</p>
+<ul>
+<li><code>docs/legal/PRIVACY.md</code> (and its <code>.html</code> and
+<code>.epub</code> renders) gains a hosted-AI section stating what is
+sent (the selected text, or three excerpts and a question), to whom
+(OpenAI, by way of QUILL’s gateway), what is stored (usage metadata only
+— feature, model, token counts, cost, timestamp; never prompt or
+document text), for how long (13 months), and what the one exception is
+(<code>diagnostic_records</code>: explicit per-incident opt-in, 30-day
+hard expiry enforced by a cron job rather than by policy).</li>
+<li>The sign-in surface says the same thing in two sentences
+<em>before</em> the device code appears, not behind a link.</li>
+<li>The claim and the schema are checked against each other.
+<code>app/models.py</code>’s module docstring already carries the
+invariant — “no column in this file may ever hold prompt text, document
+text, or a full AI response” — and it is currently true. It must stay
+true, and the privacy text must not outrun it.</li>
+</ul>
+<hr />
+<h2 id="6-gaps-in-the-built-server-ranked">6. Gaps in the built server,
+ranked</h2>
+<p>These are the concrete deltas. Four of them were things this request
+asked for that did not exist.</p>
+<blockquote>
+<p><strong>All twelve are now done</strong> (2026-09-23), along with
+three more found while building them: the new-account ramp could exceed
+the normal allowance, every post-gate failure path charged the user for
+a request that never happened, and a feature’s stored
+<code>disabled_reason</code> was never shown to anybody. The table is
+kept as the record of what was wrong and why it mattered; section 16.1
+is the list of what was built. The gateway suite went from 45 tests to
+205.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Gap</th>
+<th>Where</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>No way to reset a user’s usage.</strong> Nothing clears the
+Redis counters or the monthly summary</td>
+<td><code>app/routes/admin.py</code>, <code>app/limits.py</code></td>
+<td><strong>Asked for. Phase 1</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>No way to set a per-user cap.</strong>
+<code>User.monthly_request_cap</code>, <code>monthly_cost_cap_usd</code>
+and <code>UserFeatureCap</code> all exist in the schema with no route
+that writes them; <code>AdminAction</code>’s docstring even lists
+<code>set_quota</code> as an action</td>
+<td><code>app/routes/admin.py</code></td>
+<td><strong>Asked for. Phase 1</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Unlimited free account minting</strong> (section 4)</td>
+<td><code>app/auth.py</code>, <code>app/routes/device.py</code></td>
+<td><strong>Phase 1</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>No way to find a user.</strong> Users are pseudonymous
+UUIDs, so when someone writes to support saying “my AI stopped working”
+there is no lookup</td>
+<td><code>app/routes/admin.py</code>, client UI</td>
+<td><strong>Phase 1</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td>No token rotation endpoint</td>
+<td><code>app/routes/device.py</code></td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>max_tokens</code> will be rejected by a reasoning model, and
+<code>reasoning_effort</code> is never sent</td>
+<td><code>app/openai_client.py</code></td>
+<td><strong>Phase 1</strong></td>
+</tr>
+<tr>
+<td>7</td>
+<td>An empty completion with reasoning tokens still charges the
+user</td>
+<td><code>app/routes/chat.py</code></td>
+<td><strong>Phase 1</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>No request-shape gate; nothing stops a future <code>tools</code>
+key</td>
+<td><code>tests/</code></td>
+<td><strong>Phase 1</strong></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Pending device grants live in a process-local dict, so two Gunicorn
+workers cannot complete each other’s flows</td>
+<td><code>app/auth.py</code></td>
+<td><strong>Phase 1 — a correctness bug at any real deployment, not a
+scale concern</strong></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>gateway_models</code> has no <code>base_url</code> or
+key-source column, so “swap providers” is a deploy, not a click</td>
+<td><code>app/models.py</code>, <code>app/openai_client.py</code></td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Reasoning tokens are not recorded separately in
+<code>usage_events</code></td>
+<td><code>app/models.py</code></td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Nothing validates a config write.</strong>
+<code>dashboard.update_config</code> accepts any float, so
+<code>0.15</code> typed as <code>15</code> raises every user’s cost
+ceiling a hundredfold behind a green success message</td>
+<td><code>app/routes/dashboard.py</code>,
+<code>app/routes/admin.py</code></td>
+<td><strong>Phase 1 (13.1)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>On gap 1, one detail is easy to get wrong: <strong>resetting usage
+must clear both the Redis counters and the
+<code>MonthlyUsageSummary</code> row.</strong> Clearing only the
+counters leaves <code>total_cost_usd</code> intact, so the per-user cost
+ceiling keeps rejecting the user and the reset appears not to have
+worked. Clearing only the summary leaves the request counters in place.
+Reset does both, in one transaction, and writes an
+<code>AdminAction</code> row.</p>
+<p>On gap 12, the fix is small and is the highest-value single item in
+the whole console: per-key metadata (unit, minimum, maximum, a
+sentence), a plain-English rejection when a value is out of range, and a
+typed confirmation showing the before-and-after monthly cost whenever a
+change more than doubles it. Section 13 specifies it.</p>
+<p>On gap 4, the fix has a client half: QUILL and QuillLite display a
+short, speakable <strong>support ID</strong> (the first eight characters
+of the user id, grouped like <code>A1B2-C3D4</code>) in the AI panel and
+in About, and the dashboard gains
+<code>GET /admin/users?q=&lt;prefix&gt;</code>. Without this, every
+support conversation about hosted AI is unresolvable.</p>
+<hr />
+<h2 id="7-client-architecture">7. Client architecture</h2>
+<h3 id="71-new-modules">7.1 New modules</h3>
+<pre><code>quill/core/ai/gateway_client.py    HTTP client: /v1/config, /v1/quota, /v1/chat.
+                                   Injected poster, verified TLS, one egress site.
+quill/core/ai/gateway_backend.py   GatewayBackend(AIBackend). is_available()
+                                   answers from the stored token plus cached config.
+quill/core/ai/gateway_session.py   Token storage, sign-in state, support ID,
+                                   rotation, sign-out. Wraps device_login.py
+                                   pointed at the gateway&#39;s endpoints.
+quill/core/ai/gateway_context.py   Selection resolution, local chunking, keyword
+                                   retrieval, client-side size pre-check.
+quill/core/ai/gateway_errors.py    QUILL-AI-GATEWAY-* coded errors (GATE-EC).</code></pre>
+<p>All five are <code>wx</code>-free, strict-typed, and in scope for
+<code>mypy quill\core</code>.</p>
+<h3 id="72-wiring-into-what-exists">7.2 Wiring into what exists</h3>
+<ul>
+<li><code>providers.py</code>: add <code>"quill_gateway"</code> to
+<code>ALL_PROVIDERS</code>;
+<code>provider_requires_api_key("quill_gateway")</code> is
+<strong>False</strong> (it needs a session token, not a key, and that
+distinction is what keeps “Needs key” from being announced at someone
+who has never had a key); <code>default_host_for_provider</code> returns
+the gateway base URL.</li>
+<li><code>assistant.py:149</code>: <code>make_default_backend()</code>
+gains <code>GatewayBackend</code> in the cascade, and must respect
+<code>_note_backend_fallback</code> — silently answering from a
+different engine than the user chose is already a named rule here.</li>
+<li><code>availability.py</code>: gateway-specific unavailability
+reasons (signed out, quota exhausted with a reset time, globally paused)
+resolve through <code>describe_ai_availability</code> like everything
+else, so every surface says the same sentence.</li>
+<li><code>admin_policy.py</code>: <code>"quill_gateway"</code> is an
+ordinary provider id, so a managed install can block it with no new
+code.</li>
+<li><strong>Safe Mode</strong> (<code>QUILL_SAFE_MODE=1</code>) disables
+hosted AI along with the rest of AI. Existing invariant, no
+exception.</li>
+<li><strong>GATE-9</strong>: exactly one new
+<code>_REVIEWED_EGRESS</code> entry, its rationale being “an explicit AI
+command the user invoked, or the sign-in flow the user started.”</li>
+</ul>
+<h3 id="73-quilllite-surface">7.3 QuillLite surface</h3>
+<ul>
+<li>A new switchable area in <code>quill/core/lite/features.py</code>:
+id <code>hosted_ai</code>, <strong>off by default</strong>. A feature
+that sends your writing to a third party is not on until you say so —
+and a switched-off area owns nothing, so there is no token file, no menu
+and no settings row until it is enabled.</li>
+<li>One new menu, <code>AI</code>, with the five commands plus Sign In,
+Sign Out and Usage. Every enabled item carries a keyboard route in its
+label via <code>self._menu_label(...)</code>, and no key collides
+anywhere in the menu bar (<code>test_menu_accelerators.py</code>).</li>
+<li>One sign-in dialog and one result window. The device code is
+announced as grouped characters and re-announced on demand, because it
+is read aloud and typed back.</li>
+<li>Under GATE-LITE-COVER every new handler needs a behavioural test
+that <strong>calls</strong> it — written as
+<code>(lambda w: w.cmd_ai_summarize(), ...)</code>, not as a
+parametrized handler name, or the AST scan cannot see it. Then
+regenerate with
+<code>python -m quill.tools.lite_command_coverage --write</code>.</li>
+</ul>
+<p>Section 12 specifies every one of these surfaces in full.</p>
+<h3 id="74-accessibility-requirements-on-the-new-surfaces">7.4
+Accessibility requirements on the new surfaces</h3>
+<p>These are gates in this repository, not aspirations. Any UI work here
+goes through the accessibility specialists before it is considered
+done.</p>
+<ul>
+<li><strong>GATE-13</strong>: announce the <em>result</em> — the answer
+arrived, the quota changed, the request failed. Never announce a window
+title, a focus move, or a control name the reader already says. A long
+request announces once when it starts and once when it finishes, never
+on a timer.</li>
+<li><strong>GATE-14</strong>: no duplicate access keys within a window.
+OK, Cancel and Close carry none.</li>
+<li><strong>GATE-&lt;APP&gt;-HELP</strong>: every new control gets
+inline <code>SetHelpText</code> at its construction site, or the help
+audit files it as <code>missing</code> and the build fails. Help set
+anywhere else proves nothing.</li>
+<li><strong>Dialogs</strong> go through <code>_show_modal_dialog</code>,
+never <code>ShowModal()</code> directly, and Close buttons are bound via
+<code>dialog_contract.bind_close_button</code>.</li>
+<li><strong>Never block the editor.</strong> A hosted request runs on
+<code>stability.task_manager.QuillTaskManager</code> and returns to the
+UI thread through <code>wx.CallAfter</code>. Typing continues
+throughout. This is not negotiable for a tool people write in.</li>
+<li><strong>The dashboard</strong> is already no-JavaScript
+server-rendered HTML, which is the right foundation, but it still needs
+a real accessibility pass before it is used in anger: status must never
+be carried by colour alone, and every chart needs a data-table
+twin.</li>
+</ul>
+<hr />
+<h2 id="8-configuration-changes">8. Configuration changes</h2>
+<h3 id="81-gateway_models">8.1 <code>gateway_models</code></h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> gateway_models <span class="kw">SET</span> enabled <span class="op">=</span> <span class="kw">false</span>, is_default <span class="op">=</span> <span class="kw">false</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> model_id <span class="op">=</span> <span class="st">&#39;gpt-5-nano&#39;</span>;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> gateway_models (model_id, <span class="kw">label</span>, enabled, is_default,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                            input_cost_per_million_usd,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                            output_cost_per_million_usd)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;gpt-6-luna&#39;</span>, <span class="st">&#39;GPT-6 Luna&#39;</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="fl">0.10</span>, <span class="fl">0.50</span>);</span></code></pre></div>
+<p>Confirm the exact model id string against the provider’s own model
+list before running this. It is the string that goes into a billed API
+call.</p>
+<h3 id="82-gateway_config">8.2 <code>gateway_config</code></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th style="text-align: right;">Seeded</th>
+<th style="text-align: right;">Proposed</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>global_monthly_budget_usd</code></td>
+<td style="text-align: right;">25.00</td>
+<td style="text-align: right;"><strong>40.00</strong></td>
+<td>25% headroom over the 500-user worst case is not headroom (3.1)</td>
+</tr>
+<tr>
+<td><code>monthly_cost_cap_usd</code></td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;"><strong>0.08</strong></td>
+<td>3.75x above anything reachable is decoration (3.1)</td>
+</tr>
+<tr>
+<td><code>max_input_tokens</code></td>
+<td style="text-align: right;">1500</td>
+<td style="text-align: right;">1500</td>
+<td>Keep. It is the context discipline (5.2)</td>
+</tr>
+<tr>
+<td><code>max_output_tokens</code></td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">500</td>
+<td>Keep, now sent as <code>max_completion_tokens</code></td>
+</tr>
+<tr>
+<td><code>max_chunks_per_request</code></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td>Keep</td>
+</tr>
+<tr>
+<td><code>monthly_request_cap</code></td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">100</td>
+<td>Keep</td>
+</tr>
+<tr>
+<td><code>daily_request_cap</code></td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">20</td>
+<td>Keep</td>
+</tr>
+<tr>
+<td><code>hourly_request_cap</code></td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td>Keep</td>
+</tr>
+<tr>
+<td><code>new_account_hours</code></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>48</strong></td>
+<td>New (4.2)</td>
+</tr>
+<tr>
+<td><code>new_account_request_cap</code></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>15</strong></td>
+<td>New (4.2)</td>
+</tr>
+<tr>
+<td><code>registration_hourly_cap_per_ip</code></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>5</strong></td>
+<td>New (4.1)</td>
+</tr>
+<tr>
+<td><code>registration_daily_cap_per_ip</code></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>20</strong></td>
+<td>New (4.1)</td>
+</tr>
+<tr>
+<td><code>feature_cap.proofread</code></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>60</strong></td>
+<td>New feature</td>
+</tr>
+<tr>
+<td><code>feature_cap.explain</code></td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;"><strong>60</strong></td>
+<td>New feature</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-availability-fallback-not-cost-fallback">8.3 Availability
+fallback, not cost fallback</h3>
+<p>Keep Gemini 2.5 Flash-Lite and Groq GPT-OSS-20B as
+<code>gateway_models</code> rows that are <strong>configured and
+disabled</strong>. The reason is not the $9 a month; it is that a Luna
+outage becomes a dashboard click instead of a deploy. Making that real
+needs gap 10 (a <code>base_url</code> and a key-source column), because
+<code>openai_client.py</code> currently hardcodes one base URL and one
+key. Groq is OpenAI-compatible and needs only those two columns; Gemini
+would need a second adapter and is therefore a later, larger
+decision.</p>
+<hr />
+<h2 id="9-phases">9. Phases</h2>
+<p>Each phase has an acceptance criterion that is a fact about the
+system, not a feeling about it.</p>
+<p><strong>Phase 0 — Verify the built server.</strong> Run the existing
+45 tests. Stand the service up locally against SQLite and fakeredis.
+Walk the device flow by hand. Read <code>app/limits.py</code> end to
+end. <em>Accepted when:</em> <code>pytest</code> is green in
+<code>quill-ai-gateway/</code>, and one device has registered, spent
+quota, hit a limit, and been reset by hand at the database level.</p>
+<p><strong>Phase 1 — Close the gaps, and build the QuillLite
+client.</strong> Server: gaps 1, 2, 3, 4, 6, 7, 8, 9. Client: the five
+modules in 7.1, the QuillLite <code>hosted_ai</code> area, the five
+commands, sign-in, the result window, the usage display, the support ID.
+QUILL gets the same five commands and the provider id in the same
+change. Privacy text written and shipped (5.7). Console: gap 12’s
+validation, the cost calculator (13.3), and the reset-allowance and
+per-person-cap controls (13.6). Behind <code>future.ai_gateway</code>,
+internal only. <em>Accepted when:</em> a tester signs in from a clean
+install with no API key and no account, summarizes a selection, asks a
+question about a document, exhausts a daily cap and is told exactly when
+it resets, and an admin resets their usage from the dashboard and the
+tester’s next request succeeds. And: the request-shape test fails if
+<code>tools</code> is added to the outgoing body.</p>
+<p><strong>Phase 2 — Operate it.</strong> Token rotation (gap 5).
+Reasoning tokens recorded separately (gap 11). The alert webhook wired
+to somewhere a human reads. Cron jobs scheduled
+(<code>cleanup-expired</code>, <code>reconcile-usage</code>, partition
+maintenance). A dashboard accessibility pass by the accessibility
+specialists (13.10), plus the remaining console pages:
+settings-that-are-not-knobs (13.4), safety checks (13.8) and the
+glossary (13.9). The runbook for “the spend alert fired at 2am” written
+down. <em>Accepted when:</em> a 90% budget alert has fired in a drill,
+and the person on call knew what to do from the runbook alone.</p>
+<p><strong>Phase 3 — Small public beta.</strong> Proof-of-work on
+<code>/connect</code> (4.3). Remove the feature flag for a bounded
+cohort. Raise the budget cap deliberately. Watch
+<code>usage_events</code> for a month: real tokens per request, real
+requests per user, real abuse flags. <em>Accepted when:</em> thirty days
+of data exist, and the caps in 8.2 have been re-derived from that data
+rather than from this document’s estimates.</p>
+<p><strong>Phase 4 — General availability.</strong> Open registration.
+Publish the numbers. Revisit the allowance — the briefing is right that
+at these prices the interesting move is to make the free tier
+<em>more</em> useful rather than to pocket the savings, and Phase 3’s
+data is what says how much more.</p>
+<p><strong>Phase 5 — Optional.</strong> Email-verified accounts for
+multi-device continuity (4.4). Availability fallback made real (8.3).
+Only if the data asks for them.</p>
+<hr />
+<h2 id="10-budget">10. Budget</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th style="text-align: right;">Modelled inference</th>
+<th style="text-align: right;">Recommended cap</th>
+<th style="text-align: right;">Authorize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>500 users, 30% utilization</td>
+<td style="text-align: right;">$6/month</td>
+<td style="text-align: right;">$40/month</td>
+<td style="text-align: right;"><strong>$50/month</strong></td>
+</tr>
+<tr>
+<td>500 users, 100% utilization</td>
+<td style="text-align: right;">$20/month</td>
+<td style="text-align: right;">$40/month</td>
+<td style="text-align: right;">$50/month</td>
+</tr>
+<tr>
+<td>1,000 users, 30%</td>
+<td style="text-align: right;">$12/month</td>
+<td style="text-align: right;">$80/month</td>
+<td style="text-align: right;"><strong>$100/month</strong></td>
+</tr>
+<tr>
+<td>1,000 users, 100%</td>
+<td style="text-align: right;">$40/month</td>
+<td style="text-align: right;">$80/month</td>
+<td style="text-align: right;">$100/month</td>
+</tr>
+</tbody>
+</table>
+<p>The briefing’s instinct — authorize roughly 3x the modelled spend —
+is right, and the gap between “modelled” and “cap” is deliberate: the
+cap is what auto-pauses the service, so it needs enough room that it
+only fires on something genuinely wrong. Serving a thousand people for
+well under $1,200 a year is a real number, and at that price the
+constraint on this program is operational care, not money.</p>
+<hr />
+<h2 id="11-open-questions-for-jeff">11. Open questions for Jeff</h2>
+<ol type="1">
+<li><strong>Hosting.</strong> The PRD recommends the server already
+running GLOW and <code>quillin-hub</code>, mirroring GLOW’s Docker
+Compose plus Caddy shape. Confirm — and confirm
+<code>gateway.quillforall.org</code> as the hostname (it is already the
+default in <code>app/config.py</code>).</li>
+<li><strong>Proof-of-work or Turnstile</strong> for
+<code>/connect</code> (4.3). The recommendation is proof-of-work, to
+keep a third party out of the sign-in path.</li>
+<li><strong>Where budget alerts go.</strong>
+<code>GATEWAY_ALERT_WEBHOOK_URL</code> takes a Slack or Discord
+compatible incoming webhook. Left empty, alerts are logged locally and
+nobody sees them.</li>
+<li><strong>The <code>gpt-6-luna</code> model id string</strong>,
+verified against the provider’s own model list rather than against a
+briefing.</li>
+<li><strong>Does QuillLite’s free AI require the QUILL installer’s
+presence</strong>, or is it fully standalone? It affects nothing in the
+design, but it decides whether sign-in lives in one place or two for a
+user who runs both.</li>
+<li><strong>The support-ID question.</strong> Displaying eight
+characters of the user id makes support possible, and is a small
+deanonymization vector for anyone who can see the user’s screen. The
+recommendation is to ship it; it is worth a deliberate yes.</li>
+</ol>
+<hr />
+<h2 id="12-the-quilllite-experience-screen-by-screen">12. The QuillLite
+experience, screen by screen</h2>
+<p>This section is the specification, not a sketch. Where it names a
+keystroke, a sentence, or a tab order, that is the thing to build.</p>
+<h3 id="121-three-findings-from-the-keymap-that-decide-the-design">12.1
+Three findings from the keymap that decide the design</h3>
+<p>Before any screen: the QuillLite command table
+(<code>quill/core/lite/commands.py</code>, 900-odd rows) and QUILL’s
+<code>DEFAULT_KEYMAP</code> are both dense. Measured today, the chords
+free in <strong>both</strong> tables are:</p>
+<p><code>Ctrl+Alt+G</code>, <code>Ctrl+Alt+Z</code>,
+<code>Ctrl+Alt+Shift+K</code>. <strong>Three.</strong></p>
+<p>Family rule 2 says a command both products have keeps the same chord,
+so a design needing six entry points cannot have them. That is not a
+constraint to work around; it is the answer. <strong>One chord opens one
+surface, and everything lives inside it.</strong> Which is the better
+design anyway: one consent surface, one place that shows what will be
+sent, one place that shows what is left, one result view.</p>
+<p>Second finding: QuillLite’s menu bar is <strong>generated from the
+command table</strong>, not hand-appended, and two menus (Clipboard,
+Spelling) were <em>demoted</em> from top-level to submenus on the
+explicit reasoning that a top-level menu is “two more things to walk
+past on every Alt press.”
+<code>test_menu_shape_against_microsoft.py</code> pins the top-level
+order to Word, WordPad and Notepad — none of which has an AI menu. So:
+<strong>Tools &gt; AI</strong>, a submenu, exactly like Tools &gt;
+Spelling. Not a tenth top-level menu.</p>
+<p>Third: the surface must not block the editor, and a modal dialog
+does. So the AI pad is a <strong><code>wx.Frame</code>,
+modeless</strong> — which is precisely the case CLAUDE.md warns about: a
+<code>wx.Frame</code> does not answer <code>ID_CANCEL</code> for free,
+so its Close button must be bound through
+<code>dialog_contract.bind_close_button</code> or it ships doing
+nothing. And per the Radio close-modal gotcha, closing it never opens a
+confirmation from inside <code>EVT_CLOSE</code> on wxMSW. Closing
+discards. No prompt.</p>
+<h3 id="122-turning-it-on">12.2 Turning it on</h3>
+<p>Hosted AI is a feature <strong>area</strong>, id
+<code>hosted_ai</code>, <strong>off by default</strong>
+(<code>quill/core/lite/features.py</code>). Off means it owns nothing:
+no menu, no status cell, no token file, no settings rows, nothing on
+disk.</p>
+<p>It is turned on where every other area is, in <strong>Tools &gt;
+Customize Features</strong> (<code>Ctrl+Alt+F10</code>), which is a
+filter-as-you-type list. The area’s description — what the reader reads
+when the user arrives on the row — is the whole consent story in one
+paragraph:</p>
+<blockquote>
+<p><strong>AI help (sends your text to QUILL’s servers).</strong>
+Summarize, rewrite, proofread or explain the passage you have selected,
+and ask questions about the document you have open. The text you select
+is sent over the internet to QUILL, and on to OpenAI, which produces the
+answer. QUILL stores how many requests you made and how many words they
+used — never the text itself, and never the answer. This is free, with a
+monthly allowance. Off until you turn it on.</p>
+</blockquote>
+<p>Turning it on adds Tools &gt; AI, one status-bar cell and one
+Preferences page. It does <strong>not</strong> sign anyone in and does
+not make any network call. Nothing reaches the network until section
+12.3 completes.</p>
+<p>Turning it off signs out, deletes the stored token, removes the menu
+and the cell, and tells the gateway to revoke the device. An area that
+is off owns nothing, and a revoked token is the only kind worth leaving
+behind.</p>
+<h3 id="123-signing-in">12.3 Signing in</h3>
+<p><strong>Tools &gt; AI &gt; Sign In</strong> (no chord; rule 9 — this
+is done once).</p>
+<p>A modeless <code>wx.Frame</code>, “QUILL AI Sign-In”, with a single
+vertical flow. Tab order is exactly reading order, which is the only tab
+order this window is allowed to have.</p>
+<p><strong>Step 1, before any network call.</strong> The window opens
+showing what is about to happen, and focus lands on the first
+paragraph:</p>
+<blockquote>
+<p>QUILL’s free AI is hosted by QUILL. To use it you need to connect
+this computer once.</p>
+<p>There is no account, no password and no email address. QUILL will
+show you an eight-character code. Open the web page on any device — this
+one, a phone, anything with a browser — and type the code.</p>
+<p>When you use AI, the text you selected is sent to QUILL and on to
+OpenAI. QUILL records how many requests you make and how big they were.
+QUILL does not record what you wrote or what came back.</p>
+</blockquote>
+<p>Then: <strong>Show me my code</strong> (default), <strong>Read the
+privacy page</strong> (opens <code>docs/legal/PRIVACY.md</code>’s
+hosted-AI section in the help viewer), <strong>Cancel</strong>.</p>
+<p>No network call has happened yet. That matters: a user who reads this
+and changes their mind has sent nothing.</p>
+<p><strong>Step 2, the code.</strong> <code>Show me my code</code> posts
+<code>/v1/device/code</code> on the task manager. On success the
+window’s content is replaced in place — focus does not jump to a new
+window — and a status line updates, which is exactly the case GATE-12
+wants announced and GATE-13 permits (a label change on unfocused text is
+what the reader does not say):</p>
+<blockquote>
+<p>Your code is A B C D dash 1 2 3 4. Go to quillforall.org slash
+connect and type it. QUILL is waiting; this window will say when you are
+connected.</p>
+</blockquote>
+<p>The code is displayed in a read-only text field, <strong>not</strong>
+a static label, so the user can review it character by character with
+arrow keys, select it and copy it. That single choice is the difference
+between a code a screen-reader user can verify and one they have to
+trust.</p>
+<p>Three buttons: <strong>Say the code again</strong> (re-announces,
+grouped and spelled: “Alpha, Bravo, Charlie, Delta, dash, one, two,
+three, four”), <strong>Copy the code</strong>,
+<strong>Cancel</strong>.</p>
+<p>The code alphabet already excludes <code>I L O U 0 1 5 8</code>
+(<code>app/auth.py</code>’s <code>_USER_CODE_ALPHABET</code>) because
+those are the characters people mishear and mistype. Keep that; it is
+load-bearing.</p>
+<p><strong>Step 3, polling.</strong> The client polls
+<code>/v1/device/token</code> at the server-supplied interval, honouring
+<code>slow_down</code> — <code>quill/core/ai/device_login.py</code>
+already implements this state machine exactly. Polling is silent.
+<strong>No progress chatter, no ticking, no “still waiting” every five
+seconds.</strong> One announcement when the state changes, and not
+before.</p>
+<p><strong>Step 4, connected.</strong> Content replaces in place; status
+line announces once:</p>
+<blockquote>
+<p>Connected. You have 100 AI requests this month. Your support ID is
+A1B2-C3D4 — QUILL support will ask for this if you ever need help.</p>
+</blockquote>
+<p>Focus moves to <strong>Close</strong>, which is the only button
+left.</p>
+<p><strong>Failures</strong>, each one sentence, each saying what to
+do:</p>
+<table>
+<thead>
+<tr>
+<th>What happened</th>
+<th>What is said</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code expired (15 minutes)</td>
+<td>“That code has expired. Choose Show me my code for a fresh
+one.”</td>
+</tr>
+<tr>
+<td>Denied at the web page</td>
+<td>“The connection was refused at the web page. Choose Show me my code
+to try again.”</td>
+</tr>
+<tr>
+<td>No internet</td>
+<td>“QUILL could not reach the internet. Check your connection and try
+again.”</td>
+</tr>
+<tr>
+<td>Gateway down</td>
+<td>“QUILL’s AI service is not answering right now. Try again later —
+nothing is wrong with your computer.”</td>
+</tr>
+<tr>
+<td>Registration throttled (§4.1)</td>
+<td>“Too many computers have connected from this network recently. Try
+again in an hour.”</td>
+</tr>
+</tbody>
+</table>
+<p>The last one is the abuse throttle speaking, and it must not read as
+a fault in the user’s machine.</p>
+<h3 id="124-tools--ai">12.4 Tools &gt; AI</h3>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&amp;AI Assistant...</code></td>
+<td><code>Ctrl+Alt+G</code></td>
+<td>Opens the pad (12.5)</td>
+</tr>
+<tr>
+<td><code>&amp;Ask About This Document...</code></td>
+<td><code>Ctrl+Alt+Z</code></td>
+<td>Opens the pad on the Ask tab (12.7)</td>
+</tr>
+<tr>
+<td>— separator —</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>&amp;Usage...</code></td>
+<td>—</td>
+<td>How much is left, and when it resets (12.9)</td>
+</tr>
+<tr>
+<td><code>&amp;Sign In...</code> / <code>Sign &amp;Out</code></td>
+<td>—</td>
+<td>Whichever applies; never both</td>
+</tr>
+</tbody>
+</table>
+<p>Five rows. Every enabled row carries its key in the label via
+<code>self._menu_label(...)</code>, so the menu shows whatever is
+<em>actually</em> bound and follows a rebind. No two <code>&amp;</code>
+letters collide inside Tools (GATE-14). Signed out, the four AI rows are
+<strong>dimmed, not removed</strong> — the same call the Markdown and
+HTML tag rows make, and for the same reason: a dimmed row announces
+itself as unavailable the moment a reader arrives on it, and a vanished
+row leaves somebody hunting the menus for a feature they know the app
+has.</p>
+<p><code>Ctrl+Alt+Z</code> is spent on Ask About This Document because
+it is the one command whose input is a question rather than the
+selection, so it is the one worth reaching without going through the
+pad’s action list first. <code>Ctrl+Alt+Shift+K</code> stays unspent.
+Both must be re-checked against both tables at build time;
+<code>test_family_rules_and_gates.py</code> and
+<code>test_menu_accelerators.py</code> are what catch a collision.</p>
+<h3 id="125-the-ai-assistant-pad">12.5 The AI Assistant pad</h3>
+<p><code>Ctrl+Alt+G</code>. A modeless <code>wx.Frame</code> titled “AI
+Assistant”. It never takes focus on its own, never blocks typing, and is
+the only surface any of the five features is reached through.</p>
+<p>Opening it does <strong>not</strong> make a network call.</p>
+<p>Tab order, top to bottom:</p>
+<ol type="1">
+<li><p><strong>What will be sent</strong> — read-only multi-line text,
+focused on open. The reader reads it, so QUILL announces nothing
+(GATE-13). It holds the resolved input, resolved the moment the pad
+opened:</p>
+<ul>
+<li>a selection, if there is one;</li>
+<li>otherwise the current paragraph;</li>
+<li>otherwise, in a document with headings, the current heading’s
+section.</li>
+</ul>
+<p>Never the whole document. Above the field, a one-line summary:
+<em>“About to send: 412 words from your selection.”</em></p></li>
+<li><p><strong>Change what is sent</strong> — a three-way choice
+(Selection / This paragraph / This section). Present only when more than
+one is available. This exists so that the answer to “why did it
+summarize the wrong thing” is a control, not a support ticket.</p></li>
+<li><p><strong>What do you want done?</strong> — a single-selection
+list, five rows, arrow keys. Not a combo box: a list is one keystroke to
+hear all five.</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>What the reader hears when arriving on it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Summarize</td>
+<td>“Summarize. A few plain sentences saying what this passage
+says.”</td>
+</tr>
+<tr>
+<td>Rewrite</td>
+<td>“Rewrite. The same meaning, clearer and shorter.”</td>
+</tr>
+<tr>
+<td>Proofread</td>
+<td>“Proofread. Spelling, grammar and punctuation corrected, wording
+left alone.”</td>
+</tr>
+<tr>
+<td>Explain</td>
+<td>“Explain. What this passage means, in plain language.”</td>
+</tr>
+<tr>
+<td>Ask a question about the document</td>
+<td>“Ask a question. Type a question; QUILL finds the parts of the
+document that answer it.”</td>
+</tr>
+</tbody>
+</table>
+<p>Those sentences are the controls’ inline <code>SetHelpText</code>,
+which is also what F1 reads, which is also what the generated
+<code>docs/f1-help-reference.md</code> renders. One sentence, written
+once, reaching three places.</p></li>
+<li><p><strong>Your question</strong> — a text field, <strong>shown only
+when the fifth row is selected.</strong> Shown, not enabled-and-empty: a
+field that is present but meaningless is a stop on every Tab cycle
+forever.</p></li>
+<li><p><strong>Send</strong> (default button) /
+<strong>Close</strong>.</p></li>
+<li><p><strong>Allowance</strong> — read-only status text, last in the
+order because it is reference, not action: <em>“94 of 100 requests left
+this month. 17 of 20 left today.”</em> It updates after every
+send.</p></li>
+</ol>
+<p><strong>While it runs.</strong> Send disables, the status line
+changes to <em>“Working…”</em>, and the work runs on
+<code>QuillTaskManager</code>. The editor stays completely live — the
+user can type, save, switch documents, close the pad. Nothing is
+announced during the wait. A request that has run 10 seconds updates the
+status line once more: <em>“Still working. Press Close to stop waiting;
+this will not cost you a request if it has not finished.”</em></p>
+<p><strong>When it finishes.</strong> The result window opens (12.6).
+Because focus moves to a new window, the screen reader announces the
+window and reads the result itself — so <strong>QUILL announces
+nothing</strong> (GATE-13: never announce what the reader already says).
+The pad’s Allowance line updates silently behind it.</p>
+<p>If the user closed the pad while it ran, the result window still
+opens, but it does <strong>not</strong> take focus. The pad’s absence is
+not a cancellation, and stealing focus from someone who has gone back to
+typing is worse than any benefit.</p>
+<h3 id="126-the-result-window">12.6 The result window</h3>
+<p>A modeless <code>wx.Frame</code>, titled with the action — “Summary”,
+“Rewrite”, “Proofread”, “Explanation”, “Answer”. Focus lands on the
+result text, which the reader reads. Nothing is announced on top of
+that.</p>
+<ol type="1">
+<li><strong>The result</strong> — read-only, multi-line,
+arrow-navigable, selectable, focused on open. Read-only because AI
+output is a proposal. Editing happens in the document.</li>
+<li><strong>Replace my selection</strong> — present
+<strong>only</strong> when the request came from a selection and that
+selection still exists and is unchanged. Applies through the ordinary
+undo stack, so <code>Ctrl+Z</code> takes it back like any edit.
+Announces the outcome, which is a state change with no focus move:
+<em>“Replaced. Press Control Z to undo.”</em></li>
+<li><strong>Copy</strong> — to the clipboard. <em>“Copied.”</em></li>
+<li><strong>Insert below</strong> — puts the result under the current
+paragraph, with a blank line. For summaries and answers, which usually
+want to live beside the text rather than replace it.</li>
+<li><strong>Try again</strong> — reopens the pad with the same input and
+the same action selected. Costs another request, and the button’s help
+text says so: <em>“Sends the same text again. This uses one more of your
+requests.”</em></li>
+<li><strong>Close</strong>.</li>
+<li><strong>What this used</strong> — read-only: <em>“Used 1 request. 93
+of 100 left this month. Sent 412 words, received 96.”</em> Last in tab
+order. Present on every result, because a free allowance the user cannot
+see themselves spending is one they will be surprised to run out
+of.</li>
+</ol>
+<p><strong>AI never edits a document without a keystroke saying
+so.</strong> Nothing in this window applies automatically, on a timer,
+or on close.</p>
+<h3 id="127-ask-about-this-document">12.7 Ask about this document</h3>
+<p><code>Ctrl+Alt+Z</code>, or the fifth row of the pad. Same pad, one
+difference: the input is a question, and the “What will be sent” field
+shows <strong>what the local retrieval chose</strong>, before
+sending:</p>
+<blockquote>
+<p>About to send 3 excerpts from this document (about 900 words), and
+your question.</p>
+<p>Excerpt 1, from “Background”: … Excerpt 2, from “Method”: … Excerpt
+3, from “Results”: …</p>
+</blockquote>
+<p>The chunking and the scoring are local (§5.2): plain keyword overlap,
+no embeddings, no extra API call, no extra dependency. Showing the
+excerpts is not a debug affordance — it is the only way a user can tell
+the difference between “the AI got it wrong” and “it never saw the right
+paragraph,” and that distinction decides whether they rephrase or give
+up.</p>
+<p>Three is <code>max_chunks_per_request</code>, read from
+<code>/v1/config</code>, enforced again server-side, and
+un-routable-around because the chunk count is checked independently of
+the token count.</p>
+<p>The prompt instructs the model to answer only from the excerpts and
+to say so plainly when they do not contain the answer
+(<code>app/prompts.py</code>’s <code>document_qna</code> template
+already does exactly this). “The excerpts do not say” is a correct and
+expected answer, and the result window presents it as one rather than as
+a failure.</p>
+<h3 id="128-the-status-bar-cell">12.8 The status bar cell</h3>
+<p>QuillLite’s status bar is a catalogue of twelve cells, each with a
+label and one F1 sentence
+(<code>quill/apps/lite_status_cells.py</code>). Hosted AI adds the
+thirteenth, present only while the area is on:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>StatusCell(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;ai&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;AI Allowance&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;How many free AI requests you have left this month, and when the count &quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;starts again. Press Enter to open the AI Assistant.&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Its label is one of: <code>AI 94/100</code>,
+<code>AI: none left</code>, <code>AI: signed out</code>,
+<code>AI: paused</code>, <code>AI: offline</code>. It follows the bar’s
+existing <code>ratchet_width</code> sizing so it cannot push the row to
+wrap. Changing it announces, which is correct and is GATE-12’s cure: a
+label change on an unfocused control is precisely what the screen reader
+does not say.</p>
+<h3 id="129-every-state-the-user-can-be-in-and-the-exact-sentence">12.9
+Every state the user can be in, and the exact sentence</h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Status cell</th>
+<th>What is said, and where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ready</td>
+<td><code>AI 94/100</code></td>
+<td>Nothing. Silence is the correct announcement for “working
+normally”</td>
+</tr>
+<tr>
+<td>Daily cap reached</td>
+<td><code>AI 94/100</code></td>
+<td>On send: “You have used today’s 20 requests. They start again at
+midnight. You have 94 left this month.”</td>
+</tr>
+<tr>
+<td>Monthly cap reached</td>
+<td><code>AI: none left</code></td>
+<td>On send: “You have used this month’s 100 free requests. They start
+again on the 1st of October. You can add your own API key in Preferences
+to keep going now.”</td>
+</tr>
+<tr>
+<td>Hourly cap reached</td>
+<td><code>AI 94/100</code></td>
+<td>On send: “That is 8 requests this hour, which is the limit. Try
+again at the top of the hour.”</td>
+</tr>
+<tr>
+<td>Passage too long</td>
+<td><code>AI 94/100</code></td>
+<td>On open: “That selection is about 3,100 words, and the free limit is
+about 1,100. Select less, or choose This paragraph.” No request is sent,
+so nothing is spent</td>
+</tr>
+<tr>
+<td>Account under review</td>
+<td><code>AI 94/100</code></td>
+<td>On send: “Your account is under a routine review, so a smaller daily
+limit applies until it clears. Contact support with your support ID
+A1B2-C3D4.”</td>
+</tr>
+<tr>
+<td>Account paused</td>
+<td><code>AI: paused</code></td>
+<td>On send: “This account has been paused. Contact support with your
+support ID A1B2-C3D4.”</td>
+</tr>
+<tr>
+<td>Service paused globally</td>
+<td><code>AI: paused</code></td>
+<td>On send: “QUILL’s free AI is paused for everyone right now. Check
+quillforall.org/status. Your own API key still works if you have
+one.”</td>
+</tr>
+<tr>
+<td>Device revoked</td>
+<td><code>AI: signed out</code></td>
+<td>On send: “This computer has been signed out. Choose Tools, AI, Sign
+In to connect it again.”</td>
+</tr>
+<tr>
+<td>Signed out</td>
+<td><code>AI: signed out</code></td>
+<td>Menu rows dimmed; on send: unreachable</td>
+</tr>
+<tr>
+<td>Offline</td>
+<td><code>AI: offline</code></td>
+<td>On send: “QUILL could not reach the internet. Nothing was sent and
+nothing was used.”</td>
+</tr>
+<tr>
+<td>Upstream error</td>
+<td><code>AI 94/100</code></td>
+<td>“QUILL’s AI service had trouble with that one. Nothing was used —
+try again in a moment.”</td>
+</tr>
+<tr>
+<td>Safe Mode</td>
+<td>(no cell)</td>
+<td>The area is unavailable entirely; the existing Safe Mode wording
+covers it</td>
+</tr>
+</tbody>
+</table>
+<p>Two rules run through that whole table.</p>
+<p><strong>Every message says what to do next.</strong> Not one of them
+ends at the problem.</p>
+<p><strong>A request that did not happen never costs anything, and the
+message says so.</strong> “Nothing was sent and nothing was used”
+appears verbatim wherever it is true, because the user cannot see the
+counter move and has no way to verify it otherwise. This is the client
+half of the server-side rule in §5.3 about never charging for an empty
+answer.</p>
+<h3 id="1210-usage-and-signing-out">12.10 Usage, and signing out</h3>
+<p><strong>Tools &gt; AI &gt; Usage</strong> opens a small modeless
+frame:</p>
+<blockquote>
+<p><strong>This month</strong> 94 of 100 requests left. Starts again 1
+October.</p>
+<p><strong>Today</strong> 17 of 20 left.</p>
+<p><strong>This computer</strong> Connected 3 September. Support ID
+A1B2-C3D4.</p>
+</blockquote>
+<p>Buttons: <strong>Sign out this computer</strong>, <strong>Copy
+support ID</strong>, <strong>Close</strong>.</p>
+<p><em>Sign out</em> deletes the local token and calls
+<code>DELETE /v1/devices/&lt;id&gt;</code> so the server revokes it too.
+Confirmation is inline — a second button that appears saying “Yes, sign
+out” — <strong>not</strong> a modal dialog raised from a close handler,
+which is the wxMSW trap that made Alt+F4 do nothing in Radio while
+playing.</p>
+<p>The <strong>support ID</strong> is the first eight characters of the
+pseudonymous user id, grouped <code>A1B2-C3D4</code>, and it is the
+entire answer to “someone wrote to support and we cannot find them” (gap
+4). It appears here, in the About dialog, and in the sign-in
+confirmation. It is deliberately short enough to read aloud over a
+phone.</p>
+<h3 id="1211-preferences">12.11 Preferences</h3>
+<p>One page, “AI”, present only while the area is on. Four controls, and
+no more:</p>
+<ol type="1">
+<li><strong>Use QUILL’s free AI</strong> — checkbox. The master switch,
+separate from the feature area: the area decides whether the feature
+exists, this decides whether it is on today.</li>
+<li><strong>Or use my own API key</strong> — button, opening the
+existing BYOK connection surface. This is the escape hatch every limit
+message points at, so it has to be one press away from where the message
+was read.</li>
+<li><strong>Show what will be sent before sending</strong> — checkbox,
+<strong>on by default</strong>. Off makes the pad send on
+<code>Ctrl+Alt+G</code>-then-Enter without the review step, for someone
+who has made the trade knowingly. Never off by default: the review step
+is the consent.</li>
+<li><strong>Say the result when it arrives</strong> — checkbox,
+<strong>off by default</strong>. On, QUILL speaks the result rather than
+relying on the reader’s focus announcement. Off by default because on is
+a double-speak bug for most screen-reader users — the same
+single-speaker rule the Reveal Codes navigation had to learn.</li>
+</ol>
+<p>Any new settings field must be paired or classified in the
+settings-vocabulary audit
+(<code>quill/tools/settings_vocabulary_audit.py</code>), documented for
+GATE-SETDOC, and given a Key Describer title if it carries a chord.</p>
+<h3 id="1212-what-quill-says-and-what-it-leaves-to-the-reader">12.12
+What QUILL says, and what it leaves to the reader</h3>
+<p>GATE-13, applied to this feature specifically, because
+over-announcing is the failure nobody files:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>QUILL announces?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pad opens</td>
+<td><strong>No.</strong> The reader says the window and reads the
+focused field</td>
+</tr>
+<tr>
+<td>Arrow through the action list</td>
+<td><strong>No.</strong> The reader reads the row and its help</td>
+</tr>
+<tr>
+<td>Result window opens</td>
+<td><strong>No.</strong> The reader says the window and reads the
+result</td>
+</tr>
+<tr>
+<td>Sign-in status changes in place</td>
+<td><strong>Yes.</strong> A label change on unfocused text is exactly
+what the reader does not say</td>
+</tr>
+<tr>
+<td>Request finished, pad already closed</td>
+<td><strong>Yes.</strong> A background result with no focus change</td>
+</tr>
+<tr>
+<td>Request failed</td>
+<td><strong>Yes.</strong> An outcome, with no focus change</td>
+</tr>
+<tr>
+<td>Replace / Copy / Insert succeeded</td>
+<td><strong>Yes.</strong> An action’s outcome</td>
+</tr>
+<tr>
+<td>Allowance changed</td>
+<td><strong>Yes</strong>, via the status cell label</td>
+</tr>
+<tr>
+<td>Polling for the device code</td>
+<td><strong>No.</strong> Not once, not every five seconds</td>
+</tr>
+<tr>
+<td>Request in progress</td>
+<td><strong>Once</strong> at 10 seconds, and not again</td>
+</tr>
+</tbody>
+</table>
+<p><code>check_over_announce.py</code> flags an announce inside an
+<code>EVT_SET_FOCUS</code> handler, an announce of
+<code>GetTitle()</code>, and an announce of a <code>title=</code>
+literal. None of the “Yes” rows above is any of those.</p>
+<h3 id="1213-what-this-costs-the-build">12.13 What this costs the
+build</h3>
+<p>Every one of these gates applies to the surfaces above, and each one
+fails the build rather than filing a bug:</p>
+<ul>
+<li><strong>GATE-LITE-COVER</strong> — every new handler needs a
+behavioural test that <strong>calls</strong> it, written as
+<code>(lambda w: w.cmd_ai_assistant(), ...)</code>. A parametrized
+handler <em>name</em> is invisible to the AST scan, and that is exactly
+the shape of test that let the F8 extend-selection bug through with a
+key, a label, a handler and a passing test. Then
+<code>python -m quill.tools.lite_command_coverage --write</code>.</li>
+<li><strong>Dialogs imported at module scope must be patched in the
+module that imported them</strong>, not where they are defined.
+<code>tests/unit/apps/conftest.py</code>’s <code>DialogRecorder</code>
+names both ends of every entry point for that reason, and its fixtures
+answer <strong>cancel</strong> by default — which is the branch to write
+first here, because “user closed the pad mid-request” is a real
+path.</li>
+<li><strong>GATE-REACH</strong> — the pad, the result window, the
+sign-in frame and the usage frame must each be reachable by imports from
+an app entry point. Tests do not count as callers. Re-snapshot with
+<code>python -m quill.tools.surface_reachability_audit --write</code>.</li>
+<li><strong>GATE-&lt;APP&gt;-HELP</strong> — inline
+<code>SetHelpText</code> at each construction site, or the audit files
+it <code>missing</code>. Help set anywhere else is
+<code>help-elsewhere</code> and proves nothing. And
+<code>ensure_help_provider()</code> must run at activation, or every
+help string written above is dead.</li>
+<li><strong>Menu accelerators</strong>, <strong>GATE-14 access
+keys</strong>, <strong>GATE-DESCRIBE</strong>,
+<strong>GATE-KEYREF</strong>, <strong>documentation chords</strong> —
+the ordinary tax on any new surface.</li>
+<li><strong>Module size budget</strong> — new modules, not new sections
+of <code>lite_window.py</code>.</li>
+</ul>
+<hr />
+<h2 id="13-the-administrative-console-in-plain-language">13. The
+administrative console, in plain language</h2>
+<p>The request is that every setting, knob, cost factor and gate be
+available in plain language as part of the server’s administrative
+infrastructure. That is worth stating as a principle, because it decides
+a dozen smaller questions:</p>
+<blockquote>
+<p><strong>Every number that can cost money, change what a user gets, or
+turn something off is visible in the console, named in plain English,
+explained in one sentence, and shown with what happens if you change it.
+A setting that is not tunable is shown anyway, read-only, with the
+reason it is locked and the file it lives in.</strong></p>
+</blockquote>
+<p>The console that exists today is a good foundation — server-rendered
+HTML, no JavaScript, skip link, <code>aria-current</code>, flash
+messages with <code>role="status"</code> and <code>role="alert"</code>,
+status words never carried by colour alone. The Limits page already
+shows each row’s <code>description</code> rather than only its key. What
+it does not do is explain consequences, offer safe ranges, validate
+anything, or show the protections that are not rows in a table.</p>
+<h3 id="131-a-real-gap-first-nothing-validates-a-config-write">13.1 A
+real gap first: nothing validates a config write</h3>
+<p><code>dashboard.update_config</code> accepts <strong>any
+float</strong>. Typing <code>15</code> into
+<code>monthly_cost_cap_usd</code> where <code>0.15</code> was intended
+is a hundredfold increase in every user’s cost ceiling, accepted
+silently with a cheerful green flash. <code>max_input_tokens</code> will
+accept <code>1000000</code>. <code>global_monthly_budget_usd</code> will
+accept <code>99999</code>.</p>
+<p>This is the highest-value fix in the whole console, and it is small.
+Give every key a metadata row — unit, minimum, maximum, step, and a
+sentence — and:</p>
+<ul>
+<li>reject out-of-range values with a plain sentence rather than a stack
+trace: <em>“Requests per person per month must be between 0 and 1,000.
+You typed 10,000.”</em></li>
+<li>require a <strong>typed confirmation</strong> for any change that
+more than doubles the modelled monthly cost, showing the before and
+after (13.3);</li>
+<li>show the range next to the field, so the bound is known before the
+mistake.</li>
+</ul>
+<h3 id="132-the-limits-page-rewritten">13.2 The Limits page,
+rewritten</h3>
+<p>Not one flat alphabetical table of raw keys. Four grouped cards, each
+row a <code>&lt;fieldset&gt;</code> with a real
+<code>&lt;label&gt;</code>, in this shape:</p>
+<blockquote>
+<h3 id="how-much-each-person-gets">How much each person gets</h3>
+<p><strong>Free requests per person, per month</strong> Current:
+<strong>100</strong> Each person may make this many AI requests between
+the 1st and the end of the month. The count starts again automatically
+on the 1st. Safe range 0 to 1,000. At 100, 500 people at full use costs
+about <strong>$20 a month</strong>. Raising this to 200 would cost about
+<strong>$40</strong>. <code>monthly_request_cap</code> [ 100 ]
+(Save)</p>
+</blockquote>
+<p>Every row carries: the plain name, the current value <strong>with its
+unit</strong>, one sentence of what it does, the safe range, <strong>the
+cost consequence in dollars</strong>, the raw key in small text (kept —
+it is what appears in logs, the audit trail and the API), and the
+field.</p>
+<p>The four cards:</p>
+<p><strong>How much each person gets</strong> — requests per month, per
+day, per hour; per device per hour; the per-feature ceilings; the
+new-account ramp.</p>
+<p><strong>How big one request can be</strong> — words in, words out,
+how many document excerpts, image size. Stated in <strong>words as well
+as tokens</strong>, because nobody thinks in tokens: <em>“about 1,100
+words (1,500 tokens)”</em>.</p>
+<p><strong>How much this may cost</strong> — the per-person cost ceiling
+and the global monthly budget, each with what happens when it is
+reached. The global one says plainly: <em>“When total spending reaches
+this, QUILL’s free AI switches off for everyone until an admin turns it
+back on. You are alerted at 50%, 75% and 90% first.”</em></p>
+<p><strong>Who may sign up</strong> — the registration throttles and the
+new-account ramp, with the sentence that explains why they exist:
+<em>“Anyone can connect a computer without an account, which is
+deliberate — it is what makes this usable for someone who has never had
+an API key. These limits are what stop one person scripting a thousand
+of those.”</em></p>
+<h3 id="133-the-cost-calculator-on-the-page">13.3 The cost calculator,
+on the page</h3>
+<p>The single most valuable thing the console could gain, and it does
+not exist. Computed server-side on render (no JavaScript, consistent
+with the rest), from the current config and the default model’s
+pricing:</p>
+<blockquote>
+<h3 id="what-todays-settings-cost">What today’s settings cost</h3>
+<p>One request at the size limit: <strong>$0.00040</strong> (1,500
+tokens in at $0.10 per million, 500 out at $0.50 per million)</p>
+<table>
+<thead>
+<tr>
+<th>People</th>
+<th>If everyone uses everything</th>
+<th>If a third do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>$4.00 a month</td>
+<td>$1.20</td>
+</tr>
+<tr>
+<td>500</td>
+<td>$20.00 a month</td>
+<td>$6.00</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>$40.00 a month</td>
+<td>$12.00</td>
+</tr>
+</tbody>
+</table>
+<p>Your budget cap is <strong>$40.00 a month</strong>, which covers 500
+people at full use with room to spare, or 1,000 people at a third.</p>
+<p>Right now: <strong>214 people connected</strong>, <strong>$4.18 spent
+this month</strong>, 10% of the cap.</p>
+</blockquote>
+<p>And on every Save that changes a cost-relevant number, the
+confirmation says what moved:</p>
+<blockquote>
+<p>Free requests per person changed from 100 to 250. 500 people at full
+use: <strong>$20.00 → $50.00 a month.</strong> Your budget cap is
+$40.00, which this now exceeds. Raise the cap, or this will pause the
+service partway through the month.</p>
+</blockquote>
+<p>That last sentence is the one that prevents the specific failure
+where an admin generously raises an allowance and accidentally schedules
+an outage.</p>
+<h3 id="134-a-new-page-settings-that-are-not-knobs">13.4 A new page:
+settings that are not knobs</h3>
+<p>Everything that affects cost or safety but is deliberately in code.
+Shown read-only, with the reason and the file, because a protection the
+operator cannot see is one they will assume is missing — or worse,
+assume is a dial they already checked.</p>
+<blockquote>
+<h3 id="fixed-by-code-not-by-this-console">Fixed by code, not by this
+console</h3>
+<p>These cannot be changed here on purpose. Each one changes what a paid
+API call does, so changing it is a code review and a deploy, not a text
+box.</p>
+<p><strong>How hard the model thinks</strong> — <code>none</code> for
+summarize, rewrite, proofread and explain; <code>low</code> for document
+questions. Thinking time is billed at the output rate and is invisible
+in the answer. Left at the provider’s default (<code>medium</code>),
+this roughly <strong>doubles the entire bill</strong> and can consume
+the whole answer budget, leaving the user a blank reply they have been
+charged for. <code>app/prompts.py</code> ·
+<code>REASONING_EFFORT</code></p>
+<p><strong>What QUILL asks the model</strong> — five fixed instructions,
+one per feature, shown in full below. The desktop app sends only the
+user’s text. It never sends its own instructions. That is what stops a
+modified copy of QUILL using this service for something it was not
+opened for. <code>app/prompts.py</code> · <code>TEMPLATES</code>
+<em>(each of the five rendered verbatim, so the operator can read
+exactly what is being asked on every user’s behalf)</em></p>
+<p><strong>What is allowed in a request to OpenAI</strong> —
+<code>model</code>, <code>messages</code>,
+<code>max_completion_tokens</code>, <code>reasoning_effort</code>.
+Nothing else. No web search, no file search, no tools, no attachments.
+Web search alone costs <strong>$10 per thousand calls</strong> — on this
+traffic that would be <strong>$500 a month against $30 of actual
+AI</strong>. A test fails the build if any other key is added.
+<code>app/openai_client.py</code> ·
+<code>tests/test_openai_request_shape.py</code></p>
+<p><strong>What is never stored</strong> — no prompt text, no document
+text, no answers. The database has no column that could hold them. The
+one exception is a troubleshooting record a user opts into per incident,
+which is redacted and deleted after 30 days by a scheduled job.
+<code>app/models.py</code></p>
+</blockquote>
+<h3 id="135-the-models-page-with-the-honest-caveat">13.5 The Models
+page, with the honest caveat</h3>
+<p>The page exists: enable, disable, choose the default. Two
+additions.</p>
+<p><strong>Pricing is a claim, not a fact.</strong> The
+<code>input_cost_per_million_usd</code> and
+<code>output_cost_per_million_usd</code> columns are what <em>we told
+the gateway</em> the provider charges. Every cost figure in this console
+— the per-user ceiling, the spend total, the budget cap, the calculator
+— is derived from them. If the provider changes its prices and nobody
+updates the row, every number on every page is quietly wrong and the
+budget cap protects nothing. The page must say so next to the fields,
+and Phase 2 should add a monthly reminder to check.</p>
+<p><strong>Changing the default model is a cost change.</strong>
+Switching the default shows the same before-and-after the config page
+does: <em>“GPT-6 Luna ($0.10/$0.50) → Claude Haiku 4.5 ($1.00/$5.00).
+500 people at full use: $20.00 → $200.00 a month. Your cap is
+$40.00.”</em></p>
+<h3 id="136-the-persons-page">13.6 The person’s page</h3>
+<p>Every control asked for, phrased as the thing the operator actually
+wants to do. Each writes an <code>admin_actions</code> row; each asks
+for a reason, because “who disabled this user and why” is the question
+this table exists to answer.</p>
+<blockquote>
+<h3 id="person-a1b2-c3d4">Person A1B2-C3D4</h3>
+<p>Connected 3 September 2026 · 2 computers · 47 requests this month ·
+$0.019</p>
+<p><strong>Give this person their allowance back</strong> Sets this
+month’s count back to zero. Use it when someone ran out for a reason
+that was not their fault. This clears both the running count and the
+running cost total — if only one were cleared, the other would keep
+refusing them and the reset would look broken. [ Reason ] (Reset
+allowance)</p>
+<p><strong>Give this person a different allowance</strong> Overrides the
+normal monthly limit for this person only. Leave blank to use the normal
+limit. Requests per month [ 100 ] · Cost ceiling [ $0.08 ] · (Save)</p>
+<p><strong>Pause this person</strong> — they can no longer use AI.
+Reversible. They are told to contact support. <strong>Put under
+review</strong> — a smaller daily limit until cleared. Reversible. Use
+when something looks unusual but you are not sure. <strong>Remove
+permanently</strong> — deletes the account and every computer signed in
+on it. Usage history is kept, with no name attached to it. Not
+reversible.</p>
+<p><strong>Their computers</strong> Windows desktop · last used 2 hours
+ago · (Sign out) (Issue a new token) Sign out stops that computer
+immediately, on its very next request. Issue a new token replaces the
+one it holds without signing it out, for when a token may have leaked
+but you are not certain.</p>
+</blockquote>
+<p>Above all of it, the lookup that makes the page reachable at all (gap
+4): a search field taking a support ID prefix, because a person writing
+to support has eight characters and nothing else.</p>
+<h3 id="137-the-switches-page">13.7 The switches page</h3>
+<p>Feature flags, named as switches, with the big one visually and
+structurally separate:</p>
+<blockquote>
+<p><strong>Summarize</strong> · On · (Turn off) <strong>Rewrite</strong>
+· On · (Turn off) <strong>Proofread</strong> · On · (Turn off)
+<strong>Explain</strong> · On · (Turn off) <strong>Questions about
+documents</strong> · On · (Turn off) <strong>Pictures (alt
+text)</strong> · On · (Turn off) — QUILL only; QuillLite has none</p>
+<hr />
+<h3 id="turn-everything-off">Turn everything off</h3>
+<p>Stops every AI request from every person immediately. They are told
+the service is paused and pointed at the status page, and that their own
+API key still works. Nothing is lost; nobody’s allowance is spent while
+it is off. [ Reason ] (Turn off all AI)</p>
+</blockquote>
+<p>When the budget cap auto-pauses the service, this page must say so in
+those words rather than showing a switch that an admin flipped:</p>
+<blockquote>
+<p><strong>All AI is OFF.</strong> Turned off automatically at 09:14 on
+18 October, because spending reached the $40.00 monthly cap. Nobody
+turned this off by hand. Before turning it back on, check the Overview
+page and consider raising the cap — otherwise it will pause again within
+the hour.</p>
+</blockquote>
+<p>That last clause matters: resuming without raising the cap re-pauses
+almost immediately, and an operator who does not know that will think
+the switch is broken.</p>
+<h3 id="138-a-new-page-safety-checks">13.8 A new page: safety
+checks</h3>
+<p>The request was that the <em>gates</em> be visible in plain language
+too. They are currently invisible — they are tests and code paths, and
+an operator has no way to know whether they are holding. One page, one
+row each, each a plain sentence and a state:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>State</th>
+<th>What it protects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No web search, no tools</td>
+<td><strong>Holding</strong></td>
+<td>The only things ever sent are the model name, the text, and two size
+limits. Web search would cost $10 per thousand calls — more than
+everything else combined</td>
+</tr>
+<tr>
+<td>Nobody is charged for a blank answer</td>
+<td><strong>On</strong></td>
+<td>If the model spends its whole budget thinking and returns nothing,
+the request is not counted against anyone</td>
+</tr>
+<tr>
+<td>Sign-ups are throttled</td>
+<td><strong>On</strong> · 3 blocked today</td>
+<td>Anyone can connect without an account. This is what stops one person
+scripting a thousand of them</td>
+</tr>
+<tr>
+<td>New accounts start small</td>
+<td><strong>On</strong> · 15 requests for 48 hours</td>
+<td>A throwaway account is worth a sixth of a real one, which makes
+farming them uneconomic</td>
+</tr>
+<tr>
+<td>Spending pauses itself</td>
+<td><strong>Armed at $40.00</strong> · at 10%</td>
+<td>If spending reaches the cap, everything switches off without waiting
+for anyone to read an alert</td>
+</tr>
+<tr>
+<td>Alerts reach a human</td>
+<td><strong>Configured</strong> / <strong>NOT CONFIGURED</strong></td>
+<td>Without this, the first three alerts are logged where nobody reads
+them and the first you hear of it is the service switching off</td>
+</tr>
+<tr>
+<td>Nothing anyone wrote is stored</td>
+<td><strong>Holding</strong></td>
+<td>The database has no column that can hold document text, prompts or
+answers</td>
+</tr>
+<tr>
+<td>Old troubleshooting records are deleted</td>
+<td><strong>Ran 3 hours ago</strong></td>
+<td>The one exception to the line above expires after 30 days, by a job
+rather than by policy</td>
+</tr>
+<tr>
+<td>Usage totals agree with the event log</td>
+<td><strong>Ran 3 hours ago</strong></td>
+<td>A crash can leave the running totals slightly behind; this catches
+it</td>
+</tr>
+</tbody>
+</table>
+<p>The two rows with a live state — alerts configured, jobs last run —
+are the ones that rot silently, and both have a specific failure mode
+the sentence names. An alert webhook that was never set is not a missing
+nicety; it is the difference between noticing at 50% and noticing when
+the service stops.</p>
+<h3 id="139-overview-audit-log-and-the-glossary">13.9 Overview, Audit
+log, and the glossary</h3>
+<p><strong>Overview</strong> keeps its budget gauge and monthly trend,
+and gains: people connected, requests this month, the cost calculator’s
+“right now” line, and any safety check not in its normal state, at the
+top, as a <code>role="alert"</code> banner.</p>
+<p><strong>Audit log</strong> rows read as sentences rather than as
+columns: <em>“18 October, 09:14 — the service turned itself off because
+spending reached the $40.00 cap.”</em> <em>“3 September, 14:02 — admin
+<code>f3a8…</code> reset A1B2-C3D4’s allowance. Reason: ran out during a
+demo.”</em> The structured columns stay underneath for filtering; the
+sentence is what is read.</p>
+<p><strong>A glossary page</strong>, linked from every page’s footer,
+defining in one line each: token, input token, output token, reasoning
+token, request, allowance, cap, ceiling, budget, throttle, device,
+support ID, feature flag, BYOK. The console is operated by whoever is
+awake, not only by whoever built it.</p>
+<h3 id="1310-the-consoles-own-accessibility">13.10 The console’s own
+accessibility</h3>
+<p>The foundation is right — server-rendered, no JavaScript, no build
+step, skip link, <code>aria-current</code>, flashes with correct roles,
+status never carried by colour alone. Before it is used in anger it
+needs a real pass by the accessibility specialists, covering at
+minimum:</p>
+<ul>
+<li>every <code>&lt;table&gt;</code> a real <code>&lt;caption&gt;</code>
+and <code>&lt;th scope&gt;</code> (the existing ones have this; new
+pages must too);</li>
+<li>the budget gauge and the monthly trend each paired with a
+<strong>data table</strong>, not only a bar width — a percentage encoded
+solely as a CSS width is invisible;</li>
+<li>every form control a real <code>&lt;label&gt;</code>, not only
+<code>aria-label</code>;</li>
+<li>destructive actions (remove a person, turn everything off) requiring
+a typed confirmation rather than relying on a JavaScript
+<code>confirm()</code> this console cannot use;</li>
+<li>every error summarised at the top of the page and linked to the
+field, since a page reload loses the reader’s position otherwise;</li>
+<li>focus visible at 3:1 against its background, and never removed.</li>
+</ul>
+<h3 id="1311-what-this-adds-up-to">13.11 What this adds up to</h3>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Today</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Overview</td>
+<td>Budget gauge, trend, counts</td>
+<td>Plus live cost, plus any safety check out of normal state</td>
+</tr>
+<tr>
+<td>Models</td>
+<td>Enable, disable, set default</td>
+<td>Plus the pricing caveat, plus before-and-after cost on a default
+change</td>
+</tr>
+<tr>
+<td>Limits</td>
+<td>Flat table of every key</td>
+<td>Four grouped cards, plain names, units, safe ranges, dollar
+consequences, validated input, confirmation on big changes</td>
+</tr>
+<tr>
+<td>—</td>
+<td>—</td>
+<td><strong>New:</strong> the cost calculator</td>
+</tr>
+<tr>
+<td>—</td>
+<td>—</td>
+<td><strong>New:</strong> settings that are not knobs, and why</td>
+</tr>
+<tr>
+<td>Users</td>
+<td>List, usage, status, delete</td>
+<td>Plus support-ID lookup, reset allowance, per-person caps, token
+rotation</td>
+</tr>
+<tr>
+<td>Feature flags</td>
+<td>Toggles</td>
+<td>Plain-language switches; auto-pause explained as auto-pause</td>
+</tr>
+<tr>
+<td>—</td>
+<td>—</td>
+<td><strong>New:</strong> safety checks</td>
+</tr>
+<tr>
+<td>Audit log</td>
+<td>Rows</td>
+<td>Rows that read as sentences</td>
+</tr>
+<tr>
+<td>—</td>
+<td>—</td>
+<td><strong>New:</strong> glossary</td>
+</tr>
+</tbody>
+</table>
+<p>Three of those pages are new, three are rewrites, and the
+highest-value single item is the smallest: validating what an admin
+types before it becomes every user’s cost ceiling.</p>
+<hr />
+<h2 id="14-running-the-server-keys-admin-access-email-and-dns">14.
+Running the server: keys, admin access, email, and DNS</h2>
+<p>Section 13 is what the console should <em>say</em>. This is how you
+get into it, what secrets it holds, and what has to happen on the host
+and in DNS before any of it is reachable.</p>
+<h3 id="141-how-you-authenticate-to-make-changes">14.1 How you
+authenticate to make changes</h3>
+<p>There is <strong>no admin password and no separate admin
+account.</strong> There is one credential, and it is the same bearer
+token an ordinary QUILL install holds.</p>
+<p>The whole model in five lines:</p>
+<ol type="1">
+<li>You connect a computer through the <strong>ordinary device-code
+flow</strong> — the same one every user goes through. It gives you a
+<code>device_id</code> and a bearer token.</li>
+<li>You put that <code>device_id</code> into
+<code>GATEWAY_ADMIN_ALLOWLIST</code> in the server’s environment file,
+and restart.</li>
+<li>The JSON API (<code>/admin/*</code>) authenticates every request
+independently: <code>Authorization: Bearer &lt;your token&gt;</code>,
+then a check that your device is on the allowlist. Nothing is cached, so
+removing you from the list takes effect on your very next request.</li>
+<li>The dashboard (<code>/dashboard/*</code>) is the same credential
+with a session on top. You paste the token once at
+<code>/dashboard/login</code>; it is kept in a signed, HttpOnly,
+SameSite=Lax, Secure cookie so you are not re-pasting it on every page.
+Validity is re-checked on every request, not just at login — a revoked
+device is signed out of the dashboard immediately.</li>
+<li>Every state-changing action writes an <code>admin_actions</code>
+row: who, what, when, and why.</li>
+</ol>
+<p><strong>Why the allowlist is an environment variable and not a
+database row.</strong> Who may administer the Gateway must not be
+something the Gateway’s own console can grant to itself. If an admin
+account were a row, then compromising one admin session would let an
+attacker mint more; as an environment variable it takes shell access to
+the host and a restart. The cost is that adding an admin is a deploy
+step, which at the number of admins this will ever have is the right
+trade.</p>
+<p><strong>The bootstrap, and the deadlock that used to be in
+it.</strong> The allowlist starts empty, which means nobody can reach
+<code>/admin/*</code> — including you. That is fine, because step 1 does
+not need admin access: registration is open to anyone. Register first,
+add your id second, restart third.</p>
+<p>It was not fine until 2026-09-23. <code>Config.validate()</code>
+reported an empty allowlist as a <em>problem</em>, and
+<code>create_app</code> refuses to boot on any problem — so a brand-new
+deployment could not start at all. Registering needs the service
+running; running needed the allowlist. Neither could go first. It
+surfaced the first time the stack was stood up on the real host, and
+nowhere else: every test in the suite builds the app through
+<code>TestingConfig</code>, where that branch is skipped.
+<code>Config.warnings()</code> now carries it instead — shouted at ERROR
+level in the first screen of <code>docker compose logs</code>, but never
+fatal — and <code>tests/test_startup.py</code> pins both directions.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># On the host, with the service running:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-X</span> POST https://ai.community-access.org/v1/device/code</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  -&gt; note &quot;user_code&quot;: e.g. &quot;BKRT-3927&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># In a browser, anywhere: https://ai.community-access.org/connect?code=BKRT-3927</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Click Confirm.</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> <span class="at">-X</span> POST https://ai.community-access.org/v1/device/token <span class="dt">\</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">-H</span> <span class="st">&#39;Content-Type: application/json&#39;</span> <span class="dt">\</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">-d</span> <span class="st">&#39;{&quot;device_code&quot;:&quot;&lt;the device_code from the first call&gt;&quot;}&#39;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#  -&gt; {&quot;status&quot;:&quot;authorized&quot;,&quot;token&quot;:&quot;&lt;KEEP THIS&gt;&quot;,&quot;device_id&quot;:&quot;&lt;THIS GOES IN THE ALLOWLIST&gt;&quot;}</span></span></code></pre></div>
+<p>Then put the <code>device_id</code> in <code>.env</code> and
+restart:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/quill-ai-gateway</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">&#39;s/^GATEWAY_ADMIN_ALLOWLIST=.*/GATEWAY_ADMIN_ALLOWLIST=&lt;device_id&gt;/&#39;</span> .env</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml up <span class="at">-d</span></span></code></pre></div>
+<p>Sign in at <code>https://ai.community-access.org/dashboard/</code> by
+pasting the <strong>token</strong>, not the device id.</p>
+<p><strong>If you lose the token</strong>, you are not locked out of the
+machine — you have SSH. Register a fresh device, swap the id in
+<code>.env</code>, restart. Revoke the old one from the console
+afterwards.</p>
+<p><strong>Section 17 is the step-by-step version of all of
+this</strong>, including how to reach the dashboard through an SSH
+tunnel before the DNS record exists.</p>
+<p><strong>The known weakness, stated plainly:</strong> the dashboard
+login is a paste-a-secret form, which is not a good sign-in experience
+and is the worst part of this design. The upgrade path is already on the
+host — Keycloak runs there for GLOW — and wiring the dashboard in as an
+OIDC client is a task in section 17, not something to invent now.</p>
+<h3 id="142-the-provider-api-key-yes-you-define-it-on-the-server">14.2
+The provider API key: yes, you define it on the server</h3>
+<p><strong>Yes — and it is the entire reason this service
+exists.</strong> The key lives in the server’s environment and nowhere
+else. It is read in exactly one file
+(<code>app/openai_client.py</code>), never sent to a client, never
+stored in the database, never written to a log, and never included in an
+error message — the upstream error handler deliberately interpolates
+only the exception’s <em>type</em> name so that a future change in the
+HTTP library cannot start echoing headers into a log.</p>
+<p>On the host it comes from <code>~/quill-ai-gateway/.env</code>, which
+Docker Compose reads:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/quill-ai-gateway</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> .env          <span class="co"># set OPENAI_API_KEY=sk-...</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 .env     <span class="co"># it is the most sensitive file on the machine</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml up <span class="at">-d</span>   <span class="co"># re-reads .env</span></span></code></pre></div>
+<p><strong>Rotating it</strong> is the same three lines: edit,
+<code>up -d</code>, done. The key is read once at process start, so a
+restart is required — which is correct. A key that could be swapped
+without a restart would have to be re-read per request from somewhere
+mutable, and every “somewhere mutable” is a worse place for it.</p>
+<p><strong>Should the key be editable from the dashboard?</strong> No,
+and it is worth writing down why so the question does not come back. A
+key in the database is a key in every backup, in every
+<code>pg_dump</code>, and readable by anything with database access. The
+premise of this whole service is that exactly one thing holds the
+provider key; a text box in a web console widens that to the database,
+the backups, and whoever can read either.</p>
+<p><strong>But you cannot look at it to check it, which is a real
+cost</strong>, and a wrong key shows up as a 502 on somebody’s first
+ever request rather than as an error at deploy time. So the console has
+a button — and the API a route — that closes that gap without ever
+revealing the secret:</p>
+<pre><code>POST /admin/test-key
+  -&gt; {&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;gpt-6-luna&quot;,&quot;message&quot;:&quot;The key works and gpt-6-luna answered.&quot;}
+  -&gt; {&quot;status&quot;:&quot;failed&quot;, ...}          the provider refused it
+  -&gt; {&quot;status&quot;:&quot;not_configured&quot;, ...}  no key is set at all</code></pre>
+<p>It sends the shortest possible completion, costs a fraction of a
+cent, and never echoes the key. Run it after every deploy and after
+every rotation.</p>
+<p>Also run <code>flask --app run.py check-config</code>, which reports
+out-of-range limits, a budget cap that normal use can reach, a missing
+default model, and an unconfigured alert webhook. It exits non-zero, so
+it can be a deploy step rather than something somebody remembers.</p>
+<h3
+id="143-this-service-sends-no-email-that-is-deliberate-and-it-stays-that-way">14.3
+This service sends no email. That is deliberate, and it stays that
+way.</h3>
+<p>No SMTP host, no mail-provider account, no Postmark, nothing that
+needs one.</p>
+<p>It falls out of two decisions that were made for other reasons:</p>
+<ul>
+<li><strong>Sign-in is the device-code flow.</strong> A person reads
+eight characters into a web page. There is no address to verify, no
+password to reset, and no confirmation to deliver. This was chosen
+because pasting a 51-character API key is the wall a screen-reader user
+hits on day one — the fact that it also removes email entirely is a
+bonus that turned out to be worth as much.</li>
+<li><strong>Alerts go to a webhook, not an inbox.</strong>
+<code>GATEWAY_ALERT_WEBHOOK_URL</code> takes anything that accepts a
+JSON <code>{"text": "..."}</code> POST: a Slack or Discord incoming
+webhook, or a self-hosted <strong>ntfy</strong> topic — which needs no
+account at all and can push to a phone. That is the recommendation:
+ntfy, because a budget alert is exactly the kind of thing you want on a
+phone at 2am and exactly the kind of thing you do not want to depend on
+a mail provider’s deliverability for.</li>
+</ul>
+<p>No mail provider is one fewer account, one fewer secret, one fewer
+bill, one fewer thing in the DNS zone (no SPF, no DKIM, no DMARC), and
+no deliverability problem to debug at the exact moment something is
+already wrong.</p>
+<p><strong>The one thing that would need email</strong> is the optional
+Phase 5 identity upgrade — verifying an address so an allowance follows
+a person across devices. Three ways to keep the property if that day
+comes, best first:</p>
+<ol type="1">
+<li><strong>Do not build it.</strong> Its purpose is multi-device
+continuity and anti-farming; the new-account ramp and the sign-up
+throttle already do the anti-farming half, and multi-device continuity
+may simply not be a problem worth an email dependency.</li>
+<li><strong>Use the help desk that is already there.</strong> FreeScout
+runs on this host with a working mailbox. A verification request is a
+low-volume, human-paced flow; routing it through an existing mailbox is
+not elegant but adds no new vendor.</li>
+<li><strong>Then, and only then, a transactional provider.</strong> If
+it is ever genuinely needed, it is a Phase 5 decision with its own
+review — not something to provision now against a feature that may never
+ship.</li>
+</ol>
+<h3 id="144-where-it-goes-lpcsedesignscom">14.4 Where it goes:
+lp.csedesigns.com</h3>
+<p>The host (<code>lp.csedesigns.com</code>, hostname
+<code>bishoplink</code>, <code>107.175.91.158</code>) already runs
+eighteen containers, including a Caddy instance that terminates TLS for
+everything on the machine. There is 90 GB free. The gateway’s footprint
+is small: a Python image, a Redis with no persistence, and a
+Postgres.</p>
+<p><strong>How it attaches.</strong> Caddy (<code>web-caddy-1</code>,
+from the compose project in <code>~/app/web</code>) reaches other
+services <strong>by container name over the shared
+<code>web_default</code> network</strong>. <code>askbits-web</code>
+already works exactly this way — it sits on both its own project network
+and <code>web_default</code>. <code>docker-compose.prod.yml</code> does
+the same and deliberately does <em>not</em> publish a host port:
+publishing 8000 would work and would also expose the service directly,
+bypassing the headers, HSTS and the <code>X-Forwarded-For</code> rewrite
+that the sign-up throttle depends on for its accuracy.</p>
+<p><strong>A subdomain of its own, not a path under
+<code>lp.csedesigns.com</code>.</strong> That name is already a
+permanent-redirect block pointing at letitglow.app, with a couple of
+path matchers pinned inside it for the feedback and picks endpoints.
+Hanging an API off another path in there means every new route has to
+out-rank a <code>redir</code> that matches everything — the trap that
+cost an afternoon when the picks endpoint went in. A separate name has
+no ordering to reason about, gets its own certificate, and can move to
+another machine later by changing one DNS record.</p>
+<h3 id="145-dns-exactly-what-you-need-to-do">14.5 DNS: exactly what you
+need to do</h3>
+<p><strong>Done, 2026-09-23.</strong>
+<code>ai.community-access.org</code> resolves to
+<code>107.175.91.158</code> and the service answers on it over
+HTTPS.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>A</code></td>
+<td><code>ai</code> (in <code>community-access.org</code>)</td>
+<td><code>107.175.91.158</code></td>
+</tr>
+</tbody>
+</table>
+<p>Three things <em>not</em> to do:</p>
+<ul>
+<li><strong>No <code>AAAA</code> record.</strong> The host has no public
+IPv6. An <code>AAAA</code> pointing at nothing gives every IPv6-capable
+client a broken first attempt and a delay before it falls back — which
+on a slow connection looks exactly like the app hanging.</li>
+<li><strong>No <code>CNAME</code> to
+<code>lp.csedesigns.com</code>.</strong> It would resolve, but it chains
+the new name’s fate to a hostname that already has a redirect block and
+its own history. An <code>A</code> record to the address is one hop and
+one thing to reason about.</li>
+<li><strong>Nothing else.</strong> No MX (the service sends no mail,
+14.3), no TXT, no CAA change needed unless
+<code>community-access.org</code> already publishes a CAA that excludes
+Let’s Encrypt — worth a one-line check:
+<code>dig CAA community-access.org +short</code> should be empty or
+include <code>letsencrypt.org</code>. It was, and the certificate issued
+first time.</li>
+</ul>
+<p><strong>Why this name.</strong> <code>community-access.org</code>
+rather than <code>csedesigns.com</code>: the support address is already
+<code>support@community-access.org</code> and the help desk is already
+<code>helpdesk.community-access.org</code>, so the name somebody is
+asked to type into a phone belongs to the same organisation as the name
+they write to when it goes wrong. It is short, which matters because it
+is printed in QUILL’s sign-in window and read aloud to somebody about to
+type it on a different device. <code>gateway.quillforall.org</code> was
+the PRD’s assumption and is no longer used anywhere.</p>
+<p><strong>Then, in order — and the order matters:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Wait for the record. Do not skip this.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> +short ai.community-access.org          <span class="co"># must print 107.175.91.158</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Append the site block and reload Caddy.</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/quill-ai-gateway/Caddyfile.example <span class="op">&gt;&gt;</span> ~/app/web/Caddyfile</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec web-caddy-1 caddy reload <span class="at">--config</span> /etc/caddy/Caddyfile</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Confirm the certificate and the service together.</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> https://ai.community-access.org/healthz     <span class="co"># {&quot;database&quot;:&quot;ok&quot;,&quot;redis&quot;:&quot;ok&quot;}</span></span></code></pre></div>
+<p><strong>Do not reload Caddy before DNS resolves.</strong> Caddy asks
+Let’s Encrypt for a certificate the moment the block loads; a name that
+does not yet point at the machine fails the challenge, backs off, and
+retries on a lengthening timer — so the site stays broken for a while
+<em>after</em> you fix the DNS, which is a confusing twenty minutes to
+spend.</p>
+<h3 id="146-first-run-in-order">14.6 First run, in order</h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/quill-ai-gateway</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> .env.example .env</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> .env         <span class="co"># OPENAI_API_KEY, GATEWAY_SECRET_KEY, POSTGRES_PASSWORD,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                  <span class="co"># GATEWAY_PUBLIC_BASE_URL=https://ai.community-access.org</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 .env</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml up <span class="at">-d</span> <span class="at">--build</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml exec web flask <span class="at">--app</span> run.py init-db</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml exec web flask <span class="at">--app</span> run.py seed-config</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml exec web flask <span class="at">--app</span> run.py check-config</span></code></pre></div>
+<p>Generate the session key with
+<code>python -c "import secrets; print(secrets.token_hex(32))"</code>.</p>
+<p><code>check-config</code> will report the missing alert webhook until
+you set one. That is not pedantry: without it, the 50%, 75% and 90%
+budget warnings go to a log nobody reads, and the first you hear of a
+runaway month is the service switching itself off.</p>
+<p>Then do 14.1 to make yourself an admin, and
+<code>POST /admin/test-key</code> to confirm the provider key works
+before a single user ever touches it.</p>
+<h3 id="147-day-to-day">14.7 Day to day</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The two scheduled jobs (add to cron on the host).</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span>  3 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> cd ~/quill-ai-gateway <span class="kw">&amp;&amp;</span> <span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml <span class="dt">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>             exec <span class="at">-T</span> web flask <span class="at">--app</span> run.py cleanup-expired</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">30</span> 3 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> cd ~/quill-ai-gateway <span class="kw">&amp;&amp;</span> <span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml <span class="dt">\</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>             exec <span class="at">-T</span> web flask <span class="at">--app</span> run.py reconcile-usage</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Logs, health, and a config sanity check.</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml logs <span class="at">-f</span> web</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> https://ai.community-access.org/healthz</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml exec web flask <span class="at">--app</span> run.py check-config</span></code></pre></div>
+<p>Everything else — limits, models, people, switches — is the console.
+That is the point of section 13.</p>
+<hr />
+<h2 id="15-summary">15. Summary</h2>
+<p>The expensive half of this project is already written and has been
+sitting untouched. Luna 6 does not change its architecture; it makes the
+numbers comfortable enough that the question shifts from “can we afford
+this” to “can we operate it carefully.” The answer to the second
+question is four specific fixes — reset usage, per-user caps,
+registration throttling, user lookup — plus the discipline never to send
+a tool call and never to send a whole document.</p>
+<p>The client half has never been started, and QuillLite is the right
+place to start it: no AI today, so nothing to reconcile, and five
+commands is a complete product for someone who has never heard of an API
+key. The family rule means QUILL gets those same five in the same
+change, which is as it should be.</p>
+<p>What a blind writer who has never seen an API key gets at the end of
+Phase 1: install QuillLite, turn on one feature, read eight characters
+aloud into a browser, and have an assistant. That is the whole point,
+and the rest of this document is what it takes to make that safe,
+affordable and operable.</p>
+<hr />
+<h2 id="16-tasks">16. Tasks</h2>
+<p>Status as of 2026-09-23. <code>[x]</code> means done and covered by a
+passing test; <code>[ ]</code> means not started; <code>[~]</code> means
+started and not finished, with what is missing named.</p>
+<h3 id="161-server--done-this-session">16.1 Server — done this
+session</h3>
+<p>The gateway test suite is <strong>205 passing</strong> (was 45).</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" checked="" /><strong>Luna 6 as the
+default model.</strong> <code>migrations/003</code>,
+<code>config.py</code>, <code>cli.py</code>. The seeded price columns
+were already $0.10 / $0.50 per million, so the cost math needed no
+change — only the id and label.</label></p></li>
+<li><p><label><input type="checkbox"
+checked="" /><strong><code>max_completion_tokens</code> instead of
+<code>max_tokens</code></strong>, and <code>reasoning_effort</code> sent
+explicitly. Reasoning models reject the older parameter outright, so
+every request would have failed.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Reasoning
+effort floored per feature in code</strong> (<code>prompts.py</code>:
+<code>REASONING_EFFORT</code>), with <code>ALLOWED_EFFORTS</code> capped
+at <code>low</code>. Left at the provider’s default this roughly doubles
+the entire bill, invisibly.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>The no-tools
+gate.</strong> <code>tests/test_openai_request_shape.py</code> pins the
+outgoing body to exactly <code>model</code>, <code>messages</code>,
+<code>max_completion_tokens</code>, <code>reasoning_effort</code>, and
+fails on any addition. Web search alone would be ~$500/month against
+~$30 of model usage.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Nobody is
+charged for a request that did not happen.</strong> The counters
+increment before the size check, the model lookup and the upstream call,
+so all four failure paths refund (<code>limits.refund_request</code>).
+This was a live bug: an oversized selection or a provider outage cost
+the user one of their hundred, invisibly.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>No charge for
+an empty answer.</strong> If the model spends its whole output budget
+reasoning and returns nothing, the user’s counters are refunded and the
+real cost is still recorded against the global budget — the provider
+billed us even though the user got nothing.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Registration
+throttling per internet address</strong>
+(<code>check_registration_allowed</code>). This was the hole: anonymous
+sign-up meant an allowance was a cost <em>quantum</em>, not a cost
+bound.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>The
+new-account ramp</strong> — 15 requests for the first 48 hours, then
+100. Makes a farmed account worth a sixth of a real
+one.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Ramp bug found
+and fixed.</strong> It could give a <em>new</em> account a
+<strong>higher</strong> cap than an established one if the monthly cap
+were lowered below the ramp value — turning the anti-farming measure
+into a reason to keep making fresh accounts. Now
+<code>min(ramp, normal)</code>, with a regression test.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Reset a
+person’s allowance</strong> (<code>reset_user_usage</code> + route +
+audit row). Clears the Redis counters <strong>and</strong> the running
+cost total together; either alone produces a reset that looks as though
+it silently failed.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Per-person
+caps</strong> — <code>monthly_request_cap</code>,
+<code>monthly_cost_cap_usd</code>, per-feature. The columns existed with
+no route that wrote them.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Find a person
+by support ID.</strong> <code>User.support_id</code>
+(<code>A1B2-C3D4</code>) plus <code>GET /admin/users?q=</code>. Without
+it, “somebody wrote to support” was unanswerable.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Token
+rotation</strong> — <code>POST /v1/device/rotate</code> (client,
+proof-of-possession) and
+<code>POST /admin/devices/&lt;id&gt;/rotate</code> (operator). The
+answer to “this may have leaked but I am not certain”.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Pending device
+grants moved to Redis.</strong> They were a process-local dict and
+Gunicorn runs two workers, so roughly half of all sign-ins would have
+failed intermittently with “that code wasn’t
+recognized”.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Config
+validation</strong> (<code>config_schema.py</code>). Both write paths
+accepted any float, so <code>0.15</code> typed as <code>15</code> raised
+every user’s cost ceiling a hundredfold behind a green success message.
+Now range-checked, with a typed/explicit confirmation for any change
+that more than doubles cost.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>The cost
+model</strong> (<code>costing.py</code>) — per-request cost, monthly
+projections, and before-and-after impact of a proposed
+change.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Proofread and
+Explain</strong> added; the shipped set is the five.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Feature
+refusals say why</strong> — the stored <code>disabled_reason</code> is
+used instead of a generic “temporarily paused”, so a never-built feature
+does not send somebody to support.</label></p></li>
+<li><p><label><input type="checkbox"
+checked="" /><strong><code>flask check-config</code></strong> — reports
+out-of-range limits, a budget cap normal use can reach, a missing
+default model, and an unconfigured alert webhook. Exits non-zero so it
+can be a deploy step.</label></p></li>
+<li><p><label><input type="checkbox"
+checked="" /><strong><code>POST /admin/test-key</code></strong> — proves
+the provider key works without ever revealing it.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>The two wrong
+numbers corrected</strong>: budget cap $25 → $40 (25% headroom over the
+worst case is not headroom), per-user ceiling $0.15 → $0.08 (it sat
+3.75× above anything reachable, so it was decoration).</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Deployment
+files</strong> — <code>docker-compose.prod.yml</code> (joins the host’s
+shared <code>web_default</code> Caddy network, publishes no port),
+<code>Caddyfile.example</code>, <code>.env.example</code>,
+<code>migrations/003</code>.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Two standing
+caps per network</strong> (<code>migrations/005</code>), because of
+something worth writing down plainly: confirming a device code creates a
+brand-new pseudonymous <strong>user</strong>, not another device on an
+existing account. Two computers are therefore two accounts with a full
+allowance each, and five are five. The per-IP throttle limits how
+<em>fast</em> somebody connects machines and does nothing about
+connecting one more every few days. So: a standing cap on active devices
+per address (6, and signing one out frees its place), and a monthly
+request ceiling shared by everybody behind one address (600) which does
+not care how many accounts sit behind it. Both set generously — they are
+aimed at one household running six laptops through the free tier, never
+at an office.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>A schema
+divergence, found by running a migration.</strong> <code>init-db</code>
+(SQLAlchemy) and the <code>.sql</code> migrations produced
+<em>different</em> schemas: the SQL declares
+<code>updated_at NOT NULL DEFAULT now()</code>, the models carried only
+a Python-side default. So a database created the documented way failed
+any plain-<code>psql</code> insert that did not name the column, while
+the identical insert through SQLAlchemy succeeded — a trap for whoever
+next reaches for psql, which <code>migrations/README.md</code> tells
+them to do. Models now declare <code>server_default</code>; migration
+005 brings existing databases into line.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>Two more bugs,
+found only by running it on the real host.</strong> Neither was
+reachable from the test suite, which is the argument for standing a
+thing up before believing it works: - <strong>The service refused to
+boot with an empty admin allowlist</strong> — a deadlock on every
+brand-new deployment (see 14.1). Fixed, with
+<code>tests/test_startup.py</code> pinning both directions. -
+<strong><code>GET /v1/config</code> reported a hardcoded five
+features.</strong> The moment Proofread and Explain were added, the
+desktop client was being told about two features it could no longer
+reach while two it <em>could</em> reach went unmentioned. Now driven
+from the feature table.</label></p></li>
+<li><p><label><input type="checkbox" checked="" /><strong>A third bug,
+found by reading the first real request back out of the
+database.</strong> <code>monthly_usage_summary.total_cost_usd</code> was
+<code>NUMERIC(10, 4)</code>, and a request costs about
+<strong>$0.000028</strong>. <code>record_usage</code> accumulates by
+reading that column back, adding, and writing it again — so every write
+rounded the new total straight back to <code>0.0000</code> and it never
+moved off zero. <strong>That made the per-user cost ceiling
+inert</strong>: it is checked against this column, so it could never
+trip however much somebody used, and the Redis request counters were the
+only thing actually bounding anybody. The fence I tightened from $0.15
+to $0.08 in section 3.1 was doing nothing at all. Widened to
+<code>NUMERIC(14, 8)</code> (<code>migrations/004</code>), the host’s
+recorded total repaired with <code>reconcile-usage</code>, and four
+tests added — three of which fail against the old precision, checked by
+reverting it.</label></p>
+<pre><code>Worth naming the shape: four decimal places is a sensible precision for
+money, and the wrong precision for *this* money. Nothing was ever
+over-charged and nothing was lost — `usage_events` and the global spend
+counter both kept full precision throughout — but one of the two fences
+was not there, silently, and no test in the suite would ever have said
+so.</code></pre></li>
+</ul>
+<h3 id="162-server--remaining">16.2 Server — remaining</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>The console’s
+HTML.</strong> All nine pages render. New: <em>Safety checks</em>,
+<em>Fixed by code</em>, <em>Glossary</em>. Rewritten: <em>Limits</em>
+(grouped, explained, costed, validated), <em>Users</em> (support-ID
+search), the person’s page (reset, per-person caps, per-device sign-out
+and token rotation), <em>Switches</em> (plain-language, never-built kept
+separate from paused, auto-pause shown as auto-pause), <em>Audit
+log</em> (rows read as sentences).</label></li>
+<li><label><input type="checkbox" checked="" /><strong>53 page-level
+tests</strong> covering all nine pages, including the structural
+accessibility properties that do not need a human to check: every table
+has a caption, every input has a real <code>&lt;label for&gt;</code>,
+every status badge contains a word and not just a colour, no page uses
+JavaScript, and each limit field points at both its explanation and its
+safe range through <code>aria-describedby</code>.</label></li>
+<li><label><input type="checkbox" /><strong>A real screen-reader pass on
+the console.</strong> The tests above pin structure; they cannot tell
+you whether the Limits page is <em>pleasant</em> to move through with
+twenty-five headings, or whether the shown-once token is actually
+catchable. The accessibility-lead agent was asked for this and died on a
+session limit before reporting, so it is still owed.</label></li>
+<li><label><input type="checkbox" checked="" />Update
+<code>quill-ai-gateway/README.md</code> — Luna 6, the five features, the
+new console pages, the new admin endpoints, and why reset clears both
+halves.</label></li>
+<li><label><input type="checkbox" />Update
+<code>docs/planning/openai.md</code> §8/§23 to match the shipped
+defaults, or add a note pointing at this document as the authority on
+numbers.</label></li>
+<li><label><input type="checkbox" />Pin exact versions in
+<code>requirements.txt</code> before the first real deploy (it currently
+uses ranges and says so).</label></li>
+<li><label><input type="checkbox" />Decide on <code>tiktoken</code> for
+real token counting. The current 4-chars-per-token heuristic only ever
+over-estimates, so it is safe, but it rejects borderline requests a real
+tokenizer would allow.</label></li>
+</ul>
+<h3 id="163-deployment--what-only-you-can-do">16.3 Deployment — what
+only you can do</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>DNS done</strong>
+(2026-09-23): <code>ai.community-access.org</code> →
+<code>107.175.91.158</code>, Caddy block appended and reloaded,
+certificate issued, and a real <code>summarize</code> request answered
+over HTTPS end to end. No <code>AAAA</code>, because the host has no
+IPv6 and a dead one adds a delay to every IPv6-capable
+client.</label></li>
+<li><label><input type="checkbox" checked="" /><strong>The OpenAI API
+key is installed</strong> (2026-09-23), taken from the “Open AI Key”
+entry in <code>D:\keys.txt</code> and piped straight into the host’s
+<code>.env</code> over SSH — never printed, never written to a local
+file, never passed as a command-line argument (which would have put it
+in the process list and the shell history). <code>.env</code> is
+<code>0600</code>. <code>POST /admin/test-key</code> answers
+<strong>ok</strong>.</label></li>
+<li><label><input type="checkbox" checked="" />Public hostname settled:
+<strong><code>ai.community-access.org</code></strong>, which is now the
+default in <code>app/config.py</code>, in the client’s
+<code>DEFAULT_BASE_URL</code>, and in
+<code>Caddyfile.example</code>.</label></li>
+<li><label><input type="checkbox" />Pick where budget alerts go (14.3).
+<strong>ntfy</strong> is the recommendation — no account, pushes to a
+phone, no mail provider.</label></li>
+<li><label><input type="checkbox"
+checked="" /><strong><code>gpt-6-luna</code> is confirmed real</strong>
+— it answered a live request. That was an open question; the key test
+settled it.</label></li>
+<li><label><input type="checkbox"
+checked="" /><strong><code>reasoning_effort: "none"</code> is confirmed
+accepted.</strong> No rejection appears in the logs, and a real
+summarize request came back with <code>reasoning_tokens = 0</code> — so
+the floor is genuinely being applied and the doubled bill is genuinely
+being avoided, rather than the retry path quietly falling back to
+provider-default effort.</label></li>
+</ul>
+<h3 id="164-deployment--sequence-once-the-above-is-answered">16.4
+Deployment — sequence once the above is answered</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Code deployed to
+<code>~/quill-ai-gateway</code> on the host (2026-09-23).</label></li>
+<li><label><input type="checkbox" checked="" /><code>.env</code> created
+from the example, <code>chmod 600</code>, with the session key and the
+Postgres password <strong>generated on the host</strong> so neither ever
+passed through a transcript.</label></li>
+<li><label><input type="checkbox" checked="" /><strong>The stack is up
+and running</strong>: <code>postgres</code>, <code>redis</code> and
+<code>web</code>, joined to the shared <code>web_default</code> network,
+publishing no host port — so it is reachable from Caddy and from nowhere
+else until the DNS record and the Caddy block exist.</label></li>
+<li><label><input type="checkbox" checked="" /><code>init-db</code> and
+<code>seed-config</code> run — 33 rows seeded. <code>check-config</code>
+runs and correctly reports the one outstanding problem (no alert
+webhook).</label></li>
+<li><label><input type="checkbox" checked="" /><strong>End-to-end walk
+done on the host</strong>: registered a device through the real
+device-code flow, confirmed it on <code>/connect</code>, polled, got a
+token, read <code>/v1/quota</code> and <code>/v1/config</code>, and
+loaded all nine console pages. The new-account ramp is live
+(<code>monthly_request_cap: 15</code>), images and chat report off, and
+the Limits page computes <strong>$0.00040</strong> per request — the
+number this document predicted in section 3.</label></li>
+<li><label><input type="checkbox" checked="" /><strong>Real key
+installed and the service verified against the real provider.</strong>
+<code>POST /admin/test-key</code> answers ok. A real
+<code>summarize</code> request through <code>/v1/chat</code> returned a
+correct summary in 95 tokens in / 37 out, cost <code>$0.000028</code>,
+decremented the quota to 14 of 15 (the new-account ramp doing its job),
+and recorded a usage event with <code>reasoning_tokens = 0</code>. The
+whole path — auth, quota, size check, prompt, provider, refund logic,
+metering — works end to end on the host.</label></li>
+<li><label><input type="checkbox" /><strong>Replace the bootstrap admin
+device.</strong> One was registered to prove the flow works, and its
+token was printed to a terminal — so it must not be the admin credential
+once this is publicly reachable. Register your own, put that
+<code>device_id</code> in <code>GATEWAY_ADMIN_ALLOWLIST</code>, restart,
+then revoke <code>7c14b5d3-7c20-419a-ae9a-155945ab3502</code> from the
+console. Nothing is exposed yet (no DNS, no Caddy block), so this is a
+before-go-live task rather than an urgent one.</label></li>
+<li><label><input type="checkbox" />Wait for DNS, <strong>then</strong>
+append the Caddy block and reload. Not before — Caddy asks for a
+certificate the moment the block loads, and a failed challenge backs off
+on a lengthening timer.</label></li>
+<li><label><input type="checkbox" />Register your own device, add its id
+to <code>GATEWAY_ADMIN_ALLOWLIST</code>, restart (14.1).</label></li>
+<li><label><input
+type="checkbox" /><code>POST /admin/test-key</code>.</label></li>
+<li><label><input type="checkbox" />Add the two cron jobs
+(14.7).</label></li>
+</ul>
+<h3 id="165-client--quilllite-is-done">16.5 Client — QuillLite is
+done</h3>
+<p>Built 2026-09-23. <strong>QUILL’s existing AI was not
+touched</strong>: no change to <code>ALL_PROVIDERS</code>, none to
+<code>make_default_backend()</code>’s cascade, none to any BYOK, agent
+or local-model path. Either of the first two would alter what an
+installed QUILL does on its next launch, which is a decision to take
+deliberately rather than as a side effect of shipping QuillLite’s
+version.</p>
+<p><strong>Shared, in <code>quill/core/ai/</code> — so QUILL can reach
+all of it:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox"
+checked="" /><code>gateway_errors.py</code> — the
+<code>QUILL-AI-GATEWAY-*</code> family. Every one carries a
+<code>user_hint</code> naming the next step, because a screen-reader
+user hears only the sentence we wrote.</label></li>
+<li><label><input type="checkbox"
+checked="" /><code>gateway_context.py</code> — what gets sent, decided
+before a request exists: selection → paragraph → section (<strong>never
+the document</strong>), local chunking and keyword retrieval for
+document questions, and a size refusal phrased in <em>words</em> rather
+than tokens.</label></li>
+<li><label><input type="checkbox"
+checked="" /><code>gateway_client.py</code> — the one egress site, with
+every HTTP failure mapped to a coded error that keeps the server’s own
+sentence. The device-code flow <strong>reuses</strong>
+<code>device_login.py</code> through a twenty-line dialect adapter
+rather than growing a second RFC 8628 state machine.</label></li>
+<li><label><input type="checkbox"
+checked="" /><code>gateway_session.py</code> — token in the OS
+credential store under the existing
+<code>QUILL:assistant:&lt;provider&gt;:api-key</code> shape (no new
+secure-storage code), everything non-secret in
+<code>&lt;data&gt;/ai/gateway.json</code>.</label></li>
+<li><label><input type="checkbox"
+checked="" /><code>gateway_backend.py</code> — an <code>AIBackend</code>
+so QUILL can reach the hosted tier. Deliberately unregistered; see
+above.</label></li>
+</ul>
+<p><strong>QuillLite:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><code>hosted_ai</code>
+switchable area, <strong>off by default</strong>, whose description
+<em>is</em> the consent notice. An area that is off owns nothing — no
+menu, no keys, no token on disk, no network call of any
+kind.</label></li>
+<li><label><input type="checkbox" checked="" />Tools &gt;
+<strong>AI</strong> submenu (not a tenth top-level menu — Clipboard and
+Spelling were demoted from the bar for exactly this
+reason).</label></li>
+<li><label><input type="checkbox" checked="" />Four chords. Both keymaps
+are saturated: measured across Ctrl+Alt, Ctrl+Shift, Alt+Shift and
+Ctrl+Alt+Shift, the chords free in <em>both</em> editors are
+<code>Ctrl+Alt+G</code>, <code>Ctrl+Alt+Z</code> and a few
+Ctrl+Alt+Shift function keys. So family rule 2 decided this, not taste:
+the two short ones went to the daily commands and rule 9 sent the
+once-per-computer pair to
+<code>Ctrl+Alt+Shift+F9</code>/<code>F10</code>. QuillLite has
+<strong>no</strong> keyless command rows, so a chord each was not
+optional.</label></li>
+<li><label><input type="checkbox" checked="" />Four modeless
+<code>wx.Frame</code> windows — pad, result, sign-in, usage. Modeless
+because a modal blocks the editor, which is the one thing a writing tool
+may not do; every Close goes through <code>bind_close_button</code>, and
+nothing is ever shown modally from a close handler.</label></li>
+<li><label><input type="checkbox" checked="" />The pad shows
+<strong>what will be sent</strong> before it is sent, including the
+actual excerpts chosen for a document question — the only way somebody
+can tell “the AI got it wrong” from “it never saw the right
+paragraph”.</label></li>
+<li><label><input type="checkbox" checked="" />An answer never reaches a
+document on its own, and Replace is withheld when the text it came from
+moved while the request was in flight.</label></li>
+<li><label><input type="checkbox" checked="" />GATE-LITE-COVER:
+<strong>205 handlers, 205 covered, 0 shape-only.</strong> Tests written
+as <code>(lambda w: w.cmd_ai_assistant(), ...)</code> — a parametrized
+handler <em>name</em> is invisible to the AST scan.</label></li>
+<li><label><input type="checkbox" checked="" />GATE-9 egress entry, F1
+purposes for all four windows, the feature area in the user guide,
+profile counts corrected (18 → 19 areas) and <code>hosted_ai</code>
+explicitly removed from the WordPad and Notepad profiles — “WordPad, but
+it sends your writing to a server” is a profile whose name has stopped
+being true.</label></li>
+<li><label><input type="checkbox" checked="" />40 core tests and 14
+behavioural ones. <code>mypy quill/core quill/io</code> clean across
+1,067 files.</label></li>
+</ul>
+<p><strong>Deviations from section 12, stated rather than quietly
+dropped:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>No status-bar cell.</strong>
+Section 12.8 specified a thirteenth cell. QuillLite’s status bar is
+deliberately a <em>fixed</em> twelve, and a cell that appears only when
+an area is on needs rebuild-on-toggle machinery that module was
+explicitly not built for. The allowance shows in the pad, the result
+window and the Usage window instead. Worth doing properly later; not
+worth half-doing now.</label></li>
+<li><label><input type="checkbox" /><strong>QUILL’s own menu
+wiring.</strong> The capability is shared and reachable; the provider
+registration and cascade entry are a separate, deliberate
+change.</label></li>
+</ul>
+<h3 id="166-before-anyone-outside-the-team-uses-it">16.6 Before anyone
+outside the team uses it</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Privacy text</strong> (5.7).
+<code>docs/legal/PRIVACY.md</code> and its
+<code>.html</code>/<code>.epub</code> renders gain a hosted-AI section:
+what is sent, to whom, what is stored (metadata only), for how long, and
+the one opted-in exception. Shipped privacy text that claimed more than
+the code did was a Radio 3.0 ship blocker — do not repeat
+it.</label></li>
+<li><label><input type="checkbox" />The same two sentences on the
+sign-in surface, before the code appears, not behind a
+link.</label></li>
+<li><label><input type="checkbox" />Accessibility pass on the console by
+the specialist agents (13.10).</label></li>
+<li><label><input type="checkbox" />A runbook for “the spend alert fired
+at 2am”, proven by a drill.</label></li>
+</ul>
+<h3 id="167-known-weaknesses-to-fix-later">16.7 Known weaknesses to fix
+later</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>The dashboard login is a
+paste-a-secret form.</strong> It is the worst part of the design (14.1).
+Keycloak already runs on this host for GLOW; wiring the dashboard in as
+an OIDC client is the intended upgrade.</label></li>
+<li><label><input type="checkbox" /><strong>Proof-of-work on
+<code>/connect</code></strong> before public beta (4.3). No image or
+audio CAPTCHA, ever — that is the canonical accessibility failure, in an
+accessibility-first product.</label></li>
+<li><label><input type="checkbox" /><strong><code>gateway_models</code>
+has no <code>base_url</code> / key-source column</strong>, so “swap to a
+fallback provider” is a deploy rather than a click. Groq is
+OpenAI-compatible and needs only those two columns.</label></li>
+<li><label><input type="checkbox" />Coarse-network anomaly flagging for
+a token used from many distinct /16s in a day (4.1). Flag and review —
+never auto-lock, which would strand a roaming user.</label></li>
+<li><label><input type="checkbox" />Monthly reminder to check the model
+price columns against the provider’s actual prices. Every cost figure in
+the console derives from them; if they drift, the budget cap protects
+nothing.</label></li>
+</ul>
+<h3 id="168-images--deferred-on-purpose">16.8 Images — deferred on
+purpose</h3>
+<p>Not a gap; a decision (5.6). Tracked here so it is not quietly
+forgotten.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Describing pictures is <strong>not
+in QuillLite at all</strong> and is off on the server: flag disabled
+with a reason, per-feature cap zero, <code>daily_image_cap</code>
+zero.</label></li>
+<li><label><input type="checkbox" />When it is built it belongs in
+<strong>QUILL first</strong> — Glow and Inkwell are where pictures
+actually live.</label></li>
+<li><label><input type="checkbox" />It needs its own cap tuning from
+real Phase 3 usage data; a vision call costs several times what a text
+call does.</label></li>
+<li><label><input type="checkbox" />Two open questions travel with it:
+the client must resize before sending, and it may belong in the
+bring-your-own-key tier rather than the free one.</label></li>
+</ul>
+<hr />
+<h2 id="17-signing-in-to-the-console">17. Signing in to the console</h2>
+<p>Section 14.1 explains <em>why</em> admin access works the way it
+does. This is the runbook: the exact steps, in the state the service is
+actually in.</p>
+<h3 id="171-there-is-no-password">17.1 There is no password</h3>
+<p>The credential is a <strong>device bearer token</strong> — the same
+kind every QUILL install holds — and authorisation is an
+<strong>environment variable on the server</strong>. Both halves are
+needed: a valid token that is not on the allowlist gets
+<code>403</code>, and an allowlisted id with no token gets
+<code>401</code>.</p>
+<p>The allowlist is an environment variable rather than a database row
+on purpose: who may administer the Gateway must not be something the
+Gateway’s own console can grant to itself. Compromising an admin session
+would then let an attacker mint more admins; as an environment variable
+it takes shell access to the host and a restart.</p>
+<p>Four facts that follow, and are worth knowing before something goes
+wrong:</p>
+<ul>
+<li><strong>Every request re-checks both.</strong> Nothing is cached, so
+removing somebody from the allowlist, or revoking their device, takes
+effect on their very next request — not at their next login, and with no
+propagation delay.</li>
+<li><strong>The dashboard is not a second login.</strong> It is the same
+token, remembered in a signed, HttpOnly, SameSite=Lax, Secure cookie so
+it is not re-pasted on every page. Validity is re-checked on every page
+load, so a revoked device is signed out of the browser immediately
+too.</li>
+<li><strong>Losing the token does not lock you out of the
+machine.</strong> You have SSH. Register a fresh device, swap the id in
+<code>.env</code>, restart.</li>
+<li><strong>The bootstrap is not a deadlock</strong> — but it was until
+2026-09-23. See 14.1.</li>
+</ul>
+<h3 id="172-signing-in-today-before-dns-exists">17.2 Signing in today,
+before DNS exists</h3>
+<p>The container publishes no port on the host (correct: Caddy reaches
+it over the shared <code>web_default</code> docker network, and
+publishing 8000 as well would let traffic bypass the headers, the HSTS
+and the <code>X-Forwarded-For</code> rewrite the sign-up throttle
+depends on). So a browser needs a tunnel.</p>
+<p>The host itself can route to the container, so forward to the
+container’s address rather than to a host port. <strong>Look the address
+up rather than copying one</strong> — it changes whenever the container
+is recreated:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># On your machine:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="va">IP</span><span class="op">=</span><span class="va">$(</span><span class="fu">ssh</span> lp <span class="st">&#39;docker inspect quill-ai-gateway-web-1 \</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="st">      --format &quot;{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}&quot;&#39;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $1}&#39;</span><span class="va">)</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> 8001:<span class="va">$IP</span>:8000 lp</span></code></pre></div>
+<p>Leave that session open, then in a browser:
+<strong>http://localhost:8001/dashboard/</strong></p>
+<p>Paste the bearer token of an allowlisted device. Browsers treat
+<code>localhost</code> as a trustworthy origin, so the
+<code>Secure</code> session cookie should be accepted over plain HTTP
+there.</p>
+<p><strong>If the login bounces straight back to the form</strong>, that
+is the cookie being rejected rather than the token being wrong.
+Temporarily:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp <span class="st">&#39;cd ~/quill-ai-gateway &amp;&amp; \</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="st">  printf &quot;\nGATEWAY_DASHBOARD_INSECURE_COOKIE=1\n&quot; &gt;&gt; .env &amp;&amp; \</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="st">  docker compose -f docker-compose.prod.yml up -d web&#39;</span></span></code></pre></div>
+<p><strong>Take that line out again before DNS goes live.</strong> It
+exists for local <code>http://</code> development, and on a publicly
+reachable service it means the cookie carrying an admin credential can
+travel unencrypted.</p>
+<p>The JSON API needs none of this — it is a bearer header with no
+cookie, so it works from inside the container directly:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp <span class="st">&#39;cd ~/quill-ai-gateway &amp;&amp; docker compose -f docker-compose.prod.yml exec -T web \</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="st">  curl -s localhost:8000/admin/spend -H &quot;Authorization: Bearer &lt;token&gt;&quot;&#39;</span></span></code></pre></div>
+<h3 id="173-signing-in-once-dns-is-up">17.3 Signing in once DNS is
+up</h3>
+<p><code>https://ai.community-access.org/dashboard/</code>, paste the
+token. That is the whole thing, and it is how it should be done from
+then on — the tunnel above is scaffolding for the gap between “the
+service runs” and “the service has a name”.</p>
+<h3 id="174-making-a-device-an-admin">17.4 Making a device an admin</h3>
+<p>The first time, and every time somebody new needs access:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> lp</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/quill-ai-gateway</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Start a registration and read out the code.</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml exec <span class="at">-T</span> web python <span class="at">-c</span> <span class="st">&quot;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="st">import requests, json</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="st">r = requests.post(&#39;http://localhost:8000/v1/device/code&#39;, timeout=10).json()</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="st">print(&#39;CODE:&#39;, r[&#39;user_code&#39;])</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="st">print(&#39;DEVICE_CODE:&#39;, r[&#39;device_code&#39;])&quot;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Confirm it. Before DNS: through the tunnel at</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#    http://localhost:8001/connect  — or with curl, which is equivalent:</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml exec <span class="at">-T</span> web <span class="dt">\</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  curl <span class="at">-s</span> <span class="at">-X</span> POST localhost:8000/connect <span class="at">-d</span> <span class="st">&quot;code=&lt;CODE from step 1&gt;&quot;</span> <span class="op">&gt;</span>/dev/null</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Collect the token. This is the only time it is ever shown.</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml exec <span class="at">-T</span> web python <span class="at">-c</span> <span class="st">&quot;</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="st">import requests</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="st">t = requests.post(&#39;http://localhost:8000/v1/device/token&#39;,</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="st">                  json={&#39;device_code&#39;: &#39;&lt;DEVICE_CODE from step 1&gt;&#39;}, timeout=10).json()</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="st">print(&#39;device_id:&#39;, t[&#39;device_id&#39;])</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="st">print(&#39;token:    &#39;, t[&#39;token&#39;])&quot;</span></span></code></pre></div>
+<p>Then put the <code>device_id</code> — not the token — in the
+allowlist and restart:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> ~/quill-ai-gateway/.env      <span class="co"># GATEWAY_ADMIN_ALLOWLIST=id1,id2,...</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose <span class="at">-f</span> docker-compose.prod.yml up <span class="at">-d</span> web</span></code></pre></div>
+<p>Two things that trip people up. <strong>Poll only once</strong>: the
+device code is single-use, so a second call to
+<code>/v1/device/token</code> returns <code>expired</code> and the token
+is gone — the registration has to start over. And <strong>the allowlist
+takes ids, the login takes the token</strong>; they are different
+strings and only one of them is a secret.</p>
+<h3 id="175-before-this-is-publicly-reachable">17.5 Before this is
+publicly reachable</h3>
+<p><strong>Replace the bootstrap admin device.</strong> One was
+registered on 2026-09-23 to prove the flow worked end to end, and its
+token was printed to a terminal — so it is not a credential, it is a
+demonstration. It is harmless while the service has no DNS record and no
+Caddy block, and it stops being harmless the moment either exists.</p>
+<ol type="1">
+<li>Register your own device (17.4).</li>
+<li>Put <em>its</em> id in <code>GATEWAY_ADMIN_ALLOWLIST</code>,
+restart.</li>
+<li>Confirm you can reach the dashboard with your own token.</li>
+<li>Revoke <code>7c14b5d3-7c20-419a-ae9a-155945ab3502</code> from the
+Users page, and remove its id from the allowlist.</li>
+</ol>
+<p>Do all four. Revoking without removing the id leaves a dead entry
+that looks like access; removing the id without revoking leaves a live
+token that merely is not an admin any more.</p>
+<h3 id="176-the-known-weakness">17.6 The known weakness</h3>
+<p><strong>Paste-a-secret is the worst part of this design</strong>, and
+it is worth being honest about rather than discovering later: the token
+is 43 characters of base64, which is unpleasant to handle and unpleasant
+to read aloud, and it is pasted into a form that looks exactly like a
+phishing target.</p>
+<p>It is acceptable today because there are one or two operators and the
+service is not public. It stops being acceptable at the point where a
+third person needs access, or where somebody has to be talked through it
+on a phone.</p>
+<p>The upgrade is already on the host: <strong>Keycloak</strong> runs
+there for GLOW, and wiring the dashboard in as an OIDC client is the
+intended replacement — a real sign-in screen, no secret to handle, and
+account removal that does not need a deploy. Tracked in 16.7.</p>
+</main>
+</body>
+</html>

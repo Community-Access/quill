@@ -15,9 +15,12 @@ than not having it.
 
 from __future__ import annotations
 
+import pytest
+
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_markup import DocumentMarkupMixin
+from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
 from quill.ui.richedit_editing import PLAIN, RICH
 
 
@@ -26,6 +29,7 @@ class _Control:
         self._text = text
         self._cursor = cursor
         self.shown = -1
+        self.selection = (-1, -1)
 
     def GetValue(self) -> str:
         return self._text
@@ -41,6 +45,9 @@ class _Control:
 
     def ShowPosition(self, position: int) -> None:
         self.shown = position
+
+    def SetSelection(self, start: int, end: int) -> None:
+        self.selection = (start, end)
 
     def Replace(self, start: int, end: int, text: str) -> None:
         self._text = self._text[:start] + text + self._text[end:]
@@ -75,7 +82,12 @@ class _App:
         pass
 
 
-class _Window(DocumentFormatCommandsMixin, DocumentHeadingsMixin, DocumentMarkupMixin):
+class _Window(
+    DocumentFormatCommandsMixin,
+    DocumentSectionCommandsMixin,
+    DocumentHeadingsMixin,
+    DocumentMarkupMixin,
+):
     def __init__(self, text: str, cursor: int = 0, *, mode: str = PLAIN, level: int = 0) -> None:
         self.control = _Control(text, cursor)
         self.editor = _Editor(mode, level)
@@ -243,6 +255,83 @@ def test_the_top_section_refuses_and_says_so() -> None:
     assert win.announcements, "the refusal has to be spoken; nothing else marks it"
 
 
+def test_selecting_a_section_takes_the_subsections_and_says_how_much() -> None:
+    """The move keys reorder; this one hands the section to the clipboard, which
+    is how it reaches a place with no heading to move past. The count is the
+    point: the reader says a selection changed, not how much is in it."""
+    text = "# Top\n\ntop\n\n## Bread\n\nbread\n\n### Sourdough\n\nsour\n\n## Soup\n\nsoup\n"
+    win = _Window(text, cursor=text.index("## Bread"))
+
+    win.cmd_select_section()
+
+    start, end = win.control.selection
+    assert text[start:end] == "## Bread\n\nbread\n\n### Sourdough\n\nsour"
+    assert win.announcements == ["Selected Bread and 1 section under it, 7 lines"]
+    assert win.modified is False, "selecting is not an edit"
+
+
+def test_selecting_in_a_document_with_no_markup_says_so() -> None:
+    win = _Window("just prose\n", cursor=0)
+    win._language_override = "plain"
+
+    win.cmd_select_section()
+
+    assert win.announcements, "a refusal nobody can hear is a key that seems unbound"
+    assert win.control.selection == (-1, -1)
+
+
+def test_the_nested_outline_moves_up_and_says_why_it_cannot_move_down() -> None:
+    """The reported bug, from QuillLite's side: a document whose headings step
+    # / ## / ### has no siblings anywhere, so every Alt+Shift+Up and every
+    Alt+Shift+Down answered "No sibling to swap with" and moved nothing.
+
+    Up now moves -- Heading 2 rises above Heading 1's own heading and body,
+    taking Heading 3 with it. Down still cannot, and that is the document
+    rather than the key: everything below Heading 2 *is* Heading 2.
+    """
+    text = (
+        "# Heading 1\n\nfirst body\n\n## Heading 2\n\nsecond body\n\n### Heading 3\n\nthird body\n"
+    )
+    win = _Window(text, cursor=text.index("## Heading 2"))
+
+    win.cmd_move_section_up()
+
+    assert win.control.GetValue() == (
+        "## Heading 2\n\nsecond body\n\n### Heading 3\n\nthird body\n\n# Heading 1\n\nfirst body\n"
+    )
+    assert win.announcements == ["Section moved above Heading 1"]
+    assert win.modified is True
+
+
+def test_a_section_that_contains_everything_below_it_says_so() -> None:
+    text = (
+        "# Heading 1\n\nfirst body\n\n## Heading 2\n\nsecond body\n\n### Heading 3\n\nthird body\n"
+    )
+    win = _Window(text, cursor=text.index("## Heading 2"))
+
+    win.cmd_move_section_down()
+
+    assert win.control.GetValue() == text
+    assert win.announcements == [
+        "Bottom of Heading 1. Everything below is inside this section. "
+        "Alt Shift Left promotes Heading 3 to make it a sibling."
+    ]
+    assert win.modified is False
+
+
+def test_a_move_that_happens_says_that_it_happened() -> None:
+    """QuillLite used to say the bare heading name, which sounds like the caret
+    landed on something rather than like the document changed. The sentence is
+    composed in core now, so both editors say the one thing -- including where
+    the section has landed, which the reader never says."""
+    text = "# One\nfirst\n\n# Two\nsecond\n"
+    win = _Window(text, cursor=2)
+
+    win.cmd_move_section_down()
+
+    assert win.announcements == ["Section moved below Two. Now 2 of 2 at this level"]
+
+
 def test_rich_text_is_told_the_operation_belongs_to_plain_documents() -> None:
     """A rich heading is a font size; there is nothing in the text to move.
 
@@ -254,6 +343,144 @@ def test_rich_text_is_told_the_operation_belongs_to_plain_documents() -> None:
     win.cmd_move_section_up()
 
     assert win.announcements == [
-        "Moving sections works in plain text documents, where headings are Markdown"
+        "Moving a section needs a Markdown or HTML document: a rich-text "
+        "heading is a font size rather than markup."
     ]
     assert win.modified is False
+
+
+# --------------------------------------------------------------------------- #
+# Move Section To: a destination instead of a direction
+# --------------------------------------------------------------------------- #
+
+_OUTLINE = "# Top\n\ntop\n\n## Bread\n\nbread\n\n### Sourdough\n\nsour\n\n## Soup\n\nsoup\n"
+
+
+def _answer_pickers(monkeypatch, *answers: str | None) -> list[list[str]]:
+    """Make QuillLite's searchable chooser answer *answers*, in order.
+
+    Patched where it is **defined** rather than where it is used, because
+    ``cmd_move_section_to`` imports it inside the method -- so the name is
+    looked up at call time and the definition site is the one that counts. The
+    rows it was offered come back, because what a row says is half of this
+    command: "3 of 7, level 2 - Bread" is what makes two headings called Notes
+    two distinguishable choices.
+    """
+    offered: list[list[str]] = []
+    pending = list(answers)
+
+    def choose(_parent, *, choices, **_kwargs):
+        rows = list(choices)
+        offered.append(rows)
+        wanted = pending.pop(0)
+        if wanted is None:
+            return None
+        return next(row for row in rows if wanted in row)
+
+    monkeypatch.setattr("quill.apps.lite_dialogs.choose_searchable", choose)
+    return offered
+
+
+def test_moving_a_section_to_a_chosen_heading(monkeypatch) -> None:
+    win = _Window(_OUTLINE, cursor=_OUTLINE.index("## Soup"))
+    _answer_pickers(monkeypatch, "Bread", "Before it")
+
+    win.cmd_move_section_to()
+
+    moved = win.control.GetValue()
+    assert moved.index("## Soup") < moved.index("## Bread")
+    assert win.announcements == ["Moved Soup before Bread. Now 1 of 2 at this level"]
+    assert win.modified is True
+
+
+def test_the_destination_list_is_the_outline_in_document_order(monkeypatch) -> None:
+    win = _Window(_OUTLINE, cursor=_OUTLINE.index("## Soup"))
+    offered = _answer_pickers(monkeypatch, "Bread", "After it")
+
+    win.cmd_move_section_to()
+
+    assert offered[0] == [
+        "1 of 4, level 1 - Top",
+        "2 of 4, level 2 - Bread",
+        "3 of 4, level 3 - Sourdough",
+        "4 of 4, level 2 - Soup (the section you are moving)",
+    ]
+
+
+def test_after_puts_it_past_the_whole_chosen_subtree(monkeypatch) -> None:
+    win = _Window(_OUTLINE, cursor=_OUTLINE.index("## Soup"))
+    _answer_pickers(monkeypatch, "level 2 - Bread", "After it")
+
+    win.cmd_move_section_to()
+
+    moved = win.control.GetValue()
+    assert moved.index("### Sourdough") < moved.index("## Soup")
+
+
+def test_inside_changes_the_level_and_says_so(monkeypatch) -> None:
+    """The one placement that edits more than the order, so it is the one that
+    has to be announced: a renumbering nobody is told about is a silent edit."""
+    win = _Window(_OUTLINE, cursor=_OUTLINE.index("## Soup"))
+    _answer_pickers(monkeypatch, "level 2 - Bread", "Inside it")
+
+    win.cmd_move_section_to()
+
+    assert "### Soup" in win.control.GetValue()
+    assert "now Heading 3" in win.announcements[0]
+
+
+@pytest.mark.parametrize(
+    "answers",
+    [(None,), ("level 2 - Bread", None)],
+    ids=["backed out of the heading", "backed out of the placement"],
+)
+def test_cancelling_either_question_changes_nothing_and_says_nothing(monkeypatch, answers) -> None:
+    win = _Window(_OUTLINE, cursor=_OUTLINE.index("## Soup"))
+    _answer_pickers(monkeypatch, *answers)
+
+    win.cmd_move_section_to()
+
+    assert win.control.GetValue() == _OUTLINE
+    assert win.announcements == [], "Escape changed nothing, so there is nothing to say"
+    assert win.modified is False
+
+
+def test_a_destination_inside_the_moving_section_is_refused_out_loud(monkeypatch) -> None:
+    win = _Window(_OUTLINE, cursor=_OUTLINE.index("## Bread"))
+    _answer_pickers(monkeypatch, "Sourdough", "Inside it")
+
+    win.cmd_move_section_to()
+
+    assert win.control.GetValue() == _OUTLINE
+    assert "Sourdough is inside Bread" in win.announcements[0]
+    assert "Promote Sourdough" in win.announcements[0]
+
+
+def test_move_section_to_in_a_rich_document_says_where_it_works(monkeypatch) -> None:
+    win = _Window(_OUTLINE, cursor=0, mode=RICH)
+    _answer_pickers(monkeypatch)
+
+    win.cmd_move_section_to()
+
+    assert win.control.GetValue() == _OUTLINE
+    assert "needs a Markdown or HTML document" in win.announcements[0]
+
+
+def test_move_section_to_in_a_document_with_no_markup_says_so(monkeypatch) -> None:
+    win = _Window("just prose\n", cursor=0)
+    win._language_override = "plain"
+    _answer_pickers(monkeypatch)
+
+    win.cmd_move_section_to()
+
+    assert win.announcements, "a refusal nobody can hear is a key that seems unbound"
+
+
+def test_move_section_to_needs_somewhere_to_move_to(monkeypatch) -> None:
+    win = _Window("# Only\n\nbody\n", cursor=0)
+    _answer_pickers(monkeypatch)
+
+    win.cmd_move_section_to()
+
+    assert win.control.GetValue() == "# Only\n\nbody\n"
+    assert "only one section" in win.announcements[0]

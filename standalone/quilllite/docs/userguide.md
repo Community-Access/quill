@@ -1037,8 +1037,10 @@ which is a different job.
 |---|---|
 | **Alt+Shift+Left** | Promote heading — one level shallower |
 | **Alt+Shift+Right** | Demote heading — one level deeper |
-| **Alt+Shift+Up** | Move this whole section up, past the one before it |
-| **Alt+Shift+Down** | Move this whole section down, past the one after it |
+| **Alt+Shift+Up** | Move this whole section up, past whatever is above it |
+| **Alt+Shift+Down** | Move this whole section down, past whatever is below it |
+| **Alt+Shift+F5** | Select this section, subsections and all |
+| **Ctrl+Alt+Shift+F5** | Move Section To… — pick a destination instead of a direction |
 
 Until now QuillLite could make headings and walk between them but never move
 them about, which left cut-and-paste as the only way to reorganise a document —
@@ -1052,17 +1054,106 @@ one keystroke and tells you it happened.
 next heading at the same level or higher. Moving a Heading 2 takes its Heading 3s
 with it.
 
-Two things to know:
+**The keys always move.** They used to look for a heading at the same level under
+the same parent and refuse when there wasn't one, which meant a document whose
+headings step `#`, `##`, `###` never moved at all — in one of those, no heading
+has a sibling anywhere. Now, when there is no sibling that way, the section trades
+places with whatever *is* next to it, exactly as Word's outline Move Up and Move
+Down do on these same keys. A first section inside its parent rises above the
+parent's own heading.
 
-- **Promoting a Heading 1 leaves it a Heading 1.** It does not turn into
-  ordinary text — losing a heading altogether is not what Alt+Shift+Left is for,
-  and it would quietly drop the paragraph out of your headings list.
-- **Moving sections works in plain text documents**, where headings are Markdown
-  `#` lines. In a rich text document a heading is a font size rather than
-  something written in the text, and there is nothing there to move; QuillLite
-  says so rather than doing nothing. Promoting and demoting work in both.
+**The moved section keeps its level.** Moving never renumbers your headings: press
+the other key and you are exactly back where you were. A key that said "move" and
+also rewrote `##` as `#` would have edited more than it said. Changing a level is
+what Alt+Shift+Left and Alt+Shift+Right are for, and the two compose — move it,
+then promote it.
 
-These are QUILL for All's own four keys, so they behave the same in both.
+**It says where the section landed**, not just what it jumped: *"Section moved
+below Soup. Now 2 of 3 at this level."* That last part is what somebody looking at
+the page gets for free and a listener cannot get any other way — the screen reader
+says the text changed, never where in the outline the thing now sits.
+
+There is one refusal no rule can fix, and it explains itself rather than closing
+the door. In a strictly nested document everything below the heading you are in is
+*inside* it, so there is nothing left for it to move below: *"Bottom of Heading 1.
+Everything below is inside this section. Alt+Shift+Left promotes Heading 3 to make
+it a sibling."* The key named in that sentence is read out of your own keymap, so
+it stays right if you rebind it.
+
+#### Select Section — Alt+Shift+F5
+
+**Alt+Shift+F5** selects the section you are in, including every subsection, and
+stops just before the blank line that separates it from the next one. Then ordinary
+**Ctrl+X** and **Ctrl+V** put it anywhere — somewhere else in this document,
+another document, or another program altogether. No new idea to learn, and it is
+the honest answer to "move it somewhere there is no heading to move past".
+
+It announces how much you now have: *"Selected Bread and 1 section under it, 7
+lines"*, or *"Selected Bread, 4 lines"* when nothing is nested inside. The counts
+are the point. Your screen reader tells you a selection changed; it does not tell
+you how much is in it, and "did that take the sub-headings with it?" is the whole
+question at that moment.
+
+#### Move Section To… — Ctrl+Alt+Shift+F5
+
+Pressing Alt+Shift+Up forty times is not a way to move a section across a long
+document, and it is worse by ear than by eye: every press is a fresh announcement,
+and you have to count them, because there is no page to glance at to see how far
+you have got. **Ctrl+Alt+Shift+F5** asks where instead.
+
+Two questions, both answered from a list you can type into:
+
+1. **Which heading?** Every heading in the document, in the order they appear, one
+   row each: `3 of 7, level 2 - Bread`. The position comes first so that two
+   sections both called "Notes" are two different choices rather than a coin toss,
+   and the level is there because "before Bread" means something different
+   depending on whether Bread is a chapter or a paragraph heading. Type to narrow
+   the list; the order never reshuffles itself as you type, because a list that
+   reorders is one you cannot navigate by position. Focus starts in the search box,
+   and **Enter** there moves you into the results rather than accepting whatever
+   happens to be highlighted.
+2. **Before it, after it, or inside it?** Three rows, because "next to that
+   heading" is genuinely ambiguous and guessing would be worse than asking. **After
+   it** is the one people expect to mean something narrower than it does: it puts
+   your section below that heading *and everything under it*.
+
+The whole move is **one edit and one Ctrl+Z**, and it says where the section
+landed: *"Moved Salad before Bread. Now 1 of 3 at this level."*
+
+**Inside it is the only one that changes a level.** It makes your section the last
+one under the heading you chose, renumbers it and everything under it one step
+deeper, and says the new level out loud: *"Moved Bread inside Soup, now Heading 3.
+Now 1 of 2 at this level."* A renumbering nobody was told about would be a silent
+edit, which is the one thing these keys must never do.
+
+Two things it will not do, and it explains both rather than just declining:
+
+- **A section cannot move inside itself.** Choose a heading that sits under the one
+  you are moving and it says *"Sourdough is inside Bread, so Bread cannot move into
+  it. Promote Sourdough first if you want them side by side."* Those headings are
+  still listed rather than hidden — a heading you can see in your document and
+  cannot find in the list has no way to explain itself.
+- **Nothing goes deeper than Heading 6**, because Markdown cannot write one. It
+  names the limit and offers **After it** instead.
+
+**Escape at either question changes nothing and says nothing.** Nothing happened,
+so there is nothing to announce.
+
+Two more things to know about all six keys:
+
+- **Promoting a Heading 1 leaves it a Heading 1.** It does not turn into ordinary
+  text — losing a heading altogether is not what Alt+Shift+Left is for, and it
+  would quietly drop the paragraph out of your headings list.
+- **Moving and selecting sections need a Markdown or HTML document**, where a
+  heading is written in the text. In a rich text document a heading is a font size
+  rather than something the text says, so there is nothing to find and nothing to
+  move; QuillLite says so rather than doing nothing. Promoting and demoting work in
+  both.
+
+These are QUILL for All's own six keys, and all six behave the same in both
+editors. Anything you learn here you have learned in QUILL, and the sentences you
+hear are composed in one place, so the two products cannot describe the same action
+two different ways.
 
 ---
 
@@ -2388,6 +2479,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+Right** | Demote Heading |
 | **Alt+Shift+Up** | Move Section Up |
 | **Alt+Shift+Down** | Move Section Down |
+| **Alt+Shift+F5** | Select Section |
+| **Ctrl+Alt+Shift+F5** | Move Section To... |
 | **Alt+Shift+O** | Heading Organizer... |
 
 ### Navigate
@@ -2468,7 +2561,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+G** | AI Assistant... |
 | **Ctrl+Alt+Z** | Ask About This Document... |
 | **Ctrl+Alt+Shift+F9** | Usage... |
-| **Ctrl+Alt+Shift+F10** | Sign In or Out... |
+| **Ctrl+Alt+Shift+F10** | Connect or Sign Out... |
 | **Ctrl+Alt+Shift+K** | Privacy Agreement... |
 
 ### Tools ▸ Change Case

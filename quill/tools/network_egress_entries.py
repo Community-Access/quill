@@ -30,7 +30,8 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "when the future.url_import feature is disabled."
     ),
     "core/ai/gateway_client.py::_urlopen_json": (
-        "QuillLite's free hosted AI (ai.md sections 12 and 14). The single "
+        "The family's free hosted AI (quill-ai-gateway-spec.md sections 12 "
+        "and 14). The single "
         "outbound call for the whole feature: fetching the service's current "
         "limits, connecting this computer through the RFC 8628 device-code "
         "flow, reading how much of the monthly allowance is left, and sending "

@@ -4381,13 +4381,95 @@ through setup. Because the AI Library's Run, Ask Quill, Transcript Actions, and 
 all share the one `ProviderChatBackend` (AI Hub) connection the wizard configures,
 setting AI up once makes everything work.
 
-**Experience modes.** `is_basic_mode()` / `save_experience_mode()` persist a Basic vs
-Advanced choice (default **advanced**, so existing users never lose anything; the
-wizard's "keep it simple" checkbox puts a newcomer into Basic). In Basic mode the AI
-menu hides the power-user agentic entries ("What can I do here?", "Rewrite & Improve",
-"Run Agent") so the surface stays calm; a **"Show advanced AI features"** toggle flips
-it instantly. Everyday features (Ask Quill, Transcribe, Proofread, Translate, Read
-Aloud, the AI Library) always stay.
+**Experience modes.** `is_basic_mode()` / `save_experience_mode()` /
+`default_experience_mode()` persist a Basic vs Advanced choice. **Reversed on
+2026-09-23: the default is now Basic, and Basic hides the whole advanced surface
+rather than only the agentic entries.** See 5.84m, which is why — QUILL gained its
+own free hosted AI, so the short menu is the *working* experience rather than a
+reduced one, and the long one is the specialist one.
+
+The reversal carries one carve-out, in `default_experience_mode()`: an install that
+has already run the wizard (`onboarding_complete()`) or has a provider key stored
+(`configured_cloud_providers()`) starts in **Advanced**. An update must never take
+working menus away from somebody who was using them. The derived answer is written
+into the onboarding state the first time it is asked rather than re-derived on every
+menu build — the derivation reads the credential store, so a re-deriving mode would
+let the AI menu lengthen as a side effect of a key pasted into an unrelated
+feature, and would cost a credential-store read per menu build.
+
+Nothing is *removed* in Basic: every advanced command keeps its chord and stays in
+the command palette. The **"Show advanced AI features"** checkbox at the foot of
+the AI menu flips the mode and rebuilds the menu bar (a contextual refresh only
+enables and disables existing rows, so it could never add or remove one). The
+wizard's "keep it simple" checkbox still sets Basic.
+
+---
+
+### 5.84m QUILL's own free hosted AI is the default AI (2026-09-23)
+
+**Goal.** Remove the wall in front of somebody who wants a paragraph summarised.
+Every other door into QUILL's AI assumes two decisions already made — which
+company should see your writing, and where to paste an API key — and neither is a
+decision most people want to make in a word processor.
+
+**Where it lives.** The hosted service shipped in QuillLite first (see
+[`quill-ai-gateway-spec.md`](quill-ai-gateway-spec.md) §5.4), which made
+QuillLite briefly ahead of QUILL — the one thing the family rule
+forbids, and invisibly so, because a missing feature files no bug. The four wx
+modules therefore moved from `quill/apps/lite_ai*.py` into `quill/ui/`:
+`hosted_ai_service.py` (the per-app service that does the waiting),
+`hosted_ai_dialogs.py` (sign-in, usage, the agreement), `hosted_ai_pad.py` (the
+pad and the result window) and `hosted_ai_commands.py` (`HostedAiMixin`, the five
+commands). The wx-free half was already shared in `quill/core/ai/gateway_*`.
+
+**How one capability serves two editors.** `HostedAiMixin` exposes exactly four
+hooks, which are the only four things the two editors do differently: which window
+a new frame is parented to (`_ai_parent`), which control holds the document
+(`_ai_control`), which object holds the settings and the feature switch
+(`_ai_host`), and how to name the switch that turns the feature on
+(`_ai_switch_route` — a Customize Features area in QuillLite, the Use AI item in
+QUILL's menu). Every other route sentence was rewritten to name a row that exists
+in both products, and QuillLite's row was renamed from "Sign In or Out" to
+**"Connect or Sign Out"** to match: a row named two ways is a sentence that is
+wrong in one of the two products.
+
+`quill/ui/main_frame_hosted_ai.py` holds QUILL's `QuillAiHost` adapter (data dir,
+settings, `save_settings`, the Use AI switch read through `load_ai_enabled` /
+`save_ai_enabled`, and a menu rebuild) and `HostedAiCommandsMixin`, which is three
+overrides and **no commands**. `tests/unit/ui/test_main_frame_hosted_ai.py`
+asserts that absence: a second implementation is how the family rule gets broken
+quietly.
+
+**Chords.** All five are QuillLite's, unchanged — `Ctrl+Alt+G` (the pad),
+`Ctrl+Alt+Z` (ask about this document) and `Ctrl+Alt+Shift+K` (the agreement) are
+QuillLite's, unchanged: all three were free on QUILL's side, so family rule 2
+applied with nothing to arbitrate. **Usage and Sign In diverge**, and carry a
+`DIVERGENCES` row each: `Ctrl+Alt+Shift+F7` to `F12` are the six QuillVille
+sibling launchers in QUILL (`app_keymaps.SIBLING_APP_ACCELERATORS`) and QuillLite
+has no siblings to launch, so QUILL uses `Ctrl+Alt+Shift+F2` and `F4`. Same
+modifiers, same finger shape, and both are rule 9 commands either way — and a
+chord claimed twice means one of the pair silently never fires, which is the
+argument `cmd_spelling_voice_settings` already made about these same six keys.
+
+**Menu shape.** `quill/ui/main_frame_ai_menu.py` (GATE-11 extraction from the menu
+builder) builds the AI menu in two halves: `_build_hosted_ai_rows` always, then
+`_build_advanced_ai_rows` only when `not is_basic_mode()`, then the Use AI switch
+and the experience toggle. The five free rows carry the word **Free** and
+mnemonics E, D, G, C, Y — different letters from QuillLite's because A, U, S and P
+are all claimed elsewhere in QUILL's AI menu once the advanced rows are showing,
+and a duplicate mnemonic is a key Windows may silently refuse to press (GATE-14's
+rule, applied where the gate cannot see).
+
+**Consent.** `Settings.ai_privacy_accepted_version` was added on QUILL's side with
+the same name and meaning as QuillLite's, so the two cannot disagree about whether
+the agreement was accepted. A *version* rather than a boolean: a material change
+to what is sent bumps `gateway_privacy.AGREEMENT_VERSION` and everybody is asked
+again. It is separate from the Use AI switch on purpose — the switch answers "is
+AI on in my copy", this answers "have I agreed to what the hosted service does",
+and a switch flipped by a profile or a settings import is not consent. With the
+switch off, the two rows that spend a request are dimmed; Usage and Connect stay
+live, and the **Privacy Agreement row is never dimmed**, because it is the door
+the feature is turned on through.
 
 ---
 

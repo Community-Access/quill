@@ -33,6 +33,43 @@ def _duplicates(mapping: dict[str, str]) -> dict[str, list[str]]:
     return {binding: commands for binding, commands in grouped.items() if len(commands) > 1}
 
 
+def _free_chord(*, skip: int = 0) -> str:
+    """A chord no default claims, chosen rather than hard-coded.
+
+    Every "unrelated valid override" fixture in this module needs one, and every
+    one of them used to name a literal. That is a fixture with a shelf life: a
+    stored binding that collides with a default is dropped on purpose, so the
+    day somebody binds the literal, a test about *merging* fails with a message
+    about a chord. It has happened three times now -- Ctrl+Alt+Shift+Y became
+    Clear Copy Tray (2026-09-16), Ctrl+Alt+Z became Restore Deletion
+    (2026-09-08), and Ctrl+Alt+Shift+F5, F9 and K were all taken on 2026-09-23
+    by Move Section To and the hosted-AI commands.
+
+    ``skip`` picks the second, third, ... free chord, for the tests that need two
+    overrides that must not collide with each other either.
+    """
+    # One canonical spelling only. "Ctrl+Shift+Alt+F1" and "Ctrl+Alt+Shift+F1"
+    # are the same chord, and a set of raw strings does not know that -- the
+    # first version of this helper picked the reordered spelling of a chord that
+    # WAS taken, and the loader then correctly dropped the override and recorded
+    # the displaced default as cleared, which failed three tests with messages
+    # about deltas rather than about chords.
+    taken = {
+        "+".join(sorted(part.strip().upper() for part in value.split("+")))
+        for value in DEFAULT_KEYMAP.values()
+        if value.strip()
+    }
+    found = 0
+    for number in range(1, 25):
+        chord = f"Ctrl+Alt+Shift+F{number}"
+        if "+".join(sorted(part.upper() for part in chord.split("+"))) in taken:
+            continue
+        if found == skip:
+            return chord
+        found += 1
+    raise AssertionError("no unclaimed Ctrl+Alt+Shift+F<n> chord is left for a fixture")
+
+
 def test_load_keymap_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     keymap = load_keymap()
@@ -47,9 +84,9 @@ def test_load_keymap_merges_overrides(monkeypatch: pytest.MonkeyPatch, tmp_path:
     # that became Clear Copy Tray's default -- at which point the loader
     # correctly recorded the displaced default as cleared and the on-disk
     # delta grew an entry this test did not expect.
-    save_keymap({"file.save": "Ctrl+Alt+Shift+F5"})
+    save_keymap({"file.save": _free_chord()})
     keymap = load_keymap()
-    assert keymap["file.save"] == "Ctrl+Alt+Shift+F5"
+    assert keymap["file.save"] == _free_chord()
     assert keymap["file.open"] == DEFAULT_KEYMAP["file.open"]
 
 
@@ -72,14 +109,14 @@ def test_import_keymap_saves_merged_defaults(
     # default on 2026-09-16. This test wants a chord that is only ever the
     # user's, so a new default taking it turns a test about *saving* into a test
     # about conflict precedence -- pick a free chord and it stays the former.
-    export_keymap(source_path, {"edit.find": "Ctrl+Alt+Shift+K"})
+    export_keymap(source_path, {"edit.find": _free_chord()})
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
 
     merged = import_keymap(source_path)
 
-    assert merged["edit.find"] == "Ctrl+Alt+Shift+K"
+    assert merged["edit.find"] == _free_chord()
     saved = load_keymap()
-    assert saved["edit.find"] == "Ctrl+Alt+Shift+K"
+    assert saved["edit.find"] == _free_chord()
     assert saved["file.save"] == DEFAULT_KEYMAP["file.save"]
 
 
@@ -114,8 +151,7 @@ def test_load_keymap_preserves_unknown_command_id(
     # purpose (two commands cannot share a chord), so a hard-coded chord makes
     # this test fail the day somebody binds it -- which is exactly what happened
     # on 2026-09-08 when edit.restore_deletion took Ctrl+Alt+Z.
-    taken = set(DEFAULT_KEYMAP.values())
-    chord = next(c for c in ("Ctrl+Alt+Shift+F9", "Ctrl+Alt+F9", "Alt+Shift+F9") if c not in taken)
+    chord = _free_chord()
 
     save_keymap({"a.sibling_app_command": chord})
 
@@ -165,7 +201,7 @@ def test_load_keymap_absent_binding_falls_back_to_default(
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    save_keymap({"file.save": "Ctrl+Alt+Shift+F5"})  # unrelated override only
+    save_keymap({"file.save": _free_chord()})  # unrelated override only
 
     loaded = load_keymap()
 
@@ -198,12 +234,12 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # A move: Save leaves Ctrl+S, and the Palette takes it. Plus one foreign
     # (sibling-app) command that this build knows nothing about.
     save_keymap({
-        "file.save": "Ctrl+Alt+Shift+F5",  # valid override, must survive
+        "file.save": _free_chord(),  # valid override, must survive
         # A chord no command in THIS build claims, which is the point of the
         # row: it is a newer sibling app's. It was Ctrl+Alt+X until 2026-09-18,
         # when Exchange Cursor and Mark took that (bad.md P1.2) and the guard
         # correctly started dropping one of the two.
-        "a.sibling_app_command": "Ctrl+Alt+Shift+F12",  # unknown id, now preserved
+        "a.sibling_app_command": _free_chord(skip=1),  # unknown id, now preserved
         "app.command_palette": "Ctrl+S",  # the key Save just vacated
     })
 
@@ -212,8 +248,8 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # Both of the user's requests, honoured. The default that stood on Ctrl+S
     # is not what decides this: it is a suggestion, and the user gave an
     # instruction.
-    assert loaded["file.save"] == "Ctrl+Alt+Shift+F5"
-    assert loaded["a.sibling_app_command"] == "Ctrl+Alt+Shift+F12"  # preserved
+    assert loaded["file.save"] == _free_chord()
+    assert loaded["a.sibling_app_command"] == _free_chord(skip=1)  # preserved
     assert loaded["app.command_palette"] == "Ctrl+S"
 
     # And nothing ended up on two commands at once, which is the property the
@@ -225,8 +261,8 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     # delta plus the epoch stamp -- never the full DEFAULT_KEYMAP.
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
-        "file.save": "Ctrl+Alt+Shift+F5",
-        "a.sibling_app_command": "Ctrl+Alt+Shift+F12",
+        "file.save": _free_chord(),
+        "a.sibling_app_command": _free_chord(skip=1),
         "app.command_palette": "Ctrl+S",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
@@ -244,7 +280,7 @@ def test_load_keymap_leaves_clean_file_alone(
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    save_keymap({"file.save": "Ctrl+Alt+Shift+F5"})
+    save_keymap({"file.save": _free_chord()})
     mtime_before = store_path.stat().st_mtime_ns
 
     load_keymap()
@@ -388,8 +424,8 @@ def test_non_leader_custom_find_binding_is_preserved() -> None:
     # A user who deliberately rebinds Find to a non-leader chord keeps it; the
     # beta force only reclaims leader-chord Find bindings.
     # A free chord on purpose; see test_import_keymap_saves_merged_defaults.
-    merged = keymap_module.merge_keymaps({"edit.find": "Ctrl+Alt+Shift+K"})
-    assert merged["edit.find"] == "Ctrl+Alt+Shift+K"
+    merged = keymap_module.merge_keymaps({"edit.find": _free_chord()})
+    assert merged["edit.find"] == _free_chord()
 
 
 # ---------------------------------------------------------------------------
@@ -408,12 +444,12 @@ def test_save_keymap_persists_only_the_override_delta_plus_epoch(
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
     full = DEFAULT_KEYMAP.copy()
-    full["file.save"] = "Ctrl+Alt+Shift+F5"
+    full["file.save"] = _free_chord()
     save_keymap(full)
 
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
-        "file.save": "Ctrl+Alt+Shift+F5",
+        "file.save": _free_chord(),
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
 
@@ -423,11 +459,11 @@ def test_non_overridden_command_tracks_the_current_default() -> None:
     # delta resolves to whatever DEFAULT_KEYMAP says today -- so a changed or
     # newly added default reaches existing users with no migration entry.
     saved = {
-        "file.save": "Ctrl+Alt+Shift+F5",
+        "file.save": _free_chord(),
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
     merged = keymap_module.merge_keymaps(saved)
-    assert merged["file.save"] == "Ctrl+Alt+Shift+F5"
+    assert merged["file.save"] == _free_chord()
     assert merged["edit.find"] == DEFAULT_KEYMAP["edit.find"]
 
 
@@ -450,17 +486,17 @@ def test_legacy_full_snapshot_is_converted_to_a_stamped_delta(
             # rows are saturated across the two editors, and this fixture used
             # to pick Ctrl+Shift+Alt+B, which became edit.select_block's default
             # on 2026-09-16 and was then correctly dropped as a duplicate.
-            "format.bold": "Ctrl+Alt+Shift+F4",
+            "format.bold": _free_chord(),
         },
     )
 
     loaded = load_keymap()
     assert loaded["edit.find"] == DEFAULT_KEYMAP["edit.find"]
-    assert loaded["format.bold"] == "Ctrl+Alt+Shift+F4"
+    assert loaded["format.bold"] == _free_chord()
 
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
-        "format.bold": "Ctrl+Alt+Shift+F4",
+        "format.bold": _free_chord(),
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
 

@@ -6,7 +6,8 @@ shared provider API key in the open-source client**.
 
 **Read these first, in this order:**
 
-1. [`../ai.md`](../ai.md) — the current plan and the authority on every
+1. [`quill-ai-gateway-spec.md`](../docs/Product%20Requirement%20Documents%20and%20Specifications/quill-ai-gateway-spec.md)
+   — the current plan and the authority on every
    number, the deployment runbook (section 14), and the task list (section
    16). Where it and the PRD disagree about a value, this document wins.
 2. [`../docs/planning/openai.md`](../docs/planning/openai.md) — the original
@@ -45,7 +46,8 @@ somebody to support over a feature that does not exist.
 
 **This service sends no email.** No SMTP, no mail provider, nothing that needs
 one. Sign-in is the device-code flow, so there is no address to verify and no
-password to reset; alerts go to a webhook. See `../ai.md` section 14.3.
+password to reset; alerts go to a webhook. See `quill-ai-gateway-spec.md`
+section 14.3.
 
 - **`app/config.py`** — every environment variable this service reads, and
   nothing else. Read this to see exactly what a deployment must configure.

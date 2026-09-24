@@ -343,8 +343,13 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     # PR1 (EdSharp port): section-move pair. Distinct from move_line_up/down —
     # section-move swaps the entire heading section (heading + body) past its
     # sibling, while move_line_up/down operate on the caret's line only.
+    "edit.select_section": "core.format",
     "format.move_section_up": "core.format",
     "format.move_section_down": "core.format",
+    # Move Section To: the same capability with a destination instead of a
+    # direction, so it belongs to the same feature area as the keys it replaces
+    # over a long document.
+    "format.move_section_to": "core.format",
     "format.duplicate_line": "core.format",
     "format.delete_line": "core.format",
     "format.join_lines": "core.format",

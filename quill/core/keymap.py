@@ -215,6 +215,43 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # support#67: bare Alt+Q is a macOS Option deadkey -- disable on darwin
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "tools.ask_quill_chat": "" if sys.platform == "darwin" else "Alt+Q",
+    # The hosted AI -- QUILL's own free service, which is what the AI menu now
+    # opens with. Every chord here is **QuillLite's**, unchanged, because family
+    # rule 2 says the command both products have keeps its chord and all five
+    # were free on this side. A person who learned Ctrl+Alt+G in the small
+    # editor has learned it in the big one.
+    #
+    # Ctrl+Alt+G for the pad and Ctrl+Alt+Z for "ask about this document" are
+    # short because they are the two things people do; Usage, Sign In and the
+    # agreement are rule 9 commands -- once-a-month at most, so they earn *a*
+    # key rather than a good one.
+    # The two Ctrl+Alt+letter chords here are the §10.8 escape hatch used the
+    # same way file.new_plain_text_document and power.describe_character_detail
+    # use it: **QuillLite's chord, adopted unchanged under family rule 2.** The
+    # policy exists because Ctrl+Alt is AltGr on an international layout and
+    # because JAWS and NVDA claim parts of that space, and the honest accounting
+    # is that this chord pair is already shipped and already pressed -- in the
+    # small editor, by the same people, for the same two commands. Giving QUILL a
+    # different key would not recover the AltGr exposure; it would only add a
+    # second thing to remember, which is the cost rule 2 exists to refuse.
+    # Neither is a default JAWS or NVDA command: NVDA's laptop layer uses
+    # NVDA+Ctrl+... rather than bare Ctrl+Alt, and JAWS's Ctrl+Alt assignments
+    # are Ctrl+Alt+function-key and Ctrl+Alt+arrow (table navigation), not
+    # Ctrl+Alt+G or Ctrl+Alt+Z. Both are rebindable, and the Keyboard Manager
+    # says so.
+    "tools.hosted_ai_assistant": "Ctrl+Alt+G",  # §edsharp-ok — QuillLite's chord
+    "tools.hosted_ai_ask_document": "Ctrl+Alt+Z",  # §edsharp-ok — QuillLite's chord
+    # Usage and Sign In are the two that could NOT keep QuillLite's chord, and
+    # the reason is the same one cmd_spelling_voice_settings already carries in
+    # DIVERGENCES: Ctrl+Alt+Shift+F7 through F12 are the six QuillVille sibling
+    # launchers in QUILL, and QuillLite -- being the editor on its own -- has no
+    # siblings to launch, so F9 and F10 are free over there and spoken for here.
+    # A chord claimed twice means one of the pair silently never fires, which is
+    # worse than a divergence somebody can read about. Same modifiers, same
+    # finger shape, two keys to the left, and both are rule 9 commands anyway.
+    "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
+    "tools.hosted_ai_sign_in": "Ctrl+Alt+Shift+F4",
+    "tools.hosted_ai_privacy": "Ctrl+Alt+Shift+K",
     # Thirteen commands that had no DEFAULT_KEYMAP entry at all and were bound
     # (or listed unbound) only in the shipped "QUILL Default" profile. That was
     # backwards: the profile is a delta over these defaults, so a command
@@ -692,6 +729,22 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.shrink_selection": "Ctrl+Alt+Shift+X",  # was Alt+Shift+Down (§edsharp-ok)
     "format.move_section_up": "Alt+Shift+Up",  # §edsharp-ok — markdown/html only
     "format.move_section_down": "Alt+Shift+Down",  # §edsharp-ok — markdown/html only
+    # Select Section, the clipboard route out of the section family. Every
+    # Alt+Shift letter is spoken for in one editor or the other, and this is a
+    # rule 9 command: it earns *a* key rather than a short one. Alt+Shift+F5
+    # keeps it in the Alt+Shift family the other four structure keys live in,
+    # is free in both products, and carries no Word or Windows meaning to
+    # fight (unlike Alt+F4, Alt+F6 and Ctrl+Shift+F5/F6/F12, which do).
+    "edit.select_section": "Alt+Shift+F5",
+    # Move Section To, the destination picker. Picked the same way
+    # Select Section's key was: every Alt+Shift and Ctrl+Alt+Shift *letter* is
+    # claimed in one editor or the other, so the choice was among function keys
+    # free in both. Ctrl+Alt+Shift+F5 is the same F-key as Select Section with
+    # one more modifier -- the bigger version of the same idea, which is worth
+    # something to a hand that has learned the smaller one -- and carries no
+    # Word or Windows meaning to fight, unlike Alt+F6 (next window within an
+    # app), Alt+Shift+F10 (smart tags) and Ctrl+Shift+F5/F6/F12.
+    "format.move_section_to": "Ctrl+Alt+Shift+F5",
     "edit.set_named_mark": "",
     "edit.jump_to_named_mark": "",
     "edit.open_review_buffer": "Alt+Shift+U",  # bad.md 4.2: registered, never bound
