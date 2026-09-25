@@ -452,7 +452,7 @@ stick.
 | `QuillLite-Setup-Shared-<version>.exe` | You want to install it. |
 | `QuillLite-Portable-<version>.zip` | You want it on a USB stick. |
 
-Both are signed by Community Access, so Windows knows where they came from.
+Both are digitally signed, so Windows can confirm they have not been altered.
 
 Installing offers *Open .txt and .rtf files with QUILL Lite* as an **optional**
 extra. It adds QUILL Lite to the Open With list and **never** makes itself the
