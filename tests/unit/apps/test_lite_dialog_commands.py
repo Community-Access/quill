@@ -780,23 +780,76 @@ def _features():
     return _Features()
 
 
-def test_about_shows_the_ai_support_id_when_connected(lite_window, lite_dialogs, monkeypatch):
-    """The number support asks for first, where people look for support
-    (asked for 2026-09-25) -- and nothing at all when not connected."""
-    win = lite_window("hello")
-    monkeypatch.setattr(win, "ai_support_id", lambda: "2DFD-22DB")
-    win.cmd_about()
-    assert (
-        "QUILL AI support ID for this computer: 2DFD-22DB"
-        in lite_dialogs.args_for("show_text_window")[2]
-    )
+class _Field:
+    """Just enough of a read-only text control for the About hook."""
+
+    def __init__(self, value: str) -> None:
+        self.value = value
+        self.caret = 0
+
+    def __bool__(self) -> bool:
+        return True
+
+    def GetValue(self) -> str:  # noqa: N802 - wx API shape
+        return self.value
+
+    def SetValue(self, value: str) -> None:  # noqa: N802
+        self.value = value
+
+    def AppendText(self, text: str) -> None:  # noqa: N802
+        self.value += text
+        self.caret = len(self.value)
+
+    def GetInsertionPoint(self) -> int:  # noqa: N802
+        return self.caret
+
+    def SetInsertionPoint(self, where: int) -> None:  # noqa: N802
+        self.caret = where
+
+    def GetLastPosition(self) -> int:  # noqa: N802
+        return len(self.value)
 
 
-def test_about_says_nothing_about_ai_when_not_connected(lite_window, lite_dialogs, monkeypatch):
+def test_about_hands_its_text_to_the_ai_usage_hook(lite_window, lite_dialogs):
     win = lite_window("hello")
-    monkeypatch.setattr(win, "ai_support_id", lambda: "")
     win.cmd_about()
-    assert "support ID" not in lite_dialogs.args_for("show_text_window")[2]
+    assert lite_dialogs.kwargs_for("show_text_window")["on_ready"] == win.ai_about_usage
+
+
+def test_about_shows_the_support_id_and_the_servers_usage(lite_window, monkeypatch):
+    """Asked for 2026-09-25: the number support asks for, and the allowance,
+    where people look. The usage is fetched from the server every time, and
+    the caret stays where the reader left it."""
+    from quill.core.ai.gateway_client import GatewayQuota
+
+    class Service:
+        signed_in = True
+        support_id = "2DFD-22DB"
+
+        def fetch_quota(self, *, on_done, on_error):
+            on_done(GatewayQuota(monthly_cap=100, monthly_used=4, daily_cap=20, daily_used=1))
+
+    win = lite_window("hello")
+    monkeypatch.setattr(win, "_ai_service", lambda: Service())
+    field = _Field("QuillLite 1.0")
+    win.ai_about_usage(field)
+
+    assert "Support ID for this computer: 2DFD-22DB" in field.value
+    assert "96 of 100 requests left" in field.value
+    assert "Asking QUILL" not in field.value
+    assert field.caret == 0
+
+
+def test_about_says_nothing_about_ai_when_not_connected(lite_window, monkeypatch):
+    class Service:
+        signed_in = False
+        support_id = ""
+
+    win = lite_window("hello")
+    monkeypatch.setattr(win, "_ai_service", lambda: Service())
+    field = _Field("QuillLite 1.0")
+    win.ai_about_usage(field)
+    assert field.value == "QuillLite 1.0"
 
 
 def test_a_support_message_carries_the_ai_support_id(monkeypatch):

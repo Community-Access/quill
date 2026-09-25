@@ -9074,7 +9074,7 @@ class MainFrame(
             gather_about_info(),
             self.open_third_party_notices,
             self._show_modal_dialog,
-            ai_support_id=self.ai_support_id(),
+            on_ready=self.ai_about_usage,
         )
         self._set_status("Opened About Quill")
 

@@ -212,6 +212,23 @@ def is_new_account(app, user: User, now: datetime | None = None) -> bool:
     return (now or datetime.now(UTC)) - created < timedelta(hours=hours)
 
 
+def starter_allowance_ends_at(app, user: User, now: datetime | None = None) -> datetime | None:
+    """When this user's new-account allowance gives way to the normal one.
+
+    ``None`` when it does not apply: the account is past the window, or an
+    admin has set this person's cap by hand (which always wins, see
+    :func:`_effective_user_cap`). Reported by ``/v1/quota`` so the client can
+    *explain* a smaller number rather than just show one -- "15 left" with no
+    reason reads as a mistake to somebody who was told 100.
+    """
+    if user.monthly_request_cap is not None or not is_new_account(app, user, now):
+        return None
+    created = user.created_at
+    if created.tzinfo is None:
+        created = created.replace(tzinfo=UTC)
+    return created + timedelta(hours=resolve_limit(app, "new_account_hours"))
+
+
 def _effective_user_cap(app, user: User) -> int:
     """The monthly request cap that actually applies to *this* user.
 

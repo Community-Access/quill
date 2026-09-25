@@ -59,7 +59,12 @@
              name="monthly_request_cap" aria-describedby="cap-requests-help"
              value="{{ user.monthly_request_cap if user.monthly_request_cap is not none else '' }}">
       <p id="cap-requests-help" class="field-description">
-        {% if user.monthly_request_cap is none %}
+        {% if user.monthly_request_cap is none and is_new %}
+        No override: this is still a new account, so it has the starter
+        allowance of {{ quota.monthly_cap }} until its new-account window ends.
+        Enter a number here to lift it now -- an override always beats the
+        starter allowance. The user sees the change on their next Usage check.
+        {% elif user.monthly_request_cap is none %}
         No override: this account uses the normal limit of {{ quota.monthly_cap }}.
         {% else %}
         Currently overridden to {{ user.monthly_request_cap }}. Empty this field

@@ -391,15 +391,10 @@ class AiUsageFrame(wx.Frame):
     def _show(self, quota: Any) -> None:
         if not self:
             return
-        reset = (quota.reset_at or "")[:10] or "the 1st"
+        from quill.core.ai.gateway_quota_text import describe_quota
+
         self._body.SetValue(
-            f"This month\n"
-            f"{quota.monthly_left} of {quota.monthly_cap} requests left. "
-            f"Starts again {reset}.\n\n"
-            # No cap here: today's is the smaller of the two the server sent,
-            # so "of 20" beside a month with 15 left would contradict itself.
-            f"Today\n{quota.daily_left} left.\n\n"
-            f"This computer\nSupport ID {self._service.support_id}."
+            f"{describe_quota(quota)}\n\nThis computer\nSupport ID {self._service.support_id}."
         )
         # A label change on an unfocused control, which the reader does not say.
         self._announce(f"{quota.monthly_left} of {quota.monthly_cap} requests left this month.")

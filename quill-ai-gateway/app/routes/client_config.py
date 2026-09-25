@@ -11,7 +11,7 @@ from __future__ import annotations
 from flask import Blueprint, current_app, g, jsonify
 
 from app.auth import require_auth
-from app.limits import remaining_quota, resolve_limit
+from app.limits import remaining_quota, resolve_limit, starter_allowance_ends_at
 from app.models import FeatureFlag, db
 from app.prompts import DEFERRED_FEATURES, SHIPPED_FEATURES
 
@@ -60,7 +60,13 @@ def get_quota():
     to show it, exactly like every number in this response is re-checked
     authoritatively server-side on the next real ``/v1/chat`` call."""
     quota = remaining_quota(current_app, g.user)
+    starter_until = starter_allowance_ends_at(current_app, g.user)
     return jsonify({
+        # Both absent-safe for older clients, which ignore unknown keys. The
+        # standard cap is the live setting, not a constant: an operator can
+        # move it, and the client says whatever the server says.
+        "starter_until": starter_until.isoformat() if starter_until else None,
+        "standard_monthly_request_cap": int(resolve_limit(current_app, "monthly_request_cap")),
         "monthly_request_cap": quota.monthly_cap,
         "monthly_requests_used": quota.monthly_used,
         "daily_request_cap": quota.daily_cap,

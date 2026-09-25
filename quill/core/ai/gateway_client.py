@@ -142,6 +142,11 @@ class GatewayQuota:
     daily_used: int = 0
     reset_at: str = ""
     status: str = "active"
+    #: When a new connection's smaller first allowance ends (ISO 8601), or ""
+    #: when it does not apply. Sent by the server, like every number here.
+    starter_until: str = ""
+    #: The monthly allowance everybody gets once the starter one ends.
+    standard_monthly_cap: int = 0
 
     @property
     def monthly_left(self) -> int:
@@ -169,6 +174,8 @@ class GatewayQuota:
             daily_used=int(data.get("daily_requests_used", 0)),
             reset_at=str(data.get("reset_at", "")),
             status=str(data.get("status", "active")),
+            starter_until=str(data.get("starter_until") or ""),
+            standard_monthly_cap=int(data.get("standard_monthly_request_cap") or 0),
         )
 
 

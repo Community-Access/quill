@@ -27,9 +27,18 @@ QUILL and QuillLite:
   connection's monthly cap sits under the daily one, so Usage said 15 left
   this month and 20 left today. Both numbers still come from the server every
   time the window opens.
-- **The support ID is where people look for it.** When this computer is
-  connected, About (in both editors) shows its QUILL AI support ID, and Get
-  Help from Support includes it in the message.
+- **The support ID and the allowance are where people look for them.** When
+  this computer is connected, About (in both editors) shows its QUILL AI
+  support ID and its usage, fetched from the server while About is open, and
+  Get Help from Support includes the ID in the message.
+- **The starter allowance explains itself.** A new connection gets a smaller
+  allowance (15) for its first 48 hours, which read as a mistake to somebody
+  told 100. `/v1/quota` now reports `starter_until` and
+  `standard_monthly_request_cap`, and Usage and About say what the smaller
+  number is, when it ends, and that support can lift it. Operators lift it
+  with the existing per-user **Requests per month** override, whose dashboard
+  hint now says so for a new account. Documented in both user guides and the
+  gateway README.
 
 ### QuillLite no longer asks to save a document nobody changed (2026-09-25)
 

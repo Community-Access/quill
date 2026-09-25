@@ -174,10 +174,49 @@ class HostedAiMixin:
         support_id = self.ai_support_id()
         return {"QUILL AI support ID": support_id} if support_id else {}
 
-    def ai_support_line(self) -> str:
-        """A line for an About window, starting with its newline, or ""."""
+    def ai_about_usage(self, field: Any) -> None:
+        """Add this computer's AI support ID and usage to an About window's text.
+
+        Both About windows call this with their read-only text field just before
+        they are shown. Nothing is added when this computer is not connected.
+        The support ID is known here and goes in at once; the usage comes from
+        the server every time -- limits can be raised or lowered there at any
+        moment -- so a placeholder goes in and is replaced when the answer
+        arrives, which it does while the About window is still open. The caret
+        stays where it was: somebody may already be reading.
+        """
         support_id = self.ai_support_id()
-        return f"\nQUILL AI support ID for this computer: {support_id}" if support_id else ""
+        if not support_id:
+            return
+        placeholder = "Asking QUILL's free AI how much is left..."
+        where = field.GetInsertionPoint()
+        field.AppendText(
+            f"\n\nQUILL's free AI\nSupport ID for this computer: {support_id}\n\n{placeholder}"
+        )
+        field.SetInsertionPoint(where)
+
+        def fill(text: str) -> None:
+            try:
+                if not field:
+                    return
+                value = field.GetValue()
+                if placeholder not in value:
+                    return
+                # The whole value rather than Replace(): a plain multi-line edit
+                # counts a line break as two positions and GetValue as one, so an
+                # offset found in the string lands in the wrong place.
+                caret = field.GetInsertionPoint()
+                field.SetValue(value.replace(placeholder, text))
+                field.SetInsertionPoint(min(caret, field.GetLastPosition()))
+            except RuntimeError:  # the About window closed while we waited
+                pass
+
+        from quill.core.ai.gateway_quota_text import describe_quota
+
+        self._ai_service().fetch_quota(
+            on_done=lambda quota: fill(describe_quota(quota)),
+            on_error=lambda message: fill(f"Usage could not be checked just now. {message}"),
+        )
 
     def cmd_ai_privacy(self) -> None:
         """Read the agreement, and accept or withdraw it.

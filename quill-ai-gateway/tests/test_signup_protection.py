@@ -282,3 +282,25 @@ def test_an_unknown_address_is_never_refused_by_either_cap(app, db):
         for _ in range(50):
             check_device_budget(app, "")
             check_network_budget(app, "")
+
+
+def test_the_starter_allowance_says_when_it_ends(app, db):
+    """The client explains a smaller number instead of just showing one, so the
+    server says when it ends -- and says nothing once an admin has lifted it."""
+    from app.limits import starter_allowance_ends_at
+    from app.models import User
+
+    seed_config_rows(db.session)
+    created = datetime.now(UTC) - timedelta(hours=1)
+    new = User(created_at=created)
+    lifted = User(created_at=created, monthly_request_cap=100)
+    old = User(created_at=datetime.now(UTC) - timedelta(days=7))
+    db.session.add_all([new, lifted, old])
+    db.session.commit()
+
+    with app.app_context():
+        ends = starter_allowance_ends_at(app, new)
+        assert ends is not None
+        assert abs((ends - (created + timedelta(hours=48))).total_seconds()) < 5
+        assert starter_allowance_ends_at(app, lifted) is None
+        assert starter_allowance_ends_at(app, old) is None

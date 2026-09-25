@@ -367,8 +367,14 @@ def _index_of(choices: tuple[tuple[str, str], ...], value: str) -> int:
     return 0
 
 
-def show_text_window(parent: wx.Window, title: str, body: str) -> None:
+def show_text_window(
+    parent: wx.Window, title: str, body: str, *, on_ready: Callable[[Any], None] | None = None
+) -> None:
     """A read-only text window (the key list, the About box).
+
+    *on_ready* is handed the text field just before the window is shown, for a
+    caller with more to add once it knows it -- About adds the AI usage, which
+    arrives from the server while the window is open.
 
     The body sits in a ``TE_RICH2`` read-only field rather than in a static
     label, because a screen reader can only *read through* text it can put a
@@ -394,6 +400,8 @@ def show_text_window(parent: wx.Window, title: str, body: str) -> None:
     bind_close_button(dialog, close_btn, modeless=False)
     field.SetFocus()
     field.SetInsertionPoint(0)
+    if on_ready is not None:
+        on_ready(field)
     try:
         show_modal_dialog(dialog, title)
     finally:
