@@ -5597,6 +5597,17 @@ rather than writing the answer somewhere it does not belong.
 **The editor never waits.** Requests run in the background: you can keep typing,
 save, switch documents or close the window while an answer is on its way.
 
+**How much.** The limits are read from the service, never built into QUILL, so
+they can change without an update: currently **100 requests a month**, no more
+than **20 in a day**. **A new connection starts smaller:** for its **first 48
+hours** a newly connected computer has **15 requests**, and the full allowance
+follows on its own — it is how a free service with no accounts stops somebody
+scripting connection after connection for a fresh allowance each time. **Free
+AI Usage** explains it while it applies, including when it ends, and **Help ▸
+About QUILL** shows the same allowance with this computer's **support ID** on its
+Overview tab. Need more sooner? **Get Help from Support** includes your support
+ID automatically, and support can lift the limit for your account.
+
 **Nothing happens until you ask.** There is no request on launch, on typing, on
 save, on idle or on focus. An install with the feature on and never used makes no
 network call at all.

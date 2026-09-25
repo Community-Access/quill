@@ -142,6 +142,18 @@ second password — see `app/dashboard_auth.py`'s docstring). From there:
 - **Limits** — every `gateway_config` row, editable, live (no restart).
 - **Users** — view usage, set a user's status (active/reduced/review/
   blocked — reversible), or permanently remove a user.
+
+  **Lifting a new account's starter allowance.** A new account gets
+  `new_account_request_cap` requests a month (15) for its first
+  `new_account_hours` (48), then the normal `monthly_request_cap` (100). The
+  client explains this in Usage and About, from the `starter_until` and
+  `standard_monthly_request_cap` fields of `/v1/quota`. When somebody asks for
+  more sooner, find them under **Users** by the support ID their message
+  carries, and type a number into **Requests per month** on their page: a
+  per-user override always beats the starter allowance (and the global
+  default), takes effect on their next request, and clearing the field hands
+  them back to the normal rules. The API equivalent is
+  `PUT /admin/users/<id>/caps` with `{"monthly_request_cap": 100}`.
 - **Feature flags** — pause one feature, or hit the global "Hosted AI"
   kill switch.
 - **Audit log** — every admin action taken anywhere (API or dashboard),

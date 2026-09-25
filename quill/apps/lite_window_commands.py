@@ -474,6 +474,6 @@ class DocumentCommandsMixin(
             "Part of the QuillVille family by Community Access and BITS (MIT licence).\n"
             "https://github.com/Community-Access/quill\n\n"
             f"Settings and recovered work: {self.app.data_dir}\n\n"
-            f"Support: {SUPPORT_EMAIL}{self.ai_support_line()}"
+            f"Support: {SUPPORT_EMAIL}"
         )
-        show_text_window(self, f"About {APP_NAME}", body)
+        show_text_window(self, f"About {APP_NAME}", body, on_ready=self.ai_about_usage)

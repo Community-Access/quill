@@ -2983,9 +2983,23 @@ an hour**. Summarize, rewrite and questions each have their own monthly share of
 that. The hourly and daily numbers are there to stop one runaway loop spending a
 month's worth in an afternoon, not to ration ordinary work.
 
+**A new connection starts smaller.** For its **first 48 hours**, a computer
+that has just connected has a smaller monthly allowance — currently **15
+requests** — and after that the full allowance applies on its own; there is
+nothing to do. It is how a free service with no accounts stops somebody
+scripting connection after connection for a fresh allowance each time, and
+somebody trying the feature out rarely reaches 15 on their first day. **Usage**
+says so while it applies, including exactly when it ends. If you need more
+sooner — a class, a deadline — use **Get Help from Support**: your support ID
+goes with the message automatically, and support can lift the limit for your
+account. The numbers here are the service's current settings; Usage always
+shows the live ones.
+
 **Usage** (**Ctrl+Alt+Shift+F9**) shows what you have used and what is left. The
 service is free and has a fair-use ceiling; this is where you find out where you
-stand, before you are told by being refused.
+stand, before you are told by being refused. **Help ▸ About QuillLite** shows the
+same allowance, and this computer's **support ID**, under **QUILL's free AI** —
+the numbers are asked for fresh each time, so give it a moment after About opens.
 
 **Connect or Sign Out** (**Ctrl+Alt+Shift+F10**) connects *this computer* to the
 service, or disconnects it. Signing out does not withdraw your agreement, and
