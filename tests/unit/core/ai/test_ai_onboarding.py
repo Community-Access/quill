@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import quill.core.ai.onboarding as ob
 
 
@@ -99,7 +101,7 @@ def test_ollama_status_classifies_reachability(monkeypatch) -> None:
     # Not running (error) -> not ok, friendly guidance, no model.
     monkeypatch.setattr(aa, "list_assistant_models", lambda *a, **k: ([], "connection refused"))
     ok, msg, model = ob.ollama_status()
-    assert ok is False and "ollama.com" in msg.lower() and model == ""
+    assert ok is False and re.search(r"\bollama\.com\b", msg.lower()) and model == ""
 
     # Running but no models -> not ok, guidance to pull a model.
     monkeypatch.setattr(aa, "list_assistant_models", lambda *a, **k: ([], None))

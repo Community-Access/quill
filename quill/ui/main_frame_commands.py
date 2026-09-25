@@ -1172,77 +1172,77 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "whisperer.model_manager",
-            "BITS Whisperer Speech Model Manager...",
+            "QUILL Whisperer Speech Model Manager...",
             self.open_bw_model_manager,
             None,
             feature_id="core.bw_transcription",
         )
         self.commands.register(
             "whisperer.model_status",
-            "BITS Whisperer Speech Model Status",
+            "QUILL Whisperer Speech Model Status",
             self.show_bw_model_status,
             None,
             feature_id="core.bw_transcription",
         )
         self.commands.register(
             "whisperer.model_recommend",
-            "BITS Whisperer Use Recommended Speech Model",
+            "QUILL Whisperer Use Recommended Speech Model",
             self.apply_bw_recommended_model,
             None,
             feature_id="core.bw_transcription",
         )
         self.commands.register(
             "whisperer.check_faster_whisper",
-            "BITS Whisperer Check faster-whisper Engine",
+            "QUILL Whisperer Check faster-whisper Engine",
             self.check_bw_faster_whisper_engine,
             None,
             feature_id="core.bw_transcription",
         )
         self.commands.register(
             "whisperer.provider_center",
-            "BITS Whisperer Provider Center...",
+            "QUILL Whisperer Provider Center...",
             self.open_bw_provider_center,
             None,
             feature_id="core.bw_providers",
         )
         self.commands.register(
             "whisperer.provider_status",
-            "BITS Whisperer Provider Status",
+            "QUILL Whisperer Provider Status",
             self.show_bw_provider_status,
             None,
             feature_id="core.bw_providers",
         )
         self.commands.register(
             "whisperer.provider_recommend",
-            "BITS Whisperer Use Recommended Provider",
+            "QUILL Whisperer Use Recommended Provider",
             self.apply_bw_recommended_provider,
             None,
             feature_id="core.bw_providers",
         )
         self.commands.register(
             "whisperer.provider_select",
-            "BITS Whisperer Select Provider...",
+            "QUILL Whisperer Select Provider...",
             self.select_bw_provider,
             None,
             feature_id="core.bw_providers",
         )
         self.commands.register(
             "whisperer.readiness_check",
-            "BITS Whisperer Readiness Check",
+            "QUILL Whisperer Readiness Check",
             self.show_bw_readiness_check,
             None,
             feature_id="core.bw_insights",
         )
         self.commands.register(
             "whisperer.capability_matrix",
-            "BITS Whisperer Capability Matrix",
+            "QUILL Whisperer Capability Matrix",
             self.show_bw_capability_matrix_page,
             None,
             feature_id="core.bw_insights",
         )
         self.commands.register(
             "whisperer.download_queue",
-            "BITS Whisperer Download Queue...",
+            "QUILL Whisperer Download Queue...",
             self.manage_bw_download_queue,
             None,
             feature_id="core.bw_insights",
@@ -1651,7 +1651,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "whisperer.about",
-            "About BITS Whisperer",
+            "About QUILL Whisperer",
             self.show_whisperer_about_page,
             None,
             feature_id="core.bw_whisperer",

@@ -12,7 +12,7 @@ before touching comtypes, rather than relying on some other module (e.g.
 ``sapi5``) having already imported and set the process-wide
 ``comtypes.client.gen_dir`` as a side effect -- import order between SAPI,
 Narrator's UIA bridge, and the Rich Edit TOM surface is not something QUILL
-controls or should have to reason about (BITS mailing list report, 2026-07-11:
+controls or should have to reason about (mailing list report, 2026-07-11:
 a per-machine install without elevation).
 """
 

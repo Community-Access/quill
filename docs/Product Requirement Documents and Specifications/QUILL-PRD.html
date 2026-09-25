@@ -9446,7 +9446,7 @@ stays until the prompt migration is sunset.
 
 **Goal.** Make transcription the *beginning* of an agentic writing experience, not
 the end: turn audio into the document the user actually needs, with a gentle, guided,
-adjustable path. Folds the agentic transcription magic of BITS Whisperer into QUILL&#39;s
+adjustable path. Folds the agentic transcription magic of QUILL Whisperer into QUILL&#39;s
 unified AI framework.
 
 **Transcript Actions** (`quill/core/ai/transcript_actions.py`, wx-free). Ten
@@ -9752,7 +9752,7 @@ once per process and fails over across them on request failure, per
 RadioBrowser&#39;s own documented recipe, rather than hammering one hardcoded
 host. `core/radio/acb_media.py` bundles the American Council of the Blind&#39;s
 ten Live365 stations as a static, always-available category (no network call
-needed to see it) — researched from BITS&#39;s own `acb_link_desktop` project.
+needed to see it) — researched from the `acb_link_desktop` project.
 `core/radio/soma_fm.py` blends in [SomaFM](https://somafm.com), a second
 free, keyless, curated directory, into the same Browse Stations results —
 chosen over Shoutcast (revocable Developer-ID-gated API) and Live365
@@ -14560,15 +14560,16 @@ previews and file-picker transitions hardened); watch-folder dialogs
 (standardized close/default semantics); formatting dialogs (preserve
 <code>show_web_form</code> for Insert Link, harden list/YAML nested
 flows); macros dialogs (text-entry + management standardization);
-AI/assistant dialogs (the DLG-2 conversions folded in); BITS speech
-dialogs (provider/model/status contract hardening); feature/profile
-dialogs (profile-switch, health, and management consistency);
-help/startup/support dialogs (wizard/about/diagnostics/report-bug
-rendering and focus safety); selection-action dialogs (action-chooser
-semantics hardened); nested/secondary dialogs (explicit coverage for
-each path launched from a parent); power-tools dialogs (stock
-prompt/confirm consistency); and startup-only dialogs (crash recovery +
-untrusted-location remain top-priority hardened native flows).</p>
+AI/assistant dialogs (the DLG-2 conversions folded in); QUILL Whisperer
+speech dialogs (provider/model/status contract hardening);
+feature/profile dialogs (profile-switch, health, and management
+consistency); help/startup/support dialogs
+(wizard/about/diagnostics/report-bug rendering and focus safety);
+selection-action dialogs (action-chooser semantics hardened);
+nested/secondary dialogs (explicit coverage for each path launched from
+a parent); power-tools dialogs (stock prompt/confirm consistency); and
+startup-only dialogs (crash recovery + untrusted-location remain
+top-priority hardened native flows).</p>
 <p><strong>Conversion decisions (definitive).</strong> Keep
 <code>native</code>: simple confirms and binary prompts, and stable
 stock file/folder/select/text prompts. Keep sanctioned <code>web</code>:
@@ -22268,7 +22269,7 @@ states.</li>
 <li>Performance and stability under realistic documents.</li>
 </ul>
 <p>Out of scope for 1.0 (deferred to 2.0, tracked in
-<code>ROADMAP.md</code>): axe-core / Nu Html Checker validation, BITS
+<code>ROADMAP.md</code>): axe-core / Nu Html Checker validation, QUILL
 Whisperer, the GLOW watch-action binding (WATCH-8), and the
 Accessibility Agents workstream.</p>
 <h2 id="2-test-environments">2. Test environments</h2>
@@ -22498,7 +22499,7 @@ cancel.</li>
 <td>Sanity</td>
 </tr>
 <tr>
-<td>R. BITS Whisperer</td>
+<td>R. QUILL Whisperer</td>
 <td>Out of scope for 1.0</td>
 <td>—</td>
 <td>—</td>

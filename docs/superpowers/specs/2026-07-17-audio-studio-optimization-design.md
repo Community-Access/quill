@@ -10,7 +10,7 @@ Two sub-projects on the QUILL Audio Studio surface:
 
 1. **Trim-out** - slim the standalone QUILL-AS vendored closure so it no
    longer ships modules a standalone audio tool does not need (Quillins,
-   braille, document-editing deps, GLOW, BITS Whisperer speech, spellcheck,
+   braille, document-editing deps, GLOW, QUILL Whisperer speech, spellcheck,
    math). The embedded Audio Studio inside QUILL's `MainFrame` keeps all of
    it.
 2. **Port-in** - bring four proven patterns from QUILL Radio / QUILL Cast into

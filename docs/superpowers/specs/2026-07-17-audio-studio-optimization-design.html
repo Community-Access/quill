@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Audio Studio optimization - design</title>
   <style>
@@ -271,7 +271,7 @@ design</h1>
 <ol type="1">
 <li><strong>Trim-out</strong> - slim the standalone QUILL-AS vendored
 closure so it no longer ships modules a standalone audio tool does not
-need (Quillins, braille, document-editing deps, GLOW, BITS Whisperer
+need (Quillins, braille, document-editing deps, GLOW, QUILL Whisperer
 speech, spellcheck, math). The embedded Audio Studio inside QUILL’s
 <code>MainFrame</code> keeps all of it.</li>
 <li><strong>Port-in</strong> - bring four proven patterns from QUILL

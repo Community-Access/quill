@@ -26,4 +26,4 @@ No handler code. No `editor.read` or `editor.write`. No network access.
 
 ## License
 
-MIT. Copyright (c) Blind Information Technology Solutions (BITS) and Community Access.
+MIT. Copyright (c) Community Access.

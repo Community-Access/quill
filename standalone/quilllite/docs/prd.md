@@ -1,6 +1,6 @@
 # QUILL Lite — Product Requirements
 
-**Version 1.0.0 · Windows · MIT · part of the QuillVille family**
+**Version 1.0.0 · released 2026-09-25 · Windows · MIT · part of the QuillVille family**
 
 ## 1. Statement
 

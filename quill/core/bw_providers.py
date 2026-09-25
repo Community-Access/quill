@@ -99,7 +99,7 @@ def provider_readiness(provider_id: str, *, local_first: bool = True) -> Provide
             provider_id=provider_id,
             ready=False,
             summary="Provider is unknown.",
-            next_steps=("Select a valid provider from BITS Whisperer menu.",),
+            next_steps=("Select a valid provider from QUILL Whisperer menu.",),
         )
 
     if provider.id == "local_whisper":
@@ -117,7 +117,7 @@ def provider_readiness(provider_id: str, *, local_first: bool = True) -> Provide
             steps.append(fw_status)
         if not model_ids:
             steps.append(
-                "Download at least one whisper model from BITS Whisperer -> Speech Models."
+                "Download at least one whisper model from QUILL Whisperer -> Speech Models."
             )
         return ProviderReadiness(
             provider_id=provider.id,

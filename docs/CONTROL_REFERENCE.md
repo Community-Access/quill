@@ -2190,47 +2190,47 @@ Test the current publishing connection and report whether QUILL can reach the si
 
 ## Speech
 
-### BITS Whisperer Capability Matrix
+### QUILL Whisperer Capability Matrix
 
 Show what the speech suite can do with your current engines and providers, in one overview.
 
-### BITS Whisperer Check faster-whisper Engine
+### QUILL Whisperer Check faster-whisper Engine
 
 Check whether the optional faster-whisper transcription engine is installed and working.
 
-### BITS Whisperer Download Queue...
+### QUILL Whisperer Download Queue...
 
 Show the download queue for speech models and engines, with progress for each.
 
-### BITS Whisperer Speech Model Manager...
+### QUILL Whisperer Speech Model Manager...
 
 Manage your installed speech-to-text models: add, remove, or switch between them.
 
-### BITS Whisperer Use Recommended Speech Model
+### QUILL Whisperer Use Recommended Speech Model
 
 Select the speech model QUILL recommends for your machine automatically.
 
-### BITS Whisperer Speech Model Status
+### QUILL Whisperer Speech Model Status
 
 Report which speech model is active and whether it is ready to use.
 
-### BITS Whisperer Provider Center...
+### QUILL Whisperer Provider Center...
 
 Open the hub for managing transcription providers and their settings.
 
-### BITS Whisperer Use Recommended Provider
+### QUILL Whisperer Use Recommended Provider
 
 Select the transcription provider QUILL recommends automatically.
 
-### BITS Whisperer Select Provider...
+### QUILL Whisperer Select Provider...
 
 Choose which transcription provider to use.
 
-### BITS Whisperer Provider Status
+### QUILL Whisperer Provider Status
 
 Report the current transcription provider and whether it is reachable.
 
-### BITS Whisperer Readiness Check
+### QUILL Whisperer Readiness Check
 
 Check that everything needed for speech features is installed and configured, and report anything missing.
 

@@ -356,7 +356,7 @@ def contains_math(text: str) -> bool:
 # This is a defensive scrub, not a full HTML parser -- the preview surface never
 # needs to run document script, and there is no CSP on the WebView to fall back
 # on.
-_SCRIPT_BLOCK_RE = re.compile(r"<script\b[^>]*>.*?</script\s*>", re.IGNORECASE | re.DOTALL)
+_SCRIPT_BLOCK_RE = re.compile(r"<script\b[^>]*>.*?</script\b[^>]*>", re.IGNORECASE | re.DOTALL)
 _SCRIPT_TAG_RE = re.compile(r"</?script\b[^>]*>", re.IGNORECASE)
 _ON_ATTR_RE = re.compile(r"""\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)""", re.IGNORECASE)
 _JS_URL_RE = re.compile(

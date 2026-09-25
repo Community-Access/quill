@@ -6,7 +6,7 @@ without touching the watch engine, and each action declares the feature id it
 requires so the registry can gate it through the feature manager (FLAG-1).
 
 This module is UI-framework-agnostic: no ``wx`` imports. The registry is the
-seam that GLOW (WATCH-8) and BITS Whisperer (WATCH-9) plug into, and the same
+seam that GLOW (WATCH-8) and QUILL Whisperer (WATCH-9) plug into, and the same
 seam the built-in actions (WATCH-7) use.
 """
 

@@ -6396,10 +6396,10 @@ class MainFrame(
             if str(entry.get("status", "")).lower() == "running"
         )
         message = f"Status page refreshed. {active_tasks} background task(s) active."
-        # BITS Whisperer is deferred to QUILL 2.0; only name transcription downloads
+        # QUILL Whisperer is deferred to QUILL 2.0; only name transcription downloads
         # when one is actually running, which never happens in a 1.0 build.
         if bw_running:
-            message += f" {bw_running} BITS Whisperer download(s) running."
+            message += f" {bw_running} QUILL Whisperer download(s) running."
         self._announce(message)
         self._status_page_last_announce_at = now
         self._status_page_last_announce_signature = signature
@@ -9125,7 +9125,7 @@ class MainFrame(
         show_whisperer_about_native(
             self.frame, self._wx, roadmap_rows, principles_rows, self._show_modal_dialog
         )
-        self._set_status("Opened About BITS Whisperer")
+        self._set_status("Opened About QUILL Whisperer")
 
     def show_external_tools_dialog(self) -> None:
         wx = self._wx
@@ -13655,7 +13655,7 @@ class MainFrame(
                 ("Engine detail", bw_engine_status),
                 ("Last refresh", datetime.now(UTC).isoformat()),
             ]:
-                status_rows.append(("BITS Whisperer", name, str(value)))
+                status_rows.append(("QUILL Whisperer", name, str(value)))
 
         for name, value in [
             ("Engine", settings.read_aloud_engine),
@@ -13700,8 +13700,8 @@ class MainFrame(
         actions = []
         if self.features.is_enabled("core.bw_whisperer"):
             actions += [
-                "Open BITS Whisperer > Providers > Provider Center for staged onboarding guidance.",
-                "Open BITS Whisperer > Speech Models to choose recommended or manual model setup.",
+                "Open QUILL Whisperer > Providers > Provider Center for staged onboarding help.",
+                "Open QUILL Whisperer > Speech Models to choose recommended or manual model setup.",
             ]
         actions += [
             "Open AI > Speech > Settings to configure engine-specific paths.",
@@ -19116,27 +19116,27 @@ class MainFrame(
     def _show_bw_onboarding(self, force: bool) -> None:
         wx = self._wx
         response = self._show_message_box(
-            "Configure BITS Whisperer rollout defaults now?\n\n"
+            "Configure QUILL Whisperer rollout defaults now?\n\n"
             "This step safely stages provider/model setup and status preferences without enabling "
             "runtime routing changes.",
-            "BITS Whisperer Setup",
+            "QUILL Whisperer Setup",
             wx.ICON_QUESTION | wx.YES_NO,
         )
         if response != wx.YES:
             if force:
-                self._set_status("BITS Whisperer setup skipped")
+                self._set_status("QUILL Whisperer setup skipped")
             return
         self.apply_bw_recommended_provider()
         self.apply_bw_recommended_model()
         if not bool(getattr(self.settings, "bw_auto_open_status_page_on_download_start", False)):
             auto_open = self._show_message_box(
-                "Auto-open Help > Status Page when BITS Whisperer model downloads start?",
-                "BITS Whisperer Setup",
+                "Auto-open Help > Status Page when QUILL Whisperer model downloads start?",
+                "QUILL Whisperer Setup",
                 wx.ICON_QUESTION | wx.YES_NO,
             )
             self.settings.bw_auto_open_status_page_on_download_start = auto_open == wx.YES
             save_settings(self.settings)
-        self._set_status("BITS Whisperer rollout defaults configured")
+        self._set_status("QUILL Whisperer rollout defaults configured")
 
     def _sync_ai_enabled_menu(self, enabled: bool) -> None:
         menu_bar = self.frame.GetMenuBar()

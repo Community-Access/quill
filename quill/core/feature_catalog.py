@@ -166,11 +166,11 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
     ),
     "core.bw_whisperer": FeatureDefinition(
         "core.bw_whisperer",
-        "BITS Whisperer",
+        "QUILL Whisperer",
         description=(
-            "Master flag for the BITS Whisperer transcription suite. Disabled for "
+            "Master flag for the QUILL Whisperer transcription suite. Disabled for "
             "QUILL 1.0 (deferred to 2.0) until it reaches feature parity; gating "
-            "this off hides the entire BITS Whisperer menu and its sub-features."
+            "this off hides the entire QUILL Whisperer menu and its sub-features."
         ),
         category="accessibility",
         dependencies=("core.dictation",),
@@ -178,21 +178,21 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
     ),
     "core.bw_transcription": FeatureDefinition(
         "core.bw_transcription",
-        "BITS Whisperer Transcription Rollout",
-        description="Phased BITS Whisperer speech-model and dictation rollout surface.",
+        "QUILL Whisperer Transcription Rollout",
+        description="Phased QUILL Whisperer speech-model and dictation rollout surface.",
         category="accessibility",
         dependencies=("core.dictation", "core.bw_whisperer"),
     ),
     "core.bw_providers": FeatureDefinition(
         "core.bw_providers",
-        "BITS Whisperer Provider Onboarding",
+        "QUILL Whisperer Provider Onboarding",
         description="Guided provider planning and readiness checks for phased rollout.",
         category="accessibility",
         dependencies=("core.bw_transcription",),
     ),
     "core.bw_insights": FeatureDefinition(
         "core.bw_insights",
-        "BITS Whisperer Rollout Insights",
+        "QUILL Whisperer Rollout Insights",
         description="Readiness checks, capability matrix, and rollout diagnostics surfaces.",
         category="accessibility",
         dependencies=("core.bw_transcription",),

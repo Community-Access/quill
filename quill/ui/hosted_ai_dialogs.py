@@ -479,8 +479,17 @@ class AiUsageFrame(wx.Frame):
 # --------------------------------------------------------------------------- #
 
 
-def ask_ai_privacy_agreement(parent: wx.Window) -> bool:
+def ask_ai_privacy_agreement(parent: wx.Window, *, accepted: bool = False) -> bool:
     """Show the agreement and return whether it was accepted.
+
+    With *accepted* True this is the **review** of an agreement already given,
+    and the return value means something else: ``True`` when the person chose
+    to withdraw. Before 2026-09-25 the Privacy Agreement command withdrew on
+    the spot when the agreement was already accepted -- so pressing
+    Ctrl+Alt+Shift+K to read it again, which the documentation invites, switched
+    AI off and signed the computer out without a word of warning. Now it shows
+    the agreement, and **Keep Using AI** is the default and what Escape does;
+    withdrawing is a separate, deliberate button.
 
     **Announces nothing, either way.** The agreement is reached through three
     doors and on the way to two commands, and what happens next differs at every
@@ -511,15 +520,19 @@ def ask_ai_privacy_agreement(parent: wx.Window) -> bool:
     body = _read_only(
         dialog,
         sizer,
-        "What you are agreeing to",
+        "What you agreed to" if accepted else "What you are agreeing to",
         agreement_text(),
-        "The whole agreement. Read it with the arrow keys; nothing is sent unless you accept.",
+        "The whole agreement. Read it with the arrow keys."
+        if accepted
+        else "The whole agreement. Read it with the arrow keys; nothing is sent unless you accept.",
     )
 
     # No mnemonics on either: Enter and Escape already reach them, and GATE-14
     # would rather those letters went to something that needs them. The labels
     # say which is which, and the reader announces the default.
     buttons = wx.BoxSizer(wx.HORIZONTAL)
+    if accepted:
+        return _review_agreement(dialog, sizer, buttons, body)
     agree = wx.Button(dialog, wx.ID_OK, "I Agree")
     agree.SetHelpText(
         "Turns on AI help. You can withdraw this later in the AI menu, or in Preferences."
@@ -544,5 +557,35 @@ def ask_ai_privacy_agreement(parent: wx.Window) -> bool:
 
     try:
         return dialog.ShowModal() == wx.ID_OK
+    finally:
+        dialog.Destroy()
+
+
+def _review_agreement(dialog: wx.Dialog, sizer: wx.Sizer, buttons: wx.BoxSizer, body) -> bool:
+    """The agreement, already accepted: keep it (the default), or withdraw.
+
+    Returns ``True`` only for Withdraw. Enter and Escape both keep, so reading
+    the agreement again can never switch anything off by accident.
+    """
+    keep = wx.Button(dialog, wx.ID_CANCEL, "Keep Using AI")
+    keep.SetHelpText("Closes the agreement. AI help stays on and this computer stays connected.")
+    withdraw = wx.Button(dialog, wx.ID_ANY, "Withdraw and Sign Out")
+    withdraw.SetHelpText(
+        "Withdraws your agreement: AI help switches off and this computer is signed out. "
+        "Nothing is sent after that. You can agree again at any time."
+    )
+    withdraw.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_NO))
+    buttons.AddStretchSpacer(1)
+    buttons.Add(keep, 0, wx.RIGHT, _PAD)
+    buttons.Add(withdraw, 0)
+    sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
+
+    dialog.SetSizer(sizer)
+    dialog.SetInitialSize((620, 520))
+    dialog.Centre()
+    apply_modal_ids(dialog, affirmative_id=wx.ID_CANCEL, cancel_id=wx.ID_CANCEL)
+    wx.CallAfter(body.SetFocus)
+    try:
+        return dialog.ShowModal() == wx.ID_NO
     finally:
         dialog.Destroy()

@@ -1910,7 +1910,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "bw_safe_mode_lock",
-        "BITS Whisperer safe mode lock",
+        "QUILL Whisperer safe mode lock",
         "transcription",
         "bool",
         "Block download and retry actions while keeping status surfaces.",

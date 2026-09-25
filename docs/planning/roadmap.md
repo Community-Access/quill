@@ -29,10 +29,9 @@ removed from this file).
 ## 0. North star
 
 QUILL is a screen-reader-first writing environment, becoming the home for a family
-of accessibility products that Blind Information Technology Solutions (BITS) and
-CSE Designs built as separate apps. Rather than ship four editors, we **consolidate
+of accessibility products that were built as separate apps. Rather than ship four editors, we **consolidate
 their durable value into QUILL** as optional, keyboard-clear, screen-reader-first
-feature families. The consolidation itself is **done** — BITS Whisperer, GLOW, and
+feature families. The consolidation itself is **done** — QUILL Whisperer, GLOW, and
 ChapterForge (now the Audio Studio) all live in QUILL; the only sibling still feeding
 open work is **GLOW**'s extended family (§5). The discipline: take what clears QUILL's quality and
 accessibility bar, re-home it on QUILL's invariants (atomic storage, the dialog
@@ -150,7 +149,7 @@ move its preserved content back into the relevant doc.
 - `core.third_party_plugins` — **Third-Party Plugins** loader (SEC-8). Locked until the
   plugin sandbox, signing, and review process ship. Release notes frame third-party
   Quillins / a marketplace as *future*.
-- `core.bw_whisperer` — **BITS Whisperer** brand menu (plus `core.bw_transcription`,
+- `core.bw_whisperer` — **QUILL Whisperer** brand menu (plus `core.bw_transcription`,
   `core.bw_providers`, `core.bw_insights` sub-flags, the `quill/core/bw_providers.py`
   backend, the hidden Whisperer menu, and its commands/settings). This gates only the
   **superseded branded presentation** — the phased-rollout / Provider Center / Status Page
@@ -170,8 +169,8 @@ and the ElevenLabs cloud voice, batch document-to-speech, and audiobook building
 > **Docs framing.** GLOW ships as an experimental opt-in (2026-07-02) and its preserved user-facing content
 > has been restored into the user guide ("GLOW Workflows Inside QUILL"), glossary, help
 > topics, and PRD §5.92 — the §2.1 preservation block this file used to carry is gone
-> because the real docs now own it. The **BITS Whisperer** brand is retired — earlier
-> drafts named a "BITS Whisperer speech suite" / "Tools > Speech > Whisperer"; that is
+> because the real docs now own it. The **QUILL Whisperer** brand is retired — earlier
+> drafts named a "QUILL Whisperer speech suite" / "Tools > Speech > Whisperer"; that is
 > now the flat **Tools > Speech** menu and a plain "private, on-device speech suite,"
 > with no brand to restore.
 
@@ -225,7 +224,7 @@ open sections above when scheduled.
   "Hey QUILL" wake word, Ask Quill routing). Canonical docs: PRD §5776 "Voice input",
   user guide "Voice Interaction". Commands stay bounded by the agent safe-tool allowlist.
   The one open follow-up is a dedicated low-power keyword spotter for the wake word.
-- **BITS Whisperer remainder** (tracker #680) — the consolidation shipped for 1.0; the
+- **QUILL Whisperer remainder** (tracker #680) — the consolidation shipped for 1.0; the
   leftovers (a Windows SAPI/WinRT zero-download engine, a consented cloud watch action,
   guided provider onboarding, diarization/live-mic, additional cloud kinds, and the
   Whisperer brand decision) moved to #680 when #669 closed. See also the `bw_whisperer`

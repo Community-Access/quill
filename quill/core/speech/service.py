@@ -217,7 +217,7 @@ def _size_text(mb: int) -> str:
 
 
 def detect_has_gpu() -> bool:
-    """True when a CUDA GPU is present (reuses the BITS Whisperer probe, wx-free)."""
+    """True when a CUDA GPU is present (reuses the QUILL Whisperer probe, wx-free)."""
     try:
         from quill.core.bw_speech import has_nvidia_gpu
     except ImportError:  # bw_speech absent (standalone Audio Studio): no CUDA probe.
@@ -309,7 +309,7 @@ def required_ram_gb(size_mb: int) -> int:
     """Approximate the RAM a model needs to load and run, from its download size.
 
     whisper.cpp / CTranslate2 need roughly the weights plus working memory, so we
-    map the download size onto conservative tiers (aligned with the BITS Whisperer
+    map the download size onto conservative tiers (aligned with the QUILL Whisperer
     machine-guidance tiers). This is a guide for the warning, not a hard gate.
     """
     if size_mb <= 200:
@@ -322,7 +322,7 @@ def required_ram_gb(size_mb: int) -> int:
 
 
 def detect_total_ram_gb() -> float:
-    """Total physical RAM in GB (reuses the BITS Whisperer detector, wx-free)."""
+    """Total physical RAM in GB (reuses the QUILL Whisperer detector, wx-free)."""
     try:
         from quill.core.bw_speech import total_ram_gb
     except ImportError:  # bw_speech absent (standalone Audio Studio): unknown RAM.

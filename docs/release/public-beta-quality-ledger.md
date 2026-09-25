@@ -250,7 +250,7 @@ Captured on the current branch (`main`), dev environment, Python 3.12.
   `tests/unit/core/speech/` set could hang on NeMo's `transformers` import-structure
   scan during the Parakeet test, hitting the suite timeout.
 - Status: Resolved (2026-06-24). The NVIDIA Parakeet engine was removed from QUILL
-  entirely — the provider, catalog entries, optional `[parakeet]` extra, BITS
+  entirely — the provider, catalog entries, optional `[parakeet]` extra, QUILL
   Whisperer gating, and `test_parakeet_provider.py` are gone — so the slow import
   can no longer occur.
 

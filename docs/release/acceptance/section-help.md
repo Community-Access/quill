@@ -429,7 +429,7 @@ item is labelled **Personalise QUILL…**.
 ## HELP-16 — Status Page (`help.status_page`)
 
 *What & why.* A live, at-a-glance panel of QUILL's runtime state — version, active
-profile, background tasks, queued notifications, and (when enabled) speech/BITS
+profile, background tasks, queued notifications, and (when enabled) speech/QUILL
 Whisperer readiness. Everything is read locally; **no network is required**.
 
 **Before you start**

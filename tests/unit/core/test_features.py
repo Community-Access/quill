@@ -372,7 +372,7 @@ def test_voice_commands_is_unlocked_and_visible() -> None:
 
 
 def test_bits_whisperer_master_flag_is_locked_off() -> None:
-    # BITS Whisperer is deferred to QUILL 2.0; the master `core.bw_whisperer`
+    # QUILL Whisperer is deferred to QUILL 2.0; the master `core.bw_whisperer`
     # flag is locked off for 1.0, which hard-disables it and every bw_* feature
     # that depends on it, regardless of the active profile or any override.
     manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)

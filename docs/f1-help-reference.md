@@ -1079,7 +1079,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 61 audited sites (61 helped).
+Control coverage: 63 audited sites (63 helped).
 
 ### Every window, and what it is for
 
@@ -1248,6 +1248,8 @@ Control coverage: 61 audited sites (61 helped).
 - `close`: Closes this window. Nothing is sent, and nothing in your document changes.
 - `agree`: Turns on AI help. You can withdraw this later in the AI menu, or in Preferences.
 - `decline`: Leaves AI help switched off. Everything else in QUILL Lite is unchanged.
+- `keep`: Closes the agreement. AI help stays on and this computer stays connected.
+- `withdraw`: Withdraws your agreement: AI help switches off and this computer is signed out. Nothing is sent after that. You can agree again at any time.
 #### AiSignInFrame (`quill/ui/hosted_ai_dialogs.py`)
 
 - `browse`: Opens the connect page in your web browser with this code already filled in. Press Confirm there, then come back here.

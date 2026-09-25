@@ -52,7 +52,7 @@ def test_show_bw_onboarding_declined_stages_nothing(monkeypatch) -> None:
     frame._show_bw_onboarding(force=True)
 
     assert applied == []
-    assert frame._status[-1] == "BITS Whisperer setup skipped"
+    assert frame._status[-1] == "QUILL Whisperer setup skipped"
 
 
 def test_show_bw_onboarding_accepted_applies_recommended_defaults(monkeypatch) -> None:
@@ -66,7 +66,7 @@ def test_show_bw_onboarding_accepted_applies_recommended_defaults(monkeypatch) -
     frame._show_bw_onboarding(force=True)
 
     assert applied == ["provider", "model"]
-    assert frame._status[-1] == "BITS Whisperer rollout defaults configured"
+    assert frame._status[-1] == "QUILL Whisperer rollout defaults configured"
 
 
 def test_show_profile_onboarding_uses_real_method_not_corrupted_link_dialog() -> None:
@@ -78,8 +78,8 @@ def test_show_profile_onboarding_uses_real_method_not_corrupted_link_dialog() ->
 
 
 def test_startup_wizard_does_not_offer_bw_setup() -> None:
-    # BITS Whisperer is deferred to QUILL 2.0; the setup wizard pages must not
-    # include any BITS Whisperer / transcription onboarding for a 1.0 first run.
+    # QUILL Whisperer is deferred to QUILL 2.0; the setup wizard pages must not
+    # include any QUILL Whisperer / transcription onboarding for a 1.0 first run.
     wizard_source = (
         Path(__file__).resolve().parents[3] / "quill" / "ui" / "setup_wizard_pages.py"
     ).read_text(encoding="utf-8")

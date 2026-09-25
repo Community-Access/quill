@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL — Plan of Record (outstanding work)</title>
   <style>
@@ -230,18 +230,17 @@ file).</p>
 <hr />
 <h2 id="0-north-star">0. North star</h2>
 <p>QUILL is a screen-reader-first writing environment, becoming the home
-for a family of accessibility products that Blind Information Technology
-Solutions (BITS) and CSE Designs built as separate apps. Rather than
-ship four editors, we <strong>consolidate their durable value into
-QUILL</strong> as optional, keyboard-clear, screen-reader-first feature
-families. The consolidation itself is <strong>done</strong> — BITS
-Whisperer, GLOW, and ChapterForge (now the Audio Studio) all live in
-QUILL; the only sibling still feeding open work is
-<strong>GLOW</strong>’s extended family (§5). The discipline: take what
-clears QUILL’s quality and accessibility bar, re-home it on QUILL’s
-invariants (atomic storage, the dialog contract, the announcement
-grammar, Safe Mode, the network-egress audit), and leave behind anything
-superseded or off-mission.</p>
+for a family of accessibility products that were built as separate apps.
+Rather than ship four editors, we <strong>consolidate their durable
+value into QUILL</strong> as optional, keyboard-clear,
+screen-reader-first feature families. The consolidation itself is
+<strong>done</strong> — QUILL Whisperer, GLOW, and ChapterForge (now the
+Audio Studio) all live in QUILL; the only sibling still feeding open
+work is <strong>GLOW</strong>’s extended family (§5). The discipline:
+take what clears QUILL’s quality and accessibility bar, re-home it on
+QUILL’s invariants (atomic storage, the dialog contract, the
+announcement grammar, Safe Mode, the network-egress audit), and leave
+behind anything superseded or off-mission.</p>
 <hr />
 <h2 id="1-open-workstreams">1. Open workstreams</h2>
 <h3
@@ -369,7 +368,7 @@ ships. Release notes already frame this as <em>future</em>.</li>
 Plugins</strong> loader (SEC-8). Locked until the plugin sandbox,
 signing, and review process ship. Release notes frame third-party
 Quillins / a marketplace as <em>future</em>.</li>
-<li><code>core.bw_whisperer</code> — <strong>BITS Whisperer</strong>
+<li><code>core.bw_whisperer</code> — <strong>QUILL Whisperer</strong>
 brand menu (plus <code>core.bw_transcription</code>,
 <code>core.bw_providers</code>, <code>core.bw_insights</code> sub-flags,
 the <code>quill/core/bw_providers.py</code> backend, the hidden
@@ -399,8 +398,8 @@ speech-adjacent lock remains.</p>
 (2026-07-02) and its preserved user-facing content has been restored
 into the user guide (“GLOW Workflows Inside QUILL”), glossary, help
 topics, and PRD §5.92 — the §2.1 preservation block this file used to
-carry is gone because the real docs now own it. The <strong>BITS
-Whisperer</strong> brand is retired — earlier drafts named a “BITS
+carry is gone because the real docs now own it. The <strong>QUILL
+Whisperer</strong> brand is retired — earlier drafts named a “QUILL
 Whisperer speech suite” / “Tools &gt; Speech &gt; Whisperer”; that is
 now the flat <strong>Tools &gt; Speech</strong> menu and a plain
 “private, on-device speech suite,” with no brand to restore.</p>
@@ -461,7 +460,7 @@ Command, Voice Conversation Mode with sounders + VAD, always-listening
 “Voice input”, user guide “Voice Interaction”. Commands stay bounded by
 the agent safe-tool allowlist. The one open follow-up is a dedicated
 low-power keyword spotter for the wake word.</li>
-<li><strong>BITS Whisperer remainder</strong> (tracker #680) — the
+<li><strong>QUILL Whisperer remainder</strong> (tracker #680) — the
 consolidation shipped for 1.0; the leftovers (a Windows SAPI/WinRT
 zero-download engine, a consented cloud watch action, guided provider
 onboarding, diarization/live-mic, additional cloud kinds, and the

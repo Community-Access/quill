@@ -1,6 +1,6 @@
-"""BITS Whisperer speech-to-text management for MainFrame (CQ-1 decomposition).
+"""QUILL Whisperer speech-to-text management for MainFrame (CQ-1 decomposition).
 
-``BwSpeechMixin`` owns dictation toggling and the BW (BITS Whisperer)
+``BwSpeechMixin`` owns dictation toggling and the BW (QUILL Whisperer)
 speech-to-text management surface: model status/recommendation, the
 faster-whisper engine check, provider selection and status, the Provider
 Center, readiness/diagnostics snapshots, the capability matrix page, model
@@ -69,7 +69,7 @@ class BwSpeechMixin:
         recommended = bw_recommended_model_id()
         ok, engine_status = faster_whisper_status()
         status = [
-            "BITS Whisperer Speech Model Status",
+            "QUILL Whisperer Speech Model Status",
             "",
             bw_machine_guidance(),
             f"Selection mode: {mode}",
@@ -79,11 +79,11 @@ class BwSpeechMixin:
             f"faster-whisper engine: {'Ready' if ok else 'Not installed'}",
             engine_status,
             "",
-            "This is a phased rollout. Additional BITS Whisperer capabilities "
+            "This is a phased rollout. Additional QUILL Whisperer capabilities "
             "will arrive gradually.",
         ]
-        self._show_message_box("\n".join(status), "BITS Whisperer Speech Models", self._wx.OK)
-        self._set_status("BITS Whisperer speech model status shown")
+        self._show_message_box("\n".join(status), "QUILL Whisperer Speech Models", self._wx.OK)
+        self._set_status("QUILL Whisperer speech model status shown")
 
     def apply_bw_recommended_model(self) -> None:
         from quill.core.bw_speech import recommended_model_id as bw_recommended_model_id
@@ -159,14 +159,14 @@ class BwSpeechMixin:
         labels = [f"{provider.name} ({provider.provider_type})" for provider in providers]
         dialog = self._wx.SingleChoiceDialog(
             self.frame,
-            "Select a provider to stage for upcoming BITS Whisperer phases.",
-            "BITS Whisperer Provider Selection",
+            "Select a provider to stage for upcoming QUILL Whisperer phases.",
+            "QUILL Whisperer Provider Selection",
             labels,
         )
         apply_modal_ids(dialog, affirmative_id=self._wx.ID_OK, escape_id=self._wx.ID_CANCEL)
         try:
             if (
-                self._show_modal_dialog(dialog, "BITS Whisperer Provider Selection")
+                self._show_modal_dialog(dialog, "QUILL Whisperer Provider Selection")
                 != self._wx.ID_OK
             ):
                 return
@@ -196,7 +196,7 @@ class BwSpeechMixin:
         recommended = bw_get_provider(recommended_id, include_cloud=True)
         mode_name = "Local-first" if local_first else "Cloud-first"
         lines = [
-            "BITS Whisperer Provider Status",
+            "QUILL Whisperer Provider Status",
             "",
             bw_provider_mode_guidance(local_first=local_first),
             f"Provider mode: {mode_name}",
@@ -215,8 +215,8 @@ class BwSpeechMixin:
             "Providers are staged intentionally in this phase; "
             "runtime provider routing remains gated."
         )
-        self._show_message_box("\n".join(lines), "BITS Whisperer Providers", self._wx.OK)
-        self._set_status("BITS Whisperer provider status shown")
+        self._show_message_box("\n".join(lines), "QUILL Whisperer Providers", self._wx.OK)
+        self._set_status("QUILL Whisperer provider status shown")
 
     def open_bw_provider_center(self) -> None:
         actions = [
@@ -230,12 +230,12 @@ class BwSpeechMixin:
         dialog = self._wx.SingleChoiceDialog(
             self.frame,
             "Choose a guided provider setup action.",
-            "BITS Whisperer Provider Center",
+            "QUILL Whisperer Provider Center",
             actions,
         )
         apply_modal_ids(dialog, affirmative_id=self._wx.ID_OK, escape_id=self._wx.ID_CANCEL)
         try:
-            if self._show_modal_dialog(dialog, "BITS Whisperer Provider Center") != self._wx.ID_OK:
+            if self._show_modal_dialog(dialog, "QUILL Whisperer Provider Center") != self._wx.ID_OK:
                 return
             action = actions[dialog.GetSelection()]
         finally:
@@ -328,7 +328,7 @@ class BwSpeechMixin:
     def show_bw_readiness_check(self) -> None:
         snapshot = self._bw_readiness_snapshot()
         lines = [
-            "BITS Whisperer Readiness Check",
+            "QUILL Whisperer Readiness Check",
             "",
             str(snapshot["machine_guidance"]),
             f"Provider mode: {snapshot['provider_mode']}",
@@ -349,8 +349,8 @@ class BwSpeechMixin:
             "Next steps:",
         ]
         lines.extend(f"- {step}" for step in snapshot["provider_next_steps"])
-        self._show_message_box("\n".join(lines), "BITS Whisperer Readiness", self._wx.OK)
-        self._set_status("BITS Whisperer readiness check complete")
+        self._show_message_box("\n".join(lines), "QUILL Whisperer Readiness", self._wx.OK)
+        self._set_status("QUILL Whisperer readiness check complete")
 
     def show_bw_capability_matrix_page(self) -> None:
         from quill.ui.info_pages import show_bw_capability_matrix_native
@@ -363,7 +363,7 @@ class BwSpeechMixin:
                 "Ready"
                 if bool(snapshot["engine_ready"]) and int(snapshot["downloaded_model_count"]) > 0
                 else "In setup",
-                "Download and stage whisper models from the BITS Whisperer menu.",
+                "Download and stage whisper models from the QUILL Whisperer menu.",
             ),
             (
                 "Provider onboarding",
@@ -387,19 +387,19 @@ class BwSpeechMixin:
         show_bw_capability_matrix_native(
             self.frame, self._wx, rows, snapshot, self._show_modal_dialog
         )
-        self._set_status("Opened BITS Whisperer capability matrix")
+        self._set_status("Opened QUILL Whisperer capability matrix")
 
     def _start_bw_model_download(self, spec: object) -> None:
         from quill.core.bw_speech import download_model as bw_download_model
 
         if self._bw_safe_mode_locked():
             self._show_message_box(
-                "BITS Whisperer safe mode lock is enabled. Disable it in Preferences -> General "
+                "QUILL Whisperer safe mode lock is enabled. Disable it in Preferences -> General "
                 "to allow model downloads.",
-                "BITS Whisperer Safe Mode",
+                "QUILL Whisperer Safe Mode",
                 self._wx.ICON_INFORMATION | self._wx.OK,
             )
-            self._set_status("BITS Whisperer safe mode lock blocked model download")
+            self._set_status("QUILL Whisperer safe mode lock blocked model download")
             return
         model_id = str(getattr(spec, "id", ""))
         model_name = str(getattr(spec, "name", model_id))
@@ -451,7 +451,7 @@ class BwSpeechMixin:
             self._set_status(f"Downloaded {model_name}. Check Help -> Status Page for details.")
 
         self._run_background_task(
-            f"BITS Whisperer model download: {model_name}",
+            f"QUILL Whisperer model download: {model_name}",
             work,
             on_success,
             notify_on_success=True,
@@ -479,12 +479,12 @@ class BwSpeechMixin:
         dialog = self._wx.SingleChoiceDialog(
             self.frame,
             "Choose a download queue action.",
-            "BITS Whisperer Download Queue",
+            "QUILL Whisperer Download Queue",
             actions,
         )
         apply_modal_ids(dialog, affirmative_id=self._wx.ID_OK, escape_id=self._wx.ID_CANCEL)
         try:
-            if self._show_modal_dialog(dialog, "BITS Whisperer Download Queue") != self._wx.ID_OK:
+            if self._show_modal_dialog(dialog, "QUILL Whisperer Download Queue") != self._wx.ID_OK:
                 return
             action = actions[dialog.GetSelection()]
         finally:
@@ -497,12 +497,12 @@ class BwSpeechMixin:
         if action == "Retry failed download":
             if self._bw_safe_mode_locked():
                 self._show_message_box(
-                    "BITS Whisperer safe mode lock is enabled. Disable it in Preferences -> "
+                    "QUILL Whisperer safe mode lock is enabled. Disable it in Preferences -> "
                     "General to allow download retries.",
-                    "BITS Whisperer Safe Mode",
+                    "QUILL Whisperer Safe Mode",
                     self._wx.ICON_INFORMATION | self._wx.OK,
                 )
-                self._set_status("BITS Whisperer safe mode lock blocked download retry")
+                self._set_status("QUILL Whisperer safe mode lock blocked download retry")
                 return
             failed_ids = [
                 model_id
@@ -510,7 +510,7 @@ class BwSpeechMixin:
                 if str(entry.get("status", "")).lower() == "failed"
             ]
             if not failed_ids:
-                self._set_status("No failed BITS Whisperer downloads to retry")
+                self._set_status("No failed QUILL Whisperer downloads to retry")
                 return
             failed_choices = [
                 f"{model_id} ({self._bw_download_status[model_id].get('model', model_id)})"
@@ -550,7 +550,7 @@ class BwSpeechMixin:
                 if str(entry.get("status", "")).lower() == "running"
             }
             self._maybe_refresh_live_status_tabs()
-            self._set_status("Cleared completed and failed BITS Whisperer download history")
+            self._set_status("Cleared completed and failed QUILL Whisperer download history")
             return
 
     def open_bw_model_manager(self) -> None:
@@ -575,7 +575,7 @@ class BwSpeechMixin:
         quick_dialog = self._wx.SingleChoiceDialog(
             self.frame,
             (f"{bw_machine_guidance()}\n\nSelect a guided action for speech model setup."),
-            "BITS Whisperer Speech Setup",
+            "QUILL Whisperer Speech Setup",
             quick_actions,
         )
         apply_modal_ids(
@@ -585,7 +585,7 @@ class BwSpeechMixin:
         )
         try:
             if (
-                self._show_modal_dialog(quick_dialog, "BITS Whisperer Speech Setup")
+                self._show_modal_dialog(quick_dialog, "QUILL Whisperer Speech Setup")
                 != self._wx.ID_OK
             ):
                 return
@@ -618,12 +618,12 @@ class BwSpeechMixin:
         dialog = self._wx.SingleChoiceDialog(
             self.frame,
             "Choose a speech model to configure.",
-            "BITS Whisperer Speech Models",
+            "QUILL Whisperer Speech Models",
             choices,
         )
         apply_modal_ids(dialog, affirmative_id=self._wx.ID_OK, escape_id=self._wx.ID_CANCEL)
         try:
-            if self._show_modal_dialog(dialog, "BITS Whisperer Speech Models") != self._wx.ID_OK:
+            if self._show_modal_dialog(dialog, "QUILL Whisperer Speech Models") != self._wx.ID_OK:
                 return
             selection = dialog.GetSelection()
         finally:
@@ -651,7 +651,7 @@ class BwSpeechMixin:
                 f"Approx size: {spec.approx_size_gb:.2f} GB\n"
                 f"Minimum RAM: {spec.min_ram_gb} GB"
             ),
-            "BITS Whisperer Model Action",
+            "QUILL Whisperer Model Action",
             actions,
         )
         apply_modal_ids(
@@ -661,7 +661,7 @@ class BwSpeechMixin:
         )
         try:
             if (
-                self._show_modal_dialog(action_dialog, "BITS Whisperer Model Action")
+                self._show_modal_dialog(action_dialog, "QUILL Whisperer Model Action")
                 != self._wx.ID_OK
             ):
                 return
@@ -680,7 +680,7 @@ class BwSpeechMixin:
             if not bw_has_disk_capacity(spec):
                 self._show_message_box(
                     "Not enough disk space for this model plus safety buffer.",
-                    "BITS Whisperer Speech Models",
+                    "QUILL Whisperer Speech Models",
                     self._wx.ICON_WARNING | self._wx.OK,
                 )
                 self._set_status("Speech model download blocked by disk space check")

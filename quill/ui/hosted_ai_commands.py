@@ -228,7 +228,12 @@ class HostedAiMixin:
         disagree with the others.
         """
         if self._ai_privacy_accepted():
-            self._withdraw_ai_privacy()
+            # Show it again; only an explicit Withdraw withdraws. Keeping says
+            # nothing: nothing changed, and the reader announces the return.
+            from quill.ui.hosted_ai_dialogs import ask_ai_privacy_agreement
+
+            if ask_ai_privacy_agreement(self._ai_parent(), accepted=True):
+                self._withdraw_ai_privacy()
             return
         if self._ask_ai_privacy():
             self._light_up_ai()

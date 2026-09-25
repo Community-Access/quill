@@ -295,10 +295,13 @@ things and publishes what the service costs to run.
 
 - **Sign Out This Computer** is in **Usage**. Press it twice — the second press
   confirms. You can connect again at any time.
-- **Withdrawing the agreement** — open **Privacy Agreement** again and choose to
-  withdraw — switches AI help off **and** signs this computer out, in one step,
-  because keeping the key to a service you have just declined would be the wrong
-  way round.
+- **Reading the agreement again is safe.** Once you have agreed, **Privacy
+  Agreement** (Ctrl+Alt+Shift+K) opens it with two buttons: **Keep Using AI**,
+  which is what Enter and Escape do, and **Withdraw and Sign Out**. Nothing
+  changes unless you choose the second.
+- **Withdrawing** switches AI help off **and** signs this computer out, in one
+  step, because keeping the key to a service you have just declined would be the
+  wrong way round.
 - **Privacy Agreement opens whether or not AI is switched on**, and whether or
   not you ever agreed. A door you can only reach by agreeing to something is not
   a door.

@@ -28,7 +28,7 @@ CREDENTIAL_TARGET = "quill.adp.client_key"
 
 #: The hosted ADP backend (web app ``/``, ops dashboard ``/dashboard``, and the
 #: ``/api/...`` surface this client uses). This is the direct FastAPI service
-#: behind TLS -- not the WordPress site (bits-acb.org), which only fronts the
+#: behind TLS -- not the membership WordPress site, which only fronts the
 #: rollout/status gate. Overridable per-install via ADP Settings.
 DEFAULT_BASE_URL = "https://adp.csedesigns.com"
 

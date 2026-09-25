@@ -1,4 +1,4 @@
-"""Transcription watch actions (WATCH-9, BITS Whisperer consolidation).
+"""Transcription watch actions (WATCH-9, QUILL Whisperer consolidation).
 
 The two "turn arriving audio into a transcript" watch actions, split out of
 :mod:`quill.core.watch_actions` to keep that module within its size budget
@@ -125,7 +125,7 @@ _TRANSCRIBE_AUDIO_EXTENSIONS = frozenset({
 class WhispererTranscribeAction(_BaseAction):
     """Watch action: transcribe arriving audio offline with Whisperer (WATCH-9).
 
-    The BITS Whisperer consolidation's offline path: it runs whisper.cpp or
+    The QUILL Whisperer consolidation's offline path: it runs whisper.cpp or
     Faster Whisper entirely on the machine, so it carries no ``requires_consent``
     (nothing is uploaded) and is the on-device counterpart to
     :class:`CloudTranscribeAction`. It writes a sibling ``.txt`` transcript next
