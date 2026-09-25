@@ -29,8 +29,10 @@ and already has tests.
 from __future__ import annotations
 
 import json
+import socket
 import ssl
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -38,12 +40,14 @@ from typing import Any, Protocol
 
 from quill.core.ai.gateway_errors import (
     GatewayAuthError,
+    GatewayCertificateError,
     GatewayError,
     GatewayOfflineError,
     GatewayPausedError,
     GatewayQuotaError,
     GatewayServiceError,
     GatewayTooLargeError,
+    GatewayUnreachableError,
 )
 
 __all__ = [
@@ -190,8 +194,65 @@ def _verified_context() -> ssl.SSLContext:
     What travels on this connection is a bearer token and the user's own
     writing, so there is no deployment convenience worth an unverified
     certificate.
+
+    It trusts **Windows' own root store and certifi's bundle together**. The
+    store alone was the whole trust list until 2026-09-25, and it failed on a
+    Windows 10 machine whose internet was fine: Windows downloads most root
+    certificates only when its own networking first needs one, so a machine
+    whose browsers carry their own root stores may never have fetched the one
+    this service's certificate chains to -- and Python reads the store without
+    triggering that download. certifi ships the roots, so the chain verifies
+    anyway; the store is kept because it is where a work network's or an
+    antivirus's inspecting root lives, and dropping it would break those users
+    instead. Adding trust anchors never weakens verification: every
+    certificate is still checked, against a longer list of authorities.
     """
-    return ssl.create_default_context()
+    context = ssl.create_default_context()
+    try:
+        import certifi
+
+        context.load_verify_locations(cafile=certifi.where())
+    except Exception:  # noqa: BLE001 - certifi missing leaves the system store
+        pass
+    context.check_hostname = True
+    context.verify_mode = ssl.CERT_REQUIRED
+    return context
+
+
+def _unreachable(url: str, error: BaseException) -> GatewayError:
+    """The sentence for a connection that never produced an answer.
+
+    Said precisely, because the old single sentence -- "could not reach the
+    internet" -- was wrong for most of the ways this fails and sent a user
+    whose internet worked to go and check it. The system's own reason goes on
+    the end: it is what a support conversation needs, and it costs a listener
+    one clause.
+    """
+    host = urllib.parse.urlsplit(url).hostname or "the AI service"
+    reason = getattr(error, "reason", error)
+    detail = str(reason).strip() or type(reason).__name__
+    nothing = "Nothing was sent and nothing was used."
+    if isinstance(reason, ssl.SSLCertVerificationError):
+        return GatewayCertificateError(
+            f"QUILL reached {host} but could not verify its security certificate, "
+            f"so it stopped before sending anything ({detail}). {nothing}"
+        )
+    if isinstance(reason, ssl.SSLError):
+        return GatewayCertificateError(
+            f"QUILL reached {host} but the secure connection failed ({detail}). {nothing}"
+        )
+    if isinstance(reason, socket.gaierror):
+        return GatewayOfflineError(
+            f"QUILL could not look up the address {host}, which usually means this "
+            f"computer is offline or its DNS is not answering ({detail}). {nothing}"
+        )
+    if isinstance(reason, TimeoutError):
+        return GatewayUnreachableError(f"{host} did not answer in time ({detail}). {nothing}")
+    if isinstance(reason, (ConnectionRefusedError, ConnectionResetError, ConnectionAbortedError)):
+        return GatewayUnreachableError(
+            f"The connection to {host} was refused or cut off ({detail}). {nothing}"
+        )
+    return GatewayUnreachableError(f"QUILL could not connect to {host} ({detail}). {nothing}")
 
 
 def _urlopen_json(
@@ -242,13 +303,9 @@ def _urlopen_json(
                 return {}
         raise _error_for_status(error) from error
     except urllib.error.URLError as error:
-        raise GatewayOfflineError(
-            "QUILL could not reach the internet. Nothing was sent and nothing was used."
-        ) from error
+        raise _unreachable(url, error) from error
     except (TimeoutError, OSError) as error:
-        raise GatewayOfflineError(
-            "QUILL could not reach the AI service. Nothing was sent and nothing was used."
-        ) from error
+        raise _unreachable(url, error) from error
     except json.JSONDecodeError as error:
         raise GatewayServiceError(
             "The AI service sent back something QUILL could not read. "

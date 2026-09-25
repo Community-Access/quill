@@ -42,7 +42,7 @@ APP_ID = "QuillLite"
 #: QUILL Lite versions with the QUILL family rather than with QUILL itself
 #: (``quill.__version__``): it ships its own installers and its own release
 #: notes, exactly as Radio, Cast, Weather, Studio and Inkwell do.
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.1"
 
 #: Where QUILL Lite's own releases live, and the basename every one of its
 #: release assets starts with (``QuillLite-Setup-Shared-1.0.0.exe``,

@@ -1,5 +1,26 @@
 # QUILL Lite changelog
 
+## 1.0.1 -- 2026-09-25
+
+A fix for AI help on some Windows 10 computers.
+
+- **Connecting AI help no longer fails with "could not reach the internet" on a
+  computer whose internet is fine.** On some Windows 10 machines, Connect stopped
+  at the step that gets your code, with error QUILL-AI-GATEWAY-OFFLINE. The
+  connection had been made; QUILL Lite could not verify the AI service's security
+  certificate, because it trusted only the certificates Windows had already
+  downloaded, and Windows fetches most of them only when its own networking first
+  needs one. QUILL Lite now also trusts the certificate authorities it ships with,
+  so the check succeeds. Nothing about the check is weaker: every certificate is
+  still verified.
+- **When a connection does fail, it says which way.** A certificate that cannot
+  be verified, an address that cannot be looked up, a connection refused, and a
+  service that did not answer in time are now four different sentences, each
+  naming the service and ending with the reason Windows gave -- where before all
+  four were "could not reach the internet". New error codes
+  QUILL-AI-GATEWAY-CERTIFICATE and QUILL-AI-GATEWAY-UNREACHABLE name the first
+  and the last two.
+
 ## 1.0.0 -- 2026-09-25
 
 First release. QUILL with everything removed except the editor: numbered

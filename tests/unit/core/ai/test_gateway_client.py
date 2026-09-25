@@ -284,3 +284,103 @@ def test_the_gateways_pending_and_expired_statuses_are_answers(monkeypatch):
     assert poster("https://x/device/token", form) == {"error": "authorization_pending"}
     assert poster("https://x/device/token", form) == {"error": "access_denied"}
     assert poster("https://x/device/token", form) == {"error": "expired_token"}
+
+
+# --- When the connection itself fails (2026-09-25) -------------------------------
+#
+# Reported from a Windows 10 22H2 machine whose internet was fine: every sign-in
+# ended at "QUILL could not reach the internet". The connection had been made;
+# the certificate could not be verified, because the TLS context trusted only
+# Windows' root store and Windows had never downloaded the root this service
+# chains to. Every URLError was being reported as "no internet".
+
+
+def _names_host(message):
+    """Whether *message* names the service's host, as a whole word."""
+    import re
+
+    return re.search(r"(?<![\w.])ai\.example\.org(?![\w.])", message) is not None
+
+
+def _raise_on_open(monkeypatch, reason):
+    from quill.core.ai import gateway_client as mod
+
+    def fake_urlopen(*_a, **_k):
+        raise urllib.error.URLError(reason)
+
+    monkeypatch.setattr(mod.urllib.request, "urlopen", fake_urlopen)
+    return mod
+
+
+def test_a_certificate_failure_is_not_reported_as_no_internet(monkeypatch):
+    import ssl
+
+    from quill.core.ai.gateway_errors import GatewayCertificateError, GatewayOfflineError
+
+    mod = _raise_on_open(
+        monkeypatch, ssl.SSLCertVerificationError(1, "unable to get local issuer certificate")
+    )
+    with pytest.raises(GatewayCertificateError) as caught:
+        mod._urlopen_json("https://ai.example.org/v1/device/code", body={})
+    message = str(caught.value)
+    assert "internet" not in message
+    # Matched as a word, not with ``in``: CodeQL reads a hostname tested by
+    # substring as URL sanitisation (py/incomplete-url-substring-sanitization).
+    assert _names_host(message) and "certificate" in message
+    assert "unable to get local issuer certificate" in message  # the reason, for support
+    assert "Nothing was sent" in message
+    # Still an offline error to every caller: nothing was sent.
+    assert isinstance(caught.value, GatewayOfflineError)
+
+
+@pytest.mark.parametrize(
+    ("reason", "expected", "phrase"),
+    [
+        ("dns", "GatewayOfflineError", "could not look up the address"),
+        (ConnectionRefusedError(10061, "refused"), "GatewayUnreachableError", "refused"),
+        (TimeoutError("timed out"), "GatewayUnreachableError", "did not answer in time"),
+    ],
+)
+def test_each_connection_failure_says_which_it_was(monkeypatch, reason, expected, phrase):
+    import socket
+
+    if reason == "dns":
+        reason = socket.gaierror(11001, "getaddrinfo failed")
+    mod = _raise_on_open(monkeypatch, reason)
+    with pytest.raises(Exception) as caught:
+        mod._urlopen_json("https://ai.example.org/v1/limits")
+    assert type(caught.value).__name__ == expected
+    assert phrase in str(caught.value)
+    assert _names_host(str(caught.value))
+
+
+def test_the_tls_context_trusts_certifi_as_well_as_the_system_store(monkeypatch):
+    """The fix itself: a system store missing the root must not fail the chain."""
+    import ssl
+
+    import certifi
+
+    from quill.core.ai import gateway_client as mod
+
+    loaded: list[str] = []
+
+    class Recording(ssl.SSLContext):
+        def load_verify_locations(self, cafile=None, *args, **kwargs):  # noqa: ANN001
+            loaded.append(str(cafile))
+            return super().load_verify_locations(cafile, *args, **kwargs)
+
+    monkeypatch.setattr(
+        mod.ssl, "create_default_context", lambda *a, **k: Recording(ssl.PROTOCOL_TLS_CLIENT)
+    )
+    context = mod._verified_context()
+    assert loaded == [certifi.where()]
+    assert context.verify_mode == ssl.CERT_REQUIRED
+    assert context.check_hostname is True
+
+
+@pytest.mark.parametrize("error_name", ["GatewayCertificateError", "GatewayUnreachableError"])
+def test_the_new_connection_errors_say_what_to_do_next(error_name):
+    from quill.core.ai import gateway_errors
+
+    hint = getattr(gateway_errors, error_name)("x").user_hint
+    assert hint.endswith(".") and len(hint.split()) >= 4

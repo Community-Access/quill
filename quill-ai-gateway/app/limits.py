@@ -939,6 +939,19 @@ def record_usage(
     device.last_seen_at = now
     db.session.commit()
 
+    # The public page's figures are cached for five minutes, and until
+    # 2026-09-25 nothing cleared the cache when an answer was written -- so the
+    # spend and answer counts on ai.community-access.org trailed reality by up
+    # to five minutes, and looked frozen to anybody watching them. Dropping the
+    # cache here makes the next visitor recompute from what was just recorded;
+    # the TTL stays as the ceiling on how often a quiet page is recomputed.
+    try:
+        from app.public_stats import invalidate
+
+        invalidate(app)
+    except Exception:  # pragma: no cover - a stale page must never fail a request
+        pass
+
     _maybe_alert_on_budget_threshold(app, month_key)
 
 
