@@ -16,8 +16,13 @@ def show_about_quill_native(
     about_info: Any,
     open_notices_fn: Callable[[], None],
     show_modal_dialog: Callable[[Any, str], int],
+    ai_support_id: str = "",
 ) -> None:
     """Modal About Quill dialog backed by a ``wx.Notebook``.
+
+    *ai_support_id* is this computer's QUILL AI support ID when it is
+    connected, shown beside the support address: it is the one number support
+    asks for, and About is where people look for how to reach support.
 
     Tabs (Overview, Golden Quills, Legal, Dependencies, Links) surface the
     version, supporters, dependencies, and links as navigable controls so JAWS in
@@ -49,6 +54,7 @@ def show_about_quill_native(
         # Community Access, and the address goes here because About is where
         # everybody looks for it first (added 2026-08-27).
         "Support: support@community-access.org",
+        *([f"QUILL AI support ID for this computer: {ai_support_id}"] if ai_support_id else []),
         "",
         about_info.glow_summary,
         "",

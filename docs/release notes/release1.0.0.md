@@ -1053,6 +1053,26 @@ The conversion is meaningful rather than cosmetic. Moving a Markdown draft into 
 turns `# headings` into real headings. Moving a rich document into Markdown first warns
 you by name about anything that will not survive.
 
+Every direction is a real conversion, not a relabelling. Switching to HTML writes real
+HTML — `<h1>` and `<strong>` — and switching back reads it in again. Your formatting
+travels with you whichever way you go: headings, bold, italic, underline, strikethrough,
+superscript and subscript, font family and size, colour and highlight, bullet and numbered
+lists, links, code, block quotes, alignment, line spacing, indents, spacing, named styles,
+page breaks, tables, images and rules. Switch out and back as often as you like; the
+document you get is the document you started with.
+
+Converting to plain text is the one case with two honest answers, so QUILL asks instead of
+guessing. Plain text cannot hold formatting, so the `#` and `**` already in your document
+can either **come off**, leaving strictly plain words, or **stay as ordinary characters**,
+because a .txt file may perfectly well contain them and many people keep their notes that
+way. Escape leaves the document alone, and you are only asked when there is something to
+ask about — ordinary prose converts without a prompt.
+
+Rich Text files are written with real Word styles. Headings carry Word's own heading
+styles, and Quote, Title, Subtitle and Caption are declared under the names Word knows
+them by, so they land in Word's style box and style gallery rather than as lookalikes that
+only render correctly by accident.
+
 A format change never silently overwrites the old file. The next save proposes a filename
 with the correct extension, so `notes.md` becomes `notes.rtf` and the file on disk always
 tells the truth about what is inside it.

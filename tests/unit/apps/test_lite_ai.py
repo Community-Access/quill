@@ -604,7 +604,7 @@ def test_the_privacy_command_runs_with_the_feature_switched_off(
 
 
 def test_accepting_from_the_privacy_command_switches_the_feature_on(
-    lite_window, agreement, monkeypatch
+    lite_window, agreement, monkeypatch, connected
 ):
     """Whichever door you came through, saying yes leaves you with a working
     feature. Being sent to find a second switch would be a yes that did
@@ -622,6 +622,7 @@ def test_accepting_from_the_privacy_command_switches_the_feature_on(
             self.disabled.discard(area) if enabled else self.disabled.add(area)
 
     win = lite_window("text")
+    monkeypatch.setattr(win, "_ai_service", lambda: connected)
     win.app.features = Features()
     monkeypatch.setattr(win.app, "feature_enabled", lambda a: win.app.features.is_enabled(a))
     win.app.settings.ai_privacy_accepted_version = 0
@@ -671,18 +672,37 @@ def test_accepting_on_the_way_to_sign_in_does_not_send_you_back_to_sign_in(
 
 
 def test_the_privacy_door_says_it_took_even_when_the_area_was_already_on(
-    lite_window, agreement, monkeypatch
+    lite_window, agreement, monkeypatch, connected
 ):
     """The sentence moved out of the dialog and into the caller, and this is the
     case that proves it had to: nothing about the *features* changed, so a
     message built around switching the area on could not be said here at all."""
     win = lite_window("text")
+    monkeypatch.setattr(win, "_ai_service", lambda: connected)
     win.app.settings.ai_privacy_accepted_version = 0
     agreement["answer"] = True
 
     (lambda w: w.cmd_ai_privacy())(win)
 
     assert any("AI help is on" in said for said in win.announcements)
+
+
+def test_accepting_the_agreement_goes_straight_on_to_connecting(
+    lite_window, ai_frames, agreement, monkeypatch, connected
+):
+    """Nobody accepts the agreement for any reason but to connect, so a computer
+    that is not connected yet lands in the Connect window rather than being told
+    to go and find it in a menu (reported 2026-09-25)."""
+    connected.signed_in = False
+    win = lite_window("text")
+    monkeypatch.setattr(win, "_ai_service", lambda: connected)
+    win.app.settings.ai_privacy_accepted_version = 0
+    agreement["answer"] = True
+
+    (lambda w: w.cmd_ai_privacy())(win)
+
+    assert ai_frames["AiSignInFrame"].last is not None
+    assert win.announcements == [], "the reader announces the window; nothing to add"
 
 
 def test_asking_for_a_window_twice_raises_the_one_that_is_open(

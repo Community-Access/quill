@@ -12,7 +12,12 @@ from pathlib import Path
 
 import pytest
 
-from quill.core.session_restore import ASK_ALWAYS, ASK_NEVER, SessionEntry
+from quill.core.session_restore import (
+    ASK_ALWAYS,
+    ASK_NEVER,
+    ASK_WHEN_IT_MATTERS,
+    SessionEntry,
+)
 from quill.ui.main_frame_session_restore import SessionRestoreMixin
 from quill.ui.session_restore_dialog import SessionRestoreAnswer
 
@@ -60,11 +65,30 @@ def three(tmp_path: Path) -> list[str]:
     return paths
 
 
-def _answer(monkeypatch, answer: SessionRestoreAnswer) -> list[tuple[SessionEntry, ...]]:
-    asked: list[tuple[SessionEntry, ...]] = []
+class _Asked(list):  # type: ignore[type-arg]
+    """What the dialog was asked, and the ask mode it was asked in."""
 
-    def fake(_parent: object, entries: tuple[SessionEntry, ...]) -> SessionRestoreAnswer:
+    def __init__(self) -> None:
+        super().__init__()
+        self.modes: list[str] = []
+
+
+def _answer(monkeypatch, answer: SessionRestoreAnswer) -> _Asked:
+    # A list of what the dialog was shown, carrying the mode it was shown in
+    # as an attribute -- a list, because every existing caller compares this
+    # against [] or reads its length. The mode decides which half of the
+    # Never Ask Again / Ask Me Next Time pair the window offers, so a caller
+    # that forgets to pass it greys out the only way back from never.
+    asked = _Asked()
+
+    def fake(
+        _parent: object,
+        entries: tuple[SessionEntry, ...],
+        *,
+        mode: str = ASK_WHEN_IT_MATTERS,
+    ) -> SessionRestoreAnswer:
         asked.append(entries)
+        asked.modes.append(mode)
         return answer
 
     monkeypatch.setattr("quill.ui.session_restore_dialog.ask_session_restore", fake)

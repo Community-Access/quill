@@ -19,8 +19,10 @@ one library is its entire value, while QuillLite is offered as an alternative to
 QUILL, and a machine that has never had QUILL installed must not grow a Quill
 data folder because somebody opened a text file.
 
-**Autocorrect** (:mod:`quill.core.autoformat`, QUILL's rules). Curly quotes, em
-dashes from a double hyphen, a capital at the start of a sentence. It ships
+**Autocorrect** (:mod:`quill.core.autoformat`, QUILL's rules). Curly quotes and
+em dashes from a double hyphen -- and nothing else: :meth:`_autoformat` has no
+sentence-capital rule and never has, whatever three descriptions used to say.
+It ships
 **off** (:data:`quill.core.lite.features.DEFAULT_OFF`), because every one of
 those is welcome in prose and actively wrong in a configuration file, a code
 snippet or a CSV -- and QuillLite is used for all four. Turning it on is one

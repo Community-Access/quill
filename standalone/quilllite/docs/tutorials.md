@@ -1,6 +1,6 @@
 # QuillLite Tutorials
 
-8 guided tutorials, 33 steps, about 36 minutes of material in all.
+9 guided tutorials, 38 steps, about 42 minutes of material in all.
 
 This document is generated from the tutorials inside QuillLite, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials... (Ctrl+Alt+F1)** instead.
 
@@ -13,11 +13,12 @@ The keys below are the ones QuillLite ships with. If you have rebound something 
   - Four kinds of document, and how to say which (4 minutes)
   - Your documents are numbered (3 minutes)
   - What to press when you are lost (3 minutes)
-- **Working in a document** -- Selecting more than a few words, finding your way back to where you were, skimming something long, and spelling without a red squiggle.
+- **Working in a document** -- Selecting more than a few words, finding your way back to where you were, skimming something long, spelling without a red squiggle, and asking a question about the document in front of you.
   - Selecting more than a few words (6 minutes)
   - Finding your way back (5 minutes)
   - Skimming something long (5 minutes)
   - Spelling, without a red squiggle (5 minutes)
+  - Asking a question about a document (6 minutes)
 
 ## Your first documents
 
@@ -115,7 +116,7 @@ Nothing in QuillLite is more than these three keys away from being explained.
 
 ## Working in a document
 
-Selecting more than a few words, finding your way back to where you were, skimming something long, and spelling without a red squiggle.
+Selecting more than a few words, finding your way back to where you were, skimming something long, spelling without a red squiggle, and asking a question about the document in front of you.
 
 ### Selecting more than a few words
 
@@ -226,3 +227,35 @@ How QuillLite tells you a word is wrong without interrupting the sentence you ar
    - You should hear: Each word, its suggestions, and a summary of what changed at the end.
 
 Spelling stays quiet in source and configuration files whatever the settings say -- every identifier in one would be a false alarm.
+
+### Asking a question about a document
+
+The one feature that sends anything off this computer: how to turn it on, what goes when you use it, and what it will not do.
+
+*5 steps, about 6 minutes.*
+
+1. **Turn it on, and agree to it separately.** AI help is off until two different things are true: the feature is switched on, and you have accepted the agreement. They are separate on purpose. Switching a feature on answers 'does this exist in my copy'. It does not answer 'have I agreed to what it does' -- and an area turned on by a profile, by a settings import, or by somebody else using this machine is not you agreeing to anything.
+   - Keys: Ctrl+Alt+Shift+K
+   - You should hear: The agreement, read out in full before you are asked.
+   - Worth knowing: Three doors reach the same answer: this command, a tick box in Preferences, and switching the area on in Customize Features. It opens whether or not you have accepted, because a door you can only reach by first agreeing to something is not a door.
+
+2. **Connect this computer, once.** There is no account, no password and no email address. You are shown an eight-character code; you open the web page on anything with a browser -- this machine, a phone -- and type the code in. Asking for that code is the first moment anything is sent.
+   - Keys: Ctrl+Alt+Shift+F10
+   - You should hear: The code, character by character, and the window confirming in place rather than opening another one.
+   - Worth knowing: Each computer connects on its own, and signing one out leaves the others connected.
+
+3. **Ask about what is in front of you.** Type a question about the open document -- 'what does this say about the deadline' -- and the answer comes back with the part of the document it came from, so you can go and read that part yourself.
+   - Keys: Ctrl+Alt+Z
+   - You should hear: The passages it chose, before anything is sent, and then the answer.
+   - Worth knowing: A long document is a fair thing to ask about. It does not send the file -- it picks the three passages most likely to answer you and sends those.
+
+4. **Or hand it a job.** It is one pad with five rows. Four of them act on what you have selected, or on the paragraph or section you choose with Send this much: summarize it, rewrite it clearer and shorter, proofread it, or explain a passage that will not sit still. The fifth is the question you just asked. Nothing is applied for you -- the answer arrives with Replace My Selection, Insert Below and Copy under it, and proofreading changes not one character until you press one.
+   - Keys: Ctrl+Alt+G
+   - You should hear: What is about to be sent, before it goes.
+
+5. **Know what you have left.** The service is free, so it has a ceiling. One question can carry about two thousand two hundred and fifty words of document, and you get a hundred requests a month. If what you asked about is too big, you are told in words before anything is sent, so you can select less and ask again.
+   - Keys: Ctrl+Alt+Shift+F9
+   - You should hear: What you have used and what is left.
+   - Worth knowing: The limits are read from the service rather than built into the program, so they can be raised without you installing anything.
+
+What is recorded is how many requests you made and how big they were. What you wrote, and what came back, is not.

@@ -98,12 +98,35 @@ _ITALIC_UNDER_RE = re.compile(r"(?<!\w)_([^_]+)_(?!\w)")
 LINK_STYLES = ("text", "text_url", "url", "markdown")
 
 
+#: Inline HTML that means emphasis. Markdown has no underline syntax, so a
+#: ``<u>`` is how QUILL writes one -- and plain text kept the tag, producing
+#: ``<u>underlined</u>`` in a file whose whole promise is that it contains no
+#: markup. Narrow on purpose: only emphasis tags, only when properly closed, so
+#: prose containing ``a < b`` is untouched.
+_INLINE_HTML_EMPHASIS_RE = re.compile(
+    r"</?(?:u|b|i|em|strong|s|strike|del|ins|mark|sub|sup|small|big)\s*/?>",
+    re.IGNORECASE,
+)
+#: GFM strikethrough, which is markup like any other and has no business
+#: surviving into a plain-text file either.
+_STRIKE_RE = re.compile(r"~~(?=\S)(.+?)(?<=\S)~~", re.DOTALL)
+
+
 def _strip_emphasis(text: str) -> str:
-    """Remove bold/italic Markdown markers, keeping the emphasized words."""
+    """Remove emphasis markers, keeping the emphasized words.
+
+    Bold and italic were always handled; strikethrough and inline HTML emphasis
+    were not, so ``~~gone~~`` and ``<u>underlined</u>`` reached plain text with
+    their markers intact. Code spans are already stashed behind placeholders by
+    :func:`_strip_inline` before this runs, so a person writing *about* ``<u>``
+    keeps their example.
+    """
     text = _BOLD_STAR_RE.sub(r"\1", text)
     text = _BOLD_UNDER_RE.sub(r"\1", text)
     text = _ITALIC_STAR_RE.sub(r"\1", text)
     text = _ITALIC_UNDER_RE.sub(r"\1", text)
+    text = _STRIKE_RE.sub(r"\1", text)
+    text = _INLINE_HTML_EMPHASIS_RE.sub("", text)
     return text
 
 

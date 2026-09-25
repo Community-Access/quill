@@ -82,6 +82,80 @@ def test_every_profile_has_its_own_section_in_the_guide(guide: str) -> None:
     assert missing == [], "profiles with no section of their own: " + ", ".join(missing)
 
 
+#: Words the guide is allowed to use for an area instead of its checkbox label,
+#: where the label is a phrase and the prose is a sentence. Keyed by area id, and
+#: each entry is a phrase that must appear in the profile's section.
+_AREA_IN_PROSE: dict[str, str] = {
+    "rich_text": "Format menu",
+    "headings": "headings",
+    "markup": "Markdown",
+    "bookmarks": "bookmarks",
+    "tools": "line tools",
+    "clipboard": "clipboard",
+    "abbreviations": "abbreviations",
+    "selection": "Selection submenu",
+    "spelling": "spell check",
+    "autoformat": "autocorrect",
+    "backups": "backups",
+    "go_to_anything": "Go To Anything",
+    "matches": "Matches",
+    "history": "Back and Forward",
+    "command_palette": "Command Palette",
+    "character_info": "Describe Character",
+    "zoom": "text size",
+    "printing": "printing",
+    "hosted_ai": "AI help",
+}
+
+
+def test_every_profile_section_names_what_that_profile_removes(guide: str) -> None:
+    """The half of a profile's promise that is easiest to get wrong.
+
+    What a profile *keeps* is visible the moment you use it. What it *removes*
+    is a menu that is not there, which is exactly the thing somebody does not
+    notice and cannot look up -- so the guide lists the removals by name, and
+    this asserts the list is complete rather than nearly complete.
+
+    It was not. WordPad and Notepad each switch off **AI help** and **Markdown
+    and HTML**, and neither was in either section; Notepad's list had fifteen of
+    its seventeen. Somebody choosing Notepad to get a small editor and then
+    finding Ctrl+B in a `.md` no longer writes asterisks has no way to connect
+    the two, because the paragraph that would have told them was the one that
+    was short.
+
+    Matched on a phrase rather than the checkbox label, because the labels are
+    written for a checkbox ("Rich text and the Format menu") and the prose is
+    written for a reader ("the Format menu and everything under it").
+    """
+    from quill.core.lite.features import AREAS, PROFILES
+
+    known = {area.id for area in AREAS}
+    unknown = sorted(set(_AREA_IN_PROSE) - known)
+    assert unknown == [], f"_AREA_IN_PROSE names areas that no longer exist: {unknown}"
+    unmapped = sorted(known - set(_AREA_IN_PROSE))
+    assert unmapped == [], (
+        f"a new area needs a phrase in _AREA_IN_PROSE before this can check it: {unmapped}"
+    )
+
+    problems: list[str] = []
+    for profile in PROFILES:
+        if not profile.disabled:
+            continue
+        start = guide.index(f"#### {profile.name}")
+        section = guide[start:]
+        end = section.find("\n#### ", 1)
+        if end != -1:
+            section = section[:end]
+        # Whitespace-normalised, because the guide is hard-wrapped and a phrase
+        # like "line tools" can arrive with a newline in the middle of it.
+        lowered = " ".join(section.lower().split())
+        for area_id in sorted(profile.disabled):
+            phrase = _AREA_IN_PROSE[area_id]
+            if phrase.lower() not in lowered:
+                problems.append(f"{profile.name} removes {area_id} and never says so")
+    assert problems == [], "\n".join(problems)
+
+
 def test_the_guide_says_how_many_areas_each_profile_keeps(guide: str) -> None:
     """The number somebody comparing four profiles actually wants."""
     from quill.core.lite.features import AREAS, PROFILES
@@ -124,6 +198,39 @@ def test_the_three_default_off_areas_are_marked_as_off(guide: str) -> None:
 def test_every_status_bar_cell_is_named_by_the_label_it_announces(guide: str) -> None:
     missing = sorted(cell.label for cell in CELLS if cell.label not in guide)
     assert missing == [], "status-bar cells the guide never names: " + ", ".join(missing)
+
+
+def test_the_guide_does_not_describe_a_cell_that_is_not_there(guide: str) -> None:
+    """The other direction, and the one that went wrong.
+
+    The check above asks whether every real cell is documented and says nothing
+    about rows the guide invents. The guide's status-bar table carried a
+    **Language** row for months: the Format cell had been split into two in an
+    earlier draft and the halves were never rejoined, so the table described
+    fourteen cells where the bar has thirteen, and a reader arrowing along it
+    counted wrong and went looking for a cell that has never existed. A wrong
+    count is recoverable; hunting a bar for a control that is not in it is the
+    same dead end as a key that does nothing.
+
+    Scoped to the one table rather than the whole guide, because the prose
+    around it reasonably names things that are not cells.
+    """
+    start = guide.index("| Part | What it tells you | Enter does |")
+    table = guide[start:]
+    table = table[: table.index("\n\n")]
+    labels = {cell.label for cell in CELLS}
+    rows = [
+        line.split("|")[1].strip().strip("*")
+        for line in table.splitlines()
+        if line.startswith("| **")
+    ]
+    invented = sorted(row for row in rows if row not in labels)
+    assert invented == [], "the guide's table has rows the status bar does not: " + ", ".join(
+        invented
+    )
+    assert len(rows) == len(CELLS), (
+        f"the table has {len(rows)} rows and the bar has {len(CELLS)} cells"
+    )
 
 
 @pytest.mark.parametrize(

@@ -95,7 +95,7 @@ def test_show_about_quill_passes_real_about_info_instance() -> None:
     assert show_fn is not None, "show_about_quill not found"
     body = show_fn.group(0)
     assert "from quill.core.about_info import gather_about_info" in body
-    assert "about_info = gather_about_info()" in body
+    assert "gather_about_info()" in body
     assert "show_about_quill_native(" in body
 
 

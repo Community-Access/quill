@@ -138,7 +138,7 @@ folder.
 - [ ] pass  [ ] fail: ______
 
 **L-10. F1 answers differently in the two modes**
-- Do: press **Ctrl+Shift+M** to switch to rich text (answer **Yes** if asked),
+- Do: press **Alt+Shift+F** to switch to rich text (answer **Yes** if asked),
   then **F1** in the document.
 - Pass: the answer now mentions bold, headings and Describe Formatting. It is
   not the plain-text answer.
@@ -256,7 +256,7 @@ This block is the product. Take it slowly.
 ## Block E -- Rich text and headings (8 min)
 
 **L-27. Switching to rich text warns first**
-- Do: in a plain document with text in it, press **Ctrl+Shift+M** twice (to
+- Do: in a plain document with text in it, press **Alt+Shift+F** twice (to
   rich, then back to plain).
 - Pass: going *to plain* asks "Switching to plain text removes all formatting.
   Continue?" and the default button is **No** -- pressing Enter does **not**
@@ -589,8 +589,8 @@ silently off cannot be told apart from a broken one.
   in the document.
 - [ ] pass  [ ] fail: ______
 
-**L-74. Shift+F7 handles the single word**
-- Do: put the cursor inside a misspelled word and press **Shift+F7**.
+**L-74. Alt+Shift+F7 handles the single word**
+- Do: put the cursor inside a misspelled word and press **Alt+Shift+F7**.
 - Pass: a suggestions list opens named for the word, Enter replaces it, and you
   hear **"Replaced with ..."**.
 - [ ] pass  [ ] fail: ______
@@ -601,8 +601,10 @@ silently off cannot be told apart from a broken one.
   beside it silently is a fail -- there would be nothing to hear.
 - [ ] pass  [ ] fail: ______
 
-**L-76. Alt+F7 teaches a word, and says where it went**
-- Do: on a misspelling, press **Alt+F7**, then **Ctrl+F7** from the top again.
+**L-76. Ctrl+Alt+F9 teaches a word, and says where it went**
+- Do: on a misspelling, press **Ctrl+Alt+F9**, then **Ctrl+F7** from the top
+  again. (**Alt+F7** is Word's key for *Next Misspelling* and is an alias for
+  Ctrl+F7 here -- it does not teach anything.)
 - Pass: you hear **"Added ... to your QuillLite dictionary"** -- naming *which*
   dictionary -- and the taught word is no longer found.
 - [ ] pass  [ ] fail: ______
@@ -848,7 +850,7 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-104. Customize Features searches, and a profile sets everything**
-- Do: **Ctrl+Alt+Shift+F**. Type `curly quotes`. Then clear the box, choose the
+- Do: **Ctrl+Alt+F10**. Type `curly quotes`. Then clear the box, choose the
   **Notepad** profile, press **Use Profile**, and press **Save**.
 - Pass: typing narrows the list to Autocorrect (it matches what the feature
   *does*, not only its name) and the count is announced; Use Profile announces
@@ -860,7 +862,7 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-105. The status bar does not cut itself off on a narrow window**
-- Do: make the window narrow -- narrow enough that twelve cells cannot fit on
+- Do: make the window narrow -- narrow enough that thirteen cells cannot fit on
   one line. Read the bottom line of the window with **Insert+Page Down**.
 - Pass: nothing is cut off. The bar is two (or three) lines tall instead, and
   every cell reads in full.
@@ -872,7 +874,7 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-106. Five features that had no switch now have one**
-- Do: **Ctrl+Alt+Shift+F**, and untick **The Command Palette**. Save. Press
+- Do: **Ctrl+Alt+F10**, and untick **The Command Palette**. Save. Press
   **Ctrl+Shift+P**.
 - Pass: nothing happens, and the palette is gone from the menus -- the key is
   unhooked, not just the row hidden.
@@ -906,7 +908,7 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-110. Insert Special Character reads back what it inserted**
-- Do: **Edit > Insert > Special Character...** (Ctrl+Shift+F2). Focus lands in
+- Do: **Insert > Special Character...** (Ctrl+Shift+F2). Focus lands in
   the search box. Type `em dash`, press Enter to move into the list, and press
   Enter again on the first row.
 - Pass: the reader names the dialog, then the search box; Enter moves to the
@@ -947,7 +949,7 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-114. The same is true of a plain-text document**
-- Do: switch to plain text (Ctrl+Shift+M), type `## Section two` on its own
+- Do: switch to plain text (Alt+Shift+F), type `## Section two` on its own
   line with ordinary text above and below, and arrow onto it.
 - Pass: "Heading 2", on the same terms as L-113.
 - Do: with the cursor above it, press Ctrl+Alt+H for Next Heading, then
@@ -1011,8 +1013,8 @@ QuillLite with **Ctrl+Shift+S** if you have none.
   the one place somebody checks what kind of document they are in.
 - [ ] pass  [ ] fail: ______
 
-**L-119. Ctrl+Shift+M rings through all four kinds**
-- Do: in `build.py`, press **Ctrl+Shift+M** four times, listening to each.
+**L-119. Alt+Shift+F rings through all four kinds**
+- Do: in `build.py`, press **Alt+Shift+F** four times, listening to each.
 - Pass: you hear **Markdown**, then **HTML**, then the rich-text switch, then
   back to **Plain text**. Every stop says its own name.
 - Fail if it toggles between two states only -- that is the old behaviour, and
@@ -1020,7 +1022,7 @@ QuillLite with **Ctrl+Shift+S** if you have none.
 - [ ] pass  [ ] fail: ______
 
 **L-120. Ringing between the three plain kinds changes nothing in the document**
-- Do: in `notes.md`, type `hello`, then press **Ctrl+Shift+M** twice (to HTML
+- Do: in `notes.md`, type `hello`, then press **Alt+Shift+F** twice (to HTML
   and on to plain text, avoiding the rich stop).
 - Pass: the text is still exactly `hello`, and the document is **not** marked
   modified. Only what the keys write changed.
@@ -1553,7 +1555,7 @@ you only notice a week later.
 - [ ] pass  [ ] fail: ______
 
 **L-186. A plain text file is not read as markup**
-- Do: in a **plain text** document (`list.txt`, with the Language cell reading
+- Do: in a **plain text** document (`list.txt`, with the Format cell reading
   Plain text) type `buy 2 * 3 eggs`. Ring to rich text.
 - Pass: the line is unchanged, character for character. The asterisk is an
   asterisk.
@@ -1740,7 +1742,7 @@ here, so what these check is the door and the sentence, not the engine.
 - [ ] pass  [ ] fail: ______
 
 **L-208. Snippets lists them with a preview**
-- Do: press **Ctrl+Shift+Insert**.
+- Do: press **Alt+Shift+I**.
 - Pass: a **Snippets** list opens with every abbreviation, each row reading its
   trigger and the beginning of what it writes. Enter on one puts it in at the
   cursor and says "Inserted" with its name.
@@ -1931,7 +1933,7 @@ QuillLite's.
 - [ ] pass  [ ] fail: ______
 
 **L-230. A Markdown document names itself, and so does an HTML one**
-- Do: switch to Markdown (**Ctrl+Shift+M** until the Format part says so) and
+- Do: switch to Markdown (**Alt+Shift+F** until the Format part says so) and
   press **Ctrl+U**. Then switch to HTML and press **Ctrl+E**.
 - Pass: **"... in a Markdown document."** and **"... in an HTML document."**
 - Fail on **"a html document"**: QuillLite lower-cased its own Format label
@@ -2064,10 +2066,18 @@ one of the three from outside the app.
   empty.
 - [ ] pass  [ ] fail: ______
 
-**L-246. Never Ask Again says what it changed**
+**L-246. Never Ask Again says what it changed, and can be undone**
 - Do: press **Never Ask Again**, then relaunch twice.
-- Pass: you are told the setting's name, and last session reopens silently from
-  then on. Setting it back in preferences brings the window back.
+- Pass: you are told what changed, and last session reopens silently from then
+  on with no window.
+- Then press **Alt+Shift+F12** to open the window on purpose. **Never Ask
+  Again** is now greyed out and **Ask Me Next Time** is live. Press **Ask Me
+  Next Time**, then relaunch with three documents remembered.
+- Pass: you are asked again. Fail if Ask Me Next Time is greyed too -- that is
+  the window being opened without its current mode, and it leaves no way back.
+- Fail if either button is *missing* rather than greyed: a control that
+  disappears leaves somebody searching the window for it, where a disabled one
+  announces itself as unavailable on arrival.
 - [ ] pass  [ ] fail: ______
 
 ---

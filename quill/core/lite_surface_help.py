@@ -54,9 +54,10 @@ PURPOSES: dict[str, str] = {
     ),
     "QUILL AI Sign-In": (
         "Connect this computer to QUILL's free AI. There is no account, no "
-        "password and no email address: QUILL shows you an eight-character "
-        "code, you type it into a web page on any device, and this window says "
-        "when you are connected. Nothing is sent until you choose Show My Code."
+        "password and no email address. The window opens on an eight-character "
+        "code: choose Open the Connect Page to confirm it in your browser with "
+        "the code already filled in, or type it into the web page on any other "
+        "device. This window says when you are connected."
     ),
     "AI Usage": (
         "How many free AI requests you have left this month and today, and "

@@ -1,6 +1,6 @@
 """QuillLite's guided tutorials: its tracks, and its lessons assembled.
 
-Eight lessons in two tracks, and the number is the point. QUILL has twenty-one
+Nine lessons in two tracks, and the number is the point. QUILL has twenty-one
 in six, because QUILL is an environment somebody moves into; QuillLite is a
 Notepad replacement, and a Notepad replacement with a twenty-one-lesson course
 attached to it is advertising that it is not one.
@@ -19,8 +19,12 @@ Two tracks, and they answer the two questions this product exists for:
   use QuillLite all day.
 * **Working in a document** is the part that has no sighted equivalent --
   selecting text you cannot see the extent of, finding your way back, skimming
-  something long, and hearing that a word is wrong without being interrupted
-  mid-sentence.
+  something long, hearing that a word is wrong without being interrupted
+  mid-sentence, and asking a question about a document rather than reading it
+  end to end to find one fact. That last one earns a lesson despite the
+  restraint above, because it is the only feature here that sends anything off
+  the machine -- a thing somebody should be taught deliberately rather than
+  discover.
 
 What is deliberately not here: a tour of everything. The menus, the command
 palette and the user guide cover the rest, and a lesson that duplicates the
@@ -45,7 +49,8 @@ TRACKS: tuple[Track, ...] = (
         "working-in-it",
         "Working in a document",
         "Selecting more than a few words, finding your way back to where you "
-        "were, skimming something long, and spelling without a red squiggle.",
+        "were, skimming something long, spelling without a red squiggle, and "
+        "asking a question about the document in front of you.",
     ),
 )
 

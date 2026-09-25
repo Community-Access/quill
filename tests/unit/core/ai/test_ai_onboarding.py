@@ -54,16 +54,28 @@ def test_celebration_lines_are_tailored() -> None:
     assert any("Copilot" in line for line in agent)
 
 
-def test_experience_mode_defaults_to_advanced_and_persists(tmp_path, monkeypatch) -> None:
+def test_experience_mode_defaults_to_basic_and_persists(tmp_path, monkeypatch) -> None:
     _isolate(tmp_path, monkeypatch)
-    # Default is advanced so nothing is hidden from users who never opted into Basic.
+    # No provider key: this test passed on any machine that had one stored and
+    # failed in CI, which has none.
+    monkeypatch.setattr(ob, "configured_cloud_providers", lambda: [])
+    # A fresh install starts in Basic, now that QUILL's own free AI is the
+    # working surface (see default_experience_mode).
+    assert ob.load_experience_mode() == ob.EXPERIENCE_BASIC
+    assert ob.is_basic_mode() is True
+    ob.save_experience_mode(ob.EXPERIENCE_ADVANCED)
     assert ob.load_experience_mode() == ob.EXPERIENCE_ADVANCED
-    assert ob.is_basic_mode() is False
     ob.save_experience_mode(ob.EXPERIENCE_BASIC)
     assert ob.load_experience_mode() == ob.EXPERIENCE_BASIC
     assert ob.is_basic_mode() is True
     # Garbage falls back to advanced.
     ob.save_experience_mode("nonsense")
+    assert ob.load_experience_mode() == ob.EXPERIENCE_ADVANCED
+
+
+def test_an_install_with_a_provider_key_stays_advanced(tmp_path, monkeypatch) -> None:
+    _isolate(tmp_path, monkeypatch)
+    monkeypatch.setattr(ob, "configured_cloud_providers", lambda: [("openai", "OpenAI")])
     assert ob.load_experience_mode() == ob.EXPERIENCE_ADVANCED
 
 

@@ -775,6 +775,55 @@ def test_release_json_captures_asset_digest() -> None:
     assert release.download_digest == digest
 
 
+def test_app_releases_capture_the_digest_of_the_asset_they_chose(monkeypatch) -> None:
+    """The sibling apps' path dropped the digest, so QuillLite downloaded
+    unverified while QUILL checked every byte."""
+    import io
+    import json as _json
+
+    import quill.core.updates as updates_mod
+
+    base = "https://github.com/x/y/releases/download/quill-quilllite-v1.0.1/"
+    payload = [
+        {
+            "tag_name": "quill-quilllite-v1.0.1",
+            "assets": [
+                {
+                    "name": "QuillLite-Setup-Shared-1.0.1.exe",
+                    "browser_download_url": base + "QuillLite-Setup-Shared-1.0.1.exe",
+                    "digest": "sha256:" + "a" * 64,
+                },
+                {
+                    "name": "QuillLite-Portable-1.0.1.zip",
+                    "browser_download_url": base + "QuillLite-Portable-1.0.1.zip",
+                    "digest": "sha256:" + "b" * 64,
+                },
+            ],
+        }
+    ]
+
+    class _FakeResponse(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(
+        updates_mod,
+        "urlopen",
+        lambda *a, **k: _FakeResponse(_json.dumps(payload).encode("utf-8")),
+    )
+    for portable, expected in ((False, "a" * 64), (True, "b" * 64)):
+        (release,) = updates_mod.fetch_app_releases(
+            "QuillLite",
+            "https://api.example/releases",
+            prefer_portable=portable,
+            match_edition=False,
+        )
+        assert release.download_digest == expected
+
+
 def test_download_release_asset_rejects_digest_mismatch(monkeypatch, tmp_path) -> None:
     import io
 

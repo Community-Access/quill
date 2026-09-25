@@ -205,7 +205,7 @@ else.</p>
 href="https://github.com/Community-Access/quill/pull/1490">PR #1490</a>
 by Steven Scott (<code>doubletaponair</code>) under this repository’s
 MIT licence, and adopted into the QuillVille family here. Everything
-below shipped in 1.0.0, assembled between 2026-09-08 and 2026-09-19.</p>
+below is in 1.0.0, assembled between 2026-09-08 and 2026-09-24.</p>
 <p>Three lists, each grouped by subject: <strong>Added</strong> is what
 was not there before, <strong>Changed</strong> is what worked
 differently, <strong>Fixed</strong> is what was wrong. The two lists at
@@ -267,7 +267,7 @@ file name implies.</p></li>
 </ul>
 <h4 id="headings-and-structure">Headings and structure</h4>
 <ul>
-<li><p><strong>The Heading Organizer — Ctrl+Alt+Shift+O.</strong> Every
+<li><p><strong>The Heading Organizer — Alt+Shift+O.</strong> Every
 heading in the document in one list. Arrow through them, Tab to demote
 and Shift+Tab to promote, move a whole section up or down, rename one,
 and check the result against the accessibility rules for heading order.
@@ -275,11 +275,11 @@ QuillLite could already list headings and already move sections; this is
 both at once, so you can hear the shape of the document change as you
 change it.</p></li>
 <li><p><strong>Folding over Markdown sections.</strong>
-<strong>Ctrl+Shift+Minus</strong> folds the section you are in and says
-how many lines went with it; <strong>Ctrl+Shift+Right</strong> and
-<strong>Ctrl+Shift+Left</strong> walk between sections, each one saying
-its heading, whether it is folded, and how long it is;
-<strong>Ctrl+Shift+Equals</strong> opens everything again. Nothing is
+<strong>Ctrl+Shift+F9</strong> folds the section you are in and says how
+many lines went with it; <strong>Ctrl+Alt+Shift+Down</strong> and
+<strong>Ctrl+Alt+Shift+Up</strong> walk between sections, each one
+saying its heading, whether it is folded, and how long it is;
+<strong>Ctrl+Shift+F10</strong> opens everything again. Nothing is
 hidden from the cursor and a folded section reads exactly as it reads
 unfolded — this is a way of skimming, not a change to your
 document.</p></li>
@@ -579,34 +579,34 @@ everybody’s. Select the words, press it, type the address:
 <code>&lt;a href="address"&gt;text&lt;/a&gt;</code> in an HTML one.
 QuillLite had both kinds, a tag picker for each, and no way at all to
 make the one tag everybody inserts.</p></li>
-<li><p><strong>Edit &gt; Insert &gt; Line Break (Shift+Enter).</strong>
-Ends the line without starting a new paragraph – the distinction a blank
-line cannot make, and the chord Word uses for the same thing. QuillLite
-says which spelling it wrote, because the older one (two trailing
-spaces) is invisible on screen and silent to a screen reader.
-<strong>Markdown line break style</strong> in Settings chooses; the
-default is a backslash.</p></li>
-<li><p><strong>Edit &gt; Insert &gt; Special Character…
-(Ctrl+Shift+F2).</strong> A searchable picker for the 357 characters a
-keyboard has no key for. Type part of a name (<code>dash</code>,
-<code>euro</code>, <code>acute</code>, <code>arrow</code>) or a word
-Unicode does not use but people do (<code>gbp</code>,
-<code>copyright</code>, <code>eszett</code>), or clear the box and
-browse one of fifteen groups: whitespace, dashes and hyphens, quotes,
-invisible and control, typography, legal and reference marks, currency,
-maths and units, fractions, superscripts and ordinals, arrows, accented
-letters small and capital, Greek letters, and punctuation from other
-languages. Each row shows the character, its name and its code point,
-with a description pane that updates as you arrow. Enter inserts, and
-QuillLite reads back what it put in – “Inserted – U+2014 Em dash” –
-because most of the list is invisible on the page and the reader says
-nothing when an app writes text on its own behalf. The search box is
-also a code-point box: <code>2014</code>, <code>U+2014</code> and
-<code>d8212</code> all find the em dash, and a code point in no group
-still resolves, so the picker reaches every character Unicode has. QUILL
-has the same picker on Shift+F2.</p>
+<li><p><strong>Insert &gt; Line Break (Shift+Enter).</strong> Ends the
+line without starting a new paragraph – the distinction a blank line
+cannot make, and the chord Word uses for the same thing. QuillLite says
+which spelling it wrote, because the older one (two trailing spaces) is
+invisible on screen and silent to a screen reader. <strong>Markdown line
+break style</strong> in Settings chooses; the default is a
+backslash.</p></li>
+<li><p><strong>Insert &gt; Special Character… (Ctrl+Shift+F2).</strong>
+A searchable picker for the 357 characters a keyboard has no key for.
+Type part of a name (<code>dash</code>, <code>euro</code>,
+<code>acute</code>, <code>arrow</code>) or a word Unicode does not use
+but people do (<code>gbp</code>, <code>copyright</code>,
+<code>eszett</code>), or clear the box and browse one of fifteen groups:
+whitespace, dashes and hyphens, quotes, invisible and control,
+typography, legal and reference marks, currency, maths and units,
+fractions, superscripts and ordinals, arrows, accented letters small and
+capital, Greek letters, and punctuation from other languages. Each row
+shows the character, its name and its code point, with a description
+pane that updates as you arrow. Enter inserts, and QuillLite reads back
+what it put in – “Inserted – U+2014 Em dash” – because most of the list
+is invisible on the page and the reader says nothing when an app writes
+text on its own behalf. The search box is also a code-point box:
+<code>2014</code>, <code>U+2014</code> and <code>d8212</code> all find
+the em dash, and a code point in no group still resolves, so the picker
+reaches every character Unicode has. QUILL has the same picker on the
+same key, <strong>Ctrl+Shift+F2</strong>.</p>
 <p><strong>Insert Date and Time moved with it</strong>, from Edit to
-<strong>Edit &gt; Insert &gt; Date and Time</strong>. Its key is still
+<strong>Insert &gt; Date and Time</strong>. Its key is still
 <strong>F5</strong>.</p></li>
 </ul>
 <h4 id="typing-characters-and-the-controls-own-keys">Typing, characters
@@ -635,7 +635,7 @@ way to tell which one broke the search.</p></li>
 </ul>
 <h4 id="abbreviations-and-snippets">Abbreviations and snippets</h4>
 <ul>
-<li><p><strong>Snippets — Ctrl+Shift+Insert.</strong> A list of every
+<li><p><strong>Snippets — Alt+Shift+I.</strong> A list of every
 abbreviation, most used first, with a preview of what each one writes.
 Abbreviations expand when you type the trigger, which is perfect for the
 six you use daily and no help at all for the fortieth one, whose trigger
@@ -811,22 +811,32 @@ Selection submenu – and switching one off removes its menu <em>and</em>
 its keys, because a key that still fires for a feature you turned off is
 the feature not being off. This is how QuillLite stays a small editor
 without being a poor one.</p>
-<p>Three areas ship switched off and are found in the same list rather
+<p>Four areas ship switched off and are found in the same list rather
 than hidden: autocorrect (welcome in prose, actively wrong in a config
-file), timestamped backups (reassuring, and they fill a folder), and Go
-To Anything.</p></li>
-<li><p><strong>Dark mode by default,</strong> view-only and stripped
-back to automatic colour before every save, so a theme can never land in
-a document you send somebody.</p></li>
+file), timestamped backups (reassuring, and they fill a folder), Go To
+Anything, and AI help, which is off because it sends what you ask about
+over the internet.</p></li>
+<li><p><strong>The theme follows Windows,</strong> view-only and
+stripped back to automatic colour before every save, so a theme can
+never land in a document you send somebody. QuillLite shipped defaulting
+to dark on the grounds that its users are disproportionately
+light-sensitive. True, and it does not follow that they want
+<em>dark</em>: high-contrast black on white is a real requirement that a
+dark default breaks in exactly the same way. <code>system</code> does
+not guess, and it also settles the original complaint, which was never
+about which colour but about QUILL and QuillLite looking like two
+different editors on day one. Anybody who actually chose dark keeps it –
+the settings file stores only what you changed, so a changed default
+reaches the people who never chose and nobody else.</p></li>
 </ul>
 <h4 id="help-f1-and-tutorials">Help, F1 and tutorials</h4>
 <ul>
-<li><p><strong>Tutorials — Ctrl+Alt+F1.</strong> Eight guided lessons in
+<li><p><strong>Tutorials — Ctrl+Alt+F1.</strong> Nine guided lessons in
 two tracks: opening a file and getting it back unchanged, the four kinds
 of document, numbered documents, what to press when you are lost — then
 selecting more than a few words, finding your way back, skimming
-something long, and spelling without a red squiggle. About thirty-six
-minutes in all.</p>
+something long, spelling without a red squiggle, and asking a question
+about the document in front of you. About forty-two minutes in all.</p>
 <p>Each lesson is a list of steps, and each step says what to press,
 <strong>why</strong>, and what you should hear when it worked. A step
 shows <em>your</em> key rather than the one QuillLite ships with, can
@@ -870,15 +880,14 @@ document control itself.</p></li>
 <h4 id="settings-data-and-where-it-lives">Settings, data and where it
 lives</h4>
 <ul>
-<li><p><strong>Tools &gt; Back Up Settings… (Ctrl+Alt+Shift+Q)</strong>
-and <strong>Tools &gt; Restore Settings… (Ctrl+Alt+Shift+D).</strong>
-Write your configuration to a <code>.qsf</code> file and put it back on
-another machine. What describes <em>this</em> computer – the
-recent-files list, the restored session, the window size, the update
-timestamp – is deliberately left out, so a restore cannot point
-QuillLite at files that are not there. Restoring says what came across,
-what has been added since the file was written, and what was left
-alone.</p></li>
+<li><p><strong>Tools &gt; Back Up Settings… (Ctrl+Alt+F11)</strong> and
+<strong>Tools &gt; Restore Settings… (Ctrl+Alt+F12).</strong> Write your
+configuration to a <code>.qsf</code> file and put it back on another
+machine. What describes <em>this</em> computer – the recent-files list,
+the restored session, the window size, the update timestamp – is
+deliberately left out, so a restore cannot point QuillLite at files that
+are not there. Restoring says what came across, what has been added
+since the file was written, and what was left alone.</p></li>
 <li><p><strong>Its own data folder</strong>
 (<code>%LOCALAPPDATA%\QuillLite</code>), deliberately not
 <code>%APPDATA%\Quill</code>. Uninstalling does not remove it: recovered
@@ -938,6 +947,84 @@ fifteen-minute subset named at the top. It exists because everything a
 machine can check here is already checked – and what somebody actually
 <em>hears</em> is not one of those things.</li>
 </ul>
+<h4 id="ai-help-2026-09-23">AI help (2026-09-23)</h4>
+<p>QuillLite gained five AI commands – <strong>summarize</strong>,
+<strong>rewrite</strong>, <strong>proofread</strong>,
+<strong>explain</strong>, and <strong>ask a question about the document
+in front of you</strong> – running on QUILL’s own free service. They are
+in <strong>Tools &gt; AI</strong>, behind <strong>Ctrl+Alt+G</strong>
+(the assistant pad) and <strong>Ctrl+Alt+Z</strong> (the question box),
+with <strong>Usage</strong>, <strong>Connect or Sign Out</strong> and
+<strong>Privacy Agreement</strong> beside them.</p>
+<p><strong>Neither the feature switch nor the sign-in is enough to send
+anything.</strong> Both the area and the agreement have to be true. They
+are deliberately separate questions: the area answers “does this feature
+exist in my copy”, and the agreement answers “have I agreed to what it
+does”. Conflating them gets one of them wrong – an area switched on by a
+profile, by a settings import, or by somebody else using the machine is
+not consent.</p>
+<p>So the agreement is asked for on its own, stored as a
+<strong>version</strong> rather than a yes, so that a material change to
+what is sent or kept can ask again instead of the old answer being taken
+to cover the new thing. It is reachable by three doors – <strong>Tools
+&gt; AI &gt; Privacy Agreement</strong>, a tick box in
+<strong>Preferences</strong>, and switching the area on in
+<strong>Customize Features</strong> – because the place somebody looks
+depends on which part of the app they already know. All three read and
+write the same answer, so none of them can disagree with the others.</p>
+<p><strong>How much you can ask about doubled.</strong> The input
+ceiling went from about 1,125 words to about <strong>2,250</strong>
+(1,500 tokens to 3,000). Input is the cheap half of a request – the
+answer costs more to generate than the question costs to send – so the
+wider ceiling makes most short documents fit whole for a modest increase
+per request. The service’s own headroom was raised to match, because
+running out of it turns hosted AI off for everyone rather than merely
+slowing it down.</p>
+<p><strong>Privacy Agreement is never dimmed</strong>, whether or not
+the area is on and whether or not you have accepted. A door you can only
+reach by first agreeing to something is not a door.</p>
+<p><strong>One pad behind one key, not five commands.</strong> The
+chords free in <em>both</em> editors are few, and family rule 2 says a
+command both products have keeps its chord – so five separate keyed
+commands were never on offer. One pad is the better shape anyway: one
+place showing what will be sent, one showing what is left, and one
+consent surface rather than five.</p>
+<p><strong>QUILL’s existing AI is untouched.</strong> No provider list
+changed, no default cascade changed, and no bring-your-own-key, agent or
+local-model path changed. The capability is shared, so the two editors
+run the same five commands on the same five chords from the same module
+– QuillLite is not ahead of QUILL here, and QUILL has more AI than
+QuillLite rather than less.</p>
+<h4 id="the-last-pass-before-10-2026-09-24">The last pass before 1.0
+(2026-09-24)</h4>
+<ul>
+<li><p><strong>Ask Me Next Time</strong>, beside Never Ask Again in the
+Reopen Last Session window. Never Ask Again was the one answer in that
+window that could not be taken back: it set the preference to
+<em>never</em>, nothing else in either editor wrote that preference
+back, and the button’s own help text sent you looking for a setting
+called “Reopen last session”, which is a different setting doing a
+different job. So the window stopped appearing and there was no
+supported way to bring it back – from a button people press in a hurry,
+which is exactly the population that then wants it back. Exactly one of
+the pair is enabled at a time and the other is greyed rather than
+hidden, so arriving on it tells you which way the setting is. Shared, so
+QUILL gained it in the same change.</p></li>
+<li><p><strong>Follow me is greyed in QuillLite</strong>, rather than
+sitting there doing nothing. The tutorial window’s Follow me watches the
+app’s live state and moves you on when it can see you did the step; none
+of QuillLite’s nine lessons carries a check, because every step here
+ends in a sentence the editor already says out loud. A tick box that can
+never do anything is one somebody ticks, waits on, and concludes is
+broken. Disabled rather than removed, so somebody who used it in Quill
+Radio is told it is unavailable instead of hunting for it.</p></li>
+</ul>
+<h4 id="normal-text-2026-09-22">Normal Text (2026-09-22)</h4>
+<ul>
+<li><strong>Normal Text</strong> (<code>Ctrl+Shift+N</code>), Word’s
+command for taking formatting back off – the only thing in the Format
+menu with no way to reach it.</li>
+</ul>
 <h3 id="changed">Changed</h3>
 <h4 id="files-encoding-and-saving-1">Files, encoding and saving</h4>
 <ul>
@@ -950,10 +1037,14 @@ reading “CRLF”, so OK converted the document.</li>
 </ul>
 <h4 id="the-four-kinds-of-document-1">The four kinds of document</h4>
 <ul>
-<li><strong>Ctrl+Shift+M rings through all four kinds of
+<li><strong>Alt+Shift+F rings through all four kinds of
 document</strong> – plain text, Markdown, HTML, rich text, and round
 again – where it used to toggle between two of them. Each stop says its
-own name. Enter on the Format cell does the same.</li>
+own name. Enter on the Format cell does the same. The ring was on
+Ctrl+Shift+M until the family keymap pass gave that chord to <strong>Set
+Mark</strong>, which is pressed mid-sentence and had been sitting on
+Ctrl+Alt+Shift+K; Switch Document Mode is pressed once per document and
+could afford the longer reach.</li>
 </ul>
 <h4 id="headings-and-structure-1">Headings and structure</h4>
 <ul>
@@ -1174,7 +1265,7 @@ and neither was right for this product: the Companion zip installs
 nothing, so it ran against whatever shared runtime happened to be on the
 machine – including one built before QuillLite existed, which failed at
 launch with “No module named quill.apps.lite” and could not repair
-itself. The thin installer swapped a 113 MB download for a 110 MB
+itself. The thin installer swapped a 117 MB download for a 110 MB
 first-launch download and a network dependency, on the one app people
 install <em>because</em> they have nothing else. If you already
 installed the thin edition, the installer upgrades it in place – same
@@ -1514,6 +1605,209 @@ closed.</strong> The live spell check and the pending “and here is how
 it is spelled” were left running when a document window went away, and
 the failure that followed was swallowed. Both are stopped now, with
 everything else on a clock.</li>
+</ul>
+<h4
+id="formatting-that-did-not-survive-being-converted-2026-09-24">Formatting
+that did not survive being converted (2026-09-24)</h4>
+<ul>
+<li><p><strong>Underline reached rich text as four literal
+characters.</strong> Markdown has no underline syntax, so the tag picker
+writes <code>&lt;u&gt;text&lt;/u&gt;</code> – and the rich-text writer
+only understood QUILL’s own span spelling, so switching a Markdown
+document to rich text put <code>&lt;u&gt;</code> on the page beside the
+words it was supposed to be formatting. The two spellings are one now,
+and <code>~~strikethrough~~</code> came with it.</p></li>
+<li><p><strong>Page breaks vanished.</strong> A
+<code>::: pagebreak</code> written to rich text was not read back, so a
+document that paginated correctly stopped doing so after a save and
+reopen, silently.</p></li>
+<li><p><strong>Tables came back as one word.</strong> Converting through
+HTML turned <code>| a | b |</code> into <code>ab</code> – the header,
+the columns and the alignment row all gone. A table is the one construct
+where losing the markup also loses the meaning, because nothing else
+says which value sits under which heading.</p></li>
+<li><p><strong>Fonts, colours, sizes and super/subscripts</strong> were
+dropped by the same route, arriving as bare words. So were alignment,
+line spacing, indents and named styles.</p></li>
+<li><p><strong>Converting to plain text left the markup in.</strong>
+<code>&lt;u&gt;</code> and <code>~~</code> came through intact into a
+file whose whole promise is that it contains no markup.</p></li>
+</ul>
+<p>Twenty-eight constructs now survive both round trips exactly,
+asserted one by one in
+<code>tests/unit/io/test_format_fidelity.py</code>.</p>
+<ul>
+<li><strong>Alt+Shift+F still converts nothing.</strong> The ring walks
+plain, Markdown, HTML and rich, and the first three stops change what
+the <em>keys</em> write rather than what the buffer holds. That is
+deliberate: converting at each stop would rewrite the document three
+times on the way to the one you wanted, and wrap a plain note in a full
+HTML page for the crime of passing through. Rich text is the stop that
+costs something, and it is the one that asks first.</li>
+</ul>
+<h4 id="headings-2026-09-24">Headings (2026-09-24)</h4>
+<ul>
+<li><p><strong>The cursor landed outside the heading.</strong> Applying
+a heading in an HTML document put the cursor <em>inside</em>
+<code>&lt;/h1&gt;</code> – QuillLite’s own arithmetic added the whole
+length change to the caret, counting the closing tag as though it were
+in front of it. On an empty line it landed after the tag entirely. Both
+editors now take the answer from one place.</p></li>
+<li><p><strong>A heading on an empty Markdown line was not a
+heading.</strong> <code>Ctrl+Alt+1</code> wrote <code>#</code> without
+its trailing space, so what you typed became <code>#Heading</code>,
+which no Markdown parser reads as a heading. The reader says nothing,
+the outline stays empty, and it only shows up in the published
+document.</p></li>
+</ul>
+<h4 id="rich-text-that-other-programs-read-2026-09-24">Rich text that
+other programs read (2026-09-24)</h4>
+<ul>
+<li><strong>Quote, Title, Subtitle and Caption were written as nothing
+at all.</strong> The rich-text writer handled alignment, spacing and
+indent and dropped the named style on the floor. They are real styles
+now, declared under the names Word knows them by, so a file you send
+opens in Word as Quote rather than as text that happens to be indented
+and italic.</li>
+</ul>
+<h4 id="the-documents-and-what-they-were-teaching-2026-09-24">The
+documents, and what they were teaching (2026-09-24)</h4>
+<ul>
+<li><p><strong>The key list stopped printing “Tools” twice.</strong> The
+generated table in the user guide started a new heading every time the
+menu path changed, and the Tools menu’s rows are interrupted by the
+Spelling submenu and then resume – so five rows, Quiet Mode and Sound
+Scheme among them, were stranded under a second table with the same
+name. Somebody hunting Quiet Mode found the first table, did not find
+it, and had no reason to suppose there was another.</p></li>
+<li><p><strong>The six second keys are in the guide now.</strong>
+<code>Ctrl+;</code>, <code>Ctrl+'</code>, <code>Alt+F7</code>,
+<code>F12</code>, <code>Ctrl+F12</code> and <code>Ctrl+Shift+F12</code>
+are real bindings that appear in no menu label, so a table built from
+the menu rows told you your whole keyboard and left six working keys out
+of it.</p></li>
+<li><p><strong>Autocorrect never capitalised a sentence.</strong> Three
+places said it did – the Everything profile’s description, the typing
+module’s own docstring, and the user guide – and the code has only ever
+had two rules, curly quotes and em dashes. Somebody switches the area on
+to get the capitals and concludes the app is broken. The guide also now
+says the part that actually bites: the area is a master switch, and
+<strong>both rules start switched off</strong> in Preferences, so
+turning the area on alone changes nothing.</p></li>
+<li><p><strong>Six stale chords in the documents.</strong> Back Up
+Settings and Restore Settings were written as
+<code>Ctrl+Alt+Shift+Q</code> and <code>Ctrl+Alt+Shift+D</code> (they
+are <code>Ctrl+Alt+F11</code> and <code>Ctrl+Alt+F12</code>), Customize
+Features as <code>Ctrl+Alt+Shift+F</code> (<code>Ctrl+Alt+F10</code>),
+the Heading Organizer as <code>Ctrl+Alt+Shift+O</code>
+(<code>Alt+Shift+O</code>, and that spelling is Sound Scheme), Snippets
+as <code>Ctrl+Shift+Insert</code> (<code>Alt+Shift+I</code>), and
+Spelling for This Word as <code>Shift+F7</code>
+(<code>Alt+Shift+F7</code>). Every one of those chords is bound to
+<em>something</em>, which is why the gate that catches keys nothing
+binds did not catch these: following the guide did the wrong thing
+rather than nothing.</p>
+<p><strong>A gate for it now</strong>
+(<code>tests/unit/docs/test_documented_chord_ownership.py</code>). A
+document states a checkable claim every time it writes a command’s name
+beside a chord, and the command table is the authority for what that
+chord should be. Six documents are read, the PRD among them – the older
+gate leaves PRDs out because they quote rejected proposals, and that is
+the right call for “does anything bind this” and the wrong one for “does
+<em>this command</em> bind it”.</p></li>
+<li><p><strong>The Insert menu is not inside Edit.</strong> Two passages
+still routed people through <code>Edit ▸ Insert ▸ ...</code> for Special
+Character and Line Break, from before Insert became a menu of its
+own.</p></li>
+<li><p><strong>Nine lessons, not eight</strong>, said in four places –
+and the test that guards the tutorial window was still asserting eight,
+so the ninth lesson (asking a question about a document) shipped
+uncounted.</p></li>
+<li><p><strong>A duplicated section in the user guide.</strong> “Links”
+appeared twice, in full, one after the other; and “Making QuillLite
+smaller (or larger)” was a heading with nothing under it, because the
+section that belonged to it sat inside “Sounds” four screens below. A
+listener arrowing by heading reached the title, heard the next heading
+immediately, and concluded the section was empty.</p></li>
+<li><p><strong>A status bar cell that does not exist.</strong> The
+guide’s table carried a <strong>Language</strong> row as well as
+<strong>Format</strong>: the one cell had been split in two in an
+earlier draft and never rejoined, so the table described fourteen cells
+where the bar has thirteen. Somebody arrowing along the bar counted
+wrong and then went hunting for a cell that has never existed, which is
+the same dead end as a key that does nothing.
+<code>test_lite_docs.py</code> checked that every real cell is named and
+nothing checked the other direction; it does now, row count included.
+The README’s “ten focusable cells” was wrong by three as well.</p></li>
+<li><p><strong>Numbers that had drifted.</strong> The special-character
+picker was advertised at “1,400” and holds 357 in 15 groups; the HTML
+picker at “forty tags” and offers 111 plus 20 whole form fields; the
+autosave interval’s default was written as 60 seconds and is 30; the QA
+sign-off was cited as 80 steps and has 254; and the feature areas were
+counted as seventeen in four places after AI help made them
+nineteen.</p></li>
+<li><p><strong>The theme default, in four documents.</strong> They all
+said dark; it has been <code>system</code> since the reasoning above was
+written down.</p></li>
+<li><p><strong>“If you want artificial intelligence, that is
+QUILL.”</strong> True until 2026-09-23 and printed in the guide that
+ships with the release that added it.</p></li>
+<li><p><strong>Two profiles under-reported what they take away.</strong>
+WordPad and Notepad each switch off <strong>AI help</strong> and
+<strong>Markdown and HTML</strong>, and neither section listed either:
+Notepad’s paragraph named fifteen of its seventeen removals. What a
+profile keeps is visible the moment you use it; what it removes is a
+menu that is not there, which is exactly what somebody does not notice
+and cannot look up. Somebody choosing Notepad for a small editor and
+then finding Ctrl+B in a <code>.md</code> no longer writes asterisks had
+no way to connect the two. <code>test_lite_docs</code> now asserts every
+removal is named in its own section, and that a <strong>new
+area</strong> cannot be added without giving the check a phrase to look
+for.</p></li>
+<li><p><strong>Go To Anything had no section</strong>, only a row in the
+feature table, so the one box that searches commands, headings and
+bookmarks together was a thing you could switch on and then not know
+what to press. It has its key (<strong>Ctrl+Alt+Shift+A</strong>), its
+section, and the reason it ships off.</p></li>
+<li><p><strong>A contents list at the top of the user guide.</strong>
+Thirty-seven sections and no way to see the shape of it except by
+walking the headings. Generated from the guide’s own H2s, so it cannot
+drift.</p></li>
+</ul>
+<h4 id="reported-while-testing-2026-09-21-to-2026-09-22">Reported while
+testing (2026-09-21 to 2026-09-22)</h4>
+<ul>
+<li><p><strong>The status bar answers Insert+Page Down.</strong> JAWS’s
+read-the-status-bar command returned “CRLF (Windows) Modified” and
+nothing else. That command does not look for a role; it looks for a
+window of a particular class and reads its parts, and finding none it
+scrapes the bottom line – which, on a wrapping panel, was the last two
+cells of twelve. There is a real status bar window behind the accessible
+one now, carrying the same cells as parts.</p></li>
+<li><p><strong>Document numbers never came back.</strong> The counter
+only counted up. That number is the handle – Alt+1 to Alt+9 reach the
+first nine and the Window menu is written in them – so after opening and
+closing ten documents in a morning the eleventh had no Alt+digit at all,
+while ten working numbers belonged to nothing. It takes the lowest free
+number now, open documents are never renumbered, and the Window menu
+lists in number order.</p></li>
+<li><p><strong>The status bar read back as halves and doubles</strong> –
+“Line 1, colu Line 1, c … No selectio” – because the cells were
+<em>moving</em>. “No selection” to “1 words, 8 characters selected” is
+ninety pixels, and it shoved the nine cells after it sideways on every
+selection change. The cells hold their width now.</p></li>
+<li><p><strong>Enter in Find did nothing.</strong> You typed a word,
+pressed Enter, and had to Tab to the Next button. The code set an
+affirmative id, which says which button means yes <em>when a modal
+dialog closes</em> – and Find is modeless, so it never did anything.
+Enter and Shift+Enter are handled outright now, and Find Next is a real
+default button. Replace answers Enter with <strong>Find Next</strong>,
+never Replace, which is what the Windows Replace dialog does and the
+safe answer either way.</p></li>
+<li><p><strong>QUILL stopped crashing.</strong> An access violation
+inside the subclass that gives a screen reader the corrected caret line
+took the whole process down. It is unwound safely now: a fault there
+costs a line number, not your document.</p></li>
 </ul>
 <h3 id="fixed-in-quill-for-every-quill-user">Fixed in QUILL, for every
 QUILL user</h3>

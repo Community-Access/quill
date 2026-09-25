@@ -48,6 +48,10 @@ class SignInCode:
     user_code: str
     verification_uri: str
     expires_in: float = 900.0
+    #: The same page with the code already filled in, when the service offers
+    #: one. What Open the Connect Page opens, so the only thing left to do in
+    #: the browser is press Confirm.
+    verification_uri_complete: str = ""
 
     @property
     def spoken(self) -> str:
@@ -241,7 +245,12 @@ class AiService:
             grant = request_device_code(config, poster=poster)
             _call_after(
                 on_code,
-                SignInCode(grant.user_code, grant.verification_uri, grant.expires_in),
+                SignInCode(
+                    grant.user_code,
+                    grant.verification_uri,
+                    grant.expires_in,
+                    grant.verification_uri_complete or "",
+                ),
             )
             return run_device_login(
                 config, grant, poster=poster, clock=time.monotonic, sleeper=time.sleep
@@ -317,9 +326,9 @@ def _sign_in_failure(result: Any) -> str:
     from quill.core.ai.device_login import STATUS_DENIED, STATUS_EXPIRED
 
     if result.status == STATUS_EXPIRED:
-        return "That code expired before it was used. Choose Show My Code for a fresh one."
+        return "That code expired before it was used. Choose Get a New Code for a fresh one."
     if result.status == STATUS_DENIED:
-        return "The connection was refused at the web page. Choose Show My Code to try again."
+        return "The connection was refused at the web page. Choose Get a New Code to try again."
     return str(getattr(result, "error", "")) or "QUILL could not connect this computer."
 
 

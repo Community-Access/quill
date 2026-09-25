@@ -133,6 +133,15 @@ are pytest gates and one is a tool in `platform_report`:
   chord a user guide *teaches* must be one something binds. The 2026-09 pass
   found 46 stale ones, several since taken by a different command -- so
   following the guide did the wrong thing rather than nothing.
+- **GATE-DOCKEY** (`tests/unit/docs/test_documented_chord_ownership.py`), the
+  other half of that one and added 2026-09-24: wherever a QuillLite document
+  writes a command's **name beside a chord**, that chord must be one the command
+  answers to (`DEFAULT_ALIASES` counts). The sibling gate cannot see a
+  misattribution, because a misattributed chord is still bound -- the six the
+  first run found included the Heading Organizer written as `Ctrl+Alt+Shift+O`,
+  which is Sound Scheme. Unlike that gate, this one reads the PRD too: a PRD
+  quoting a rejected chord is fine, and a PRD pairing a name with the wrong one
+  is not.
 - **GATE-PERF** (`tests/unit/core/test_large_document_budget.py`, marked
   `perf`): a synthetic 50 MB buffer, against a ceiling rather than against the
   other editor -- comparing the two would pass a build where both had become

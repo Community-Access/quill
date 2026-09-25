@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite -- sign-off checklist</title>
   <style>
@@ -378,7 +378,7 @@ bar. <strong>Escape</strong> returns you to the text.</li>
 </ul>
 <p><strong>L-10. F1 answers differently in the two modes</strong></p>
 <ul>
-<li>Do: press <strong>Ctrl+Shift+M</strong> to switch to rich text
+<li>Do: press <strong>Alt+Shift+F</strong> to switch to rich text
 (answer <strong>Yes</strong> if asked), then <strong>F1</strong> in the
 document.</li>
 <li>Pass: the answer now mentions bold, headings and Describe
@@ -569,7 +569,7 @@ headings (8 min)</h2>
 <p><strong>L-27. Switching to rich text warns first</strong></p>
 <ul>
 <li>Do: in a plain document with text in it, press
-<strong>Ctrl+Shift+M</strong> twice (to rich, then back to plain).</li>
+<strong>Alt+Shift+F</strong> twice (to rich, then back to plain).</li>
 <li>Pass: going <em>to plain</em> asks “Switching to plain text removes
 all formatting. Continue?” and the default button is <strong>No</strong>
 – pressing Enter does <strong>not</strong> discard the formatting.</li>
@@ -1089,10 +1089,10 @@ leaves the corrected word in the document.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
-<p><strong>L-74. Shift+F7 handles the single word</strong></p>
+<p><strong>L-74. Alt+Shift+F7 handles the single word</strong></p>
 <ul>
 <li>Do: put the cursor inside a misspelled word and press
-<strong>Shift+F7</strong>.</li>
+<strong>Alt+Shift+F7</strong>.</li>
 <li>Pass: a suggestions list opens named for the word, Enter replaces
 it, and you hear <strong>“Replaced with …”</strong>.</li>
 </ul>
@@ -1111,11 +1111,13 @@ nothing to hear.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
-<p><strong>L-76. Alt+F7 teaches a word, and says where it
+<p><strong>L-76. Ctrl+Alt+F9 teaches a word, and says where it
 went</strong></p>
 <ul>
-<li>Do: on a misspelling, press <strong>Alt+F7</strong>, then
-<strong>Ctrl+F7</strong> from the top again.</li>
+<li>Do: on a misspelling, press <strong>Ctrl+Alt+F9</strong>, then
+<strong>Ctrl+F7</strong> from the top again. (<strong>Alt+F7</strong> is
+Word’s key for <em>Next Misspelling</em> and is an alias for Ctrl+F7
+here – it does not teach anything.)</li>
 <li>Pass: you hear <strong>“Added … to your QuillLite
 dictionary”</strong> – naming <em>which</em> dictionary – and the taught
 word is no longer found.</li>
@@ -1499,10 +1501,9 @@ one list is the property this whole layer exists to keep.</li>
 <p><strong>L-104. Customize Features searches, and a profile sets
 everything</strong></p>
 <ul>
-<li>Do: <strong>Ctrl+Alt+Shift+F</strong>. Type
-<code>curly quotes</code>. Then clear the box, choose the
-<strong>Notepad</strong> profile, press <strong>Use Profile</strong>,
-and press <strong>Save</strong>.</li>
+<li>Do: <strong>Ctrl+Alt+F10</strong>. Type <code>curly quotes</code>.
+Then clear the box, choose the <strong>Notepad</strong> profile, press
+<strong>Use Profile</strong>, and press <strong>Save</strong>.</li>
 <li>Pass: typing narrows the list to Autocorrect (it matches what the
 feature <em>does</em>, not only its name) and the count is announced;
 Use Profile announces how many features are on and that nothing is saved
@@ -1537,9 +1538,8 @@ on. Fail if any cell’s text ends mid-word on screen.</li>
 <p><strong>L-106. Five features that had no switch now have
 one</strong></p>
 <ul>
-<li>Do: <strong>Ctrl+Alt+Shift+F</strong>, and untick <strong>The
-Command Palette</strong>. Save. Press
-<strong>Ctrl+Shift+P</strong>.</li>
+<li>Do: <strong>Ctrl+Alt+F10</strong>, and untick <strong>The Command
+Palette</strong>. Save. Press <strong>Ctrl+Shift+P</strong>.</li>
 <li>Pass: nothing happens, and the palette is gone from the menus – the
 key is unhooked, not just the row hidden.</li>
 <li>Turn it back on and confirm it returns.</li>
@@ -1654,7 +1654,7 @@ not twice.</li>
 </ul>
 <p><strong>L-114. The same is true of a plain-text document</strong></p>
 <ul>
-<li>Do: switch to plain text (Ctrl+Shift+M), type
+<li>Do: switch to plain text (Alt+Shift+F), type
 <code>## Section two</code> on its own line with ordinary text above and
 below, and arrow onto it.</li>
 <li>Pass: “Heading 2”, on the same terms as L-113.</li>
@@ -1746,9 +1746,9 @@ are in.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
-<p><strong>L-119. Ctrl+Shift+M rings through all four kinds</strong></p>
+<p><strong>L-119. Alt+Shift+F rings through all four kinds</strong></p>
 <ul>
-<li>Do: in <code>build.py</code>, press <strong>Ctrl+Shift+M</strong>
+<li>Do: in <code>build.py</code>, press <strong>Alt+Shift+F</strong>
 four times, listening to each.</li>
 <li>Pass: you hear <strong>Markdown</strong>, then
 <strong>HTML</strong>, then the rich-text switch, then back to
@@ -1764,7 +1764,7 @@ keyboard.</li>
 in the document</strong></p>
 <ul>
 <li>Do: in <code>notes.md</code>, type <code>hello</code>, then press
-<strong>Ctrl+Shift+M</strong> twice (to HTML and on to plain text,
+<strong>Alt+Shift+F</strong> twice (to HTML and on to plain text,
 avoiding the rich stop).</li>
 <li>Pass: the text is still exactly <code>hello</code>, and the document
 is <strong>not</strong> marked modified. Only what the keys write
@@ -2930,7 +2930,7 @@ last jump.</li>
 </ul>
 <p><strong>L-208. Snippets lists them with a preview</strong></p>
 <ul>
-<li>Do: press <strong>Ctrl+Shift+Insert</strong>.</li>
+<li>Do: press <strong>Alt+Shift+I</strong>.</li>
 <li>Pass: a <strong>Snippets</strong> list opens with every
 abbreviation, each row reading its trigger and the beginning of what it
 writes. Enter on one puts it in at the cursor and says “Inserted” with
@@ -3217,7 +3217,7 @@ not once per document – the second key is a different question.</li>
 <p><strong>L-230. A Markdown document names itself, and so does an HTML
 one</strong></p>
 <ul>
-<li>Do: switch to Markdown (<strong>Ctrl+Shift+M</strong> until the
+<li>Do: switch to Markdown (<strong>Alt+Shift+F</strong> until the
 Format part says so) and press <strong>Ctrl+U</strong>. Then switch to
 HTML and press <strong>Ctrl+E</strong>.</li>
 <li>Pass: <strong>“… in a Markdown document.”</strong> and <strong>“… in
@@ -3421,13 +3421,23 @@ than opening empty.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
-<p><strong>L-246. Never Ask Again says what it changed</strong></p>
+<p><strong>L-246. Never Ask Again says what it changed, and can be
+undone</strong></p>
 <ul>
 <li>Do: press <strong>Never Ask Again</strong>, then relaunch
 twice.</li>
-<li>Pass: you are told the setting’s name, and last session reopens
-silently from then on. Setting it back in preferences brings the window
-back.</li>
+<li>Pass: you are told what changed, and last session reopens silently
+from then on with no window.</li>
+<li>Then press <strong>Alt+Shift+F12</strong> to open the window on
+purpose. <strong>Never Ask Again</strong> is now greyed out and
+<strong>Ask Me Next Time</strong> is live. Press <strong>Ask Me Next
+Time</strong>, then relaunch with three documents remembered.</li>
+<li>Pass: you are asked again. Fail if Ask Me Next Time is greyed too –
+that is the window being opened without its current mode, and it leaves
+no way back.</li>
+<li>Fail if either button is <em>missing</em> rather than greyed: a
+control that disappears leaves somebody searching the window for it,
+where a disabled one announces itself as unavailable on arrival.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>

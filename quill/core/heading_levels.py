@@ -73,6 +73,16 @@ class HeadingChange:
     replacement: str = ""
     old_level: int = 0
     new_level: int = 0
+    #: Where the caret belongs afterwards, as an absolute offset into the
+    #: rewritten document. Not optional decoration: ``Replace`` leaves the caret
+    #: at the end of what it wrote, which in HTML is *after* ``</h1>`` -- so
+    #: applying a heading to an empty line left you outside the element you
+    #: just asked for, typing body text next to a heading rather than in it.
+    #: The rule is "wherever the words go": for an empty line that is inside the
+    #: element, and for a line that already had words it is the same spot in
+    #: those words the caret was already in, so setting a level does not also
+    #: move you.
+    caret: int = 0
 
     @property
     def changed(self) -> bool:
@@ -221,10 +231,18 @@ def set_heading_level(
         if not old_level:
             return HeadingChange(LevelResult.NOT_A_HEADING)
         replacement = body
+        prefix = ""
     elif markup_kind == "markdown":
-        replacement = f"{'#' * level} {body}".rstrip()
+        # ``rstrip`` only when there are words to strip after. On an empty line
+        # it used to eat the marker's own trailing space and leave a bare "#",
+        # so the next thing typed read "#Heading" -- which no CommonMark parser
+        # treats as a heading at all. The reader says nothing, the outline stays
+        # empty, and the mistake only surfaces in the published document.
+        prefix = f"{'#' * level} "
+        replacement = f"{prefix}{body}".rstrip() if body else prefix
     else:
-        replacement = f"<h{level}{attributes}>{body}</h{level}>"
+        prefix = f"<h{level}{attributes}>"
+        replacement = f"{prefix}{body}</h{level}>"
     return HeadingChange(
         LevelResult.OK,
         start=start,
@@ -232,6 +250,7 @@ def set_heading_level(
         replacement=replacement,
         old_level=old_level,
         new_level=level,
+        caret=start + len(prefix) + _caret_within_body(line, body, caret - start),
     )
 
 
@@ -283,14 +302,37 @@ def set_heading_level_over_lines(
         offset += len(line) + 1
     if not changed_any:
         return HeadingChange(LevelResult.NOT_A_HEADING)
+    replacement = "\n".join(lines)
     return HeadingChange(
         LevelResult.OK,
         start=block_start,
         end=block_end,
-        replacement="\n".join(lines),
+        replacement=replacement,
         old_level=old_level,
         new_level=level,
+        # The end of the block, which is where a selection-wide edit leaves you
+        # anyway. Stated rather than defaulted: ``caret`` defaults to 0, and a
+        # caller that trusts the field would otherwise fling the caret to the
+        # top of the document after heading five selected lines.
+        caret=block_start + len(replacement),
     )
+
+
+def _caret_within_body(line: str, body: str, caret_in_line: int) -> int:
+    """How far into the heading's *words* the caret sits, clamped to them.
+
+    Marker characters are not a place to stand: a caret resting on the ``#`` of
+    ``## Notes``, or between ``<`` and ``h2``, belongs at the start of "Notes"
+    once the line is rewritten, because the markers it was sitting in no longer
+    exist in the same form. An empty line answers ``0``, which is what puts the
+    caret inside ``<h1></h1>`` rather than after it.
+    """
+    if not body:
+        return 0
+    body_start = line.find(body)
+    if body_start < 0:  # body was stripped out of a shape find() cannot locate
+        body_start = 0
+    return max(0, min(caret_in_line - body_start, len(body)))
 
 
 def _heading_body(line: str, markup_kind: str, old_level: int) -> tuple[str, str]:

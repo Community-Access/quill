@@ -149,7 +149,16 @@ class GatewayQuota:
 
     @property
     def daily_left(self) -> int:
-        return max(0, self.daily_cap - self.daily_used)
+        """What is left today -- never more than is left this month.
+
+        The two caps are independent dials on the server and either can be
+        raised or lowered at any time, so neither is assumed here -- both come
+        from the server every time the numbers are shown. When the monthly one is
+        the smaller (a new connection's first allowance is), today's cannot be
+        more than it: reported as it came, the Usage window said "15 of 15 left
+        this month" and "20 of 20 left today" in the same breath.
+        """
+        return max(0, min(self.daily_cap - self.daily_used, self.monthly_left))
 
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> GatewayQuota:
@@ -179,7 +188,12 @@ def _verified_context() -> ssl.SSLContext:
 
 
 def _urlopen_json(
-    url: str, *, token: str = "", body: dict[str, Any] | None = None, method: str = ""
+    url: str,
+    *,
+    token: str = "",
+    body: dict[str, Any] | None = None,
+    method: str = "",
+    answers: tuple[int, ...] = (),
 ) -> dict[str, Any]:
     """The single outbound call. Returns the parsed JSON body.
 
@@ -192,6 +206,10 @@ def _urlopen_json(
     there ("You have used today's free limit. It resets at midnight"), and
     discarding it in favour of "HTTP 429" throws away the only part of the
     response a user could act on.
+
+    *answers* names the status codes that are replies rather than failures for
+    this call, whose body is returned like a 200's. The device poll needs it:
+    the gateway says "pending" with 428 and "expired" or "denied" with 410.
     """
     data = json.dumps(body).encode("utf-8") if body is not None else None
     request = urllib.request.Request(url, data=data, method=method or ("POST" if data else "GET"))
@@ -209,6 +227,12 @@ def _urlopen_json(
             raw = response.read().decode("utf-8", errors="replace")
         return json.loads(raw) if raw.strip() else {}
     except urllib.error.HTTPError as error:
+        if error.code in answers:
+            try:
+                raw = error.read().decode("utf-8", errors="replace")
+                return json.loads(raw) if raw.strip() else {}
+            except (ValueError, OSError):
+                return {}
         raise _error_for_status(error) from error
     except urllib.error.URLError as error:
         raise GatewayOfflineError(
@@ -286,8 +310,14 @@ def device_flow_poster(base_url: str) -> Poster:
             return dict(grant)
 
         try:
+            # 428 is "pending" and 410 is "expired" or "denied": the gateway's
+            # normal answers while somebody types the code, not failures. Read
+            # as failures, the very first poll ended the sign-in with
+            # "server_error" (reported 2026-09-25).
             reply = _urlopen_json(
-                f"{base_url}/v1/device/token", body={"device_code": form.get("device_code", "")}
+                f"{base_url}/v1/device/token",
+                body={"device_code": form.get("device_code", "")},
+                answers=(410, 428),
             )
         except GatewayQuotaError:
             # 429 on the poll endpoint is "you are polling too fast", not a

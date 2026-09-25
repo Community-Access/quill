@@ -84,11 +84,35 @@ def take_focus(frame: wx.Frame) -> None:
             return
         frame.Raise()
         frame.SetFocus()
-        target = getattr(frame, "_focus_target", None)
+        target = getattr(frame, "_focus_target", None) or _first_focusable(frame)
         if target:
             target.SetFocus()
     except RuntimeError:  # the wx object went away while we waited
         pass
+
+
+def _first_focusable(frame: wx.Frame) -> wx.Window | None:
+    """The first control Tab would reach, for a window that named none.
+
+    Focus left on the frame itself is focus on nothing: on wxMSW the keys go to
+    a window with no controls of its own, so neither the arrows nor Tab do
+    anything -- which is how AI Usage opened (reported 2026-09-25).
+    """
+    children = getattr(frame, "GetChildren", None)
+    pending = list(children()) if callable(children) else []
+    while pending:
+        window = pending.pop(0)
+        if isinstance(window, wx.TopLevelWindow):
+            continue
+        # Into a container before asking it: a panel answers yes to
+        # AcceptsFocus, and focus on the panel is focus on nothing.
+        inner = list(window.GetChildren())
+        if inner:
+            pending[0:0] = inner
+            continue
+        if window.AcceptsFocus() and window.IsShown() and window.IsEnabled():
+            return window
+    return None
 
 
 def _read_only(parent: wx.Window, sizer: wx.Sizer, label: str, value: str, help_text: str):
@@ -125,12 +149,39 @@ def _close_row(frame: wx.Frame, sizer: wx.Sizer, *extra: wx.Button) -> wx.Button
     row.AddStretchSpacer(1)
     for button in extra:
         row.Add(button, 0, wx.RIGHT, _PAD)
-    close = wx.Button(frame, wx.ID_CLOSE, "Close")
+    # Parented to whatever window owns *sizer* (the panel), never the frame:
+    # wx asserts when a sizer manages a window that is not its container's
+    # child, and that assertion aborted both windows' constructors -- so
+    # Connect or Sign Out and Usage opened nothing and left focus in the editor.
+    owner = sizer.GetContainingWindow() or frame
+    close = wx.Button(owner, wx.ID_CLOSE, "Close")
     close.SetHelpText("Closes this window. Nothing is sent, and nothing in your document changes.")
     row.Add(close, 0)
     sizer.Add(row, 0, wx.EXPAND | wx.ALL, _PAD)
     bind_close_button(frame, close, modeless=True)
+    _bind_escape(frame)
     return close
+
+
+def _bind_escape(frame: wx.Frame) -> None:
+    """Escape closes the window, as it would a dialog.
+
+    A ``wx.Dialog`` turns Escape into ``ID_CANCEL`` for free; a ``wx.Frame``
+    does nothing with it, so every one of these windows ignored the key a
+    listener reaches for first (reported 2026-09-25). Bound once per frame:
+    :func:`_close_row` runs again each time the sign-in window changes state.
+    """
+    if getattr(frame, "_escape_bound", False):
+        return
+    frame._escape_bound = True  # noqa: SLF001 - one family, one attribute
+
+    def _on_char_hook(event: wx.KeyEvent) -> None:
+        if event.GetKeyCode() == wx.WXK_ESCAPE and not event.HasAnyModifiers():
+            frame.Close()
+            return
+        event.Skip()
+
+    frame.Bind(wx.EVT_CHAR_HOOK, _on_char_hook)
 
 
 # --------------------------------------------------------------------------- #
@@ -141,8 +192,15 @@ def _close_row(frame: wx.Frame, sizer: wx.Sizer, *extra: wx.Button) -> wx.Button
 class AiSignInFrame(wx.Frame):
     """Connect this computer. No account, no password, no email address.
 
-    Three states in one window rather than three windows: what is about to
-    happen, the code, and the confirmation. Replacing the content in place means
+    **The code is on the first screen.** This window used to open on an
+    explanation and a Show My Code button, so connecting took a keystroke
+    whose only job was to reveal the thing the window is for. Nobody reaches
+    this window without having accepted the agreement, which already says what
+    is sent and where -- so it asks for the code as it opens, and offers Open
+    the Connect Page beside it with the code already filled in.
+
+    Three states in one window rather than three windows: waiting for the code,
+    the code, and the confirmation. Replacing the content in place means
     focus never jumps to a window somebody did not open, and the status line
     changing is a label change on unfocused text -- exactly the case a screen
     reader does *not* announce, and therefore exactly the case QuillLite should.
@@ -158,57 +216,25 @@ class AiSignInFrame(wx.Frame):
         panel.SetSizer(self._sizer)
         self._panel = panel
 
+        self.SetInitialSize((560, 440))
+        self.Centre()
         if service.signed_in:
             self._show_connected(service.support_id, already=True)
         else:
-            self._show_intro()
-
-        self.SetInitialSize((560, 440))
-        self.Centre()
-
-    # -- step 1: what is about to happen, before any network call ---------- #
+            self._on_show_code(None)
 
     def _clear(self) -> None:
         self._sizer.Clear(delete_windows=True)
 
-    def _show_intro(self) -> None:
-        self._clear()
-        panel = self._panel
-        body = _read_only(
-            panel,
-            self._sizer,
-            "About connecting this computer",
-            "QUILL's free AI is hosted by QUILL. To use it you need to connect "
-            "this computer once.\n\n"
-            "There is no account, no password and no email address. QUILL will "
-            "show you an eight-character code. Open the web page on any device "
-            "-- this one, a phone, anything with a browser -- and type the "
-            "code.\n\n"
-            "When you use AI, the text you selected is sent to QUILL and on to "
-            "OpenAI, which writes the answer. QUILL records how many requests "
-            "you make and how big they were. QUILL does not record what you "
-            "wrote or what came back.",
-            "What connecting this computer does, and what is sent when you use AI. "
-            "Nothing has been sent yet.",
-        )
-        show = wx.Button(panel, label="&Show My Code")
-        show.SetHelpText(
-            "Asks QUILL for a code to connect this computer. This is the first "
-            "time anything is sent."
-        )
-        show.Bind(wx.EVT_BUTTON, self._on_show_code)
-        _close_row(self, self._sizer, show)
-        self._panel.Layout()
-        focus_on(self, body)
-
-    # -- step 2: the code -------------------------------------------------- #
+    # -- step 1: the code -------------------------------------------------- #
 
     def _on_show_code(self, _event: wx.CommandEvent) -> None:
         self._clear()
         self._status = wx.StaticText(self._panel, label="Asking QUILL for a code...")
         self._sizer.Add(self._status, 0, wx.ALL, _PAD)
-        _close_row(self, self._sizer)
+        close = _close_row(self, self._sizer)
         self._panel.Layout()
+        focus_on(self, close)
         self._service.start_sign_in(
             on_code=self._show_code, on_done=self._show_connected, on_error=self._show_error
         )
@@ -228,18 +254,26 @@ class AiSignInFrame(wx.Frame):
         )
         where = wx.StaticText(
             panel,
-            label=f"Go to {code.verification_uri} and type the code. "
-            "QUILL is waiting; this window will say when you are connected.",
+            label="Choose Open the Connect Page and press Confirm, or type the code at "
+            f"{code.verification_uri} on any device. There is no account and no "
+            "password. QUILL is waiting; this window will say when you are connected.",
         )
         self._sizer.Add(where, 0, wx.ALL, _PAD)
 
+        page = getattr(code, "verification_uri_complete", "") or code.verification_uri
+        browse = wx.Button(panel, label="&Open the Connect Page")
+        browse.SetHelpText(
+            "Opens the connect page in your web browser with this code already "
+            "filled in. Press Confirm there, then come back here."
+        )
+        browse.Bind(wx.EVT_BUTTON, lambda _e: self._open_page(page))
         say = wx.Button(panel, label="Say the Code &Again")
         say.SetHelpText("Reads the code out one character at a time.")
         say.Bind(wx.EVT_BUTTON, lambda _e: self._announce(code.spoken))
         copy = wx.Button(panel, label="&Copy the Code")
         copy.SetHelpText("Puts the code on the clipboard.")
         copy.Bind(wx.EVT_BUTTON, lambda _e: self._copy(code.user_code))
-        _close_row(self, self._sizer, say, copy)
+        _close_row(self, self._sizer, browse, say, copy)
         panel.Layout()
         focus_on(self, field)
         take_focus(self)
@@ -247,6 +281,12 @@ class AiSignInFrame(wx.Frame):
         # reader does not announce. Say the code rather than "ready": the code
         # is the thing they need, and they are about to type it elsewhere.
         self._announce(f"Your code is {code.spoken}. Go to {code.verification_uri}.")
+
+    def _open_page(self, url: str) -> None:
+        # The browser taking focus is what the reader announces; a sentence here
+        # would talk over it. Only a failure is ours to say.
+        if not wx.LaunchDefaultBrowser(url):
+            self._announce(f"Could not open a browser. Go to {url} and type the code.")
 
     def _copy(self, text: str) -> None:
         if wx.TheClipboard.Open():
@@ -256,7 +296,7 @@ class AiSignInFrame(wx.Frame):
                 wx.TheClipboard.Close()
             self._announce("Code copied.")
 
-    # -- step 3: connected, or not --------------------------------------- #
+    # -- step 2: connected, or not --------------------------------------- #
 
     def _show_connected(self, support_id: str, already: bool = False) -> None:
         if not self:
@@ -286,19 +326,23 @@ class AiSignInFrame(wx.Frame):
         if not self:
             return
         self._clear()
-        _read_only(
+        field = _read_only(
             self._panel,
             self._sizer,
             "Could not connect",
             message,
             "What went wrong, and what to do about it.",
         )
-        retry = wx.Button(self._panel, label="&Show My Code")
+        retry = wx.Button(self._panel, label="&Get a New Code")
         retry.SetHelpText("Asks QUILL for a fresh code and tries again.")
         retry.Bind(wx.EVT_BUTTON, self._on_show_code)
         _close_row(self, self._sizer, retry)
         self._panel.Layout()
-        self._announce(message)
+        # Focus on the message rather than announcing it: the control that was
+        # focused has just been destroyed, and the reader says a field's text
+        # when it takes focus -- so an announcement as well said it twice.
+        focus_on(self, field)
+        take_focus(self)
 
 
 # --------------------------------------------------------------------------- #
@@ -338,6 +382,7 @@ class AiUsageFrame(wx.Frame):
         copy.SetHelpText("Puts this computer's support ID on the clipboard.")
         copy.Bind(wx.EVT_BUTTON, self._on_copy)
         _close_row(self, self._sizer, self._sign_out, copy)
+        focus_on(self, self._body)
 
         self.SetInitialSize((520, 380))
         self.Centre()
@@ -351,7 +396,9 @@ class AiUsageFrame(wx.Frame):
             f"This month\n"
             f"{quota.monthly_left} of {quota.monthly_cap} requests left. "
             f"Starts again {reset}.\n\n"
-            f"Today\n{quota.daily_left} of {quota.daily_cap} left.\n\n"
+            # No cap here: today's is the smaller of the two the server sent,
+            # so "of 20" beside a month with 15 left would contradict itself.
+            f"Today\n{quota.daily_left} left.\n\n"
             f"This computer\nSupport ID {self._service.support_id}."
         )
         # A label change on an unfocused control, which the reader does not say.

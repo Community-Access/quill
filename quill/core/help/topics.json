@@ -722,6 +722,19 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "edit.select_section",
+    "title": "Select Section",
+    "body": "Selects the section the cursor is in — the heading, its body, and every subsection under it — and says how much that is. Selecting from a heading to exactly the start of the next one is an invisible boundary to find by hand, so this finds it for you; from there Copy or Cut takes the section anywhere. Markdown and HTML documents only.",
+    "keystrokes": [
+      "Alt+Shift+F5"
+    ],
+    "see_also": [
+      "format.move_section_to",
+      "format.move_section_up"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "edit.select_to_end_of_document",
     "title": "Select to End of Document",
     "body": "Extend the selection from the cursor to the very end of the document.",
@@ -1493,6 +1506,20 @@
     "body": "Move the whole section under the current heading — heading and its content — below the next section.",
     "keystrokes": [
       "Alt+Shift+Down"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.move_section_to",
+    "title": "Move Section To",
+    "body": "Moves this section — subsections and all — to a heading you pick, rather than one step at a time. Two questions, both answered from a filtered list: which heading (each row says where it sits, so two headings with the same name are still two distinguishable rows), then whether to land before it, after it, or inside it. The result is one edit and one undo step, and it is announced. Only \"inside\" changes the section's level, and it says so; use Promote and Demote when changing the level is what you meant. Markdown and HTML documents only.",
+    "keystrokes": [
+      "Ctrl+Alt+Shift+F5"
+    ],
+    "see_also": [
+      "edit.select_section",
+      "format.move_section_up",
+      "format.move_section_down"
     ],
     "user_guide_section": "writing-and-editing"
   },

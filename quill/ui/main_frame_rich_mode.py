@@ -33,6 +33,12 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
+from quill.core.format_transitions import (
+    PlainStyle,
+    TransitionPlan,
+    convert_text,
+    plan_transition,
+)
 from quill.core.html_to_markdown import contains_html_markup, html_to_markdown
 from quill.io.rtf import markdown_to_rtf, read_rtf_sanitized, rtf_to_markdown
 from quill.io.rtf_model import rich_to_rtf, rtf_to_rich, scan_rtf_features
@@ -791,11 +797,31 @@ class RichModeMixin:
                     markup = rtf_to_markdown(rtf_source)
                 else:
                     markup = self.editor.GetValue()
-                self.editor.ChangeValue(markup)
+                # Leaving rich always lands in Markdown -- that is what
+                # rtf_to_markdown produces -- so the *real* target is reached by
+                # converting again below, from markdown. Saying so here is what
+                # stops "markdown, relabelled" from passing as HTML or plain.
+                converted = self._convert_buffer_format("markdown", target, markup)
+                if converted is None:
+                    self._set_status("Format switch cancelled")
+                    return
+                self.editor.ChangeValue(converted)
                 tab.editor_mode = "markup"
                 tab.docx_rich = False
-                self.document.set_text(markup)
-            # Markup-to-markup switches keep the text; the pin decides the tags.
+                self.document.set_text(converted)
+            else:
+                # Markup to markup. This used to keep the text and let the pin
+                # decide the tags, which is how Markdown became "HTML" without
+                # a single tag being written, and how a plain-text document kept
+                # its hashes. The words are kept; the markup is rewritten.
+                source_kind = self._current_markup_context()
+                converted = self._convert_buffer_format(source_kind, target, self.editor.GetValue())
+                if converted is None:
+                    self._set_status("Format switch cancelled")
+                    return
+                if converted != self.editor.GetValue():
+                    self.editor.ChangeValue(converted)
+                    self.document.set_text(converted)
             self._pin_markup_kind_for_tab(tab, target)
             self._retarget_format_suffix(tab, suffix)
             self._set_status_quiet(f"Now editing as {label}")
@@ -807,6 +833,68 @@ class RichModeMixin:
                 self._announce("Now editing as plain text.")
         self._refresh_statusbar()
         self._request_menu_refresh()
+
+    def _convert_buffer_format(self, source: str, target: str, text: str) -> str | None:
+        """Rewrite *text* from *source* markup to *target*, asking when it matters.
+
+        ``None`` means the person cancelled and nothing should change -- which
+        is why the caller must check it rather than treating a falsy answer as
+        empty text.
+
+        The only question with two honest answers is plain text: ``# Heading``
+        can stay as the ordinary characters a .txt file is entitled to hold, or
+        come off so the file is strictly plain. Both are things people actually
+        want, so this asks instead of choosing, and only when there is Markdown
+        in the buffer to ask about.
+        """
+        plan = plan_transition(text, source, target)
+        plain_style = PlainStyle.STRIP
+        if plan.asks_plain_style:
+            answer = self._ask_plain_text_style(plan)
+            if answer is None:
+                return None
+            plain_style = answer
+        return convert_text(
+            text,
+            source,
+            target,
+            plain_style=plain_style,
+            title=self.document.name or "Document",
+            charset=getattr(self.document, "encoding", None) or "utf-8",
+        )
+
+    def _ask_plain_text_style(self, plan: TransitionPlan) -> PlainStyle | None:
+        """Keep the Markdown characters, or take them off? ``None`` to cancel.
+
+        Three buttons rather than a yes/no, because "no" is not an answer to
+        this question: both outcomes are a conversion, and only Cancel means
+        "leave my document alone".
+        """
+        wx = self._wx
+        dialog = wx.MessageDialog(
+            self.frame,
+            f"{plan.summary}\n\n"
+            "Keep the Markdown characters (# and **) as ordinary text, or "
+            "remove them so the document is strictly plain?",
+            "Converting to plain text",
+            # NO_DEFAULT, so Enter answers "keep them". Of the two conversions
+            # only one can lose something -- removing the markers -- and a
+            # reflexive Enter must not be the thing that loses it. Keeping them
+            # is reversible by pressing the same command again and answering the
+            # other way; removing them is not.
+            wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION | wx.NO_DEFAULT,
+        )
+        if hasattr(dialog, "SetYesNoCancelLabels"):
+            dialog.SetYesNoCancelLabels("Remove the markers", "Keep them as text", "Cancel")
+        try:
+            result = self._show_modal_dialog(dialog, "Converting to plain text")
+        finally:
+            dialog.Destroy()
+        if result == wx.ID_YES:
+            return PlainStyle.STRIP
+        if result == wx.ID_NO:
+            return PlainStyle.KEEP
+        return None
 
     def _confirm_lossy_format_switch(self, target_label: str, features: list[str]) -> bool:
         """The honest-fidelity gate: name what will not survive, then ask."""

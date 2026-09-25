@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL 1.0.0</title>
   <style>
@@ -1376,6 +1376,28 @@ bar.</p>
 draft into rich text turns <code># headings</code> into real headings.
 Moving a rich document into Markdown first warns you by name about
 anything that will not survive.</p>
+<p>Every direction is a real conversion, not a relabelling. Switching to
+HTML writes real HTML — <code>&lt;h1&gt;</code> and
+<code>&lt;strong&gt;</code> — and switching back reads it in again. Your
+formatting travels with you whichever way you go: headings, bold,
+italic, underline, strikethrough, superscript and subscript, font family
+and size, colour and highlight, bullet and numbered lists, links, code,
+block quotes, alignment, line spacing, indents, spacing, named styles,
+page breaks, tables, images and rules. Switch out and back as often as
+you like; the document you get is the document you started with.</p>
+<p>Converting to plain text is the one case with two honest answers, so
+QUILL asks instead of guessing. Plain text cannot hold formatting, so
+the <code>#</code> and <code>**</code> already in your document can
+either <strong>come off</strong>, leaving strictly plain words, or
+<strong>stay as ordinary characters</strong>, because a .txt file may
+perfectly well contain them and many people keep their notes that way.
+Escape leaves the document alone, and you are only asked when there is
+something to ask about — ordinary prose converts without a prompt.</p>
+<p>Rich Text files are written with real Word styles. Headings carry
+Word’s own heading styles, and Quote, Title, Subtitle and Caption are
+declared under the names Word knows them by, so they land in Word’s
+style box and style gallery rather than as lookalikes that only render
+correctly by accident.</p>
 <p>A format change never silently overwrites the old file. The next save
 proposes a filename with the correct extension, so <code>notes.md</code>
 becomes <code>notes.rtf</code> and the file on disk always tells the

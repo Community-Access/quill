@@ -168,11 +168,11 @@ class DocumentViewCommandsMixin:
 
         The way QuillLite stays small is not that it does little -- it is that
         somebody who does not want rich text can remove the Format menu
-        *entirely* rather than learn to ignore it. This is also where the three
+        *entirely* rather than learn to ignore it. This is also where the four
         areas that ship switched off are found, which is the difference between
         "off by default" and "hidden".
 
-        The list is searchable and comes with profiles, because seventeen
+        The list is searchable and comes with profiles, because nineteen
         checkboxes is a long way to Tab and "give me the small one" should not
         require ticking most of them. Both live in the shared dialog; what is
         QuillLite's is which areas exist and what the four profiles mean

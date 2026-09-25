@@ -128,6 +128,33 @@ class RtfTables:
 DEFAULT_HALF_POINTS = int(round(BODY_POINT_SIZE * 2))
 
 
+#: The named paragraph styles, as ``token -> (style index, Word's own name,
+#: RTF character/paragraph controls)``.
+#:
+#: The **names matter more than the controls**. Word matches a stylesheet entry
+#: to its own built-in style by name, so an entry called ``Quote`` lands in the
+#: style box as Quote -- it can be restyled, it appears in the style gallery,
+#: and a downstream tool reading structure sees a quotation. Spelled anything
+#: else it would be a new user-defined style that merely looks similar, which is
+#: the difference between a document Word understands and one it merely renders.
+#:
+#: Indices start at 10 to leave ``\\s1``-``\\s6`` to the headings; ``\\s0`` is
+#: Normal. The controls are a readable approximation of Word's own defaults --
+#: Word overrides them with the real style definition on open, and they are what
+#: every *other* RTF reader will show.
+NAMED_PARAGRAPH_STYLES: dict[str, tuple[int, str, str]] = {
+    "quote": (10, "Quote", "\\ql\\li720\\ri720\\i"),
+    "title": (11, "Title", "\\ql\\b\\f0\\fs56\\outlinelevel0"),
+    "subtitle": (12, "Subtitle", "\\ql\\i\\f0\\fs28"),
+    "caption": (13, "Caption", "\\ql\\b\\f0\\fs18"),
+}
+
+#: ``style index -> token``, for the reader putting a ``\\sN`` back.
+NAMED_STYLE_BY_INDEX: dict[int, str] = {
+    index: token for token, (index, _name, _controls) in NAMED_PARAGRAPH_STYLES.items()
+}
+
+
 def heading_stylesheet() -> str:
     """The RTF ``{\\stylesheet}`` group declaring Heading 1-6.
 
@@ -161,4 +188,6 @@ def heading_stylesheet() -> str:
             + f"\\outlinelevel{level - 1}\\sbasedon0\\snext0 {name};"
             + "}"
         )
+    for _token, (index, name, controls) in sorted(NAMED_PARAGRAPH_STYLES.items()):
+        entries.append("{" + f"\\s{index}{controls}\\sbasedon0\\snext0 {name};" + "}")
     return "{\\stylesheet{\\s0\\ql Normal;}" + "".join(entries) + "}"

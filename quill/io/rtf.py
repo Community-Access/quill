@@ -18,9 +18,12 @@ from pathlib import Path
 
 from quill.core.document import Document
 from quill.core.heading_ladder import HEADING_POINT_SIZES
+from quill.core.inline_markup import normalize_inline_markup
 from quill.io.rtf_safety import RtfSafetyReport, scan_rtf_safety
 from quill.io.rtf_styles import (
     DEFAULT_HALF_POINTS,
+    NAMED_PARAGRAPH_STYLES,
+    NAMED_STYLE_BY_INDEX,
     RtfTables,
     escape_rtf_text,
     heading_stylesheet,
@@ -80,6 +83,15 @@ _FIELD_RE = re.compile(
     re.DOTALL,
 )
 _SENTINEL_RE = re.compile(f"{_LINK_OPEN}(.*?){_LINK_SEP}(.*?){_LINK_CLOSE}", re.DOTALL)
+
+#: ``{onttbl{0 Calibri;}{1 Arial;}}`` -- scanned up front rather than
+#: walked, because the table is a flat list of name-per-index and the tokenizer
+#: would otherwise have to leave its skip-destination fast path to read it.
+_FONT_TABLE_RE = re.compile(r"\\f(\d+)[^;}]*?\s+([^;}]+);")
+#: Where the font table stops. A non-greedy ``\}`` cannot be used to find it: the
+#: table is a group *of* groups, so the first ``}`` closes only its first entry
+#: and the scan would see one font however many the document declares.
+_FONT_TABLE_END_RE = re.compile(r"\{\\(?:stylesheet|colortbl|info)|\\pard")
 
 _SKIP_DESTINATIONS = {
     "fonttbl",
@@ -159,6 +171,13 @@ def _block_controls(attrs: dict[str, str], *, include_indent: bool) -> str:
     ``\\fi-360\\li720`` hanging indent) so block indent does not fight the bullet.
     """
     parts: list[str] = []
+    # The named style first, so Word opens the paragraph *as* Quote/Title rather
+    # than as Normal that happens to be indented and italic. Written as a real
+    # \\sN pointing at the stylesheet entry, which is the only thing that puts a
+    # name in Word's style box and the style in its gallery.
+    named = NAMED_PARAGRAPH_STYLES.get(attrs.get("pstyle", "").lower())
+    if named:
+        parts.append(f"\\s{named[0]}")
     align_cw = _ALIGN_CONTROL.get(attrs.get("align", ""), "")
     if align_cw:
         parts.append(align_cw)
@@ -229,7 +248,14 @@ def markdown_to_rtf(markdown: str) -> str:
     per-paragraph alignment, line spacing, spacing and indent (via fenced divs),
     and page breaks (``::: pagebreak``). Fonts and colors are collected into RTF
     font and color tables in a single pass over the body.
+
+    Inline HTML emphasis (``<u>``, ``<b>``, ``~~strike~~``) is normalised to that
+    span vocabulary first. Markdown has no underline syntax, so Insert Tag writes
+    ``<u>text</u>`` -- which this writer had no rule for, and so emitted as four
+    literal characters sitting in the paragraph. The words arrived; the underline
+    did not, and neither did anything saying so.
     """
+    markdown = normalize_inline_markup(markdown)
     tables = RtfTables()
     body: list[str] = []
     block: dict[str, str] = {}
@@ -348,12 +374,16 @@ def _tokenize(rtf: str) -> list[tuple[str, object, object]]:
 #: The extras signature carried per run: (color, highlight, underline, strike,
 #: superscript, subscript). Bold/italic are emitted inline as ``**``/``*`` markers;
 #: these wrap the run in a ``[text]{...}`` span when present.
-_Sig = tuple[str | None, str | None, bool, bool, bool, bool]
+_Sig = tuple[str | None, str | None, bool, bool, bool, bool, str | None, str | None]
 
 
 def _sig_to_attrs(sig: _Sig) -> str:
-    color, highlight, underline, strike, superscript, subscript = sig
+    color, highlight, underline, strike, superscript, subscript, family, size = sig
     parts: list[str] = []
+    if family:
+        parts.append(f'font-family="{family}"')
+    if size:
+        parts.append(f'font-size="{size}"')
     if color:
         parts.append(f'color="{color}"')
     if highlight:
@@ -369,6 +399,26 @@ def _sig_to_attrs(sig: _Sig) -> str:
     return " ".join(parts)
 
 
+def _parse_font_table(rtf: str) -> dict[int, str]:
+    """``{\fonttbl}`` as ``index -> family name``.
+
+    Scanned from the raw RTF rather than walked by the tokenizer, which skips
+    the whole destination. Without it ``\f1`` in the body is an index into a
+    table nobody read, so the font a person chose came back as no font at all.
+    """
+    start = rtf.find(chr(123) + chr(92) + "fonttbl")
+    if start < 0:
+        return {}
+    end_match = _FONT_TABLE_END_RE.search(rtf, start + 9)
+    window = rtf[start : end_match.start() if end_match else len(rtf)]
+    fonts: dict[int, str] = {}
+    for index, name in _FONT_TABLE_RE.findall(window):
+        cleaned = name.strip()
+        if cleaned:
+            fonts[int(index)] = cleaned
+    return fonts
+
+
 class _RtfReader:
     """Parse RTF into QUILL markup, recovering the readable subset plus the run
     attributes the writer materializes: underline, strikethrough, super/subscript,
@@ -379,6 +429,7 @@ class _RtfReader:
 
     def __init__(self, rtf: str) -> None:
         self._tokens = _tokenize(rtf)
+        self._font_table = _parse_font_table(rtf)
         self._paragraphs: list[str] = []
         self._parts: list[str] = []
         self._run_parts: list[str] = []
@@ -392,8 +443,17 @@ class _RtfReader:
         self._sub = False
         self._color: str | None = None
         self._highlight: str | None = None
-        self._run_sig: _Sig = (None, None, False, False, False, False)
+        self._run_sig: _Sig = (None, None, False, False, False, False, None, None)
+        #: Font table index -> family name, parsed from {onttbl}. Without
+        #: it a 1 in the body is a number with nothing behind it, which is
+        #: why font family used to be the one run attribute that did not
+        #: survive a save and reopen.
+        self._font: str | None = None
+        self._fontsize: str | None = None
         self._outline: int | None = None
+        #: Block attributes seen on the current paragraph, rebuilt into a
+        #: fenced div when it is flushed.
+        self._block: dict[str, str] = {}
         self._is_list = False
         self._stack: list[tuple[object, ...]] = []
         self._depth = 0
@@ -413,6 +473,8 @@ class _RtfReader:
             self._strike,
             self._super,
             self._sub,
+            self._font,
+            self._fontsize,
         )
 
     def _sync(self) -> None:
@@ -451,6 +513,7 @@ class _RtfReader:
         self._bold = self._italic = False
         self._underline = self._strike = self._super = self._sub = False
         self._color = self._highlight = None
+        self._font = self._fontsize = None
 
     def _flush_paragraph(self) -> None:
         self._reset_run_formatting()
@@ -461,11 +524,28 @@ class _RtfReader:
             content = prefix + content
         elif self._is_list:
             content = "- " + content
+        else:
+            content = self._wrap_block_attributes(content)
         self._paragraphs.append(content)
         self._parts = []
         self._run_sig = self._current_sig()
         self._outline = None
         self._is_list = False
+        self._block = {}
+
+    def _wrap_block_attributes(self, content: str) -> str:
+        """Wrap a paragraph in a fenced div when it carries block formatting.
+
+        The writer emits alignment, line spacing, indent and named styles as
+        paragraph controls; without this the reader dropped every one of them,
+        so a centred quotation came back as an ordinary left-aligned paragraph.
+        Nothing said so -- the words were all there -- and saving again wrote
+        the flattened version over the original.
+        """
+        if not self._block or not content.strip():
+            return content
+        attributes = " ".join(f'{name}="{value}"' for name, value in sorted(self._block.items()))
+        return f"::: {{{attributes}}}\n{content}\n:::"
 
     def _push_color(self) -> None:
         if self._ct_seen:
@@ -493,6 +573,8 @@ class _RtfReader:
                     self._sub,
                     self._color,
                     self._highlight,
+                    self._font,
+                    self._fontsize,
                 ))
                 continue
             if kind == "group_close":
@@ -506,6 +588,8 @@ class _RtfReader:
                         self._sub,
                         self._color,
                         self._highlight,
+                        self._font,
+                        self._fontsize,
                     ) = self._stack.pop()  # type: ignore[assignment]
                 self._depth -= 1
                 if self._skip_to_depth is not None and self._depth < self._skip_to_depth:
@@ -560,6 +644,18 @@ class _RtfReader:
             return
         if word == "par":
             self._flush_paragraph()
+        elif word == "page":
+            # The writer emits ``\page`` for ``::: pagebreak``; the reader had no
+            # rule for it, so a page break was the one construct that did not
+            # survive a save-and-reopen -- it simply vanished, and a document
+            # that paginated correctly yesterday quietly stopped doing so.
+            self._flush_paragraph()
+            # The flush closes whatever paragraph the break interrupted, which
+            # on a break standing alone is an empty one -- drop it, or the
+            # marker arrives with a blank line in front that was not there.
+            if self._paragraphs and not self._paragraphs[-1].strip():
+                self._paragraphs.pop()
+            self._paragraphs.append("::: pagebreak")
         elif word == "pard":
             self._outline = None
             self._is_list = False
@@ -589,11 +685,51 @@ class _RtfReader:
             self._color = self._color_at(param)
         elif word == "highlight":
             self._highlight = self._color_at(param)
+        elif word == "f" and param is not None:
+            family = self._font_table.get(param)
+            # 0 is the document default (Calibri), which is the absence of
+            # a font choice rather than a choice of Calibri -- writing it into
+            # a span would put a font on every character in the document.
+            self._font = family if param else None
+        elif word == "fs" and param is not None:
+            # A heading's size comes from its style, not from the author, and
+            # the body default is not a choice either. Recording those would
+            # wrap every heading and paragraph in a font-size span.
+            if self._outline is not None or param == DEFAULT_HALF_POINTS:
+                self._fontsize = None
+            else:
+                self._fontsize = str(param // 2)
         elif word == "outlinelevel":
             self._outline = param if param is not None else 0
-        elif word == "li":
-            if param:
+        elif word == "s":
+            named = NAMED_STYLE_BY_INDEX.get(param if param is not None else -1)
+            if named:
+                self._block["pstyle"] = named
+        elif word in {"qc", "qr", "qj"}:
+            self._block["align"] = {"qc": "center", "qr": "right", "qj": "justify"}[word]
+        elif word == "sl" and param:
+            # \slN at \slmult1 is a multiple of a single line (240 twips).
+            spacing = {240: "1", 360: "1.5", 480: "2"}.get(param)
+            if spacing:
+                self._block["line-spacing"] = spacing
+        elif word == "sb" and param:
+            self._block["space-before"] = str(param // 20)  # twips -> points
+        elif word == "sa" and param:
+            self._block["space-after"] = str(param // 20)
+        elif word == "fi" and param:
+            if param < 0:
+                # The bullet's hanging indent. This is the only thing that tells
+                # a list item from an indented paragraph: both carry \li720, so
+                # \li alone read a 36pt indent as a bullet and put "- " in front
+                # of it.
                 self._is_list = True
+                self._block.pop("indent", None)
+            else:
+                self._block["first-line-indent"] = str(param // 20)
+        elif word == "li":
+            # Written after \fi by the bullet path, so _is_list already knows.
+            if param and not self._is_list:
+                self._block["indent"] = str(param // 20)
         elif word == "tab":
             self._append_text("\t")
         elif word == "u" and param is not None:

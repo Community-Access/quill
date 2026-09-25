@@ -1,7 +1,7 @@
 # QuillLite
 
 **QUILL with everything removed except the editor.** Numbered documents in one
-window, plain text or rich text, and nothing else.
+window; plain text, Markdown, HTML or rich text; and nothing else.
 
 QuillLite is for the person who wants Notepad or WordPad with QUILL's
 accessibility and finds the full writing environment more than they need. It is
@@ -15,8 +15,8 @@ Windows · MIT · part of the QuillVille family
 ## What it is
 
 - **Notepad's and WordPad's keys**, unchanged, so there is nothing to learn.
-- **A status bar you can read** — ten focusable cells, F6 to get in, including
-  the encoding and the line endings no other editor shows you.
+- **A status bar you can read** — thirteen focusable cells, F6 to get in,
+  including the encoding and the line endings no other editor shows you.
 - **Files come back unchanged.** Encoding, byte order mark, line endings and the
   final newline all survive a round trip.
 - **Bookmarks, structural selection, a copy tray, a clip library, abbreviations,
@@ -30,8 +30,14 @@ Windows · MIT · part of the QuillVille family
 - **Earcons for the moments speech cannot cover** — cut, copy, paste, delete,
   undo, save, close — every one of them replaceable with a sound of your own,
   and **Alt+Shift+M** silences the lot.
+- **Nine guided lessons**, inside the app on **Ctrl+Alt+F1**, each step saying
+  what to press, why, and what you should hear when it worked.
+- **Free AI help**, off until you switch it on *and* accept the agreement:
+  summarize, rewrite, proofread, explain, and a question about the open
+  document, on QUILL's own hosted service. No account, no key, no card.
 - **Switchable.** Turn rich text off and it is Notepad; turn everything on and it
-  is WordPad with tools. Four one-word profiles set every switch at once.
+  is WordPad with tools. Nineteen areas, and four one-word profiles that set
+  every switch at once.
 
 New here? Start with [the announcement](docs/announcement.md) — it is the
 one-page version, written for somebody who has never opened it.
@@ -102,7 +108,7 @@ a frozen build without disturbing a running copy.
 ## Build a release
 
 ```powershell
-.\scripts\build_release.ps1              # all four artifacts
+.\scripts\build_release.ps1              # both artifacts
 .\scripts\build_release.ps1 -Sign        # …signed (see docs/code-signing.md)
 .\scripts\build_release.ps1 -SkipSharedRuntime   # reuse a runtime another app built
 ```

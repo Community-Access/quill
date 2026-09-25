@@ -150,6 +150,35 @@ class HostedAiMixin:
             self._ai_host().ai_service = service
         return service
 
+    def ai_support_id(self) -> str:
+        """This computer's QUILL AI support ID, or "" when it is not connected.
+
+        For About and Get Help from Support, so the number support asks for is
+        somewhere a person already looks rather than only in AI Usage. Never
+        raises: both callers are windows about something else, and a credential
+        store that cannot be read means there is no ID to show.
+        """
+        try:
+            service = self._ai_service()
+            return str(service.support_id) if service.signed_in else ""
+        except Exception:  # noqa: BLE001 - no ID is an answer, not an error
+            return ""
+
+    def ai_support_facts(self) -> dict[str, str]:
+        """The support ID as a support-message fact, or nothing.
+
+        Read by :func:`quill.ui.support_dialog.open_support_message` from
+        whichever host opened it, so every Get Help from Support carries it
+        without each app having to remember to pass it.
+        """
+        support_id = self.ai_support_id()
+        return {"QUILL AI support ID": support_id} if support_id else {}
+
+    def ai_support_line(self) -> str:
+        """A line for an About window, starting with its newline, or ""."""
+        support_id = self.ai_support_id()
+        return f"\nQUILL AI support ID for this computer: {support_id}" if support_id else ""
+
     def cmd_ai_privacy(self) -> None:
         """Read the agreement, and accept or withdraw it.
 
@@ -164,12 +193,9 @@ class HostedAiMixin:
             return
         if self._ask_ai_privacy():
             self._light_up_ai()
-            # This door opens onto the document, so this is the only thing that
-            # will say the decision took. Declining says nothing at all: nothing
-            # changed, and the reader announces the caret arriving back.
-            self._announce(
-                "AI help is on. Choose Connect or Sign Out in the AI menu to connect this computer."
-            )
+            # Declining says nothing at all: nothing changed, and the reader
+            # announces the caret arriving back.
+            self._after_ai_accepted()
 
     # ------------------------------------------------------------------ #
     # The agreement
@@ -204,6 +230,20 @@ class HostedAiMixin:
         self._ai_host().settings.ai_privacy_accepted_version = AGREEMENT_VERSION
         self._ai_host().save_settings()
         return True
+
+    def _after_ai_accepted(self) -> None:
+        """Go straight on to connecting, once the agreement is accepted.
+
+        Accepting and then being told to go and find Connect in a menu was a
+        yes that stopped halfway: nobody accepts the agreement for any reason
+        other than to connect. So a computer that is not connected yet lands in
+        the Connect window, whose opening the reader announces; one that already
+        is has nothing left to do, and hears that the feature is on.
+        """
+        if self._ai_service().signed_in:
+            self._announce("AI help is on.")
+            return
+        self.cmd_ai_sign_in()
 
     def _light_up_ai(self) -> None:
         """Switch the area on, because accepting here means accepting here.
@@ -254,9 +294,7 @@ class HostedAiMixin:
         if self._ai_privacy_accepted():
             return
         if self._ask_ai_privacy():
-            self._announce(
-                "AI help is on. Choose Connect or Sign Out in the AI menu to connect this computer."
-            )
+            self._after_ai_accepted()
             return
         self._announce(
             "AI help is in the menus but will not send anything until you "

@@ -85,7 +85,15 @@ class SessionRestoreMixin:
     def _ask_and_open(self, entries: tuple[SessionEntry, ...]) -> int:
         from quill.ui.session_restore_dialog import ask_session_restore
 
-        answer = ask_session_restore(self.frame, entries)
+        # The mode goes in as well as coming back: it is what decides which
+        # half of the Never Ask Again / Ask Me Next Time pair the window
+        # offers, and without it the way back out of *never* is greyed out
+        # in the one window that can undo it.
+        answer = ask_session_restore(
+            self.frame,
+            entries,
+            mode=str(getattr(self.settings, "session_restore_ask", ASK_WHEN_IT_MATTERS)),
+        )
         # Saved unconditionally: Forget and Clear change the list even when
         # nothing is opened, and this is the only write.
         self._save_session_list(answer.remembered)

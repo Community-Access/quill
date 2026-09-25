@@ -36,6 +36,16 @@ import pytest
 
 import tests.conftest as suite_conftest
 
+# Every test here runs a *nested* pytest collection over a real test file, so the
+# unit of work is an entire pytest session -- importing the wx UI stack from
+# scratch takes ~18s apiece on an idle machine, three times over. Against the 30s
+# default ceiling that is a 1.7x margin, and it does not survive a full run. When
+# it goes, pytest-timeout's thread method (the default on Windows, which has no
+# SIGALRM) takes the whole session down rather than reddening one test, so the
+# run ends at 76% with a stack dump and no summary. The ceiling itself stays
+# where test_suite_guardrails pins it; this file opts out instead.
+pytestmark = pytest.mark.timeout(180)
+
 _TESTS = Path(__file__).resolve().parent
 
 

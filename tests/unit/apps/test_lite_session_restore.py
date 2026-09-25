@@ -16,7 +16,12 @@ import pytest
 
 from quill.apps.lite import QuillLiteApp
 from quill.apps.lite_window_commands import DocumentCommandsMixin
-from quill.core.session_restore import ASK_ALWAYS, ASK_NEVER, SessionEntry
+from quill.core.session_restore import (
+    ASK_ALWAYS,
+    ASK_NEVER,
+    ASK_WHEN_IT_MATTERS,
+    SessionEntry,
+)
 from quill.ui.session_restore_dialog import SessionRestoreAnswer
 
 
@@ -68,12 +73,31 @@ def three(tmp_path: Path) -> list[str]:
     return paths
 
 
-def _answer(monkeypatch, answer: SessionRestoreAnswer) -> list[tuple[SessionEntry, ...]]:
-    """Patch the dialog where ``lite.py`` imports it, and record what it was asked."""
-    asked: list[tuple[SessionEntry, ...]] = []
+class _Asked(list):  # type: ignore[type-arg]
+    """What the dialog was asked, and the ask mode it was asked in."""
 
-    def fake(_parent: object, entries: tuple[SessionEntry, ...]) -> SessionRestoreAnswer:
+    def __init__(self) -> None:
+        super().__init__()
+        self.modes: list[str] = []
+
+
+def _answer(monkeypatch, answer: SessionRestoreAnswer) -> _Asked:
+    """Patch the dialog where ``lite.py`` imports it, and record what it was asked."""
+    # A list of what the dialog was shown, carrying the mode it was shown in
+    # as an attribute -- a list, because every existing caller compares this
+    # against [] or reads its length. The mode decides which half of the
+    # Never Ask Again / Ask Me Next Time pair the window offers, so a caller
+    # that forgets to pass it greys out the only way back from never.
+    asked = _Asked()
+
+    def fake(
+        _parent: object,
+        entries: tuple[SessionEntry, ...],
+        *,
+        mode: str = ASK_WHEN_IT_MATTERS,
+    ) -> SessionRestoreAnswer:
         asked.append(entries)
+        asked.modes.append(mode)
         return answer
 
     monkeypatch.setattr("quill.ui.session_restore_dialog.ask_session_restore", fake)
@@ -228,6 +252,47 @@ def test_never_ask_again_writes_the_preference(monkeypatch, three: list[str]) ->
     app.choose_session_documents()
 
     assert app.settings.session_restore_ask == ASK_NEVER
+
+
+def test_the_window_is_told_which_way_the_preference_is_set(monkeypatch, three: list[str]) -> None:
+    """The mode goes *in*, not only out.
+
+    It is what decides which half of the Never Ask Again / Ask Me Next Time pair
+    the window offers. A caller that does not pass it leaves the window showing
+    the default, so somebody who had pressed Never Ask Again would find the one
+    button that undoes it greyed out.
+    """
+    app = _App(three)
+    app.settings.session_restore_ask = ASK_NEVER
+    asked = _answer(monkeypatch, SessionRestoreAnswer())
+
+    app.choose_session_documents()
+
+    assert asked.modes == [ASK_NEVER]
+
+
+def test_ask_me_next_time_puts_never_ask_again_back(monkeypatch, three: list[str]) -> None:
+    """The round trip, which is the whole reason the twin exists.
+
+    Never Ask Again used to be the only answer in this window that could not be
+    taken back from inside the app: nothing else wrote the preference, and the
+    button's help text named a different setting.
+    """
+    app = _App(three)
+    app.settings.session_restore_ask = ASK_NEVER
+    _answer(
+        monkeypatch,
+        SessionRestoreAnswer(
+            open_paths=tuple(three),
+            remembered=tuple(three),
+            ask_mode=ASK_WHEN_IT_MATTERS,
+            spoken="You will be asked about last session again when it matters.",
+        ),
+    )
+
+    app.choose_session_documents()
+
+    assert app.settings.session_restore_ask == ASK_WHEN_IT_MATTERS
 
 
 def test_nothing_remembered_says_so_rather_than_opening_an_empty_window(monkeypatch) -> None:

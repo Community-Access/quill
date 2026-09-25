@@ -9068,13 +9068,13 @@ class MainFrame(
         from quill.core.about_info import gather_about_info
         from quill.ui.info_pages import show_about_quill_native
 
-        about_info = gather_about_info()
         show_about_quill_native(
             self.frame,
             self._wx,
-            about_info,
+            gather_about_info(),
             self.open_third_party_notices,
             self._show_modal_dialog,
+            ai_support_id=self.ai_support_id(),
         )
         self._set_status("Opened About Quill")
 

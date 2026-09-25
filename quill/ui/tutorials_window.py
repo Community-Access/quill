@@ -78,6 +78,15 @@ class TutorialsApp:
 _OPEN: dict[str, TutorialsWindow] = {}
 
 
+def has_anything_to_watch(catalogue: TutorialSet) -> bool:
+    """Whether any step in *catalogue* carries a check Follow me could watch.
+
+    Out here rather than inline so it can be asserted without a display, and
+    because the answer is a property of the lessons rather than of the window.
+    """
+    return any(step.check for tutorial in catalogue.tutorials for step in tutorial.steps)
+
+
 def open_tutorials(host: Any, app: TutorialsApp, *, slug: str = "") -> None:
     """Open (or raise) *app*'s tutorials; *slug* starts that lesson straight away."""
     existing = _OPEN.get(app.app_id)
@@ -263,11 +272,22 @@ class TutorialsWindow:
         sizer.Add(self._step_field, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         self._follow = wx.CheckBox(parent, label="Follow &me")
-        self._follow.SetValue(self._progress.guide_me)
+        # Greyed, not hidden, in an app whose lessons carry no checks at all --
+        # QuillLite is one: every step's outcome there is a sentence the app
+        # already says, so there is nothing to watch for. A tick box that can
+        # never do anything is worse than an absent one only if nothing says so,
+        # and a disabled control announces itself as unavailable the moment a
+        # reader arrives on it. Hiding it would leave somebody who had used
+        # Follow me in Radio hunting this window for a control that was removed.
+        watchable = has_anything_to_watch(self._app.catalogue)
+        self._follow.Enable(watchable)
+        self._follow.SetValue(self._progress.guide_me and watchable)
         self._follow.SetHelpText(
             "While this is ticked, the lesson watches the app and moves you to the "
             "next step by itself once it can see you have done this one. It watches "
-            "what changed, not which key you pressed, so any route counts."
+            "what changed, not which key you pressed, so any route counts. "
+            "Unavailable in an app whose lessons have nothing to watch for, because "
+            "every step's outcome there is a sentence the app already says."
         )
         sizer.Add(self._follow, 0, wx.ALL, 8)
 

@@ -31,6 +31,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from quill.core.lite.commands import COMMANDS, plain_label, split_menu  # noqa: E402
+from quill.core.lite.keymap import DEFAULT_ALIASES  # noqa: E402
 
 GUIDE = REPO_ROOT / "standalone" / "quilllite" / "docs" / "userguide.md"
 
@@ -56,30 +57,65 @@ as `Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and
 the spelling wx understands.
 """
 
+#: The heading over the second-chord table, and the sentence that explains it.
+#: These are real bindings that are in no menu label, so a table built only from
+#: the menu rows would be telling somebody their whole keyboard and leaving six
+#: keys out of it.
+_ALIAS_PREAMBLE = """
+### Second keys
+
+A few commands answer to two keys. The first is the one the menu shows; the
+second is here because it is the key a hand trained on Word or on a home-row
+editor already reaches for. Both work, always, and rebinding the first in the
+Keyboard Manager leaves the second alone.
+"""
+
 
 def render() -> str:
     """The whole block between the markers, ready to drop in."""
     lines: list[str] = [_PREAMBLE.strip(), ""]
-    current = ""
+    # Grouped by menu path rather than by run of adjacent rows. The Tools menu
+    # is the reason: its rows are interrupted by the Spelling submenu and then
+    # resume, so a generator that started a new heading every time the path
+    # changed printed "### Tools" twice, with five rows stranded under the
+    # second one. Somebody hunting Quiet Mode found the first table, did not
+    # find it there, and had no reason to suppose there was a second table of
+    # the same name further down.
+    order: list[str] = []
+    grouped: dict[str, list[tuple[str, str]]] = {}
     for menu, label, key, _handler, kind in COMMANDS:
         # "sub" rows are submenu titles: no key of their own, and the submenu
         # they name gets its own heading from the rows that do carry keys.
         if kind in {"sep", "sub"}:
             continue
-        if menu != current:
-            current = menu
-            if lines and lines[-1] != "":
-                lines.append("")  # a heading needs air above it, in Markdown and by ear
-            parent, child = split_menu(menu)
-            # "Edit|Selection" is the table's way of saying "submenu"; a reader
-            # wants the path, not the separator.
-            heading = (
-                f"{plain_label(parent)} ▸ {plain_label(child)}" if child else plain_label(parent)
-            )
-            lines += [f"### {heading}", "", "| Key | Command |", "|---|---|"]
-        lines.append(f"| **{key}** | {plain_label(label)} |")
+        if menu not in grouped:
+            order.append(menu)
+            grouped[menu] = []
+        grouped[menu].append((key, plain_label(label)))
+    for menu in order:
+        if lines and lines[-1] != "":
+            lines.append("")  # a heading needs air above it, in Markdown and by ear
+        parent, child = split_menu(menu)
+        # "Edit|Selection" is the table's way of saying "submenu"; a reader
+        # wants the path, not the separator.
+        heading = f"{plain_label(parent)} ▸ {plain_label(child)}" if child else plain_label(parent)
+        lines += [f"### {heading}", "", "| Key | Command |", "|---|---|"]
+        lines += [f"| **{key}** | {label} |" for key, label in grouped[menu]]
     lines += ["", "### Built per window", "", "| Key | Command |", "|---|---|"]
     lines += [f"| {key} | {what} |" for key, what in _PER_WINDOW]
+    # The aliases are bound, and they appear in no menu label -- so a table
+    # built only from the menu rows tells somebody their whole keyboard and
+    # leaves six working keys out of it.
+    titles = {
+        handler: (plain_label(label), key)
+        for _menu, label, key, handler, kind in COMMANDS
+        if kind not in {"sep", "sub"} and handler
+    }
+    lines += ["", _ALIAS_PREAMBLE.strip(), ""]
+    lines += ["| Second key | Command | The key the menu shows |", "|---|---|---|"]
+    for handler, alias in DEFAULT_ALIASES.items():
+        name, primary = titles.get(handler, (handler, ""))
+        lines.append(f"| **{alias}** | {name} | **{primary}** |")
     lines += ["", _POSTAMBLE.strip(), ""]
     return "\n".join(lines)
 

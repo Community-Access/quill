@@ -112,6 +112,12 @@ def test_forget_and_clear(store) -> None:
     assert store.count() == 0
 
 
+# 525 `remember` calls means 525 *durable* writes -- write_json_atomic fsyncs
+# every one, by design -- so this is ~6.8s on an idle disk where every other test
+# in this directory is under a second. That leaves only a 4x margin against the
+# 30s ceiling, and a loaded CI disk can spend it. The ceiling itself stays where
+# test_suite_guardrails pins it; this one honest outlier opts out instead.
+@pytest.mark.timeout(120)
 def test_the_store_is_bounded_and_drops_the_oldest(store) -> None:
     for n in range(MAX_ENTRIES + 25):
         store.remember(f"https://a.example/{n}.mp3", 60_000 + n)
