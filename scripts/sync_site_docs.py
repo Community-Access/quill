@@ -8,7 +8,7 @@ user guide for an app that no longer looked like that.
 
 Radio was the only app that ever got the treatment, and the rest of the family
 was worse off than stale — it was **absent**. Cast, Weather, Audio Studio,
-Inkwell, the Converter, the Media Player, Beacon and QuillLite had no page on
+Inkwell, the Converter, the Media Player, Beacon and QUILL Lite had no page on
 the site at all, which is a documentation gap nobody can report: there is no
 wrong page to complain about, only a product a reader cannot find anything
 about. This script is the per-app bolt-on replaced by one table.
@@ -98,6 +98,17 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         "userguide": "userguide.html",
         "prd": "prd.html",
         "release-notes": "release-notes-1.0.html",
+        # The 1.0 announcement and the free-AI guide, both linked from
+        # quilllite.html. Generated from the repo like Radio's, so the page a
+        # newsletter links to cannot drift from the release it announces.
+        "announcement": "announcement.html",
+        "ai-guide": "ai-guide.html",
+        # All of QUILL Lite's documentation is on the site (asked for
+        # 2026-09-25), the tutorials and changelog included: it is the
+        # product a newsletter sends people to, and a reader arriving there
+        # should find everything rather than a selection.
+        "tutorials": "tutorials.html",
+        "changelog": "CHANGELOG.html",
     },
 }
 

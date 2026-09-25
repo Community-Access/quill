@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Lite's free AI: the complete guide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-lites-free-ai-the-complete-guide">QUILL Lite’s free AI:
+the complete guide</h1>
+<p><em>QUILL Lite 1.0. Updated September 25, 2026.</em></p>
+<p>QUILL’s free AI helps with the writing in front of you: summarize it,
+rewrite it, proofread it, explain it, or answer a question about the
+document you have open. It is built into QUILL Lite, it is free, and it
+needs no account, no password and no card.</p>
+<p>This guide explains everything: how to start, what each command does,
+exactly which text is sent, what happens to the answer, the limits, and
+your privacy.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#starting-in-about-a-minute">Starting, in about a
+minute</a></li>
+<li><a href="#the-keys">The keys</a></li>
+<li><a href="#the-ai-pad">The AI pad</a></li>
+<li><a href="#the-five-things-it-can-do">The five things it can
+do</a></li>
+<li><a href="#exactly-what-is-sent">Exactly what is sent</a></li>
+<li><a href="#asking-about-a-whole-document">Asking about a whole
+document</a></li>
+<li><a href="#when-something-is-too-long">When something is too
+long</a></li>
+<li><a href="#the-answer-window">The answer window</a></li>
+<li><a href="#usage-about-and-your-support-id">Usage, About and your
+support ID</a></li>
+<li><a href="#limits-and-when-they-start-again">Limits, and when they
+start again</a></li>
+<li><a href="#when-something-goes-wrong">When something goes
+wrong</a></li>
+<li><a href="#your-privacy">Your privacy</a></li>
+<li><a href="#signing-out-and-changing-your-mind">Signing out and
+changing your mind</a></li>
+<li><a href="#questions-people-ask">Questions people ask</a></li>
+</ul>
+<h2 id="starting-in-about-a-minute">Starting, in about a minute</h2>
+<p>You do this once per computer.</p>
+<ol type="1">
+<li><strong>Open the agreement.</strong> Press
+<strong>Ctrl+Alt+Shift+K</strong>, or choose <strong>Tools ▸ AI ▸
+Privacy Agreement</strong>. It is there even while AI help is switched
+off.</li>
+<li><strong>Read it, and choose I Agree.</strong> It says what is sent,
+what is kept, what is not kept, and how to change your mind. Agreeing
+switches AI help on; there is no second switch to find. Choosing
+<strong>No Thanks</strong> sends nothing and changes nothing.</li>
+<li><strong>Connect this computer.</strong> The Connect window opens by
+itself, already showing an <strong>eight-character code</strong>, spoken
+as well as shown. Press <strong>Open the Connect Page</strong>: your
+browser opens with the code filled in, so all that is left is
+<strong>Confirm</strong>. The window says when you are connected.
+<ul>
+<li>Not at the computer you are connecting? Type the code at the address
+the window names, on any device. A phone is fine.</li>
+<li><strong>Say the Code Again</strong> reads it one character at a
+time, and <strong>Copy the Code</strong> puts it on the clipboard.</li>
+</ul></li>
+<li><strong>Try it.</strong> Put the cursor in any paragraph, press
+<strong>Ctrl+Alt+G</strong>, choose <strong>Summarize</strong>, and
+press <strong>Send</strong>.</li>
+</ol>
+<p>There is no account, no password and no email address. The code is
+the whole of it.</p>
+<p>Reaching for any AI command before you have agreed shows you the
+agreement first. Reaching for one before this computer is connected
+takes you to the Connect window.</p>
+<h2 id="the-keys">The keys</h2>
+<p>All five are in <strong>Tools ▸ AI</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI Assistant</td>
+<td>Ctrl+Alt+G</td>
+</tr>
+<tr>
+<td>Ask About This Document</td>
+<td>Ctrl+Alt+Z</td>
+</tr>
+<tr>
+<td>Usage</td>
+<td>Ctrl+Alt+Shift+F9</td>
+</tr>
+<tr>
+<td>Connect or Sign Out</td>
+<td>Ctrl+Alt+Shift+F10</td>
+</tr>
+<tr>
+<td>Privacy Agreement</td>
+<td>Ctrl+Alt+Shift+K</td>
+</tr>
+</tbody>
+</table>
+<p>Every key can be changed in <strong>Tools ▸ Keyboard
+Manager</strong>.</p>
+<p><strong>Escape closes every AI window.</strong> Nothing is lost by
+closing: the pad and the answer are about a moment, and nothing in your
+document changes unless you pressed a button that said so.</p>
+<h2 id="the-ai-pad">The AI pad</h2>
+<p><strong>Ctrl+Alt+G</strong> opens the pad on whatever your cursor is
+in. From top to bottom:</p>
+<ol type="1">
+<li><strong>About to send</strong> — one sentence: how much will be
+sent, from where, and whether it fits the free limit. For example,
+“About to send 84 words from this paragraph.”</li>
+<li><strong>What will be sent</strong> — a read-only box holding
+<em>exactly</em> the text that will go, and nothing else. Focus starts
+here, so the first thing you hear is the text itself. Arrow through it
+at your own pace.</li>
+<li><strong>Send this much</strong> — which part of your document to
+send. Only offered when there is a real choice; see <a
+href="#exactly-what-is-sent">Exactly what is sent</a>.</li>
+<li><strong>What do you want done?</strong> — the five things, in a
+list. Press <strong>F1</strong> on any one to hear what it does.</li>
+<li><strong>Your question</strong> — only there when you choose
+<strong>Ask a question about the document</strong>.</li>
+<li><strong>Send</strong>, and <strong>Close</strong>.</li>
+<li><strong>Status</strong> — what happened to the last request:
+working, how many requests it used, or what went wrong.</li>
+</ol>
+<p>Every line in the pad is reachable with <strong>Tab</strong>,
+including the summary and the status, so nothing is said once and
+lost.</p>
+<p><strong>The editor never waits for the AI.</strong> Requests run in
+the background. Keep typing, save, switch documents, or close the pad
+while the answer is on its way.</p>
+<h2 id="the-five-things-it-can-do">The five things it can do</h2>
+<ul>
+<li><strong>Summarize</strong> — a few plain sentences saying what the
+passage says. Good for the long email, the dense report, the terms and
+conditions nobody reads.</li>
+<li><strong>Rewrite</strong> — the same meaning, clearer and shorter.
+Good for the paragraph you have rewritten four times and still do not
+like.</li>
+<li><strong>Proofread</strong> — spelling, grammar and punctuation
+corrected, your wording left alone. The corrected text comes back for
+you to compare with your own; nothing in your document changes until you
+choose to put it there.</li>
+<li><strong>Explain</strong> — what the passage means, in plain
+language. Good for jargon, a legal clause, or a paragraph that will not
+sit still.</li>
+<li><strong>Ask a question about the document</strong> — type a
+question, and QUILL Lite finds the parts of the document that answer it.
+See <a href="#asking-about-a-whole-document">Asking about a whole
+document</a>.</li>
+</ul>
+<p><strong>Ctrl+Alt+Z</strong> opens the pad with the question already
+chosen, so you can type straight away.</p>
+<h2 id="exactly-what-is-sent">Exactly what is sent</h2>
+<p>For Summarize, Rewrite, Proofread and Explain, the pad sends
+<strong>one piece</strong> of your document, and it picks the piece like
+this:</p>
+<ol type="1">
+<li><strong>If you have selected text</strong>, the selection is
+sent.</li>
+<li><strong>If you have not</strong>, the <strong>paragraph your cursor
+is in</strong> is sent. A paragraph is the text between one blank line
+and the next. You do not have to select anything: put the cursor
+anywhere in the paragraph and press the key.</li>
+<li><strong>If your document has headings</strong>, you can choose
+<strong>This section</strong> instead: everything from the heading above
+your cursor to the next heading.</li>
+</ol>
+<p><strong>Send this much</strong> lets you switch between whichever of
+those apply — <strong>What I have selected</strong>, <strong>This
+paragraph</strong>, <strong>This section</strong> — and the <strong>What
+will be sent</strong> box rewrites itself the moment you change it. When
+only one of them applies, the chooser is not shown at all, because a
+choice with one option is just another stop on every Tab.</p>
+<p>A few details worth knowing:</p>
+<ul>
+<li><strong>Sections follow Markdown-style headings</strong> — lines
+that start with <code>#</code>, or a line underlined with
+<code>===</code> or <code>---</code>. In a document without them,
+<strong>This section</strong> is not offered.</li>
+<li><strong>A document with no blank lines is one paragraph.</strong> In
+that case “this paragraph” is the whole file, and the size check below
+is what stops a very long one.</li>
+<li><strong>Nothing else goes with it.</strong> Not the rest of the
+document, not the file’s name, not where it is saved. The box shows the
+whole of what is sent.</li>
+</ul>
+<h2 id="asking-about-a-whole-document">Asking about a whole
+document</h2>
+<p><strong>Ask a question about the document</strong> works differently,
+and it is why a long document is a perfectly fair thing to ask
+about.</p>
+<p>Instead of sending the whole file, QUILL Lite reads it <strong>on
+your own computer</strong>, splits it into passages of about <strong>180
+words</strong>, each labelled with the heading it sits under, and picks
+the <strong>three passages most likely to answer your question</strong>.
+It sends only those, with your question.</p>
+<ul>
+<li><strong>The pad shows you the passages it chose</strong> before you
+press Send, in the <strong>What will be sent</strong> box, each one
+named “Excerpt 1, from <em>heading</em>”. If they are not the right
+ones, rephrase the question with the words the document itself would
+use.</li>
+<li><strong>A passage whose heading matches your question counts for
+more</strong>, because a heading is the author’s own label for what the
+passage is about.</li>
+<li><strong>A question with no useful words in it</strong> — “what is
+it?” — gets the opening passages of the document, which is a better
+guess than nothing.</li>
+<li><strong>A very long document</strong> is searched up to about the
+first 375,000 words. The pad says so when that happens; put the cursor
+nearer what you mean, or select a part and use one of the other four
+instead.</li>
+<li><strong>The answer comes from those passages.</strong> If the
+document says something somewhere else, the AI did not see it.</li>
+</ul>
+<h2 id="when-something-is-too-long">When something is too long</h2>
+<p>One request can hold about <strong>3,000 tokens</strong> — roughly
+<strong>2,250 words</strong> or <strong>12,000 characters</strong>,
+counting the text, your question and the instructions together. The
+answer itself is up to about 500 tokens, a few hundred words.</p>
+<p>If what you are about to send is bigger, the pad says so
+<strong>before</strong> you press Send, in words rather than tokens —
+“That is about 4,000 words, and the free limit is about 2,250.” Select
+less, or choose a smaller part in <strong>Send this much</strong>.
+Nothing is sent and nothing is used.</p>
+<h2 id="the-answer-window">The answer window</h2>
+<p>The answer arrives in its own window, titled after what you asked for
+— <strong>Summary</strong>, <strong>Rewrite</strong>,
+<strong>Proofread</strong>, <strong>Explanation</strong> or
+<strong>Answer</strong>. Focus lands on the answer, so your screen
+reader starts reading it. Under it:</p>
+<ul>
+<li><strong>Replace My Selection</strong> — puts the answer where your
+selection was. Only offered when you had text selected, and only while
+that text is still exactly where it was: if you changed it while the
+answer was on its way, Replace is left out rather than writing the
+answer over words it was not about.</li>
+<li><strong>Insert Below</strong> — puts the answer underneath the
+paragraph your cursor is in, after a blank line, rather than in the
+middle of a sentence.</li>
+<li><strong>Copy</strong> — puts the answer on the clipboard.</li>
+<li><strong>Try Again</strong> — sends the same text again for a
+different answer. This uses one more request.</li>
+<li><strong>Requests</strong> — how much of your allowance this answer
+used.</li>
+</ul>
+<p><strong>Every edit can be undone.</strong> Replace and Insert Below
+go through the ordinary undo, so <strong>Ctrl+Z</strong> takes an AI
+edit back exactly like your own typing.</p>
+<h2 id="usage-about-and-your-support-id">Usage, About and your support
+ID</h2>
+<p><strong>Usage</strong> shows what you have used and what is left this
+month and today, when each count starts again, and your <strong>support
+ID</strong>. It asks the service every time you open it, so the numbers
+are always current. <strong>Sign Out This Computer</strong> and
+<strong>Copy Support ID</strong> are here too.</p>
+<p><strong>Help ▸ About</strong> shows the same allowance and support
+ID, under <strong>QUILL’s free AI</strong>, once this computer is
+connected. Give it a moment after About opens: the numbers are fetched
+while you read.</p>
+<p>Your <strong>support ID</strong> is a short code like
+<code>A1B2-C3D4</code>. It is the only way support can find your
+account, because there is no name on it. <strong>Get Help from
+Support</strong> puts it into your message automatically when this
+computer is connected.</p>
+<h2 id="limits-and-when-they-start-again">Limits, and when they start
+again</h2>
+<p>The service is free because it is shared, so there is an
+allowance:</p>
+<table>
+<thead>
+<tr>
+<th>Limit</th>
+<th>How many</th>
+<th>Starts again</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requests a month</td>
+<td>100</td>
+<td>The 1st of the month</td>
+</tr>
+<tr>
+<td>Requests a day</td>
+<td>20</td>
+<td>Every night</td>
+</tr>
+<tr>
+<td>Requests an hour</td>
+<td>8</td>
+<td>At the top of each hour</td>
+</tr>
+<tr>
+<td>Any one kind of request a month</td>
+<td>60</td>
+<td>The 1st of the month</td>
+</tr>
+<tr>
+<td>A new connection’s first 48 hours</td>
+<td>15</td>
+<td>Rises to 100 on its own</td>
+</tr>
+</tbody>
+</table>
+<p>These are the service’s current settings. They live on the service,
+not in the program, so they can change without an update — and
+<strong>Usage</strong> always shows the numbers that apply to you right
+now.</p>
+<ul>
+<li><strong>The service keeps time in UTC.</strong> The daily count
+starts again at midnight UTC: <strong>8 PM Eastern</strong> or <strong>5
+PM Pacific</strong> in summer, an hour earlier in winter. The monthly
+count starts again at midnight UTC on the 1st.</li>
+<li><strong>Only answers count.</strong> A request that does not come
+back with an answer — too long, no connection, a problem on the service,
+a limit already reached — uses nothing. Opening Usage or About uses
+nothing.</li>
+<li><strong>A new connection starts smaller.</strong> For its first 48
+hours a newly connected computer has 15 requests, and then the full
+allowance applies by itself. It is how a free service with no accounts
+stops somebody scripting connection after connection. Signing out and
+connecting again starts a new connection, so it is never a way to get
+more.</li>
+<li><strong>Computers sharing one internet connection</strong> — a
+household, a class, a library — also share a few limits on that address:
+how many can be connected at once, how many new connections an hour, and
+a monthly total. Signing a computer out gives its place back. If a class
+runs into these, write to support.</li>
+<li><strong>Need more?</strong> Choose <strong>Get Help from
+Support</strong> and say what it is for — a course, a deadline, a book.
+Support can raise your allowance, including ending the new-connection
+allowance early. It applies from your next request; there is nothing to
+reinstall and nothing to reconnect.</li>
+</ul>
+<h2 id="when-something-goes-wrong">When something goes wrong</h2>
+<p>When a request fails, the pad’s <strong>Status</strong> line says
+what happened and what to do, and <strong>focus moves to it</strong> so
+your screen reader reads it — and you can read it again with the arrow
+keys. If the pad is not in front at the time, the message is spoken
+instead, and focus is waiting on it when you come back.</p>
+<p>The message ends with an error code, such as
+<code>QUILL-AI-GATEWAY-QUOTA</code> for a limit. It is worth including
+if you write to support. The common ones:</p>
+<ul>
+<li><strong>A limit was reached.</strong> The message names the limit
+and when it starts again. Nothing was used.</li>
+<li><strong>No connection.</strong> Nothing was sent and nothing was
+used. Try again when you are online.</li>
+<li><strong>The free AI is paused.</strong> The service has a spending
+ceiling for everybody together; when it is reached, the free AI pauses
+for everyone until the 1st. This is rare, and nothing is wrong with your
+computer.</li>
+<li><strong>This computer was signed out.</strong> Choose
+<strong>Connect or Sign Out</strong> and connect again.</li>
+</ul>
+<h2 id="your-privacy">Your privacy</h2>
+<ul>
+<li><strong>What is sent:</strong> only the text shown in <strong>What
+will be sent</strong>, plus your question if you asked one. It goes to
+QUILL’s service and on to OpenAI, which writes the answer.</li>
+<li><strong>What is kept:</strong> how many requests you made, how big
+they were, which of the five you used, and what it cost.</li>
+<li><strong>What is not kept:</strong> what you wrote. What came back.
+Your name, your email address, or anything else that identifies you —
+connecting a computer creates an account with no name on it at all.</li>
+<li><strong>When it is sent:</strong> only when you press
+<strong>Send</strong>. Nothing is sent as you type, on save, in the
+background, or when you open the pad. Closing the pad without pressing
+Send sends nothing.</li>
+</ul>
+<p>The service’s own page, <strong><a
+href="https://ai.community-access.org">https://ai.community-access.org</a></strong>,
+explains the same things and publishes what the service costs to
+run.</p>
+<h2 id="signing-out-and-changing-your-mind">Signing out and changing
+your mind</h2>
+<ul>
+<li><strong>Sign Out This Computer</strong> is in
+<strong>Usage</strong>. Press it twice — the second press confirms. You
+can connect again at any time.</li>
+<li><strong>Withdrawing the agreement</strong> — open <strong>Privacy
+Agreement</strong> again and choose to withdraw — switches AI help off
+<strong>and</strong> signs this computer out, in one step, because
+keeping the key to a service you have just declined would be the wrong
+way round.</li>
+<li><strong>Privacy Agreement opens whether or not AI is switched
+on</strong>, and whether or not you ever agreed. A door you can only
+reach by agreeing to something is not a door.</li>
+</ul>
+<h2 id="questions-people-ask">Questions people ask</h2>
+<p><strong>Do I need an account?</strong> No. No name, no email, no
+password. The eight-character code connects this computer, and that is
+all.</p>
+<p><strong>Does it cost anything?</strong> No. It is paid for by
+Community Access.</p>
+<p><strong>Can it change my document without asking?</strong> No.
+Nothing goes into your document until you press <strong>Replace My
+Selection</strong> or <strong>Insert Below</strong>, and
+<strong>Ctrl+Z</strong> takes either back.</p>
+<p><strong>Does it read my whole document?</strong> Only when you ask a
+question about the document, and even then only the three passages it
+picks are sent — and the pad shows you which before you press Send.</p>
+<p><strong>Why is my allowance 15 when I was told 100?</strong> This
+computer connected less than 48 hours ago. The full allowance applies by
+itself when that time is up; Usage says exactly when.</p>
+<p><strong>Why did my daily requests come back in the evening?</strong>
+The service keeps time in UTC, so in North America the new day starts in
+the evening.</p>
+<p><strong>Who do I ask for help?</strong> Choose <strong>Get Help from
+Support</strong> in the Help menu, or write to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+A person reads it.</p>
+</main>
+</body>
+</html>
