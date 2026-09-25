@@ -87,3 +87,59 @@ def test_a_window_with_no_target_still_focuses_a_control(wx_app) -> None:
         assert isinstance(_first_focusable(frame), wx.TextCtrl)
     finally:
         frame.Destroy()
+
+
+def _every_static_text_labels_a_field(frame) -> list[str]:
+    """Static text that is not immediately followed by a control Tab reaches."""
+    loose = []
+    for panel in frame.GetChildren():
+        children = list(panel.GetChildren())
+        for index, child in enumerate(children):
+            if isinstance(child, wx.StaticText):
+                following = children[index + 1] if index + 1 < len(children) else None
+                if following is None or isinstance(following, wx.StaticText):
+                    loose.append(child.GetLabel())
+    return loose
+
+
+def test_every_sentence_in_the_sign_in_window_is_reachable_by_tab(wx_app) -> None:
+    """Reported 2026-09-25: text in a StaticText cannot be tabbed to, so a
+    sentence there is heard once or never. Every static label here names a
+    field, and the sentences themselves live in read-only fields."""
+    code = SimpleNamespace(
+        user_code="ABCD1234",
+        spoken="A B C D",
+        verification_uri="https://x",
+        verification_uri_complete="https://x?code=ABCD1234",
+    )
+    frame = AiSignInFrame(None, _service(False), lambda _text: None)
+    try:
+        assert _every_static_text_labels_a_field(frame) == []
+        frame._show_code(code)
+        assert _every_static_text_labels_a_field(frame) == []
+    finally:
+        frame.Destroy()
+
+
+def test_an_error_is_spoken_when_the_window_is_not_in_front(wx_app) -> None:
+    from quill.ui.hosted_ai_dialogs import show_problem
+
+    frame = AiUsageFrame(None, _service(True), lambda _text: None)
+    said: list[str] = []
+    try:
+        show_problem(frame, frame._body, "It did not work.", said.append)
+        assert frame._body.GetValue() == "It did not work."
+        assert frame._focus_target is frame._body
+        assert said == ["It did not work."]  # never shown, so never active
+    finally:
+        frame.Destroy()
+
+
+def test_an_error_sentence_leads_with_words_not_the_code() -> None:
+    from quill.core.ai.gateway_errors import GatewayQuotaError
+    from quill.ui.hosted_ai_service import _sentence
+
+    text = _sentence(GatewayQuotaError("You've reached this hour's request limit."))
+    assert text.startswith("You've reached")
+    assert "Error code QUILL-" in text
+    assert "[" not in text

@@ -2978,22 +2978,9 @@ hundred-page document is a fair thing to ask about — what the limit bounds is 
 much goes in one request, not how big your document may be. The pad shows you
 which passages were chosen before anything is sent.
 
-**How often:** **100 requests a month**, no more than **20 in a day** and **8 in
-an hour**. Summarize, rewrite and questions each have their own monthly share of
-that. The hourly and daily numbers are there to stop one runaway loop spending a
-month's worth in an afternoon, not to ration ordinary work.
-
-**A new connection starts smaller.** For its **first 48 hours**, a computer
-that has just connected has a smaller monthly allowance — currently **15
-requests** — and after that the full allowance applies on its own; there is
-nothing to do. It is how a free service with no accounts stops somebody
-scripting connection after connection for a fresh allowance each time, and
-somebody trying the feature out rarely reaches 15 on their first day. **Usage**
-says so while it applies, including exactly when it ends. If you need more
-sooner — a class, a deadline — use **Get Help from Support**: your support ID
-goes with the message automatically, and support can lift the limit for your
-account. The numbers here are the service's current settings; Usage always
-shows the live ones.
+**How often:** there is a monthly, a daily and an hourly allowance, and a
+smaller one for a computer's first 48 hours. *Limits, and when they start
+again*, just below, has every number and every rule.
 
 **Usage** (**Ctrl+Alt+Shift+F9**) shows what you have used and what is left. The
 service is free and has a fair-use ceiling; this is where you find out where you
@@ -3013,6 +3000,100 @@ only reach by agreeing to something is not a door.
 
 Every key named here is listed again in *Every key, in one table*, under
 **Tools ▸ AI**.
+
+### Limits, and when they start again
+
+QUILL's free AI is free because it is shared, so it has limits. This is every
+one of them, in one place.
+
+#### Your allowance at a glance
+
+These are the service's current settings. They are read from the service every
+time, never built into the program, so one can change without an update — and
+**Usage** always shows the numbers that actually apply to you right now.
+
+| Limit | How many | Starts again |
+|---|---|---|
+| Requests a month | 100 | The 1st of the month |
+| Requests a day | 20 | Every night |
+| Requests an hour | 8 | At the top of each hour |
+| Any one kind of request a month | 60 | The 1st of the month |
+| A new connection's first 48 hours | 15 | Rises to 100 on its own |
+
+"Any one kind" means Summarize, Rewrite, Proofread, Explain and Ask About This
+Document each have a monthly share of 60, so one of them cannot use up the whole
+month. The daily and hourly numbers are there to stop a runaway loop spending a
+month's worth in an afternoon, not to ration ordinary work.
+
+#### When the counts start again
+
+The service keeps time in **UTC**, not in your time zone:
+
+- **The hour** starts again on the hour.
+- **The day** starts again at **midnight UTC**. That is **8 PM Eastern** or
+  **5 PM Pacific** in summer, an hour earlier in winter — so in North America
+  the new day's requests arrive in the evening, not at midnight.
+- **The month** starts again at **midnight UTC on the 1st**. Usage shows the
+  exact date.
+
+#### What counts as a request
+
+One request is one press of **Send** that comes back with an answer. **Try
+Again** is another request. A request that does not produce an answer is **not
+counted**: if it was too long, if there was no connection, if the service had a
+problem, or if a limit had already been reached, nothing is used. Showing Usage
+or About never uses anything.
+
+#### When you reach a limit
+
+The AI window says **which** limit you reached and **when it starts again**, and
+focus moves to that message so you can read it again with the arrow keys. It
+ends with an error code — `QUILL-AI-GATEWAY-QUOTA` for a limit — which is worth
+including if you write to support. Nothing is used, nothing in your document
+changes, and everything else in the editor carries on as normal. Wait until the
+time it names, or ask for more (below).
+
+If the message says QUILL's free AI is **paused**, that is not about you: the
+service has a spending ceiling for everybody together, and when it is reached
+the free AI pauses for everyone until the 1st. This is rare, and it is announced
+rather than silent.
+
+#### A new connection starts smaller
+
+For its **first 48 hours**, a computer that has just connected gets **15
+requests** instead of the full monthly allowance, and then the full allowance
+applies **on its own** — there is nothing to do. It is how a free service with no
+accounts and no passwords stops somebody scripting connection after connection
+for a fresh allowance each time; somebody trying the feature out rarely reaches
+15 on the first day. While it applies, **Usage** and **About** say so and name
+the exact time it ends. Signing out and connecting again starts a new
+connection, so it is never a way to get more.
+
+#### Computers that share an internet connection
+
+A household, a classroom or a library usually reaches the internet through one
+address, and a few limits apply to that address as a whole: how many computers
+can be connected from it at once, how many new connections it can make in an
+hour, and a monthly total shared by every computer on it. They are generous for
+a home and are there to stop one address minting connections by the hundred;
+the exact numbers are not published, for the same reason. Signing a computer out
+gives its place back.
+
+If a class or a lab runs into these, write to support — this is exactly the
+situation they can help with.
+
+#### Asking for more
+
+Choose **Get Help from Support** in the Help menu and say what you need and why:
+a course, a deadline, a book. When this computer is connected, its **support ID**
+goes into the message automatically, and that is all support needs to find your
+account — there is no account name or password to give. Support can raise your
+monthly allowance, including lifting the new-connection allowance early. The
+change applies from your next request; you do not need to sign out, reconnect
+or update anything, and Usage shows the new number the next time you open it.
+
+Your support ID is also on **Help ▸ About** and in **Usage**, with a **Copy
+Support ID** button, if you would rather write from somewhere else.
 
 ## Where your files are kept
 

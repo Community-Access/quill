@@ -39,6 +39,23 @@ QUILL and QuillLite:
   with the existing per-user **Requests per month** override, whose dashboard
   hint now says so for a new account. Documented in both user guides and the
   gateway README.
+- **Every sentence in the AI windows is reachable by Tab.** The status lines,
+  the "about to send" summary, the sign-in instructions and the requests-used
+  line were static labels, which a screen reader reads once and Tab never
+  reaches; they are read-only fields now. An error moves focus to its message
+  when the window is in front and is spoken when it is not, and it leads with
+  the sentence rather than `[QUILL-AI-GATEWAY-QUOTA]`, which now ends it as
+  "Error code ...".
+- **Limits are documented in one place.** Both user guides have a section on
+  every limit, what counts as a request, when each count starts again (in UTC,
+  with what that means in North America), what happens at a limit, the
+  shared-network limits, the starter allowance and how to ask for more.
+- **ai.community-access.org explains itself to a newcomer.** The public page
+  now covers the allowance, the 48-hour starter allowance, when counts start
+  again (in UTC), what counts as a request, how to ask for more, and how to
+  connect in both editors through the AI menu. It links to quillforall.org, and
+  it no longer claims QuillLite can use your own AI key. It still publishes no
+  per-person numbers, as its tests require.
 
 ### QuillLite no longer asks to save a document nobody changed (2026-09-25)
 

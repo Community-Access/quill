@@ -144,7 +144,7 @@ def test_a_paused_service_says_so_at_the_top(app, client, db):
     # test_the_page_does_not_announce_its_own_arrival.
     assert html.index("paused right now") < html.index("What it does")
     # And it says what still works, so it is not a dead end.
-    assert "own API key" in html
+    assert "works as normal" in html
 
 
 # --- The page itself ----------------------------------------------------------------

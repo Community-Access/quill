@@ -220,21 +220,21 @@ you, using QUILL's own service, free, with no account and no card:
 **How to start, from a standing start.** Four steps, once, and then it is two
 keys forever after:
 
-1. **Turn it on.** **Tools ▸ Customize Features** (**Ctrl+Alt+F10**), tick
-   **AI help**, press **Save**. It ships switched off.
-2. **Read the agreement and accept it.** The moment you press Save, QuillLite
-   asks. It says what is sent, what QUILL keeps, what it does not keep, what
-   OpenAI does with it, and how to say no. Switching the feature on is *not*
-   consent — a profile could have switched it on — so this is asked as its own
-   question, and declining leaves the menu there and the feature unusable
-   rather than quietly undoing the change you did make.
+1. **Open the agreement from the AI menu.** **Tools ▸ AI ▸ Privacy Agreement**
+   (**Ctrl+Alt+Shift+K**). It is there even while AI help is switched off, which
+   it is until you agree.
+2. **Read it and choose I Agree.** It says what is sent, what QUILL keeps,
+   what it does not keep, what OpenAI does with it, and how to say no.
+   Agreeing switches AI help on — there is no second switch to find. (Ticking
+   **AI help** in **Tools ▸ Customize Features** asks the same question, if you
+   happen to be there.) Declining sends nothing and changes nothing.
 3. **Connect this computer.** **Tools ▸ AI ▸ Connect or Sign Out**
    (**Ctrl+Alt+Shift+F10**) — accepting the agreement takes you there anyway.
    The window opens on an eight-character code, spoken as well as shown.
    **Open the Connect Page** opens it in your browser already filled in, so all
    that is left is **Confirm**; or type it into the web page on any device. **There
    is no account, no password and no email address** — the code is the whole of
-   it. The same window is where **Sign Out This Computer** lives afterwards.
+   it. **Sign Out This Computer** lives in **Usage** afterwards.
 4. **Try it.** Select a paragraph and press **Ctrl+Alt+G**. Choose
    **Summarize**. That is the shortest round trip there is, and it tells you at
    a glance whether the whole thing is working.

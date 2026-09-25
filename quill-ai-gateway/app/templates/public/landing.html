@@ -14,16 +14,24 @@
     <h1>QUILL AI</h1>
     <p class="lede">Free AI help, built into
       <strong>QuillLite</strong> and <strong>QUILL</strong> — two text editors
-      made for people who use a screen reader.</p>
+      made for people who use a screen reader. Select a paragraph, ask for a
+      summary, a clearer version or a proofread, and the answer comes back in
+      its own window, ready to read with your screen reader.</p>
 
     {% if not stats.available %}
     <p class="flash" data-kind="error">
       <strong>The free AI is paused right now.</strong>
       {%- if stats.paused_reason %} {{ stats.paused_reason }}{% endif %}
-      The editors themselves are unaffected, and your own API key still works if
-      you have one.
+      Everything else in QuillLite and QUILL works as normal.
     </p>
     {% endif %}
+
+    <ul class="facts">
+      <li><strong>Free.</strong> No card, no trial, no subscription.</li>
+      <li><strong>No account.</strong> No name, no email address, no password.</li>
+      <li><strong>Your words are not kept.</strong> Not what you wrote, and not what came back.</li>
+      <li><strong>You stay in charge.</strong> Nothing goes into your document until you put it there.</li>
+    </ul>
 
     <section>
       <h2>What it does</h2>
@@ -38,6 +46,37 @@
         <li><strong>Ask a question about your document</strong> — your editor finds the
           parts that answer it, on your own computer, and sends only those.</li>
       </ul>
+    </section>
+
+    <section>
+      <h2>How to get it</h2>
+      <p>The AI is part of the editors rather than something separate, so there
+        is nothing to install here. Get <strong>QuillLite</strong> or
+        <strong>QUILL</strong> from
+        <a href="https://www.quillforall.org">QUILL for All</a>.</p>
+      <h3>In QuillLite</h3>
+      <ol>
+        <li>Open <strong>Tools</strong>, then <strong>AI</strong>, and choose
+          <strong>Privacy Agreement</strong> — or press
+          <strong>Ctrl+Alt+Shift+K</strong> from anywhere in the editor.</li>
+        <li>Read the agreement, and choose <strong>I Agree</strong> if you are
+          happy. That switches AI help on; there is no second switch to find.</li>
+        <li>The <strong>Connect</strong> window opens by itself, already showing
+          your eight-character code. Press <strong>Open the Connect Page</strong>:
+          your browser opens with the code filled in, so all that is left is
+          <strong>Confirm</strong>. The window says when you are connected.</li>
+      </ol>
+      <h3>In QUILL</h3>
+      <ol>
+        <li>Open the <strong>AI</strong> menu. QUILL's free AI is at the top.</li>
+        <li>Choose any of it — the <strong>Free AI Assistant</strong> is a good
+          first one. QUILL shows you the agreement the first time.</li>
+        <li>Accept, and the Connect window opens with your code, exactly as in
+          QuillLite.</li>
+      </ol>
+      <p>Not at the computer you are connecting? Type the code into
+        <a href="{{ connect_url }}">the connect page</a> on any device — a phone
+        is fine.</p>
     </section>
 
     <section>
@@ -56,11 +95,73 @@
     <section>
       <h2>What it costs you</h2>
       <p><strong>Nothing.</strong> There is no account, no password, no card and
-        no trial. You connect a computer once by reading an eight-character code
-        into a web page, and after that it works.</p>
-      <p>There is a monthly allowance so that one person cannot use up what
-        everybody else needs. Your editor says how much of it is left, and it
-        starts again by itself on the 1st.</p>
+        no trial. You connect a computer once, with an eight-character code, and
+        after that it works.</p>
+      <p>Because it is free and shared, there is an <strong>allowance</strong>,
+        so that one person cannot use up what everybody else needs:</p>
+      <ul>
+        <li><strong>A monthly allowance</strong> — the main one.</li>
+        <li><strong>A daily and an hourly allowance</strong> — there to stop a
+          runaway loop spending a month in an afternoon, not to ration ordinary
+          work.</li>
+        <li><strong>A share for each kind of request</strong>, so that one of
+          them, Summarize say, cannot use up the whole month on its own.</li>
+      </ul>
+      <p>Your editor's <strong>Usage</strong> window shows your exact numbers:
+        what you have used, what is left, and when each count starts again. So
+        does <strong>Help, About</strong>. The numbers come from this service
+        every time you look, so if an allowance changes, you see it straight
+        away.</p>
+    </section>
+
+    <section>
+      <h2>A new computer starts with a smaller allowance</h2>
+      <p>For its <strong>first 48 hours</strong>, a computer that has just
+        connected gets a smaller allowance, and then the full one applies
+        <strong>by itself</strong> — there is nothing to do. It is how a free
+        service with no accounts stops somebody scripting connection after
+        connection for a fresh allowance each time. Somebody trying it out
+        rarely notices; if you do, Usage says so and names the exact time it
+        ends. Signing out and connecting again starts a new connection, so it is
+        never a way round it.</p>
+    </section>
+
+    <section>
+      <h2>When your allowance starts again</h2>
+      <p>This service keeps time in <strong>UTC</strong>, not in your time zone:</p>
+      <ul>
+        <li><strong>The hourly count</strong> starts again on the hour.</li>
+        <li><strong>The daily count</strong> starts again at midnight UTC. That
+          is <strong>8 PM Eastern</strong> or <strong>5 PM Pacific</strong> in
+          summer, and an hour earlier in winter — so in North America, the next
+          day's requests arrive in the evening.</li>
+        <li><strong>The monthly count</strong> starts again at midnight UTC on
+          the 1st.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>What counts as a request</h2>
+      <p>One answer is one request, and <strong>Try Again</strong> is another. A
+        request that does not produce an answer is <strong>not counted</strong>:
+        if it was too long, if the connection dropped, if something went wrong
+        here, or if you had already reached a limit, nothing is used. Looking at
+        Usage never uses anything.</p>
+      <p>If you do reach a limit, your editor says which one and when it starts
+        again, and puts the message where your screen reader is, so you can read
+        it as often as you like. Nothing in your document changes, and the rest
+        of the editor carries on as normal.</p>
+    </section>
+
+    <section>
+      <h2>Need more?</h2>
+      <p>Ask. Choose <strong>Get Help from Support</strong> in your editor's Help
+        menu and say what it is for — a course, a deadline, a book. When your
+        computer is connected, its <strong>support ID</strong> goes into the
+        message by itself, and that is all support needs to find your account.
+        Support can raise your allowance, including ending a new computer's
+        smaller allowance early. It applies from your next request, with nothing
+        to reinstall and nothing to reconnect.</p>
     </section>
 
     {% if stats.started %}
@@ -117,34 +218,16 @@
     {% endif %}
 
     <section>
-      <h2>How to get it</h2>
-      <p>The AI is part of the editors rather than something separate, so there
-        is nothing to install here. Get <strong>QuillLite</strong> or
-        <strong>QUILL</strong> from
-        <a href="https://github.com/Community-Access/quill">the QUILL project</a>,
-        then in QuillLite:</p>
-      <ol>
-        <li>Open <strong>Tools</strong>, then <strong>Customize Features</strong>,
-          and switch on <strong>AI help</strong>. It is off until you do.</li>
-        <li>Read the agreement it shows you, and accept it if you are happy.</li>
-        <li>Open <strong>Tools</strong>, <strong>AI</strong>,
-          <strong>Sign In or Out</strong>, and follow the eight-character code
-          to <a href="{{ connect_url }}">the connect page</a>.</li>
-      </ol>
-      <p>If you already have an account with an AI provider of your own, both
-        editors can use that instead, and then nothing goes through this service
-        at all.</p>
-    </section>
-
-    <section>
       <h2>If something goes wrong</h2>
       <p>Write to <a href="mailto:support@community-access.org">support@community-access.org</a>.
         A person reads it.</p>
-      <p>Your editor shows you a <strong>support ID</strong> — a short code like
-        <span class="code">A1B2-C3D4</span> — in <strong>Tools</strong>,
-        <strong>AI</strong>, <strong>Usage</strong>. Quoting it lets support find
-        your account, which is otherwise impossible: there is no name on it to
-        search for.</p>
+      <p>Or choose <strong>Get Help from Support</strong> in your editor's Help
+        menu, which writes the message for you and includes your
+        <strong>support ID</strong> — a short code like
+        <span class="code">A1B2-C3D4</span>. It is also in
+        <strong>Usage</strong> and in <strong>Help, About</strong>. Quoting it
+        lets support find your account, which is otherwise impossible: there is
+        no name on it to search for.</p>
     </section>
   </main>
 

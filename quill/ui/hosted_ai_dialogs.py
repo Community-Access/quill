@@ -115,21 +115,52 @@ def _first_focusable(frame: wx.Frame) -> wx.Window | None:
     return None
 
 
-def _read_only(parent: wx.Window, sizer: wx.Sizer, label: str, value: str, help_text: str):
+def _read_only(
+    parent: wx.Window,
+    sizer: wx.Sizer,
+    label: str,
+    value: str,
+    help_text: str,
+    *,
+    grow: bool = True,
+):
     """A labelled, read-only, multi-line field.
 
     Read-only but **not** a static label, and the difference matters: a text
-    control can be arrowed through character by character, selected and copied.
-    A ``StaticText`` can be read once, as a lump, and nothing else -- which is
-    no way to check an eight-character code you are about to type into a phone.
+    control can be arrowed through character by character, selected and copied,
+    and Tab reaches it. A ``StaticText`` can be read once, as a lump, and Tab
+    never lands on it -- so every sentence these windows have to say lives in
+    one of these, the short ones too (reported 2026-09-25: "everything should
+    be tabbable so people can get to all text"). *grow* False is for those short
+    ones: a few lines high, and not stretched.
     """
     static = wx.StaticText(parent, label=label)
     field = wx.TextCtrl(parent, value=value, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
     set_accessible_name(field, label.replace("&", "").rstrip(": "))
     field.SetHelpText(help_text)
     sizer.Add(static, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-    sizer.Add(field, 1, wx.EXPAND | wx.ALL, _PAD)
+    if not grow:
+        field.SetMinSize((-1, field.GetCharHeight() * 3 + _PAD))
+    sizer.Add(field, 1 if grow else 0, wx.EXPAND | wx.ALL, _PAD)
     return field
+
+
+def show_problem(frame: wx.Frame, field: wx.TextCtrl, message: str, announce: Callable) -> None:
+    """Put *message* in *field* and take the person to it.
+
+    An error has to be where focus is, or it is only heard once and cannot be
+    read again (reported 2026-09-25). When the window is in front, focus moves
+    to the message and the reader reads it -- nothing is announced on top of
+    that (GATE-13). When it is not, focus cannot follow, so it is spoken, and
+    focus waits on the message for when they come back.
+    """
+    field.SetValue(message)
+    field.SetInsertionPoint(0)
+    focus_on(frame, field)
+    if frame.IsActive():
+        field.SetFocus()
+    else:
+        announce(message)
 
 
 def _close_row(frame: wx.Frame, sizer: wx.Sizer, *extra: wx.Button) -> wx.Button:
@@ -230,11 +261,17 @@ class AiSignInFrame(wx.Frame):
 
     def _on_show_code(self, _event: wx.CommandEvent) -> None:
         self._clear()
-        self._status = wx.StaticText(self._panel, label="Asking QUILL for a code...")
-        self._sizer.Add(self._status, 0, wx.ALL, _PAD)
-        close = _close_row(self, self._sizer)
+        status = _read_only(
+            self._panel,
+            self._sizer,
+            "Status",
+            "Asking QUILL for a code...",
+            "What is happening. The code appears here in a moment.",
+            grow=False,
+        )
+        _close_row(self, self._sizer)
         self._panel.Layout()
-        focus_on(self, close)
+        focus_on(self, status)
         self._service.start_sign_in(
             on_code=self._show_code, on_done=self._show_connected, on_error=self._show_error
         )
@@ -252,13 +289,16 @@ class AiSignInFrame(wx.Frame):
             "The code to type into the web page. Use the arrow keys to hear it "
             "one character at a time.",
         )
-        where = wx.StaticText(
+        _read_only(
             panel,
-            label="Choose Open the Connect Page and press Confirm, or type the code at "
+            self._sizer,
+            "What to do",
+            "Choose Open the Connect Page and press Confirm, or type the code at "
             f"{code.verification_uri} on any device. There is no account and no "
             "password. QUILL is waiting; this window will say when you are connected.",
+            "How to use the code, and where to type it.",
+            grow=False,
         )
-        self._sizer.Add(where, 0, wx.ALL, _PAD)
 
         page = getattr(code, "verification_uri_complete", "") or code.verification_uri
         browse = wx.Button(panel, label="&Open the Connect Page")
@@ -402,8 +442,7 @@ class AiUsageFrame(wx.Frame):
     def _failed(self, message: str) -> None:
         if not self:
             return
-        self._body.SetValue(message)
-        self._announce(message)
+        show_problem(self, self._body, message, self._announce)
 
     def _on_copy(self, _event: wx.CommandEvent) -> None:
         if wx.TheClipboard.Open():
