@@ -319,7 +319,7 @@ class KeymapEditorMixin:
         # these before the app sees them, so the binding would be assigned,
         # shown as assigned, and never fire -- the worst shape a keymap bug
         # takes, because every visible surface agrees it should have worked.
-        # QuillLite has refused them since it shipped and QUILL refused nothing
+        # QUILL Lite has refused them since it shipped and QUILL refused nothing
         # (bad.md H9, P1.18); the list is shared so there is one answer.
         reserved = reservation_for(canonical)
         if reserved:

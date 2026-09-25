@@ -111,7 +111,7 @@ def test_move_section_announces_bottom_when_already_last() -> None:
 def test_a_section_with_no_sibling_moves_past_its_parent_in_quill_too() -> None:
     """QUILL used to re-derive its sentences from the result code alone and
     could only say "No sibling to swap with". It now reaches the same
-    move_section QuillLite does, so the two cannot answer differently."""
+    move_section QUILL Lite does, so the two cannot answer differently."""
     text = "# Heading 1\n\nbody\n\n## Heading 2\n\nbody\n"
     frame, editor = _make_frame(text, text.index("## Heading 2"), "test.md")
     frame.move_section_up()
@@ -197,7 +197,7 @@ def test_move_section_menu_ids_are_appended_and_bound() -> None:
 
 
 def test_quill_moves_subsections_with_their_parent_too() -> None:
-    """QUILL reaches the same move_section QuillLite does, so the fix for
+    """QUILL reaches the same move_section QUILL Lite does, so the fix for
     "the ### stayed behind" is one fix. Pinned on this side as well, because
     "both editors call the same function" is a claim that stops being true the
     moment somebody writes a second one."""
@@ -211,7 +211,7 @@ def test_quill_moves_subsections_with_their_parent_too() -> None:
 
 
 def test_quill_selects_a_section_with_its_subsections() -> None:
-    """Same command, same core helper and the same sentence as QuillLite's, so
+    """Same command, same core helper and the same sentence as QUILL Lite's, so
     the two products cannot describe one capability two ways."""
     text = "# Top\n\ntop\n\n## Bread\n\nbread\n\n### Sourdough\n\nsour\n\n## Soup\n\nsoup\n"
     frame, editor = _make_frame(text, text.index("## Bread"), "notes.md")

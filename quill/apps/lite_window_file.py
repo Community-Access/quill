@@ -73,10 +73,10 @@ class DocumentFileMixin:
         """Whether a text event on a clean document left the text as it was.
 
         Rich Edit raises EN_CHANGE for things that change nothing: Ctrl+Z with
-        nothing to undo, for one. Reported 2026-09-25 as "I open QuillLite, make
+        nothing to undo, for one. Reported 2026-09-25 as "I open QUILL Lite, make
         no changes, and Alt+F4 asks me to save". Rich text only trusts this when
         the buffer is empty, because there a formatting-only change with the same
-        characters (a native chord QuillLite does not route) is a real edit.
+        characters (a native chord QUILL Lite does not route) is a real edit.
         """
         baseline = getattr(self, "_clean_text", None)
         if baseline is None:

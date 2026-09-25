@@ -219,7 +219,7 @@ class RichEditDocument(RichEditStructureMixin, QuillRichEdit):
         """Flip the control between inserting and overwriting, and say whether it took.
 
         Here rather than in either product because neither may own it alone:
-        QUILL binds ``view.toggle_overwrite_mode``, QuillLite
+        QUILL binds ``view.toggle_overwrite_mode``, QUILL Lite
         ``cmd_toggle_overwrite``, and both render the mode in a status cell.
         Until 2026-09-09 QUILL's command flipped a display flag and told the
         control nothing at all, so the cell could read "Overwrite" while typing

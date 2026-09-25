@@ -1,13 +1,13 @@
-"""GATE-LITE-HELP: F1 help must ship with every QuillLite surface and control.
+"""GATE-LITE-HELP: F1 help must ship with every QUILL Lite surface and control.
 
 The eighth app to join the family's F1 program, and the same shape as the seven
-before it. :mod:`quill.core.lite_surface_help` is QuillLite's catalogue of window
-purposes and this is its gate, so a new QuillLite window cannot ship without
+before it. :mod:`quill.core.lite_surface_help` is QUILL Lite's catalogue of window
+purposes and this is its gate, so a new QUILL Lite window cannot ship without
 saying what it is for and a new control cannot ship without either help or a
 deliberate, reviewed classification.
 
 Configuration only: the scanner, the snapshot rules and the CLI all live in
-:mod:`quill.tools.help_audit`. What is QuillLite's own is here -- the modules it
+:mod:`quill.tools.help_audit`. What is QUILL Lite's own is here -- the modules it
 scans, the catalogue that judges the titles, the snapshot path, and the
 exemptions.
 
@@ -40,7 +40,7 @@ from quill.tools.help_audit import (
 
 SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "lite_help_inventory.json"
 
-#: QuillLite has no ``quill/ui`` subpackage: its modules sit together under
+#: QUILL Lite has no ``quill/ui`` subpackage: its modules sit together under
 #: ``quill/apps`` (the app, the window, its commands, its dialogs), which is
 #: what ``lite*.py`` picks up -- including any module a future split adds.
 #:
@@ -57,8 +57,8 @@ _SCAN_GLOBS: tuple[str, ...] = (
     # The hosted-AI windows went the same way as the Spelling Announcements
     # one, and for the stronger reason: QUILL now opens them too (they are its
     # *default* AI), so they could not stay in a QuillLite-only module without
-    # breaking the rule that QuillLite is never ahead of QUILL. They stay in
-    # this glob because QuillLite is still a caller, and a surface no gate can
+    # breaking the rule that QUILL Lite is never ahead of QUILL. They stay in
+    # this glob because QUILL Lite is still a caller, and a surface no gate can
     # see is one that rots -- QUILL's own help audit covers them as well, which
     # is correct: two callers, two gates, one set of sentences.
     "quill/ui/hosted_ai*.py",
@@ -81,7 +81,7 @@ TITLE_EXEMPT: dict[str, str] = {
     ),
     "quill/apps/lite_dialogs.py::show_text_window": (
         "The title is the caller's, and both callers pass a literal that the "
-        "catalogue answers: 'Keyboard shortcuts' and 'About QuillLite'."
+        "catalogue answers: 'Keyboard shortcuts' and 'About QUILL Lite'."
     ),
     "quill/apps/lite_dialogs.py::choose_searchable": (
         "One filtered-list window with two callers, each passing a literal the "
@@ -109,7 +109,7 @@ TITLE_EXEMPT: dict[str, str] = {
 
 
 def scan() -> tuple[list[ControlSite], list[TitleViolation]]:
-    """Every helpable-control site in QuillLite, and every unknown title."""
+    """Every helpable-control site in QUILL Lite, and every unknown title."""
     from quill.core import lite_surface_help
 
     return scan_paths(

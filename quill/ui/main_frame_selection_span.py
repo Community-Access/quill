@@ -18,7 +18,7 @@ separately rather than calling ``action``, because QUILL's ``_set_status``
 *speaks* what it is given -- so "put it on the bar without saying it" is a
 decision only this method can make.
 
-QuillLite's equivalent is ``lite_window_selection.py``, and it is a different
+QUILL Lite's equivalent is ``lite_window_selection.py``, and it is a different
 implementation on purpose: it has a key-up hook this does not, which is where
 its F8 bug lived for a release. These compute the span at completion time and
 were never affected.
@@ -79,7 +79,7 @@ class SelectionSpanMixin:
         and, pressed a second time, the way out of a marker they no longer
         want without completing a selection they did not ask for.
 
-        QuillLite's chord, taken here on 2026-09-17. QUILL was spending it on
+        QUILL Lite's chord, taken here on 2026-09-17. QUILL was spending it on
         Extend Selection Mode, which is a different thing and now has
         Alt+Shift+F9 in both (bad.md 5.3a, P1.2).
         """
@@ -95,7 +95,7 @@ class SelectionSpanMixin:
         moved used to announce "Selected 0 characters, line 4 column 7 to line 4
         column 7" -- a sentence that reports a number, a place and a second
         identical place to say the one thing that matters, which is that nothing
-        happened. QuillLite's wording is the one a listener can act on
+        happened. QUILL Lite's wording is the one a listener can act on
         (bad.md L11).
 
         The sentence for a real span is

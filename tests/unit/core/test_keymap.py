@@ -344,7 +344,7 @@ def test_bundled_profiles_do_not_override_platform_aware_defaults() -> None:
 
 def test_snippet_shortcuts_are_available() -> None:
     # word_prediction moved to Ctrl+. (§4.22), freeing Ctrl+Space for the
-    # sentence family -- which is what it means in QuillLite, and what it means
+    # sentence family -- which is what it means in QUILL Lite, and what it means
     # in both editors since 2026-09-17 (bad.md P1.2b, 5.3a). It was Select
     # Chunk here, so one key meant two different things across the two
     # products; the sentence is what people reach for and keeps the chord.
@@ -373,7 +373,7 @@ def test_indent_shortcuts_are_available() -> None:
 
 def test_browser_preview_shortcut_is_available() -> None:
     # Preview moved off Ctrl+Shift+V on 2026-09-16: that is Paste Without
-    # Formatting in Word 365, Notepad, every browser and QuillLite, so the
+    # Formatting in Word 365, Notepad, every browser and QUILL Lite, so the
     # chord everybody reaches for to strip a web page's styling was opening a
     # preview pane instead. Preview is QUILL-only and had no competing claim.
     assert DEFAULT_KEYMAP["view.preview"] == "Alt+Shift+V"
@@ -526,7 +526,7 @@ def test_quote_lines_default_is_ctrl_shift_q() -> None:
     # Unquote Lines left Ctrl+Shift+K on 2026-09-18 for one modifier off its
     # own twin: the blockquote merge freed Ctrl+Alt+Q for Duplicate Selection,
     # which freed Ctrl+Alt+Shift+Q for this, which freed Ctrl+Shift+K for
-    # lowercase -- QuillLite's chord for it (bad.md P2.5, P1.2, P1.1).
+    # lowercase -- QUILL Lite's chord for it (bad.md P2.5, P1.2, P1.1).
     assert DEFAULT_KEYMAP["edit.unquote_lines"] == "Ctrl+Alt+Shift+Q"
     assert DEFAULT_KEYMAP["format.lower_case"] == "Ctrl+Shift+K"
 
@@ -792,35 +792,35 @@ def test_authoring_chords_are_the_defaults() -> None:
     """The "Authoring" chord set (x.md), user-authorized, minus what supersedes it.
 
     The set was authorized before the family keymap existed. Where Microsoft
-    and QuillLite both bind a key for a verb QUILL also has, that key wins --
+    and QUILL Lite both bind a key for a verb QUILL also has, that key wins --
     rule 1 of bad.md, decided 2026-09-16 -- so a few of these rows have moved
     and are asserted at their new homes here rather than deleted, because the
     point of this test is that the set is *decided* rather than accidental.
 
     Moved, with the claim that beat it:
       format.toggle_bullet_list  Ctrl+Alt+B -> Ctrl+Shift+L (WordPad's Bullets
-                                 key, and QuillLite's; Ctrl+Alt+B is Clear All
-                                 Bookmarks in QuillLite and now in QUILL).
+                                 key, and QUILL Lite's; Ctrl+Alt+B is Clear All
+                                 Bookmarks in QUILL Lite and now in QUILL).
       edit.insert_link           Ctrl+Alt+K -> Ctrl+K (Word's Insert Hyperlink,
                                  and the chord three key handlers already
                                  hard-coded outside the keymap; Ctrl+Alt+K is
-                                 Remove Every Blank Line in QuillLite).
+                                 Remove Every Blank Line in QUILL Lite).
       edit.paste_plain_text      Ctrl+Alt+V -> Ctrl+Shift+V (Word 365, Notepad
                                  and every browser; Ctrl+Alt+V is Paste from
-                                 Tray in QuillLite).
+                                 Tray in QUILL Lite).
       format.horizontal_rule     Ctrl+Alt+H -> Ctrl+Alt+- (H is for Heading:
-                                 Ctrl+Alt+H walks them in QuillLite, and that
+                                 Ctrl+Alt+H walks them in QUILL Lite, and that
                                  is an editing-loop verb where inserting a rule
                                  is a once-a-document one).
       format.justify             Ctrl+Alt+J -> Ctrl+J (Word, WordPad and
-                                 QuillLite all justify there).
+                                 QUILL Lite all justify there).
 
     Moved later, by the same authority (2026-09-17): power.insert_image gave
-    Ctrl+Alt+I to format.insert_markdown_tag, which is QuillLite's chord for it
+    Ctrl+Alt+I to format.insert_markdown_tag, which is QUILL Lite's chord for it
     and was listed as such in bad.md 3.7 before either moved.
 
     Kept, deliberately: format.insert_table stays on Ctrl+Alt+T, which is Trim
-    Trailing Spaces in QuillLite. An authorized chord for a verb that builds
+    Trailing Spaces in QUILL Lite. An authorized chord for a verb that builds
     structure outranks one that strips whitespace, so QUILL's trim took
     Ctrl+Alt+R and that pair is the one documented divergence in bad.md 3.2.
     """
@@ -835,12 +835,12 @@ def test_authoring_chords_are_the_defaults() -> None:
     assert DEFAULT_KEYMAP["navigate.clear_numbered_bookmarks"] == "Ctrl+Alt+B"
     # Ctrl+Alt+N changed hands on 2026-09-17 by the 2026-09-16 decision: Numbered
     # List folded into the Ctrl+Shift+L cycle and its chord went to New Plain
-    # Text Document, which is what QuillLite opens with it (bad.md P1.5a, 3.4).
+    # Text Document, which is what QUILL Lite opens with it (bad.md P1.5a, 3.4).
     assert DEFAULT_KEYMAP["file.new_plain_text_document"] == "Ctrl+Alt+N"
     assert DEFAULT_KEYMAP["format.toggle_numbered_list"] == "Ctrl+Shift+Grave, Shift+L"
     # Ctrl+Alt+I changed hands on 2026-09-17 by the same authorization that
     # granted it: bad.md 3.7 gives it to Insert Markdown Tag, which is what it
-    # opens in QuillLite, and sends Insert Image one modifier over to the
+    # opens in QUILL Lite, and sends Insert Image one modifier over to the
     # Ctrl+Shift+I the intake report vacated in the leader reclaim (P1.1, P1.11).
     assert DEFAULT_KEYMAP["format.insert_markdown_tag"] == "Ctrl+Alt+I"
     assert DEFAULT_KEYMAP["power.insert_image"] == "Ctrl+Shift+I"
@@ -858,10 +858,10 @@ def test_authoring_chords_are_the_defaults() -> None:
 
 
 def test_numbered_bookmarks_agree_with_quilllite() -> None:
-    """QUILL's numbered bookmarks use QuillLite's chords, because they are one feature.
+    """QUILL's numbered bookmarks use QUILL Lite's chords, because they are one feature.
 
     quill.core.numbered_bookmarks says in its own docstring that it lives in
-    shared core so QUILL can adopt it; QuillLite was its only caller until
+    shared core so QUILL can adopt it; QUILL Lite was its only caller until
     2026-09-16. Adopting it on different keys would have been the worst of
     both: one engine, two habits.
     """
@@ -878,7 +878,7 @@ def test_numbered_bookmarks_agree_with_quilllite() -> None:
     }
     for command_id, handler in pairs.items():
         assert DEFAULT_KEYMAP[command_id] == lite[handler], (
-            f"{command_id} and QuillLite's {handler} are one feature on two keys"
+            f"{command_id} and QUILL Lite's {handler} are one feature on two keys"
         )
 
 
@@ -930,7 +930,7 @@ def test_every_quill_alias_is_free_parseable_and_unique() -> None:
 
 
 def test_the_two_editors_agree_about_the_home_row_pair() -> None:
-    """QUILL and QuillLite must not disagree about a key this close to the fingers.
+    """QUILL and QUILL Lite must not disagree about a key this close to the fingers.
 
     The pair exists because a function key means taking a hand off the home row.
     Shipping it in one editor and not the other, or on different chords, would

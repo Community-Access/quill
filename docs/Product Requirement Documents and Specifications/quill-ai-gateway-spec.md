@@ -12,7 +12,7 @@ Read this if you are about to build any part of free hosted AI. Read the PRD if
 you want to know *why* the server looks the way it does. This document answers
 three questions the PRD does not: **what is actually built today**, **what the
 new model economics change**, and **what the smallest product that delivers real
-value looks like** — which, on the current evidence, was QuillLite. It shipped
+value looks like** — which, on the current evidence, was QUILL Lite. It shipped
 there first and reached QUILL on 2026-09-23; section 5.4 records how, and what
 that cost.
 
@@ -33,7 +33,7 @@ On the QUILL side of the wire there is **nothing**. No `GatewayBackend`, no
 field, no egress-audit entry. A code search for `quillforall`, `ai_gateway` or
 `hosted_ai` across `quill/` returns only unrelated hits on `tool_gateway`.
 
-And QuillLite has no AI at all — not a backend, not a command, not a menu item,
+And QUILL Lite has no AI at all — not a backend, not a command, not a menu item,
 not one import of `quill.core.ai` across its 45 modules.
 
 So the work is not "design a hosted AI service." It is: **re-price the built
@@ -95,7 +95,7 @@ The PRD's section 0 inventory is still accurate. Verified today:
 - `quill/core/ai/admin_policy.py` — organization allow/block over provider ids.
 - `quill/tools/network_egress_audit.py` — GATE-9. One new reviewed entry needed.
 
-### 2.3 QuillLite
+### 2.3 QUILL Lite
 
 `quill/apps/lite*.py` is 45 modules and does not import `quill.core.ai` once.
 Feature areas live in `quill/core/lite/features.py` (`AREAS`,
@@ -347,14 +347,14 @@ charge the user's quota**. Log it, return the ordinary "having trouble, try
 again" error, and alert. Billing a user for a blank answer is worse than the
 outage it disguises.
 
-### 5.4 QuillLite ships first, and QUILL ships in the same change
+### 5.4 QUILL Lite ships first, and QUILL ships in the same change
 
-QuillLite is the right first client. It has no AI at all, so there is no existing
+QUILL Lite is the right first client. It has no AI at all, so there is no existing
 surface to reconcile, no provider picker to extend, no agent harness to reason
 about, and no BYOK user whose configuration might break. It is the smallest
 honest test of "does free hosted AI deliver value."
 
-But **CLAUDE.md is explicit: QuillLite may never be ahead of QUILL.** A capability
+But **CLAUDE.md is explicit: QUILL Lite may never be ahead of QUILL.** A capability
 the small product has and the big one does not is backwards, and invisible —
 nobody opens QUILL and notices the absence of a thing they have only ever seen
 elsewhere. So:
@@ -385,12 +385,12 @@ very providers it exists to make unnecessary.
   It has **no commands of its own**, and a test asserts that absence: a second
   implementation is how this rule gets broken quietly, far more easily than a
   missing feature.
-- Three of the five chords are QuillLite's, unchanged: `Ctrl+Alt+G` (the pad),
+- Three of the five chords are QUILL Lite's, unchanged: `Ctrl+Alt+G` (the pad),
   `Ctrl+Alt+Z` (ask about this document) and `Ctrl+Alt+Shift+K` (the agreement).
   All three were free on QUILL's side, so family rule 2 applied with nothing to
   arbitrate. **Usage and Sign In could not keep theirs**: `Ctrl+Alt+Shift+F7` to
   `F12` are the six QuillVille sibling launchers in QUILL
-  (`app_keymaps.SIBLING_APP_ACCELERATORS`), and QuillLite — being the editor on
+  (`app_keymaps.SIBLING_APP_ACCELERATORS`), and QUILL Lite — being the editor on
   its own — has none to launch, so F9 and F10 are free over there and spoken for
   here. QUILL uses `Ctrl+Alt+Shift+F2` and `F4`, and both divergences carry a
   `DIVERGENCES` row in `lite/parity.py` plus a comment in `keymap.py` (rule 11).
@@ -405,9 +405,9 @@ very providers it exists to make unnecessary.
   than re-derived, so a menu cannot lengthen as a side effect of a key pasted into
   an unrelated feature.
 - One sentence could not be shared and is a hook rather than a literal: the
-  feature switch is a Customize Features area in QuillLite and the Use AI item in
+  feature switch is a Customize Features area in QUILL Lite and the Use AI item in
   QUILL's own menu. Every *other* route sentence was rewritten to name a row that
-  exists in both ("Connect or Sign Out in the AI menu"), and QuillLite's row was
+  exists in both ("Connect or Sign Out in the AI menu"), and QUILL Lite's row was
   renamed from "Sign In or Out" to match — a row named two ways is a sentence that
   is wrong in one of the two products.
 
@@ -428,7 +428,7 @@ Deliberately excluded from the free tier: chat with history, agents and the tool
 loop, translation, cloud TTS, streaming, and any multi-turn context. Each of
 those is a multiplier on cost, a multiplier on complexity, or both.
 
-**And images. Not in QuillLite at all** — see 5.7, which is a decision rather
+**And images. Not in QUILL Lite at all** — see 5.7, which is a decision rather
 than an omission.
 
 Every result lands in a **result window, not the document**: the text, the tokens
@@ -436,14 +436,14 @@ used, the remaining allowance, and three buttons — Replace selection, Copy, Cl
 AI never edits a document without a keystroke saying so. Section 12 is the
 full screen-by-screen specification.
 
-### 5.6 No images in QuillLite. Tracked, not forgotten.
+### 5.6 No images in QUILL Lite. Tracked, not forgotten.
 
-QuillLite is a text editor. It has no image model, no picture control, nowhere
+QUILL Lite is a text editor. It has no image model, no picture control, nowhere
 an image lives, and adding one to reach a describe-this-picture feature would
 be building an image pipeline in order to justify an AI call — which is the
 wrong order to do anything in.
 
-So images are out of QuillLite entirely, and the server reflects that rather
+So images are out of QUILL Lite entirely, and the server reflects that rather
 than merely not offering it:
 
 - The `alt_text` feature keeps its id and its prompt template, but ships with
@@ -533,7 +533,7 @@ rejection when a value is out of range, and a typed confirmation showing the
 before-and-after monthly cost whenever a change more than doubles it. Section 13
 specifies it.
 
-On gap 4, the fix has a client half: QUILL and QuillLite display a short,
+On gap 4, the fix has a client half: QUILL and QUILL Lite display a short,
 speakable **support ID** (the first eight characters of the user id, grouped like
 `A1B2-C3D4`) in the AI panel and in About, and the dashboard gains
 `GET /admin/users?q=<prefix>`. Without this, every support conversation about
@@ -581,7 +581,7 @@ All five are `wx`-free, strict-typed, and in scope for `mypy quill\core`.
 - **GATE-9**: exactly one new `_REVIEWED_EGRESS` entry, its rationale being "an
   explicit AI command the user invoked, or the sign-in flow the user started."
 
-### 7.3 QuillLite surface
+### 7.3 QUILL Lite surface
 
 - A new switchable area in `quill/core/lite/features.py`: id `hosted_ai`, **off by
   default**. A feature that sends your writing to a third party is not on until
@@ -687,8 +687,8 @@ Read `app/limits.py` end to end. *Accepted when:* `pytest` is green in
 `quill-ai-gateway/`, and one device has registered, spent quota, hit a limit, and
 been reset by hand at the database level.
 
-**Phase 1 — Close the gaps, and build the QuillLite client.** Server: gaps 1, 2,
-3, 4, 6, 7, 8, 9. Client: the five modules in 7.1, the QuillLite `hosted_ai` area,
+**Phase 1 — Close the gaps, and build the QUILL Lite client.** Server: gaps 1, 2,
+3, 4, 6, 7, 8, 9. Client: the five modules in 7.1, the QUILL Lite `hosted_ai` area,
 the five commands, sign-in, the result window, the usage display, the support ID.
 QUILL gets the same five commands and the provider id in the same change. Privacy
 text written and shipped (5.7). Console: gap 12's validation, the cost calculator
@@ -756,7 +756,7 @@ and at that price the constraint on this program is operational care, not money.
    nobody sees them.
 4. **The `gpt-6-luna` model id string**, verified against the provider's own model
    list rather than against a briefing.
-5. **Does QuillLite's free AI require the QUILL installer's presence**, or is it
+5. **Does QUILL Lite's free AI require the QUILL installer's presence**, or is it
    fully standalone? It affects nothing in the design, but it decides whether
    sign-in lives in one place or two for a user who runs both.
 6. **The support-ID question.** Displaying eight characters of the user id makes
@@ -766,14 +766,14 @@ and at that price the constraint on this program is operational care, not money.
 
 ---
 
-## 12. The QuillLite experience, screen by screen
+## 12. The QUILL Lite experience, screen by screen
 
 This section is the specification, not a sketch. Where it names a keystroke, a
 sentence, or a tab order, that is the thing to build.
 
 ### 12.1 Three findings from the keymap that decide the design
 
-Before any screen: the QuillLite command table
+Before any screen: the QUILL Lite command table
 (`quill/core/lite/commands.py`, 900-odd rows) and QUILL's `DEFAULT_KEYMAP` are
 both dense. Measured today, the chords free in **both** tables are:
 
@@ -786,7 +786,7 @@ lives inside it.** Which is the better design anyway: one consent surface, one
 place that shows what will be sent, one place that shows what is left, one
 result view.
 
-Second finding: QuillLite's menu bar is **generated from the command table**,
+Second finding: QUILL Lite's menu bar is **generated from the command table**,
 not hand-appended, and two menus (Clipboard, Spelling) were *demoted* from
 top-level to submenus on the explicit reasoning that a top-level menu is "two
 more things to walk past on every Alt press." `test_menu_shape_against_microsoft.py`
@@ -1057,7 +1057,7 @@ rather than as a failure.
 
 ### 12.8 The status bar cell
 
-QuillLite's status bar is a catalogue of twelve cells, each with a label and
+QUILL Lite's status bar is a catalogue of twelve cells, each with a label and
 one F1 sentence (`quill/apps/lite_status_cells.py`). Hosted AI adds the
 thirteenth, present only while the area is on:
 
@@ -1427,7 +1427,7 @@ separate:
 > **Proofread** · On · (Turn off)
 > **Explain** · On · (Turn off)
 > **Questions about documents** · On · (Turn off)
-> **Pictures (alt text)** · On · (Turn off) — QUILL only; QuillLite has none
+> **Pictures (alt text)** · On · (Turn off) — QUILL only; QUILL Lite has none
 >
 > ---
 > ### Turn everything off
@@ -1838,13 +1838,13 @@ operate it carefully." The answer to the second question is four specific fixes 
 reset usage, per-user caps, registration throttling, user lookup — plus the
 discipline never to send a tool call and never to send a whole document.
 
-The client half has never been started, and QuillLite is the right place to start
+The client half has never been started, and QUILL Lite is the right place to start
 it: no AI today, so nothing to reconcile, and five commands is a complete product
 for someone who has never heard of an API key. The family rule means QUILL gets
 those same five in the same change, which is as it should be.
 
 What a blind writer who has never seen an API key gets at the end of Phase 1:
-install QuillLite, turn on one feature, read eight characters aloud into a
+install QUILL Lite, turn on one feature, read eight characters aloud into a
 browser, and have an assistant. That is the whole point, and the rest of this
 document is what it takes to make that safe, affordable and operable.
 
@@ -2070,13 +2070,13 @@ The gateway test suite is **205 passing** (was 45).
 - [ ] `POST /admin/test-key`.
 - [ ] Add the two cron jobs (14.7).
 
-### 16.5 Client — QuillLite is done
+### 16.5 Client — QUILL Lite is done
 
 Built 2026-09-23. **QUILL's existing AI was not touched**: no change to
 `ALL_PROVIDERS`, none to `make_default_backend()`'s cascade, none to any BYOK,
 agent or local-model path. Either of the first two would alter what an installed
 QUILL does on its next launch, which is a decision to take deliberately rather
-than as a side effect of shipping QuillLite's version.
+than as a side effect of shipping QUILL Lite's version.
 
 **Shared, in `quill/core/ai/` — so QUILL can reach all of it:**
 
@@ -2097,7 +2097,7 @@ than as a side effect of shipping QuillLite's version.
 - [x] `gateway_backend.py` — an `AIBackend` so QUILL can reach the hosted tier.
       Deliberately unregistered; see above.
 
-**QuillLite:**
+**QUILL Lite:**
 
 - [x] `hosted_ai` switchable area, **off by default**, whose description *is* the
       consent notice. An area that is off owns nothing — no menu, no keys, no
@@ -2109,7 +2109,7 @@ than as a side effect of shipping QuillLite's version.
       editors are `Ctrl+Alt+G`, `Ctrl+Alt+Z` and a few Ctrl+Alt+Shift function
       keys. So family rule 2 decided this, not taste: the two short ones went to
       the daily commands and rule 9 sent the once-per-computer pair to
-      `Ctrl+Alt+Shift+F9`/`F10`. QuillLite has **no** keyless command rows, so a
+      `Ctrl+Alt+Shift+F9`/`F10`. QUILL Lite has **no** keyless command rows, so a
       chord each was not optional.
 - [x] Four modeless `wx.Frame` windows — pad, result, sign-in, usage. Modeless
       because a modal blocks the editor, which is the one thing a writing tool
@@ -2133,7 +2133,7 @@ than as a side effect of shipping QuillLite's version.
 
 **Deviations from section 12, stated rather than quietly dropped:**
 
-- [ ] **No status-bar cell.** Section 12.8 specified a thirteenth cell. QuillLite's
+- [ ] **No status-bar cell.** Section 12.8 specified a thirteenth cell. QUILL Lite's
       status bar is deliberately a *fixed* twelve, and a cell that appears only
       when an area is on needs rebuild-on-toggle machinery that module was
       explicitly not built for. The allowance shows in the pad, the result
@@ -2176,7 +2176,7 @@ than as a side effect of shipping QuillLite's version.
 
 Not a gap; a decision (5.6). Tracked here so it is not quietly forgotten.
 
-- [ ] Describing pictures is **not in QuillLite at all** and is off on the
+- [ ] Describing pictures is **not in QUILL Lite at all** and is off on the
       server: flag disabled with a reason, per-feature cap zero,
       `daily_image_cap` zero.
 - [ ] When it is built it belongs in **QUILL first** — Glow and Inkwell are

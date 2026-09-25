@@ -6,7 +6,7 @@ wx eats it and underlines the letter after it. An ``&`` in a row of a
 it, and a screen reader says "ampersand".
 
 The two are easy to confuse because the strings are written side by side and
-often start life as one another. QuillLite's Find and Replace dialogs offered
+often start life as one another. QUILL Lite's Find and Replace dialogs offered
 "&Normal", "&Escapes" and "Re&gular expression" in a Search-mode combo for
 exactly that reason -- the three had been radio buttons -- and every user saw
 and heard the ampersand until 2026-09-09.

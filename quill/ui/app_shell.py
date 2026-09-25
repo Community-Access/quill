@@ -914,7 +914,7 @@ class AppShellFrame(
         """Download the release asset and offer the install actions.
 
         The download, the spoken milestones and the post-download dialog all
-        live in :mod:`quill.ui.update_download`, shared with QuillLite -- which
+        live in :mod:`quill.ui.update_download`, shared with QUILL Lite -- which
         is not an AppShell app and would otherwise need a second copy of every
         line of it.
         """

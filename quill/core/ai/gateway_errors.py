@@ -40,7 +40,7 @@ class GatewayError(CodedError):
     code = "QUILL-AI-GATEWAY-FAILED"
     user_hint = (
         "Try again in a moment. If it keeps happening you can still use your own "
-        "API key, or QuillLite works exactly as before without AI."
+        "API key, or QUILL Lite works exactly as before without AI."
     )
 
 

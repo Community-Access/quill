@@ -19,7 +19,7 @@ exactly the kind of code that should have one implementation and one set of
 tests, not one per feature that needs a secret.
 
 wx-free and strict-typed. The data directory is passed in rather than looked up,
-so QuillLite and QUILL can each use their own without this module knowing which
+so QUILL Lite and QUILL can each use their own without this module knowing which
 one it is serving.
 """
 

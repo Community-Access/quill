@@ -1,8 +1,8 @@
-"""Window > Close Other Documents in QuillLite (Ctrl+Shift+F4).
+"""Window > Close Other Documents in QUILL Lite (Ctrl+Shift+F4).
 
-Reported by a user who opened QuillLite to sixty-nine restored windows and found
+Reported by a user who opened QUILL Lite to sixty-nine restored windows and found
 that the only way back to one document was Ctrl+W sixty-eight times, answering a
-save prompt on each. QUILL has had this command since 2026-06-15; QuillLite
+save prompt on each. QUILL has had this command since 2026-06-15; QUILL Lite
 never got it, which is the wrong direction for a key learned in one editor and
 pressed in the other.
 

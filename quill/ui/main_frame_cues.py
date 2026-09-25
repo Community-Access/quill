@@ -68,7 +68,7 @@ class CueMixin:
     def cue_deletion_key(self, event: object) -> None:
         """Sound Delete and Backspace, which never reach a command to be cued.
 
-        Reported against QuillLite and true of both editors: the earcon for a
+        Reported against QUILL Lite and true of both editors: the earcon for a
         deletion lives in the delete *command*, and the delete command is the
         menu item. The keys go straight into the control, which removes the
         character itself and tells nobody -- so Edit > Delete chimed and the key

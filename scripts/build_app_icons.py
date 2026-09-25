@@ -214,7 +214,7 @@ def _social(background):
 
 
 def _quilllite(background):
-    """A page with a folded corner and two lines of text. QuillLite is one
+    """A page with a folded corner and two lines of text. QUILL Lite is one
     document per window, and a page is the one silhouette nothing else in the
     family has -- every other glyph is round, pointed, or built from bars, so
     this is the only one that blurs to a rectangle with a bite out of it.

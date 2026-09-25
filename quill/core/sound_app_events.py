@@ -30,7 +30,7 @@ from quill.core.sound_events import SoundEvent
 
 __all__ = ["APP_ROSTERS", "QUILLLITE_EVENTS", "events_for", "is_editor_app"]
 
-#: Everything QuillLite posts. Small on purpose: it is a text editor, so it has
+#: Everything QUILL Lite posts. Small on purpose: it is a text editor, so it has
 #: no assistant, no conversation mode, no radio and no dictation, and rows for
 #: those would be rows that cannot fire.
 QUILLLITE_EVENTS: frozenset[str] = frozenset({
@@ -56,7 +56,7 @@ QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.SEARCH_NOT_FOUND,
     SoundEvent.SEARCH_WRAPPED,
     # F8 and Shift+F8. The clips shipped in the Ink pack from the start and
-    # QuillLite posted neither, so the two rows were missing from its Sound Events
+    # QUILL Lite posted neither, so the two rows were missing from its Sound Events
     # window as well -- an earcon nobody could hear and nobody could switch off.
     # Reported by ear, 2026-09-10, alongside the extend-mode bug itself.
     SoundEvent.SELECTION_STARTED,
@@ -64,7 +64,7 @@ QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.ERROR,
 })
 
-# Not here, and each absence is a decision rather than an oversight: QuillLite
+# Not here, and each absence is a decision rather than an oversight: QUILL Lite
 # has no long-running work to finish (TASK_COMPLETE), no information or question
 # boxes of its own (INFORMATION, QUESTION, WARNING), no command that toggles
 # sound (SOUND_ON, SOUND_OFF), and no edge or heading cue wired yet

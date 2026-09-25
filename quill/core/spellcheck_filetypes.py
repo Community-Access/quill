@@ -11,7 +11,7 @@ that helps most in an essay is the feature that makes a config file unusable.
 Notepad reached the same conclusion when it gained spell check in 2024 and
 shipped the same answer: on for prose, off for the file types associated with
 coding, decided by extension. This module is that rule, in one wx-free place
-both QUILL and QuillLite read, so the two products cannot disagree about what
+both QUILL and QUILL Lite read, so the two products cannot disagree about what
 counts as code.
 
 **By extension, deliberately, and not by sniffing the content.** A rule a

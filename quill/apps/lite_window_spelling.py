@@ -1,4 +1,4 @@
-"""Spelling in QuillLite: F7 to review, and a quiet check while you type.
+"""Spelling in QUILL Lite: F7 to review, and a quiet check while you type.
 
 None of the checking is written here. The wordlist, the suggestions and the
 guided review are QUILL's (:mod:`quill.core.spellcheck`,
@@ -140,7 +140,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         Keyed on the personal dictionary's **revision** since 2026-09-17, which
         is what makes ``share_quill_dictionary`` mean what it says. With sharing
         on, both editors read and write one ``personal.json`` -- and a word
-        taught in QUILL stayed underlined here until QuillLite was restarted,
+        taught in QUILL stayed underlined here until QUILL Lite was restarted,
         which makes a shared dictionary look broken rather than shared
         (bad.md S10). The check is one ``stat``; the re-read only happens when
         the file actually moved.
@@ -306,7 +306,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         Reported 2026-09-12: "if I arrow to the word it does not make a sound
         either by moving with the arrow keys or moving by word", while moving to
         the *line* did make one. Both halves of that were this function's
-        absence. The only spelling check QuillLite ran was the as-you-type one,
+        absence. The only spelling check QUILL Lite ran was the as-you-type one,
         which asks ``misspelling_behind`` -- the word you have just *finished* --
         and every key including an arrow restarted it. Arrow down onto a line and
         the word behind the caret is often the misspelled one, so it fired;
@@ -399,7 +399,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
             show_modal=show_modal_dialog,
             scope_label="document",
             document_path=self.path,
-            # QuillLite's own folder, or QUILL's when the listener has asked to
+            # QUILL Lite's own folder, or QUILL's when the listener has asked to
             # share it. Without this the review wrote into QUILL's regardless,
             # so a word taught through F7 was flagged again next session and a
             # Quill folder appeared on a machine that had never had QUILL
@@ -432,7 +432,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         # word beginning at the caret, so Shift+F7 in the middle of a misspelled
         # word used to say there was no misspelling at the cursor -- which is
         # every press that was not made in the instant after typing the space.
-        # QUILL has always used the walk-left form here; this is QuillLite
+        # QUILL has always used the walk-left form here; this is QUILL Lite
         # catching up rather than a new idea.
         item = misspelling_at_position(
             text, self.control.GetInsertionPoint(), self._spell_dictionary()
@@ -490,7 +490,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
     def cmd_add_word_to_dictionary(self) -> None:
         """Alt+F7: teach the word at the caret, for good.
 
-        Written to QuillLite's own dictionary unless Preferences says to share
+        Written to QUILL Lite's own dictionary unless Preferences says to share
         QUILL's -- and it says which, because "added to dictionary" does not
         tell you where it went when there are two of them.
         """
@@ -515,7 +515,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         self._forget_spell_dictionary()
         self._last_live_word = None
         shared = bool(getattr(self.app.settings, "share_quill_dictionary", False))
-        where = "QUILL's shared dictionary" if shared else "your QuillLite dictionary"
+        where = "QUILL's shared dictionary" if shared else "your QUILL Lite dictionary"
         self._announce("Added " + item.word + " to " + where)
 
     def cmd_spelling_voice_settings(self) -> None:

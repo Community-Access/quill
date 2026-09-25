@@ -641,7 +641,7 @@ class _DocumentTab:
     # never persisted to DocumentMemory, deliberately forgotten on restart.
     temp_bookmark: int | None = None
     # Nine numbered bookmark slots (quill.core.numbered_bookmarks), persisted
-    # per saved file through DocumentMemory in the same records QuillLite
+    # per saved file through DocumentMemory in the same records QUILL Lite
     # writes. None until first touched; the mixin builds it from the store.
     numbered_bookmarks: object = None
     # Per-document inline notes (content-anchored). Loaded from / saved to the
@@ -1454,7 +1454,7 @@ class MainFrame(
         # A status bar that says so to Windows. Without the role MSAA and UIA
         # see an anonymous box of buttons, and JAWS's Insert+Page Down -- which
         # means "read the status bar" -- falls back to scraping the bottom line
-        # of the window. Reported against QuillLite; both bars are the same
+        # of the window. Reported against QUILL Lite; both bars are the same
         # wx.Panel and both get the role.
         mark_as_status_bar(wx, self.statusbar)
         self.statusbar.SetName("Status bar")
@@ -1473,7 +1473,7 @@ class MainFrame(
         # A blank document unless the user has said otherwise. Off is a real
         # preference and had no way to be expressed: somebody who always opens
         # an existing file was handed an Untitled to close on every launch. The
-        # same setting name and default QuillLite uses.
+        # same setting name and default QUILL Lite uses.
         wants_blank = bool(getattr(self.settings, "open_blank_document_at_startup", True))
         if not self._first_run_wizard_pending and wants_blank:
             # #606: skip the default tab when the wizard is about to run,
@@ -2783,7 +2783,7 @@ class MainFrame(
             if self.cancel_selection_anchor():
                 return
         # The mode itself is quill/ui/extend_selection_mode.py since 2026-09-17,
-        # so QuillLite can have it too (bad.md P2.13) and the four movement bugs
+        # so QUILL Lite can have it too (bad.md P2.13) and the four movement bugs
         # were fixed once rather than twice (bad.md P1.2a).
         if self.handle_extend_selection_key(event):
             return
@@ -6568,7 +6568,7 @@ class MainFrame(
         self._clear_empty_workspace_state()
         document = Document()
         # CRLF unless the setting says otherwise: what Notepad, WordPad, Word
-        # and QuillLite all write for a new document (bad.md F11, P2.10). An
+        # and QUILL Lite all write for a new document (bad.md F11, P2.10). An
         # opened file keeps its own endings -- the readers set them.
         if str(getattr(self.settings, "default_line_ending", "crlf")).lower() == "lf":
             document.line_ending = "\n"
@@ -10099,7 +10099,7 @@ class MainFrame(
         """Every heading in one list, reordered with arrow keys.
 
         The window itself is :mod:`quill.ui.heading_organizer_dialog`, shared
-        with QuillLite since 2026-09-17 (bad.md P2.13). What stays here is the
+        with QUILL Lite since 2026-09-17 (bad.md P2.13). What stays here is the
         three things only this host knows: which kind of markup the document is,
         how to put text back through the undo-aware apply, and the setting that
         decides whether a second Heading 1 is a warning.
@@ -10431,7 +10431,7 @@ class MainFrame(
         # **Screen order, not use order.** F6 walks the regions in the order
         # they appear in the window: the editor, then whatever panes are
         # showing, then the status bar at the bottom -- which is where it is on
-        # screen and where QuillLite's F6 finds it too.
+        # screen and where QUILL Lite's F6 finds it too.
         #
         # Reordering it to put the status bar second was tried on 2026-09-17
         # (bad.md P1.10, 5.6, which asked for exactly that) and REVERSED the
@@ -11551,7 +11551,7 @@ class MainFrame(
         It opened one, which somebody then had to find the OK button of and
         dismiss, to be told three numbers they had already heard on the way --
         the status line was written too. Three numbers are a sentence, and a
-        sentence does not need a window. QuillLite has always spoken this, and
+        sentence does not need a window. QUILL Lite has always spoken this, and
         a modal for a readout is a modal you close on every single use.
 
         All three numbers are in the sentence now rather than only the words,
@@ -16050,7 +16050,7 @@ class MainFrame(
     def toggle_bullet_list(self) -> None:
         """Ctrl+Shift+L: bulleted list, numbered list, no list, round again.
 
-        WordPad's key and WordPad's behaviour, which is QuillLite's too. It was
+        WordPad's key and WordPad's behaviour, which is QUILL Lite's too. It was
         a *toggle* -- bullets on, bullets off -- so the numbered list needed a
         second command on a second chord that did not know about this one, and
         the two could disagree about what the caret was sitting in (bad.md
@@ -16062,7 +16062,7 @@ class MainFrame(
           control draws and renumbers (``format_rich_list_style``).
         * **Markdown**: the ``- `` and ``1. `` markers over the selected lines
           or the caret's line, through the shared ``quill.core.list_style``
-          -- the same function QuillLite rings on this key.
+          -- the same function QUILL Lite rings on this key.
         * **HTML**: ``<ul>``/``<ol>`` need a wrapper as well as per-item tags
           and there is no strip path for them, so the key inserts rather than
           cycles there and Numbered List keeps its own command for the other
@@ -16992,7 +16992,7 @@ class MainFrame(
         exactly the pre-transform text.
 
         The mechanism itself now lives in :mod:`quill.ui.atomic_edit`, because
-        QuillLite was promising the same single undo step while using the call
+        QUILL Lite was promising the same single undo step while using the call
         this one exists to avoid (bad.md C6).
         """
         replace_as_one_undo(self.editor, start, end, updated)
@@ -17141,7 +17141,7 @@ class MainFrame(
         It used to act on the **current line** when nothing was selected, which
         is why Sort Lines with no selection sorted one line and announced
         "Sorted lines ascending" (bad.md N1). Selection, else the whole
-        document, is what QuillLite means and what every other line tool in
+        document, is what QUILL Lite means and what every other line tool in
         QUILL already meant.
         """
         if not self._feature_enabled("core.format"):
@@ -19269,7 +19269,7 @@ def run_app(
         # Last session's documents, and never over the top of a file named on
         # the command line: somebody who double-clicked a file asked for that
         # file, and burying it under yesterday's four answers a different
-        # question (bad.md G4, P2.12 -- QuillLite's rule, and Notepad 11's).
+        # question (bad.md G4, P2.12 -- QUILL Lite's rule, and Notepad 11's).
         try:
             frame.restore_session()
         except Exception:  # noqa: BLE001 - a restore must never block launch

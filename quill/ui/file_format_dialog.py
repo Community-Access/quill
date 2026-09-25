@@ -1,6 +1,6 @@
 """The File Format dialog: what this document saves as (bad.md P1.8, 3.7).
 
-QuillLite has had one window for this on ``Ctrl+Alt+E`` since it shipped. QUILL
+QUILL Lite has had one window for this on ``Ctrl+Alt+E`` since it shipped. QUILL
 had two status-bar cells and no dialog at all -- the encoding and the line
 ending could be *read* from the bar and changed nowhere, which is the shape of
 a setting that exists without being reachable.

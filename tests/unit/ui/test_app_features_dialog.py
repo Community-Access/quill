@@ -1,6 +1,6 @@
 """The Customize Features dialog: searching it, and the profile row.
 
-The dialog is shared by Quill Radio, Quill Weather and QuillLite, so two things
+The dialog is shared by Quill Radio, Quill Weather and QUILL Lite, so two things
 are asserted here that no one app's tests would cover: that an app passing no
 profiles gets no profile row at all, and that the filter is a pure function
 anybody can check without a display.
@@ -293,7 +293,7 @@ def test_a_hand_edit_shows_as_custom(parent) -> None:
 
 
 def test_a_stored_marker_does_not_break_the_readback(parent) -> None:
-    """QuillLite stores a private seeding marker in the same disabled set."""
+    """QUILL Lite stores a private seeding marker in the same disabled set."""
     dialog = AppFeaturesDialog(
         parent,
         app_title="Test",

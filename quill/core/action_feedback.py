@@ -110,7 +110,7 @@ def resolve_failure(mode: object, *, has_sound: bool, repeated: bool) -> tuple[b
     The rule this module opens with -- "a command that could not do what was
     asked says so in words" -- was written and then not applied to the one
     failure anybody meets daily. A search that found nothing played a tone and
-    said nothing, and the report was the obvious one: "QuillLite made a sound
+    said nothing, and the report was the obvious one: "QUILL Lite made a sound
     but did not announce the error, is this due to a setting?"
 
     It was a setting, and the setting had a real argument behind it: F3 is

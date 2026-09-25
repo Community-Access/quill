@@ -5,7 +5,7 @@ Three promises about what happens when you *arrive*:
 * QUILL reopens last session's documents, unless you named a file -- somebody
   who double-clicked a file asked for that file, and burying it under
   yesterday's four answers a different question (G4).
-* QuillLite offers last session's unsaved work back instead of reopening every
+* QUILL Lite offers last session's unsaved work back instead of reopening every
   slot unasked: after a crash, four windows appearing unbidden is four things
   to identify before you can work (F14).
 * Both say, at open, when a file cannot be saved back -- rather than at

@@ -174,21 +174,21 @@ an air-gapped machine. macOS builds are notarized and Developer-ID signed.
 
 ## Or take the small one
 
-Not everybody wants a writing suite. **QuillLite** is QUILL's editor on its own --
+Not everybody wants a writing suite. **QUILL Lite** is QUILL's editor on its own --
 Notepad-scale, screen-reader-first, a separate download that installs beside QUILL
 and keeps its own settings. Same keys, same status bar you can actually read, same
 answer when you press F1.
 
-The two are held to one rule: **QuillLite is never allowed to be ahead of QUILL.**
+The two are held to one rule: **QUILL Lite is never allowed to be ahead of QUILL.**
 Anything the small product needs that the big one cannot do goes into the shared
 code, and QUILL gets a way to reach it in the same release. In September 2026 a
 twenty-nine item pass made that true in both directions -- the two keyboards
 converged on the keys Word, WordPad and Notepad already put in your hands, a check
 found and fixed 170 menus offering the same Alt letter twice, and QUILL picked up
-four things QuillLite had first, including spelling suggestions that spell
+four things QUILL Lite had first, including spelling suggestions that spell
 themselves out as you arrow through them.
 
-If you use both, they can be one setup: **Bring My QuillLite Settings** copies
+If you use both, they can be one setup: **Bring My QUILL Lite Settings** copies
 your preferences and rebound keys into QUILL and shares your abbreviations,
 dictionary, copy tray, clips and bookmarks from then on, so a change in either is
 a change in both. It tells you what it will do before it does it, and nothing you

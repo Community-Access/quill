@@ -205,7 +205,7 @@ class LineCommandsMixin:
     def select_sentence(self) -> None:
         """Ctrl+Space: take the sentence the caret is in.
 
-        QuillLite has had this since it shipped and QUILL had none, which is
+        QUILL Lite has had this since it shipped and QUILL had none, which is
         the rule violation that also explains why Ctrl+Space meant two
         different things in the two products (bad.md P1.2, 5.3a). The span is
         the shared ``quill.core.selection.sentence_span``.
@@ -232,7 +232,7 @@ class LineCommandsMixin:
         thing you can only do with this (bad.md P1.2b, 5.3a).
 
         It gave up ``Ctrl+Space`` to Select Sentence, which is what that chord
-        means in QuillLite and what people reach for far more often.
+        means in QUILL Lite and what people reach for far more often.
         """
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()

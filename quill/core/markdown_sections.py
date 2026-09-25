@@ -10,7 +10,7 @@ it:
   ``SectionSelection``, ``MoveResult``) and the arithmetic: parse, boundaries,
   siblings, subtree ends, swapping two spans.
 * :mod:`quill.core.section_speech` -- the one sentence each outcome gets, so
-  that QUILL and QuillLite cannot word the same action two ways.
+  that QUILL and QUILL Lite cannot word the same action two ways.
 * :mod:`quill.core.list_markers` -- numbered- and bulleted-list markers, which
   were never about sections at all.
 * :mod:`quill.core.section_move_to` -- Move Section To, the destination picker.

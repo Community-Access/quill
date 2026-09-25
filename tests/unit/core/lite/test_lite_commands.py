@@ -1,4 +1,4 @@
-"""QuillLite's command table keeps the house keyboard rules, mechanically.
+"""QUILL Lite's command table keeps the house keyboard rules, mechanically.
 
 ``CLAUDE.md`` states the rule this file enforces: **every enabled menu item
 shows a keyboard route in its label, and no two items in one menu bar may claim

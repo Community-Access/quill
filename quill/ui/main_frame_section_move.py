@@ -46,7 +46,7 @@ class SectionMoveMixin:
 
         The move keys reorder a section against its neighbours; this hands it
         to the clipboard, which is how it reaches anywhere else. Same command,
-        same wording and the same core helper as QuillLite's, because one
+        same wording and the same core helper as QUILL Lite's, because one
         capability described two ways is two capabilities to keep in step.
         """
         surface = self._active_markup_surface()
@@ -81,7 +81,7 @@ class SectionMoveMixin:
         The rules, the refusals and the sentence all live in
         :func:`quill.core.section_move_to.run_move_section_to`; this supplies
         QUILL's searchable picker for the two questions and writes the result
-        back. QuillLite supplies its own picker to the same function, which is
+        back. QUILL Lite supplies its own picker to the same function, which is
         what keeps one capability from becoming two.
         """
         surface = self._active_markup_surface()
@@ -177,7 +177,7 @@ class SectionMoveMixin:
         # The wording is outcome-specific -- "Bottom of Heading 1" names the
         # parent the section is already last inside -- and a re-derivation
         # from the enum alone cannot say that, which is how QUILL ended up
-        # announcing less than QuillLite did for the same key.
+        # announcing less than QUILL Lite did for the same key.
         if announce:
             self._announce(announce)
         else:  # pragma: no cover - defensive: unannounced enum member

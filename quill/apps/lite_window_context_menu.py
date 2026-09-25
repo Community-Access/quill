@@ -9,7 +9,7 @@ submenu whose first row is a correction.**
 
 Why that matters more here than in most editors: a sighted user finds a
 misspelling by looking for a red squiggle and right-clicks it. There is no
-squiggle in a screen reader. QuillLite says "possible misspelling" in the status
+squiggle in a screen reader. QUILL Lite says "possible misspelling" in the status
 bar once and then stays out of the way (GATE-13 -- speaking it would interrupt
 the typing it is commenting on), so until now acting on it meant remembering
 Shift+F7 or walking Tools > Spelling. The Applications key is the affordance
@@ -25,7 +25,7 @@ The shape, and the reasons:
   Two good arguments pulled opposite ways. QUILL's: the Applications key *is*
   the squiggle a listener does not have, so the first Down arrow has to land on
   the correction itself -- a submenu costs a Right arrow and a pause before
-  anything is said, which is most of what the menu was saving. QuillLite's,
+  anything is said, which is most of what the menu was saving. QUILL Lite's,
   asked for directly on 2026-09-13: a menu whose length changes depending on
   where the caret is, with Undo and Cut a dozen unpredictable rows further down
   whenever the word happens to be misspelled, is a menu nobody can learn.
@@ -301,7 +301,7 @@ class DocumentContextMenuMixin:
         """Two rows, and only when the caret is actually on a link.
 
         A web address in a text file is the commonest actionable thing in one,
-        and QuillLite's context menu had spelling, the clipboard verbs and
+        and QUILL Lite's context menu had spelling, the clipboard verbs and
         nothing else -- so the only way to follow a link was to select it by
         hand, copy it, and paste it into a browser. QUILL offers both of these
         when the caret is on one; the finder
@@ -448,7 +448,7 @@ class DocumentContextMenuMixin:
             return f"the dictionary beside {where}"
         if getattr(self.app.settings, "share_quill_dictionary", False):
             return "QUILL's shared dictionary"
-        return "your QuillLite dictionary"
+        return "your QUILL Lite dictionary"
 
     def _context_still_valid(self, context: SpellingContext) -> bool:
         """Does the document still say, at that offset, what the menu was about?"""

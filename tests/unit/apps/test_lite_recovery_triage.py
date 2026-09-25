@@ -1,4 +1,4 @@
-"""QuillLite's startup recovery: tidy first, then ask, and never go quiet.
+"""QUILL Lite's startup recovery: tidy first, then ask, and never go quiet.
 
 The reported failure in one line: sixty-nine slots, one Yes/No, no way to tell
 that sixty-seven of them were the same four characters. These tests drive

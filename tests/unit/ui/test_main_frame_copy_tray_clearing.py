@@ -1,6 +1,6 @@
 """Clearing the copy tray asks *and* counts (bad.md C9, P3.5).
 
-QUILL asked without a count and QuillLite counted without asking, and each half
+QUILL asked without a count and QUILL Lite counted without asking, and each half
 is the one the other needed: a count after the fact tells you what you have
 lost, and a question without one asks you to confirm you do not know what. The
 two editors now do both, from the same wording.

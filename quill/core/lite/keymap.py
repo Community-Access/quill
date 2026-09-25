@@ -1,6 +1,6 @@
-"""QuillLite's keys: the table is the defaults, the user file is the overrides.
+"""QUILL Lite's keys: the table is the defaults, the user file is the overrides.
 
-Until now a QuillLite key was a string literal in the fourth column of
+Until now a QUILL Lite key was a string literal in the fourth column of
 :data:`~quill.core.lite.commands.COMMANDS`, read three times -- once for the menu
 label, once for the accelerator, once for the Ctrl+F1 list. That is exactly what
 made the keys impossible to drift and impossible to *change*: there was no keymap
@@ -75,7 +75,7 @@ __all__ = [
     "spoken_key_for",
 ]
 
-#: The overrides file, beside the settings file in QuillLite's own data folder.
+#: The overrides file, beside the settings file in QUILL Lite's own data folder.
 KEYMAP_FILE = "lite_keymap.json"
 
 #: Bumped only if the stored shape changes. Present so a future reader can tell
@@ -133,11 +133,11 @@ _NAMED_KEYS.update({
 })
 _NAMED_KEYS.update({f"f{index}": f"F{index}" for index in range(1, 25)})
 
-#: Keys QuillLite refuses to bind, with the reason a user is given. Insert is
+#: Keys QUILL Lite refuses to bind, with the reason a user is given. Insert is
 #: the screen reader's own modifier; taking it would take away the key somebody
 #: needs to get it back.
 #: Re-exported from :mod:`quill.core.reserved_keys` since 2026-09-17, where the
-#: list now lives so QUILL reads the same one. QuillLite refused these at assign
+#: list now lives so QUILL reads the same one. QUILL Lite refused these at assign
 #: time and QUILL refused nothing, which is how "which keys belong to the screen
 #: reader" came to have two answers (bad.md H9).
 RESERVED_KEYS = _SHARED_RESERVED_KEYS
@@ -235,7 +235,7 @@ def describe_binding_problem(key: str) -> str:
         return f"{parts[-1].upper()} would type the character instead. Add Ctrl or Alt."
     chord = normalise_chord(text)
     if not chord:
-        return f"{text} is not a key combination QuillLite can use."
+        return f"{text} is not a key combination QUILL Lite can use."
     main = chord.split("+")[-1]
     if main in RESERVED_KEYS:
         return RESERVED_KEYS[main]
@@ -276,7 +276,7 @@ def default_keymap() -> dict[str, str]:
 #: function key means leaving the home row, and for somebody typing without
 #: sight that is a real cost on a command used mid-sentence. ``Ctrl+;`` and
 #: ``Ctrl+'`` are literally the home row -- right hand, no reach -- and both
-#: were free in QuillLite *and* in QUILL, which is the other half of why they
+#: were free in QUILL Lite *and* in QUILL, which is the other half of why they
 #: were chosen. ``Ctrl+,`` was the obvious pick and is Preferences in both
 #: apps and in most editors people arrive from.
 #:
@@ -291,7 +291,7 @@ DEFAULT_ALIASES: dict[str, str] = {
     # alias rather than a move: Ctrl+F7 is the primary and keeps working.
     "cmd_next_misspelling": "Alt+F7",
     # Word's F-keys for the three file verbs, which QUILL has carried as aliases
-    # since 2026-09 and QuillLite did not -- the one place the Microsoft-habit
+    # since 2026-09 and QUILL Lite did not -- the one place the Microsoft-habit
     # audit of 2026-09-18 found the two products still disagreeing. Rule 1 says
     # Microsoft's key wins for a function both editors have, and rule 5 says a
     # chord free in both is adopted as an ALIAS rather than a move: all three
@@ -405,7 +405,7 @@ class KeymapAudit:
         if self.unknown:
             counts.append(f"{len(self.unknown)} bindings for commands that no longer exist")
         if self.unparseable:
-            counts.append(f"{len(self.unparseable)} bindings QuillLite cannot read")
+            counts.append(f"{len(self.unparseable)} bindings QUILL Lite cannot read")
         if self.reserved:
             counts.append(f"{len(self.reserved)} bindings on a reserved key")
         return "Found " + ", ".join(counts) + "."
@@ -454,7 +454,7 @@ def key_for(keymap: Mapping[str, str] | None, handler: str) -> str:
     The user's rebinding first, the shipped default behind it. A free function
     rather than a method because the windows that need it are spread across a
     dozen mixins, and a sentence that names a key has to name the key that is
-    *bound*: QuillLite told people "Control Shift 0 copies into it" for a chord
+    *bound*: QUILL Lite told people "Control Shift 0 copies into it" for a chord
     that had not been Copy to Tray since before 1.0 (bad.md C7).
     """
     return str((keymap or {}).get(handler) or default_keymap().get(handler, ""))

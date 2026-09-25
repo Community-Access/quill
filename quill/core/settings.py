@@ -179,7 +179,7 @@ class Settings:
     show_tab_control: bool = False
     #: The whole status bar, not the per-cell ``status_bar_hidden`` list below.
     #: QUILL could hide individual cells and not the bar (bad.md G3, P1.10);
-    #: QuillLite has had Notepad's View > Status Bar since it shipped, under
+    #: QUILL Lite has had Notepad's View > Status Bar since it shipped, under
     #: this name, so a settings file means the same thing in both.
     show_status_bar: bool = True
     title_bar_path_mode: str = "name"
@@ -267,7 +267,7 @@ class Settings:
     assistant_enabled: bool = False
     assistant_prompt_style: str = "balanced"
     #: Which version of the hosted-AI privacy agreement this person has
-    #: accepted, or 0. **Same field name and same meaning as QuillLite's**
+    #: accepted, or 0. **Same field name and same meaning as QUILL Lite's**
     #: (``quill/core/lite/settings.py``), because it is the same agreement about
     #: the same service -- the two products must not be able to disagree about
     #: whether it was accepted.
@@ -501,9 +501,9 @@ class Settings:
     # an editor control -- every call site was a dialog heading or a print DC --
     # so the editor rendered in whatever font wx picked, forever, for an
     # audience that includes low-vision users (bad.md 4.3, the P0 viability
-    # bar). QuillLite has had both since its first release.
+    # bar). QUILL Lite has had both since its first release.
     #
-    # Deliberately QuillLite's field names, so the grow-up path has two fewer
+    # Deliberately QUILL Lite's field names, so the grow-up path has two fewer
     # rows to map (bad.md G1) and a settings file carried between the two
     # products means the same thing in both.
     #
@@ -549,9 +549,9 @@ class Settings:
     # dialog. Forgotten again by Tools > Forget Remembered File-Change Answers.
     external_change_always_reload: list[str] = field(default_factory=list)
     external_change_always_keep: list[str] = field(default_factory=list)
-    # Asked once, on first activating the QuillLite profile (bad.md P2.4): bring
-    # a QuillLite setup over. A profile switched back and forth must not keep
-    # asking, and the sharing itself is QuillLite's own two switches pointed at
+    # Asked once, on first activating the QUILL Lite profile (bad.md P2.4): bring
+    # a QUILL Lite setup over. A profile switched back and forth must not keep
+    # asking, and the sharing itself is QUILL Lite's own two switches pointed at
     # QUILL's folder -- QUILL's folder was already the shared home, so there is
     # no second one here to go stale.
     quilllite_bring_offered: bool = False
@@ -593,12 +593,12 @@ class Settings:
     confirm_destructive_actions: bool = True
     default_export_preset: str = "html"
     default_new_document_format: str = "markdown"
-    # CRLF, like Notepad, WordPad, Word and QuillLite. A file that is OPENED
+    # CRLF, like Notepad, WordPad, Word and QUILL Lite. A file that is OPENED
     # keeps whatever line ending it had; this is only what a new document is
     # born with (bad.md F11, P2.10).
     default_line_ending: str = "crlf"
     #: Reopen last session's documents at launch, which is what Notepad 11 and
-    #: QuillLite both do (bad.md G4, P2.12). Files named on the command line
+    #: QUILL Lite both do (bad.md G4, P2.12). Files named on the command line
     #: always win: somebody who double-clicked a file asked for that file.
     restore_session: bool = True
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
@@ -613,7 +613,7 @@ class Settings:
     session_files: list[str] = field(default_factory=list)
     #: Offer unsaved work back from a document that never had a file. On by
     #: default; off means such a snapshot is not offered after an unclean exit.
-    #: Same field name and same meaning in QuillLite, which is where the need
+    #: Same field name and same meaning in QUILL Lite, which is where the need
     #: showed up first -- see ``quill/core/recovery_triage.py``. QUILL can
     #: answer it because an untitled document autosaves under a known key.
     recover_untitled_documents: bool = True
@@ -706,7 +706,7 @@ class Settings:
     # this off a heading reads exactly like ordinary text. Off is for reading a
     # document *as* text, where the structure is not what you are listening for.
     # Ctrl+Alt+F3 toggles it without leaving the document -- a per-task decision
-    # rather than a preference you set once. Shared with QuillLite, which must
+    # rather than a preference you set once. Shared with QUILL Lite, which must
     # never be ahead of QUILL (CLAUDE.md).
     announce_headings: bool = True
     # Say "Bulleted list, 5 items" on entering a list, "Level 2, 3 items" a rung
@@ -717,7 +717,7 @@ class Settings:
     # every item. This is the one cue in the set a screen reader gives you
     # everywhere else -- a browser hands it an <ul> with a count and an editor
     # hands it characters -- so switching it off is giving something up rather
-    # than declining an extra. Ctrl+Alt+F5. Shared with QuillLite.
+    # than declining an extra. Ctrl+Alt+F5. Shared with QUILL Lite.
     announce_lists: bool = True
     # Where "Heading 2" goes relative to the heading's own text: ``"before"``
     # (the default) says "Heading 2, Installing" as one sentence of QUILL's
@@ -793,7 +793,7 @@ class Settings:
     # voicing.py). The two spell_review_* fields above are the review dialog's
     # own switch and pause and stay as they are; these govern the surfaces the
     # review does not own -- landing on a word, arrowing the suggestions, and
-    # the alert while you type -- and QuillLite stores the same nine names, so
+    # the alert while you type -- and QUILL Lite stores the same nine names, so
     # somebody who tunes this in one editor finds the other already tuned.
     spell_aloud_enabled: bool = True
     spell_aloud_delay_ms: int = 800
@@ -809,7 +809,7 @@ class Settings:
     spelling_alert_speech: bool = False
     spelling_alert_repeat_ms: int = 750
     #: Open a blank document at launch when nothing else is being opened. The
-    #: same name and default QuillLite uses, so the two editors answer this the
+    #: same name and default QUILL Lite uses, so the two editors answer this the
     #: same way and a listener who has set it once is not surprised by the other.
     open_blank_document_at_startup: bool = True
     # Vision prompt library: image description style management.

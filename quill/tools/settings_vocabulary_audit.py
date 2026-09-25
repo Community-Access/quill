@@ -1,7 +1,7 @@
 """Gate 4: every setting on either side has been looked at once (bad.md).
 
 The failure this exists for is specific and was missed twice by human review.
-QuillLite's ``check_updates_on_launch`` and QUILL's ``auto_check_updates`` are the
+QUILL Lite's ``check_updates_on_launch`` and QUILL's ``auto_check_updates`` are the
 same switch under two names, and **neither name contains a word the other does**
 -- so reading the two field lists side by side does not find it. Nor does any
 name-similarity check: of the five real pairs the 2026-09 audit found, two share

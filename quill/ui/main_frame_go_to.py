@@ -3,12 +3,12 @@
 Word's shape, and now the family's. QUILL had **Go To Line** on ``Ctrl+G`` and
 **Go To Page** on ``Ctrl+Shift+G`` as two separate commands with two separate
 prompts, and its bookmarks under a third surface entirely -- three places to
-look and three things to learn for one verb (bad.md 5.4, P1.6). QuillLite moved
+look and three things to learn for one verb (bad.md 5.4, P1.6). QUILL Lite moved
 onto the shared :mod:`quill.ui.go_to_dialog` first; this is QUILL's half, and
-QUILL brings the **Page** kind QuillLite has no model for.
+QUILL brings the **Page** kind QUILL Lite has no model for.
 
 Both old keys still work. ``Ctrl+Shift+G`` is now **Document Statistics**, which
-is Word's key for it and QuillLite's, and Go To Page is the Page row of this
+is Word's key for it and QUILL Lite's, and Go To Page is the Page row of this
 dialog -- one keystroke further and one surface fewer.
 
 What this module does is answer "what places does this document have?". The
@@ -131,7 +131,7 @@ class GoToMixin:
         """The numbered bookmarks, each row led by its digit (bad.md 5.2).
 
         Led by the digit so a listener can pick a row out by its first word, and
-        so the same row reads the same way here as in QuillLite's list.
+        so the same row reads the same way here as in QUILL Lite's list.
         """
         try:
             marks = self.numbered_bookmarks.all()

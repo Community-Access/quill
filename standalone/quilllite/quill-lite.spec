@@ -1,4 +1,4 @@
-# PyInstaller spec for the QuillLite onedir build.
+# PyInstaller spec for the QUILL Lite onedir build.
 # Build with: pyinstaller quill-lite.spec
 #
 # Onedir, not onefile, on purpose (mirrors every sibling): one built folder
@@ -8,7 +8,7 @@
 # package, which is what supplies the Rich Edit surface, the RTF safety scanner,
 # the dialog contract, the F1 help engine and the announcement path.
 #
-# QuillLite is the second-smallest app in the family: one editor control, six
+# QUILL Lite is the second-smallest app in the family: one editor control, six
 # small windows, and a settings file. It touches no media, no documents stack,
 # no AI, no speech engines and no science stacks, so the exclude list below is
 # aggressive -- and every entry has been checked to be unreachable from
@@ -53,7 +53,7 @@ a = Analysis(
         "pandas",
         "scipy",
         "matplotlib",
-        # The documents stack. QuillLite reads .txt and .rtf and nothing else:
+        # The documents stack. QUILL Lite reads .txt and .rtf and nothing else:
         # RTF goes to the native control through the Text Object Model, and
         # plain text is bytes. None of these readers is reachable from
         # quill.apps.lite.
@@ -75,10 +75,10 @@ a = Analysis(
         "av",
         "imageio",
         "imageio_ffmpeg",
-        # The spell checker. QuillLite has no spell-check surface; the whole
+        # The spell checker. QUILL Lite has no spell-check surface; the whole
         # pyenchant payload would be dead weight.
         "enchant",
-        # AI and the cloud clients behind it. QuillLite has no AI surface at all,
+        # AI and the cloud clients behind it. QUILL Lite has no AI surface at all,
         # by design, and that is the single biggest thing it does not ship.
         "openai",
         "anthropic",

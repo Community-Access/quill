@@ -1,7 +1,7 @@
 """QUILL's half of the hosted AI: the free service, as the *default* AI.
 
 The hosted service -- QUILL's own gateway, free, nothing to configure, no key to
-paste -- shipped in QuillLite first. That was backwards twice over. The family
+paste -- shipped in QUILL Lite first. That was backwards twice over. The family
 rule says the small editor is never ahead of the big one, and the practical
 version of that rule is sharper than the principle: **nobody opens QUILL and
 notices the absence of something they have only ever seen elsewhere.** A missing
@@ -21,7 +21,7 @@ Two objects live here:
 * :class:`QuillAiHost` -- the adapter. :mod:`quill.ui.hosted_ai_commands` needs
   five things from "the app": a data directory, settings it can read and write,
   a feature switch it can read and turn on, and a way to rebuild the menus.
-  QuillLite's ``app`` answers all five directly; QUILL's equivalents are spread
+  QUILL Lite's ``app`` answers all five directly; QUILL's equivalents are spread
   across ``self.settings``, ``save_settings`` and the Use AI switch in
   ``model_manager``. This maps one to the other so that neither editor has to
   learn the other's vocabulary and the shared module does not have to know which
@@ -40,7 +40,7 @@ from quill.ui.hosted_ai_commands import HostedAiMixin
 
 __all__ = ["HostedAiCommandsMixin", "QuillAiHost"]
 
-#: The feature name the shared module asks about. QuillLite has a real feature
+#: The feature name the shared module asks about. QUILL Lite has a real feature
 #: area by this name; QUILL has the Use AI master switch, which answers the same
 #: question -- "does AI exist in my copy" -- so the adapter maps the one name
 #: onto it rather than inventing a second switch for people to find and
@@ -140,7 +140,7 @@ class QuillAiHost:
 class HostedAiCommandsMixin(HostedAiMixin):
     """The shared hosted-AI commands, wired to QUILL's frame, editor and settings.
 
-    Three overrides and no commands. That is the whole point: QUILL and QuillLite
+    Three overrides and no commands. That is the whole point: QUILL and QUILL Lite
     run the same code for the same five keys, so a fix to one is a fix to both
     and neither can word an announcement the other does not.
     """

@@ -10,7 +10,7 @@ encoding round trips, the bookmark arithmetic, the F1 catalogue -- is checked in
 
 Every check prints PASS or FAIL and the script exits non-zero if any failed, so
 it can be pasted into a release checklist. It runs against a temporary data
-folder, so it cannot disturb a QuillLite you actually use, and it deliberately
+folder, so it cannot disturb a QUILL Lite you actually use, and it deliberately
 avoids every path that raises a modal dialog -- a probe that stops halfway
 waiting for somebody to press a button is a probe nobody runs.
 

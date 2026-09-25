@@ -1,7 +1,7 @@
 """Close Other Documents in QUILL, with an answer for all the rest.
 
 Extracted from ``main_frame.py`` under GATE-11 when the bulk prompt landed, and
-the extraction is the right shape rather than only the cheap one: QuillLite's
+the extraction is the right shape rather than only the cheap one: QUILL Lite's
 half of the same command is ``QuillLiteApp.close_other_documents``, and the two
 now read as the same feature written twice in the same order. The decisions --
 what the question says, what a "to all" answer latches, what is said afterwards

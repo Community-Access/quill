@@ -8,7 +8,7 @@ which speaks while you are moving and goes quiet at the moment you stop and
 wonder. Both products now answer on demand, on one key.
 
 The transform itself is tested in ``tests/unit/core``; what is tested here is
-that QuillLite reaches it, over the real control's offsets, and *says* the
+that QUILL Lite reaches it, over the real control's offsets, and *says* the
 answer -- an informational command that computes the right string and announces
 nothing has done nothing at all.
 """

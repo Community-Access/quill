@@ -1,4 +1,4 @@
-"""QuillLite checks for its own updates, like every other app in the family.
+"""QUILL Lite checks for its own updates, like every other app in the family.
 
 It shipped without this. Eight QuillVille apps answer Ctrl+Alt+U with "here is
 what is new, do you want it", and the ninth -- the one most likely to be
@@ -10,22 +10,22 @@ forever, and would have had no way to know that was happening.
 Nothing here is a second implementation. The offer dialog is
 :mod:`quill.ui.update_notice`, shared with QUILL and the companion apps; the
 download, the spoken milestones and the Install-and-restart dialog are
-:mod:`quill.ui.update_download`, likewise. What is QuillLite's own is the small
+:mod:`quill.ui.update_download`, likewise. What is QUILL Lite's own is the small
 amount that genuinely differs:
 
 * it has no ``TaskManager``, so the background work runs on
   ``update_download.thread_submit`` -- one daemon thread for one download;
-* the silent launch check is throttled to once a day through QuillLite's own
-  settings file, because QuillLite must never adopt QUILL's;
+* the silent launch check is throttled to once a day through QUILL Lite's own
+  settings file, because QUILL Lite must never adopt QUILL's;
 * the dialog's parent is the *document window*, not a top-level app frame,
-  since QuillLite is MDI and the active document is where the user is;
-* and the asset is chosen **without** the four-edition machinery. QuillLite
+  since QUILL Lite is MDI and the active document is where the user is;
+* and the asset is chosen **without** the four-edition machinery. QUILL Lite
   publishes two downloads, an installer and a portable zip, so the question is
   "portable, or not" and nothing else. The four-way chooser exists because the
   other apps ship four non-interchangeable assets; pointed at two it can only
   add a way to be wrong, and it nearly did -- an installed app resolves
   ``QUILL_APP_ROOT`` to the shared runtime's folder, where ``detect()`` finds
-  no marker and answers "companion". QuillLite came out right anyway, because
+  no marker and answers "companion". QUILL Lite came out right anyway, because
   it publishes no Companion zip and fell through to the installer. Right for
   the wrong reason is not something to leave holding a download link.
 """
@@ -83,13 +83,13 @@ def _running_portable_build() -> bool:
 
 
 def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
-    """Check QuillLite's own releases and offer what is newer, with its notes.
+    """Check QUILL Lite's own releases and offer what is newer, with its notes.
 
     *window* is the document window the dialog belongs to. ``silent_no_update``
     is the launch check: "checking", "up to date" and a failed check all stay
     quiet, because a launch is not the place to announce that nothing happened.
     A genuine available update still shows the same dialog either way -- there
-    is no notification centre in QuillLite to defer it to.
+    is no notification centre in QUILL Lite to defer it to.
     """
     from quill.core.updates import fetch_app_releases, is_newer_version
 
@@ -164,8 +164,8 @@ def _download(window: Any, release: Any, announce: Any) -> None:
     download_and_offer_install(
         window,
         release=release,
-        # QuillLite's own folder (%LOCALAPPDATA%\QuillLite), never QUILL's:
-        # a user who removes QuillLite must not leave a download behind in
+        # QUILL Lite's own folder (%LOCALAPPDATA%\QuillLite), never QUILL's:
+        # a user who removes QUILL Lite must not leave a download behind in
         # another product's data directory.
         target_dir=data_dir() / "updates",
         portable=_running_portable_build(),
@@ -183,7 +183,7 @@ def _download(window: Any, release: Any, announce: Any) -> None:
 
 
 class DocumentUpdatesMixin:
-    """``cmd_check_updates``, mixed into the QuillLite document window."""
+    """``cmd_check_updates``, mixed into the QUILL Lite document window."""
 
     def cmd_check_updates(self) -> None:
         """Help > Check for Updates... -- the family key, Ctrl+Alt+U."""
@@ -193,7 +193,7 @@ class DocumentUpdatesMixin:
 
 
 def check_at_launch(app: Any) -> None:
-    """The quiet once-a-day check QuillLite runs when it opens.
+    """The quiet once-a-day check QUILL Lite runs when it opens.
 
     Silent in every direction but one: nothing while it runs, nothing when
     there is nothing, and nothing when the network is down -- a launch is not

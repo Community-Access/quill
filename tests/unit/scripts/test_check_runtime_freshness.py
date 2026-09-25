@@ -3,7 +3,7 @@
 ``Assert-QuillRuntimeHasModule`` asks whether a module is *present* in the
 frozen tree. On 2026-09-08 that was not enough: a runtime reused with
 ``-SkipSharedRuntime`` contained ``quill/apps/lite.py`` -- an older copy of it,
-28 files behind, with two QuillLite modules missing entirely -- and the
+28 files behind, with two QUILL Lite modules missing entirely -- and the
 assertion passed. The installer would have shipped an app three weeks older
 than its own installer, with every check green.
 

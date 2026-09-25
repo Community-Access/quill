@@ -3,7 +3,7 @@
 The last half of P1.14, and it was the quietest kind of gap: QUILL built the
 announcer with the shared voicing settings, shipped an Announcements window to
 edit them, and never called ``spell_suggestion`` -- so one of the twelve settings
-that window offers did nothing at all in QUILL, while QuillLite had been spelling
+that window offers did nothing at all in QUILL, while QUILL Lite had been spelling
 suggestions since it shipped.
 
 Choosing between "receive" and "recieve" by ear is exactly as impossible in a
@@ -27,7 +27,7 @@ def test_quill_spells_the_highlighted_suggestion() -> None:
 
 
 def test_both_editors_spell_suggestions_so_neither_is_ahead() -> None:
-    """Rule 10: QuillLite is never allowed to be ahead of QUILL."""
+    """Rule 10: QUILL Lite is never allowed to be ahead of QUILL."""
     assert "spell_suggestion" in DIALOG.read_text(encoding="utf-8")
     assert "_spell_suggestion" in LITE.read_text(encoding="utf-8")
 

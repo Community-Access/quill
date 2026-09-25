@@ -53,7 +53,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
     "core/keymap.py::save_keymap": "versioned",
-    # QuillLite's own keys. Same contract and the same reason: a schema stamp
+    # QUILL Lite's own keys. Same contract and the same reason: a schema stamp
     # and a delta of the user's overrides, never a snapshot, so a key improved
     # in a later version still reaches somebody who launched the app once.
     "core/lite/keymap.py::save_keymap": "versioned",
@@ -71,7 +71,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/data_location.py::request_legacy_data_import": "framework",
     "core/storage_mode.py::save_storage_mode": "framework",
     "core/recovery.py::_save_state": "framework",
-    # QuillLite's own stores, in %LOCALAPPDATA%\QuillLite rather than QUILL's
+    # QUILL Lite's own stores, in %LOCALAPPDATA%\QuillLite rather than QUILL's
     # data folder -- see quill/core/lite/paths.py for why that separation is
     # deliberate. The recovery slot is the same shape as QUILL's: aside-copy
     # metadata that exists only between a crash and the next launch.
@@ -344,14 +344,14 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # travels with it, and the shape is unchanged (every field defaults, and
     # a field nobody set is not written).
     "core/abbreviations_store.py::save_abbreviation_library": "content",
-    # "Bring My QuillLite Settings": merges QuillLite's copy of a store into
+    # "Bring My QUILL Lite Settings": merges QUILL Lite's copy of a store into
     # QUILL's, on an explicit ask, with QUILL winning every collision. It
     # writes only the five stores listed in SHARED_CONTENT_STORES, and each of
     # those files is classified content on its own line above -- the merge adds
     # entries to an existing shape, it does not invent one.
     "core/lite_bridge.py::merge_json_store": "content",
-    # The same ask, QuillLite's half: flips the share-with-QUILL switches on in
-    # QuillLite's settings.json so the two stop keeping separate copies. It
+    # The same ask, QUILL Lite's half: flips the share-with-QUILL switches on in
+    # QUILL Lite's settings.json so the two stop keeping separate copies. It
     # reads the raw file and writes it back with only those booleans changed,
     # so the schema stamp core/lite/settings.py::save wrote is preserved and
     # every other field is left exactly as it was found.

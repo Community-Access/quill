@@ -211,7 +211,7 @@ def spoken_scope(scope: str) -> str:
 
     :func:`describe_selection` has always applied this rule to the sentence it
     builds, and every other place that put a scope in front of a person had to
-    remember to do the same. Two did not. QuillLite's Say Selection read
+    remember to do the same. Two did not. QUILL Lite's Say Selection read
     "52039 characters, 9696 words, lines." -- a bare noun with no number in
     front of it, reported exactly that way -- and QUILL's Selection Actions
     dialog titled itself "Selection actions (lines, 180 words)", which a screen
@@ -237,7 +237,7 @@ def describe_selection(
     other way to know how far it reached.
 
     The two editors had two shapes for one event: QUILL said "Selected
-    paragraph, 41 words" and QuillLite said "Selected paragraph, 412
+    paragraph, 41 words" and QUILL Lite said "Selected paragraph, 412
     characters, 41 words", and F8 completion differed again. Neither was wrong;
     having two was, because a person who uses both hears the same key report the
     same thing two ways and has to learn which product they are in before they

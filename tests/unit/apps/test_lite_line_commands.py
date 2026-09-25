@@ -1,4 +1,4 @@
-"""QuillLite's line surgery, and the deletion ring behind Restore Deleted Text.
+"""QUILL Lite's line surgery, and the deletion ring behind Restore Deleted Text.
 
 The mixin is exercised against a stand-in for the wx control rather than a real
 one: every command here is a pure text transform plus an announcement, and the

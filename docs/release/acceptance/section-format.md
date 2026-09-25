@@ -1268,7 +1268,7 @@ is how it gets somewhere there is no heading to move past. Markdown/HTML only.
   the point: the screen reader says a selection changed, never how much is in it.
 - Off any heading: "Put the cursor in a section to select it". In a non-markup
   document: a refusal naming the reason, not silence.
-- **QuillLite must do all of the above identically**, on the same key, with the
+- **QUILL Lite must do all of the above identically**, on the same key, with the
   same sentences.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
@@ -1290,7 +1290,7 @@ and does the whole move as one undoable edit. Markdown/HTML only.
 
 **Do this**
 1. Press **Ctrl+Alt+Shift+F5**, or **Format menu ▸ Line ▸ Move Section To…**
-   (QuillLite: **Format ▸ Structure ▸ Move Section To…**).
+   (QUILL Lite: **Format ▸ Structure ▸ Move Section To…**).
 2. In the first list, type part of a heading, press **Down Arrow** or **Enter**
    to move into the results, choose one, **Enter**.
 3. In the second list choose **Before it**, **After it** or **Inside it**,
@@ -1326,7 +1326,7 @@ and does the whole move as one undoable edit. Markdown/HTML only.
   nowhere to move it to." A non-markup document: a refusal naming the reason.
 - The document keeps its shape: exactly one blank line at each seam, no heading
   jammed onto the line above, and the file's own ending unchanged.
-- **QuillLite must do all of the above identically**, on the same key, with the
+- **QUILL Lite must do all of the above identically**, on the same key, with the
   same sentences.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`

@@ -1,13 +1,13 @@
-"""QuillLite's Keyboard Manager: change a key, and be told what it costs.
+"""QUILL Lite's Keyboard Manager: change a key, and be told what it costs.
 
 QUILL has had a searchable, conflict-aware keymap editor for a long time
-(``quill/ui/keymap_editor.py``). QuillLite could not have one, because it had no
+(``quill/ui/keymap_editor.py``). QUILL Lite could not have one, because it had no
 keymap to edit -- its keys were string literals in a table. Now it has one
 (:mod:`quill.core.lite.keymap`), and this is the editor on top.
 
 Not a port of QUILL's mixin. That one reaches ``self.keymap``, ``self.commands``,
 ``self._binding_for`` and ``self._show_modal_dialog`` -- a command *registry* and
-a chord grammar QuillLite does not have and does not want. What is worth copying
+a chord grammar QUILL Lite does not have and does not want. What is worth copying
 is the behaviour, and this has all of it:
 
 * **One box, two questions.** Type part of a command's name and the list
@@ -23,7 +23,7 @@ is the behaviour, and this has all of it:
   own modifier -- and a bare letter would type itself. Both are refused with the
   sentence, not with a beep.
 * **An audit.** One button reports every duplicate, every binding for a command
-  that no longer exists, every binding QuillLite cannot read, and every binding
+  that no longer exists, every binding QUILL Lite cannot read, and every binding
   wx will accept and then never fire. The last of those is the one that looks
   like success from everywhere else: ``wx.AcceleratorEntry`` silently drops what
   it cannot parse, leaving a menu advertising a key that does nothing.
@@ -51,7 +51,7 @@ from quill.ui.hotkey_conflict import claim_sentence
 
 __all__ = ["DocumentKeymapMixin", "KeymapEditorDialog", "row_text", "sort_key"]
 
-#: Uniform padding, the same number the other QuillLite dialogs use.
+#: Uniform padding, the same number the other QUILL Lite dialogs use.
 _PAD = 8
 
 #: How wide and tall the manager opens. Big enough that the list is worth
@@ -184,7 +184,7 @@ class KeymapEditorDialog:
         self.listbox = wx.ListBox(self.dialog, choices=[])
         set_accessible_name(self.listbox, "Commands and their keys")
         self.listbox.SetHelpText(
-            "Every command QuillLite has, with the key it answers to. Press Enter "
+            "Every command QUILL Lite has, with the key it answers to. Press Enter "
             "on one to give it a different key."
         )
         apply_listbox_activation(self.listbox, lambda _event: self._assign_selected())
@@ -219,7 +219,7 @@ class KeymapEditorDialog:
 
         self.record = wx.ToggleButton(self.dialog, label="&Record a Key")
         self.record.SetHelpText(
-            "Turn this on and press a key combination. QuillLite says what that key "
+            "Turn this on and press a key combination. QUILL Lite says what that key "
             "does today, so you can find a free one without reading the whole list."
         )
         self.record.Bind(wx.EVT_TOGGLEBUTTON, lambda _e: self._on_record_toggled())
@@ -236,17 +236,17 @@ class KeymapEditorDialog:
             ),
             (
                 "Reset to &Default",
-                "Put the command you are on back to the key QuillLite ships with.",
+                "Put the command you are on back to the key QUILL Lite ships with.",
                 self._reset_selected,
             ),
             (
                 "Reset &Everything...",
-                "Put every key back to the one QuillLite ships with.",
+                "Put every key back to the one QUILL Lite ships with.",
                 self._reset_all,
             ),
             (
                 "Chec&k for Problems",
-                "Report duplicate keys, keys QuillLite cannot read, and keys that "
+                "Report duplicate keys, keys QUILL Lite cannot read, and keys that "
                 "are assigned but can never fire.",
                 self._audit,
             ),
@@ -338,7 +338,7 @@ class KeymapEditorDialog:
         if problem:
             self._say(problem)
             return
-        # "Free" used to mean "free inside QuillLite", which is the wrong half
+        # "Free" used to mean "free inside QUILL Lite", which is the wrong half
         # of the question: another application holding a chord system-wide gets
         # the key before this window sees it, so the chord is not free at all
         # and pressing it does nothing. Reported as "Ctrl+Alt+G interferes with
@@ -374,7 +374,7 @@ class KeymapEditorDialog:
         # along.
         if not binding_is_dispatchable(chord):
             refusal = (
-                f"{chord} is a key Windows will not send to QuillLite, so nothing "
+                f"{chord} is a key Windows will not send to QUILL Lite, so nothing "
                 "would happen when you pressed it. Try another."
             )
             self._say(refusal)
@@ -446,10 +446,10 @@ class KeymapEditorDialog:
             != keymap_mod.chord_identity(default)
         )
         if not changed:
-            self._say("Nothing to reset. Every key is already the one QuillLite ships with.")
+            self._say("Nothing to reset. Every key is already the one QUILL Lite ships with.")
             return
         answer = show_message_box(
-            f"Put all {changed} changed keys back to the ones QuillLite ships with?",
+            f"Put all {changed} changed keys back to the ones QUILL Lite ships with?",
             "Reset every key",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
             self.dialog,
@@ -475,9 +475,9 @@ class KeymapEditorDialog:
             names = ", ".join(self._titles.get(owner, owner) for owner in owners)
             lines.append(f"  {chord}: claimed by {names} -- only one of them fires.")
         for handler in audit.unparseable:
-            lines.append(f"  {self._titles.get(handler, handler)}: QuillLite cannot read its key.")
+            lines.append(f"  {self._titles.get(handler, handler)}: QUILL Lite cannot read its key.")
         for handler in audit.reserved:
-            lines.append(f"  {self._titles.get(handler, handler)}: on a key QuillLite reserves.")
+            lines.append(f"  {self._titles.get(handler, handler)}: on a key QUILL Lite reserves.")
         for handler in inert:
             lines.append(
                 f"  {self._titles.get(handler, handler)}: {self._keymap[handler]} is a key "

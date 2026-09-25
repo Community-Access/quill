@@ -17,7 +17,7 @@ standalone/
   cast/             QUILL Cast           -> quill.apps.podcasts
   studio/           Quill Audio Studio   -> quill.apps.studio   (see note)
   inkwell/          Quill Inkwell        -> quill.apps.inkwell  (see note)
-  quilllite/        QuillLite            -> quill.apps.lite
+  quilllite/        QUILL Lite            -> quill.apps.lite
   runtime/          QuillVille Runtime   -> shared CPython used by every app
 ```
 

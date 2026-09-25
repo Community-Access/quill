@@ -128,8 +128,8 @@ class DocumentMemory:
     ``numbered`` is the second kind of bookmark
     (:class:`~quill.core.numbered_bookmarks.BookmarkSet` -- nine slots addressed
     by digit) and is stored alongside the named ones rather than in a store of
-    its own. QuillLite is its first user, and the ``path`` argument is what lets
-    it be: QuillLite keeps its own file under ``%LOCALAPPDATA%\\QuillLite`` and
+    its own. QUILL Lite is its first user, and the ``path`` argument is what lets
+    it be: QUILL Lite keeps its own file under ``%LOCALAPPDATA%\\QuillLite`` and
     shares no data with QUILL (its PRD 5.3, "not a thin client"), so what the
     two products share here is the *format and the code*, never the file.
     Absent from older files and written only when non-empty.

@@ -7,7 +7,7 @@ provider-and-agent surface behind one remembered checkbox, which turned one long
 block of menu building into two clearly different jobs:
 
 * :meth:`_build_hosted_ai_rows` -- the five rows QUILL's own service is reached
-  through, shown in both modes, identical in words and chords to QuillLite's
+  through, shown in both modes, identical in words and chords to QUILL Lite's
   because they run the same shared code
   (:mod:`quill.ui.hosted_ai_commands`).
 * :meth:`_build_advanced_ai_rows` -- provider setup, Ask Quill, the agents, the
@@ -34,14 +34,14 @@ class AiMenuMixin:
     def _build_hosted_ai_rows(self, ai_menu) -> None:
         """QUILL's own free AI, the five rows, identical in Basic and Advanced.
 
-        Same five commands, same chords and the same shared code as QuillLite
+        Same five commands, same chords and the same shared code as QUILL Lite
         (:mod:`quill.ui.hosted_ai_commands`), because it is one capability.
 
-        The labels carry one word QuillLite's do not -- **Free** -- and it is
+        The labels carry one word QUILL Lite's do not -- **Free** -- and it is
         load-bearing rather than promotional: somebody who has been trained by
         every other editor to expect a subscription prompt behind an AI menu
         needs to be told, on the row, that this one is not that. The mnemonics
-        differ from QuillLite's for a duller reason: A, U, S and P are all
+        differ from QUILL Lite's for a duller reason: A, U, S and P are all
         claimed elsewhere in *this* menu once the advanced rows are showing, and
         a duplicate mnemonic is a key Windows may silently refuse to press.
         """

@@ -525,7 +525,7 @@ def test_every_ai_window_says_where_focus_should_land(lite_window, monkeypatch, 
     The cause was ``SetFocus()`` in a constructor. On wxMSW focus given to a
     control in a window that has not been shown yet is discarded when the window
     finally is -- so every one of those calls was silently doing nothing. The
-    other dialogs in QuillLite get away with it because they are ``wx.Dialog``s,
+    other dialogs in QUILL Lite get away with it because they are ``wx.Dialog``s,
     which ``Show()`` activates; these are ``wx.Frame``s parented to an MDI child,
     which it does not.
     """

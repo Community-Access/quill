@@ -122,7 +122,7 @@ def test_factory_falls_back_and_tags_surface_kind() -> None:
     # The factory builds RichEditDocument, which *is* a QuillRichEdit plus the
     # paragraph and view capabilities (bullets, line spacing, the point-size
     # ladder, text mode, zoom). Building the subclass here is what stops QUILL
-    # being behind its own small sibling QuillLite, which needed them first.
+    # being behind its own small sibling QUILL Lite, which needed them first.
     assert "RichEditDocument(surface)" in source
     assert "return wx_module.TextCtrl(parent, style=style)" in source  # fallback
 

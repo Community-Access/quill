@@ -1,10 +1,10 @@
-"""QuillLite, track 1: your first documents.
+"""QUILL Lite, track 1: your first documents.
 
 Four lessons. Open a file and be sure it comes back unchanged, learn where the
 facts about it live, learn what kind of document you are in, and find your way
 between the ones you have open.
 
-Somebody who does only this track can use QuillLite as a Notepad replacement all
+Somebody who does only this track can use QUILL Lite as a Notepad replacement all
 day, which is the whole of its promise (prd.md §1).
 """
 
@@ -18,9 +18,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Open a file, and give it back unchanged",
         track="first-documents",
         minutes=5,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
-            "The one promise QuillLite makes, and the three things it "
+            "The one promise QUILL Lite makes, and the three things it "
             "remembers about your file in order to keep it."
         ),
         steps=(
@@ -28,7 +28,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Open something you already have",
                 body=(
                     "Any text file will do, and an old one is a better test than "
-                    "a new one. QuillLite reads plain text, Markdown, HTML and "
+                    "a new one. QUILL Lite reads plain text, Markdown, HTML and "
                     "rich text."
                 ),
                 command="cmd_open",
@@ -41,7 +41,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "strip of text. Three of them are the promise: Encoding is "
                     "how the letters are stored, Line Endings is how the lines "
                     "finish, and Format is what kind of document this is. "
-                    "QuillLite puts all three back exactly as it found them."
+                    "QUILL Lite puts all three back exactly as it found them."
                 ),
                 command="cmd_focus_status_bar",
                 hear="Each cell's name and its value as you arrow along.",
@@ -65,7 +65,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Type a character the file cannot hold",
                 body=(
                     "If your file is stored in an older encoding, type an em dash "
-                    "or an emoji into it and save again. QuillLite asks before it "
+                    "or an emoji into it and save again. QUILL Lite asks before it "
                     "writes: save as UTF-8 and keep it, save as asked and lose it "
                     "knowingly, or cancel."
                 ),
@@ -91,7 +91,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Four kinds of document, and how to say which",
         track="first-documents",
         minutes=4,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
             "Plain text, Markdown, HTML and rich text -- what each changes, and "
             "the one key that rings between them."
@@ -102,7 +102,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "The Format cell says which of the four this document is, and "
                     "the Language cell says which markup a plain one is written "
-                    "in. QuillLite guesses from the file's name, and the guess is "
+                    "in. QUILL Lite guesses from the file's name, and the guess is "
                     "only ever a first guess."
                 ),
                 command="cmd_focus_status_bar",
@@ -153,7 +153,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Your documents are numbered",
         track="first-documents",
         minutes=3,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
             "Why there are no tabs, what you get instead, and the four ways to "
             "reach the document you want."
@@ -190,7 +190,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 note=(
                     "Documents here are children of one window, so they do not "
                     "appear in Alt+Tab. That is the cost of the numbering, and "
-                    "these four routes are how QuillLite carries it."
+                    "these four routes are how QUILL Lite carries it."
                 ),
             ),
         ),
@@ -200,7 +200,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="What to press when you are lost",
         track="first-documents",
         minutes=3,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary="Three keys that answer where you are, what this does, and what exists.",
         steps=(
             Step(
@@ -216,17 +216,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Ask what the facts are",
                 body=(
-                    "The status bar holds everything QuillLite knows about your "
+                    "The status bar holds everything QUILL Lite knows about your "
                     "document, and every message it has said. A message you "
                     "missed is still in the first cell."
                 ),
                 command="cmd_focus_status_bar",
-                hear="The last thing QuillLite said, and then each fact as you arrow.",
+                hear="The last thing QUILL Lite said, and then each fact as you arrow.",
             ),
             Step(
                 title="Ask what exists",
                 body=(
-                    "The Keyboard Shortcuts window lists every key QuillLite has, "
+                    "The Keyboard Shortcuts window lists every key QUILL Lite has, "
                     "built from the live command table -- so it shows your keys, "
                     "including any you have changed."
                 ),
@@ -234,6 +234,6 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear="A searchable list of every command and its key.",
             ),
         ),
-        closing=("Nothing in QuillLite is more than these three keys away from being explained."),
+        closing=("Nothing in QUILL Lite is more than these three keys away from being explained."),
     ),
 )

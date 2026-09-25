@@ -24,7 +24,7 @@ syllable would have to sit through eleven more letters. Press the next key and
 the pending spelling is cancelled unheard, which is what makes the feature free
 for a fast reader and complete for a careful one.
 
-Every timing and every choice is shared with QuillLite through
+Every timing and every choice is shared with QUILL Lite through
 :mod:`quill.core.spelling.voicing`, which owns the policies and the one-pending-
 utterance scheduler and knows nothing about wx.
 """
@@ -158,7 +158,7 @@ class SpellVoiceMixin:
         # 2026-09-16 this line was read aloud whether or not
         # `spelling_alert_speech` was on -- and TWICE when it was on, once here
         # and once below. The setting therefore meant nothing in QUILL and the
-        # opposite of nothing in QuillLite, whose status write is silent
+        # opposite of nothing in QUILL Lite, whose status write is silent
         # (bad.md S2). The quiet write keeps the status bar honest for anybody
         # reviewing it, which is GATE-12's requirement, without speaking.
         self._set_status_quiet(f'Possible misspelling: "{item.word}"')

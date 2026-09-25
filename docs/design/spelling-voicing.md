@@ -1,6 +1,6 @@
 # Spelling voicing: how a misspelling is reported, and why
 
-Applies to **QUILL and QuillLite together**. Every rule here lives in shared
+Applies to **QUILL and QUILL Lite together**. Every rule here lives in shared
 code -- `quill/core/spelling/voicing.py`, `quill/core/spellcheck.py` -- so
 neither editor can drift ahead of the other, and a listener who tunes this in
 one finds the other already tuned.
@@ -122,7 +122,7 @@ underscores are named rather than paused over, because a pause is not a hyphen.
 ## The settings
 
 Twelve names, identical in both editors. QUILL renders them from
-`settings_specs.py`; QuillLite has its own Spelling Announcements window.
+`settings_specs.py`; QUILL Lite has its own Spelling Announcements window.
 
 | Setting | Default | What it decides |
 |---|---|---|

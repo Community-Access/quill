@@ -1,6 +1,6 @@
 """Recent Clips pastes where the caret is, on Enter (bad.md C9, P3.5).
 
-QuillLite's Recent Clips inserts the clip at the caret and closes. QUILL's Clip
+QUILL Lite's Recent Clips inserts the clip at the caret and closes. QUILL's Clip
 Library put the clip on the *system clipboard* and left the dialog open, so
 reaching a remembered clip took Enter, Escape and then Ctrl+V -- three keys for
 the verb the dialog exists to perform, and a silent overwrite of whatever the

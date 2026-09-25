@@ -1,4 +1,4 @@
-"""Insert Special Character, on a QuillLite document window.
+"""Insert Special Character, on a QUILL Lite document window.
 
 Its own module for the reason QUILL's half of this feature has one
 (:mod:`quill.ui.main_frame_special_character`): the module it grew out of is at

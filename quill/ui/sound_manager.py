@@ -100,7 +100,7 @@ def post_sound_and_wait(event_id: str, timeout: float | None = None) -> None:
     Every other cue returns at once because it comments on something in
     progress. This one is followed by the process ending, so returning
     immediately means the sound is cut off -- reported by ear, closing
-    QuillLite.
+    QUILL Lite.
     """
     if _manager is None or not _manager.enabled:
         return

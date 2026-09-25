@@ -5,16 +5,16 @@ what happens after the user says yes: the asset downloads off the UI thread
 with coarse spoken milestones, and then one dialog offers **Install and restart
 now**, **Open folder** or **Close**.
 
-It lives here rather than on ``AppShellFrame`` because QuillLite is not an
+It lives here rather than on ``AppShellFrame`` because QUILL Lite is not an
 AppShell app -- it is an MDI editor with no command registry, no tray icon and
-no task manager -- and "QuillLite cannot update itself" is not an acceptable
+no task manager -- and "QUILL Lite cannot update itself" is not an acceptable
 consequence of that. The host supplies four small things (a parent window, a
 way to speak, a way to run a modal, and a way to run work in the background)
 and gets the same update experience as everything else in the family.
 
 The background runner is passed in rather than imported so each host keeps its
 own: the companion apps hand over ``QuillTaskManager.submit``, which drains and
-cancels on shutdown; QuillLite hands over a one-shot thread, because it has no
+cancels on shutdown; QUILL Lite hands over a one-shot thread, because it has no
 task manager and a single download does not justify one.
 """
 
@@ -67,7 +67,7 @@ def thread_submit(
     on_success: Callable[[str, Any], None] | None = None,
     on_failure: Callable[[str, BaseException], None] | None = None,
 ) -> None:
-    """A ``Submit`` for a host with no task manager (QuillLite).
+    """A ``Submit`` for a host with no task manager (QUILL Lite).
 
     One daemon thread, one result, no cancellation -- which is honest for this
     job: an update download the user explicitly asked for, whose only failure
@@ -92,7 +92,7 @@ def thread_submit(
             on_success(name, result)
 
     threading.Thread(  # GATE-40-OK: one-shot update download for a host with no
-        # task manager (QuillLite); nothing to cancel, result reported to the caller.
+        # task manager (QUILL Lite); nothing to cancel, result reported to the caller.
         target=_run,
         name=f"quill-{name}",
         daemon=True,
@@ -272,7 +272,7 @@ def apply_and_restart(
     *close_app* is called only on success -- on any failure the app stays open
     and the user can still open the folder and update by hand, because an
     update that cannot be applied must never leave somebody with no editor.
-    Passed in rather than derived from a window: for QuillLite the thing to
+    Passed in rather than derived from a window: for QUILL Lite the thing to
     close is the MDI shell, not the document the dialog is parented to.
     """
     from quill.core.paths import app_data_dir

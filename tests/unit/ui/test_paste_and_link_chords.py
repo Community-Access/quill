@@ -1,13 +1,13 @@
-"""The four chords a QuillLite habit fired in QUILL and got something else.
+"""The four chords a QUILL Lite habit fired in QUILL and got something else.
 
 ``Ctrl+Shift+V`` is Paste Without Formatting in Word 365, Notepad, every
-browser and QuillLite. In QUILL it opened a preview pane -- so the one chord
+browser and QUILL Lite. In QUILL it opened a preview pane -- so the one chord
 everybody reaches for when a paste would otherwise carry a web page's styling
 did the one thing you cannot undo by pressing it again.
 
-``Ctrl+Alt+V`` is Paste from Tray in QuillLite and was Paste Text Only here.
+``Ctrl+Alt+V`` is Paste from Tray in QUILL Lite and was Paste Text Only here.
 ``Ctrl+K`` is Word's Insert Hyperlink. ``Ctrl+Alt+K`` is Remove Every Blank
-Line in QuillLite and was Insert Link here.
+Line in QUILL Lite and was Insert Link here.
 
 The Ctrl+K half is the more interesting fix. QUILL already answered it -- three
 separate key handlers hard-coded the key code and called ``insert_link`` by
@@ -65,7 +65,7 @@ def test_insert_link_is_words_key_and_remove_blank_lines_took_the_old_one() -> N
 def test_trim_trailing_spaces_has_a_key_and_the_divergence_is_deliberate() -> None:
     """The one row in bad.md 3.2 that does not converge, on purpose.
 
-    QuillLite trims trailing spaces on Ctrl+Alt+T. In QUILL that is Insert
+    QUILL Lite trims trailing spaces on Ctrl+Alt+T. In QUILL that is Insert
     Table -- an authorized x.md authoring chord for a verb that builds
     structure, kept over one that strips whitespace (decided 2026-09-16). So
     QUILL's trim takes Ctrl+Alt+R, and the divergence is written down rather
@@ -156,7 +156,7 @@ def test_a_rebinding_is_followed_rather_than_ignored() -> None:
 
 
 def test_select_paragraph_beats_replace_all_on_ctrl_shift_h() -> None:
-    """The reflex that selected a paragraph in QuillLite ran a replace in QUILL.
+    """The reflex that selected a paragraph in QUILL Lite ran a replace in QUILL.
 
     bad.md rule 4: a habit that does damage is fixed before one that merely
     opens the wrong dialog. Replace All keeps a key rather than losing one --

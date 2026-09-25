@@ -167,7 +167,7 @@ PRODUCTS: dict[str, Product] = {
         key="quilllite",
         module="quill.apps.lite",
         exe="QuillLite",
-        display="QuillLite",
+        display="QUILL Lite",
         zip_name="QuillLite-Portable-{ver}.zip",
         # An editor and nothing else: one native control, six small windows and
         # a settings file. No media stack, no documents stack, no spell checker,

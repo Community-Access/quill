@@ -1,13 +1,13 @@
 """QUILL's half of the recovery hygiene: expiry, and the untitled preference.
 
-QUILL never piled up sixty-nine offers the way QuillLite did -- it offers one
+QUILL never piled up sixty-nine offers the way QUILL Lite did -- it offers one
 snapshot, from the previous session only -- but it accumulated the *store* just
 as silently: one directory per session, none ever removed, thirteen of them on a
 real machine with the oldest eighty-six days old. Every one older than the
 previous session is unreachable by design, so keeping them is not caution, it is
 litter with no reader.
 
-The untitled half is the same preference QuillLite grew, and QUILL can answer it
+The untitled half is the same preference QUILL Lite grew, and QUILL can answer it
 because an untitled document autosaves under a known key.
 """
 

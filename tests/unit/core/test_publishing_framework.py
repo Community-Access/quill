@@ -102,7 +102,7 @@ def test_publishing_profile_states_match_writer_tier_and_above() -> None:
         "low_vision",
         "braille_screen_reader_power_user",
         PROFILE_ACCESSIBILITY_PROFESSIONAL,
-        # QuillLite has no publishing paths at all, so the profile named after
+        # QUILL Lite has no publishing paths at all, so the profile named after
         # it cannot have them either (bad.md P2.4).
         "quilllite",
     }

@@ -1,6 +1,6 @@
 """The close prompt names the document, in both editors (bad.md F12, P2.10).
 
-QuillLite asked "Save changes to notes.txt?" and QUILL asked "You have unsaved
+QUILL Lite asked "Save changes to notes.txt?" and QUILL asked "You have unsaved
 changes. Save before closing?" -- the right question about the wrong number of
 documents. With nine tabs open and no way to glance at a title bar, *which one*
 is the whole answer a listener needs.

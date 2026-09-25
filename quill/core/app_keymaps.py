@@ -230,7 +230,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
 #: (Ctrl+Alt+Shift+F3), so in QUILL the Search menu's Count Occurrences and the
 #: QuillVille menu's Open Quill Inkwell claimed one key and one of them never
 #: fired. The launchers move rather than Count Occurrences: an existing binding
-#: outranks a newcomer's convention, and that chord is QuillLite's too
+#: outranks a newcomer's convention, and that chord is QUILL Lite's too
 #: (``core/lite/commands.py``), so moving it would split a key across the two
 #: products for no reason. F4-F6 were already Quill Radio's Sort Favorites
 #: items, which is why the block starts at F7 -- and F7-F12 is exactly six, one

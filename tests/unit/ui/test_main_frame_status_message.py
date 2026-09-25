@@ -1,6 +1,6 @@
 """QUILL's message cell expires, and its bar has a control the reader can find.
 
-The same two reports as QuillLite's (``tests/unit/apps/test_lite_status_message.py``)
+The same two reports as QUILL Lite's (``tests/unit/apps/test_lite_status_message.py``)
 and the same two fixes, because the bars are the same bar twice: a panel of
 focusable buttons that no ``msctls_statusbar32``-seeking reader could find, and
 a message cell that held "String not found" through a page of editing.

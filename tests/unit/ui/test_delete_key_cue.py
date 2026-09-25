@@ -1,6 +1,6 @@
-r"""QUILL's Delete and Backspace keys make a sound, as QuillLite's now do.
+r"""QUILL's Delete and Backspace keys make a sound, as QUILL Lite's now do.
 
-Reported against QuillLite -- "the delete key does not play a sound, or I do not
+Reported against QUILL Lite -- "the delete key does not play a sound, or I do not
 hear one" -- and true of both editors for the same reason: the earcon lived in
 the delete *command*, the command is the menu item, and the key goes straight
 into the control. A capability the small product has and the editor does not is

@@ -6,7 +6,7 @@ it is still there tomorrow. A mark is where you were before you went to look
 something up: you drop it without thinking, you use it up getting back, and you
 never name it.
 
-One ring, shared. QuillLite had its own -- a plain list, capped at ten, with no
+One ring, shared. QUILL Lite had its own -- a plain list, capped at ten, with no
 de-duplication -- beside this one, which is capped at twenty and de-dupes
 (bad.md L6). Two implementations of a thing that simple is not a bug on its own;
 it is the mechanism by which the two editors drift, because there is no place
@@ -126,7 +126,7 @@ class MarkRing:
     def clamped_to(self, limit: int) -> None:
         """Pull every mark back inside a document that has got shorter.
 
-        QuillLite clamped on pop and QUILL did not, so the same shrunken
+        QUILL Lite clamped on pop and QUILL did not, so the same shrunken
         document gave two answers (bad.md L6). It is done here now, once.
         """
         ceiling = max(0, limit)

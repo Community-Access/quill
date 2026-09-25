@@ -1,4 +1,4 @@
-"""QuillLite's menu bar, generated from the command table.
+"""QUILL Lite's menu bar, generated from the command table.
 
 Not fifty ``Append`` calls. The bar is built by walking
 :data:`quill.core.lite.commands.COMMANDS`, so the keys the menus advertise, the
@@ -218,7 +218,7 @@ class DocumentMenuMixin:
             "cmd_toggle_extend_selection_mode": self.extend_selection_active(),
             # Per document too: the control keeps overtype per control.
             "cmd_toggle_overwrite": overwrite_now(self),
-            # Checked means Tab types a tab, which is how QuillLite starts.
+            # Checked means Tab types a tab, which is how QUILL Lite starts.
             "cmd_toggle_tab_mode": getattr(self, "_tab_inserts_literal", True),
             # Per app, both of them: the status bar is either on screen or not,
             # and abbreviations either expand or do not, whichever document is

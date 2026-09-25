@@ -1,6 +1,6 @@
 """New Rich Text Document and New Plain Text Document (bad.md P1.13, 3.7).
 
-QuillLite has had both since it shipped: `Ctrl+Shift+N` starts a rich document,
+QUILL Lite has had both since it shipped: `Ctrl+Shift+N` starts a rich document,
 `Ctrl+Alt+N` a plain one. QUILL could only make a new document in whatever
 `default_new_document_format` said and then *convert* it -- two commands and a
 popup menu to do what the small product does with one key, which is the kind of

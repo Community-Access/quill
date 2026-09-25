@@ -4,7 +4,7 @@ Split out of :mod:`quill.apps.lite_window_tools` under GATE-11, and the line is
 clean: that module reshapes the text in front of you, and this one goes and
 fetches an older copy of it.
 
-QuillLite has written these since backups shipped and offered no way to read
+QUILL Lite has written these since backups shipped and offered no way to read
 one: the files were correct, correctly named, and reachable only by knowing that
 ``%LOCALAPPDATA%\QuillLite\backups`` exists and which of the hashed folders was
 yours. A safety net nobody can reach is not a safety net.
@@ -29,7 +29,7 @@ class DocumentBackupsMixin:
     def cmd_browse_backups(self) -> None:
         """List the dated copies kept on every save, and put one back.
 
-        QuillLite has written these since backups shipped and offered no way to
+        QUILL Lite has written these since backups shipped and offered no way to
         read one: the files were correct, correctly named, and reachable only by
         knowing that ``%LOCALAPPDATA%\\QuillLite\\backups`` exists and which of
         the hashed folders was yours. A safety net nobody can reach is not a
@@ -52,7 +52,7 @@ class DocumentBackupsMixin:
         if not self.app.feature_enabled("backups"):
             self._announce(
                 "Backups are switched off. Turn them on in Tools, Customize Features, "
-                "and QuillLite will keep a dated copy of this file on every save."
+                "and QUILL Lite will keep a dated copy of this file on every save."
             )
             return
         if self.path is None:

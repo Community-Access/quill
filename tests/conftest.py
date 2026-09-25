@@ -266,7 +266,7 @@ def _enable_dev_build_for_tests() -> None:
 
 @pytest.fixture
 def lite_recovery_store(tmp_path, monkeypatch):
-    """QuillLite's recovery folder, redirected into *tmp_path*.
+    """QUILL Lite's recovery folder, redirected into *tmp_path*.
 
     ``quill.core.lite.recovery`` did ``from ... import recovery_dir``, so it
     holds its own reference and patching the paths module does nothing -- the
@@ -303,7 +303,7 @@ def _never_write_to_the_real_profile() -> None:
     on the line that caused it.
 
     **Both profiles, since 2026-09-21.** The guard only ever covered QUILL's
-    roaming profile, and QuillLite keeps its own under ``%LOCALAPPDATA%``. That
+    roaming profile, and QUILL Lite keeps its own under ``%LOCALAPPDATA%``. That
     gap had a cost with a number on it: ``quill.core.lite.recovery.new_slot``
     resolves the *real* recovery folder, and two tests in
     ``test_lite_save_path.py`` called it without isolation on every run, leaving
@@ -325,7 +325,7 @@ def _never_write_to_the_real_profile() -> None:
         yield
         return
     guarded = [(Path(appdata) / "Quill").resolve()]
-    # QuillLite's own profile, which lives under LOCALAPPDATA rather than
+    # QUILL Lite's own profile, which lives under LOCALAPPDATA rather than
     # APPDATA and was unguarded until 2026-09-21. Resolved the way
     # quill.core.lite.paths computes it, deliberately not by calling into that
     # module, which a test may already have redirected.

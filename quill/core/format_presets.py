@@ -12,7 +12,7 @@ raise a budget:
 * **They are testable without a display.** "No two colours share a name", "every
   point size is a size" and "the spacing presets come in before/after pairs" are
   all assertions about a tuple, and none of them needed a menu bar.
-* **QuillLite can have the same ladder.** The two products already share the
+* **QUILL Lite can have the same ladder.** The two products already share the
   heading ladder and the metrics; a font list that differs between them would be
   a difference with no reason behind it, and CLAUDE.md's rule is that a shared
   capability lives in the shared package.

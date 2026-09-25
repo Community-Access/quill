@@ -1,4 +1,4 @@
-"""The Preferences window: every setting QuillLite has, in one place.
+"""The Preferences window: every setting QUILL Lite has, in one place.
 
 Split from :mod:`quill.apps.lite_dialogs` because it is the only dialog that
 edits state rather than answering a question, and because it is the one window
@@ -10,7 +10,7 @@ a Preferences window that answers half the question is a Preferences window
 people stop opening. But three settings live *only* here, and they are the reason
 it exists: what Control N creates, how often unsaved work is copied aside,
 whether last session's documents reopen, whether spelling is checked as you
-type, and whether abbreviations and taught words come from QuillLite's own
+type, and whether abbreviations and taught words come from QUILL Lite's own
 lists or QUILL's shared ones.
 Before this they could be changed only by hand-editing ``settings.json``, which
 is not a setting anyone has.
@@ -185,7 +185,7 @@ def edit_preferences(
 
     share = wx.CheckBox(dialog, label="Share QUILL's abbre&viation library")
     share.SetHelpText(
-        "Off: abbreviations are QuillLite's own. On: read and write the same "
+        "Off: abbreviations are QUILL Lite's own. On: read and write the same "
         "library QUILL and Quill Inkwell use, so an abbreviation added in any of "
         "them works in all of them. Turning this on creates a QUILL data folder "
         "if you do not already have one."
@@ -198,7 +198,7 @@ def edit_preferences(
     # switches to remember.
     share_dict = wx.CheckBox(dialog, label="Share QUILL's &dictionary of taught words")
     share_dict.SetHelpText(
-        "Off: words you teach the spell checker are QuillLite's own. On: read "
+        "Off: words you teach the spell checker are QUILL Lite's own. On: read "
         "and write the same dictionary QUILL uses, so a word taught in either "
         "is known to both. Turning this on creates a QUILL data folder if you "
         "do not already have one."
@@ -207,17 +207,17 @@ def edit_preferences(
     root.Add(share_dict, 0, wx.LEFT | wx.RIGHT, _PAD)
 
     # Beside the two sharing switches because it is the third question of the
-    # same kind -- what QuillLite keeps, and where. Off by default, and the
+    # same kind -- what QUILL Lite keeps, and where. Off by default, and the
     # help text says plainly what "everything" means rather than selling the
     # feature: somebody turning this on should know what they are turning on.
     keep_clips = wx.CheckBox(dialog, label="&Keep everything I copy in the clip library")
     keep_clips.SetHelpText(
         "Off: the clip library holds only what you put there with Keep Clip. "
-        "On: every piece of text you copy or cut inside a QuillLite document is "
+        "On: every piece of text you copy or cut inside a QUILL Lite document is "
         "added to it automatically, up to the last two hundred, and Recent "
         "Clips offers them all. That includes anything you had pasted into a "
         "document and copied back out -- a password, a licence key, a private "
-        "address -- and it is written to a file in QuillLite's data folder. It "
+        "address -- and it is written to a file in QUILL Lite's data folder. It "
         "never sees what you copy in other programs."
     )
     keep_clips.SetValue(bool(getattr(settings, "clip_library_autocapture", False)))
@@ -226,9 +226,9 @@ def edit_preferences(
     # &U, because every other letter in "Look for updates" is spoken for in
     # this window and Windows cycles focus between two controls with the same
     # access key rather than pressing either (GATE-14).
-    updates = wx.CheckBox(dialog, label="Look for &updates when QuillLite starts")
+    updates = wx.CheckBox(dialog, label="Look for &updates when QUILL Lite starts")
     updates.SetHelpText(
-        "Once a day, when the app opens, ask GitHub whether a newer QuillLite "
+        "Once a day, when the app opens, ask GitHub whether a newer QUILL Lite "
         "has been published. Nothing is said unless there is one, and nothing "
         "is downloaded or installed without being asked -- a new version shows "
         "you what changed and offers it. Off means Check for Updates on the "
@@ -312,7 +312,7 @@ def edit_preferences(
     set_accessible_name(heading_choice, "Say a heading's level")
     heading_choice.SetHelpText(
         "Where the level goes relative to the heading itself. Before the text "
-        "is one sentence QuillLite says on its own -- Heading 2, Installing -- "
+        "is one sentence QUILL Lite says on its own -- Heading 2, Installing -- "
         "and it is the one that survives a jump: pressing Control Home or "
         "landing on a search hit makes a screen reader cancel whatever it was "
         "about to say, and a level waiting its turn behind that is never heard. "
@@ -353,7 +353,7 @@ def edit_preferences(
     set_accessible_name(throttle, "Shortest gap between spoken messages, milliseconds")
     throttle.SetHelpText(
         "Zero, the default, says everything as it happens. A larger number "
-        "drops anything QuillLite would say too soon after the last thing it "
+        "drops anything QUILL Lite would say too soon after the last thing it "
         "said, which is what you want if holding a key down floods your screen "
         "reader. Nothing is lost by it: the status bar is written either way, "
         "and F6 reads it back."

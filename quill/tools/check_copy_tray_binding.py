@@ -10,7 +10,7 @@ default keymap.
 **The row moved on 2026-09-16, and this table moved with it.** Paste was on
 ``Ctrl+Shift+1``..``9`` / ``0`` / ``-`` / ``=`` and is now one modifier out,
 on ``Ctrl+Alt+Shift+``.  The digits it gave up are Set Bookmark N -- which is
-what QuillLite has meant by them since it shipped, and QUILL adopted the
+what QUILL Lite has meant by them since it shipped, and QUILL adopted the
 shared numbered-bookmark core the same day (bad.md P0.1).  A bookmark is an
 editing-loop verb and pasting slot seven by number is not, so the shorter
 chord went to the bookmark.  The guard itself is unchanged in spirit: these

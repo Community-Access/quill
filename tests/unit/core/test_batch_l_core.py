@@ -130,9 +130,9 @@ def test_the_notice_names_the_effect_and_the_kind() -> None:
 def test_both_editors_name_a_kind_of_document_the_same_way() -> None:
     """One dead key, one sentence -- whichever editor's label it starts from.
 
-    QUILL asks its markup kind, which is lower case ("html"); QuillLite asks its
+    QUILL asks its markup kind, which is lower case ("html"); QUILL Lite asks its
     own status cell, which is title case ("Plain text"). Before the shared table
-    QuillLite lower-cased its answer on the way in, so an HTML document heard "a
+    QUILL Lite lower-cased its answer on the way in, so an HTML document heard "a
     html document" in one editor and "an HTML document" in the other -- the same
     key, the same file, two explanations.
     """

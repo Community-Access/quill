@@ -21,7 +21,7 @@ Three keys, and the third is the one that actually scales:
 Every rule, refusal, renumbering and spoken sentence lives in
 :mod:`quill.core.markdown_sections`, :mod:`quill.core.section_speech` and
 :mod:`quill.core.section_move_to`, shared with QUILL. This module supplies
-QuillLite's text control and its chooser and nothing else, which is what stops one
+QUILL Lite's text control and its chooser and nothing else, which is what stops one
 capability becoming two that drift.
 """
 
@@ -143,7 +143,7 @@ class DocumentSectionCommandsMixin:
         self._touch_status()
         # One sentence, composed in core: what it did, what it passed, and
         # where it now sits among its siblings. Composed there rather than here
-        # so QUILL and QuillLite cannot describe the same move two ways.
+        # so QUILL and QUILL Lite cannot describe the same move two ways.
         self._announce(announce)
 
     def cmd_move_section_up(self) -> None:
@@ -164,7 +164,7 @@ class DocumentSectionCommandsMixin:
 
         The rules, the refusals, the renumbering and the sentence all live in
         :func:`quill.core.section_move_to.run_move_section_to`. This supplies
-        QuillLite's searchable chooser -- the same one Headings and Bookmarks
+        QUILL Lite's searchable chooser -- the same one Headings and Bookmarks
         use, so there is no new dialog to learn or to keep accessible -- and
         writes the answer back through the ordinary undo stack.
         """

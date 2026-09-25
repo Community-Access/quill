@@ -1,8 +1,8 @@
 """An :class:`~quill.core.ai.backend.AIBackend` over QUILL's hosted service.
 
 This is the seam that lets **QUILL** reach the hosted tier, and it is why the
-whole gateway client lives in the shared package rather than inside QuillLite.
-CLAUDE.md's rule is that QuillLite may never be ahead of QUILL: a capability the
+whole gateway client lives in the shared package rather than inside QUILL Lite.
+CLAUDE.md's rule is that QUILL Lite may never be ahead of QUILL: a capability the
 small product has and the big one cannot reach is backwards, and invisible.
 
 Nothing registers this yet, and that is deliberate. QUILL already has a rich AI
@@ -10,8 +10,8 @@ story -- bring-your-own-key across five providers, local models, the agent
 harness -- and adding a sixth provider to ``ALL_PROVIDERS`` or a sixth branch to
 ``make_default_backend()``'s cascade would change what an existing QUILL install
 does on its next launch. That is a decision to take on purpose, with its own
-review, rather than a side effect of shipping QuillLite's version. Until then
-QUILL is not *behind*: it has more AI than QuillLite does, and this is the
+review, rather than a side effect of shipping QUILL Lite's version. Until then
+QUILL is not *behind*: it has more AI than QUILL Lite does, and this is the
 one-line registration away whenever it is wanted.
 
 The free tier is a narrower product than BYOK, and honestly so:

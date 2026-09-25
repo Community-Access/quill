@@ -1,4 +1,4 @@
-# QuillLite assets
+# QUILL Lite assets
 
 - `quill-lite.ico` — the app and installer icon, referenced by
   `quill-lite.spec`, `installer/quilllite.iss` and

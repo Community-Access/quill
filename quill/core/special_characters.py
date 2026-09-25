@@ -38,7 +38,7 @@ The shape of the answer:
   folded into the box that was going to be there anyway.
 
 Framework-agnostic on purpose: QUILL's Insert Special Character lives on a
-``MainFrame`` mixin, QuillLite's on a document window, and the dialog they share
+``MainFrame`` mixin, QUILL Lite's on a document window, and the dialog they share
 knows only this.
 """
 

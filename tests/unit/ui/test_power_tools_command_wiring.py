@@ -86,7 +86,7 @@ _POWER_TOOLS_COMMAND_IDS = [
     # §4.22/§4.23 TextMonkey/EdSharp-parity additions
     "power.trim_blank_lines",
     # Its companion, added 2026-09-10 with the shared format_ops helper
-    # QuillLite needed. Two commands rather than one because trimming the ends
+    # QUILL Lite needed. Two commands rather than one because trimming the ends
     # and emptying the middle are different jobs -- see the manifest comment.
     "power.remove_blank_lines",
     "power.strip_html_tags",

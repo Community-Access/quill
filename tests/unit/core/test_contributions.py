@@ -161,12 +161,12 @@ def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # post-0.9.0: +1 Paste Markdown as HTML (power.paste_markdown_as_html).
     # 1.0.0 (2026-09-10): +1 Remove Every Blank Line
     # (power.remove_blank_lines), the companion to Trim Blank Lines at the Ends
-    # and a separate command rather than a fix to it -- QuillLite needed the
+    # and a separate command rather than a fix to it -- QUILL Lite needed the
     # shared format_ops helper and the house rule puts the capability in the
     # shared package with a way for QUILL to reach it in the same change.
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
     # 84 since 2026-09-17: +1 Character Details (power.describe_character_detail),
-    # the studying half of Describe Character, which QuillLite has had since it
+    # the studying half of Describe Character, which QUILL Lite has had since it
     # shipped and QUILL had only the window of (bad.md P1.13); and +1 Copy to
     # Tray Slot (edit.copy_to_tray_slot), the chooser that says what each slot
     # would overwrite, which QUILL had no equivalent of at all (P2.1).

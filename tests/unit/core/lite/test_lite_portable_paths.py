@@ -1,17 +1,17 @@
-"""A portable QuillLite keeps its settings on the stick, not on the host PC.
+"""A portable QUILL Lite keeps its settings on the stick, not on the host PC.
 
 The whole promise of a portable build is that it leaves nothing behind on
-somebody else's computer. QuillLite broke that promise silently: its data
+somebody else's computer. QUILL Lite broke that promise silently: its data
 folder resolves through
 :func:`quill.core.storage_mode.portable_root_dir`, which only recognises a
 bundle whose launcher name is in an allowlist -- and ``QuillLite.exe`` was not
-in it. So a portable QuillLite wrote settings, recent files and recovery copies
+in it. So a portable QUILL Lite wrote settings, recent files and recovery copies
 of in-progress documents into ``%LOCALAPPDATA%\\QuillLite`` on the host machine,
 announced nothing, and looked exactly like a working portable build.
 
 Tested here as well as in ``tests/unit/core/test_storage_mode.py`` because the
-allowlist and QuillLite's own path chain are two separate things that both have
-to hold, and QuillLite is the product where getting it wrong is worst: a
+allowlist and QUILL Lite's own path chain are two separate things that both have
+to hold, and QUILL Lite is the product where getting it wrong is worst: a
 recovery slot is an unsaved document, so the leak is the user's actual writing
 rather than a window size.
 """

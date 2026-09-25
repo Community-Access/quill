@@ -1,6 +1,6 @@
-"""QuillLite's Find, now over the shared find model.
+"""QUILL Lite's Find, now over the shared find model.
 
-What is being pinned is the *seam*: QuillLite used to compile its own regex,
+What is being pinned is the *seam*: QUILL Lite used to compile its own regex,
 escaping the needle, which meant it could never offer a search mode. Routing it
 through :mod:`quill.core.find_model` is what buys the three modes, the count and
 the match list at once -- and the risk of a seam like that is a silent change

@@ -1,4 +1,4 @@
-"""QuillLite's spelling: whose dictionary, and when to speak up.
+"""QUILL Lite's spelling: whose dictionary, and when to speak up.
 
 The engine is QUILL's -- :mod:`quill.core.spellcheck` for the wordlist and the
 suggestions, :mod:`quill.core.spelling` for the guided F7 review. Nothing about
@@ -6,7 +6,7 @@ checking a word is re-implemented here. What this module owns is the two
 questions QUILL does not have to answer, because QUILL is the only editor in
 its own data folder and opens documents rather than files.
 
-**Whose dictionary.** QuillLite keeps its taught words in QuillLite's folder by
+**Whose dictionary.** QUILL Lite keeps its taught words in QUILL Lite's folder by
 default, exactly as it keeps its abbreviations there, and for the same reason: a
 machine that has never had QUILL installed must not grow a ``%APPDATA%\\Quill``
 because somebody taught a text editor that "Bhattacharya" is a word. One switch
@@ -47,7 +47,7 @@ __all__ = [
 def dictionary_dir(settings: Any, data_dir: Path) -> Path:
     """The folder the personal dictionary is read from and written to.
 
-    QuillLite's own unless the listener has asked, in Preferences, to share
+    QUILL Lite's own unless the listener has asked, in Preferences, to share
     QUILL's -- in which case this is QUILL's data directory and a word taught
     here is taught there. Mirrors ``abbreviation_dir`` exactly, on purpose: two
     switches that behave differently would be two switches to remember.
@@ -63,7 +63,7 @@ def load_dictionary(settings: Any, data_dir: Path, document_path: Path | None) -
     """Every word this document should treat as correct.
 
     The personal list plus the document's own ``.quill-dict.json`` sidecar.
-    There is no project scope: QuillLite opens files, not projects, and a
+    There is no project scope: QUILL Lite opens files, not projects, and a
     checkout root is not a thing it has any way to know about.
 
     Never raises. A dictionary that cannot be read is an empty one, because an

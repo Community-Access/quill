@@ -1,15 +1,15 @@
-"""QuillLite's status bar: QUILL's focusable cells, at notepad scale.
+"""QUILL Lite's status bar: QUILL's focusable cells, at notepad scale.
 
 QUILL's status bar is not a strip of painted text. It is a row of **focusable
 cells** (``quill/ui/main_frame_statusbar.py``): F6 lands in it, the arrow keys
 and Home/End move between cells, each cell announces its own name and value,
 Enter acts on it, and Escape returns to the document. That is the difference
 between a status bar a sighted user glances at and one a screen-reader user can
-actually read -- and it is why QuillLite builds the same thing rather than
+actually read -- and it is why QUILL Lite builds the same thing rather than
 calling ``SetStatusText`` four times.
 
 What is *not* copied is QUILL's configurability. The full editor lets you
-reorder and hide thirty-odd cells and has a dialog for doing it; QuillLite has
+reorder and hide thirty-odd cells and has a dialog for doing it; QUILL Lite has
 :data:`CELLS`, twelve of them, fixed. A notepad does not need a status-bar layout
 editor, and every cell here is a fact a text editor is actually asked for:
 

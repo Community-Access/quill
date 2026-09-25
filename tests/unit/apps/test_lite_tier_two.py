@@ -1,4 +1,4 @@
-"""The QUILL tools a listener feels immediately, now in QuillLite.
+"""The QUILL tools a listener feels immediately, now in QUILL Lite.
 
 Tier 2 of bad.md 4.2: small, shared, and each one removing a specific cost. A
 read-only copy of the selection so reading it back cannot destroy it. A list of

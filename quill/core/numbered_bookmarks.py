@@ -1,12 +1,12 @@
 """Numbered bookmarks for one document -- nine slots that move with the text.
 
-Shared core, not QuillLite's own, and deliberately so. QUILL already has *named*
+Shared core, not QUILL Lite's own, and deliberately so. QUILL already has *named*
 bookmarks (:class:`quill.core.bookmarks.BookmarkVault`) and a mark ring
 (:class:`quill.core.marks.MarkRing`); what neither of them is, is nine
-slots you address by digit. QuillLite needed that, and a feature QuillLite has
+slots you address by digit. QUILL Lite needed that, and a feature QUILL Lite has
 and QUILL cannot reach would be exactly backwards -- the small product is not
 allowed to be ahead of the big one. So it lives here, where QUILL's editor can
-adopt it, and QuillLite is simply its first caller.
+adopt it, and QUILL Lite is simply its first caller.
 
 A bookmark is a place you meant to come back to. In a long document that is the
 difference between "I was somewhere in the middle" and "I was at bookmark 3",

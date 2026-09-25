@@ -15,7 +15,7 @@ not on Undo, and not on a "Spelling Suggestions" submenu that costs a Right
 arrow and a pause before anything is said. QUILL had them nested until
 2026-09-10 and that was the fix.
 
-QuillLite, asked directly on 2026-09-13, went the other way and had a reason
+QUILL Lite, asked directly on 2026-09-13, went the other way and had a reason
 just as good: a menu whose *length* changes with where the caret is, with Undo
 and Cut a dozen unpredictable rows further down whenever the word happens to be
 misspelled, is a menu nobody can learn.
@@ -35,7 +35,7 @@ remove; the durable answer is the dictionary, which is on the same menu and says
 which of its three scopes it wrote to. The list is per document, so a surname
 ignored in a letter does not go quiet in the report in the next tab.
 
-QuillLite's editor answers the same key with the same shape
+QUILL Lite's editor answers the same key with the same shape
 (:mod:`quill.apps.lite_window_context_menu`) over the same wx-free model
 (:mod:`quill.core.spelling.context_menu`), so neither editor can drift ahead of
 the other.
@@ -130,7 +130,7 @@ class SpellContextMenuMixin:
 
         Everything that is not a correction is behind one **Spelling Actions**
         row, which is what makes the tail fixed (see the module docstring). Three
-        of QuillLite's scopes are two, because QuillLite opens files rather than
+        of QUILL Lite's scopes are two, because QUILL Lite opens files rather than
         projects and has nothing to call a project root; that divergence is
         real and is the only one here.
         """

@@ -5,7 +5,7 @@ it **silently**: a boolean said yes or no, four windows appeared, and a file tha
 had gone was skipped without a word. That is defensible for one file and wrong
 for four -- four windows appearing unbidden is four things to identify before you
 can start work, and the one you actually wanted is not necessarily the first.
-QuillLite's crash-recovery prompt was written for exactly that reason and the
+QUILL Lite's crash-recovery prompt was written for exactly that reason and the
 session list never got the same treatment.
 
 So this module answers three questions, all of them wx-free so both editors get

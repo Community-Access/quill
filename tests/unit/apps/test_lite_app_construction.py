@@ -1,10 +1,10 @@
 """The wx.App itself can be constructed, which no other test checks.
 
-Every other QuillLite test builds a stub window (``tests/unit/apps/conftest.py``)
+Every other QUILL Lite test builds a stub window (``tests/unit/apps/conftest.py``)
 because a real ``wx.App`` needs a display. That is the right trade for testing
 commands -- and it left ``QuillLiteApp.__init__`` with no test at all, so on
 2026-09-17 it could read ``self.settings`` at line 88 while ``OnInit`` set it at
-line 121, and **QuillLite did not start**. The only thing that constructs the
+line 121, and **QUILL Lite did not start**. The only thing that constructs the
 real app is the live probe, which is run by hand.
 
 This does not need a display: ``__init__`` is plain Python up to the
@@ -42,7 +42,7 @@ def _assigned_and_read(method: str) -> tuple[set[str], set[str]]:
 
 
 def test_init_never_reads_state_that_oninit_sets() -> None:
-    """The fault that stopped QuillLite starting, in one assertion.
+    """The fault that stopped QUILL Lite starting, in one assertion.
 
     ``__init__`` runs before ``OnInit``. An attribute read in the first and
     assigned only in the second is an AttributeError on launch -- and
@@ -54,7 +54,7 @@ def test_init_never_reads_state_that_oninit_sets() -> None:
 
     too_early = sorted((init_read & oninit_assigned) - init_assigned)
     assert too_early == [], (
-        f"__init__ reads {too_early}, which OnInit sets later -- QuillLite will "
+        f"__init__ reads {too_early}, which OnInit sets later -- QUILL Lite will "
         "raise AttributeError before its first window appears"
     )
 

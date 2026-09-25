@@ -176,7 +176,7 @@ def isolated_quill_settings(tmp_path, monkeypatch):
     """Quiet mode writes QUILL's *shared* settings, so the test needs its own.
 
     The point of the command is that silencing one editor silences the family,
-    which means it reaches past QuillLite's settings file into the real one --
+    which means it reaches past QUILL Lite's settings file into the real one --
     exactly the reach a test must not make on the developer's machine.
     """
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))

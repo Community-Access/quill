@@ -3,7 +3,7 @@
 Double-clicking three files in Explorer starts three processes. Without a
 handover each one would build its own window registry, its own recovery store
 and its own settings writer, and the last one to exit would win the settings
-file. QuillLite therefore keeps one process and many windows: a second launch
+file. QUILL Lite therefore keeps one process and many windows: a second launch
 writes what it wanted into an inbox, asks the running instance to come forward,
 and exits.
 

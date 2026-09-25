@@ -1,7 +1,7 @@
 """The rich-text heading ladder: a point size and bold per level, and its inverse.
 
 Rich-mode headings are presentational. A Windows edit control has no paragraph
-styles, so QUILL and QuillLite say "this is a Heading 2" by making the paragraph
+styles, so QUILL and QUILL Lite say "this is a Heading 2" by making the paragraph
 bold at 16 pt, and read it back by recognising that pair. The ladder is
 therefore load-bearing in two directions at once, and both of them cross the
 layer boundary:

@@ -135,7 +135,7 @@ def test_a_stale_entry_is_reported() -> None:
 
 
 def test_there_is_no_debt_left() -> None:
-    """Zero, as of 2026-09-11. Every QuillLite command has a behavioural test.
+    """Zero, as of 2026-09-11. Every QUILL Lite command has a behavioural test.
 
     Asserted as an absolute rather than a ceiling that happens to be zero,
     because the two say different things to whoever reads a failure. A ceiling
@@ -148,7 +148,7 @@ def test_there_is_no_debt_left() -> None:
     recorded = load_snapshot()
     shape_only = sorted(h for h, status in recorded.items() if status == "shape_only")
     assert shape_only == [], (
-        "every QuillLite command had a behavioural test on 2026-09-11 and one of "
+        "every QUILL Lite command had a behavioural test on 2026-09-11 and one of "
         "them no longer does. Write it rather than recording the loss -- the "
         f"whole point of the gate is that this list stays empty. Uncovered: {shape_only}"
     )

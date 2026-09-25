@@ -4,7 +4,7 @@ The recovery store is a copy of every modified window, written on a timer and
 removed the moment the document is saved or closed cleanly. That is the right
 promise, and for years it had no housekeeping at all: **every launch that ended
 badly left one slot per modified window, and nothing ever collected them.** On
-2026-09-21 a QuillLite user opened the app and was asked, in one yes-or-no
+2026-09-21 a QUILL Lite user opened the app and was asked, in one yes-or-no
 question, whether to open sixty-nine documents. Sixty-seven of them were the same
 four characters, typed into an untitled window by an automated run that was then
 killed; two were real. The only answers were "open all sixty-nine" and "no", and

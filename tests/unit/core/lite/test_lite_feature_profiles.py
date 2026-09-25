@@ -1,4 +1,4 @@
-"""QuillLite's switchable areas, and the four profiles over them.
+"""QUILL Lite's switchable areas, and the four profiles over them.
 
 Two questions this file answers mechanically, because both were asked of the
 Customize Features dialog and neither had an answer in code:

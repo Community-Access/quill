@@ -1,4 +1,4 @@
-"""QuillLite's keymap layer: defaults from the table, overrides in a file.
+"""QUILL Lite's keymap layer: defaults from the table, overrides in a file.
 
 The three properties this file exists to hold, because each has a cheap wrong
 version that would pass a casual reading:

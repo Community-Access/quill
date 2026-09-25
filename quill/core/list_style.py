@@ -3,7 +3,7 @@
 WordPad's ``Ctrl+Shift+L`` steps a paragraph between a bulleted list, a numbered
 list and no list at all, and that is the shape both editors want: one key, three
 states, each announcing itself, so you press it until you hear the one you meant.
-A toggle can only say yes or no, which is why QuillLite had bullets and no way to
+A toggle can only say yes or no, which is why QUILL Lite had bullets and no way to
 make a numbered list at all and QUILL had two commands on two chords that did not
 know about each other (bad.md P1.5, 4.2 Tier 1).
 

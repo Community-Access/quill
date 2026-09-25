@@ -2,12 +2,12 @@
 
 One checkbox per switchable app area, each with a short description. Unchecking
 an area turns it off; the app omits that area's menu the next time it launches.
-Shared by Quill Radio, Quill Weather and QuillLite, which is why the areas and
+Shared by Quill Radio, Quill Weather and QUILL Lite, which is why the areas and
 the profiles arrive as arguments and nothing about any one app is written here.
 wx lives only here; the state is the wx-free ``core/app_features`` model the
 caller passes in and saves.
 
-Two things were added in 2026-09 after QuillLite's list reached seventeen
+Two things were added in 2026-09 after QUILL Lite's list reached seventeen
 entries, and both are QUILL's own answers to the same problem in
 ``quill/core/feature_catalog.py``:
 

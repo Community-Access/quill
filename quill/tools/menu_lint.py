@@ -89,12 +89,12 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     # (x.md "Authoring"), user-authorized as in-app Ctrl+Alt chords. None
     # collides with a default NVDA/JAWS command.
     "format.toggle_bullet_list",  # Ctrl+Alt+B
-    "file.new_plain_text_document",  # Ctrl+Alt+N, QuillLite's chord (bad.md P1.13)
+    "file.new_plain_text_document",  # Ctrl+Alt+N, QUILL Lite's chord (bad.md P1.13)
     "format.insert_table",  # Ctrl+Alt+T
     "format.blockquote",  # Ctrl+Alt+Q
     "format.horizontal_rule",  # Ctrl+Alt+H
     "edit.insert_link",  # Ctrl+Alt+K
-    "format.insert_markdown_tag",  # Ctrl+Alt+I, QuillLite's chord (bad.md P1.1)
+    "format.insert_markdown_tag",  # Ctrl+Alt+I, QUILL Lite's chord (bad.md P1.1)
     # Table cell navigation: Ctrl+Alt+arrow/Home/End move
     # cell by cell; context-sensitive and harmless outside a table.
     "table.next_cell",  # Ctrl+Alt+Right
@@ -168,26 +168,26 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "tools.check_updates",  # Ctrl+Alt+U
     "edit.open_copy_tray",  # Ctrl+Alt+V, one modifier off Ctrl+V
     "edit.copy_to_next_slot",  # Ctrl+Alt+Y
-    # 2026-09-17, all three on QuillLite's chords (bad.md 3.7, P1.12).
+    # 2026-09-17, all three on QUILL Lite's chords (bad.md 3.7, P1.12).
     "power.compute_line_statistics",  # Ctrl+Alt+W
     "power.toggle_clipboard_collector",  # Ctrl+Alt+G
     "edit.keep_selection_in_clip_library",  # Ctrl+Alt+M
-    "power.describe_character_detail",  # Ctrl+Alt+C, QuillLite's chord (bad.md P1.13)
+    "power.describe_character_detail",  # Ctrl+Alt+C, QUILL Lite's chord (bad.md P1.13)
     # Ctrl+Alt+= and Ctrl+Alt+E, 2026-09-17 (bad.md 3.3, 3.7, P1.8): File Format
-    # takes QuillLite's Ctrl+Alt+E, Select Line takes Word-shaped Ctrl+Shift+E,
+    # takes QUILL Lite's Ctrl+Alt+E, Select Line takes Word-shaped Ctrl+Shift+E,
     # and Insert Equation moves to the sign it draws. Neither new chord is a
     # letter any screen reader claims with Ctrl+Alt.
     "edit.insert_equation",  # Ctrl+Alt+=
     "file.file_format",  # Ctrl+Alt+E
-    # 2026-09-18, the structural six converging on QuillLite's chords (bad.md
+    # 2026-09-18, the structural six converging on QUILL Lite's chords (bad.md
     # 3.3, P1.2, P2.5): Duplicate Selection took Ctrl+Alt+Q from the retired
     # Block Quote, and Exchange Cursor and Mark took Ctrl+Alt+X so Expand
-    # Selection could have QuillLite's Ctrl+Shift+X. Neither letter is one a
+    # Selection could have QUILL Lite's Ctrl+Shift+X. Neither letter is one a
     # default JAWS or NVDA command claims with Ctrl+Alt.
     "edit.duplicate_selection",  # Ctrl+Alt+Q
     "edit.exchange_point_mark",  # Ctrl+Alt+X
     # Ctrl+Alt+Space, 2026-09-17: Select Token gave up Ctrl+Space to Select
-    # Sentence, which is what that chord means in QuillLite and now means in
+    # Sentence, which is what that chord means in QUILL Lite and now means in
     # both (bad.md P1.2b, 5.3a). Ctrl+Alt+Space is the nearest free
     # neighbour, and Space is not a letter any screen reader claims with
     # Ctrl+Alt -- the §10.8 concern is the letter rows.

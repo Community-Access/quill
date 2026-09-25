@@ -1,4 +1,4 @@
-r"""What QuillLite's status bar cells *are*: the catalogue, and how one is sized.
+r"""What QUILL Lite's status bar cells *are*: the catalogue, and how one is sized.
 
 Split out of :mod:`quill.apps.lite_window_status`, which is the behaviour --
 when the bar refreshes, what it reads, where focus goes. This is the data: the
@@ -188,7 +188,7 @@ CELLS: tuple[StatusCell, ...] = (
         "line_endings",
         "Line Endings",
         "Whether this file uses Windows line endings (CRLF) or Unix ones (LF). "
-        "QuillLite writes back whichever it read, so a file does not change shape "
+        "QUILL Lite writes back whichever it read, so a file does not change shape "
         "just because it was opened. Press Enter to change it.",
     ),
     StatusCell("saved", "Saved State", "Whether this document has unsaved changes."),
@@ -203,7 +203,7 @@ CELLS: tuple[StatusCell, ...] = (
     StatusCell(
         _MESSAGE,
         "Status Message",
-        "The last thing QuillLite announced. Speech is gone once it is spoken; "
+        "The last thing QUILL Lite announced. Speech is gone once it is spoken; "
         "this is where it can be read again.",
     ),
 )

@@ -57,7 +57,7 @@ class ClipLibraryMixin:
         it is the half that matters most: a copy leaves the text where it was,
         so losing it from the history costs nothing. A cut takes it away, and
         the clip library is then the only copy outside the undo stack.
-        QuillLite captures both.
+        QUILL Lite captures both.
         """
         if getattr(self.settings, "clip_library_autocapture", False):
             start, end = self.editor.GetSelection()

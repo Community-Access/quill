@@ -80,7 +80,7 @@ def test_body_paragraphs_are_left_exactly_as_they_were() -> None:
 def test_body_text_is_written_at_the_ladders_body_size() -> None:
     """Body text must not be the size of a heading.
 
-    Reported from QuillLite: bold a line and it was announced as "heading
+    Reported from QUILL Lite: bold a line and it was announced as "heading
     level 4" by a user who had pressed Ctrl+B and nothing else. A rich
     heading *is* its point size plus bold, Heading 4 is twelve point, and
     twelve point is what RTF gives a paragraph that names no size -- so body

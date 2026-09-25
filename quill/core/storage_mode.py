@@ -18,7 +18,7 @@ _VALID_MODES = {"appdata", "portable", "custom"}
 #: which is the one thing somebody running from a USB stick is relying on it not
 #: to do. It fails quietly and it fails on somebody else's computer.
 #:
-#: Five names were missing until 2026-09-09 -- QuillLite, Inkwell, Beacon,
+#: Five names were missing until 2026-09-09 -- QUILL Lite, Inkwell, Beacon,
 #: Social and Cast's registry spelling -- so five products' portable builds did
 #: exactly that. The list was hand-maintained in two places and the tests named
 #: four products explicitly, so adding a sixth app was always going to repeat

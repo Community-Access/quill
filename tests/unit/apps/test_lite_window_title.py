@@ -1,7 +1,7 @@
 r"""The window is not renamed to the name it already has.
 
 QUILL has skipped an unchanged retitle since it learned why
-(``_refresh_title_bar``); QuillLite called ``SetTitle`` every time anything
+(``_refresh_title_bar``); QUILL Lite called ``SetTitle`` every time anything
 touched the document. Retitling fires ``EVT_OBJECT_NAMECHANGE`` through MSAA and
 UIA, so a screen reader is told the window was renamed -- and on an MDI child the
 call reaches all the way up to the parent's caption, which is not free even when

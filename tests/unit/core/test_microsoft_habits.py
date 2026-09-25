@@ -6,7 +6,7 @@ one for a function both our editors have -- and this is that list, checked
 against both keymaps rather than believed.
 
 It found the last disagreement on 2026-09-18: QUILL carried Word's ``F12`` for
-Save As (and ``Ctrl+F12`` / ``Ctrl+Shift+F12`` for Open and Print) and QuillLite
+Save As (and ``Ctrl+F12`` / ``Ctrl+Shift+F12`` for Open and Print) and QUILL Lite
 did not. All three were free there, so rule 5 applied -- adopted as aliases, with
 nothing moved and both primaries still working.
 
@@ -57,7 +57,7 @@ MICROSOFT: dict[str, str] = {
 
 #: Chords **QUILL** leaves to the control, each with its reason.
 #:
-#: QuillLite binds the clipboard four itself, and is right to: it plays an
+#: QUILL Lite binds the clipboard four itself, and is right to: it plays an
 #: earcon for cut, copy, paste and delete, because those change the document
 #: and change *nothing a screen reader announces* -- no focus move, no control
 #: name -- so the feedback is a sound or it is nothing. QUILL routes them
@@ -116,7 +116,7 @@ def _lite_chords() -> dict[str, str]:
 #: Microsoft chords one editor has and the other genuinely cannot, with the
 #: reason. Rule 1 only applies to a function **both** editors have.
 ONE_EDITOR_ONLY: dict[str, str] = {
-    "Shift+F7": "Word's Thesaurus. QUILL has one; QuillLite has no thesaurus at "
+    "Shift+F7": "Word's Thesaurus. QUILL has one; QUILL Lite has no thesaurus at "
     "all, which is the allowed direction under rule 10 -- the big product may be "
     "ahead of the small one.",
 }
@@ -143,7 +143,7 @@ def test_every_microsoft_habit_lands_somewhere_in_quilllite() -> None:
         if _normalise(chord) not in claimed and chord not in ONE_EDITOR_ONLY
     )
     assert not missing, (
-        "chords a Word, WordPad or Notepad habit would press, which QuillLite does "
+        "chords a Word, WordPad or Notepad habit would press, which QUILL Lite does "
         "not bind (rule 1):\n  " + "\n  ".join(missing)
     )
 
@@ -163,7 +163,7 @@ def test_the_clipboard_four_still_answer_in_quilllite() -> None:
     """Different mechanism, same keys -- which is what rule 2 actually asks."""
     lite = _lite_chords()
     for chord in ("Ctrl+X", "Ctrl+C", "Ctrl+V", "Ctrl+A"):
-        assert _normalise(chord) in lite, f"QuillLite lost {chord}"
+        assert _normalise(chord) in lite, f"QUILL Lite lost {chord}"
 
 
 def test_the_two_editors_agree_about_every_microsoft_chord() -> None:
@@ -176,13 +176,13 @@ def test_the_two_editors_agree_about_every_microsoft_chord() -> None:
             continue
         key = _normalise(chord)
         if key in NOT_OURS_KEYS:
-            # The control owns it in QUILL and QuillLite binds it for its
+            # The control owns it in QUILL and QUILL Lite binds it for its
             # earcon: the key answers in both, which is the question here.
             continue
         if key in quill and key not in lite:
-            disagreements.append(f"{chord}: QUILL has it, QuillLite does not")
+            disagreements.append(f"{chord}: QUILL has it, QUILL Lite does not")
         if key in lite and key not in quill:
-            disagreements.append(f"{chord}: QuillLite has it, QUILL does not")
+            disagreements.append(f"{chord}: QUILL Lite has it, QUILL does not")
     assert not disagreements, "\n  ".join(disagreements)
 
 

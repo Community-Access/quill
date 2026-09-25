@@ -366,7 +366,7 @@ def latest_session_snapshot(session_id: str, *, include_untitled: bool = True) -
     non-empty, one to sort by mtime).
 
     ``include_untitled`` is the ``recover_untitled_documents`` preference, which
-    QuillLite answers the same way: a document that never had a file is a
+    QUILL Lite answers the same way: a document that never had a file is a
     different promise from one that did, and a user is allowed to say they only
     want the second kind back. It is expressible here at all because an untitled
     document snapshots under a known key -- see

@@ -1,11 +1,11 @@
-"""QuillLite's Select menu: the table, the area, and parity with QUILL.
+"""QUILL Lite's Select menu: the table, the area, and parity with QUILL.
 
 The behaviour of the commands themselves needs a real window and belongs to the
 sign-off checklist, which is where a person listens to what they announce. What
 is checked here is what a machine can check and a person cannot reliably: that
 the menu is complete, that its keys are the ones QUILL uses where that was
 possible, that switching the area off does not take Select All with it, and --
-the rule that keeps costing work when it is forgotten -- that QuillLite has not
+the rule that keeps costing work when it is forgotten -- that QUILL Lite has not
 ended up with a selection command QUILL lacks.
 """
 
@@ -73,7 +73,7 @@ def test_the_submenu_is_named_by_a_row_of_the_edit_menu() -> None:
 def test_the_f8_family_uses_quills_own_keys(handler: str, key: str) -> None:
     """Muscle memory has to carry between the two products.
 
-    Every one of these was free in QuillLite, so there was no reason to differ
+    Every one of these was free in QUILL Lite, so there was no reason to differ
     and every reason not to.
     """
     bound = {h: k for _m, _l, k, h, kind in COMMANDS if kind != "sep"}
@@ -110,7 +110,7 @@ def test_every_select_command_has_a_handler_on_the_window() -> None:
 
 
 def test_quill_can_do_everything_the_select_menu_can() -> None:
-    """QuillLite is never allowed to be ahead of QUILL.
+    """QUILL Lite is never allowed to be ahead of QUILL.
 
     Every command in this menu maps to a QUILL command id that is bound. This is
     the test that would have caught Select Word being absent from QUILL, and
@@ -149,7 +149,7 @@ def test_quill_can_do_everything_the_select_menu_can() -> None:
         # Added 2026-09-16, and it is the reason QUILL's own
         # edit.open_review_buffer finally got a key: the command had been
         # registered there since SEL-4 with nothing bound to it, so the moment
-        # QuillLite could reach the feature from the keyboard the small product
+        # QUILL Lite could reach the feature from the keyboard the small product
         # was ahead (bad.md 4.2, Tier 2). This gate is what said so.
         "cmd_open_review_buffer": "edit.open_review_buffer",
     }
@@ -167,7 +167,7 @@ def test_quill_can_do_everything_the_select_menu_can() -> None:
         and not DEFAULT_KEYMAP.get(command_id)
     )
     assert unreachable == [], (
-        "QuillLite offers these and QUILL has no key for them, which is exactly "
+        "QUILL Lite offers these and QUILL has no key for them, which is exactly "
         "backwards: " + ", ".join(unreachable)
     )
 

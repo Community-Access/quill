@@ -127,7 +127,7 @@ def apply_profile(
     """Set every known area to what *profile* says, leaving the rest alone.
 
     Every *known* area, not every stored id: the store also carries private
-    markers (QuillLite seeds its default-off set exactly once and records that
+    markers (QUILL Lite seeds its default-off set exactly once and records that
     it did), and a profile has no opinion about those.
     """
     for area in areas:

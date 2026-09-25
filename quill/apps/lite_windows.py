@@ -1,4 +1,4 @@
-"""Which QuillLite window is in front, and which ones close.
+"""Which QUILL Lite window is in front, and which ones close.
 
 Extracted from ``lite.py`` under GATE-11 when Close Other Documents grew its
 bulk prompt. QUILL's half of the same command is
@@ -28,10 +28,10 @@ class LiteWindowsMixin:
     def close_other_documents(self, keep: DocumentFrame) -> int:
         """Close every document window but *keep*. Returns how many closed.
 
-        Reported by a QuillLite user with sixty-nine windows open at once: the
+        Reported by a QUILL Lite user with sixty-nine windows open at once: the
         only way back to one document was Ctrl+W sixty-eight times, answering a
         save prompt on each. QUILL has had Close Other Documents on
-        Ctrl+Shift+F4 since 2026-06-15 and QuillLite never got it, which is the
+        Ctrl+Shift+F4 since 2026-06-15 and QUILL Lite never got it, which is the
         wrong direction for a key somebody learns in one editor and presses in
         the other (family rule 2: the command both products have keeps the
         chord).

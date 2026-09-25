@@ -367,7 +367,7 @@ class CopyTrayMixin:
         tray filled in order is a tray whose numbers mean nothing. Each row
         says what it would overwrite, because that is the one mistake this
         feature can make and a listener cannot see the tray to check first.
-        QuillLite's Alt+Shift+Y, and QuillLite's wording.
+        QUILL Lite's Alt+Shift+Y, and QUILL Lite's wording.
         """
         wx = self._wx
         text = self._get_editor_selection()
@@ -417,7 +417,7 @@ class CopyTrayMixin:
     def clear_all_tray_slots(self) -> None:
         """Empty every slot, having said how many there are to empty.
 
-        Asked *and* counted (bad.md C9): QUILL asked without a count, QuillLite
+        Asked *and* counted (bad.md C9): QUILL asked without a count, QUILL Lite
         counted without asking, and each half is the one the other needed. An
         empty tray is not worth a question at all, and it used to get one and
         then an announcement that read like a successful clearing.

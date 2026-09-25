@@ -7,7 +7,7 @@ Keyboard Manager showed it assigned, and pressing it does the reader's thing.
 Every visible surface agrees it should have worked, which is what makes it the
 worst shape a keymap bug takes.
 
-QuillLite refused these at assign time and QUILL refused nothing. Both do now,
+QUILL Lite refused these at assign time and QUILL refused nothing. Both do now,
 from one list.
 """
 

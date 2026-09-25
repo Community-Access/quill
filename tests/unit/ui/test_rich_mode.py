@@ -445,9 +445,9 @@ def test_status_bar_offers_the_format_cell() -> None:
 
 
 def test_default_chord_moved_to_the_switcher() -> None:
-    """QuillLite's Alt+Shift+F since 2026-09-18 (bad.md 3.8, P1.2).
+    """QUILL Lite's Alt+Shift+F since 2026-09-18 (bad.md 3.8, P1.2).
 
-    It was on the leader, and rule 6 does not allow that while QuillLite
+    It was on the leader, and rule 6 does not allow that while QUILL Lite
     reaches the same window on a plain chord.
     """
     from quill.core.keymap import DEFAULT_KEYMAP

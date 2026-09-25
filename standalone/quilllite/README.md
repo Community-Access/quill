@@ -1,9 +1,9 @@
-# QuillLite
+# QUILL Lite
 
 **QUILL with everything removed except the editor.** Numbered documents in one
 window; plain text, Markdown, HTML or rich text; and nothing else.
 
-QuillLite is for the person who wants Notepad or WordPad with QUILL's
+QUILL Lite is for the person who wants Notepad or WordPad with QUILL's
 accessibility and finds the full writing environment more than they need. It is
 a companion to [QUILL for All](https://github.com/Community-Access/quill), not a
 replacement: they install side by side and neither touches the other's settings.
@@ -60,13 +60,13 @@ Two downloads. You want one of them.
 
 Two, deliberately. The other QuillVille apps also publish a thin installer and a
 launcher-only Companion zip, which reuse a shared runtime someone already has.
-QuillLite does not, because it is the app people install when they have nothing
+QUILL Lite does not, because it is the app people install when they have nothing
 else: the runtime is usually absent, so the thin flavours download it anyway,
 and the Companion zip cannot install one at all -- it runs against whatever is
-on the machine, including a runtime older than QuillLite itself.
+on the machine, including a runtime older than QUILL Lite itself.
 
-The installer offers *Open .txt and .rtf files with QuillLite* as an
-**optional** component. It adds QuillLite to the Open With list and never
+The installer offers *Open .txt and .rtf files with QUILL Lite* as an
+**optional** component. It adds QUILL Lite to the Open With list and never
 becomes the default handler — Notepad, WordPad and QUILL stay where they were.
 
 **SmartScreen.** Until code signing is in place, Windows may warn about the
@@ -76,7 +76,7 @@ installer. Choose **More info**, then **Run anyway**.
 
 ## Run from source
 
-QuillLite lives in the `quill` package (`quill.apps.lite`); this folder is the
+QUILL Lite lives in the `quill` package (`quill.apps.lite`); this folder is the
 product wrapper — entry point, icon, installers, docs.
 
 ```powershell
@@ -125,7 +125,7 @@ Docs are rendered to HTML and EPUB from the Markdown by
 ```
 
 Settings, recent files, the copy tray, and any recovered work. Deliberately
-**not** `%APPDATA%\Quill`: QuillLite is offered as an alternative to QUILL, and
+**not** `%APPDATA%\Quill`: QUILL Lite is offered as an alternative to QUILL, and
 a machine that has never had QUILL installed should not grow a Quill folder
 because somebody opened a text file. Uninstalling does not remove this folder —
 recovered work is the one thing you might not have finished with.
@@ -136,10 +136,10 @@ A portable build keeps the same folder on the stick instead.
 
 ## Provenance
 
-QuillLite began as [PR
+QUILL Lite began as [PR
 #1490](https://github.com/Community-Access/quill/pull/1490) by Steven Scott
 (`doubletaponair`), offered under this repository's MIT licence — together with
 a standalone reproduction of a real bug in QUILL's Rich Edit surface, which
-ships here as `tests/repro_tom_true.py` and imports neither QUILL nor QuillLite
+ships here as `tests/repro_tom_true.py` and imports neither QUILL nor QUILL Lite
 so it can be run against a clean checkout. Both that fix and a second one are in
-this release, and both reach every QUILL user rather than only QuillLite's.
+this release, and both reach every QUILL user rather than only QUILL Lite's.

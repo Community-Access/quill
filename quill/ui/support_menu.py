@@ -42,7 +42,7 @@ def append_get_help_item(
     """Append **Get Help from Support...** and bind it. Returns its id ref.
 
     Every app in the family calls this, including the ones with no shell of
-    their own (QuillBeacon, QuillLite): the label, the key and the flow are
+    their own (QuillBeacon, QUILL Lite): the label, the key and the flow are
     written once so that asking for help is the same act everywhere, and so
     the six apps that had no reporting item at all -- only an address in the
     About box -- stop being the odd ones out.

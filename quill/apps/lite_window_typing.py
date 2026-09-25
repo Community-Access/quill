@@ -1,7 +1,7 @@
 """What happens while you type: abbreviations, autocorrect, and the spell check.
 
 Two features that watch the keystroke rather than the menu, and the only two
-places in QuillLite where the app changes text the user did not ask it to
+places in QUILL Lite where the app changes text the user did not ask it to
 change. Both are therefore switchable areas, and one of them starts off.
 
 **Abbreviations** (:mod:`quill.core.abbreviations`, QUILL's own engine and
@@ -11,11 +11,11 @@ turns a long, error-prone, character-by-character insertion into four
 keystrokes, and the errors it removes are the ones that cost most to find again
 by ear.
 
-The library is **QuillLite's own** by default, in QuillLite's own data folder.
+The library is **QUILL Lite's own** by default, in QUILL Lite's own data folder.
 Preferences has a switch -- off by default -- that points it at QUILL's shared
 ``abbreviations.json`` instead, which is the one Inkwell and QUILL both use. That
 is deliberately opt-in and not the default: Inkwell shares the library because
-one library is its entire value, while QuillLite is offered as an alternative to
+one library is its entire value, while QUILL Lite is offered as an alternative to
 QUILL, and a machine that has never had QUILL installed must not grow a Quill
 data folder because somebody opened a text file.
 
@@ -25,7 +25,7 @@ sentence-capital rule and never has, whatever three descriptions used to say.
 It ships
 **off** (:data:`quill.core.lite.features.DEFAULT_OFF`), because every one of
 those is welcome in prose and actively wrong in a configuration file, a code
-snippet or a CSV -- and QuillLite is used for all four. Turning it on is one
+snippet or a CSV -- and QUILL Lite is used for all four. Turning it on is one
 checkbox in Tools > Customize Features.
 
 Neither runs in plain text mode by accident: both are keyed off ``EVT_CHAR``
@@ -34,7 +34,7 @@ off.
 
 **Overtype** is the fourth. The native control implements insert-versus-overwrite
 itself and toggles it on VK_INSERT, and it will not report which mode it is in --
-so QuillLite mirrors the mode, and every route that changes it comes through
+so QUILL Lite mirrors the mode, and every route that changes it comes through
 :meth:`~quill.ui.richedit_editing.RichEditDocument.toggle_overtype` (which is
 also what QUILL's own command calls). The Insert key is watched rather than
 bound: it is NVDA's and JAWS's modifier and must never be claimed, but the
@@ -42,11 +42,11 @@ control answers it regardless, so the mirror has to see it go past or the Typing
 Mode cell would start lying the first time somebody pressed it.
 
 **Tab mode** is the fifth, and the only one that changes what an ordinary key
-*means*. QuillLite is a Notepad replacement, so its Tab types a tab character --
+*means*. QUILL Lite is a Notepad replacement, so its Tab types a tab character --
 that is the default, and it is the opposite of QUILL's, where Tab runs the smart
 line indent. The divergence is deliberate and is the only one on this page:
 QUILL is a document editor whose Tab is almost always about structure, while a
-file opened in QuillLite is as likely to be a configuration file where a tab is
+file opened in QUILL Lite is as likely to be a configuration file where a tab is
 data. Both products ship the same toggle so either default can be left behind,
 and in both Shift+Tab outdents whatever the mode, so a stray indent can be
 undone without first switching back.
@@ -194,7 +194,7 @@ class DocumentTypingMixin:
         # Extend Selection Mode owns the navigation keys while it is on, and
         # must see them BEFORE the control does -- on wxMSW an arrow pressed
         # with text selected collapses the selection and stops, which is what
-        # broke QuillLite's own attempt at this (bad.md P2.13, 5.3a).
+        # broke QUILL Lite's own attempt at this (bad.md P2.13, 5.3a).
         if self.handle_extend_selection_key(event):
             return
         # Shift+F10 and the Applications key, opened here rather than left to
@@ -216,17 +216,17 @@ class DocumentTypingMixin:
     def _swallow_native_formatting_key(self, event: wx.KeyEvent) -> bool:
         """Stop the control formatting a document that has no formatting.
 
-        QuillLite builds plain and Markdown documents on the same Rich Edit
+        QUILL Lite builds plain and Markdown documents on the same Rich Edit
         control QUILL does, and for the same reason -- it is what gives braille
         and the reader a text surface worth reading. The control brings its own
-        chords: every native key QuillLite does not bind (``Ctrl+Shift+=`` for
+        chords: every native key QUILL Lite does not bind (``Ctrl+Shift+=`` for
         superscript and its friends) applies a formatting run to a document
         that cannot hold one, so the window and the file it will write disagree
         and nothing says so (bad.md R9).
 
         Said once per document, from the same shared sentence QUILL uses, so
         the two products cannot explain one dead key two ways. A chord
-        QuillLite binds never reaches here: the menu accelerator runs first.
+        QUILL Lite binds never reaches here: the menu accelerator runs first.
         """
         from quill.core.native_richedit_keys import (
             native_formatting_effect,
@@ -318,7 +318,7 @@ class DocumentTypingMixin:
         """Whether Tab types a tab character right now (bad.md T3, P1.21).
 
         The toggle wins once it has been used; otherwise the document kind
-        decides, through the rule QUILL reads too. QuillLite typed a tab in
+        decides, through the rule QUILL reads too. QUILL Lite typed a tab in
         every kind and QUILL indented in every kind, and each was wrong in the
         other's documents -- a tab in a Markdown list item breaks the list.
         """
@@ -510,11 +510,11 @@ class DocumentTypingMixin:
     def cmd_snippet_gallery(self) -> None:
         """Ctrl+Shift+Insert: pick a snippet from a list and put it in.
 
-        The half QuillLite did not have. Abbreviations expand when you *type the
+        The half QUILL Lite did not have. Abbreviations expand when you *type the
         trigger*, which is perfect for the six you use daily and useless for the
         fortieth one, whose trigger you cannot remember -- and a manager is for
         editing them, not for reaching them. QUILL has had a gallery since its
-        snippets shipped; this is the same surface at QuillLite's scale
+        snippets shipped; this is the same surface at QUILL Lite's scale
         (bad.md 4.2 Tier 3, P3.6).
 
         "Snippet" rather than "abbreviation" in the title, because it is the

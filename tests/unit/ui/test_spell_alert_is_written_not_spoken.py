@@ -4,7 +4,7 @@
 whether or not ``spelling_alert_speech`` was on -- and *twice* when it was on,
 once through the status write and once through the deliberate announcement
 below it. The setting therefore did nothing in QUILL and did exactly what it
-says in QuillLite, whose status write is silent: one setting, two opposite
+says in QUILL Lite, whose status write is silent: one setting, two opposite
 meanings, in two editors that are meant to agree.
 
 Over-announcing is the failure nobody files. "This app is chatty" gets absorbed;

@@ -46,7 +46,7 @@ APP_MENU_FILES = (
     "weather.py",
     "converter.py",
     "beacon/app.py",
-    # QuillLite builds its bar by walking a table, so every label here is an
+    # QUILL Lite builds its bar by walking a table, so every label here is an
     # f-string the source-level scan cannot read. The table itself is checked
     # far more strictly instead (tests/unit/core/lite/test_lite_commands.py):
     # every item has a key, no key or access key is claimed twice, and every

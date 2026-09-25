@@ -273,7 +273,7 @@ class TutorialsWindow:
 
         self._follow = wx.CheckBox(parent, label="Follow &me")
         # Greyed, not hidden, in an app whose lessons carry no checks at all --
-        # QuillLite is one: every step's outcome there is a sentence the app
+        # QUILL Lite is one: every step's outcome there is a sentence the app
         # already says, so there is nothing to watch for. A tick box that can
         # never do anything is worse than an absent one only if nothing says so,
         # and a disabled control announces itself as unavailable the moment a

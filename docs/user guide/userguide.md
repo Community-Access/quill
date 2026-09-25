@@ -395,7 +395,7 @@ A few things worth knowing: the Illumination travels as a *separate file*, so if
 ### How this file is written: encoding and line endings
 
 **File ▸ File Format...** (`Ctrl+Alt+E`) is one window for the two facts that
-decide what bytes land on disk. QuillLite opens the same window on the same key,
+decide what bytes land on disk. QUILL Lite opens the same window on the same key,
 under its own name: **Tools ▸ File Encoding and Line Endings...**.
 
 - **Encoding.** UTF-8 for anything new; UTF-8 with BOM for the Windows tools
@@ -404,7 +404,7 @@ under its own name: **Tools ▸ File Encoding and Line Endings...**.
   **keep as is** row and stays in it, because a chooser that cannot show the
   format it is editing must not answer for it.
 - **Line endings.** CRLF is what Windows programs write and what a new QUILL
-  document is born with, matching Notepad, WordPad, Word and QuillLite. LF is
+  document is born with, matching Notepad, WordPad, Word and QUILL Lite. LF is
   what Unix, macOS and most build tools expect. A file that arrived with
   classic-Mac CR keeps it, in its own **keep as is** row.
 
@@ -527,7 +527,7 @@ The **View** menu controls how Quill presents your document on screen without ch
 - **Auto Side-by-Side Preview** opens a live preview beside the editor automatically.
 - **Show Tab Control** toggles the visible document tab strip.
 - **Status Bar** (`Alt+Shift+B`) shows or hides the **whole** status bar, which
-  is Notepad's switch on Notepad's key, and QuillLite's. It is distinct from
+  is Notepad's switch on Notepad's key, and QUILL Lite's. It is distinct from
   choosing *which cells* the bar carries (right-click the bar, or
   **Preferences > Settings**, `status_bar_hidden`): a bar with every cell hidden
   still takes a row of the window, and until September 2026 emptying that list
@@ -536,7 +536,7 @@ The **View** menu controls how Quill presents your document on screen without ch
   bar leaving the window is not something your screen reader will mention.
 - **Increase Text Size** (`Ctrl+=`), **Decrease Text Size** (`Ctrl+-`) and
   **Reset Text Size** (`Ctrl+0`) change how big the editor's text is without
-  leaving the document. These are Notepad's own three keys, and QuillLite's.
+  leaving the document. These are Notepad's own three keys, and QUILL Lite's.
   See [The size and face of the text](#the-size-and-face-of-the-text).
 - **Wrap Find Searches** controls whether Find wraps past the end of the document.
 - **Start With No Document Open** makes Quill open into an empty workspace instead of a starter document.
@@ -560,7 +560,7 @@ The **Insert** menu adds structured content at the cursor.
   down.
 - **Next Heading** is `Ctrl+Alt+H` and **Previous Heading** is
   `Ctrl+Alt+Shift+H`; `Ctrl+Alt+L` opens the **Outline Navigator**, which is
-  QuillLite's List Headings chord pointed at QUILL's list, so either habit
+  QUILL Lite's List Headings chord pointed at QUILL's list, so either habit
   works. (`Ctrl+Shift+O` still opens it too.) **AI Thesaurus** moved to
   `Ctrl+Alt+Shift+M` to free the H; the plain **Thesaurus** keeps Word's
   `Shift+F7`.
@@ -579,7 +579,7 @@ The **Insert** menu adds structured content at the cursor.
 - **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. These carry direct authoring shortcuts: **Insert Table** is `Ctrl+Alt+T`, **Insert Block Quote** is on **Quote Lines** (`Ctrl+Shift+Q`) — the two wrote the identical `> ` in Markdown, so they are one command now — and **Insert Horizontal Rule** is `Ctrl+Alt+-`, alongside the `Ctrl+Alt+1`–`6` heading chords and the list toggles on `Ctrl+Shift+L` and `Ctrl+Shift+Grave, Shift+L`. All remain rebindable in the Keymap Editor.
 - **Date and Time** (`F5`) writes the time and date at the caret and reads it
   back to you --- Notepad's key, Notepad's shape (`14:07 16/09/2026`), and
-  QuillLite's. It is a built-in command rather than an extension, so it also
+  QUILL Lite's. It is a built-in command rather than an extension, so it also
   works in **Safe Mode**; the three variants below it in the same submenu
   (date only, time only, both) come from the bundled Insert Tools extension and
   switch off with the rest of them.
@@ -597,7 +597,7 @@ The **Insert** menu adds structured content at the cursor.
   the picker reaches every character Unicode has. That replaced the bare
   code-point prompt this command used to be. QUILL says what it inserted, in
   Describe Character's words, because most of the list is invisible on the page.
-  QuillLite has the same picker on **Edit > Insert > Special Character...**.
+  QUILL Lite has the same picker on **Edit > Insert > Special Character...**.
   (This moved from F2, which now opens the Structured List Studio; both keys are
   remappable.)
 - **Line Break** (`Shift+Enter`) ends the line **without starting a new
@@ -614,7 +614,7 @@ The **Insert** menu adds structured content at the cursor.
   many tools when they save. QUILL always *reads* both, so a document written
   elsewhere in the two-space style still renders correctly here.
 
-  QuillLite has the same command on **Edit > Insert > Line Break**, on the same
+  QUILL Lite has the same command on **Edit > Insert > Line Break**, on the same
   key.
 - **Date and Time** submenu inserts a date, time, or both at the cursor. The bundled `com.quill.bundled.insert-tools` Quillin owns this submenu; it is the canonical home for date and time snippets. See [Date and Time submenu](#date-and-time-submenu) below.
 - **Insert Emoji...** (`Alt+.`) opens the Accessible Emoji Picker: browse or search all 3,781 standard emoji by name, keyword, symbol, or a typed smiley like `:)`, each with a real spoken description of what it looks like. See [Insert Emoji: browse or search 3,781 emoji](#insert-emoji-browse-or-search-3781-emoji) below.
@@ -4568,7 +4568,7 @@ which is a cost you pay on every visit rather than once: **Hard-Wrap Lines**
 (`Alt+Shift+W`), **Delete Lines Containing** (`Alt+Shift+X`), **Convert
 Indentation to Spaces** (`Alt+F11`), **Convert Indentation to Tabs**
 (`Alt+F12`) and **Line Statistics** (`Ctrl+Alt+W`). The first four are the
-chords QuillLite uses for the same verbs, so a hand trained on either product
+chords QUILL Lite uses for the same verbs, so a hand trained on either product
 finds them; Line Statistics is the "how wide is this" companion to Document
 Statistics on `Ctrl+Shift+G`.
 
@@ -4598,7 +4598,7 @@ Core location commands:
   kind from the radio buttons at the top; the number field and the list below
   follow your choice, and the one that does not apply is dimmed rather than
   removed, so the window never changes shape under you. Pages are exact in a
-  PDF and marked `~4 (estimated)` everywhere else. QuillLite opens the same
+  PDF and marked `~4 (estimated)` everywhere else. QUILL Lite opens the same
   window on the same key, without the Page row --- it has no pagination model,
   and a dimmed row for something a product does not do is a row you walk past
   forever. The old **Go To Line** and **Go To Page** commands both land here
@@ -4924,7 +4924,7 @@ The fourth of the set, **Repeat Last Announcement**, has been there since 0.9.0:
 
 - **Document Statistics...** (`Ctrl+Shift+G`) --- words, characters, lines,
   paragraphs and reading time. It was "Word Count" on `Ctrl+Shift+W` until
-  September 2026; the new name and key are Word's and QuillLite's, so one
+  September 2026; the new name and key are Word's and QUILL Lite's, so one
   window has one name and one key across the family.
 - **Spell Check...**
 - **Next Misspelling**
@@ -5315,7 +5315,7 @@ unheard. A fast reader pays nothing for a feature a careful reader needs.
 Twelve settings under **Spelling** in Settings control all of it, and both
 editors also gather them into one window of their own. In QUILL it is
 **Spelling Announcements**, on `Ctrl+Alt+Shift+F6` or by name in the command
-palette (`Ctrl+Shift+P`); in QuillLite it is **Tools ▸ Spelling ▸
+palette (`Ctrl+Shift+P`); in QUILL Lite it is **Tools ▸ Spelling ▸
 Announcements**. Same twelve settings, same file, so tuning this once tunes
 both.
 
@@ -5330,7 +5330,7 @@ The status bar always carries the word --- "Possible misspelling: teest" ---
 whichever way those two settings are set, so you can go and read it with your
 reader at any time. Until September 2026 QUILL spoke that status line as well,
 whether or not **spelling_alert_speech** was on, and spoke it *twice* when it
-was: the setting did nothing here while doing exactly what it says in QuillLite.
+was: the setting did nothing here while doing exactly what it says in QUILL Lite.
 Both editors now mean the same thing by it.
 
 **Spelling a word out.** **spell_aloud_enabled** is the master switch.
@@ -5365,7 +5365,7 @@ existing file was handed a blank document to close on every single launch.
 Turning it off changes only that one case. A file you double-clicked, a file
 named on the command line, last session's documents and recovered unsaved work
 all still open, because every one of those is somebody asking for a document.
-QuillLite has the same setting, under the same name, in **Preferences**.
+QUILL Lite has the same setting, under the same name, in **Preferences**.
 
 #### Quiet mode
 
@@ -5373,7 +5373,7 @@ QuillLite has the same setting, under the same name, in **Preferences**.
 One key, because "make it stop" is something you need *while* the noise is
 happening -- on a call, in a quiet room, or having had enough of an earcon
 today. A feature you have to go and find is one that does not help at the moment
-you need it. The setting is shared with QuillLite, so silencing one editor
+you need it. The setting is shared with QUILL Lite, so silencing one editor
 silences both.
 
 #### The Sound Scheme window
@@ -5411,7 +5411,7 @@ Defaults** puts every event back and switches them all on, and it cannot
 half-succeed, because the sounds QUILL ships are never overwritten in the first
 place.
 
-QuillLite opens the same window over the same schemes, so a scheme you build in
+QUILL Lite opens the same window over the same schemes, so a scheme you build in
 one is offered in the other.
 
 #### The sounds themselves
@@ -5577,10 +5577,10 @@ the `&AI` menu:
 | **Ctrl+Alt+Shift+F4** | Connect or Sign Out... | Connect this computer, or disconnect it |
 | **Ctrl+Alt+Shift+K** | Privacy Agreement... | Read what is sent, and accept or withdraw |
 
-These are the same five commands as QuillLite's — one feature, shared, so
+These are the same five commands as QUILL Lite's — one feature, shared, so
 anything you learn in one editor you have learned in both. Three of the five keys
 are identical too. Usage and Connect differ because `Ctrl+Alt+Shift+F7` to `F12`
-open the other QuillVille apps from inside QUILL, and QuillLite, being the editor
+open the other QuillVille apps from inside QUILL, and QUILL Lite, being the editor
 on its own, has none to open — so it uses `Ctrl+Alt+Shift+F9` and `F10` for those
 two, and QUILL uses `F2` and `F4`.
 
@@ -8230,7 +8230,7 @@ than just the keys.
 | `Ctrl+-` | Decrease Text Size, one point |
 | `Ctrl+0` | Reset Text Size to the default (12 point) |
 
-Notepad uses those three, every browser uses those three, and QuillLite has used
+Notepad uses those three, every browser uses those three, and QUILL Lite has used
 those three since it shipped -- so the hand that already knows one of them knows
 QUILL's. QUILL says the new size out loud ("14 point") each time, because a
 screen reader announces nothing when a control it is not focused on changes size;
@@ -8288,7 +8288,7 @@ Both live in **Preferences > Settings** (search for "font"):
   rather than refused, so a settings file with a typo in it still opens into a
   readable editor.
 
-They are the same two setting names QuillLite uses, deliberately: a settings
+They are the same two setting names QUILL Lite uses, deliberately: a settings
 file carried between the two products means the same thing in both.
 
 ### Status bar as an accessible control surface
@@ -8366,7 +8366,7 @@ If you pick a sound for a moment your sound pack has no clip for, Quill speaks i
 
 **Wrap around when searching** (`wrap_find`) decides what happens when Find Next reaches the end of the document, or Find Previous reaches the start. With it on (the default) the search continues from the other end, and a distinct wrap cue tells you that it did — which is the one thing your screen reader cannot know. With it off the search stops and says which end it stopped at: *"No more matches. Reached the end of the document, and wrapping is off."*
 
-That wording matters, because the two situations need different fixes. "Not found" means change the pattern; running out of document means go to the other end and press again. The setting applies in both directions, and to Quill and QuillLite alike.
+That wording matters, because the two situations need different fixes. "Not found" means change the pattern; running out of document means go to the other end and press again. The setting applies in both directions, and to Quill and QUILL Lite alike.
 
 Earcon events in the bundled Ink pack include: `quill_key_pressed` (QUILL key prefix armed), `abbreviation_expanded`, `abbreviation_deleted`, `snippet_inserted`, `autocomplete_accepted`, `document_saved`, `document_created`, `search_found`, `search_not_found`, `search_wrapped`, `heading_jumped`, `table_entered`, `browse_mode_on`, `browse_mode_off`, `ai_thinking_started`, `ai_response_received`, `ai_error`, `transcription_started`, `transcription_stopped`, `ssh_connected`, `ssh_disconnected`, `error`, `warning`, `sound_on`, `sound_off`, and the five compare events. Every scripted earcon in the bundled pack is a distinct sound, so two different events never sound identical. Pack authors can map any event ID to any WAV file; the full QSP format and event reference are documented in the product requirements document, under "Sound notifications and QSP sound packs."
 
@@ -8435,13 +8435,13 @@ The first-run Personalise QUILL wizard offers seven of these as curated starting
 - **Braille and Screen Reader Power User** — screen-reader-friendly navigation with advanced text tools surfaced calmly rather than buried.
 - **Accessibility Professional** — reading, inspection, trust, and accessibility diagnostics for auditing other people's documents.
 - **Full Quill** — everything visible, including advanced and experimental paths, for people who would rather see it all than ask "why don't I see this?"
-- **QuillLite** — QUILL with QuillLite's nine menus and nothing else: a plain-text editor with rich text, spelling, the line tools and the clipboard, and none of the writing environment around them. For somebody arriving from the small editor who wants QUILL to be the shape they already know.
+- **QUILL Lite** — QUILL with QUILL Lite's nine menus and nothing else: a plain-text editor with rich text, spelling, the line tools and the clipboard, and none of the writing environment around them. For somebody arriving from the small editor who wants QUILL to be the shape they already know.
 
-The QuillLite profile does two things the others do not, and both are worth knowing. It **switches features off rather than hiding them** — everything it takes away is still in **Customize Features** and the command palette, so wanting one thing back is one tick, not a reinstall. And because its name is a promise about what you type in and not only about which menus exist, it also sets **Ctrl+N to make a plain text document**, which is what QuillLite makes.
+The QUILL Lite profile does two things the others do not, and both are worth knowing. It **switches features off rather than hiding them** — everything it takes away is still in **Customize Features** and the command palette, so wanting one thing back is one tick, not a reinstall. And because its name is a promise about what you type in and not only about which menus exist, it also sets **Ctrl+N to make a plain text document**, which is what QUILL Lite makes.
 
-**Bring my QuillLite settings.** The first time you choose the profile, QUILL offers to start from your QuillLite setup, and **Tools > Customize and Support > Bring My QuillLite Settings...** (`Alt+Shift+F11`) does it any time — you can want your QuillLite abbreviations in QUILL without wanting QuillLite's menus. The question says what it would do before it does it, with counts, and what it is leaving behind.
+**Bring my QUILL Lite settings.** The first time you choose the profile, QUILL offers to start from your QUILL Lite setup, and **Tools > Customize and Support > Bring My QUILL Lite Settings...** (`Alt+Shift+F11`) does it any time — you can want your QUILL Lite abbreviations in QUILL without wanting QUILL Lite's menus. The question says what it would do before it does it, with counts, and what it is leaving behind.
 
-What comes across, and how, follows one rule: **content is shared and preferences are copied.** Your abbreviations, personal dictionary, copy tray, clip library and bookmarks are months of work, so they are merged into QUILL's folder and QuillLite is pointed at the same copy — add an abbreviation in either editor from then on and it is in both. Wrap, autosave, spell-check-while-typing and the rest are about the editor you are in, and the two are not the same editor, so they are copied once and then allowed to drift. Rebound keys come the same way, and a QuillLite command QUILL does not have is left behind rather than guessed at. **Nothing already in QUILL is replaced** — where both have an entry, QUILL's wins, because you have been using QUILL and what is here is the more recent answer.
+What comes across, and how, follows one rule: **content is shared and preferences are copied.** Your abbreviations, personal dictionary, copy tray, clip library and bookmarks are months of work, so they are merged into QUILL's folder and QUILL Lite is pointed at the same copy — add an abbreviation in either editor from then on and it is in both. Wrap, autosave, spell-check-while-typing and the rest are about the editor you are in, and the two are not the same editor, so they are copied once and then allowed to drift. Rebound keys come the same way, and a QUILL Lite command QUILL does not have is left behind rather than guessed at. **Nothing already in QUILL is replaced** — where both have an entry, QUILL's wins, because you have been using QUILL and what is here is the more recent answer.
 
 Use **Profiles and Features...** to:
 
@@ -8552,8 +8552,8 @@ Quill's current settings and customization surface covers the things you are mos
 - active keyboard pack
 - custom keybindings through the keymap editor
 - status-bar order and status-bar visibility
-- **reopen last session's documents** (`restore_session`) -- on by default, the way Notepad 11 and QuillLite both behave. The list of what was open is kept in `session_files`; a file you open from Explorer or the command line always wins, and is opened *instead* of the session rather than on top of it. **Whether it asks first** is `session_restore_ask` -- see [Reopening last session](#reopening-last-session).
-- **line endings for new documents** (`default_line_ending`) -- Windows (CR LF) by default, which is what Notepad, WordPad, Word and QuillLite all write. Set it to Unix (LF) if you would rather. A file you *open* always keeps the line endings it already had, whichever this says; the choice only decides what a brand-new document starts with.
+- **reopen last session's documents** (`restore_session`) -- on by default, the way Notepad 11 and QUILL Lite both behave. The list of what was open is kept in `session_files`; a file you open from Explorer or the command line always wins, and is opened *instead* of the session rather than on top of it. **Whether it asks first** is `session_restore_ask` -- see [Reopening last session](#reopening-last-session).
+- **line endings for new documents** (`default_line_ending`) -- Windows (CR LF) by default, which is what Notepad, WordPad, Word and QUILL Lite all write. Set it to Unix (LF) if you would rather. A file you *open* always keeps the line endings it already had, whichever this says; the choice only decides what a brand-new document starts with.
 - **the format a new document starts in** (`default_new_document_format`) -- Markdown, plain text or HTML. **File -> New Rich Text Document** (Ctrl+Shift+N) and **New Plain Text Document** (Ctrl+Alt+N) start one in that kind whatever the setting says, and `quill --rich` / `quill --plain` do the same from a command line.
 
 Some of these live in the View menu for quick toggling; the preference-style toggles now live in the **Settings** dialog (**Tools -> Customize & Support -> Preferences...**). Others live in **Profiles and Features...**, **Status Bar Layout...**, **Keymap Editor...**, and the related customization commands under **Tools -> Customize & Support**.
@@ -8607,7 +8607,7 @@ a restart.
 
 `session_restore_ask` holds the preference: **always**, **when_it_matters** (the
 default) or **never**. It is a separate question from `restore_session`, which
-decides whether last session is reopened at all. QuillLite has the same window on
+decides whether last session is reopened at all. QUILL Lite has the same window on
 the same key and the same setting under the same name.
 
 ## Trust, Recovery, Sessions, and Safety
@@ -8788,7 +8788,7 @@ How this fits with QUILL's other safety nets: **undo** (and persistent undo) cov
 
 If Quill closes unexpectedly, it can offer a recovery snapshot on the next launch. That is not a dramatic feature. It is a humane one.
 
-Two settings shape what it offers, and both are shared with QuillLite so the
+Two settings shape what it offers, and both are shared with QUILL Lite so the
 answer is the same in either editor.
 
 - **Offer untitled unsaved work** (`recover_untitled_documents`) -- on by
@@ -8818,7 +8818,7 @@ row, so it never describes a window you have already changed.
 ### Closing every tab but this one
 
 **Window > Close Other Documents (Ctrl+Shift+F4)** keeps the tab you are in and
-closes the rest. QuillLite has the same command on the same key.
+closes the rest. QUILL Lite has the same command on the same key.
 
 When one of those tabs has unsaved changes you are asked about it, and the
 question carries two answers that settle every remaining tab at once: **Save
@@ -9961,7 +9961,7 @@ The previous activation mechanism (`QUILL_PORTABLE=1`) is no longer required and
 
 Until version 1.0 this was not true: a freshly extracted portable copy used `%APPDATA%\Quill` on the host machine until you went to the Setup Wizard or Preferences and chose portable, and nothing said so. If you have been running a portable QUILL and your settings look like they have reset, they have not — they are in `%APPDATA%\Quill` on that computer, and you can copy that folder's contents into the bundle's `data\` folder to bring them across.
 
-You can still choose otherwise. Picking **Windows profile** in Preferences or the Setup Wizard is remembered and overrides the bundle, because an explicit choice always beats a default. The same applies to every Quill app that ships a portable build — Quill Radio, Cast, Weather, Audio Studio, Converter, Inkwell, Beacon, Media Player and QuillLite.
+You can still choose otherwise. Picking **Windows profile** in Preferences or the Setup Wizard is remembered and overrides the bundle, because an explicit choice always beats a default. The same applies to every Quill app that ships a portable build — Quill Radio, Cast, Weather, Audio Studio, Converter, Inkwell, Beacon, Media Player and QUILL Lite.
 
 When portable mode is on, keys are stored in a file called `keys.enc` inside the QUILL data directory. The file is encrypted with Windows DPAPI, so it is protected by your Windows user-account key.
 

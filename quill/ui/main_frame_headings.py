@@ -3,7 +3,7 @@
 Two operations with two keys and one rule underneath. ``Ctrl+Alt+2`` means
 "this is a Heading 2" whatever it was before; ``Alt+Shift+Right`` means "one
 level deeper than it is". Both are :mod:`quill.core.heading_levels`, which is
-shared with QuillLite so the two editors cannot answer the same question two
+shared with QUILL Lite so the two editors cannot answer the same question two
 ways.
 
 Extracted from ``main_frame.py`` on 2026-09-16 while fixing bad.md R3. Setting a
@@ -15,7 +15,7 @@ lines, with nothing said about the four.
 
 Every one of those is invisible by ear, which is why it survived: the screen
 reader says "Heading 2" in all four cases, and the damage is only discoverable
-in the published document. QuillLite fixed exactly this by calling
+in the published document. QUILL Lite fixed exactly this by calling
 ``set_heading_level``, whose docstring names the bug; QUILL never adopted it.
 """
 
@@ -99,7 +99,7 @@ class HeadingLevelsMixin:
             return
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
-        # The rule itself is quill.core.heading_levels, shared with QuillLite,
+        # The rule itself is quill.core.heading_levels, shared with QUILL Lite,
         # which binds the same Alt+Shift+Left / Right pair. It used to be two
         # regexes and four branches inline here, which is the shape that gets
         # copied rather than called the second time somebody needs it.

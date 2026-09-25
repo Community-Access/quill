@@ -37,7 +37,7 @@ __all__ = ["contains_html_markup", "extract_cf_html_fragment", "html_to_markdown
 _SKIPPED_TEXT_TAGS = frozenset({"script", "style", "title"})
 
 #: The tags whose presence means a buffer is HTML rather than Markdown that
-#: happens to contain a tag. Block-level only, deliberately: QuillLite writes
+#: happens to contain a tag. Block-level only, deliberately: QUILL Lite writes
 #: ``<u>`` into *Markdown* documents (there is no native syntax for underline),
 #: so an inline tag proves nothing, while a ``<p>`` or an ``<h2>`` is structure
 #: no Markdown writer produces. The same set QUILL sniffs content with.

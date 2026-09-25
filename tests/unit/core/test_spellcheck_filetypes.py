@@ -1,13 +1,13 @@
 """The rule that decides where a live spell checker keeps quiet.
 
-Shared by QUILL and QuillLite, so it is tested once, here, rather than twice
+Shared by QUILL and QUILL Lite, so it is tested once, here, rather than twice
 against two products that could then disagree.
 
 This is not a cosmetic preference. Spell-check-as-you-type in a source or
 configuration file flags every identifier, key, tag and flag, and none of those
 alerts are right. A sighted user learns to ignore an underline; a screen-reader
 user pays an interruption for each one, which is why QUILL's live alert and
-QuillLite's both consult this before saying anything.
+QUILL Lite's both consult this before saying anything.
 """
 
 from __future__ import annotations

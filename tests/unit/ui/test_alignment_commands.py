@@ -10,7 +10,7 @@ shape as Underline's hard-coded ``Ctrl+U``: a capability that exists and cannot
 be reached.
 
 So this is a registration change, not a new feature. What it buys is Word's
-four keys -- ``Ctrl+L``, ``Ctrl+E``, ``Ctrl+R``, ``Ctrl+J`` -- which QuillLite
+four keys -- ``Ctrl+L``, ``Ctrl+E``, ``Ctrl+R``, ``Ctrl+J`` -- which QUILL Lite
 has always had and QUILL spent on nothing, a media command and a temporary
 bookmark.
 

@@ -327,7 +327,7 @@ class SearchCommandsMixin(FileSearchPromptMixin):
 
         ``settings.find_not_found_feedback`` -- sound (the default), speech, both
         or neither -- resolved through the shared rule in
-        :mod:`quill.core.action_feedback` so QuillLite cannot answer this
+        :mod:`quill.core.action_feedback` so QUILL Lite cannot answer this
         differently.
 
         The **first** miss speaks whatever the mode says, and a repeat of the

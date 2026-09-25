@@ -4,7 +4,7 @@ Every app in the family opened at a size written into its own source and forgot
 whatever you did to the window: Quill Radio at 460x360, QUILL at 1000x700,
 Beacon at 1100x720, and none of them remembered a thing between launches. Resize
 QUILL to fill your screen, close it, open it again -- 1000x700, every time. The
-only app that remembered was QuillLite, and it is the one this module is
+only app that remembered was QUILL Lite, and it is the one this module is
 modelled on.
 
 **Maximized is the default, and that is an accessibility decision rather than a
@@ -25,7 +25,7 @@ and then whatever you said. A restored size is only recorded while the window is
 the window would never come back to the size you actually chose.
 
 One store, keyed per app, in the shape ``app_features`` already uses: shared file,
-per-app entry, so QUILL's window size can never be Quill Radio's. QuillLite is
+per-app entry, so QUILL's window size can never be Quill Radio's. QUILL Lite is
 deliberately absent from it and keeps its geometry in its own settings file, for
 the same reason it keeps its abbreviations there: a machine that has never had
 QUILL installed must not grow a Quill data folder because somebody opened a text

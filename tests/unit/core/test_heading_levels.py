@@ -2,7 +2,7 @@
 
 The rule was two regexes and four branches inline in ``main_frame.py`` until
 2026-09-09 -- the shape that gets copied rather than called the second time
-somebody needs it, and QuillLite was the second time. It is here now, and both
+somebody needs it, and QUILL Lite was the second time. It is here now, and both
 products' Alt+Shift+Left / Right run it.
 
 The refusals carry as much weight as the change. Nothing about this operation

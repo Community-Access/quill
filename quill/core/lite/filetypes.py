@@ -1,4 +1,4 @@
-"""Which files QuillLite offers, and which of them are rich text.
+"""Which files QUILL Lite offers, and which of them are rich text.
 
 Two decisions live here, in one wx-free place so the Open dialog, the Save As
 dialog, the drag-and-drop path and the mode-switching logic cannot disagree
@@ -180,7 +180,7 @@ _SAVE_SUFFIX_FOR_LANGUAGE: dict[str, str] = {
 #:
 #: HTML lands on **All files** rather than a row of its own, and that is not an
 #: oversight: a row in the type list is a promise about what gets written, and
-#: QuillLite has no Markdown-to-HTML writer, so an "HTML (*.html)" row would
+#: QUILL Lite has no Markdown-to-HTML writer, so an "HTML (*.html)" row would
 #: offer to turn a Markdown document into HTML and then write the Markdown
 #: unchanged -- exactly the broken promise the Markdown row was once removed
 #: for. An HTML document still arrives with ``.html`` proposed in the name box,
@@ -210,7 +210,7 @@ def save_filter_index_for_language(language: str) -> int:
 
 #: The plain-text documents whose ``#`` lines are headings rather than comments.
 #:
-#: This distinction is load-bearing and easy to miss. QuillLite is a Notepad
+#: This distinction is load-bearing and easy to miss. QUILL Lite is a Notepad
 #: replacement, so people open ``.py``, ``.sh``, ``.ini``, ``.yml`` and ``.conf``
 #: files in it constantly -- and in every one of those a line beginning ``#`` is
 #: a **comment**. Treating it as a heading would make the caret cue say

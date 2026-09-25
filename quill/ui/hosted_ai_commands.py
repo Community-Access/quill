@@ -1,4 +1,4 @@
-"""The hosted-AI commands, shared by QUILL and QuillLite.
+"""The hosted-AI commands, shared by QUILL and QUILL Lite.
 
 Five commands -- the pad, Ask About This Document, Usage, Sign In or Out and the
 Privacy Agreement -- plus the rule that AI never edits on its own.
@@ -54,7 +54,7 @@ class HostedAiMixin:
     def _ai_parent(self):  # noqa: ANN201 - wx.Window
         """The window new AI frames are parented to.
 
-        QuillLite's document window *is* a ``wx.Frame``, so it is its own
+        QUILL Lite's document window *is* a ``wx.Frame``, so it is its own
         parent. QUILL's ``MainFrame`` is a controller that owns one, so it
         overrides this with ``self.frame``. Parenting matters more than it
         looks: a frame parented to nothing is a frame Windows can bury behind
@@ -63,14 +63,14 @@ class HostedAiMixin:
         return self
 
     def _ai_control(self):  # noqa: ANN201 - a text control
-        """The control the document is in. ``self.control`` in QuillLite,
+        """The control the document is in. ``self.control`` in QUILL Lite,
         ``self.editor`` in QUILL."""
         return self.control
 
     def _ai_host(self):  # noqa: ANN201 - the app-ish object
         """Whatever holds the settings, the feature switch and the data dir.
 
-        QuillLite passes its ``app``. QUILL passes a small adapter
+        QUILL Lite passes its ``app``. QUILL passes a small adapter
         (:class:`~quill.ui.main_frame_hosted_ai.QuillAiHost`) that answers the
         same five questions against QUILL's own settings and its Use AI switch,
         so neither editor has to learn the other's vocabulary and this module
@@ -83,7 +83,7 @@ class HostedAiMixin:
 
         The one sentence in this module that cannot be written once for both
         editors, because the switch genuinely is in two different places: a
-        feature area in QuillLite's Customize Features, and the Use AI item in
+        feature area in QUILL Lite's Customize Features, and the Use AI item in
         QUILL's own AI menu. Every *other* route sentence here names a row that
         exists in both ("Connect or Sign Out in the AI menu"), which is why this
         is the only hook of its kind.

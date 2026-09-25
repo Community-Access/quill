@@ -12,7 +12,7 @@ what it cannot catch, and names the defect that motivated it:
 This is that gate. A document *does* state the claim machine-readably whenever it
 writes a command's name beside a chord -- "**Tools > Customize Features**
 (**Ctrl+Alt+F10**)", "**Snippets -- Alt+Shift+I**", "| **F7** | Check Spelling |"
--- and QuillLite's command table is the authority for what that chord should be.
+-- and QUILL Lite's command table is the authority for what that chord should be.
 
 The 2026-09-24 pass found six of these across the shipped documents, every one of
 them pointing at a real command:
@@ -49,7 +49,7 @@ from quill.core.lite.keymap import DEFAULT_ALIASES, chord_identity
 
 _ROOT = Path(__file__).resolve().parents[3]
 
-#: Every QuillLite document that attributes keys to commands. The PRD is here
+#: Every QUILL Lite document that attributes keys to commands. The PRD is here
 #: where the sibling gate leaves it out, and the difference is the point: a PRD
 #: quoting a *rejected* chord is fine, and a PRD saying "Customize Features
 #: (Ctrl+Alt+Shift+F)" is wrong in exactly the way this gate exists to catch.
@@ -63,7 +63,7 @@ DOCUMENTS: tuple[Path, ...] = (
 )
 
 #: A chord as any of these documents spells one. The trailing class is wide
-#: because QuillLite binds ``Ctrl+,``, ``Ctrl+/``, ``Ctrl+[`` and ``Ctrl+;``.
+#: because QUILL Lite binds ``Ctrl+,``, ``Ctrl+/``, ``Ctrl+[`` and ``Ctrl+;``.
 _CHORD = r"(?:Ctrl|Alt|Shift|Win)\+[A-Za-z0-9+.,;'\[\]/=<>\-]{1,24}|F\d{1,2}"
 
 #: A command name as a document writes one, optionally with its menu path in
@@ -126,7 +126,7 @@ def _leaf(name: str) -> str:
 def _tidy(chord: str) -> str:
     """A chord with the sentence's punctuation taken back off it.
 
-    The whole difficulty is that four of QuillLite's chords **end** in the
+    The whole difficulty is that four of QUILL Lite's chords **end** in the
     punctuation a sentence would: ``Ctrl+,`` is Preferences, ``Ctrl+Shift+,`` is
     Shrink Font, ``Ctrl+;`` is Start Selection's alias, and ``Ctrl+Shift+.`` is
     Grow Font. So a character only comes off when something other than the ``+``
@@ -167,7 +167,7 @@ def test_every_documented_chord_belongs_to_the_command_beside_it(document: Path)
     for number, name, chord in _claims(document.read_text(encoding="utf-8")):
         entry = bindings.get(_leaf(name))
         if entry is None:
-            continue  # not a command of QuillLite's; the sibling gate has it
+            continue  # not a command of QUILL Lite's; the sibling gate has it
         try:
             identity = chord_identity(_tidy(chord))
         except ValueError:

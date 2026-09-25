@@ -148,14 +148,16 @@ PRODUCTS: dict[str, Product] = {
         icon_dir="social",
         icon_name="quill-social",
     ),
-    # QuillLite: the editor-only sibling. Its module is quill.apps.lite and its
+    # QUILL Lite: the editor-only sibling. Its module is quill.apps.lite and its
     # version comes from quill/core/lite/__init__.py rather than a quill/apps
     # module, so version_from is left empty and the version is passed by the
     # build script -- see the note on version_from above.
     "quilllite": Product(
         key="quilllite",
+        # The exe keeps its one-word name; the description Windows reads in a
+        # UAC prompt and Task Manager is the display name (2026-09-25).
         name="QuillLite",
-        display="QuillLite",
+        display="QUILL Lite",
         module="quill.apps.lite",
         icon_dir="quilllite",
         icon_name="quill-lite",

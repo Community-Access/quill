@@ -161,7 +161,7 @@ def test_all_three_commands_are_in_the_keymap() -> None:
     from quill.core.keymap import DEFAULT_KEYMAP
 
     # Ctrl+E until 2026-09-16, when it went to Centre -- Word's key, and
-    # QuillLite's. Media transport lives on the leader digits (bad.md rule
+    # QUILL Lite's. Media transport lives on the leader digits (bad.md rule
     # 7); the point of this test is that the command is bindable at all,
     # which a leader chord satisfies as well as a plain one did.
     assert DEFAULT_KEYMAP["media.sound_enhancements"] == "Ctrl+Shift+Grave, 1"

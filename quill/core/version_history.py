@@ -1,9 +1,9 @@
 """How a saved version is described out loud -- one phrasing, both products.
 
-QUILL keeps restore points (:mod:`quill.core.restore_points`) and QuillLite
+QUILL keeps restore points (:mod:`quill.core.restore_points`) and QUILL Lite
 keeps timestamped backups (:mod:`quill.core.lite.backups`). Two stores, and
 deliberately two: they were written for different products with different
-retention rules, and QuillLite keeps nothing in QUILL's data folder. But a
+retention rules, and QUILL Lite keeps nothing in QUILL's data folder. But a
 listener choosing between eleven versions of their own file is doing the same
 thing in both, and hearing it described two different ways would be a difference
 with no reason behind it.

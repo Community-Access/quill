@@ -156,7 +156,7 @@ class StatusBarMixin:
             return None
         # Through the shared DocumentText since 2026-09-18 (bad.md P0.6c, V4).
         # QUILL had its own half of this -- document.text plus a stats cache
-        # keyed on document.revision, right here -- and QuillLite had the whole
+        # keyed on document.revision, right here -- and QUILL Lite had the whole
         # object, which is backwards: the small product was ahead on the one
         # piece of machinery that decides how a big document feels. One object
         # now, owned by core, answering both.
@@ -712,7 +712,7 @@ class StatusBarMixin:
             pass
 
     def toggle_status_bar(self) -> None:
-        """Alt+Shift+B: Notepad's View > Status Bar, and QuillLite's chord.
+        """Alt+Shift+B: Notepad's View > Status Bar, and QUILL Lite's chord.
 
         Spoken, because nothing else will say it. A bar that has just left the
         window is not a focus change and not a control the reader was on, so

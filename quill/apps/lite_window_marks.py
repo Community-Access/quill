@@ -11,7 +11,7 @@ already existed and are already tested:
   one for a paragraph; this is how you take hold of a structure without knowing
   where it starts.
 * **Numbered bookmarks** -- :mod:`quill.core.numbered_bookmarks`, which lives in
-  QUILL's own core rather than QuillLite's so the editor can adopt it too. A
+  QUILL's own core rather than QUILL Lite's so the editor can adopt it too. A
   place you meant
   to come back to, with a number you can hold. There is no scrollbar thumb to
   remember the position of and no glance that finds the place again, so a
@@ -23,7 +23,7 @@ already existed and are already tested:
   window closes, and reopening a long file to find the nine places you marked
   gone is the same loss, merely deferred. The store is QUILL's own
   :class:`~quill.core.bookmarks.DocumentMemory`, keyed by file path and kept in
-  QuillLite's data folder -- no sidecar file is written next to anybody's
+  QUILL Lite's data folder -- no sidecar file is written next to anybody's
   document.
 * **Describe Character** -- :func:`quill.core.char_describe.describe_character`.
   What is actually under the cursor: its Unicode name, its code point, and a
@@ -244,7 +244,7 @@ class DocumentMarksMixin:
     # The one bookmark with no number
     # ------------------------------------------------------------------ #
     #
-    # QUILL has had this since before QuillLite existed and QuillLite had
+    # QUILL has had this since before QUILL Lite existed and QUILL Lite had
     # nothing like it, which is the wrong way round for a pair of editors whose
     # keys are meant to agree (bad.md P2.20). It is *not* a tenth numbered
     # bookmark and it is not a mark: a numbered bookmark is a place you mean to
@@ -326,7 +326,7 @@ class DocumentMarksMixin:
         exists to protect. Until 2026-09-16 bookmarks were written only on
         close and after a save, so a Clear All followed by a crash came back
         with every bookmark still there (bad.md L10). QUILL writes on every Set
-        and always has; this is QuillLite catching up to the better half.
+        and always has; this is QUILL Lite catching up to the better half.
 
         The CARET stays on the old cadence deliberately: it moves on every
         keystroke, and a file write per arrow key is the trade the original

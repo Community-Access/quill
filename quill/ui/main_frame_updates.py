@@ -458,7 +458,7 @@ class UpdatesMixin:
         """Show release notes in a read-only multi-line edit (help-text style).
 
         The dialog itself lives in :mod:`quill.ui.update_notice`, which is where
-        the eight companion apps and QuillLite get exactly the same one. This
+        the eight companion apps and QUILL Lite get exactly the same one. This
         stays as the name the rest of the mixin calls.
         """
         from quill.ui.update_notice import present_release_notes

@@ -149,7 +149,7 @@ class SpellingReviewDialog:
         # ways, on two chords, in two menu rows. One verb registered twice is
         # how a pair drifts (bad.md 7.1), and the F7 chord family had no room
         # left for the second one anyway. A checkbox instead, which also gives
-        # QuillLite ranked review for the first time -- it shares this dialog
+        # QUILL Lite ranked review for the first time -- it shares this dialog
         # and never had the second command.
         self._ranked_box = wx.CheckBox(self.dialog, label="Review most-&frequent words first")
         self._ranked_box.SetValue(self._session.is_ranked())
@@ -273,7 +273,7 @@ class SpellingReviewDialog:
             # the document. The announcer has been built with these settings
             # since it shipped and nothing was calling it, so the twelve
             # Announcements settings QUILL could reach did nothing on this
-            # list -- and QuillLite had done it all along, which is rule 10
+            # list -- and QUILL Lite had done it all along, which is rule 10
             # backwards (bad.md P1.14). Arrowing on cancels the pending one.
             self._announcer.spell_suggestion(str(suggestion))
         event.Skip()  # type: ignore[attr-defined]

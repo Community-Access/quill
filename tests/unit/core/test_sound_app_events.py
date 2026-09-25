@@ -40,7 +40,7 @@ from quill.tools.sound_event_audit import posted_events, unposted_events
 
 _REPO = Path(__file__).resolve().parents[3]
 
-#: Where each rostered app's own code lives. Only its own: QuillLite must not
+#: Where each rostered app's own code lives. Only its own: QUILL Lite must not
 #: be credited with a cue that only Quill Radio posts.
 _APP_SOURCES: dict[str, tuple[str, ...]] = {
     "quilllite": ("quill/apps/lite*.py", "quill/core/lite/*.py"),

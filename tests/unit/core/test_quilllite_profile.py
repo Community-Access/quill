@@ -1,6 +1,6 @@
-"""The QuillLite profile in QUILL (bad.md P2.4).
+"""The QUILL Lite profile in QUILL (bad.md P2.4).
 
-One feature profile that shows QuillLite's menus and nothing else, so somebody
+One feature profile that shows QUILL Lite's menus and nothing else, so somebody
 who is used to the small editor can have QUILL be that shape without giving up
 the option of the rest.
 
@@ -11,10 +11,10 @@ Customize Features and from the command palette. Somebody who chose "the small
 one" and then wants one thing back has to be able to find it, and a hidden
 feature cannot be found by looking.
 
-**It carries a setting.** QuillLite makes a plain text document on Ctrl+N, and a
+**It carries a setting.** QUILL Lite makes a plain text document on Ctrl+N, and a
 profile named after it that made a rich text one would keep the letter of its
 name and break its promise -- the user finding out one document later, at the
-Save As dialog, offering a format they thought they had turned off. QuillLite's
+Save As dialog, offering a format they thought they had turned off. QUILL Lite's
 own Notepad and WordPad profiles have carried their ``default_mode`` since they
 shipped, for exactly this reason.
 """
@@ -35,7 +35,7 @@ def _profile() -> object:
 
 
 def test_the_profile_exists_and_is_named_for_the_product() -> None:
-    assert str(_profile().name) == "QuillLite"
+    assert str(_profile().name) == "QUILL Lite"
 
 
 def test_everything_quilllite_has_is_still_on() -> None:
@@ -81,7 +81,7 @@ def test_what_quilllite_does_not_have_is_off() -> None:
 def test_the_bundled_quillins_stay_because_quill_needs_them() -> None:
     """Locked on, and rightly: the bundled extensions carry commands QUILL uses.
 
-    What QuillLite lacks is the Quillins *menu*, which is a different feature and
+    What QUILL Lite lacks is the Quillins *menu*, which is a different feature and
     is off. A profile that tried to switch off a locked feature would be a
     profile making a promise the feature manager will not keep.
     """

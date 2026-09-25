@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>one key, one list — Quill Eraser as the whole checking
 surface</title>
@@ -787,18 +787,18 @@ leaves the caret on the range; and <strong>Next / Previous Issue from
 the editor with no dialog at all</strong>, spoken on arrival — the
 <code>Ctrl+F7</code> habit, which is how most people will actually use
 this.</p>
-<h3 id="43-quill-and-quilllite--every-eraser-feature-both-products">4.3
-QUILL and QuillLite — every Eraser feature, both products</h3>
+<h3 id="43-quill-and-quill-lite--every-eraser-feature-both-products">4.3
+QUILL and QUILL Lite — every Eraser feature, both products</h3>
 <p><strong>Decision: all Eraser features ship in both.</strong> Not the
 shared core with a reduced Lite surface — the whole thing, both places.
 That is stricter than the standing family rule requires and it is the
 right call here, because every argument for the feature applies at least
-as hard to the smaller product: a QuillLite user writing a README is
+as hard to the smaller product: a QUILL Lite user writing a README is
 exactly the person who will never see the missing <code>alt</code>.</p>
 <p>This is also the direction the family rules already push. The rule is
-that QuillLite may never be ahead of QUILL, and that anything Lite needs
-goes in the shared package with a QUILL route added in the same change.
-Building <code>quill/core/eraser/</code> shared by construction
+that QUILL Lite may never be ahead of QUILL, and that anything Lite
+needs goes in the shared package with a QUILL route added in the same
+change. Building <code>quill/core/eraser/</code> shared by construction
 satisfies the core half automatically; §4.3 is the commitment that the
 <em>surface</em> half is satisfied too, in the same commit rather than
 in a follow-up nobody schedules.</p>
@@ -837,7 +837,7 @@ does not report it as a gap.</li>
 </ul>
 <p><strong>Gate.</strong> The parity claim needs a test or it is a
 sentence. Add a fixture asserting that every <code>eraser.*</code>
-command id present in QUILL’s keymap is present in QuillLite’s with the
+command id present in QUILL’s keymap is present in QUILL Lite’s with the
 same chord, and that every rule family enabled by default in one is
 enabled by default in the other — the same shape as the existing
 bound-command and settings-vocabulary gates, and for the same reason:
@@ -1235,11 +1235,11 @@ is a promise and promises need gates.</li>
 test passes, with the AI provider set to Off and in Safe Mode. The list
 is shorter; nothing else differs.</li>
 <li><strong>Product parity (§4.3).</strong> Every <code>eraser.*</code>
-command id in QUILL’s keymap is present in QuillLite’s with the same
+command id in QUILL’s keymap is present in QUILL Lite’s with the same
 chord, and every rule family enabled by default in one is enabled by
 default in the other. Divergence requires a <code>keymap.py</code>
 comment <strong>and</strong> a parity-table row, per rule 11.</li>
-<li><strong>GATE-LITE-COVER</strong> — QuillLite’s handlers classified
+<li><strong>GATE-LITE-COVER</strong> — QUILL Lite’s handlers classified
 <code>covered</code>, with lambda-shaped parametrisation so the AST scan
 sees the calls.</li>
 <li><strong>GATE-REACH</strong> — the dialog reachable from an app entry

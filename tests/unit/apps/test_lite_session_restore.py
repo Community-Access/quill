@@ -1,4 +1,4 @@
-"""Reopening last session in QuillLite: asked about, and answerable in parts.
+"""Reopening last session in QUILL Lite: asked about, and answerable in parts.
 
 It reopened everything silently until 2026-09-19, which is right for one file and
 wrong for four. These tests drive the real ``QuillLiteApp`` methods with a

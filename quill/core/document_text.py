@@ -6,20 +6,20 @@ the wx/native boundary, so every reader of "what does the document say" costs a
 pass over the text. Display code has a *lot* of readers -- a status bar with a
 word count, a heading cue, a list cue, a live spell check, an autoformat rule
 that wants the character before the caret -- and each of them reading the
-control directly turned one coalesced refresh of QuillLite's status bar into
+control directly turned one coalesced refresh of QUILL Lite's status bar into
 three full scans plus two marshals, and one arrow key in a large file into
 another (bad.md V2, V3, S8, T1).
 
 QUILL solved this in #1346 by giving display code the document's own Python
 string and memoising the statistics against a revision counter. It had somewhere
 to put them: a :class:`~quill.core.document.Document` that every edit already
-flows through. QuillLite has no such object -- its document *is* the control --
+flows through. QUILL Lite has no such object -- its document *is* the control --
 so this is that seam, built to be used by both, and **both use it** since
 2026-09-18: QUILL's hand-rolled stats cache is gone, and the two editors now
 answer "what does the document say" through one object (bad.md P0.6c, V4).
 
 The two arrive at "the document changed" differently, and both are supported.
-QuillLite has a text hook and calls :meth:`invalidate`; QUILL has a revision
+QUILL Lite has a text hook and calls :meth:`invalidate`; QUILL has a revision
 counter on its Document and calls :meth:`sync_to`, which invalidates only when
 the number has actually moved. Handing QUILL ``invalidate`` instead would have
 meant finding every edit path in a 19,000-line module and remembering to call
@@ -199,7 +199,7 @@ class DocumentText:
     def char_before(self, position: int) -> str:
         """The one character before *position*, or "".
 
-        Its own method because the alternative is what QuillLite's autoformat
+        Its own method because the alternative is what QUILL Lite's autoformat
         did: ``GetValue()[position - 1]``, which reads the entire document to
         look at one character, on the hottest path in the app (bad.md T1).
         """

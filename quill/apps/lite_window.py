@@ -17,7 +17,7 @@ RichEditDocument`, the native ``RICHEDIT50W`` whose ``IAccessible`` value NVDA
 and JAWS read correctly where a classic EDIT control's is not, with RTF going
 through the Text Object Model because ``EM_STREAMIN`` with a Python callback
 hard-crashes msftedit. Neither of those was discovered here; both are QUILL's
-findings, and QuillLite gets them by using QUILL's surface rather than by
+findings, and QUILL Lite gets them by using QUILL's surface rather than by
 copying it.
 
 The window is assembled from four neighbours, each answering one question:
@@ -78,7 +78,7 @@ __all__ = ["DocumentFrame"]
 
 #: The construction title. The window is retitled after the document as soon as
 #: there is one; the catalogue in :mod:`quill.core.lite_surface_help` matches
-#: both this and the "<file> - QuillLite (<mode>)" form F1 sees at runtime.
+#: both this and the "<file> - QUILL Lite (<mode>)" form F1 sees at runtime.
 _TITLE = APP_NAME
 
 
@@ -108,12 +108,12 @@ class DocumentFrame(
     DocumentAppearanceMixin,
     DocumentModeMixin,
     # Folding over Markdown sections, 2026-09-17 (bad.md P3.6, Tier 3).
-    # QuillLite already parsed heading blocks for its outline; collapsing
+    # QUILL Lite already parsed heading blocks for its outline; collapsing
     # to headings is how a listener skims a long document without the
     # scroll-and-glance a sighted reader gets for free.
     DocumentFoldingMixin,
     # Extend Selection Mode, 2026-09-17 (bad.md P2.13, Tier 2).
-    # QuillLite deleted its own attempt at this in d20fabe and has had
+    # QUILL Lite deleted its own attempt at this in d20fabe and has had
     # nothing since; QUILL's is the mechanism that works on wxMSW, so it
     # was extracted rather than written a third time.
     ExtendSelectionMixin,
@@ -147,7 +147,7 @@ class DocumentFrame(
         # **Not Alt+F4**, which this comment claimed for a year and the shell's
         # own comment contradicted (bad.md H7). Alt+F4 belongs to the window
         # manager and reaches the top-level frame, which is the shell: it exits
-        # QuillLite, asking about each unsaved document on the way out. That is
+        # QUILL Lite, asking about each unsaved document on the way out. That is
         # the MDI convention and the right behaviour; only the comment was wrong.
         super().__init__(
             app.shell,
@@ -217,7 +217,7 @@ class DocumentFrame(
         #: The document's text, on the Python side, for everything that only
         #: *reads* it -- the status bar's counts, the heading and list cues, the
         #: live spell check. ``GetValue()`` on a multiline control copies the
-        #: whole buffer across the wx boundary, and QuillLite had five separate
+        #: whole buffer across the wx boundary, and QUILL Lite had five separate
         #: readers doing it: one coalesced status refresh cost three full scans
         #: and two marshals, and one arrow key in a large file cost another
         #: (bad.md V2, V3, S8). It reads at most once per edit and answers
@@ -317,7 +317,7 @@ class DocumentFrame(
         """Retitle after the document. The reader announces this; nothing else does.
 
         **Skipped when the string has not changed**, which QUILL has done since
-        it learned the same thing (``_refresh_title_bar``) and QuillLite did
+        it learned the same thing (``_refresh_title_bar``) and QUILL Lite did
         not. Retitling fires ``EVT_OBJECT_NAMECHANGE`` through MSAA and UIA, and
         a screen reader has no use for being told a window was renamed to the
         name it already had -- and on an MDI child the call reaches all the way
@@ -389,7 +389,7 @@ class DocumentFrame(
         self.check_spelling_at_caret(key_code)
         # And the heading the caret has just entered, which nothing else in the
         # stack can say: no Windows edit control exposes a paragraph style to a
-        # screen reader, so if QuillLite does not say "Heading 2" nobody does.
+        # screen reader, so if QUILL Lite does not say "Heading 2" nobody does.
         self.announce_structure_at_caret()
         event.Skip()
 
@@ -418,7 +418,7 @@ class DocumentFrame(
         the one the shared audit cannot see: it is built by
         :func:`~quill.ui.richedit_editing.create_richedit_document`, not
         constructed here, so without this call F1 in the document would answer
-        with the generic "a QuillLite window" sentence and nothing else. The
+        with the generic "a QUILL Lite window" sentence and nothing else. The
         answer differs by mode, because what you can do here differs by mode --
         so it is re-applied whenever the mode changes.
         """

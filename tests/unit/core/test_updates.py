@@ -776,7 +776,7 @@ def test_release_json_captures_asset_digest() -> None:
 
 
 def test_app_releases_capture_the_digest_of_the_asset_they_chose(monkeypatch) -> None:
-    """The sibling apps' path dropped the digest, so QuillLite downloaded
+    """The sibling apps' path dropped the digest, so QUILL Lite downloaded
     unverified while QUILL checked every byte."""
     import io
     import json as _json

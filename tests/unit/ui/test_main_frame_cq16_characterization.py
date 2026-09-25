@@ -136,7 +136,7 @@ def test_expand_then_shrink_comes_back_without_a_stack() -> None:
     *earlier* span and jumped you there -- reproduced 2026-09-17 by
     ``scripts/probe_rich_edits.py`` (bad.md L3).
 
-    Shrink computes from the text now, which is what QuillLite has always done.
+    Shrink computes from the text now, which is what QUILL Lite has always done.
     What a characterization test should hold onto is the round trip a person
     experiences -- expand, then shrink, and you are back where you were -- not
     the list that used to implement it.

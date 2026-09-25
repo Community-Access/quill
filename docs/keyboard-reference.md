@@ -295,7 +295,7 @@ Editor commands with default bindings: 455.
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill... | `tools.ask_quill_chat` |
-| Alt+Shift+F11 | Bring My QuillLite Settings | `tools.bring_from_quilllite` |
+| Alt+Shift+F11 | Bring My QUILL Lite Settings | `tools.bring_from_quilllite` |
 | Alt+Shift+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
 | Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |

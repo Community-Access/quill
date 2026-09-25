@@ -1,4 +1,4 @@
-"""QuillLite -- QUILL with everything removed except the editor.
+"""QUILL Lite -- QUILL with everything removed except the editor.
 
 One document per window, plain text or rich text, and nothing else. It exists
 for the person who wants Notepad or WordPad with QUILL's accessibility and finds
@@ -8,7 +8,7 @@ command palette.
 
 It is explicitly **not** a replacement for QUILL, and explicitly **not** a place
 new features go. Anyone who wants any of the list above wants QUILL, and
-QuillLite is built so it cannot grow into it: its whole product is one window
+QUILL Lite is built so it cannot grow into it: its whole product is one window
 class, one editor surface and one command table.
 
 What it does *not* reimplement is the part that took QUILL years to get right.
@@ -21,7 +21,7 @@ and F1 still answers through the family's context-help engine.
 **Bootstrap deliberately differs from its siblings.** Radio, Cast, Weather,
 Studio and Inkwell each run one window and take the family single-instance lock
 in :mod:`quill.core.ipc`, whose lock and queue live in QUILL's own data
-directory. QuillLite runs *many* windows in one process and keeps a separate
+directory. QUILL Lite runs *many* windows in one process and keeps a separate
 data store, so it uses ``wx.SingleInstanceChecker`` (a kernel object, with no
 file to go stale) plus its own inbox under
 ``%LOCALAPPDATA%\\QuillLite`` -- a machine that has never had QUILL installed
@@ -50,7 +50,7 @@ from quill.apps.lite_updates import check_at_launch
 from quill.apps.lite_voice import ScreenReaderVoice
 from quill.apps.lite_window import DocumentFrame
 from quill.apps.lite_windows import LiteWindowsMixin
-from quill.core.lite import APP_NAME, APP_VERSION
+from quill.core.lite import APP_ID, APP_NAME, APP_VERSION
 from quill.core.lite import features as features_mod
 from quill.core.lite import inbox as inbox_mod
 from quill.core.lite import keymap as keymap_mod
@@ -66,7 +66,7 @@ _TITLE = APP_NAME
 _VERSION = APP_VERSION
 _REPO = "Community-Access/quill"
 
-#: QuillLite is a text editor. It plays nothing, records nothing, converts
+#: QUILL Lite is a text editor. It plays nothing, records nothing, converts
 #: nothing, and therefore stages neither ffmpeg nor libmpv into the shared
 #: runtime. Declared here and mirrored in ``standalone/runtime/app-profiles.json``,
 #: which ``tests/unit/structure/test_app_profiles.py`` checks cannot drift.
@@ -116,18 +116,18 @@ class QuillLiteApp(
         super().__init__(redirect=False)
 
     def OnInit(self) -> bool:  # noqa: N802 - wx API shape
-        self.SetAppName(APP_NAME)
+        self.SetAppName(APP_ID)
         self.data_dir = data_dir()
         self.settings = settings_mod.load()
         # Here and not in __init__, where it was until 2026-09-17 and where it
         # read self.settings **before OnInit had loaded it** -- so constructing
-        # the app raised AttributeError and QuillLite did not start at all.
+        # the app raised AttributeError and QUILL Lite did not start at all.
         # Nothing caught it because every unit test builds a stub window rather
         # than the wx.App, and the one thing that does construct it is the live
         # probe, which is run by hand.
         self.voice.throttle_ms = int(getattr(self.settings, "announcement_throttle_ms", 0) or 0)
         inbox_mod.claim_instance_marker()
-        # F1 help for the whole app, with QuillLite's own purpose catalogue.
+        # F1 help for the whole app, with QUILL Lite's own purpose catalogue.
         # Without activate() every SetHelpText in the app stores nothing, because
         # wx needs a HelpProvider before it will keep help text at all.
         from quill.core import lite_surface_help
@@ -137,7 +137,7 @@ class QuillLiteApp(
 
         # Never say "Entered Preferences dialog" / "Exited Preferences dialog".
         # The shared modal contract offers those cues and QUILL makes them a
-        # setting; QuillLite answers no, once, for every dialog it will ever
+        # setting; QUILL Lite answers no, once, for every dialog it will ever
         # show. A screen reader already announces a dialog by its title when it
         # opens and announces where focus lands when it closes, so the cue is a
         # second telling of something the user was told a moment ago -- which is
@@ -149,7 +149,7 @@ class QuillLiteApp(
 
         self.print_settings = PrintSettings(self.settings)
         # The earcon player, so the as-you-type spelling alert has something to
-        # reach. QuillLite had no sound stack at all: the alert was a status-bar
+        # reach. QUILL Lite had no sound stack at all: the alert was a status-bar
         # line and nothing else, which on an unwatched bar is not an alert. Never
         # fatal -- a machine with no audio, or no pack, simply stays quiet, and
         # the status bar carries the words either way.
@@ -316,7 +316,7 @@ class QuillLiteApp(
     def _confirm_large_file(self, path: Path) -> bool:
         """Ask before opening a file big enough to hang the editor. True to go on.
 
-        QuillLite had no size guard at all until 2026-09-16 -- nothing in its
+        QUILL Lite had no size guard at all until 2026-09-16 -- nothing in its
         tree called ``stat()`` before reading -- so a 200 MB log opened by
         ``read_text`` straight into a ``wx.TextCtrl`` with no warning, no
         progress and no way out. For a Notepad replacement that is the scenario
@@ -531,7 +531,7 @@ _USAGE = f"""{APP_NAME} {APP_VERSION} -- a notepad-scale editor built for screen
   --plain   open a new plain text window as well as any files named
   --check   write a diagnostic to the data folder and exit without a window
   --new-instance
-            open a second QuillLite window with its own document numbering,
+            open a second QUILL Lite window with its own document numbering,
             instead of handing the files to the copy that is already running
 """
 
@@ -540,23 +540,23 @@ def main() -> int:
     from quill.core.data_location import apply_pending_at_launch
     from quill.core.paths import use_running_app_data_dir
 
-    # QuillLite keeps its own store, and the shared core has two caches that
+    # QUILL Lite keeps its own store, and the shared core has two caches that
     # have to land in it rather than in QUILL's folder: the comtypes
     # generated-wrapper cache (reached by the native Rich Edit surface, so on
     # the very first window) and the managed Hunspell dir. Both used to resolve
     # to %APPDATA%\Quill, which created that folder on machines that had never
     # had QUILL installed -- the one thing core/lite/paths.py opens by saying
-    # QuillLite does not do. Declared here, before anything can ask.
+    # QUILL Lite does not do. Declared here, before anything can ask.
     #
     # Narrow on purpose: this does NOT redirect app_data_dir(), because
-    # QuillLite reaches QUILL's folder deliberately in three places (share
+    # QUILL Lite reaches QUILL's folder deliberately in three places (share
     # QUILL's dictionary, share QUILL's abbreviations, list QUILL's sound
     # schemes) and those must keep meaning QUILL's.
     use_running_app_data_dir(data_dir)
 
     # Every app in the family applies a queued Data Folder move before reading
     # anything, so a move queued from one app happens at whichever app launches
-    # next. QuillLite keeps its own store and so has nothing of its own to move,
+    # next. QUILL Lite keeps its own store and so has nothing of its own to move,
     # but it is part of the family and must not be the app that strands
     # somebody's queued change.
     apply_pending_at_launch()
@@ -570,7 +570,7 @@ def main() -> int:
     # One process, many windows: a second launch hands its files to the first
     # and exits, so opening files from Explorer is instant and there is one
     # owner of the settings file and the recovery store.
-    checker = wx.SingleInstanceChecker(f"{APP_NAME}-{wx.GetUserId()}")
+    checker = wx.SingleInstanceChecker(f"{APP_ID}-{wx.GetUserId()}")
     if checker.IsAnotherRunning() and not new_instance:
         _allow_foreground(inbox_mod.running_instance_pid())
         if inbox_mod.post_request(paths, mode):

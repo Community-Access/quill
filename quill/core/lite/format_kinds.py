@@ -9,7 +9,7 @@ arrow past, each of which promises a shortcut, and pressing any of them answers
 
 Dimmed rather than removed, for three reasons. The menu bar's *shape* is what a
 listener navigates by, and a menu that appears and disappears between documents
-is re-learned every time. Windows dims what does not apply, QuillLite already
+is re-learned every time. Windows dims what does not apply, QUILL Lite already
 dims two rows this way, and the project's menu rule exempts disabled items from
 having to advertise a key -- so dimming is the sanctioned answer rather than a
 special case. And the Format menu of a plain document still has to hold

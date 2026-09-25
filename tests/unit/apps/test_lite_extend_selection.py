@@ -253,10 +253,10 @@ def test_toggle_extend_mode_turns_it_both_ways(lite_window) -> None:
 
 
 def test_starting_a_selection_makes_a_sound_as_well_as_speaking(lite_window) -> None:
-    """The sounds existed in the pack and QuillLite played neither of them.
+    """The sounds existed in the pack and QUILL Lite played neither of them.
 
     ``selection_started.wav`` and ``selection_completed.wav`` have shipped in the
-    Ink pack all along; QUILL posted both and QuillLite posted neither.
+    Ink pack all along; QUILL posted both and QUILL Lite posted neither.
     """
     from quill.core.sound_events import SoundEvent
 

@@ -1,8 +1,8 @@
-"""QuillLite's half of the hosted AI: what it knows, and how it waits.
+"""QUILL Lite's half of the hosted AI: what it knows, and how it waits.
 
 The shared capability lives in :mod:`quill.core.ai.gateway_client`,
 :mod:`~quill.core.ai.gateway_session` and :mod:`~quill.core.ai.gateway_context`
--- all wx-free, all usable by QUILL. This module is the part that is QuillLite's
+-- all wx-free, all usable by QUILL. This module is the part that is QUILL Lite's
 own: one object per app that holds the session, caches what the service allows,
 and runs every request off the UI thread.
 
@@ -66,7 +66,7 @@ class SignInCode:
 
 
 class AiService:
-    """One per running QuillLite. Holds the session and does the waiting."""
+    """One per running QUILL Lite. Holds the session and does the waiting."""
 
     def __init__(self, app: Any) -> None:
         self._app = app
@@ -267,7 +267,7 @@ class AiService:
                     on_error,
                     "QUILL connected, but could not store the sign-in securely on "
                     "this computer, so it would be forgotten when you close "
-                    "QuillLite. Nothing was saved.",
+                    "QUILL Lite. Nothing was saved.",
                 )
                 return
             session = GatewaySession(device_id=device_id, base_url=url, connected_at=_now())
@@ -351,7 +351,7 @@ def _call_after(func: Callable[..., None], *args: Any) -> None:
 
 
 def _submit(name: str, func: Callable[..., Any], *, on_success: Any, on_failure: Any) -> None:
-    """One background job. QuillLite has no task manager, so this is the
+    """One background job. QUILL Lite has no task manager, so this is the
     family's ``thread_submit`` -- the same one the update check uses."""
     from quill.ui.update_download import thread_submit
 

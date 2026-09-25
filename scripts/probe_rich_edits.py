@@ -90,7 +90,7 @@ def main() -> int:  # noqa: C901 - a probe is a list of questions
     )
 
     # And the guarded path, which is what QUILL's .rtf save runs now
-    # (_theme_colour_off in main_frame_rich_mode) and what QuillLite has always
+    # (_theme_colour_off in main_frame_rich_mode) and what QUILL Lite has always
     # run (_write_rtf in lite_window_file).
     editor.set_document_color(None)
     editor.save_rtf(str(target))

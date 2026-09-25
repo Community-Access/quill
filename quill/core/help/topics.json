@@ -2919,8 +2919,8 @@
   },
   {
     "id": "tools.bring_from_quilllite",
-    "title": "Bring My QuillLite Settings",
-    "body": "Finds an existing QuillLite setup and describes exactly what it would copy -- settings, key bindings, saved stores -- and what it would leave alone, before importing anything. Nothing moves until you say yes. Your own rebound keys win over QuillLite's, some changes need a restart to appear, and afterwards it names the stores the two products will now share, so a change in one is a change in both.",
+    "title": "Bring My QUILL Lite Settings",
+    "body": "Finds an existing QUILL Lite setup and describes exactly what it would copy -- settings, key bindings, saved stores -- and what it would leave alone, before importing anything. Nothing moves until you say yes. Your own rebound keys win over QUILL Lite's, some changes need a restart to appear, and afterwards it names the stores the two products will now share, so a change in one is a change in both.",
     "keystrokes": [
       "Alt+Shift+F11"
     ]
@@ -3435,7 +3435,7 @@
   {
     "id": "tools.spelling_announcements",
     "title": "Spelling Announcements",
-    "body": "Controls how a misspelling is spoken to you -- the same settings QuillLite uses, so both editors behave alike. It opens even when spell checking is switched off, on purpose: the settings should outlive turning the feature off and on.",
+    "body": "Controls how a misspelling is spoken to you -- the same settings QUILL Lite uses, so both editors behave alike. It opens even when spell checking is switched off, on purpose: the settings should outlive turning the feature off and on.",
     "keystrokes": [
       "Ctrl+Alt+Shift+F6"
     ]

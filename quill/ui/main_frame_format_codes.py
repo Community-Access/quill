@@ -338,7 +338,7 @@ class FormatCodesMixin:
         codes come off the selected text, which is what this command has always
         done and the only thing it could do.
 
-        The rich half is new, and it arrived from QuillLite: "we also need a
+        The rich half is new, and it arrived from QUILL Lite: "we also need a
         normal text command ... something like Word's Ctrl+Shift+N to set text
         to normal mode in an RTF document." Every other command in this menu is
         a toggle or a set, so each one needs you to already know what is

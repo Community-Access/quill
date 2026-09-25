@@ -93,7 +93,7 @@ def spoken_binding(binding: str | None) -> str:
 
     For the announcements that tell somebody *which key* to press -- "the copy
     tray is empty, Control Alt Y copies into it". Those sentences were typed by
-    hand with the chord spelled into them, which is how QuillLite came to name
+    hand with the chord spelled into them, which is how QUILL Lite came to name
     a key that had not been that command's since before 1.0 and is in any case
     rebindable. One rewrite, applied to whatever the keymap actually resolves,
     cannot go stale.

@@ -35,7 +35,7 @@ _ROOT = Path(__file__).resolve().parents[3]
 
 #: Every document that *teaches* a key to somebody who will then press it. The
 #: two user guides came first; the release notes and the announcements were added
-#: on 2026-09-19, when an audit found QuillLite's notes still telling a reader
+#: on 2026-09-19, when an audit found QUILL Lite's notes still telling a reader
 #: that Justify and Paste Text Only live on ``Ctrl+Alt+J`` and ``Ctrl+Alt+V`` in
 #: QUILL. They had, until the parity pass moved QUILL's own commands instead, so
 #: following that paragraph reached the temporary bookmark and the copy tray.
@@ -65,7 +65,7 @@ GUIDES: tuple[Path, ...] = (
     _ROOT / "standalone" / "quilllite" / "docs" / "announcement.md",
 )
 
-#: A chord as the guides write it. QUILL's guide uses backticks and QuillLite's
+#: A chord as the guides write it. QUILL's guide uses backticks and QUILL Lite's
 #: uses bold, so both count -- a gate that only read one would have left the
 #: other guide unchecked while reporting success, which is the worse failure.
 _CHORD = re.compile(

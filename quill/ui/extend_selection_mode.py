@@ -7,10 +7,10 @@ paragraphs.
 
 **Why this mechanism and not the obvious one.** The obvious one is to set an
 anchor and stretch a live selection to meet the caret after each navigation key.
-QuillLite shipped that, and it did not work: on wxMSW an arrow key pressed while
+QUILL Lite shipped that, and it did not work: on wxMSW an arrow key pressed while
 text is selected *collapses the selection to its edge and stays there*, so the
 next key-up re-selected the same span and the caret never advanced. It was
-deleted in ``d20fabe`` and QuillLite has had nothing since.
+deleted in ``d20fabe`` and QUILL Lite has had nothing since.
 
 QUILL's version, which is this one, intercepts the key **before** the control,
 moves the caret itself, and leaves no selection behind for the control to
@@ -18,7 +18,7 @@ fight -- the span is applied only when a non-movement key commits it. Opposite
 mechanism, and it works. The first pass of bad.md called it "the design Lite
 deleted"; it is the reverse, and 5.3a is the correction.
 
-Extracted here on 2026-09-17 so QuillLite can take it (bad.md P2.13, Tier 2)
+Extracted here on 2026-09-17 so QUILL Lite can take it (bad.md P2.13, Tier 2)
 rather than writing a third attempt, and so the four movement bugs it carried
 were fixed once instead of twice (bad.md P1.2a):
 
@@ -83,7 +83,7 @@ class ExtendSelectionMixin:
         ``_set_status`` **first**, because in QUILL that is the one that both
         writes the status bar and announces -- reaching for ``_announce`` there
         speaks the sentence and leaves the bar empty, so F6 could not bring it
-        back. QuillLite has no ``_set_status`` and announces directly.
+        back. QUILL Lite has no ``_set_status`` and announces directly.
         """
         status = getattr(self, "_set_status", None)
         if callable(status):
@@ -174,7 +174,7 @@ class ExtendSelectionMixin:
         text is selected collapses the selection to its edge and stops, so a
         live selection between the two keystrokes would fight the caret and
         win. Leaving the control nothing to fight is what makes this work where
-        QuillLite's key-up version (``d20fabe``) could not (5.3a).
+        QUILL Lite's key-up version (``d20fabe``) could not (5.3a).
         """
         if not self._extend_selection_mode:
             return False
@@ -339,10 +339,10 @@ class ExtendSelectionMixin:
 
         The two hosts disagree about what ``editor`` means, and the disagreement
         is old and not worth unpicking: in ``MainFrame`` it *is* the text
-        control, and in QuillLite's document window it is the rich surface
+        control, and in QUILL Lite's document window it is the rich surface
         wrapper while ``control`` is the text control. A mixin shared by both has
         to ask rather than assume -- assuming cost an ``AttributeError`` on the
-        first keystroke in QuillLite, which is the cheapest possible version of
+        first keystroke in QUILL Lite, which is the cheapest possible version of
         this bug and the reason the accessor exists.
         """
         control = getattr(self, "control", None)

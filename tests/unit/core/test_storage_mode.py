@@ -226,7 +226,7 @@ def _shipped_launcher_exe_names() -> list[str]:
 def test_every_shipped_launcher_is_in_the_portable_allowlist() -> None:
     """The gate that stops the sixth app repeating the first five.
 
-    Five products -- QuillLite, Inkwell, Beacon, Social and Cast under its
+    Five products -- QUILL Lite, Inkwell, Beacon, Social and Cast under its
     registry spelling -- were missing from this allowlist until 2026-09-09, so
     their portable builds silently wrote the user's settings and recovery files
     to ``%APPDATA%`` on the host machine instead of to the stick. Nothing failed

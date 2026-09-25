@@ -1,10 +1,10 @@
-"""QuillLite checks for its own updates (Help > Check for Updates, Ctrl+Alt+U).
+"""QUILL Lite checks for its own updates (Help > Check for Updates, Ctrl+Alt+U).
 
 It shipped with no update check at all: the one app most likely to be somebody's
 only Quill product, and the one whose users are least likely to go looking on
 GitHub, had no way to learn that a newer version existed.
 
-The network call is replaced throughout -- what is under test is what QuillLite
+The network call is replaced throughout -- what is under test is what QUILL Lite
 does with each answer, including the three it is supposed to keep quiet about.
 """
 
@@ -182,7 +182,7 @@ def test_the_launch_check_says_nothing_when_the_network_is_down(updates):
 
 
 def test_the_launch_check_still_offers_a_real_update(updates):
-    """QuillLite has no notification centre to defer it to."""
+    """QUILL Lite has no notification centre to defer it to."""
     updates.releases = [_Release("2.0.0")]
     lite_updates.check_for_updates(_Window(), silent_no_update=True)
     assert updates.offered == ["2.0.0"]

@@ -1,4 +1,4 @@
-"""Last session's documents in QuillLite: ask when it matters, remember the rest.
+"""Last session's documents in QUILL Lite: ask when it matters, remember the rest.
 
 Extracted from ``lite.py`` under GATE-11 when the chooser landed, and the
 extraction is the right shape rather than only the cheap one: QUILL's half is a
@@ -79,7 +79,7 @@ class LiteSessionMixin:
         if not entries:
             self.voice.speak(
                 "Nothing was open last time. This list fills itself when you close "
-                "QuillLite with documents open."
+                "QUILL Lite with documents open."
             )
             return False
         # The mode goes in as well as coming back: it decides which half of

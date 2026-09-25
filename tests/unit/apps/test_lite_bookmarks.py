@@ -150,7 +150,7 @@ def test_describe_character_at_the_end_of_the_document_says_so(lite_window) -> N
 # A third thing again: not a numbered bookmark (a place you mean to keep, with a
 # digit and a row in a list) and not a mark (consumed when you go back to it).
 # This is a pin you drop before going to look something up, overwritten every
-# time it is set and never written down. QUILL has had it since before QuillLite
+# time it is set and never written down. QUILL has had it since before QUILL Lite
 # existed; these tests are the crossing (bad.md P2.20).
 
 

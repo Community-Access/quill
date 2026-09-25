@@ -9,7 +9,7 @@ produced one symptom in the two products, and neither is a trade any more.
 
 | Product | Cause | State |
 | --- | --- | --- |
-| QuillLite | `EM_SETTEXTMODE` with `TM_PLAINTEXT` | Fixed: the control stays in rich-text mode, the plain/rich distinction lives in the document. `quill/ui/richedit_editing.py`, guarded by `tests/unit/ui/test_richedit_empty_last_line.py`. |
+| QUILL Lite | `EM_SETTEXTMODE` with `TM_PLAINTEXT` | Fixed: the control stays in rich-text mode, the plain/rich distinction lives in the document. `quill/ui/richedit_editing.py`, guarded by `tests/unit/ui/test_richedit_empty_last_line.py`. |
 | QUILL | `SES_EMULATESYSEDIT`, the #616/#813 braille fix | Fixed: the wrong answers are corrected in a window subclass, and the braille fix stays on. `quill/ui/richedit_line_fix.py`, guarded by `tests/unit/ui/test_richedit_final_line_fix.py`. |
 
 ### What was measured
@@ -170,4 +170,4 @@ Any other combinations tried and what happened:
 - The RichEdit wrapper and `SES_EMULATESYSEDIT` application:
   `quill/ui/richedit_rtf_surface.py`.
 - The correction and the full measurement: `quill/ui/richedit_line_fix.py`.
-- QuillLite's separate cause: `quill/ui/richedit_editing.py`, `set_text_mode`.
+- QUILL Lite's separate cause: `quill/ui/richedit_editing.py`, `set_text_mode`.

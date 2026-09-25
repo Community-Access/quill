@@ -34,7 +34,7 @@ def _source(rel: str) -> str:
 
 
 def test_quill_runs_the_shared_commands_rather_than_its_own() -> None:
-    """QuillLite had hosted AI first; QUILL must not grow a second copy of it.
+    """QUILL Lite had hosted AI first; QUILL must not grow a second copy of it.
 
     The family rule is that the small editor is never ahead of the big one, and
     the way that rule gets broken quietly is a second implementation rather than
@@ -63,7 +63,7 @@ def test_main_frame_answers_all_five_hosted_ai_commands() -> None:
         assert hasattr(MainFrame, name), name
 
 
-#: QuillLite handler -> QUILL command id, for all five hosted-AI commands.
+#: QUILL Lite handler -> QUILL command id, for all five hosted-AI commands.
 _PAIRS = {
     "cmd_ai_assistant": "tools.hosted_ai_assistant",
     "cmd_ai_ask_document": "tools.hosted_ai_ask_document",
@@ -72,9 +72,9 @@ _PAIRS = {
     "cmd_ai_privacy": "tools.hosted_ai_privacy",
 }
 
-#: The two that could not keep QuillLite's chord, and must therefore carry a
+#: The two that could not keep QUILL Lite's chord, and must therefore carry a
 #: reviewed reason. Ctrl+Alt+Shift+F7 to F12 are the six QuillVille sibling
-#: launchers in QUILL; QuillLite, being the editor on its own, has none to
+#: launchers in QUILL; QUILL Lite, being the editor on its own, has none to
 #: launch, so F9 and F10 are free over there and spoken for here.
 _MUST_DIVERGE = {"cmd_ai_usage", "cmd_ai_sign_in"}
 
@@ -90,7 +90,7 @@ def test_three_hosted_ai_commands_keep_quilllites_chord(handler: str) -> None:
     """Family rule 2: the command both products have keeps the chord.
 
     These three were free on QUILL's side, so there was nothing to arbitrate --
-    a person who learned Ctrl+Alt+G in QuillLite has learned it in QUILL.
+    a person who learned Ctrl+Alt+G in QUILL Lite has learned it in QUILL.
     """
     from quill.core.keymap import DEFAULT_KEYMAP
 
@@ -117,7 +117,7 @@ def test_the_two_that_diverge_say_why_and_stay_off_the_launcher_row(handler: str
 
 
 def test_quilllite_still_uses_the_launcher_row_for_those_two() -> None:
-    """The divergence is QUILL's, not QuillLite's: nothing moved over there.
+    """The divergence is QUILL's, not QUILL Lite's: nothing moved over there.
 
     Worth pinning, because the tempting "fix" for a divergence is to change both
     sides -- which would take a key away from people already using it, to buy a
@@ -151,7 +151,7 @@ class _Frame(HostedAiCommandsMixin):
 def test_the_parent_is_the_frame_not_the_controller() -> None:
     """A frame parented to the controller would be parented to nothing.
 
-    QuillLite's document window *is* a wx.Frame and is its own parent; QUILL's
+    QUILL Lite's document window *is* a wx.Frame and is its own parent; QUILL's
     MainFrame is a controller that owns one. Getting this wrong is not cosmetic:
     an unparented modeless window is one Windows can bury behind the editor with
     no keyboard route back to it, while somebody waits for an answer in it.

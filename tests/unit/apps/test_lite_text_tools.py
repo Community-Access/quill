@@ -83,7 +83,7 @@ def test_case_applies_to_the_selection_and_leaves_the_rest_alone(lite_window) ->
 
 
 def test_case_with_no_selection_takes_the_word_at_the_caret(lite_window) -> None:
-    """Word's Shift+F3 scope, and QuillLite's since 2026-09-16 (bad.md N5).
+    """Word's Shift+F3 scope, and QUILL Lite's since 2026-09-16 (bad.md N5).
 
     It took the whole document, which is the right scope for a sort and the
     wrong one for a case change -- and by ear it is the worst kind of wrong: a

@@ -1,14 +1,14 @@
-"""Last session's unsaved work in QuillLite: tidy it first, then ask properly.
+"""Last session's unsaved work in QUILL Lite: tidy it first, then ask properly.
 
 Extracted from ``lite.py`` when the chooser landed, for the reason the session
 half was extracted (``lite_session.py``): the two questions are the same shape
 and belong in the same shape of module. The decisions are wx-free in
 ``quill/core/recovery_triage.py`` and the window is ``quill/ui/recovery_dialog.py``,
-both shared, so QUILL and QuillLite cannot drift on an answer they agree about.
+both shared, so QUILL and QUILL Lite cannot drift on an answer they agree about.
 
 What this replaced, and why it had to go: ``_restore_pending_work`` read the
 store, put every slot in a Yes/No message box, and opened all of them or none.
-On 2026-09-21 that arrived as "QuillLite has unsaved work from 69 documents ...
+On 2026-09-21 that arrived as "QUILL Lite has unsaved work from 69 documents ...
 Open them now?" Sixty-seven of the sixty-nine were four identical characters left
 by automated runs that had been killed; two were real. Every part of that is now
 answered before the question is asked -- duplicates folded, month-old copies

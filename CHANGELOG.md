@@ -5,7 +5,7 @@
 ### Connecting to QUILL's free AI works, and takes one keystroke (2026-09-25)
 
 Four faults between accepting the agreement and being connected, all shared by
-QUILL and QuillLite:
+QUILL and QUILL Lite:
 
 - **Connect or Sign Out and AI Usage opened nothing.** Both windows put their
   Close button on the frame while the sizer holding it belonged to the panel;
@@ -54,13 +54,13 @@ QUILL and QuillLite:
   now covers the allowance, the 48-hour starter allowance, when counts start
   again (in UTC), what counts as a request, how to ask for more, and how to
   connect in both editors through the AI menu. It links to quillforall.org, and
-  it no longer claims QuillLite can use your own AI key. It still publishes no
+  it no longer claims QUILL Lite can use your own AI key. It still publishes no
   per-person numbers, as its tests require.
 
-### QuillLite no longer asks to save a document nobody changed (2026-09-25)
+### QUILL Lite no longer asks to save a document nobody changed (2026-09-25)
 
 Rich Edit raises a text event for things that change nothing -- Ctrl+Z with
-nothing to undo is one -- and QuillLite counted every text event as an edit, so
+nothing to undo is one -- and QUILL Lite counted every text event as an edit, so
 Alt+F4 on an untouched document asked to save it. The first text event after a
 load or save is now compared with the text as it was; in rich text only an
 empty buffer is judged that way, because a formatting chord can change a rich
@@ -74,7 +74,7 @@ chord that is bound, to a **different command** from the one it is written
 beside. That is the worse half -- "nothing happened" is a guess somebody
 recovers from, and "something else happened" is one they have to undo.
 
-`tests/unit/docs/test_documented_chord_ownership.py` closes it for QuillLite,
+`tests/unit/docs/test_documented_chord_ownership.py` closes it for QUILL Lite,
 whose command table is machine-readable: wherever a document writes a command's
 name beside a chord, the chord must be one that command answers to (its alias
 counts). The first run found six across the shipped documents, including the
@@ -98,7 +98,7 @@ Exactly one of the pair is enabled at a time and the other is **greyed rather
 than hidden**, so arriving on it announces which way the setting currently is
 instead of leaving somebody hunting a window for a button that was removed.
 
-The window is shared, so QUILL and QuillLite both gained it in the same change;
+The window is shared, so QUILL and QUILL Lite both gained it in the same change;
 both callers now pass their current mode in as well as reading the new one back,
 because a caller that does not is a window that greys out the only way home.
 
@@ -106,7 +106,7 @@ because a caller that does not is a window that greys out the only way home.
 
 **Follow me** watches the app's live state and moves you to the next step once
 it can see you did this one. That needs lessons whose steps carry a check, and
-an app can reasonably have none -- QuillLite is one: every step there ends in a
+an app can reasonably have none -- QUILL Lite is one: every step there ends in a
 sentence the editor already says out loud, so there is nothing to poll for. The
 tick box is now disabled in that case rather than sitting there doing nothing,
 because a control that can never act is one somebody ticks, waits on, and
@@ -189,7 +189,7 @@ Markdown had a second, quieter version of the same bug: on an empty line,
 heading in any Markdown parser. The reader says nothing, the outline stays
 empty, and the mistake only shows up in the published document.
 
-QuillLite had the same bug in a different form -- its cursor landed *inside*
+QUILL Lite had the same bug in a different form -- its cursor landed *inside*
 `</h1>` -- and both editors now take the answer from one place.
 
 ### The free AI can be asked about twice as much (2026-09-24)
@@ -280,7 +280,7 @@ door** of the AI menu:
   writing.
 - **Free AI Usage…**, **Connect or Sign Out…**, **Privacy Agreement…**
 
-These are the same five commands on the same five keys as QuillLite's, running
+These are the same five commands on the same five keys as QUILL Lite's, running
 the same shared code, so anything you learn in one editor you have learned in
 both. It acts on the selection, else the paragraph, else the section — never the
 whole file. Nothing is applied without a keystroke, and every AI edit goes through
@@ -404,7 +404,7 @@ under GATE-11 rather than growing the menu module.
 
 ### The status bar answers Insert+Page Down (2026-09-22)
 
-Reported on QuillLite: JAWS's read-the-status-bar command returned "CRLF
+Reported on QUILL Lite: JAWS's read-the-status-bar command returned "CRLF
 (Windows) Modified" and nothing else, after selecting text in a large file.
 
 That command does not look for a role. It looks for a window of class
@@ -420,9 +420,9 @@ same cells as parts, so Insert+Page Down reads the whole bar. Switching document
 format also lights the keys correctly again -- the menu had been showing
 shortcuts for the format you left rather than the one you arrived in.
 
-### QuillLite: fourteen things two testing sessions found (2026-09-22)
+### QUILL Lite: fourteen things two testing sessions found (2026-09-22)
 
-Every one reported while testing QuillLite, and nearly every one turned out to
+Every one reported while testing QUILL Lite, and nearly every one turned out to
 be shared with QUILL or to be a class of bug rather than a single instance.
 
 **Document numbers never came back.** The counter only counted up. That number
@@ -504,18 +504,18 @@ demand, which is what makes Not Now safe: the answer is deferred rather than los
 `session_restore_ask` holds the preference --- always, when_it_matters (the
 default) or never --- a separate question from `restore_session`, which decides
 whether last session is reopened at all. One shared core
-(`quill/core/session_restore.py`), one shared window, and QuillLite has both on
+(`quill/core/session_restore.py`), one shared window, and QUILL Lite has both on
 the same key.
 
 
-### QUILL and QuillLite became one family (2026-09-18)
+### QUILL and QUILL Lite became one family (2026-09-18)
 
 A twenty-nine item program, closed. The two editors now agree about their keys,
 their capabilities and their words, and where they still differ the reason is
 written down beside the code. What a person will notice:
 
 **The keyboard.** Sixteen commands came off the QUILL-key leader onto the plain
-chords QuillLite already used, thirteen commands that existed only inside a
+chords QUILL Lite already used, thirteen commands that existed only inside a
 keymap profile got real defaults, and every registered editor command now has a
 key or a written reason not to. Three keymap profiles were broken outright: two
 of the three could not be loaded by name at all, SR Friendly remapped nothing,
@@ -570,15 +570,15 @@ buffer in silence; and **Undo and Say What Changed** (`Alt+Shift+F3`) tells an
 undo that reversed forty lines apart from an undo at the bottom of the stack ---
 two things ordinary Ctrl+Z reports identically, which is to say not at all.
 
-**A QuillLite profile** (Preferences > Profiles and Features): QUILL with
-QuillLite's nine menus and nothing else, switching features *off* rather than
-hiding them so wanting one back is one tick. **Bring My QuillLite Settings...**
+**A QUILL Lite profile** (Preferences > Profiles and Features): QUILL with
+QUILL Lite's nine menus and nothing else, switching features *off* rather than
+hiding them so wanting one back is one tick. **Bring My QUILL Lite Settings...**
 (`Alt+Shift+F11`) starts you from the setup you already have: your
 abbreviations, dictionary, copy tray, clip library and bookmarks are shared from
 then on, your preferences and rebound keys are copied once, and nothing already
 in QUILL is replaced.
 
-**Under it all, one document model.** QUILL had half of QuillLite's
+**Under it all, one document model.** QUILL had half of QUILL Lite's
 `DocumentText` --- a text mirror and a hand-rolled statistics cache --- while the
 smaller product had the whole object, which is the family rule exactly backwards.
 There is one now, owned by shared code and answering both, and the status bar's
@@ -587,14 +587,14 @@ arrow press.
 
 **One dead key, one sentence.** A formatting chord the editing control answers
 but the document cannot hold --- `Ctrl+U` in Markdown, say --- is swallowed and
-explained once, in both editors, from one shared table. QuillLite lower-cased its
+explained once, in both editors, from one shared table. QUILL Lite lower-cased its
 own Format label on the way into that sentence, so an HTML document heard "a html
 document" where QUILL said "an HTML document": the article is chosen by *sound*
 because the sentence is spoken, and lower-casing an initialism throws that away.
 
 **The documents caught up.** Both user guides now cover the File Format window's
 **keep as is** rows and what a rich document's Encoding and Line Endings cells
-say, the QuillLite guide explains the swallowed formatting keys, and the QA
+say, the QUILL Lite guide explains the swallowed formatting keys, and the QA
 estate covers the whole program: a new **Block R** in
 `docs/qa/quilllite-signoff.md` (L-223 to L-236, with the rich-document status
 cells promoted into the fifteen-minute pass), the four new windows in
@@ -606,7 +606,7 @@ announced rather than shown.
 ### Ctrl+F6 walks documents, and Word Count stopped opening a window (2026-09-17)
 
 **`Ctrl+F6` and `Ctrl+Shift+F6` move between documents.** That is Windows' own
-MDI pair, it is Word's, and it is QuillLite's --- QUILL was the one product in
+MDI pair, it is Word's, and it is QUILL Lite's --- QUILL was the one product in
 the family where the key somebody arrives with did something else entirely
 (Focus Preview). `Ctrl+Tab` stays the primary in both, because it is what
 people actually press; the platform's pair now works as well rather than
@@ -624,7 +624,7 @@ where the lines and characters had existed only inside the box.
 **The Keyboard Manager refuses the screen reader's own keys.** It never did:
 binding `Insert` was accepted, shown as assigned, and never fired, because the
 reader intercepts it before QUILL sees it. Every visible surface agreed it
-should have worked, which is the worst shape a keymap bug can take. QuillLite
+should have worked, which is the worst shape a keymap bug can take. QUILL Lite
 has refused these since it shipped; the list is shared now
 (`quill/core/reserved_keys.py`) so "which keys belong to the reader" has one
 answer.
@@ -643,7 +643,7 @@ side.
 ### Ctrl+Space means sentence, and four surfaces got a key (2026-09-17)
 
 **`Ctrl+Space` selects the sentence.** It was Select Chunk here and Select
-Sentence in QuillLite --- one key meaning two different things in two products
+Sentence in QUILL Lite --- one key meaning two different things in two products
 somebody may use in the same hour --- and QUILL had no Select Sentence command
 at all, which is what let the chord be spent elsewhere.
 
@@ -657,7 +657,7 @@ and now its name and its help text say so.
 **Quick Nav has a key at last: `Ctrl+Shift+Z`, and the same key closes it.** A
 surface opened by mistake should close with the key that opened it; Escape
 closes it too. It stays a separate command from **Go to Anything**, which takes
-QuillLite's `Ctrl+Alt+Shift+A` --- a fuzzy command palette and a landmark index
+QUILL Lite's `Ctrl+Alt+Shift+A` --- a fuzzy command palette and a landmark index
 answer different questions, and merging them would mean typing a heading's name
 into a list that also holds every command in the app. Both were also registered
 claiming no key at all, so the palette --- the one surface whose job is telling
@@ -669,7 +669,7 @@ things you do once, when you set the app up, and they keep their menu rows.
 That freed three three-modifier chords, spent immediately: Go to Anything took
 one, and **Keyboard Manager** (`Ctrl+Alt+Shift+R`) and **Sound Scheme**
 (`Ctrl+Alt+Shift+O`) --- both reachable only by walking a menu until now, and
-both on QuillLite's own chord for them --- took the other two.
+both on QUILL Lite's own chord for them --- took the other two.
 
 **A cut goes into the Clip Library too.** With **Keep everything I copy** on,
 QUILL captured copies and never cuts. That is the half that matters: a copy
@@ -712,26 +712,26 @@ of them the kind you feel rather than see:
   keystroke.** It reads the document mirror, which is what the mirror is for.
 
 The mode also **moved to `Alt+Shift+F9`**, and `Ctrl+Alt+F8` became
-**Toggle Selection Marker** --- QuillLite's meaning for that key. One chord was
+**Toggle Selection Marker** --- QUILL Lite's meaning for that key. One chord was
 carrying two different things across two products somebody may use in the same
 hour: here a sticky Shift, there a pin you drop and pick up.
 
 All of it moved to `quill/ui/extend_selection_mode.py`, shared, because
-QuillLite deleted its own attempt at this and has had nothing since --- so
+QUILL Lite deleted its own attempt at this and has had nothing since --- so
 fixing it in place would have been fixing it once for one of the two products.
 
 ### The Heading Organizer is shared, and QUILL prints its headings (2026-09-17)
 
 The **Heading Organizer** moved to `quill/ui/heading_organizer_dialog.py` so
-QuillLite can open it too. Same window, same rules, same keys.
+QUILL Lite can open it too. Same window, same rules, same keys.
 
 **A rich document no longer prints as anonymous flat text.** QUILL printed
 `GetValue()` and nothing else, so every heading, every bold run and every list
-arrived on paper indistinguishable from body text --- while QuillLite at least
+arrived on paper indistinguishable from body text --- while QUILL Lite at least
 wrote the level in front of each heading line, which made the *small* product
 better on paper than this one. QUILL marks them now, from the same function
-QuillLite uses. The real answer, `EM_FORMATRANGE` in the shared rich surface, is
-in `quill/ui/richedit_printing.py` and QuillLite prints through it today.
+QUILL Lite uses. The real answer, `EM_FORMATRANGE` in the shared rich surface, is
+in `quill/ui/richedit_printing.py` and QUILL Lite prints through it today.
 
 ### Spelling: the contested menu, and a review that starts where you are (2026-09-17)
 
@@ -771,7 +771,7 @@ app has already done.
 
 **Every selection is announced as its scope and its word count** --- "Selected
 paragraph, 41 words" --- from one function both editors call. QUILL said that
-and QuillLite said "Selected paragraph, 412 characters, 41 words", so the same
+and QUILL Lite said "Selected paragraph, 412 characters, 41 words", so the same
 key reported the same fact two ways depending on which of the two you were in.
 Words rather than characters, because a word count is a size you can picture and
 412 characters is a number you then have to divide.
@@ -807,9 +807,9 @@ and `Alt+F12`, and **Line Statistics** is `Ctrl+Alt+G`. All five were reachable
 only by walking a menu, which for a screen-reader user is a cost paid on every
 visit rather than once.
 
-The first four are the chords QuillLite already uses for the same verbs and all
+The first four are the chords QUILL Lite already uses for the same verbs and all
 four were free in QUILL, so there was nothing to trade. Line Statistics takes
-`Ctrl+Alt+G` rather than QuillLite's `Ctrl+Alt+W` --- that is Select Word here
+`Ctrl+Alt+G` rather than QUILL Lite's `Ctrl+Alt+W` --- that is Select Word here
 --- and G is the better letter anyway, since Line Statistics answers "how wide
 is this document" to Document Statistics' "how big", and that is on
 `Ctrl+Shift+G`.
@@ -825,7 +825,7 @@ rather than four scattered ones.
 individual *cell* of it and never the bar itself, so somebody who wanted
 Notepad's plain window had to go and empty a list of cell names --- and still
 give up a row of the screen to a bar with nothing in it. Notepad has had
-**View > Status Bar** on this key for decades and QuillLite has had it since it
+**View > Status Bar** on this key for decades and QUILL Lite has had it since it
 shipped, under the same `show_status_bar` setting name, so a settings file
 carried between the two products now means one thing in both.
 
@@ -843,14 +843,14 @@ so the sentence is the only evidence the key did anything.
 ### F5 writes the date in QUILL too (2026-09-16)
 
 `F5` has put the time and date at the caret since Notepad on Windows 3.1, and
-QuillLite has done it since it shipped. QUILL had no `F5` at all: its three
+QUILL Lite has done it since it shipped. QUILL had no `F5` at all: its three
 date/time inserters were menu rows contributed by the bundled Insert Tools
 extension, reached through a submenu --- and a menu row is not a chord. They
 also switch off in **Safe Mode** along with every other extension, so in the
 mode people fall back to when something is wrong, QUILL could not insert a date
 at all.
 
-It is a built-in command now, on `F5`, writing the same stamp QuillLite writes
+It is a built-in command now, on `F5`, writing the same stamp QUILL Lite writes
 (`14:07 16/09/2026`) from one format both editors read, and reading it back to
 you afterwards --- a screen reader says nothing when an app writes text on its
 own behalf, so without that sentence `F5` is a keystroke after which something
@@ -861,8 +861,8 @@ has silently appeared. The extension's three variants are untouched.
 **`Ctrl+G` now goes to a line, a page, a bookmark or a heading.** It used to go
 to a line and nothing else; a page meant `Ctrl+Shift+G` and a different prompt,
 and a bookmark meant a third surface entirely. Three places to look for one
-verb. It is Word's shape, it is the window QuillLite already opens on the same
-key, and QUILL brings the **Page** row QuillLite has no model for --- exact
+verb. It is Word's shape, it is the window QUILL Lite already opens on the same
+key, and QUILL brings the **Page** row QUILL Lite has no model for --- exact
 numbers in a PDF, `~4 (estimated)` everywhere else, so which kind of jump you
 are making is written on the row instead of buried in a prompt. The kind is a
 radio box rather than a drop-down on purpose: arrow keys walk it and every stop
@@ -872,7 +872,7 @@ rebinding you made still works.
 
 **`Ctrl+Shift+G` is Document Statistics.** Freed by the above, and given to the
 window that was "Word Count" on `Ctrl+Shift+W`. That is Word's key for it and
-the one QuillLite already used, and the new name is honest about a window that
+the one QUILL Lite already used, and the new name is honest about a window that
 also counts characters, lines, paragraphs and reading time.
 
 **Three heading commands that had no key, and one that had no command.**
@@ -882,7 +882,7 @@ also counts characters, lines, paragraphs and reading time.
   command at all.
 - **Previous Heading** is `Ctrl+Alt+Shift+H`, beside `Ctrl+Alt+H` for Next.
   Shift for backwards, which is what every other pair in the product does.
-- **`Ctrl+Alt+L`** opens the **Outline Navigator**. That is QuillLite's List
+- **`Ctrl+Alt+L`** opens the **Outline Navigator**. That is QUILL Lite's List
   Headings chord, pointed at QUILL's list of the same thing, so a hand trained
   on either product finds it. `Ctrl+Shift+O` still works.
 
@@ -913,14 +913,14 @@ four alone, saying nothing about the four. Every one of those is invisible by
 ear: the screen reader says "Heading 2" in all four cases, and the damage only
 appears in the published file. Heading N now **rewrites** the line, does **every
 selected line**, and does it as one edit so one `Ctrl+Z` walks it back. `Body
-Text` takes the markers off the same way. QuillLite fixed exactly this bug a
+Text` takes the markers off the same way. QUILL Lite fixed exactly this bug a
 while ago with a shared function whose docstring names it; QUILL had never
 called it.
 
 **The as-you-type spelling alert spoke whether you asked it to or not.**
 "Possible misspelling" was read aloud with *Speak the spelling alert* switched
 off, and read twice with it switched on. The setting did nothing here and did
-exactly what it says in QuillLite, so one preference meant two opposite things
+exactly what it says in QUILL Lite, so one preference meant two opposite things
 in two editors meant to agree. The alert now writes the status bar silently and
 speaks only when you have asked for speech.
 
@@ -931,7 +931,7 @@ buffer has neither --- the word went nowhere and QUILL still announced `Added
 discover it was to try again and hear the same sentence twice. It now says what
 actually happened and what to do instead: **"Cannot add "word" to this document
 only until the document is saved. Save it, or add the word to your personal
-dictionary instead."** QuillLite's `teach_word` was equally cheerful and is
+dictionary instead."** QUILL Lite's `teach_word` was equally cheerful and is
 equally honest now.
 
 Two modules came out of `main_frame.py` in the process
@@ -945,13 +945,13 @@ QUILL drew in whatever font the toolkit happened to pick on your machine, and
 there was nothing anywhere in the product to change it. For an editor whose
 audience includes low-vision users that is not a missing preference; it is the
 product not working. It was also the largest of sixteen things the small sibling
-QuillLite could do and the full editor could not, which is exactly backwards:
+QUILL Lite could do and the full editor could not, which is exactly backwards:
 nobody opens QUILL and notices the absence of a thing they have only ever seen
 somewhere else, so it never gets reported.
 
 **Three keys, the ones already in your hands.** `Ctrl+=` makes the text one
 point bigger, `Ctrl+-` one point smaller, `Ctrl+0` puts it back to 12 point.
-Notepad's three, every browser's three, and QuillLite's three. QUILL speaks the
+Notepad's three, every browser's three, and QUILL Lite's three. QUILL speaks the
 new size ("14 point") each time, because a screen reader says nothing at all
 when a control changes size --- and without that sentence, pressing the key
 twice tells you nothing about where you ended up. The range is 6 to 72 points,
@@ -990,10 +990,10 @@ it is, and its refusal now points at the two real rows above it. Being told
 somebody concludes the editor cannot change its font at all, which until today
 happened to be true.
 
-**Two settings, shared with QuillLite.** **Editor font** (`font_name`, empty
+**Two settings, shared with QUILL Lite.** **Editor font** (`font_name`, empty
 means the system's own pick) and **Editor text size (points)** (`font_size`,
 6--72, default 12) live in Preferences ▸ Settings under "font". They are
-QuillLite's field names deliberately, so a settings file carried between the two
+QUILL Lite's field names deliberately, so a settings file carried between the two
 products means the same thing in both. A hand-edited size outside the range is
 clamped to the nearest legal one rather than refused: a typo in a settings file
 should not cost you a working editor.
@@ -1080,7 +1080,7 @@ decides four things at once:
 | HTML document | `<strong>bold</strong>` | `<h2>Heading</h2>` | Insert HTML Tag |
 | Plain text document | nothing, and says why | nothing, and says why | neither; both dimmed |
 
-QuillLite reads the language from the file name -- `.md`/`.markdown`/`.mdx` and
+QUILL Lite reads the language from the file name -- `.md`/`.markdown`/`.mdx` and
 `.txt` are Markdown, the new `.html`/`.htm`/`.xhtml` are HTML, and a `.py` or a
 `.conf` is plain -- and it is only ever a first guess. **`Ctrl+Shift+M` now rings
 through all four kinds of document** (plain, Markdown, HTML, rich) instead of
@@ -1097,7 +1097,7 @@ anchor. `Alt+Shift+Right` walks `<h2>` down to `<h3>` in an HTML file instead of
 hunting for hashes. Heading navigation, the headings list and the Heading cell
 all read HTML headings too.
 
-#### QuillLite gained an Insert menu, and the emoji picker
+#### QUILL Lite gained an Insert menu, and the emoji picker
 
 Insert was a submenu of Edit holding three rows. Six is a menu, so it is one now
 -- **before Format**, the order Word uses and the order the work happens in: you
@@ -1170,7 +1170,7 @@ rule, and an enabled row promises the command will work.
   next launch. Invisible from the settings file, which was right the whole time
   — only the loader was not. Announce Lists and the new heading-order preference
   were wired the same way from the start, and all three now have a test that
-  round-trips them. QuillLite was never affected: its loader is field-driven.
+  round-trips them. QUILL Lite was never affected: its loader is field-driven.
 - **`F6` leaves the status bar as well as entering it**, in both editors.
   Escape still works; so now does the key that got you there, which is what
   every other region-cycling key in Windows does. `Shift+F6` too.
@@ -1183,7 +1183,7 @@ rule, and an enabled row promises the command will work.
   position is deliberately not spoken on every arrow press and deliberately not
   impossible to find out; a cell answers on demand and costs nothing until it is
   read. Enter on it turns the spoken cue off and on.
-- **QuillLite's Open dialog offers HTML**, and its "all supported files" filter
+- **QUILL Lite's Open dialog offers HTML**, and its "all supported files" filter
   covers `.htm` as well as `.html`.
 - **Customize Features gained a Markdown and HTML area** (18 areas, not 17).
   Recommended keeps it; WordPad and Notepad do not -- WordPad because rich text
@@ -1201,7 +1201,7 @@ can tell a reader the font name, the point size and the weight, and has no way
 to say "this paragraph is a heading". Word manages it only because Word ships an
 accessibility provider of its own.
 
-So the editor says it now. Arrive at a heading, in QUILL or QuillLite, in rich
+So the editor says it now. Arrive at a heading, in QUILL or QUILL Lite, in rich
 text or in Markdown, and you hear **"Heading 2"** -- the level alone, once, on
 arrival, because the reader is already reading the line and moving about inside
 the heading is not news. It works the same way on a heading that came out of a
@@ -1212,7 +1212,7 @@ Three things came with it:
 - **Entering a table now tells you its shape.** "Table, 4 rows, 3 columns"
   instead of "Entering table". Leaving one still says "Out of table".
 - **Heading navigation works in plain text.** Next Heading, Previous Heading and
-  the headings list refused outright in a QuillLite plain-text document --
+  the headings list refused outright in a QUILL Lite plain-text document --
   "Headings are only available in rich text" -- in documents whose Markdown
   headings Alt+Shift+Right would happily re-level. They now walk the hashes, and
   a `#` inside a fenced code block is correctly not a heading. The status bar's Heading cell
@@ -1222,7 +1222,7 @@ Three things came with it:
   which way it went rather than "on" and "off". Reading a document as text is a
   different job from writing one, and it is a decision per document rather than
   a preference to set once.
-- **A `#` is only a heading where `#` means heading.** In QuillLite a plain-text
+- **A `#` is only a heading where `#` means heading.** In QUILL Lite a plain-text
   document is a heading document when it is a `.md`, a `.txt`, or untitled. In a
   `.py`, `.sh`, `.ini` or `.conf` a leading `#` is a comment, and treating it as
   a heading would have announced "Heading 1" on most lines of a build script.
@@ -1270,7 +1270,7 @@ first question asked, so every row the old search returned is still there.
 
 ### Insert Special Character never opened, in either editor (2026-09-14)
 
-Ctrl+Shift+F2 in QuillLite and Shift+F2 in QUILL did nothing at all. The picker
+Ctrl+Shift+F2 in QUILL Lite and Shift+F2 in QUILL did nothing at all. The picker
 raised a wx assertion while it was being built -- its OK and Cancel buttons were
 parented on the dialog while every other control sat on a panel -- so it never
 reached the screen. The buttons moved onto the panel, and a new test builds the
@@ -1337,9 +1337,9 @@ a `.qsf` has never been able to carry one. There is now a test asserting that
 stays true.
 
 **Every app with settings got the same treatment**, over one shared
-implementation: QUILL, QuillLite, Quill Cast, Quill Weather and Quill Inkwell
+implementation: QUILL, QUILL Lite, Quill Cast, Quill Weather and Quill Inkwell
 each declare which of their settings describe the machine rather than the
-person. QuillLite gains **Tools > Back Up Settings** and **Tools > Restore
+person. QUILL Lite gains **Tools > Back Up Settings** and **Tools > Restore
 Settings**, which it had no equivalent of at all.
 
 ### A hard line break, at last (2026-09-14)
@@ -1376,7 +1376,7 @@ toss-up: two trailing spaces are invisible on screen, silent to a screen reader,
 and stripped by many tools on save. A backslash can be heard, can be found with
 Find, and survives every editor there has ever been.
 
-**QuillLite has the setting and the command on the same key.** It has no preview
+**QUILL Lite has the setting and the command on the same key.** It has no preview
 and cannot open Word files, so the other two halves do not apply to it.
 
 ### Insert a character your keyboard has no key for, by name (2026-09-13)
@@ -1416,7 +1416,7 @@ the old prompt is folded into the box rather than bolted on beside it.
 Find keeps its own forty, built from the same table under the same names, so the
 two lists cannot drift.
 
-**QuillLite gained the command in the same change**, on **Edit > Insert >
+**QUILL Lite gained the command in the same change**, on **Edit > Insert >
 Special Character...** (**Ctrl+Shift+F2** -- QUILL's Shift+F2 is Previous
 Bookmark there), and it is the same dialog over the same catalogue rather than a
 second one that could drift. It reads back what it inserted, in Describe
@@ -1425,7 +1425,7 @@ on the page, and a screen reader says nothing when an app writes text on its own
 behalf, so without the read-back the command is a keystroke after which
 something you cannot see may or may not have appeared.
 
-**QuillLite's spelling context menu is one submenu now.** The Applications key
+**QUILL Lite's spelling context menu is one submenu now.** The Applications key
 on a misspelled word used to add a dozen rows to the top of the popup -- the
 suggestions, both Ignores, both Add-to-dictionary rows, and four onward
 commands -- which put Undo and Cut a different distance down the menu depending
@@ -1433,7 +1433,7 @@ on whether the word under the cursor happened to be spelled correctly. They are
 under one row named after the word, *Spelling: "wrold"*, whose first entry is
 still the first suggestion.
 
-### One update dialog, and QuillLite can finally find its own updates (2026-09-12)
+### One update dialog, and QUILL Lite can finally find its own updates (2026-09-12)
 
 **Every app now tells you what is in an update before it asks whether you want
 it.** QUILL always did -- its Check for Updates window opened on the release
@@ -1450,15 +1450,15 @@ notes rather than on a button, so the first thing you hear is the release notes
 and not the word "Update". QUILL keeps one extra button, **Skip this version**,
 because QUILL is the only app with somewhere to remember that answer.
 
-**QuillLite can now check for updates at all.** It shipped without any -- the
+**QUILL Lite can now check for updates at all.** It shipped without any -- the
 app most likely to be somebody's only Quill product, installed by a person who
 wanted Notepad, and there was no way for them to learn that a newer version
 existed. **Help > Check for Updates...** answers on **Ctrl+Alt+U**, the same key
-as everywhere else in the family, and QuillLite also looks once a day when it
+as everywhere else in the family, and QUILL Lite also looks once a day when it
 starts and says *nothing* unless there is something -- not while it checks, not
 when there is nothing, and not when the network is down. Only a real new version
 speaks, and even then it only offers; nothing downloads until you press Update.
-Turn the daily look off in Settings ("Look for updates when QuillLite starts").
+Turn the daily look off in Settings ("Look for updates when QUILL Lite starts").
 
 Page Setup moved from Ctrl+Alt+U to **Ctrl+Alt+P** to free that key. A
 chord that means Check for Updates in eight apps and Page Setup in the ninth is
@@ -1466,7 +1466,7 @@ the kind of difference nobody discovers until it does the wrong thing, and P
 suits Page Setup better than U ever did.
 
 **Two older faults in the update path were fixed while we were in here**, and
-they were not QuillLite's -- every app in the family had both.
+they were not QUILL Lite's -- every app in the family had both.
 
 **You were sometimes offered the wrong download.** Each app publishes four
 files: a full installer, a small one that fetches the shared parts on first
@@ -1475,7 +1475,7 @@ between them by looking at the file extension, so of the two installers it took
 whichever GitHub happened to list last -- and somebody running the Companion zip
 was handed an installer that cannot update their copy at all. QUILL's own
 updater learned to ask which edition you are running back in August; the eight
-companion apps and QuillLite were on a different code path that never did. They
+companion apps and QUILL Lite were on a different code path that never did. They
 ask now.
 
 **"Install and restart now" installed, and then the app did not come back.** The
@@ -1493,7 +1493,7 @@ ones out.
 
 **Report a Bug is now Get Help from Support...**, on Ctrl+Alt+F2, and it is on
 the Help menu of all ten surfaces rather than four. Quill Weather, Quill
-Converter, Quill Media Player, Quill Inkwell, QuillBeacon and QuillLite had no
+Converter, Quill Media Player, Quill Inkwell, QuillBeacon and QUILL Lite had no
 reporting item at all until now -- only an address printed in the About box for
 you to copy out by hand.
 
@@ -1529,7 +1529,7 @@ noticed, because the fallback worked. The transport is now read from the
 installed package's signature rather than assumed, and when the submission
 server can take it, reports go there instead -- with no change to what you do.
 
-### Every QuillLite command now has a test that presses it (2026-09-11)
+### Every QUILL Lite command now has a test that presses it (2026-09-11)
 
 Not "has a test that proves the method exists" -- one that presses the key and
 checks what a listener would get back. All **161** of them, up from 93, and the
@@ -1583,12 +1583,12 @@ nothing, give me*), with the same four answers and the same default. F3 is
 pressed in runs, and "Not found" spoken on every press is the fastest way to end
 up turning speech off altogether -- while somebody who wants every success spoken
 may well want the failure kept to a tone. Both are in **Settings ▸ Accessibility
-and Announcements** in QUILL and in **Preferences** in QuillLite, worded from one
+and Announcements** in QUILL and in **Preferences** in QUILL Lite, worded from one
 shared list so the two panes cannot describe the same four modes differently.
 
-### Searching now stops at the end if you tell it to (QuillLite, 2026-09-10)
+### Searching now stops at the end if you tell it to (QUILL Lite, 2026-09-10)
 
-QuillLite always wrapped around, with no way to say otherwise. It now honours
+QUILL Lite always wrapped around, with no way to say otherwise. It now honours
 the same **wrap_find** setting QUILL does, in both directions, with a checkbox in
 Preferences.
 
@@ -1606,7 +1606,7 @@ Blank Lines" and "Remove Blank Lines" are the same phrase, and the only way to
 learn which was which was to try one. They are now **Trim Blank Lines at the
 Ends** and **Remove Every Blank Line**, which is the actual difference: the first
 takes the blank lines before the first line of text and after the last, the
-second takes all of them including the ones between your paragraphs. QuillLite's
+second takes all of them including the ones between your paragraphs. QUILL Lite's
 single command takes the second name, so the two editors read alike.
 
 ### Every earcon in the product had been silent since it shipped (2026-09-10)
@@ -1618,7 +1618,7 @@ is everybody who never changed it.
 **The pack was never loaded.** The sound manager reloads only when the pack path
 *changes*. It initialised that path to `""` and the default setting is *also*
 `""`, so the very first comparison was `"" != ""`, the load was skipped, and the
-player held zero events. Every `post_sound` in QUILL and QuillLite quietly did
+player held zero events. Every `post_sound` in QUILL and QUILL Lite quietly did
 nothing.
 
 **And the audio backend freed each sound before it could play.** On the BASS
@@ -1638,7 +1638,7 @@ wondered why it did not sound like the rest of the pack.
 ### Nineteen new sounds, and every event now actually fires (2026-09-10)
 
 QUILL declared a hundred and forty-one sound events and **posted forty-five of
-them**. QuillLite posted three. The gap was not random: what had earcons were
+them**. QUILL Lite posted three. The gap was not random: what had earcons were
 the clever features -- the assistant, conversation mode, indent tones -- and
 what had none were cut, copy, paste, delete, undo, redo, open, close, print,
 start and exit.
@@ -1686,7 +1686,7 @@ listed every event the catalogue **declares**, most of which the app in front of
 you never posts -- so you could pick a sound for "Radio buffering" in a text
 editor and wait a long time to hear it.
 
-**QuillLite now lists twenty-two rows instead of a hundred and forty-one**, and
+**QUILL Lite now lists twenty-two rows instead of a hundred and forty-one**, and
 every one of them fires. QUILL lists all of them, because QUILL posts all of
 them. The rosters are held to that in both directions by a gate: an event listed
 and never posted is a row that does nothing, and an event posted and not listed
@@ -1707,7 +1707,7 @@ finish, and is it a word?** It requires a terminator -- a space, a comma, a new
 line -- so it never judges "recie" on the way to "receive", which is the failure
 that makes a live checker intolerable.
 
-**And QuillLite now has a sound at all.** It had none: the alert was a line in
+**And QUILL Lite now has a sound at all.** It had none: the alert was a line in
 the status bar, which on a bar nobody is watching is not an alert.
 
 ### A misspelling now tells you which letters are wrong (2026-09-10)
@@ -1733,7 +1733,7 @@ whether the alert plays a sound, whether it also speaks, how long before it
 repeats itself on the same word, whether words are spelled at all, three
 separate pauses for three surfaces, whether capitals are named, and whether the
 letters are spoken plainly, in the phonetic alphabet, or both. QUILL renders
-them under **Spelling** in Settings; QuillLite has **Tools ▸ Spelling ▸
+them under **Spelling** in Settings; QUILL Lite has **Tools ▸ Spelling ▸
 Announcements** (Ctrl+Alt+Shift+F7), with an example box that says what your
 choices sound like.
 
@@ -1839,7 +1839,7 @@ is.
 
 Right-click a misspelling in Word and the corrections are the first thing you
 see. Do it in QUILL and you got a "Spelling Suggestions" submenu below Undo,
-Cut, Copy and Paste; do it in QuillLite and you got the plain Windows edit menu,
+Cut, Copy and Paste; do it in QUILL Lite and you got the plain Windows edit menu,
 which knows nothing about spelling at all.
 
 That is a convenience for somebody who can see a red squiggle and **the only
@@ -1852,7 +1852,7 @@ arrow away -- followed by:
   disk. They last until the document is closed, and the announcement says so,
   because that is the fact that decides whether to teach the word instead.
 - **Add to Dictionary**, which says *which* dictionary it wrote to. There are
-  two in QuillLite and three in QUILL, and "added to dictionary" does not say.
+  two in QUILL Lite and three in QUILL, and "added to dictionary" does not say.
 - **More Suggestions**, **Check Document**, **Next** and **Previous
   Misspelling**, each showing the key it is bound to, so the menu teaches the
   shortcut rather than replacing it.
@@ -1860,14 +1860,14 @@ arrow away -- followed by:
 Every label names the word -- `Add "Bhattacharya" to My Dictionary` -- because a
 menu reached by keyboard is read out of context, and a row that names the word
 is one you can act on where you stand. A correctly spelled word gets no spelling
-section at all rather than a disabled row to arrow past, and QuillLite's menu
+section at all rather than a disabled row to arrow past, and QUILL Lite's menu
 keeps Undo, Cut, Copy, Paste, Delete and Select All, because losing them to gain
 a spell checker would be a poor trade.
 
 Ignoring is honoured everywhere it should be: the as-you-type check, Next and
 Previous Misspelling, and the suggestions window all consult the same list.
 
-### QuillLite: Shift+F7 works in the middle of a word (2026-09-10)
+### QUILL Lite: Shift+F7 works in the middle of a word (2026-09-10)
 
 **"Spelling for This Word" and "Add Word to Dictionary" only answered when the
 caret was on the word's very first character.** Anywhere else in the word --
@@ -1894,7 +1894,7 @@ Un-maximize it and that is remembered too, including the size you chose. Only a
 size you actually picked is stored, so un-maximizing always gives back the window
 you had rather than a full-screen one.
 
-### QuillLite: the profiles now match what their names promise (2026-09-10)
+### QUILL Lite: the profiles now match what their names promise (2026-09-10)
 
 Choosing **Notepad** removed the Format menu and then went on creating rich text
 documents on Ctrl+N -- keeping the letter of the name and breaking its promise,
@@ -1943,14 +1943,14 @@ without the keys. Both keep their shortcuts and gain an Alt path.
 All of it is now checked automatically: every enabled item must advertise a
 route, and no two items in one menu may claim one letter.
 
-### QuillLite: change any key, and be told what it costs (2026-09-10)
+### QUILL Lite: change any key, and be told what it costs (2026-09-10)
 
 **Tools > Keyboard Manager (Ctrl+Alt+Shift+R)** is new, and it is the first time
-a QuillLite key could be changed at all.
+a QUILL Lite key could be changed at all.
 
 Every command is listed with the key it answers to. Type part of a name to find
 one. The harder question -- *is this key free?* -- has its own answer: press
-**Record a Key**, press the combination, and QuillLite says what it does today
+**Record a Key**, press the combination, and QUILL Lite says what it does today
 or that it is free. Assigning a key somebody else has **names them and asks**
 rather than stealing it silently or refusing silently; say yes and that command
 is left with no key until you give it one, which is the honest outcome.
@@ -1959,13 +1959,13 @@ is left with no key until you give it one, which is the honest outcome.
 modifier, and taking it would take away the key you need to get it back.
 
 **Check for Problems** reports what nothing else can: a key claimed twice, a key
-QuillLite cannot read, and a key Windows will accept and then never actually send
+QUILL Lite cannot read, and a key Windows will accept and then never actually send
 to a menu -- assigned, and inert.
 
 Only what you changed is written down, so a key improved in a later version
 still reaches you.
 
-### QuillLite: Customize Features searches, and has profiles (2026-09-10)
+### QUILL Lite: Customize Features searches, and has profiles (2026-09-10)
 
 The list had grown to a length you had to **walk**. It now filters as you type,
 and it matches what a feature *does* as well as what it is called -- type "curly
@@ -1989,7 +1989,7 @@ Encoding and Line Endings** is no longer switchable, because turning off the lin
 tools was also taking away the dialog that decides whether a file saves back
 exactly as it arrived -- which is most of what a Notepad replacement is for.
 
-### QuillLite: the status bar stops cutting itself off (2026-09-10)
+### QUILL Lite: the status bar stops cutting itself off (2026-09-10)
 
 On a narrow window, the **Status Message** cell was the only one that could be
 squeezed -- and a button label wider than its button is cut off by Windows, so a
@@ -2044,7 +2044,7 @@ finished instead of saying "blank".** On every empty line at the end of every
 document -- which, in an editor, is most of them. It had two separate causes in
 the two products, and both are fixed.
 
-In **QuillLite** the cause was the editor being put into the Rich Edit control's
+In **QUILL Lite** the cause was the editor being put into the Rich Edit control's
 plain-text mode, where the control does not treat the position after a trailing
 line break as a line of its own and answers "which line is the caret on" with
 the previous one. Nothing needed that mode: whether a document is plain or rich
@@ -2081,12 +2081,12 @@ Two separate faults, both fixed:
   -- there is no portable root for it to default to.
 
 - **Five apps were not recognised as portable at all.** A bundle is only
-  portable when its launcher's name is on an allowlist, and **QuillLite,
+  portable when its launcher's name is on an allowlist, and **QUILL Lite,
   Inkwell, Beacon, Social and Cast** were missing from it. So those five wrote
   to the host machine's profile whatever the user chose -- their bundles even
   ship a `data\storage-mode.json` saying `portable`, and it was never read,
   because finding that file needs the bundle to be recognised first. For
-  QuillLite that included **recovery copies of documents that had never been
+  QUILL Lite that included **recovery copies of documents that had never been
   saved**, left behind on somebody else's computer.
 
   The allowlist was hand-maintained in two places and the tests named four
@@ -2135,13 +2135,13 @@ wonder. It also answers a question nothing else can -- whether *this* line is
 indented with the same kind of whitespace as its neighbours, which is invisible
 however carefully the text is read and which stops a Python file running.
 
-QuillLite has it on the same key, in the same change.
+QUILL Lite has it on the same key, in the same change.
 
 ### Heading levels share one implementation (2026-09-09)
 
 Promote and demote were two regexes and four branches inline in
 `main_frame.py` -- the shape that gets copied rather than called the second time
-somebody needs it, and QuillLite was the second time. The rule is now
+somebody needs it, and QUILL Lite was the second time. The rule is now
 `quill/core/heading_levels.py`, which both products' Alt+Shift+Left and Right
 run, and which returns a *reason* rather than a bool: nothing about the
 operation makes a sound or moves the caret, so "not on a heading", "already at
@@ -2156,20 +2156,20 @@ so Change Case offered five conversions in the menu and three from the keyboard.
 Both now have keys, in both products. Sentence case is what a heading typed in
 shouting needs; Invert Case is the cure for a sentence typed with Caps Lock on.
 
-QuillLite also gains **Reverse Lines**, **Tidy Whitespace** (which collapses the
+QUILL Lite also gains **Reverse Lines**, **Tidy Whitespace** (which collapses the
 runs of spaces and tabs that arrive with pasted-in text) and **Number Lines**,
 under Tools ▸ More Line Work; and **Indent** and **Outdent** on QUILL's own
 Ctrl+] and Ctrl+[, under Tools ▸ Indenting. All of them are QUILL's
 `format_ops`, `transforms` and `line_ops` rather than second implementations.
 
-Indenting is there for a specific person: QuillLite already goes quiet about
+Indenting is there for a specific person: QUILL Lite already goes quiet about
 spelling in a `.json` or a `.py` file, which is an admission that people edit
 configuration and code in it, and for them moving a block in or out a level is
 the most common thing to want and the most tedious to do by arrow key.
 
 ### Find learns three modes, a count, and a list of every match (2026-09-08)
 
-QuillLite's Find escaped what you typed and offered Match case and Whole word.
+QUILL Lite's Find escaped what you typed and offered Match case and Whole word.
 It now runs on QUILL's own `find_model`, which brings the rest with it.
 
 **Search mode**, in both Find and Replace, with three settings. *Normal* is what
@@ -2234,20 +2234,20 @@ Safe Mode check now runs first, matching what listing models and generating a
 response already did, so all three AI surfaces give the same answer to the same
 question. (`core/assistant_ai.py`)
 
-### QuillLite, and what building it gave the editor (2026-09-08)
+### QUILL Lite, and what building it gave the editor (2026-09-08)
 
-**QuillLite** joins the family: QUILL with everything removed except the
+**QUILL Lite** joins the family: QUILL with everything removed except the
 editor, derived from PR #1490 by Steven Scott (`doubletaponair`). Numbered
 documents in one window, plain text or rich text, Notepad's and WordPad's
 keys, a ten-cell readable status bar, and files that come back byte-for-byte.
 It lives in the shared package (`quill.apps.lite`, `quill/core/lite/`), with
 `standalone/quilllite/` as the packaging shell; its own PRD, user guide,
 release notes and changelog live there. The name is always spelled
-**QuillLite** -- one mixed-case word, including in the download artifact names
+**QUILL Lite** -- one mixed-case word, including in the download artifact names
 (`QuillLite-Setup-Shared-*`, never `Quill-Lite-*`) -- so a screen reader
 speaks it as a name instead of reading out hyphens.
 
-Because QuillLite may never be ahead of QUILL, the editor gained in the same
+Because QUILL Lite may never be ahead of QUILL, the editor gained in the same
 change:
 
 - **Two Rich Edit fixes for every QUILL user.** `_TOM_TRUE` was `tomUndefined`
@@ -2260,7 +2260,7 @@ change:
   Justify (Ctrl+Alt+J), single / one-and-a-half / double line spacing
   (Ctrl+1 / Ctrl+5 / Ctrl+2), Grow Font and Shrink Font
   (Ctrl+Shift+Period / Ctrl+Shift+Comma), and Paste Text Only (Ctrl+Alt+V). Where QUILL's keys differ from
-  QuillLite's WordPad defaults, an existing QUILL binding somebody's hands
+  QUILL Lite's WordPad defaults, an existing QUILL binding somebody's hands
   already know kept its key, and the reason is a comment in `keymap.py`.
 - **Numbered bookmarks** moved to shared `quill/core/numbered_bookmarks.py`
   so QUILL can adopt them (the QUILL-side UI is a named follow-up).

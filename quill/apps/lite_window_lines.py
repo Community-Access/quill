@@ -8,7 +8,7 @@ cannot glance at. That is the whole argument for this module, and it is why
 these commands are here rather than filed under "power tools".
 
 Every operation is QUILL's own :mod:`quill.core.line_ops`, not a second
-implementation. QuillLite must never be ahead of QUILL, and it is not here
+implementation. QUILL Lite must never be ahead of QUILL, and it is not here
 either: QUILL registered all five line commands long before this file existed
 and bound none of them to a key, so they were reachable from a menu and from no
 keystroke at all. Adding them here is what surfaced that, and the same chords
@@ -231,7 +231,7 @@ class DocumentLineMixin:
     def cmd_toggle_line_comment(self) -> None:
         """Ctrl+/: comment the selected lines out, or bring them back.
 
-        QuillLite's PRD accepts that people edit ``.py``, ``.json`` and
+        QUILL Lite's PRD accepts that people edit ``.py``, ``.json`` and
         ``.conf`` here -- it already silences the spell checker in them for
         exactly that reason -- and a comment toggle is the second half of that
         concession (bad.md 4.2, Tier 1). It is the same shared

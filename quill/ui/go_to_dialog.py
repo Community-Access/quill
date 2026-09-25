@@ -2,13 +2,13 @@
 
 ``Ctrl+G`` has meant "go to line" in Notepad since Windows 3.1 and "go to
 anything -- a line, a page, a bookmark, a heading" in Word for almost as long.
-QuillLite had the Notepad half and reached bookmarks and headings through two
+QUILL Lite had the Notepad half and reached bookmarks and headings through two
 other commands on two other chords; QUILL had Go To Line and Go To Page as
 separate commands and its bookmarks under a third. Three surfaces for one verb
 is three places to look and three things to learn (bad.md 5.4, P1.6, P2.3).
 
 Shared, so both editors open the same window. The host supplies the targets it
-has -- QuillLite has no pagination, so it offers no Page kind, and the radio box
+has -- QUILL Lite has no pagination, so it offers no Page kind, and the radio box
 shows only the kinds it was given rather than a greyed row for a thing this
 product does not do.
 

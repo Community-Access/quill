@@ -1,6 +1,6 @@
-"""Bring a QuillLite setup into QUILL, and share what is worth sharing.
+"""Bring a QUILL Lite setup into QUILL, and share what is worth sharing.
 
-QuillLite keeps its state in its own folder, on purpose:
+QUILL Lite keeps its state in its own folder, on purpose:
 ``quill/core/lite/paths.py`` says why -- a Notepad-scale editor that silently
 adopted a writing environment's settings would be deciding something nobody
 asked it to, and uninstalling it could then cost the user something QUILL owns.
@@ -13,16 +13,16 @@ Two kinds of state, and they are treated differently (decided 2026-09-18):
 **Content is shared, in QUILL's folder.** Abbreviations, the personal
 dictionary, the copy tray, the clip library and per-file bookmarks are things a
 person builds up over months, and keeping two copies in step by hand is the
-chore that ends with one copy quietly stale. QuillLite already has this for two
+chore that ends with one copy quietly stale. QUILL Lite already has this for two
 of them -- ``share_quill_abbreviations`` and ``share_quill_dictionary`` point it
 at QUILL's folder -- so QUILL's folder is *already* the shared home, and this
-follows that direction rather than inventing a second one. QuillLite's content
+follows that direction rather than inventing a second one. QUILL Lite's content
 is merged in once, and its switches are turned on, so from then on a change in
 either editor is a change in both.
 
 **Preferences are copied.** Wrap, autosave, spell-check-while-typing and the
 rest are about *the editor you are in*, and the two are not the same editor:
-QUILL has menus, panels and a leader key QuillLite does not have. A one-time
+QUILL has menus, panels and a leader key QUILL Lite does not have. A one-time
 copy gets somebody started in the shape they know and then lets the two drift,
 which is the honest answer. Keymap overrides come the same way and for the same
 reason -- a chord you rebound in a nine-menu editor should not silently rebind
@@ -30,7 +30,7 @@ something in a twenty-menu one.
 
 **Merging never loses.** QUILL's own entry wins every collision, in every store.
 Somebody running this has been using QUILL; what is already here is more recent
-than what QuillLite's file remembers, and an import that overwrites it is an
+than what QUILL Lite's file remembers, and an import that overwrites it is an
 import that undoes their work.
 
 wx-free: the UI asks for a plan, shows it, and applies it.
@@ -66,17 +66,17 @@ class SharedStore:
     key: str
     #: What it is called to a person, in a sentence that says what is in it.
     label: str
-    #: The file name inside QuillLite's data directory.
+    #: The file name inside QUILL Lite's data directory.
     lite_file: str
     #: The file name inside QUILL's data directory.
     quill_file: str
-    #: The QuillLite setting that points it at QUILL's folder from then on, or
-    #: ``""`` for a store QuillLite has no switch for yet.
+    #: The QUILL Lite setting that points it at QUILL's folder from then on, or
+    #: ``""`` for a store QUILL Lite has no switch for yet.
     lite_share_field: str = ""
 
 
 #: The five content stores, in the order a person would think of them. The two
-#: with a switch are the two QuillLite already ships sharing for; the other three
+#: with a switch are the two QUILL Lite already ships sharing for; the other three
 #: are merged once, and QUILL is where they live afterwards.
 SHARED_CONTENT_STORES: tuple[SharedStore, ...] = (
     SharedStore(
@@ -132,7 +132,7 @@ _NOT_COPIED: frozenset[str] = frozenset({
     "share_quill_dictionary",
 })
 
-#: QuillLite's ``default_mode`` is plain/rich and QUILL's
+#: QUILL Lite's ``default_mode`` is plain/rich and QUILL's
 #: ``default_new_document_format`` names a format, so the value needs
 #: translating rather than copying. The parity table records the pair; this is
 #: the translation it says an importer has to do.
@@ -141,17 +141,17 @@ _MODE_TO_FORMAT: dict[str, str] = {"plain": "txt", "rich": "rtf"}
 
 @dataclass(slots=True)
 class BringPlan:
-    """What bringing a QuillLite setup over would actually do."""
+    """What bringing a QUILL Lite setup over would actually do."""
 
-    #: QuillLite's data directory, or ``None`` when there is no setup to bring.
+    #: QUILL Lite's data directory, or ``None`` when there is no setup to bring.
     lite_dir: Path | None = None
     #: ``QUILL field -> value``, ready to set on :class:`~quill.core.settings.Settings`.
     settings: dict[str, object] = field(default_factory=dict)
-    #: ``QUILL command id -> chord``, translated from QuillLite's handler names.
+    #: ``QUILL command id -> chord``, translated from QUILL Lite's handler names.
     keymap: dict[str, str] = field(default_factory=dict)
-    #: The content stores QuillLite actually has a file for.
+    #: The content stores QUILL Lite actually has a file for.
     shared: tuple[SharedStore, ...] = ()
-    #: Fields found in QuillLite's settings that QUILL has no home for, so the
+    #: Fields found in QUILL Lite's settings that QUILL has no home for, so the
     #: report can say what is being left behind rather than implying it came.
     skipped: tuple[str, ...] = ()
 
@@ -161,9 +161,9 @@ class BringPlan:
 
 
 def lite_data_dir() -> Path | None:
-    """QuillLite's data directory, if this machine has one.
+    """QUILL Lite's data directory, if this machine has one.
 
-    ``None`` rather than a guess when QuillLite has never run: an import that
+    ``None`` rather than a guess when QUILL Lite has never run: an import that
     finds nothing and reports success is worse than one that says there is
     nothing here.
     """
@@ -179,12 +179,12 @@ def lite_data_dir() -> Path | None:
 
 
 def translate_lite_settings(raw: dict[str, object]) -> tuple[dict[str, object], tuple[str, ...]]:
-    """QuillLite's settings as QUILL's, plus the names that had no home here.
+    """QUILL Lite's settings as QUILL's, plus the names that had no home here.
 
     The name mapping is :func:`quill.core.lite.parity.quill_setting_for`, so this
     cannot drift from the parity gate. Two things it refuses to do: copy a field
     that describes this computer rather than a preference, and copy a field whose
-    QUILL namesake means something else (``NOT_ALIASES`` -- QuillLite's
+    QUILL namesake means something else (``NOT_ALIASES`` -- QUILL Lite's
     ``recent_files`` is a list of files and QUILL's ``recent_files_limit`` is a
     number, and handing an importer one where it expects the other is the most
     plausible single way to corrupt a settings file).
@@ -216,7 +216,7 @@ def translate_lite_settings(raw: dict[str, object]) -> tuple[dict[str, object], 
 
 
 def translate_lite_keymap(raw: dict[str, object]) -> dict[str, str]:
-    """QuillLite's saved rebindings as QUILL command ids.
+    """QUILL Lite's saved rebindings as QUILL command ids.
 
     Through :data:`quill.core.lite.parity.COMMAND_EQUIVALENTS`, the one table
     that knows which handler is which command. A handler with no QUILL
@@ -279,7 +279,7 @@ def merge_json_store(lite_path: Path, quill_path: Path) -> int:
     entries, or a dict with one list inside it, and a merger that knew each shape
     would be five mergers to keep in step with five schemas. What matters is the
     rule, and the rule is the same for all of them -- **nothing already in QUILL
-    is replaced**, and anything QuillLite has that QUILL does not is added.
+    is replaced**, and anything QUILL Lite has that QUILL does not is added.
 
     Returns 0 and writes nothing when there is nothing to add, when either file
     cannot be read, or when the two are different shapes. A merge that cannot be
@@ -370,15 +370,15 @@ def apply_bring_plan(plan: BringPlan, quill_dir: Path) -> dict[str, int]:
 
 
 def enable_lite_sharing(plan: BringPlan) -> tuple[str, ...]:
-    """Point QuillLite at QUILL's folder for the stores it has a switch for.
+    """Point QUILL Lite at QUILL's folder for the stores it has a switch for.
 
-    The only thing this module writes into QuillLite's own settings, and the
+    The only thing this module writes into QUILL Lite's own settings, and the
     reason it is allowed to: a person who has just asked for one shared set of
     abbreviations has asked for exactly this, and doing half of it -- QUILL
-    holding QuillLite's words while QuillLite still reads its own copy -- is the
+    holding QUILL Lite's words while QUILL Lite still reads its own copy -- is the
     shape that makes a "shared" store look broken.
 
-    Returns the switches it turned on. Silent when QuillLite is not installed.
+    Returns the switches it turned on. Silent when QUILL Lite is not installed.
     """
     from quill.core.storage import read_json, write_json_atomic
 
@@ -409,10 +409,10 @@ def describe_plan(plan: BringPlan) -> str:
     otherwise.
     """
     if plan.lite_dir is None:
-        return "QuillLite has not been run on this computer, so there is nothing to bring."
+        return "QUILL Lite has not been run on this computer, so there is nothing to bring."
     if plan.is_empty:
         return (
-            f"QuillLite's folder is here ({plan.lite_dir}) but holds nothing to bring: "
+            f"QUILL Lite's folder is here ({plan.lite_dir}) but holds nothing to bring: "
             "no changed settings, no rebound keys, and none of the shared stores."
         )
     lines: list[str] = []
@@ -431,6 +431,6 @@ def describe_plan(plan: BringPlan) -> str:
         lines.append(
             f"Left behind ({len(plan.skipped)}): "
             + ", ".join(plan.skipped)
-            + ". These describe QuillLite or this computer rather than a preference."
+            + ". These describe QUILL Lite or this computer rather than a preference."
         )
     return "\n".join(lines)

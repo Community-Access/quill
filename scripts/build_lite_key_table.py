@@ -1,4 +1,4 @@
-"""Regenerate the key table in QuillLite's user guide from the command table.
+"""Regenerate the key table in QUILL Lite's user guide from the command table.
 
 The guide's key list has to be the keys that are actually bound. A guide that
 names a key the app does not bind sends somebody to press nothing -- and for a

@@ -351,7 +351,7 @@ def test_misspellings_behind_message_counts_the_other_direction(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # Patched in quill.core.spellcheck, which is where the sentence now lives:
-    # it moved out of main_frame_spellcheck.py on 2026-09-16 so QuillLite could
+    # it moved out of main_frame_spellcheck.py on 2026-09-16 so QUILL Lite could
     # say it too (bad.md S9), and a test that patches the module that merely
     # calls it patches nothing.
     from quill.core import spellcheck as mf
@@ -423,7 +423,7 @@ def test_navigate_next_heading_announces_level_and_ordinal() -> None:
     # the one thing you already knew, which is what GATE-13 is about -- and it
     # is what every screen reader says navigating headings on a web page. The
     # "2 of 3" stays, because it is the only part that says where you are in
-    # the document rather than what is under the caret. QuillLite says exactly
+    # the document rather than what is under the caret. QUILL Lite says exactly
     # this sentence now.
     assert statuses == ["Heading 2, 2 of 3: Child at line 3, column 1"]
 
@@ -449,8 +449,8 @@ def test_select_line_announces_scope_and_word_count() -> None:
     frame.select_line()
 
     # No trailing full stop: the sentence comes from
-    # quill.core.selection.describe_selection now, which is QuillLite's shape
-    # as well, and QuillLite's announcement vocabulary carries none (bad.md
+    # quill.core.selection.describe_selection now, which is QUILL Lite's shape
+    # as well, and QUILL Lite's announcement vocabulary carries none (bad.md
     # L14). One shape means one punctuation too.
     assert statuses == ["Selected line, 3 words"]
 
@@ -484,7 +484,7 @@ def test_an_f8_span_says_which_lines_it_reached() -> None:
 def test_completing_an_empty_f8_span_says_nothing_was_selected() -> None:
     """It used to announce "Selected 0 characters, line 1 column 1 to line 1
     column 1" -- a number, a place, and the same place again, to say the one
-    thing that matters: nothing happened. QuillLite's wording is the one a
+    thing that matters: nothing happened. QUILL Lite's wording is the one a
     listener can act on (bad.md L11)."""
     frame = _build_frame("one two three\n", insertion_point=4)
     statuses: list[str] = []
@@ -588,7 +588,7 @@ def test_shrink_never_jumps_to_a_span_you_have_left() -> None:
     hold an empty pair too, so Shrink would collapse the selection and announce
     that it had shrunk something.
 
-    It computes from the text now, which is what QuillLite has always done and
+    It computes from the text now, which is what QUILL Lite has always done and
     is strictly better rather than merely simpler: a history can only answer
     for selections you reached by *expanding*, and the text can answer for any
     selection at all.
@@ -1261,7 +1261,7 @@ def test_temp_bookmark_commands_are_registered_with_chords_and_a_feature() -> No
     from quill.core.keymap_packs import _PACK_LABELS
 
     # Ctrl+J went to Justify on 2026-09-16 -- Word's key, WordPad's and
-    # QuillLite's -- and the temporary bookmark took the chord Justify
+    # QUILL Lite's -- and the temporary bookmark took the chord Justify
     # vacated. Go To keeps Ctrl+Shift+J, so the pair stays a pair.
     assert DEFAULT_KEYMAP["navigate.set_temp_bookmark"] == "Ctrl+Alt+J"
     assert DEFAULT_KEYMAP["navigate.go_to_temp_bookmark"] == "Ctrl+Shift+J"

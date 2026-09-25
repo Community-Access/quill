@@ -702,7 +702,7 @@ command's whole distinction from POW-33a is what it does **not** touch.
 including the ones between paragraphs. Unbound by default, like every other
 power tool; reach it from the menu or give it a key in the Keymap Editor.
 
-The bug it was written for: QuillLite shipped a command with this name wired to
+The bug it was written for: QUILL Lite shipped a command with this name wired to
 the trimming one. On any document with blank lines in the middle it removed
 nothing, and then announced that it had removed a line — which is worse than
 doing nothing, because a listener cannot see that the text is unchanged.

@@ -4,7 +4,7 @@
 ``%LOCALAPPDATA%\\QuillLite``. Both halves of that guard have been wrong once,
 and neither failure announced itself:
 
-* **QuillLite's profile was not guarded at all** until 2026-09-21. QUILL's was.
+* **QUILL Lite's profile was not guarded at all** until 2026-09-21. QUILL's was.
 * **The guard patched only ``builtins.open``**, so every ``Path.write_text`` and
   ``Path.write_bytes`` walked past it -- ``pathlib`` calls ``io.open`` by
   attribute lookup on the module, which is a different binding to the same
@@ -13,7 +13,7 @@ and neither failure announced itself:
 
 The cost was not theoretical: two tests in ``test_lite_save_path.py`` called
 ``quill.core.lite.recovery.new_slot`` without isolation, leaving a slot in the
-developer's live QuillLite store on every run of the suite, for months. Those
+developer's live QUILL Lite store on every run of the suite, for months. Those
 slots were part of the sixty-nine unsaved documents a user was offered in a
 single Yes/No box on launch.
 

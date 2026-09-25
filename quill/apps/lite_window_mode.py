@@ -15,13 +15,13 @@ and neither said so.
 
 QUILL has converted both ways since 0.9.0-beta3, through the same wx-free
 converters in :mod:`quill.io.rtf`, and warns first about anything the target
-cannot carry. QuillLite may never be behind QUILL on an editor-core capability
+cannot carry. QUILL Lite may never be behind QUILL on an editor-core capability
 (CLAUDE.md), so it converts too, through the same functions and with the same
 warning (bad.md R6).
 
 **What "convert" means in each direction, and why it is not symmetrical.**
 
-Rich to plain is always Markdown: it is the only markup QuillLite's converters
+Rich to plain is always Markdown: it is the only markup QUILL Lite's converters
 write, and a heading that arrives as ``## Title`` is a heading the outline, the
 headings list and heading navigation all still find. The document's language is
 pinned to Markdown as part of the switch, so the Format cell says what the

@@ -1,19 +1,19 @@
-"""Every control a QuillLite user can land on answers F1 with something specific.
+"""Every control a QUILL Lite user can land on answers F1 with something specific.
 
 GATE-LITE-HELP (``tests/unit/tools/test_lite_help_audit.py``) uses the family's
 shared scanner, and that scanner's ``_HELPABLE_CLASSES`` is deliberately a
 subset: it does not include ``wx.CheckBox``, and it cannot see a control built by
 a factory in another module. Both gaps are real here --
 
-* QuillLite's Find and Replace windows are half checkboxes;
+* QUILL Lite's Find and Replace windows are half checkboxes;
 * the **document itself** is built by
   :func:`quill.ui.richedit_editing.create_richedit_document`, so the control a
   listener is in for all but a few seconds of a session is invisible to the
   shared scan.
 
 So this file asks the stricter question the product actually needs answered:
-*of every focusable control QuillLite constructs, is there one without help?*
-It is deliberately QuillLite's own rather than a change to the shared gate --
+*of every focusable control QUILL Lite constructs, is there one without help?*
+It is deliberately QUILL Lite's own rather than a change to the shared gate --
 tightening that would put every sibling app into failure on a rule nobody has
 agreed to yet.
 

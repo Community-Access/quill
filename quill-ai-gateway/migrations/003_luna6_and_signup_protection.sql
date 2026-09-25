@@ -133,7 +133,7 @@ UPDATE feature_flags
        disabled_reason = 'Describing pictures is not a shipped feature yet. It costs '
                          'several times more per request than text does and needs its '
                          'own limits, so it is deliberately last. Nothing in QUILL or '
-                         'QuillLite can reach it.'
+                         'QUILL Lite can reach it.'
  WHERE feature = 'alt_text';
 
 UPDATE feature_flags

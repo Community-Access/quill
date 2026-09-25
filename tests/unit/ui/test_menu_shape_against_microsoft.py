@@ -196,7 +196,7 @@ def test_the_two_tables_do_not_disagree_with_the_code() -> None:
 def test_quilllite_keeps_the_same_menu_bar_shape() -> None:
     """Rule 2, one level up: the two products' menu bars agree about what exists.
 
-    QuillLite's titles come from its command table, which is the one list its menu
+    QUILL Lite's titles come from its command table, which is the one list its menu
     bar and its key list both read -- so this checks the table rather than a
     builder, and a menu that stopped existing would fail here.
     """
@@ -208,7 +208,7 @@ def test_quilllite_keeps_the_same_menu_bar_shape() -> None:
         if top and top not in titles:
             titles.append(top)
     for expected in ("File", "Edit", "View", "Insert", "Format", "Tools", "Help"):
-        assert expected in titles, f"QuillLite has no {expected} menu"
+        assert expected in titles, f"QUILL Lite has no {expected} menu"
     # And in the same relative order, for the same reason QUILL's are checked.
     positions = {title: index for index, title in enumerate(titles)}
     shared = [title for title in _EXPECTED_ORDER if title in positions]

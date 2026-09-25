@@ -255,7 +255,7 @@ def test_a_heading_marks_the_document_modified(lite_window):
 
 
 def test_the_list_key_rings_through_three_answers_in_rich_text(lite_window):
-    """A toggle can only say yes or no, so QuillLite could not make a numbered
+    """A toggle can only say yes or no, so QUILL Lite could not make a numbered
     list at all -- in any kind of document (bad.md P1.5). WordPad's own button
     on this chord rings, and each stop says its own name so you press it until
     you hear the one you meant."""

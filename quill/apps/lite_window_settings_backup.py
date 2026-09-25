@@ -1,4 +1,4 @@
-"""Back Up Settings and Restore Settings, for QuillLite (#1501).
+"""Back Up Settings and Restore Settings, for QUILL Lite (#1501).
 
 Asked for by a QUILL user who wanted to configure the app once and carry that
 configuration to his other machines: *"the user often makes several changes to a
@@ -119,7 +119,7 @@ class DocumentSettingsBackupMixin:
     # ------------------------------------------------------------------ #
 
     def _show_lite_modal(self, dialog: wx.Dialog, label: str) -> int:
-        """The hardened modal path, reached the way the rest of QuillLite does."""
+        """The hardened modal path, reached the way the rest of QUILL Lite does."""
         from quill.ui.dialog_contract import show_modal_dialog
 
         return int(show_modal_dialog(dialog, label))

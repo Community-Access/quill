@@ -2,7 +2,7 @@
 
 **The F8 marker could not be cancelled, in either editor** (bad.md L4). Press
 F8, change your mind, and there was no way out: QUILL's Escape cleared *extend
-mode* and left the anchor sitting there, QuillLite's ``cancel_extend_selection``
+mode* and left the anchor sitting there, QUILL Lite's ``cancel_extend_selection``
 had no callers at all, and pressing F8 again silently MOVED the marker rather
 than dropping it. The state is invisible, so it was also impossible to tell
 which of those had happened. Escape drops it now, in both, and says so.
@@ -11,11 +11,11 @@ which of those had happened. Escape drops it now, in both, and says so.
 ``Open User Guide`` carried ``Ctrl+F1`` as text after a tab in its menu label,
 outside the keymap entirely -- so it was absent from the generated reference,
 unreachable from the Keyboard Manager, and deaf to a rebinding. Harmless until
-``help.key_cheatsheet`` gained the ``Ctrl+F1`` alias QuillLite uses, at which
+``help.key_cheatsheet`` gained the ``Ctrl+F1`` alias QUILL Lite uses, at which
 point two menu items claimed one key and one of them silently stopped firing.
 No gate could see it, because a literal in a label is not a binding.
 
-**QuillLite told people the wrong key** (bad.md R10). "Press Control Shift M to
+**QUILL Lite told people the wrong key** (bad.md R10). "Press Control Shift M to
 switch to rich text" -- but Ctrl+Shift+M is a *ring* (plain, Markdown, HTML,
 rich), so one press from a plain document lands on Markdown. The method that
 said it has a docstring explaining that advice which is wrong half the time is
@@ -54,7 +54,7 @@ def test_f1_belongs_to_the_command_whose_docstring_answers_it() -> None:
     QUILL". F1 was in fact answered -- by a literal in a menu label, which is
     invisible to the keymap, the generated reference and the Keyboard Manager.
     It now belongs to show_help_on_control, which is what it always did, and
-    which is also QuillLite's F1 and the GATE-<APP>-HELP contract.
+    which is also QUILL Lite's F1 and the GATE-<APP>-HELP contract.
     """
     owners = [c for c, chord in DEFAULT_KEYMAP.items() if chord == "F1"]
     owners += [f"{c} (alias)" for c, chord in DEFAULT_ALIASES.items() if chord == "F1"]

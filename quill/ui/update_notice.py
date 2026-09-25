@@ -20,7 +20,7 @@ So there is one dialog now, and it always carries three things:
 QUILL keeps one extra button (*Skip this version*), because QUILL is the only
 app with somewhere to record the answer. Everything else about the dialog is
 identical in all nine, which is the point: a person who learns the update
-dialog in QuillLite has learned it in Quill Radio as well.
+dialog in QUILL Lite has learned it in Quill Radio as well.
 
 Two accessibility details are load-bearing and easy to lose:
 

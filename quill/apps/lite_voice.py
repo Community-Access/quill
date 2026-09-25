@@ -1,4 +1,4 @@
-"""QuillLite's one speech channel: a running screen reader, and nothing else.
+"""QUILL Lite's one speech channel: a running screen reader, and nothing else.
 
 Split out of :mod:`quill.apps.lite` under GATE-11, and it stands on its own
 anyway -- everything here is about *how* a sentence reaches a listener, while
@@ -16,7 +16,7 @@ __all__ = ["ScreenReaderVoice"]
 class ScreenReaderVoice:
     """Announcements, through a running screen reader and nowhere else.
 
-    QuillLite has **no self-voicing fallback** -- no SAPI, no synthesized voice
+    QUILL Lite has **no self-voicing fallback** -- no SAPI, no synthesized voice
     of its own -- and that is a decision rather than an omission. A second voice
     talking over NVDA or JAWS is worse than silence, and a listener who has no
     screen reader running is not the person this editor is for; for them the
@@ -40,7 +40,7 @@ class ScreenReaderVoice:
         self._reader_present = False
         self._probed_at = 0.0
         #: Shortest gap between two spoken messages, in milliseconds. Zero is no
-        #: throttle, which is the default and what QuillLite has always done.
+        #: throttle, which is the default and what QUILL Lite has always done.
         #: Set from ``settings.announcement_throttle_ms`` when the app starts and
         #: whenever Preferences is saved.
         self.throttle_ms = 0
@@ -69,7 +69,7 @@ class ScreenReaderVoice:
         text = (message or "").strip()
         if not text or not self._reader_running():
             return
-        # The throttle, which QUILL has had and QuillLite did not (bad.md A5). A
+        # The throttle, which QUILL has had and QUILL Lite did not (bad.md A5). A
         # key held down that announces on every repeat floods the reader, and
         # the only remedy a listener had was to turn speech off. Dropped here
         # rather than at the call sites, because the status bar is written

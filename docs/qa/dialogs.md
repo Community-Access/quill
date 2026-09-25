@@ -62,7 +62,7 @@ or the command palette (`Ctrl+Shift+P`).
         endings) starts on a **keep as is** row and stays there, so Enter cannot
         convert a file that was only opened to read
   - [ ] Neither list is applied until the next save, and the window says so
-  - [ ] QuillLite's own copy of this window is **Tools > File Encoding and Line
+  - [ ] QUILL Lite's own copy of this window is **Tools > File Encoding and Line
         Endings...** on the same key
 - [ ] File Changed on Disk: **no menu path** -- shown when another program writes to
       the file you have open (save the same file from Notepad to raise it)
@@ -155,7 +155,7 @@ or the command palette (`Ctrl+Shift+P`).
 - [ ] Thesaurus: `Shift+F7`
 - [ ] Spelling Announcements (how a misspelling is said, and when):
       `Ctrl+Alt+Shift+F6`, or by name in the command palette. No menu row;
-      QuillLite's copy is **Tools > Spelling > Announcements**
+      QUILL Lite's copy is **Tools > Spelling > Announcements**
   - [ ] The twelve settings are the same twelve in both editors, in one file
   - [ ] In the F7 review, arrowing the suggestion list says each suggestion and
         then spells it -- interruptibly, as a second utterance
@@ -240,13 +240,13 @@ state and lists any installed Quillins read-only.
 
 ## O2. Tools: the other editor
 
-- [ ] Bring My QuillLite Settings: `Alt+Shift+F11`, or Tools > Customize and Support
+- [ ] Bring My QUILL Lite Settings: `Alt+Shift+F11`, or Tools > Customize and Support
   - [ ] Describes the plan **before** applying it: how many settings, how many
         rebound keys, which stores are merged, and what is being left behind
   - [ ] Answering No leaves QUILL's own settings alone and says so
-  - [ ] Answering Yes reports what it brought, that QuillLite now reads the shared
+  - [ ] Answering Yes reports what it brought, that QUILL Lite now reads the shared
         stores from QUILL, and that a restart shows every change
-  - [ ] Says so plainly when QuillLite has never been run on this computer, or has
+  - [ ] Says so plainly when QUILL Lite has never been run on this computer, or has
         nothing to bring
   - [ ] Nothing already in QUILL is replaced -- QUILL wins every collision
 
@@ -291,7 +291,7 @@ state and lists any installed Quillins read-only.
 ## S. Help: features and profile
 
 - [ ] Switch Feature Profile: `Alt+Shift+P`
-  - [ ] Choosing the **QuillLite** profile offers to bring a QuillLite setup over
+  - [ ] Choosing the **QUILL Lite** profile offers to bring a QUILL Lite setup over
         (native Yes/No), once only, and applies the settings the profile's own name
         promises -- a plain document model, not just a smaller menu bar
 - [ ] Feature Profile Health Check: via Help menu

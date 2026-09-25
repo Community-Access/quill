@@ -130,7 +130,7 @@ class RichModeMixin:
         ``tomAutoColor`` for the save, the theme back afterwards, and the
         restore in a ``finally`` -- because a save that raises must not leave
         the window unreadable, which is the one failure worse than the bug.
-        QuillLite has guarded both directions since it shipped
+        QUILL Lite has guarded both directions since it shipped
         (``lite_window_file._write_rtf``); this is QUILL catching up.
         """
         restore = False
@@ -468,7 +468,7 @@ class RichModeMixin:
         a listener with no visual feedback had to type a character to find out.
         The shared surface has answered this since it shipped
         (``toggle_font_attr`` returns the state the control ended in) and
-        QuillLite has said "Bold on" all along (bad.md R8, P1.17).
+        QUILL Lite has said "Bold on" all along (bad.md R8, P1.17).
         """
         label = self._TOGGLING_RUN_ATTRS[method]
         if self._current_editor_mode() != "rich":
@@ -650,11 +650,11 @@ class RichModeMixin:
         self._set_status(f"New {DOCUMENT_FORMATS[target][0]} document")
 
     def new_rich_document(self) -> None:
-        """QuillLite's Ctrl+Shift+N: start a rich text document."""
+        """QUILL Lite's Ctrl+Shift+N: start a rich text document."""
         self.new_document_in_format("rtf")
 
     def new_plain_text_document(self) -> None:
-        """QuillLite's Ctrl+Alt+N: start a plain text document."""
+        """QUILL Lite's Ctrl+Alt+N: start a plain text document."""
         self.new_document_in_format("plain")
 
     # ------------------------------------------------------------------ #
@@ -745,7 +745,7 @@ class RichModeMixin:
                 self._refresh_statusbar()
                 return
             markup = self.editor.GetValue()
-            # An HTML document becomes Markdown first, which QuillLite has done
+            # An HTML document becomes Markdown first, which QUILL Lite has done
             # since it learned the switch and QUILL never had: markdown_to_rtf
             # reads ``<h1>`` as four characters, so switching an HTML page to
             # Rich Text used to put the tags on the page as literal text beside

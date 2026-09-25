@@ -203,7 +203,7 @@ class DocumentFormatCommandsMixin:
         Two documents, two mechanisms, one command, because "make this heading
         one level shallower" is one idea to the person doing it:
 
-        * **Rich text** is QuillLite's own heading ladder -- bold plus a point
+        * **Rich text** is QUILL Lite's own heading ladder -- bold plus a point
           size -- so the level is read back off the caret and re-applied one
           step along. Level 1 promoted stays 1 rather than becoming body text:
           losing a heading entirely is not what Alt+Shift+Left means, and it
@@ -337,7 +337,7 @@ class DocumentFormatCommandsMixin:
         """Ctrl+Shift+L: bulleted list, numbered list, no list, round again.
 
         WordPad's key and WordPad's behaviour. It was a *toggle* -- bullets on,
-        bullets off -- which meant QuillLite could not make a numbered list at
+        bullets off -- which meant QUILL Lite could not make a numbered list at
         all, in any kind of document, while its own PRD said an ordered list is
         structure a reader announces and should come first (bad.md P1.5, 4.2).
 

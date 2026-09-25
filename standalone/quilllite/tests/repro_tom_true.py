@@ -11,7 +11,7 @@ source, which is what it was reproducing. `quill/ui/richedit_rtf_surface.py` now
 declares `_TOM_TRUE = -1` and names `-9999999` as `_TOM_UNDEFINED`.
 
 Self-contained. Needs only wxPython and comtypes on Windows; it does not import
-QuillLite or QUILL, so a maintainer can run it against a clean checkout.
+QUILL Lite or QUILL, so a maintainer can run it against a clean checkout.
 
 tom.h defines:
 
