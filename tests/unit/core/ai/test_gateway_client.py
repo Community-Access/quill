@@ -295,6 +295,13 @@ def test_the_gateways_pending_and_expired_statuses_are_answers(monkeypatch):
 # chains to. Every URLError was being reported as "no internet".
 
 
+def _names_host(message):
+    """Whether *message* names the service's host, as a whole word."""
+    import re
+
+    return re.search(r"(?<![\w.])ai\.example\.org(?![\w.])", message) is not None
+
+
 def _raise_on_open(monkeypatch, reason):
     from quill.core.ai import gateway_client as mod
 
@@ -317,7 +324,9 @@ def test_a_certificate_failure_is_not_reported_as_no_internet(monkeypatch):
         mod._urlopen_json("https://ai.example.org/v1/device/code", body={})
     message = str(caught.value)
     assert "internet" not in message
-    assert "ai.example.org" in message and "certificate" in message
+    # Matched as a word, not with ``in``: CodeQL reads a hostname tested by
+    # substring as URL sanitisation (py/incomplete-url-substring-sanitization).
+    assert _names_host(message) and "certificate" in message
     assert "unable to get local issuer certificate" in message  # the reason, for support
     assert "Nothing was sent" in message
     # Still an offline error to every caller: nothing was sent.
@@ -342,7 +351,7 @@ def test_each_connection_failure_says_which_it_was(monkeypatch, reason, expected
         mod._urlopen_json("https://ai.example.org/v1/limits")
     assert type(caught.value).__name__ == expected
     assert phrase in str(caught.value)
-    assert "ai.example.org" in str(caught.value)
+    assert _names_host(str(caught.value))
 
 
 def test_the_tls_context_trusts_certifi_as_well_as_the_system_store(monkeypatch):
