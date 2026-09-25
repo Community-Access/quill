@@ -259,6 +259,24 @@ def test_the_figures_are_cached_so_the_page_cannot_hammer_the_database(app, busy
         assert app.extensions["gateway_redis"].get(_CACHE_KEY) is not None
 
 
+def test_a_new_answer_shows_on_the_page_at_once(app, busy, db):
+    """Reported 2026-09-25: the page was not real time. The figures sat in a
+    five-minute cache that nothing cleared, so a new answer did not appear on
+    the page until the cache expired. Recording an answer now drops it."""
+    from app.models import Device, User
+    from app.public_stats import _CACHE_KEY, gather
+
+    with app.app_context():
+        busy.get("/")
+        assert gather(app).requests_all_time == 5
+        user = db.session.query(User).first()
+        device = db.session.query(Device).first()
+    _spend(app, user, device, count=1)
+    with app.app_context():
+        assert app.extensions["gateway_redis"].get(_CACHE_KEY) is None
+        assert gather(app).requests_all_time == 6
+
+
 def test_an_admin_change_can_drop_the_cache(app, busy, db):
     from app.public_stats import _CACHE_KEY, invalidate
 

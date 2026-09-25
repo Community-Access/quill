@@ -25,12 +25,14 @@ from quill.core.error_codes import CodedError
 
 __all__ = [
     "GatewayAuthError",
+    "GatewayCertificateError",
     "GatewayError",
     "GatewayOfflineError",
     "GatewayPausedError",
     "GatewayQuotaError",
     "GatewayServiceError",
     "GatewayTooLargeError",
+    "GatewayUnreachableError",
 ]
 
 
@@ -55,6 +57,42 @@ class GatewayOfflineError(GatewayError):
     code = "QUILL-AI-GATEWAY-OFFLINE"
     user_hint = (
         "Check your internet connection and try again. Nothing was sent and nothing was used."
+    )
+
+
+class GatewayCertificateError(GatewayOfflineError):
+    """The connection was made, and the service's certificate could not be verified.
+
+    Reported as "could not reach the internet" until 2026-09-25, which sent a
+    user whose internet was fine to check their internet. It is a different fact
+    with different cures: a certificate authority Windows has not downloaded
+    yet, or security software or a proxy that inspects HTTPS. A subclass of the
+    offline error, because for every caller it means the same thing -- nothing
+    was sent -- and only the sentence needs to differ.
+    """
+
+    code = "QUILL-AI-GATEWAY-CERTIFICATE"
+    user_hint = (
+        "If your antivirus or a work network inspects secure connections, allow "
+        "QUILL through it. Otherwise run Windows Update and try again. Nothing was "
+        "sent and nothing was used."
+    )
+
+
+class GatewayUnreachableError(GatewayOfflineError):
+    """The internet may be fine; this particular service could not be reached.
+
+    A name lookup that failed, a connection refused or reset, or no answer in
+    time. Each is said separately, with the system's own reason attached,
+    because "check your internet" is the wrong advice for most of them and a
+    screen-reader user has no network icon to glance at instead.
+    """
+
+    code = "QUILL-AI-GATEWAY-UNREACHABLE"
+    user_hint = (
+        "Try again in a minute. If other sites work and this keeps happening, a "
+        "firewall, VPN or proxy may be blocking the connection. Nothing was sent "
+        "and nothing was used."
     )
 
 

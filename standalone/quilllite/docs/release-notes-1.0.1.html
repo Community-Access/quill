@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Lite 1.0.1 — What's New</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-lite-101--whats-new">QUILL Lite 1.0.1 — What’s New</h1>
+<p><em>Released September 25, 2026.</em></p>
+<p><strong>A fix for AI help on some Windows 10 computers.</strong> If
+Connect stopped at the step that gets your code and said QUILL Lite
+“could not reach the internet” – on a computer whose internet was
+working perfectly well – this release fixes it. Nothing else changes,
+and everything you have is kept.</p>
+<hr />
+<h2 id="what-was-wrong">What was wrong</h2>
+<p>When QUILL Lite connects to its free AI service, it first checks the
+service’s security certificate, the same check your browser makes before
+it shows a padlock. To make that check, a program needs a list of the
+organisations it trusts to issue certificates.</p>
+<p>QUILL Lite 1.0 used only the list Windows keeps. Windows does not
+keep a complete list up front: it downloads most of those organisations
+the first time Windows’ own networking needs one. A computer that has
+never had a reason to download the one this service uses – often because
+the browser on it keeps its own list and never asks Windows – did not
+have it. QUILL Lite could not finish the check, stopped before sending
+anything, and then reported the wrong problem: that the internet could
+not be reached.</p>
+<h2 id="what-101-does">What 1.0.1 does</h2>
+<ul>
+<li><strong>Connecting works on those computers.</strong> QUILL Lite now
+also trusts the list it ships with, so the check succeeds whether or not
+Windows has downloaded that organisation yet. The check itself is
+exactly as strict as before: every certificate is still verified, and a
+connection that cannot be verified is still refused.</li>
+<li><strong>When a connection fails, it says how.</strong> A certificate
+that cannot be verified, an address that cannot be looked up, a
+connection that was refused, and a service that did not answer in time
+are now four different messages. Each names the service and ends with
+the reason Windows gave, so a message you pass on to us tells us
+straight away what happened.</li>
+</ul>
+<p>New error codes, in case you are asked for one:</p>
+<ul>
+<li><strong>QUILL-AI-GATEWAY-CERTIFICATE</strong>: the service was
+reached, but its certificate could not be verified. Security software or
+a work network that inspects secure connections is the usual cause
+now.</li>
+<li><strong>QUILL-AI-GATEWAY-UNREACHABLE</strong>: the service was not
+reached – refused, cut off, or no answer in time.</li>
+<li><strong>QUILL-AI-GATEWAY-OFFLINE</strong>: the service’s address
+could not be looked up, so this computer is offline or its DNS is not
+answering.</li>
+</ul>
+<p>In every one of these cases nothing was sent and none of your
+allowance was used.</p>
+<hr />
+<h2 id="getting-it">Getting it</h2>
+<p>Choose <strong>Help ▸ Check for Updates</strong>
+(<strong>Ctrl+Alt+U</strong>) and then Update, or download
+<strong>QuillLite-Setup-Shared-1.0.1.exe</strong> to install or update,
+or <strong>QuillLite-Portable-1.0.1.zip</strong> to unzip over a
+portable copy. Your settings, your recovered work and your AI connection
+are all kept.</p>
+</main>
+</body>
+</html>

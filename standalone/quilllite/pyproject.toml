@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quill-lite"
-version = "1.0.0"
+version = "1.0.1"
 description = "QUILL Lite -- a notepad-scale, screen-reader-first text and rich text editor, on QUILL's editor surface"
 readme = "README.md"
 requires-python = ">=3.12"
