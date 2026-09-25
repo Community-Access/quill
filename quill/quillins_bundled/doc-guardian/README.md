@@ -42,4 +42,4 @@ Configure from **Preferences** (Ctrl+Comma) → **Document Guardian**:
 
 ## License
 
-MIT. Copyright (c) Blind Information Technology Solutions (BITS) and Community Access.
+MIT. Copyright (c) Community Access.

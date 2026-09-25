@@ -1,6 +1,6 @@
 # QUILL Lite changelog
 
-## 1.0.0 -- 2026-09-19
+## 1.0.0 -- 2026-09-25
 
 First release. QUILL with everything removed except the editor: numbered
 documents in one window, four kinds of document, and nothing else.
@@ -8,7 +8,7 @@ documents in one window, four kinds of document, and nothing else.
 Contributed as [PR #1490](https://github.com/Community-Access/quill/pull/1490)
 by Steven Scott (`doubletaponair`) under this repository's MIT licence, and
 adopted into the QuillVille family here. Everything below is in 1.0.0,
-assembled between 2026-09-08 and 2026-09-24.
+assembled between 2026-09-08 and 2026-09-25.
 
 Three lists, each grouped by subject: **Added** is what was not there before,
 **Changed** is what worked differently, **Fixed** is what was wrong. The two
@@ -756,6 +756,31 @@ cascade changed, and no bring-your-own-key, agent or local-model path changed.
 The capability is shared, so the two editors run the same five commands on the
 same five chords from the same module -- QUILL Lite is not ahead of QUILL here,
 and QUILL has more AI than QUILL Lite rather than less.
+
+#### Release day (2026-09-25)
+
+- **The name is QUILL Lite**, everywhere you see or hear it: window titles,
+  dialogs, About, help, the installer and its shortcuts. The program file, the
+  settings folder and the downloads keep their old names, so an upgrade keeps
+  everything you have set, and the installer removes the old shortcuts.
+- **Connecting takes one keystroke.** The Connect window opens on your code,
+  with **Open the Connect Page** filling it in for you in the browser; accepting
+  the agreement goes straight there. Connecting no longer fails at once with
+  "server_error", and Connect or Sign Out and Usage no longer fail to open.
+- **Every AI window closes with Escape**, every sentence in them is reachable
+  with Tab, and an error takes focus so it can be read again. Usage opens on
+  your allowance.
+- **Your allowance explains itself.** A new connection's smaller allowance for
+  its first 48 hours says what it is and when it ends, today's number never
+  reads higher than the month's, and Help > About shows your usage and support
+  ID. Get Help from Support includes the support ID automatically.
+- **Reading the agreement again is safe.** Privacy Agreement, once you have
+  agreed, opens with **Keep Using AI** as the default; withdrawing is its own
+  button. It used to withdraw the moment you pressed the key.
+- **An untouched document closes without asking to save.** Rich Edit reports a
+  change for things that change nothing, such as Ctrl+Z with nothing to undo.
+- **A new AI guide** explains every command, exactly what is sent, and how the
+  allowance works.
 
 #### The last pass before 1.0 (2026-09-24)
 

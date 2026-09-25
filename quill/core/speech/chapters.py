@@ -9,7 +9,7 @@ shared module's plain exceptions into :class:`ChapterEditError` so GATE-EC
 holds, and keeps the parts only QUILL has -- ``compute_chapters`` and its
 ``ChapterSection`` input, which turn a batch document-to-speech run's section
 durations into chapters, and ``ChapterSettings``, which is how those runs are
-configured. The CHAP/CTOC writer began as the sibling BITS project
+configured. The CHAP/CTOC writer began as the sibling ChapterForge project
 **ChapterForge**'s (``d:\\code99\\forum``, MIT).
 
 Two behaviours worth restating because callers depend on them:

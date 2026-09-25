@@ -37,7 +37,6 @@ from quill.build_info import get_short_version, get_support_info
 # Org links shown on the Overview tab. Mirrors ``MainFrame._ABOUT_LINKS``.
 _DEFAULT_ORG_LINKS: tuple[tuple[str, str], ...] = (
     ("Community Access", "https://community-access.org"),
-    ("Blind Information Technology Solutions (BITS)", "https://bits-acb.org"),
     ("Techopolis", "https://techopolis.app"),
     ("GLOW (Community Access)", "https://letitglow.app"),
     ("AccessibleApps (Christopher Toth)", "https://github.com/accessibleapps"),

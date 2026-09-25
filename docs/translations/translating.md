@@ -163,7 +163,7 @@ pybabel extract \
   -k lazy_gettext \
   --project "QUILL" \
   --version "0.7.0" \
-  --copyright-holder "Blind Information Technology Solutions (BITS) and Community Access" \
+  --copyright-holder "Community Access" \
   --msgid-bugs-address "https://github.com/Community-Access/quill/issues" \
   -o quill/locale/quill.pot \
   .

@@ -1,7 +1,7 @@
 """Guided Action Builder — users define their own AI Action in plain language.
 
 The friendly, no-syntax front door to QUILL's Skill/Agent continuum (the descendant
-of BITS Whisperer's Agent Builder). A user gives their action a name, optionally
+of QUILL Whisperer's Agent Builder). A user gives their action a name, optionally
 starts from a Transcript Action preset, writes what they want in plain language, and
 saves — and it becomes a real, runnable, Promotable Skill in the AI Library, with no
 ``.sqp`` syntax in sight.

@@ -44,6 +44,8 @@
   "quill/ui/hosted_ai_dialogs.py::AiUsageFrame.__init__::wx.Button#2": "helped",
   "quill/ui/hosted_ai_dialogs.py::_close_row::wx.Button": "helped",
   "quill/ui/hosted_ai_dialogs.py::_read_only::wx.TextCtrl": "helped",
+  "quill/ui/hosted_ai_dialogs.py::_review_agreement::wx.Button": "helped",
+  "quill/ui/hosted_ai_dialogs.py::_review_agreement::wx.Button#2": "helped",
   "quill/ui/hosted_ai_dialogs.py::ask_ai_privacy_agreement::wx.Button": "helped",
   "quill/ui/hosted_ai_dialogs.py::ask_ai_privacy_agreement::wx.Button#2": "helped",
   "quill/ui/hosted_ai_pad.py::AiPadFrame.__init__::wx.Button": "helped",

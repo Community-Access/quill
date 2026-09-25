@@ -156,7 +156,7 @@ rules in addition to everything above.
 ### Out of scope for 1.0 (do NOT work on these)
 
 - axe-core / vnu (Nu Html Checker) HTML/CSS/SVG validation.
-- BITS Whisperer.
+- QUILL Whisperer.
 - The GLOW watch-action binding (WATCH-8) and the axe-core / Accessibility
   Agents workstream (AX-A..F).
 

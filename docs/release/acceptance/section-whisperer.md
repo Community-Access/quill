@@ -1,6 +1,6 @@
-# Section — BITS Whisperer (`whisperer.*`, 12 commands) [GATED]
+# Section — QUILL Whisperer (`whisperer.*`, 12 commands) [GATED]
 
-BITS Whisperer is QUILL's phased speech-to-text management surface: it stages
+QUILL Whisperer is QUILL's phased speech-to-text management surface: it stages
 Whisper speech models, checks the local faster-whisper engine, plans transcription
 **providers**, and reports readiness and roadmap. In QUILL 1.0 this whole suite is a
 **staging / planning** surface — it lets you download and configure models and
@@ -24,9 +24,9 @@ Works/Surface-exact/Accessible boxes.
 > **`locked_off`** — it is off in *every* build, including a developer build
 > (`QUILL_DEV_BUILD=1` alone does **not** reveal it). The one sanctioned way to
 > enable it is a **signature-verified unlock code**: **Help menu ▸ Redeem Unlock
-> Code…** (command `help.redeem_unlock_code`), enter a valid BITS Whisperer unlock
+> Code…** (command `help.redeem_unlock_code`), enter a valid QUILL Whisperer unlock
 > code, then **restart QUILL** if the menu is not yet visible. Once enabled, the
-> **Tools ▸ BITS Whisperer** submenu appears with sub-menus **Watch Folder**,
+> **Tools ▸ QUILL Whisperer** submenu appears with sub-menus **Watch Folder**,
 > **Speech Models**, **Providers**, and **Rollout**. All twelve commands are also
 > reachable from the **Command Palette**. This section is written so a dev/admin
 > who has redeemed the code can sign every command off.
@@ -36,7 +36,7 @@ Works/Surface-exact/Accessible boxes.
 > "Shortcut" in each title below is therefore "no default shortcut". Fail
 > **Surface-exact** only if the menu shows a shortcut this book does not list.
 
-**Where each command lives** (after the flag is on), under **Tools ▸ BITS
+**Where each command lives** (after the flag is on), under **Tools ▸ QUILL
 Whisperer**:
 
 - **Speech Models ▸** Model Manager… · Model Status · Use Recommended Model ·
@@ -44,7 +44,7 @@ Whisperer**:
 - **Providers ▸** Provider Center… · Provider Status · Use Recommended Provider ·
   Select Provider…
 - **Rollout ▸** Readiness Check · Capability Matrix
-- **About BITS Whisperer** is **not** in this submenu (it was folded into the About
+- **About QUILL Whisperer** is **not** in this submenu (it was folded into the About
   Quill dialog); reach it from the **Command Palette**.
 
 ---
@@ -60,11 +60,11 @@ with the machine's own capability guidance shown up front.
 - Any document open.
 
 **Do this**
-1. Open **Tools menu (Alt, T) ▸ BITS Whisperer ▸ Speech Models ▸ Model Manager…**,
-   or Command Palette → "BITS Whisperer Speech Model Manager".
-2. Read the first dialog ("BITS Whisperer Speech Setup"). Arrow to **Choose model
+1. Open **Tools menu (Alt, T) ▸ QUILL Whisperer ▸ Speech Models ▸ Model Manager…**,
+   or Command Palette → "QUILL Whisperer Speech Model Manager".
+2. Read the first dialog ("QUILL Whisperer Speech Setup"). Arrow to **Choose model
    manually** and press **Enter**.
-3. In the model list ("BITS Whisperer Speech Models"), arrow through the entries;
+3. In the model list ("QUILL Whisperer Speech Models"), arrow through the entries;
    each shows its family and any `[downloaded]` / `[recommended]` markers. Pick one
    and press **Enter**.
 4. In the per-model action dialog, read the size and minimum-RAM detail, arrow to
@@ -99,19 +99,19 @@ installed, and whether the engine is ready.
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Speech Models ▸ Model Status**, or Command
-   Palette → "BITS Whisperer Speech Model Status".
+1. Open **Tools ▸ QUILL Whisperer ▸ Speech Models ▸ Model Status**, or Command
+   Palette → "QUILL Whisperer Speech Model Status".
 2. Read the whole dialog with your screen reader's review cursor; press **Enter** or
    **Escape** on OK to close.
 
 **You should see and hear**
-- A message dialog titled **BITS Whisperer Speech Models** whose text begins "BITS
+- A message dialog titled **QUILL Whisperer Speech Models** whose text begins "QUILL
   Whisperer Speech Model Status" and lists, in order: the machine-capability
   guidance, **Selection mode:** (recommended/manual), **Configured default:**
   <model>, **Recommended now:** <model>, **Installed models: N of M**, and
   **faster-whisper engine: Ready / Not installed** with an engine detail line. It
   ends with a note that this is a phased rollout.
-- Closing returns focus to where you were. Status bar: "BITS Whisperer speech model
+- Closing returns focus to where you were. Status bar: "QUILL Whisperer speech model
   status shown".
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
@@ -129,8 +129,8 @@ recommended mode and selects the model QUILL recommends for your hardware.
   switch back to recommended is observable.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Speech Models ▸ Use Recommended Model**, or
-   Command Palette → "BITS Whisperer Use Recommended Speech Model".
+1. Open **Tools ▸ QUILL Whisperer ▸ Speech Models ▸ Use Recommended Model**, or
+   Command Palette → "QUILL Whisperer Use Recommended Speech Model".
 
 **You should see and hear**
 - No dialog. The selection mode flips to **recommended** and the default model is set
@@ -153,8 +153,8 @@ installed and usable, so you know before you rely on offline speech.
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Speech Models ▸ Check faster-whisper Engine**, or
-   Command Palette → "BITS Whisperer Check faster-whisper Engine".
+1. Open **Tools ▸ QUILL Whisperer ▸ Speech Models ▸ Check faster-whisper Engine**, or
+   Command Palette → "QUILL Whisperer Check faster-whisper Engine".
 2. Read the dialog; close with OK.
 
 **You should see and hear**
@@ -183,9 +183,9 @@ user-initiated and covered by the network egress audit.
   downloads and retries are intentionally blocked (see the projected outcome).
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Speech Models ▸ Download Queue…**, or Command
-   Palette → "BITS Whisperer Download Queue".
-2. In the "BITS Whisperer Download Queue" list, arrow through **Open live status
+1. Open **Tools ▸ QUILL Whisperer ▸ Speech Models ▸ Download Queue…**, or Command
+   Palette → "QUILL Whisperer Download Queue".
+2. In the "QUILL Whisperer Download Queue" list, arrow through **Open live status
    page**, **Retry failed download**, **Clear completed and failed download
    history**. Choose **Open live status page** and press **Enter**.
 3. Repeat and choose **Retry failed download**; in the follow-up list pick a failed
@@ -196,11 +196,11 @@ user-initiated and covered by the network egress audit.
 - The three-item action list is arrow-navigable. **Open live status page** opens the
   Help ▸ Status Page (live download/speech status). **Retry failed download** opens a
   second list of failed models and restarts the chosen one as a background download;
-  if there are none it says "No failed BITS Whisperer downloads to retry". **Clear…**
+  if there are none it says "No failed QUILL Whisperer downloads to retry". **Clear…**
   removes completed/failed entries (keeping any still running) and says "Cleared
-  completed and failed BITS Whisperer download history".
+  completed and failed QUILL Whisperer download history".
 - If the **safe mode lock** is enabled, Retry is refused with a spoken message
-  pointing you to **Preferences ▸ General**, and status "BITS Whisperer safe mode
+  pointing you to **Preferences ▸ General**, and status "QUILL Whisperer safe mode
   lock blocked download retry" — it does not silently do nothing.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
@@ -219,8 +219,8 @@ even visible.
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Providers ▸ Provider Center…**, or Command
-   Palette → "BITS Whisperer Provider Center".
+1. Open **Tools ▸ QUILL Whisperer ▸ Providers ▸ Provider Center…**, or Command
+   Palette → "QUILL Whisperer Provider Center".
 2. Arrow through the six actions: **Use recommended provider**, **Select provider
    manually**, **Show provider status**, **Switch to local-first mode**, **Switch to
    cloud-first mode**, **Toggle cloud provider visibility**. Pick **Switch to
@@ -228,7 +228,7 @@ even visible.
 3. Re-open and try **Toggle cloud provider visibility**.
 
 **You should see and hear**
-- A single-choice dialog titled **BITS Whisperer Provider Center** with the six
+- A single-choice dialog titled **QUILL Whisperer Provider Center** with the six
   actions, arrow-navigable. Each action either delegates (recommended → WHIS-08,
   manual → WHIS-09, status → WHIS-07) or applies and announces a setting:
   "Provider mode set to local-first" / "…cloud-first", and "Cloud provider visibility
@@ -249,17 +249,17 @@ make it ready.
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Providers ▸ Provider Status**, or Command Palette
-   → "BITS Whisperer Provider Status".
+1. Open **Tools ▸ QUILL Whisperer ▸ Providers ▸ Provider Status**, or Command Palette
+   → "QUILL Whisperer Provider Status".
 2. Read the whole dialog; close with OK.
 
 **You should see and hear**
-- A message dialog titled **BITS Whisperer Providers** beginning "BITS Whisperer
+- A message dialog titled **QUILL Whisperer Providers** beginning "QUILL Whisperer
   Provider Status" and listing: mode guidance, **Provider mode: Local-first /
   Cloud-first**, **Cloud providers visible: Yes/No**, **Configured provider:** and
   **Recommended provider:** by name, a **Readiness: Ready / Needs setup** line with a
   summary, and a bulleted **Next steps:** list. It ends noting that runtime provider
-  routing remains gated in this phase. Status bar: "BITS Whisperer provider status
+  routing remains gated in this phase. Status bar: "QUILL Whisperer provider status
   shown".
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
@@ -276,8 +276,8 @@ cloud-first preference.
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Providers ▸ Use Recommended Provider**, or
-   Command Palette → "BITS Whisperer Use Recommended Provider".
+1. Open **Tools ▸ QUILL Whisperer ▸ Providers ▸ Use Recommended Provider**, or
+   Command Palette → "QUILL Whisperer Use Recommended Provider".
 
 **You should see and hear**
 - No dialog. The recommended provider (computed from your local-first/cloud-first
@@ -300,13 +300,13 @@ setting).
   provider visibility first (WHIS-06 ▸ Toggle cloud provider visibility).
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Providers ▸ Select Provider…**, or Command
-   Palette → "BITS Whisperer Select Provider".
+1. Open **Tools ▸ QUILL Whisperer ▸ Providers ▸ Select Provider…**, or Command
+   Palette → "QUILL Whisperer Select Provider".
 2. Arrow the provider list; each entry shows the provider name and its type. Pick one
    and press **Enter**.
 
 **You should see and hear**
-- A single-choice dialog titled **BITS Whisperer Provider Selection** listing each
+- A single-choice dialog titled **QUILL Whisperer Provider Selection** listing each
   provider as "<name> (<type>)". On confirm the choice is saved and spoken/status:
   "Selected provider: <name>". If no providers are visible for the current
   visibility settings, it says so ("No providers available for current provider
@@ -328,18 +328,18 @@ mode lock, installed model count, engine state, and next steps.
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Rollout ▸ Readiness Check**, or Command Palette →
-   "BITS Whisperer Readiness Check".
+1. Open **Tools ▸ QUILL Whisperer ▸ Rollout ▸ Readiness Check**, or Command Palette →
+   "QUILL Whisperer Readiness Check".
 2. Read the whole dialog; close with OK.
 
 **You should see and hear**
-- A message dialog titled **BITS Whisperer Readiness** beginning "BITS Whisperer
+- A message dialog titled **QUILL Whisperer Readiness** beginning "QUILL Whisperer
   Readiness Check" and listing, in order: machine guidance, **Provider mode**,
   **Configured provider**, **Recommended provider**, **Provider readiness: Ready /
   Needs setup** with summary, **Speech mode**, **Configured speech model**, **Safe
   mode lock: Enabled/Disabled**, **Downloaded whisper models: N of M**,
   **faster-whisper engine: Ready / Not installed** with detail, then a bulleted
-  **Next steps:** list. Status bar: "BITS Whisperer readiness check complete".
+  **Next steps:** list. Status bar: "QUILL Whisperer readiness check complete".
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
@@ -348,27 +348,27 @@ mode lock, installed model count, engine state, and next steps.
 
 ## WHIS-11 — Capability Matrix (`whisperer.capability_matrix`, no default shortcut) [GATED core.bw_whisperer]
 
-*What & why.* A table of which BITS Whisperer capabilities are live now vs gated for
+*What & why.* A table of which QUILL Whisperer capabilities are live now vs gated for
 a later phase, so a tester can see at a glance what is expected to work in 1.0.
 
 **Before you start**
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open **Tools ▸ BITS Whisperer ▸ Rollout ▸ Capability Matrix**, or Command Palette
-   → "BITS Whisperer Capability Matrix".
+1. Open **Tools ▸ QUILL Whisperer ▸ Rollout ▸ Capability Matrix**, or Command Palette
+   → "QUILL Whisperer Capability Matrix".
 2. Tab to the table and arrow through its rows; then read the snapshot text below it.
    Close with **Close** (OK) or **Escape**.
 
 **You should see and hear**
-- A resizable dialog titled **BITS Whisperer Capability Matrix** with a real
+- A resizable dialog titled **QUILL Whisperer Capability Matrix** with a real
   ListCtrl (report view) whose columns are **Capability**, **Phase**, **Status**,
   **Notes**. Rows include **Whisper model acquisition** (Phase 1), **Provider
   onboarding** (Phase 1), **Dynamic status monitoring** (Phase 1, Ready), and
   **Runtime provider routing** (Phase 2, **Gated**). Below the table a read-only
   snapshot shows provider mode, configured provider, speech-model mode, configured
   speech model, and downloaded-model count. Focus lands in the table; every column is
-  announced by the screen reader. Status bar: "Opened BITS Whisperer capability
+  announced by the screen reader. Status bar: "Opened QUILL Whisperer capability
   matrix".
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
@@ -376,25 +376,25 @@ a later phase, so a tester can see at a glance what is expected to work in 1.0.
 
 ---
 
-## WHIS-12 — About BITS Whisperer (`whisperer.about`, no default shortcut) [GATED core.bw_whisperer]
+## WHIS-12 — About QUILL Whisperer (`whisperer.about`, no default shortcut) [GATED core.bw_whisperer]
 
-*What & why.* The roadmap/orientation page: what BITS Whisperer is, the phased plan
+*What & why.* The roadmap/orientation page: what QUILL Whisperer is, the phased plan
 for absorbing its patterns into QUILL, and the guiding principles. It is **not** in
-the BITS Whisperer submenu — it lives in the Command Palette (its content was also
+the QUILL Whisperer submenu — it lives in the Command Palette (its content was also
 folded into the About Quill dialog).
 
 **Before you start**
 - `core.bw_whisperer` enabled.
 
 **Do this**
-1. Open the **Command Palette** (see Part 0 for its shortcut), type **About BITS
+1. Open the **Command Palette** (see Part 0 for its shortcut), type **About QUILL
    Whisperer**, and press **Enter**.
 2. Tab across the three tabs (**Overview**, **Roadmap**, **Principles**); read the
    Roadmap and Principles tables with your review cursor. Close with **Close** (OK)
    or **Escape**.
 
 **You should see and hear**
-- A resizable tabbed dialog titled **About BITS Whisperer** with a notebook named
+- A resizable tabbed dialog titled **About QUILL Whisperer** with a notebook named
   "About sections" and three tabs. **Overview** is a read-only multi-line text
   describing the phased plan and three next steps. **Roadmap** is a ListCtrl with
   columns **Capability**, **Whisperer Source**, **Phase**, **Quill Plan** (five
@@ -402,7 +402,7 @@ folded into the About Quill dialog).
   **How it applies** (Accessibility first, Offline-friendly, Safe rollout,
   Transparent status). Focus lands on the first control of the visible tab, not the
   tab strip; tab order and the Close button honor the keyboard contract. Status bar:
-  "Opened About BITS Whisperer".
+  "Opened About QUILL Whisperer".
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

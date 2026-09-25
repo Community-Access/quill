@@ -29,7 +29,7 @@ _AUTHORS = [
     ("@grace@mock.social", "Grace Hopper"),
     ("@alan@mock.social", "Alan Turing"),
     ("@katherine@mock.social", "Katherine Johnson"),
-    ("@bits@mock.social", "BITS Accessibility"),
+    ("@community@mock.social", "Community Access"),
 ]
 
 
@@ -70,8 +70,11 @@ class MockNetwork(NetworkAdapter):
 
     def thread(self, item: SocialItem) -> list[SocialItem]:
         root_remote = item.thread_root or item.remote_id
-        chain = [it for it in self._home if (it.thread_root == root_remote
-                                             or it.remote_id == root_remote)]
+        chain = [
+            it
+            for it in self._home
+            if (it.thread_root == root_remote or it.remote_id == root_remote)
+        ]
         chain.sort(key=lambda it: it.created_at)
         return chain
 
@@ -132,52 +135,82 @@ class MockNetwork(NetworkAdapter):
     def _seed_home(self) -> list[SocialItem]:
         items: list[SocialItem] = []
 
-        items.append(self._mk(
-            1, 0,
-            "Just shipped an accessibility fix for the timeline. Focus no longer "
-            "jumps to the top on refresh. @you should try it.",
-            reply_count=4, reblog_count=9, favourite_count=22,
-        ))
+        items.append(
+            self._mk(
+                1,
+                0,
+                "Just shipped an accessibility fix for the timeline. Focus no longer "
+                "jumps to the top on refresh. @you should try it.",
+                reply_count=4,
+                reblog_count=9,
+                favourite_count=22,
+            )
+        )
 
-        items.append(self._mk(
-            2, 4,
-            "New guide: keyboard-first social reading. Every action has a shortcut "
-            "and every state is spoken.",
-            media=[Media(kind="image", uri="mock://img/guide.png",
-                         alt_text="Cover reading 'Keyboard-First Social'.")],
-            reply_count=2, reblog_count=15, favourite_count=40, bookmarked=True,
-        ))
+        items.append(
+            self._mk(
+                2,
+                4,
+                "New guide: keyboard-first social reading. Every action has a shortcut "
+                "and every state is spoken.",
+                media=[
+                    Media(
+                        kind="image",
+                        uri="mock://img/guide.png",
+                        alt_text="Cover reading 'Keyboard-First Social'.",
+                    )
+                ],
+                reply_count=2,
+                reblog_count=15,
+                favourite_count=40,
+                bookmarked=True,
+            )
+        )
 
-        items.append(self._mk(
-            3, 1,
-            "Reminder: describe your images. A photo with no alt text is a locked "
-            "door.",
-            media=[Media(kind="image", uri="mock://img/nodesc.png")],  # missing alt
-            reply_count=1, reblog_count=30, favourite_count=51,
-        ))
+        items.append(
+            self._mk(
+                3,
+                1,
+                "Reminder: describe your images. A photo with no alt text is a locked door.",
+                media=[Media(kind="image", uri="mock://img/nodesc.png")],  # missing alt
+                reply_count=1,
+                reblog_count=30,
+                favourite_count=51,
+            )
+        )
 
         cw = self._mk(
-            4, 2,
+            4,
+            2,
             "Long thread about election-night data crunching ahead.",
-            content_warning="Politics", sensitive=True,
-            reply_count=6, reblog_count=3, favourite_count=8,
+            content_warning="Politics",
+            sensitive=True,
+            reply_count=6,
+            reblog_count=3,
+            favourite_count=8,
         )
         items.append(cw)
 
         # A short thread rooted at seed-005.
         root = self._mk(
-            5, 3,
+            5,
+            3,
             "1/ Let's talk about how we calculated orbital trajectories by hand.",
-            reply_count=2, reblog_count=12, favourite_count=61,
+            reply_count=2,
+            reblog_count=12,
+            favourite_count=61,
         )
         root.thread_root = "seed-005"
         # A real thread is chronological: the root is oldest, replies follow.
         root.created_at = self.base_ms - 20 * _MIN
         items.append(root)
         r1 = self._mk(
-            6, 3,
+            6,
+            3,
             "2/ We checked the machine's math. Trust, but verify.",
-            reply_count=1, reblog_count=4, favourite_count=33,
+            reply_count=1,
+            reblog_count=4,
+            favourite_count=33,
         )
         r1.in_reply_to = "seed-005"
         r1.thread_root = "seed-005"
@@ -185,9 +218,11 @@ class MockNetwork(NetworkAdapter):
         r1.created_at = self.base_ms - 19 * _MIN
         items.append(r1)
         r2 = self._mk(
-            7, 3,
+            7,
+            3,
             "3/ The point: accuracy is an accessibility feature too.",
-            reblog_count=6, favourite_count=45,
+            reblog_count=6,
+            favourite_count=45,
         )
         r2.in_reply_to = "seed-006"
         r2.thread_root = "seed-005"
@@ -196,9 +231,12 @@ class MockNetwork(NetworkAdapter):
         items.append(r2)
 
         poll = self._mk(
-            8, 0,
+            8,
+            0,
             "Which pane order do you prefer for the reader?",
-            reply_count=3, reblog_count=1, favourite_count=5,
+            reply_count=3,
+            reblog_count=1,
+            favourite_count=5,
         )
         poll.poll = Poll(
             options=[
@@ -212,20 +250,28 @@ class MockNetwork(NetworkAdapter):
         items.append(poll)
 
         boost = self._mk(
-            9, 1,
+            9,
+            1,
             "Boosting: the new field reader lets you hear exactly the columns you "
             "want, in the order you want.",
-            reblog_of="seed-002", reblog_by="@grace@mock.social",
-            reblog_count=15, favourite_count=40,
+            reblog_of="seed-002",
+            reblog_by="@grace@mock.social",
+            reblog_count=15,
+            favourite_count=40,
         )
         items.append(boost)
 
         for i in range(10, 16):
-            items.append(self._mk(
-                i, i,
-                f"Cached post number {i}. This is here so search, paging, and "
-                f"catch-up have real volume to work with.",
-                reply_count=i % 3, reblog_count=i % 4, favourite_count=i,
-            ))
+            items.append(
+                self._mk(
+                    i,
+                    i,
+                    f"Cached post number {i}. This is here so search, paging, and "
+                    f"catch-up have real volume to work with.",
+                    reply_count=i % 3,
+                    reblog_count=i % 4,
+                    favourite_count=i,
+                )
+            )
 
         return items

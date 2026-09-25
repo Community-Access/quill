@@ -195,7 +195,7 @@ environment. Keep this table current — it is the book's own completeness gate.
 | `section-github.md` | `github.*` `localgit.*` `publishing.*` — VCS & publishing | 40 | ✅ | ☐ |
 | `section-settings.md` | Settings / Preferences — every pane | 23 | ✅ | ☐ |
 | `section-quillins.md` | Quillins (extension) system + bundled Quillins | 19 | ✅ | ☐ |
-| `section-whisperer.md` | `whisperer.*` — BITS Whisperer [GATED] | 12 | ✅ | ☐ |
+| `section-whisperer.md` | `whisperer.*` — QUILL Whisperer [GATED] | 12 | ✅ | ☐ |
 | `section-app-adp.md` | `app.*` `adp.*` — app launcher & ADP | 12 | ✅ | ☐ |
 | `section-accessibility.md` | Cross-cutting accessibility contract (master §F) | 13 | ✅ | ☐ |
 | `app-radio.md` | Quill Radio (public standalone app) | 41 | ✅ | ☐ |

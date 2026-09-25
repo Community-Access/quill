@@ -6,7 +6,7 @@
 
 Quill is a screen-reader-first writing and reading environment for Windows. It is designed to feel calm, predictable, deeply keyboard-friendly, and respectful of your focus. It is also ambitious. Quill is not only a place to write plain text. It is a place to open difficult documents, inspect structure, navigate long material, compare revisions, prepare content for Markdown or HTML, and work with accessibility and extraction issues without leaving the editor.
 
-This guide is aligned to QUILL 1.0.0, built by Blind Information Technology Solutions (BITS) together with Community Access.
+This guide is aligned to QUILL 1.0.0, built by Community Access.
 
 This guide is written as a companion, not a reference wall. Read it from the beginning if you are new to Quill. Dip into the sections that matter most if you already know what kind of work you want to do.
 
@@ -6657,7 +6657,7 @@ If you do not want the dialog at all, turn it off in **Preferences -> General ->
 
 **Help -> Status Page** opens a non-modal window with four tabs, arranged so you can leave it open in the background while you keep working:
 
-- **Status** — an at-a-glance Overview (version, active profile, background task count, queued notifications) plus per-feature detail rows (BITS Whisperer, Read Aloud engine and voice settings) when those features are enabled.
+- **Status** — an at-a-glance Overview (version, active profile, background task count, queued notifications) plus per-feature detail rows (QUILL Whisperer, Read Aloud engine and voice settings) when those features are enabled.
 - **Tasks & Downloads** — one live row per background job: name, status, progress, start time, and finish time. This is where batch conversions, model downloads, and other long-running work report their progress.
 - **Features** — every feature ID QUILL knows about, its display name, category, and whether it is currently on.
 - **Actions** — a plain-text log of recent actions QUILL has taken.
@@ -9778,7 +9778,7 @@ Today, Quill still does **not** yet ship a polished no-login secure upload path 
 
 Before the broadest public rollout, publish one secure feedback route that does not require GitHub login. The best release-quality path is still:
 
-1. a BITS-controlled HTTPS feedback form
+1. a Community Access HTTPS feedback form
 2. optional upload of a user-reviewed diagnostics bundle
 3. a plain-language bug template with environment summary and reproduction steps
 4. the current **Help -> Report a Bug...** handoff kept as the guided in-app bridge until the fuller route is live
@@ -10559,7 +10559,7 @@ Proposed for **QUILL 1.1**, with the Python console eligible for a 1.0 experimen
 
 ## Owner
 
-Blind Information Technology Solutions (BITS) and Community Access
+Community Access
 
 ## Target platform
 
@@ -10572,7 +10572,7 @@ Windows 10 and Windows 11
 * Accessibility professionals
 * Blind programmers and technical writers
 * Macro authors
-* Support/debugging users working with BITS or Community Access staff
+* Support/debugging users working with Community Access staff
 * Future Quillins/plugin developers
 
 ## 1. Vision

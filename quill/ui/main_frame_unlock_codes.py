@@ -1,7 +1,7 @@
 """Help > Redeem Unlock Code... -- lets a trusted tester unlock a
 pre-beta, ``locked_off`` feature (see ``quill/core/unlock_codes.py`` and
 ``quill/core/feature_catalog.py``) with a signed code minted by Jeff via
-``python -m quill.tools.mint_unlock_code``. No network call, no bits-acb
+``python -m quill.tools.mint_unlock_code``. No network call, no membership-site
 dependency: the code's signature is verified entirely offline.
 """
 

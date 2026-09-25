@@ -1,4 +1,4 @@
-"""Offline file transcription entry point (WATCH-9, BITS Whisperer consolidation).
+"""Offline file transcription entry point (WATCH-9, QUILL Whisperer consolidation).
 
 A thin, wx-free seam that transcribes a single audio/video file with the best
 available *offline* speech provider (whisper.cpp or Faster Whisper). Callers that

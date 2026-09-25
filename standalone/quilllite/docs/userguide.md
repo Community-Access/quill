@@ -1,5 +1,7 @@
 # QUILL Lite — User Guide
 
+*For QUILL Lite 1.0, released September 25, 2026.*
+
 QUILL Lite is a text editor. It opens a file, lets you change it, and saves it
 back exactly as it found it.
 

@@ -269,16 +269,16 @@ state and lists any installed Quillins read-only.
 - [ ] Set Up GitHub Copilot: via AI menu (AI > Set Up GitHub Copilot...), or by choosing GitHub Copilot in the AI engine switcher when its SDK is not installed
 - [ ] Validate Agents: via AI menu (AI > Validate Agents...). Lints built-in agents by default; Choose Folder/File to validate your own
 
-## R. Tools: BITS Whisperer (speech)
+## R. Tools: QUILL Whisperer (speech)
 
 - [ ] Announcement Backend: via Tools menu
-- [ ] BITS Model Manager: via Tools menu
-- [ ] BITS Model Status: via Tools menu
-- [ ] BITS Provider Center: via Tools menu
-- [ ] BITS Provider Selection: via Tools menu
-- [ ] BITS Readiness Check: via Tools menu
-- [ ] BITS Capability Matrix: via Tools menu
-- [ ] BITS Download Queue: via Tools menu
+- [ ] QUILL Whisperer Model Manager: via Tools menu
+- [ ] QUILL Whisperer Model Status: via Tools menu
+- [ ] QUILL Whisperer Provider Center: via Tools menu
+- [ ] QUILL Whisperer Provider Selection: via Tools menu
+- [ ] QUILL Whisperer Readiness Check: via Tools menu
+- [ ] QUILL Whisperer Capability Matrix: via Tools menu
+- [ ] QUILL Whisperer Download Queue: via Tools menu
 
 ## R2. Publishing
 
@@ -307,7 +307,7 @@ state and lists any installed Quillins read-only.
 - [ ] What Can I Do Here?: via Help menu
 - [ ] Save Diagnostics: via Help menu
 - [ ] Get Help from Support: via Help menu
-- [ ] BITS Whisperer About: via Help menu
+- [ ] QUILL Whisperer About: via Help menu
 
 ## U. Selection and QUILL key
 
@@ -413,7 +413,7 @@ here in the same change so this file stays a faithful, complete map.
 - **Safe Mode** — see `quill/stability/safe_mode.py` (env-var contract is
   `QUILL_SAFE_MODE=1`) and `quill/stability/__init__.py` (`SafeModeConfig`,
   `build_safe_mode_config`). When safe mode is active, the AI assistant
-  surfaces in section Q, the BITS / Whisperer surfaces in section R, the
+  surfaces in section Q, the QUILL Whisperer surfaces in section R, the
   watch-folder network calls in section M, and the Agent Center all
   short-circuit. Manual verification: launch with `set QUILL_SAFE_MODE=1`
   (cmd) / `$env:QUILL_SAFE_MODE=1` (PowerShell) / `--safe-mode` (CLI flag);

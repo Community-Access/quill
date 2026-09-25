@@ -51,4 +51,4 @@ Configure from **Preferences** (Ctrl+Comma) → **Smart Insert**:
 
 ## License
 
-MIT. Copyright (c) Blind Information Technology Solutions (BITS) and Community Access.
+MIT. Copyright (c) Community Access.

@@ -1,6 +1,6 @@
 # QUILL Lite: free AI help, in an editor that talks to you
 
-**September 25, 2026 — from Community Access and BITS**
+**September 25, 2026 — from Community Access**
 
 **Select a paragraph. Press two keys. Hear it summarized, rewritten, proofread
 or explained — free, with no account, no password and no card.**

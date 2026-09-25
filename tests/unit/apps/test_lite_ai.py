@@ -349,9 +349,14 @@ def agreement(monkeypatch):
     """
     import quill.ui.hosted_ai_dialogs as dialogs
 
-    calls = {"shown": 0, "answer": False}
+    calls = {"shown": 0, "answer": False, "reviewed": 0}
 
-    def fake(parent):
+    def fake(parent, *, accepted=False):
+        # A review of an accepted agreement is counted separately: its answer
+        # means "withdraw", and a test must say so on purpose.
+        if accepted:
+            calls["reviewed"] += 1
+            return calls.get("withdraw", False)
         calls["shown"] += 1
         return calls["answer"]
 
@@ -432,11 +437,13 @@ def test_the_privacy_command_shows_the_agreement_when_it_is_not_accepted(
 
 
 def test_the_privacy_command_withdraws_an_accepted_agreement(lite_window, agreement, monkeypatch):
-    """Door one of three, in its "take it back" direction."""
+    """Door one of three, in its "take it back" direction -- when Withdraw is
+    what the person chose."""
     from quill.core.ai.gateway_privacy import AGREEMENT_VERSION
 
     win = lite_window("text")
     win.app.settings.ai_privacy_accepted_version = AGREEMENT_VERSION
+    agreement["withdraw"] = True
 
     (lambda w: w.cmd_ai_privacy())(win)
 
@@ -463,10 +470,28 @@ def test_withdrawing_also_signs_this_computer_out(lite_window, agreement, monkey
     win = lite_window("text")
     win.app.ai_service = service
     win.app.settings.ai_privacy_accepted_version = AGREEMENT_VERSION
+    agreement["withdraw"] = True
 
     (lambda w: w.cmd_ai_privacy())(win)
 
     assert service.signed_out is True
+
+
+def test_reading_an_accepted_agreement_again_changes_nothing(lite_window, agreement, monkeypatch):
+    """Reported 2026-09-25: pressing Ctrl+Alt+Shift+K to read the agreement
+    again -- which the documentation invites -- withdrew it on the spot and
+    signed the computer out. Now it shows the agreement; keeping is the default,
+    and keeping says nothing."""
+    from quill.core.ai.gateway_privacy import AGREEMENT_VERSION
+
+    win = lite_window("text")
+    win.app.settings.ai_privacy_accepted_version = AGREEMENT_VERSION
+
+    (lambda w: w.cmd_ai_privacy())(win)
+
+    assert agreement["reviewed"] == 1
+    assert win.app.settings.ai_privacy_accepted_version == AGREEMENT_VERSION
+    assert win.announcements == []
 
 
 def test_declining_leaves_the_feature_present_and_unusable(

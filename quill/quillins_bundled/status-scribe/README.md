@@ -42,4 +42,4 @@ Status Scribe uses `api.log()` to write developer messages to the QUILL Develope
 
 ## License
 
-MIT. Copyright (c) Blind Information Technology Solutions (BITS) and Community Access.
+MIT. Copyright (c) Community Access.

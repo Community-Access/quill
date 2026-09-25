@@ -4305,7 +4305,7 @@ stays until the prompt migration is sunset.
 
 **Goal.** Make transcription the *beginning* of an agentic writing experience, not
 the end: turn audio into the document the user actually needs, with a gentle, guided,
-adjustable path. Folds the agentic transcription magic of BITS Whisperer into QUILL's
+adjustable path. Folds the agentic transcription magic of QUILL Whisperer into QUILL's
 unified AI framework.
 
 **Transcript Actions** (`quill/core/ai/transcript_actions.py`, wx-free). Ten
@@ -4611,7 +4611,7 @@ once per process and fails over across them on request failure, per
 RadioBrowser's own documented recipe, rather than hammering one hardcoded
 host. `core/radio/acb_media.py` bundles the American Council of the Blind's
 ten Live365 stations as a static, always-available category (no network call
-needed to see it) — researched from BITS's own `acb_link_desktop` project.
+needed to see it) — researched from the `acb_link_desktop` project.
 `core/radio/soma_fm.py` blends in [SomaFM](https://somafm.com), a second
 free, keyless, curated directory, into the same Browse Stations results —
 chosen over Shoutcast (revocable Developer-ID-gated API) and Live365
@@ -8375,7 +8375,7 @@ Every dialog in Quill is the single highest-risk accessibility surface in the UI
 
 **Execution waves.** DLG-3 proceeds as: Phase 0 — authoritative source-generated registry + gates (delivered); Phase 1 — strengthened A11Y-4 static guard (delivered); Phase 2 — native conversion wave for hand-rolled dialogs that are really a single confirm / choice / text prompt, replaced with the stock one-shot equivalent, preserving all user-facing wording and outcomes; Phase 3 — enhanced-native standardization wave converging the genuinely multi-control dialogs onto one focus/default/lifecycle grammar via the shared contract (never flattened into one-shots where that would lose live search, lists, or streaming); Phase 4 — web-surface standardization only where rich rendering or dynamic forms are justified, with native-fallback parity and no raw HTML dumped into document tabs in onboarding/welcome paths; Phase 5 — startup/onboarding hardening (wizard, first-run, trust consent, crash recovery) for deterministic focus across chained modals, preserving the explicit-consent requirements and retiring the screen-reader startup-crash path; Phase 6 — assistant/AI tool dialog consolidation (`assistant_tools.py`, `ai_model_panel.py`, `train_style_dialog.py`, `assistant_panel.py`) onto the same modal/focus/error contract with safe async/"busy" semantics; Phase 7 — CQ-16 characterization expansion around dialog-launch command paths (return values and side effects) before any CQ-1 decomposition; Phase 8 — manual NVDA baseline, JAWS spot (startup, assistant, sticky notes, watch profiles), and Narrator sanity passes across `dialogs.md`, each row carrying pass/fail evidence.
 
-**Dialog-by-dialog coverage map (no section exempt).** Every checklist family in `dialogs.md` is in scope with a default disposition: file/session dialogs (native-flow normalization + modal/focus hardening); settings/customization/dialog-launch surfaces (enhanced-native consistency — menu editor, settings, command palette); navigation dialogs (keep stock/input surfaces, harden bookmark/list/tree flows); text-analysis dialogs (normalize spell/lookup/thesaurus list workflows); accessibility-tools dialogs (focus/read-order consistency in results dialogs); intake/report dialogs (standardized preview/report modals); read-aloud/OCR dialogs (keep the OCR review contract, harden nested chooser flows); sticky-notes dialogs (retain web-form where justified, harden vault/list/editor transitions); external-tools/format dialogs (enhanced-native standard patterns); compare dialogs (consistent list/option/preview focus); keymap dialogs (stock controls + predictable nested edit flow); appearance/backup/import dialogs (import/export previews and file-picker transitions hardened); watch-folder dialogs (nested editor/browse/preview paths hardened); notifications dialog (standardized close/default semantics); formatting dialogs (preserve `show_web_form` for Insert Link, harden list/YAML nested flows); macros dialogs (text-entry + management standardization); AI/assistant dialogs (the DLG-2 conversions folded in); BITS speech dialogs (provider/model/status contract hardening); feature/profile dialogs (profile-switch, health, and management consistency); help/startup/support dialogs (wizard/about/diagnostics/report-bug rendering and focus safety); selection-action dialogs (action-chooser semantics hardened); nested/secondary dialogs (explicit coverage for each path launched from a parent); power-tools dialogs (stock prompt/confirm consistency); and startup-only dialogs (crash recovery + untrusted-location remain top-priority hardened native flows).
+**Dialog-by-dialog coverage map (no section exempt).** Every checklist family in `dialogs.md` is in scope with a default disposition: file/session dialogs (native-flow normalization + modal/focus hardening); settings/customization/dialog-launch surfaces (enhanced-native consistency — menu editor, settings, command palette); navigation dialogs (keep stock/input surfaces, harden bookmark/list/tree flows); text-analysis dialogs (normalize spell/lookup/thesaurus list workflows); accessibility-tools dialogs (focus/read-order consistency in results dialogs); intake/report dialogs (standardized preview/report modals); read-aloud/OCR dialogs (keep the OCR review contract, harden nested chooser flows); sticky-notes dialogs (retain web-form where justified, harden vault/list/editor transitions); external-tools/format dialogs (enhanced-native standard patterns); compare dialogs (consistent list/option/preview focus); keymap dialogs (stock controls + predictable nested edit flow); appearance/backup/import dialogs (import/export previews and file-picker transitions hardened); watch-folder dialogs (nested editor/browse/preview paths hardened); notifications dialog (standardized close/default semantics); formatting dialogs (preserve `show_web_form` for Insert Link, harden list/YAML nested flows); macros dialogs (text-entry + management standardization); AI/assistant dialogs (the DLG-2 conversions folded in); QUILL Whisperer speech dialogs (provider/model/status contract hardening); feature/profile dialogs (profile-switch, health, and management consistency); help/startup/support dialogs (wizard/about/diagnostics/report-bug rendering and focus safety); selection-action dialogs (action-chooser semantics hardened); nested/secondary dialogs (explicit coverage for each path launched from a parent); power-tools dialogs (stock prompt/confirm consistency); and startup-only dialogs (crash recovery + untrusted-location remain top-priority hardened native flows).
 
 **Conversion decisions (definitive).** Keep `native`: simple confirms and binary prompts, and stable stock file/folder/select/text prompts. Keep sanctioned `web`: markdown/HTML preview and rich rendered content, explicit multi-field forms where `show_web_form` is already stable and fallback-backed, and chat-centric surfaces with native fallback. Harden `hardened_custom` (not a web rewrite by default): complex list/CRUD/picker dialogs where stock controls are appropriate and lower-risk than a web migration, and interaction-heavy assistant panels that are not rich-rendering-centric. No untouched custom paths: any retained custom dialog must carry a written rationale plus a contract test.
 
@@ -12727,7 +12727,7 @@ In scope:
 - Performance and stability under realistic documents.
 
 Out of scope for 1.0 (deferred to 2.0, tracked in `ROADMAP.md`): axe-core / Nu
-Html Checker validation, BITS Whisperer, the GLOW watch-action binding
+Html Checker validation, QUILL Whisperer, the GLOW watch-action binding
 (WATCH-8), and the Accessibility Agents workstream.
 
 ## 2. Test environments
@@ -12841,7 +12841,7 @@ Screen-reader coverage matrix for the dialog estate:
 | H. Sticky notes | Full | Spot | Sanity |
 | I–P. Formats, compare, keyboard, macros | Full | — | Sanity |
 | Q. AI and assistant (DLG-2 / DLG-3.6) | Full | Spot | Sanity |
-| R. BITS Whisperer | Out of scope for 1.0 | — | — |
+| R. QUILL Whisperer | Out of scope for 1.0 | — | — |
 | S–T. Help, features, startup, support | Full | Spot | Sanity |
 | U. Selection and QUILL key | Full | — | Sanity |
 | V. Nested and secondary dialogs | Full | — | Sanity |

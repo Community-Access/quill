@@ -81,7 +81,7 @@ def test_ask_refuses_safe_mode() -> None:
 
 def test_default_base_url_is_the_hosted_backend_over_https() -> None:
     # The direct FastAPI backend (docs/OPERATIONS.md), not the old bitsinfo host
-    # and not the WordPress site (bits-acb.org, which only fronts the status gate).
+    # and not the membership WordPress site, which only fronts the status gate.
     assert DEFAULT_BASE_URL == "https://adp.csedesigns.com"
     assert DEFAULT_BASE_URL.startswith("https://")
     assert "bitsinfo" not in DEFAULT_BASE_URL

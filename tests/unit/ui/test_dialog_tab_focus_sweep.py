@@ -35,7 +35,7 @@ def test_about_dialogs_route_focus_through_the_contract() -> None:
     assert "notebook.SetFocus" not in src, (
         "The About dialogs must not focus the notebook tab strip on open."
     )
-    # Both tabbed About dialogs (About Quill, About BITS Whisperer) use the
+    # Both tabbed About dialogs (About Quill, About QUILL Whisperer) use the
     # module-level show_modal_dialog (no MainFrame seam), so each must call
     # focus_primary_control itself.
     assert src.count("focus_primary_control(dialog)") >= 2, (

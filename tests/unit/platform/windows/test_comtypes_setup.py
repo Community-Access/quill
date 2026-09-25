@@ -1,4 +1,4 @@
-"""The shared comtypes generated-wrapper cache redirect (BITS mailing list
+"""The shared comtypes generated-wrapper cache redirect (community mailing list
 report, 2026-07-11): every comtypes call site redirects the cache itself
 rather than relying on some other module having already done it as an
 import-order side effect."""

@@ -4,7 +4,7 @@ The Listening Companion's first magic: after audio is transcribed, QUILL offers 
 small, context-aware set of *actions* that turn the raw transcript into a finished,
 structured document — Meeting Minutes, Action Items, Study Notes, a clean draft, and
 more. Each action is a named, plain-language instruction (ported and adapted from
-BITS Whisperer's AI Action presets) plus a prompt builder, so running one is a single
+QUILL Whisperer's AI Action presets) plus a prompt builder, so running one is a single
 provider call whose result opens as a new document.
 
 This module is wx-free and fully unit-testable. The UI presents

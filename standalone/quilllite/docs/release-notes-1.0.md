@@ -1,5 +1,12 @@
 # QUILL Lite 1.0 — What's New
 
+*Released September 25, 2026.*
+
+**New in 1.0: free AI help, built in.** Select a paragraph, press **Ctrl+Alt+G**,
+and hear it summarized, rewritten, proofread or explained — or ask a question
+about the document you have open. No account, no password, no card. See *AI
+help* below, and the separate **AI guide** for every detail.
+
 **QUILL Lite is a simple, friendly text editor built for people who use a screen
 reader.**
 

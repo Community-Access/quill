@@ -3,7 +3,7 @@
 **Product:** QUILL Media Player (in-QUILL feature **and** the standalone
 `Quill Media Player` app — see Section 9.11)
 **Status:** Approved for phased build — Phase 1 (core) shipped; UI phases in progress
-**Owners:** Community Access / BITS
+**Owners:** Community Access
 **Date:** 2026-08-04
 **Related:** `bard.md` (BARD 2.0 integration + Secrets/Token Manager); the user
 guide alongside this PRD (`userguide.md`)

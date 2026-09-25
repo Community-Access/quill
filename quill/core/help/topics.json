@@ -3650,67 +3650,67 @@
   },
   {
     "id": "whisperer.capability_matrix",
-    "title": "BITS Whisperer Capability Matrix",
+    "title": "QUILL Whisperer Capability Matrix",
     "body": "Show what the speech suite can do with your current engines and providers, in one overview.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.check_faster_whisper",
-    "title": "BITS Whisperer Check faster-whisper Engine",
+    "title": "QUILL Whisperer Check faster-whisper Engine",
     "body": "Check whether the optional faster-whisper transcription engine is installed and working.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.download_queue",
-    "title": "BITS Whisperer Download Queue...",
+    "title": "QUILL Whisperer Download Queue...",
     "body": "Show the download queue for speech models and engines, with progress for each.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.model_manager",
-    "title": "BITS Whisperer Speech Model Manager...",
+    "title": "QUILL Whisperer Speech Model Manager...",
     "body": "Manage your installed speech-to-text models: add, remove, or switch between them.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.model_recommend",
-    "title": "BITS Whisperer Use Recommended Speech Model",
+    "title": "QUILL Whisperer Use Recommended Speech Model",
     "body": "Select the speech model QUILL recommends for your machine automatically.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.model_status",
-    "title": "BITS Whisperer Speech Model Status",
+    "title": "QUILL Whisperer Speech Model Status",
     "body": "Report which speech model is active and whether it is ready to use.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.provider_center",
-    "title": "BITS Whisperer Provider Center...",
+    "title": "QUILL Whisperer Provider Center...",
     "body": "Open the hub for managing transcription providers and their settings.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.provider_recommend",
-    "title": "BITS Whisperer Use Recommended Provider",
+    "title": "QUILL Whisperer Use Recommended Provider",
     "body": "Select the transcription provider QUILL recommends automatically.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.provider_select",
-    "title": "BITS Whisperer Select Provider...",
+    "title": "QUILL Whisperer Select Provider...",
     "body": "Choose which transcription provider to use.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.provider_status",
-    "title": "BITS Whisperer Provider Status",
+    "title": "QUILL Whisperer Provider Status",
     "body": "Report the current transcription provider and whether it is reachable.",
     "user_guide_section": "speech"
   },
   {
     "id": "whisperer.readiness_check",
-    "title": "BITS Whisperer Readiness Check",
+    "title": "QUILL Whisperer Readiness Check",
     "body": "Check that everything needed for speech features is installed and configured, and report anything missing.",
     "user_guide_section": "speech"
   },

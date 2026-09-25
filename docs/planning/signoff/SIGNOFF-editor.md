@@ -597,18 +597,18 @@
 - [ ] W  [ ] S  [ ] A  `window.previous_document` — Previous Document  `Ctrl+Shift+Tab`
 
 ## `whisperer.*` (12)
-- [ ] W  [ ] S  [ ] A  `whisperer.about` — About BITS Whisperer  **[GATED core.bw_whisperer]**
-- [ ] W  [ ] S  [ ] A  `whisperer.capability_matrix` — BITS Whisperer Capability Matrix
-- [ ] W  [ ] S  [ ] A  `whisperer.check_faster_whisper` — BITS Whisperer Check faster-whisper Engine
-- [ ] W  [ ] S  [ ] A  `whisperer.download_queue` — BITS Whisperer Download Queue...
-- [ ] W  [ ] S  [ ] A  `whisperer.model_manager` — BITS Whisperer Speech Model Manager...
-- [ ] W  [ ] S  [ ] A  `whisperer.model_recommend` — BITS Whisperer Use Recommended Speech Model
-- [ ] W  [ ] S  [ ] A  `whisperer.model_status` — BITS Whisperer Speech Model Status
-- [ ] W  [ ] S  [ ] A  `whisperer.provider_center` — BITS Whisperer Provider Center...
-- [ ] W  [ ] S  [ ] A  `whisperer.provider_recommend` — BITS Whisperer Use Recommended Provider
-- [ ] W  [ ] S  [ ] A  `whisperer.provider_select` — BITS Whisperer Select Provider...
-- [ ] W  [ ] S  [ ] A  `whisperer.provider_status` — BITS Whisperer Provider Status
-- [ ] W  [ ] S  [ ] A  `whisperer.readiness_check` — BITS Whisperer Readiness Check
+- [ ] W  [ ] S  [ ] A  `whisperer.about` — About QUILL Whisperer  **[GATED core.bw_whisperer]**
+- [ ] W  [ ] S  [ ] A  `whisperer.capability_matrix` — QUILL Whisperer Capability Matrix
+- [ ] W  [ ] S  [ ] A  `whisperer.check_faster_whisper` — QUILL Whisperer Check faster-whisper Engine
+- [ ] W  [ ] S  [ ] A  `whisperer.download_queue` — QUILL Whisperer Download Queue...
+- [ ] W  [ ] S  [ ] A  `whisperer.model_manager` — QUILL Whisperer Speech Model Manager...
+- [ ] W  [ ] S  [ ] A  `whisperer.model_recommend` — QUILL Whisperer Use Recommended Speech Model
+- [ ] W  [ ] S  [ ] A  `whisperer.model_status` — QUILL Whisperer Speech Model Status
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_center` — QUILL Whisperer Provider Center...
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_recommend` — QUILL Whisperer Use Recommended Provider
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_select` — QUILL Whisperer Select Provider...
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_status` — QUILL Whisperer Provider Status
+- [ ] W  [ ] S  [ ] A  `whisperer.readiness_check` — QUILL Whisperer Readiness Check
 
 ## `localgit.*` (12)
 - [ ] W  [ ] S  [ ] A  `localgit.bisect_reset` — Local Git: End Bisect

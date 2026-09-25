@@ -137,7 +137,7 @@ With the release/dev flag OFF (default public build), confirm these are **not re
 - [ ] **Internet Radio (`core.radio`)** and **Book Library (`core.library`)** are absent from the editor: no `Tools ▸ Media ▸ Internet Radio` or `Tools ▸ Media ▸ Book Library` items, no `radio.*`/`library.*` commands in the command palette, no Radio status-bar mini-player or tray radio controls, and no Book Library entries anywhere. With Radio, Podcasts, and Book Library all gated, the **`Tools ▸ Media` submenu is omitted entirely** in a public build — confirm it is not shown. (`QUILL_DEV_BUILD=1` restores all of it.) The **standalone Quill Radio and Quill Weather apps are unaffected** and remain launchable via the QuillVille switcher (see the check above).
 - [ ] Automated test asserts gated apps are absent from public surfaces when the flag is off (Phase 2 deliverable).
 
-Already-gated (verify still correct): Podcasts (`core.podcasts`, unreleased in public builds — see above), ADP (`future.adp_assistant`, default ON — decide for 1.0), Publishing send half (`future.publishing`), Spotify (`future.spotify`), GLOW (`core.glow`), BITS Whisperer (`core.bw_whisperer`), third-party Quillins (locked; bundled load regardless).
+Already-gated (verify still correct): Podcasts (`core.podcasts`, unreleased in public builds — see above), ADP (`future.adp_assistant`, default ON — decide for 1.0), Publishing send half (`future.publishing`), Spotify (`future.spotify`), GLOW (`core.glow`), QUILL Whisperer (`core.bw_whisperer`), third-party Quillins (locked; bundled load regardless).
 
 ---
 

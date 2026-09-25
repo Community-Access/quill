@@ -370,12 +370,12 @@ def show_whisperer_about_native(
     principles_rows: list[tuple[str, str]],
     show_modal_dialog: Callable[[Any, str], int],
 ) -> None:
-    """Modal About BITS Whisperer dialog with tabbed native ListCtrls."""
+    """Modal About QUILL Whisperer dialog with tabbed native ListCtrls."""
     from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
 
     dialog = wx.Dialog(
         parent,
-        title="About BITS Whisperer",
+        title="About QUILL Whisperer",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
     dialog.SetSize((760, 540))
@@ -389,10 +389,10 @@ def show_whisperer_about_native(
     ov_text = wx.TextCtrl(
         overview_panel,
         value=(
-            "The future is bright. BITS Whisperer patterns are being evaluated "
+            "The future is bright. QUILL Whisperer patterns are being evaluated "
             "for selective adoption inside Quill to improve accessibility, reliability, "
             "and creative flow.\n\n"
-            "Quill will progressively absorb proven ideas from BITS Whisperer in focused "
+            "Quill will progressively absorb proven ideas from QUILL Whisperer in focused "
             "phases, while preserving Quill's writing-first experience.\n\n"
             "Next steps:\n"
             "1. Use Startup Wizard to configure profile, AI, and speech foundation.\n"
@@ -457,7 +457,7 @@ def show_whisperer_about_native(
     # the default Close button (module-level show_modal_dialog, no MainFrame seam).
     focus_primary_control(dialog)
     try:
-        show_modal_dialog(dialog, "About BITS Whisperer")
+        show_modal_dialog(dialog, "About QUILL Whisperer")
     finally:
         dialog.Destroy()
 
@@ -469,12 +469,12 @@ def show_bw_capability_matrix_native(
     snapshot: dict,
     show_modal_dialog: Callable[[Any, str], int],
 ) -> None:
-    """Modal BITS Whisperer Capability Matrix dialog with a native ListCtrl."""
+    """Modal QUILL Whisperer Capability Matrix dialog with a native ListCtrl."""
     from quill.ui.dialog_contract import apply_modal_ids
 
     dialog = wx.Dialog(
         parent,
-        title="BITS Whisperer Capability Matrix",
+        title="QUILL Whisperer Capability Matrix",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
     dialog.SetSize((760, 500))
@@ -523,6 +523,6 @@ def show_bw_capability_matrix_native(
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
     wx.CallAfter(cap_list.SetFocus)
     try:
-        show_modal_dialog(dialog, "BITS Whisperer Capability Matrix")
+        show_modal_dialog(dialog, "QUILL Whisperer Capability Matrix")
     finally:
         dialog.Destroy()

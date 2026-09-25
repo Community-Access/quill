@@ -2954,7 +2954,7 @@ class MenuBuilderMixin:
         ai_menu.AppendCheckItem(self._id_ai_enabled, _("&Use Artificial Intelligence"))
         ai_menu.Check(self._id_ai_enabled, load_ai_enabled())
         self._append_ai_experience_toggle(ai_menu)
-        # BITS Whisperer (conditional, deferred to QUILL 2.0) ----------------
+        # QUILL Whisperer (conditional, deferred to QUILL 2.0) ----------------
         # "About Whisperer" was folded into the single About Quill dialog.
         whisperer_menu = wx.Menu()
         whisperer_menu.Append(
