@@ -275,8 +275,12 @@ PROFILES: tuple[AppProfile, ...] = (
         "everything",
         "Everything",
         "All 19 areas on, including the four a new install leaves off. "
-        "Autocorrect will straighten your quotes and capitalise your sentences, "
-        "every save keeps a dated copy, and Go To Anything joins the command "
+        # Not "and capitalise your sentences": the area description three
+        # hundred lines up was corrected for saying so and this one was
+        # missed, which left the same wrong rule in the sentence somebody
+        # reads *while choosing the profile that turns it on*.
+        "Autocorrect will straighten your quotes and turn two hyphens into a "
+        "dash, every save keeps a dated copy, and Go To Anything joins the command "
         "palette and the two lists as a fourth way to jump. It also switches on "
         "AI help, which sends the passage you ask about to QUILL's servers -- "
         "the one area here that does something outside this computer, so choose "

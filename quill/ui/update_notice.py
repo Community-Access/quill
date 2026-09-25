@@ -34,6 +34,7 @@ Two accessibility details are load-bearing and easy to lose:
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Sequence
 from typing import Any
 
@@ -73,6 +74,9 @@ MAX_NOTE_LINES = 60
 MAX_NOTE_CHARS = 4000
 _TRUNCATION_NOTE = "(Notes shortened. The full notes are on the release page.)"
 
+#: A line of nothing but rule characters: a heading underline or a ``---``.
+_RULE_LINE = re.compile(r"^\s*[-=_*]{3,}\s*$")
+
 
 def summarize_release_notes(raw: str) -> str:
     """A GitHub release body as plain prose, capped, never empty.
@@ -87,6 +91,10 @@ def summarize_release_notes(raw: str) -> str:
     blank = False
     for line in text.splitlines():
         stripped = line.rstrip()
+        # The flattener underlines each heading, and a horizontal rule is the
+        # same shape: either way a screen reader says "dash dash dash".
+        if _RULE_LINE.match(stripped):
+            continue
         if not stripped.strip():
             blank = True
             continue

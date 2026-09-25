@@ -161,9 +161,16 @@ def test_the_global_switch_turns_everything_off():
 
 
 def test_quota_reports_what_is_left_not_what_was_used():
-    quota = GatewayQuota(monthly_cap=100, monthly_used=94, daily_cap=20, daily_used=3)
-    assert quota.monthly_left == 6
+    quota = GatewayQuota(monthly_cap=100, monthly_used=80, daily_cap=20, daily_used=3)
+    assert quota.monthly_left == 20
     assert quota.daily_left == 17
+
+
+def test_today_never_reports_more_than_the_month_has_left():
+    """A new connection's monthly cap sat under the daily one, and the Usage
+    window said 15 left this month and 20 left today (2026-09-25)."""
+    quota = GatewayQuota(monthly_cap=15, monthly_used=0, daily_cap=20, daily_used=0)
+    assert quota.daily_left == 15
 
 
 def test_a_quota_already_over_its_cap_never_reports_a_negative():
@@ -252,3 +259,28 @@ def test_a_too_fast_poll_is_a_slow_down_not_a_quota_failure():
     mod._urlopen_json = _raising(GatewayQuotaError("slow down"))  # noqa: SLF001
     poster = device_flow_poster("https://x")
     assert poster("https://x/device/token", {"device_code": "d"}) == {"error": "slow_down"}
+
+
+def test_the_gateways_pending_and_expired_statuses_are_answers(monkeypatch):
+    """The gateway says "pending" with HTTP 428 and "expired" or "denied" with
+    410. Read as failures, the first poll ended every sign-in with
+    "server_error" before anybody could type the code (2026-09-25). Patched at
+    urlopen rather than at _urlopen_json, because that is where it broke."""
+    import importlib
+
+    mod = importlib.reload(importlib.import_module("quill.core.ai.gateway_client"))
+    replies = iter([
+        _http_error(428, {"status": "pending"}),
+        _http_error(410, {"status": "denied"}),
+        _http_error(410, {"status": "expired"}),
+    ])
+
+    def fake_urlopen(*_a, **_k):
+        raise next(replies)
+
+    monkeypatch.setattr(mod.urllib.request, "urlopen", fake_urlopen)
+    poster = mod.device_flow_poster("https://x")
+    form = {"device_code": "d"}
+    assert poster("https://x/device/token", form) == {"error": "authorization_pending"}
+    assert poster("https://x/device/token", form) == {"error": "access_denied"}
+    assert poster("https://x/device/token", form) == {"error": "expired_token"}

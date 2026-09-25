@@ -23,6 +23,14 @@ def test_markdown_release_body_is_flattened_for_speech():
     assert "Faster startup" in summary
 
 
+def test_headings_and_rules_do_not_leave_a_line_of_dashes_to_read():
+    """The flattener underlines headings; a reader says 'dash dash dash'."""
+    summary = update_notice.summarize_release_notes(
+        "# Title\n\n## What's new\n\n- Faster startup\n\n---\n\nEnd"
+    )
+    assert summary == "Title\n\nWhat's new\n\n- Faster startup\n\nEnd"
+
+
 def test_a_release_with_no_body_says_so_rather_than_showing_nothing():
     """An empty notes box reads as a broken dialog."""
     assert update_notice.summarize_release_notes("   ") == update_notice.NO_NOTES

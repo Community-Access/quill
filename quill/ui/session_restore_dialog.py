@@ -10,13 +10,22 @@ appearing at once is four things to identify before any work; being asked to nam
 them first is faster than arrowing through them afterwards, and it is the only
 version where the answer can be *partial*.
 
-**Every answer is reversible except the one that is not, and that one is not
-destructive.** Not Now keeps the list exactly as it was. Forget drops rows from
-the list and **touches nothing on disk** -- the sentence under the buttons says so
-rather than a warning box saying it, because a warning on a harmless action is how
-people learn to click through the warnings that matter (decided with Jeff,
-2026-09-19). Never Ask Again sets a preference and says which one, so it can be
-found again by somebody who pressed it in a hurry.
+**Every answer is reversible, and none is destructive.** Not Now keeps the list
+exactly as it was. Forget drops rows from the list and **touches nothing on
+disk** -- the sentence under the buttons says so rather than a warning box saying
+it, because a warning on a harmless action is how people learn to click through
+the warnings that matter (decided with Jeff, 2026-09-19).
+
+**Never Ask Again has a twin, and that is what makes it reversible.** It used to
+be the one door in this window that only opened one way: it set the preference to
+*never*, nothing else in either editor wrote that preference back, and the button's
+own help text sent you to look for a setting ("Reopen last session") that is a
+different setting and does a different thing. So the window stopped appearing and
+there was no supported way to get it back -- from a button somebody presses in a
+hurry, which is exactly the population that then needs it back. **Ask Me Next
+Time** puts the preference back to the shipped answer, and exactly one of the pair
+is ever enabled: the other is greyed rather than hidden, so a reader arriving on it
+is told it is unavailable instead of hunting a window for a button that was removed.
 
 **A missing file is a row, not an omission.** The silent path skipped a file that
 had gone, which is fine for one deleted on purpose and useless for one that
@@ -33,6 +42,7 @@ import wx
 
 from quill.core.session_restore import (
     ASK_NEVER,
+    ASK_WHEN_IT_MATTERS,
     SessionEntry,
     describe_session_plan,
     missing,
@@ -51,6 +61,7 @@ _ID_OPEN_CHECKED = wx.ID_OK
 _ID_NOT_NOW = wx.ID_CANCEL
 _ID_OPEN_ALL = wx.ID_APPLY
 _ID_NEVER_ASK = wx.ID_IGNORE
+_ID_ASK_AGAIN = wx.ID_RETRY
 
 
 @dataclass(slots=True)
@@ -76,6 +87,8 @@ class SessionRestoreAnswer:
 def ask_session_restore(
     parent: object,
     entries: tuple[SessionEntry, ...],
+    *,
+    mode: str = ASK_WHEN_IT_MATTERS,
 ) -> SessionRestoreAnswer:
     """Ask which of *entries* to reopen, and which to forget.
 
@@ -83,6 +96,10 @@ def ask_session_restore(
     caller should save, whatever the person chose -- so a caller that saves it
     unconditionally is correct, and one that forgets to is the only way a Forget
     can be lost.
+
+    *mode* is the caller's current ``session_restore_ask``. It decides which
+    half of the Never Ask Again / Ask Me Next Time pair is offered; the default
+    is the shipped value, so an older caller behaves exactly as it did.
     """
     if not entries:
         return SessionRestoreAnswer(remembered=(), spoken="")
@@ -217,10 +234,23 @@ def ask_session_restore(
     never_ask = wx.Button(dialog, _ID_NEVER_ASK, "&Never Ask Again")
     never_ask.SetHelpText(
         "Reopen last session's documents from now on without asking, and open "
-        "the ticked ones now. The setting is Reopen last session, in preferences, "
-        "if you want this window back."
+        "the ticked ones now. Ask Me Next Time, beside this button, is how you "
+        "undo it: open this window from File, Reopen Last Session and press that."
     )
-    for button in (forget_checked, clear_list, never_ask):
+    ask_again = wx.Button(dialog, _ID_ASK_AGAIN, "Ask Me Ne&xt Time")
+    ask_again.SetHelpText(
+        "Undo Never Ask Again: be asked about last session again, the way a new "
+        "install does -- when there are several documents, or one whose file has "
+        "moved. The ticked documents open now as well."
+    )
+    # Exactly one of the pair is live, and the other is greyed rather than
+    # removed. A button that vanishes leaves somebody hunting the window for it;
+    # a greyed one announces itself as unavailable the moment they arrive on it,
+    # which is the same choice the two tag pickers make.
+    asking_now = mode != ASK_NEVER
+    never_ask.Enable(asking_now)
+    ask_again.Enable(not asking_now)
+    for button in (forget_checked, clear_list, never_ask, ask_again):
         keeping.Add(button, 0, wx.RIGHT, _PAD // 2)
     root.Add(keeping, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
@@ -229,6 +259,7 @@ def ask_session_restore(
     for button, answer in (
         (open_all, _ID_OPEN_ALL),
         (never_ask, _ID_NEVER_ASK),
+        (ask_again, _ID_ASK_AGAIN),
         (forget_checked, wx.ID_DELETE),
         (clear_list, wx.ID_CLEAR),
     ):
@@ -329,6 +360,9 @@ def ask_session_restore(
             if result == _ID_NEVER_ASK:
                 return _answer(_checked(), live, forgotten_total, ask_mode=ASK_NEVER)
 
+            if result == _ID_ASK_AGAIN:
+                return _answer(_checked(), live, forgotten_total, ask_mode=ASK_WHEN_IT_MATTERS)
+
             if result == _ID_OPEN_CHECKED:
                 return _answer(_checked(), live, forgotten_total, ask_mode="")
 
@@ -360,8 +394,10 @@ def _answer(
     if ask_mode == ASK_NEVER:
         parts.append(
             "Last session will reopen without asking from now on. "
-            "The setting is Reopen last session."
+            "Ask Me Next Time, in this window, puts that back."
         )
+    if ask_mode == ASK_WHEN_IT_MATTERS:
+        parts.append("You will be asked about last session again when it matters.")
     skipped = len(missing(tuple(live)))
     if chosen and skipped:
         noun = "file" if skipped == 1 else "files"

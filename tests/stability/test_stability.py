@@ -5,6 +5,7 @@ import logging
 import subprocess
 import threading
 import time
+import tracemalloc
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -305,12 +306,26 @@ def test_safe_regex_times_out(monkeypatch) -> None:
 
 
 def test_memory_snapshot_writes_file(tmp_path: Path) -> None:
+    # tracemalloc must be stopped again, or it stays on for the rest of the
+    # session: `start_memory_tracing` records a 25-frame traceback for *every
+    # allocation in the process*, which is ~50x on allocation-heavy code and
+    # grows the heap without bound. Left running, it does not fail this test --
+    # it fails whichever allocation-heavy test happens to run later, by pushing
+    # it past the 30s ceiling, and on Windows pytest-timeout's thread method
+    # then kills the whole session. That is a different victim every run
+    # (test_resume, test_family_keymap, GATE-PERF's 50 MB buffer), which is
+    # exactly why it read as flakiness rather than as one bug.
+    was_tracing = tracemalloc.is_tracing()
     start_memory_tracing()
-    path = tmp_path / "memory.txt"
-    write_memory_snapshot(path)
+    try:
+        path = tmp_path / "memory.txt"
+        write_memory_snapshot(path)
 
-    assert path.exists()
-    assert "QUILL memory snapshot" in path.read_text(encoding="utf-8")
+        assert path.exists()
+        assert "QUILL memory snapshot" in path.read_text(encoding="utf-8")
+    finally:
+        if not was_tracing:
+            tracemalloc.stop()
 
 
 def test_slow_wx_event_handler_logs_warning(caplog) -> None:

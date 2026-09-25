@@ -74,6 +74,10 @@ class HeadingLevelsMixin:
             self._set_status("Already body text" if not level else "Heading tools need a line")
             return
         self.editor.Replace(change.start, change.end, change.replacement)
+        # Replace leaves the caret at the end of what it wrote, which in HTML is
+        # after ``</h1>`` -- outside the element you just asked for. change.caret
+        # is where the words go instead.
+        self.editor.SetInsertionPoint(change.caret)
         self.document.set_text(self.editor.GetValue())
         self._set_status(f"Heading {level}" if level else "Body text")
         # Already reported. Latch it so the caret hook does not say it again.

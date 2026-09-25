@@ -111,9 +111,11 @@ QuillLite gets them by *using* QUILL's code, not by copying its conclusions:
   four things at once so they cannot disagree: what the run keys write, what the
   heading keys write, which of the two tag pickers the Insert menu offers, and
   whether the caret cue can see a list. The language is read from the file name
-  and is never binding: **Ctrl+Shift+M** rings through all four kinds of
+  and is never binding: **Alt+Shift+F** rings through all four kinds of
   document, **Ctrl+Alt+F6** goes straight to one, and the status bar's Format
-  cell names whichever you are in.
+  cell names whichever you are in. (The ring was Ctrl+Shift+M until the family
+  pass gave that chord to Set Mark, under rule 3: frequency breaks the tie, and
+  a mark is dropped mid-sentence where a mode is switched once per document.)
 - **Whole form controls, not tags** (`quill/core/html_forms.py`, shared with
   QUILL). Offering `<select>` alone is offering the easy half: a usable dropdown
   is a `<label>`, a `for` matching the field's `id`, the field and its options,
@@ -246,7 +248,7 @@ ladder and rewriting them would silently re-level every heading in the document.
 | A **focusable** status bar (F6) | See §4.2 |
 | Unsaved-work recovery, and session restore | See §5.2 |
 | Byte-honest encoding and line endings, and a way to change them | See §5.1 |
-| Dark mode, on by default | See §4.4 |
+| Theme, following the system by default | See §4.4 |
 | Nine numbered bookmarks that move with the text | No scrollbar to remember the position of |
 | Structural selection (word, line, paragraph, expand) | Shift+arrow is the wrong tool for a paragraph |
 | Describe Character | A reader says "space" for four different characters |
@@ -259,14 +261,24 @@ ladder and rewriting them would silently re-level every heading in the document.
 
 ### 3.2 What it drops, and why
 
-Tabs, AI, dictation, self-voicing, preview, Quillins, remote files, GitHub,
-braille tooling, the setup wizard, comparison, publishing, and every companion
-app.
+Tabs, dictation, self-voicing, preview, Quillins, remote files, GitHub, braille
+tooling, the setup wizard, comparison, publishing, and every companion app.
 
 **The command palette is not on that list any more**, and was listed here in
 error: §3.1 and the command table have always had it, and it ships. A document
 that says a shipped feature was dropped is worse than one that says nothing,
 because somebody reads it and does not go looking for the key.
+
+**AI came off the list on 2026-09-23**, and the distinction matters because the
+list is not meaningless now. What arrived is **five commands behind one pad** on
+QUILL's own free hosted service, under two gates (§5.6). What is still dropped
+is everything else QUILL's AI is: bring-your-own-key, the provider list and the
+default cascade, local models, the agent harness, the conversation, alt text,
+and the setup wizard that configures them. The reason for the exception is the
+reason the product exists: summarizing and explaining a passage is
+disproportionately valuable to somebody who cannot skim, and an editor that is
+only usable by somebody who reads a screen quickly is not much of an accessible
+editor.
 
 Two of those deserve their reasoning stated rather than assumed:
 
@@ -298,11 +310,20 @@ one off removes its menu **and** its keys -- a key that still fires for a featur
 somebody turned off is the feature not being off. Somebody who wants Notepad
 unchecks rich text, and the Format menu is gone entirely.
 
-Three areas ship **switched off** and are found in that same checklist rather
+Four areas ship **switched off** and are found in that same checklist rather
 than hidden, because a feature nobody can find is a feature that does not exist:
 autocorrect (welcome in prose, actively wrong in a config file), timestamped
-backups (reassuring, and they fill a folder), and Go To Anything (the palette,
-the headings list and the bookmark list each already answer their own part).
+backups (reassuring, and they fill a folder), Go To Anything (the palette, the
+headings list and the bookmark list each already answer their own part), and AI
+help, which is off because it sends what you ask about off this computer -- a
+different kind of reason, and the one that needs a second question as well as a
+switch (§5.6).
+
+**Nineteen areas now.** *Markdown and HTML* arrived on 2026-09-15 with the rule
+that decides what Ctrl+B writes in a `.md`, and *AI help* on 2026-09-23. Both
+are areas rather than bare settings for the same reason the rest are: switching
+one off has to take its menu rows and its keys with it, and a setting cannot do
+that.
 
 **Seventeen areas, not twelve** (2026-09-10). Five features belonged to no area
 at all, which meant no switch in the dialog could reach them: the Matches
@@ -316,7 +337,7 @@ Notepad replacement is most of the job.
 
 ### 3.3a Profiles: a name is a promise, not a preset
 
-Seventeen checkboxes is the right way to change one thing and the wrong way to
+Nineteen checkboxes is the right way to change one thing and the wrong way to
 say "give me the small one". :data:`quill.core.lite.features.PROFILES` is four
 named starting points -- **Recommended**, **Everything**, **WordPad**,
 **Notepad** -- and the design rules behind them are worth stating, because each
@@ -354,10 +375,18 @@ paragraph over the top of that is what GATE-13 exists to stop.
 
 | Profile | Areas on | Ctrl+N | For |
 |---|---|---|---|
-| Recommended | 14 of 17 | unchanged | the shipped answer, and the way back from experimenting |
-| Everything | 17 of 17 | unchanged | turning things off as they annoy you rather than finding them one at a time |
-| WordPad | 5 of 17 | **rich** | letters and notes that should look like something |
-| Notepad | 2 of 17 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Recommended | 15 of 19 | unchanged | the shipped answer, and the way back from experimenting |
+| Everything | 19 of 19 | unchanged | turning things off as they annoy you rather than finding them one at a time |
+| WordPad | 5 of 19 | **rich** | letters and notes that should look like something |
+| Notepad | 2 of 19 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+
+The four Recommended leaves off are autocorrect, timestamped backups, Go To
+Anything and **AI help** -- and the last of those is off for a different kind of
+reason from the other three. Those would be *wrong* on; this one is off because
+using it sends the passage you ask about over the internet, which is not a
+choice a default gets to make on somebody's behalf. See §5.6: the area switch
+and the agreement are two separate questions, and Everything can turn the first
+on without ever answering the second.
 
 Notepad keeps two areas and still has Find, Replace, Go To Line, Select All,
 Insert Date and Time, Word Wrap, the font picker, the status bar, Undo, printing
@@ -509,8 +538,9 @@ on the next start is work the last session did not keep, and is reopened in its
 own window, unsaved. The original file is never touched, so a crash mid-save
 cannot leave somebody with a truncated original *and* no recovery.
 
-The interval is a setting (15–600 seconds, default 60) and is one of the two
-settings that exist only in Preferences.
+The interval is a setting (`autosave_seconds`, 15–600 seconds, **default 30**),
+reachable only from Preferences -- **Copy unsaved work aside every (seconds)**.
+It has no key and no menu row, deliberately: it is a number somebody sets once.
 
 ### 5.3 Its own data folder
 
@@ -605,14 +635,91 @@ clipboard, so nothing typed is ever lost.
 Writing to `support@community-access.org` directly works exactly as well. There
 is no form anybody is required to use.
 
+### 5.6 AI help: two gates, not one
+
+QuillLite carries five AI commands -- summarize, rewrite, proofread, explain, and
+ask a question about the open document -- on QUILL's own hosted service. They are
+the *only* part of this product that sends anything off the machine, which is why
+they sit in this section rather than in Scope.
+
+**Two independent gates, both of which must be true before a byte leaves.** The
+feature area answers *does this exist in my copy*; the agreement answers *have I
+agreed to what it does*. Collapsing them into one switch gets the second one
+wrong, because an area can be switched on by a profile, by a settings import, or
+by another person using the machine, and none of those is consent.
+
+The agreement is therefore:
+
+- **Asked for on its own**, never as a side effect of enabling something.
+- **Stored as a version, not a boolean.** A material change to what is sent or
+  retained asks again, rather than an old yes being read as covering a new thing.
+- **Reachable by three doors** -- `Tools > AI > Privacy Agreement`
+  (`Ctrl+Alt+Shift+K`), a Preferences tick box, and switching the area on in
+  Customize Features -- because which door somebody finds depends on which part
+  of the app they already know. All three read and write the same value, so they
+  cannot disagree.
+- **Never dimmed.** The Privacy Agreement row opens whether or not the area is
+  enabled and whether or not the agreement has been accepted. A door reachable
+  only by first agreeing to something is not a door, and withdrawal has to be as
+  easy as acceptance.
+
+**Withdrawal signs the machine out.** Keeping a sign-in for a service just
+declined would leave the key in a door the user has closed. Signing out, by
+contrast, does *not* withdraw the agreement: it is a smaller action and must not
+silently perform a larger one.
+
+**Shape: one pad behind one key, not five keyed commands.** Measured across
+Ctrl+Alt, Ctrl+Shift, Alt+Shift and Ctrl+Alt+Shift, the chords free in *both*
+editors are few, and family rule 2 requires a command both products have to keep
+its chord -- so five separate keyed commands were never available. The single pad
+is the better shape regardless: one surface showing what is about to be sent, one
+showing what remains, one consent surface.
+
+**Family rule 10 holds.** The capability is shared rather than QuillLite's own,
+so QUILL runs the same five commands on the same five chords from the same
+module. QuillLite is not ahead of QUILL here; QUILL has more AI, not less, and
+none of its existing provider list, default cascade, bring-your-own-key, agent or
+local-model paths changed to make room for this.
+
+### 5.7 Every switch has a way back, from inside the app
+
+A preference somebody can turn off and cannot turn back on is not a preference;
+it is a trapdoor. The rule is that the surface that sets a value is a surface
+that can also unset it, and that the way back is reachable **without editing a
+file** -- because the population this product is written for is exactly the one
+that cannot be told "open the JSON in your profile folder".
+
+The one place this was broken until 2026-09-24 is worth recording, because it is
+the shape the rule exists to catch. The Reopen Last Session window's **Never Ask
+Again** wrote `session_restore_ask = "never"`. Nothing else in either editor ever
+wrote that key: not Preferences, not the window itself on any later visit. The
+window then stopped appearing at launch, and although `File > Reopen Last
+Session...` still *opened* it, there was no control in it that could undo the
+setting. The button's help text made it worse by naming a real setting that is
+not this one -- "Reopen last session" is `restore_session`, whether to reopen at
+all -- so following the instruction produced a different effect and no clue.
+
+**Ask Me Next Time** is its twin. Exactly one of the pair is enabled, decided by
+the mode the caller passes in, and the disabled one is **greyed rather than
+hidden**: a removed control leaves somebody hunting the window for it, where a
+disabled one announces itself as unavailable the moment a reader arrives on it.
+The same choice the two tag pickers make, for the same reason.
+
+Not a Preferences row, deliberately. The window that asks the question is where
+somebody looks to answer it, and adding a row to QuillLite's Preferences that
+QUILL's Settings does not have would put the small product ahead of the large
+one (§2.2) over a control that belongs in the shared window anyway. Both editors
+gained it in the same change, which is what rule 10 requires.
+
 ## 6. Release packaging
 
-Four artifacts, the family contract:
+**Two** artifacts, where the family contract is four -- the reason is the
+paragraph under the table:
 
 | Artifact | Built from | Output | Measured |
 |---|---|---|---|
-| Installer | `installer/quilllite.iss` | `QuillLite-Setup-Shared-1.0.0.exe` | 113 MB |
-| Full portable | `build_portable.py --product quilllite` | `QuillLite-Portable-1.0.0.zip` | 91 MB |
+| Installer | `installer/quilllite.iss` | `QuillLite-Setup-Shared-1.0.0.exe` | 117 MB |
+| Full portable | `build_portable.py --product quilllite` | `QuillLite-Portable-1.0.0.zip` | 94 MB |
 
 **Two artifacts, where the other apps publish four** (2026-09-15). QuillLite used
 to ship the thin `QuillLite-Lite-Setup` and the launcher-only
@@ -621,7 +728,7 @@ Companion zip installs nothing, so it binds to whatever shared runtime is
 already on the machine -- including one frozen before QuillLite existed, which
 fails at launch with `No module named quill.apps.lite` and cannot repair itself,
 because the launcher's runtime bootstrap only fires when *no* runtime resolves
-and a stale one resolves perfectly well. The thin installer traded a 113 MB
+and a stale one resolves perfectly well. The thin installer traded a 117 MB
 download for a 110 MB first-launch download plus a network dependency, on the
 one app somebody installs *because* they have nothing else -- so the runtime is
 usually absent and the saving is notional. Retiring both is safe for anyone
@@ -969,7 +1076,7 @@ oversight:
 - `standalone/quilllite/tests/repro_tom_true.py` and `probe_live.py` against a
   real `RICHEDIT50W` in a Windows desktop session (manual).
 - A JAWS and NVDA pass by hand, against
-  [`docs/qa/quilllite-signoff.md`](https://github.com/Community-Access/quill/blob/main/docs/qa/quilllite-signoff.md) -- 80
+  [`docs/qa/quilllite-signoff.md`](https://github.com/Community-Access/quill/blob/main/docs/qa/quilllite-signoff.md) -- 254
   numbered steps, each saying what to press and what decides pass or fail, with
   a fifteen-minute subset named at the top. Matching Studio (#839) and Inkwell,
   this is **not** required for the change to merge but **is** required for the

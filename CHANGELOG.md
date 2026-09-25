@@ -2,6 +2,212 @@
 
 ## 1.0.0
 
+### Connecting to QUILL's free AI works, and takes one keystroke (2026-09-25)
+
+Four faults between accepting the agreement and being connected, all shared by
+QUILL and QuillLite:
+
+- **Connect or Sign Out and AI Usage opened nothing.** Both windows put their
+  Close button on the frame while the sizer holding it belonged to the panel;
+  wx asserted, the constructor died, and focus went back to the document with
+  nothing said. The command tests replace every AI window with a recorder, so
+  `tests/unit/ui/test_hosted_ai_windows_build.py` now builds the real ones.
+- **Every sign-in ended in "server_error".** The gateway answers "pending"
+  with HTTP 428 and "expired" or "denied" with 410; the client read those as
+  failures, so the very first poll gave up before anybody could type the code.
+- **The code is on the first screen.** The window used to open on an
+  explanation and a Show My Code button. It now asks for the code as it opens,
+  and **Open the Connect Page** opens the browser with the code filled in.
+- **Accepting the agreement goes straight on to Connect** when this computer is
+  not connected yet, instead of telling you to find it in the AI menu.
+- **Escape closes every AI window**, and **AI Usage opens with focus on the
+  allowance.** A frame does nothing with Escape unless told to, and Usage left
+  focus on the frame itself, so neither the arrows nor Tab did anything.
+- **Today's allowance never reads higher than the month's.** A new
+  connection's monthly cap sits under the daily one, so Usage said 15 left
+  this month and 20 left today. Both numbers still come from the server every
+  time the window opens.
+- **The support ID is where people look for it.** When this computer is
+  connected, About (in both editors) shows its QUILL AI support ID, and Get
+  Help from Support includes it in the message.
+
+### QuillLite no longer asks to save a document nobody changed (2026-09-25)
+
+Rich Edit raises a text event for things that change nothing -- Ctrl+Z with
+nothing to undo is one -- and QuillLite counted every text event as an edit, so
+Alt+F4 on an untouched document asked to save it. The first text event after a
+load or save is now compared with the text as it was; in rich text only an
+empty buffer is judged that way, because a formatting chord can change a rich
+document without changing a character.
+
+### A gate for a key attributed to the wrong command (2026-09-24)
+
+`tests/unit/ui/test_documentation_chords.py` checks that a chord a guide names
+is a chord something binds, and its own docstring says what it cannot catch: a
+chord that is bound, to a **different command** from the one it is written
+beside. That is the worse half -- "nothing happened" is a guess somebody
+recovers from, and "something else happened" is one they have to undo.
+
+`tests/unit/docs/test_documented_chord_ownership.py` closes it for QuillLite,
+whose command table is machine-readable: wherever a document writes a command's
+name beside a chord, the chord must be one that command answers to (its alias
+counts). The first run found six across the shipped documents, including the
+Heading Organizer written as `Ctrl+Alt+Shift+O`, which is **Sound Scheme** --
+so following the changelog opened the wrong window rather than none.
+
+### Never Ask Again can be taken back (2026-09-24)
+
+The Reopen Last Session window's **Never Ask Again** was the one answer in it
+that only went one way. It set `session_restore_ask` to *never*; nothing else in
+either editor ever wrote that preference back; and the button's own help text
+sent you looking for a setting called "Reopen last session", which is a
+different setting doing a different job (whether to reopen at all). So the
+window stopped appearing and there was no supported route to bring it back --
+from a button people press in a hurry, which is exactly the population that then
+wants it back.
+
+**Ask Me Next Time** is its twin, beside it, and restores the shipped answer:
+asked when it matters, which is several documents or one whose file has moved.
+Exactly one of the pair is enabled at a time and the other is **greyed rather
+than hidden**, so arriving on it announces which way the setting currently is
+instead of leaving somebody hunting a window for a button that was removed.
+
+The window is shared, so QUILL and QuillLite both gained it in the same change;
+both callers now pass their current mode in as well as reading the new one back,
+because a caller that does not is a window that greys out the only way home.
+
+### The tutorial window greys Follow me when there is nothing to follow (2026-09-24)
+
+**Follow me** watches the app's live state and moves you to the next step once
+it can see you did this one. That needs lessons whose steps carry a check, and
+an app can reasonably have none -- QuillLite is one: every step there ends in a
+sentence the editor already says out loud, so there is nothing to poll for. The
+tick box is now disabled in that case rather than sitting there doing nothing,
+because a control that can never act is one somebody ticks, waits on, and
+concludes is broken. Disabled, not hidden: a reader arriving on it is told it is
+unavailable.
+
+### Every format converts to every other, and keeps your formatting (2026-09-24)
+
+Switching a document between Plain text, Markdown, HTML and Rich Text used to
+convert it **once** and then relabel the result. Leaving rich text always
+produced Markdown -- that is what the RTF reader returns -- and whatever format
+you actually asked for was pinned on top of it. So:
+
+* **Rich Text to Plain text** handed back `# Heading` and `**bold**` and called
+  it plain text, which is the one thing plain text is not.
+* **Rich Text to HTML**, and **Markdown to HTML**, produced `# Heading` under an
+  HTML label -- a document that claims to be HTML and contains none.
+
+Both are the same bug, and it is a quiet one: the label moved and the text did
+not. Every word is still there and only the markers are wrong, so it surfaces
+later, in a published file, rather than now.
+
+Now every switch runs a real conversion, with Markdown as the pivot, and
+**every formatting feature survives every direction exactly** -- headings, bold,
+italic, underline, strikethrough, superscript, subscript, font family, font
+size, text colour, highlight, bullet and numbered lists, links, code spans and
+fences, block quotes, alignment, line spacing, indent, first-line indent, space
+before and after, named styles, page breaks, tables, images and horizontal
+rules. Twenty-eight constructs, through Rich Text and through HTML, asserted
+one by one and all together in `tests/unit/io/test_format_fidelity.py`.
+
+Things that were silently lost until now, all fixed:
+
+* **Tables through HTML** came back as `ab` -- the header, the columns and the
+  alignment row gone, and the cells run together into one word. A table is the
+  one construct where losing the markup also loses the *meaning*.
+* **Page breaks** vanished entirely on a save and reopen, so a document that
+  paginated correctly yesterday quietly stopped.
+* **Fonts, colours and super/subscripts** through HTML arrived as bare words.
+* **Underline** never survived anything. Markdown has no underline syntax, so
+  Insert Tag writes `<u>text</u>` -- and the RTF bridge only understood QUILL's
+  own `[text]{underline}` span, so the tag arrived in Rich Text as four literal
+  characters sitting in the paragraph. The two spellings are now one.
+* **An HTML round trip grew a line every time**, because the page's `<title>`
+  was read back as body text -- and being the document's own name, it read as
+  something the author had written.
+
+### Plain text means plain text, and it asks first (2026-09-24)
+
+Converting to Plain text has two honest answers when there is Markdown in the
+buffer, and QUILL used to choose one without saying so. Now it asks: **remove
+the markers** so `# Heading` becomes `Heading` and the file is strictly plain,
+or **keep them as ordinary text**, because a .txt file may perfectly well
+contain a `#` and some people keep their notes exactly that way. Cancel leaves
+the document alone.
+
+It only asks when there is something to ask about -- plain prose converts
+without a prompt, because a dialog raised when nothing is at stake is how people
+learn to dismiss dialogs without reading them.
+
+### Rich Text files open correctly in Word (2026-09-24)
+
+Named paragraph styles -- Quote, Title, Subtitle, Caption -- were written to RTF
+as **nothing at all**: the writer handled alignment, spacing and indent and
+dropped the style on the floor. They are now real `\sN` styles pointing at
+stylesheet entries spelled with Word's own names, which is what puts them in
+Word's style box and style gallery rather than producing a lookalike that only
+Word's renderer agrees with. Headings already did this; now everything does.
+
+### The cursor lands where you type (2026-09-24)
+
+Applying a heading in an HTML document put the cursor **after** `</h1>` -- outside
+the element you had just asked for -- so the next thing typed became body text
+beside a heading rather than the heading itself. It now lands between the tags,
+and on a line that already had words it stays in the same place in those words,
+so setting a level no longer also moves you.
+
+Markdown had a second, quieter version of the same bug: on an empty line,
+`Ctrl+Alt+1` wrote `#` without its trailing space, and `#Heading` is not a
+heading in any Markdown parser. The reader says nothing, the outline stays
+empty, and the mistake only shows up in the published document.
+
+QuillLite had the same bug in a different form -- its cursor landed *inside*
+`</h1>` -- and both editors now take the answer from one place.
+
+### The free AI can be asked about twice as much (2026-09-24)
+
+The input ceiling was about 1,125 words, and a document short enough to ask about
+whole was the exception rather than the rule. It is now about **2,250 words**
+(1,500 tokens to 3,000).
+
+Input is the cheap half of a request: the answer costs more to produce than the
+question costs to send, so what you can ask about doubled for a modest increase
+per request. The service's own headroom was raised to match, because running out
+of it does not slow the service down or throttle heavy users -- it turns hosted
+AI **off for everyone**.
+
+Limits are read from the service rather than built into the program, so this
+reached every installed copy without anybody updating anything.
+
+A long document was never the problem and still is not: Ask About This Document
+sends the three passages most likely to answer your question, not the file. What
+the ceiling bounds is one request, not how big a document may be.
+
+### Forty-seven commands answered F1 with "No help available" (2026-09-23)
+
+The house rule is that nothing answers F1 with silence. These forty-seven
+answered with a non-answer -- "No specific help is available for this control"
+-- which is silence with extra steps, and worse in one way: it tells you the
+answer does not exist rather than that nobody has written it.
+
+They went unnoticed because the gate that finds them printed a WARNING and
+exited **0** unless asked to be strict, and the scorecard did not ask. So the
+report read 42 of 42 while the gap sat there, findable only by running the tool
+by hand -- exactly the shape of defect a gate exists to prevent. The gate is
+strict now, which makes it a ratchet: a new command without help fails the
+build rather than printing a line nobody reads.
+
+Every one of the forty-seven is written from a reading of what the command
+actually does, and says the thing you need rather than the thing you could have
+guessed. The gotchas are the point: **Commit Multiple Files** puts every file at
+the repository root under its bare filename, so your folder structure is lost.
+**Create Codespace** is the one GitHub command that can cost money. **Export to
+Speech Audio** offers MP3 only when ffmpeg is installed. **Add Current Folder to
+Favorites** refuses an unsaved document. **Braille A/B** needs a braille display
+to teach you anything at all.
+
 ### Move a section to where you want it, not one step at a time (2026-09-23)
 
 `Alt+Shift+Up` and `Alt+Shift+Down` move a section one step. That is the right
@@ -169,6 +375,80 @@ installer download rides `release_assets.download_verified` (HTTPS-only,
 Safe-Mode gated, atomic), and Safe Mode refuses the door before any window
 opens. The AI menu's two setup rows moved to `quill/ui/ai_menu_setup.py`
 under GATE-11 rather than growing the menu module.
+
+### The status bar answers Insert+Page Down (2026-09-22)
+
+Reported on QuillLite: JAWS's read-the-status-bar command returned "CRLF
+(Windows) Modified" and nothing else, after selecting text in a large file.
+
+That command does not look for a role. It looks for a window of class
+`msctls_statusbar32` and reads its parts; finding none, it scrapes the bottom
+line of the window. Neither editor had one -- both build the bar as a panel of
+focusable buttons, which is the right shape for F6 and the arrow keys and
+completely invisible to that command. So the scrape was all there ever was, and
+what it found was the last row of a *wrapping* panel: the final two cells of
+twelve.
+
+There is now a real status bar window behind the accessible one, carrying the
+same cells as parts, so Insert+Page Down reads the whole bar. Switching document
+format also lights the keys correctly again -- the menu had been showing
+shortcuts for the format you left rather than the one you arrived in.
+
+### QuillLite: fourteen things two testing sessions found (2026-09-22)
+
+Every one reported while testing QuillLite, and nearly every one turned out to
+be shared with QUILL or to be a class of bug rather than a single instance.
+
+**Document numbers never came back.** The counter only counted up. That number
+is not a tally, it is the handle: Alt+1 to Alt+9 reach the first nine and the
+Window menu is written in them. Open and close a document ten times in a morning
+and the eleventh had no Alt+digit at all, while ten working numbers belonged to
+nothing. It now takes the lowest free number, open documents are never
+renumbered, and the Window menu lists in number order.
+
+**The status bar read back as halves and doubles** -- "Line 1, colu Line 1, c
+... No selectio" -- because the cells were *moving*. "No selection" to "1 words,
+8 characters selected" is ninety pixels, and it shoved the nine cells after it
+sideways on every selection change. The cells hold their width now.
+
+**Enter in Find did nothing.** You typed a word, pressed Enter, and had to Tab
+to the Next button. The code set an affirmative id, which says which button
+means yes *when a modal dialog closes* -- and Find is modeless, so it never did
+anything at all. Enter and Shift+Enter are handled outright now, and Find Next
+is a real default button. Replace answers Enter with **Find Next**, never
+Replace, which is what the Windows Replace dialog does and the safe answer
+either way: the reflex keystroke moves the cursor, it does not edit your
+document.
+
+Also: **Normal Text** (Ctrl+Shift+N), the Word command for taking formatting
+back off, which was the only thing in the Format menu with no way to reach it.
+
+### QUILL stopped crashing, and the wizard can be walked again (2026-09-21)
+
+**A crash that read as a flaky robot.** The nightly automation had been
+recording two tests failing to find the main window. The log underneath said
+what actually happened: an access violation inside the subclass QUILL installs
+so that a screen reader's cross-process request gets the corrected caret line.
+It took the whole process down, repeatedly. The subclass is now unwound safely;
+a fault there costs a line number, not your document.
+
+**The Audio Studio wizard could not be advanced from the keyboard.** A wizard
+page and the wizard's own navigation are one window, so a page control claiming
+`N` competes with `&Next >` -- and Windows does not press a duplicated mnemonic,
+it cycles focus between the claimants and waits. Two pages did exactly that. The
+nightly suite had been recording it as "QUILL never announced anything
+containing 'How should chapters work'", which names neither a key nor a button,
+so nobody read it as a keyboard bug.
+
+**Nine more windows stopped cycling.** The access-key gate could read
+`label="&Save"` and nothing else -- a label wrapped in a translation call, which
+is how most of this tree is written, was invisible to it. Whole windows reported
+clean while carrying duplicates; the Chapter Workbench had five. The gate reads
+them now, and all nine collisions it found are fixed.
+
+**Spin controls and wizard controls say their names.** A spin control is two
+windows to a screen reader, an Edit and a Spinner, and only the outer one
+carried the name.
 
 ### Reopening last session became a conversation (2026-09-19)
 
@@ -1702,10 +1982,12 @@ you missed the key or the app ignored it. QUILL's menu bar had two.
 
 - **View > Preview Side by Side** advertised Ctrl+Shift+Backslash. wx has no
   name for that key, so it threw the whole shortcut away at startup and left
-  the label promising it. The key is now **Ctrl+Alt+backslash** -- not
+  the label promising it. The key is now **Ctrl+Alt+Shift+backslash** -- not
   Ctrl+Shift+backslash, because that one has always belonged to Match Bracket,
   and the two were only ever at peace because the broken one was being
-  discarded.
+  discarded; and not bare Ctrl+Alt+backslash either, because on a great many
+  keyboard layouts Ctrl+Alt is AltGr, so the chord would type a character
+  instead of firing.
 
 - **Search > Count Occurrences** and **QuillVille > Open Quill Inkwell** both
   claimed Ctrl+Alt+Shift+F3, so one of them never fired. The QuillVille

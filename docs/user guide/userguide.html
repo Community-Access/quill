@@ -27735,7 +27735,10 @@ any Markdown markup, so a plain-text file makes a perfect round trip. If
 you want the markup <em>stripped</em> (headings and emphasis flattened
 to plain words), use <strong>File &gt; Save As Plain Text</strong>
 instead — that command also offers to keep your formatting in an
-Illumination sidecar.</li>
+Illumination sidecar. (<strong>Format &gt; Document Format… &gt; Plain
+text</strong> is the third route, and the one that <em>asks</em> which
+of the two you want; Save As keeps your file byte-for-byte on purpose,
+so a .txt you opened comes back unchanged.)</li>
 <li><strong>HTML (.html)</strong> — converted to a complete standalone
 web page with your document title, ready for a browser.</li>
 <li><strong>Rich Text (.rtf)</strong> — converted with full formatting
@@ -31825,8 +31828,14 @@ all of them. Neither touches a file: forgetting is about what QUILL
 offers you, not about what is on your disk, and the window says so under
 the buttons.</li>
 <li><strong>Never Ask Again</strong> opens the ticked documents and sets
-the preference to reopen without asking from then on. It tells you which
-setting it changed, so you can find it again.</li>
+the preference to reopen without asking from then on.</li>
+<li><strong>Ask Me Next Time</strong> is its twin and undoes it: you are
+asked again when it matters, the way a new install does. Exactly one of
+the pair is available at a time and the other is greyed rather than
+hidden, so arriving on it tells you which way the setting is. If you
+pressed Never Ask Again and want the window back, open it yourself with
+<strong>File ▸ Reopen Last Session…</strong>
+(<code>Alt+Shift+F12</code>) and press it.</li>
 </ul>
 <p>Afterwards you hear what happened – “Reopened all 3 documents”,
 “Reopened 1 of 2”, “Forgot 2 documents. 1 still remembered. The files
@@ -31980,6 +31989,32 @@ headings into real ones; leaving a rich format warns first, with the
 specific list of anything that will not survive. A switched document
 never silently overwrites its old file — the next save proposes the
 matching new name.</p>
+<p><strong>Every switch is a real conversion.</strong> Switching to HTML
+writes real HTML — <code>&lt;h1&gt;</code> and
+<code>&lt;strong&gt;</code>, not hashes and asterisks under an HTML
+label — and switching back reads it in again. Your formatting comes with
+you in every direction: headings, bold, italic, underline,
+strikethrough, superscript and subscript, font family and size, text
+colour and highlight, bullet and numbered lists, links, code spans and
+fences, block quotes, alignment, line spacing, indents, spacing before
+and after, named styles, page breaks, tables, images and horizontal
+rules. Switch out and back as often as you like — the document you get
+is the document you started with.</p>
+<p><strong>Converting to Plain text asks you first.</strong> Plain text
+has no formatting, so there are two honest things to do with Markdown
+that is already in your document, and QUILL will not guess:</p>
+<ul>
+<li><strong>Remove the markers</strong> — <code># Heading</code> becomes
+<code>Heading</code>, <code>**bold**</code> becomes <code>bold</code>,
+and the file is strictly plain.</li>
+<li><strong>Keep them as text</strong> — the <code>#</code> and
+<code>**</code> stay as ordinary characters, because a .txt file is
+perfectly entitled to contain them and plenty of people keep their notes
+exactly that way.</li>
+</ul>
+<p>Escape (or Cancel) leaves the document alone. You are only asked when
+there is something to ask about: a document of ordinary prose converts
+without a prompt.</p>
 <p><strong>If rich mode is unavailable</strong> (a system where the
 bundled macOS bridge or the Windows COM bridge cannot load), .rtf and
 .docx documents open converted to editable text exactly as in earlier

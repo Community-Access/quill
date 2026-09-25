@@ -59,7 +59,7 @@ If you have used Notepad or WordPad, you already know QuillLite.
 - **F3** — find the next one
 - **Shift+F3** — find the previous one
 - **Ctrl+H** — replace
-- **Ctrl+G** — go to a line number
+- **Ctrl+G** — Go To: a line number, a bookmark or a heading
 - **F5** — put today's date and time in
 
 **Making text look different**
@@ -186,7 +186,7 @@ So a plain document now has a **language**, and it decides what the keys write:
 
 QuillLite reads the language from the file name -- `.md` and `.txt` are
 Markdown, the newly-recognised `.html`, `.htm` and `.xhtml` are HTML, a `.py` or
-a `.conf` is plain -- and it is never binding. **Ctrl+Shift+M** rings through
+a `.conf` is plain -- and it is never binding. **Alt+Shift+F** rings through
 all four kinds of document, one press at a time, each saying its own name;
 **Ctrl+Alt+F6** goes straight to one; and the status bar's **Format** cell says
 which you are in.
@@ -208,7 +208,8 @@ format it. Nothing you already press has moved.
   one control shape that cannot be used without sight.
 - **Ctrl+Alt+I** opens the **Markdown tag picker** -- the whole vocabulary,
   searchable.
-- **Ctrl+Alt+O** opens the **HTML tag picker** -- forty tags, and it searches by
+- **Ctrl+Alt+O** opens the **HTML tag picker** -- 111 tags and 20 whole form
+  fields, and it searches by
   what they *do*: type "dropdown" and find `select`, "checkbox" and find
   `input`, "collapsible" and find `details`.
 
@@ -274,7 +275,7 @@ write and had never offered.
   of your reader instead of behind it.
 - **The status bar's Format cell knows all four kinds of document.** It used to
   say "Plain text" or "Rich text" and nothing else, so two thirds of what
-  Ctrl+Shift+M does were invisible in the one place you would look to check.
+  Alt+Shift+F does were invisible in the one place you would look to check.
 
 One more thing came with it, in QUILL for All rather than here: a heading saved
 to an `.rtf` file is now a proper Word heading. It used to be big bold text with
@@ -313,9 +314,11 @@ WordPad never had one. Notepad only got one recently. QuillLite has one, and it
 is the same one QUILL for All uses.
 
 - **F7** — check the whole document, one word at a time, with suggestions
-- **Shift+F7** — suggestions for the word you are on right now
+- **Alt+Shift+F7** — suggestions for the word you are on right now
 - **Ctrl+F7** and **Ctrl+Shift+F7** — jump to the next or previous mistake
-- **Alt+F7** — add a word to your dictionary, so it stops being questioned
+  (**Alt+F7** is Word's key for the next one, and works here too)
+- **Ctrl+Alt+F9** — add a word to your dictionary, so it stops being questioned
+- **Alt+Shift+L** — every misspelling in one list, each with its line
 
 **It knows when to stay quiet.** Some files are not writing at all — they hold
 settings and instructions that computers read. In those, almost every word looks
@@ -399,7 +402,8 @@ selection outwards a step at a time and **Ctrl+Alt+Shift+X** shrinks it back —
 so over-pressing costs you nothing.
 
 **Marks.** A mark is where you were standing before you went to look something
-up. **Ctrl+Alt+Shift+K** drops one, **Ctrl+M** goes back, **Alt+M** lists them.
+up. **Ctrl+Shift+M** drops one, **Ctrl+M** goes back, **Alt+M** lists them,
+and **Ctrl+Alt+X** swaps the cursor and the mark.
 
 And **Ctrl+Shift+Y** reads back what is selected — because there is no glance
 that confirms you took what you meant to, and the next key might replace it.
@@ -462,20 +466,120 @@ properly gone rather than just hidden.
 
 Uncheck the first one and QuillLite is essentially Notepad.
 
-These all start switched **on**:
+There are **nineteen** areas. These fifteen start switched **on**:
 
-Rich text and the Format menu · Heading navigation · Bookmarks · Line tools and
-change case · Copy Tray and the clip library · Printing · Abbreviations · Spell
-check · The Selection submenu
+Rich text and the Format menu · Heading navigation · Markdown and HTML ·
+Bookmarks · Line tools and change case · Copy Tray and the clip library ·
+Printing · Abbreviations · Spell check · The Selection submenu · The Matches
+submenu · Go Back and Go Forward · The Command Palette · Describe Character ·
+Text size
 
-These three start switched **off**, and they sit in the same list rather than
+These four start switched **off**, and they sit in the same list rather than
 being hidden away, because something you cannot find might as well not exist:
 
-- **Autocorrect while typing** — curly quotes and dashes. Lovely in a letter,
-  unhelpful in a settings file.
+- **Autocorrect while typing** — curly quotes and em dashes. Lovely in a letter,
+  unhelpful in a settings file. (It does not capitalise sentences.)
 - **Timestamped backups** — a dated copy every time you save. Reassuring, and it
   does fill up a folder.
 - **Go To Anything** — one box that searches everything at once.
+- **AI help** — off for a different reason from the other three: using it sends
+  the passage you ask about over the internet, and that is not a choice a
+  default gets to make for you. See *AI help* below.
+
+### Nine lessons, inside the app
+
+**Ctrl+Alt+F1** opens **Tutorials**: nine guided lessons in two tracks, about
+forty-two minutes in all. *Your first documents* covers opening a file and
+giving it back unchanged, the four kinds of document, your numbered documents,
+and what to press when you are lost. *Working in a document* covers selecting
+more than a few words, finding your way back, skimming something long, spelling
+without a red squiggle, and asking a question about the document in front of
+you.
+
+Every step says what to press, **why**, and **what you should hear when it
+worked**. That last part is the one a manual never has and the one you actually
+need when nothing on the screen is going to tell you. A step shows *your* key
+rather than the shipped one, so a lesson stays true after you rebind something.
+
+### Every key is yours to change
+
+**Tools ▸ Keyboard Manager** (**Ctrl+Alt+Shift+R**) is every command in
+QuillLite with the key it answers to. Type part of a name to find one, **Enter**
+on its row to give it a different key, and if something else already has that
+key QuillLite names the command that owns it and asks. **Record a Key** answers
+the other question -- press it, press a chord, and hear what that chord does
+today, or that it is free, or that another program has claimed it across the
+whole of Windows and it never reaches this editor at all.
+
+- **Reset to Default** puts one command back; **Reset Everything** does the lot,
+  after asking. Nothing is written until you press Save, so Escape leaves your
+  keyboard exactly as it was.
+- **Check for Problems** reports the three ways a keyboard goes quietly wrong: a
+  key claimed twice, a key QuillLite cannot read, and a key Windows will accept
+  and then never actually deliver — assigned, and inert.
+- **Insert can never be claimed.** It is NVDA's and JAWS's own modifier, and
+  taking it from somebody who cannot then give it back is not a trade-off.
+
+Only what you changed is stored, so a key we improve in a later version still
+reaches you.
+
+### Going back to an earlier version of a file
+
+Switch on **Timestamped backups** in Customize Features and **File ▸ Earlier
+Versions...** (**Ctrl+Alt+Shift+E**) lists every save of the document you are
+in, newest first: "Today at 4:12 PM — 2,341 words". Up to twenty per document.
+
+The word count is there to be compared rather than read. Two saves a minute
+apart are almost impossible to tell apart by ear, and the version that is
+suddenly two thousand words shorter is usually the one you are hunting.
+
+**Restore** puts that version into the window and does **not** save, so the file
+on disk is untouched until you decide and **Ctrl+Z** undoes it. **Open a Copy**
+puts it in a new untitled window and leaves your document completely alone.
+
+QuillLite has written these files since backups shipped and gave you no way to
+read one back: correct, correctly dated, and reachable only if you knew which
+hashed folder was yours. If you have had backups on, everything from before this
+version is in the list too.
+
+### Headings you can move, not just make
+
+Making a heading is the easy half. This release is the other half.
+
+- **Alt+Shift+Left** and **Alt+Shift+Right** promote and demote the heading you
+  are on.
+- **Alt+Shift+Up** and **Alt+Shift+Down** move a whole section — the heading,
+  its text, and every subsection under it — past its neighbour. One edit, one
+  **Ctrl+Z**.
+- **Alt+Shift+F5** selects the section you are in, subsections included, so
+  **Ctrl+X** and **Ctrl+V** can put it anywhere.
+- **Ctrl+Alt+Shift+F5** is **Move Section To...**, which asks *where* instead.
+  Pressing Alt+Shift+Up forty times is not a way to move a section across a long
+  document; it is a way to lose it.
+- **Alt+Shift+O** opens the **Heading Organizer**: every heading in one list,
+  Tab and Shift+Tab to demote and promote, and the whole restructure lands as a
+  single undo.
+- **Ctrl+Shift+F9** folds the section you are in down to its heading, and
+  **Ctrl+Shift+F10** unfolds everything. **Ctrl+Alt+Shift+Down** and
+  **Ctrl+Alt+Shift+Up** step between sections.
+
+### Printing you can read before you print
+
+**Ctrl+Alt+Shift+P** is **Print Preview**, and it is not a picture of a page. It
+is a readable answer: how many pages there are, where each one breaks, and what
+is in the margins. A preview you cannot see is not a preview, so this one is
+words.
+
+**Rich text prints as rich text** — the headings, the bold and the alignment go
+to the printer the way they are on the screen. **Ctrl+Alt+P** is Page Setup:
+paper, orientation and margins, remembered between sessions.
+
+### Closing a lot of documents at once
+
+**Window ▸ Close Other Documents** (**Ctrl+Shift+F4**) keeps the document you
+are in and closes the rest, asking once about everything unsaved rather than
+once per document. It says how many it closed, because a count is the one thing
+you cannot go and read off the screen.
 
 ### Sounds you can hear, change, and switch off
 
@@ -527,10 +631,22 @@ close on every single launch — so there is a switch in **Preferences** to turn
 off. Files you double-click, last session's documents and any recovered work all
 still open either way, because every one of those is you asking for a document.
 
-### Dark by default
+### It follows the contrast you already chose
 
-QuillLite opens in dark mode, because many of the people it is built for find a
-bright white screen genuinely hard to look at.
+QuillLite shipped opening in dark mode, because many of the people it is built
+for find a bright white screen genuinely hard to look at. That was half right.
+Light-sensitive does not mean *dark*: somebody who depends on high-contrast
+black on white — which Windows ships as a theme and which plenty of low-vision
+readers use — is hurt by a dark default in exactly the same way, and there are
+more ways to need a particular contrast than there are defaults to guess with.
+
+So **QuillLite follows Windows**. Anybody with a strong requirement has already
+told the system about it, in the one place every other program reads. **View ▸
+Dark Mode** (**Alt+Shift+D**) forces dark whenever you want it, and Preferences
+has the same choice as a setting.
+
+If you chose dark in an earlier build you keep dark; only somebody who never
+chose comes with the new default.
 
 It changes what *you* see and nothing else. The colours are never saved into your
 file, so a document you send somebody will not arrive full of grey text.
@@ -591,6 +707,89 @@ different things is a key you cannot trust.
 
 ---
 
+### Free AI help, if you want it — and how to start
+
+This is the newest thing in QuillLite and the one most people will not have used
+before, so this section is longer than the others on purpose.
+
+**One pad, and five things it can do.** All of them work on what you have
+selected, or on the paragraph or section you are in — the pad has a **Send this
+much** chooser and shows you *exactly* what will go before it goes:
+
+| Ask for | You get |
+|---|---|
+| **Summarize** | What this says, in a few sentences |
+| **Rewrite** | The same meaning, clearer and shorter |
+| **Proofread** | A **list** of what is wrong. Nothing is changed behind your back |
+| **Explain** | What this passage means, in plain language — for jargon, a legal clause, a paragraph that will not sit still |
+| **Ask about this document** | A plain question: "what does this say about the deadline?" The answer comes back with the part of the document it came from |
+
+They live in **Tools ▸ AI**, behind two keys: **Ctrl+Alt+G** opens the pad
+where you are, and **Ctrl+Alt+Z** opens the same pad with the last row already
+chosen — that one takes a question rather than a selection, which is why it is
+worth a chord rather than one more row to arrow past.
+
+The answer arrives in a read-only box with **Replace My Selection**, **Insert
+Below**, **Copy** and **Try Again** under it, so **nothing is applied for you**.
+Proofread in particular reports what it found and changes not one character
+until you press Replace My Selection.
+
+**Starting from nothing — four steps, once.**
+
+1. **Turn the area on.** **Tools ▸ Customize Features** (**Ctrl+Alt+F10**),
+   tick **AI help**, Save. It ships off.
+2. **Read the agreement and accept it.** Turning the area on asks straight away.
+   You can decline and keep the menu; the switch does not flip itself back.
+3. **Connect this computer.** **Tools ▸ AI ▸ Connect or Sign Out**
+   (**Ctrl+Alt+Shift+F10**), where accepting the agreement takes you anyway.
+   The window opens on an **eight-character code**; **Open the Connect Page**
+   fills it in for you in the browser, or type it into the web page on any
+   device. **No account, no password, no email address.** The window confirms
+   in place — focus does not jump to something you did not open.
+4. **Try the short one.** Select a paragraph, press **Ctrl+Alt+G**, choose
+   **Summarize**. It is the shortest round trip there is, so it is the fastest
+   way to find out the whole thing is working.
+
+Each computer connects separately, and signing one out does not sign out the
+others.
+
+**What it costs, in words you can check.** About **2,250 words** in one question
+(3,000 tokens, counting the document text, your question and the instructions
+together), and the answer is capped at a few hundred words. **100 requests a
+month**, no more than **20 in a day** and **8 in an hour** — the hourly and
+daily numbers exist to stop one runaway loop spending a month's worth in an
+afternoon, not to ration ordinary work. If what you asked about is too big, the
+pad says so *in words* before anything is sent — "that is about 4,000 words, and
+the free limit is about 2,250" — so you can select less and ask again.
+
+**A long document still works.** Ask About This Document does not send the whole
+file. It picks the **three passages most likely to answer your question**, each
+about 180 words and carrying the heading it sits under, and shows you which ones
+before anything goes. So a hundred-page document is a fair thing to ask about.
+
+The limits are read from the service rather than built into the program, so one
+can be raised without you installing anything.
+
+**It is off until you turn it on and accept the agreement** — both, not either.
+Those are separate questions on purpose. Switching the area on answers "does this
+feature exist in my copy". The agreement answers "have I agreed to what it does".
+An area switched on by a profile, by a settings import, or by somebody else using
+the machine is not consent, so the agreement is asked for on its own.
+
+It is stored as a *version* rather than a yes, so if what gets sent or kept ever
+changes in a way that matters, you are asked again instead of your old answer
+being taken to cover the new thing. And you can reach it three ways — the AI
+menu, a tick box in Preferences, or switching the area on — because the place you
+look depends on which part of the app you already know. All three are the same
+answer.
+
+**Nothing leaves this computer until you ask it to.** Not as you type, not in the
+background. You run one of the two commands, the text you asked about goes, the
+answer comes back. **Usage** (Ctrl+Alt+Shift+F9) tells you what you have left
+before you find out by being refused, and **Privacy Agreement**
+(Ctrl+Alt+Shift+K) opens whether or not any of it is switched on — a door you can
+only reach by agreeing to something first is not a door.
+
 ## Two things this fixed in QUILL for All
 
 Building QuillLite turned up two real faults in QUILL for All's editor. Both are
@@ -648,7 +847,8 @@ directions. What you will notice in QuillLite:
 leader chord came onto the plain keys you already press here, and where QUILL and
 QuillLite disagreed about a key, the one with the better claim won — usually
 Microsoft's, because that is the key in your hands already. Word's **F12**,
-**Ctrl+F12** and **Ctrl+Shift+F12** (Save As, Open, Print) work in QuillLite now;
+**F12**, **Ctrl+F12** and **Ctrl+Shift+F12** (Save As, Open, Print) work in
+QuillLite now;
 QUILL had all three and QuillLite had none. Eight keys still differ on purpose,
 and each one has its reason written down beside the code.
 
@@ -691,14 +891,20 @@ what it is about to do before it does any of it.
 ## Things worth knowing before you start
 
 - **Windows only**, for now.
-- **Formatting does not print yet.** Your text prints in the editor's font with
-  headings marked. Bold, italics and colour are not carried onto the page.
+- **Rich text prints as rich text.** A rich document is printed by the editor
+  itself, so a heading arrives on paper as a heading and a bold word arrives
+  bold. This was not true before 1.0 -- everything printed flat, in one size.
+  A plain text or Markdown document prints as it reads, which is the right
+  answer: a Markdown heading already carries its own `#` onto the page.
 - **QuillLite does not talk on its own.** It speaks through NVDA or JAWS, and
   says nothing without one. That is deliberate — a second voice talking over your
   screen reader is worse than silence. Everything it would say also appears in
   the status bar, so you can always go and read it.
-- **Text colour is not kept** in formatted documents. That is what makes dark
-  mode safe to use.
+- **The theme is never written into your file.** Whatever colours you are
+  looking at, the document is stripped back to automatic colour before every
+  save -- so a dark theme can never leave grey text in something you send
+  somebody. Colour you apply *yourself* in a rich document is yours and is
+  kept, in the file and through every conversion.
 
 ---
 
@@ -706,8 +912,8 @@ what it is about to do before it does any of it.
 
 | Download | Size | Choose this if |
 |---|---|---|
-| **QuillLite-Setup-Shared-1.0.0.exe** | 113 MB | You just want to install it. Everything is included. This is the one. |
-| **QuillLite-Portable-1.0.0.zip** | 91 MB | You want to run it from a USB stick, with your settings on the stick too. |
+| **QuillLite-Setup-Shared-1.0.0.exe** | 117 MB | You just want to install it. Everything is included. This is the one. |
+| **QuillLite-Portable-1.0.0.zip** | 94 MB | You want to run it from a USB stick, with your settings on the stick too. |
 
 If you are not sure, take the first one.
 

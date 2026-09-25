@@ -68,7 +68,11 @@ class LiteSessionMixin:
         Reopen Last Session...** at any time -- which is what makes "Not Now"
         safe: the answer is deferred, not lost.
         """
-        from quill.core.session_restore import describe_opened, read_entries
+        from quill.core.session_restore import (
+            ASK_WHEN_IT_MATTERS,
+            describe_opened,
+            read_entries,
+        )
         from quill.ui.session_restore_dialog import ask_session_restore
 
         entries = read_entries(list(self.settings.session_files))
@@ -78,7 +82,15 @@ class LiteSessionMixin:
                 "QuillLite with documents open."
             )
             return False
-        answer = ask_session_restore(self.shell, entries)
+        # The mode goes in as well as coming back: it decides which half of
+        # the Never Ask Again / Ask Me Next Time pair the window offers, and
+        # without it the way back out of *never* is greyed out in the one
+        # window that can undo it.
+        answer = ask_session_restore(
+            self.shell,
+            entries,
+            mode=str(getattr(self.settings, "session_restore_ask", ASK_WHEN_IT_MATTERS)),
+        )
         # Saved unconditionally: Forget and Clear change the list even when
         # nothing is opened, and this is the only write.
         self.settings.session_files = list(answer.remembered)

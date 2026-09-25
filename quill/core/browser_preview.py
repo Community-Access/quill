@@ -646,7 +646,14 @@ def _render_markdown(text: str, *, source_map: bool = False) -> str:
             flush_list()
             style = _div_style_from_attrs(fence_open.group(1))
             src = _src_attr(source_map, index)
-            blocks.append(f'<div{src} style="{style}">' if style else f"<div{src}>")
+            # The named style travels as a data attribute as well as CSS,
+            # because CSS is a one-way trip: "quote" renders as italics and a
+            # left border, and no reader can tell that apart from somebody who
+            # asked for italics and a left border. Browsers ignore it; the
+            # Markdown reader uses it to put the name back.
+            pstyle = _parse_code_attrs(fence_open.group(1)).get("pstyle", "").lower()
+            named = f' data-quill-pstyle="{pstyle}"' if pstyle in _NAMED_STYLE_CSS else ""
+            blocks.append(f'<div{src}{named} style="{style}">' if style else f"<div{src}{named}>")
             index += 1
             continue
         if _FENCE_CLOSE_CODE_RE.match(stripped):

@@ -1,9 +1,14 @@
 """QuillLite, track 2: working in a document.
 
-Four lessons, and every one of them is about the same problem: doing without a
+Five lessons, and the first four are about the same problem: doing without a
 glance. Selecting text you cannot see the extent of, finding your way back to
 where you were, skimming something long, and hearing that a word is wrong
 without being interrupted while you type it.
+
+The fifth is the odd one out and says so: asking the AI about a document is the
+only thing in this product that sends anything off the computer, so it is
+taught rather than discovered -- what has to be true before it will send, what
+goes when it does, and what is recorded afterwards.
 """
 
 from __future__ import annotations
@@ -276,6 +281,112 @@ TUTORIALS: tuple[Tutorial, ...] = (
         closing=(
             "Spelling stays quiet in source and configuration files whatever the "
             "settings say -- every identifier in one would be a false alarm."
+        ),
+    ),
+    Tutorial(
+        slug="asking-about-a-document",
+        title="Asking a question about a document",
+        track="working-in-it",
+        minutes=6,
+        surfaces=("QuillLite",),
+        summary=(
+            "The one feature that sends anything off this computer: how to turn "
+            "it on, what goes when you use it, and what it will not do."
+        ),
+        steps=(
+            Step(
+                title="Turn it on, and agree to it separately",
+                body=(
+                    "AI help is off until two different things are true: the "
+                    "feature is switched on, and you have accepted the agreement. "
+                    "They are separate on purpose. Switching a feature on answers "
+                    "'does this exist in my copy'. It does not answer 'have I "
+                    "agreed to what it does' -- and an area turned on by a "
+                    "profile, by a settings import, or by somebody else using "
+                    "this machine is not you agreeing to anything."
+                ),
+                command="cmd_ai_privacy",
+                hear="The agreement, read out in full before you are asked.",
+                note=(
+                    "Three doors reach the same answer: this command, a tick box "
+                    "in Preferences, and switching the area on in Customize "
+                    "Features. It opens whether or not you have accepted, "
+                    "because a door you can only reach by first agreeing to "
+                    "something is not a door."
+                ),
+            ),
+            Step(
+                title="Connect this computer, once",
+                body=(
+                    "There is no account, no password and no email address. You "
+                    "are shown an eight-character code; you open the web page on "
+                    "anything with a browser -- this machine, a phone -- and type "
+                    "the code in. Asking for that code is the first moment "
+                    "anything is sent."
+                ),
+                command="cmd_ai_sign_in",
+                hear=(
+                    "The code, character by character, and the window confirming "
+                    "in place rather than opening another one."
+                ),
+                note=(
+                    "Each computer connects on its own, and signing one out "
+                    "leaves the others connected."
+                ),
+            ),
+            Step(
+                title="Ask about what is in front of you",
+                body=(
+                    "Type a question about the open document -- 'what does this "
+                    "say about the deadline' -- and the answer comes back with "
+                    "the part of the document it came from, so you can go and "
+                    "read that part yourself."
+                ),
+                command="cmd_ai_ask_document",
+                hear=("The passages it chose, before anything is sent, and then the answer."),
+                note=(
+                    "A long document is a fair thing to ask about. It does not "
+                    "send the file -- it picks the three passages most likely to "
+                    "answer you and sends those."
+                ),
+            ),
+            Step(
+                title="Or hand it a job",
+                body=(
+                    "It is one pad with five rows. Four of them act on what you "
+                    "have selected, or on the paragraph or section you choose "
+                    "with Send this much: summarize it, rewrite it clearer and "
+                    "shorter, proofread it, or explain a passage that will not "
+                    "sit still. The fifth is the question you just asked. "
+                    "Nothing is applied for you -- the answer arrives with "
+                    "Replace My Selection, Insert Below and Copy under it, and "
+                    "proofreading changes not one character until you press one."
+                ),
+                command="cmd_ai_assistant",
+                hear="What is about to be sent, before it goes.",
+            ),
+            Step(
+                title="Know what you have left",
+                body=(
+                    "The service is free, so it has a ceiling. One question can "
+                    "carry about two thousand two hundred and fifty words of document, "
+                    "and "
+                    "you get a hundred requests a month. If what you asked about "
+                    "is too big, you are told in words before anything is sent, "
+                    "so you can select less and ask again."
+                ),
+                command="cmd_ai_usage",
+                hear="What you have used and what is left.",
+                note=(
+                    "The limits are read from the service rather than built into "
+                    "the program, so they can be raised without you installing "
+                    "anything."
+                ),
+            ),
+        ),
+        closing=(
+            "What is recorded is how many requests you made and how big they "
+            "were. What you wrote, and what came back, is not."
         ),
     ),
 )

@@ -27,6 +27,15 @@ from html.parser import HTMLParser
 
 __all__ = ["contains_html_markup", "extract_cf_html_fragment", "html_to_markdown"]
 
+#: Tags whose text belongs to the document's *machinery*, not its body, and so
+#: must never be emitted as Markdown. ``title`` is the one that bit: a standalone
+#: page written by ``markdown_to_html`` carries ``<title>`` in its head, and
+#: reading it back turned the file's own name into a first line of body text.
+#: Switching a document Markdown -> HTML -> Markdown therefore *grew a line
+#: every time*, and because the line is the document's title it reads as
+#: something the author wrote rather than as damage.
+_SKIPPED_TEXT_TAGS = frozenset({"script", "style", "title"})
+
 #: The tags whose presence means a buffer is HTML rather than Markdown that
 #: happens to contain a tag. Block-level only, deliberately: QuillLite writes
 #: ``<u>`` into *Markdown* documents (there is no native syntax for underline),
@@ -140,6 +149,113 @@ def extract_cf_html_fragment(payload: str) -> str:
     return payload
 
 
+#: Inline tags that mean one run attribute, mapped to the span keyword that
+#: carries it. These are what ``markdown_to_html`` emits for a span it can say
+#: in a tag, and what a person hand-writing HTML uses.
+_SPAN_TAGS: dict[str, str] = {
+    "u": "underline",
+    "ins": "underline",
+    "s": "strike",
+    "strike": "strike",
+    "del": "strike",
+    "sup": "superscript",
+    "sub": "subscript",
+}
+
+#: ``style`` declarations back to span attributes -- the exact inverse of what
+#: ``markdown_to_html`` writes, so a document that goes out to HTML and comes
+#: back keeps its fonts, colours and super/subscripts instead of arriving as
+#: bare words. Keyed by CSS property; the value either names a bare flag (when
+#: the declaration's own value identifies it) or a span attribute to quote.
+_STYLE_FLAGS: dict[tuple[str, str], str] = {
+    ("text-decoration", "underline"): "underline",
+    ("text-decoration", "line-through"): "strike",
+    ("vertical-align", "super"): "superscript",
+    ("vertical-align", "sub"): "subscript",
+}
+_STYLE_ATTRIBUTES: dict[str, str] = {
+    "color": "color",
+    "background-color": "highlight",
+    "background": "highlight",
+    "font-family": "font-family",
+}
+
+
+#: ``<div style>`` declarations back to the fenced-div vocabulary -- the inverse
+#: of ``_div_style_from_attrs``. Values carrying a unit ("36pt", "1.5") keep only
+#: what the fenced div stores.
+_BLOCK_STYLE_ATTRIBUTES: dict[str, str] = {
+    "text-align": "align",
+    "line-height": "line-spacing",
+    "margin-top": "space-before",
+    "margin-bottom": "space-after",
+    "margin-left": "indent",
+    "text-indent": "first-line-indent",
+}
+
+
+def _block_attributes_from_style(style: str, pstyle: str) -> str:
+    """Translate a ``<div style>`` back into fenced-div attributes.
+
+    ``pstyle`` arrives separately, from ``data-quill-pstyle``, because a named
+    style renders as ordinary CSS that nothing can distinguish from somebody
+    having asked for that CSS directly.
+    """
+    pairs: list[str] = []
+    for declaration in style.split(";"):
+        name, separator, value = declaration.partition(":")
+        if not separator:
+            continue
+        attribute = _BLOCK_STYLE_ATTRIBUTES.get(name.strip().lower())
+        value = value.strip()
+        if not attribute or not value:
+            continue
+        if attribute in {"space-before", "space-after", "indent", "first-line-indent"}:
+            digits = "".join(ch for ch in value if ch.isdigit())
+            if digits:
+                pairs.append(f'{attribute}="{digits}"')
+            continue
+        pairs.append(f'{attribute}="{value}"')
+    if pstyle:
+        pairs.append(f'pstyle="{pstyle}"')
+    return " ".join(pairs)
+
+
+def _span_attributes_from_style(style: str) -> str:
+    """Translate a ``style`` attribute into QUILL's span vocabulary.
+
+    Returns "" when the style says nothing QUILL's markup can carry, so the
+    caller emits the text plainly rather than an empty ``[text]{}``.
+    """
+    flags: list[str] = []
+    pairs: list[str] = []
+    for declaration in style.split(";"):
+        name, separator, value = declaration.partition(":")
+        if not separator:
+            continue
+        name = name.strip().lower()
+        value = value.strip()
+        if not value:
+            continue
+        matched = False
+        for (flag_name, flag_value), keyword in _STYLE_FLAGS.items():
+            if name == flag_name and flag_value in value.lower():
+                flags.append(keyword)
+                matched = True
+        if matched:
+            continue
+        attribute = _STYLE_ATTRIBUTES.get(name)
+        if attribute:
+            pairs.append(f'{attribute}="{value.strip(chr(34) + chr(39))}"')
+            continue
+        if name == "font-size":
+            # Written as "18pt" by markdown_to_html; the span carries the number.
+            digits = "".join(ch for ch in value if ch.isdigit())
+            if digits:
+                pairs.append(f'font-size="{digits}"')
+    return " ".join(flags + pairs)
+
+
 class _MarkdownWriter(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
@@ -148,7 +264,31 @@ class _MarkdownWriter(HTMLParser):
         self._pre_depth = 0
         self._link_href: str | None = None
         self._link_text: list[str] = []
-        self._skip_depth = 0  # inside <script>/<style>
+        self._skip_depth = 0  # inside a tag whose text is not body text
+        #: Open run spans, as ``(index into _parts, attribute text)``. The index
+        #: is where the span's content starts, so closing it lifts the content
+        #: back out and re-emits it wrapped -- the same trick the table cells use.
+        self._span_stack: list[tuple[int, str]] = []
+        #: Rows of the table being read, innermost last. A list per table because
+        #: a table inside a table must not append cells to its parent's last row.
+        self._table_stack: list[list[list[str]]] = []
+        self._cell_start: int | None = None
+        #: One entry per open <div>: True when it opened a ``:::`` fence that
+        #: must be closed, False when it was an ordinary layout div.
+        self._open_divs: list[bool] = []
+        self._header_rows = 0
+
+    # -- run spans -------------------------------------------------------
+    def _open_span(self, attributes: str) -> None:
+        self._span_stack.append((len(self._parts), attributes))
+
+    def _close_span(self) -> None:
+        if not self._span_stack:
+            return
+        start, attributes = self._span_stack.pop()
+        inner = "".join(self._parts[start:])
+        del self._parts[start:]
+        self._parts.append(f"[{inner}]{{{attributes}}}" if inner and attributes else inner)
 
     # -- helpers ---------------------------------------------------------
     def _emit(self, text: str) -> None:
@@ -166,7 +306,7 @@ class _MarkdownWriter(HTMLParser):
 
     # -- tag handling ----------------------------------------------------
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag in {"script", "style"}:
+        if tag in _SKIPPED_TEXT_TAGS:
             self._skip_depth += 1
             return
         if self._skip_depth:
@@ -202,6 +342,46 @@ class _MarkdownWriter(HTMLParser):
             href = next((value for name, value in attrs if name == "href"), None)
             self._link_href = href or ""
             self._link_text = []
+        elif tag == "img":
+            source = next((value for name, value in attrs if name == "src"), None) or ""
+            alt = next((value for name, value in attrs if name == "alt"), None) or ""
+            self._emit(f"![{alt}]({source})")
+        elif tag in _SPAN_TAGS:
+            self._open_span(_SPAN_TAGS[tag])
+        elif tag == "span":
+            style = next((value for name, value in attrs if name == "style"), None) or ""
+            self._open_span(_span_attributes_from_style(style))
+        elif tag == "div":
+            style = next((value for name, value in attrs if name == "style"), None) or ""
+            pstyle = (
+                next((value for name, value in attrs if name == "data-quill-pstyle"), None) or ""
+            )
+            if "page-break-after" in style:
+                # The page break is a whole empty div; emit the marker and record
+                # nothing to close, or the ``:::`` fence would be opened twice.
+                self._newline_block()
+                self._parts.append("::: pagebreak")
+                self._newline_block()
+                self._open_divs.append(False)
+                return
+            attributes = _block_attributes_from_style(style, pstyle)
+            if attributes:
+                self._newline_block()
+                self._parts.append(f"::: {{{attributes}}}" + "\n")
+                self._open_divs.append(True)
+            else:
+                self._open_divs.append(False)
+                self._newline_block()
+        elif tag == "table":
+            self._newline_block()
+            self._table_stack.append([])
+            self._header_rows = 0
+        elif tag == "tr" and self._table_stack:
+            self._table_stack[-1].append([])
+        elif tag in {"td", "th"} and self._table_stack:
+            if not self._table_stack[-1]:
+                self._table_stack[-1].append([])
+            self._cell_start = len(self._parts)
         elif tag in _BLOCK_TAGS:
             self._newline_block()
 
@@ -221,7 +401,7 @@ class _MarkdownWriter(HTMLParser):
             self._parts.append(f"{indent}- ")
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in {"script", "style"}:
+        if tag in _SKIPPED_TEXT_TAGS:
             self._skip_depth = max(0, self._skip_depth - 1)
             return
         if self._skip_depth:
@@ -258,8 +438,56 @@ class _MarkdownWriter(HTMLParser):
                 self._parts.append(f"[{text}]({href})")
             elif text:
                 self._parts.append(text)
-        elif tag in {"p", "div", "section", "article", "tr"}:
+        elif tag in _SPAN_TAGS or tag == "span":
+            self._close_span()
+        elif tag in {"td", "th"} and self._table_stack:
+            start = self._cell_start
+            self._cell_start = None
+            if start is not None:
+                cell = "".join(self._parts[start:]).strip().replace("\n", " ")
+                del self._parts[start:]
+                if self._table_stack[-1]:
+                    self._table_stack[-1][-1].append(cell)
+                if tag == "th":
+                    self._header_rows = 1
+        elif tag == "table" and self._table_stack:
+            self._emit_table(self._table_stack.pop())
+        elif tag == "div":
+            if self._open_divs and self._open_divs.pop():
+                # One newline before the closing fence, not the blank line
+                # _newline_block would leave: ``:::`` belongs against the last
+                # line of the block it closes.
+                while self._parts and self._parts[-1].endswith("\n\n"):
+                    self._parts[-1] = self._parts[-1][:-1]
+                if self._parts and not self._parts[-1].endswith("\n"):
+                    self._parts.append("\n")
+                self._parts.append(":::")
             self._newline_block()
+        elif tag in {"p", "section", "article", "tr"}:
+            self._newline_block()
+
+    def _emit_table(self, rows: list[list[str]]) -> None:
+        """Write a parsed table back as a Markdown pipe table.
+
+        Tables used to be read a cell at a time with no structure at all, so
+        ``| a | b |`` came back as ``ab`` -- the header, the columns and the
+        alignment row all gone, and the two cells run together into one word.
+        A table is the one construct where losing the markup also loses the
+        *meaning*, because nothing else says which value sits under which
+        heading.
+        """
+        rows = [row for row in rows if row]
+        if not rows:
+            return
+        width = max(len(row) for row in rows)
+        padded = [row + [""] * (width - len(row)) for row in rows]
+        header = padded[0] if self._header_rows else [""] * width
+        body = padded[1:] if self._header_rows else padded
+        self._newline_block()
+        lines = ["| " + " | ".join(header) + " |", "|" + "|".join(["---"] * width) + "|"]
+        lines += ["| " + " | ".join(row) + " |" for row in body]
+        self._parts.append("\n".join(lines))
+        self._newline_block()
 
     def handle_data(self, data: str) -> None:
         if self._skip_depth:
@@ -275,6 +503,16 @@ class _MarkdownWriter(HTMLParser):
         text = "".join(self._parts)
         text = re.sub(r"[ \t]+\n", "\n", text)
         text = re.sub(r"\n{3,}", "\n\n", text)
+        # A fenced div's markers belong against the block they wrap. The blank
+        # line comes from the whitespace *between* the HTML tags, which is data
+        # to an HTML parser and nothing to a reader -- but it makes the round
+        # trip differ from what went in, and a round trip that changes the text
+        # is one nobody can tell apart from one that damaged it.
+        # Only a fence that *opens* a block (``::: {...}``) -- a standalone
+        # ``::: pagebreak`` is its own paragraph and keeps the blank line after it.
+        text = re.sub(r"(?m)^(:::\s*\{[^\n]*)\n\n", r"\1\n", text)
+        text = re.sub(r"\n\n(:::\s*)$", r"\n\1", text)
+        text = re.sub(r"\n\n(:::\n)", r"\n\1", text)
         return text.strip() + "\n"
 
 

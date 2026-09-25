@@ -469,11 +469,11 @@ class DocumentCommandsMixin(
             "Numbered documents in one window. Plain text or rich text, and\n"
             "nothing else.\n\n"
             "QuillLite is a companion to QUILL for All, not a replacement for it. "
-            "AI, dictation, conversion, comparison, publishing and extensions all\n"
+            "Dictation, conversion, comparison, publishing and extensions all\n"
             "live in QUILL.\n\n"
             "Part of the QuillVille family by Community Access and BITS (MIT licence).\n"
             "https://github.com/Community-Access/quill\n\n"
             f"Settings and recovered work: {self.app.data_dir}\n\n"
-            f"Support: {SUPPORT_EMAIL}"
+            f"Support: {SUPPORT_EMAIL}{self.ai_support_line()}"
         )
         show_text_window(self, f"About {APP_NAME}", body)

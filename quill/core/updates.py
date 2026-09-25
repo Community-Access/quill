@@ -14,6 +14,8 @@ from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
+from quill.core.update_digest import asset_digest_for_url as _asset_digest_for_url
+
 DEFAULT_UPDATE_MANIFEST_URL = (
     "https://community-access.github.io/quill/updates/.quill-update-feed-v1.json"
 )
@@ -303,24 +305,6 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
     return ""
 
 
-def _asset_digest_for_url(assets: object, url: str) -> str:
-    """SHA-256 hex for the asset at *url* from GitHub's ``digest`` field, or ""."""
-    if not url or not isinstance(assets, list):
-        return ""
-    for asset in assets:
-        if not isinstance(asset, dict):
-            continue
-        if str(asset.get("browser_download_url") or "") != url:
-            continue
-        digest = str(asset.get("digest") or "").strip().lower()
-        if digest.startswith("sha256:"):
-            candidate = digest.split(":", 1)[1]
-            if re.fullmatch(r"[0-9a-f]{64}", candidate):
-                return candidate
-        return ""
-    return ""
-
-
 def _release_from_json(data: dict, *, prefer_portable: bool | None = None) -> GitHubRelease:
     # Pick the platform installer asset; fall back to the release page when the
     # release has no real installer (e.g. only provenance/checksum artifacts).
@@ -503,6 +487,9 @@ def fetch_app_releases(
                 published_at=str(r.get("published_at") or "").strip(),
                 notes=str(r.get("body") or "").strip(),
                 prerelease=bool(r.get("prerelease")),
+                # Without this every sibling app downloaded unverified: the
+                # download checks the digest only when the release carries one.
+                download_digest=_asset_digest_for_url(r.get("assets"), url),
             )
         )
     return releases

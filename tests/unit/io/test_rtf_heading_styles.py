@@ -53,7 +53,14 @@ def test_a_heading_does_not_enlarge_the_paragraph_after_it() -> None:
     # \pard resets the paragraph, not the font. Without an explicit reset the
     # body text following a Heading 1 would render at 20 point.
     rtf = markdown_to_rtf("# Title\nbody text\n")
-    heading_line = next(line for line in rtf.split("\n") if "Title" in line)
+    # The heading's own paragraph, not merely the first line mentioning "Title".
+    # The stylesheet declares Word's built-in ``Title`` style by name, so the
+    # header line contains the word too -- and being first, it is what a plain
+    # "in line" search finds. The heading is the paragraph line: it ends in
+    # \par and carries the Heading 1 style.
+    heading_line = next(
+        line for line in rtf.split("\n") if "Title" in line and line.endswith("\\par")
+    )
     assert heading_line.endswith(f"\\b0\\fs{DEFAULT_HALF_POINTS}\\par")
 
 

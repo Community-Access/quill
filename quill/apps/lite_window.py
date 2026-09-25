@@ -300,6 +300,8 @@ class DocumentFrame(
             self._load_recovery(recovery_slot)
         elif path is not None:
             self.load(path)
+        if not self.modified:
+            self._remember_clean_text()
         self._update_title()
         self._touch_status()
         self.control.SetFocus()
@@ -335,6 +337,8 @@ class DocumentFrame(
         self.SetTitle(title)
 
     def _set_modified(self, modified: bool) -> None:
+        if not modified:
+            self._remember_clean_text()
         if modified == self.modified:
             return
         self.modified = modified
@@ -351,7 +355,7 @@ class DocumentFrame(
         # the load would answer every question about the new file with the old
         # one's text. O(1) -- it only forgets, it does not read.
         self.doc_text.invalidate()
-        if not self._loading:
+        if not self._loading and (self.modified or not self._text_event_changed_nothing()):
             self._set_modified(True)
             # Every edit invalidates the counts, so every edit marks the bar
             # stale -- and _set_modified cannot do it, because it returns early

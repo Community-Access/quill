@@ -81,6 +81,21 @@ msg.txt
 # like the notes above; untracked, and listed explicitly because
 # tests/unit/structure/test_repo_layout.py reads exact patterns only.
 /xplan2.md
+# Quill Radio working notes: xradio1 is the feature scratchpad, xradio2 the
+# 2026-09-24 study of the FreeRadio NVDA add-on (what to take from it, what
+# to decline, and why). Both describe work rather than being it, like the
+# notes above, and both are listed by exact name because
+# tests/unit/structure/test_repo_layout.py reads exact patterns only.
+/xradio1.md
+/xradio2.md
+# The QuillLite AI verification guide (2026-09-24): admin setup, the
+# user-facing tests, the limits, the screen-reader pass and the refusals.
+# Written to be handed to outside testers, so it is a document rather than a
+# note -- but it describes one release's verification pass rather than being
+# part of the product, which is the same class as the notes above. Listed by
+# exact name because tests/unit/structure/test_repo_layout.py reads exact
+# patterns only.
+/testai.md
 
 # Local research lab for the chapter work (2026-08-20): the evaluation harness
 # plus 22 GB of vendored engines, episode audio and result sweeps. The findings

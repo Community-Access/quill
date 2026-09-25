@@ -1143,7 +1143,7 @@ Control coverage: 61 audited sites (61 helped).
 
 **Proofread.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
-**QUILL AI Sign-In.** Connect this computer to QUILL's free AI. There is no account, no password and no email address: QUILL shows you an eight-character code, you type it into a web page on any device, and this window says when you are connected. Nothing is sent until you choose Show My Code.
+**QUILL AI Sign-In.** Connect this computer to QUILL's free AI. There is no account, no password and no email address. The window opens on an eight-character code: choose Open the Connect Page to confirm it in your browser with the code already filled in, or type it into the web page on any other device. This window says when you are connected.
 
 **QUILL AI: what is sent, and what is kept.** The agreement, in full, before anything is sent. Read it with the arrow keys. I Agree turns AI help on; No Thanks leaves it off and changes nothing else. You can read this again, or withdraw it, from Tools, AI, Privacy Agreement at any time.
 
@@ -1205,7 +1205,7 @@ Control coverage: 61 audited sites (61 helped).
 #### (module level) (`quill/apps/lite_preferences.py`)
 
 - `mode_choice`: What Control N creates. New Plain Text and New Rich Text ignore this.
-- `theme_choice`: Dark is the default. It changes the view only and is never saved into your documents.
+- `theme_choice`: Follow the system is the default: anybody who needs a particular contrast has already told Windows, and following that beats guessing. Either way it changes the view only and is never saved into your documents.
 - `restore`: Reopen last session's files, in the same numbered order. Different from recovering unsaved work, which happens whether this is on or not.
 - `keep_untitled`: On: work you never saved is offered back whether or not the window had a file. Off: only documents with a file are offered, and the copies of untitled ones are deleted rather than kept -- keeping something that is never offered would be a promise nothing can redeem. Identical copies are folded into one either way, and anything older than a month is dropped. QUILL has the same setting.
 - `blank`: On: a new Untitled document is waiting when the app opens, the way Notepad and WordPad do it. Off: the app opens with nothing, and Control N or Open makes the first document -- which is what you want if you always open an existing file and were closing an empty one every time. Files you open by double-clicking, last session's documents and recovered work all still appear either way.
@@ -1250,7 +1250,7 @@ Control coverage: 61 audited sites (61 helped).
 - `decline`: Leaves AI help switched off. Everything else in QuillLite is unchanged.
 #### AiSignInFrame (`quill/ui/hosted_ai_dialogs.py`)
 
-- `show`: Asks QUILL for a code to connect this computer. This is the first time anything is sent.
+- `browse`: Opens the connect page in your web browser with this code already filled in. Press Confirm there, then come back here.
 - `say`: Reads the code out one character at a time.
 - `copy`: Puts the code on the clipboard.
 - `retry`: Asks QUILL for a fresh code and tries again.

@@ -201,7 +201,14 @@ class DocumentMarkupMixin:
         return language if language in {"markdown", "html"} else None
 
     def set_document_language(self, language: str, *, announce: bool = True) -> None:
-        """Adopt *language* for this window, and tell everything that cares."""
+        """Adopt *language* for this window, and tell everything that cares.
+
+        Deliberately **no conversion**: the language says what you are typing,
+        not what the buffer holds. Ctrl+Shift+M rings through four stops, and
+        converting at each would rewrite the document three times on the way to
+        the one you wanted. Rich text is the stop that costs something, and
+        ``switch_mode`` is the one that asks first.
+        """
         self._language_override = language if language in {"markdown", "html", "plain"} else ""
         # The two pickers change availability, the caret cue changes what it can
         # see, and the status bar has a cell for it. All three, or the window
@@ -387,10 +394,12 @@ class DocumentMarkupMixin:
         if change.result is not LevelResult.OK:
             return False
         replace_as_one_undo(self.control, change.start, change.end, change.replacement)
-        # Hold the caret's place *in the line*, which has just grown or shrunk in
-        # front of it by however many hashes or tag characters changed.
-        moved = len(change.replacement) - (change.end - change.start)
-        self.control.SetInsertionPoint(max(change.start, min(caret + moved, len(text) + moved)))
+        # Hold the caret's place *in the line*. The arithmetic this replaces
+        # added the whole length change to the caret, which counts the closing
+        # tag as though it were in front of the caret rather than behind it: on
+        # ``Notes`` it landed inside ``</h1>``, and on an empty line it landed
+        # after it. change.caret knows where the words are.
+        self.control.SetInsertionPoint(change.caret)
         self._set_modified(True)
         self._touch_status()
         self._announce(f"Heading {level}" if level else "Body text")

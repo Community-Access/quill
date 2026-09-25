@@ -69,10 +69,31 @@ def open_support_message(
     app_version: str = "",
     prefill_summary: str = "",
     prefill_body: str = "",
+    extra: dict[str, str] | None = None,
 ) -> None:
-    """Open the support surface for *host*. Never raises into a menu handler."""
+    """Open the support surface for *host*. Never raises into a menu handler.
+
+    *extra* is facts the app knows and the person should not have to look up,
+    written into the message under "About this report" -- the QUILL AI support
+    ID, when this computer is connected, is the one support asks for first.
+    """
     product = f"{source_app} {app_version}".strip()
-    if _server_path(host, product, prefill_summary=prefill_summary, prefill_body=prefill_body):
+    if extra is None:
+        # An editor with QUILL's free AI knows its own support ID; asking the
+        # host here is what puts it in every app's message without every call
+        # site having to pass it.
+        facts_of = getattr(host, "ai_support_facts", None)
+        try:
+            extra = facts_of() if callable(facts_of) else {}
+        except Exception:  # noqa: BLE001 - a missing fact must not block writing to support
+            extra = {}
+    if not isinstance(extra, dict):
+        extra = {}
+    facts = {key: value for key, value in (extra or {}).items() if value}
+    # The hub dialog has no field for these, so they ride on the version line
+    # it does send.
+    hub_product = "; ".join([product, *(f"{k} {v}" for k, v in facts.items())])
+    if _server_path(host, hub_product, prefill_summary=prefill_summary, prefill_body=prefill_body):
         return
     import wx
 
@@ -82,6 +103,7 @@ def open_support_message(
         product=product,
         prefill_summary=prefill_summary,
         prefill_body=prefill_body,
+        extra=facts,
     ).show()
 
 
@@ -139,8 +161,10 @@ class _SupportDialog:
         product: str,
         prefill_summary: str = "",
         prefill_body: str = "",
+        extra: dict[str, str] | None = None,
     ) -> None:
         self._host = host
+        self._extra = dict(extra or {})
         self._wx = wx
         self._product = product
         self._prefill_summary = prefill_summary
@@ -213,7 +237,12 @@ class _SupportDialog:
 
         included = wx.StaticText(
             self.dialog,
-            label=f"Also included: {self._product or 'this app'}, and your Windows version.",
+            label="Also included: "
+            + ", ".join([
+                self._product or "this app",
+                *(f"your {key} ({value})" for key, value in self._extra.items()),
+            ])
+            + ", and your Windows version.",
         )
         root.Add(included, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
@@ -292,6 +321,7 @@ class _SupportDialog:
             reply_email=self._email.GetValue().strip(),
             platform=_platform_label(),
             screen_reader="" if reader == _SCREEN_READERS[0] else reader,
+            extra=getattr(self, "_extra", {}),
         )
 
     def _submit(self) -> None:

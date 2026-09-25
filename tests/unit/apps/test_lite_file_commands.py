@@ -495,3 +495,23 @@ def test_an_empty_document_still_prints_one_line(lite_window):
     """``splitlines()`` on "" is empty, and a printout with no pages raises."""
     win = lite_window("")
     assert win._printable_lines() == [""]
+
+
+def test_a_text_event_that_changed_nothing_is_not_an_edit(lite_window) -> None:
+    """Rich Edit raises a text event for Ctrl+Z with nothing to undo, and that
+    alone made Alt+F4 ask to save a document nobody had touched (2026-09-25).
+    The window compares against what it held when it was last clean."""
+    win = lite_window("", mode="plain")
+    win._remember_clean_text()
+    assert win._text_event_changed_nothing() is True
+
+    win.control.ChangeValue("typed")
+    assert win._text_event_changed_nothing() is False
+
+
+def test_rich_text_trusts_the_event_once_there_is_text(lite_window) -> None:
+    """A native formatting chord can change a rich document without changing a
+    character, so only an empty rich buffer may be judged by its text."""
+    win = lite_window("words", mode="rich")
+    win._remember_clean_text()
+    assert win._text_event_changed_nothing() is False

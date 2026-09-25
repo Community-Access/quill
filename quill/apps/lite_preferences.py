@@ -135,7 +135,9 @@ def edit_preferences(
     theme_choice = wx.Choice(dialog, choices=["Dark", "Follow the system"])
     set_accessible_name(theme_choice, "Theme")
     theme_choice.SetHelpText(
-        "Dark is the default. It changes the view only and is never saved into your documents."
+        "Follow the system is the default: anybody who needs a particular "
+        "contrast has already told Windows, and following that beats guessing. "
+        "Either way it changes the view only and is never saved into your documents."
     )
     theme_choice.SetSelection(0 if settings.theme == "dark" else 1)
     _stack(root, theme_label, theme_choice)

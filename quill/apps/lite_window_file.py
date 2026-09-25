@@ -58,6 +58,36 @@ class DocumentFileMixin:
     # Load
     # ------------------------------------------------------------------ #
 
+    def _remember_clean_text(self) -> None:
+        """Note what the buffer held at the moment the document became clean.
+
+        One read per load or save, never per keystroke: it is compared only on
+        the first text event after that, in :meth:`_text_event_changed_nothing`.
+        """
+        try:
+            self._clean_text: str | None = self.control.GetValue()
+        except Exception:  # noqa: BLE001 - no baseline just means "trust the event"
+            self._clean_text = None
+
+    def _text_event_changed_nothing(self) -> bool:
+        """Whether a text event on a clean document left the text as it was.
+
+        Rich Edit raises EN_CHANGE for things that change nothing: Ctrl+Z with
+        nothing to undo, for one. Reported 2026-09-25 as "I open QuillLite, make
+        no changes, and Alt+F4 asks me to save". Rich text only trusts this when
+        the buffer is empty, because there a formatting-only change with the same
+        characters (a native chord QuillLite does not route) is a real edit.
+        """
+        baseline = getattr(self, "_clean_text", None)
+        if baseline is None:
+            return False
+        if self.editor.mode == RICH and baseline:
+            return False
+        try:
+            return self.control.GetValue() == baseline
+        except Exception:  # noqa: BLE001 - unreadable is "changed"
+            return False
+
     def load(self, path: Path) -> bool:
         """Open *path* into this window. ``False`` when it could not be read."""
         path = Path(path)
@@ -82,6 +112,7 @@ class DocumentFileMixin:
         self.path = path
         self._discard_slot()
         self.modified = False
+        self._remember_clean_text()
         self._remember(path)
         self.control.SetInsertionPoint(0)
         self._update_title()

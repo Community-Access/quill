@@ -12,14 +12,24 @@ INSERT INTO gateway_config (key, value, description) VALUES
     ('daily_request_cap', 20, 'Free requests per user per day.'),
     ('hourly_request_cap', 8, 'Free requests per user per hour.'),
     ('device_hourly_request_cap', 8, 'Free requests per device per hour.'),
-    ('max_input_tokens', 1500, 'Maximum tokens in a single request''s prompt (plus chunks).'),
+    -- Raised from 1,500 on 2026-09-24. 1,500 tokens is about 1,125 words, and a
+    -- document short enough to fit was the exception rather than the rule. Input
+    -- is the cheap half of a request -- the output costs several times what the
+    -- input does per token -- so doubling the input ceiling is a modest increase
+    -- per request. See the budget note below, which was raised to match.
+    ('max_input_tokens', 3000, 'Maximum tokens in a single request''s prompt (plus chunks).'),
     ('max_output_tokens', 500, 'Maximum tokens the model may generate per request.'),
     ('max_chunks_per_request', 3, 'Maximum document excerpts a document-Q&A request may include.'),
     ('max_image_bytes', 3145728, 'Maximum image file size, in bytes, for alt-text requests.'),
     ('max_image_edge_px', 1600, 'Maximum image longest-edge size, in pixels (client resizes below this).'),
     ('daily_image_cap', 5, 'Free image (alt-text) requests per user per day.'),
     ('monthly_cost_cap_usd', 0.15, 'Maximum estimated cost per user per month, in USD.'),
-    ('global_monthly_budget_usd', 25.0, 'Total hosted-AI budget per month across all users, in USD.'),
+    -- Raised on 2026-09-24, which the gateway spec had already flagged as too
+    -- tight: the worst case consumed most of it, and tripping this cap does not
+    -- degrade the service -- it turns hosted AI off for EVERYONE, which is the
+    -- loudest possible failure. The new value is the spec's own recommendation
+    -- and covers the worst case at the 3,000-token input ceiling with real room.
+    ('global_monthly_budget_usd', 40.0, 'Total hosted-AI budget per month across all users, in USD.'),
     ('feature_cap.document_qna', 60, 'Monthly cap for the document_qna feature.'),
     ('feature_cap.summarize', 60, 'Monthly cap for the summarize feature.'),
     ('feature_cap.rewrite', 60, 'Monthly cap for the rewrite feature.'),

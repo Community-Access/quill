@@ -2820,10 +2820,11 @@ purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
 <p><strong>QUILL AI Sign-In.</strong> Connect this computer to QUILL’s
-free AI. There is no account, no password and no email address: QUILL
-shows you an eight-character code, you type it into a web page on any
-device, and this window says when you are connected. Nothing is sent
-until you choose Show My Code.</p>
+free AI. There is no account, no password and no email address. The
+window opens on an eight-character code: choose Open the Connect Page to
+confirm it in your browser with the code already filled in, or type it
+into the web page on any other device. This window says when you are
+connected.</p>
 <p><strong>QUILL AI: what is sent, and what is kept.</strong> The
 agreement, in full, before anything is sent. Read it with the arrow
 keys. I Agree turns AI help on; No Thanks leaves it off and changes
@@ -2961,8 +2962,10 @@ without reading the whole list.</li>
 <ul>
 <li><code>mode_choice</code>: What Control N creates. New Plain Text and
 New Rich Text ignore this.</li>
-<li><code>theme_choice</code>: Dark is the default. It changes the view
-only and is never saved into your documents.</li>
+<li><code>theme_choice</code>: Follow the system is the default: anybody
+who needs a particular contrast has already told Windows, and following
+that beats guessing. Either way it changes the view only and is never
+saved into your documents.</li>
 <li><code>restore</code>: Reopen last session’s files, in the same
 numbered order. Different from recovering unsaved work, which happens
 whether this is on or not.</li>
@@ -3115,8 +3118,9 @@ in QuillLite is unchanged.</li>
 <h4 id="aisigninframe-quilluihosted_ai_dialogspy">AiSignInFrame
 (<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
 <ul>
-<li><code>show</code>: Asks QUILL for a code to connect this computer.
-This is the first time anything is sent.</li>
+<li><code>browse</code>: Opens the connect page in your web browser with
+this code already filled in. Press Confirm there, then come back
+here.</li>
 <li><code>say</code>: Reads the code out one character at a time.</li>
 <li><code>copy</code>: Puts the code on the clipboard.</li>
 <li><code>retry</code>: Asks QUILL for a fresh code and tries

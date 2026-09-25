@@ -6726,7 +6726,7 @@ Work Personas are convenience bundles for one person's different contexts — no
 **File > Save As** genuinely converts your document to the format you pick in the "Save as type" list — it never just renames the file. QUILL's editor holds your text in one clean canonical form; choosing a type in Save As re-serializes that text into the chosen format on disk. Here is exactly what each choice does:
 
 - **Markdown (.md)** — your text is written exactly as it is in the editor. This is QUILL's native format; nothing is converted or lost.
-- **Text (.txt)** — also written exactly as-is, including any Markdown markup, so a plain-text file makes a perfect round trip. If you want the markup *stripped* (headings and emphasis flattened to plain words), use **File > Save As Plain Text** instead — that command also offers to keep your formatting in an Illumination sidecar.
+- **Text (.txt)** — also written exactly as-is, including any Markdown markup, so a plain-text file makes a perfect round trip. If you want the markup *stripped* (headings and emphasis flattened to plain words), use **File > Save As Plain Text** instead — that command also offers to keep your formatting in an Illumination sidecar. (**Format > Document Format... > Plain text** is the third route, and the one that *asks* which of the two you want; Save As keeps your file byte-for-byte on purpose, so a .txt you opened comes back unchanged.)
 - **HTML (.html)** — converted to a complete standalone web page with your document title, ready for a browser.
 - **Rich Text (.rtf)** — converted with full formatting fidelity: fonts, sizes, colors, highlights, and alignment all carry over.
 - **Word (.docx)** — converted to a real Word document. Headings become Word heading styles (so Word and screen readers can navigate them), each editor line becomes one Word paragraph (your line breaks are preserved exactly), and hidden-codes formatting — font, size, color, highlight, alignment — carries onto real Word runs.
@@ -8489,8 +8489,13 @@ those". A row whose file has gone says so and cannot be ticked.
   forgetting is about what QUILL offers you, not about what is on your disk, and
   the window says so under the buttons.
 - **Never Ask Again** opens the ticked documents and sets the preference to
-  reopen without asking from then on. It tells you which setting it changed, so
-  you can find it again.
+  reopen without asking from then on.
+- **Ask Me Next Time** is its twin and undoes it: you are asked again when it
+  matters, the way a new install does. Exactly one of the pair is available at
+  a time and the other is greyed rather than hidden, so arriving on it tells
+  you which way the setting is. If you pressed Never Ask Again and want the
+  window back, open it yourself with **File ▸ Reopen Last Session...**
+  (`Alt+Shift+F12`) and press it.
 
 Afterwards you hear what happened -- "Reopened all 3 documents", "Reopened 1 of
 2", "Forgot 2 documents. 1 still remembered. The files themselves are untouched."
@@ -8581,6 +8586,15 @@ Every document opens in the one QUILL editor — the same native control QUILL h
 - **Editing Word documents (.docx):** a .docx can open for real rich editing and save back as a genuine Word file. A file carrying things QUILL's editor cannot hold (images, comments, tracked changes, headers/footers) asks first — open for reading and plain editing (the safe default), edit as Rich Text with those losses named specifically, or edit a copy. The first rich save over such an original writes a timestamped backup next to it automatically. **Tables are preserved** when you open a Word document for rich editing: they appear inline as accessible tables (previously their contents were dropped), so you can read them and jump to them with single-key table navigation (`T`).
 
 **The Document Format switcher.** **Format > Document Format...** (also Ctrl+Shift+Grave, K; the command palette; or press Enter on the **Format** cell in the status bar, which always shows your current format) moves the current document between Plain text, Markdown, HTML, Rich Text (RTF), and Word (.docx) mid-session. Switching to a rich format turns your Markdown headings into real ones; leaving a rich format warns first, with the specific list of anything that will not survive. A switched document never silently overwrites its old file — the next save proposes the matching new name.
+
+**Every switch is a real conversion.** Switching to HTML writes real HTML — `<h1>` and `<strong>`, not hashes and asterisks under an HTML label — and switching back reads it in again. Your formatting comes with you in every direction: headings, bold, italic, underline, strikethrough, superscript and subscript, font family and size, text colour and highlight, bullet and numbered lists, links, code spans and fences, block quotes, alignment, line spacing, indents, spacing before and after, named styles, page breaks, tables, images and horizontal rules. Switch out and back as often as you like — the document you get is the document you started with.
+
+**Converting to Plain text asks you first.** Plain text has no formatting, so there are two honest things to do with Markdown that is already in your document, and QUILL will not guess:
+
+- **Remove the markers** — `# Heading` becomes `Heading`, `**bold**` becomes `bold`, and the file is strictly plain.
+- **Keep them as text** — the `#` and `**` stay as ordinary characters, because a .txt file is perfectly entitled to contain them and plenty of people keep their notes exactly that way.
+
+Escape (or Cancel) leaves the document alone. You are only asked when there is something to ask about: a document of ordinary prose converts without a prompt.
 
 **If rich mode is unavailable** (a system where the bundled macOS bridge or the Windows COM bridge cannot load), .rtf and .docx documents open converted to editable text exactly as in earlier releases, and save back through the same converters. Nothing is ever lost; you simply get the classic behavior — and QUILL says so in the status bar. The Mac app ships everything rich mode needs out of the box; only source installs add it themselves (`pip install "quill[mac]"`). If you ever see the converted fallback on a normal install, please tell us via **Help > Get Help from Support**.
 

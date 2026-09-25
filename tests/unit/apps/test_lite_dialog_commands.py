@@ -778,3 +778,43 @@ def _features():
             self.set_calls.append((area, enabled))
 
     return _Features()
+
+
+def test_about_shows_the_ai_support_id_when_connected(lite_window, lite_dialogs, monkeypatch):
+    """The number support asks for first, where people look for support
+    (asked for 2026-09-25) -- and nothing at all when not connected."""
+    win = lite_window("hello")
+    monkeypatch.setattr(win, "ai_support_id", lambda: "2DFD-22DB")
+    win.cmd_about()
+    assert (
+        "QUILL AI support ID for this computer: 2DFD-22DB"
+        in lite_dialogs.args_for("show_text_window")[2]
+    )
+
+
+def test_about_says_nothing_about_ai_when_not_connected(lite_window, lite_dialogs, monkeypatch):
+    win = lite_window("hello")
+    monkeypatch.setattr(win, "ai_support_id", lambda: "")
+    win.cmd_about()
+    assert "support ID" not in lite_dialogs.args_for("show_text_window")[2]
+
+
+def test_a_support_message_carries_the_ai_support_id(monkeypatch):
+    """Read from the host by the support flow itself, so every app's message
+    carries it without every call site having to pass it."""
+    import quill.ui.support_dialog as support_dialog
+
+    seen: dict = {}
+    monkeypatch.setattr(support_dialog, "_server_path", lambda *a, **k: False)
+
+    class Dialog:
+        def __init__(self, host, wx, **kwargs):
+            seen.update(kwargs)
+
+        def show(self):
+            pass
+
+    monkeypatch.setattr(support_dialog, "_SupportDialog", Dialog)
+    host = type("Host", (), {"ai_support_facts": lambda self: {"QUILL AI support ID": "X1"}})()
+    support_dialog.open_support_message(host, source_app="QuillLite", app_version="1.0")
+    assert seen["extra"] == {"QUILL AI support ID": "X1"}
