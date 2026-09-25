@@ -329,17 +329,17 @@ caret on the range; and **Next / Previous Issue from the editor with no dialog a
 all**, spoken on arrival — the `Ctrl+F7` habit, which is how most people will
 actually use this.
 
-### 4.3 QUILL and QuillLite — every Eraser feature, both products
+### 4.3 QUILL and QUILL Lite — every Eraser feature, both products
 
 **Decision: all Eraser features ship in both.** Not the shared core with a
 reduced Lite surface — the whole thing, both places. That is stricter than the
 standing family rule requires and it is the right call here, because every
 argument for the feature applies at least as hard to the smaller product: a
-QuillLite user writing a README is exactly the person who will never see the
+QUILL Lite user writing a README is exactly the person who will never see the
 missing `alt`.
 
 This is also the direction the family rules already push. The rule is that
-QuillLite may never be ahead of QUILL, and that anything Lite needs goes in the
+QUILL Lite may never be ahead of QUILL, and that anything Lite needs goes in the
 shared package with a QUILL route added in the same change. Building
 `quill/core/eraser/` shared by construction satisfies the core half
 automatically; §4.3 is the commitment that the *surface* half is satisfied too,
@@ -374,7 +374,7 @@ What that means concretely, per layer:
 
 **Gate.** The parity claim needs a test or it is a sentence. Add a fixture
 asserting that every `eraser.*` command id present in QUILL's keymap is present
-in QuillLite's with the same chord, and that every rule family enabled by default
+in QUILL Lite's with the same chord, and that every rule family enabled by default
 in one is enabled by default in the other — the same shape as the existing
 bound-command and settings-vocabulary gates, and for the same reason: this is
 exactly the kind of promise that decays silently.
@@ -697,10 +697,10 @@ gates. Labels come from `self._menu_label(...)`, never a literal.
    provider set to Off and in Safe Mode. The list is shorter; nothing else
    differs.
 6. **Product parity (§4.3).** Every `eraser.*` command id in QUILL's keymap is
-   present in QuillLite's with the same chord, and every rule family enabled by
+   present in QUILL Lite's with the same chord, and every rule family enabled by
    default in one is enabled by default in the other. Divergence requires a
    `keymap.py` comment **and** a parity-table row, per rule 11.
-7. **GATE-LITE-COVER** — QuillLite's handlers classified `covered`, with
+7. **GATE-LITE-COVER** — QUILL Lite's handlers classified `covered`, with
    lambda-shaped parametrisation so the AST scan sees the calls.
 8. **GATE-REACH** — the dialog reachable from an app entry point and snapshotted.
 9. **Dialog inventory, button contract, access keys, menu accelerators** — the

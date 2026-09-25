@@ -86,11 +86,11 @@ BOOKS: tuple[Book, ...] = (
     ),
     Book(
         "quilllite",
-        "QuillLite",
+        "QUILL Lite",
         REPO_ROOT / "standalone" / "quilllite" / "docs" / "tutorials.md",
-        # No APP_KEYMAPS section: QuillLite's keys are its own command table
+        # No APP_KEYMAPS section: QUILL Lite's keys are its own command table
         # (core/lite/commands.py), not overrides on QUILL's keymap. The
-        # catalogue names commands by QuillLite handler, so the resolver below
+        # catalogue names commands by QUILL Lite handler, so the resolver below
         # answers from that table instead.
         "",
         "Help > Tutorials... (Ctrl+Alt+F1)",
@@ -126,9 +126,9 @@ def catalogue_for(app_id: str) -> TutorialSet:
 def shipped_key(keymap_id: str, app_id: str = "") -> object:
     """A lookup answering the key *keymap_id*'s app ships with for a command.
 
-    QuillLite is the exception and needs its own branch: its steps name
-    QuillLite *handlers* (``cmd_select_paragraph``) rather than QUILL command
-    ids, because QuillLite has its own command table rather than overrides on
+    QUILL Lite is the exception and needs its own branch: its steps name
+    QUILL Lite *handlers* (``cmd_select_paragraph``) rather than QUILL command
+    ids, because QUILL Lite has its own command table rather than overrides on
     QUILL's keymap. Resolving those through ``DEFAULT_KEYMAP`` would answer
     "no key" for every step in the book.
     """

@@ -1,22 +1,22 @@
-"""GATE-LITE-HELP: F1 help ships with every QuillLite surface and control.
+"""GATE-LITE-HELP: F1 help ships with every QUILL Lite surface and control.
 
-The mirror of the seven sibling gates, judged against QuillLite's own catalogue
+The mirror of the seven sibling gates, judged against QUILL Lite's own catalogue
 (:mod:`quill.core.lite_surface_help`) and its own inventory:
 
 1. **Every window title resolves to a purpose.** A new ``wx.Frame`` /
-   ``wx.Dialog`` in QuillLite whose title has no entry fails here, so a window
+   ``wx.Dialog`` in QUILL Lite whose title has no entry fails here, so a window
    cannot ship without saying what it is for.
 2. **Every helpable control is accounted for.** The committed inventory
    classifies every construction site; a brand-new site is ``missing`` until a
    human either authors help or classifies it -- and ``missing`` fails.
-3. **The wiring cannot silently disappear.** QuillLite activates the shared
+3. **The wiring cannot silently disappear.** QUILL Lite activates the shared
    engine with its own resolver at startup, which is also what installs the
    ``wx.HelpProvider`` -- without that call every ``SetHelpText`` in the app
    stores nothing at all, and the whole catalogue is dead.
 
-QuillLite's own wrinkle is the fourth test: its main window is titled after the
+QUILL Lite's own wrinkle is the fourth test: its main window is titled after the
 document rather than after the app, so the catalogue has to answer titles like
-``"*Notes.txt - QuillLite (rich text)"`` that no fixed key could ever match.
+``"*Notes.txt - QUILL Lite (rich text)"`` that no fixed key could ever match.
 """
 
 from __future__ import annotations

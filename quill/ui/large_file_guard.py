@@ -35,7 +35,7 @@ def human_size(size_bytes: int) -> str:
 def large_file_warning(name: str, size_bytes: int, app_name: str = "QUILL") -> str:
     """The confirmation message shown before opening a large file.
 
-    *app_name* because QuillLite asks this too, since 2026-09-16 -- it had no
+    *app_name* because QUILL Lite asks this too, since 2026-09-16 -- it had no
     size guard at all, which for a Notepad replacement is the scenario rather
     than an edge case (bad.md V1). A message that named the wrong product would
     be its own small dishonesty.

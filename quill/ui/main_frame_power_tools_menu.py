@@ -45,7 +45,7 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
     QUILL's curated keymap, so users bind them from the Keymap Editor. Three do
     as of 2026-09-16 -- Hard-Wrap Lines (``Alt+Shift+W``), Delete Lines
     Containing (``Alt+Shift+X``) and Line Statistics (``Ctrl+Alt+G``) -- because
-    QuillLite gave the first two those exact chords and both were free here, and
+    QUILL Lite gave the first two those exact chords and both were free here, and
     because a verb reachable only by walking a menu is a cost a screen-reader
     user pays on every visit (bad.md P1.1, rule 8). The keys live in
     ``DEFAULT_KEYMAP`` and arrive through ``_binding_for``; nothing in this
@@ -355,7 +355,7 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
     # is what you want before pasting a fragment, removing all of them is what
     # you want after a copy out of a web page, and one item that did whichever
     # would be an item nobody could predict. Added with the shared
-    # ``format_ops.remove_blank_lines`` that QuillLite needed -- see
+    # ``format_ops.remove_blank_lines`` that QUILL Lite needed -- see
     # PowerToolsActionsMixin.remove_blank_lines for why it lands here too.
     #
     # The two names say where rather than how much (2026-09-10). "Trim" and

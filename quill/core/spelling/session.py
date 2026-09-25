@@ -328,10 +328,10 @@ class ReviewSession:
 
         *personal_dir* because this is shared by two editors that keep separate
         data folders. Without it ``add_word_to_scope`` falls back to QUILL's,
-        so F7's "Add to Dictionary" in QuillLite grew a Quill folder under
+        so F7's "Add to Dictionary" in QUILL Lite grew a Quill folder under
         ``%APPDATA%`` on a machine that had never had QUILL installed -- and the word
-        was flagged again next session, because QuillLite reads its own
-        (bad.md S1). QuillLite's other two add routes passed the right folder
+        was flagged again next session, because QUILL Lite reads its own
+        (bad.md S1). QUILL Lite's other two add routes passed the right folder
         all along; only the review dialog did not.
         """
         m = self._issues[self._current_idx]

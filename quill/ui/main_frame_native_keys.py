@@ -15,7 +15,7 @@ seam: this is the only place in the frame that cares what the *toolkit* does
 with a key rather than what QUILL does with it.
 
 The vocabulary -- which chords, and what each would have done -- is shared with
-QuillLite in :mod:`quill.core.native_richedit_keys`, so the two products cannot
+QUILL Lite in :mod:`quill.core.native_richedit_keys`, so the two products cannot
 explain one dead key two different ways.
 """
 
@@ -104,7 +104,7 @@ class NativeKeyGuardMixin:
     def _native_key_kind_label(self) -> str:
         """ "Markdown", "HTML" or "plain text" -- what this document actually is.
 
-        The names come from the shared table so that QuillLite, whose own
+        The names come from the shared table so that QUILL Lite, whose own
         status cell spells these differently, cannot end up saying a different
         sentence about the same key in the same file.
         """

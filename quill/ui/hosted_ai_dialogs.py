@@ -1,7 +1,7 @@
 """The four windows the family's hosted AI is reached through.
 
 Shared by **both** editors, which is why these modules live in ``quill/ui``
-rather than beside QuillLite's. The hosted service shipped in QuillLite first,
+rather than beside QUILL Lite's. The hosted service shipped in QUILL Lite first,
 and a feature the small product has and the big one does not is backwards and
 invisible -- nobody opens QUILL and notices the absence of a thing they have
 only ever seen elsewhere. So the windows moved here and QUILL reaches them on
@@ -234,7 +234,7 @@ class AiSignInFrame(wx.Frame):
     the code, and the confirmation. Replacing the content in place means
     focus never jumps to a window somebody did not open, and the status line
     changing is a label change on unfocused text -- exactly the case a screen
-    reader does *not* announce, and therefore exactly the case QuillLite should.
+    reader does *not* announce, and therefore exactly the case QUILL Lite should.
     """
 
     def __init__(self, parent: wx.Window, service: Any, announce: Callable[[str], None]) -> None:
@@ -525,7 +525,7 @@ def ask_ai_privacy_agreement(parent: wx.Window) -> bool:
         "Turns on AI help. You can withdraw this later in the AI menu, or in Preferences."
     )
     decline = wx.Button(dialog, wx.ID_CANCEL, "No Thanks")
-    decline.SetHelpText("Leaves AI help switched off. Everything else in QuillLite is unchanged.")
+    decline.SetHelpText("Leaves AI help switched off. Everything else in QUILL Lite is unchanged.")
     # A stretch spacer, not wx.ALIGN_RIGHT -- see _close_row for why.
     buttons.AddStretchSpacer(1)
     buttons.Add(agree, 0, wx.RIGHT, _PAD)

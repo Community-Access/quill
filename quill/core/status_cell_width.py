@@ -9,7 +9,7 @@ drawn there.
 That makes the row's geometry part of the interface. A cell whose width follows
 its text shoves every cell after it sideways whenever the text changes:
 "No selection" becoming "1 words, 8 characters selected" is ninety pixels, and
-in QuillLite it moved nine of thirteen cells on every selection and every
+in QUILL Lite it moved nine of thirteen cells on every selection and every
 deselection. Text drawn at one position and then redrawn ninety pixels along
 leaves both in that model, so the bar came back as halves and doubles --
 "Line 1, colu Line 1, c ... No selectio ... B ody text" -- on a *maximised*

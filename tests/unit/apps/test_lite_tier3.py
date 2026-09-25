@@ -1,6 +1,6 @@
-"""The Tier 2 and Tier 3 crossings into QuillLite (bad.md P2.13, P3.6).
+"""The Tier 2 and Tier 3 crossings into QUILL Lite (bad.md P2.13, P3.6).
 
-Five capabilities QUILL had and QuillLite did not, and the rule that put them
+Five capabilities QUILL had and QUILL Lite did not, and the rule that put them
 here: a capability that is editor-core, already shared, worth a listener's time
 and switchable off belongs in both products (bad.md 4.2). Each of these is a
 thing a sighted reader gets from scrolling and glancing.
@@ -211,7 +211,7 @@ def test_the_snippet_gallery_says_when_abbreviations_are_off(markdown_window) ->
 
 
 def test_the_snippet_gallery_inserts_the_one_chosen(markdown_window, monkeypatch) -> None:
-    """The half QuillLite did not have: abbreviations expand when you type the
+    """The half QUILL Lite did not have: abbreviations expand when you type the
     trigger, which is useless for the fortieth one whose trigger you cannot
     remember."""
     from quill.apps import lite_window_typing as typing_mod
@@ -291,7 +291,7 @@ def test_the_tutorials_window_opens(markdown_window, monkeypatch) -> None:
 
 
 def test_follow_me_is_unavailable_because_no_lesson_here_has_a_check() -> None:
-    """The tick box that watches the app is greyed in QuillLite, not shown live.
+    """The tick box that watches the app is greyed in QUILL Lite, not shown live.
 
     Every step in an editor lesson ends in a sentence the app already says, so
     there is nothing for Follow me to watch for, and none of the nine lessons

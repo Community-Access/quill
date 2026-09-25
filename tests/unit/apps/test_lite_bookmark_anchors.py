@@ -1,6 +1,6 @@
 """A bookmark that survives an edit it did not expect.
 
-QuillLite shifted its bookmarks by a guess: the document's length changed by N
+QUILL Lite shifted its bookmarks by a guess: the document's length changed by N
 and the caret is here, so everything after the caret moves N. That is right for
 one insertion at the caret and wrong for every other edit there is -- a Replace
 All, an undo, a paste over a selection, a reload that happens to change the

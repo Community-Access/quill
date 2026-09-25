@@ -23,9 +23,9 @@ PROFILE_ACCESSIBILITY_PROFESSIONAL = "accessibility_professional"
 PROFILE_FULL_QUILL = "full_quill"
 PROFILE_QUILLLITE = "quilllite"
 
-#: What the QuillLite profile takes away, written as a subtraction so a feature
+#: What the QUILL Lite profile takes away, written as a subtraction so a feature
 #: added to QUILL later is *on* here until somebody decides otherwise -- the same
-#: direction QuillLite's own profiles are written in, and the safe one: a new
+#: direction QUILL Lite's own profiles are written in, and the safe one: a new
 #: feature silently missing is a bug nobody can see, while a new feature
 #: unexpectedly present is one press of Customize Features away.
 #:
@@ -34,14 +34,14 @@ PROFILE_QUILLLITE = "quilllite"
 #: Somebody who chose "the small one" and then wants one thing back should be
 #: able to find it, and a hidden feature cannot be found by looking.
 #:
-#: The list is what QuillLite genuinely does not have: the AI surfaces, the
+#: The list is what QUILL Lite genuinely does not have: the AI surfaces, the
 #: companion apps, extensions, remote and publishing paths, the notebook, and
 #: the reading and dictation stack. Editing, files, spelling, formatting,
-#: navigation, the clipboard, recovery and help all stay, because QuillLite has
+#: navigation, the clipboard, recovery and help all stay, because QUILL Lite has
 #: every one of them.
 #: ``core.bundled_quillins`` is deliberately NOT here: it is ``locked_on``,
 #: because the bundled extensions carry commands QUILL itself relies on. What
-#: QuillLite does not have is the Quillins *menu*, which is
+#: QUILL Lite does not have is the Quillins *menu*, which is
 #: ``future.quillins_menu`` and is off below.
 _QUILLLITE_OFF: tuple[str, ...] = (
     "core.analysis",
@@ -93,7 +93,7 @@ class FeatureProfile:
     states: dict[str, str] = field(default_factory=dict)
     #: Settings the profile's NAME promises, applied when it is activated.
     #:
-    #: QuillLite's profiles have carried these since they shipped, and for a
+    #: QUILL Lite's profiles have carried these since they shipped, and for a
     #: reason worth repeating here: a profile named after another program is a
     #: statement about what the thing you type in *is*, not merely about which
     #: menus exist. A "Notepad" profile that removed the Format menu and still
@@ -395,14 +395,14 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
     ),
     PROFILE_QUILLLITE: FeatureProfile(
         id=PROFILE_QUILLLITE,
-        name=lazy_gettext("QuillLite"),
+        name=lazy_gettext("QUILL Lite"),
         description=lazy_gettext(
-            "QUILL with QuillLite's nine menus and nothing else: a plain-text "
+            "QUILL with QUILL Lite's nine menus and nothing else: a plain-text "
             "editor with rich text, spelling, the line tools and the clipboard, "
             "and none of the writing environment around them."
         ),
         states=dict.fromkeys(_QUILLLITE_OFF, FEATURE_STATE_OFF),
-        # The half a list of menus cannot say: QuillLite makes a plain text
+        # The half a list of menus cannot say: QUILL Lite makes a plain text
         # document on Ctrl+N, so this profile does too (bad.md P2.4).
         settings=(("default_new_document_format", "txt"),),
     ),

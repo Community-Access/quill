@@ -1,4 +1,4 @@
-"""Small QuillLite defects, each of which cost a listener something specific.
+"""Small QUILL Lite defects, each of which cost a listener something specific.
 
 Grouped here rather than scattered because they share a shape: the code did
 something reasonable and *said* something that was not true, or said nothing at
@@ -14,7 +14,7 @@ from __future__ import annotations
 
 
 def test_ctrl_f4_closes_the_document_like_ctrl_w(lite_window) -> None:
-    """Windows has closed an MDI child with Ctrl+F4 since 3.1, and QuillLite is
+    """Windows has closed an MDI child with Ctrl+F4 since 3.1, and QUILL Lite is
     MDI. Nothing bound it, so the key did nothing -- and the two comments that
     mentioned Alt+F4 disagreed about what that one did (bad.md H7)."""
     win = lite_window("hello")

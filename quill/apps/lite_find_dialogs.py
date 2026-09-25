@@ -1,4 +1,4 @@
-"""QuillLite's three searching windows: Find, Replace, and All Matches.
+"""QUILL Lite's three searching windows: Find, Replace, and All Matches.
 
 Split out of :mod:`quill.apps.lite_dialogs` when the search modes, the live
 match count and the match list pushed that module past GATE-11's default cap.

@@ -13,7 +13,7 @@ front door -- knowing that an em dash is 2014 is a thing you look up. It now
 opens the shared picker (:mod:`quill.ui.special_character_dialog`) over the
 shared catalogue (:mod:`quill.core.special_characters`), whose search box takes
 a code point as readily as a name, so nothing was lost by dropping the prompt.
-QuillLite's Edit > Insert > Special Character opens the same dialog.
+QUILL Lite's Edit > Insert > Special Character opens the same dialog.
 """
 
 from __future__ import annotations

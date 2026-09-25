@@ -24,9 +24,9 @@
  * so they still reach branch 2 and nothing about the shared-runtime story
  * changes. Two bugs came out of the old order:
  *
- *   * QuillLite's portable zip died at launch with "No module named
+ *   * QUILL Lite's portable zip died at launch with "No module named
  *     quill.apps.lite" -- it was running a shared runtime frozen in August,
- *     before QuillLite existed, while its own interpreter with the whole app
+ *     before QUILL Lite existed, while its own interpreter with the whole app
  *     in it sat unused in the same folder. The shared runtime is validated by
  *     CPython major.minor only, so a runtime that predates an app matches
  *     forever.

@@ -16,13 +16,13 @@ and the numbers beside the switches they belong to.
 QUILL renders the same twelve settings from ``settings_specs.py`` into its own
 searchable Settings window too, which is the right shape there because that
 window has four hundred rows and a search box -- but it also opens *this*
-window on ``Ctrl+Alt+Shift+F7``, QuillLite's chord for it, because a person who
+window on ``Ctrl+Alt+Shift+F7``, QUILL Lite's chord for it, because a person who
 wants to tune how a misspelling is said should not have to find twelve rows
 among four hundred first (bad.md 3.6, P1.14).
 
 It moved from ``quill/apps/`` to ``quill/ui/`` on 2026-09-18 when QUILL started
 using it: a window both editors open is shared UI, and leaving it under the
-small product's package would have meant QUILL importing from QuillLite.
+small product's package would have meant QUILL importing from QUILL Lite.
 """
 
 from __future__ import annotations
@@ -37,7 +37,7 @@ from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_
 
 __all__ = ["edit_spelling_voice"]
 
-#: Uniform padding, matching the other QuillLite dialogs.
+#: Uniform padding, matching the other QUILL Lite dialogs.
 _PAD = 8
 
 #: The bounds every millisecond field is clamped to. Generous at the top on

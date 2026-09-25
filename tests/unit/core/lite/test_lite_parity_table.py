@@ -26,7 +26,7 @@ def _quill_fields() -> set[str]:
 
 def test_every_alias_names_a_field_that_exists_on_both_sides() -> None:
     """A mapping to a field nobody has is a mapping that silently does nothing,
-    and "Bring my QuillLite settings" would drop that setting without a word."""
+    and "Bring my QUILL Lite settings" would drop that setting without a word."""
     lite, quill = _lite_fields(), _quill_fields()
     missing = [
         f"{left} -> {right}"
@@ -60,7 +60,7 @@ def test_the_four_known_pairs_resolve() -> None:
 
 
 def test_a_lookalike_pair_is_not_translated() -> None:
-    """recent_files is QuillLite's LIST of files; recent_files_limit is QUILL's
+    """recent_files is QUILL Lite's LIST of files; recent_files_limit is QUILL's
     COUNT. Mapping one to the other hands an importer a list where it wants a
     number -- the one wrong answer that looks right."""
     assert quill_setting_for("recent_files") == "recent_files"
@@ -71,11 +71,11 @@ def test_a_field_nobody_has_heard_of_comes_back_unchanged() -> None:
 
 
 def test_every_quilllite_field_is_either_shared_mapped_or_its_own() -> None:
-    """The gate itself: a NEW QuillLite field whose concept already exists in
+    """The gate itself: a NEW QUILL Lite field whose concept already exists in
     QUILL under a different name has to be noticed here rather than discovered
     two releases later by somebody whose imported settings were half-applied.
 
-    "Its own" is the common and legitimate case -- QuillLite has settings QUILL
+    "Its own" is the common and legitimate case -- QUILL Lite has settings QUILL
     genuinely does not, and QUILL has three hundred it does not. What this
     catches is a field that is neither: spelled differently from QUILL's and not
     in the table.
@@ -102,7 +102,7 @@ def test_every_quilllite_field_is_either_shared_mapped_or_its_own() -> None:
         "restore_session",
         "session_files",
         # "Use QUILL's" only makes sense in the product that is not QUILL.
-        # QuillLite's own, for now and on purpose. QUILL has AI already -- five
+        # QUILL Lite's own, for now and on purpose. QUILL has AI already -- five
         # bring-your-own-key providers, local models, the agent harness -- and
         # reaches none of it through QUILL's hosted gateway, so it has nothing
         # this agreement would be about. The day it does, this becomes a shared

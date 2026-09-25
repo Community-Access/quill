@@ -43,7 +43,7 @@ class SpellcheckCommandsMixin:
     def announce_spelling_state_if_skipped(self) -> bool:
         """Say once, at open, that this file type is not checked as you type.
 
-        The one announcement this feature makes on its own, and QuillLite has
+        The one announcement this feature makes on its own, and QUILL Lite has
         made it since it shipped (bad.md P1.14). Without it the difference
         between "off for this file type" and "broken" is invisible, and nobody
         can act on a silence they cannot explain -- which is the shape of every
@@ -69,7 +69,7 @@ class SpellcheckCommandsMixin:
     def open_spelling_announcements(self) -> None:
         """How a misspelling is said, in one window (bad.md P1.14, 3.6).
 
-        The same window QuillLite opens, on the same chord, over the same
+        The same window QUILL Lite opens, on the same chord, over the same
         setting names -- so somebody who tunes this in one editor finds the
         other already tuned. Not gated on spelling being enabled: the settings
         survive the feature being switched off, and somebody who has just
@@ -398,7 +398,7 @@ class SpellcheckCommandsMixin:
         """The spoken "none in this direction" result for Ctrl+F7 / Ctrl+Shift+F7.
 
         The sentence itself moved to :func:`quill.core.spellcheck.no_misspelling_message`
-        on 2026-09-16, so QuillLite could say it too: it had the bare "No further
+        on 2026-09-16, so QUILL Lite could say it too: it had the bare "No further
         misspellings" with no count, which reads as "your document is clean" when
         seven are sitting behind the caret (bad.md S9).
         """
@@ -623,7 +623,7 @@ class SpellcheckCommandsMixin:
         which "spell check as you type" would do -- is wasteful, so the result
         is cached. The key includes the personal dictionary's **revision**
         (mtime and size), which is what makes a *shared* dictionary actually
-        shared: QuillLite writes into this same ``personal.json`` when the
+        shared: QUILL Lite writes into this same ``personal.json`` when the
         listener has asked it to, and until 2026-09-17 a word taught there
         stayed underlined here until QUILL was restarted (bad.md S10). The
         check is one ``stat``; the re-read only happens when the file moved.
@@ -697,7 +697,7 @@ class SpellcheckCommandsMixin:
 
         QUILL could do this only from the context menu: no command, no key, no
         palette entry, so a keyboard-only user had to open a menu to reach it
-        while QuillLite had it on Alt+F7 (bad.md 4.1, P0.3). It is deliberately
+        while QUILL Lite had it on Alt+F7 (bad.md 4.1, P0.3). It is deliberately
         NOT on the F7 row -- that row is navigation, and the one command here
         that writes to a stored dictionary should not sit where a spelling
         habit can land on it by accident.

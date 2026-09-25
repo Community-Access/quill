@@ -21,7 +21,7 @@ every route which moves the control also moves the mirror:
   NVDA's and JAWS's own modifier;
 * **Ctrl+Alt+Shift+W** (``view.toggle_overwrite_mode``), which goes through
   :meth:`~quill.ui.richedit_editing.RichEditDocument.toggle_overtype` -- the
-  shared implementation QuillLite's ``cmd_toggle_overwrite`` calls too.
+  shared implementation QUILL Lite's ``cmd_toggle_overwrite`` calls too.
 
 Until 2026-09-09 the second of those flipped the mirror and told the control
 nothing. ``_overwrite_mode`` was written in three places and read in exactly one
@@ -38,7 +38,7 @@ said so" is a usable answer and "I claimed a mode I did not set" is not.
 :attr:`_tab_inserts_literal` decides whether it runs the smart line indent
 (QUILL's default) or types a tab character (Notepad's). Shift+Tab outdents in
 either mode, so a stray indent can be undone without first leaving the mode.
-QuillLite ships the same toggle with the opposite default, for the reason
+QUILL Lite ships the same toggle with the opposite default, for the reason
 recorded in ``quill/apps/lite_window_typing.py``: it is a Notepad replacement,
 and Notepad's Tab types a tab.
 
@@ -68,7 +68,7 @@ class TypingModesMixin:
 
         The mechanism is the shared one --
         :meth:`~quill.ui.richedit_editing.RichEditDocument.toggle_overtype`,
-        which QuillLite's own command calls too, so the two products cannot
+        which QUILL Lite's own command calls too, so the two products cannot
         drift on what "overwrite mode" does. Returns True when the control was
         told, so the caller can refuse to announce a mode change it could not
         make: a status cell that misreports what typing is about to do is
@@ -115,8 +115,8 @@ class TypingModesMixin:
         """Whether Tab types a tab character right now (bad.md T3, P1.21).
 
         The toggle wins when it has been used; otherwise the document kind
-        decides, through the shared ``quill.core.tab_behaviour`` rule QuillLite
-        reads too. Before this, QUILL indented in every kind and QuillLite typed
+        decides, through the shared ``quill.core.tab_behaviour`` rule QUILL Lite
+        reads too. Before this, QUILL indented in every kind and QUILL Lite typed
         a tab in every kind, and each was wrong in the other's documents.
         """
         from quill.core.tab_behaviour import tab_inserts_a_tab
@@ -179,7 +179,7 @@ class TypingModesMixin:
 
         The phrasing is :func:`~quill.core.format_ops.describe_indent_depth`'s,
         the same one Tab already speaks, so "4 spaces" means the same thing
-        however it was reached. QuillLite has the command on the same key.
+        however it was reached. QUILL Lite has the command on the same key.
         """
         self._set_status(self._current_line_indent_phrase())
 

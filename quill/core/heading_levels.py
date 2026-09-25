@@ -2,7 +2,7 @@
 
 Shared because both products need it and neither may own it: QUILL binds
 ``format.decrease_heading_level`` / ``increase_heading_level`` to Alt+Shift+Left
-and Right, and QuillLite binds the same pair. Until 2026-09-09 the rule lived
+and Right, and QUILL Lite binds the same pair. Until 2026-09-09 the rule lived
 inline in ``main_frame.py`` as two regexes and four branches, which is exactly
 the shape that gets copied rather than called the second time somebody needs it.
 

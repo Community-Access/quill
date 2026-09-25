@@ -1,10 +1,10 @@
 """A cache the running app needs must not land in another product's folder.
 
-``quill/core/lite/paths.py`` opens by saying QuillLite is "deliberately **not**
+``quill/core/lite/paths.py`` opens by saying QUILL Lite is "deliberately **not**
 ``%APPDATA%\\Quill``", and ``core/lite/settings.py`` that "a machine that has
 never had QUILL installed must not grow a Quill data folder because somebody
 opened a text file". Both were untrue until 2026-09-15: two shared-core caches
-resolved through :func:`app_data_dir`, which is QUILL's folder, and QuillLite
+resolved through :func:`app_data_dir`, which is QUILL's folder, and QUILL Lite
 reaches both on its first window --
 
 * the comtypes generated-wrapper cache, because the native Rich Edit surface
@@ -15,7 +15,7 @@ One ``--check`` -- less than opening a document -- created
 ``%APPDATA%\\Quill\\comtypes_gen`` and ``%APPDATA%\\Quill\\spell``.
 
 The fix is a seam, not an override. :func:`app_data_dir` still means *QUILL's*
-folder, because QuillLite reaches it on purpose in three places (share QUILL's
+folder, because QUILL Lite reaches it on purpose in three places (share QUILL's
 dictionary, share QUILL's abbreviations, list QUILL's sound schemes) and a
 global redirect would have broken all three silently -- which is the test at the
 bottom of this file.
@@ -42,7 +42,7 @@ def _no_declaration_leaks_between_tests() -> Iterator[None]:
 
 
 def test_an_app_that_declares_nothing_gets_quills_folder() -> None:
-    """The default, and therefore every app except QuillLite: unchanged."""
+    """The default, and therefore every app except QUILL Lite: unchanged."""
     assert paths.running_app_data_dir() == paths.app_data_dir()
 
 
@@ -91,7 +91,7 @@ def test_the_managed_spell_dir_follows_the_running_app(
 def test_the_comtypes_cache_follows_the_running_app(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """``comtypes_gen/`` is the other, and the one QuillLite cannot avoid: it is
+    """``comtypes_gen/`` is the other, and the one QUILL Lite cannot avoid: it is
     created by the native Rich Edit surface, on the first window."""
     from quill.platform.windows import comtypes_setup
 
@@ -116,7 +116,7 @@ def test_quilllite_still_reaches_quills_folder_when_asked_to_share(
 
     ``share_quill_dictionary`` and ``share_quill_abbreviations`` are Preferences
     switches whose entire meaning is "use QUILL's copy". They resolve through
-    ``app_data_dir`` and must keep doing so while QuillLite is declaring its own
+    ``app_data_dir`` and must keep doing so while QUILL Lite is declaring its own
     folder for everything else.
     """
     from quill.core.lite.spelling import dictionary_dir

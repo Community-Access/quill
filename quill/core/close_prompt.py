@@ -1,6 +1,6 @@
 """The question asked before unsaved work can be lost (bad.md F12, P2.10).
 
-Two editors asked it two ways. QuillLite named the document -- "Save changes to
+Two editors asked it two ways. QUILL Lite named the document -- "Save changes to
 notes.txt?" -- and QUILL did not: "You have unsaved changes. Save before
 closing?", which is the right question about the wrong number of documents. With
 nine tabs open and no way to look at the title bar, "unsaved changes" in which

@@ -1,6 +1,6 @@
 """The three-stop ring a list key should be, over Markdown markers.
 
-A toggle can only say yes or no, which is why QuillLite had bullets and no way
+A toggle can only say yes or no, which is why QUILL Lite had bullets and no way
 to make a numbered list at all (bad.md P1.5). What is being asserted here is the
 ring itself, the scope, and the two things the obvious implementation gets
 wrong: numbering that restarts at one and counts only the lines it numbers, and

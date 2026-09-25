@@ -1,6 +1,6 @@
 """QUILL's half of the shared feedback rule (``settings.action_feedback``).
 
-QuillLite's half is covered behaviourally in ``tests/unit/apps``; this is the
+QUILL Lite's half is covered behaviourally in ``tests/unit/apps``; this is the
 same four modes exercised against QUILL's three call sites, because "the rule is
 shared" is only true while both callers are checked. The rule itself lives in
 :mod:`quill.core.action_feedback` and is tested there -- what is tested here is
@@ -248,7 +248,7 @@ def test_a_missed_search_reports_in_the_chosen_channel(recorded_sounds, mode, to
 
 
 def test_the_first_miss_speaks_and_the_same_miss_again_does_not(recorded_sounds):
-    """Both halves of the report in one test. QuillLite "made a sound but did
+    """Both halves of the report in one test. QUILL Lite "made a sound but did
     not announce the error" on the press that asked the question; F3 pressed in
     runs after that is what the tone default was always protecting."""
     host = _Search(find_not_found_feedback="sound")

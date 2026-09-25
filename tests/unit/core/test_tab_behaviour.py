@@ -1,6 +1,6 @@
 """Tab's meaning follows the document kind (bad.md T3, P1.21).
 
-QUILL indented the line in every kind of document and QuillLite typed a tab in
+QUILL indented the line in every kind of document and QUILL Lite typed a tab in
 every kind, each with a toggle to get the other behaviour -- so the same key
 did two different things in two editors that share a keymap, and each default
 was wrong somewhere: a literal tab inside a Markdown list item breaks the list,

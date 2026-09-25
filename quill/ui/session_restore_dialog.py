@@ -1,6 +1,6 @@
 """The chooser for last session's documents: which ones, and which to forget.
 
-Shared by QUILL and QuillLite, because it is the same question in both and the
+Shared by QUILL and QUILL Lite, because it is the same question in both and the
 answers are computed in one wx-free place (``quill/core/session_restore.py``).
 
 **Why a list with checkboxes rather than a Yes/No.** Yes/No is what both editors

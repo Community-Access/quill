@@ -1,14 +1,14 @@
-# Builds every QuillLite release artifact from one onedir build:
+# Builds every QUILL Lite release artifact from one onedir build:
 #
 #   dist\QuillLite\                        the staged app folder
 #   dist\QuillLite-Portable-<ver>.zip      portable (with its data\ folder)
 #   dist\QuillLite-Setup-Shared-<ver>.exe  the installer (bundles the runtime)
 #
-# TWO artifacts, not four (2026-09-15). QuillLite used to publish the thin
+# TWO artifacts, not four (2026-09-15). QUILL Lite used to publish the thin
 # "Lite" installer and the launcher-only Companion zip as well, and both were
 # wrong for THIS product. The Companion zip installs nothing, so it binds to
 # whatever shared runtime is already on the machine -- including one built
-# before QuillLite existed, which fails at launch with "No module named
+# before QUILL Lite existed, which fails at launch with "No module named
 # quill.apps.lite" and cannot self-heal, because the bootstrap only fires when
 # NO runtime resolves and a stale one resolves fine. The thin installer traded
 # a 114 MB download for a 110 MB first-launch download plus a network
@@ -27,7 +27,7 @@
 #                               [-Iscc <path>] [-SkipToken] [-SkipSharedRuntime]
 #                               [-Sign]
 #
-# QuillLite is a text editor: no ffmpeg, no libmpv, no media, AI or speech
+# QUILL Lite is a text editor: no ffmpeg, no libmpv, no media, AI or speech
 # stacks -- so, unlike Quill Radio's build, there is nothing to stage under its
 # own tools\. -FfmpegDir/-LibmpvDir are still accepted so an existing build
 # command keeps working; they are unused here. Pass -SkipSharedRuntime to reuse
@@ -36,11 +36,11 @@
 
 param(
     [string]$Python = "",
-    # QuillLite's own payload bundles neither ffmpeg nor mpv, and the shared
+    # QUILL Lite's own payload bundles neither ffmpeg nor mpv, and the shared
     # QuillVille Runtime no longer bundles them either -- the apps that declare
     # them (Radio, Cast, Studio) stage them in themselves. Both switches are
     # still accepted so an existing build command keeps working; they are simply
-    # unused here, which is exactly the 304 MB QuillLite stops installing.
+    # unused here, which is exactly the 304 MB QUILL Lite stops installing.
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
     [string]$TokenFile = "",
@@ -98,7 +98,7 @@ $sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
 if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
     Write-Host "Reusing existing shared runtime at $sharedRuntimeDist (--SkipSharedRuntime)."
 } else {
-    # Nothing is staged into the runtime here, and that is the point. QuillLite
+    # Nothing is staged into the runtime here, and that is the point. QUILL Lite
     # declares no components, so it contributes no ffmpeg, no ffprobe and no
     # libmpv -- 304 MB, 41% of what this installer used to carry, for tools it
     # can never call. Staging is opt-in (scripts\StageMediaTools.ps1), so there
@@ -106,7 +106,7 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
     #
     # This also retires an ordering dependency nothing documented: build_runtime
     # used to refuse to run without a vetted ffmpeg AND libmpv directory, so
-    # every QuillLite build failed unless some other app had already produced the
+    # every QUILL Lite build failed unless some other app had already produced the
     # runtime, and the -FfmpegDir the caller reached for was silently swallowed
     # into $args.
     Push-Location (Join-Path $repoRoot "..\runtime")
@@ -121,7 +121,7 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
 # -- the runtime must actually contain this app -------------------------------
 # Compiling and installing are not evidence that the thing runs. The shared
 # runtime carries its OWN frozen copy of the quill package, so a runtime built
-# before QuillLite existed does not contain quill.apps.lite -- and the installer
+# before QUILL Lite existed does not contain quill.apps.lite -- and the installer
 # compiles, installs, and then fails on first launch with "No module named
 # quill.apps.lite". That shipped once, on 2026-09-08, because -SkipSharedRuntime
 # reused a runtime from three weeks earlier. One import is the cheapest check
@@ -132,7 +132,7 @@ Assert-QuillRuntimeHasModule -RuntimeDir $sharedRuntimeDist -Module "quill.apps.
 # NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
 # and docs/design/native-launcher-2026-07-24.md: genuine unmodified
 # python.exe/pythonw.exe + the native C launcher (QuillLite.exe) spawning
-# `pythonw.exe -m quill.apps.lite`. QuillLite is small -- no ffmpeg/mpv/engines.
+# `pythonw.exe -m quill.apps.lite`. QUILL Lite is small -- no ffmpeg/mpv/engines.
 $appDir = Join-Path $repoRoot "dist\QuillLite"
 & $Python (Join-Path $QuillRepo "standalone\studio\scripts\build_portable.py") `
     --product quilllite `
@@ -160,10 +160,10 @@ Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 
 # -- strip staged media tools from the runtime payload -----------------------
-# QuillLite declares no media components, but the shared runtime dist is a
+# QUILL Lite declares no media components, but the shared runtime dist is a
 # COMMUNAL work area: a media app's build (Radio, Studio, Cast) stages
 # ffmpeg/libmpv into its tools\ and leaves them there. Packed wholesale,
-# they cost this installer 304 MB for tools QuillLite can never call -- the
+# they cost this installer 304 MB for tools QUILL Lite can never call -- the
 # 2026-08-18 rebuild shipped exactly that because it ran after Radio's.
 # Stripping here makes build order irrelevant; a media app's own build
 # re-stages what it declares every time.
@@ -171,7 +171,7 @@ foreach ($tool in @("ffmpeg", "mpv")) {
     $staged = Join-Path $sharedRuntimeDist "tools\$tool"
     if (Test-Path $staged) {
         Remove-Item $staged -Recurse -Force
-        Write-Host "Stripped staged $tool from the runtime payload (QuillLite declares no media tools)."
+        Write-Host "Stripped staged $tool from the runtime payload (QUILL Lite declares no media tools)."
     }
 }
 

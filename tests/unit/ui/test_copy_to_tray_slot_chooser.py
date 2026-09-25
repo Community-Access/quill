@@ -1,7 +1,7 @@
 """Copy to Tray Slot... in QUILL (bad.md P2.1, 5.1).
 
 QUILL could copy to the *next free* slot (`Ctrl+Alt+Y`) or to a slot by its own
-chord, and that is the whole point of the chooser QuillLite has on
+chord, and that is the whole point of the chooser QUILL Lite has on
 `Alt+Shift+Y`: a tray you fill in order is a tray whose numbers mean nothing,
 and the value of a numbered slot is that you chose the number and can therefore
 remember it.

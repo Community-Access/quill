@@ -3,7 +3,7 @@
 A capability with no key is not merely slower to reach. It is absent from the
 generated keyboard reference, so nobody discovers it either -- it exists only
 for whoever happens to walk the menu it lives in. Fifteen QUILL commands were
-registered with ``binding=None`` while QuillLite reached the same verb on a
+registered with ``binding=None`` while QUILL Lite reached the same verb on a
 chord, which is the small product being ahead of the big one in exactly the way
 ``CLAUDE.md`` forbids.
 
@@ -24,7 +24,7 @@ def _lite() -> dict[str, str]:
     return {handler: key for _m, _label, key, handler, _flag in COMMANDS if key}
 
 
-#: QUILL command -> (its chord, the QuillLite handler that already used it).
+#: QUILL command -> (its chord, the QUILL Lite handler that already used it).
 _ADOPTED = {
     "file.page_setup": ("Ctrl+Alt+P", "cmd_page_setup"),
     "edit.remove_duplicate_lines": ("Ctrl+Alt+D", "cmd_remove_duplicate_lines"),
@@ -92,7 +92,7 @@ def test_copy_with_source_stepped_aside_for_describe_character() -> None:
 def test_the_once_a_year_trio_agrees_and_left_the_letter_rows(
     command_id: str, handler: str, chord: str
 ) -> None:
-    """They held Ctrl+Alt+Shift+F, Q and D in QuillLite -- three-modifier LETTER
+    """They held Ctrl+Alt+Shift+F, Q and D in QUILL Lite -- three-modifier LETTER
     chords that editing verbs want in QUILL (Search in Files, Duplicate
     Selection). Nobody backs up their settings in the editing loop."""
     assert DEFAULT_KEYMAP[command_id] == chord
@@ -122,9 +122,9 @@ def test_list_bookmarks_kept_every_chord_it_has_ever_had() -> None:
 
     ``navigate.list_bookmarks`` held ``Alt+Shift+B`` with ``Ctrl+Shift+F5`` --
     Word's own Bookmark key -- as an alias beside it. The whole-bar status
-    switch took ``Alt+Shift+B`` (Notepad's chord for it, and QuillLite's) and
+    switch took ``Alt+Shift+B`` (Notepad's chord for it, and QUILL Lite's) and
     the alias was promoted rather than replaced, which is the cheap shape of a
-    move. Then rule 6 gave the command QuillLite's own ``Alt+Shift+G`` as the
+    move. Then rule 6 gave the command QUILL Lite's own ``Alt+Shift+G`` as the
     primary (bad.md P1.15), and Word's key went back to being the alias.
 
     Both of the earlier chords still reach it -- one as the live alias, one

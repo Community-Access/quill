@@ -1,10 +1,10 @@
-"""QuillLite's Typing Mode cell has to be true, or it is worse than absent.
+"""QUILL Lite's Typing Mode cell has to be true, or it is worse than absent.
 
 The native control implements insert-versus-overwrite itself, toggles it on
-VK_INSERT, and will not report which mode it is in. So QuillLite mirrors the
+VK_INSERT, and will not report which mode it is in. So QUILL Lite mirrors the
 mode, and the only thing that makes the mirror trustworthy is that *every* route
 which changes the control also moves the mirror -- the command, and the Insert
-key the control answers whether QuillLite asks it to or not.
+key the control answers whether QUILL Lite asks it to or not.
 
 QUILL shipped the other version of this: a flag the status bar rendered and
 nothing else ever changed, so the cell could read "Overwrite" while typing still
@@ -104,7 +104,7 @@ def test_the_command_refuses_rather_than_claiming_a_mode_it_could_not_set() -> N
 
 
 def test_the_insert_key_is_watched_and_never_swallowed() -> None:
-    """The control does the overtype; all QuillLite adds is that the cell knows.
+    """The control does the overtype; all QUILL Lite adds is that the cell knows.
 
     ``Skip`` is load-bearing twice over: it is what lets the control act at all,
     and Insert is NVDA's and JAWS's modifier, so a handler that consumed it

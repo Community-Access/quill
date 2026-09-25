@@ -1,6 +1,6 @@
 """Paragraph and run formatting QUILL's rich mode was missing.
 
-Six commands, and all six arrived the same way: QuillLite needed them to be a
+Six commands, and all six arrived the same way: QUILL Lite needed them to be a
 credible WordPad replacement, and a feature the small product has and the
 editor does not is exactly backwards. So the capability lives in the shared
 surface (:mod:`quill.ui.richedit_editing`) and both products reach it -- this
@@ -22,7 +22,7 @@ module is QUILL's half.
   WordPad feature, and the thing everybody reaches for anyway when a web page
   arrives in a document wearing its own fonts.
 
-QUILL takes Ctrl+Alt+J and Ctrl+Alt+V where QuillLite uses WordPad's Ctrl+J and
+QUILL takes Ctrl+Alt+J and Ctrl+Alt+V where QUILL Lite uses WordPad's Ctrl+J and
 Ctrl+Shift+V: Ctrl+J has been Set Temporary Bookmark and Ctrl+Shift+V has been
 Preview here for far longer, and an existing binding somebody's hands already
 know outranks a new command's convention.
@@ -113,7 +113,7 @@ class RichParagraphMixin:
     def format_rich_list_style(self) -> bool:
         """Step the caret's paragraphs to the next list style. True when handled.
 
-        WordPad's Ctrl+Shift+L and QuillLite's: bulleted, numbered, none, round
+        WordPad's Ctrl+Shift+L and QUILL Lite's: bulleted, numbered, none, round
         again. A toggle can only say yes or no, which is why a numbered list was
         unreachable from the keyboard in a rich QUILL document (bad.md P1.5).
 

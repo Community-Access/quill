@@ -103,7 +103,7 @@ APPS: tuple[AppConfig, ...] = (
         "beacon_help_inventory.json",
     ),
     AppConfig(
-        "QuillLite",
+        "QUILL Lite",
         "quill.core.lite_surface_help",
         (),
         # The Spelling Announcements dialog moved to quill/ui in 2026-09 so

@@ -116,7 +116,7 @@ Quill Radio 3.0 is a free download for Windows 10 and 11, as an installer or a
 portable build, from the QuillVille site. It shares its engine with **QUILL**,
 the full accessible word processor, and sits beside **QUILL Cast** (podcasts),
 **Quill Weather**, **Quill Audio Studio**, **Quill Media Player**, **Quill
-Inkwell**, **Quill Converter**, **Quill Beacon** and **QuillLite** -- one
+Inkwell**, **Quill Converter**, **Quill Beacon** and **QUILL Lite** -- one
 family, one set of keys, one way of speaking.
 
 Upgrading from 2.x keeps your favorites, your settings and your keymap.

@@ -1,7 +1,7 @@
 """The message every app sends when somebody asks support for help.
 
 One address, one shape, one place that decides what a support message says --
-so Quill Radio's report and QuillLite's report arrive looking like the same
+so Quill Radio's report and QUILL Lite's report arrive looking like the same
 product wrote them, and so the wording can be fixed once.
 
 Two things this module deliberately does *not* do:

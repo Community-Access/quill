@@ -82,8 +82,8 @@ class LiteServicesMixin:
         """Load the per-document bookmark and cursor store, once for the app.
 
         QUILL's :class:`~quill.core.bookmarks.DocumentMemory`, pointed at
-        QuillLite's own folder. The *code* is shared; the *file* is not, because
-        QuillLite shares no data with QUILL (its PRD 5.3, "not a thin client")
+        QUILL Lite's own folder. The *code* is shared; the *file* is not, because
+        QUILL Lite shares no data with QUILL (its PRD 5.3, "not a thin client")
         and a machine that has never had QUILL installed must not grow a Quill
         data folder because somebody opened a text file.
 
@@ -107,7 +107,7 @@ class LiteServicesMixin:
     def abbreviation_dir(self) -> Path:
         """Where the abbreviation library is read from and written to.
 
-        QuillLite's own folder unless the listener has asked, in Preferences, to
+        QUILL Lite's own folder unless the listener has asked, in Preferences, to
         share QUILL's -- in which case this is QUILL's data directory, the same
         one Inkwell and QUILL both use, and a change here is a change there.
         """
@@ -197,7 +197,7 @@ class LiteServicesMixin:
             logger.warning("Could not write the keymap file", exc_info=True)
 
     def reset_keymap(self) -> None:
-        """Put every key back to the one QuillLite ships with."""
+        """Put every key back to the one QUILL Lite ships with."""
         self.keymap = keymap_mod.default_keymap()
         self.save_keymap()
 

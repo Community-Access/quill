@@ -1,7 +1,7 @@
-"""QuillLite's guided tutorials: its tracks, and its lessons assembled.
+"""QUILL Lite's guided tutorials: its tracks, and its lessons assembled.
 
 Nine lessons in two tracks, and the number is the point. QUILL has twenty-one
-in six, because QUILL is an environment somebody moves into; QuillLite is a
+in six, because QUILL is an environment somebody moves into; QUILL Lite is a
 Notepad replacement, and a Notepad replacement with a twenty-one-lesson course
 attached to it is advertising that it is not one.
 
@@ -16,7 +16,7 @@ Two tracks, and they answer the two questions this product exists for:
 
 * **Your first documents** is the promise: open a file, get it back unchanged,
   and know what kind of thing you are in. Somebody who does only this track can
-  use QuillLite all day.
+  use QUILL Lite all day.
 * **Working in a document** is the part that has no sighted equivalent --
   selecting text you cannot see the extent of, finding your way back, skimming
   something long, hearing that a word is wrong without being interrupted
@@ -36,7 +36,7 @@ from __future__ import annotations
 from quill.core.lite.tutorials import first_documents, working_in_it
 from quill.core.tutorials.model import Track, TutorialSet, build
 
-#: QuillLite's tracks, in teaching order.
+#: QUILL Lite's tracks, in teaching order.
 TRACKS: tuple[Track, ...] = (
     Track(
         "first-documents",

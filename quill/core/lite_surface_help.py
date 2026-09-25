@@ -1,23 +1,23 @@
-"""What every QuillLite window is *for* -- the F1 help's opening paragraph.
+"""What every QUILL Lite window is *for* -- the F1 help's opening paragraph.
 
 Every app in the family answers F1 the same way: what this window is for, then
 what the control you are on does. The engine is shared
 (:mod:`quill.ui.app_context_help` + :mod:`quill.core.control_help`); this module
-is QuillLite's half of it, the wx-free catalogue of window purposes, keyed by
+is QUILL Lite's half of it, the wx-free catalogue of window purposes, keyed by
 window title exactly as Radio's, Cast's, Converter's and Inkwell's are.
 
 Keyed by **title** for the reason the siblings are: the title is the one
 identity a window already announces, and it is what somebody quotes back in a
-bug report. QuillLite adds one wrinkle none of the siblings have -- its main
+bug report. QUILL Lite adds one wrinkle none of the siblings have -- its main
 window is titled after the *document*, not after the app ("3: Notes.txt -
-QuillLite (plain text)"), because the number and the file name are what a
+QUILL Lite (plain text)"), because the number and the file name are what a
 listener needs from the one string a reader announces on arrival. So the
-document window is matched by the ``" - QuillLite"`` that every one of those
+document window is matched by the ``" - QUILL Lite"`` that every one of those
 titles contains, and the fixed windows are matched exactly.
 
 The catalogue is **gated** (GATE-LITE-HELP,
 :mod:`quill.tools.lite_help_audit`): every ``wx.Frame`` / ``wx.Dialog`` title
-constructed in QuillLite's modules must resolve here, so a new surface cannot
+constructed in QUILL Lite's modules must resolve here, so a new surface cannot
 ship without saying what it is for.
 
 Wording rules, unchanged from Radio's, so the entries stay worth hearing:
@@ -81,13 +81,13 @@ PURPOSES: dict[str, str] = {
         "your document until you choose Replace My Selection or Insert Below, "
         "and either of those is a single edit that Control Z takes back."
     ),
-    "QuillLite": (
+    "QUILL Lite": (
         "Your document. This is the whole editor: type, and Control S saves. The "
         "title bar leads with this document's number, then its name, whether it "
         "is plain text or rich text, and whether there is anything unsaved. "
         "Control N opens another document beside this one, numbered; Alt+1 to "
         "Alt+9 go straight to one, Control Tab and Control F6 move to the next, "
-        "and the Window menu lists them all. Documents live inside one QuillLite "
+        "and the Window menu lists them all. Documents live inside one QUILL Lite "
         "window, so Alt+Tab will not step between them -- those four are how you "
         "move. Press F6 for the status bar, which carries the position, the word "
         "count, the encoding and the line endings."
@@ -111,7 +111,7 @@ PURPOSES: dict[str, str] = {
         "invisibles, typography, marks, currency, maths, fractions, superscripts, "
         "arrows, accented letters, Greek and punctuation from other languages. "
         "Arrow through the characters to hear each one described and press Enter to "
-        "insert the one you are on. QuillLite reads back what it put in, because "
+        "insert the one you are on. QUILL Lite reads back what it put in, because "
         "most of this list is invisible on the page. QUILL has the same picker on "
         "Shift+F2."
     ),
@@ -127,7 +127,7 @@ PURPOSES: dict[str, str] = {
         "also what Word will show in its navigation pane."
     ),
     "Preferences": (
-        "Every setting QuillLite has, in one window. Two of them live only here: "
+        "Every setting QUILL Lite has, in one window. Two of them live only here: "
         "what Control N creates, and how often unsaved work is copied aside. The "
         "rest -- theme, word wrap, and the editor font -- are also on the View "
         "menu, where you will reach them faster."
@@ -144,12 +144,12 @@ PURPOSES: dict[str, str] = {
         "Which markup this document is written in. It decides what Bold writes, "
         "what the heading keys write, which of the two tag pickers the Insert "
         "menu offers, and whether the cursor can tell you what list you are in. "
-        "QuillLite reads it from the file name; this is where you say otherwise. "
+        "QUILL Lite reads it from the file name; this is where you say otherwise. "
         "Nothing in your document changes -- only what the keys write from now "
         "on. The choice lasts as long as this window is open."
     ),
     "Insert Markdown Tag": (
-        "Every piece of Markdown QuillLite can write, in one searchable list: "
+        "Every piece of Markdown QUILL Lite can write, in one searchable list: "
         "bold, italic, code, the six heading levels, bullet, numbered and task "
         "lists, blockquote, link, image, table and footnote. Type to narrow it. "
         "Anything selected in your document is wrapped; with nothing selected "
@@ -174,7 +174,7 @@ PURPOSES: dict[str, str] = {
     ),
     "File format": (
         "How this document will be written back to disk: which character "
-        "encoding, and which line endings. QuillLite normally writes back "
+        "encoding, and which line endings. QUILL Lite normally writes back "
         "exactly what it read, so these only change when you change them here -- "
         "and the change happens at the next save, not now."
     ),
@@ -219,11 +219,11 @@ PURPOSES: dict[str, str] = {
     ),
     "Manage Abbreviations": (
         "Your abbreviations: type the short form and a space, and the long form "
-        "appears. This is QuillLite's own list unless you asked it, in "
+        "appears. This is QUILL Lite's own list unless you asked it, in "
         "Preferences, to share the one QUILL and Quill Inkwell use."
     ),
-    "Customize QuillLite Features": (
-        "Turn whole parts of QuillLite on or off. Unchecking an area removes its "
+    "Customize QUILL Lite Features": (
+        "Turn whole parts of QUILL Lite on or off. Unchecking an area removes its "
         "menu and its keys entirely, which is how this stays a small editor "
         "without being a poor one. Type in the search box to narrow the list, or "
         "choose a profile -- Notepad, WordPad, Recommended, Everything -- to set "
@@ -232,7 +232,7 @@ PURPOSES: dict[str, str] = {
         "Anything."
     ),
     "Keyboard Manager": (
-        "Every command QuillLite has, with the key it answers to. Type part of a "
+        "Every command QUILL Lite has, with the key it answers to. Type part of a "
         "command's name to find it, or press Record a Key and press a "
         "combination to be told what that key already does. Assigning a key "
         "somebody else has names them and asks before moving it. Insert is never "
@@ -243,7 +243,7 @@ PURPOSES: dict[str, str] = {
         "another replaces it. Escape leaves the command on the key it has now."
     ),
     "Command Palette": (
-        "Every command QuillLite has, searchable, with its key beside it. A menu "
+        "Every command QUILL Lite has, searchable, with its key beside it. A menu "
         "answers 'what is under Format?'; this answers 'how do I sort lines?', "
         "which is the question you actually have."
     ),
@@ -253,13 +253,13 @@ PURPOSES: dict[str, str] = {
         "to headings."
     ),
     "Keyboard shortcuts": (
-        "Every key QuillLite binds, menu by menu. It is generated from the same "
+        "Every key QUILL Lite binds, menu by menu. It is generated from the same "
         "table that builds the menus, so it cannot drift from what is actually "
         "bound. Read it with the arrow keys; Escape closes it."
     ),
-    "About QuillLite": (
+    "About QUILL Lite": (
         "What this copy is, and where it keeps your settings and your recovered "
-        "work. QuillLite is a small companion to QUILL for All, not a replacement "
+        "work. QUILL Lite is a small companion to QUILL for All, not a replacement "
         "for it: anything to do with AI, dictation, conversion, comparison or "
         "publishing lives in QUILL."
     ),
@@ -282,16 +282,16 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
     ),
 )
 
-#: Purposes for windows titled after their content. QuillLite's document window
-#: is titled "<file> - QuillLite (<mode>)", so the app's own name inside the
+#: Purposes for windows titled after their content. QUILL Lite's document window
+#: is titled "<file> - QUILL Lite (<mode>)", so the app's own name inside the
 #: title is what identifies it -- there is no fixed prefix to match on.
-CONTAINS_PURPOSES: tuple[tuple[str, str], ...] = ((" - QuillLite", PURPOSES["QuillLite"]),)
+CONTAINS_PURPOSES: tuple[tuple[str, str], ...] = ((" - QUILL Lite", PURPOSES["QUILL Lite"]),)
 
 #: The honest fallback for a surface the catalogue does not know. The gate keeps
-#: this unreachable from any window QuillLite builds; it exists so a shared or
+#: this unreachable from any window QUILL Lite builds; it exists so a shared or
 #: brand-new window still answers F1 with something true rather than nothing.
 GENERIC_PURPOSE = (
-    "A QuillLite window. Tab moves between its controls, Escape closes it, and "
+    "A QUILL Lite window. Tab moves between its controls, Escape closes it, and "
     "F1 on any control explains that control."
 )
 

@@ -28,7 +28,7 @@ and also renumbers your headings has edited more than it said. Promote and
 Demote are on Alt+Shift+Left/Right for when that is what you meant.
 
 Everything here is pure. :func:`run_move_section_to` runs the two-question flow
-with the choosers passed in, so QUILL and QuillLite share the flow, the rules
+with the choosers passed in, so QUILL and QUILL Lite share the flow, the rules
 and the wording and differ only in which dialog they draw.
 """
 
@@ -286,8 +286,8 @@ def run_move_section_to(
     """Ask the two questions and apply the answer. The flow, shared by both editors.
 
     The choosers are injected rather than imported because they are the only
-    part that differs: QUILL draws its searchable picker, QuillLite draws
-    QuillLite's, and both are already built, already keyboard-tested and already
+    part that differs: QUILL draws its searchable picker, QUILL Lite draws
+    QUILL Lite's, and both are already built, already keyboard-tested and already
     in the dialog inventory. Everything that decides what the rows say, what is
     refused, what the edit is and what gets announced happens here, once.
 

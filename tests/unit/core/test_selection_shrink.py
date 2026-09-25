@@ -7,7 +7,7 @@ is on" is an obvious and useful answer.
 
 That failure is invisible to a sighted tester, who sees the selection simply not
 change, and indistinguishable by ear from a broken command. So the answer is
-computed from the text instead, and both QUILL and QuillLite use it.
+computed from the text instead, and both QUILL and QUILL Lite use it.
 """
 
 from __future__ import annotations

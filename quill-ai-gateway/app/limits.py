@@ -607,7 +607,7 @@ def check_device_budget(app, client_ip: str) -> None:
     if count >= cap:
         raise RegistrationThrottled(
             "There are already several computers connected to QUILL's free AI "
-            "from this network. Sign one of them out first -- in QuillLite, "
+            "from this network. Sign one of them out first -- in QUILL Lite, "
             "Tools, AI, Usage -- and this one can connect.",
             24 * 3600,
         )

@@ -376,7 +376,7 @@ class _SupportDialog:
 #
 # Every app reaches this surface, and they do not all have the same shell:
 # QUILL and the AppShellFrame apps carry _show_modal_dialog/_announce, while
-# QuillBeacon and QuillLite are plain frames. So each helper asks the host for
+# QuillBeacon and QUILL Lite are plain frames. So each helper asks the host for
 # the method and falls back to the shared contract rather than requiring one
 # shape -- which is what lets one dialog serve all ten surfaces.
 

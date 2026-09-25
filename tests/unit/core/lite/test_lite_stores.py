@@ -1,4 +1,4 @@
-"""QuillLite's own stores: settings, recovery, file bytes, the inbox, bookmarks.
+"""QUILL Lite's own stores: settings, recovery, file bytes, the inbox, bookmarks.
 
 Everything here is wx-free and runs against real files in a temporary directory,
 because the questions worth asking are about bytes and about what survives a
@@ -33,7 +33,7 @@ from quill.core.numbered_bookmarks import MAX_BOOKMARKS, BookmarkSet, label_for
 
 @pytest.fixture
 def data_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Point QuillLite's whole data folder at a temporary directory."""
+    """Point QUILL Lite's whole data folder at a temporary directory."""
     monkeypatch.setenv("QUILL_LITE_DATA_DIR", str(tmp_path))
     return tmp_path
 

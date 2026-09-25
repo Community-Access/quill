@@ -8,12 +8,12 @@ minutes of arrow keys" costs a screen-reader user far more than it costs anybody
 else.
 
 * **Line and case tools** -- QUILL's own :mod:`quill.core.format_ops` and
-  :mod:`quill.core.transforms`, not a second implementation. QuillLite must
+  :mod:`quill.core.transforms`, not a second implementation. QUILL Lite must
   never be *ahead* of QUILL: if a text operation is worth having here it is
   worth having there, and two implementations of "sort these lines" is two
   places for them to start disagreeing about what a trailing newline means.
 * **File format** -- the encoding and the line endings this document will be
-  written back with. QuillLite already round-trips both faithfully; this is how
+  written back with. QUILL Lite already round-trips both faithfully; this is how
   you *change* them on purpose, which is what somebody moving a file between
   Windows and a build server actually needs.
 
@@ -232,7 +232,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         """Put ``> `` in front of the lines you chose. QUILL's Ctrl+Shift+Q.
 
         Replying to an email and quoting a log excerpt are Notepad-scale tasks,
-        and the engine was already shared: QuillLite had every other line tool
+        and the engine was already shared: QUILL Lite had every other line tool
         and not this one (bad.md 4.2, Tier 2).
         """
         self._apply_tool(format_ops.quote_lines, unit="line", verb="Quoted", count="scope")
@@ -245,7 +245,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         """Turn the leading tabs of every chosen line into spaces.
 
         The single most common fix a person makes to somebody else's file, and
-        the other half of the concession that QuillLite is where a ``.py`` gets
+        the other half of the concession that QUILL Lite is where a ``.py`` gets
         opened (bad.md 4.2, Tier 2).
         """
         self._apply_tool(
@@ -414,7 +414,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         The one question about a line that cannot otherwise be asked. A screen
         reader reads a line's *text*; it does not read the spaces or tabs in
         front of it, so in a YAML file, a Python module or a nested list the
-        structure of the document is invisible by ear. QuillLite already goes
+        structure of the document is invisible by ear. QUILL Lite already goes
         quiet about spelling in those files, which is an admission that people
         edit them here -- and for those people this is the fact the editor was
         withholding.
@@ -422,7 +422,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         QUILL had the phrasing and no way to ask for it, only an
         announce-as-you-move toggle that speaks while you are moving and stays
         silent when you stop to wonder. The command was added there first, on
-        this same key, because QuillLite may never be ahead of the editor.
+        this same key, because QUILL Lite may never be ahead of the editor.
         """
         self._announce(self.describe_indent_at_cursor())
 
@@ -434,7 +434,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         """Choose the encoding and the line endings this document saves with.
 
         Both are shown in the status bar and both were previously read-only:
-        QuillLite wrote back whatever it read, which is the right default and a
+        QUILL Lite wrote back whatever it read, which is the right default and a
         dead end for somebody who needs a UTF-8 copy of a Windows-1252 file, or
         Unix line endings for a build server. Nothing is written here -- the
         choice takes effect at the next save, which is the moment it means

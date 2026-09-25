@@ -1,4 +1,4 @@
-"""Find, Find Next, Count Occurrences, Find All and Replace, for QuillLite.
+"""Find, Find Next, Count Occurrences, Find All and Replace, for QUILL Lite.
 
 Split out of :mod:`quill.apps.lite_window_commands` on 2026-09-10 for GATE-11.
 It was already its own ``# -- find and replace --`` section of a module that
@@ -120,7 +120,7 @@ class DocumentFindMixin:
             mode=str(options.get("mode", "normal")),  # type: ignore[arg-type]
             case_sensitive=bool(options.get("match_case")),
             whole_word=bool(options.get("whole_word")),
-            # QUILL's setting, honoured here too. QuillLite always wrapped, in
+            # QUILL's setting, honoured here too. QUILL Lite always wrapped, in
             # both directions, with no way to say otherwise -- and wrapping is not
             # a preference about tidiness: for somebody working down a document by
             # F3, a search that silently starts again at the top has moved them
@@ -148,7 +148,7 @@ class DocumentFindMixin:
         F3 is pressed in runs, and "Not found" on every press of it is the
         fastest way to make somebody switch the speech off altogether -- but the
         press that started the run is somebody asking a question, and answering
-        it with an unexplained tone is what got this reported ("QuillLite made a
+        it with an unexplained tone is what got this reported ("QUILL Lite made a
         sound but did not announce the error"). See
         :func:`~quill.core.action_feedback.resolve_failure`. The status bar is
         written whatever the mode, because it is the record.

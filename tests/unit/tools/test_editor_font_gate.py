@@ -33,7 +33,7 @@ def test_settings_hold_a_font_name_and_a_font_size() -> None:
 
 def test_both_editors_agree_on_what_the_two_settings_are_called() -> None:
     """One name, so a settings file carried between them means one thing, and
-    so the QuillLite profile in QUILL has two fewer rows to map (bad.md G1)."""
+    so the QUILL Lite profile in QUILL has two fewer rows to map (bad.md G1)."""
     from quill.core.lite.settings import Settings as LiteSettings
     from quill.core.settings import Settings as QuillSettings
 
@@ -60,7 +60,7 @@ def test_the_three_text_size_commands_are_registered_and_bound() -> None:
 
 def test_the_text_size_keys_are_notepads() -> None:
     """Ctrl+=, Ctrl+- and Ctrl+0 -- the keys the hands already know, and the
-    ones QuillLite uses, so the family answers one way."""
+    ones QUILL Lite uses, so the family answers one way."""
     from quill.core.keymap import DEFAULT_KEYMAP
 
     assert DEFAULT_KEYMAP["view.text_size_up"] == "Ctrl+="

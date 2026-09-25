@@ -266,7 +266,7 @@ and never marked dirty, never announced and never saved.
 - TC-PARITY-003c — The article is chosen by sound
   - Steps: do the same in an HTML document.
   - Expected: **"an HTML document"**, not "a HTML document". The sentence is going
-    to be spoken, and an initialism is read letter by letter. QuillLite says the
+    to be spoken, and an initialism is read letter by letter. QUILL Lite says the
     same sentence from the same shared table.
 - TC-PARITY-003d — Rich text is left alone
   - Steps: in a `.rtf`, press `Ctrl+U` and type.
@@ -276,7 +276,7 @@ and never marked dirty, never announced and never saved.
 ## PARITY-004 — Suggestions are spelled, not just spoken
 
 Fix: QUILL's spelling review never spelled the suggestion you arrowed onto, while
-QuillLite always had.
+QUILL Lite always had.
 
 - TC-PARITY-004 — The F7 review list
   - Steps: type `recieve`, open the review with `F7`, arrow down the suggestions.
@@ -284,14 +284,14 @@ QuillLite always had.
     separate utterance — so pressing the next key cancels the spelling unheard.
     "receive" and "recieve" are the same sound; the letters are the answer.
 
-## PARITY-005 — Bringing a QuillLite setup across
+## PARITY-005 — Bringing a QUILL Lite setup across
 
-Fix: QuillLite could already read QUILL's abbreviations and dictionary; QUILL had
-no way to take QuillLite's. Now it does, and the two stores become one.
+Fix: QUILL Lite could already read QUILL's abbreviations and dictionary; QUILL had
+no way to take QUILL Lite's. Now it does, and the two stores become one.
 
 - TC-PARITY-005a — The plan is described before it is applied
-  - Steps: with QuillLite installed and used on the same machine, press
-    `Alt+Shift+F11` (Tools > Customize and Support > Bring My QuillLite
+  - Steps: with QUILL Lite installed and used on the same machine, press
+    `Alt+Shift+F11` (Tools > Customize and Support > Bring My QUILL Lite
     Settings...).
   - Expected: a Yes/No question whose text says how many settings and rebound keys
     would be copied, which stores would be merged **and shared from then on**, and
@@ -303,16 +303,16 @@ no way to take QuillLite's. Now it does, and the two stores become one.
 - TC-PARITY-005c — Yes
   - Steps: answer Yes.
   - Expected: an announcement counting the settings, the keys, the entries added
-    and the stores they went into; that QuillLite now reads those stores from
+    and the stores they went into; that QUILL Lite now reads those stores from
     QUILL; and that a restart shows every change. Afterwards, an abbreviation you
-    had only in QuillLite expands in QUILL, and one you had only in QUILL is still
+    had only in QUILL Lite expands in QUILL, and one you had only in QUILL is still
     there with its own expansion.
 - TC-PARITY-005d — Nothing to bring
-  - Steps: run it on a machine where QuillLite has never run.
+  - Steps: run it on a machine where QUILL Lite has never run.
   - Expected: it says so in one sentence rather than opening an empty dialog or
     doing nothing.
 - TC-PARITY-005e — The profile offers it once
-  - Steps: `Alt+Shift+P`, choose the **QuillLite** profile.
+  - Steps: `Alt+Shift+P`, choose the **QUILL Lite** profile.
   - Expected: the same question is offered once, and never again after it has been
     answered either way; the profile also applies the document model its name
     promises rather than only renaming the menus.

@@ -1,6 +1,6 @@
 """A new document ends its lines the way Windows does (bad.md F11, P2.10).
 
-`Document()` defaulted to LF while Notepad, WordPad, Word and QuillLite all
+`Document()` defaulted to LF while Notepad, WordPad, Word and QUILL Lite all
 write CRLF, so a file QUILL created and a file anything else created differed
 in a way nobody sees until a tool that cares complains. A file that is *opened*
 keeps whatever endings it had -- every reader sets them explicitly -- so this

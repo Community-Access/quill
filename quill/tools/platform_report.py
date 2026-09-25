@@ -158,12 +158,12 @@ GATES: tuple[Gate, ...] = (
     ),
     Gate(
         "lite-help",
-        "GATE-LITE-HELP: every QuillLite surface and control answers F1",
+        "GATE-LITE-HELP: every QUILL Lite surface and control answers F1",
         (sys.executable, "-m", "quill.tools.lite_help_audit"),
     ),
     Gate(
         "lite-command-coverage",
-        "GATE-LITE-COVER: every QuillLite command has a behavioural test or a recorded debt",
+        "GATE-LITE-COVER: every QUILL Lite command has a behavioural test or a recorded debt",
         (sys.executable, "-m", "quill.tools.lite_command_coverage"),
     ),
     Gate(

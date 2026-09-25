@@ -2,7 +2,7 @@
 
 Both reported on 2026-09-12, and both are the same missing question asked twice.
 
-QuillLite's only spelling check was the as-you-type one, which asks
+QUILL Lite's only spelling check was the as-you-type one, which asks
 ``misspelling_behind`` -- the word you have just *finished* -- and every key
 including an arrow restarted it. So arrowing down onto a line often fired (the
 word behind the caret happened to be the misspelled one) and arrowing right into
@@ -313,7 +313,7 @@ def test_the_keyboard_menu_asks_about_the_word_at_the_caret(monkeypatch) -> None
 def test_a_tone_with_no_clip_falls_through_to_the_words(monkeypatch) -> None:
     """The setting chooses between two kinds of feedback, never down to none.
 
-    QuillLite went silent on a machine with no sound pack, so a listener who had
+    QUILL Lite went silent on a machine with no sound pack, so a listener who had
     asked for a tone and got nothing could not tell the alert from a clean
     document (bad.md S12, and the house rule in CLAUDE.md).
     """

@@ -1,4 +1,4 @@
-"""Bringing a QuillLite setup into QUILL (bad.md P2.4).
+"""Bringing a QUILL Lite setup into QUILL (bad.md P2.4).
 
 The decision this file encodes, answered 2026-09-18: **content is shared,
 preferences are copied.** Abbreviations and a personal dictionary are months of
@@ -6,7 +6,7 @@ somebody's work and keeping two copies in step by hand is how one copy goes
 stale; wrap and autosave are about the editor you are in, and the two are not
 the same editor.
 
-The direction is not arbitrary either. QuillLite already ships
+The direction is not arbitrary either. QUILL Lite already ships
 ``share_quill_abbreviations`` and ``share_quill_dictionary``, which point *it* at
 QUILL's folder -- so QUILL's folder is already the shared home, and this follows
 that rather than inventing a second one that could then disagree with the first.
@@ -129,7 +129,7 @@ def test_this_computer_is_not_a_preference() -> None:
 
 
 def test_quilllites_own_sharing_switches_are_not_copied_into_quill() -> None:
-    """They are about QuillLite reading QUILL, which is the other direction."""
+    """They are about QUILL Lite reading QUILL, which is the other direction."""
     brought, skipped = translate_lite_settings({"share_quill_abbreviations": True})
     assert brought == {}
     assert skipped == ("share_quill_abbreviations",)
@@ -247,9 +247,9 @@ def test_applying_merges_every_store_it_found(tmp_path: Path) -> None:
 
 
 def test_sharing_is_switched_on_in_quilllites_own_settings(tmp_path: Path) -> None:
-    """The one thing written into QuillLite's folder, and only when asked.
+    """The one thing written into QUILL Lite's folder, and only when asked.
 
-    Half of it -- QUILL holding the words while QuillLite still reads its own
+    Half of it -- QUILL holding the words while QUILL Lite still reads its own
     copy -- is the shape that makes a "shared" store look broken.
     """
     lite = tmp_path / "lite"

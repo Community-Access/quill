@@ -1101,7 +1101,7 @@ rules.</li>
 <li><strong>Shipped profiles</strong>: Essential, Casual Writer, Author
 or Student, Reader and Student, Office and Admin, Accessibility
 Professional, Developer and Power Text, Low Vision, Braille and Screen
-Reader Power User, Full Quill, QuillLite, and Custom.</li>
+Reader Power User, Full Quill, QUILL Lite, and Custom.</li>
 <li><strong>Settings UI</strong>: Profiles and Features page with
 search, feature table, explain/related commands, compare profiles, and
 profile management actions.</li>
@@ -1216,7 +1216,7 @@ plugin surfaces.</li>
 <li><strong>Profiles</strong>: Essential, Casual Writer, Author or
 Student, Reader and Student, Office and Admin, Accessibility
 Professional, Developer and Power Text, Low Vision, Braille and Screen
-Reader Power User, Full Quill, QuillLite, Custom.</li>
+Reader Power User, Full Quill, QUILL Lite, Custom.</li>
 <li><strong>Settings</strong>: a Profiles and Features page lets the
 user switch profiles, compare them, and expose quiet features when
 desired.</li>
@@ -4562,7 +4562,7 @@ active encoding. Auto-detection on open via
 an opt-in setting.</li>
 <li><strong>File Format</strong> (<code>File &gt; File Format...</code>,
 <code>Ctrl+Alt+E</code>): encoding and line endings in one window, the
-same window QuillLite opens from <strong>Tools &gt; File Encoding and
+same window QUILL Lite opens from <strong>Tools &gt; File Encoding and
 Line Endings…</strong>. Neither list applies until the next save. A file
 in a format the lists cannot offer — UTF-16 big-endian, or classic-Mac
 single-CR line endings — shows a <strong>keep as is</strong> row and
@@ -4635,17 +4635,18 @@ kind of document once per effect per document — “Underline has no
 meaning in a Markdown document” — and both editors build that sentence
 from the one shared table, article chosen by sound so an initialism gets
 “an”.</li>
-<li><strong>Bring My QuillLite Settings</strong>
+<li><strong>Bring My QUILL Lite Settings</strong>
 (<code>Alt+Shift+F11</code>, Tools &gt; Customize and Support): merges a
-QuillLite setup into QUILL on an explicit ask — five content stores
+QUILL Lite setup into QUILL on an explicit ask — five content stores
 (abbreviations, personal dictionary, copy tray, clip library, bookmarks)
 shared from then on, plus settings and rebound keys copied once. The
 plan is described before it is applied, counts first and what is being
 left behind last; QUILL wins every collision and nothing already in
-QUILL is replaced. The <strong>QuillLite</strong> feature profile offers
-it once on activation, and applies the document model its own name
-promises rather than only renaming the menus. Design:
-<code>quill/core/lite_bridge.py</code>; see the QuillLite PRD §5.3.</li>
+QUILL is replaced. The <strong>QUILL Lite</strong> feature profile
+offers it once on activation, and applies the document model its own
+name promises rather than only renaming the menus. Design:
+<code>quill/core/lite_bridge.py</code>; see the QUILL Lite PRD
+§5.3.</li>
 <li><strong>Sessions</strong>: <code>File &gt; Save Session…</code> and
 <code>File &gt; Open Session…</code> preserve the set of open documents
 and per-document cursor position.</li>
@@ -4715,19 +4716,19 @@ preference, and it is recorded here so it cannot recur silently.</p>
 </tr>
 </tbody>
 </table>
-<p>The first three are Notepad’s, every browser’s, and QuillLite’s.
+<p>The first three are Notepad’s, every browser’s, and QUILL Lite’s.
 <code>Ctrl+Shift+F</code> is Word’s Font key;
 <code>tools.search_in_files</code> moved to
 <code>Ctrl+Alt+Shift+F</code> to free it, under the family rule that
 where Word has a key the family follows Word.</p>
 <p><strong>Settings.</strong> <code>font_name</code> (string; empty
 means the system default) and <code>font_size</code> (int, 6–72, default
-12), in <code>quill.core.settings.Settings</code>. These are QuillLite’s
-field names by design, so one settings file means the same thing in both
-products and the grow-up path has two fewer rows to map. Out-of-range
-values are <strong>clamped, never refused</strong>: a hand-edited
-settings file must not be able to produce an editor that will not
-start.</p>
+12), in <code>quill.core.settings.Settings</code>. These are QUILL
+Lite’s field names by design, so one settings file means the same thing
+in both products and the grow-up path has two fewer rows to map.
+Out-of-range values are <strong>clamped, never refused</strong>: a
+hand-edited settings file must not be able to produce an editor that
+will not start.</p>
 <p><strong>The rich/plain split (<code>quill.core.editor_font</code>,
 wx-free).</strong> In a rich text document the run point sizes
 <em>are</em> the heading ladder, and heading navigation and the headings
@@ -8142,7 +8143,7 @@ provides it, and lets the user <strong>Update</strong>, <strong>Skip
 this version</strong>, or <strong>Close</strong>.</li>
 <li><strong>One update dialog, every app (2026-09-12).</strong>
 <code>quill/ui/update_notice.py</code> is the single “an update is
-available” surface for QUILL, the eight companion apps and QuillLite;
+available” surface for QUILL, the eight companion apps and QUILL Lite;
 <code>quill/ui/update_download.py</code> is the single download,
 progress-milestone and Install-and-restart path behind it. The dialog
 always carries a summary of what is new (the release body, flattened out
@@ -8153,11 +8154,11 @@ thing read is what changed. QUILL alone adds <strong>Skip this
 version</strong>, because QUILL alone has a settings field to remember
 the answer in. Before this the companion apps showed a bare Yes/No box
 (“Download it now?”) that said nothing about the release at all.</li>
-<li><strong>QuillLite checks for its own updates (2026-09-12).</strong>
+<li><strong>QUILL Lite checks for its own updates (2026-09-12).</strong>
 Help &gt; Check for Updates… on the family key
 <strong>Ctrl+Alt+U</strong> (Page Setup moved to Ctrl+Alt+P to free it),
 plus a silent once-a-day check at launch governed by
-<code>check_updates_on_launch</code> in QuillLite’s own settings. The
+<code>check_updates_on_launch</code> in QUILL Lite’s own settings. The
 launch check says nothing while it runs, nothing when there is nothing,
 and nothing when the network is down; only a genuine newer version
 speaks. Releases resolve from <code>RELEASE_REPO</code> /
@@ -9552,9 +9553,9 @@ Every other door into QUILL&#39;s AI assumes two decisions already made — whic
 company should see your writing, and where to paste an API key — and neither is a
 decision most people want to make in a word processor.
 
-**Where it lives.** The hosted service shipped in QuillLite first (see
+**Where it lives.** The hosted service shipped in QUILL Lite first (see
 [`quill-ai-gateway-spec.md`](quill-ai-gateway-spec.md) §5.4), which made
-QuillLite briefly ahead of QUILL — the one thing the family rule
+QUILL Lite briefly ahead of QUILL — the one thing the family rule
 forbids, and invisibly so, because a missing feature files no bug. The four wx
 modules therefore moved from `quill/apps/lite_ai*.py` into `quill/ui/`:
 `hosted_ai_service.py` (the per-app service that does the waiting),
@@ -9567,9 +9568,9 @@ hooks, which are the only four things the two editors do differently: which wind
 a new frame is parented to (`_ai_parent`), which control holds the document
 (`_ai_control`), which object holds the settings and the feature switch
 (`_ai_host`), and how to name the switch that turns the feature on
-(`_ai_switch_route` — a Customize Features area in QuillLite, the Use AI item in
+(`_ai_switch_route` — a Customize Features area in QUILL Lite, the Use AI item in
 QUILL&#39;s menu). Every other route sentence was rewritten to name a row that exists
-in both products, and QuillLite&#39;s row was renamed from &quot;Sign In or Out&quot; to
+in both products, and QUILL Lite&#39;s row was renamed from &quot;Sign In or Out&quot; to
 **&quot;Connect or Sign Out&quot;** to match: a row named two ways is a sentence that is
 wrong in one of the two products.
 
@@ -9580,12 +9581,12 @@ overrides and **no commands**. `tests/unit/ui/test_main_frame_hosted_ai.py`
 asserts that absence: a second implementation is how the family rule gets broken
 quietly.
 
-**Chords.** All five are QuillLite&#39;s, unchanged — `Ctrl+Alt+G` (the pad),
+**Chords.** All five are QUILL Lite&#39;s, unchanged — `Ctrl+Alt+G` (the pad),
 `Ctrl+Alt+Z` (ask about this document) and `Ctrl+Alt+Shift+K` (the agreement) are
-QuillLite&#39;s, unchanged: all three were free on QUILL&#39;s side, so family rule 2
+QUILL Lite&#39;s, unchanged: all three were free on QUILL&#39;s side, so family rule 2
 applied with nothing to arbitrate. **Usage and Sign In diverge**, and carry a
 `DIVERGENCES` row each: `Ctrl+Alt+Shift+F7` to `F12` are the six QuillVille
-sibling launchers in QUILL (`app_keymaps.SIBLING_APP_ACCELERATORS`) and QuillLite
+sibling launchers in QUILL (`app_keymaps.SIBLING_APP_ACCELERATORS`) and QUILL Lite
 has no siblings to launch, so QUILL uses `Ctrl+Alt+Shift+F2` and `F4`. Same
 modifiers, same finger shape, and both are rule 9 commands either way — and a
 chord claimed twice means one of the pair silently never fires, which is the
@@ -9595,13 +9596,13 @@ argument `cmd_spelling_voice_settings` already made about these same six keys.
 builder) builds the AI menu in two halves: `_build_hosted_ai_rows` always, then
 `_build_advanced_ai_rows` only when `not is_basic_mode()`, then the Use AI switch
 and the experience toggle. The five free rows carry the word **Free** and
-mnemonics E, D, G, C, Y — different letters from QuillLite&#39;s because A, U, S and P
+mnemonics E, D, G, C, Y — different letters from QUILL Lite&#39;s because A, U, S and P
 are all claimed elsewhere in QUILL&#39;s AI menu once the advanced rows are showing,
 and a duplicate mnemonic is a key Windows may silently refuse to press (GATE-14&#39;s
 rule, applied where the gate cannot see).
 
 **Consent.** `Settings.ai_privacy_accepted_version` was added on QUILL&#39;s side with
-the same name and meaning as QuillLite&#39;s, so the two cannot disagree about whether
+the same name and meaning as QUILL Lite&#39;s, so the two cannot disagree about whether
 the agreement was accepted. A *version* rather than a boolean: a material change
 to what is sent bumps `gateway_privacy.AGREEMENT_VERSION` and everybody is asked
 again. It is separate from the Use AI switch on purpose — the switch answers &quot;is
@@ -12340,7 +12341,7 @@ The restraint is the design, and each rule earns its place:
   follows a change in the text re-latches silently, or typing would be
   interrupted with &quot;Heading 2&quot;.
 - **Interrupting only when the phrase carries the words.** A bare &quot;Heading 2&quot;
-  and every list cue queue behind the reader (`force=False`; QuillLite&#39;s
+  and every list cue queue behind the reader (`force=False`; QUILL Lite&#39;s
   `_announce(..., interrupt=False)`), because cutting across the reader would
   cost the listener the very text they moved to hear -- the same ordering
   discipline as speak-then-spell. The composed &quot;Heading 2, Installing&quot;
@@ -12362,7 +12363,7 @@ The restraint is the design, and each rule earns its place:
   heading does not stay silent until you leave and return.
 - **A `#` is only a heading where `#` means heading.** QUILL was never exposed
   here because `_effective_markup_kind()` already answers &quot;plain&quot; for a `.py` or
-  a `.conf`. QuillLite had no such notion and briefly read every shell comment as
+  a `.conf`. QUILL Lite had no such notion and briefly read every shell comment as
   a Heading 1; `quill.core.lite.filetypes.has_markdown_headings` now scopes it to
   `.md` / `.markdown` / `.mdx` / `.txt` and untitled buffers. The asymmetry is
   deliberate: a false positive is heard on every line, a false negative costs one
@@ -12446,14 +12447,14 @@ already in on the very next keypress.
 untested and said only &quot;Entering table&quot;. Entering now gives the shape --
 **&quot;Table, 4 rows, 3 columns&quot;** -- and leaving still says &quot;Out of table&quot;; cell
 navigation (5.x, `core/table_nav.py`) is unchanged. This half is **QUILL only**:
-QuillLite passes `include_tables=False`, because accessible table navigation is a
+QUILL Lite passes `include_tables=False`, because accessible table navigation is a
 full-QUILL feature and announcing the edge of a grid the small editor cannot then
 navigate advertises something that is not there. That does not offend the
-QuillLite rule, which forbids Lite being *ahead* of QUILL, never the reverse.
+QUILL Lite rule, which forbids Lite being *ahead* of QUILL, never the reverse.
 
 **Two defects surfaced on the way and were fixed with it.**
 
-*Heading navigation refused in plain text.* QuillLite&#39;s Next Heading, Previous
+*Heading navigation refused in plain text.* QUILL Lite&#39;s Next Heading, Previous
 Heading and headings list answered &quot;Headings are only available in rich text&quot; in
 documents whose Markdown headings **Alt+Shift+Right would happily re-level**.
 Only navigation pretended the document had no shape. They now read
@@ -12753,7 +12754,7 @@ Settings group added in `quill/core/settings_specs.py` and `quill/core/settings.
 | `spell_review_spell_word_pause_ms` | int (100–3000) | `800` | Milliseconds before letter-spelling starts |
 | `spell_review_wrap_to_beginning` | bool | `True` | After reaching end of document, wrap to beginning |
 | `spell_review_context_mode` | choice | `&quot;sentence&quot;` | Context extraction mode: sentence / paragraph |
-| `spell_review_ranked` | bool | `False` | Walk the review most-frequent word first rather than in document order. Set from the review dialog&#39;s own checkbox, which replaced a second command and a second chord (2026-09-16); QuillLite shares the dialog and so gained ranked review with it |
+| `spell_review_ranked` | bool | `False` | Walk the review most-frequent word first rather than in document order. Set from the review dialog&#39;s own checkbox, which replaced a second command and a second chord (2026-09-16); QUILL Lite shares the dialog and so gained ranked review with it |
 
 #### 6.4.17 Acceptance Criteria
 
@@ -13362,7 +13363,7 @@ setting rather than a decision.</p>
 same four, same default, asked separately because F3 is pressed in runs
 and somebody may want every success spoken and every miss kept to a
 tone. Both live on QUILL’s <code>Settings</code> and, with the same
-names and defaults, on QuillLite’s
+names and defaults, on QUILL Lite’s
 (<code>quill/core/lite/settings.py</code>).</p>
 <p><strong>One rule, one module:
 <code>quill/core/action_feedback.py</code>.</strong>
@@ -13394,7 +13395,7 @@ modes route through <code>_set_status_quiet</code>.</li>
 <code>action_channels()</code> (<code>main_frame_cues.py</code>) over
 the clipboard cues and undo/redo,
 <code>SelectionSpanMixin.start_selection</code>, and
-<code>SearchCommandsMixin._report_search_missed</code>. QuillLite:
+<code>SearchCommandsMixin._report_search_missed</code>. QUILL Lite:
 <code>DocumentFrame._action()</code> / <code>_has_sound_for()</code>,
 and <code>_report_not_found</code>. <code>action_channels</code> is
 public because a caller that owns its own status line has to make the
@@ -13404,12 +13405,12 @@ public because a caller that owns its own status line has to make the
 off gives
 <code>No more matches. Reached the end of the document, and wrapping is off.</code>
 – go to the other end and press again. The fixes differ, so the
-sentences must. QuillLite now honours <code>wrap_find</code> in both
+sentences must. QUILL Lite now honours <code>wrap_find</code> in both
 directions, which it never had a way to express.</p>
 <p><strong>Surfaced, or it is not a setting.</strong> Two
 <code>SettingSpec</code> entries in the Accessibility group (QUILL) and
 two <code>wx.Choice</code> rows plus a <code>wrap_find</code> checkbox
-in Preferences (QuillLite), both built from
+in Preferences (QUILL Lite), both built from
 <code>ACTION_FEEDBACK_LABELS</code> rather than retyped, so the two
 panes cannot describe the same four modes under different names – which
 reads as two settings and sends somebody looking for the other.</p>
@@ -15537,11 +15538,11 @@ the user has opted in (manual <code>Check for Updates</code> is always
 available).</li>
 <li><strong>Footprint</strong>: realistic target is 180–220 MB installed
 with English Tesseract data and English/UK + Spanish/French/German
-Hunspell dictionaries. A <strong>QuillLite</strong> option ships at ~90
+Hunspell dictionaries. A <strong>QUILL Lite</strong> option ships at ~90
 MB and downloads dictionaries and Tesseract on first use. (The
 editor-only sibling product of that name now exists —
 <code>quill.apps.lite</code>, <code>standalone/quilllite/</code> — and
-is always spelled <strong>QuillLite</strong>, one mixed-case word, so
+is always spelled <strong>QUILL Lite</strong>, one mixed-case word, so
 speech reads it as a name.)</li>
 <li><strong>Offline Edition</strong>
 (<code>scripts/build_windows_distribution.py --bundle-offline</code>,
@@ -24283,7 +24284,7 @@ the editor rebuilt — and no caret position reports correctly, so nothing
 is fixable by moving the caret. Guarded by
 <code>tests/unit/ui/test_richedit_final_line_fix.py</code>; the
 measurement and the remaining braille A/B are in
-<code>scripts/jaws_blank_line_repro.md</code>. QuillLite had the same
+<code>scripts/jaws_blank_line_repro.md</code>. QUILL Lite had the same
 symptom from a different cause (<code>EM_SETTEXTMODE</code> /
 <code>TM_PLAINTEXT</code>), fixed separately in
 <code>quill/ui/richedit_editing.py</code>.</p>
@@ -24338,10 +24339,10 @@ transition prompt). Native Ctrl+B/I/U are intercepted in rich mode and
 routed through QUILL’s commands so formatting is announced,
 dirty-marked, and remappable. Describe Formatting at Cursor reads the
 live TOM in rich mode.</p>
-<p><strong>Paragraph formatting completed (2026-09-08, via
-QuillLite).</strong> The surface has always been able to justify a
-paragraph, set a list type and set a line-spacing rule; nothing in QUILL
-was bound to any of it, so the small editor-only sibling QuillLite
+<p><strong>Paragraph formatting completed (2026-09-08, via QUILL
+Lite).</strong> The surface has always been able to justify a paragraph,
+set a list type and set a line-spacing rule; nothing in QUILL was bound
+to any of it, so the small editor-only sibling QUILL Lite
 (<code>standalone/quilllite/</code>) could do things the editor could
 not. That is backwards, and it is now closed.
 <code>quill/ui/main_frame_rich_paragraph.py</code> adds
@@ -24360,7 +24361,7 @@ Only</strong> (Ctrl+Alt+V), which neither product had.
 <code>QuillRichEdit</code> plus the paragraph and view capabilities — so
 every tab gains them by construction rather than through a second
 factory.</p>
-<p>QUILL takes Ctrl+Alt+J and Ctrl+Alt+V where QuillLite uses WordPad’s
+<p>QUILL takes Ctrl+Alt+J and Ctrl+Alt+V where QUILL Lite uses WordPad’s
 Ctrl+J and Ctrl+Shift+V, because Ctrl+J has been Set Temporary Bookmark
 and Ctrl+Shift+V has been Preview here for far longer: an existing
 binding somebody’s hands already know outranks a new command’s
@@ -24368,7 +24369,7 @@ convention. The divergence is a comment in <code>keymap.py</code>, not
 folklore.</p>
 <p><strong>Two TOM bugs fixed in the same change</strong> (both isolated
 by Steven Scott in PR #1490, with a standalone reproduction that imports
-neither QUILL nor QuillLite —
+neither QUILL nor QUILL Lite —
 <code>standalone/quilllite/tests/repro_tom_true.py</code>):</p>
 <ul>
 <li><strong><code>_TOM_TRUE</code> was <code>tomUndefined</code>, so

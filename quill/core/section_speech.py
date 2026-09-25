@@ -5,7 +5,7 @@ The other half of the :mod:`quill.core.markdown_sections` extraction (GATE-11).
 turns that shape into the one sentence a screen reader reads out, and it is the
 only place either editor is allowed to compose one.
 
-That rule is not tidiness. QUILL and QuillLite each used to derive their own
+That rule is not tidiness. QUILL and QUILL Lite each used to derive their own
 wording for the same key, and the shorter of the two said less: "Soup" where
 the other said "Section moved below Soup", and "No sibling to swap with" -- a
 sentence about the implementation -- where the document plainly continued below.

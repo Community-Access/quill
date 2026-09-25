@@ -1,4 +1,4 @@
-"""The eleven rules QUILL and QuillLite are held to, and where they came from.
+"""The eleven rules QUILL and QUILL Lite are held to, and where they came from.
 
 These were the plan of record for the 2026-09 parity program (`bad.md`, now
 closed). They live here because the program is over and the rules are not: code
@@ -72,7 +72,7 @@ FAMILY_RULES: tuple[FamilyRule, ...] = (
     ),
     FamilyRule(
         6,
-        "Nothing QuillLite reaches on a plain chord lives on QUILL's leader.",
+        "Nothing QUILL Lite reaches on a plain chord lives on QUILL's leader.",
         "The leader is a second keystroke and a thing to be told about. A "
         "command the small editor gives you directly should not be buried in "
         "the big one -- that is the big one being worse at the same job.",
@@ -102,7 +102,7 @@ FAMILY_RULES: tuple[FamilyRule, ...] = (
     FamilyRule(
         10,
         "Value flows both ways, violations flow one: a capability may cross in "
-        "either direction, but QuillLite is never allowed to be ahead of QUILL.",
+        "either direction, but QUILL Lite is never allowed to be ahead of QUILL.",
         "Nobody opens QUILL and notices the absence of a thing they have only "
         "ever seen elsewhere. A feature the small product has and the big one "
         "does not is invisible and backwards, so it is a bug in the big one.",

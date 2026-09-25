@@ -24,7 +24,7 @@ wx-free QUILL cores that already existed:
   things copied, searchable, with the ones worth keeping marked as favourites.
   You do not have to have decided in advance that a copy mattered.
 
-The tray and the library live in QuillLite's own data folder, like everything
+The tray and the library live in QUILL Lite's own data folder, like everything
 else it stores.
 """
 
@@ -135,7 +135,7 @@ class DocumentClipboardMixin:
         and no others. ``EVT_TEXT_CUT`` / ``COPY`` / ``PASTE`` fire once for all
         four, after the edit has happened, because the control raises them from
         the Windows messages it acts on. This is the shape QUILL already uses
-        (``quill/ui/main_frame_cues.py``); QuillLite reporting these moments a
+        (``quill/ui/main_frame_cues.py``); QUILL Lite reporting these moments a
         different way was how it ended up reporting some of them not at all.
 
         ``Skip()`` on every one: the event *is* how the control learns it has
@@ -298,7 +298,7 @@ class DocumentClipboardMixin:
         if not filled:
             self._announce("The copy tray is already empty")
             return
-        # Asked *and* counted. QUILL asked without a count and QuillLite counted
+        # Asked *and* counted. QUILL asked without a count and QUILL Lite counted
         # without asking, and each half is the one the other needed: a count
         # after the fact tells you what you have lost, and a question without
         # one asks you to confirm you do not know what (bad.md C9).
@@ -371,7 +371,7 @@ class DocumentClipboardMixin:
         if not text:
             self._announce("Select something to keep first")
             return
-        if self.app.clip_library.remember(Fragment(markup=text, source="QuillLite")):
+        if self.app.clip_library.remember(Fragment(markup=text, source="QUILL Lite")):
             self._announce("Kept in the clip library")
         else:
             self._announce("That is already in the clip library")
@@ -439,6 +439,6 @@ class DocumentClipboardMixin:
         if library is None or not text.strip():
             return
         try:
-            library.remember(Fragment(markup=text, source="QuillLite"))
+            library.remember(Fragment(markup=text, source="QUILL Lite"))
         except Exception:  # noqa: BLE001 - remembering is never worth an error
             pass

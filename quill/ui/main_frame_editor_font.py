@@ -5,7 +5,7 @@ control. Every call site was a dialog heading or a print DC, ``Settings`` had no
 font name and no font size, and there was no zoom command and no text-size
 command: QUILL rendered in whatever font wx picked, forever. For a product whose
 audience includes low-vision users that is not a missing preference, it is a
-viability failure -- and it is the largest of the sixteen ways QuillLite was
+viability failure -- and it is the largest of the sixteen ways QUILL Lite was
 ahead of the editor, which is exactly backwards (bad.md 4.3, P0.6a).
 
 The one thing called "Font" was ``format.font_dialog``, labelled "&More Font

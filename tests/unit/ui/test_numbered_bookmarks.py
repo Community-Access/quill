@@ -1,9 +1,9 @@
-"""QUILL's numbered bookmarks: the nine slots QuillLite had to itself.
+"""QUILL's numbered bookmarks: the nine slots QUILL Lite had to itself.
 
 The engine (``quill.core.numbered_bookmarks``) has its own tests; these are
 about the half that was missing until 2026-09-16 -- QUILL's door to it. The
 regression they exist to prevent is the one that already happened: the core
-shipped, QuillLite called it, and nothing under ``quill/ui`` imported it for
+shipped, QUILL Lite called it, and nothing under ``quill/ui`` imported it for
 seven days while ``navigate.set_bookmark`` sat registered with no key.
 
 A stub host rather than a real ``MainFrame``: the mixin's contract is six
@@ -186,7 +186,7 @@ def test_one_bookmark_is_cleared_in_the_singular(host: _Host) -> None:
 def test_bookmarks_are_written_on_every_change_not_on_close(
     tmp_path: Path, memory: DocumentMemory
 ) -> None:
-    # bad.md L10: QuillLite writes on close, so a crash loses a clear-all.
+    # bad.md L10: QUILL Lite writes on close, so a crash loses a clear-all.
     # QUILL already wrote named bookmarks on every Set; this follows that.
     path = tmp_path / "doc.txt"
     host = _Host(TEXT, path, memory)

@@ -1,6 +1,6 @@
-"""A QuillLite document window with the wx taken out, for testing behaviour.
+"""A QUILL Lite document window with the wx taken out, for testing behaviour.
 
-Every command in QuillLite is a method on a mixin that reads and writes a text
+Every command in QUILL Lite is a method on a mixin that reads and writes a text
 control and then says what it did. Both halves matter and only one of them was
 being checked: the command table had gates for its keys, its mnemonics and its
 labels, and the *behaviour* of the commands was left to a person listening to a
@@ -61,7 +61,7 @@ _CLIPBOARD_EVENT_KINDS = {
 
 
 class FakeControl:
-    """The slice of ``wx.TextCtrl`` QuillLite's commands actually use.
+    """The slice of ``wx.TextCtrl`` QUILL Lite's commands actually use.
 
     Text, a selection, an insertion point and a small undo stack. Line
     arithmetic is computed from the text rather than stored, so a command that
@@ -244,7 +244,7 @@ class FakeControl:
         """Fire the handler wx would fire, because the cue now hangs off it.
 
         ``wxEVT_TEXT_CUT`` / ``COPY`` / ``PASTE`` are raised by the real control
-        from the Windows messages it acts on, which is *why* QuillLite's feedback
+        from the Windows messages it acts on, which is *why* QUILL Lite's feedback
         was moved onto them: they fire once whether the command came from the
         accelerator, the menu, the context menu, or the control's own key
         handling. A stand-in that stayed silent would let the cue be deleted with
@@ -388,7 +388,7 @@ class FakeEditor:
         """The three-stop ring the real surface gained on 2026-09-16.
 
         ``ITextPara.ListType`` has always had a numbered value; the surface
-        offered two of the three, so QuillLite could not make a numbered list in
+        offered two of the three, so QUILL Lite could not make a numbered list in
         any kind of document (bad.md P1.5).
         """
         self.list_style = style
@@ -733,7 +733,7 @@ def wx_app():
 def lite_settings():
     """Real :class:`Settings`, so a test reads the same defaults the app does.
 
-    QuillLite's own, not QUILL's. This was QUILL's until 2026-09-10, which
+    QUILL Lite's own, not QUILL's. This was QUILL's until 2026-09-10, which
     happened to work while the tests only touched fields both objects have --
     and stopped the moment a View-menu test reached for ``show_status_bar``,
     which is one of seventeen fields only the small editor has. A stand-in built
@@ -1122,7 +1122,7 @@ class _Shown:
 
 
 class DialogRecorder:
-    """Every window QuillLite can open, replaced by a record-and-answer stub.
+    """Every window QUILL Lite can open, replaced by a record-and-answer stub.
 
     Twenty-odd commands are *one state change behind a modal dialog*: choose a
     file, choose a font, choose a slot, then do the thing. Without a seam they
@@ -1359,7 +1359,7 @@ def _fake_dialog_class(answer_id: Any, **values: Any) -> type[FakeModalDialog]:
 
 @pytest.fixture
 def lite_dialogs(monkeypatch):
-    """Every QuillLite dialog, recorded and answered. See :class:`DialogRecorder`."""
+    """Every QUILL Lite dialog, recorded and answered. See :class:`DialogRecorder`."""
     return DialogRecorder(monkeypatch)
 
 

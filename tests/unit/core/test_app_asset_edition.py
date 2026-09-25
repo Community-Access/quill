@@ -2,7 +2,7 @@
 
 ``_pick_asset`` (QUILL's own updater) learned this in August, after two users a
 month apart reported being handed the wrong download. ``_app_asset_url`` -- the
-path every companion app and QuillLite takes -- never did, so the same two
+path every companion app and QUILL Lite takes -- never did, so the same two
 failures stayed live there:
 
 * of the two ``-setup-*.exe`` assets it took whichever GitHub listed **last**,
@@ -92,7 +92,7 @@ def test_a_source_run_with_no_edition_falls_back_to_the_old_rules(monkeypatch) -
     assert _app_asset_url(LITE, "QuillLite", prefer_portable=False).endswith(".exe")
 
 
-#: What QuillLite publishes since 2026-09-15: an installer and a portable zip.
+#: What QUILL Lite publishes since 2026-09-15: an installer and a portable zip.
 #: Spelled out rather than filtered out of LITE -- "QuillLite-Setup-Shared"
 #: contains the substring "Lite-Setup", so the obvious filter silently drops the
 #: full installer. That is the same trap install_edition.matches_asset carries an
@@ -112,7 +112,7 @@ LITE_TWO = [
     ],
 )
 def test_two_assets_are_decided_by_portable_alone(monkeypatch, portable, expected) -> None:
-    """QuillLite's rule, and the whole of it: portable, or not.
+    """QUILL Lite's rule, and the whole of it: portable, or not.
 
     ``match_edition=False`` is the app saying it publishes two downloads rather
     than four, so there is no edition question to get wrong.
@@ -131,7 +131,7 @@ def test_the_companion_misdetection_cannot_reach_a_two_asset_app(monkeypatch) ->
     An installed QuillVille app resolves QUILL_APP_ROOT to the SHARED RUNTIME's
     folder -- where there is no edition marker, no uninstaller, no data folder --
     so detect() answers "companion" for every one of them (verified
-    2026-09-15). With the edition step on, an installed QuillLite is asking a
+    2026-09-15). With the edition step on, an installed QUILL Lite is asking a
     chooser that believes it is something it is not, and comes out right only
     because no Companion zip is published any more. With it off, the question
     is never asked.

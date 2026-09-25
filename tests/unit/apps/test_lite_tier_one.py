@@ -1,4 +1,4 @@
-"""The QUILL capabilities QuillLite was missing, and had promised.
+"""The QUILL capabilities QUILL Lite was missing, and had promised.
 
 Each of these is a "Tier 1" row in bad.md 4.2 -- a thing the small editor
 already claimed to be able to do, or already had every part of except the one

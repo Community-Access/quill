@@ -1,7 +1,7 @@
-"""How often QuillLite reads its own buffer, which is the whole point.
+"""How often QUILL Lite reads its own buffer, which is the whole point.
 
 ``GetValue()`` on a multiline control copies the entire document across the
-wx/native boundary. QuillLite had five readers doing it -- the status bar's
+wx/native boundary. QUILL Lite had five readers doing it -- the status bar's
 counts, the heading cue's change detector, the list cue, the live spell check on
 every navigation key-up, and autoformat on every keystroke -- so one pause in
 typing cost three full scans and two marshals, and holding the Down arrow in a

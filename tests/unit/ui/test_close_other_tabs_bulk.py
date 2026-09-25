@@ -9,7 +9,7 @@ without a display: ``_ask_bulk_unsaved`` is the seam the window sits behind, and
 everything else here is the real mixin over fake tabs. The decisions it defers
 to -- the question's wording, what a "to all" answer latches, the sentence
 afterwards -- are tested in ``tests/unit/core/test_close_prompt.py``; what is
-held here is that QUILL wires them up the same way QuillLite does.
+held here is that QUILL wires them up the same way QUILL Lite does.
 """
 
 from __future__ import annotations

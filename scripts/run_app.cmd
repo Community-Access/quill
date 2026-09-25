@@ -16,7 +16,7 @@ rem The module arrives in a variable rather than as %1 on purpose: `shift` moves
 rem %1..%9 and leaves `%*` alone, so a positional module name would still be
 rem sitting in `%*` and would reach the app as an argument to open.
 rem
-rem An app with its own data-folder variable (QuillLite's QUILL_LITE_DATA_DIR)
+rem An app with its own data-folder variable (QUILL Lite's QUILL_LITE_DATA_DIR)
 rem sets it in its own shim before calling this. Anything already defined is
 rem left alone, so every variable here stays overridable from the caller.
 setlocal EnableExtensions EnableDelayedExpansion

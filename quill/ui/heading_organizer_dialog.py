@@ -9,8 +9,8 @@ document with four commands means holding the shape of the document in your head
 while you work on it, because nothing reads it back; here the list *is* the
 shape, and every change re-reads it.
 
-**Extracted from ``main_frame.py`` on 2026-09-17 so QuillLite can have it**
-(bad.md P2.13, Tier 2). QuillLite already lists headings and already moves
+**Extracted from ``main_frame.py`` on 2026-09-17 so QUILL Lite can have it**
+(bad.md P2.13, Tier 2). QUILL Lite already lists headings and already moves
 sections; the organizer is those two combined, and the rule is that a
 capability which is editor-core, already shared, worth a listener's time and
 switchable off belongs in both (bad.md 4.2). Sharing it also took 260 lines out
@@ -151,7 +151,7 @@ def _show_dialog(
 
     A parameter rather than a hard call because QUILL passes ``MainFrame``'s own
     ``_show_modal_dialog``, which adds the z-order and region handling a frame
-    with a status bar and a notebook needs. QuillLite has no such wrapper and
+    with a status bar and a notebook needs. QUILL Lite has no such wrapper and
     wants exactly the default, which is why it is the default rather than
     something every caller has to remember to pass.
     """

@@ -34,9 +34,9 @@ __all__ = [
 ]
 
 #: How each kind of document is *named* in the sentence below. One table,
-#: because the two editors spell their own kinds differently -- QuillLite's
+#: because the two editors spell their own kinds differently -- QUILL Lite's
 #: status cell says "Plain text" and QUILL's markup kind says "html" -- and
-#: the sentence has to come out identical either way. QuillLite lower-cased
+#: the sentence has to come out identical either way. QUILL Lite lower-cased
 #: its own label before handing it over, which turned "HTML" into "html" and
 #: so into "a html document" while QUILL said "an HTML document": the one
 #: thing this module exists to prevent.

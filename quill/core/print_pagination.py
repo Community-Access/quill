@@ -118,7 +118,7 @@ def mark_headings_for_print(lines: list[str], levels: dict[int, int]) -> list[st
 
     A heading printed at body weight and body size is indistinguishable from
     body text on paper, and that is the one piece of structure the document had.
-    QuillLite has marked them since it shipped; QUILL printed ``GetValue()`` and
+    QUILL Lite has marked them since it shipped; QUILL printed ``GetValue()`` and
     nothing else, so the **small** product was ahead on paper (bad.md PR1).
 
     This is the honest stopgap and says so. The real answer is the control's own

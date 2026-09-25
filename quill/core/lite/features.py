@@ -1,6 +1,6 @@
-"""What QuillLite can be, and what it is by default.
+"""What QUILL Lite can be, and what it is by default.
 
-QuillLite stays small by being *switchable*, not by being poor. Somebody who
+QUILL Lite stays small by being *switchable*, not by being poor. Somebody who
 wants Notepad can turn the Format menu off and never see rich text again;
 somebody who wants WordPad-with-tools can turn everything on. The mechanism is
 QUILL's own :mod:`quill.core.app_features`, the same one Radio and Cast use for
@@ -68,7 +68,7 @@ AREAS: tuple[AppArea, ...] = (
         "rich_text",
         "Rich text and the Format menu",
         "Bold, italic, headings, alignment, bullets and line spacing. Turn this "
-        "off to make QuillLite a plain text editor and nothing else.",
+        "off to make QUILL Lite a plain text editor and nothing else.",
     ),
     AppArea(
         "headings",
@@ -118,7 +118,7 @@ AREAS: tuple[AppArea, ...] = (
     AppArea(
         "abbreviations",
         "Abbreviations",
-        "Type a short form and a space, and get the long one. Uses QuillLite's "
+        "Type a short form and a space, and get the long one. Uses QUILL Lite's "
         "own list unless you ask it to share QUILL's in Preferences. This is "
         "the same switch as Tools > Expand Abbreviations (Alt+Shift+A), which "
         "is the quick way to reach it while you are typing.",
@@ -136,14 +136,14 @@ AREAS: tuple[AppArea, ...] = (
         "Spell check",
         "Tools > Spelling: check as you type, and review the whole document "
         "with F7. "
-        "Uses QuillLite's own dictionary of taught words unless you ask it to "
+        "Uses QUILL Lite's own dictionary of taught words unless you ask it to "
         "share QUILL's in Preferences. Stays quiet in source and configuration "
         "files, where every identifier would be a false alarm.",
     ),
     AppArea(
         "autoformat",
         "Autocorrect while typing",
-        # It said "and a capital at the start of a sentence", which QuillLite
+        # It said "and a capital at the start of a sentence", which QUILL Lite
         # has never done: _autoformat implements quotes and dashes and nothing
         # else. A feature list that describes a rule the code does not have is
         # worse than one that describes nothing -- somebody turns the area on to
@@ -245,7 +245,7 @@ DEFAULT_OFF: frozenset[str] = frozenset({
 #:
 #: The two named after other people's programs are named after them on purpose.
 #: "Notepad" and "WordPad" say in one word what a paragraph of feature names
-#: cannot, and they are the two products somebody arriving at QuillLite is most
+#: cannot, and they are the two products somebody arriving at QUILL Lite is most
 #: likely to be replacing.
 #:
 #: They are also the only two that carry a *setting*, and for the same reason:
@@ -324,7 +324,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "notepad",
         "Notepad",
-        "The smallest QuillLite gets, and the one most people are replacing "
+        "The smallest QUILL Lite gets, and the one most people are replacing "
         "something with. Two of the 19 areas: printing and text size. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
         "history, no spell check -- nothing Notepad does not have, which is the "

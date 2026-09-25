@@ -1,4 +1,4 @@
-"""QuillLite, track 2: working in a document.
+"""QUILL Lite, track 2: working in a document.
 
 Five lessons, and the first four are about the same problem: doing without a
 glance. Selecting text you cannot see the extent of, finding your way back to
@@ -21,7 +21,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Selecting more than a few words",
         track="working-in-it",
         minutes=6,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
             "Three genuinely different answers to the same problem, and when "
             "each one is the right one."
@@ -106,7 +106,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Finding your way back",
         track="working-in-it",
         minutes=5,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
             "Bookmarks, marks and the Back key -- three things that sound alike "
             "and answer different questions."
@@ -142,7 +142,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Undo the jump",
                 body=(
-                    "Back is the undo for navigation. Every jump in QuillLite "
+                    "Back is the undo for navigation. Every jump in QUILL Lite "
                     "goes through it -- bookmarks, marks, headings, Go To, search "
                     "results -- so there is no jump it cannot take you back from."
                 ),
@@ -162,7 +162,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Skimming something long",
         track="working-in-it",
         minutes=5,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
             "What a sighted reader gets from scrolling and glancing, and the "
             "three ways to get it without one."
@@ -225,9 +225,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Spelling, without a red squiggle",
         track="working-in-it",
         minutes=5,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
-            "How QuillLite tells you a word is wrong without interrupting the "
+            "How QUILL Lite tells you a word is wrong without interrupting the "
             "sentence you are writing, and the one key that fixes it."
         ),
         steps=(
@@ -288,7 +288,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         title="Asking a question about a document",
         track="working-in-it",
         minutes=6,
-        surfaces=("QuillLite",),
+        surfaces=("QUILL Lite",),
         summary=(
             "The one feature that sends anything off this computer: how to turn "
             "it on, what goes when you use it, and what it will not do."

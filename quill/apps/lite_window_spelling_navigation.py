@@ -30,7 +30,7 @@ class DocumentSpellingNavigationMixin:
 
         Ctrl+F7 N times is the alternative, and it answers a different question:
         it moves you to the next one, and this tells you how many there are and
-        lets you choose. QuillLite already builds exactly this data for its live
+        lets you choose. QUILL Lite already builds exactly this data for its live
         check; it had no way to show it (bad.md 4.2, Tier 2).
 
         Ignored words are left out, because a list that offers you the word you

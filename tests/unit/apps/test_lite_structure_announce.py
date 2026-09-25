@@ -1,9 +1,9 @@
-"""QuillLite says "Heading 2" because nothing else in the stack can.
+"""QUILL Lite says "Heading 2" because nothing else in the stack can.
 
 The wiring, not the rules -- the rules are tested in
 ``tests/unit/core/test_structure_announce.py``. What matters here is that the
 caret hook feeds the latch, that an edit does not masquerade as an arrival, that
-the formatting commands do not get echoed a second time, and that QuillLite
+the formatting commands do not get echoed a second time, and that QUILL Lite
 never mentions a table.
 """
 
@@ -278,7 +278,7 @@ def test_the_heading_cue_never_interrupts_the_reader() -> None:
     """The one thing that would make this feature worse than silence.
 
     The cue fires as the screen reader is reading the line the caret landed on.
-    QuillLite's announcements interrupt by default -- which is right for the
+    QUILL Lite's announcements interrupt by default -- which is right for the
     outcome of a command and exactly wrong here, because interrupting would
     take away the text the user moved there to hear.
     """
@@ -386,7 +386,7 @@ def test_switching_off_still_feeds_the_latch() -> None:
 
 
 def test_a_hash_in_a_shell_script_is_a_comment_not_a_heading() -> None:
-    """QuillLite is a Notepad replacement, so this is the common case.
+    """QUILL Lite is a Notepad replacement, so this is the common case.
 
     A ``.sh``, ``.py``, ``.ini`` or ``.conf`` uses ``#`` for comments. Reading
     those as headings would announce "Heading 1" on most lines of a build

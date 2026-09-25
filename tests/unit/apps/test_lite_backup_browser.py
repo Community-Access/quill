@@ -1,6 +1,6 @@
 """Earlier Versions: the half of backups that was missing.
 
-QuillLite has written a dated copy of every save since backups shipped, and
+QUILL Lite has written a dated copy of every save since backups shipped, and
 offered no way to read one. The files were correct and correctly named, and
 getting at one meant knowing where the app keeps them, which of the hashed
 folders was yours, and how to open a ``.bak``. A safety net nobody can reach is

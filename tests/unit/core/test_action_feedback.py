@@ -1,7 +1,7 @@
 """The rule for "a tone, words, both, or neither", which both editors share.
 
 Small enough to read in one go and worth its own file because it is the one place
-the rule lives: QUILL asks it in :meth:`CueMixin.action_channels` and QuillLite in
+the rule lives: QUILL asks it in :meth:`CueMixin.action_channels` and QUILL Lite in
 ``DocumentFrame._action``, and if either had its own copy the two products would
 answer the same setting differently -- which is exactly the divergence the shared
 package exists to prevent.
@@ -110,7 +110,7 @@ def test_both_settings_that_use_the_rule_default_to_a_tone() -> None:
 
 def test_the_first_failure_speaks_on_the_tone_default() -> None:
     """The rule this module opens with, finally applied to the one failure
-    anybody meets daily. Reported as "QuillLite made a sound but did not
+    anybody meets daily. Reported as "QUILL Lite made a sound but did not
     announce the error"."""
     from quill.core.action_feedback import resolve_failure
 

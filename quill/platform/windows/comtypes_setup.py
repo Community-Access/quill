@@ -40,7 +40,7 @@ def ensure_comtypes_gen_dir_redirected() -> None:
     _redirected = True
     try:
         # The RUNNING app's folder, not QUILL's: this cache is a private
-        # side-effect of touching COM, and QuillLite reaches it through the
+        # side-effect of touching COM, and QUILL Lite reaches it through the
         # native Rich Edit surface on its very first window. Pointed at
         # app_data_dir() it created %APPDATA%\Quill on a machine that had
         # never had QUILL installed.

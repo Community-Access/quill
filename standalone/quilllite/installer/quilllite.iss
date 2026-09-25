@@ -1,4 +1,4 @@
-; QuillLite installer -- shared-runtime layout.
+; QUILL Lite installer -- shared-runtime layout.
 ;
 ; Named quilllite.iss rather than quill-lite.iss on purpose: the family
 ; reserves the "*-lite.iss" suffix for the THIN installer flavour, and
@@ -13,7 +13,7 @@
 ; Runtime and launched through `{app}\QuillLite.exe`, the native launcher.
 ; See standalone\radio\installer\quill-radio.iss for the full rationale.
 ;
-; QuillLite is the leanest app in the family after Weather -- one editor
+; QUILL Lite is the leanest app in the family after Weather -- one editor
 ; control, six small windows, no ffmpeg and no libmpv -- so the per-app payload
 ; is just the icon, the C launcher, and (optionally) the docs.
 ;
@@ -24,9 +24,14 @@
 ;   - the per-app QuillLite.exe at ..\dist\QuillLite\QuillLite.exe
 ;     (built by build_native_launcher.py);
 ;   - the per-app icon at ..\assets\quill-lite.ico;
-;   - the rendered QuillLite docs at ..\dist\QuillLite\docs.
+;   - the rendered QUILL Lite docs at ..\dist\QuillLite\docs.
 
-#define AppName "QuillLite"
+; The name people see and hear: window titles, the Start Menu, Add/Remove
+; Programs, the Open With list. Changed from "QuillLite" on 2026-09-25. Every
+; machine identifier -- the exe, the install folder, the data folder, AppId, the
+; registry keys, the release assets -- keeps the old one-word spelling, so an
+; upgrade finds everything where it left it.
+#define AppName "QUILL Lite"
 ; Version is single-sourced from build_release.ps1, which passes
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
@@ -65,8 +70,12 @@ AppUpdatesURL={#AppURL}
 VersionInfoVersion=1.0.0.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible plain text and rich text editor (shared runtime)
-DefaultDirName={autopf}\{#AppName}
+; The folder keeps the old name: an existing install upgrades in place.
+DefaultDirName={autopf}\QuillLite
 DefaultGroupName={#AppName}
+; Not the previous group: that is the old "QuillLite" name, which [InstallDelete]
+; removes so the Start Menu does not end up with both.
+UsePreviousGroup=no
 DisableDirPage=no
 DisableProgramGroupPage=auto
 AllowNoIcons=yes
@@ -119,6 +128,13 @@ Source: "..\dist\QuillLite\docs\*"; DestDir: "{app}\docs"; Components: docs; Fla
 ; removal on uninstall. Defines RuntimeDir/RuntimeExe used by [Icons]/[Run].
 #include "..\..\..\installer\shared-runtime.iss"
 
+[InstallDelete]
+; The shortcuts from before the display name became "QUILL Lite" (2026-09-25).
+; Without these an upgrade leaves the old Start Menu folder and desktop icon
+; behind, and the Start Menu reads out the product twice under two spellings.
+Type: filesandordirs; Name: "{autoprograms}\QuillLite"
+Type: files; Name: "{autodesktop}\QuillLite.lnk"
+
 [Icons]
 ; Every shortcut launches through {app}\QuillLite.exe -- the native launcher,
 ; which resolves the shared runtime itself and runs `-m quill.apps.lite` in it.
@@ -134,7 +150,7 @@ Source: "..\dist\QuillLite\docs\*"; DestDir: "{app}\docs"; Components: docs; Fla
 ; the staged tools\ and vendor\ payloads live. quill.core.install_edition then
 ; reads THAT folder, finds no quill-edition.txt, no uninstaller and no data\,
 ; and concludes the user is running the Companion zip (verified 2026-09-15).
-; Harmless for QuillLite from now on, because QuillLite publishes no Companion
+; Harmless for QUILL Lite from now on, because QUILL Lite publishes no Companion
 ; zip and the updater falls through to this installer -- the right answer by
 ; luck rather than by design. The two meanings of "app root" need separating
 ; before it is right on purpose.
@@ -147,7 +163,7 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename:
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Registry]
-; "Open with QuillLite" on .txt and .rtf, as an OPTIONAL component and never as
+; "Open with QUILL Lite" on .txt and .rtf, as an OPTIONAL component and never as
 ; the default handler. A text editor that quietly takes over every .txt on the
 ; machine is a text editor people uninstall; taking the verb rather than the
 ; association leaves Notepad, WordPad and QUILL exactly where they were.
@@ -156,7 +172,7 @@ Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe"; ValueType: str
 Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\quill-lite.ico"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\.txt\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
-; QuillLite edits four kinds, not two. Markdown and HTML were missing from
+; QUILL Lite edits four kinds, not two. Markdown and HTML were missing from
 ; this list until 2026-09-16 -- so a .md file could not reach the editor that
 ; has a Markdown mode, from the menu Windows offers for exactly that (bad.md A1).
 Root: HKA; Subkey: "Software\Classes\.md\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
@@ -168,7 +184,7 @@ Root: HKA; Subkey: "Software\Classes\.htm\OpenWithList\QuillLite.exe"; Flags: un
 Filename: "{app}\QuillLite.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
 
 [UninstallDelete]
-; Remove only QuillLite's own {app} payload. The shared runtime is left to the
+; Remove only QUILL Lite's own {app} payload. The shared runtime is left to the
 ; fragment's CurUninstallStepChanged, which deletes it only when unreferenced.
 Type: filesandordirs; Name: "{app}"
 

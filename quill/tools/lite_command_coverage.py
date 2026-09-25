@@ -1,4 +1,4 @@
-"""GATE-LITE-COVER: a QuillLite command may not ship without a behavioural test.
+"""GATE-LITE-COVER: a QUILL Lite command may not ship without a behavioural test.
 
 The gate that exists because of F8. ``cmd_start_extend_selection`` was on the
 menu, had a key, had a handler, and was covered by a test that asserted the
@@ -60,7 +60,7 @@ STATUSES = ("covered", "shape_only")
 
 
 def command_handlers() -> list[str]:
-    """Every handler name QuillLite's menu table names, sorted and de-duplicated."""
+    """Every handler name QUILL Lite's menu table names, sorted and de-duplicated."""
     from quill.core.lite.commands import COMMANDS
 
     return sorted({row[3] for row in COMMANDS if row[4] not in {"sep", "sub"} and row[3]})

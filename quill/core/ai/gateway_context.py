@@ -58,7 +58,7 @@ _WORDS_PER_TOKEN = 0.75
 #: single-spaced paragraphs -- both shapes appear in plain text files.
 _PARA_BREAK = re.compile(r"\n\s*\n")
 
-#: Markdown and plain-text heading shapes. QuillLite documents are plain text,
+#: Markdown and plain-text heading shapes. QUILL Lite documents are plain text,
 #: Markdown or RTF; this catches the first two, and an RTF document's headings
 #: arrive already split by the caller.
 _HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*$|^(.+)\n([=-]{3,})$", re.M)
@@ -300,7 +300,7 @@ class Retrieval:
         if self.scanned_all:
             return ""
         return (
-            f"This document is very long, so QuillLite searched the first "
+            f"This document is very long, so QUILL Lite searched the first "
             f"{words_for_tokens(self.scanned_chars // _CHARS_PER_TOKEN):,} words "
             "of it. Put the cursor nearer what you are asking about, or ask about "
             "a selection instead."
@@ -314,7 +314,7 @@ class Retrieval:
 #: This is not a guess. Scoring a 1 MB document by materialising every chunk
 #: took **three seconds on the UI thread**, on every refresh of the pad's
 #: preview, in an editor whose whole promise is that it never stops accepting
-#: keystrokes. QuillLite opens files far larger than that.
+#: keystrokes. QUILL Lite opens files far larger than that.
 MAX_SCAN_CHARS = 2_000_000
 
 

@@ -1,7 +1,7 @@
 """F5 writes the date in QUILL too (bad.md P1.9).
 
 F5 has put the time and date in at the caret since Notepad on Windows 3.1, and
-QuillLite has done it since it shipped. QUILL had no F5: its three date/time
+QUILL Lite has done it since it shipped. QUILL had no F5: its three date/time
 inserters are menu rows contributed by the bundled ``insert-tools`` Quillin,
 reached through a submenu, and a menu row is not a chord. They also switch off
 in Safe Mode with every other Quillin contribution, so in the mode people fall
@@ -76,7 +76,7 @@ def test_it_is_f5_and_it_is_a_core_command() -> None:
 
 
 def test_both_editors_write_the_same_stamp() -> None:
-    """One format in core, so QUILL's F5 and QuillLite's cannot drift apart."""
+    """One format in core, so QUILL's F5 and QUILL Lite's cannot drift apart."""
     from quill.apps import lite_window_commands
     from quill.core.datetime_insert import NOTEPAD_DATETIME_FORMAT
 

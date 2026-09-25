@@ -25,7 +25,7 @@ import wx
 def say_yes(monkeypatch):
     """Answer Yes to the "clear N filled slots?" question.
 
-    Asked at all since 2026-09-16: QUILL asked without a count and QuillLite
+    Asked at all since 2026-09-16: QUILL asked without a count and QUILL Lite
     counted without asking, and each half is the one the other needed
     (bad.md C9). Answering it in a fixture rather than per test keeps the
     tests about the *count*, which is the part that was wrong.

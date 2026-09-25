@@ -1,6 +1,6 @@
-"""The MDI shell: one QuillLite window holding numbered documents.
+"""The MDI shell: one QUILL Lite window holding numbered documents.
 
-QuillLite opens documents as **numbered children inside one parent window**
+QUILL Lite opens documents as **numbered children inside one parent window**
 rather than as separate top-level windows. The parent is
 :class:`QuillLiteShell`; the documents are ``wx.MDIChildFrame``s built by
 :mod:`quill.apps.lite_window`.
@@ -45,7 +45,7 @@ On Windows an MDI child's menu bar replaces the parent's while that child is
 active, which is exactly what is wanted: each document owns the bar, so a menu
 item can act on *this* document without asking which one is in front. The parent
 carries its own smaller bar for the state where nothing is open at all -- which
-QuillLite avoids by always keeping one document, but a menu bar that vanishes is
+QUILL Lite avoids by always keeping one document, but a menu bar that vanishes is
 worse than one that is briefly short.
 """
 
@@ -74,11 +74,11 @@ class QuillLiteShell(wx.MDIParentFrame):
         # Before any document exists, because wxMSW hands each new MDI child a
         # copy of the parent's window menu: **wx builds a "Window" menu of its
         # own** (Cascade, Tile, Arrange Icons, and a list of children) and
-        # inserts it into every child's bar next to the one QuillLite builds.
+        # inserts it into every child's bar next to the one QUILL Lite builds.
         # The result was two menus both called Window, one of them arranging
         # icons in an editor that has none, and a listener pressing Alt and
         # arrowing along the bar hearing "Window" twice with no way to tell
-        # which was which. QuillLite's own is the one that lists documents by
+        # which was which. QUILL Lite's own is the one that lists documents by
         # number, so wx's goes.
         self.SetWindowMenu(None)
         # F1 on the shell itself: no show path wraps a main window, so the

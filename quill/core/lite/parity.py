@@ -6,9 +6,9 @@ its own; together they are **the mechanism by which the two editors drift**,
 because there was no place where a name got decided once (bad.md 7.7).
 
 This module is that place. Today it holds the **settings** half:
-:data:`SETTINGS_ALIASES` maps QuillLite's field name to QUILL's, for every
+:data:`SETTINGS_ALIASES` maps QUILL Lite's field name to QUILL's, for every
 concept both products store under different names (bad.md G1). It is what
-"Bring my QuillLite settings" reads when somebody grows up into QUILL (5.8),
+"Bring my QUILL Lite settings" reads when somebody grows up into QUILL (5.8),
 and what the settings-vocabulary gate checks a new field against.
 
 The **command** half belongs here too and is not written yet: the family parity
@@ -41,18 +41,18 @@ __all__ = [
     "quill_setting_for",
 ]
 
-#: QuillLite's field name -> QUILL's, for one concept stored under two names.
+#: QUILL Lite's field name -> QUILL's, for one concept stored under two names.
 #:
 #: Five rows, and each one is a concept a person would describe with the same
 #: sentence in either product (bad.md G1). Three more pairs the audit named have
 #: since converged on one name and are deliberately absent: ``font_name``,
 #: ``font_size`` and ``show_status_bar`` are spelled identically in both.
 SETTINGS_ALIASES: dict[str, str] = {
-    # "How often it saves a copy of unsaved work." QuillLite's name is the
+    # "How often it saves a copy of unsaved work." QUILL Lite's name is the
     # shorter and the clearer of the two; QUILL's says "interval" twice.
     "autosave_seconds": "autosave_interval_seconds",
     # "Whether long lines wrap to the window." Notepad, WordPad and Word all
-    # call this Word Wrap, which is QuillLite's name and the one the menus in
+    # call this Word Wrap, which is QUILL Lite's name and the one the menus in
     # both products show -- QUILL's field is the outlier, not its label.
     "word_wrap": "soft_wrap",
     # "Whether it checks spelling as you type."
@@ -72,14 +72,14 @@ SETTINGS_ALIASES: dict[str, str] = {
 #: them to the table above by pattern-matching on the name.
 #:
 #: ``recent_files`` / ``recent_files_limit`` is the one that catches people:
-#: QuillLite's is **the list of files** and QUILL's is **how many to keep**. A
+#: QUILL Lite's is **the list of files** and QUILL's is **how many to keep**. A
 #: mapping between them would hand an importer a list where it expected a
 #: number.
 NOT_ALIASES: dict[str, str] = {
     "recent_files": "recent_files_limit",
 }
 
-#: QuillLite handlers whose chord is allowed to differ, each with its reason.
+#: QUILL Lite handlers whose chord is allowed to differ, each with its reason.
 #:
 #: A row here is a promise that somebody thought about it, not a place to park
 #: a collision -- and the gate prints the reason when it reports the pair, so
@@ -94,20 +94,20 @@ DIVERGENCES: dict[str, str] = {
     "cmd_toggle_fold": (
         "QUILL's folds are Ctrl+Shift+[ and ] beside its indent pair, which is "
         "where every code editor puts folding, and that freed Ctrl+Shift+F for "
-        "Word's Font (bad.md 3.1). QuillLite uses the F9 row and has no font "
+        "Word's Font (bad.md 3.1). QUILL Lite uses the F9 row and has no font "
         "dialog to make room for."
     ),
     "cmd_next_fold": (
         "As cmd_toggle_fold: the whole fold family sits on the bracket row in "
-        "QUILL, beside indent and outdent, and on the F9 row in QuillLite."
+        "QUILL, beside indent and outdent, and on the F9 row in QUILL Lite."
     ),
     "cmd_previous_fold": (
         "As cmd_toggle_fold: the whole fold family sits on the bracket row in "
-        "QUILL, beside indent and outdent, and on the F9 row in QuillLite."
+        "QUILL, beside indent and outdent, and on the F9 row in QUILL Lite."
     ),
     "cmd_spelling_voice_settings": (
         "Ctrl+Alt+Shift+F7 is a QuillVille launcher in QUILL -- the six "
-        "siblings sit on Ctrl+Alt+Shift+F7 through F12, and QuillLite, being "
+        "siblings sit on Ctrl+Alt+Shift+F7 through F12, and QUILL Lite, being "
         "the editor on its own, has none to launch. QUILL's Announcements "
         "window is one key down on Ctrl+Alt+Shift+F6: same modifiers, same "
         "finger shape, so the habit transfers even though the key cannot "
@@ -116,7 +116,7 @@ DIVERGENCES: dict[str, str] = {
     "cmd_ai_usage": (
         "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the six siblings "
         "sit on Ctrl+Alt+Shift+F7 through F12 (app_keymaps.SIBLING_APP_ACCELERATORS) "
-        "-- and QuillLite, being the editor on its own, has none to launch. QUILL's "
+        "-- and QUILL Lite, being the editor on its own, has none to launch. QUILL's "
         "Free AI Usage is Ctrl+Alt+Shift+F2: same modifiers, same finger shape, and "
         "a rule 9 command either way. Exactly the argument "
         "cmd_spelling_voice_settings makes below."
@@ -124,12 +124,12 @@ DIVERGENCES: dict[str, str] = {
     "cmd_ai_sign_in": (
         "As cmd_ai_usage: Ctrl+Alt+Shift+F10 is a QuillVille launcher in QUILL. "
         "QUILL's Connect or Sign Out is Ctrl+Alt+Shift+F4. The other three hosted-AI "
-        "commands kept QuillLite's chords unchanged (rule 2); these two could not, "
+        "commands kept QUILL Lite's chords unchanged (rule 2); these two could not, "
         "and a chord claimed twice means one of the pair silently never fires."
     ),
     "cmd_snippet_gallery": (
         "Alt+Shift+I is Add Inline Note in QUILL -- one of four note chords "
-        "QuillLite does not have (bad.md 3.9) -- and a snippet gallery is a "
+        "QUILL Lite does not have (bad.md 3.9) -- and a snippet gallery is a "
         "once-a-session window, so the note keeps the shorter chord (rule 3)."
     ),
     "cmd_context_help": (
@@ -138,15 +138,15 @@ DIVERGENCES: dict[str, str] = {
         "help.context_help is QUILL's second, chord-reached help window."
     ),
     "cmd_customize_features": (
-        "Not the same verb: QuillLite's Customize Features toggles individual "
+        "Not the same verb: QUILL Lite's Customize Features toggles individual "
         "features, QUILL's Alt+Shift+P switches whole feature PROFILES. The "
         "closest QUILL command to Lite's is tools.individual_feature_toggles, "
-        "which is on Ctrl+Alt+F10 -- QuillLite's chord -- and the mapping "
+        "which is on Ctrl+Alt+F10 -- QUILL Lite's chord -- and the mapping "
         "points at the profile switcher because that is the row the menus "
         "share. Reviewed 2026-09-18; left as a divergence rather than forcing "
         "two different verbs onto one key."
     ),
-    # Five pairs that looked like divergences and are not: QuillLite's chord is
+    # Five pairs that looked like divergences and are not: QUILL Lite's chord is
     # a QUILL *alias*, which is rule 5 working -- both keys reach the command
     # here. The gate said so on its first run and they were deleted from this
     # table (cmd_list_headings, cmd_insert_html_tag, cmd_manage_abbreviations,
@@ -154,14 +154,14 @@ DIVERGENCES: dict[str, str] = {
 }
 
 
-#: QuillLite handler -> the QUILL command id that means the same thing.
+#: QUILL Lite handler -> the QUILL command id that means the same thing.
 #:
-#: 186 rows, and the table IS the review (bad.md P1.15): a new QuillLite command
+#: 186 rows, and the table IS the review (bad.md P1.15): a new QUILL Lite command
 #: fails the family parity gate until somebody writes its row, and writing the
 #: row is where they have to decide whether QUILL has that verb at all. Three
 #: things fell out of building it -- five chords that had drifted (the heading
 #: organiser, the tab-mode toggle, Expand Abbreviations, the bookmark list and
-#: block comment), and four QuillLite verbs QUILL simply does not have.
+#: block comment), and four QUILL Lite verbs QUILL simply does not have.
 COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_about": "help.about_quill",
     "cmd_add_word_to_dictionary": "tools.add_word_to_dictionary",
@@ -379,7 +379,7 @@ NATIVE_IN_BOTH: frozenset[str] = frozenset({
     "cmd_select_all",
 })
 
-#: QuillLite verbs QUILL does not have, each a real gap or a real difference:
+#: QUILL Lite verbs QUILL does not have, each a real gap or a real difference:
 #:
 #: * ``cmd_close_mdi`` / MDI child windows -- QUILL has tabs (bad.md 5.7).
 #: * ``cmd_print_preview`` -- QUILL prints but has no preview window.
@@ -389,7 +389,7 @@ NATIVE_IN_BOTH: frozenset[str] = frozenset({
 #: * ``cmd_paste_collected`` / ``cmd_clear_collected`` -- QUILL's collector is
 #:   a mode that writes into the document, so it has neither verb (C4).
 #:
-#: This set is the P1 backlog, restated as data: every entry is QuillLite ahead
+#: This set is the P1 backlog, restated as data: every entry is QUILL Lite ahead
 #: of QUILL, which rule 10 does not allow to stand.
 LITE_ONLY: frozenset[str] = frozenset({
     "cmd_clear_collected",

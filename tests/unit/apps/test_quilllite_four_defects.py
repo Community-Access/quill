@@ -1,4 +1,4 @@
-"""Four QuillLite defects, three of which cost somebody something real.
+"""Four QUILL Lite defects, three of which cost somebody something real.
 
 **H1 -- a hand-edited keymap could bind a bare letter.** ``wx`` accepts
 ``"Win+A"``, returns True, and hands back an entry with *no modifier at all*:
@@ -7,7 +7,7 @@ file did not fail, did not warn, and ran Delete Line every time they typed the
 letter A. ``load_keymap`` is the trust boundary for a file a person can edit,
 and it consulted ``normalise_chord``, which said that chord was fine.
 
-**V1 -- no large-file guard of any kind.** Nothing in QuillLite called
+**V1 -- no large-file guard of any kind.** Nothing in QUILL Lite called
 ``stat()`` before reading, so a 200 MB log opened by ``read_text`` straight
 into a ``wx.TextCtrl`` with no warning, no progress and no way out. QUILL has
 had the guard since #1150. For a Notepad replacement this is the scenario, not
@@ -20,8 +20,8 @@ always has.
 **S1 -- F7's "Add to Dictionary" wrote into QUILL's data folder.**
 ``ReviewSession.add_to_dict`` passed no ``personal_dir``, so the shared
 ``add_word_to_scope`` fell back to QUILL's. A word taught through the review
-was flagged again next session -- QuillLite reads its own folder -- and a Quill
-folder appeared on a machine that had never had QUILL. QuillLite's other two
+was flagged again next session -- QUILL Lite reads its own folder -- and a Quill
+folder appeared on a machine that had never had QUILL. QUILL Lite's other two
 add routes passed the right folder all along; only the review dialog did not.
 """
 
@@ -159,7 +159,7 @@ def test_quilllite_f7_passes_its_own_dictionary_folder() -> None:
 
 
 def test_the_folder_follows_the_share_setting(tmp_path: Path) -> None:
-    """QuillLite's own, unless the listener asked in Preferences to share QUILL's."""
+    """QUILL Lite's own, unless the listener asked in Preferences to share QUILL's."""
     from types import SimpleNamespace
 
     from quill.core.lite.spelling import dictionary_dir

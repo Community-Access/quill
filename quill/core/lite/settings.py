@@ -1,9 +1,9 @@
-"""QuillLite's settings: ten fields, one small JSON file, written atomically.
+"""QUILL Lite's settings: ten fields, one small JSON file, written atomically.
 
 Deliberately not :class:`quill.core.settings.Settings`. QUILL's settings object
-carries hundreds of fields for features QuillLite does not have and must never
+carries hundreds of fields for features QUILL Lite does not have and must never
 grow -- AI, dictation, Quillins, publishing -- and sharing it would make
-QuillLite's data folder a place a QUILL feature could appear by accident. A
+QUILL Lite's data folder a place a QUILL feature could appear by accident. A
 dozen fields is the whole product: a theme, a font, a wrap, a default mode, a
 window size, a recent list, a session list, and how often unsaved work is copied
 aside.
@@ -101,7 +101,7 @@ _MIN_AUTOSAVE_SECONDS = 15
 
 @dataclass
 class Settings:
-    """Everything QuillLite remembers between sessions."""
+    """Everything QUILL Lite remembers between sessions."""
 
     #: ``dark`` or ``system``. **``system`` since 2026-09-17, which reverses
     #: the default this field shipped with** (bad.md G2).
@@ -123,7 +123,7 @@ class Settings:
     #: machine reads, and following that is strictly better than a guess that is
     #: right for one group and wrong for another. It also settles G2's real
     #: complaint, which was never about which colour: the same person launching
-    #: QUILL and QuillLite got two different-looking editors on day one, from
+    #: QUILL and QUILL Lite got two different-looking editors on day one, from
     #: one setting spelled one way.
     #:
     #: Existing users come with it, and that is deliberate -- see ``_deltas``:
@@ -152,7 +152,7 @@ class Settings:
     #: phrase is one thing between you and every item. Ctrl+Alt+F5 toggles it.
     announce_lists: bool = True
     #: Where "Heading 2" goes relative to the heading's own text: ``"before"``
-    #: (the default) says "Heading 2, Installing" as one sentence of QuillLite's
+    #: (the default) says "Heading 2, Installing" as one sentence of QUILL Lite's
     #: own, and ``"after"`` lets the screen reader read the line and adds
     #: "Heading 2" behind it.
     #:
@@ -170,7 +170,7 @@ class Settings:
     #: in the other order, and on ordinary line-by-line reading it is reliable.
     heading_announce_position: str = "before"
     # How a hard line break is written in Markdown: "backslash" or "spaces".
-    # Shared with QUILL, which must never be behind QuillLite (#1488).
+    # Shared with QUILL, which must never be behind QUILL Lite (#1488).
     markdown_hard_break_style: str = "backslash"
     #: What a plain Ctrl+N creates. The explicit New Rich Text and New Plain
     #: Text commands ignore this.
@@ -181,7 +181,7 @@ class Settings:
     #: The default is True for the reason set out in
     #: :mod:`quill.core.window_geometry`: a small window is where clipped labels
     #: and four-row lists come from, and it costs a sighted user one keystroke
-    #: to undo while costing everybody else something on every launch. QuillLite
+    #: to undo while costing everybody else something on every launch. QUILL Lite
     #: keeps its geometry here rather than in the shared store for the same
     #: reason it keeps its abbreviations here -- a machine that has never had
     #: QUILL installed must not grow a Quill data folder because somebody opened
@@ -190,7 +190,7 @@ class Settings:
     recent_files: list[str] = field(default_factory=list)
     #: Seconds between recovery copies of a modified document. **30, matching
     #: QUILL's autosave_interval_seconds** (2026-09-15): it was 60 here for no
-    #: stated reason, which meant the same crash cost a QuillLite user up to a
+    #: stated reason, which meant the same crash cost a QUILL Lite user up to a
     #: minute of typing and a QUILL user up to thirty seconds. The two products
     #: make the same promise about unsaved work and should keep it equally well.
     #: The names still differ because each dataclass is its own store; the
@@ -237,14 +237,14 @@ class Settings:
     #: offered in a single yes-or-no question. See
     #: ``quill/core/recovery_triage.py``.
     recovery_keep_days: int = RECOVERY_KEEP_DAYS
-    #: Read abbreviations from QUILL's shared library instead of QuillLite's own.
+    #: Read abbreviations from QUILL's shared library instead of QUILL Lite's own.
     #: Off by default and deliberately so: Inkwell shares that library because
-    #: one library is its entire value, while QuillLite is offered as an
+    #: one library is its entire value, while QUILL Lite is offered as an
     #: alternative to QUILL -- and a machine that has never had QUILL installed
     #: must not grow a Quill data folder because somebody opened a text file.
     share_quill_abbreviations: bool = False
     #: Read and write taught words in QUILL's shared dictionary instead of
-    #: QuillLite's own. Off by default for the same reason the abbreviation
+    #: QUILL Lite's own. Off by default for the same reason the abbreviation
     #: switch is: a machine that has never had QUILL installed must not grow a
     #: Quill data folder because somebody taught a text editor a word.
     share_quill_dictionary: bool = False
@@ -258,13 +258,13 @@ class Settings:
     #: Keep Clip puts anything in it.
     #:
     #: Deliberately the same field name QUILL uses, so the grow-up path has one
-    #: fewer row to map (bad.md G1). QuillLite promised this history from 1.0
+    #: fewer row to map (bad.md G1). QUILL Lite promised this history from 1.0
     #: and never implemented it -- the capture method was written and called
     #: from nowhere (bad.md C1).
     clip_library_autocapture: bool = False
     #: Shortest gap between two spoken announcements, in milliseconds.
     #:
-    #: Zero -- no throttle -- which is what QuillLite has always done and what
+    #: Zero -- no throttle -- which is what QUILL Lite has always done and what
     #: QUILL defaults to as well. It exists because a held key that announces
     #: per repeat floods the reader, and a listener who hits that has no way to
     #: ask for less short of switching speech off entirely (bad.md A5). The
@@ -280,7 +280,7 @@ class Settings:
     # every session (bad.md F13, PR2). Three fields rather than six, because the
     # four margins are one decision.
     #
-    #: ``wx.PaperSize`` id. 9 is A4, which is what QuillLite has always started
+    #: ``wx.PaperSize`` id. 9 is A4, which is what QUILL Lite has always started
     #: with; the number rather than the name because that is what wx stores.
     print_paper_id: int = 9
     #: Landscape rather than portrait.
@@ -288,7 +288,7 @@ class Settings:
     #: Left, top, right and bottom margins, in millimetres.
     print_margins_mm: list[int] = field(default_factory=lambda: [15, 15, 15, 15])
     #: Whether the status bar is on screen at all. Notepad's View menu has had
-    #: this checkbox since Windows 95 and QuillLite had no answer to it: the bar
+    #: this checkbox since Windows 95 and QUILL Lite had no answer to it: the bar
     #: was always there. Per app rather than per document, because it is a
     #: statement about how you want to work rather than about a file.
     show_status_bar: bool = True
@@ -304,21 +304,21 @@ class Settings:
     #: Features area stays the master switch -- turning the area off turns both
     #: off -- and these say *which* rules run when it is on.
     #:
-    #: Both default to False, which is QuillLite's default and the right one:
+    #: Both default to False, which is QUILL Lite's default and the right one:
     #: a substitution that happens without being asked for is one somebody has
     #: to discover by reading their own file back.
     autoformat_smart_quotes: bool = False
     autoformat_dashes: bool = False
     #: Walk the F7 review by how often each word recurs rather than by
-    #: position. QuillLite never had this: it was a QUILL-only second command
+    #: position. QUILL Lite never had this: it was a QUILL-only second command
     #: on a second chord, and became the shared dialog's checkbox on
-    #: 2026-09-16, which is how QuillLite gained it (bad.md P0.3, 4.2).
+    #: 2026-09-16, which is how QUILL Lite gained it (bad.md P0.3, 4.2).
     #: Deliberately the same field name QUILL uses, so the grow-up path has
     #: one fewer row to map (bad.md G1).
     spell_review_ranked: bool = False
     #: Spell the word out, letter by letter, when the F7 review arrives at one.
     #:
-    #: QuillLite had the *switch* for this -- Spelling Announcements offers
+    #: QUILL Lite had the *switch* for this -- Spelling Announcements offers
     #: "spell words out" -- and no field for it, so the switch governed the
     #: as-you-type alert and the caret arrival and silently did nothing to the
     #: review, which is the one place a listener most wants a word spelled
@@ -380,18 +380,18 @@ class Settings:
     #: preference and F3 is pressed in runs.
     find_not_found_feedback: str = "sound"
     #: Carry on from the other end when a search reaches the end of the
-    #: document. On, which is what QuillLite always did with no way to say
+    #: document. On, which is what QUILL Lite always did with no way to say
     #: otherwise; off makes Find Next stop at the end and say so.
     wrap_find: bool = True
     # -- Updates -------------------------------------------------------------
-    #: Look for a new QuillLite once a day, at launch, and say nothing unless
-    #: there is one. On, because the alternative is what QuillLite shipped
+    #: Look for a new QUILL Lite once a day, at launch, and say nothing unless
+    #: there is one. On, because the alternative is what QUILL Lite shipped
     #: with: a user who never opens GitHub staying on the version they
     #: installed forever, with no way to know that was happening. Nothing is
     #: downloaded or installed without being asked -- the check finds a
     #: version number and shows what changed.
     check_updates_on_launch: bool = True
-    #: ISO timestamp of the last *silent* launch check, so QuillLite does not
+    #: ISO timestamp of the last *silent* launch check, so QUILL Lite does not
     #: reach the network on every single launch. Ctrl+Alt+U always runs.
     last_update_check: str = ""
 
@@ -497,7 +497,7 @@ def _coerce(current: Any, value: Any) -> Any | None:
     return None
 
 
-#: Settings that describe *this machine* rather than how QuillLite behaves, and
+#: Settings that describe *this machine* rather than how QUILL Lite behaves, and
 #: so are left out of a portable backup (#1501). The same rule QUILL applies:
 #: a list of recent files, a restored session and an update timestamp are a
 #: record of one computer, not a configuration to carry to another.
@@ -512,7 +512,7 @@ LOCAL_SETTINGS: frozenset[str] = frozenset({
 
 
 def export_portable(settings: Settings) -> tuple[dict[str, object], PortabilityReport]:
-    """QuillLite's settings as a portable file, and what was left behind."""
+    """QUILL Lite's settings as a portable file, and what was left behind."""
     return portable_export(settings, app="quilllite", local_fields=LOCAL_SETTINGS)
 
 

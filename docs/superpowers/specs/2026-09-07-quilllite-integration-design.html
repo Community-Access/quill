@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QuillLite integration — design</title>
+  <title>QUILL Lite integration — design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -196,14 +196,14 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
-<h1 id="quilllite-integration--design">QuillLite integration —
+<h1 id="quill-lite-integration--design">QUILL Lite integration —
 design</h1>
 <p><strong>Status: implemented, 2026-09-08.</strong> This document
 records what was decided and what actually shipped, including the four
 places the plan changed under contact with the code. Where the two
 differ, the “what shipped” note is the truth.</p>
 <h2 id="problem">Problem</h2>
-<p>PR #1490 (“Add QuillLite: a notepad-scale alternative editor”) by
+<p>PR #1490 (“Add QUILL Lite: a notepad-scale alternative editor”) by
 Steven Scott (<code>doubletaponair</code>) adds a small editor-only
 sibling to the QUILL family. The contributor self-contained the
 implementation — feature code, RTF scanner, dialogs, speech path,
@@ -223,12 +223,12 @@ the RTF safety scanner wholesale, even though both already live in
 <code>quill/</code>.</li>
 <li><strong>Do the QUILL-side fixes the contributor isolated land in the
 same PR?</strong> They affect every QUILL user today.</li>
-<li><strong>Does QuillLite ship as a full sibling (four artifacts, four
+<li><strong>Does QUILL Lite ship as a full sibling (four artifacts, four
 docs, shared runtime) or as something smaller?</strong></li>
 </ol>
 <h2 id="decision-thin-shell--quillappslite-full-sibling-shape">Decision:
 thin shell + <code>quill.apps.lite</code>, full sibling shape</h2>
-<p>QuillLite becomes a full sibling of
+<p>QUILL Lite becomes a full sibling of
 Radio/Cast/Weather/Studio/Inkwell. <strong>All</strong> wx and feature
 code moves into the shared package; the wrapper at
 <code>standalone/quilllite/</code> is an entry point, an icon,
@@ -262,10 +262,10 @@ session restore and encoding conversion all landed, and
 <code>View &gt; Customize Features</code> is what keeps that from making
 the product big: turning an area off removes its menu
 <strong>and</strong> its keys.</p></li>
-<li><p><strong>QuillLite is never allowed to be ahead of QUILL</strong>
+<li><p><strong>QUILL Lite is never allowed to be ahead of QUILL</strong>
 (Jeff, twice, and it is now the governing rule — see below). Everything
-QuillLite needed that the editor could not do was added to the editor in
-the same change.</p></li>
+QUILL Lite needed that the editor could not do was added to the editor
+in the same change.</p></li>
 </ol>
 <h2 id="code-architecture-as-shipped">Code architecture, as shipped</h2>
 <h3 id="layer-a--shared-quill-package">Layer A — shared
@@ -368,17 +368,17 @@ mpv.</li>
 <li><code>quill/tools/platform_report.py</code> — GATE-LITE-HELP joins
 the roster.</li>
 <li><code>tests/unit/ui/test_app_menu_accelerators.py</code> — both
-QuillLite menu files.</li>
+QUILL Lite menu files.</li>
 </ul>
-<h2 id="the-governing-rule-quilllite-may-never-be-ahead-of-quill">The
-governing rule: QuillLite may never be ahead of QUILL</h2>
+<h2 id="the-governing-rule-quill-lite-may-never-be-ahead-of-quill">The
+governing rule: QUILL Lite may never be ahead of QUILL</h2>
 <p>Stated by Jeff during implementation and applied retroactively across
-the whole change. If QuillLite needs something the editor cannot do, the
-capability goes into the <strong>shared</strong> package and the editor
-gets a way to reach it in the same change. A feature the small product
-has and the big one does not is backwards, and worse, invisible — nobody
-opens QUILL and notices the absence of a thing they have only ever seen
-elsewhere.</p>
+the whole change. If QUILL Lite needs something the editor cannot do,
+the capability goes into the <strong>shared</strong> package and the
+editor gets a way to reach it in the same change. A feature the small
+product has and the big one does not is backwards, and worse, invisible
+— nobody opens QUILL and notices the absence of a thing they have only
+ever seen elsewhere.</p>
 <p>What that cost, concretely:</p>
 <ul>
 <li><code>create_richedit_rtf</code> builds the extended surface, so
@@ -397,7 +397,7 @@ regenerated <code>docs/keyboard-reference.md</code>.</li>
 </ul>
 <p><strong>Where the two diverge, they diverge in writing.</strong>
 QUILL takes <code>Ctrl+Alt+J</code> and <code>Ctrl+Alt+V</code> where
-QuillLite uses WordPad’s <code>Ctrl+J</code> and
+QUILL Lite uses WordPad’s <code>Ctrl+J</code> and
 <code>Ctrl+Shift+V</code>, because <code>Ctrl+J</code> has been Set
 Temporary Bookmark and <code>Ctrl+Shift+V</code> has been Preview in
 QUILL for far longer. An existing binding somebody’s hands already know
@@ -405,7 +405,7 @@ outranks a new command’s convention; the reason is a comment in
 <code>keymap.py</code>.</p>
 <p>Still open, and named rather than implied: QUILL does
 <strong>not</strong> yet expose numbered bookmarks, the copy-tray-style
-clip chooser QuillLite uses, or the File Format dialog. The shared code
+clip chooser QUILL Lite uses, or the File Format dialog. The shared code
 is in place for all three; the QUILL-side UI is not, and that is a
 follow-up rather than a claim.</p>
 <h2 id="release-packaging">Release packaging</h2>
@@ -441,7 +441,7 @@ follow-up rather than a claim.</p>
 </tbody>
 </table>
 <p>The artifact names spell the product as one mixed-case word (Jeff,
-finalizing, 2026-09-08): <code>QuillLite</code> is spoken by a screen
+finalizing, 2026-09-08): <code>QUILL Lite</code> is spoken by a screen
 reader as a name, where <code>Quill-Lite</code> is read out punctuation
 and all — and the hyphenated thin installer would have been “Quill dash
 Lite dash Lite dash Setup”. The first build ran before the rename, so
@@ -465,7 +465,7 @@ per-app repos, recorded and revisitable.</p>
 <li>GATE-11, GATE-13, GATE-14, GATE-EC, GATE-REACH, the banned-pattern
 gate, the dialog registry, GATE-KEYREF, GATE-HELPREF and the new
 GATE-LITE-HELP.</li>
-<li>38 wx-free unit tests for the QuillLite cores, 19 for the F1
+<li>38 wx-free unit tests for the QUILL Lite cores, 19 for the F1
 catalogue and the stricter control-help check, and 3 new regression
 tests in <code>tests/unit/ui/test_richedit_rtf_surface.py</code> pinning
 both PR #1490 fixes against a fake TOM that models the real control’s
@@ -481,7 +481,7 @@ contributor’s standalone reproduction, kept runnable, with a header
 noting the bug is now fixed.</li>
 <li><code>python -m quill.tools.platform_report</code> — every gate,
 including the <code>docs-artifacts</code> gate, which is why the four
-QuillLite docs and the four regenerated top-level references all ship
+QUILL Lite docs and the four regenerated top-level references all ship
 with their HTML and EPUB.</li>
 <li><code>pytest tests/unit tests/stability -n 8 --dist loadgroup</code>
 — 17,551 passed, 34 skipped, 0 failed.</li>
@@ -522,7 +522,7 @@ meant to remove.</p>
 <p>The native launcher compiled (MSVC 14.44, 24 KB
 <code>QuillLite.exe</code>), the portable bundle’s own interpreter was
 run and reported
-<code>quill 1.0.0 | wx 4.3.1 | frames 1 | title "1: Untitled - QuillLite (plain text)" | native True</code>,
+<code>quill 1.0.0 | wx 4.3.1 | frames 1 | title "1: Untitled - QUILL Lite (plain text)" | native True</code>,
 both installers compiled under Inno 7, and
 <code>portable-inventory.json</code> was adopted from that build and
 re-verified against it.</p>
@@ -542,7 +542,7 @@ installer for.</p>
 not evidence that the thing runs.</strong> So
 <code>scripts/BuildEnv.ps1</code> gained
 <code>Assert-QuillRuntimeHasModule</code>, which every sibling can call
-and QuillLite’s <code>build_release.ps1</code> now does. Two checks,
+and QUILL Lite’s <code>build_release.ps1</code> now does. Two checks,
 cheapest first: the module’s source file is present in the frozen tree
 (universal, instant, and exactly what was missing), and – with
 <code>-ProbeArgs "--check"</code> – the runtime is asked to actually
@@ -567,7 +567,7 @@ wrong with that, and both are now fixed.</p>
 <p><strong>The tag had never existed.</strong>
 <code>gh release view runtime-latest</code> answered “release not found”
 – not a stale asset, no asset at all, so the Lite edition of
-<em>every</em> app in the family (seven installers, not just QuillLite)
+<em>every</em> app in the family (seven installers, not just QUILL Lite)
 downloaded a 404. <code>build_runtime_installer.ps1 -Publish</code>
 creates the release when it is absent, which is what published it: tag
 <code>runtime-latest</code>, <code>QuillVille-Runtime-Setup.exe</code>
@@ -581,8 +581,8 @@ it before.</p>
 <p><strong><code>Assert-QuillRuntimeHasModule</code> asks whether the
 module is present, not whether it is current.</strong> Before
 publishing, the frozen <code>quill</code> package in the built runtime
-was diffed against the working tree: 28 differences, including two
-QuillLite modules missing outright (<code>lite_check.py</code>,
+was diffed against the working tree: 28 differences, including two QUILL
+Lite modules missing outright (<code>lite_check.py</code>,
 <code>lite_window_selection.py</code>) and changed <code>lite.py</code>,
 <code>lite_window.py</code>, <code>keymap.py</code> and
 <code>selection.py</code>. The guard passed on that runtime, because
@@ -637,7 +637,7 @@ it needs a person and a screen reader. Matching Studio (#839) and
 Inkwell, this is not required for the change to merge but
 <strong>is</strong> required for the release to publish. It is the only
 item here a machine cannot close.</li>
-<li><strong>The QuillLite artifacts themselves are built but not
+<li><strong>The QUILL Lite artifacts themselves are built but not
 published.</strong> Only the shared runtime went to GitHub, because that
 one was already broken for the whole family; the four
 <code>QuillLite-*</code> files are sitting in
@@ -645,11 +645,11 @@ one was already broken for the whole family; the four
 pass above. That ordering is the same one Studio (#839) and Inkwell were
 held to, and it is the reason the artifacts are not simply pushed once
 they build cleanly.</li>
-<li><strong>The site sync, and why QuillLite is still not in
-it.</strong> The earlier note here said QuillLite would join
+<li><strong>The site sync, and why QUILL Lite is still not in
+it.</strong> The earlier note here said QUILL Lite would join
 <code>scripts/sync_site_radio_docs.py</code> “after its first real
 render”. The renders now exist, and it still has not, because the sync
-is not the obstacle: <code>docs/site/</code> has no QuillLite page and
+is not the obstacle: <code>docs/site/</code> has no QUILL Lite page and
 nothing linking to one, and the same is true of Cast, Weather, Studio
 and Inkwell – the site carries doc pages for Radio and the editor alone.
 Adding one app’s pages to a script named for another, with no page to
@@ -666,28 +666,28 @@ current</h2>
 <code>docs/keyboard-reference.md</code> (GATE-KEYREF),
 <code>docs/f1-help-reference.md</code> (GATE-HELPREF),
 <code>docs/CONTROL_REFERENCE.md</code> (<code>build_docs.py</code>), and
-four fixture snapshots (dialog inventory, QuillLite help inventory,
+four fixture snapshots (dialog inventory, QUILL Lite help inventory,
 surface reachability, module-size budgets).</li>
 <li><strong><code>CLAUDE.md</code></strong> — the help-gate roster is
-nine, <code>quill/apps</code> is described, and the “QuillLite may never
-be ahead of QUILL” rule is written down where the next person will read
-it.</li>
+nine, <code>quill/apps</code> is described, and the “QUILL Lite may
+never be ahead of QUILL” rule is written down where the next person will
+read it.</li>
 <li><strong><code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></strong>
 — “One Editor, Every Format” now records the six commands QUILL gained,
 the two TOM bugs and their measurements, and the deliberate Ctrl+Alt+J /
-Ctrl+Alt+V divergence from QuillLite.</li>
+Ctrl+Alt+V divergence from QUILL Lite.</li>
 <li><strong><code>quill/core/help/topics.json</code></strong> — seven
 new F1 topics, so <code>check_help_coverage</code>’s
 <code>format:6</code> warning is gone.</li>
-<li><strong><code>standalone/README.md</code></strong> — QuillLite
+<li><strong><code>standalone/README.md</code></strong> — QUILL Lite
 listed as a build shell.</li>
-<li><strong>QuillLite’s own four:</strong> <code>docs/prd.md</code>,
+<li><strong>QUILL Lite’s own four:</strong> <code>docs/prd.md</code>,
 <code>docs/userguide.md</code>, <code>docs/release-notes-1.0.md</code>,
 <code>docs/CHANGELOG.md</code>, plus <code>README.md</code> and
 <code>assets/README.md</code>.</li>
 </ul>
 <h2 id="provenance">Provenance</h2>
-<p>QuillLite is derived from PR #1490 by Steven Scott
+<p>QUILL Lite is derived from PR #1490 by Steven Scott
 (<code>doubletaponair</code>), MIT, with the reasoning in the upstream
 files preserved in comments. The two QUILL-side fixes are attributed in
 the PRD, the changelog and the release notes so the contributor’s

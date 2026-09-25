@@ -340,9 +340,9 @@ def test_private_runtime_preferred_over_shared(fake_local_appdata: Path, tmp_pat
     This is the 2026-09-15 correction to the Phase 2 behaviour. The old order
     preferred the shared runtime once it was installed, which meant a portable
     bundle stopped being portable the moment any other QuillVille app had put a
-    runtime in %LOCALAPPDATA%. QuillLite's portable zip died at launch with "No
+    runtime in %LOCALAPPDATA%. QUILL Lite's portable zip died at launch with "No
     module named quill.apps.lite" -- it was running an August runtime built
-    before QuillLite existed, while its own interpreter sat unused beside it.
+    before QUILL Lite existed, while its own interpreter sat unused beside it.
 
     A launcher shipped beside an interpreter IS a self-contained install. The
     thin installers ship the launcher alone, so they still reach the shared

@@ -10,7 +10,7 @@ class Document:
     path: Path | None = None
     modified: bool = False
     encoding: str = "utf-8"
-    # CRLF, which is what Notepad, WordPad, Word and QuillLite all write for a
+    # CRLF, which is what Notepad, WordPad, Word and QUILL Lite all write for a
     # new document on Windows (bad.md F11, P2.10). A document READ from disk
     # gets whatever that file had -- every reader sets this explicitly -- so
     # this default only decides what a brand-new document is born with, and

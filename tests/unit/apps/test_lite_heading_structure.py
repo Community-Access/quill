@@ -1,4 +1,4 @@
-"""QuillLite can rearrange headings, not only make them and walk between them.
+"""QUILL Lite can rearrange headings, not only make them and walk between them.
 
 Reorganising a document was, until 2026-09-09, cut-and-paste only -- and that is
 the operation cut-and-paste is worst at. Moving a section by hand means
@@ -281,7 +281,7 @@ def test_selecting_in_a_document_with_no_markup_says_so() -> None:
 
 
 def test_the_nested_outline_moves_up_and_says_why_it_cannot_move_down() -> None:
-    """The reported bug, from QuillLite's side: a document whose headings step
+    """The reported bug, from QUILL Lite's side: a document whose headings step
     # / ## / ### has no siblings anywhere, so every Alt+Shift+Up and every
     Alt+Shift+Down answered "No sibling to swap with" and moved nothing.
 
@@ -320,7 +320,7 @@ def test_a_section_that_contains_everything_below_it_says_so() -> None:
 
 
 def test_a_move_that_happens_says_that_it_happened() -> None:
-    """QuillLite used to say the bare heading name, which sounds like the caret
+    """QUILL Lite used to say the bare heading name, which sounds like the caret
     landed on something rather than like the document changed. The sentence is
     composed in core now, so both editors say the one thing -- including where
     the section has landed, which the reader never says."""
@@ -357,7 +357,7 @@ _OUTLINE = "# Top\n\ntop\n\n## Bread\n\nbread\n\n### Sourdough\n\nsour\n\n## Sou
 
 
 def _answer_pickers(monkeypatch, *answers: str | None) -> list[list[str]]:
-    """Make QuillLite's searchable chooser answer *answers*, in order.
+    """Make QUILL Lite's searchable chooser answer *answers*, in order.
 
     Patched where it is **defined** rather than where it is used, because
     ``cmd_move_section_to`` imports it inside the method -- so the name is

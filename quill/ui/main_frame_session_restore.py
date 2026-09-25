@@ -3,7 +3,7 @@
 Extracted from ``main_frame.py``, where ``restore_session`` reopened every
 remembered file silently and skipped a missing one without a word. The decision
 about *whether to ask* is ``quill.core.session_restore``; the window is
-``quill.ui.session_restore_dialog``; both are shared with QuillLite, so the two
+``quill.ui.session_restore_dialog``; both are shared with QUILL Lite, so the two
 editors cannot drift on a question they answer identically.
 
 ``File > Reopen Last Session...`` (``Alt+Shift+F12``) opens the same window on

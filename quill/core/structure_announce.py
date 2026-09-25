@@ -31,11 +31,11 @@ The discipline is the whole design. Two things are announced and nothing else:
   editor owes it. :mod:`quill.core.list_structure` does the reading; this
   decides what of it is worth saying.
 
-The table half is **QUILL only** and QuillLite passes ``include_tables=False``.
+The table half is **QUILL only** and QUILL Lite passes ``include_tables=False``.
 That is a deliberate product line, not an oversight: accessible table navigation
 is a full-QUILL feature, and a boundary cue for a grid the small editor cannot
 then navigate would announce a capability that is not there. It does not offend
-the QuillLite rule in CLAUDE.md, which forbids Lite being *ahead* of QUILL --
+the QUILL Lite rule in CLAUDE.md, which forbids Lite being *ahead* of QUILL --
 never the other way about. Headings go to both editors.
 
 Everything else stays silent, and the :class:`StructureAnnouncer` latch is what
@@ -75,7 +75,7 @@ def describe_heading_arrival(
 ) -> str:
     """What both editors say on arriving at a heading (bad.md R15).
 
-    QUILL said "Moved to next heading, H2, 3 of 12: Installing" and QuillLite
+    QUILL said "Moved to next heading, H2, 3 of 12: Installing" and QUILL Lite
     said "Heading 2: Installing". Two products, one key, two sentences -- and
     each half-right.
 
@@ -83,7 +83,7 @@ def describe_heading_arrival(
     moved to the next heading is the one thing you already knew, and GATE-13 is
     the rule that says the app speaks only what the reader cannot. It is also
     what every screen reader says navigating headings on a web page: the level,
-    then the text. QuillLite's shape wins on that count.
+    then the text. QUILL Lite's shape wins on that count.
 
     **"3 of 12" stays**, which is QUILL's and is the half worth keeping: it is
     the only thing in the sentence that tells you where you are in the document
@@ -174,7 +174,7 @@ def point_from_text(
     identity in markup mode and a serviceable one anywhere the buffer mirrors the
     visible text.
 
-    ``include_tables=False`` skips table detection entirely -- QuillLite's
+    ``include_tables=False`` skips table detection entirely -- QUILL Lite's
     setting, because table navigation is a full-QUILL feature and a boundary cue
     for a grid you cannot navigate is worse than silence. It also skips the scan,
     which is the whole per-keystroke cost of this module.

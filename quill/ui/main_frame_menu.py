@@ -869,7 +869,7 @@ class MenuBuilderMixin:
         )
         view_menu.Check(self._id_toggle_status_bar, self.settings.show_status_bar)
         view_menu.AppendSeparator()
-        # Notepad's three, and QuillLite's. There was no way to change the size
+        # Notepad's three, and QUILL Lite's. There was no way to change the size
         # of QUILL's text at all before 2026-09-16, which for an audience that
         # includes low-vision users is the product not working (bad.md 4.3).
         view_menu.Append(
@@ -1114,7 +1114,7 @@ class MenuBuilderMixin:
         navigate_menu.AppendSeparator()
         bookmarks_menu = wx.Menu()
         # Numbered bookmarks first: nine slots addressed by digit, which is what
-        # "bookmark" means in QuillLite and in the editors people arrive from.
+        # "bookmark" means in QUILL Lite and in the editors people arrive from.
         # Built by their own mixin (main_frame_numbered_bookmarks.py), which
         # also binds them. The named vault below is QUILL's extra and says so
         # in its labels -- before 2026-09-16 there was only one kind here and
@@ -1246,7 +1246,7 @@ class MenuBuilderMixin:
             self._id_format_underline,
             self._menu_label(_("&Underline"), "format.underline"),
         )
-        # Paragraph and run formatting the editor was missing until QuillLite
+        # Paragraph and run formatting the editor was missing until QUILL Lite
         # needed it. Every label goes through _menu_label so it advertises
         # whatever is actually bound, and follows a rebinding.
         # Grow/Shrink Font and the three keyed line spacings used to sit here,

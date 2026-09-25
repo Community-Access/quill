@@ -140,7 +140,7 @@ def test_a_scope_that_names_the_document_is_spoken() -> None:
 
 
 def test_a_scope_that_names_the_classifier_is_not() -> None:
-    """QuillLite's Say Selection read "9696 words, lines." and QUILL's Selection
+    """QUILL Lite's Say Selection read "9696 words, lines." and QUILL's Selection
     Actions dialog titled itself "(lines, 180 words)" -- a bare noun with no
     number in front of it, in two products, from two call sites that each
     forgot the rule describe_selection had always applied."""

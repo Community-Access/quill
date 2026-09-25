@@ -40,7 +40,7 @@ def managed_spell_dir() -> Path:
         bundled = Path(app_root) / "dictionaries"
         if (bundled / "hunspell").is_dir():
             return bundled
-    # The RUNNING app's folder. QuillLite has its own spell store and its own
+    # The RUNNING app's folder. QUILL Lite has its own spell store and its own
     # data directory; resolving this to QUILL's put downloaded dictionaries --
     # and, on first launch, the whole %APPDATA%\Quill folder -- on a machine
     # that may never have had QUILL on it.

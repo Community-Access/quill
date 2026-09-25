@@ -45,7 +45,7 @@ def _speakable_when(point: RestorePoint, now: datetime | None = None) -> str:
 def restore_point_label(point: RestorePoint) -> str:
     """One list row: when, size in words, and how the version came to exist.
 
-    The phrasing is :mod:`quill.core.version_history`'s, shared with QuillLite's
+    The phrasing is :mod:`quill.core.version_history`'s, shared with QUILL Lite's
     backup browser: the two products keep separate stores on purpose, but a
     listener choosing between versions of their own file is doing the same thing
     in both and should not hear it described two different ways.

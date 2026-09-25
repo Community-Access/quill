@@ -15,7 +15,7 @@ run you are in, or the one before it if you are already there. That is what
 because every other text box on the machine does it.
 
 It lives in core rather than beside a key handler because **three** places in
-the product move a caret by a word -- QUILL's extend-selection mode, QuillLite's,
+the product move a caret by a word -- QUILL's extend-selection mode, QUILL Lite's,
 and the reveal-codes navigator -- and the first two had two different wrong
 answers (bad.md P1.2a, 5.3a).
 """

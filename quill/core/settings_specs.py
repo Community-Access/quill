@@ -23,7 +23,7 @@ from quill.core.structure_announce import (
 SCHEMA_VERSION = 1
 
 #: The four feedback modes as a spec's ``choices`` tuple. Derived from the one
-#: list rather than retyped, so QUILL's Preferences page and QuillLite's cannot
+#: list rather than retyped, so QUILL's Preferences page and QUILL Lite's cannot
 #: end up describing the same four modes in different words -- which reads as
 #: two settings rather than one, and sends somebody looking for the other.
 _FEEDBACK_CHOICES: tuple[tuple[str, str], ...] = tuple(
@@ -31,7 +31,7 @@ _FEEDBACK_CHOICES: tuple[tuple[str, str], ...] = tuple(
 )
 
 #: Derived from the shared table rather than retyped, so QUILL's Preferences
-#: page and QuillLite's cannot describe the same two orders in different words.
+#: page and QUILL Lite's cannot describe the same two orders in different words.
 _HEADING_POSITION_CHOICES = tuple(
     (key, _HEADING_POSITION_LABELS[key]) for key in _HEADING_POSITIONS
 )
@@ -212,7 +212,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "bar; which cells it carries is a separate setting, and a bar with "
             "every cell hidden still takes a row of the window. Notepad's View "
             "menu has the same switch, on the same Alt+Shift+B, and so does "
-            "QuillLite."
+            "QUILL Lite."
         ),
         keywords=("status", "bar", "hide", "show", "bottom", "notepad"),
     ),
@@ -382,7 +382,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "saved. When this is off, it offers back only documents that had a "
         "file, and the copies of untitled ones are discarded rather than kept "
         "-- keeping something that is never offered is a promise nothing can "
-        "redeem. QuillLite has the same setting under the same name.",
+        "redeem. QUILL Lite has the same setting under the same name.",
         keywords=("recovery", "unsaved", "untitled", "crash", "autosave"),
     ),
     SettingSpec(
@@ -1297,7 +1297,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "whatever it was about to say, and a level waiting its turn behind "
             "that is never heard at all. After the text lets your reader read "
             "the line and adds the level behind it, which is quieter on "
-            "ordinary line-by-line reading. Shared with QuillLite."
+            "ordinary line-by-line reading. Shared with QUILL Lite."
         ),
         choices=_HEADING_POSITION_CHOICES,
         keywords=("heading", "level", "announce", "before", "after", "order", "speech"),
@@ -1453,7 +1453,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "picks, which is the right answer for anybody who has never chosen. "
             "It changes what you see and nothing about the file: the face is "
             "never written into a document. Format > Font... is the chooser, "
-            "and QuillLite reads the same setting."
+            "and QUILL Lite reads the same setting."
         ),
         keywords=("font", "typeface", "face", "editor", "low vision", "size"),
     ),

@@ -3,7 +3,7 @@
 QUILL could hide any individual *cell* and not the bar itself. Somebody who
 wanted Notepad's plain window had to empty a list of cell names and still give
 up a row of the screen to a bar with nothing in it. Notepad has had
-View > Status Bar on Alt+Shift+B for decades; QuillLite has had it since it
+View > Status Bar on Alt+Shift+B for decades; QUILL Lite has had it since it
 shipped, under this setting name.
 """
 
@@ -103,7 +103,7 @@ def test_both_editors_call_the_setting_the_same_thing() -> None:
 def test_notepads_chord_and_the_displacement_it_cost() -> None:
     """Alt+Shift+B was List Bookmarks here. It moved onto its own alias --
     Word's Ctrl+Shift+F5 -- so nothing was lost, and two days later onto
-    QuillLite's Alt+Shift+G under rule 6, with Word's key back as the alias and
+    QUILL Lite's Alt+Shift+G under rule 6, with Word's key back as the alias and
     a legacy_rebindings hop for anyone who saved the original."""
     from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
 

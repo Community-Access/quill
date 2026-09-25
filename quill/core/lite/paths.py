@@ -1,6 +1,6 @@
-"""Where QuillLite keeps its state on disk.
+"""Where QUILL Lite keeps its state on disk.
 
-Deliberately **not** ``%APPDATA%\\Quill``. QuillLite is offered as an
+Deliberately **not** ``%APPDATA%\\Quill``. QUILL Lite is offered as an
 alternative to QUILL, not as a client of it: a Notepad-scale editor that
 silently adopted a writing environment's settings, recent files and recovery
 store would be making a decision for the user that nobody asked it to make, and
@@ -14,7 +14,7 @@ Three locations, in the order they are consulted:
    what the tests use for isolation and what a support answer can reach for.
 2. The portable anchor. A portable bundle ships a ``data`` folder beside the
    executable and the wrapper exports ``QUILL_PORTABLE``/``QUILL_APP_ROOT``
-   before any quill import runs; QuillLite then lives on the stick, beside a
+   before any quill import runs; QUILL Lite then lives on the stick, beside a
    portable QUILL rather than inside it.
 3. ``%LOCALAPPDATA%\\QuillLite`` -- the default. *Local*, not roaming: a
    recovery copy of an in-progress document and a window size are this
@@ -31,7 +31,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from quill.core.lite import APP_NAME
+from quill.core.lite import APP_ID
 
 __all__ = [
     "data_dir",
@@ -63,7 +63,7 @@ def _portable_root() -> Path | None:
 
 
 def _base_dir() -> Path:
-    """The parent QuillLite's own folder is created under."""
+    """The parent QUILL Lite's own folder is created under."""
     portable = _portable_root()
     if portable is not None:
         return portable
@@ -74,9 +74,9 @@ def _base_dir() -> Path:
 
 
 def data_dir() -> Path:
-    """QuillLite's data folder, created if it does not exist yet."""
+    """QUILL Lite's data folder, created if it does not exist yet."""
     override = _override()
-    root = override if override is not None else _base_dir() / APP_NAME
+    root = override if override is not None else _base_dir() / APP_ID
     root.mkdir(parents=True, exist_ok=True)
     return root
 

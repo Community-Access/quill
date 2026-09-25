@@ -1,5 +1,5 @@
 """Print and Page Setup -- the one thing Notepad and WordPad have that a first
-cut of QuillLite did not.
+cut of QUILL Lite did not.
 
 Ctrl+P is in every text editor Windows has ever shipped, and an editor that
 answers it with nothing is an editor somebody has to copy their document out of.
@@ -234,7 +234,7 @@ def _wrap_to_width(dc: wx.DC, lines: list[str], width: int) -> list[str]:
 
 
 class DocumentPrintMixin:
-    """Page Setup and Print for a QuillLite document window."""
+    """Page Setup and Print for a QUILL Lite document window."""
 
     def _printable_lines(self) -> list[str]:
         """The document as lines, with headings marked rather than styled.
@@ -292,7 +292,7 @@ class DocumentPrintMixin:
         scaled image of the sheet, which answers nothing at all for somebody who
         listens -- and QUILL's answer to that has never been a bigger picture, it
         is Print Studio, which *says* the answer. This is the same idea at
-        QuillLite's scale (bad.md PR2, P3.6): how many pages, on what paper,
+        QUILL Lite's scale (bad.md PR2, P3.6): how many pages, on what paper,
         with what margins, and what is at the top of each one.
 
         The pagination is :func:`quill.core.print_pagination.paginate_lines`,
@@ -420,7 +420,7 @@ class DocumentPrintMixin:
     def _print_font(self) -> Any:
         """The document's own face and size, at a printable point size.
 
-        Not a fixed teletype font: what QuillLite shows is what it should print,
+        Not a fixed teletype font: what QUILL Lite shows is what it should print,
         and somebody who chose a face for legibility on screen chose it for a
         reason. The size is clamped, because a 72-point document would print one
         word per page and a 6-point one is unreadable on paper.

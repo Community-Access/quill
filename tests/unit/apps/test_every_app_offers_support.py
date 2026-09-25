@@ -4,7 +4,7 @@ A source-level check rather than a launch, for the same reason as
 ``test_every_app_remembers_its_window``: the failure worth catching is a *new*
 app quietly shipping without it. Until 2026-09-11 six of the ten surfaces had no
 reporting item at all -- Quill Weather, Quill Converter, Quill Media Player,
-Quill Inkwell, QuillBeacon and QuillLite printed the support address in their
+Quill Inkwell, QuillBeacon and QUILL Lite printed the support address in their
 About box and left you to copy it out by hand -- and the four that did have one
 filed a GitHub issue in a public repository that the reporter could not be
 answered in.

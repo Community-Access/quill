@@ -16,7 +16,7 @@ those into the editor, dialogs, and announcements.
 NOTE: ``calculate_and_insert_date`` (EDS-3) and the three Insert > Date and Time
 menu variants belong to the bundled ``com.quill.bundled.insert-tools`` Quillin,
 where the 2026-06 consolidation put them. ``insert_date_time`` (EDS-2) came back
-on 2026-09-16 as **F5** -- Notepad's key, QuillLite's key, and one that a menu
+on 2026-09-16 as **F5** -- Notepad's key, QUILL Lite's key, and one that a menu
 row cannot be; it is core rather than contributed so it also works in Safe Mode,
 where every Quillin contribution is off (bad.md P1.9).
 """
@@ -93,7 +93,7 @@ class PowerToolsActionsMixin(ClipboardCollectorMixin, SpecialCharacterMixin, Lin
         line* when nothing was selected -- so Sort Lines with no selection
         sorted one line and said "Sorted lines ascending" -- and a third for
         case, which takes the word at the caret and is a deliberately different
-        rule (bad.md 3.4). QuillLite has always had one, and this is its shape.
+        rule (bad.md 3.4). QUILL Lite has always had one, and this is its shape.
 
         Three things came with it, and each is a thing a listener cannot see:
 
@@ -146,7 +146,7 @@ class PowerToolsActionsMixin(ClipboardCollectorMixin, SpecialCharacterMixin, Lin
     def _confirm_whole_document_rewrite(self) -> bool:
         """Rich mode only: warn that replaced text takes the run's formatting.
 
-        QuillLite's words, and QuillLite's NO_DEFAULT -- Enter must not be the
+        QUILL Lite's words, and QUILL Lite's NO_DEFAULT -- Enter must not be the
         key that rewrites the document.
         """
         if self._current_editor_mode() not in {"rich", "rich_converted"}:
@@ -306,7 +306,7 @@ class PowerToolsActionsMixin(ClipboardCollectorMixin, SpecialCharacterMixin, Lin
 
         Notepad's key and Notepad's stamp, which is the whole argument for it:
         somebody who has pressed F5 in Notepad for twenty years should get the
-        same thing here, and QuillLite has since it shipped (bad.md P1.9).
+        same thing here, and QUILL Lite has since it shipped (bad.md P1.9).
 
         This reverses the 2026-09-10 decision not to give QUILL an F5 on the
         grounds that the bundled insert-tools Quillin already offered three

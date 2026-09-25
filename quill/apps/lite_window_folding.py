@@ -2,7 +2,7 @@
 
 Collapsing to headings is the thing a sighted reader gets for free by scrolling
 and glancing, and the only way anybody without that glance can answer "what is
-in this file" without reading all of it. QuillLite already parses heading blocks
+in this file" without reading all of it. QUILL Lite already parses heading blocks
 for its outline, so the structure was there and nothing was using it for this
 (bad.md 4.2 Tier 3, P3.6).
 

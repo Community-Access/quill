@@ -1,4 +1,4 @@
-"""QuillLite's small windows: go to line, headings, bookmarks, file format, about.
+"""QUILL Lite's small windows: go to line, headings, bookmarks, file format, about.
 
 Six surfaces, each one screen, each built to QUILL's own dialog contract rather
 than to a private convention:
@@ -327,7 +327,7 @@ def edit_file_format(parent: wx.Window, *, encoding: str, newline: str) -> tuple
         "UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the "
         "old Western European encoding a lot of existing .txt files are in. A "
         "'keep as is' row means this file arrived in something else, which "
-        "QuillLite reads and writes back but does not offer as a new choice."
+        "QUILL Lite reads and writes back but does not offer as a new choice."
     )
     encoding_choice.SetSelection(_index_of(encoding_offers, encoding))
     _stack(root, encoding_label, encoding_choice)
@@ -337,7 +337,7 @@ def edit_file_format(parent: wx.Window, *, encoding: str, newline: str) -> tuple
     set_accessible_name(newline_choice, "Line endings")
     newline_choice.SetHelpText(
         "CRLF is what Windows programs write. LF is what Unix, macOS and most "
-        "build tools expect. QuillLite writes back whichever the file arrived "
+        "build tools expect. QUILL Lite writes back whichever the file arrived "
         "with unless you change it here."
     )
     newline_choice.SetSelection(_index_of(newline_offers, newline))

@@ -1,4 +1,4 @@
-"""Describe Character is two commands, as it is in QuillLite (bad.md P1.13).
+"""Describe Character is two commands, as it is in QUILL Lite (bad.md P1.13).
 
 QUILL had one: `Ctrl+Shift+C` opened a modal dialog with the full description.
 That is the right answer to "what *exactly* is this character" and the wrong
@@ -6,7 +6,7 @@ answer to the question people actually press it for -- "is that a hyphen or an
 en dash?" -- which wants a sentence spoken where you stand, not a window to
 open, read and close.
 
-QuillLite already split them, and this is the split: the summary is spoken on
+QUILL Lite already split them, and this is the split: the summary is spoken on
 `Ctrl+Shift+C`, and the detail keeps its readable window one key along on
 `Ctrl+Alt+C`. Nothing is lost -- the dialog is still there, and it is still the
 same shared `quill.core.char_describe` behind both.

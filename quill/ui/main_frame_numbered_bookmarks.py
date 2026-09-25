@@ -1,15 +1,15 @@
 """Numbered bookmarks in QUILL: nine slots you address by digit.
 
 The engine is :mod:`quill.core.numbered_bookmarks`, whose own docstring says it
-lives in shared core *"where QUILL's editor can adopt it, and QuillLite is
-simply its first caller"*. Until 2026-09-16 QuillLite was its **only** caller:
+lives in shared core *"where QUILL's editor can adopt it, and QUILL Lite is
+simply its first caller"*. Until 2026-09-16 QUILL Lite was its **only** caller:
 nothing under ``quill/ui`` imported it, QUILL's own ``set_quick_bookmark`` /
 ``go_to_quick_bookmark`` had no command, no key and no caller, and
 ``navigate.set_bookmark`` was registered with ``binding=None`` and absent from
 the keyboard reference. So the small product had nine persistent bookmarks and
 the big one did not -- which is the shape ``CLAUDE.md`` forbids, and the reason
 it forbids it: nobody opens QUILL and notices the absence of a thing they have
-only ever seen in QuillLite, so it is never reported. This module is the door.
+only ever seen in QUILL Lite, so it is never reported. This module is the door.
 
 **Numbered is not named.** QUILL keeps its named bookmark vault
 (:class:`quill.core.bookmarks.BookmarkVault`, ``navigate.set_bookmark``) and its
@@ -18,22 +18,22 @@ place I called Chapter Three". A numbered bookmark is the notepad's answer to
 "come back to where I just was", and a digit is a name you do not have to think
 of at the moment you are trying not to lose your place.
 
-Three things this deliberately shares with QuillLite rather than reinventing:
+Three things this deliberately shares with QUILL Lite rather than reinventing:
 
 **The same store.** Positions persist through
 :class:`~quill.core.bookmarks.DocumentMemory`, keyed by path, in the same
-``numbered_for`` / ``set_numbered`` records QuillLite writes -- so a file's
+``numbered_for`` / ``set_numbered`` records QUILL Lite writes -- so a file's
 bookmarks are the same file's bookmarks in either editor. That seam already
 existed; only QUILL's half of it was missing.
 
-**Written on every change**, not on close. QuillLite writes on close and after
+**Written on every change**, not on close. QUILL Lite writes on close and after
 save, and loses a clear-all to a crash (bad.md L10); QUILL already writes named
 bookmarks on every Set and this follows that, which is the better half of the
 pair.
 
 **Every jump feeds Back.** ``Alt+Left`` undoes a bookmark jump, because the
 jump goes through ``_record_location_before_jump`` and the location ring like
-every other jump in QUILL (bad.md L8). QuillLite routes bookmarks through its
+every other jump in QUILL (bad.md L8). QUILL Lite routes bookmarks through its
 own ``_go_to`` seam for the same reason.
 """
 

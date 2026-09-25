@@ -360,7 +360,7 @@ def remove_blank_lines(text: str) -> str:
     """Remove **every** blank line, not just the ones at the two ends.
 
     Distinct from :func:`trim_blank_lines`, which only takes the leading and
-    trailing ones, and added because QuillLite offered a command called *Remove
+    trailing ones, and added because QUILL Lite offered a command called *Remove
     Blank Lines* that was wired to the trimming one. On a document with blank
     lines through the middle -- which is every document -- it removed nothing and
     then announced that it had removed a line, which is worse than doing nothing:

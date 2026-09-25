@@ -1,6 +1,6 @@
 """Save changes to this one -- and an answer for all the rest.
 
-Shared by QUILL and QuillLite, because Close Other Documents is the same
+Shared by QUILL and QUILL Lite, because Close Other Documents is the same
 command in both and a person who learns the window in one presses the same keys
 in the other.
 

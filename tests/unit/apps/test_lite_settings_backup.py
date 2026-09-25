@@ -1,4 +1,4 @@
-"""Back Up Settings and Restore Settings in QuillLite (#1501).
+"""Back Up Settings and Restore Settings in QUILL Lite (#1501).
 
 The point of the feature is that the file lands on a *different* machine, so the
 tests are about what does and does not cross over -- and about the sentence said

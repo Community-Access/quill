@@ -1,7 +1,7 @@
 """What the Tab key does, decided by the kind of document you are in.
 
 Two editors had two answers and neither asked the document: QUILL indented the
-line always, QuillLite typed a tab always, and each had a toggle to get the
+line always, QUILL Lite typed a tab always, and each had a toggle to get the
 other behaviour (bad.md T3, P1.21). Both defaults are right somewhere and wrong
 somewhere else -- typing a tab into a Markdown list item breaks the list, and
 indenting the line in a plain note is not what a Notepad replacement does --

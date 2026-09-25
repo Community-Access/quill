@@ -1,4 +1,4 @@
-"""Case conversions, line transforms and indenting in QuillLite.
+"""Case conversions, line transforms and indenting in QUILL Lite.
 
 Every one of these is QUILL's own :mod:`quill.core.transforms`,
 :mod:`quill.core.format_ops` or :mod:`quill.core.line_ops` -- so what is worth

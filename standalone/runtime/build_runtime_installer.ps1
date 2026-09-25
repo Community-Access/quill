@@ -56,7 +56,7 @@ if (-not (Test-Path (Join-Path $dist "QuillVilleRuntime.exe")) -or -not (Test-Pa
 # disk may have been frozen days ago from a different tree -- and this is the
 # script that PUBLISHES it, to a moving tag every Lite installer in the family
 # downloads from. On 2026-09-08 the runtime staged for publication was 28 files
-# behind the checkout and missing two QuillLite modules; the presence checks all
+# behind the checkout and missing two QUILL Lite modules; the presence checks all
 # passed. Of everywhere this gate could run, here is where it matters most:
 # every other staleness ships to one app's users, this one ships to everyone's.
 & $Python (Join-Path $QuillRepo "scripts\check_runtime_freshness.py") $dist --source-root $QuillRepo

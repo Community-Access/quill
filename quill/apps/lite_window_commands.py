@@ -1,4 +1,4 @@
-"""Every command a QuillLite document window can run.
+"""Every command a QUILL Lite document window can run.
 
 One mixin rather than a second window class: :class:`DocumentFrame` is the
 window -- its menus, its state, its file I/O -- and this is what its menu items
@@ -350,7 +350,7 @@ class DocumentCommandsMixin(
         arrowing back over it character by character.
 
         **QUILL grew an F5 of its own on 2026-09-16**, reversing the 2026-09-10
-        reading of "QuillLite may never be ahead of QUILL". That reading was
+        reading of "QUILL Lite may never be ahead of QUILL". That reading was
         that QUILL's bundled ``com.quill.bundled.insert-tools`` Quillin already
         put three variants on Insert > Date and Time, so a second inserter would
         undo a consolidation for nothing. What it missed is the key: those three
@@ -375,7 +375,7 @@ class DocumentCommandsMixin(
         Nothing is announced: the caret move is a focus/selection change, which
         the screen reader reads out of the control itself.
 
-        Every jump in QuillLite comes through here -- Go To Line, Go To
+        Every jump in QUILL Lite comes through here -- Go To Line, Go To
         Anything, the heading commands, the heading list, the bookmarks -- which
         is why this is where the location ring is fed. One seam rather than a
         ``record`` call beside each caller, because the failure mode of the
@@ -457,7 +457,7 @@ class DocumentCommandsMixin(
         show_text_window(self, "Keyboard shortcuts", shortcut_text(self.app.keymap))
 
     def cmd_get_help_from_support(self) -> None:
-        """Write to support, with QuillLite's own name on the message."""
+        """Write to support, with QUILL Lite's own name on the message."""
         from quill.ui.support_dialog import open_support_message
 
         open_support_message(self, source_app=APP_NAME, app_version=APP_VERSION)
@@ -468,7 +468,7 @@ class DocumentCommandsMixin(
             "A small notepad and wordpad replacement for screen reader users.\n"
             "Numbered documents in one window. Plain text or rich text, and\n"
             "nothing else.\n\n"
-            "QuillLite is a companion to QUILL for All, not a replacement for it. "
+            "QUILL Lite is a companion to QUILL for All, not a replacement for it. "
             "Dictation, conversion, comparison, publishing and extensions all\n"
             "live in QUILL.\n\n"
             "Part of the QuillVille family by Community Access and BITS (MIT licence).\n"

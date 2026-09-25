@@ -270,7 +270,7 @@ def posted_events(app_id: str) -> set[str]:
                 continue
             relative = path.relative_to(_REPO_ROOT).as_posix()
             if app_id == "quill" and ("/lite" in relative or path.name.startswith("lite")):
-                continue  # QuillLite's cues are QuillLite's
+                continue  # QUILL Lite's cues are QUILL Lite's
             found |= _posted_in(path, known)
     return found
 

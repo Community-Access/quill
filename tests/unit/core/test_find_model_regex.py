@@ -2,7 +2,7 @@
 
 The model had two modes -- literal and extended-escape -- and QUILL's regular
 expression search went through a second, older core (``quill.core.search``).
-Adding the third mode here rather than teaching QuillLite about that other core
+Adding the third mode here rather than teaching QUILL Lite about that other core
 is what lets both products search by pattern from one implementation, which is
 the rule the two are held to: a capability the small product needs goes in the
 shared package, not into a copy.

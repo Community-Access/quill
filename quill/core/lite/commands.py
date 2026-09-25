@@ -1,4 +1,4 @@
-"""QuillLite's command table: one list the menu bar and the key list both read.
+"""QUILL Lite's command table: one list the menu bar and the key list both read.
 
 The house rule this table exists to keep is QUILL's, stated in ``CLAUDE.md``:
 **every enabled menu item shows a keyboard route in its label, and no two items
@@ -108,7 +108,7 @@ COMMANDS: list[CommandRow] = [
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
     ("&File", "Save &As...", "Ctrl+Shift+S", "cmd_save_as", ""),
-    # The dated copies kept on every save. QuillLite has written these since
+    # The dated copies kept on every save. QUILL Lite has written these since
     # backups shipped and offered no way to read one back: the files were
     # correct, correctly named, and reachable only by knowing which hashed
     # folder under the backups directory was yours. A safety net nobody can
@@ -146,7 +146,7 @@ COMMANDS: list[CommandRow] = [
     # its own row rather than an alias because the table gives one key to one
     # handler -- the same arrangement Ctrl+Tab and Ctrl+F6 already have.
     ("&File", "Close Window (&MDI)", "Ctrl+F4", "cmd_close_mdi", ""),
-    ("&File", "E&xit QuillLite", "Ctrl+Q", "cmd_exit", ""),
+    ("&File", "E&xit QUILL Lite", "Ctrl+Q", "cmd_exit", ""),
     # -- Edit ---------------------------------------------------------------
     # Notepad's Edit menu is the top of this one, in Notepad's order, and then
     # four submenus for the things Notepad has no answer to at all: the
@@ -260,7 +260,7 @@ COMMANDS: list[CommandRow] = [
     ("&Edit|&Lines", "Remove Dup&licate Lines", "Ctrl+Alt+D", "cmd_remove_duplicate_lines", ""),
     ("&Edit|&Lines", "&Trim Trailing Spaces", "Ctrl+Alt+T", "cmd_trim_trailing_space", ""),
     ("&Edit|&Lines", "", "", "", "sep"),
-    # QuillLite's PRD accepts that people edit .py, .json and .conf here -- it
+    # QUILL Lite's PRD accepts that people edit .py, .json and .conf here -- it
     # silences the spell checker in them for exactly that reason -- and a
     # comment toggle is the second half of that concession (bad.md 4.2). The
     # prefix comes from the file name, through the same shared helper QUILL
@@ -268,7 +268,7 @@ COMMANDS: list[CommandRow] = [
     ("&Edit|&Lines", "Toggle Line &Comment", "Ctrl+/", "cmd_toggle_line_comment", ""),
     ("&Edit|&Lines", "", "", "", "sep"),
     # Replying to an email and quoting a log excerpt are Notepad-scale tasks,
-    # and the engine was shared already: QuillLite had every other line tool
+    # and the engine was shared already: QUILL Lite had every other line tool
     # and not these two (bad.md 4.2, Tier 2). Ctrl+Shift+Q is QUILL's own.
     #
     # "Remove Quote Marks" rather than "Unquote Lines", which is QUILL's label:
@@ -325,7 +325,7 @@ COMMANDS: list[CommandRow] = [
     (
         # Named for what it does since 2026-09-17. It was called "Extend
         # Selection Mode", which is a different thing that QUILL has on
-        # Alt+Shift+F9 and QuillLite now has too -- and calling the marker
+        # Alt+Shift+F9 and QUILL Lite now has too -- and calling the marker
         # toggle by the mode's name is how somebody presses it expecting a
         # sticky Shift and gets a pin (bad.md 5.3a).
         "&Edit|Selectio&n",
@@ -441,17 +441,17 @@ COMMANDS: list[CommandRow] = [
     ("&View", "&Announce Lists", "Ctrl+Alt+F5", "cmd_toggle_list_announcements", "check"),
     # Overtype, on QUILL's own chord. **Not** the Insert key, which is NVDA's
     # and JAWS's modifier -- binding it would fight the reader. The native
-    # control answers Insert itself whatever we do, so QuillLite mirrors that
+    # control answers Insert itself whatever we do, so QUILL Lite mirrors that
     # into the Typing Mode cell rather than claiming the key: a reader that is
     # not using Insert as its modifier still gets the Windows behaviour, and
     # the status cell stays true either way.
     ("&View", "&Overwrite Mode", "Ctrl+Alt+Shift+W", "cmd_toggle_overwrite", "check"),
     # What the Tab key does. Checked means Tab types a tab character, which is
-    # Notepad's behaviour and QuillLite's default; unchecked runs the smart line
+    # Notepad's behaviour and QUILL Lite's default; unchecked runs the smart line
     # indent, which is QUILL's. The default differs on purpose -- a file opened
     # here is as likely to be a configuration file where a tab is data -- and
     # the key differs because it has to: QUILL binds this to the leader chord
-    # Ctrl+Shift+Grave, U and QuillLite has no leader key at all.
+    # Ctrl+Shift+Grave, U and QUILL Lite has no leader key at all.
     (
         "&View",
         "&Tab Key Inserts a Tab Character",
@@ -460,7 +460,7 @@ COMMANDS: list[CommandRow] = [
         "check",
     ),
     # Notepad's View menu has carried this checkbox since Windows 95, and it was
-    # the one thing QuillLite's status bar could not do: it was always there and
+    # the one thing QUILL Lite's status bar could not do: it was always there and
     # there was no way to say otherwise. Hiding it gives the document four more
     # lines and takes nothing away, because everything the bar says is also
     # available on demand -- Document Statistics speaks the counts, and the
@@ -508,7 +508,7 @@ COMMANDS: list[CommandRow] = [
     # starting a paragraph, which is the distinction a blank line cannot make.
     ("&Insert", "&Line Break", "Shift+Enter", "cmd_insert_line_break", ""),
     # Word's key, and everybody's. A link is the one tag every person who has
-    # ever written anything has inserted, and QuillLite had the Markdown and
+    # ever written anything has inserted, and QUILL Lite had the Markdown and
     # HTML kinds, a tag picker for each, and no way to make it (bad.md 4.2).
     ("&Insert", "Lin&k...", "Ctrl+K", "cmd_insert_link", ""),
     ("&Insert", "", "", "", "sep"),
@@ -553,7 +553,7 @@ COMMANDS: list[CommandRow] = [
     ("F&ormat", "", "", "", "sep"),
     # A ring, not a toggle: bulleted list, numbered list, no list, round again,
     # which is what WordPad's own button on this chord does. As a toggle it
-    # meant QuillLite could not make a numbered list in any kind of document
+    # meant QUILL Lite could not make a numbered list in any kind of document
     # (bad.md P1.5). The label says "Lists" because the row is now about all
     # three answers rather than about bullets.
     ("F&ormat", "List&s", "Ctrl+Shift+L", "cmd_cycle_list_style", ""),
@@ -628,7 +628,7 @@ COMMANDS: list[CommandRow] = [
     ("F&ormat|&Headings", "", "", "", "sep"),
     ("F&ormat|&Headings", "Body &Text", "Ctrl+Alt+0", "cmd_heading_0", ""),
     # -- Format > Structure --------------------------------------------------
-    # Restructuring, on QUILL's own four keys. Until now QuillLite could create
+    # Restructuring, on QUILL's own four keys. Until now QUILL Lite could create
     # and navigate headings but never rearrange them, so reorganising a
     # document fell back to cut and paste -- which means selecting from one
     # heading to the start of the next, a boundary you cannot see and have to
@@ -665,7 +665,7 @@ COMMANDS: list[CommandRow] = [
     ),
     ("F&ormat|Structur&e", "", "", "", "sep"),
     # The four rows above, in one window. QUILL has had this since #303 and
-    # QuillLite already had both halves of it -- a headings list and section
+    # QUILL Lite already had both halves of it -- a headings list and section
     # moves -- so what was missing was only the surface that puts them
     # together (bad.md P2.13, Tier 2). QUILL's own chord is Ctrl+Alt+Shift+H,
     # which is Previous Heading here, and Ctrl+Alt+Shift+O is Sound Scheme --
@@ -692,7 +692,7 @@ COMMANDS: list[CommandRow] = [
     # they belong to neither the headings area nor the bookmarks one, which is
     # also what keeps this menu from emptying when both are switched off.
     #
-    # QuillLite is Windows-only, so the macOS Cmd+[ / Cmd+] fallback QUILL
+    # QUILL Lite is Windows-only, so the macOS Cmd+[ / Cmd+] fallback QUILL
     # carries for #609 has nothing to answer here.
     ("&Navigate", "Go Bac&k", "Alt+Left", "cmd_back_location", ""),
     ("&Navigate", "Go For&ward", "Alt+Right", "cmd_forward_location", ""),
@@ -709,7 +709,7 @@ COMMANDS: list[CommandRow] = [
     # Function keys rather than Minus and Equal. Those two are unparseable to
     # wx.AcceleratorEntry, which does not complain -- it rejects the whole
     # string, leaving the menu advertising a key that can never fire. Subtract
-    # and Add parse in wx and not in QuillLite's own reader, which is the same
+    # and Add parse in wx and not in QUILL Lite's own reader, which is the same
     # failure from the other end. F9 and F10 are read by both, and a fold is a
     # once-in-a-while verb rather than an editing-loop one, which is where the
     # F-keys past F8 belong (bad.md rule 9).
@@ -742,7 +742,7 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Bookmarks", "&Previous Bookmark", "Shift+F2", "cmd_previous_bookmark", ""),
     ("&Navigate|&Bookmarks", "&Clear All Bookmarks", "Ctrl+Alt+B", "cmd_clear_bookmarks", ""),
     ("&Navigate|&Bookmarks", "", "", "", "sep"),
-    # The one with no number. QUILL has had it for years and QuillLite had
+    # The one with no number. QUILL has had it for years and QUILL Lite had
     # nothing like it, which is backwards for two editors whose keys are meant
     # to agree -- so it crosses on QUILL's own two chords (bad.md P2.20).
     # A pin you drop before going to look something up: no dialog, no label, no
@@ -770,7 +770,7 @@ COMMANDS: list[CommandRow] = [
     # What is left once line work has gone to Edit where it belongs: the things
     # that are genuinely *tools* rather than editing -- the spell checker, case
     # conversion, indenting, the files-and-formats dialog, abbreviations, and
-    # the two ways to change what QuillLite itself is. Tools > Options is where
+    # the two ways to change what QUILL Lite itself is. Tools > Options is where
     # Windows applications have kept their settings since Word 6, which is why
     # Preferences and Customize Features are here rather than in View.
     ("&Tools", "&Spelling", "", "", "sub"),
@@ -781,18 +781,18 @@ COMMANDS: list[CommandRow] = [
     # in quill/ui/hosted_ai_commands.py's docstring.
     ("&Tools", "&AI", "", "", "sub"),
     ("&Tools", "", "", "", "sep"),
-    # Both are shown in the status bar and both used to be read-only: QuillLite
+    # Both are shown in the status bar and both used to be read-only: QUILL Lite
     # wrote back whatever it read, which is the right default and a dead end for
     # anyone who needs a UTF-8 copy of a Windows-1252 file.
     ("&Tools", "&File Encoding and Line Endings...", "Ctrl+Alt+E", "cmd_file_format", ""),
     ("&Tools", "", "", "", "sep"),
     # Type a short form and a space, get the long one. QUILL's engine, QUILL's
-    # manager dialog, and QuillLite's own library unless Preferences says share.
+    # manager dialog, and QUILL Lite's own library unless Preferences says share.
     # The gallery, and the manager beside it. Abbreviations expand when you
     # type the trigger, which is perfect for the six you use daily and useless
     # for the fortieth, whose trigger you cannot remember. QUILL has had a
     # snippet gallery since its snippets shipped (bad.md 4.2 Tier 3).
-    # Not Insert: QuillLite reserves it, because it is the screen reader's
+    # Not Insert: QUILL Lite reserves it, because it is the screen reader's
     # own modifier and a binding on it is a binding the reader eats. Not
     # &S either -- Spelling has it in this menu (GATE-14).
     ("&Tools", "Snippe&ts...", "Alt+Shift+I", "cmd_snippet_gallery", ""),
@@ -821,7 +821,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&Back Up Settings...", "Ctrl+Alt+F11", "cmd_backup_settings", ""),
     ("&Tools", "Restore Sett&ings...", "Ctrl+Alt+F12", "cmd_restore_settings", ""),
     # Turning a whole area off is QUILL's own idea, and it belongs here more
-    # than anywhere: the way QuillLite stays small is that somebody who does not
+    # than anywhere: the way QUILL Lite stays small is that somebody who does not
     # want rich text can remove the Format menu entirely rather than learn to
     # ignore it.
     # Once a year, and therefore on the F-keys. These three held
@@ -852,7 +852,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools|&Spelling", "Check &Spelling...", "F7", "cmd_spell_review", ""),
     # Alt+Shift+F7 rather than Shift+F7 since 2026-09-16: Shift+F7 is the
     # Thesaurus in Word and in QUILL, so a habit from either landed here on
-    # something else. QuillLite has no thesaurus (it needs an asset
+    # something else. QUILL Lite has no thesaurus (it needs an asset
     # download), and the right answer for a key it cannot honour is to leave
     # it unbound rather than to give it a different meaning (bad.md 3.6).
     (
@@ -946,7 +946,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools|Indentin&g", "&Outdent", "Ctrl+[", "cmd_outdent", ""),
     # Describe Indent Depth landed in QUILL first (2026-09-09,
     # ``format.describe_indent_depth``, the same chord), which is the order the
-    # house rule requires: QuillLite may never be ahead of the editor. Leading
+    # house rule requires: QUILL Lite may never be ahead of the editor. Leading
     # whitespace is the one part of a line a screen reader does not read back,
     # so this is the only way to ask what shape the document is in -- and QUILL
     # had the phrasing for two years with nothing bound to it, only an
@@ -955,7 +955,7 @@ COMMANDS: list[CommandRow] = [
     ("&Tools|Indentin&g", "&Describe Indent Depth", "Ctrl+Alt+Shift+V", "cmd_describe_indent", ""),
     ("&Tools|Indentin&g", "", "", "", "sep"),
     # The single most common fix a person makes to somebody else's file, and
-    # the other half of the concession that QuillLite is where a .py gets
+    # the other half of the concession that QUILL Lite is where a .py gets
     # opened (bad.md 4.2, Tier 2). On F-keys past F9 by rule 9: they are real
     # commands and they are not run in the editing loop.
     ("&Tools|Indentin&g", "Convert to &Spaces", "Alt+F11", "cmd_indentation_to_spaces", ""),
@@ -969,7 +969,7 @@ COMMANDS: list[CommandRow] = [
     ("&Window", "&Previous Window", "Ctrl+Shift+Tab", "cmd_previous_window", ""),
     ("&Window", "", "", "", "sep"),
     # QUILL's command, on QUILL's key (family rule 2). Reported by somebody who
-    # opened QuillLite to sixty-nine restored windows and found that the only
+    # opened QUILL Lite to sixty-nine restored windows and found that the only
     # route back to one document was Ctrl+W sixty-eight times, with a save
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
@@ -983,13 +983,13 @@ COMMANDS: list[CommandRow] = [
     # Radio, Cast, Weather and QUILL answer with (bad.md P3.2).
     ("&Help", "&Tutorials...", "Ctrl+Alt+F1", "cmd_tutorials", ""),
     ("&Help", "&Keyboard Shortcuts", "Ctrl+F1", "cmd_shortcuts", ""),
-    # The family item, on the family key: QuillLite is the app whose users
+    # The family item, on the family key: QUILL Lite is the app whose users
     # are least likely to know where else to write.
     ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
-    # The family key. Before this QuillLite had no way at all to learn that a
+    # The family key. Before this QUILL Lite had no way at all to learn that a
     # newer version existed -- see quill.apps.lite_updates.
     ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
-    ("&Help", "&About QuillLite", "Shift+F1", "cmd_about", ""),
+    ("&Help", "&About QUILL Lite", "Shift+F1", "cmd_about", ""),
 ]
 
 #: Menu-bar labels, in bar order, deduplicated by first appearance.

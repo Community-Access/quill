@@ -2,7 +2,7 @@
 
 The two editors documented opposite facts about the same wx call. QUILL's
 ``_atomic_replace`` said native ``TextCtrl.Replace`` is recorded as *two* undo
-entries and refused to use it (issue #131); QuillLite's clipboard insert and
+entries and refused to use it (issue #131); QUILL Lite's clipboard insert and
 line operations promised "one undoable step" and used ``Replace`` to get it.
 Both sentences were written in good faith and one of them was wrong, and the
 way to find out which was to press Ctrl+Z after a line move and read the

@@ -12,7 +12,7 @@ directional select-to commands) and the temporary-jump mark ring
 There was a ``_selection_expand_stack`` here until 2026-09-17 and there is not
 one now: it was never cleared, so Shrink popped a span from a selection you had
 long since moved away from (bad.md L3). Shrink computes from the text, which is
-what QuillLite has always done and is strictly better -- a history can only
+what QUILL Lite has always done and is strictly better -- a history can only
 answer for selections you reached by *expanding*, and the text can answer for
 any of them.
 """
@@ -81,7 +81,7 @@ class SelectionMarksMixin:
 
         The sentence is :func:`quill.core.selection.describe_selection` since
         2026-09-17 (bad.md L14): QUILL said "Selected paragraph, 41 words" and
-        QuillLite said "Selected paragraph, 412 characters, 41 words", and F8
+        QUILL Lite said "Selected paragraph, 412 characters, 41 words", and F8
         completion differed again. Neither was wrong, and having two was --
         somebody who uses both had to know which product they were in before
         they could parse the answer.
@@ -95,7 +95,7 @@ class SelectionMarksMixin:
 
         if end <= start:
             # "Selected line, 0 words" on a blank line is a report that
-            # something happened when nothing did. QuillLite's wording says
+            # something happened when nothing did. QUILL Lite's wording says
             # which thing was not there (bad.md L11).
             self._set_status(f"No {scope} at the cursor")
             return
@@ -128,7 +128,7 @@ class SelectionMarksMixin:
         something. Reproduced 2026-09-17 by ``scripts/probe_rich_edits.py``:
         stack held ``(0, 16)`` while the selection was ``(18, 39)``.
 
-        QuillLite has always computed it, and computing is strictly better
+        QUILL Lite has always computed it, and computing is strictly better
         rather than merely simpler: a history can only answer for selections you
         reached *by expanding*, so selecting a paragraph outright and asking to
         shrink got a refusal a listener cannot tell from a broken command --
@@ -429,7 +429,7 @@ class SelectionMarksMixin:
     def exchange_point_and_mark(self) -> None:
         """Swap the caret with the newest mark, **and select what is between**.
 
-        Two things at once, deliberately, which is QuillLite's behaviour and the
+        Two things at once, deliberately, which is QUILL Lite's behaviour and the
         useful one: you end up at the other end of the span *and* the span is
         selected, because wanting to be at the other end of something is
         normally a prelude to doing something to it (bad.md L12).
@@ -463,7 +463,7 @@ class SelectionMarksMixin:
         It was a message box: a read-only wall of "3. Line 41, Column 7" that
         you had to dismiss and then reach by some other means. A list of places
         that cannot take you to one of them is a list that answers the easy half
-        of the question -- QuillLite's jumps, and has since it shipped.
+        of the question -- QUILL Lite's jumps, and has since it shipped.
 
         Each row leads with the line and carries a snippet of it, because "Line
         41" is not a place anybody recognises and the words on it are.

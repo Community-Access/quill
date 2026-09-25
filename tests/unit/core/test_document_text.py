@@ -4,7 +4,7 @@ Every test here counts reads. That is the whole point of the class: the answers
 it gives are the same answers the control would give, and what is being asserted
 is how *often* it goes and asks. A version of this that was always correct and
 read the buffer per question would pass an equality test and fail the user --
-which is exactly what QuillLite shipped, three full scans and two marshals per
+which is exactly what QUILL Lite shipped, three full scans and two marshals per
 status refresh (bad.md V2, V3, S8, T1).
 """
 

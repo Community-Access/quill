@@ -4,7 +4,7 @@ For an audience that includes low-vision users, "you cannot make the text
 bigger" is not a missing preference, it is a product that does not work. QUILL
 had no ``SetFont`` on any editor control, no font setting and no zoom command at
 all until 2026-09-16 -- every call site in ``quill/ui`` was a dialog heading or a
-print DC -- while QuillLite had Editor Font, Font for Selection and Notepad's
+print DC -- while QUILL Lite had Editor Font, Font for Selection and Notepad's
 three text-size keys from its first release (bad.md 4.3, P0.6a).
 
 Two things live here rather than in either shell.

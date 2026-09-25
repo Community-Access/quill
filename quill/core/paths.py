@@ -67,7 +67,7 @@ def safe_dialog_filename(name: str, *, suffix: str = "", fallback: str = "Untitl
     return f"{result}{suffix}"
 
 
-#: Set by an app whose own data does NOT live in QUILL's folder -- QuillLite is
+#: Set by an app whose own data does NOT live in QUILL's folder -- QUILL Lite is
 #: the only one today. ``None`` means "this app is QUILL, or shares its store".
 _RUNNING_APP_DATA_DIR: Callable[[], Path] | None = None
 
@@ -87,19 +87,19 @@ def running_app_data_dir() -> Path:
 
     **Not the same question as** :func:`app_data_dir`, which answers "where is
     QUILL's data folder" -- the shared store QUILL, Inkwell and the QuillVille
-    apps all use, and which QuillLite reaches on purpose in exactly three
+    apps all use, and which QUILL Lite reaches on purpose in exactly three
     places (share QUILL's dictionary, share QUILL's abbreviations, list QUILL's
     sound schemes). Those say "QUILL's data directory" in their docstrings and
     must keep meaning it.
 
     This one is for a *cache or private store the running app needs somewhere*
     -- the comtypes generated-wrapper cache and the managed Hunspell folder.
-    Both used :func:`app_data_dir`, and for QuillLite that was the wrong folder:
+    Both used :func:`app_data_dir`, and for QUILL Lite that was the wrong folder:
     one ``--check`` on a machine that had never seen QUILL created
     ``%APPDATA%\Quill\comtypes_gen`` and ``%APPDATA%\Quill\spell``, because
     the native Rich Edit surface goes through comtypes and the spell checker
     goes through the managed dir. ``quill/core/lite/paths.py`` opens by saying
-    QuillLite is "deliberately **not** ``%APPDATA%\Quill``", and
+    QUILL Lite is "deliberately **not** ``%APPDATA%\Quill``", and
     ``core/lite/settings.py`` that "a machine that has never had QUILL
     installed must not grow a Quill data folder because somebody opened a text
     file". It grew one on first launch (verified 2026-09-15).

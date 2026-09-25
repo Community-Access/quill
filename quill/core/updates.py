@@ -395,7 +395,7 @@ def _app_asset_url(
     this edition and for a source run with no edition at all.
 
     ``match_edition=False`` skips the edition step for an app that publishes
-    **two** assets rather than four (QuillLite, 2026-09-15): "portable, or not"
+    **two** assets rather than four (QUILL Lite, 2026-09-15): "portable, or not"
     decides, and a four-way chooser pointed at two can only add a way to be
     wrong. See :mod:`quill.apps.lite_updates` for the way it nearly did.
     """

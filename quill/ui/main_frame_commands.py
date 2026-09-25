@@ -19,7 +19,7 @@ class CommandRegistryMixin:
             self.new_file,
             self._binding_for("file.new"),
         )
-        # QuillLite's two "start a document in this kind" commands (bad.md
+        # QUILL Lite's two "start a document in this kind" commands (bad.md
         # P1.13). Both run one seam, new_document_in_format, which is also what
         # --rich / --plain will call (P2.16).
         self.commands.register(
@@ -54,7 +54,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "tools.bring_from_quilllite",
-            "Bring My QuillLite Settings",
+            "Bring My QUILL Lite Settings",
             self.bring_from_quilllite,
             self._binding_for("tools.bring_from_quilllite"),
         )
@@ -520,7 +520,7 @@ class CommandRegistryMixin:
         )
         # QUILL's own free AI: the five commands the AI menu now opens with.
         # The handlers are the *shared* ones in quill.ui.hosted_ai_commands --
-        # the same code QuillLite runs, on the same chords -- so a fix to either
+        # the same code QUILL Lite runs, on the same chords -- so a fix to either
         # editor's hosted AI is a fix to both. See quill/ui/main_frame_hosted_ai.py.
         self.commands.register(
             "tools.hosted_ai_assistant",
@@ -917,7 +917,7 @@ class CommandRegistryMixin:
             self._binding_for("navigate.list_bookmarks"),
         )
         # Numbered bookmarks -- nine slots addressed by digit, the shared core
-        # QuillLite had to itself until 2026-09-16. Registered by their own
+        # QUILL Lite had to itself until 2026-09-16. Registered by their own
         # mixin so the table, the menu and the bindings stay in one module
         # (main_frame_numbered_bookmarks.py) rather than in three.
         self.register_numbered_bookmark_commands()
@@ -935,7 +935,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "tools.word_count",
-            # QuillLite's name; "Word Count" undersells the window (bad.md 3.4).
+            # QUILL Lite's name; "Word Count" undersells the window (bad.md 3.4).
             "Document Statistics...",
             self.show_word_count,
             self._binding_for("tools.word_count"),
@@ -968,7 +968,7 @@ class CommandRegistryMixin:
         )
         # Add Word to Dictionary was reachable only from the context menu: a
         # capability with no command, no key and no palette entry, while
-        # QuillLite had it on a chord (bad.md 4.1, P0.3). Deliberately off the
+        # QUILL Lite had it on a chord (bad.md 4.1, P0.3). Deliberately off the
         # F7 row -- that row is navigation, and this is the one command in the
         # family that writes to a stored dictionary.
         self.commands.register(
@@ -1722,7 +1722,7 @@ class CommandRegistryMixin:
             self.toggle_extend_selection_mode,
             self._binding_for("edit.toggle_extend_selection_mode"),
         )
-        # The F8 marker, as a toggle -- QuillLite's Ctrl+Alt+F8, which QUILL was
+        # The F8 marker, as a toggle -- QUILL Lite's Ctrl+Alt+F8, which QUILL was
         # spending on Extend Selection Mode. Two different things on one chord
         # across two products somebody may use in the same hour (bad.md 5.3a).
         self.commands.register(
@@ -2120,7 +2120,7 @@ class CommandRegistryMixin:
             self.format_underline,
             self._binding_for("format.underline"),
         )
-        # Paragraph and run formatting that arrived through QuillLite. The
+        # Paragraph and run formatting that arrived through QUILL Lite. The
         # capability was always in the Rich Edit surface; nothing was bound to
         # it, so the editor could not do what its own small sibling could.
         # Alignment was never missing from QUILL -- format_align has handled all
@@ -2486,7 +2486,7 @@ class CommandRegistryMixin:
             self.select_chunk,
             self._binding_for("edit.select_chunk"),
         )
-        # QuillLite has had this since it shipped and QUILL had no Select
+        # QUILL Lite has had this since it shipped and QUILL had no Select
         # Sentence at all -- a 4.1 violation, and the one that took Ctrl+Space
         # away from the sentence in this product (bad.md P1.2, P1.2b).
         self.commands.register(
@@ -2511,7 +2511,7 @@ class CommandRegistryMixin:
             "edit.convert_indentation_to_spaces",
             "Convert Indentation to Spaces",
             self.convert_indentation_to_spaces,
-            # QuillLite's Alt+F11 / Alt+F12 since 2026-09-16; both were free
+            # QUILL Lite's Alt+F11 / Alt+F12 since 2026-09-16; both were free
             # here, and a verb reachable only by walking a menu is a cost a
             # screen-reader user pays on every visit (bad.md P1.1).
             self._binding_for("edit.convert_indentation_to_spaces"),

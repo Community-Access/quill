@@ -28,7 +28,7 @@ What is deliberate here:
   because they are labelled controls rather than because anybody spoke them
   (GATE-13).
 
-Shared rather than duplicated, because "QuillLite may never be ahead of QUILL":
+Shared rather than duplicated, because "QUILL Lite may never be ahead of QUILL":
 one dialog, one catalogue, and neither editor can offer a character the other
 cannot.
 """

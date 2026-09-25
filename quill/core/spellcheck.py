@@ -576,7 +576,7 @@ def no_misspelling_message(text: str, cursor: int, dictionary: set[str], *, ahea
     misleading -- it reads as "your document is clean" -- and a dead end, since
     it does not say that turning round would find seven.
 
-    QUILL has answered this way since #9; QuillLite said the bare sentence with
+    QUILL has answered this way since #9; QUILL Lite said the bare sentence with
     no count at all (bad.md S9). Shared here rather than copied, because two
     editors describing the same silence in two different ways is exactly the
     divergence the family plan exists to remove.
@@ -722,7 +722,7 @@ def personal_dictionary_revision(personal_dir: Path | None = None) -> tuple[int,
 
     What a caller compares against to find out whether the shared list has
     changed under it. Each app used to load the dictionary once and keep the
-    set, so a word taught in QuillLite stayed underlined in QUILL until QUILL
+    set, so a word taught in QUILL Lite stayed underlined in QUILL until QUILL
     was restarted -- which makes a *shared* dictionary look broken rather than
     shared (bad.md S10).
     """
@@ -831,7 +831,7 @@ def _dictionary_path(
     """Where a scope's taught words live.
 
     ``personal_dir`` overrides the data folder the personal dictionary is kept
-    in, and exists for the sibling apps: QuillLite keeps its own dictionary in
+    in, and exists for the sibling apps: QUILL Lite keeps its own dictionary in
     its own folder, because a machine that has never had QUILL installed must
     not grow a Quill data folder because somebody taught a text editor a word.
     QUILL passes nothing and gets ``app_data_dir()``, exactly as before.

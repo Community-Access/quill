@@ -3,7 +3,7 @@
 QUILL could not change the size of its own text at all until 2026-09-16: no
 ``SetFont`` on any editor control, no font setting, no zoom command. For an
 audience that includes low-vision users that is not a missing preference, it is
-the product not working, and it is the largest of the sixteen ways QuillLite was
+the product not working, and it is the largest of the sixteen ways QUILL Lite was
 ahead of the editor (bad.md 4.3, the P0 viability bar).
 
 The rule worth testing is the rich/plain split. In a rich document the run point
@@ -79,7 +79,7 @@ def test_nonsense_gives_the_default(given: object) -> None:
 
 
 def test_both_editors_read_the_same_two_settings() -> None:
-    """QuillLite's field names, deliberately, so a settings file carried between
+    """QUILL Lite's field names, deliberately, so a settings file carried between
     the two products means the same thing in both (bad.md G1)."""
     from quill.core.lite.settings import Settings as LiteSettings
     from quill.core.settings import Settings as QuillSettings

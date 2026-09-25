@@ -1,4 +1,4 @@
-# QuillLite -- sign-off checklist
+# QUILL Lite -- sign-off checklist
 
 One pass, top to bottom, ticking boxes. Every step says exactly what to press,
 exactly what to type, and the one thing that decides pass or fail.
@@ -9,7 +9,7 @@ in [the PRD](../../standalone/quilllite/docs/prd.md) and
 [the release notes](../../standalone/quilllite/docs/release-notes-1.0.md).
 
 **Why this file exists.** Everything an automated test can answer about
-QuillLite is already answered: the wx-free core suites (`tests/unit/core/lite`,
+QUILL Lite is already answered: the wx-free core suites (`tests/unit/core/lite`,
 204 tests), the behavioural coverage gate over every handler in its command
 table (198 today, none of them shape-only), the F1 audit, the access-key and over-announce gates, the family gates
 that hold it and QUILL to the same keys and the same words, and 21 live checks
@@ -22,10 +22,10 @@ quill.tools.platform_report` is the answer that is true today.
 ## Before you start (3 minutes)
 
 - Install or launch the build under test. Note the version from
-  **Help > About QuillLite**: `____________`
+  **Help > About QUILL Lite**: `____________`
 - Have a screen reader running and speaking (JAWS or NVDA). Note which, and its
   version: `____________`
-- QuillLite keeps everything in `%LOCALAPPDATA%\QuillLite`, separate from
+- QUILL Lite keeps everything in `%LOCALAPPDATA%\QuillLite`, separate from
   QUILL's `%APPDATA%\Quill`. For a clean run, rename that folder first; to keep
   your real one, take a copy.
 - **Fail means:** it did not happen, or it happened silently, or what you heard
@@ -75,13 +75,13 @@ folder.
 ## Block A -- Opening, and where focus lands (5 min)
 
 **L-01. The window announces itself as a document**
-- Do: launch QuillLite with nothing open.
-- Pass: you hear a window title containing **"1: Untitled - QuillLite (plain
+- Do: launch QUILL Lite with nothing open.
+- Pass: you hear a window title containing **"1: Untitled - QUILL Lite (plain
   text)"**. The number leads.
 - [ ] pass  [ ] fail: ______
 
 **L-02. Focus starts in the document**
-- Do: launch QuillLite, do not touch anything, type `hello`.
+- Do: launch QUILL Lite, do not touch anything, type `hello`.
 - Pass: the letters go into the document. You did not have to Tab first, and
   the reader announced the edit control, not a button.
 - [ ] pass  [ ] fail: ______
@@ -98,9 +98,9 @@ folder.
 - Pass: the title is **"2: Untitled - ..."**. The first document is still open.
 - [ ] pass  [ ] fail: ______
 
-**L-05. Alt+Tab shows QuillLite once, and the Window menu shows both**
+**L-05. Alt+Tab shows QUILL Lite once, and the Window menu shows both**
 - Do: press **Alt+Tab**, then come back. Open the **Window** menu (Alt+W).
-- Pass: Alt+Tab lists QuillLite **once** (this is expected -- documents are
+- Pass: Alt+Tab lists QUILL Lite **once** (this is expected -- documents are
   inside one window). The Window menu lists **1** and **2**, each with its
   Alt+digit, and a mark on the one you are in.
 - [ ] pass  [ ] fail: ______
@@ -406,13 +406,13 @@ This block is the product. Take it slowly.
 
 **L-48. Paste Text Only strips formatting**
 - Do: copy some formatted text from a web page or Word. In a **rich text**
-  QuillLite document press **Ctrl+V**, then undo, then **Ctrl+Shift+V**.
+  QUILL Lite document press **Ctrl+V**, then undo, then **Ctrl+Shift+V**.
 - Pass: Ctrl+V brings the formatting; Ctrl+Shift+V brings the words only, and
   says how many characters.
 - [ ] pass  [ ] fail: ______
 
 **L-49. The copy tray remembers across a restart**
-- Do: select text, **Ctrl+Alt+Y**. Close QuillLite entirely. Reopen. Press
+- Do: select text, **Ctrl+Alt+Y**. Close QUILL Lite entirely. Reopen. Press
   **Ctrl+Alt+V**.
 - Pass: the slot is still there, with a readable preview, and pastes.
 - [ ] pass  [ ] fail: ______
@@ -436,24 +436,24 @@ This block is the product. Take it slowly.
 **L-52. Unsaved work survives a kill**
 - Do: type several paragraphs into a new document. Do **not** save. Wait 40
   seconds (the copy is taken every thirty seconds, as QUILL's is). Kill
-  QuillLite from Task Manager.
+  QUILL Lite from Task Manager.
   Reopen it.
 - Pass: the text is back, in its own window, marked unsaved, and you hear
   **"Recovered unsaved work from the last session"**.
 - [ ] pass  [ ] fail: ______
 
 **L-53. Saving clears the recovery copy**
-- Do: save that recovered document, close QuillLite normally, reopen.
+- Do: save that recovered document, close QUILL Lite normally, reopen.
 - Pass: nothing is offered back. `%LOCALAPPDATA%\QuillLite\recovery` is empty.
 - [ ] pass  [ ] fail: ______
 
 **L-54. Last session's documents reopen**
-- Do: open two saved files. Close QuillLite with **Ctrl+Q**. Reopen.
+- Do: open two saved files. Close QUILL Lite with **Ctrl+Q**. Reopen.
 - Pass: both are back, numbered in the same order.
 - [ ] pass  [ ] fail: ______
 
 **L-55. Naming a file on the command line wins over the session**
-- Do: close QuillLite. Open a `.txt` from Explorer.
+- Do: close QUILL Lite. Open a `.txt` from Explorer.
 - Pass: that file opens, and last session's documents do **not** bury it.
 - [ ] pass  [ ] fail: ______
 
@@ -536,7 +536,7 @@ This block is the product. Take it slowly.
 - Do: use the app normally for two minutes -- save, format, search, switch
   documents.
 - Pass: you never hear the same sentence twice in a row, and you never hear
-  QuillLite repeat a window title or control name your reader has just said.
+  QUILL Lite repeat a window title or control name your reader has just said.
 - [ ] pass  [ ] fail: ______
 
 **L-67. No key advertises something that does not happen**
@@ -557,14 +557,14 @@ This block is the product. Take it slowly.
 - Pass: every one closes and returns focus to the document.
 - [ ] pass  [ ] fail: ______
 
-**L-70. QuillLite does not create a QUILL data folder**
-- Do: on a machine (or profile) with no QUILL installed, run QuillLite, save a
+**L-70. QUILL Lite does not create a QUILL data folder**
+- Do: on a machine (or profile) with no QUILL installed, run QUILL Lite, save a
   file, quit.
 - Pass: `%APPDATA%\Quill` does **not** exist. Only `%LOCALAPPDATA%\QuillLite`.
 - [ ] pass  [ ] fail: ______
 
 **L-71. Uninstalling leaves your work alone**
-- Do: uninstall QuillLite.
+- Do: uninstall QUILL Lite.
 - Pass: `%LOCALAPPDATA%\QuillLite` is still there, with settings and any
   recovery files.
 - [ ] pass  [ ] fail: ______
@@ -605,7 +605,7 @@ silently off cannot be told apart from a broken one.
 - Do: on a misspelling, press **Ctrl+Alt+F9**, then **Ctrl+F7** from the top
   again. (**Alt+F7** is Word's key for *Next Misspelling* and is an alias for
   Ctrl+F7 here -- it does not teach anything.)
-- Pass: you hear **"Added ... to your QuillLite dictionary"** -- naming *which*
+- Pass: you hear **"Added ... to your QUILL Lite dictionary"** -- naming *which*
   dictionary -- and the taught word is no longer found.
 - [ ] pass  [ ] fail: ______
 
@@ -726,7 +726,7 @@ have to notice.
 **L-91. The Insert key moves the cell too**
 - Do: with your screen reader's modifier *not* set to Insert (or using the
   laptop layout), press **Insert** once. **F6**, arrow to **Typing Mode**.
-- Pass: the cell has changed. QuillLite does not claim the Insert key -- the
+- Pass: the cell has changed. QUILL Lite does not claim the Insert key -- the
   editing control answers it -- but the cell must follow it.
 - If your reader uses Insert as its modifier, skip and note "skipped": that is
   the expected experience and not a failure.
@@ -788,8 +788,8 @@ have to notice.
   USB stick or any folder, run `QuillLite.exe`, change a setting, type
   something, and close.
 - Pass: `data\QuillLite` inside the bundle now has a `settings.json`, and
-  **no** `QuillLite` folder has appeared in `%LOCALAPPDATA%` on that machine.
-- This is the one step worth running on a computer that has never had QuillLite
+  **no** `QUILL Lite` folder has appeared in `%LOCALAPPDATA%` on that machine.
+- This is the one step worth running on a computer that has never had QUILL Lite
   on it, because that is the only place the old behaviour was visible.
 - [ ] pass  [ ] fail: ______
 
@@ -824,7 +824,7 @@ person can check that pressing the key afterwards does the thing.
 - Do: with Record a Key on, press **Insert**. (If your reader uses Insert as its
   modifier, press it twice quickly or use the laptop layout.)
 - Pass: you hear that Insert is the key NVDA and JAWS use as their own modifier
-  and QuillLite never binds it. **Not** a beep, and **not** silence.
+  and QUILL Lite never binds it. **Not** a beep, and **not** silence.
 - Fail if anything at all is assigned, or if nothing is said.
 - [ ] pass  [ ] fail: ______
 
@@ -892,8 +892,8 @@ person can check that pressing the key afterwards does the thing.
 - [ ] pass  [ ] fail: ______
 
 **L-108. The daily look is silent**
-- Do: with "Look for updates when QuillLite starts" ticked in Settings, close
-  QuillLite and open it again. Then unplug the network and open it again.
+- Do: with "Look for updates when QUILL Lite starts" ticked in Settings, close
+  QUILL Lite and open it again. Then unplug the network and open it again.
 - Pass: nothing is said either time -- no "checking", no "up to date", no
   network error. A launch is not the place to report that nothing happened.
 - [ ] pass  [ ] fail: ______
@@ -913,7 +913,7 @@ person can check that pressing the key afterwards does the thing.
   Enter again on the first row.
 - Pass: the reader names the dialog, then the search box; Enter moves to the
   list and the row reads as its character, its name and its code point; the
-  second Enter closes the dialog and QuillLite says "Inserted", the character,
+  second Enter closes the dialog and QUILL Lite says "Inserted", the character,
   U+2014 and "Em dash". Escape at any point says nothing and inserts nothing.
 - [ ] pass  [ ] fail: ______
 
@@ -972,7 +972,7 @@ person can check that pressing the key afterwards does the thing.
 - Pass: the first press says "Headings will not be announced" and the heading
   is then silent on arrival; the second says "Headings announced on arrival"
   and it comes back. **View ▸ Announce Headings** shows a tick that matches.
-- Pass: closing and reopening QuillLite remembers the choice.
+- Pass: closing and reopening QUILL Lite remembers the choice.
 - [ ] pass  [ ] fail: ______
 
 **L-116. A shell script is not a document full of headings**
@@ -1001,7 +1001,7 @@ and hear it once.
 
 Have three files ready for this block: **`notes.md`**, **`page.html`** and
 **`build.py`**, each containing a line of ordinary text. Create them from
-QuillLite with **Ctrl+Shift+S** if you have none.
+QUILL Lite with **Ctrl+Shift+S** if you have none.
 
 ### The language, and the ring
 
@@ -1445,7 +1445,7 @@ you only notice a week later.
 - Do: open any `.rtf` and put a heading and a bold word in it. Open the same
   folder in another program that locks files, or make the target read-only --
   the simplest way is to save once as `locked.txt`, then set that file
-  read-only in Explorer. Now in QuillLite press **Ctrl+Shift+S**, choose
+  read-only in Explorer. Now in QUILL Lite press **Ctrl+Shift+S**, choose
   **Text files**, and save over `locked.txt`. Answer **Yes** to "Saving as
   plain text removes all formatting".
 - Pass: you hear that the save failed and names the file. The document in front
@@ -1490,8 +1490,8 @@ you only notice a week later.
 **L-179. A recovered file keeps its own encoding and line endings**
 - Do: open a `.txt` saved with **Unix** line endings (any file from a git
   checkout). Type a sentence but do **not** save. Wait forty seconds so the
-  copy-aside has run. Now end the QuillLite process from Task Manager. Start
-  QuillLite again and let it restore the document. Press **Ctrl+S**.
+  copy-aside has run. Now end the QUILL Lite process from Task Manager. Start
+  QUILL Lite again and let it restore the document. Press **Ctrl+S**.
 - Pass: press **F6** and the **Line Endings** cell reads **LF** before you save,
   and the saved file still has Unix line endings afterwards.
 - Fail if it reads CRLF, or the saved file gained Windows line endings. The copy
@@ -1500,11 +1500,11 @@ you only notice a week later.
 - [ ] pass  [ ] fail: ______
 
 **L-180. A recovery that fails takes nothing**
-- Do: after a crash as in L-179, and **before** starting QuillLite, open
+- Do: after a crash as in L-179, and **before** starting QUILL Lite, open
   `%LOCALAPPDATA%\QuillLite\recovery` and make the copy's content file
   unreadable -- the simplest way is to open it in another program that holds an
   exclusive lock, or deny yourself read access in its Properties ▸ Security.
-  Now start QuillLite.
+  Now start QUILL Lite.
 - Pass: you hear that it could not be recovered and is still saved aside. The
   window is **untitled** -- it has not taken the original file's name -- and it
   is not marked as changed. The copy is still on disk, and the next launch
@@ -1574,7 +1574,7 @@ you only notice a week later.
 
 **L-188. The warning names what will not survive**
 - Do: open an `.rtf` that contains a **table** (make one in WordPad or Word and
-  save it as RTF). Open it in QuillLite and ring out of rich text.
+  save it as RTF). Open it in QUILL Lite and ring out of rich text.
 - Pass: the question names it -- "Switching to plain text cannot carry: tables".
 - Fail if the question is the generic one. Naming the loss before it happens is
   the difference between a warning and a formality.
@@ -1598,7 +1598,7 @@ you only notice a week later.
   **Ctrl+Shift+H** (paragraph) and **Ctrl+Space** (sentence).
 - Pass: each says what it took and how many **words** -- "Selected line, 3
   words". No character counts.
-- Fail if any of them reports characters. QUILL says words and QuillLite said
+- Fail if any of them reports characters. QUILL says words and QUILL Lite said
   both, so the same key reported the same fact two ways.
 - [ ] pass  [ ] fail: ______
 
@@ -1644,7 +1644,7 @@ you only notice a week later.
 
 ### The Tier 2 and Tier 3 crossings (2026-09-17)
 
-Five things QUILL had and QuillLite did not. Each is shared code given a door
+Five things QUILL had and QUILL Lite did not. Each is shared code given a door
 here, so what these check is the door and the sentence, not the engine.
 
 **L-196. Extend Selection Mode is a Shift that stays down**
@@ -1763,7 +1763,7 @@ here, so what these check is the door and the sentence, not the engine.
 - Pass: the heading is larger and bold on the page, the bold word is bold, and
   the list has bullets.
 - Fail if everything is one size. That was true until this version, and it made
-  QuillLite's printed output worse than its screen.
+  QUILL Lite's printed output worse than its screen.
 - [ ] pass  [ ] fail: ______
 
 **L-211. The corrections come first again**
@@ -1784,7 +1784,7 @@ here, so what these check is the door and the sentence, not the engine.
 
 **L-213. A word taught in QUILL is known here at once**
 - Do: with **Use QUILL's dictionary** on in Preferences and both apps open,
-  teach a made-up word in QUILL. Come back to QuillLite, type the same word and
+  teach a made-up word in QUILL. Come back to QUILL Lite, type the same word and
   wait for the live check.
 - Pass: it is not reported. No restart needed.
 - [ ] pass  [ ] fail: ______
@@ -1807,7 +1807,7 @@ here, so what these check is the door and the sentence, not the engine.
 
 **L-216. Ctrl+Alt+F1 opens the lessons**
 - Do: press **Ctrl+Alt+F1**.
-- Pass: a **QuillLite Tutorials** window opens, listing eight lessons in two
+- Pass: a **QUILL Lite Tutorials** window opens, listing eight lessons in two
   tracks. Arrowing reads each lesson's title, how long it takes, and what you
   will be able to do at the end.
 - [ ] pass  [ ] fail: ______
@@ -1844,7 +1844,7 @@ here, so what these check is the door and the sentence, not the engine.
 ### The family keymap, second pass (2026-09-17)
 
 Three keys changed meaning in **both** editors, so these are worth a listen in
-QuillLite even though the work was mostly QUILL's side.
+QUILL Lite even though the work was mostly QUILL's side.
 
 **L-221. Ctrl+Space takes the sentence**
 - Do: put the cursor in the middle of a sentence and press **Ctrl+Space**.
@@ -1853,9 +1853,9 @@ QuillLite even though the work was mostly QUILL's side.
   "chunk" there.
 - [ ] pass  [ ] fail: ______
 
-**L-222. Nothing else moved in QuillLite**
+**L-222. Nothing else moved in QUILL Lite**
 - Do: read Edit ▸ Selection top to bottom.
-- Pass: every key is the one it was. QuillLite's selection keys were already the
+- Pass: every key is the one it was. QUILL Lite's selection keys were already the
   family's; what changed was QUILL coming into line with them.
 - [ ] pass  [ ] fail: ______
 
@@ -1864,15 +1864,15 @@ QuillLite even though the work was mostly QUILL's side.
 ## Block R -- The 2026-09-18 additions (10 min)
 
 The family parity program. Most of it landed on QUILL's side; these are the
-QuillLite halves, and the two that are shared behave identically in both by
+QUILL Lite halves, and the two that are shared behave identically in both by
 design -- so if one of these fails here, check QUILL before filing it as
-QuillLite's.
+QUILL Lite's.
 
 ### The File Encoding and Line Endings window
 
 **L-223. It shows what this file actually is**
 - Do: make a file whose lines end with a single CR (classic Mac); writing
-  `b"one<CR>two<CR>"` as raw bytes is enough. Open it in QuillLite and press
+  `b"one<CR>two<CR>"` as raw bytes is enough. Open it in QUILL Lite and press
   **Ctrl+Alt+E**.
 - Pass: the Line Endings list starts on a row saying **keep as is**, naming CR.
 - Fail if it reads "CRLF" or "LF". Until 2026-09-18 it read CRLF -- the list fell
@@ -1889,7 +1889,7 @@ QuillLite's.
 
 **L-225. A UTF-16 big-endian file is still big-endian afterwards**
 - Do: save a file as UTF-16 big-endian with a BOM (Notepad's "Unicode big
-  endian" will do). Open it in QuillLite, change nothing, press **Ctrl+S**.
+  endian" will do). Open it in QUILL Lite, change nothing, press **Ctrl+S**.
 - Pass: the first two bytes are still `FE FF`.
 - Fail if they are `FF FE` -- that is little-endian, every pair of bytes in the
   file swapped by a save that changed nothing else. Both byte orders used to
@@ -1936,7 +1936,7 @@ QuillLite's.
 - Do: switch to Markdown (**Alt+Shift+F** until the Format part says so) and
   press **Ctrl+U**. Then switch to HTML and press **Ctrl+E**.
 - Pass: **"... in a Markdown document."** and **"... in an HTML document."**
-- Fail on **"a html document"**: QuillLite lower-cased its own Format label
+- Fail on **"a html document"**: QUILL Lite lower-cased its own Format label
   before building the sentence, so an initialism lost the article it needs when
   spoken aloud. Both editors now name a kind of document from one shared table.
 - [ ] pass  [ ] fail: ______
@@ -1967,30 +1967,30 @@ QuillLite's.
   **Ctrl+Shift+F12**.
 - Pass: Save As, then Open, then Print -- Word's keys for all three. They are
   aliases: **Ctrl+Shift+S**, **Ctrl+O** and **Ctrl+P** still work.
-- Fail if any of the three does nothing. QUILL carried all three and QuillLite
+- Fail if any of the three does nothing. QUILL carried all three and QUILL Lite
   carried none, which is a habit that works in one editor and not the other.
 - [ ] pass  [ ] fail: ______
 
 ### After QUILL brings your setup across
 
-Run these only if you have also run QUILL's **Bring My QuillLite Settings**
+Run these only if you have also run QUILL's **Bring My QUILL Lite Settings**
 (**Alt+Shift+F11** there) on the same machine, and answered yes.
 
-**L-234. QuillLite is reading the shared stores from QUILL**
-- Do: in QuillLite, open its preferences and find the two sharing switches
+**L-234. QUILL Lite is reading the shared stores from QUILL**
+- Do: in QUILL Lite, open its preferences and find the two sharing switches
   (abbreviations, personal dictionary).
 - Pass: both are **on**. QUILL turned them on when it took the copies, because
-  QUILL holding your words while QuillLite still reads its own copy is what makes
+  QUILL holding your words while QUILL Lite still reads its own copy is what makes
   a "shared" store look broken.
 - [ ] pass  [ ] fail: ______
 
 **L-235. A word added in one editor is there in the other**
-- Do: in QUILL, add an abbreviation. Restart QuillLite and expand it.
+- Do: in QUILL, add an abbreviation. Restart QUILL Lite and expand it.
 - Pass: it expands. One set of abbreviations, both editors.
 - [ ] pass  [ ] fail: ______
 
 **L-236. Nothing of yours was replaced**
-- Do: check an abbreviation you had in QuillLite before the merge, and one you
+- Do: check an abbreviation you had in QUILL Lite before the merge, and one you
   had in QUILL.
 - Pass: both are still there, with their own expansions. QUILL wins a collision
   and nothing already in QUILL is overwritten, but neither side loses an entry
@@ -2005,11 +2005,11 @@ It reopened everything without asking until 2026-09-19. Everything here is about
 the answer being **partial** and about Forget being **safe**: those are the two
 claims the window makes, and a listener cannot check either by looking.
 
-Set this up once: open three `.txt` files, close QuillLite, then delete or rename
+Set this up once: open three `.txt` files, close QUILL Lite, then delete or rename
 one of the three from outside the app.
 
 **L-237. Three documents means you are asked**
-- Do: launch QuillLite.
+- Do: launch QUILL Lite.
 - Pass: a window titled **Reopen Last Session**, whose first line says "3
   documents from last time, 1 of which is no longer there."
 - Fail if three windows simply appear, or if the missing one is not mentioned.
@@ -2048,7 +2048,7 @@ one of the three from outside the app.
 - [ ] pass  [ ] fail: ______
 
 **L-243. One or two documents still open without a question**
-- Do: with two documents open, close QuillLite and relaunch.
+- Do: with two documents open, close QUILL Lite and relaunch.
 - Pass: both open, no window. The chooser is for the cases where the answer is not
   obvious, and two files that are still there is not one of them.
 - [ ] pass  [ ] fail: ______
@@ -2093,7 +2093,7 @@ your document.
 
 Run this block with a screen reader speaking, and with **Braille selection
 support** left at its default (on). If it has been turned off, turn it back on
-and restart QuillLite -- the flag is set once, when the editor is built, so the
+and restart QUILL Lite -- the flag is set once, when the editor is built, so the
 setting does nothing until the editor is rebuilt.
 
 **L-247. The final empty line is blank**
@@ -2126,7 +2126,7 @@ setting does nothing until the editor is rebuilt.
 - Do: open and close ten documents in a row -- **Ctrl+O**, **Ctrl+W**, ten
   times -- typing a character into each before you close it. Then repeat
   L-247.
-- Pass: QuillLite is still running, nothing was lost, and the final empty line
+- Pass: QUILL Lite is still running, nothing was lost, and the final empty line
   is still blank. Each editor installs a subclass and each close takes one off;
   a mistake in that pairing does not misreport anything, it ends the process
   with whatever was unsaved in it.
@@ -2136,7 +2136,7 @@ setting does nothing until the editor is rebuilt.
 
 **L-251. If the correction ever gives up, it gives up quietly**
 - Do: nothing to trigger this -- read it so you recognise it. Should the
-  message chain fault, QuillLite detaches from that one control and logs a
+  message chain fault, QUILL Lite detaches from that one control and logs a
   warning naming the message number, rather than going down.
 - Pass: the symptom to report is **one** editor that has started repeating the
   last line on its final empty line while the rest of the app behaves. That is

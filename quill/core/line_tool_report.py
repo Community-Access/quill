@@ -15,7 +15,7 @@ Two numbers are available and they are not interchangeable:
   understates a sort of forty lines as "moved 38" and sends the reader hunting
   for the two that did not move.
 
-QuillLite had both, chosen per call site by hand. Here the choice is derived --
+QUILL Lite had both, chosen per call site by hand. Here the choice is derived --
 a transform whose output is a permutation of its input is a reordering -- so a
 new tool cannot forget to declare it, and both editors read one module.
 

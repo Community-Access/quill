@@ -1,4 +1,4 @@
-"""PyInstaller entry point for the one-folder QuillLite build."""
+"""PyInstaller entry point for the one-folder QUILL Lite build."""
 
 from quill_lite import main
 

@@ -255,7 +255,7 @@ class PrintMixin:
 
         QUILL printed ``editor.GetValue()`` and nothing else, so a rich document
         came out as a wall of body text with every heading, every bold run and
-        every list gone -- while QuillLite at least wrote the level in front of
+        every list gone -- while QUILL Lite at least wrote the level in front of
         each heading line, which made the **small** product better on paper
         (bad.md PR1). The marker is core's, so the two print the same thing.
 

@@ -7,8 +7,8 @@ key, the Keyboard Manager showed it assigned, and pressing it does the reader's
 thing instead -- which is the worst shape a keymap bug can take, because every
 visible surface agrees that it should have worked.
 
-QuillLite refused these at assign time and QUILL refused nothing; QUILL checked
-for conflicts and QuillLite had no assign-time check at all. Both guards now
+QUILL Lite refused these at assign time and QUILL refused nothing; QUILL checked
+for conflicts and QUILL Lite had no assign-time check at all. Both guards now
 exist in both, and the list itself lives here rather than in either product, so
 "which keys are the reader's" is answered in one place (bad.md H9, P1.18).
 

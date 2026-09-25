@@ -1,6 +1,6 @@
 """A lock file, for the read-modify-write two processes can both be inside.
 
-QUILL and QuillLite are separate processes that share files when the listener
+QUILL and QUILL Lite are separate processes that share files when the listener
 asks them to -- one personal dictionary (``share_quill_dictionary``), one
 abbreviation library (``share_quill_abbreviations``). Every one of those is
 read-modify-write: load the list, add an entry, write the list back. Two apps

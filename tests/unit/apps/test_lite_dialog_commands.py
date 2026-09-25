@@ -61,7 +61,7 @@ def test_get_help_from_support_writes_as_quilllite(lite_window, monkeypatch):
     """The small product has to name itself.
 
     Whoever answers should never have to guess which of nine products somebody
-    was running, and QuillLite is the one most likely to be somebody's first --
+    was running, and QUILL Lite is the one most likely to be somebody's first --
     and only -- Quill app.
     """
     import quill.ui.support_dialog as support_dialog
@@ -119,7 +119,7 @@ def test_describe_character_detail_opens_a_window_on_the_character_at_the_caret(
 
 
 def test_context_help_asks_the_shared_engine(lite_window, lite_dialogs):
-    """F1 is one engine for all nine apps; QuillLite only has to route to it."""
+    """F1 is one engine for all nine apps; QUILL Lite only has to route to it."""
     win = lite_window("hello")
     win.cmd_context_help()
     assert lite_dialogs.args_for("show_help") == (win,)
@@ -621,7 +621,7 @@ def test_goto_is_offered_the_current_line_and_the_total(lite_window, lite_dialog
 
 
 def test_goto_offers_the_kinds_quilllite_has_and_not_pages(lite_window, lite_dialogs):
-    """QuillLite has no pagination model, and a greyed row for a thing the
+    """QUILL Lite has no pagination model, and a greyed row for a thing the
     product does not do is a row to walk past forever (bad.md 5.4)."""
     win = lite_window("# One\n\nbody\n", cursor=0)
     win.set_document_language("markdown", announce=False)
@@ -831,7 +831,7 @@ def test_about_shows_the_support_id_and_the_servers_usage(lite_window, monkeypat
 
     win = lite_window("hello")
     monkeypatch.setattr(win, "_ai_service", lambda: Service())
-    field = _Field("QuillLite 1.0")
+    field = _Field("QUILL Lite 1.0")
     win.ai_about_usage(field)
 
     assert "Support ID for this computer: 2DFD-22DB" in field.value
@@ -847,9 +847,9 @@ def test_about_says_nothing_about_ai_when_not_connected(lite_window, monkeypatch
 
     win = lite_window("hello")
     monkeypatch.setattr(win, "_ai_service", lambda: Service())
-    field = _Field("QuillLite 1.0")
+    field = _Field("QUILL Lite 1.0")
     win.ai_about_usage(field)
-    assert field.value == "QuillLite 1.0"
+    assert field.value == "QUILL Lite 1.0"
 
 
 def test_a_support_message_carries_the_ai_support_id(monkeypatch):

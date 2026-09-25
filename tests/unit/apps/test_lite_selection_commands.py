@@ -50,7 +50,7 @@ def test_select_paragraph_takes_the_run_between_blank_lines(lite_window) -> None
 def test_every_selection_is_announced_in_the_shape_quill_uses(lite_window) -> None:
     """Scope, then words -- one shape, in core (bad.md L14).
 
-    QUILL said "Selected paragraph, 41 words" and QuillLite said "Selected
+    QUILL said "Selected paragraph, 41 words" and QUILL Lite said "Selected
     paragraph, 412 characters, 41 words". Neither was wrong; having two was,
     because somebody who uses both had to work out which product they were in
     before they could parse the answer. Words rather than characters because a
@@ -235,7 +235,7 @@ def test_pop_mark_with_an_empty_ring_says_so(lite_window) -> None:
 def test_the_mark_ring_holds_twenty_and_drops_the_oldest(lite_window) -> None:
     """Twenty, because the ring is the shared one now (bad.md L6).
 
-    QuillLite had a plain list of its own capped at ten, with no
+    QUILL Lite had a plain list of its own capped at ten, with no
     de-duplication, beside ``quill.core.marks.MarkRing``, which is capped at
     twenty and de-dupes. Two implementations of something this simple are not a
     bug on their own; they are the mechanism by which the two editors drift.
@@ -248,7 +248,7 @@ def test_the_mark_ring_holds_twenty_and_drops_the_oldest(lite_window) -> None:
 
 
 def test_marking_the_same_place_twice_does_not_fill_the_ring(lite_window) -> None:
-    """The de-duplication QuillLite's own list did not have."""
+    """The de-duplication QUILL Lite's own list did not have."""
     win = lite_window("x" * 100, cursor=0)
     for _ in range(5):
         win.control.SetInsertionPoint(7)

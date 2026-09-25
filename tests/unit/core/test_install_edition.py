@@ -128,7 +128,7 @@ def test_the_installers_ship_their_edition_marker() -> None:
         assert marker.read_text(encoding="utf-8").strip() == expected
 
 
-#: QuillLite is the case the word-matching above cannot survive on its own: the
+#: QUILL Lite is the case the word-matching above cannot survive on its own: the
 #: product NAME contains "lite", so every one of its assets reads as the thin
 #: installer and ``INSTALLER_FULL`` matches nothing it ever publishes. The
 #: prefix is what restores the distinction.
@@ -160,7 +160,7 @@ def test_an_app_whose_name_contains_a_marker_word(edition_name: str, expected: s
 
 def test_without_the_prefix_quilllite_cannot_be_told_apart() -> None:
     """The bug the prefix exists to stop, pinned so it cannot come back
-    silently: every QuillLite .exe reads as the thin installer."""
+    silently: every QUILL Lite .exe reads as the thin installer."""
     unprefixed = [
         asset["name"]
         for asset in LITE_ASSETS

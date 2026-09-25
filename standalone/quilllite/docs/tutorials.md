@@ -1,10 +1,10 @@
-# QuillLite Tutorials
+# QUILL Lite Tutorials
 
 9 guided tutorials, 38 steps, about 42 minutes of material in all.
 
-This document is generated from the tutorials inside QuillLite, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials... (Ctrl+Alt+F1)** instead.
+This document is generated from the tutorials inside QUILL Lite, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials... (Ctrl+Alt+F1)** instead.
 
-The keys below are the ones QuillLite ships with. If you have rebound something in the Keyboard Manager, the tutorials *inside the app* say your key; this document cannot know it.
+The keys below are the ones QUILL Lite ships with. If you have rebound something in the Keyboard Manager, the tutorials *inside the app* say your key; this document cannot know it.
 
 ## Contents
 
@@ -26,15 +26,15 @@ Open a file and give it back unchanged, learn where the facts about it live, lea
 
 ### Open a file, and give it back unchanged
 
-The one promise QuillLite makes, and the three things it remembers about your file in order to keep it.
+The one promise QUILL Lite makes, and the three things it remembers about your file in order to keep it.
 
 *4 steps, about 5 minutes.*
 
-1. **Open something you already have.** Any text file will do, and an old one is a better test than a new one. QuillLite reads plain text, Markdown, HTML and rich text.
+1. **Open something you already have.** Any text file will do, and an old one is a better test than a new one. QUILL Lite reads plain text, Markdown, HTML and rich text.
    - Keys: Ctrl+O
    - You should hear: The file's name, and the first line of it.
 
-2. **Look at what it remembered.** The status bar is a row of cells you can arrow along, not a strip of text. Three of them are the promise: Encoding is how the letters are stored, Line Endings is how the lines finish, and Format is what kind of document this is. QuillLite puts all three back exactly as it found them.
+2. **Look at what it remembered.** The status bar is a row of cells you can arrow along, not a strip of text. Three of them are the promise: Encoding is how the letters are stored, Line Endings is how the lines finish, and Format is what kind of document this is. QUILL Lite puts all three back exactly as it found them.
    - Keys: F6
    - You should hear: Each cell's name and its value as you arrow along.
    - Worth knowing: Escape brings you back to your document. Nothing you do in the status bar changes the file unless you press Enter on a cell and answer the question it asks.
@@ -43,7 +43,7 @@ The one promise QuillLite makes, and the three things it remembers about your fi
    - Keys: Ctrl+S
    - You should hear: "Saved" and the file's name.
 
-4. **Type a character the file cannot hold.** If your file is stored in an older encoding, type an em dash or an emoji into it and save again. QuillLite asks before it writes: save as UTF-8 and keep it, save as asked and lose it knowingly, or cancel.
+4. **Type a character the file cannot hold.** If your file is stored in an older encoding, type an em dash or an emoji into it and save again. QUILL Lite asks before it writes: save as UTF-8 and keep it, save as asked and lose it knowingly, or cancel.
    - You should hear: A question counting the characters, naming the encoding, and offering Yes, No and Cancel.
    - Worth knowing: Before version 1.0 those characters became question marks and the app said "Saved". The only way to find out was to read that line again.
 
@@ -57,7 +57,7 @@ Plain text, Markdown, HTML and rich text -- what each changes, and the one key t
 
 *4 steps, about 4 minutes.*
 
-1. **Find out what you are in.** The Format cell says which of the four this document is, and the Language cell says which markup a plain one is written in. QuillLite guesses from the file's name, and the guess is only ever a first guess.
+1. **Find out what you are in.** The Format cell says which of the four this document is, and the Language cell says which markup a plain one is written in. QUILL Lite guesses from the file's name, and the guess is only ever a first guess.
    - Keys: F6
    - You should hear: The Format cell, reading "Markdown", "HTML", "Plain text" or "Rich text".
 
@@ -92,7 +92,7 @@ Why there are no tabs, what you get instead, and the four ways to reach the docu
 3. **Go straight to one.** Alt and a digit goes directly to that document. This is the fast way once you have more than two open, and it is the reason they are numbered at all.
    - Keys: Alt+1, Alt+2, Alt+3
    - You should hear: The document you asked for.
-   - Worth knowing: Documents here are children of one window, so they do not appear in Alt+Tab. That is the cost of the numbering, and these four routes are how QuillLite carries it.
+   - Worth knowing: Documents here are children of one window, so they do not appear in Alt+Tab. That is the cost of the numbering, and these four routes are how QUILL Lite carries it.
 
 ### What to press when you are lost
 
@@ -104,15 +104,15 @@ Three keys that answer where you are, what this does, and what exists.
    - Keys: F1
    - You should hear: The window's purpose, then the control's.
 
-2. **Ask what the facts are.** The status bar holds everything QuillLite knows about your document, and every message it has said. A message you missed is still in the first cell.
+2. **Ask what the facts are.** The status bar holds everything QUILL Lite knows about your document, and every message it has said. A message you missed is still in the first cell.
    - Keys: F6
-   - You should hear: The last thing QuillLite said, and then each fact as you arrow.
+   - You should hear: The last thing QUILL Lite said, and then each fact as you arrow.
 
-3. **Ask what exists.** The Keyboard Shortcuts window lists every key QuillLite has, built from the live command table -- so it shows your keys, including any you have changed.
+3. **Ask what exists.** The Keyboard Shortcuts window lists every key QUILL Lite has, built from the live command table -- so it shows your keys, including any you have changed.
    - Keys: Ctrl+F1
    - You should hear: A searchable list of every command and its key.
 
-Nothing in QuillLite is more than these three keys away from being explained.
+Nothing in QUILL Lite is more than these three keys away from being explained.
 
 ## Working in a document
 
@@ -171,7 +171,7 @@ Bookmarks, marks and the Back key -- three things that sound alike and answer di
    - Keys: Ctrl+M
    - You should hear: The line you came back to, and how many marks are left.
 
-4. **Undo the jump.** Back is the undo for navigation. Every jump in QuillLite goes through it -- bookmarks, marks, headings, Go To, search results -- so there is no jump it cannot take you back from.
+4. **Undo the jump.** Back is the undo for navigation. Every jump in QUILL Lite goes through it -- bookmarks, marks, headings, Go To, search results -- so there is no jump it cannot take you back from.
    - Keys: Alt+Left
    - You should hear: Where you were before the jump.
    - Worth knowing: Without this, every jump is one-way: you followed a heading and have no way back to the paragraph you were writing except a line number nobody told you.
@@ -207,7 +207,7 @@ What a sighted reader gets from scrolling and glancing, and the three ways to ge
 
 ### Spelling, without a red squiggle
 
-How QuillLite tells you a word is wrong without interrupting the sentence you are writing, and the one key that fixes it.
+How QUILL Lite tells you a word is wrong without interrupting the sentence you are writing, and the one key that fixes it.
 
 *4 steps, about 5 minutes.*
 

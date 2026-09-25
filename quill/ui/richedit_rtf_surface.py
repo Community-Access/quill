@@ -403,7 +403,7 @@ class QuillRichEdit:
 
         A collapsed TOM range reports the formatting of the character
         **before** it, so standing at the start of a heading described the
-        paragraph above it (reported against QuillLite, PR #1490). Screen
+        paragraph above it (reported against QUILL Lite, PR #1490). Screen
         readers describe the character *after* the caret; so does this. With a
         real selection the selection itself is the answer, and at the very end
         of the story there is no next character, so the collapsed range stands.
@@ -677,7 +677,7 @@ def create_richedit_rtf(
         surface.surface_kind = SURFACE_KIND  # type: ignore[attr-defined]
         # RichEditDocument, not QuillRichEdit: it *is* a QuillRichEdit (every
         # method below is unchanged) plus the paragraph and view capabilities
-        # QuillLite needed -- bullets, line spacing, the point-size ladder,
+        # QUILL Lite needed -- bullets, line spacing, the point-size ladder,
         # heading enumeration, text mode, zoom. Built here so QUILL's own tabs
         # have them too: a feature the small product has and the editor cannot
         # reach would be exactly backwards. Imported inside the function because

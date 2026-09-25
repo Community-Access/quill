@@ -336,7 +336,7 @@ function Assert-QuillRuntimeHasModule {
     The QuillVille Runtime is a PyInstaller onedir with its OWN frozen copy of
     the quill package, and every app installer ships it. So a runtime built
     before an app existed does not contain that app -- and nothing else in the
-    build notices. QuillLite shipped exactly that on 2026-09-08: the installer
+    build notices. QUILL Lite shipped exactly that on 2026-09-08: the installer
     compiled cleanly, installed cleanly, and the first launch said
     "No module named quill.apps.lite", because -SkipSharedRuntime had reused a
     runtime from three weeks earlier.
@@ -350,7 +350,7 @@ function Assert-QuillRuntimeHasModule {
     * the whole frozen quill package matches this checkout
       (scripts\check_runtime_freshness.py). Present is not current: on
       2026-09-08 a runtime about to be PUBLISHED passed the check above while
-      its frozen tree was 28 files behind, with two QuillLite modules missing
+      its frozen tree was 28 files behind, with two QUILL Lite modules missing
       outright. The build would have shipped code three weeks older than its own
       installer, green all the way.
     * optionally, with -ProbeArgs, the runtime is asked to *run* the module with

@@ -2,9 +2,9 @@
 
 Two rules, both about not deciding for somebody:
 
-**Offered, not done.** Activating the QuillLite profile is the moment the
+**Offered, not done.** Activating the QUILL Lite profile is the moment the
 question is worth asking and exactly the wrong moment to answer it: the person's
-QuillLite abbreviations and dictionary are months of work, and adopting them
+QUILL Lite abbreviations and dictionary are months of work, and adopting them
 silently is the behaviour ``quill/core/lite/paths.py`` refuses on principle.
 
 **Described first.** "It copied your settings" is not something a listener can

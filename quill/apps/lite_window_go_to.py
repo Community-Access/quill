@@ -5,7 +5,7 @@ its own module for the same reason the dialog earns its own window: going
 *somewhere* is one idea, and it had been three -- a line number here, a bookmark
 list on Alt+Shift+G, a heading list on Ctrl+Alt+L. The dialog itself is shared
 (:mod:`quill.ui.go_to_dialog`) so QUILL can open the same one; this is
-QuillLite's half, which is answering "what places does this document have?".
+QUILL Lite's half, which is answering "what places does this document have?".
 
 ``_go_to`` stays next door with the location ring it feeds. Everything here
 *decides where*; that one does the moving.
@@ -31,7 +31,7 @@ class DocumentGoToMixin:
         and go straight to their own list, which is the faster route when you
         know which kind you want; this is the one to press when you do not.
 
-        No Page kind here. QuillLite has no pagination model, and a greyed row
+        No Page kind here. QUILL Lite has no pagination model, and a greyed row
         for a thing the product does not do is a row to walk past forever --
         the dialog shows the kinds it is given.
         """

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QuillLite -- sign-off checklist</title>
+  <title>QUILL Lite -- sign-off checklist</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -196,7 +196,7 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
-<h1 id="quilllite--sign-off-checklist">QuillLite – sign-off
+<h1 id="quill-lite--sign-off-checklist">QUILL Lite – sign-off
 checklist</h1>
 <p>One pass, top to bottom, ticking boxes. Every step says exactly what
 to press, exactly what to type, and the one thing that decides pass or
@@ -208,7 +208,7 @@ PRD</a> and <a
 href="../../standalone/quilllite/docs/release-notes-1.0.md">the release
 notes</a>.</p>
 <p><strong>Why this file exists.</strong> Everything an automated test
-can answer about QuillLite is already answered: the wx-free core suites
+can answer about QUILL Lite is already answered: the wx-free core suites
 (<code>tests/unit/core/lite</code>, 204 tests), the behavioural coverage
 gate over every handler in its command table (198 today, none of them
 shape-only), the F1 audit, the access-key and over-announce gates, the
@@ -223,13 +223,14 @@ true today.</p>
 <h2 id="before-you-start-3-minutes">Before you start (3 minutes)</h2>
 <ul>
 <li>Install or launch the build under test. Note the version from
-<strong>Help &gt; About QuillLite</strong>:
+<strong>Help &gt; About QUILL Lite</strong>:
 <code>____________</code></li>
 <li>Have a screen reader running and speaking (JAWS or NVDA). Note
 which, and its version: <code>____________</code></li>
-<li>QuillLite keeps everything in <code>%LOCALAPPDATA%\QuillLite</code>,
-separate from QUILL’s <code>%APPDATA%\Quill</code>. For a clean run,
-rename that folder first; to keep your real one, take a copy.</li>
+<li>QUILL Lite keeps everything in
+<code>%LOCALAPPDATA%\QuillLite</code>, separate from QUILL’s
+<code>%APPDATA%\Quill</code>. For a clean run, rename that folder first;
+to keep your real one, take a copy.</li>
 <li><strong>Fail means:</strong> it did not happen, or it happened
 silently, or what you heard differs from what this file quotes. Write
 down what you actually heard – “nothing” and “the wrong thing” are
@@ -276,16 +277,16 @@ checked – so it is checked on every pass, by hand, in the folder.</p>
 and where focus lands (5 min)</h2>
 <p><strong>L-01. The window announces itself as a document</strong></p>
 <ul>
-<li>Do: launch QuillLite with nothing open.</li>
+<li>Do: launch QUILL Lite with nothing open.</li>
 <li>Pass: you hear a window title containing <strong>“1: Untitled -
-QuillLite (plain text)”</strong>. The number leads.</li>
+QUILL Lite (plain text)”</strong>. The number leads.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
 <p><strong>L-02. Focus starts in the document</strong></p>
 <ul>
-<li>Do: launch QuillLite, do not touch anything, type
+<li>Do: launch QUILL Lite, do not touch anything, type
 <code>hello</code>.</li>
 <li>Pass: the letters go into the document. You did not have to Tab
 first, and the reader announced the edit control, not a button.</li>
@@ -312,12 +313,12 @@ document is still open.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
-<p><strong>L-05. Alt+Tab shows QuillLite once, and the Window menu shows
-both</strong></p>
+<p><strong>L-05. Alt+Tab shows QUILL Lite once, and the Window menu
+shows both</strong></p>
 <ul>
 <li>Do: press <strong>Alt+Tab</strong>, then come back. Open the
 <strong>Window</strong> menu (Alt+W).</li>
-<li>Pass: Alt+Tab lists QuillLite <strong>once</strong> (this is
+<li>Pass: Alt+Tab lists QUILL Lite <strong>once</strong> (this is
 expected – documents are inside one window). The Window menu lists
 <strong>1</strong> and <strong>2</strong>, each with its Alt+digit, and
 a mark on the one you are in.</li>
@@ -798,7 +799,7 @@ min)</h2>
 <p><strong>L-48. Paste Text Only strips formatting</strong></p>
 <ul>
 <li>Do: copy some formatted text from a web page or Word. In a
-<strong>rich text</strong> QuillLite document press
+<strong>rich text</strong> QUILL Lite document press
 <strong>Ctrl+V</strong>, then undo, then
 <strong>Ctrl+Shift+V</strong>.</li>
 <li>Pass: Ctrl+V brings the formatting; Ctrl+Shift+V brings the words
@@ -809,7 +810,7 @@ only, and says how many characters.</li>
 </ul>
 <p><strong>L-49. The copy tray remembers across a restart</strong></p>
 <ul>
-<li>Do: select text, <strong>Ctrl+Alt+Y</strong>. Close QuillLite
+<li>Do: select text, <strong>Ctrl+Alt+Y</strong>. Close QUILL Lite
 entirely. Reopen. Press <strong>Ctrl+Alt+V</strong>.</li>
 <li>Pass: the slot is still there, with a readable preview, and
 pastes.</li>
@@ -844,8 +845,8 @@ I – Recovery and sessions (6 min, includes a deliberate kill)</h2>
 <ul>
 <li>Do: type several paragraphs into a new document. Do
 <strong>not</strong> save. Wait 40 seconds (the copy is taken every
-thirty seconds, as QUILL’s is). Kill QuillLite from Task Manager. Reopen
-it.</li>
+thirty seconds, as QUILL’s is). Kill QUILL Lite from Task Manager.
+Reopen it.</li>
 <li>Pass: the text is back, in its own window, marked unsaved, and you
 hear <strong>“Recovered unsaved work from the last
 session”</strong>.</li>
@@ -855,7 +856,7 @@ session”</strong>.</li>
 </ul>
 <p><strong>L-53. Saving clears the recovery copy</strong></p>
 <ul>
-<li>Do: save that recovered document, close QuillLite normally,
+<li>Do: save that recovered document, close QUILL Lite normally,
 reopen.</li>
 <li>Pass: nothing is offered back.
 <code>%LOCALAPPDATA%\QuillLite\recovery</code> is empty.</li>
@@ -865,7 +866,7 @@ reopen.</li>
 </ul>
 <p><strong>L-54. Last session’s documents reopen</strong></p>
 <ul>
-<li>Do: open two saved files. Close QuillLite with
+<li>Do: open two saved files. Close QUILL Lite with
 <strong>Ctrl+Q</strong>. Reopen.</li>
 <li>Pass: both are back, numbered in the same order.</li>
 </ul>
@@ -875,7 +876,7 @@ reopen.</li>
 <p><strong>L-55. Naming a file on the command line wins over the
 session</strong></p>
 <ul>
-<li>Do: close QuillLite. Open a <code>.txt</code> from Explorer.</li>
+<li>Do: close QUILL Lite. Open a <code>.txt</code> from Explorer.</li>
 <li>Pass: that file opens, and last session’s documents do
 <strong>not</strong> bury it.</li>
 </ul>
@@ -1005,7 +1006,7 @@ things that must never happen (3 min)</h2>
 <li>Do: use the app normally for two minutes – save, format, search,
 switch documents.</li>
 <li>Pass: you never hear the same sentence twice in a row, and you never
-hear QuillLite repeat a window title or control name your reader has
+hear QUILL Lite repeat a window title or control name your reader has
 just said.</li>
 </ul>
 <ul class="task-list">
@@ -1041,11 +1042,11 @@ each.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
-<p><strong>L-70. QuillLite does not create a QUILL data
+<p><strong>L-70. QUILL Lite does not create a QUILL data
 folder</strong></p>
 <ul>
-<li>Do: on a machine (or profile) with no QUILL installed, run
-QuillLite, save a file, quit.</li>
+<li>Do: on a machine (or profile) with no QUILL installed, run QUILL
+Lite, save a file, quit.</li>
 <li>Pass: <code>%APPDATA%\Quill</code> does <strong>not</strong> exist.
 Only <code>%LOCALAPPDATA%\QuillLite</code>.</li>
 </ul>
@@ -1054,7 +1055,7 @@ Only <code>%LOCALAPPDATA%\QuillLite</code>.</li>
 </ul>
 <p><strong>L-71. Uninstalling leaves your work alone</strong></p>
 <ul>
-<li>Do: uninstall QuillLite.</li>
+<li>Do: uninstall QUILL Lite.</li>
 <li>Pass: <code>%LOCALAPPDATA%\QuillLite</code> is still there, with
 settings and any recovery files.</li>
 </ul>
@@ -1118,7 +1119,7 @@ went</strong></p>
 <strong>Ctrl+F7</strong> from the top again. (<strong>Alt+F7</strong> is
 Word’s key for <em>Next Misspelling</em> and is an alias for Ctrl+F7
 here – it does not teach anything.)</li>
-<li>Pass: you hear <strong>“Added … to your QuillLite
+<li>Pass: you hear <strong>“Added … to your QUILL Lite
 dictionary”</strong> – naming <em>which</em> dictionary – and the taught
 word is no longer found.</li>
 </ul>
@@ -1301,7 +1302,7 @@ invisible without checking both.</li>
 <li>Do: with your screen reader’s modifier <em>not</em> set to Insert
 (or using the laptop layout), press <strong>Insert</strong> once.
 <strong>F6</strong>, arrow to <strong>Typing Mode</strong>.</li>
-<li>Pass: the cell has changed. QuillLite does not claim the Insert key
+<li>Pass: the cell has changed. QUILL Lite does not claim the Insert key
 – the editing control answers it – but the cell must follow it.</li>
 <li>If your reader uses Insert as its modifier, skip and note “skipped”:
 that is the expected experience and not a failure.</li>
@@ -1401,10 +1402,10 @@ installer. Extract it to a USB stick or any folder, run
 close.</li>
 <li>Pass: <code>data\QuillLite</code> inside the bundle now has a
 <code>settings.json</code>, and <strong>no</strong>
-<code>QuillLite</code> folder has appeared in
+<code>QUILL Lite</code> folder has appeared in
 <code>%LOCALAPPDATA%</code> on that machine.</li>
 <li>This is the one step worth running on a computer that has never had
-QuillLite on it, because that is the only place the old behaviour was
+QUILL Lite on it, because that is the only place the old behaviour was
 visible.</li>
 </ul>
 <ul class="task-list">
@@ -1455,7 +1456,7 @@ reason</strong></p>
 reader uses Insert as its modifier, press it twice quickly or use the
 laptop layout.)</li>
 <li>Pass: you hear that Insert is the key NVDA and JAWS use as their own
-modifier and QuillLite never binds it. <strong>Not</strong> a beep, and
+modifier and QUILL Lite never binds it. <strong>Not</strong> a beep, and
 <strong>not</strong> silence.</li>
 <li>Fail if anything at all is assigned, or if nothing is said.</li>
 </ul>
@@ -1520,8 +1521,8 @@ is the trade this profile exists to avoid.</li>
 <p><strong>L-105. The status bar does not cut itself off on a narrow
 window</strong></p>
 <ul>
-<li>Do: make the window narrow – narrow enough that twelve cells cannot
-fit on one line. Read the bottom line of the window with
+<li>Do: make the window narrow – narrow enough that thirteen cells
+cannot fit on one line. Read the bottom line of the window with
 <strong>Insert+Page Down</strong>.</li>
 <li>Pass: nothing is cut off. The bar is two (or three) lines tall
 instead, and every cell reads in full.</li>
@@ -1565,9 +1566,9 @@ release notes.</li>
 </ul>
 <p><strong>L-108. The daily look is silent</strong></p>
 <ul>
-<li>Do: with “Look for updates when QuillLite starts” ticked in
-Settings, close QuillLite and open it again. Then unplug the network and
-open it again.</li>
+<li>Do: with “Look for updates when QUILL Lite starts” ticked in
+Settings, close QUILL Lite and open it again. Then unplug the network
+and open it again.</li>
 <li>Pass: nothing is said either time – no “checking”, no “up to date”,
 no network error. A launch is not the place to report that nothing
 happened.</li>
@@ -1592,15 +1593,14 @@ either way.</li>
 <p><strong>L-110. Insert Special Character reads back what it
 inserted</strong></p>
 <ul>
-<li>Do: <strong>Edit &gt; Insert &gt; Special Character…</strong>
-(Ctrl+Shift+F2). Focus lands in the search box. Type
-<code>em dash</code>, press Enter to move into the list, and press Enter
-again on the first row.</li>
+<li>Do: <strong>Insert &gt; Special Character…</strong> (Ctrl+Shift+F2).
+Focus lands in the search box. Type <code>em dash</code>, press Enter to
+move into the list, and press Enter again on the first row.</li>
 <li>Pass: the reader names the dialog, then the search box; Enter moves
 to the list and the row reads as its character, its name and its code
-point; the second Enter closes the dialog and QuillLite says “Inserted”,
-the character, U+2014 and “Em dash”. Escape at any point says nothing
-and inserts nothing.</li>
+point; the second Enter closes the dialog and QUILL Lite says
+“Inserted”, the character, U+2014 and “Em dash”. Escape at any point
+says nothing and inserts nothing.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
@@ -1686,7 +1686,7 @@ it. Press Ctrl+Alt+F3 again.</li>
 heading is then silent on arrival; the second says “Headings announced
 on arrival” and it comes back. <strong>View ▸ Announce Headings</strong>
 shows a tick that matches.</li>
-<li>Pass: closing and reopening QuillLite remembers the choice.</li>
+<li>Pass: closing and reopening QUILL Lite remembers the choice.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
@@ -1728,7 +1728,7 @@ that you actually hear “Bulleted list, 4 items” and hear it once.</p>
 <strong><code>notes.md</code></strong>,
 <strong><code>page.html</code></strong> and
 <strong><code>build.py</code></strong>, each containing a line of
-ordinary text. Create them from QuillLite with
+ordinary text. Create them from QUILL Lite with
 <strong>Ctrl+Shift+S</strong> if you have none.</p>
 <h3 id="the-language-and-the-ring">The language, and the ring</h3>
 <p><strong>L-118. The file name decides the language, and the status bar
@@ -2462,7 +2462,7 @@ here are the kind you only notice a week later.</p>
 it. Open the same folder in another program that locks files, or make
 the target read-only – the simplest way is to save once as
 <code>locked.txt</code>, then set that file read-only in Explorer. Now
-in QuillLite press <strong>Ctrl+Shift+S</strong>, choose <strong>Text
+in QUILL Lite press <strong>Ctrl+Shift+S</strong>, choose <strong>Text
 files</strong>, and save over <code>locked.txt</code>. Answer
 <strong>Yes</strong> to “Saving as plain text removes all
 formatting”.</li>
@@ -2536,7 +2536,7 @@ endings</strong></p>
 <li>Do: open a <code>.txt</code> saved with <strong>Unix</strong> line
 endings (any file from a git checkout). Type a sentence but do
 <strong>not</strong> save. Wait forty seconds so the copy-aside has run.
-Now end the QuillLite process from Task Manager. Start QuillLite again
+Now end the QUILL Lite process from Task Manager. Start QUILL Lite again
 and let it restore the document. Press <strong>Ctrl+S</strong>.</li>
 <li>Pass: press <strong>F6</strong> and the <strong>Line
 Endings</strong> cell reads <strong>LF</strong> before you save, and the
@@ -2552,10 +2552,10 @@ back.</li>
 <p><strong>L-180. A recovery that fails takes nothing</strong></p>
 <ul>
 <li>Do: after a crash as in L-179, and <strong>before</strong> starting
-QuillLite, open <code>%LOCALAPPDATA%\QuillLite\recovery</code> and make
+QUILL Lite, open <code>%LOCALAPPDATA%\QuillLite\recovery</code> and make
 the copy’s content file unreadable – the simplest way is to open it in
 another program that holds an exclusive lock, or deny yourself read
-access in its Properties ▸ Security. Now start QuillLite.</li>
+access in its Properties ▸ Security. Now start QUILL Lite.</li>
 <li>Pass: you hear that it could not be recovered and is still saved
 aside. The window is <strong>untitled</strong> – it has not taken the
 original file’s name – and it is not marked as changed. The copy is
@@ -2638,7 +2638,7 @@ The document said it was rich text and nothing in it was.</li>
 <p><strong>L-186. A plain text file is not read as markup</strong></p>
 <ul>
 <li>Do: in a <strong>plain text</strong> document
-(<code>list.txt</code>, with the Language cell reading Plain text) type
+(<code>list.txt</code>, with the Format cell reading Plain text) type
 <code>buy 2 * 3 eggs</code>. Ring to rich text.</li>
 <li>Pass: the line is unchanged, character for character. The asterisk
 is an asterisk.</li>
@@ -2666,7 +2666,7 @@ used to forget the file altogether.</li>
 <p><strong>L-188. The warning names what will not survive</strong></p>
 <ul>
 <li>Do: open an <code>.rtf</code> that contains a <strong>table</strong>
-(make one in WordPad or Word and save it as RTF). Open it in QuillLite
+(make one in WordPad or Word and save it as RTF). Open it in QUILL Lite
 and ring out of rich text.</li>
 <li>Pass: the question names it – “Switching to plain text cannot carry:
 tables”.</li>
@@ -2702,9 +2702,8 @@ put the cursor straight back where it came from.</li>
 (paragraph) and <strong>Ctrl+Space</strong> (sentence).</li>
 <li>Pass: each says what it took and how many <strong>words</strong> –
 “Selected line, 3 words”. No character counts.</li>
-<li>Fail if any of them reports characters. QUILL says words and
-QuillLite said both, so the same key reported the same fact two
-ways.</li>
+<li>Fail if any of them reports characters. QUILL says words and QUILL
+Lite said both, so the same key reported the same fact two ways.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
@@ -2773,7 +2772,7 @@ moving.</li>
 </ul>
 <h3 id="the-tier-2-and-tier-3-crossings-2026-09-17">The Tier 2 and Tier
 3 crossings (2026-09-17)</h3>
-<p>Five things QUILL had and QuillLite did not. Each is shared code
+<p>Five things QUILL had and QUILL Lite did not. Each is shared code
 given a door here, so what these check is the door and the sentence, not
 the engine.</p>
 <p><strong>L-196. Extend Selection Mode is a Shift that stays
@@ -2959,7 +2958,7 @@ bold word and a bullet list, print to PDF (or to paper).</li>
 <li>Pass: the heading is larger and bold on the page, the bold word is
 bold, and the list has bullets.</li>
 <li>Fail if everything is one size. That was true until this version,
-and it made QuillLite’s printed output worse than its screen.</li>
+and it made QUILL Lite’s printed output worse than its screen.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
@@ -2995,8 +2994,8 @@ carries on with the ones above.</li>
 once</strong></p>
 <ul>
 <li>Do: with <strong>Use QUILL’s dictionary</strong> on in Preferences
-and both apps open, teach a made-up word in QUILL. Come back to
-QuillLite, type the same word and wait for the live check.</li>
+and both apps open, teach a made-up word in QUILL. Come back to QUILL
+Lite, type the same word and wait for the live check.</li>
 <li>Pass: it is not reported. No restart needed.</li>
 </ul>
 <ul class="task-list">
@@ -3029,7 +3028,7 @@ error that arrives silently.</li>
 <p><strong>L-216. Ctrl+Alt+F1 opens the lessons</strong></p>
 <ul>
 <li>Do: press <strong>Ctrl+Alt+F1</strong>.</li>
-<li>Pass: a <strong>QuillLite Tutorials</strong> window opens, listing
+<li>Pass: a <strong>QUILL Lite Tutorials</strong> window opens, listing
 eight lessons in two tracks. Arrowing reads each lesson’s title, how
 long it takes, and what you will be able to do at the end.</li>
 </ul>
@@ -3084,7 +3083,7 @@ it.</li>
 <h3 id="the-family-keymap-second-pass-2026-09-17">The family keymap,
 second pass (2026-09-17)</h3>
 <p>Three keys changed meaning in <strong>both</strong> editors, so these
-are worth a listen in QuillLite even though the work was mostly QUILL’s
+are worth a listen in QUILL Lite even though the work was mostly QUILL’s
 side.</p>
 <p><strong>L-221. Ctrl+Space takes the sentence</strong></p>
 <ul>
@@ -3097,10 +3096,10 @@ now; it used to select a “chunk” there.</li>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
 </ul>
-<p><strong>L-222. Nothing else moved in QuillLite</strong></p>
+<p><strong>L-222. Nothing else moved in QUILL Lite</strong></p>
 <ul>
 <li>Do: read Edit ▸ Selection top to bottom.</li>
-<li>Pass: every key is the one it was. QuillLite’s selection keys were
+<li>Pass: every key is the one it was. QUILL Lite’s selection keys were
 already the family’s; what changed was QUILL coming into line with
 them.</li>
 </ul>
@@ -3111,16 +3110,17 @@ them.</li>
 <h2 id="block-r--the-2026-09-18-additions-10-min">Block R – The
 2026-09-18 additions (10 min)</h2>
 <p>The family parity program. Most of it landed on QUILL’s side; these
-are the QuillLite halves, and the two that are shared behave identically
-in both by design – so if one of these fails here, check QUILL before
-filing it as QuillLite’s.</p>
+are the QUILL Lite halves, and the two that are shared behave
+identically in both by design – so if one of these fails here, check
+QUILL before filing it as QUILL Lite’s.</p>
 <h3 id="the-file-encoding-and-line-endings-window">The File Encoding and
 Line Endings window</h3>
 <p><strong>L-223. It shows what this file actually is</strong></p>
 <ul>
 <li>Do: make a file whose lines end with a single CR (classic Mac);
 writing <code>b"one&lt;CR&gt;two&lt;CR&gt;"</code> as raw bytes is
-enough. Open it in QuillLite and press <strong>Ctrl+Alt+E</strong>.</li>
+enough. Open it in QUILL Lite and press
+<strong>Ctrl+Alt+E</strong>.</li>
 <li>Pass: the Line Endings list starts on a row saying <strong>keep as
 is</strong>, naming CR.</li>
 <li>Fail if it reads “CRLF” or “LF”. Until 2026-09-18 it read CRLF – the
@@ -3146,7 +3146,7 @@ byte size, or reopen it – the line count must not have changed.</li>
 afterwards</strong></p>
 <ul>
 <li>Do: save a file as UTF-16 big-endian with a BOM (Notepad’s “Unicode
-big endian” will do). Open it in QuillLite, change nothing, press
+big endian” will do). Open it in QUILL Lite, change nothing, press
 <strong>Ctrl+S</strong>.</li>
 <li>Pass: the first two bytes are still <code>FE FF</code>.</li>
 <li>Fail if they are <code>FF FE</code> – that is little-endian, every
@@ -3222,7 +3222,7 @@ Format part says so) and press <strong>Ctrl+U</strong>. Then switch to
 HTML and press <strong>Ctrl+E</strong>.</li>
 <li>Pass: <strong>“… in a Markdown document.”</strong> and <strong>“… in
 an HTML document.”</strong></li>
-<li>Fail on <strong>“a html document”</strong>: QuillLite lower-cased
+<li>Fail on <strong>“a html document”</strong>: QUILL Lite lower-cased
 its own Format label before building the sentence, so an initialism lost
 the article it needs when spoken aloud. Both editors now name a kind of
 document from one shared table.</li>
@@ -3266,7 +3266,7 @@ press the next key and the spelling stops unheard.</li>
 They are aliases: <strong>Ctrl+Shift+S</strong>, <strong>Ctrl+O</strong>
 and <strong>Ctrl+P</strong> still work.</li>
 <li>Fail if any of the three does nothing. QUILL carried all three and
-QuillLite carried none, which is a habit that works in one editor and
+QUILL Lite carried none, which is a habit that works in one editor and
 not the other.</li>
 </ul>
 <ul class="task-list">
@@ -3274,16 +3274,16 @@ not the other.</li>
 </ul>
 <h3 id="after-quill-brings-your-setup-across">After QUILL brings your
 setup across</h3>
-<p>Run these only if you have also run QUILL’s <strong>Bring My
-QuillLite Settings</strong> (<strong>Alt+Shift+F11</strong> there) on
-the same machine, and answered yes.</p>
-<p><strong>L-234. QuillLite is reading the shared stores from
+<p>Run these only if you have also run QUILL’s <strong>Bring My QUILL
+Lite Settings</strong> (<strong>Alt+Shift+F11</strong> there) on the
+same machine, and answered yes.</p>
+<p><strong>L-234. QUILL Lite is reading the shared stores from
 QUILL</strong></p>
 <ul>
-<li>Do: in QuillLite, open its preferences and find the two sharing
+<li>Do: in QUILL Lite, open its preferences and find the two sharing
 switches (abbreviations, personal dictionary).</li>
 <li>Pass: both are <strong>on</strong>. QUILL turned them on when it
-took the copies, because QUILL holding your words while QuillLite still
+took the copies, because QUILL holding your words while QUILL Lite still
 reads its own copy is what makes a “shared” store look broken.</li>
 </ul>
 <ul class="task-list">
@@ -3292,7 +3292,7 @@ reads its own copy is what makes a “shared” store look broken.</li>
 <p><strong>L-235. A word added in one editor is there in the
 other</strong></p>
 <ul>
-<li>Do: in QUILL, add an abbreviation. Restart QuillLite and expand
+<li>Do: in QUILL, add an abbreviation. Restart QUILL Lite and expand
 it.</li>
 <li>Pass: it expands. One set of abbreviations, both editors.</li>
 </ul>
@@ -3301,8 +3301,8 @@ it.</li>
 </ul>
 <p><strong>L-236. Nothing of yours was replaced</strong></p>
 <ul>
-<li>Do: check an abbreviation you had in QuillLite before the merge, and
-one you had in QUILL.</li>
+<li>Do: check an abbreviation you had in QUILL Lite before the merge,
+and one you had in QUILL.</li>
 <li>Pass: both are still there, with their own expansions. QUILL wins a
 collision and nothing already in QUILL is overwritten, but neither side
 loses an entry the other did not have.</li>
@@ -3317,12 +3317,11 @@ session (6 min)</h2>
 here is about the answer being <strong>partial</strong> and about Forget
 being <strong>safe</strong>: those are the two claims the window makes,
 and a listener cannot check either by looking.</p>
-<p>Set this up once: open three <code>.txt</code> files, close
-QuillLite, then delete or rename one of the three from outside the
-app.</p>
+<p>Set this up once: open three <code>.txt</code> files, close QUILL
+Lite, then delete or rename one of the three from outside the app.</p>
 <p><strong>L-237. Three documents means you are asked</strong></p>
 <ul>
-<li>Do: launch QuillLite.</li>
+<li>Do: launch QUILL Lite.</li>
 <li>Pass: a window titled <strong>Reopen Last Session</strong>, whose
 first line says “3 documents from last time, 1 of which is no longer
 there.”</li>
@@ -3390,7 +3389,7 @@ that is not written is a Forget that did not happen.</li>
 <p><strong>L-243. One or two documents still open without a
 question</strong></p>
 <ul>
-<li>Do: with two documents open, close QuillLite and relaunch.</li>
+<li>Do: with two documents open, close QUILL Lite and relaunch.</li>
 <li>Pass: both open, no window. The chooser is for the cases where the
 answer is not obvious, and two files that are still there is not one of
 them.</li>
@@ -3453,9 +3452,9 @@ message chain under it faults. Both halves are invisible until you
 listen: one is a line number, the other is your document.</p>
 <p>Run this block with a screen reader speaking, and with
 <strong>Braille selection support</strong> left at its default (on). If
-it has been turned off, turn it back on and restart QuillLite – the flag
-is set once, when the editor is built, so the setting does nothing until
-the editor is rebuilt.</p>
+it has been turned off, turn it back on and restart QUILL Lite – the
+flag is set once, when the editor is built, so the setting does nothing
+until the editor is rebuilt.</p>
 <p><strong>L-247. The final empty line is blank</strong></p>
 <ul>
 <li>Do: in a new document, type <code>This is a test.</code> then press
@@ -3501,7 +3500,7 @@ app</strong></p>
 <li>Do: open and close ten documents in a row – <strong>Ctrl+O</strong>,
 <strong>Ctrl+W</strong>, ten times – typing a character into each before
 you close it. Then repeat L-247.</li>
-<li>Pass: QuillLite is still running, nothing was lost, and the final
+<li>Pass: QUILL Lite is still running, nothing was lost, and the final
 empty line is still blank. Each editor installs a subclass and each
 close takes one off; a mistake in that pairing does not misreport
 anything, it ends the process with whatever was unsaved in it.</li>
@@ -3515,7 +3514,7 @@ how many documents in it happened.</li>
 quietly</strong></p>
 <ul>
 <li>Do: nothing to trigger this – read it so you recognise it. Should
-the message chain fault, QuillLite detaches from that one control and
+the message chain fault, QUILL Lite detaches from that one control and
 logs a warning naming the message number, rather than going down.</li>
 <li>Pass: the symptom to report is <strong>one</strong> editor that has
 started repeating the last line on its final empty line while the rest

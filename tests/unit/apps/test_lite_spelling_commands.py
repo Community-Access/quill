@@ -123,7 +123,7 @@ def test_a_miss_says_how_many_are_the_other_way(spelled):
 
     It is a lie when seven are sitting behind the caret, and the fix -- press
     the other key -- is exactly what the bare sentence does not say. QUILL has
-    counted the other direction since #9; QuillLite said nothing (bad.md S9).
+    counted the other direction since #9; QUILL Lite said nothing (bad.md S9).
     """
     win = spelled("the quick brxwn fox", cursor=19)
     win.cmd_next_misspelling()
@@ -179,7 +179,7 @@ def test_the_word_the_caret_is_already_on_is_not_offered_again(spelled):
     The cost, recorded here rather than discovered: with the caret at position 0
     of a document whose first word is wrong, Ctrl+F7 goes to the second one. F7
     reviews from the top, and that is the command for "check the whole thing".
-    Shared with QUILL (quill.core.spellcheck), so it is not QuillLite's to change
+    Shared with QUILL (quill.core.spellcheck), so it is not QUILL Lite's to change
     alone.
     """
     win = spelled("teh quick brxwn fox", cursor=0)
@@ -207,7 +207,7 @@ def test_add_word_says_which_of_the_two_dictionaries_it_went_to(spelled):
     win = spelled("the quick brxwn fox", cursor=13)
     win.app.settings.share_quill_dictionary = False
     win.cmd_add_word_to_dictionary()
-    assert "your QuillLite dictionary" in win.announcements[-1]
+    assert "your QUILL Lite dictionary" in win.announcements[-1]
 
 
 def test_add_word_names_the_shared_dictionary_when_sharing_is_on(spelled, tmp_path, monkeypatch):
@@ -230,7 +230,7 @@ def test_add_word_names_the_shared_dictionary_when_sharing_is_on(spelled, tmp_pa
     win.app.settings.share_quill_dictionary = True
     win.cmd_add_word_to_dictionary()
     assert "QUILL's shared dictionary" in win.announcements[-1]
-    # And it really went there, rather than into QuillLite's own folder.
+    # And it really went there, rather than into QUILL Lite's own folder.
     taught = tmp_path / "quill-data" / "dictionaries" / "personal.json"
     assert taught.is_file() and "brxwn" in taught.read_text(encoding="utf-8")
 

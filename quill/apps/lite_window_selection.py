@@ -30,7 +30,7 @@ commands that move the caret by changing the selection themselves. Find a word,
 then Shift+F8, and you have taken everything from the marker to the match --
 which live extension could never have done, because Find's own selection was
 the thing being overwritten. QUILL has always worked this way
-(``main_frame_selection_span.py``); this is QuillLite catching up to it, by
+(``main_frame_selection_span.py``); this is QUILL Lite catching up to it, by
 deleting the part that was extra.
 
 **Structure.** Take the whole word, line, paragraph, sentence or block in one
@@ -79,7 +79,7 @@ class DocumentSelectionMixin:
         #: The last completed selection, for Reselect.
         self._last_selection: tuple[int, int] | None = None
         #: Places you can bounce back to. The **shared** ring since 2026-09-17
-        #: (bad.md L6): QuillLite had a plain list of its own, capped at ten and
+        #: (bad.md L6): QUILL Lite had a plain list of its own, capped at ten and
         #: with no de-duplication, beside a core one capped at twenty that
         #: de-dupes. Two implementations of something that simple are how two
         #: editors drift without anybody deciding to.
@@ -163,7 +163,7 @@ class DocumentSelectionMixin:
         press, which is what makes Shift+Down unusable for taking four
         paragraphs.
 
-        QuillLite had this, in a form that could not work: an anchor plus a live
+        QUILL Lite had this, in a form that could not work: an anchor plus a live
         selection stretched on every navigation key-**up**, which on wxMSW
         collapses to the edge and stops, so the caret never advanced past one
         character. It was deleted in ``d20fabe``. What it takes now is QUILL's
@@ -501,7 +501,7 @@ class DocumentSelectionMixin:
         """Say how much was taken, in the shape both editors use (bad.md L14).
 
         The sentence itself is :func:`quill.core.selection.describe_selection`.
-        QUILL said "Selected paragraph, 41 words" and QuillLite said "Selected
+        QUILL said "Selected paragraph, 41 words" and QUILL Lite said "Selected
         paragraph, 412 characters, 41 words" -- neither wrong, and having two was,
         because somebody who uses both had to know which product they were in
         before they could parse the answer.
@@ -524,7 +524,7 @@ class DocumentSelectionMixin:
         keystroke: the search is over the whole document, and doing it per
         character typed would cost exactly what the document mirror exists to
         save. Clamping follows it, so a document that has got shorter cannot
-        hand back a position past its end -- QuillLite clamped on pop and QUILL
+        hand back a position past its end -- QUILL Lite clamped on pop and QUILL
         did not, which is one shrunken document giving two answers (bad.md L6).
         """
         text = self.control.GetValue()

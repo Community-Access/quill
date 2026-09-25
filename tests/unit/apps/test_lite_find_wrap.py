@@ -1,6 +1,6 @@
 """Whether a search carries on from the other end, and how a miss is reported.
 
-QuillLite always wrapped, in both directions, with no way to say otherwise. That
+QUILL Lite always wrapped, in both directions, with no way to say otherwise. That
 is not a preference about tidiness. Somebody working down a document by F3 is
 using the *end* of the search as the signal that they have finished; a search that
 silently starts again at the top has moved them somewhere they did not ask to go,
@@ -116,7 +116,7 @@ def test_running_out_backwards_names_the_start(lite_window) -> None:
 
 
 def test_the_first_miss_is_spoken_even_on_the_tone_default(lite_window) -> None:
-    """Reported: "QuillLite made a sound but did not announce the error, is
+    """Reported: "QUILL Lite made a sound but did not announce the error, is
     this due to a setting?" It was, and the setting was answering the wrong
     press. The one that starts a run is somebody asking a question, and a tone
     means "not found" only to a person who already knows it does."""

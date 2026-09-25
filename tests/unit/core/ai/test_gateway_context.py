@@ -1,7 +1,7 @@
 """What gets sent, and what never does.
 
 Every test here is about one of two promises the feature makes to somebody who
-cannot see the screen: that QuillLite sends what they meant, and that it never
+cannot see the screen: that QUILL Lite sends what they meant, and that it never
 quietly sends their whole document.
 """
 

@@ -1,4 +1,4 @@
-"""Which number a new QuillLite document gets, and why a closed one's comes back.
+"""Which number a new QUILL Lite document gets, and why a closed one's comes back.
 
 Reported by a user: open a window, close it, open another, and the new one is
 document 2 rather than document 1 again. The counter only ever went up.

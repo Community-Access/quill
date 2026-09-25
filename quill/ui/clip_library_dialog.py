@@ -176,7 +176,7 @@ class ClipLibraryDialog:
         elif not query:
             # An empty list says nothing at all, and the library is off by
             # default on purpose -- so somebody who has just copied four things
-            # reads the silence as a broken feature. Reported against QuillLite;
+            # reads the silence as a broken feature. Reported against QUILL Lite;
             # the same sentence, from the same place, so the two editors cannot
             # explain one thing two ways.
             if self._empty_message:
@@ -222,7 +222,7 @@ class ClipLibraryDialog:
 
         Leaving the dialog open would send the next keystroke to a list rather
         than to the text the person has just pasted into, so this closes --
-        which is also what QuillLite's Recent Clips does.
+        which is also what QUILL Lite's Recent Clips does.
         """
         index = self._selected_index()
         if index is None or self._paste_cb is None:

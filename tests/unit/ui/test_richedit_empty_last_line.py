@@ -1,7 +1,7 @@
 """The empty line after Enter must read as blank, not as the line above it.
 
 Type "This is a test.", press Enter, and ask a screen reader to read the current
-line. It should say "blank". For as long as QuillLite has existed it said "This
+line. It should say "blank". For as long as QUILL Lite has existed it said "This
 is a test." instead -- on every empty line at the end of every plain text
 document, which in a Notepad replacement is most of them.
 

@@ -1,13 +1,13 @@
-# QuillLite — User Guide
+# QUILL Lite — User Guide
 
-QuillLite is a text editor. It opens a file, lets you change it, and saves it
+QUILL Lite is a text editor. It opens a file, lets you change it, and saves it
 back exactly as it found it.
 
 If you have used Notepad or WordPad, almost every key you already know works
-here. Where QuillLite does something different, this guide says so, and says
+here. Where QUILL Lite does something different, this guide says so, and says
 why.
 
-You do not need to read this guide to use QuillLite. Start it, type, press
+You do not need to read this guide to use QUILL Lite. Start it, type, press
 **Ctrl+S**. Come back here when you want more.
 
 <!-- contents:start -->
@@ -43,15 +43,15 @@ same places; this list is here for reading through, and for the EPUB.
 - [Closing a lot of windows at once](#closing-a-lot-of-windows-at-once)
 - [Changing what a key does](#changing-what-a-key-does)
 - [Sounds](#sounds)
-- [Making QuillLite smaller (or larger)](#making-quilllite-smaller-or-larger)
+- [Making QUILL Lite smaller (or larger)](#making-quilllite-smaller-or-larger)
 - [Reopening what you had open](#reopening-what-you-had-open)
 - [Settings](#settings)
 - [Printing](#printing)
 - [Speech](#speech)
 - [AI help](#ai-help)
 - [Where your files are kept](#where-your-files-are-kept)
-- [Keeping QuillLite up to date](#keeping-quilllite-up-to-date)
-- [What QuillLite is not](#what-quilllite-is-not)
+- [Keeping QUILL Lite up to date](#keeping-quilllite-up-to-date)
+- [What QUILL Lite is not](#what-quilllite-is-not)
 - [Every key, in one table](#every-key-in-one-table)
 - [Getting help](#getting-help)
 
@@ -61,7 +61,7 @@ same places; this list is here for reading through, and for the EPUB.
 
 ## The first minute
 
-Start QuillLite and you get one window with one empty document in it, called
+Start QUILL Lite and you get one window with one empty document in it, called
 **1: Untitled**. Type. Press **Ctrl+S** when you want to keep it.
 
 That is the whole thing. The rest of this guide is optional.
@@ -69,11 +69,11 @@ That is the whole thing. The rest of this guide is optional.
 Three keys are worth knowing straight away:
 
 - **F1** tells you where you are. Press it anywhere — in your document, on a
-  button, in any window — and QuillLite says what that window is for and what
+  button, in any window — and QUILL Lite says what that window is for and what
   the thing you are on does.
 - **F6** takes you to the status bar, which is where the useful facts live.
   Arrow along it, press **Escape** to come back.
-- **Ctrl+F1** lists every key QuillLite has.
+- **Ctrl+F1** lists every key QUILL Lite has.
 - **Ctrl+Alt+F1** opens **Tutorials...**: nine short lessons that walk you
   through the things that are hard to work out by pressing keys.
 
@@ -83,10 +83,10 @@ Three keys are worth knowing straight away:
 
 The rest of this guide explains **why**. This section is the other half: what to
 press, in order, and what you should hear when it worked. Every key here is
-QuillLite's shipped key — if you have rebound something, **Ctrl+F1** is the list
+QUILL Lite's shipped key — if you have rebound something, **Ctrl+F1** is the list
 of what you actually have.
 
-Each recipe assumes nothing except that QuillLite is open.
+Each recipe assumes nothing except that QUILL Lite is open.
 
 ### Getting started
 
@@ -119,7 +119,7 @@ then what the thing you are focused on does.
 3. Read the step, press **Try it** if you would rather it did the step for you,
    then **Next**.
 
-**5. See every key QuillLite has.**
+**5. See every key QUILL Lite has.**
 
 **Ctrl+F1**. Type part of a name to narrow it.
 
@@ -248,7 +248,7 @@ and carries on from the top when it reaches the end.
 Press the **Applications key** (or **Shift+F10**). The first **Down** arrow
 lands on a suggestion. **Enter** replaces the word.
 
-**23. Teach QuillLite a word.**
+**23. Teach QUILL Lite a word.**
 
 **Ctrl+Alt+F9** with the cursor anywhere in the word.
 
@@ -287,7 +287,7 @@ lands on a suggestion. **Enter** replaces the word.
    has it.
 3. **Check for Problems** before you leave. **Save**.
 
-**29. Make QuillLite smaller.**
+**29. Make QUILL Lite smaller.**
 
 1. **Ctrl+Alt+F10** (**Customize Features**).
 2. Choose **Notepad** in the Profile box — every checkbox below moves there and
@@ -305,7 +305,7 @@ lands on a suggestion. **Enter** replaces the word.
 
 ## Your documents are numbered
 
-QuillLite opens your documents **inside one window**, and numbers them. Your
+QUILL Lite opens your documents **inside one window**, and numbers them. Your
 first is 1, the next is 2, and a number never changes for as long as that
 document is open — even if you close the one before it.
 
@@ -319,20 +319,20 @@ That number is how you get back to it:
 | **Window menu** | Every open document, by number, with a mark on the one you are in |
 
 **One thing to know.** Because your documents sit inside one window, they do
-**not** appear in Alt+Tab. Alt+Tab shows you *QuillLite*, once. The four ways
+**not** appear in Alt+Tab. Alt+Tab shows you *QUILL Lite*, once. The four ways
 above are how you move between documents. We would rather tell you that here
 than have you hunting for a document you thought you had lost.
 
 **Ctrl+N** makes a new document. **Ctrl+W** closes the one you are in.
 **Ctrl+Q** closes everything, asking about anything you have not saved.
 
-### Opening a second QuillLite
+### Opening a second QUILL Lite
 
-If you open a file from your file manager while QuillLite is already running, it
-opens in the QuillLite you already have. That is what keeps the numbering
+If you open a file from your file manager while QUILL Lite is already running, it
+opens in the QUILL Lite you already have. That is what keeps the numbering
 meaningful.
 
-If you really do want two separate QuillLite windows — one per monitor, say —
+If you really do want two separate QUILL Lite windows — one per monitor, say —
 start it with the extra option `--new-instance`.
 
 ---
@@ -347,7 +347,7 @@ paste in arrives as plain text. This is what a `.py`, a `.conf` or a log file
 is, and it is what you want when another program is going to read the file.
 
 **Markdown** is plain text that means something: `#` starts a heading, `-`
-starts a bullet, `**` makes a word bold. QuillLite writes those for you — see
+starts a bullet, `**` makes a word bold. QUILL Lite writes those for you — see
 [Formatting](#formatting) — and reads them back, so the caret can tell you you
 have arrived at a Heading 2 or walked into a list of five.
 
@@ -357,7 +357,7 @@ Markdown gets, HTML gets, in HTML's own spelling.
 **Rich text** is like WordPad. Bold, italic, headings, alignment, bullet points,
 line spacing. It saves as a Rich Text file, which Word and WordPad both open.
 
-QuillLite chooses the kind from the file's name, and it is only ever a first
+QUILL Lite chooses the kind from the file's name, and it is only ever a first
 guess:
 
 | The file is called | You get |
@@ -399,7 +399,7 @@ bullet list becomes `- ` lines. The document is then a Markdown document, and
 says so in the **Format** cell — so heading navigation, the headings list and
 the outline all still find everything they found a moment ago. If the document
 holds something Markdown cannot carry — a table, a picture, a footnote —
-QuillLite names it before it asks.
+QUILL Lite names it before it asks.
 
 Until version 1.0 this direction took the letters and left everything else. An
 afternoon of headings and bold became a wall of unmarked text, and the only
@@ -441,7 +441,7 @@ what the file is.
 
 **Ctrl+S** saves. **Ctrl+Shift+S** saves under a new name.
 
-QuillLite makes you one promise here: **open a file, change nothing, save it,
+QUILL Lite makes you one promise here: **open a file, change nothing, save it,
 and it is exactly the file you started with.** Nothing is quietly tidied up
 behind your back.
 
@@ -449,9 +449,9 @@ To keep that promise it remembers three things about every file it opens, and
 puts them back the same way:
 
 - **How the text is stored** — different files store letters and accents
-  differently, and QuillLite keeps whichever way yours already used.
+  differently, and QUILL Lite keeps whichever way yours already used.
 - **How the lines end** — files made on Windows and files made on other systems
-  mark the end of a line differently, and QuillLite does not change yours.
+  mark the end of a line differently, and QUILL Lite does not change yours.
 - **Whether the file ended with a blank line** — if it did not, it will not
   suddenly start.
 
@@ -470,7 +470,7 @@ Format...**. Neither list is applied until you save; the window says so.
 **Encoding** offers UTF-8 for anything new, UTF-8 with BOM for the Windows tools
 that expect one, UTF-16, and Windows-1252 for the older `.txt` files that are in
 it. **Line endings** offers CRLF, which is what Windows programs write and what a
-new QuillLite document is born with, and LF, which is what Unix, macOS and most
+new QUILL Lite document is born with, and LF, which is what Unix, macOS and most
 build tools expect.
 
 A file that arrived in something neither list offers keeps it. A UTF-16
@@ -486,7 +486,7 @@ file you had not otherwise touched swapped every pair of bytes in it.
 ### When a character will not fit
 
 Older files store only a limited set of letters. If you type an em dash, a
-curly quote or an emoji into a file that cannot hold one, QuillLite asks before
+curly quote or an emoji into a file that cannot hold one, QUILL Lite asks before
 it saves rather than after:
 
 > 3 characters cannot be saved as Windows-1252. Save as UTF-8 instead?
@@ -500,7 +500,7 @@ it saves rather than after:
 - **Cancel** stops, and nothing is written.
 
 Until version 1.0 there was no question. The characters became question marks,
-QuillLite said "Saved", and the only way to find out was to read that line
+QUILL Lite said "Saved", and the only way to find out was to read that line
 again.
 
 ### Saving an HTML page as Markdown
@@ -509,36 +509,36 @@ again.
 case that is a real conversion rather than a new name: if the document you are
 saving is **HTML**, the tags are turned into Markdown as it saves. A heading
 becomes `#`, bold becomes `**bold**`, a list becomes `-` lines, and links keep
-both their text and their address. QuillLite says **"Converted HTML to
+both their text and their address. QUILL Lite says **"Converted HTML to
 Markdown"** when it happens, and the document in front of you changes to match
 the file -- the window and the file never disagree about what you just saved.
 
 Tags Markdown has no way to write are dropped and their text kept, so nothing
 you typed disappears. If the conversion would produce nothing at all -- a page
-that is only a comment, say -- QuillLite keeps your text exactly as it was and
+that is only a comment, say -- QUILL Lite keeps your text exactly as it was and
 tells you so, rather than writing an empty file.
 
 The conversion happens **to the file**, and the window follows only once the
 file is safely written. If the save fails — the file is locked, the disk is
 full — the document in front of you is untouched, still HTML, with its undo
 history intact. The same is true of flattening a rich text document to plain:
-QuillLite asks, writes the plain file, and only then drops the formatting from
+QUILL Lite asks, writes the plain file, and only then drops the formatting from
 the window.
 
 Saving a plain text or Markdown document as `.md` changes nothing at all: plain
 text is already what it claims to be, and Markdown already is Markdown. A
 **rich text** document is not offered Markdown, because turning real formatting
 back into `#` and `**` means guessing which bold lines were meant as headings.
-Save it as plain text first -- QuillLite asks before it drops the formatting --
+Save it as plain text first -- QUILL Lite asks before it drops the formatting --
 and the Markdown row is waiting.
 
 ### If something goes wrong
 
-While a document has changes you have not saved, QuillLite keeps a copy of it
+While a document has changes you have not saved, QUILL Lite keeps a copy of it
 aside, about every thirty seconds. That copy sits **beside** your file and never on top
 of it.
 
-If QuillLite or your computer stops unexpectedly, that work is offered back to
+If QUILL Lite or your computer stops unexpectedly, that work is offered back to
 you the next time you start, in its own document. It comes back **the way it
 was**: a file stored in an older encoding, or written with Unix line endings,
 is still that file after a recovery. The copy kept aside is always written in
@@ -546,7 +546,7 @@ one format, because it has to hold whatever you typed — but what it records
 alongside is what *your* document was, and that is what is put back.
 
 If a copy cannot be read back — a damaged disk, a file something else is
-holding — QuillLite says so and leaves it exactly where it is. The window does
+holding — QUILL Lite says so and leaves it exactly where it is. The window does
 not take your file's name, and the copy is offered again next time. It is still
 the only copy of that work.
 
@@ -554,11 +554,11 @@ Save it, or close normally, and the copy is deleted. So there is never anything
 in there except work you actually need.
 
 **What you are offered is tidied first, and you are told.** Before the window
-opens, QuillLite drops three kinds of row: copies that are identical to each
+opens, QUILL Lite drops three kinds of row: copies that are identical to each
 other (a crash can write the same work several times, and that is one
 document, not four), copies nobody has come back for in **thirty days**, and
 untitled documents if you have turned those off in Preferences. If everything
-it found was one of those, no window opens and QuillLite **says so** --
+it found was one of those, no window opens and QUILL Lite **says so** --
 "Tidied up unsaved work from last time" -- because silence there is
 indistinguishable from work having vanished.
 
@@ -566,7 +566,7 @@ The window itself lists what is left, one row each, with a checkbox, and a
 read-only **What this would do** field you can arrow through. Six buttons:
 **Restore Checked**, **Restore All**, **Not Now** (which changes nothing and
 offers the same list next time), **Discard Checked**, **Discard Everything**,
-and **Never Offer Untitled** — that last one for somebody who uses QuillLite as
+and **Never Offer Untitled** — that last one for somebody who uses QUILL Lite as
 a scratchpad and does not want yesterday's throwaway notes back. It is a
 preference, not a trapdoor: **Offer untitled unsaved work back after a crash**
 in Preferences turns it on again.
@@ -595,7 +595,7 @@ There are two ways to take one:
   document you are working on completely alone. Use this one when the question
   is "what did this say yesterday" rather than "put yesterday back".
 
-Until version 1.0 QuillLite wrote these files and gave you no way to read one:
+Until version 1.0 QUILL Lite wrote these files and gave you no way to read one:
 they were there, correctly dated, and reachable only if you knew where the app
 kept them. If you have had backups switched on, everything from before this
 version is in the list too.
@@ -760,7 +760,7 @@ with the same detail **Character Details...** gives for a character already in
 the document. The code point column is what tells apart rows that sound the
 same: "Thin space" and "Hair space" are U+2009 and U+200A.
 
-**Enter inserts the character you are on**, and QuillLite **reads back what it
+**Enter inserts the character you are on**, and QUILL Lite **reads back what it
 put in** -- "Inserted — U+2014 Em dash". That is not a nicety: most of this list
 is invisible on the page, so without the read-back the command would be a
 keystroke after which something you cannot see may or may not have appeared.
@@ -780,15 +780,15 @@ to a `.qsf` file. **Tools ▸ Restore Settings...** (**Ctrl+Alt+F12**) reads
 one back.
 
 The file holds preferences, not a picture of this computer. Your recent-files
-list, the session QuillLite restores at startup, the window size and the last
+list, the session QUILL Lite restores at startup, the window size and the last
 time it looked for an update are all **left out on purpose** — carrying them to
 another machine would give you an editor pointing at files that are not there.
 The backup tells you how many locations it left behind.
 
 Restoring tells you what was different: how many settings came across, how many
-have been added to QuillLite since the file was written (those keep their
+have been added to QUILL Lite since the file was written (those keep their
 defaults), and how many the file had that this version does not recognise. If
-the file has nothing QuillLite recognises at all, nothing is changed — a wrong
+the file has nothing QUILL Lite recognises at all, nothing is changed — a wrong
 file should not reset your editor.
 
 QUILL has the same thing, on buttons in its Preferences window. The two products
@@ -807,7 +807,7 @@ a gap. A hard break makes them two lines of one paragraph, which is what you
 want for an address, a verse, or a run of scene-break lines that should sit
 tight against each other.
 
-QuillLite writes the break in whichever spelling **Markdown line break style**
+QUILL Lite writes the break in whichever spelling **Markdown line break style**
 names in Settings, and **says which one it used** — the default is a backslash
 at the end of the line, because the alternative is two trailing spaces, which
 are invisible on screen, silent to a screen reader, and stripped by many tools
@@ -832,7 +832,7 @@ every other one like it, or replace them all with an ordinary space.
 **Regular expression** treats what you typed as a search pattern -- `.` matches
 any character, `*` repeats the thing before it, `[abc]` matches any one of
 those, `^` and `$` are the start and end of a line. If the pattern is not valid,
-QuillLite says which character is wrong rather than quietly finding nothing: a
+QUILL Lite says which character is wrong rather than quietly finding nothing: a
 search that failed and a search that found nothing are different problems, and
 only one of them is fixed by retyping.
 
@@ -888,7 +888,7 @@ Two details worth knowing:
 - **A document you have never saved is not remembered.** There is no filename to
   remember it by. Save it once and its bookmarks are kept from then on.
 - **Nothing is written next to your file.** No stray sidecar file appears in your
-  folder; the list lives in QuillLite's own settings folder, keyed by the file's
+  folder; the list lives in QUILL Lite's own settings folder, keyed by the file's
   location. If the file has been shortened by something else since you last had
   it open, bookmarks past the new end are pulled back to the end rather than
   sending you nowhere.
@@ -926,7 +926,7 @@ They are at the top of the **Navigate** menu, above the headings and the
 bookmarks, and they belong to neither of those — so switching both of those off
 does not take Back and Forward with them. They are always there.
 
-Every jump QuillLite makes is remembered: going to a line, following a heading,
+Every jump QUILL Lite makes is remembered: going to a line, following a heading,
 picking something out of the heading list or the bookmark list, and landing on a
 search hit. **Alt+Left** takes you back to where you were standing before it.
 
@@ -974,7 +974,7 @@ the thing you want does not line up neatly with a word or a paragraph.
 **Extend Selection Mode** is the other way to do the same job, and which one
 suits you is a matter of taste rather than of which is better.
 
-Press **Alt+Shift+F9** and QuillLite says "Extend selection mode on" and
+Press **Alt+Shift+F9** and QUILL Lite says "Extend selection mode on" and
 tells you where you are. From then on every arrow, Home, End, Page Down and
 Ctrl+arrow *extends* instead of moving — no modifier held, and, the part that
 matters, **no "selected" from your screen reader on every press**. That is what
@@ -1063,7 +1063,7 @@ duplicates the line you are on if nothing is selected.
 
 ### The ones Windows gives you anyway
 
-These work in QuillLite as they do everywhere, and have no menu row because they
+These work in QUILL Lite as they do everywhere, and have no menu row because they
 need none:
 
 | Key | What it does |
@@ -1114,7 +1114,7 @@ The rest of the Format menu — alignment, line spacing, font — is rich text o
 and says so when it cannot run. Lists are not: **Ctrl+Shift+L** works in a rich
 text document and in a Markdown one.
 
-**The keys the editing control brings with it.** Every QuillLite document is
+**The keys the editing control brings with it.** Every QUILL Lite document is
 built on the same Windows editing control that WordPad uses, because that is what
 gives your screen reader and your braille display a text surface worth reading.
 The cost is that the control has its own keyboard: **Ctrl+U** underlines,
@@ -1129,7 +1129,7 @@ was saved. A document that differs from the file it is about to become, with
 nothing in the app willing to mention it, is the worst version of this bug for
 somebody who cannot see the screen.
 
-Now the key is swallowed in a document that has no formatting, and QuillLite says
+Now the key is swallowed in a document that has no formatting, and QUILL Lite says
 so once:
 
 > Underline has no meaning in a plain text document.
@@ -1165,7 +1165,7 @@ levels 1 to 6, with ordinary text at 11 point. These are the same sizes QUILL
 for All uses, chosen so that a document you save here still reads as having
 headings when somebody opens it in Word. Every level has a size of its own on
 purpose: levels 5 and 6 used to share the 11-point body size, which meant
-QuillLite could apply them and then could not find them again — heading
+QUILL Lite could apply them and then could not find them again — heading
 navigation and the headings list both walked straight past them.
 
 **Ctrl+Shift+N** is Normal Text, and it is the way back. Every other command
@@ -1227,10 +1227,10 @@ Markdown documents, where a `#` heading marks where a section starts.
 
 ### Hearing that you have arrived at one
 
-Arrow onto a heading and QuillLite says **"Heading 2"**.
+Arrow onto a heading and QUILL Lite says **"Heading 2"**.
 
 It has to, because your screen reader cannot. **No Windows edit control has
-paragraph styles** — the control QuillLite hosts can tell JAWS or NVDA the font
+paragraph styles** — the control QUILL Lite hosts can tell JAWS or NVDA the font
 name, the size and the weight, and has no way to say "this paragraph is a
 heading". Word manages it only by shipping an accessibility provider of its own.
 
@@ -1255,14 +1255,14 @@ decision per document.
 
 **A `#` is not always a heading.** In a `.md` or a `.txt`, or a document you
 have not named yet, a line starting with `#` is a heading. In a `.py`, `.sh`,
-`.ini`, `.yml` or `.conf` it is a comment, and QuillLite says nothing and lists
+`.ini`, `.yml` or `.conf` it is a comment, and QUILL Lite says nothing and lists
 nothing — otherwise a build script would announce "Heading 1" on most of its
 lines. In an HTML document it is neither: there the headings are `<h1>` to
-`<h6>`, and QuillLite reads and writes those instead.
+`<h6>`, and QUILL Lite reads and writes those instead.
 
 ### Hearing that you are in a list
 
-Arrow into a list and QuillLite says **"Bulleted list, 5 items"**. Go a level
+Arrow into a list and QUILL Lite says **"Bulleted list, 5 items"**. Go a level
 deeper and it says **"Level 2, 3 items"**. Arrow out and it says **"Out of
 list"**.
 
@@ -1353,7 +1353,7 @@ which is a different job.
 | **Alt+Shift+F5** | Select this section, subsections and all |
 | **Ctrl+Alt+Shift+F5** | Move Section To… — pick a destination instead of a direction |
 
-Until now QuillLite could make headings and walk between them but never move
+Until now QUILL Lite could make headings and walk between them but never move
 them about, which left cut-and-paste as the only way to reorganise a document —
 and that is the operation it is worst at. Moving a section by hand means
 selecting from one heading to exactly the start of the next: a boundary you
@@ -1458,7 +1458,7 @@ Two more things to know about all six keys:
 - **Moving and selecting sections need a Markdown or HTML document**, where a
   heading is written in the text. In a rich text document a heading is a font size
   rather than something the text says, so there is nothing to find and nothing to
-  move; QuillLite says so rather than doing nothing. Promoting and demoting work in
+  move; QUILL Lite says so rather than doing nothing. Promoting and demoting work in
   both.
 
 These are QUILL for All's own six keys, and all six behave the same in both
@@ -1470,7 +1470,7 @@ two different ways.
 
 ## Spell check
 
-WordPad never had a spell checker. Notepad only got one recently. QuillLite has
+WordPad never had a spell checker. Notepad only got one recently. QUILL Lite has
 one, and it is the same one QUILL for All uses.
 
 **F7 checks the whole document.** It walks you through it one word at a time
@@ -1548,7 +1548,7 @@ tuning this once tunes both.
 
 ### The word you are on: the Applications key
 
-With the cursor in a word QuillLite thinks is misspelled, press the
+With the cursor in a word QUILL Lite thinks is misspelled, press the
 **Applications key** (or Shift+F10, or right-click) and **the first Down arrow
 lands on a suggestion**. **Enter** replaces the word. No dialog opens, the
 cursor does not move, and there is nothing to arrow past first.
@@ -1577,7 +1577,7 @@ Inside **Spelling Actions**:
 | **Next / Previous Misspelling** | Move on without leaving the keyboard. |
 
 QUILL's menu is the same menu, in the same order, with one extra dictionary in
-it (it has projects; QuillLite opens files).
+it (it has projects; QUILL Lite opens files).
 
 Every row names the word it is about, so a menu you reached by keyboard still
 tells you what it is going to do. On a word that is spelled correctly there is
@@ -1595,7 +1595,7 @@ programs read, and they are full of made-up words, abbreviations and names that
 no dictionary contains. Checking one of those as you type would give you a
 constant stream of warnings that are every one of them wrong.
 
-So **QuillLite does not check those files as you type.** It recognises them by
+So **QUILL Lite does not check those files as you type.** It recognises them by
 the kind of file they are, and it tells you once when you open one, so you are
 never left wondering whether something is broken.
 
@@ -1609,7 +1609,7 @@ when you have not asked. If you ask for a check, you get one.
 
 ### Your dictionary
 
-Words you teach QuillLite are yours, kept in QuillLite's own folder. If you also
+Words you teach QUILL Lite are yours, kept in QUILL Lite's own folder. If you also
 use QUILL for All, one setting in Preferences makes both share the same list, so
 a word taught in either is known to both.
 
@@ -1651,7 +1651,7 @@ than doing nothing.
 
 | Part | What it tells you | Enter does |
 |---|---|---|
-| **Status Message** | The last thing QuillLite told you, so speech you missed can be heard again | repeats it |
+| **Status Message** | The last thing QUILL Lite told you, so speech you missed can be heard again | repeats it |
 | **Position** | Which line and column you are on, out of how many lines | Go to a line |
 | **Word Count** | How many words the document has | repeats it |
 | **Character Count** | How many characters, spaces included | repeats it |
@@ -1674,11 +1674,11 @@ you are in — you find out by typing over a sentence you meant to keep. Press
 **Ctrl+Alt+Shift+W** to switch, or **Enter** on this part of the status bar.
 
 The **Insert** key switches it too, because the editing control answers that key
-whether QuillLite asks it to or not. QuillLite does not claim the key — it is
+whether QUILL Lite asks it to or not. QUILL Lite does not claim the key — it is
 NVDA's and JAWS's own modifier and taking it would fight your screen reader —
 but it does watch for it, so this part of the status bar stays right either way.
 
-**Tab Mode** is the same idea. QuillLite starts where Notepad does: the **Tab**
+**Tab Mode** is the same idea. QUILL Lite starts where Notepad does: the **Tab**
 key types a tab character. Switch it with **Ctrl+Alt+Shift+I** and Tab indents
 the whole line instead, which is what QUILL does by default and what you
 probably want when the file is code. **Shift+Tab** outdents either way, so a tab
@@ -1710,13 +1710,13 @@ problem when you are halfway through reordering nine things.
 **Format** is what decides the rest. It says whether this document is plain text,
 Markdown, HTML or rich text, and that one fact decides what **Ctrl+B** writes,
 what the heading keys write, which of the two tag pickers the Insert menu offers,
-and whether the List part above has anything to say. QuillLite reads it from the
+and whether the List part above has anything to say. QUILL Lite reads it from the
 file name; **Enter** here rings on to the next kind and says its name, and
 **Ctrl+Alt+F6** goes straight to one. See [Four kinds of
 document](#four-kinds-of-document).
 
 **Status Message** exists because speech is gone the moment it is spoken. If you
-missed something QuillLite said, this is where you go to read it again.
+missed something QUILL Lite said, this is where you go to read it again.
 
 ---
 
@@ -1735,7 +1735,7 @@ back where you were, with the selection intact.
 
 ## Copying and pasting more than one thing
 
-The Windows clipboard holds one thing at a time. QuillLite gives you three ways
+The Windows clipboard holds one thing at a time. QUILL Lite gives you three ways
 around that, in **Edit ▸ Clipboard**.
 
 **The copy tray** is twelve numbered slots that survive closing the app. Copy
@@ -1757,7 +1757,7 @@ what you have selected, and **Ctrl+Alt+Shift+M** opens the list to paste one bac
 
 It can also fill itself. **Preferences ▸ Keep everything I copy in the clip
 library** turns that on, and then every copy and every cut you make inside a
-QuillLite document is added automatically, up to the last two hundred. It is off
+QUILL Lite document is added automatically, up to the last two hundred. It is off
 until you ask, and the reason is worth stating plainly: a history of everything
 you copy is a file on your disk holding whatever you last took out of a
 document, a password you had pasted somewhere included. It never sees what you
@@ -1828,7 +1828,7 @@ double-spaced, not a tidy-up you want on prose. A line of nothing but spaces
 counts as blank, because it is blank to everyone reading the document and to
 every tool that will ever open it. QUILL has this command under the same name,
 beside a second one called **Trim Blank Lines at the Ends**, which takes only
-the blank lines before the first line of text and after the last; QuillLite has
+the blank lines before the first line of text and after the last; QUILL Lite has
 just the one.
 
 Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
@@ -1888,7 +1888,7 @@ be a change you could not hear.
 ### Getting deleted text back somewhere else
 
 **Restore Deleted Text** (**Ctrl+Alt+Shift+Z**) puts a recent deletion back **at
-the cursor**, wherever the cursor now is. QuillLite remembers the last three, so
+the cursor**, wherever the cursor now is. QUILL Lite remembers the last three, so
 if what you want is not the last thing you deleted it offers a list with a
 preview of each.
 
@@ -1907,7 +1907,7 @@ commands above, not every character you backspaced over.
 (**Ctrl+[**). They work on every line the selection touches, or on the line the
 cursor is on if nothing is selected, and they say how many lines moved.
 
-These matter more here than they look. QuillLite already goes quiet about
+These matter more here than they look. QUILL Lite already goes quiet about
 spelling in a `.json` or a `.py` file, which is an admission that people edit
 configuration and code in it -- and for that person, moving a block in or out a
 level is the single most common thing to want and the most tedious to do by
@@ -1961,7 +1961,7 @@ anything you add in Manage Abbreviations appears here.
 Type a short form, press space, and get the long one. Useful for an address, a
 sign off, or anything you type often and would rather not spell out every time.
 
-**Ctrl+Alt+A** manages your list. It is QuillLite's own list to begin with; if
+**Ctrl+Alt+A** manages your list. It is QUILL Lite's own list to begin with; if
 you also use QUILL for All or Quill Inkwell, Preferences has a switch that makes
 all three share one list.
 
@@ -1984,7 +1984,7 @@ which nobody does.
 
 | Lesson | About |
 |---|---|
-| Open a file, and give it back unchanged | The one promise QuillLite makes, and the three things it remembers in order to keep it |
+| Open a file, and give it back unchanged | The one promise QUILL Lite makes, and the three things it remembers in order to keep it |
 | Four kinds of document, and how to say which | What a plain, Markdown, HTML or rich document changes about the keys |
 | Your documents are numbered | Getting between the things you have open |
 | What to press when you are lost | F1, F6, Ctrl+F1, and Escape |
@@ -2032,16 +2032,16 @@ arrow through — and copy from with Ctrl+C — with five buttons under it:
 thing it is teaching and then talk you through what you are standing in, so
 you are never blocked on a key you have not learned yet.
 
-There is also a **Follow me** tick box, and **in QuillLite it is greyed out**.
+There is also a **Follow me** tick box, and **in QUILL Lite it is greyed out**.
 In the apps that have it, Follow me watches what changed in the app and moves
-you on by itself. QuillLite's lessons have nothing for it to watch: every step
+you on by itself. QUILL Lite's lessons have nothing for it to watch: every step
 here ends in a sentence the editor already says out loud, so the step tells you
 it worked and there is no state to poll. It is disabled rather than removed, so
 that arriving on it tells you it is unavailable instead of leaving you hunting
 a window for a control you last used in Quill Radio.
 
 The window is a **peer**, not a dialog: it stays open beside your document,
-Alt+F4 or Escape closes it, and QuillLite remembers which lessons you have
+Alt+F4 or Escape closes it, and QUILL Lite remembers which lessons you have
 finished and where you had got to in the one you were in.
 
 Every QuillVille app has the same window on the same key. The whole book is
@@ -2073,7 +2073,7 @@ where every line starts with `#` and a letter with six real headings in it can
 disagree about this, and they should.
 
 **Overwrite Mode** is also on the status bar's **Typing Mode** cell — press
-**F6**, arrow to it, and **Enter** toggles it. QuillLite watches the **Insert**
+**F6**, arrow to it, and **Enter** toggles it. QUILL Lite watches the **Insert**
 key go past and reports what it did, but never claims it: Insert is your screen
 reader's own modifier.
 
@@ -2149,21 +2149,21 @@ on in **Tools ▸ Customize Features** (**Ctrl+Alt+F10**) if you would rather
 have one key than three.
 
 Headings only appear in it for a **rich text** document, because that is where
-QuillLite can ask the control itself what the headings are. In a Markdown or
+QUILL Lite can ask the control itself what the headings are. In a Markdown or
 HTML file the headings list on Ctrl+Alt+L is the one to use.
 
 ---
 
 ## The window
 
-QuillLite opens **maximized**, and after that it opens the way you left it. Make
+QUILL Lite opens **maximized**, and after that it opens the way you left it. Make
 it smaller and that size comes back next time; put it back to full screen and so
 does that.
 
 Maximized is the default because a small window is where text gets cut off and
 where a list shows four rows on a screen with room for thirty -- and neither
 costs anything to the person who chose the size. It is one keystroke to change
-and QuillLite will not ask again.
+and QUILL Lite will not ask again.
 
 Every app in the family behaves the same way now: QUILL, Quill Radio, Cast,
 Weather, Audio Studio, Inkwell, the Converter, the Media Player and Beacon.
@@ -2173,7 +2173,7 @@ Weather, Audio Studio, Inkwell, the Converter, the Media Player and Beacon.
 ## Closing a lot of windows at once
 
 **Window > Close Other Documents (Ctrl+Shift+F4)** keeps the document you are in
-and closes every other one. QUILL has had it since 2026-06; QuillLite has it now
+and closes every other one. QUILL has had it since 2026-06; QUILL Lite has it now
 too, on the same key, because a key you learn in one editor should work in the
 other.
 
@@ -2203,21 +2203,21 @@ stops meaning "save all" until you say so again.
 ## Changing what a key does
 
 **Tools ▸ Keyboard Manager** (**Ctrl+Alt+Shift+R**) is where every key in
-QuillLite can be changed. The list has every command with the key it answers to;
+QUILL Lite can be changed. The list has every command with the key it answers to;
 type part of a command's name to find it, and press **Enter** on a row to give it
 a different key.
 
 ### Finding out what a key already does
 
 The other question is the harder one: *is this key free?* Press **Record a Key**,
-then press the combination you are thinking of. QuillLite says what it does today
+then press the combination you are thinking of. QUILL Lite says what it does today
 -- "Ctrl+S is File ▸ Save" -- or says it is free. That is faster and more
 reliable than reading a list of two hundred rows.
 
 ### When a key is taken
 
 Assigning a key somebody else already has does not silently steal it and does not
-silently refuse. QuillLite names the command that owns it and asks. If you say
+silently refuse. QUILL Lite names the command that owns it and asks. If you say
 yes, that command is left with **no key** until you give it one -- which is the
 honest outcome, because a key claimed twice means one of the pair never fires and
 nothing tells you which.
@@ -2226,8 +2226,8 @@ nothing tells you which.
 
 Some programs claim a key across the whole of Windows -- Google Drive takes
 **Ctrl+Alt+G**, and it is not the only one. A key claimed that way never reaches
-QuillLite at all: Windows hands it to the program that registered it, even while
-QuillLite is the window you are typing in. The command is not broken and the key
+QUILL Lite at all: Windows hands it to the program that registered it, even while
+QUILL Lite is the window you are typing in. The command is not broken and the key
 is not misassigned; the keystroke simply goes somewhere else.
 
 This used to be invisible, which made it look like a bug in the editor. Record a
@@ -2237,7 +2237,7 @@ has taken. It is a warning rather than a refusal: the key may be yours again
 tomorrow when that program is not running, and it is not this editor's place to
 forbid a key you chose deliberately.
 
-QuillLite cannot say *which* program. Windows does not offer the owner's name,
+QUILL Lite cannot say *which* program. Windows does not offer the owner's name,
 and guessing from a list of the usual suspects would be wrong the first time you
 installed something that was not on it.
 
@@ -2245,18 +2245,18 @@ installed something that was not on it.
 
 **Insert is never bindable.** It is the key NVDA and JAWS use as their own
 modifier, and taking it would take away the key you would need to get it back.
-QuillLite watches it go past -- that is what the Typing Mode cell reads -- but
+QUILL Lite watches it go past -- that is what the Typing Mode cell reads -- but
 never claims it. A key on its own with no Ctrl, Alt or Shift is refused too: it
 would type itself instead.
 
 ### Putting things back
 
-**Reset to Default** puts the command you are on back to the key QuillLite ships
+**Reset to Default** puts the command you are on back to the key QUILL Lite ships
 with. **Reset Everything** does it for all of them, after asking. Nothing is
 saved until you press **Save**, so Escape leaves your keys exactly as they were.
 
 **Check for Problems** reports anything wrong with the set as a whole: a key
-claimed twice, a key QuillLite cannot read, and -- the one you would otherwise
+claimed twice, a key QUILL Lite cannot read, and -- the one you would otherwise
 never find out about -- a key Windows will accept and then never actually send to
 a menu, so it is assigned and inert.
 
@@ -2282,7 +2282,7 @@ mark that reads the true state.
 
 ### Every sound, in a list you can hear
 
-**Tools ▸ Sound Scheme** (**Ctrl+Alt+Shift+O**) is every sound QuillLite can
+**Tools ▸ Sound Scheme** (**Ctrl+Alt+Shift+O**) is every sound QUILL Lite can
 make, in a list you can hear. Arrow through it and each event plays as you land
 on it -- that is what turns a list of names into a catalogue, and you can turn
 it off with the checkbox under the list if you would rather move in silence.
@@ -2302,7 +2302,7 @@ whichever row you are on:
 **Save As Scheme** saves the whole set under a name of your own. A scheme is an
 ordinary folder with the sounds in it, so you can copy it, back it up, or send
 it to somebody. **Restore All Defaults** puts every event back and switches them
-all on, and it cannot half-succeed -- the sounds QuillLite ships are never
+all on, and it cannot half-succeed -- the sounds QUILL Lite ships are never
 overwritten, so getting back to them is always one press.
 
 QUILL opens the same window over the same schemes, so a scheme you build in one
@@ -2310,13 +2310,13 @@ is offered in the other.
 
 ---
 
-## Making QuillLite smaller (or larger)
+## Making QUILL Lite smaller (or larger)
 
 **Tools ▸ Customize Features** (**Ctrl+Alt+F10**) lets you switch whole parts
-of QuillLite off. Turning something off removes it from the menus **and**
+of QUILL Lite off. Turning something off removes it from the menus **and**
 unhooks its keys, so it is properly gone rather than just hidden.
 
-That is how QuillLite stays small without being poor: you take out what you do
+That is how QUILL Lite stays small without being poor: you take out what you do
 not want, rather than learning to ignore it.
 
 ### Profiles: four ways to say it in one word
@@ -2417,7 +2417,7 @@ without one in 2026 is a surprise rather than a simplification.
 
 #### Notepad
 
-**The smallest QuillLite gets**, and the one most people arriving here are
+**The smallest QUILL Lite gets**, and the one most people arriving here are
 replacing something with. Two of the 19 areas: **printing** and **text
 size**.
 
@@ -2494,7 +2494,7 @@ make for you. Its row in Customize Features spells out the whole trade before
 you switch it on, and an area that is off owns nothing: no menu, no keys, no
 sign-in stored on disk, and no connection of any kind.
 
-**And switching it on is not enough.** Before anything is sent, QuillLite shows
+**And switching it on is not enough.** Before anything is sent, QUILL Lite shows
 you the whole agreement -- what is sent, what QUILL keeps, what it does not
 keep, what OpenAI does with it, and how to say no -- and nothing happens until
 you accept it. Turning the area on and declining the agreement leaves the menu
@@ -2524,7 +2524,7 @@ Anything is off because the command search, the headings list and the bookmark
 list already each do their own part of the job.
 
 **Autocorrect is two rules, and switching the area on does not switch either of
-them on.** The area decides whether QuillLite has the feature at all; two tick
+them on.** The area decides whether QUILL Lite has the feature at all; two tick
 boxes in **Tools ▸ Preferences** decide which rules run -- **Curl quotes as I
 type** and **Turn two hyphens into an em dash** -- and both start off, so turning
 the area on and typing a quote correctly does nothing until you tick one. They
@@ -2533,7 +2533,7 @@ dash and not the curly quotes. Neither runs in a plain text, source or
 configuration document whatever the boxes say, because a curly quote in a `.json`
 is a syntax error and no setting can express "except in code".
 
-And there is no third rule: QuillLite does **not** capitalise the start of a
+And there is no third rule: QUILL Lite does **not** capitalise the start of a
 sentence, has never done so, and will not start doing it behind you.
 
 Two things are never switchable, on purpose. **Tools ▸ Preferences** and
@@ -2546,7 +2546,7 @@ most of what a Notepad replacement is for.
 
 ## Reopening what you had open
 
-QuillLite remembers the saved documents you had open and offers them back next
+QUILL Lite remembers the saved documents you had open and offers them back next
 time. Until September 2026 it simply opened all of them without asking, and
 skipped any whose file had gone without saying so. That is right for one document
 and wrong for four: four windows appearing unbidden is four things to identify
@@ -2570,7 +2570,7 @@ can be opened starts ticked, so **Enter** is "all of it" and unticking two is
   next time. Escape does the same.
 - **Forget Checked** takes the ticked rows off the list so they stop being
   offered, and **Clear the List** does it to all of them. **Neither touches a
-  file.** Forgetting is about what QuillLite offers you, not about what is on
+  file.** Forgetting is about what QUILL Lite offers you, not about what is on
   your disk, and the window says so in a line under the buttons.
 - **Never Ask Again** opens the ticked documents and stops asking from then on.
 - **Ask Me Next Time** is its twin, and undoes it: you are asked again the way
@@ -2606,7 +2606,7 @@ Here is every control in it, in the order you meet them.
 
 **Profile** is the same four-answer chooser Customize Features has, with the
 same read-only description under it. It is here as well as there because "make
-this Notepad" is a preference like any other. See [Making QuillLite smaller (or
+this Notepad" is a preference like any other. See [Making QUILL Lite smaller (or
 larger)](#making-quilllite-smaller-or-larger).
 
 **New documents are:** — **Plain text** or **Rich text**. This is what
@@ -2617,13 +2617,13 @@ profile moves this control in front of you rather than behind your back, so you
 can see what the profile claimed and overrule it before you press OK.
 
 **Theme:** — **Dark** or **Follow the system**. **Follow the system is the
-default**, and it is the one that does not guess. QuillLite shipped dark,
+default**, and it is the one that does not guess. QUILL Lite shipped dark,
 because the people this editor is for are disproportionately light-sensitive
 and a first launch that is bright white is one some of them cannot read — but
 light-sensitive does not mean *dark*: somebody who depends on high-contrast
 black on white is harmed by a dark default in exactly the same way. Anybody
 with a strong requirement has already told Windows about it, in the one place
-every other program on the machine reads, so QuillLite reads that instead.
+every other program on the machine reads, so QUILL Lite reads that instead.
 Choose **Dark** to have it dark whatever Windows says. Either way it changes
 what is on the screen and nothing else: the colours are never written into your
 files, so a theme can never leave grey text in a document you send somebody.
@@ -2633,13 +2633,13 @@ and it says "Dark mode on" or "Dark mode off" so you never have to look.
 If you chose dark in an earlier version, you keep dark. Only somebody who never
 chose comes with the new default.
 
-**Reopen the documents I had open last time** — on. Off means QuillLite starts
+**Reopen the documents I had open last time** — on. Off means QUILL Lite starts
 with whatever you open yourself. This is a different question from recovering
 unsaved work, which happens either way.
 
 **Offer untitled unsaved work back after a crash** — on. An untitled document
 is the one with no file to fall back on, so this is the copy you would miss
-most. Off if you use QuillLite as a scratchpad and would rather it forgot.
+most. Off if you use QUILL Lite as a scratchpad and would rather it forgot.
 
 **Start with a blank document** — on, the way Notepad and WordPad do it. Turn it
 off if you always open an existing file: without it you are handed an empty
@@ -2647,7 +2647,7 @@ Untitled to close on every launch. Files you open by double-clicking, last
 session's documents and recovered work all still appear either way. QUILL has
 the same setting under **General**.
 
-**Share QUILL's abbreviation library** — off. On, QuillLite reads and writes
+**Share QUILL's abbreviation library** — off. On, QUILL Lite reads and writes
 QUILL for All's list instead of its own, so a short form added in either is
 there in both. It does nothing if you do not have QUILL installed.
 
@@ -2658,7 +2658,7 @@ spelling: a word you teach in either editor is known to both.
 in the clip library automatically instead of only the ones you press
 **Ctrl+Alt+M** on. Useful, and it does mean the library fills up by itself.
 
-**Look for updates when QuillLite starts** — on. It looks once a day and says
+**Look for updates when QUILL Lite starts** — on. It looks once a day and says
 nothing unless there is something. **Ctrl+Alt+U** asks on demand either way.
 
 **Check spelling as I type** — on. This is the same switch as **Tools ▸
@@ -2686,7 +2686,7 @@ way to end up turning speech off altogether. The status bar carries the words
 whichever you pick, so nothing is lost by choosing the tone.
 
 **Say a heading's level:** — **before the text** or **after the text**. Before
-is one sentence QuillLite says on its own — "Heading 2, Installing" — and it is
+is one sentence QUILL Lite says on its own — "Heading 2, Installing" — and it is
 the one that survives a jump, because pressing Ctrl+Home or landing on a search
 hit makes a screen reader cancel whatever it was about to say, and a level
 waiting its turn behind that is never heard. After lets your reader read the
@@ -2702,7 +2702,7 @@ and scroll. **Alt+Z** is the same switch on the View menu.
 
 **Shortest gap between spoken messages (ms):** — 0 to 2000, and 0 is the
 default, meaning say everything as it happens. A larger number drops anything
-QuillLite would say too soon after the last thing it said, which is what you
+QUILL Lite would say too soon after the last thing it said, which is what you
 want if holding a key down floods your screen reader. Nothing is lost by it: the
 status bar is written either way and **F6** reads it back.
 
@@ -2712,7 +2712,7 @@ your file, never over it, and is removed the moment you save.
 
 **Editor font:** — a read-only box saying the face and size, and a **Change
 Font...** button that opens the chooser. The box reads back whatever you pick,
-and QuillLite says it out loud as well, because a box you are not focused on is
+and QUILL Lite says it out loud as well, because a box you are not focused on is
 exactly what a screen reader does not announce. The same chooser is on
 **Ctrl+Alt+F** (**Format ▸ Editor Font**), which is where Notepad has always
 kept it and which is the one row the Format menu keeps if you switch rich text
@@ -2722,7 +2722,7 @@ off.
 it shows you the whole agreement there and then and records your answer
 immediately; unticking it withdraws immediately. Consent recorded because
 somebody pressed OK on an unrelated window would be consent of a worse kind. If
-you decline the agreement the tick goes back by itself, and QuillLite says so
+you decline the agreement the tick goes back by itself, and QUILL Lite says so
 out loud, because a checkbox changed in code is not a checkbox your reader
 announces. See [AI help](#ai-help).
 
@@ -2790,24 +2790,24 @@ out.
 
 ## Speech
 
-QuillLite talks through **NVDA or JAWS**, and nothing else. There is no built-in
+QUILL Lite talks through **NVDA or JAWS**, and nothing else. There is no built-in
 voice, and that is on purpose: a second voice talking over your screen reader is
 worse than silence.
 
 It also says as little as it can. Your screen reader already announces window
 titles, where your focus has moved, the names of buttons and what you have
-selected. QuillLite only tells you things it alone knows — that a save happened,
+selected. QUILL Lite only tells you things it alone knows — that a save happened,
 that a search wrapped around, that bold went on, that four things were replaced.
 
 Everything it says also goes into the first part of the status bar, so **F6**
 will bring back a message you missed.
 
-If you have no screen reader running, QuillLite says nothing out loud — but
+If you have no screen reader running, QUILL Lite says nothing out loud — but
 every message is still there in the status bar.
 
 ### If it says too much
 
-Holding a key down can make QuillLite speak faster than anybody can listen.
+Holding a key down can make QUILL Lite speak faster than anybody can listen.
 **Preferences ▸ Shortest gap between spoken messages** sets a floor, in
 milliseconds: anything it would say too soon after the last thing it said is
 dropped. Zero, the default, says everything as it happens. Nothing is lost by
@@ -2872,7 +2872,7 @@ The collector used to be on Ctrl+Alt+G. It moved to Alt+Shift+S in September
 Windows — and a key claimed system-wide never reaches the application at all,
 so the command looked broken on any machine with Drive installed. If you find
 another key that does nothing, the Keyboard Manager will now tell you when
-something outside QuillLite has taken it.
+something outside QUILL Lite has taken it.
 
 ## AI help
 
@@ -2904,7 +2904,7 @@ is worth a chord instead of one more row to arrow past.
 | **Rewrite** | The same meaning, clearer and shorter |
 | **Proofread** | Spelling, grammar and punctuation corrected, wording left alone |
 | **Explain** | What this passage means, in plain language |
-| **Ask a question about the document** | You type a question; QuillLite finds the parts of the document that answer it and sends only those |
+| **Ask a question about the document** | You type a question; QUILL Lite finds the parts of the document that answer it and sends only those |
 
 4. **Your question** — which appears only for that last one.
 5. **Send** — and nothing at all has left this computer until you press it.
@@ -2984,7 +2984,7 @@ again*, just below, has every number and every rule.
 
 **Usage** (**Ctrl+Alt+Shift+F9**) shows what you have used and what is left. The
 service is free and has a fair-use ceiling; this is where you find out where you
-stand, before you are told by being refused. **Help ▸ About QuillLite** shows the
+stand, before you are told by being refused. **Help ▸ About QUILL Lite** shows the
 same allowance, and this computer's **support ID**, under **QUILL's free AI** —
 the numbers are asked for fresh each time, so give it a moment after About opens.
 
@@ -3098,42 +3098,42 @@ Support ID** button, if you would rather write from somewhere else.
 ## Where your files are kept
 
 Your settings, recent files, copy tray and any recovered work are kept in a
-QuillLite folder inside your own Windows user folder. **Help ▸ About QuillLite**
+QUILL Lite folder inside your own Windows user folder. **Help ▸ About QUILL Lite**
 shows you the exact location.
 
-It is deliberately **not** inside QUILL for All's folder. QuillLite is offered
+It is deliberately **not** inside QUILL for All's folder. QUILL Lite is offered
 as an alternative to QUILL, not as part of it, and installing or removing one
 should never affect the other.
 
-Uninstalling QuillLite does not delete that folder. Recovered work is the one
+Uninstalling QUILL Lite does not delete that folder. Recovered work is the one
 thing you might not have finished with, and an uninstaller is the worst possible
 moment to discover that.
 
 ### The portable copy keeps everything on the stick
 
-If you are running the **portable** QuillLite -- the `.zip` you unpack rather
+If you are running the **portable** QUILL Lite -- the `.zip` you unpack rather
 than the installer -- then none of the above applies. Everything goes into the
 `data\QuillLite` folder inside the bundle, right next to `QuillLite.exe`, and
 nothing at all is written to the computer you are plugged into. That is what
-portable means, and QuillLite does it from the very first launch: there is no
+portable means, and QUILL Lite does it from the very first launch: there is no
 setting to find first.
 
-Until version 1.0 it did not. A portable QuillLite quietly used
+Until version 1.0 it did not. A portable QUILL Lite quietly used
 `%LOCALAPPDATA%\QuillLite` on the host machine instead, and said nothing about
 it -- so settings did not travel with the stick, and, worse, recovered copies of
 documents you had not saved were left behind on someone else's computer. If you
-have been carrying a portable QuillLite, that folder is where anything you seem
+have been carrying a portable QUILL Lite, that folder is where anything you seem
 to have lost will be, and it is worth deleting once you have what you want out
 of it.
 
-Delete the `data` folder from the bundle and QuillLite goes back to using this
+Delete the `data` folder from the bundle and QUILL Lite goes back to using this
 computer's own profile -- that folder is what marks the copy as portable.
 
 ---
 
-## Keeping QuillLite up to date
+## Keeping QUILL Lite up to date
 
-**Help > Check for Updates...** (**Ctrl+Alt+U**) asks whether a newer QuillLite
+**Help > Check for Updates...** (**Ctrl+Alt+U**) asks whether a newer QUILL Lite
 has been published. It is the same key, and the same window, in every app in the
 family.
 
@@ -3151,23 +3151,23 @@ document. Tab from there reaches two buttons:
 While the download runs you hear it reach a quarter, a half and three quarters,
 and then that it has finished.
 
-QuillLite also looks once a day when it starts, and says **nothing** unless
+QUILL Lite also looks once a day when it starts, and says **nothing** unless
 there is something -- not while it checks, not when there is nothing, and not
 when the network is down. Only a genuine new version speaks, and even then it
 only offers. Turn the daily look off in **Settings** ("Look for updates when
-QuillLite starts"); Ctrl+Alt+U still works either way.
+QUILL Lite starts"); Ctrl+Alt+U still works either way.
 
 ---
 
-## What QuillLite is not
+## What QUILL Lite is not
 
-QuillLite is a companion to **QUILL for All**, not a replacement for it.
+QUILL Lite is a companion to **QUILL for All**, not a replacement for it.
 
 If you want dictation, document conversion, comparing two documents, publishing
-or braille tools, those are QUILL, and QuillLite is built so that it will not
+or braille tools, those are QUILL, and QUILL Lite is built so that it will not
 slowly grow into them.
 
-**AI is the one line that moved**, and only a little. QuillLite has the five
+**AI is the one line that moved**, and only a little. QUILL Lite has the five
 free commands described under [AI help](#ai-help) -- summarize, rewrite,
 proofread, explain, and a question about the document you have open -- because
 an editor that can only be used by somebody who can read a screen quickly is not
@@ -3179,23 +3179,23 @@ one pad, on one free service, and nothing else.
 Both are free, both are built for screen reader users, and they install
 perfectly happily side by side.
 
-**And they can share what you have built up.** QuillLite keeps its own settings
+**And they can share what you have built up.** QUILL Lite keeps its own settings
 folder on purpose --- an editor this size should not quietly adopt a writing
 environment's preferences, and uninstalling it should never cost you something
 QUILL owns. But the things you *accumulate* are worth having in one place, so
 each is an opt-in switch rather than a default:
 
 - **Preferences ▸ Share QUILL's abbreviations** and **Share QUILL's personal
-  dictionary** point QuillLite at QUILL's copy, so a short form you add or a word
+  dictionary** point QUILL Lite at QUILL's copy, so a short form you add or a word
   you teach in either editor is there in both.
-- From QUILL's side, **Tools ▸ Customize and Support ▸ Bring My QuillLite
-  Settings...** does the whole thing in one step: it merges your QuillLite
+- From QUILL's side, **Tools ▸ Customize and Support ▸ Bring My QUILL Lite
+  Settings...** does the whole thing in one step: it merges your QUILL Lite
   abbreviations, dictionary, copy tray, clip library and bookmarks into QUILL,
   turns those switches on for you, and copies your preferences and rebound keys
-  across once. Nothing already in QUILL is replaced, and nothing in QuillLite is
+  across once. Nothing already in QUILL is replaced, and nothing in QUILL Lite is
   removed.
 
-QUILL also has a **QuillLite profile** now (Preferences ▸ Profiles and Features),
+QUILL also has a **QUILL Lite profile** now (Preferences ▸ Profiles and Features),
 which makes QUILL show these nine menus and nothing else --- including making
 Ctrl+N a plain text document, the way it does here. It is there for the day you
 want one of QUILL's tools without giving up the shape you are used to.
@@ -3226,7 +3226,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+P** | Print... |
 | **Ctrl+W** | Close Window |
 | **Ctrl+F4** | Close Window (MDI) |
-| **Ctrl+Q** | Exit QuillLite |
+| **Ctrl+Q** | Exit QUILL Lite |
 
 ### Edit
 
@@ -3520,7 +3520,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+F1** | Keyboard Shortcuts |
 | **Ctrl+Alt+F2** | Get Help from Support... |
 | **Ctrl+Alt+U** | Check for Updates... |
-| **Shift+F1** | About QuillLite |
+| **Shift+F1** | About QUILL Lite |
 
 ### Built per window
 
@@ -3565,7 +3565,7 @@ address to reply to. What you expected and how to reproduce it are optional,
 and worth more than anything else when you can give them.
 
 Press Send and your **own mail program opens with the whole message already
-written**, addressed to support, with QuillLite's name and version and your Windows
+written**, addressed to support, with QUILL Lite's name and version and your Windows
 version filled in at the bottom. Nothing is sent until you send it there, so you
 can read it over, add anything, or change your mind.
 
@@ -3577,7 +3577,7 @@ using and what happened.
 
 ### The one thing worth attaching
 
-If QuillLite is starting but behaving oddly -- no formatting, every word called
+If QUILL Lite is starting but behaving oddly -- no formatting, every word called
 a misspelling, nothing spoken -- run it once with **`--check`**:
 
 ```
@@ -3585,7 +3585,7 @@ QuillLite.exe --check
 ```
 
 It opens no window. It writes a dozen lines to **`check.log`** in your data
-folder (**Help ▸ About QuillLite** says where that is) and prints the same
+folder (**Help ▸ About QUILL Lite** says where that is) and prints the same
 lines, saying which version this is, whether it is a frozen build, whether the
 native rich-text surface came up, which text mode it is in, which screen reader
 it can reach, whether the spelling dictionary actually loaded, and where your
@@ -3597,5 +3597,5 @@ that into your email and the first three questions are already answered.
 
 There are three other options on the same command line: **`--rich`** and
 **`--plain`** open with a new document of that kind whatever your setting says,
-and **`--new-instance`** starts a second, separate QuillLite instead of handing
+and **`--new-instance`** starts a second, separate QUILL Lite instead of handing
 the file to the one you already have.

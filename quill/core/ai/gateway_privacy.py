@@ -1,11 +1,11 @@
 """The agreement somebody has to accept before any of their writing is sent.
 
 One place for the words, and one number for the version. wx-free, so QUILL and
-QuillLite show the same text rather than two texts that start the same and
+QUILL Lite show the same text rather than two texts that start the same and
 drift.
 
 **Why this is separate from the feature switch.** The switchable area answers
-"does this feature exist in my copy of QuillLite"; the agreement answers "have I
+"does this feature exist in my copy of QUILL Lite"; the agreement answers "have I
 agreed to what it does". They are genuinely different questions and conflating
 them gets one of them wrong: an area switched on by a profile, by a settings
 import or by somebody else using the machine would otherwise be consent nobody
@@ -60,7 +60,7 @@ def agreement_text() -> str:
     return "\n\n".join([
         "What happens when you use AI help",
         "The passage you have selected -- or, for a question about a document, "
-        "up to three excerpts QuillLite picks on this computer -- is sent over "
+        "up to three excerpts QUILL Lite picks on this computer -- is sent over "
         "the internet to QUILL's servers, and from there to OpenAI, which "
         "writes the answer. The answer comes back to you and is shown in a "
         "window. Nothing is put into your document until you choose to put it "
@@ -81,7 +81,7 @@ def agreement_text() -> str:
         "Nothing. There is a monthly allowance, and Tools, AI, Usage says how "
         "much of it is left. When it runs out it starts again by itself.",
         "If you would rather not",
-        "Say no. QuillLite works exactly as it does now -- every other feature "
+        "Say no. QUILL Lite works exactly as it does now -- every other feature "
         "is untouched, and nothing is sent anywhere. You can change your mind "
         "later in Tools, AI, or in Preferences, or in Customize Features. If "
         "you have your own AI provider account, that route never involves "

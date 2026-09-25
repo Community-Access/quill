@@ -1,4 +1,4 @@
-"""QuillLite's user guide cannot fall behind QuillLite.
+"""QUILL Lite's user guide cannot fall behind QUILL Lite.
 
 Documentation drift is not a tidiness problem, it is a correctness one, and it
 is invisible: a guide that names a key the app does not bind sends somebody to

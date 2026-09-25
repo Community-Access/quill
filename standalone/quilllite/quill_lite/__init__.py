@@ -1,4 +1,4 @@
-"""QuillLite standalone launcher.
+"""QUILL Lite standalone launcher.
 
 The application itself lives in the ``quill`` package (``quill.apps.lite``) and
 shares QUILL's editor surface, its RTF safety scanner, its dialog contract, its
@@ -8,7 +8,7 @@ off to the app.
 
 One detail differs from every sibling wrapper, and it is deliberate. Inkwell
 keeps using ``%APPDATA%\\Quill`` on purpose, because its whole value is that its
-abbreviations are *the same* abbreviations QUILL expands. QuillLite is the
+abbreviations are *the same* abbreviations QUILL expands. QUILL Lite is the
 opposite case: it is offered as an alternative to QUILL rather than as a
 companion to it, so its settings, its recent files and its recovered work live
 in ``%LOCALAPPDATA%\\QuillLite`` and nothing it does creates or touches a QUILL
@@ -17,7 +17,7 @@ because somebody opened a text file.
 
 What portable mode still does is put that folder on the stick: a portable bundle
 ships a ``data`` folder beside ``QuillLite.exe``, and
-:mod:`quill.core.lite.paths` puts QuillLite's own directory inside it.
+:mod:`quill.core.lite.paths` puts QUILL Lite's own directory inside it.
 """
 
 import os
@@ -30,7 +30,7 @@ def _export_app_root() -> None:
 
     Portable mode: a portable zip ships a ``data`` folder next to
     QuillLite.exe. When it is there, export ``QUILL_APP_ROOT`` and
-    ``QUILL_PORTABLE`` so QuillLite's data folder lands on the stick beside a
+    ``QUILL_PORTABLE`` so QUILL Lite's data folder lands on the stick beside a
     portable QUILL rather than in this machine's profile. The installed copy
     ships no ``data`` folder and therefore keeps using
     ``%LOCALAPPDATA%\\QuillLite``.

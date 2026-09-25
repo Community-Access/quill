@@ -164,9 +164,9 @@ class DocumentViewCommandsMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_customize_features(self) -> None:
-        """Turn whole areas of QuillLite on or off.
+        """Turn whole areas of QUILL Lite on or off.
 
-        The way QuillLite stays small is not that it does little -- it is that
+        The way QUILL Lite stays small is not that it does little -- it is that
         somebody who does not want rich text can remove the Format menu
         *entirely* rather than learn to ignore it. This is also where the four
         areas that ship switched off are found, which is the difference between
@@ -175,7 +175,7 @@ class DocumentViewCommandsMixin:
         The list is searchable and comes with profiles, because nineteen
         checkboxes is a long way to Tab and "give me the small one" should not
         require ticking most of them. Both live in the shared dialog; what is
-        QuillLite's is which areas exist and what the four profiles mean
+        QUILL Lite's is which areas exist and what the four profiles mean
         (:mod:`quill.core.lite.features`).
 
         The settings object goes in as well, because two of those profiles claim
@@ -264,12 +264,12 @@ class DocumentViewCommandsMixin:
             return False
 
     def cmd_sound_scheme(self) -> None:
-        """Every sound QuillLite can make, in one window you can hear.
+        """Every sound QUILL Lite can make, in one window you can hear.
 
         The same window QUILL opens, over the same shared pack format, because
         the sounds are the same sounds -- a listener who has built a scheme in
         one editor should find it offered in the other rather than having to
-        build it twice. QuillLite writes its choice to the shared sound
+        build it twice. QUILL Lite writes its choice to the shared sound
         settings, which is the one place the player reads from.
 
         Not gated by Customize Features: somebody who has silenced everything
@@ -303,7 +303,7 @@ class DocumentViewCommandsMixin:
             play=lambda path: sound_manager.preview_file(Path(path)),
             announce=self._announce,
             app_title=APP_NAME,
-            # So the list is only what QuillLite can actually play. Without it
+            # So the list is only what QUILL Lite can actually play. Without it
             # the window offered a hundred and forty rows, most of which this
             # app never posts.
             app_id="quilllite",
@@ -323,7 +323,7 @@ class DocumentViewCommandsMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_command_palette(self) -> None:
-        """Every command QuillLite has, searchable, with its key beside it.
+        """Every command QUILL Lite has, searchable, with its key beside it.
 
         A menu bar answers "what is under Format?"; a palette answers "how do I
         sort lines?", which is the question somebody actually has. It is also

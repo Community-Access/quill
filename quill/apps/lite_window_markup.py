@@ -1,6 +1,6 @@
 """Markup in a plain document: what Bold writes, and which picker is offered.
 
-QuillLite has always had two kinds of document -- plain and rich -- and one of
+QUILL Lite has always had two kinds of document -- plain and rich -- and one of
 them could not be formatted at all. Ctrl+B in a ``.md`` said "Not available in
 plain text. Press Alt Shift F to switch to rich text", which is a true
 sentence and an unhelpful one: somebody writing Markdown does not want rich
@@ -517,7 +517,7 @@ class DocumentMarkupMixin:
         """Ctrl+K: a link, in whatever markup the document is written in.
 
         Word's key, and everybody's: a link is the one tag every person who has
-        ever written anything has inserted. QuillLite had the kinds and the tag
+        ever written anything has inserted. QUILL Lite had the kinds and the tag
         pickers and no way to make the one tag that matters (bad.md 4.2, Tier 1).
 
         Markdown and HTML only. Rich text says so -- a link in a rich document is

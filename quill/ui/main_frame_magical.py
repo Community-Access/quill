@@ -15,7 +15,7 @@ glance at the screen.
 The fourth approved command, Repeat Last Announcement, shipped as #1304 and
 lives in :mod:`quill.ui.announce_commands`.
 
-The wording is all in the wx-free :mod:`quill.core.magical`, so QuillLite can
+The wording is all in the wx-free :mod:`quill.core.magical`, so QUILL Lite can
 adopt these three without the two editors describing the same change two ways --
 which is the whole point of rule 10, and the reason none of this phrasing is
 written here.

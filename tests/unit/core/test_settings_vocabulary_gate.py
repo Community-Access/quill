@@ -84,7 +84,7 @@ def test_every_alias_names_a_field_that_exists_on_both_sides() -> None:
     broken: list[str] = []
     for lite_field, quill_field in sorted(SETTINGS_ALIASES.items()):
         if lite_field not in lite_fields:
-            broken.append(f"{lite_field} is not a QuillLite setting")
+            broken.append(f"{lite_field} is not a QUILL Lite setting")
         if quill_field not in quill_fields:
             broken.append(f"{quill_field} is not a QUILL setting")
     assert not broken, (

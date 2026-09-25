@@ -1,6 +1,6 @@
-"""Structure in QuillLite: the heading you arrived at, and the list you are in.
+"""Structure in QUILL Lite: the heading you arrived at, and the list you are in.
 
-QuillLite's headings are real in every way that matters to a document and
+QUILL Lite's headings are real in every way that matters to a document and
 invisible in the one way that matters to a listener. In rich text they are the
 point-size ladder (:mod:`quill.ui.richedit_rtf_surface`); in plain markup they
 are Markdown hashes. Neither is a paragraph style, and a Windows edit control
@@ -8,7 +8,7 @@ has no way to tell JAWS or NVDA that a paragraph is a heading -- so the reader
 says nothing, and a listener arrowing down a document hears a line of text with
 no clue that it is a title.
 
-That is squarely GATE-13's "only what the reader cannot know", so QuillLite says
+That is squarely GATE-13's "only what the reader cannot know", so QUILL Lite says
 it: "Heading 2", once, on arrival. The rules and the latch live in the shared
 :mod:`quill.core.structure_announce`, because QUILL announces the same thing the
 same way and two copies would drift apart within a release.
@@ -34,7 +34,7 @@ from over-announcing:
   line the heading is on, and a naive latch reads that as "you have arrived at a
   heading" and says so in the middle of typing. So a move that follows a change
   in the text only re-latches; it never speaks.
-* **Tables are QUILL's, not QuillLite's.** ``include_tables=False`` is passed on
+* **Tables are QUILL's, not QUILL Lite's.** ``include_tables=False`` is passed on
   every call. Cell navigation is a full-QUILL feature and announcing the edge of
   a grid the small editor cannot then navigate would advertise something that is
   not there.
@@ -314,7 +314,7 @@ class DocumentHeadingsMixin:
     def cmd_heading_organizer(self) -> None:
         """Ctrl+Alt+Shift+O: every heading in one list, reordered with arrows.
 
-        QuillLite could already list headings and already move a section up or
+        QUILL Lite could already list headings and already move a section up or
         down; what it could not do was see both at once. Restructuring with four
         separate commands means holding the shape of the document in your head
         while you change it, because nothing reads the result back -- and in the

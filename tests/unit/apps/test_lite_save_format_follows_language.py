@@ -57,7 +57,7 @@ def test_an_untitled_plain_document_is_still_offered_as_text(
 def test_an_untitled_html_document_is_offered_under_its_own_extension(
     lite_window, fake_wx_dialog, tmp_path
 ) -> None:
-    """HTML lands on "All files" rather than a row of its own: QuillLite has no
+    """HTML lands on "All files" rather than a row of its own: QUILL Lite has no
     Markdown-to-HTML writer, so an HTML row would be a promise it cannot keep.
     The name is the part that was wrong, and the name is fixed."""
     win = lite_window("<h1>Title</h1>\n", cursor=0)

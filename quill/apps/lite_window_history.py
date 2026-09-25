@@ -1,6 +1,6 @@
 """Back and Forward: the undo for moving about.
 
-Without these, every jump in QuillLite is one-way. Somebody who pressed F3 to
+Without these, every jump in QUILL Lite is one-way. Somebody who pressed F3 to
 check a word elsewhere in the document, or followed a heading, or went to a line
 number, can only return to the paragraph they were writing if they happen to
 know its line number -- and the line number is exactly the thing a listener was

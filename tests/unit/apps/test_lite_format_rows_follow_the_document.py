@@ -1,6 +1,6 @@
 r"""The Format rows follow the document, not the moment the window was built.
 
-Reported: "I pasted text into QuillLite that was markdown and then used
+Reported: "I pasted text into QUILL Lite that was markdown and then used
 Alt+Shift+F to change to markdown mode. The keys are grayed out in the format
 menu for markdown logic, like promoting and demoting headings, Alt+Shift+Left
 and Right arrow."
@@ -8,7 +8,7 @@ and Right arrow."
 ``tests/unit/apps/test_lite_format_gating.py`` already asserts that the gating
 *table* matches what each command does, and it passed throughout. The table was
 never the problem. The sweep that applies it ran twice -- once when the bar was
-built, and once from ``EVT_MENU_OPEN`` on the document frame -- and a QuillLite
+built, and once from ``EVT_MENU_OPEN`` on the document frame -- and a QUILL Lite
 document is a ``wx.MDIChildFrame`` whose menu bar wxMSW merges into the shell.
 The menu-open event is delivered to the parent. So the sweep ran exactly once,
 against a document that was plain at the time, and every markup row stayed

@@ -623,7 +623,7 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
         metavar="NAME",
         help="Launch directly into a saved Work Persona (Tools > Work Personas...).",
     )
-    # QuillLite's two, and the reason A7 was not the one-liner it looked: QUILL
+    # QUILL Lite's two, and the reason A7 was not the one-liner it looked: QUILL
     # had no "start a document in this kind" seam at all until 2026-09-17
     # (bad.md P2.16, P1.13). Mutually exclusive, because "--rich --plain" has no
     # sensible answer and argparse can say so better than we can.

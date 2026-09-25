@@ -252,7 +252,7 @@ def test_leaving_rich_text_turns_the_formatting_into_markdown(lite_window, answe
 
     An afternoon of headings and bold became a wall of unmarked text, announced
     as "Plain text mode" (bad.md R6). QUILL has converted through
-    ``quill.io.rtf`` since 0.9.0-beta3 and QuillLite may never be behind it.
+    ``quill.io.rtf`` since 0.9.0-beta3 and QUILL Lite may never be behind it.
     """
     win = lite_window("", cursor=0, mode="rich")
     win.editor.set_rtf(markdown_to_rtf("# Title\n\nSome **bold** text.\n").encode("utf-8"))

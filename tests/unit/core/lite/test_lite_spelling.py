@@ -1,7 +1,7 @@
 """Spelling: whose dictionary, and when the checker keeps quiet.
 
 The checking itself is QUILL's and is tested against QUILL. What is tested here
-is the two decisions QuillLite adds, because both are the kind that fail
+is the two decisions QUILL Lite adds, because both are the kind that fail
 silently:
 
 * **The file-type rule.** A live checker in ``settings.json`` flags every key
@@ -11,7 +11,7 @@ silently:
   experiences as mild noise and a screen-reader user experiences as unusable.
 * **Whose folder the taught words land in.** A machine that has never had QUILL
   installed must not grow a ``%APPDATA%\\Quill`` because somebody taught a text
-  editor a word. That is invisible until somebody uninstalls QuillLite and finds
+  editor a word. That is invisible until somebody uninstalls QUILL Lite and finds
   a Quill folder they never asked for.
 
 wx-free, against real files in a temporary directory.

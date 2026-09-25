@@ -1,4 +1,4 @@
-"""QuillLite's spelling context menu: what it offers, and what its rows do.
+"""QUILL Lite's spelling context menu: what it offers, and what its rows do.
 
 The menu is built against a stand-in for ``wx.Menu`` rather than a real one, for
 the reason the line-command tests give: what is being tested is the *decision*
@@ -220,7 +220,7 @@ def test_everything_below_the_corrections_is_in_the_same_place_every_time() -> N
     """The other half of S11, and the reason the two arguments never actually
     conflicted: the part that changes length is at the **front**.
 
-    QuillLite's complaint was a menu whose length changes with where the caret
+    QUILL Lite's complaint was a menu whose length changes with where the caret
     is, putting Undo and Cut a dozen unpredictable rows down whenever the word
     happens to be misspelled. Corrections, a separator, one Spelling Actions
     row, a separator -- so what somebody learns is not a row number, it is
@@ -369,7 +369,7 @@ def test_ignore_once_leaves_the_other_occurrence_alone() -> None:
 def test_the_personal_dictionary_is_named_by_which_one_it_is() -> None:
     """There are two, and "added to dictionary" does not say which."""
     window = _Window("wrold", 0)
-    assert window._dictionary_name("personal") == "your QuillLite dictionary"
+    assert window._dictionary_name("personal") == "your QUILL Lite dictionary"
     window.app.settings.share_quill_dictionary = True
     assert window._dictionary_name("personal") == "QUILL's shared dictionary"
 

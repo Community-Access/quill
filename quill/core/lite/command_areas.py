@@ -1,4 +1,4 @@
-"""Which QuillLite commands belong to which switchable area, and what that hides.
+"""Which QUILL Lite commands belong to which switchable area, and what that hides.
 
 Split out of :mod:`quill.core.lite.commands` under GATE-11. The table there is
 the menu bar; this is the *other* question about every row -- whether Tools >

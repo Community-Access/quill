@@ -1,12 +1,12 @@
 """Bookmarks and the cursor survive closing the document.
 
-The argument for numbered bookmarks in QuillLite is that there is no scrollbar
+The argument for numbered bookmarks in QUILL Lite is that there is no scrollbar
 to remember the position of (its PRD 3.1). That argument does not stop when the
 window closes -- it is strongest then -- so until 2026-09-09 the feature was
 delivering half of what justified it: nine places you marked, gone on reopen.
 
 The store is QUILL's own :class:`~quill.core.bookmarks.DocumentMemory`, keyed by
-absolute path and kept in QuillLite's own data folder. What the two products
+absolute path and kept in QUILL Lite's own data folder. What the two products
 share is the format and the code; they never share the file.
 
 These tests go through the real store on a real temporary path, because the two

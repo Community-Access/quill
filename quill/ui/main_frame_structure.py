@@ -18,7 +18,7 @@ The table half was already here as ``_maybe_announce_table_transition`` and move
 in with it, because the two cues answer the same question ("what have I just
 walked into?") and were drifting apart -- one had a latch and no tests, the other
 had neither. Now both come from :mod:`quill.core.structure_announce`, which
-QuillLite shares for the heading half, and entering a table says how big it is
+QUILL Lite shares for the heading half, and entering a table says how big it is
 instead of only that it happened.
 
 **The list is the third, and it is the one a screen reader gives you

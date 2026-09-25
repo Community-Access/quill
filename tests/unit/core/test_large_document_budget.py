@@ -11,7 +11,7 @@ thread.
 Measured **against a ceiling, not against each other**, and deliberately:
 comparing the two editors would pass a build where both had become slow
 together, which is exactly what happened before ``DocumentText`` existed
-(QuillLite read the control three times per status refresh and QUILL twice).
+(QUILL Lite read the control three times per status refresh and QUILL twice).
 
 The ceilings are generous on purpose -- a CI box under load is several times
 slower than a developer's machine, and a gate that fails on a bad afternoon gets
@@ -102,7 +102,7 @@ _THOUSAND_INVALIDATIONS_CEILING_S = 0.2
 #: One line/column lookup off the cached table: a binary search, so flat.
 _LINE_COLUMN_CEILING_S = 0.01
 
-#: One character before the caret. QuillLite's autoformat used to read the whole
+#: One character before the caret. QUILL Lite's autoformat used to read the whole
 #: buffer for this, on the hottest path in the app (bad.md T1).
 _CHAR_BEFORE_CEILING_S = 0.01
 

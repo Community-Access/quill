@@ -20,7 +20,7 @@ recovery artifact with no round-trip requirement, and writing it in a narrow
 encoding buys a ``UnicodeEncodeError`` that would abort the *save* rather than
 just the backup.
 
-The folder is QuillLite's, not QUILL's -- the same rule as everything else here.
+The folder is QUILL Lite's, not QUILL's -- the same rule as everything else here.
 
 Writing them was only ever half the feature. Until 2026-09-09 there was no way
 to *see* a backup from inside the app, which made this a safety net nobody could

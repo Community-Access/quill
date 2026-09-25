@@ -1,7 +1,7 @@
 """The two windows the work happens in: the pad, and what came back.
 
 Shared by both editors -- see :mod:`quill.ui.hosted_ai_dialogs` for why these
-live in ``quill/ui`` rather than beside QuillLite's own modules.
+live in ``quill/ui`` rather than beside QUILL Lite's own modules.
 
 Split from :mod:`quill.ui.hosted_ai_dialogs` under GATE-11, and the seam is a
 real one rather than a line count: that module is about the *account* -- getting
@@ -59,7 +59,7 @@ ACTIONS: tuple[tuple[str, str, str], ...] = (
     (
         "document_qna",
         "Ask a question about the document",
-        "Type a question; QuillLite finds the parts of the document that answer "
+        "Type a question; QUILL Lite finds the parts of the document that answer "
         "it and sends only those.",
     ),
 )
@@ -271,7 +271,7 @@ class AiPadFrame(wx.Frame):
         self._question = wx.TextCtrl(panel)
         set_accessible_name(self._question, "Your question")
         self._question.SetHelpText(
-            "What you want to know about this document. QuillLite finds the "
+            "What you want to know about this document. QUILL Lite finds the "
             "parts that answer it and sends only those."
         )
         sizer.Add(self._question_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)

@@ -98,7 +98,7 @@ DEFERRED_FEATURES: dict[str, str] = {
     "alt_text": (
         "Describing pictures is not a shipped feature yet. It costs several "
         "times more per request than text does and needs its own limits, so "
-        "it is deliberately last. Nothing in QUILL or QuillLite can reach it."
+        "it is deliberately last. Nothing in QUILL or QUILL Lite can reach it."
     ),
     "chat": (
         "Open-ended chat is not part of the free tier. Every free feature "

@@ -1,4 +1,4 @@
-"""QuillLite's Insert Special Character: what the command does with an answer.
+"""QUILL Lite's Insert Special Character: what the command does with an answer.
 
 The picker itself is tested where it lives -- the catalogue and its search in
 ``tests/unit/core/test_special_characters.py``, the dialog by the contract gates

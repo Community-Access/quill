@@ -5,7 +5,7 @@ questions arrive within a second of each other at launch, and a person who has
 learned one window should not have to learn the other. The decisions behind the
 list are wx-free in ``quill/core/recovery_triage.py``.
 
-**Why this replaced a Yes/No.** The old question was one message box: "QuillLite
+**Why this replaced a Yes/No.** The old question was one message box: "QUILL Lite
 has unsaved work from 69 documents ... Open them now?" Yes opened sixty-nine
 windows. No offered them again next launch. There was no way to say "that one",
 no way to say "never these", and no way to find out that sixty-seven of the

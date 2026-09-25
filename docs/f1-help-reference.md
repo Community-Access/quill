@@ -1077,7 +1077,7 @@ Control coverage: 127 audited sites (127 helped).
 - `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start.
 - `self.transcript`: The episode's transcript as read-only text, when one is available. Empty otherwise.
 
-## QuillLite
+## QUILL Lite
 
 Control coverage: 61 audited sites (61 helped).
 
@@ -1089,7 +1089,7 @@ Control coverage: 61 audited sites (61 helped).
 
 **AI Usage.** How many free AI requests you have left this month and today, and when the count starts again. Your support ID is here too -- that is what QUILL support will ask for. You can also sign this computer out from here, and connect it again whenever you like.
 
-**About QuillLite.** What this copy is, and where it keeps your settings and your recovered work. QuillLite is a small companion to QUILL for All, not a replacement for it: anything to do with AI, dictation, conversion, comparison or publishing lives in QUILL.
+**About QUILL Lite.** What this copy is, and where it keeps your settings and your recovered work. QUILL Lite is a small companion to QUILL for All, not a replacement for it: anything to do with AI, dictation, conversion, comparison or publishing lives in QUILL.
 
 **Answer.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1099,17 +1099,17 @@ Control coverage: 61 audited sites (61 helped).
 
 **Clip Library.** Everything you have copied recently, newest first, whether or not you decided at the time that it mattered. Choose one and press Enter to paste it back.
 
-**Command Palette.** Every command QuillLite has, searchable, with its key beside it. A menu answers 'what is under Format?'; this answers 'how do I sort lines?', which is the question you actually have.
+**Command Palette.** Every command QUILL Lite has, searchable, with its key beside it. A menu answers 'what is under Format?'; this answers 'how do I sort lines?', which is the question you actually have.
 
 **Copy Tray.** Twelve numbered clipboard slots that outlive a restart. Copy into a slot, and paste from it an hour later -- the system clipboard holds one thing, and this is what to do when that is one fewer than you need.
 
-**Customize QuillLite Features.** Turn whole parts of QuillLite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Type in the search box to narrow the list, or choose a profile -- Notepad, WordPad, Recommended, Everything -- to set them all at once. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
+**Customize QUILL Lite Features.** Turn whole parts of QUILL Lite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Type in the search box to narrow the list, or choose a profile -- Notepad, WordPad, Recommended, Everything -- to set them all at once. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
 
-**Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QuillLite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
+**Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
 **Explanation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
-**File format.** How this document will be written back to disk: which character encoding, and which line endings. QuillLite normally writes back exactly what it read, so these only change when you change them here -- and the change happens at the next save, not now.
+**File format.** How this document will be written back to disk: which character encoding, and which line endings. QUILL Lite normally writes back exactly what it read, so these only change when you change them here -- and the change happens at the next save, not now.
 
 **Find.** Find text in this document. Enter finds the next match and Shift Enter the previous one; the search wraps around the end and says so when it does. The window stays open while you work, so F3 and Shift F3 keep moving through the matches after you have gone back to the text.
 
@@ -1125,21 +1125,21 @@ Control coverage: 61 audited sites (61 helped).
 
 **Insert Link.** Where the link points. Leave the address as it is to put a placeholder in and fill it in later -- the link text is whatever you had selected.
 
-**Insert Markdown Tag.** Every piece of Markdown QuillLite can write, in one searchable list: bold, italic, code, the six heading levels, bullet, numbered and task lists, blockquote, link, image, table and footnote. Type to narrow it. Anything selected in your document is wrapped; with nothing selected the markup goes in empty and the cursor lands in the middle of it.
+**Insert Markdown Tag.** Every piece of Markdown QUILL Lite can write, in one searchable list: bold, italic, code, the six heading levels, bullet, numbered and task lists, blockquote, link, image, table and footnote. Type to narrow it. Anything selected in your document is wrapped; with nothing selected the markup goes in empty and the cursor lands in the middle of it.
 
-**Insert Special Character.** Put in a character the keyboard has no key for. Search by name -- dash, quote, euro, acute, arrow -- or by Unicode code point, or clear the search box and browse one of the fifteen groups: whitespace, dashes, quotes, invisibles, typography, marks, currency, maths, fractions, superscripts, arrows, accented letters, Greek and punctuation from other languages. Arrow through the characters to hear each one described and press Enter to insert the one you are on. QuillLite reads back what it put in, because most of this list is invisible on the page. QUILL has the same picker on Shift+F2.
+**Insert Special Character.** Put in a character the keyboard has no key for. Search by name -- dash, quote, euro, acute, arrow -- or by Unicode code point, or clear the search box and browse one of the fifteen groups: whitespace, dashes, quotes, invisibles, typography, marks, currency, maths, fractions, superscripts, arrows, accented letters, Greek and punctuation from other languages. Arrow through the characters to hear each one described and press Enter to insert the one you are on. QUILL Lite reads back what it put in, because most of this list is invisible on the page. QUILL has the same picker on Shift+F2.
 
 **Key for.** Press the key combination you want, and it appears in the box. Pressing another replaces it. Escape leaves the command on the key it has now.
 
-**Keyboard Manager.** Every command QuillLite has, with the key it answers to. Type part of a command's name to find it, or press Record a Key and press a combination to be told what that key already does. Assigning a key somebody else has names them and asks before moving it. Insert is never bindable: it is the key NVDA and JAWS use as their own modifier.
+**Keyboard Manager.** Every command QUILL Lite has, with the key it answers to. Type part of a command's name to find it, or press Record a Key and press a combination to be told what that key already does. Assigning a key somebody else has names them and asks before moving it. Insert is never bindable: it is the key NVDA and JAWS use as their own modifier.
 
-**Keyboard shortcuts.** Every key QuillLite binds, menu by menu. It is generated from the same table that builds the menus, so it cannot drift from what is actually bound. Read it with the arrow keys; Escape closes it.
+**Keyboard shortcuts.** Every key QUILL Lite binds, menu by menu. It is generated from the same table that builds the menus, so it cannot drift from what is actually bound. Read it with the arrow keys; Escape closes it.
 
-**Manage Abbreviations.** Your abbreviations: type the short form and a space, and the long form appears. This is QuillLite's own list unless you asked it, in Preferences, to share the one QUILL and Quill Inkwell use.
+**Manage Abbreviations.** Your abbreviations: type the short form and a space, and the long form appears. This is QUILL Lite's own list unless you asked it, in Preferences, to share the one QUILL and Quill Inkwell use.
 
 **Marks.** The places you have passed through, newest first, with the line each one is on. Choose one and press Enter to go there. A mark is not a bookmark: a bookmark is somewhere you meant to keep, a mark is where you were standing before you went to look something up.
 
-**Preferences.** Every setting QuillLite has, in one window. Two of them live only here: what Control N creates, and how often unsaved work is copied aside. The rest -- theme, word wrap, and the editor font -- are also on the View menu, where you will reach them faster.
+**Preferences.** Every setting QUILL Lite has, in one window. Two of them live only here: what Control N creates, and how often unsaved work is copied aside. The rest -- theme, word wrap, and the editor font -- are also on the View menu, where you will reach them faster.
 
 **Proofread.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
@@ -1147,7 +1147,7 @@ Control coverage: 61 audited sites (61 helped).
 
 **QUILL AI: what is sent, and what is kept.** The agreement, in full, before anything is sent. Read it with the arrow keys. I Agree turns AI help on; No Thanks leaves it off and changes nothing else. You can read this again, or withdraw it, from Tools, AI, Privacy Agreement at any time.
 
-**QuillLite.** Your document. This is the whole editor: type, and Control S saves. The title bar leads with this document's number, then its name, whether it is plain text or rich text, and whether there is anything unsaved. Control N opens another document beside this one, numbered; Alt+1 to Alt+9 go straight to one, Control Tab and Control F6 move to the next, and the Window menu lists them all. Documents live inside one QuillLite window, so Alt+Tab will not step between them -- those four are how you move. Press F6 for the status bar, which carries the position, the word count, the encoding and the line endings.
+**QUILL Lite.** Your document. This is the whole editor: type, and Control S saves. The title bar leads with this document's number, then its name, whether it is plain text or rich text, and whether there is anything unsaved. Control N opens another document beside this one, numbered; Alt+1 to Alt+9 go straight to one, Control Tab and Control F6 move to the next, and the Window menu lists them all. Documents live inside one QUILL Lite window, so Alt+Tab will not step between them -- those four are how you move. Press F6 for the status bar, which carries the position, the word count, the encoding and the line endings.
 
 **Replace.** Find text and put something else in its place. Replace changes the match you are on and moves to the next; Replace All changes every one and tells you how many. In a rich text document Replace All asks first, because replaced text takes the formatting of the run it lands in.
 
@@ -1167,8 +1167,8 @@ Control coverage: 61 audited sites (61 helped).
 
 #### (module level) (`quill/apps/lite_dialogs.py`)
 
-- `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in. A 'keep as is' row means this file arrived in something else, which QuillLite reads and writes back but does not offer as a new choice.
-- `newline_choice`: CRLF is what Windows programs write. LF is what Unix, macOS and most build tools expect. QuillLite writes back whichever the file arrived with unless you change it here.
+- `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in. A 'keep as is' row means this file arrived in something else, which QUILL Lite reads and writes back but does not offer as a new choice.
+- `newline_choice`: CRLF is what Windows programs write. LF is what Unix, macOS and most build tools expect. QUILL Lite writes back whichever the file arrived with unless you change it here.
 - `close_btn`: Close this window and go back to your document.
 - `entry`: Type part of a name to narrow the list below. Leave it empty to see everything. Press Enter or Down Arrow to move to the list.
 - `listbox`: Markdown makes Bold write two asterisks and the heading keys write hashes. HTML makes them write <strong> and <h2>, and offers the HTML tag picker. Plain text writes no markup at all and is right for a letter, a log or a script. The choice lasts as long as this window is open; the file itself is not changed.
@@ -1199,9 +1199,9 @@ Control coverage: 61 audited sites (61 helped).
 - `field`: The key combination you last pressed. Press another to change it.
 #### KeymapEditorDialog (`quill/apps/lite_keymap_editor.py`)
 
-- `self.listbox`: Every command QuillLite has, with the key it answers to. Press Enter on one to give it a different key.
+- `self.listbox`: Every command QUILL Lite has, with the key it answers to. Press Enter on one to give it a different key.
 - `self.search`: Type part of a command's name, or of the menu it is in. Press Down to move into the list.
-- `self.record`: Turn this on and press a key combination. QuillLite says what that key does today, so you can find a free one without reading the whole list.
+- `self.record`: Turn this on and press a key combination. QUILL Lite says what that key does today, so you can find a free one without reading the whole list.
 #### (module level) (`quill/apps/lite_preferences.py`)
 
 - `mode_choice`: What Control N creates. New Plain Text and New Rich Text ignore this.
@@ -1209,19 +1209,19 @@ Control coverage: 61 audited sites (61 helped).
 - `restore`: Reopen last session's files, in the same numbered order. Different from recovering unsaved work, which happens whether this is on or not.
 - `keep_untitled`: On: work you never saved is offered back whether or not the window had a file. Off: only documents with a file are offered, and the copies of untitled ones are deleted rather than kept -- keeping something that is never offered would be a promise nothing can redeem. Identical copies are folded into one either way, and anything older than a month is dropped. QUILL has the same setting.
 - `blank`: On: a new Untitled document is waiting when the app opens, the way Notepad and WordPad do it. Off: the app opens with nothing, and Control N or Open makes the first document -- which is what you want if you always open an existing file and were closing an empty one every time. Files you open by double-clicking, last session's documents and recovered work all still appear either way.
-- `share`: Off: abbreviations are QuillLite's own. On: read and write the same library QUILL and Quill Inkwell use, so an abbreviation added in any of them works in all of them. Turning this on creates a QUILL data folder if you do not already have one.
-- `share_dict`: Off: words you teach the spell checker are QuillLite's own. On: read and write the same dictionary QUILL uses, so a word taught in either is known to both. Turning this on creates a QUILL data folder if you do not already have one.
-- `keep_clips`: Off: the clip library holds only what you put there with Keep Clip. On: every piece of text you copy or cut inside a QuillLite document is added to it automatically, up to the last two hundred, and Recent Clips offers them all. That includes anything you had pasted into a document and copied back out -- a password, a licence key, a private address -- and it is written to a file in QuillLite's data folder. It never sees what you copy in other programs.
-- `updates`: Once a day, when the app opens, ask GitHub whether a newer QuillLite has been published. Nothing is said unless there is one, and nothing is downloaded or installed without being asked -- a new version shows you what changed and offers it. Off means Check for Updates on the Help menu is the only check that ever runs.
+- `share`: Off: abbreviations are QUILL Lite's own. On: read and write the same library QUILL and Quill Inkwell use, so an abbreviation added in any of them works in all of them. Turning this on creates a QUILL data folder if you do not already have one.
+- `share_dict`: Off: words you teach the spell checker are QUILL Lite's own. On: read and write the same dictionary QUILL uses, so a word taught in either is known to both. Turning this on creates a QUILL data folder if you do not already have one.
+- `keep_clips`: Off: the clip library holds only what you put there with Keep Clip. On: every piece of text you copy or cut inside a QUILL Lite document is added to it automatically, up to the last two hundred, and Recent Clips offers them all. That includes anything you had pasted into a document and copied back out -- a password, a licence key, a private address -- and it is written to a file in QUILL Lite's data folder. It never sees what you copy in other programs.
+- `updates`: Once a day, when the app opens, ask GitHub whether a newer QUILL Lite has been published. Nothing is said unless there is one, and nothing is downloaded or installed without being asked -- a new version shows you what changed and offers it. Off means Check for Updates on the Help menu is the only check that ever runs.
 - `spell_typing`: Report a misspelling in the status bar shortly after you finish a word. Never in a source or configuration file, whatever this says: every identifier in one would be a false alarm. F7 reviews the whole document either way.
 - `quotes`: Turn a straight quote into a matching curly one, the way a typesetter would. Welcome in prose. Never in a source or configuration file, whatever this says -- a curly quote there is a syntax error. Autocorrect also has to be switched on in Tools, Customize Features.
 - `dashes`: Typing a second hyphen replaces both with a single long dash. Same two conditions as curly quotes: Autocorrect switched on, and not in a source or configuration file.
 - `action_choice`: How a copy, paste, undo or started selection reports back. Play a sound is what the app has always done. Speak the action says the word instead, which is what you want before you have learned the tones. A command that has no tone in the sound pack speaks either way, and a command that could not do what you asked always says so in words.
 - `miss_choice`: Asked separately from the setting above because F3 is pressed in runs: hearing Not found spoken on every press is the fastest way to end up turning speech off. The status bar carries the words whichever you pick, so nothing is lost by choosing the tone.
-- `heading_choice`: Where the level goes relative to the heading itself. Before the text is one sentence QuillLite says on its own -- Heading 2, Installing -- and it is the one that survives a jump: pressing Control Home or landing on a search hit makes a screen reader cancel whatever it was about to say, and a level waiting its turn behind that is never heard. After the text lets your reader read the line and adds the level behind it, which is quieter on ordinary line-by-line reading.
+- `heading_choice`: Where the level goes relative to the heading itself. Before the text is one sentence QUILL Lite says on its own -- Heading 2, Installing -- and it is the one that survives a jump: pressing Control Home or landing on a search hit makes a screen reader cancel whatever it was about to say, and a level waiting its turn behind that is never heard. After the text lets your reader read the line and adds the level behind it, which is quieter on ordinary line-by-line reading.
 - `wrap_find`: On: Find Next reaching the end of the document starts again at the top. Off: it stops and tells you which end you are at, so you know to go to the other one and press again rather than that the word is absent.
 - `wrap`: When off, long lines run past the right edge and scroll instead.
-- `throttle`: Zero, the default, says everything as it happens. A larger number drops anything QuillLite would say too soon after the last thing it said, which is what you want if holding a key down floods your screen reader. Nothing is lost by it: the status bar is written either way, and F6 reads it back.
+- `throttle`: Zero, the default, says everything as it happens. A larger number drops anything QUILL Lite would say too soon after the last thing it said, which is what you want if holding a key down floods your screen reader. Nothing is lost by it: the status bar is written either way, and F6 reads it back.
 - `autosave`: How often a modified document is copied to the recovery folder. The copy is beside your file, never over it, and is removed when you save.
 - `font_field`: The face and size the editor draws in. Change Font opens the chooser; this box reads back whatever you pick.
 - `choose_btn`: Open the font chooser and pick a face and size for the editor.
@@ -1247,7 +1247,7 @@ Control coverage: 61 audited sites (61 helped).
 
 - `close`: Closes this window. Nothing is sent, and nothing in your document changes.
 - `agree`: Turns on AI help. You can withdraw this later in the AI menu, or in Preferences.
-- `decline`: Leaves AI help switched off. Everything else in QuillLite is unchanged.
+- `decline`: Leaves AI help switched off. Everything else in QUILL Lite is unchanged.
 #### AiSignInFrame (`quill/ui/hosted_ai_dialogs.py`)
 
 - `browse`: Opens the connect page in your web browser with this code already filled in. Press Confirm there, then come back here.
@@ -1264,7 +1264,7 @@ Control coverage: 61 audited sites (61 helped).
 #### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `self._actions`: Choose what the AI should do with the text above. Each choice has its own description -- press F1 on one to hear it.
-- `self._question`: What you want to know about this document. QuillLite finds the parts that answer it and sends only those.
+- `self._question`: What you want to know about this document. QUILL Lite finds the parts that answer it and sends only those.
 - `self._send`: Sends the text above and uses one of your free requests.
 #### AiResultFrame (`quill/ui/hosted_ai_pad.py`)
 

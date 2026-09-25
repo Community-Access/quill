@@ -1,7 +1,7 @@
 """Printing a rich document as it looks: ``EM_FORMATRANGE`` on the shared surface.
 
 Neither editor printed formatting. QUILL printed ``editor.GetValue()`` -- flat
-text with no structural marker at all -- and QuillLite at least prefixed a
+text with no structural marker at all -- and QUILL Lite at least prefixed a
 heading line with its level, which meant the *small* product was ahead on paper
 (bad.md PR1, PR3). Both are fixed here, in one place, because a second
 implementation of this is a second set of pagination bugs.

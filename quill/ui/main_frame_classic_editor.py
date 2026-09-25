@@ -126,7 +126,7 @@ class ClassicEditorMixin:
 
         The full description (category, decimal code point, what this character
         does to a search) is one key along, in ``describe_character_detail``.
-        QuillLite has split them this way since it shipped (bad.md P1.13).
+        QUILL Lite has split them this way since it shipped (bad.md P1.13).
         """
         description = describe_character(self.editor.GetValue(), self.editor.GetInsertionPoint())
         # _set_status speaks it and leaves it in the status bar to be read

@@ -1,6 +1,6 @@
 """`--rich` and `--plain` start a document in that kind (bad.md A7, P2.16).
 
-QuillLite has had both since it shipped. The row looked like a one-liner and
+QUILL Lite has had both since it shipped. The row looked like a one-liner and
 was not: QUILL had no "start a document in this kind" seam at all -- `new_file`
 made a document in whatever `default_new_document_format` said, and the only
 way to another kind was the switcher afterwards. `new_document_in_format`

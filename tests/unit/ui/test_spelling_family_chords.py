@@ -1,6 +1,6 @@
 """The spelling family: one key meant two things, and one of them taught the dictionary.
 
-``Alt+F7`` was Add Word to Dictionary in QuillLite and the word-level check in
+``Alt+F7`` was Add Word to Dictionary in QUILL Lite and the word-level check in
 QUILL. So the same reflex, in two editors that look and sound alike, either
 looked a word up or taught a stored dictionary a word forever -- and the second
 one is not undone by pressing the key again.
@@ -22,7 +22,7 @@ proper noun (bad.md 4.1).
 **Ranked review became a checkbox.** Spell Check and Spell Check (Ranked by
 Frequency) were one dialog opened two ways, on two chords, in two menu rows --
 one verb registered twice (bad.md 7.1). The F7 chord family had no room for
-the second once Alt+F7 changed hands, and the fold hands QuillLite ranked
+the second once Alt+F7 changed hands, and the fold hands QUILL Lite ranked
 review for the first time, because it shares the dialog and never had the
 second command.
 """
@@ -66,7 +66,7 @@ def test_spelling_for_this_word_agrees_in_both() -> None:
 
 
 def test_shift_f7_stays_the_thesaurus_and_quilllite_leaves_it_alone() -> None:
-    """QuillLite has no thesaurus, so the honest answer for the key is silence."""
+    """QUILL Lite has no thesaurus, so the honest answer for the key is silence."""
     from quill.core.keymap import DEFAULT_KEYMAP
 
     assert DEFAULT_KEYMAP["tools.thesaurus"] == "Shift+F7"

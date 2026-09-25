@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL 1.0.0</title>
   <style>
@@ -2456,15 +2456,15 @@ decides what to keep based on <em>what</em> you typed, which is why the
 rule that stops it typing into a password manager looks at the window
 and not at the text. <strong>Ctrl+Shift+E</strong> stops it, the tray
 menu stops it, and Safe Mode never starts it.</p>
-<h2 id="quilllite-and-one-family">QuillLite, and one family</h2>
-<p><strong>QuillLite</strong> is the editor out of QUILL, on its own: a
+<h2 id="quill-lite-and-one-family">QUILL Lite, and one family</h2>
+<p><strong>QUILL Lite</strong> is the editor out of QUILL, on its own: a
 Notepad-scale product for somebody who wants to open a file, change a
 line and save it, without a writing environment in the way. It installs
 beside QUILL, keeps its own settings in its own folder, and is a
 separate download. It is not a cut-down QUILL so much as the same editor
 with everything else taken out – the two share the code that does the
 editing, which is why a fix to one arrives in the other.</p>
-<p>That sharing is a rule, not an accident: <strong>QuillLite may never
+<p>That sharing is a rule, not an accident: <strong>QUILL Lite may never
 be ahead of QUILL.</strong> If the small product needs something the big
 one cannot do, the capability goes into shared code and QUILL gets a way
 to reach it in the same change. A feature the small product has and the
@@ -2472,20 +2472,20 @@ big one does not is backwards, and invisible – nobody opens QUILL and
 notices the absence of a thing they have only ever seen elsewhere.</p>
 <p>A twenty-nine item pass in September 2026 made that true rather than
 aspirational.</p>
-<p><strong>QUILL gained what QuillLite already had.</strong> One
+<p><strong>QUILL gained what QUILL Lite already had.</strong> One
 document model instead of one and a half (QUILL had a text mirror and a
-hand-rolled statistics cache; QuillLite had the whole object). Spelling
+hand-rolled statistics cache; QUILL Lite had the whole object). Spelling
 suggestions that spell themselves as you arrow, which is the only way to
 choose between “receive” and “recieve” by ear. A Spelling Announcements
 window. And a guard on the formatting keys the editing control brings
 with it – <code>Ctrl+U</code> and friends, which used to apply a
 formatting run to a Markdown or plain document that was never marked
 changed, never announced and never saved.</p>
-<p><strong>QuillLite gained what QUILL already had</strong>, where the
+<p><strong>QUILL Lite gained what QUILL already had</strong>, where the
 rule allows it: Word’s <code>F12</code>, <code>Ctrl+F12</code> and
 <code>Ctrl+Shift+F12</code> for Save As, Open and Print.</p>
 <p><strong>The keyboards converged.</strong> Sixteen commands came off
-QUILL’s leader chord onto the plain keys QuillLite already used,
+QUILL’s leader chord onto the plain keys QUILL Lite already used,
 thirteen commands that existed only inside a keymap profile got real
 defaults, and every registered editor command now has a key or a written
 reason not to. Eight keys still differ on purpose, each with its reason
@@ -2522,13 +2522,13 @@ rewritten little-endian by a save that changed nothing else, and a CR
 file used to open the window reading “CRLF”, so confirming it converted
 the document.</p>
 <p><strong>Start from the setup you already have.</strong> A
-<strong>QuillLite</strong> feature profile gives QUILL QuillLite’s nine
-menus and nothing else – switching features <em>off</em> rather than
-hiding them, so wanting one back is one tick. **Tools &gt; Customize and
-Support</p>
+<strong>QUILL Lite</strong> feature profile gives QUILL QUILL Lite’s
+nine menus and nothing else – switching features <em>off</em> rather
+than hiding them, so wanting one back is one tick. **Tools &gt;
+Customize and Support</p>
 <blockquote>
-<p>Bring My QuillLite Settings…** (<code>Alt+Shift+F11</code>) merges
-your QuillLite abbreviations, dictionary, copy tray, clip library and
+<p>Bring My QUILL Lite Settings…** (<code>Alt+Shift+F11</code>) merges
+your QUILL Lite abbreviations, dictionary, copy tray, clip library and
 bookmarks into QUILL and shares them from then on, so a change in either
 editor is a change in both, and copies your preferences and rebound keys
 across once. It tells you what it is about to do – including what it is
@@ -2543,7 +2543,7 @@ by letter because reading a whole menu aloud costs ten seconds. A new
 check found 170 collisions across the family, from Tools &gt; Customize
 offering “Export…” three times to six in Cast’s Help menu. All 170 are
 fixed, and the check keeps them fixed.</p>
-<p>QuillLite has its own user guide, release notes and sign-off
+<p>QUILL Lite has its own user guide, release notes and sign-off
 checklist in <code>standalone/quilllite/docs/</code>.</p>
 <h2 id="quillins-extending-quill">Quillins: extending QUILL</h2>
 <p>Quillins are QUILL’s extensions. The model is capability-and-consent:

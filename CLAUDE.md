@@ -74,9 +74,9 @@ QUILL is a layered wxPython desktop application with strict import boundaries:
 - **`quill/stability`** — cross-cutting runtime safety: `safe_subprocess.py`, `crash_report.py` (diagnostic bundles), `redaction.py` (secret scrubbing), `task_manager.py`, `wx_heartbeat.py`, `safe_mode.py`.
 - **`quill/tools`** — internal CI gates: `check_banned_patterns.py`, `module_size_budget.py`, `network_egress_audit.py`, `dialog_inventory.py`, `dialog_button_contract.py`, `quillin_lint.py`, `error_code_audit.py`.
 - **`quill/plugins`** — plugin-facing API surfaces and Quillin (extension) manifest model.
-- **`quill/apps`** — the QuillVille apps, each an entry point plus its mixins: Radio, Cast, Studio, Weather, Inkwell, Converter, Player, Beacon and QuillLite. `standalone/<app>/` is only a packaging shell; **feature code never lives there**, because every repo-wide gate scopes to `quill/` and a surface no gate can see is one that rots.
+- **`quill/apps`** — the QuillVille apps, each an entry point plus its mixins: Radio, Cast, Studio, Weather, Inkwell, Converter, Player, Beacon and QUILL Lite. `standalone/<app>/` is only a packaging shell; **feature code never lives there**, because every repo-wide gate scopes to `quill/` and a surface no gate can see is one that rots.
 
-**QuillLite may never be ahead of QUILL.** `quill.apps.lite` is the editor-only
+**QUILL Lite may never be ahead of QUILL.** `quill.apps.lite` is the editor-only
 sibling (`standalone/quilllite/`), and it exists on one condition: if it needs
 something the editor cannot do, the capability goes in the **shared** package and
 QUILL gets a way to reach it in the same change. A feature the small product has
@@ -102,7 +102,7 @@ the tree resolves, which is what stops a reshuffle turning those comments into
 lies. Lower number wins when two conflict. In brief: Microsoft's key wins for a
 function both editors have (1); the command both products have keeps the chord
 (2); frequency breaks ties (3); destructive habits are fixed first (4); a chord
-free in both becomes an alias rather than a move (5); nothing QuillLite reaches
+free in both becomes an alias rather than a move (5); nothing QUILL Lite reaches
 plainly lives on QUILL's leader (6); editor chords are for the editor (7); every
 command has a key or a written reason (8); once-a-year commands get *a* key, not
 a short one (9); value flows both ways but violations flow one (10); every
@@ -134,7 +134,7 @@ are pytest gates and one is a tool in `platform_report`:
   found 46 stale ones, several since taken by a different command -- so
   following the guide did the wrong thing rather than nothing.
 - **GATE-DOCKEY** (`tests/unit/docs/test_documented_chord_ownership.py`), the
-  other half of that one and added 2026-09-24: wherever a QuillLite document
+  other half of that one and added 2026-09-24: wherever a QUILL Lite document
   writes a command's **name beside a chord**, that chord must be one the command
   answers to (`DEFAULT_ALIASES` counts). The sibling gate cannot see a
   misattribution, because a misattributed chord is still bound -- the six the
@@ -163,9 +163,9 @@ are pytest gates and one is a tool in `platform_report`:
 
 **Access keys (GATE-14):** within one window, no two controls may claim the same `&` mnemonic. Windows cycles focus between duplicates instead of pressing, so one of the pair silently cannot be reached and nothing announces the loss (the first sweep found 128 collisions across 76 windows). `check_access_keys.py` scopes a `wx.Dialog`/`wx.Frame` subclass as one window and any other class per method. Three fixes, in order: **OK, Cancel and Close carry no access key at all** (Enter and Escape already serve them, and every letter they give up resolves a collision elsewhere); otherwise move the less important control to a free letter; and when a dense window genuinely runs out — an embedded radio surface is under a menu bar that owns thirteen of twenty-six letters — the loser gets **no** mnemonic rather than a duplicate, because a duplicate advertises a key that may not work while silence is merely silent and Tab still arrives.
 
-**F1 answers everywhere (GATE-<APP>-HELP):** every window in every app answers F1 with its authored purpose and then the focused control's own help. The engine is shared (`quill/ui/app_context_help.py` + `quill/core/control_help.py`); each app owns a `surface_help` catalogue and a help-audit gate over its own modules — radio, cast, player, studio, inkwell, weather, converter, beacon and QuillLite, all nine rostered in `platform_report`. Authored help must be **inline `SetHelpText` at the construction site**: that is what the audit can verify (`helped`); help set anywhere else is `help-elsewhere` and proves nothing. A new control snapshots as `missing` and fails the build until somebody writes a sentence or classifies it deliberately. One load-bearing detail: `SetHelpText` stores nothing without a `wx.HelpProvider`, so `ensure_help_provider()` runs at activation — without it every help string ever written is dead. The complete authored content renders to `docs/f1-help-reference.md` (`build_help_reference.py`, drift-gated).
+**F1 answers everywhere (GATE-<APP>-HELP):** every window in every app answers F1 with its authored purpose and then the focused control's own help. The engine is shared (`quill/ui/app_context_help.py` + `quill/core/control_help.py`); each app owns a `surface_help` catalogue and a help-audit gate over its own modules — radio, cast, player, studio, inkwell, weather, converter, beacon and QUILL Lite, all nine rostered in `platform_report`. Authored help must be **inline `SetHelpText` at the construction site**: that is what the audit can verify (`helped`); help set anywhere else is `help-elsewhere` and proves nothing. A new control snapshots as `missing` and fails the build until somebody writes a sentence or classifies it deliberately. One load-bearing detail: `SetHelpText` stores nothing without a `wx.HelpProvider`, so `ensure_help_provider()` runs at activation — without it every help string ever written is dead. The complete authored content renders to `docs/f1-help-reference.md` (`build_help_reference.py`, drift-gated).
 
-**Behavioural coverage (GATE-LITE-COVER):** every handler in QuillLite's command
+**Behavioural coverage (GATE-LITE-COVER):** every handler in QUILL Lite's command
 table is classified `covered` or `shape_only` in
 `tests/unit/ui/fixtures/lite_command_coverage.json`, and **the `shape_only` list
 is empty** — every handler has a behavioural test (161 of them

@@ -815,7 +815,7 @@ alt text on demand. Behind `future.ai` for 1.0.
 door**: the AI menu opens with five rows that need no account, no API key and no
 decision about which company sees your writing. Everything TAI-01 to TAI-31 test
 is behind one remembered checkbox. Same five commands, same five chords and the
-same shared code as QuillLite, so a difference between the two products here is
+same shared code as QUILL Lite, so a difference between the two products here is
 itself the defect.
 
 **Before you start**
@@ -827,11 +827,11 @@ itself the defect.
 1. Open the **AI** menu and read it top to bottom.
 2. Press **Ctrl+Alt+G**.
 3. Read and accept the agreement; then **Ctrl+Alt+Shift+F4** and connect
-   (QuillLite: **Ctrl+Alt+Shift+F10** — the launcher row is spoken for in QUILL).
+   (QUILL Lite: **Ctrl+Alt+Shift+F10** — the launcher row is spoken for in QUILL).
 4. Select a paragraph, **Ctrl+Alt+G**, choose Summarize, **Enter**. Keep typing
    while it thinks.
 5. In the result window press **Replace**, then **Ctrl+Z**.
-6. **Ctrl+Alt+Shift+F2** (QuillLite: **Ctrl+Alt+Shift+F9**); then tick **Show
+6. **Ctrl+Alt+Shift+F2** (QUILL Lite: **Ctrl+Alt+Shift+F9**); then tick **Show
    advanced AI features**; then untick it.
 7. **Ctrl+Alt+Shift+K** and withdraw.
 
@@ -858,7 +858,7 @@ itself the defect.
   dimmed, **Usage and Connect or Sign Out stay live**, and **Privacy Agreement is
   never dimmed** — it is the door the feature is turned on through.
 - Withdrawing signs this computer out as well, and says so.
-- **QuillLite must do all of the above identically**, with the same sentences.
+- **QUILL Lite must do all of the above identically**, with the same sentences.
   Three of the five keys are identical; Usage and Connect differ, because
   Ctrl+Alt+Shift+F9 and F10 are QuillVille launchers in QUILL. Check both.
 
