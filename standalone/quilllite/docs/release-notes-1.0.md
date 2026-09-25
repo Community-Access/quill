@@ -736,15 +736,15 @@ until you press Replace My Selection.
 
 **Starting from nothing — four steps, once.**
 
-1. **Turn the area on.** **Tools ▸ Customize Features** (**Ctrl+Alt+F10**),
-   tick **AI help**, Save. It ships off.
-2. **Read the agreement and accept it.** Turning the area on asks straight away.
-   You can decline and keep the menu; the switch does not flip itself back.
-3. **Connect this computer.** **Tools ▸ AI ▸ Connect or Sign Out**
-   (**Ctrl+Alt+Shift+F10**), where accepting the agreement takes you anyway.
-   The window opens on an **eight-character code**; **Open the Connect Page**
-   fills it in for you in the browser, or type it into the web page on any
-   device. **No account, no password, no email address.** The window confirms
+1. **Open the agreement from the AI menu.** **Tools ▸ AI ▸ Privacy Agreement**
+   (**Ctrl+Alt+Shift+K**). It is there even while AI help is off.
+2. **Read it and choose I Agree.** That switches AI help on; there is no second
+   switch to find. (Ticking **AI help** in **Tools ▸ Customize Features** asks
+   the same question, if you are already there.)
+3. **Connect this computer.** The **Connect or Sign Out** window
+   (**Ctrl+Alt+Shift+F10**) opens by itself on an **eight-character code**;
+   **Open the Connect Page** fills it in for you in the browser, or type it into
+   the web page on any device. **No account, no password, no email address.** The window confirms
    in place — focus does not jump to something you did not open.
 4. **Try the short one.** Select a paragraph, press **Ctrl+Alt+G**, choose
    **Summarize**. It is the shortest round trip there is, so it is the fastest

@@ -4002,25 +4002,10 @@ carrying the heading it sits under, and sends those. So a hundred-page
 document is a fair thing to ask about — what the limit bounds is how
 much goes in one request, not how big your document may be. The pad
 shows you which passages were chosen before anything is sent.</p>
-<p><strong>How often:</strong> <strong>100 requests a month</strong>, no
-more than <strong>20 in a day</strong> and <strong>8 in an
-hour</strong>. Summarize, rewrite and questions each have their own
-monthly share of that. The hourly and daily numbers are there to stop
-one runaway loop spending a month’s worth in an afternoon, not to ration
-ordinary work.</p>
-<p><strong>A new connection starts smaller.</strong> For its
-<strong>first 48 hours</strong>, a computer that has just connected has
-a smaller monthly allowance — currently <strong>15 requests</strong> —
-and after that the full allowance applies on its own; there is nothing
-to do. It is how a free service with no accounts stops somebody
-scripting connection after connection for a fresh allowance each time,
-and somebody trying the feature out rarely reaches 15 on their first
-day. <strong>Usage</strong> says so while it applies, including exactly
-when it ends. If you need more sooner — a class, a deadline — use
-<strong>Get Help from Support</strong>: your support ID goes with the
-message automatically, and support can lift the limit for your account.
-The numbers here are the service’s current settings; Usage always shows
-the live ones.</p>
+<p><strong>How often:</strong> there is a monthly, a daily and an hourly
+allowance, and a smaller one for a computer’s first 48 hours.
+<em>Limits, and when they start again</em>, just below, has every number
+and every rule.</p>
 <p><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) shows
 what you have used and what is left. The service is free and has a
 fair-use ceiling; this is where you find out where you stand, before you
@@ -4041,6 +4026,125 @@ one command in this menu that never needs permission to open, because a
 door you can only reach by agreeing to something is not a door.</p>
 <p>Every key named here is listed again in <em>Every key, in one
 table</em>, under <strong>Tools ▸ AI</strong>.</p>
+<h3 id="limits-and-when-they-start-again">Limits, and when they start
+again</h3>
+<p>QUILL’s free AI is free because it is shared, so it has limits. This
+is every one of them, in one place.</p>
+<h4 id="your-allowance-at-a-glance">Your allowance at a glance</h4>
+<p>These are the service’s current settings. They are read from the
+service every time, never built into the program, so one can change
+without an update — and <strong>Usage</strong> always shows the numbers
+that actually apply to you right now.</p>
+<table>
+<thead>
+<tr>
+<th>Limit</th>
+<th>How many</th>
+<th>Starts again</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requests a month</td>
+<td>100</td>
+<td>The 1st of the month</td>
+</tr>
+<tr>
+<td>Requests a day</td>
+<td>20</td>
+<td>Every night</td>
+</tr>
+<tr>
+<td>Requests an hour</td>
+<td>8</td>
+<td>At the top of each hour</td>
+</tr>
+<tr>
+<td>Any one kind of request a month</td>
+<td>60</td>
+<td>The 1st of the month</td>
+</tr>
+<tr>
+<td>A new connection’s first 48 hours</td>
+<td>15</td>
+<td>Rises to 100 on its own</td>
+</tr>
+</tbody>
+</table>
+<p>“Any one kind” means Summarize, Rewrite, Proofread, Explain and Ask
+About This Document each have a monthly share of 60, so one of them
+cannot use up the whole month. The daily and hourly numbers are there to
+stop a runaway loop spending a month’s worth in an afternoon, not to
+ration ordinary work.</p>
+<h4 id="when-the-counts-start-again">When the counts start again</h4>
+<p>The service keeps time in <strong>UTC</strong>, not in your time
+zone:</p>
+<ul>
+<li><strong>The hour</strong> starts again on the hour.</li>
+<li><strong>The day</strong> starts again at <strong>midnight
+UTC</strong>. That is <strong>8 PM Eastern</strong> or <strong>5 PM
+Pacific</strong> in summer, an hour earlier in winter — so in North
+America the new day’s requests arrive in the evening, not at
+midnight.</li>
+<li><strong>The month</strong> starts again at <strong>midnight UTC on
+the 1st</strong>. Usage shows the exact date.</li>
+</ul>
+<h4 id="what-counts-as-a-request">What counts as a request</h4>
+<p>One request is one press of <strong>Send</strong> that comes back
+with an answer. <strong>Try Again</strong> is another request. A request
+that does not produce an answer is <strong>not counted</strong>: if it
+was too long, if there was no connection, if the service had a problem,
+or if a limit had already been reached, nothing is used. Showing Usage
+or About never uses anything.</p>
+<h4 id="when-you-reach-a-limit">When you reach a limit</h4>
+<p>The AI window says <strong>which</strong> limit you reached and
+<strong>when it starts again</strong>, and focus moves to that message
+so you can read it again with the arrow keys. It ends with an error code
+— <code>QUILL-AI-GATEWAY-QUOTA</code> for a limit — which is worth
+including if you write to support. Nothing is used, nothing in your
+document changes, and everything else in the editor carries on as
+normal. Wait until the time it names, or ask for more (below).</p>
+<p>If the message says QUILL’s free AI is <strong>paused</strong>, that
+is not about you: the service has a spending ceiling for everybody
+together, and when it is reached the free AI pauses for everyone until
+the 1st. This is rare, and it is announced rather than silent.</p>
+<h4 id="a-new-connection-starts-smaller">A new connection starts
+smaller</h4>
+<p>For its <strong>first 48 hours</strong>, a computer that has just
+connected gets <strong>15 requests</strong> instead of the full monthly
+allowance, and then the full allowance applies <strong>on its
+own</strong> — there is nothing to do. It is how a free service with no
+accounts and no passwords stops somebody scripting connection after
+connection for a fresh allowance each time; somebody trying the feature
+out rarely reaches 15 on the first day. While it applies,
+<strong>Usage</strong> and <strong>About</strong> say so and name the
+exact time it ends. Signing out and connecting again starts a new
+connection, so it is never a way to get more.</p>
+<h4 id="computers-that-share-an-internet-connection">Computers that
+share an internet connection</h4>
+<p>A household, a classroom or a library usually reaches the internet
+through one address, and a few limits apply to that address as a whole:
+how many computers can be connected from it at once, how many new
+connections it can make in an hour, and a monthly total shared by every
+computer on it. They are generous for a home and are there to stop one
+address minting connections by the hundred; the exact numbers are not
+published, for the same reason. Signing a computer out gives its place
+back.</p>
+<p>If a class or a lab runs into these, write to support — this is
+exactly the situation they can help with.</p>
+<h4 id="asking-for-more">Asking for more</h4>
+<p>Choose <strong>Get Help from Support</strong> in the Help menu and
+say what you need and why: a course, a deadline, a book. When this
+computer is connected, its <strong>support ID</strong> goes into the
+message automatically, and that is all support needs to find your
+account — there is no account name or password to give. Support can
+raise your monthly allowance, including lifting the new-connection
+allowance early. The change applies from your next request; you do not
+need to sign out, reconnect or update anything, and Usage shows the new
+number the next time you open it.</p>
+<p>Your support ID is also on <strong>Help ▸ About</strong> and in
+<strong>Usage</strong>, with a <strong>Copy Support ID</strong> button,
+if you would rather write from somewhere else.</p>
 <h2 id="where-your-files-are-kept">Where your files are kept</h2>
 <p>Your settings, recent files, copy tray and any recovered work are
 kept in a QuillLite folder inside your own Windows user folder.

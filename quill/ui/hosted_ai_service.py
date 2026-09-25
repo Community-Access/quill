@@ -317,8 +317,14 @@ def _sentence(error: BaseException) -> str:
     act on.
     """
     if isinstance(error, GatewayError):
+        # The sentence first and the code last. str(error) leads with
+        # "[QUILL-AI-GATEWAY-QUOTA]", which a screen reader spells out before
+        # the person hears what happened; support still gets the code.
+        message = str(error.args[0]) if error.args else ""
         hint = getattr(error, "user_hint", "")
-        return f"{error} {hint}".strip() if hint else str(error)
+        code = getattr(error, "code", "")
+        parts = [message, hint, f"Error code {code}." if code else ""]
+        return " ".join(part.strip() for part in parts if part and part.strip())
     return "QUILL's free AI is not answering right now. Try again in a moment. Nothing was used."
 
 

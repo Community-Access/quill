@@ -24,7 +24,7 @@ import wx
 
 from quill.core.ai import gateway_context as ctx
 from quill.ui.accessible_names import set_accessible_name
-from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on
+from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, show_problem
 
 __all__ = ["ACTIONS", "AiPadFrame", "AiResultFrame"]
 
@@ -152,8 +152,15 @@ class AiResultFrame(wx.Frame):
 
         _close_row(self, sizer, *extra)
 
-        used_label = wx.StaticText(panel, label=used)
-        sizer.Add(used_label, 0, wx.ALL, _PAD)
+        if used:
+            _read_only(
+                panel,
+                sizer,
+                "Requests",
+                used,
+                "How much of your free allowance this answer used, and what is left.",
+                grow=False,
+            )
 
         self.SetInitialSize((620, 460))
         self.Centre()
@@ -216,8 +223,14 @@ class AiPadFrame(wx.Frame):
         panel.SetSizer(sizer)
         self._panel = panel
 
-        self._summary = wx.StaticText(panel, label="")
-        sizer.Add(self._summary, 0, wx.ALL, _PAD)
+        self._summary = _read_only(
+            panel,
+            sizer,
+            "About to send",
+            "",
+            "How much will be sent, from where, and whether it fits the free limit.",
+            grow=False,
+        )
 
         self._preview = _read_only(
             panel,
@@ -269,8 +282,14 @@ class AiPadFrame(wx.Frame):
         self._send.Bind(wx.EVT_BUTTON, self._on_send)
         _close_row(self, sizer, self._send)
 
-        self._status = wx.StaticText(panel, label="")
-        sizer.Add(self._status, 0, wx.ALL, _PAD)
+        self._status = _read_only(
+            panel,
+            sizer,
+            "Status",
+            "Ready.",
+            "What happened to the last request: working, used, or what went wrong.",
+            grow=False,
+        )
 
         index = next((i for i, (aid, _l, _h) in enumerate(ACTIONS) if aid == initial_action), 0)
         self._actions.SetSelection(index)
@@ -315,7 +334,7 @@ class AiPadFrame(wx.Frame):
             excerpts = found.excerpts
             if not excerpts:
                 self._preview.SetValue("")
-                self._summary.SetLabel("There is nothing in this document to search.")
+                self._summary.SetValue("There is nothing in this document to search.")
                 return
             words = sum(e.words for e in excerpts)
             body = "\n\n".join(
@@ -323,7 +342,7 @@ class AiPadFrame(wx.Frame):
                 for n, e in enumerate(excerpts, start=1)
             )
             self._preview.SetValue(body)
-            self._summary.SetLabel(
+            self._summary.SetValue(
                 f"About to send {len(excerpts)} excerpt"
                 f"{'' if len(excerpts) == 1 else 's'} from this document "
                 f"(about {words} words), and your question."
@@ -340,7 +359,7 @@ class AiPadFrame(wx.Frame):
         )
         self._preview.SetValue(text)
         where = ctx.SCOPE_LABELS.get(self._scope, "your document").lower()
-        self._summary.SetLabel(
+        self._summary.SetValue(
             f"About to send {ctx.words_in(text)} words from {where}.{self._size_warning(text)}"
             if text
             else "There is nothing here to send."
@@ -383,7 +402,10 @@ class AiPadFrame(wx.Frame):
         if self._asking():
             question = self._question.GetValue().strip()
             if not question:
-                self._say("Type a question first.")
+                # Focus goes to the empty field, not to the message: the field
+                # is what needs typing into, so the sentence is spoken instead.
+                self._status.SetValue("Type a question first.")
+                self._announce("Type a question first.")
                 self._question.SetFocus()
                 return
             excerpts = ctx.pick_excerpts(
@@ -411,7 +433,7 @@ class AiPadFrame(wx.Frame):
             return
 
         self._send.Disable()
-        self._status.SetLabel("Working...")
+        self._status.SetValue("Working...")
         self._announce("Working.")
         self._service.ask(
             feature,
@@ -430,17 +452,17 @@ class AiPadFrame(wx.Frame):
             )
         if self:
             self._send.Enable()
-            self._status.SetLabel(used)
+            self._status.SetValue(used)
         # The result window takes focus, so the reader announces it and reads
         # the answer. Nothing is announced here on top of that.
         self._on_result(feature, text, used)
 
     def _failed(self, message: str) -> None:
-        if self:
-            self._send.Enable()
-            self._status.SetLabel(message)
-        self._announce(message)
+        if not self:
+            self._announce(message)
+            return
+        self._send.Enable()
+        show_problem(self, self._status, message, self._announce)
 
     def _say(self, message: str) -> None:
-        self._status.SetLabel(message)
-        self._announce(message)
+        show_problem(self, self._status, message, self._announce)
