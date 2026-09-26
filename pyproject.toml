@@ -660,6 +660,10 @@ module = [
     # Optional Nemotron engine (quill[nemotron]); sherpa-onnx imported lazily in
     # providers/nemotron_onnx.py. Ships no type stubs.
     "sherpa_onnx",
+    # numpy arrives with the live-dictation extra (windows_dictation/
+    # local_recognizer.py imports it lazily); the typing job installs only [dev].
+    "numpy",
+    "numpy.*",
     # PyNaCl (Ed25519 unlock-code verification, quill/core/unlock_codes.py); no stubs.
     "nacl",
     "nacl.*",

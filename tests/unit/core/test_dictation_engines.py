@@ -8,6 +8,7 @@ counts as noise, and that a phrase reaches the listener on the poster.
 
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,12 @@ import pytest
 
 from quill.core.windows_dictation import engines, local_recognizer
 from quill.core.windows_dictation.controller import DictationPreferences, DictationStartError
+
+# The built-in engines hand audio to sherpa-onnx as numpy arrays. numpy ships
+# in the live-dictation extra, not in [dev], so CI's unit job has none.
+needs_numpy = pytest.mark.skipif(
+    importlib.util.find_spec("numpy") is None, reason="numpy (live-dictation extra) not installed"
+)
 
 
 def _fill(folder: Path, engine_id: str) -> None:
@@ -147,12 +154,14 @@ def recognizer(monkeypatch):
     return fake
 
 
+@needs_numpy
 def test_a_phrase_is_padded_so_its_last_word_survives(recognizer) -> None:
     samples = [0.0] * 16_000
     assert local_recognizer.transcribe("moonshine", samples) == "Hello there."
     assert recognizer.streams[0].samples > len(samples)
 
 
+@needs_numpy
 def test_whispers_noise_answers_are_dropped_only_when_short(recognizer) -> None:
     recognizer.text = "Thank you."
     assert local_recognizer.transcribe("whisper", [0.0] * 4_000) == ""
@@ -190,6 +199,7 @@ class _Vad:
         self.queue.pop(0)
 
 
+@needs_numpy
 def test_a_finished_phrase_reaches_the_listener_through_the_poster(recognizer) -> None:
     heard: list[Any] = []
     posted: list[str] = []
@@ -262,6 +272,7 @@ def test_stopping_twice_never_raises() -> None:
     engine.stop()
 
 
+@needs_numpy
 def test_a_phrase_starts_a_little_before_the_detector_said_so() -> None:
     """Reported 2026-09-25: the first word of a phrase was missing. Detection
     lags a quietly started word, so each phrase takes 0.4 s from before it."""
@@ -283,6 +294,7 @@ def test_a_phrase_starts_a_little_before_the_detector_said_so() -> None:
     assert phrase[lead] == 16_000
 
 
+@needs_numpy
 def test_the_lead_in_never_reaches_before_the_microphone_opened() -> None:
     import numpy as np
 
