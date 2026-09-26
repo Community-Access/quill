@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Lite 1.1 — What's New</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-lite-11--whats-new">QUILL Lite 1.1 — What’s New</h1>
+<p>Two things are new in 1.1:</p>
+<ul>
+<li><strong><a href="#dictation">Dictation</a>.</strong> Press
+<strong>Ctrl+F11</strong>, talk, and pause. What you said is written at
+the cursor with the punctuation put in for you, and QUILL Lite reads it
+back so you know it is right.</li>
+<li><strong><a href="#ai-help-with-your-own-openai-key">AI help with
+your own OpenAI key</a>.</strong> Paste a key and every limit on AI help
+is lifted.</li>
+</ul>
+<hr />
+<h2 id="dictation">Dictation</h2>
+<p>The speech recognition comes with QUILL Lite. There is nothing to
+download, no account to make, and nothing you say leaves your computer.
+No recording is kept anywhere.</p>
+<h3 id="getting-started">Getting started</h3>
+<ol type="1">
+<li>Put the cursor where you want the words.</li>
+<li>Press <strong>Ctrl+F11</strong>. You hear two rising tones and
+“Dictation on”.</li>
+<li>Talk the way you would talk to a person, and pause. The sentence is
+written, a soft tone says it went in, and QUILL Lite reads it back to
+you.</li>
+<li>Keep going. It keeps listening between sentences.</li>
+<li>Press <strong>Ctrl+F11</strong> again, or say “stop dictation”, to
+stop.</li>
+</ol>
+<h3 id="punctuation-goes-in-by-itself">Punctuation goes in by
+itself</h3>
+<p>You do not need to say punctuation: full stops, commas, question
+marks and capitals go in by themselves. Say a mark whenever you want a
+particular one, and your word wins.</p>
+<h3 id="fixing-things-by-voice">Fixing things by voice</h3>
+<p>Say these on their own, after a pause:</p>
+<ul>
+<li><strong>“scratch that”</strong> takes out the last phrase. Say it
+again for the one before.</li>
+<li><strong>“select that”</strong> selects the last phrase, so you can
+fix it with the keyboard.</li>
+<li><strong>“capitalize that”</strong>, <strong>“all caps
+that”</strong>, <strong>“no caps that”</strong> change its
+capitals.</li>
+<li><strong>“delete word”</strong> and <strong>“delete
+sentence”</strong> delete back from the cursor.</li>
+<li><strong>“undo that”</strong> is Ctrl+Z; <strong>“read that”</strong>
+reads the last phrase again.</li>
+<li><strong>“go to end of line”</strong>, <strong>“go to top”</strong>
+and their friends move the cursor.</li>
+</ul>
+<h3 id="spelling-a-name">Spelling a name</h3>
+<p>Say <strong>“start spelling”</strong>, then the letters – “capital
+bravo alpha delta” writes <em>Bad</em> – then <strong>“stop
+spelling”</strong>.</p>
+<h3 id="starting-with-your-voice">Starting with your voice</h3>
+<p>Switch on the <strong>wake phrase</strong> in Dictation Settings and
+say <strong>“Quill dictate”</strong> to start without touching the
+keyboard – or choose a phrase of your own. It listens only while QUILL
+Lite is the window in front, and nothing it hears is kept unless it
+starts with the wake phrase. It is off until you turn it on.</p>
+<h3 id="stopping-with-your-voice">Stopping with your voice</h3>
+<p>Say <strong>“stop dictation”</strong> on its own to stop – or choose
+your own <strong>stop phrase</strong> in Dictation Settings. It counts
+only when it is all you said, so the same words inside a sentence are
+simply written.</p>
+<h3 id="talking-in-one-long-run">Talking in one long run</h3>
+<p>Switch on <strong>Just write what I say</strong> in Dictation
+Settings and a pause does nothing: no full stop because you paused, no
+tone, no read-back, and no voice commands – only the punctuation you say
+and your stop phrase. For thinking out loud, telling a story, or a good
+rant, without being interrupted.</p>
+<h3 id="fine-tuning">Fine-tuning</h3>
+<p>Dictation Settings also has <strong>automatic punctuation</strong> on
+or off, how long a <strong>pause</strong> ends a phrase (short, normal
+or long), <strong>remove filler words</strong> like um and uh,
+<strong>stop after silence</strong> (1, 5 or 10 minutes), and
+<strong>Test Microphone</strong>, which listens for four seconds and
+tells you how loud you were and what it heard.</p>
+<h3 id="your-own-words-and-phrases">Your own words and phrases</h3>
+<p><strong>Edit My Words and Phrases</strong> in Dictation Settings
+opens a small file where you list names dictation should spell your way,
+and phrases of your own: say <em>my email address</em> and it writes
+your address.</p>
+<h3 id="every-command-in-one-place">Every command, in one place</h3>
+<p>Say <strong>“what can I say”</strong> while dictating, and a window
+lists everything dictation understands, your own phrases included. The
+same list is its own page in the documentation, <strong>Dictation
+commands</strong>.</p>
+<h3 id="settings-engine-microphone-and-what-you-hear">Settings: engine,
+microphone, and what you hear</h3>
+<p><strong>Tools ▸ Dictation ▸ Dictation Settings…</strong>
+(<strong>Alt+Shift+F6</strong>):</p>
+<ul>
+<li><strong>Speech engine.</strong> <strong>Moonshine</strong> is the
+one it starts with: fast even on a modest computer.
+<strong>Whisper</strong> is a little slower; try it if Moonshine often
+mishears you. Both are built in and understand English. <strong>Windows
+speech recognition</strong> can use any speech language installed in
+Windows, but you say the punctuation yourself. <strong>Windows voice
+typing</strong> hands over to Windows+H.</li>
+<li><strong>Microphone</strong>, by name, or the Windows default.</li>
+<li><strong>What you hear</strong> after each phrase: a sound, the words
+read back, both, or neither.</li>
+</ul>
+<p>If the read-back comes out of speakers, the microphone can hear it
+too. Use headphones, or choose a sound only.</p>
+<h3 id="knowing-what-it-is-doing">Knowing what it is doing</h3>
+<p>The status bar has a new <strong>Dictation</strong> part – off,
+listening, hearing you, writing, spelling, or waiting for the wake
+phrase – and <strong>Tools ▸ Dictation ▸ Dictation On</strong> is
+checked while it writes.</p>
+<hr />
+<h2 id="ai-help-with-your-own-openai-key">AI help with your own OpenAI
+key</h2>
+<p><strong>Tools ▸ AI ▸ Use My Own OpenAI Key</strong>
+(<strong>Alt+F2</strong>). Paste an OpenAI key, press OK, and every
+limit on AI help is lifted — no monthly, daily or hourly allowance, and
+no size ceiling.</p>
+<h3 id="choosing-the-model">Choosing the model</h3>
+<p>Once the key is checked, the <strong>Model</strong> list holds every
+model your account can use for text, <strong>Luna 6 first, then the
+other GPT-6 models</strong>. Each row carries an estimated cost per 100
+requests, and the <strong>Cost estimate</strong> box below says what a
+typical request might cost. They are estimates to help you compare, not
+OpenAI’s prices. With a key saved, the list fills as the window opens,
+so you can change the model at any time with
+<strong>Alt+F2</strong>.</p>
+<h3 id="what-changes">What changes</h3>
+<p>Your text goes straight from this computer to OpenAI on your account,
+and nothing passes through QUILL’s servers. OpenAI bills your account
+for each request. You do not need to connect this computer or accept the
+free service’s agreement. The five things AI help can do, and what comes
+back, are exactly the same.</p>
+<h3 id="usage-and-about">Usage and About</h3>
+<p><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) shows a
+different window with your own key: the model answering, that no
+allowance applies, and <strong>Open My OpenAI Usage</strong>, which
+opens your OpenAI account’s usage page, where your requests and charges
+are. <strong>Help ▸ About</strong> shows the model and that page instead
+of the free allowance.</p>
+<h3 id="going-back-to-the-free-service">Going back to the free
+service</h3>
+<p><strong>Remove the Saved Key</strong>, in the same window. AI help is
+back on the free service, with its free allowance, at once. There is no
+other switch to find: while a key is saved it is used, and when it is
+gone it is not.</p>
+<h3 id="where-the-key-is-kept">Where the key is kept</h3>
+<p>In Windows’ credential store, never in a settings file, and it is
+never shown again once saved. A portable copy keeps it in an encrypted
+file. QUILL uses the same key: saving or removing it in either program
+does it for both.</p>
+<hr />
+<h2 id="keys-new-in-11">Keys new in 1.1</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+F11</strong></td>
+<td>Dictation On (start or stop)</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F6</strong></td>
+<td>Dictation Settings</td>
+</tr>
+<tr>
+<td><strong>Alt+F2</strong></td>
+<td>Use My Own OpenAI Key</td>
+</tr>
+</tbody>
+</table>
+<h2 id="also-in-quill">Also in QUILL</h2>
+<p>Both features are in QUILL too, on the same keys: Live Dictation
+under Tools ▸ Speech, and Use My Own OpenAI Key in the AI menu.</p>
+</main>
+</body>
+</html>

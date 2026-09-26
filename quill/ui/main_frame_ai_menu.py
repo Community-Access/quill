@@ -68,6 +68,7 @@ class AiMenuMixin:
             self._id_hosted_ai_privacy,
             self._menu_label(_("Privac&y Agreement..."), "tools.hosted_ai_privacy"),
         )
+        self._append_own_key_row(ai_menu)  # quill/ui/main_frame_hosted_ai.py
 
     def _build_advanced_ai_rows(self, ai_menu) -> None:
         """Everything the AI menu used to open with, now one checkbox away."""

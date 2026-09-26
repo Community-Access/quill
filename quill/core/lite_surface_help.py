@@ -260,8 +260,8 @@ PURPOSES: dict[str, str] = {
     "About QUILL Lite": (
         "What this copy is, and where it keeps your settings and your recovered "
         "work. QUILL Lite is a small companion to QUILL for All, not a replacement "
-        "for it: anything to do with AI, dictation, conversion, comparison or "
-        "publishing lives in QUILL."
+        "for it: conversion, comparison, publishing and the rest of QUILL's AI "
+        "live in QUILL."
     ),
 }
 

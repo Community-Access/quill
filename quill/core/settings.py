@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
+from quill.core.ai.own_key import load_settings_fields as load_own_key_fields
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
 from quill.core.editor_font import DEFAULT_FONT_POINTS, clamp_font_points
 from quill.core.markdown_breaks import normalise_hard_break_style
@@ -28,6 +29,9 @@ from quill.core.settings_normalizers import (
 from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
 from quill.core.versioned_store import load_with_migration
+from quill.core.windows_dictation.settings_fields import (
+    load_fields as load_windows_dictation_fields,
+)
 
 __all__ = [
     "STATUS_BAR_ITEMS",
@@ -282,6 +286,7 @@ class Settings:
     #: hosted service does". A switch flipped by a profile, a settings import or
     #: somebody else using the machine is not consent.
     ai_privacy_accepted_version: int = 0
+    ai_own_key_model: str = ""  # own-key AI's model (core/ai/own_key.py); empty: the default
     markdown_clipboard_format: str = "html"
     markdown_profile_id: str = "standard"
     citation_style: str = "footnotes"
@@ -310,6 +315,22 @@ class Settings:
     # one authoring surface for the user's terms, and its list feeds both the
     # Whisper initial_prompt bias and the fuzzy corrector.
     dictation_remove_fillers: bool = False
+    # Windows Dictation, shared with QUILL Lite by name (its own microphone setting).
+    windows_dictation_microphone: str = ""
+    windows_dictation_engine: str = "moonshine"
+    windows_dictation_language: str = ""
+    windows_dictation_dash: str = "em"
+    windows_dictation_wake_enabled: bool = False
+    windows_dictation_wake_phrase: str = "Quill dictate"
+    windows_dictation_stop_phrase: str = "stop dictation"
+    windows_dictation_phrase_feedback: str = "both"
+    windows_dictation_cue_sounds: bool = True
+    windows_dictation_announce: bool = True
+    windows_dictation_pause: str = "normal"
+    windows_dictation_remove_fillers: bool = False
+    windows_dictation_auto_punctuation: bool = True
+    windows_dictation_silence_minutes: int = 0
+    windows_dictation_continuous: bool = False
     # Speak the formatting delta as the caret moves (hidden-codes interrogation);
     # off by default so navigation stays quiet (Describe Formatting is on-demand).
     announce_formatting_on_move: bool = False
@@ -1099,6 +1120,7 @@ class Settings:
         dictation_intelligent_spacing = bool(data.get("dictation_intelligent_spacing", True))
         dictation_onboarding_shown = bool(data.get("dictation_onboarding_shown", False))
         dictation_remove_fillers = bool(data.get("dictation_remove_fillers", False))
+        windows_dictation = load_windows_dictation_fields(data) | load_own_key_fields(data)
         announce_formatting_on_move = bool(data.get("announce_formatting_on_move", False))
         find_use_quill_dialog = bool(data.get("find_use_quill_dialog", False))
         announce_dialog_transitions = bool(data.get("announce_dialog_transitions", False))
@@ -1756,6 +1778,7 @@ class Settings:
             dictation_stop_on_focus_loss=dictation_stop_on_focus_loss,
             dictation_intelligent_spacing=dictation_intelligent_spacing,
             dictation_remove_fillers=dictation_remove_fillers,
+            **windows_dictation,
             announce_formatting_on_move=announce_formatting_on_move,
             find_use_quill_dialog=find_use_quill_dialog,
             announce_dialog_transitions=announce_dialog_transitions,

@@ -2695,9 +2695,8 @@ is here too – that is what QUILL support will ask for. You can also sign
 this computer out from here, and connect it again whenever you like.</p>
 <p><strong>About QUILL Lite.</strong> What this copy is, and where it
 keeps your settings and your recovered work. QUILL Lite is a small
-companion to QUILL for All, not a replacement for it: anything to do
-with AI, dictation, conversion, comparison or publishing lives in
-QUILL.</p>
+companion to QUILL for All, not a replacement for it: conversion,
+comparison, publishing and the rest of QUILL’s AI live in QUILL.</p>
 <p><strong>Answer.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -3138,6 +3137,36 @@ again.</li>
 free AI. You can connect it again at any time.</li>
 <li><code>copy</code>: Puts this computer’s support ID on the
 clipboard.</li>
+</ul>
+<h4 id="ownkeydialog-quilluihosted_ai_own_keypy">OwnKeyDialog
+(<code>quill/ui/hosted_ai_own_key.py</code>)</h4>
+<ul>
+<li><code>about</code>: Where your text goes with your own key. Read
+with the arrow keys.</li>
+<li><code>self.key</code>: Paste your OpenAI API key. It starts with
+sk-. It is stored securely and never shown again; leave this empty to
+keep the key already saved.</li>
+<li><code>self.model</code>: Which OpenAI model answers, with an
+estimate of what each might cost. Every model your key can use for text
+is listed once the key is checked, Luna 6 and GPT-6 models first. You
+can change it here at any time.</li>
+<li><code>self.cost</code>: What the chosen model might cost for a
+typical request, and where OpenAI’s real prices are. An estimate, not
+OpenAI’s price.</li>
+<li><code>self.status</code>: What the last test said, or whether a key
+is saved.</li>
+<li><code>test</code>: Checks the key with OpenAI, lists every model it
+can use, then sends one tiny request to the chosen model and says
+whether it answered. The request costs a fraction of a cent on your
+account.</li>
+<li><code>self.remove</code>: Forgets the saved OpenAI key now, and puts
+AI help back on QUILL’s free service with its free allowance.</li>
+</ul>
+<h4 id="ownkeyusageframe-quilluihosted_ai_own_keypy">OwnKeyUsageFrame
+(<code>quill/ui/hosted_ai_own_key.py</code>)</h4>
+<ul>
+<li><code>usage</code>: Opens your OpenAI account’s usage page in your
+browser, where your requests and charges are.</li>
 </ul>
 <h4 id="airesultframe-quilluihosted_ai_padpy">AiResultFrame
 (<code>quill/ui/hosted_ai_pad.py</code>)</h4>

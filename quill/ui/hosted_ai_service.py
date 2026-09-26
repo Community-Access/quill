@@ -100,6 +100,26 @@ class AiService:
     def client(self) -> GatewayClient:
         return GatewayClient(self.session.base_url or base_url(), self.token)
 
+    @property
+    def own_key_active(self) -> bool:
+        """Whether requests go to OpenAI with the user's own key instead.
+
+        Then there is no QUILL server, no sign-in and no allowance: the same
+        five commands, billed to the user's OpenAI account
+        (:mod:`quill.core.ai.own_key`).
+        """
+        from quill.core.ai.own_key import own_key_active
+
+        return own_key_active(getattr(self._app, "settings", None))
+
+    @property
+    def own_key_model(self) -> str:
+        """The OpenAI model own-key requests use: the chosen one, or the default."""
+        from quill.core.ai.own_key import default_model
+
+        chosen = getattr(getattr(self._app, "settings", None), "ai_own_key_model", "")
+        return str(chosen or "").strip() or default_model()
+
     # -- what the service allows ----------------------------------------- #
 
     @property
@@ -111,6 +131,10 @@ class AiService:
         defaults are honest in the meantime -- they are the values the service
         actually ships with.
         """
+        if self.own_key_active:
+            from quill.core.ai.own_key import OWN_KEY_LIMITS
+
+            return OWN_KEY_LIMITS
         return self._limits or GatewayLimits()
 
     def refresh_limits(self, on_done: Callable[[GatewayLimits], None] | None = None) -> None:
@@ -121,6 +145,9 @@ class AiService:
         error in front of somebody because a *background* refresh failed would
         be reporting our housekeeping as their problem.
         """
+
+        if self.own_key_active:
+            return  # nothing to ask QUILL's service: the limits are OpenAI's
 
         def work(**_kwargs: Any) -> GatewayLimits:
             return GatewayClient(self.session.base_url or base_url()).fetch_limits()
@@ -142,6 +169,8 @@ class AiService:
         "you are not connected" without a network call, and so a menu never
         stalls.
         """
+        if self.own_key_active:
+            return ""
         if not self.signed_in:
             return (
                 "This computer is not connected to QUILL's free AI. "
@@ -173,10 +202,19 @@ class AiService:
         failure in the client is already a coded error whose text was written
         for a person to hear, so rendering one at a user is the whole job.
         """
-        client = self.client()
+        if self.own_key_active:
+            from quill.core.ai.own_key import ask_with_own_key
 
-        def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
-            return client.ask(feature, prompt, chunks)
+            model = self.own_key_model
+
+            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
+                return ask_with_own_key(feature, prompt, chunks, model=model), None
+
+        else:
+            client = self.client()
+
+            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
+                return client.ask(feature, prompt, chunks)
 
         def done(_name: str, result: Any) -> None:
             text, quota = result
@@ -316,7 +354,9 @@ def _sentence(error: BaseException) -> str:
     ``ConnectionResetError`` rendered at a listener tells them nothing they can
     act on.
     """
-    if isinstance(error, GatewayError):
+    from quill.core.error_codes import CodedError
+
+    if isinstance(error, (GatewayError, CodedError)):
         # The sentence first and the code last. str(error) leads with
         # "[QUILL-AI-GATEWAY-QUOTA]", which a screen reader spells out before
         # the person hears what happened; support still gets the code.

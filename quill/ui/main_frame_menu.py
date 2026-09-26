@@ -2471,9 +2471,9 @@ class MenuBuilderMixin:
             self._id_dictation_history,
             self._menu_label(_("Dictation &History && Review..."), "tools.dictation_history"),
         )
-        # Hold-to-Dictate was removed (a held key repeats and announces itself
-        # endlessly), so the submenu carries only the Locked Dictation surface.
+        # Hold-to-Dictate was removed (a held key repeats endlessly): Locked only.
         speech_menu.AppendSubMenu(dictation_menu, _("&Locked Dictation"))
+        self._append_windows_dictation_menu(speech_menu)  # shared with QUILL Lite
         speech_menu.AppendSeparator()
         speech_menu.Append(
             self._id_speech_transcribe,

@@ -708,8 +708,7 @@ class MenuBindingsMixin:
             lambda _e: self.open_ai_document_qa(),
             id=self._id_ai_document_qa,
         )
-        # QUILL's own free AI: the shared handlers, bound to the five rows the
-        # AI menu opens with (quill/ui/main_frame_hosted_ai.py).
+        # The shared hosted-AI handlers (main_frame_hosted_ai.py); dictation's below.
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.cmd_ai_assistant(),
@@ -735,6 +734,7 @@ class MenuBindingsMixin:
             lambda _e: self.cmd_ai_privacy(),
             id=self._id_hosted_ai_privacy,
         )
+        self._bind_windows_dictation_menu()
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.open_ask_quill_chat(),

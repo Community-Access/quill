@@ -229,6 +229,8 @@ wrong</a></li>
 <li><a href="#your-privacy">Your privacy</a></li>
 <li><a href="#signing-out-and-changing-your-mind">Signing out and
 changing your mind</a></li>
+<li><a href="#using-your-own-openai-key-no-limits">Using your own OpenAI
+key: no limits</a></li>
 <li><a href="#questions-people-ask">Questions people ask</a></li>
 </ul>
 <h2 id="starting-in-about-a-minute">Starting, in about a minute</h2>
@@ -263,7 +265,7 @@ the whole of it.</p>
 agreement first. Reaching for one before this computer is connected
 takes you to the Connect window.</p>
 <h2 id="the-keys">The keys</h2>
-<p>All five are in <strong>Tools ▸ AI</strong>.</p>
+<p>All six are in <strong>Tools ▸ AI</strong>.</p>
 <table>
 <thead>
 <tr>
@@ -291,6 +293,10 @@ takes you to the Connect window.</p>
 <tr>
 <td>Privacy Agreement</td>
 <td>Ctrl+Alt+Shift+K</td>
+</tr>
+<tr>
+<td>Use My Own OpenAI Key</td>
+<td>Alt+F2</td>
 </tr>
 </tbody>
 </table>
@@ -457,6 +463,9 @@ are always current. <strong>Sign Out This Computer</strong> and
 ID, under <strong>QUILL’s free AI</strong>, once this computer is
 connected. Give it a moment after About opens: the numbers are fetched
 while you read.</p>
+<p>With <strong>your own OpenAI key</strong> saved, both show something
+different: the model in use and where your OpenAI usage page is, instead
+of an allowance. See <em>Using your own OpenAI key</em>, below.</p>
 <p>Your <strong>support ID</strong> is a short code like
 <code>A1B2-C3D4</code>. It is the only way support can find your
 account, because there is no name on it. <strong>Get Help from
@@ -591,12 +600,90 @@ way round.</li>
 on</strong>, and whether or not you ever agreed. A door you can only
 reach by agreeing to something is not a door.</li>
 </ul>
+<h2 id="using-your-own-openai-key-no-limits">Using your own OpenAI key:
+no limits</h2>
+<p>If you have an OpenAI account, you can use <strong>your own
+key</strong> instead of QUILL’s free service, and <strong>every limit
+goes away</strong>: no monthly, daily or hourly allowance, no 2,250-word
+ceiling, no smaller first 48 hours.</p>
+<p><strong>Tools ▸ AI ▸ Use My Own OpenAI Key</strong>
+(<strong>Alt+F2</strong>) opens one window:</p>
+<ol type="1">
+<li><strong>About this</strong> — a read-only box saying exactly where
+your text goes. Arrow through it once.</li>
+<li><strong>OpenAI API key</strong> — paste your key here. You make one
+at platform.openai.com, under API keys. It starts with
+<code>sk-</code>.</li>
+<li><strong>Model</strong> — a list of every model your key can use for
+text, filled from your OpenAI account once the key is checked:
+<strong>Luna 6 first, then the other GPT-6 models</strong>, then the
+rest by name. Each row says roughly what it costs, for example
+“gpt-6-luna, about $0.57 per 100 requests (estimate)”, so arrowing down
+the list is enough to compare them. Models that cannot answer text —
+speech, transcription, images, embeddings — are left out.</li>
+<li><strong>Cost estimate</strong> — the chosen model’s estimate per
+request and per 100 requests. <strong>These are estimates to help you
+compare, not OpenAI’s prices.</strong> A typical request here is about a
+page in and a paragraph back; the real prices are at
+openai.com/api/pricing.</li>
+<li><strong>Status</strong> — whether a key is saved, and what the last
+test said.</li>
+<li><strong>Test the Key</strong> — checks the key with OpenAI, fills
+the model list, then sends one tiny request to the chosen model and says
+whether it answered. The request costs a fraction of a cent.</li>
+<li><strong>Remove the Saved Key</strong> — forgets the key <strong>at
+once</strong> and puts AI help straight back on QUILL’s free
+service.</li>
+</ol>
+<p>Press <strong>OK</strong> and the key is saved. QUILL Lite says “AI
+help uses your own OpenAI key, with no limits.”</p>
+<p><strong>Change the model at any time.</strong> With a key saved,
+opening this window lists your models straight away: press
+<strong>Alt+F2</strong>, pick another, press OK.</p>
+<p><strong>There is no separate switch.</strong> While a key is saved,
+AI help uses it; remove the key and AI help is back on the free service,
+with its free allowance, the moment you do. Nothing else to find and
+turn off.</p>
+<p><strong>What changes with your own key:</strong></p>
+<ul>
+<li>Your text goes <strong>straight from this computer to
+OpenAI</strong>, on your account. Nothing passes through QUILL’s
+servers, so QUILL records nothing at all — not even the count it keeps
+for the free service.</li>
+<li><strong>OpenAI bills you</strong> for each request, under OpenAI’s
+own terms and privacy policy.</li>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens a
+different window: which model is answering, that no allowance applies,
+and an <strong>Open My OpenAI Usage</strong> button that takes you to
+your OpenAI account’s usage page, which is where your requests and
+charges are. There is no Sign Out and no support ID in it, because
+neither applies. <strong>Help ▸ About</strong> likewise shows the model
+and that page’s address instead of the free allowance.</li>
+<li>You do not need to connect this computer, and the free service’s
+agreement is not asked for: it is about QUILL’s servers, which this
+route never touches.</li>
+<li>The pad, the five things it can do, and what comes back are
+<strong>exactly the same</strong>, down to the instructions sent with
+your text. The pad still tells you before sending something very large,
+because with your own key a large request costs you money.</li>
+</ul>
+<p><strong>Where the key is kept.</strong> In Windows’ own credential
+store, not in a settings file, and it is never shown again once saved —
+the box stays empty and says a key is saved. A portable copy keeps it in
+an encrypted file instead. QUILL and QUILL Lite share it: a key saved in
+either works in both, and removing it in either removes it from
+both.</p>
+<p><strong>If a request fails</strong>, you hear why, followed by error
+code <code>QUILL-AI-OWN-KEY-FAILED</code>. The usual causes are a
+mistyped key, a model your account cannot use, or an OpenAI account with
+no credit. <strong>Test the Key</strong> tells you which.</p>
 <h2 id="questions-people-ask">Questions people ask</h2>
 <p><strong>Do I need an account?</strong> No. No name, no email, no
 password. The eight-character code connects this computer, and that is
 all.</p>
 <p><strong>Does it cost anything?</strong> No. It is paid for by
-Community Access.</p>
+Community Access. If you use your own OpenAI key instead, OpenAI bills
+your account and there are no limits.</p>
 <p><strong>Can it change my document without asking?</strong> No.
 Nothing goes into your document until you press <strong>Replace My
 Selection</strong> or <strong>Insert Below</strong>, and
