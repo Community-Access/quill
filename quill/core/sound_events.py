@@ -86,6 +86,15 @@ class SoundEvent(StrEnum):
     # hands-free session sounds different from a press-and-hold one.
     DICTATION_LOCKED_ON = "dictation_locked_on"
     DICTATION_LOCKED_OFF = "dictation_locked_off"
+    # Windows Dictation (quill/core/windows_dictation), in both editors: a
+    # rising pair when it starts listening, a soft short tone each time a phrase
+    # has actually been written, a falling pair when it stops, and a low double
+    # pulse when it could not go on. The phrase cue is the one heard hundreds
+    # of times an hour, so it is the quietest of the four.
+    WINDOWS_DICTATION_ON = "windows_dictation_on"
+    WINDOWS_DICTATION_PHRASE = "windows_dictation_phrase"
+    WINDOWS_DICTATION_OFF = "windows_dictation_off"
+    WINDOWS_DICTATION_ERROR = "windows_dictation_error"
 
     # Voice conversation mode (Hey QUILL Phase 2). Warm, consonant bell cues
     # that make every state of a hands-free exchange audible: on/off, the mic

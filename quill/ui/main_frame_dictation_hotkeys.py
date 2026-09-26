@@ -30,6 +30,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from quill.ui.main_frame_windows_dictation import WindowsDictationCommandsMixin
+
 logger = logging.getLogger(__name__)
 
 _DICTATION_COMMANDS: tuple[tuple[str, str], ...] = (
@@ -148,7 +150,7 @@ class _LiveDictationServices:
         return time.time()
 
 
-class DictationHotkeysMixin:
+class DictationHotkeysMixin(WindowsDictationCommandsMixin):
     """Ctrl+F9 Locked Dictation and its controls, fully remappable."""
 
     # Relies on MainFrame helpers: _wx, frame, editor, document, settings,
@@ -224,6 +226,7 @@ class DictationHotkeysMixin:
                 self._binding_for(command_id),
                 feature_id="core.dictation",
             )
+        self._register_windows_dictation_commands()  # Tools > Speech > Live Dictation
         # Deferred so the prompt lands after the startup announcements settle.
         try:
             self._wx.CallLater(2000, self.check_dictation_recovery_on_startup)

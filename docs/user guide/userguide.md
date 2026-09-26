@@ -5712,6 +5712,76 @@ or update anything, and Usage shows the new number the next time you open it.
 Your support ID is also on **Help ▸ About** and in **Usage**, with a **Copy
 Support ID** button, if you would rather write from somewhere else.
 
+### Using your own OpenAI key: no limits
+
+If you have an OpenAI account, you can use **your own key** instead of QUILL's
+free service, and **every limit goes away**: no monthly, daily or hourly
+allowance, no 2,250-word ceiling, no smaller first 48 hours.
+
+**AI ▸ Use My Own OpenAI Key** (**Alt+F2**) opens one window:
+
+1. **About this** — a read-only box saying exactly where your text goes.
+   Arrow through it once.
+2. **OpenAI API key** — paste your key here. You make one at
+   platform.openai.com, under API keys. It starts with `sk-`.
+3. **Model** — a list of every model your key can use for text, filled
+   from your OpenAI account once the key is checked: **Luna 6 first, then the
+   other GPT-6 models**, then the rest by name. Each row says roughly what it
+   costs (`ai_own_key_model` holds your choice), for example "gpt-6-luna, about $0.57 per 100 requests (estimate)", so
+   arrowing down the list is enough to compare them. Models that cannot answer
+   text — speech, transcription, images, embeddings — are left out.
+4. **Cost estimate** — the chosen model's estimate per request and per 100
+   requests. **These are estimates to help you compare, not OpenAI's prices.**
+   A typical request here is about a page in and a paragraph back; the real
+   prices are at openai.com/api/pricing.
+5. **Status** — whether a key is saved, and what the last test said.
+6. **Test the Key** — checks the key with OpenAI, fills the model list,
+   then sends one tiny request to the chosen model and says whether it
+   answered. The request costs a fraction of a cent.
+7. **Remove the Saved Key** — forgets the key **at once** and puts AI help
+   straight back on QUILL's free service.
+
+Press **OK** and the key is saved. QUILL says "AI help uses your own OpenAI
+key, with no limits."
+
+**Change the model at any time.** With a key saved, opening this window
+lists your models straight away: press **Alt+F2**, pick another, press OK.
+
+**There is no separate switch.** While a key is saved, AI help uses it; remove
+the key and AI help is back on the free service, with its free allowance, the
+moment you do. Nothing else to find and turn off.
+
+**What changes with your own key:**
+
+- Your text goes **straight from this computer to OpenAI**, on your account.
+  Nothing passes through QUILL's servers, so QUILL records nothing at all —
+  not even the count it keeps for the free service.
+- **OpenAI bills you** for each request, under OpenAI's own terms and privacy
+  policy.
+- **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window: which model is
+  answering, that no allowance applies, and an **Open My OpenAI Usage** button
+  that takes you to your OpenAI account's usage page, which is where your
+  requests and charges are. There is no Sign Out and no support ID in it,
+  because neither applies. **Help ▸ About** likewise shows the model and that
+  page's address instead of the free allowance.
+- You do not need to connect this computer, and the free service's agreement
+  is not asked for: it is about QUILL's servers, which this route never touches.
+- The pad, the five things it can do, and what comes back are **exactly the
+  same**, down to the instructions sent with your text. The pad still tells you
+  before sending something very large, because with your own key a large request
+  costs you money.
+
+**Where the key is kept.** In Windows' own credential store, not in a settings
+file, and it is never shown again once saved — the box stays empty and says
+a key is saved. A portable copy keeps it in an encrypted file instead. QUILL and
+QUILL Lite share it: a key saved in either works in both, and removing it in
+either removes it from both.
+
+**If a request fails**, you hear why, followed by error code
+`QUILL-AI-OWN-KEY-FAILED`. The usual causes are a mistyped key, a model your
+account cannot use, or an OpenAI account with no credit. **Test the Key** tells
+you which.
+
 ### Basic and Advanced — the short menu and the long one
 
 The AI menu opens **Basic**: the five free-AI rows above, the **Use Artificial
@@ -6020,6 +6090,90 @@ they are there if you want to tune how much memory QUILL uses.
   cursor as a single undoable edit (the status bar shows the word count).
 - **Dictation Microphone...** chooses which microphone dictation uses, or the
   system default.
+
+##### Live Dictation (Ctrl+F11)
+
+The dictation QUILL Lite has, in QUILL too, on the same keys: **Tools > Speech >
+Live Dictation**. Press **Ctrl+F11**, talk, and pause: each phrase is written at
+the cursor as you pause, a soft tone confirms it arrived, and the words are read
+back to you. It keeps listening until you press **Ctrl+F11** again or say "stop
+dictation". Nothing leaves your computer, nothing is downloaded, and no
+recording is kept. Unlike **Locked Dictation** below, which records a passage
+and transcribes it afterwards, Live Dictation writes as you go.
+
+The full list of everything it understands is its own page,
+**[Dictation commands](dictation-commands.html)**, generated from the table
+QUILL itself reads. While dictating, say **"what can I say"** to open the same
+list in a window.
+
+- **You do not need to say punctuation.** The built-in engines add full stops,
+  commas, question marks and capitals by themselves. Say a mark when you want a
+  particular one ("comma", "new paragraph") and your word wins. When a pause
+  splits a sentence and the next part begins with a word like *and* or
+  *which*, the full stop the pause put in is taken back out.
+- **Speech engines.** **Moonshine** (the default: fast even on a modest
+  computer), **Whisper** (a little slower; try it if Moonshine often mishears
+  you), both built in and English; **Windows speech recognition** (any speech
+  language installed in Windows, but no punctuation of its own); and **Windows
+  voice typing** (hands over to Windows+H, where none of the commands apply).
+- **Punctuation and layout, anywhere in a phrase.** "period", "comma",
+  "question mark", "open quote" and "close quote", brackets, "hyphen", "dash",
+  "slash", symbols like "at sign" and "percent sign", "new line", "new
+  paragraph", "tab". Say "literal" first to write one as a word.
+- **Commands, as a whole phrase after a pause.** "scratch that" removes the last
+  phrase; "undo that"; "select that"; "capitalize that", "all caps that", "no
+  caps that"; "delete word", "delete sentence"; "read that"; "go to beginning
+  of line", "go to end of line", "go to top", "go to end of document"; "stop
+  dictation". Commands that change the last phrase leave it alone if you have
+  typed into it since, and say so.
+- **Spelling.** Say "start spelling", then letters -- the phonetic alphabet
+  (alpha, bravo, charlie...) is the reliable way -- with "capital" before a
+  capital and "space" for a space, then "stop spelling".
+- **The wake phrase.** Switch on **Listen for the wake phrase while dictation
+  is off** in Dictation Settings and say **"Quill dictate"** -- or a phrase of
+  your own, at least two words -- to start without the keyboard. Anything you
+  say after it in the same breath is written. While it is on, the microphone is
+  open whenever QUILL is the window in front; nothing it hears is written, kept
+  or sent unless it begins with the wake phrase, and it closes when another
+  program comes to the front. It never listens in the background.
+- **Your own words and phrases.** **Edit My Words and Phrases...** in Dictation
+  Settings opens your `dictation.md` -- the same file Locked Dictation reads.
+  **Vocabulary** entries correct near misses to your spelling; **Replacements**
+  (`say => write`, with `\n` for a new line) are your own spoken phrases.
+- **Dictation Settings -- Alt+Shift+F6.** The **speech engine**
+  (`windows_dictation_engine`); the **language** for Windows speech recognition
+  (`windows_dictation_language`); the **microphone** (`windows_dictation_microphone`,
+  saved by name); **what you hear after each phrase**
+  (`windows_dictation_phrase_feedback`: a sound, the words read back, both --
+  the default -- or neither); what **"dash"** writes (`windows_dictation_dash`:
+  em dash, spaced en dash, or two hyphens); the **start, stop and error tones**
+  (`windows_dictation_cue_sounds`); **saying "Dictation on" and "Dictation off"**
+  (`windows_dictation_announce`); the **wake phrase**
+  (`windows_dictation_wake_enabled`, `windows_dictation_wake_phrase`); and the
+  **stop phrase** (`windows_dictation_stop_phrase`, "stop dictation" until you
+  choose your own words, said on their own after a pause -- "stop dictation"
+  always works too). Five finer choices sit beside them: **automatic
+  punctuation** for Moonshine and Whisper (`windows_dictation_auto_punctuation`;
+  off, you say every mark); the **pause before a phrase is written**
+  (`windows_dictation_pause`: short, normal or long); **remove filler words**
+  such as um and uh (`windows_dictation_remove_fillers`); **stop dictation after
+  silence** (`windows_dictation_silence_minutes`: never, 1, 5 or 10 minutes); and
+  **Just write what I say** (`windows_dictation_continuous`), for talking in one
+  long run -- a pause then puts in no full stop, plays nothing, reads nothing
+  back, and voice commands are written as words, with only spoken marks and the
+  stop phrase still obeyed. **Test Microphone** records four seconds and says how
+  loud it was and what the engine heard. A failure
+  is always spoken whatever these say. If the read-back plays through speakers
+  the microphone can hear it, so use headphones or choose a sound only.
+- **Where the words go.** Into the document you started in, replacing any
+  selection, each phrase one step for **Ctrl+Z**. If you move to another tab,
+  window, program or dialog and speak, nothing is written and dictation stops and
+  tells you why; closing the document stops it too. If it will not start it says
+  why: no microphone, microphone access turned off for desktop apps in Windows
+  Settings, Privacy and security, Microphone, or -- for Windows speech
+  recognition -- no speech language installed.
+
+Live Dictation and Locked Dictation each keep their own microphone choice.
 
 ##### Locked Dictation (Ctrl+F9)
 

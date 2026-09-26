@@ -1069,15 +1069,15 @@ def build_chat_body(
             messages.append({"role": "system", "content": system_prompt})
         messages.append(user_message)
         return {"model": model, "messages": messages, "stream": stream}
-    # OpenAI-compatible: openai, openrouter, custom, ollama_cloud.
-    # OpenAI automatically caches prompt prefixes > 1024 tokens; sending the
-    # system prompt as a dedicated role="system" message keeps the cacheable
-    # prefix stable across requests.
+    # OpenAI-compatible: openai, openrouter, custom, ollama_cloud. A role="system"
+    # message keeps OpenAI's cached prompt prefix stable. OpenAI's newer models
+    # (GPT-6) refuse max_tokens; all of its chat models take max_completion_tokens.
     messages_oa: list[dict[str, str]] = []
     if system_prompt:
         messages_oa.append({"role": "system", "content": system_prompt})
     messages_oa.append(user_message)
-    body = {"model": model, "messages": messages_oa, "max_tokens": max_tokens}
+    limit = "max_completion_tokens" if normalized == "openai" else "max_tokens"
+    body = {"model": model, "messages": messages_oa, limit: max_tokens}
     if stream:
         body["stream"] = True
     return body

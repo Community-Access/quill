@@ -130,6 +130,10 @@
     "voice_preview_generating": "voice_preview.wav",
     "warning": "warning.wav",
     "weather_alert": "weather_alert.wav",
+    "windows_dictation_error": "windows_dictation_error.wav",
+    "windows_dictation_off": "windows_dictation_off.wav",
+    "windows_dictation_on": "windows_dictation_on.wav",
+    "windows_dictation_phrase": "windows_dictation_phrase.wav",
     "word_corrected": "word_corrected.wav"
   }
 }

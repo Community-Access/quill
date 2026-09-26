@@ -2,7 +2,7 @@
 
 Deliberately not :class:`quill.core.settings.Settings`. QUILL's settings object
 carries hundreds of fields for features QUILL Lite does not have and must never
-grow -- AI, dictation, Quillins, publishing -- and sharing it would make
+grow -- Quillins, publishing, QUILL's wider AI -- and sharing it would make
 QUILL Lite's data folder a place a QUILL feature could appear by accident. A
 dozen fields is the whole product: a theme, a font, a wrap, a default mode, a
 window size, a recent list, a session list, and how often unsaved work is copied
@@ -215,6 +215,7 @@ class Settings:
     #: it does". Conflating them gets one wrong -- an area switched on by a
     #: profile or a settings import would otherwise be consent nobody gave.
     ai_privacy_accepted_version: int = 0
+    ai_own_key_model: str = ""  # own-key AI model; key in the OS store (core/ai/own_key.py)
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
     #: Same field name and same three values as QUILL, because it is the same
     #: question -- see ``quill/core/session_restore.py``, which answers it for
@@ -383,6 +384,25 @@ class Settings:
     #: document. On, which is what QUILL Lite always did with no way to say
     #: otherwise; off makes Find Next stop at the end and say so.
     wrap_find: bool = True
+    # -- Dictation -------------------------------------------------------------
+    #: Tools > Dictation > Dictation Settings, under QUILL's names, from the one
+    #: shared module (quill/ui/windows_dictation_commands.py); what each means is in
+    #: quill/core/windows_dictation/preferences.py and options.py.
+    windows_dictation_microphone: str = ""
+    windows_dictation_engine: str = "moonshine"
+    windows_dictation_language: str = ""
+    windows_dictation_dash: str = "em"
+    windows_dictation_wake_enabled: bool = False
+    windows_dictation_wake_phrase: str = "Quill dictate"
+    windows_dictation_stop_phrase: str = "stop dictation"
+    windows_dictation_phrase_feedback: str = "both"
+    windows_dictation_cue_sounds: bool = True
+    windows_dictation_announce: bool = True
+    windows_dictation_pause: str = "normal"
+    windows_dictation_remove_fillers: bool = False
+    windows_dictation_auto_punctuation: bool = True
+    windows_dictation_silence_minutes: int = 0
+    windows_dictation_continuous: bool = False
     # -- Updates -------------------------------------------------------------
     #: Look for a new QUILL Lite once a day, at launch, and say nothing unless
     #: there is one. On, because the alternative is what QUILL Lite shipped
@@ -457,6 +477,9 @@ class Settings:
         self.print_paper_id = max(0, int(self.print_paper_id))
         self.action_feedback = str(_coerce_action_feedback(self.action_feedback))
         self.find_not_found_feedback = str(_coerce_action_feedback(self.find_not_found_feedback))
+        self.windows_dictation_phrase_feedback = str(
+            _coerce_action_feedback(self.windows_dictation_phrase_feedback)
+        )
         return self
 
 

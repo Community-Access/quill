@@ -171,8 +171,10 @@ PRODUCTS: dict[str, Product] = {
         zip_name="QuillLite-Portable-{ver}.zip",
         # An editor and nothing else: one native control, six small windows and
         # a settings file. No media stack, no documents stack, no spell checker,
-        # no engines, nothing to download.
-        dep_groups=("ui", "feedback"),
+        # nothing to download. The one engine it carries is dictation's
+        # (live-dictation: sherpa-onnx, numpy, sounddevice); the models are
+        # staged beside the launcher by build_release.ps1, not in here.
+        dep_groups=("ui", "feedback", "live-dictation"),
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dictation commands</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="dictation-commands">Dictation commands</h1>
+<p>Everything QUILL Lite and QUILL’s Live Dictation understand,
+generated from the table the program itself reads – so this list and the
+program cannot disagree. In either program, say <strong>what can I
+say</strong> while dictating to open the same list.</p>
+<h2 id="how-the-commands-work">How the commands work</h2>
+<ul>
+<li>Punctuation and layout words can go anywhere in a phrase: “dear Sam
+comma new paragraph thank you for the letter”.</li>
+<li>Commands only work as a whole phrase, said on their own after a
+pause. “Delete that line of text” in a sentence is just words.</li>
+<li>With “Just write what I say” switched on in Dictation Settings,
+commands are written as words too; punctuation, layout and the stop
+phrase still work.</li>
+<li>Say “literal” before any of these to write the word instead:
+“literal comma” writes comma.</li>
+<li>Moonshine and Whisper add punctuation by themselves; saying it
+yourself always wins. With Windows speech recognition, say all of
+it.</li>
+</ul>
+<h2 id="punctuation">Punctuation</h2>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>period</td>
+<td><code>.</code></td>
+</tr>
+<tr>
+<td>full stop</td>
+<td><code>.</code></td>
+</tr>
+<tr>
+<td>comma</td>
+<td><code>,</code></td>
+</tr>
+<tr>
+<td>question mark</td>
+<td><code>?</code></td>
+</tr>
+<tr>
+<td>exclamation point</td>
+<td><code>!</code></td>
+</tr>
+<tr>
+<td>exclamation mark</td>
+<td><code>!</code></td>
+</tr>
+<tr>
+<td>colon</td>
+<td><code>:</code></td>
+</tr>
+<tr>
+<td>semicolon</td>
+<td><code>;</code></td>
+</tr>
+<tr>
+<td>ellipsis</td>
+<td><code>...</code></td>
+</tr>
+<tr>
+<td>open quote</td>
+<td>the quotation mark “</td>
+</tr>
+<tr>
+<td>begin quote</td>
+<td>the quotation mark “</td>
+</tr>
+<tr>
+<td>close quote</td>
+<td>the quotation mark “</td>
+</tr>
+<tr>
+<td>end quote</td>
+<td>the quotation mark “</td>
+</tr>
+<tr>
+<td>open single quote</td>
+<td><code>'</code></td>
+</tr>
+<tr>
+<td>close single quote</td>
+<td><code>'</code></td>
+</tr>
+<tr>
+<td>apostrophe</td>
+<td><code>'</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="brackets">Brackets</h2>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open parenthesis</td>
+<td><code>(</code></td>
+</tr>
+<tr>
+<td>open paren</td>
+<td><code>(</code></td>
+</tr>
+<tr>
+<td>left parenthesis</td>
+<td><code>(</code></td>
+</tr>
+<tr>
+<td>close parenthesis</td>
+<td><code>)</code></td>
+</tr>
+<tr>
+<td>close paren</td>
+<td><code>)</code></td>
+</tr>
+<tr>
+<td>right parenthesis</td>
+<td><code>)</code></td>
+</tr>
+<tr>
+<td>open bracket</td>
+<td><code>[</code></td>
+</tr>
+<tr>
+<td>left bracket</td>
+<td><code>[</code></td>
+</tr>
+<tr>
+<td>close bracket</td>
+<td><code>]</code></td>
+</tr>
+<tr>
+<td>right bracket</td>
+<td><code>]</code></td>
+</tr>
+<tr>
+<td>open brace</td>
+<td><code>{</code></td>
+</tr>
+<tr>
+<td>close brace</td>
+<td><code>}</code></td>
+</tr>
+<tr>
+<td>open angle bracket</td>
+<td><code>&lt;</code></td>
+</tr>
+<tr>
+<td>close angle bracket</td>
+<td><code>&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="dashes-and-joining">Dashes and joining</h2>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hyphen</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>dash</td>
+<td>a dash, written as em dash, no spaces (word—word)</td>
+</tr>
+<tr>
+<td>slash</td>
+<td><code>/</code></td>
+</tr>
+<tr>
+<td>forward slash</td>
+<td><code>/</code></td>
+</tr>
+<tr>
+<td>backslash</td>
+<td><code>\</code></td>
+</tr>
+<tr>
+<td>underscore</td>
+<td><code>_</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="symbols">Symbols</h2>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>at sign</td>
+<td><code>@</code></td>
+</tr>
+<tr>
+<td>hash sign</td>
+<td><code>#</code></td>
+</tr>
+<tr>
+<td>number sign</td>
+<td><code>#</code></td>
+</tr>
+<tr>
+<td>dollar sign</td>
+<td><code>$</code></td>
+</tr>
+<tr>
+<td>percent sign</td>
+<td><code>%</code></td>
+</tr>
+<tr>
+<td>ampersand</td>
+<td><code>&amp;</code></td>
+</tr>
+<tr>
+<td>asterisk</td>
+<td><code>*</code></td>
+</tr>
+<tr>
+<td>plus sign</td>
+<td><code>+</code></td>
+</tr>
+<tr>
+<td>minus sign</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>equals sign</td>
+<td><code>=</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="lines-and-layout">Lines and layout</h2>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>new line</td>
+<td>a line break</td>
+</tr>
+<tr>
+<td>newline</td>
+<td>a line break</td>
+</tr>
+<tr>
+<td>new paragraph</td>
+<td>a blank line (new paragraph)</td>
+</tr>
+<tr>
+<td>tab key</td>
+<td>a tab</td>
+</tr>
+<tr>
+<td>press tab</td>
+<td>a tab</td>
+</tr>
+<tr>
+<td>tab</td>
+<td>a tab</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-correcting">Commands: correcting</h2>
+<table>
+<thead>
+<tr>
+<th>Say, on its own</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“scratch that” or “delete that”</td>
+<td>Removes the phrase you dictated last. Say it again to remove the one
+before. A phrase you have typed into since is left alone.</td>
+</tr>
+<tr>
+<td>“undo that” or “undo” or “undo last”</td>
+<td>The same as pressing Ctrl+Z.</td>
+</tr>
+<tr>
+<td>“select that”</td>
+<td>Selects the phrase you dictated last, so you can change or format it
+with the keyboard. The next phrase you say replaces it.</td>
+</tr>
+<tr>
+<td>“capitalize that” or “cap that”</td>
+<td>Gives every word of the last phrase a capital: meeting notes becomes
+Meeting Notes.</td>
+</tr>
+<tr>
+<td>“all caps that” or “uppercase that”</td>
+<td>Puts the last phrase in capitals.</td>
+</tr>
+<tr>
+<td>“no caps that” or “lowercase that”</td>
+<td>Puts the last phrase in small letters.</td>
+</tr>
+<tr>
+<td>“delete word” or “delete last word”</td>
+<td>Deletes the word just before the cursor.</td>
+</tr>
+<tr>
+<td>“delete sentence” or “delete last sentence”</td>
+<td>Deletes from the start of the sentence the cursor is in up to the
+cursor.</td>
+</tr>
+<tr>
+<td>“read that” or “repeat that”</td>
+<td>Reads the last phrase aloud again.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-moving-the-cursor">Commands: moving the cursor</h2>
+<table>
+<thead>
+<tr>
+<th>Say, on its own</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“go to beginning of line” or “go to start of line”</td>
+<td>Moves the cursor to the start of the line.</td>
+</tr>
+<tr>
+<td>“go to end of line”</td>
+<td>Moves the cursor to the end of the line.</td>
+</tr>
+<tr>
+<td>“go to top” or “go to start of document” or “go to beginning of
+document”</td>
+<td>Moves the cursor to the start of the document.</td>
+</tr>
+<tr>
+<td>“go to bottom” or “go to end of document”</td>
+<td>Moves the cursor to the end of the document.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="commands-dictation-itself">Commands: dictation itself</h2>
+<table>
+<thead>
+<tr>
+<th>Say, on its own</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“start spelling” or “spell mode” or “spelling mode”</td>
+<td>Starts spelling mode: every phrase is read as letters until you say
+stop spelling. See Spelling below.</td>
+</tr>
+<tr>
+<td>“stop spelling” or “end spelling” or “spelling off”</td>
+<td>Leaves spelling mode.</td>
+</tr>
+<tr>
+<td>“what can i say” or “show commands” or “dictation commands”</td>
+<td>Opens this list.</td>
+</tr>
+<tr>
+<td>“stop dictation” or “stop dictating” or “stop listening”</td>
+<td>Stops dictation. With a wake phrase set, dictation goes back to
+waiting for it.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="spelling">Spelling</h2>
+<ul>
+<li>Say “start spelling”, then letters. Everything you say is written as
+letters until you say “stop spelling”.</li>
+<li>Say “capital” before a letter for a capital, and “space” for a
+space.</li>
+<li>Letter names work (“bee”, “see”), and the phonetic alphabet is
+clearer: alpha, bravo, charlie, delta, echo, foxtrot, golf, hotel,
+india, juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo,
+sierra, tango, uniform, victor, whiskey, x-ray, yankee, zulu.</li>
+<li>Numbers are written as digits: zero, one, two, three, four, five,
+six, seven, eight, nine.</li>
+</ul>
+<h2 id="starting-and-stopping-by-voice">Starting and stopping by
+voice</h2>
+<ul>
+<li>With the wake phrase switched on in Dictation Settings, say “Quill
+dictate” to start dictation without touching the keyboard. Anything you
+say after it in the same breath is written.</li>
+<li>Say “stop dictation” on its own, after a pause, to stop dictation.
+“Stop dictation” always works too. With the wake phrase on, stopping
+goes back to waiting for the wake phrase.</li>
+<li>You choose both phrases in Dictation Settings; each needs at least
+two words.</li>
+</ul>
+</main>
+</body>
+</html>

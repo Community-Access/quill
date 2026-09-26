@@ -105,6 +105,7 @@ _AREA_IN_PROSE: dict[str, str] = {
     "zoom": "text size",
     "printing": "printing",
     "hosted_ai": "AI help",
+    "dictation": "dictation",
 }
 
 

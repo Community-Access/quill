@@ -115,6 +115,10 @@ EVENT_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "transcription_word_inserted",
             "dictation_locked_on",
             "dictation_locked_off",
+            "windows_dictation_on",
+            "windows_dictation_phrase",
+            "windows_dictation_off",
+            "windows_dictation_error",
         ),
     ),
     (
@@ -244,6 +248,10 @@ LABELS: dict[str, str] = {
     "transcription_word_inserted": "Dictated word inserted",
     "dictation_locked_on": "Hands-free dictation on",
     "dictation_locked_off": "Hands-free dictation off",
+    "windows_dictation_on": "Live dictation listening",
+    "windows_dictation_phrase": "Live dictation wrote a phrase",
+    "windows_dictation_off": "Live dictation stopped listening",
+    "windows_dictation_error": "Live dictation could not go on",
     # Talking to QUILL
     "conversation_on": "Conversation mode on",
     "conversation_off": "Conversation mode off",

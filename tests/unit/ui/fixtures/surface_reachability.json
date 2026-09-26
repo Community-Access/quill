@@ -86,6 +86,7 @@
   "quill.ui.heading_organizer_dialog": "reachable",
   "quill.ui.hosted_ai_commands": "reachable",
   "quill.ui.hosted_ai_dialogs": "reachable",
+  "quill.ui.hosted_ai_own_key": "reachable",
   "quill.ui.hosted_ai_pad": "reachable",
   "quill.ui.hygiene_dialog": "reachable",
   "quill.ui.info_pages": "reachable",
@@ -164,6 +165,7 @@
   "quill.ui.main_frame_vault": "reachable",
   "quill.ui.main_frame_verbosity": "reachable",
   "quill.ui.main_frame_watch_profile": "reachable",
+  "quill.ui.main_frame_windows_dictation": "reachable",
   "quill.ui.main_frame_work_persona": "reachable",
   "quill.ui.main_frame_worktrees": "reachable",
   "quill.ui.mastodon_dialogs": "reachable",
@@ -357,5 +359,6 @@
   "quill.ui.weather.weather_center_dialog": "reachable",
   "quill.ui.web_form": "reachable",
   "quill.ui.window_state": "reachable",
+  "quill.ui.windows_dictation_dialog": "reachable",
   "quill.ui.work_persona_dialog": "reachable"
 }

@@ -45,6 +45,7 @@ from quill.apps.lite_updates import DocumentUpdatesMixin
 from quill.apps.lite_window_clipboard import DocumentClipboardMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
+from quill.apps.lite_window_dictation import DocumentDictationMixin
 from quill.apps.lite_window_file import DocumentFileMixin
 from quill.apps.lite_window_folding import DocumentFoldingMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
@@ -84,6 +85,8 @@ _TITLE = APP_NAME
 
 class DocumentFrame(
     HostedAiMixin,
+    # Tools > Dictation, from the module QUILL shares (2026-09-25).
+    DocumentDictationMixin,
     DocumentCommandsMixin,
     DocumentFormatCommandsMixin,
     # The outline commands: Select Section, Move Section Up/Down, Move
@@ -287,6 +290,8 @@ class DocumentFrame(
         from quill.ui import app_context_help
 
         app_context_help.install(self, wx=wx)
+        # Dictation follows the shell's activation, for the wake phrase.
+        self._dictation_install()
 
         self._autosave = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._on_autosave_tick, self._autosave)

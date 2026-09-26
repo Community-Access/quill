@@ -178,6 +178,14 @@ CELLS: tuple[StatusCell, ...] = (
         "resume announcing lists as you move.",
     ),
     StatusCell(
+        "dictation",
+        "Dictation",
+        "What dictation is doing: off, listening, hearing you, writing, spelling, "
+        "or waiting for the wake phrase. It is the one place the microphone's state "
+        "can be read at any time without opening a menu. Press Enter to start or "
+        "stop dictation.",
+    ),
+    StatusCell(
         "encoding",
         "Encoding",
         "The character encoding this file was read with and will be written back "

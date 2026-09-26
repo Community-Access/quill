@@ -780,6 +780,7 @@ COMMANDS: list[CommandRow] = [
     # from the bar for exactly this reason. Why these four chords and no others,
     # in quill/ui/hosted_ai_commands.py's docstring.
     ("&Tools", "&AI", "", "", "sub"),
+    ("&Tools", "&Dictation", "", "", "sub"),
     ("&Tools", "", "", "", "sep"),
     # Both are shown in the status bar and both used to be read-only: QUILL Lite
     # wrote back whatever it read, which is the right default and a dead end for
@@ -927,6 +928,12 @@ COMMANDS: list[CommandRow] = [
     # The chord held back when this family was laid out, spent on the one
     # command that has to be reachable without agreeing to anything first.
     ("&Tools|&AI", "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),
+    ("&Tools|&AI", "Use My &Own OpenAI Key...", "Alt+F2", "cmd_ai_own_key", ""),
+    # -- Tools > Dictation, shared with QUILL (quill/ui/windows_dictation_commands.py).
+    # Ctrl+F11: Word's Alt+grave is a dead key on many layouts, and QUILL's Ctrl+F9
+    # is Locked Dictation, another engine (rule 2). Checkable: "am I heard?"
+    ("&Tools|&Dictation", "Dictation &On", "Ctrl+F11", "cmd_toggle_dictation", "check"),
+    ("&Tools|&Dictation", "Dictation &Settings...", "Alt+Shift+F6", "cmd_dictation_settings", ""),
     ("&Tools|&Change Case", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools|&Change Case", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     # Ctrl+Shift+T since 2026-09-16: Ctrl+Shift+G is Word Count in Word, and

@@ -87,6 +87,7 @@ def signed_in(monkeypatch):
 
     class Service:
         signed_in = True
+        own_key_active = False
         support_id = "A1B2-C3D4"
 
         def __init__(self):
@@ -112,6 +113,7 @@ def connected(monkeypatch):
 
     class Service:
         signed_in = True
+        own_key_active = False
         support_id = "A1B2-C3D4"
 
         def refresh_limits(self, on_done=None):
@@ -172,6 +174,7 @@ def test_the_assistant_offers_sign_in_when_this_computer_is_not_connected(
 
     class SignedOut:
         signed_in = False
+        own_key_active = False
 
     monkeypatch.setattr(win, "_ai_service", lambda: SignedOut())
 
@@ -192,6 +195,7 @@ def test_usage_does_not_open_when_signed_out(lite_window, ai_frames, monkeypatch
 
     class SignedOut:
         signed_in = False
+        own_key_active = False
 
     monkeypatch.setattr(win, "_ai_service", lambda: SignedOut())
 
@@ -459,6 +463,7 @@ def test_withdrawing_also_signs_this_computer_out(lite_window, agreement, monkey
 
     class Service:
         signed_in = True
+        own_key_active = False
 
         def __init__(self):
             self.signed_out = False
@@ -756,3 +761,116 @@ def test_closing_a_window_lets_the_next_press_open_it_again(
     (lambda w: w.cmd_ai_sign_in())(win)
 
     assert ai_frames["AiSignInFrame"].last is not None
+
+
+# --------------------------------------------------------------------------- #
+# Use My Own OpenAI Key: a saved key lifts every limit; removing it goes back
+# --------------------------------------------------------------------------- #
+
+
+@pytest.fixture
+def own_key_dialog(monkeypatch):
+    """The Use My Own OpenAI Key window, answered without a screen."""
+    import wx
+
+    import quill.ui.dialog_contract as contract
+    import quill.ui.hosted_ai_own_key as own_key_ui
+
+    state = {"answer": wx.ID_OK, "shown": 0, "applied": 0}
+
+    class Dialog:
+        def __init__(self, parent, settings, announce):
+            state["shown"] += 1
+
+        def apply(self, settings):
+            state["applied"] += 1
+            settings.ai_own_key_model = "gpt-test"
+            return "AI help uses your own OpenAI key, with no limits."
+
+        def Destroy(self):
+            pass
+
+    monkeypatch.setattr(own_key_ui, "OwnKeyDialog", Dialog)
+    monkeypatch.setattr(contract, "show_modal_dialog", lambda _d, _t: state["answer"])
+    return state
+
+
+def test_own_key_refuses_when_the_area_is_off(lite_window, own_key_dialog, monkeypatch):
+    win = lite_window("text")
+    monkeypatch.setattr(win.app, "feature_enabled", lambda area: area != "hosted_ai")
+
+    (lambda w: w.cmd_ai_own_key())(win)
+
+    assert own_key_dialog["shown"] == 0
+    assert any("switched off" in said for said in win.announcements)
+
+
+def test_own_key_needs_no_agreement_and_saves_what_the_window_chose(lite_window, own_key_dialog):
+    """The free service's agreement is about QUILL's servers; this route never
+    touches them, and the window itself says where the text goes."""
+    win = lite_window("text")
+    win.app.settings.ai_privacy_accepted_version = 0
+    before = win.app.saved_settings
+
+    (lambda w: w.cmd_ai_own_key())(win)
+
+    assert own_key_dialog["applied"] == 1
+    assert win.app.settings.ai_own_key_model == "gpt-test"
+    assert win.app.saved_settings == before + 1
+    assert any("no limits" in said for said in win.announcements)
+
+
+def test_cancelling_own_key_changes_nothing(lite_window, own_key_dialog):
+    import wx
+
+    own_key_dialog["answer"] = wx.ID_CANCEL
+    win = lite_window("text")
+    before = win.app.saved_settings
+
+    (lambda w: w.cmd_ai_own_key())(win)
+
+    assert own_key_dialog["applied"] == 0
+    assert win.app.saved_settings == before
+
+
+def test_with_a_saved_key_usage_opens_the_own_key_window(lite_window, ai_frames, monkeypatch):
+    """A different window, not the allowance one: there is nothing to fetch."""
+    import quill.ui.hosted_ai_own_key as own_key_ui
+    from quill.ui.hosted_ai_commands import HostedAiMixin
+
+    Window = type("OwnKeyUsageFrame", (_FakeFrame,), {"last": None})
+
+    class Service:
+        signed_in = False
+        own_key_active = True
+
+    service = Service()
+    win = lite_window("text")
+    monkeypatch.setattr(HostedAiMixin, "_ai_privacy_accepted", lambda _self: True)
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+    monkeypatch.setattr(own_key_ui, "OwnKeyUsageFrame", Window)
+
+    (lambda w: w.cmd_ai_usage())(win)
+
+    assert Window.last["args"][1] is service
+    assert ai_frames["AiUsageFrame"].last is None
+
+
+def test_a_saved_key_lifts_the_limits_and_removing_it_restores_them(monkeypatch):
+    """No switch: the key's presence is the whole state."""
+    from quill.core.ai import own_key
+    from quill.ui.hosted_ai_service import AiService
+
+    class App:
+        class settings:  # noqa: N801 - a stand-in namespace
+            ai_own_key_model = ""
+
+    service = AiService(App())
+    monkeypatch.setattr(own_key, "has_own_key", lambda: True)
+    assert service.own_key_active
+    assert service.limits is own_key.OWN_KEY_LIMITS
+    assert service.unavailable_reason("summarize") == ""
+
+    monkeypatch.setattr(own_key, "has_own_key", lambda: False)
+    assert not service.own_key_active
+    assert service.limits is not own_key.OWN_KEY_LIMITS
