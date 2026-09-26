@@ -120,12 +120,17 @@ def _server_path(host: Any, product: str, *, prefill_summary: str, prefill_body:
         from feedback_hub.wx_dialog import FeedbackDialog
 
         import quill.core as _core
+        from quill.core.paths import app_data_dir
 
         schema_path = Path(_core.__file__).parent / "schemas" / "feedback.json"
         dialog = FeedbackDialog(
             _parent(host),
             schema=load_schema(schema_path),
             app_version=product,
+            # The hub keeps a local copy of every message it sends. Its default is
+            # %APPDATA%\Quill, which for a portable copy is somebody else's
+            # computer; the data folder is the same place on an installed one.
+            db_path=app_data_dir() / "feedback.db",
             **submission_kwargs(),
         )
     except Exception:  # noqa: BLE001 - any hub failure means the mail path

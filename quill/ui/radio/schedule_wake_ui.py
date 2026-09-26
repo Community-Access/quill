@@ -54,8 +54,17 @@ def refresh_wake_task(host: Any) -> None:
     when "the next occurrence" becomes a different moment. Windows-only and
     best effort: a machine whose policy forbids scheduled tasks silently keeps
     the other two defences.
+
+    A portable copy never touches Task Scheduler -- not to register, and not
+    even to spawn ``schtasks`` to delete: a wake task left on a friend's
+    computer would wake it and run a program from a stick that has gone home.
+    The keep-awake half is session-only and stays.
     """
     try:
+        from quill.core.paths import portable_bundle_root
+
+        if portable_bundle_root() is not None:
+            return
         from quill.core.radio.schedule_wake import next_wake_moment
         from quill.platform.windows import recording_wake_task as task
 

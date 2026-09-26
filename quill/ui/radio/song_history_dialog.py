@@ -137,9 +137,9 @@ class SongHistoryDialog:
         close_id = wx.NewIdRef()
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
-        menu_bar.Append(surface_menu, "&Songs")
-        # The app's own Station commands, so Alt+S opens the same menu here it
-        # opens in the main window -- see surface_app_menu for the report.
+        menu_bar.Append(surface_menu, "Son&gs")
+        # Station owns Alt+S here as in the main window (surface_app_menu), so
+        # Songs is Alt+G -- two menus on one letter cycle, not open (2026-09-25).
         from quill.ui.radio import surface_app_menu
 
         self._menu_id_refs.extend(
@@ -399,12 +399,14 @@ class SongHistoryDialog:
         dialog = wx.MessageDialog(
             self.dialog,
             f"Clear the song history for {station_name}?\n\n"
-            "Choose No to clear the history for every station instead.",
+            "Choose All stations to clear the history for every station instead.",
             "Clear Song History",
-            wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION,
+            wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION,
         )
         # Destructive question, so the safe answer is the default (the same rule
-        # the rest of the radio follows).
+        # the rest of the radio follows). Until 2026-09-25 this comment was the
+        # only thing saying so: the style had no CANCEL_DEFAULT, Enter cleared
+        # this station, and the message named a "No" button that has another label.
         dialog.SetYesNoCancelLabels("This &station", "&All stations", "Cancel")
         answer = self._show_modal(dialog, "Clear Song History")
         dialog.Destroy()

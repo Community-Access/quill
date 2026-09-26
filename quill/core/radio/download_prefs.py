@@ -142,7 +142,19 @@ class DownloadPrefs:
 
 
 def default_root() -> Path:
-    """The Downloads folder everybody already has, with our own folder inside."""
+    """The Downloads folder everybody already has, with our own folder inside.
+
+    A portable copy saves to ``<bundle>\\Downloads`` instead -- the host's
+    Downloads folder belongs to whoever owns the computer. Beside ``data``
+    rather than in it, like Recordings, so turning the stick into an ordinary
+    copy does not delete what was saved; ``root`` still persists as ``""`` so
+    the default follows the stick to another drive letter.
+    """
+    from quill.core.paths import portable_bundle_root
+
+    bundle = portable_bundle_root()
+    if bundle is not None:
+        return bundle / "Downloads"
     return Path.home() / "Downloads" / "Quill Radio"
 
 

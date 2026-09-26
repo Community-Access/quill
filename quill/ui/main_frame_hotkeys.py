@@ -92,7 +92,15 @@ class GlobalHotkeysMixin:
         # A unique default so show/hide-to-tray works out of the box, matching
         # the standalone apps (Radio Ctrl+Alt+Shift+R, Weather ...+W). The user
         # can rebind or clear it in Tools > Global Hotkeys.
-        if "view.toggle_window_to_tray" not in bindings:
+        #
+        # ...but not in an app that has already registered its own show/hide
+        # chord (_register_tray_hotkey: Radio's Ctrl+Alt+Shift+R, Weather's W).
+        # There this default was a *second* system-wide show/hide key, and it
+        # took Ctrl+Alt+Shift+Q from every other program -- including QUILL,
+        # whose own show/hide it is, and Radio's own Community menu (2026-09-25).
+        if "view.toggle_window_to_tray" not in bindings and not getattr(
+            self, "_tray_hotkey_registered", False
+        ):
             bindings["view.toggle_window_to_tray"] = "Ctrl+Alt+Shift+Q"
         return bindings
 

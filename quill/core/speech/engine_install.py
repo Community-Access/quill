@@ -370,8 +370,7 @@ def install_nemotron(
     Offline Edition's bundled wheelhouse (:func:`_bundled_wheelhouse_dir`) over
     PyPI when present. ``sherpa-onnx`` bundles its own native onnxruntime, so no
     torch/CUDA is ever pulled in. Raises :class:`EngineInstallError` on Safe Mode,
-    unavailable pip, a non-zero pip exit, or if the engine still cannot be
-    imported afterward.
+    unavailable pip, a non-zero pip exit, or if the engine cannot be imported afterward.
     """
     if os.environ.get("QUILL_SAFE_MODE") == "1":
         raise EngineInstallError("Downloading speech engines is disabled in Safe Mode.")
@@ -705,6 +704,7 @@ def _pip_command(
         "install",
         "--no-input",
         "--disable-pip-version-check",
+        "--no-cache-dir",  # nothing in the host's %LOCALAPPDATA%\pip (portable copies)
         "--only-binary=:all:",
         "--no-warn-script-location",
         "--upgrade",

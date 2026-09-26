@@ -37,28 +37,14 @@ def quill_main_load_settings() -> object:
 
 
 def _propagate_portable_environment() -> None:
-    """Set QUILL_APP_ROOT and QUILL_PORTABLE when running from a portable bundle.
+    """Mirror a verified portable bundle into the environment.
 
-    The portable bundle's primary entry point is ``quill.exe`` at the bundle
-    root, next to a ``data/`` folder -- the evidence rules in
-    :func:`quill.core.storage_mode._resolve_app_root` apply here too. When
-    the host process can resolve a verified portable anchor, mirror the
-    fact into the env so the legacy ``QUILL_APP_ROOT`` consumers (braille
-    pack, bundled tool paths, read-aloud assets, AI key DPAPI fallback)
-    keep working without each doing its own walk-up from ``sys.executable``.
-
-    Skipped when the env vars are already set -- the launcher or a test
-    harness may have set them deliberately.
+    Moved to :func:`quill.core.paths.propagate_portable_environment` so every
+    app's ``main()`` shares it; kept under this name for QUILL's own caller.
     """
-    from quill.core.storage_mode import _resolve_app_root
+    from quill.core.paths import propagate_portable_environment
 
-    if os.environ.get("QUILL_APP_ROOT") or os.environ.get("QUILL_PORTABLE"):
-        return
-    anchor = _resolve_app_root()
-    if anchor is None:
-        return
-    os.environ["QUILL_APP_ROOT"] = str(anchor)
-    os.environ["QUILL_PORTABLE"] = "1"
+    propagate_portable_environment()
 
 
 def _install_excepthook() -> None:

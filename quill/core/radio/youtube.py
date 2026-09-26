@@ -38,6 +38,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from quill.core.error_codes import CodedError
+from quill.core.paths import yt_dlp_cache_dir
 
 # The pure URL readers live in youtube_urls (a GATE-11 extraction) and are
 # re-exported here, because every caller has always imported them from this
@@ -235,6 +236,7 @@ def _default_resolver(page_url: str) -> YouTubeStream:
     import yt_dlp  # imported lazily: installed on demand, absent until then
 
     options: dict[str, object] = {
+        "cachedir": yt_dlp_cache_dir(),
         "format": "bestaudio/best",
         "noplaylist": True,
         "quiet": True,
@@ -448,6 +450,7 @@ def _default_search_resolver(spec: str) -> dict[str, object]:
     import yt_dlp  # imported lazily
 
     options: dict[str, object] = {
+        "cachedir": yt_dlp_cache_dir(),
         "extract_flat": "in_playlist",
         "quiet": True,
         "no_warnings": True,
@@ -468,6 +471,7 @@ def _default_playlist_resolver(url: str) -> dict[str, object]:
     import yt_dlp  # imported lazily: installed on demand, absent until then
 
     options: dict[str, object] = {
+        "cachedir": yt_dlp_cache_dir(),
         "extract_flat": "in_playlist",
         "quiet": True,
         "no_warnings": True,

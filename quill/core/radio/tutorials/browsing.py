@@ -34,28 +34,29 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "branch, not collapsed at the top with everything closed. "
                     "That is a deliberate saving of the arrowing you already did."
                 ),
-                command="radio.browse",
-                hear="Entered Browse Stations, and the branch you were last in.",
+                keys=("Ctrl+B",),
+                hear="Browse Stations, and the row you were last on.",
                 check="window:Browse Stations",
             ),
             Step(
                 title="Open a folder and let it tell you its size",
                 body=(
-                    "Open By Country and pick one. Every folder announces how many "
-                    "stations it holds before you open it -- France, 812 stations. "
-                    "The live directory could never afford that, because counting "
-                    "used to cost a network round trip; it now costs nothing, "
-                    "because the count comes off your own disk."
+                    "Open By Country and arrow through it. Every country row says "
+                    "how many stations it holds before you open it -- France, "
+                    "then a number in brackets. The live directory could never "
+                    "afford that, because counting used to cost a network round "
+                    "trip; it now costs nothing, because the count comes off your "
+                    "own disk."
                 ),
                 keys=("Right arrow", "Down arrow"),
-                hear="The country, then its station count, then its states or regions.",
+                hear="How many items By Country holds, then each country with its station count.",
             ),
             Step(
                 title="Read a row before you play it",
                 body=(
                     "Arrow onto a station and listen to the whole row. A row that "
                     "probably will not play says may not be playable; a row that "
-                    "has to be looked up first -- TuneIn, YouTube -- says resolved "
+                    "has to be looked up first -- TuneIn, YouTube -- says resolves "
                     "when you play it, so the pause before the audio starts is "
                     "explained rather than worrying."
                 ),
@@ -72,12 +73,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "With the Station Details pane on, arrowing a row fills a "
                     "read-only box with its source, stream, format and country -- "
-                    "text you can arrow through and copy. Turn the pane off from "
-                    "the View menu if you would rather not Tab past it; every "
-                    "station surface honours the choice."
+                    "text you can arrow through and copy. Tab from the tree to "
+                    "reach it. Turn the pane off with Show Station Details on the "
+                    "main window's View menu if you would rather not Tab past it; "
+                    "every station surface honours the choice."
                 ),
-                keys=("Tab", "Ctrl+D"),
+                keys=("Tab",),
                 hear="The details box, read as ordinary text.",
+                note="Show Station Details is Ctrl+D in the main window.",
             ),
             Step(
                 title="Search inside the folder you are standing in",
@@ -89,7 +92,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "them. Clearing the box returns the folder."
                 ),
                 keys=("Ctrl+F",),
-                hear="A find box, then the number of rows that matched.",
+                hear=(
+                    "Find in this folder; then, once you press Enter, the number of rows that "
+                    "matched."
+                ),
             ),
             Step(
                 title="Open a row's own menu",
@@ -103,9 +109,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 keys=("Shift+F10",),
                 hear="A context menu, read from the top.",
                 note=(
-                    "The first item is what Enter does, and the first nine answer "
-                    "to Ctrl+1 through Ctrl+9. Quick Actions decides that order -- "
-                    "see the lesson called Decide what Enter does."
+                    "Quick Actions, on the Station menu, decides the order of "
+                    "this menu -- see the lesson called Decide what a row says, "
+                    "and what its menu offers first."
                 ),
             ),
             Step(
@@ -129,8 +135,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "not in the tree at all and is never contacted, so this is a "
                     "speed and a privacy control as much as a tidiness one."
                 ),
-                command="radio.browse_sources",
-                hear="Browse Stations has been updated, and the branch gone from the tree.",
+                keys=("Shift+F10",),
+                hear="The source's name, hidden, and how to bring it back.",
+                note=(
+                    "Choose Browse Sources, on the main window's Station menu, "
+                    "is the same setting as one checklist of every source "
+                    "(Ctrl+Alt+Shift+O)."
+                ),
             ),
         ),
         closing=(
@@ -161,7 +172,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "tree, so the answer arrives where you already are."
                 ),
                 keys=("Home", "Enter"),
-                hear="A box asking what to search for.",
+                hear=(
+                    "Search All Sources: What are you looking for? Every source is searched at "
+                    "once."
+                ),
             ),
             Step(
                 title="Type something specific enough to be interesting",
@@ -173,8 +187,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 keys=("Enter",),
                 hear=(
-                    "After about four seconds, a spoken note that it is still going; then the "
-                    "results."
+                    "Searching every source, and your words; after about four seconds, Still "
+                    "searching; then the results."
                 ),
             ),
             Step(
@@ -212,11 +226,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Add anything worth keeping to your favorites from the row's "
                     "own menu, then press Delete on the Search Results branch to "
-                    "close it. It asks nothing, because nothing is lost -- your "
-                    "query is still in the Find box."
+                    "close it. It asks nothing, because nothing is lost -- running "
+                    "the same search again brings the answer straight back."
                 ),
                 keys=("Delete",),
-                hear="The branch gone, and the tree as it was.",
+                hear="Search results closed, and the cursor back on Search All Sources.",
             ),
         ),
         closing=(
@@ -262,7 +276,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "that one page, finds the stream the station's player uses, "
                     "and hands it back as a row. No https:// needed."
                 ),
-                command="radio.browse",
+                keys=("Ctrl+B",),
                 hear=(
                     "One stream found on the website, and a row named for the station "
                     "rather than for a web address."
@@ -283,7 +297,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "everything as a row you found by browsing."
                 ),
                 keys=("Enter", "Shift+F10"),
-                hear="Connecting, then Playing; then Added, and the station's name.",
+                hear="Playing, and the station's name; then Added, the name, to Favorites.",
                 check="favorite-added",
             ),
             Step(
@@ -326,13 +340,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Open the search window",
                 body=(
-                    "Find Stations is a window of fields rather than one box: a "
-                    "station name, a tag, a country. They work as a set, and that "
-                    "is the point -- jazz in France and jazz in Brazil are "
-                    "different searches."
+                    "Search Stations, on the Station menu, opens a window of "
+                    "fields rather than one box: a station name, a tag, a country. "
+                    "They work as a set, and that is the point -- jazz in France "
+                    "and jazz in Brazil are different searches."
                 ),
                 keys=("Ctrl+F",),
-                hear="Entered the search window, with focus in the station-name field.",
+                hear="Internet Radio, then the Station name field.",
             ),
             Step(
                 title="Search the catalog first, and the internet second",
@@ -364,22 +378,24 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Choose which directories are asked",
                 body=(
-                    "The search sources are yours to pick. A source that is "
-                    "switched off is never contacted at all -- not asked and "
-                    "ignored, not asked -- so turning off the ones you do not care "
-                    "about makes every search faster as well as quieter."
+                    "The search sources are yours to pick, from Search Sources on "
+                    "the main window's Station menu. A source that is switched off "
+                    "is never contacted at all -- not asked and ignored, not "
+                    "asked -- so turning off the ones you do not care about makes "
+                    "every search faster as well as quieter."
                 ),
-                keys=("Alt+S",),
-                hear="Each source with its own state read out.",
+                keys=("Ctrl+Alt+Shift+U",),
+                hear="A checklist of directories, each read with its own checked state.",
             ),
             Step(
                 title="Decide what a result row says",
                 body=(
                     "A list is read one column at a time, so the columns are the "
-                    "sentence you hear on every row. Choose Columns lets you "
-                    "reorder them, hide the ones you do not want spoken, and turn "
-                    "on the ones that start switched off -- language, genres, "
-                    "popularity, bitrate."
+                    "sentence you hear on every row. Choose Columns, on the main "
+                    "window's View menu, lets you reorder them, hide the ones you "
+                    "do not want spoken, and turn on the ones that start switched "
+                    "off -- language, genres, popularity, bitrate. The next search "
+                    "window you open uses the new layout."
                 ),
                 keys=("Ctrl+Alt+Shift+C",),
                 hear=(
@@ -401,7 +417,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "all."
                 ),
                 keys=("Enter", "Shift+F10"),
-                hear="Connecting, then Playing; then Added, and the station's name.",
+                hear="Playing, and the station's name; then Added, the name, to Favorites.",
             ),
         ),
         closing=(

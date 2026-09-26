@@ -126,3 +126,74 @@ def test_the_now_playing_readout_is_wide_enough_to_read(wx_app) -> None:
             panel.dialog.Destroy()
     finally:
         frame.Destroy()
+
+
+# -- embedded as the main view (2026-09-25) ---------------------------------------
+
+
+class _KeyEvent:
+    """The two questions ``_on_char_hook`` asks, and whether it skipped."""
+
+    def __init__(self, code: int, *, ctrl: bool = False) -> None:
+        self._code = code
+        self._ctrl = ctrl
+        self.skipped = False
+
+    def GetKeyCode(self) -> int:
+        return self._code
+
+    def ControlDown(self) -> bool:
+        return self._ctrl
+
+    def Skip(self, skip: bool = True) -> None:
+        self.skipped = skip
+
+
+def _embedded(monkeypatch):
+    from quill.ui.radio import transport_keys
+
+    installed_on: list[object] = []
+    real_install = transport_keys.install
+
+    def _recording_install(window, *args, **kwargs):
+        installed_on.append(window)
+        return real_install(window, *args, **kwargs)
+
+    monkeypatch.setattr(transport_keys, "install", _recording_install)
+    frame = wx.Frame(None)
+    page = wx.Panel(frame)
+    panel = player_panel.PlayerPanel(None, _Host(), embed_in=page)
+    return frame, page, panel, installed_on
+
+
+def test_the_embedded_player_has_no_close_button(wx_app, monkeypatch) -> None:
+    # A hosted view is not a window; a Close button on it closed the app.
+    frame, page, _panel, _installed = _embedded(monkeypatch)
+    try:
+        buttons = [c for c in page.GetChildren() if isinstance(c, wx.Button)]
+        assert all(b.GetId() != wx.ID_CANCEL for b in buttons)
+        assert all("Close" not in b.GetLabel().replace("&", "") for b in buttons)
+    finally:
+        frame.Destroy()
+
+
+def test_escape_on_the_embedded_player_does_not_close_the_main_window(wx_app, monkeypatch) -> None:
+    frame, _page, panel, _installed = _embedded(monkeypatch)
+    try:
+        closed: list[bool] = []
+        monkeypatch.setattr(panel._win, "Close", lambda *a, **k: closed.append(True))
+        for event in (_KeyEvent(wx.WXK_ESCAPE), _KeyEvent(wx.WXK_F4, ctrl=True)):
+            panel._on_char_hook(event)
+            assert event.skipped, "the key goes on to the main window's own handling"
+        assert closed == []
+    finally:
+        frame.Destroy()
+
+
+def test_the_embedded_player_puts_its_keys_on_the_page_not_the_frame(wx_app, monkeypatch) -> None:
+    # A frame has one accelerator table; replacing it cost the app Ctrl+Tab.
+    frame, page, _panel, installed_on = _embedded(monkeypatch)
+    try:
+        assert installed_on == [page]
+    finally:
+        frame.Destroy()

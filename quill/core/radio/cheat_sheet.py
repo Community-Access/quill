@@ -58,20 +58,22 @@ OFF_MENU_KEYS: tuple[tuple[str, str, str], ...] = (
     ("Recordings", "J", "Jump to a recording by name"),
     ("Recordings", "Ctrl+J", "Jump to a time"),
     # Every window that is not the main one carries a single menu of its own,
-    # and its letter is the one thing about it nobody can discover by looking:
-    # Alt+S is the Station menu in the main window and the Search menu in Find
-    # Stations, and in Browse Stations it is nothing at all (asked 2026-08-26,
-    # "what is the command to bring up the Station Menu, alt+s is not
-    # working"). Named here per surface, which is where that question is asked.
-    ("Main window", "Alt+S", "The Station menu -- in the main window only"),
+    # and its letter is the one thing about it nobody can discover by looking
+    # (asked 2026-08-26, "what is the command to bring up the Station Menu,
+    # alt+s is not working"). Named here per surface, which is where that
+    # question is asked. Since surface_app_menu, Alt+S is the Station menu in
+    # every window, so no surface's own menu may claim S; corrected 2026-09-25,
+    # when these rows still said "main window only", gave Find Stations a
+    # Search menu it no longer has (it is Go), and sent two windows to Alt+S.
+    ("Every window", "Alt+S", "The Station menu"),
     ("Browse Stations", "Alt+B", "This window's Browse menu"),
-    ("Find Stations", "Alt+S", "This window's Search menu"),
+    ("Find Stations", "Alt+G", "This window's Go menu"),
     ("Player", "Alt+P", "This window's Player menu"),
     ("Favorites Manager", "Alt+F", "This window's Favorites menu"),
     ("Recordings", "Alt+R", "This window's Recordings menu"),
     ("Downloads", "Alt+D", "This window's Downloads menu"),
-    ("Schedule Recording", "Alt+S", "This window's Schedule menu"),
-    ("Song History", "Alt+S", "This window's Songs menu"),
+    ("Schedule Recording", "Alt+D", "This window's Schedule menu"),
+    ("Song History", "Alt+G", "This window's Songs menu"),
     ("Now Playing", "Alt+V", "This window's View menu"),
     ("Browse Stations", "Ctrl+F", "Jump to the Find box from anywhere in the window"),
     ("Browse Stations", "Shift+F10", "All actions for the row you are on"),
@@ -145,9 +147,9 @@ def menu_open_rows(titles: list[tuple[str, str]]) -> list[CheatRow]:
     ways to invoke them"*. Every item inside a menu already names its key; the
     menus were the one rung of the ladder that did not, and the letter is the
     one thing about a menu bar nobody can discover by listening -- especially
-    here, where every window carries its own bar, so ``Alt+S`` is Station in
-    the main window, Search in Find Stations and nothing at all in Browse
-    Stations.
+    here, where every window carries its own bar, so ``Alt+B`` is Browse in
+    Browse Stations and ``Alt+G`` is Go in Find Stations, while ``Alt+S`` is
+    Station everywhere.
 
     Built from the bar in front of the listener, like the rest of this sheet,
     so it cannot drift from what is actually bound.

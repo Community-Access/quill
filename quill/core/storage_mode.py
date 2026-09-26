@@ -129,18 +129,25 @@ def storage_mode_path() -> Path | None:
 def storage_mode_paths() -> tuple[Path, ...]:
     """Where ``storage-mode.json`` itself is read from / written to.
 
-    Always includes the appdata fallback, even when not running portable,
-    so non-portable users can still save an explicit "appdata" or "custom"
-    choice (#615) without a portable bundle being present.
+    Outside a portable bundle it is the appdata file, so non-portable users
+    can still save an explicit "appdata" or "custom" choice (#615).
+
+    Inside a verified bundle it is the bundle's own file and *only* that one.
+    Until 2026-09-25 the host's ``%APPDATA%\\Quill\\storage-mode.json`` was
+    read as well -- first, whenever the bundle's marker was missing or not
+    writable -- so a stick carried to any computer where somebody had once
+    saved an explicit data location put everything it wrote onto that
+    computer's hard drive: a write-protected stick, a read-only attribute, or a
+    deleted marker was enough. A portable copy's answer lives in the bundle; a
+    missing or unreadable marker there means "never chosen", which in a bundle
+    means portable (see ``paths.app_data_dir``). Saving on a read-only bundle
+    now fails with the ``PermissionError`` every caller already reports,
+    instead of quietly writing a choice to the host that would then be ignored.
     """
-    fallback_path = _fallback_storage_mode_path()
     root = portable_root_dir()
     if root is None:
-        return (fallback_path,)
-    portable_path = root / "storage-mode.json"
-    if _portable_path_is_writable(portable_path):
-        return (portable_path, fallback_path)
-    return (fallback_path, portable_path)
+        return (_fallback_storage_mode_path(),)
+    return (root / "storage-mode.json",)
 
 
 def _fallback_storage_mode_path() -> Path:
@@ -148,13 +155,6 @@ def _fallback_storage_mode_path() -> Path:
     if appdata:
         return Path(appdata).expanduser().resolve() / "Quill" / "storage-mode.json"
     return Path.home() / ".quill" / "storage-mode.json"
-
-
-def _portable_path_is_writable(path: Path) -> bool:
-    candidate = path if path.exists() else path.parent
-    while not candidate.exists() and candidate != candidate.parent:
-        candidate = candidate.parent
-    return os.access(candidate, os.W_OK)
 
 
 def _read_storage_mode_document() -> dict | None:

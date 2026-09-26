@@ -366,7 +366,22 @@ def diagnose_keymap(
     it is reported under ``missing_dispatch`` — a key the user assigned that would
     do nothing until re-applied. Both default to "do not check" so the pure
     duplicate/invalid audit works without UI context.
+
+    With ``known_commands`` given, a *shipped default* the app does not define is
+    left out of every check: it belongs to another product in the family (the
+    keymap file is shared, so Quill Radio loads QUILL's editor commands too). It
+    was reported as "no longer exists", so Heal in Radio deleted the user's QUILL
+    customisations -- and a deleted default comes back on the next load anyway,
+    so there was never anything to heal (2026-09-25).
     """
+    if known_commands is not None:
+        from quill.core.keymap import DEFAULT_KEYMAP
+
+        keymap = {
+            command_id: binding
+            for command_id, binding in keymap.items()
+            if command_id in known_commands or command_id not in DEFAULT_KEYMAP
+        }
     duplicates = duplicate_bindings(keymap, quill_key_prefix=quill_key_prefix)
     invalid: dict[str, str] = {}
     unknown: list[str] = []

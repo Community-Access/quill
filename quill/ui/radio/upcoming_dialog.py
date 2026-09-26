@@ -169,8 +169,8 @@ def _gather(host: Any, data_dir: Any, now: datetime) -> list[tuple[str, Any]]:
             continue
         rows.append((reminder.fires_at, f"Reminder: {rem.row_label(reminder, now)}", reminder))
     for entry in _recordings(host):
-        when = _entry_moment(entry)
-        if when is None:
+        when = _entry_moment(entry, now)
+        if when is None or when < now:
             continue
         name = str(getattr(entry, "station_name", "") or getattr(entry, "name", "") or "Recording")
         rows.append((when, f"Recording: {name}, {rem.spoken_when(when)}", entry))
@@ -193,7 +193,21 @@ def _recordings(host: Any) -> list[Any]:
         return []
 
 
-def _entry_moment(entry: Any) -> datetime | None:
+def _entry_moment(entry: Any, now: datetime) -> datetime | None:
+    """When *entry* next happens, or ``None``.
+
+    A scheduled recording has no moment field at all -- it has a recurrence and
+    a ``run_at`` the scheduler interprets -- so it is asked the scheduler's own
+    question. Until 2026-09-25 only the attribute names below were tried, none
+    of which a ``RecordingScheduleEntry`` has, and Upcoming never listed a
+    single recording.
+    """
+    from quill.core.radio.recording_schedule import RecordingScheduleEntry, next_occurrence
+
+    if isinstance(entry, RecordingScheduleEntry):
+        # In local time: an entry with no zone of its own means "this
+        # computer's clock", and a UTC *now* would read its HH:MM as UTC.
+        return next_occurrence(entry, now.astimezone())
     for name in ("next_run_at", "next_occurrence", "when", "starts_at"):
         value = getattr(entry, name, None)
         if isinstance(value, datetime):
@@ -227,17 +241,20 @@ def open_target(host: Any, payload: Any) -> str:
     "where does this kind of reminder lead?" is one question, and a second
     copy would drift the first time a kind was added.
     """
+    # The two openers are the ones the menus use. Until 2026-09-25 this asked
+    # for ``open_schedule_recording`` and ``open_acb_calendar``, neither of which
+    # exists on any host, so Go There always said there was nowhere to go.
     if not isinstance(payload, rem.Reminder):
-        opener = getattr(host, "open_schedule_recording", None)
+        opener = getattr(host, "_radio_open_schedule_recording", None)
         if callable(opener):
             opener()
             return "Opened Schedule Recording."
         return "Scheduled recording is not available here."
     if payload.kind == rem.KIND_EVENT:
-        opener = getattr(host, "open_acb_calendar", None)
-        if callable(opener):
-            opener()
-            return f"Opened the schedule. {payload.title} is in it."
+        from quill.ui.radio.calendar_wiring import open_calendar
+
+        open_calendar(host)
+        return f"Opened the schedule. {payload.title} is in it."
     if payload.kind == rem.KIND_STATION and payload.target:
         controller = getattr(host, "_radio_controller", None)
         if controller is not None:

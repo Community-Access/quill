@@ -37,7 +37,11 @@ class ResumeRecordingDialog:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._result: tuple[str, bool] | None = None
-        self._resume_id = int(wx.NewIdRef())
+        # Hold the IdRef: int(wx.NewIdRef()) frees the id at once, and the Resume
+        # button then asserts "id count already 0" -- the dialog could not be
+        # built at all, so no resume offer was ever shown (found 2026-09-25).
+        self._resume_ref = wx.NewIdRef()
+        self._resume_id = int(self._resume_ref)
 
         self.dialog = wx.Dialog(parent, title="Resume Recording")
         root = wx.BoxSizer(wx.VERTICAL)
@@ -55,7 +59,7 @@ class ResumeRecordingDialog:
 
         self._remember_check = wx.CheckBox(self.dialog, label="&Don't ask me again")
         self._remember_check.SetName(
-            "Don't ask me again -- remembers this choice; change it later in Preferences"
+            "Don't ask me again -- remembers this choice; Preferences can change it"
         )
         self._remember_check.SetValue(False)
         root.Add(self._remember_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -124,7 +128,11 @@ class ResumeRecordingsBatchDialog:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._result: tuple[str, bool] | None = None
-        self._resume_id = int(wx.NewIdRef())
+        # Hold the IdRef: int(wx.NewIdRef()) frees the id at once, and the Resume
+        # button then asserts "id count already 0" -- the dialog could not be
+        # built at all, so no resume offer was ever shown (found 2026-09-25).
+        self._resume_ref = wx.NewIdRef()
+        self._resume_id = int(self._resume_ref)
 
         count = len(lines)
         self.dialog = wx.Dialog(parent, title="Resume Recordings")
@@ -153,7 +161,7 @@ class ResumeRecordingsBatchDialog:
 
         self._remember_check = wx.CheckBox(self.dialog, label="&Don't ask me again")
         self._remember_check.SetName(
-            "Don't ask me again -- remembers this choice; change it later in Preferences"
+            "Don't ask me again -- remembers this choice; Preferences can change it"
         )
         self._remember_check.SetValue(False)
         root.Add(self._remember_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)

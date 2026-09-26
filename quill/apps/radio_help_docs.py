@@ -15,7 +15,6 @@ from typing import Any
 DOC_TITLES: dict[str, str] = {
     "userguide": "Quill Radio User Guide",
     "release-notes-3.0": "Quill Radio Release Notes",
-    "release-notes-3.0-in-depth": "Quill Radio Release Notes: The Long Version",
     "prd": "Quill Radio Product Requirements",
     "tutorials": "Quill Radio Tutorials",
 }
@@ -38,15 +37,14 @@ def open_tutorials(host: Any, slug: str = "") -> None:
 
 
 def install_help_items(host: Any, help_menu: Any, wx: Any) -> list[Any]:
-    """Append What Is This?, Tutorials and the four documents. Returns the ids.
+    """Append What Is This?, Tutorials and the three documents. Returns the ids.
 
     The keys are a family, and the family is ordered by how often somebody
     reaches for the door. **F1** is context help for the control you are on --
     QUILL's editor convention, which is why the guide gave that key up. **Ctrl+F1**
-    is the guide. **Shift+F1** and **Ctrl+Shift+F1** are the release notes and
-    the companion that carries the reasoning; the narrative points at the
-    companion by name, so a document nobody can open from the Help menu is a
-    document that does not really ship.
+    is the guide. **Shift+F1** is the release notes -- one document since
+    2026-09-26, when the narrative and its in-depth companion were merged into
+    it, which freed Ctrl+Shift+F1.
 
     **Ctrl+Alt+F1 is Tutorials** as of 2026-08-27, and the **PRD moved out one
     notch to Alt+Shift+F1** -- the same reasoning that put the PRD on Ctrl+Alt+F1
@@ -58,15 +56,11 @@ def install_help_items(host: Any, help_menu: Any, wx: Any) -> list[Any]:
     recycled once nothing references them, and a recycled id is a menu item
     that stops firing.
     """
-    ids = {
-        name: wx.NewIdRef()
-        for name in ("what_is_this", "tutorials", "guide", "notes", "notes_depth", "prd")
-    }
+    ids = {name: wx.NewIdRef() for name in ("what_is_this", "tutorials", "guide", "notes", "prd")}
     help_menu.Append(ids["what_is_this"], "&What Is This?\tF1")
     help_menu.Append(ids["tutorials"], host._menu_label("&Tutorials...", "radio.tutorials"))
     help_menu.Append(ids["guide"], "&User Guide\tCtrl+F1")
     help_menu.Append(ids["notes"], "&Release Notes\tShift+F1")
-    help_menu.Append(ids["notes_depth"], "Release Notes: The &Long Version\tCtrl+Shift+F1")
     help_menu.Append(ids["prd"], "&Product Requirements...\tAlt+Shift+F1")
 
     frame = host.frame
@@ -75,7 +69,6 @@ def install_help_items(host: Any, help_menu: Any, wx: Any) -> list[Any]:
     for name, stem in (
         ("guide", "userguide"),
         ("notes", "release-notes-3.0"),
-        ("notes_depth", "release-notes-3.0-in-depth"),
         ("prd", "prd"),
     ):
         frame.Bind(wx.EVT_MENU, lambda _e, s=stem: open_doc(host, s), id=ids[name])

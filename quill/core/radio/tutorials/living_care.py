@@ -32,12 +32,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "once per station."
                 ),
                 command="radio.volume_up",
+                keys=("Ctrl+Up", "Ctrl+Down"),
                 hear="The new level -- and the same level again the next time that station starts.",
                 check="volume-changed",
                 note=(
                     "A favorite's remembered level always wins over the general one. "
-                    "Forget Station Volumes clears them all if you would rather start "
-                    "again, and Global Volume turns the whole behaviour off."
+                    "Forget Every Station's Own Volume, on the Audio menu, clears them "
+                    "all if you would rather start again, and Use One Volume for All "
+                    "Stations, beside it, turns the whole behaviour off."
                 ),
             ),
             Step(
@@ -50,36 +52,43 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 command="radio.volume_boost",
                 keys=("Ctrl+Shift+B",),
-                hear="Volume Boost on, or the reason it cannot.",
+                hear="Volume Boost on: up to 50 percent louder -- or the reason it cannot.",
             ),
             Step(
                 title="Open Sound Enhancements",
                 body=(
-                    "EQ, a compressor and a channel mode -- the three things that "
-                    "make a thin talk station or an over-compressed music station "
-                    "listenable. There is a preview, so you can hear a setting before "
-                    "you keep it."
+                    "An equaliser, Even Out Volume, a channel mode and Night mode -- "
+                    "the things that make a thin talk station or an over-compressed "
+                    "music station listenable. Changes apply to what is playing as "
+                    "you move the controls, and Cancel puts it back as it was."
                 ),
                 command="radio.sound_enhancements",
                 keys=("Ctrl+E",),
-                hear="Entered Sound Enhancements.",
+                hear="Sound Enhancements, then its Quick preset list.",
                 note=(
                     "Enhancements are off for recordings by default, so your "
                     "recordings stay an unfiltered archival copy. Recording Settings "
-                    "has the switch if you want the filtered audio captured instead."
+                    "has Apply Sound Enhancements to recordings if you want the "
+                    "filtered audio captured instead."
                 ),
             ),
             Step(
-                title="Pause live radio, and rewind into what you missed",
+                title="Rewind live radio into what you missed",
                 body=(
-                    "On the mpv engine a live station really pauses -- and you can "
-                    "rewind into what went out while you were away. Back to Live "
-                    "returns you to the broadcast edge."
+                    "On the mpv engine Quill Radio keeps the last three-quarters of "
+                    "an hour of a live station. Rewind 30 Seconds, on the Playback "
+                    "menu, steps back into what already went out; Forward 30 "
+                    "Seconds comes forward again; Back to Live returns you to the "
+                    "broadcast edge."
                 ),
-                command="radio.pause",
-                keys=("Ctrl+Space", "Ctrl+Shift+Left", "Ctrl+Shift+L"),
-                hear="Paused, then the position as you rewind, then back at the live edge.",
-                check="paused",
+                command="radio.rewind",
+                keys=("Ctrl+Shift+Left", "Ctrl+Shift+Right", "Ctrl+Shift+L"),
+                hear="30 seconds behind live, then how far behind you are, then Back to live.",
+                note=(
+                    "Pause on the Playback menu is dimmed on a live station and says "
+                    "why; it is for recordings, episodes and files. On the classic "
+                    "engine the rewind keys say that they need mpv."
+                ),
             ),
             Step(
                 title="Choose a speed that stays chosen",
@@ -148,7 +157,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 command="radio.statistics",
                 keys=("Ctrl+Shift+Q",),
-                hear="Entered Listening Statistics, then the totals.",
+                hear="Listening Statistics, then the totals.",
             ),
             Step(
                 title="Notice how the durations are read",
@@ -186,7 +195,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "session out for a spreadsheet, which is the one to use if you "
                     "want to do arithmetic the window does not do."
                 ),
-                hear="Copied, or the file written and where.",
+                hear="Copied -- or Saved, the number of sessions, and the file's name.",
             ),
             Step(
                 title="Delete it if you would rather not keep it",
@@ -222,11 +231,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "Back Up Stations and Settings writes your favorites, settings, "
                     "wake timer and recording schedule into one portable file, and "
                     "asks whether to include your recorded audio -- which can be "
-                    "large. Restore from Backup previews it and confirms before "
-                    "replacing anything."
+                    "large. Both commands are on the Station menu. Restore from "
+                    "Backup previews it and confirms before replacing anything."
                 ),
-                keys=("Alt+S",),
-                hear="The file written, and what went into it.",
+                keys=("Ctrl+Shift+U", "Ctrl+Alt+Shift+W"),
+                hear="Backing up Quill Radio, then Backup saved to, and the file's name.",
             ),
             Step(
                 title="Move the whole setup to another machine",
@@ -235,9 +244,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "does: subscriptions, folders and playlists, favorites and saved "
                     "places, settings, your Go To order, your Quick Action order, "
                     "scheduled recordings, bookmarks and any keys you rebound. Import "
-                    "My Setup puts them on the other machine."
+                    "My Setup, beside it on the Help menu, puts them on the other "
+                    "machine."
                 ),
-                keys=("Ctrl+Alt+Shift+X", "Ctrl+Alt+Shift+N"),
+                command="app.export_setup",
+                keys=("Ctrl+Alt+Shift+N",),
                 hear="What the file holds, named, before anything is written.",
                 note=(
                     "Passwords are not in it: private-feed sign-ins, server "
@@ -250,42 +261,53 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Or let a sync service do it",
                 body=(
-                    "The Data Folder button in Preferences points every Quill app at "
+                    "The Data Folder button in Preferences, on the Station menu, "
+                    "points every Quill app at "
                     "a folder of your choosing. Point it at one Dropbox, OneDrive, "
                     "Google Drive or iCloud already syncs and the setup travels by "
                     "itself -- no account, no sign-in, the sync client does the "
                     "moving."
                 ),
                 keys=("Ctrl+,",),
-                hear="The folder, and an offer to restart so it takes effect.",
+                hear="The Data Folder window, and afterwards an offer to Restart Now or Later.",
             ),
             Step(
                 title="Stay up to date without being nagged",
                 body=(
-                    "Check for Updates compares your version with the newest release, "
-                    "downloads the edition you are actually running with spoken "
-                    "progress, then offers Install now or Open folder. Quill Radio "
-                    "also checks quietly once a day at launch -- silent unless it "
-                    "finds something."
+                    "Check for Updates, on the Help menu, compares your version with "
+                    "the newest release, tells you what changed, downloads it with "
+                    "spoken progress, then offers Install now or Open folder. Quill "
+                    "Radio also checks quietly at launch, at most once a day -- "
+                    "silent unless it finds something."
                 ),
                 keys=("Ctrl+Alt+U",),
-                hear="Either what is available, or a dialog saying you are up to date.",
+                hear=(
+                    "Either the new version and what changed, or You are up to date, and "
+                    "your version."
+                ),
                 note=(
-                    "Each installer records which edition it laid down, so an update "
-                    "gives you the same kind back -- installer for installer, "
+                    "Quill Radio comes as two downloads: the installer, "
+                    "Quill-Radio-Setup-Shared, and the portable zip, "
+                    "Quill-Radio-Portable. Check for Updates knows which one you are "
+                    "running and offers that one back -- installer for installer, "
                     "portable for portable."
                 ),
             ),
             Step(
                 title="Keep it playing while you work",
                 body=(
-                    "Send to Tray hides the window and keeps everything running. The "
+                    "Send to Tray, on the Station menu, hides the window and keeps "
+                    "everything running; Ctrl+Alt+Shift+R shows or hides it from "
+                    "anywhere in Windows. The "
                     "tray icon carries the live now-playing line, play/stop, mute, "
                     "your favorites and recently played nested by folder, recording, "
                     "scheduling and Browse Stations."
                 ),
                 keys=("Ctrl+W", "Ctrl+Alt+Shift+R"),
-                hear="Hidden to the tray -- and Shown when you bring it back.",
+                hear=(
+                    "Quill Radio hidden to the tray -- and Quill Radio shown when you "
+                    "bring it back."
+                ),
             ),
             Step(
                 title="Check the installation itself",
@@ -297,7 +319,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "now."
                 ),
                 keys=("Ctrl+Alt+Shift+M",),
-                hear="Each check with its own verdict.",
+                hear="Audio Health, then each check with its own verdict.",
                 note=(
                     "mpv and FFmpeg ship inside every installer, so a missing one "
                     "means a damaged installation -- antivirus quarantine and a "
@@ -321,10 +343,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Safe Mode starts Quill Radio with every network feature "
                     "disabled -- no directories, no catalog refresh, no YouTube, no "
-                    "Spotify, no Quillins. It is what to try when something is broken "
+                    "Spotify, no Quillins. Start it by adding --safe-mode after the "
+                    "program's name. It is what to try when something is broken "
                     "enough that you want to know whether the network is involved."
                 ),
-                hear="The app starting with the online branches simply absent.",
+                hear="Network commands saying they are off in Safe Mode, rather than failing.",
             ),
         ),
         closing=(

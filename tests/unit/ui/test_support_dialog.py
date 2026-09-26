@@ -164,3 +164,32 @@ def test_an_app_with_an_announcer_instead_of_a_shell_still_speaks(
     dialog._submit()
 
     assert said and "Nothing is sent until you send it there" in said[0][0]
+
+
+def test_the_hub_keeps_its_local_copy_in_the_data_folder(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """feedback-hub's default is %APPDATA%\Quill\feedback.db -- for a portable
+    copy, a message left on somebody else's computer."""
+    import sys
+    import types
+
+    import quill.core.feedback_token as feedback_token
+    from quill.core.paths import app_data_dir
+
+    seen: dict[str, object] = {}
+
+    class _Dialog:
+        def __init__(self, _parent: object, **kwargs: object) -> None:
+            seen.update(kwargs)
+            raise RuntimeError("stop before any wx")
+
+    monkeypatch.setattr(feedback_token, "server_transport_available", lambda: True)
+    monkeypatch.setattr(feedback_token, "submission_kwargs", lambda: {})
+    monkeypatch.setitem(
+        sys.modules, "feedback_hub.wx_dialog", types.SimpleNamespace(FeedbackDialog=_Dialog)
+    )
+
+    support_dialog._server_path(_Host(), "Quill Radio 3.0.0", prefill_summary="", prefill_body="")
+
+    assert seen["db_path"] == app_data_dir() / "feedback.db"

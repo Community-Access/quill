@@ -70,16 +70,17 @@ def stored_client_key() -> str:
 
     This is what ADP Settings shows and edits: an empty field means "use the
     built-in key," not "no key." Use :func:`load_client_key` for the value to
-    actually send on a request (override first, then the bundled default)."""
-    try:
-        from quill.platform.windows.credential_manager import load_generic_credential
+    actually send on a request (override first, then the bundled default).
 
-        stored = load_generic_credential(CREDENTIAL_TARGET)
-        if stored is not None and stored.secret.strip():
-            return stored.secret
+    Through ``credential_store`` rather than Credential Manager directly, so a
+    portable copy keeps the key in its own ``keys.enc`` instead of leaving a
+    secret on the computer it visited."""
+    try:
+        from quill.platform.windows.credential_store import load_secret
+
+        return load_secret(CREDENTIAL_TARGET)
     except Exception:  # noqa: BLE001 - non-Windows / no vault reads as unset
         return ""
-    return ""
 
 
 def load_client_key() -> str:
@@ -92,16 +93,14 @@ def load_client_key() -> str:
 
 
 def save_client_key(key: str) -> bool:
+    """Store (or, when blank, delete) the override key in the active secret store."""
     try:
-        from quill.platform.windows.credential_manager import (
-            delete_generic_credential,
-            save_generic_credential,
-        )
+        from quill.platform.windows.credential_store import delete_secret, save_secret
 
         if not key.strip():
-            delete_generic_credential(CREDENTIAL_TARGET)
+            delete_secret(CREDENTIAL_TARGET)
             return True
-        save_generic_credential(CREDENTIAL_TARGET, key.strip(), user_name="quill")
+        save_secret(CREDENTIAL_TARGET, key.strip())
         return True
     except Exception:  # noqa: BLE001
         return False

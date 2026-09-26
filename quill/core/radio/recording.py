@@ -37,6 +37,7 @@ from pathlib import Path
 from quill.core import http_client
 from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.error_codes import CodedError
+from quill.core.paths import portable_bundle_root
 from quill.core.radio import radio_logging, recording_outcome
 from quill.core.radio.local_clock import local_now
 from quill.core.radio.recording_commands import (
@@ -120,7 +121,7 @@ class RecordingSettings:
 
     format: str = "mp3"  # one of RECORD_FORMATS
     bitrate_kbps: int = _DEFAULT_BITRATE_KBPS  # ignored for flac/wav (lossless)
-    destination_root: str = ""  # "" = default (~/Music/Quill Radio Recordings)
+    destination_root: str = ""  # "" = default (see _default_dir; portable: in the bundle)
     #: Where a recording is *written while in progress* (quill-radio #5). "" =
     #: write straight to destination_root (today's behavior). When set, ffmpeg
     #: writes here and the finished file is moved to destination_root on a clean
@@ -1117,8 +1118,13 @@ def _default_dir(home: Path | None = None) -> Path:
     Recordings used to land in ``app_data_dir()/radio_recordings`` (buried in
     AppData with no way to find them). They now default to
     ``~/Music/Quill Radio Recordings``, falling back to the home folder itself
-    when a Music folder does not exist. ``home`` is injectable for tests.
+    when a Music folder does not exist. ``home`` is injectable for tests. A
+    portable copy uses ``<bundle>\\Recordings`` (beside ``data``, so deleting
+    ``data`` keeps them): the host's Music folder is somebody else's computer.
     """
+    bundle = portable_bundle_root() if home is None else None
+    if bundle is not None:
+        return bundle / "Recordings"
     base = home or Path.home()
     music = base / "Music"
     parent = music if music.is_dir() else base

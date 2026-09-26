@@ -77,8 +77,11 @@ class CastCloseConfirmDialog:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._result: tuple[str, bool] | None = None
-        self._minimize_id = int(wx.NewIdRef())
-        self._exit_id = int(wx.NewIdRef())
+        # Hold the IdRefs: int(wx.NewIdRef()) frees the id at once, and the
+        # buttons then assert "id count already 0" -- the dialog could not be
+        # built, so closing never asked (found 2026-09-25).
+        self._id_refs = (wx.NewIdRef(), wx.NewIdRef())
+        self._minimize_id, self._exit_id = (int(ref) for ref in self._id_refs)
 
         self.dialog = wx.Dialog(parent, title=TITLE)
         root = wx.BoxSizer(wx.VERTICAL)

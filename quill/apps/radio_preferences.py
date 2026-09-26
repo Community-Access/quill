@@ -32,6 +32,51 @@ _PODCASTS = "Podcasts"
 _REMINDERS = "Reminders"
 
 
+#: What the wake checkbox says in a portable copy, where it is greyed out.
+PORTABLE_WAKE_HELP = (
+    "A portable copy does not change this computer's Task Scheduler, so it "
+    "cannot wake the computer for a scheduled recording. Keeping the computer "
+    "awake before a recording still works."
+)
+
+
+def _wake_checkbox(value: bool) -> Any:
+    """The one preference that changes the machine, so the one a portable copy
+    cannot offer: registering a wake task on a friend's computer would outlive
+    the stick. The value is kept, so an installed copy sharing the data folder
+    is not quietly switched off."""
+    from quill.core.paths import portable_bundle_root
+    from quill.ui.app_preferences_dialog import PreferenceCheckbox
+
+    label = "Wa&ke the computer for a scheduled recording"
+    if portable_bundle_root() is not None:
+        return PreferenceCheckbox(label, PORTABLE_WAKE_HELP, value, enabled=False)
+    return PreferenceCheckbox(
+        label,
+        "If the computer is already asleep when a recording is due, "
+        "ask Windows to wake it a couple of minutes beforehand. This "
+        "adds a task to Windows Task Scheduler. On by default; turn "
+        "it off to leave your machine's sleep entirely alone.",
+        value,
+    )
+
+
+#: "Interrupted recordings at launch": the stored value, then what it reads.
+#: Until 2026-09-25 "Don't ask me again" on the Resume Recording dialog wrote
+#: this with no way back; this row is the way back.
+RESUME_CHOICES: tuple[tuple[str, str], ...] = (
+    ("ask", "Ask each time (default)"),
+    ("always", "Always resume them"),
+    ("never", "Never resume them"),
+)
+
+
+def _resume_index(value: object) -> int:
+    """Which row a stored resume choice is, or Ask when unknown."""
+    values = [stored for stored, _label in RESUME_CHOICES]
+    return values.index(value) if value in values else 0
+
+
 def _lead_index(seconds: object) -> int:
     """Which lead-time row a stored default is, or the first when unknown."""
     for index, (offered, _label) in enumerate(reminders.LEAD_CHOICES):
@@ -165,14 +210,7 @@ def open_preferences(app: Any) -> None:
                 "minutes before one is due. On by default.",
                 history.keep_awake_before_recording,
             ),
-            PreferenceCheckbox(
-                "Wa&ke the computer for a scheduled recording",
-                "If the computer is already asleep when a recording is due, "
-                "ask Windows to wake it a couple of minutes beforehand. This "
-                "adds a task to Windows Task Scheduler. On by default; turn "
-                "it off to leave your machine's sleep entirely alone.",
-                history.wake_for_scheduled_recording,
-            ),
+            _wake_checkbox(history.wake_for_scheduled_recording),
             PreferenceCheckbox(
                 "Keep a local station catalo&g on this computer",
                 "Browse the station directories instantly from a copy kept on "
@@ -299,6 +337,16 @@ def open_preferences(app: Any) -> None:
                 _lead_index(history.reminder_default_lead_seconds),
                 group=_REMINDERS,
             ),
+            PreferenceChoice(
+                "Interrup&ted recordings at launch:",
+                "A recording cut off because Quill Radio or the computer "
+                "stopped is offered again the next time Radio starts, if its "
+                "scheduled end has not passed. Ask each time shows the Resume "
+                "Recording dialog; the other two answer it for you. Don't ask "
+                "me again in that dialog sets this too.",
+                [label for _value, label in RESUME_CHOICES],
+                _resume_index(history.recording_resume_choice),
+            ),
         ],
         texts=[
             PreferenceText(
@@ -389,6 +437,7 @@ def open_preferences(app: Any) -> None:
     history.reminder_default_lead_seconds = reminders.LEAD_CHOICES[
         min(max(0, choice_indices[8]), len(reminders.LEAD_CHOICES) - 1)
     ][0]
+    history.recording_resume_choice = RESUME_CHOICES[choice_indices[9]][0]
     if chosen_sort != history.favorites_sort:
         history.favorites_sort = chosen_sort
         app._reload_favorites_tree()

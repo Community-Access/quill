@@ -280,11 +280,12 @@ PURPOSES: dict[str, str] = {
     "Resume Recording": (
         "Quill Radio closed while this recording was still being written -- "
         "a crash, a shutdown, a log-off. Resume picks the capture back up on "
-        "the same station; Dismiss keeps what was saved and lets it go."
+        "the same station; Skip keeps what was saved and lets it go. Don't ask "
+        "me again remembers the answer; Preferences can change it."
     ),
     "Resume Recordings": (
         "Quill Radio closed while these recordings were still being written. "
-        "Resume picks the captures back up; Dismiss keeps what was saved and "
+        "Resume All picks the captures back up; Skip All keeps what was saved and "
         "lets them go."
     ),
     "Search Sources": (

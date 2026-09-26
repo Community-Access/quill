@@ -96,6 +96,31 @@ def test_modal_search_stays_a_dialog(_app: wx.App) -> None:
         dlg._win.Destroy()
 
 
+def test_embedded_search_has_no_close_button_to_close_the_main_window(_app: wx.App) -> None:
+    """Search Stations as the main view (2026-09-25): its Close button was bound
+    to the top-level parent -- the main window -- so pressing it closed the app."""
+    frame = wx.Frame(None)
+    try:
+        page = wx.Panel(frame)
+        controller = SimpleNamespace(state=SimpleNamespace(volume_percent=100, muted=False))
+        dlg = StationBrowserDialog(
+            None,
+            controller=controller,
+            favorites_store=RadioFavoritesStore(),
+            task_manager=SimpleNamespace(),
+            safe_mode=True,
+            announce_cb=lambda _m: None,
+            windows=WindowManager(wx),
+            embed_in=page,
+        )
+        assert dlg._win is frame
+        assert page.FindWindowById(wx.ID_CANCEL) is None, "no Close button on a hosted view"
+        buttons = [w for w in page.GetChildren() if isinstance(w, wx.Button)]
+        assert not any(b.GetLabel().replace("&", "") == "Close" for b in buttons)
+    finally:
+        frame.Destroy()
+
+
 def _make_favorites(windows: object | None) -> FavoritesManagerDialog:
     controller = SimpleNamespace(state=SimpleNamespace(volume_percent=100, muted=False))
     return FavoritesManagerDialog(

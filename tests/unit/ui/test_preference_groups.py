@@ -87,6 +87,21 @@ def test_grouping_never_reorders_the_returned_values(frame) -> None:
     dialog.dialog.Destroy()
 
 
+def test_a_disabled_checkbox_keeps_its_value_and_its_reason(frame) -> None:
+    """A portable copy greys out the one setting that would change the computer
+    it visits; the stored value must come back untouched, and the name says why."""
+    spec = PreferenceCheckbox("Wa&ke", "A portable copy does not change this computer.", True)
+    spec.enabled = False
+    dialog = _build(frame, checkboxes=[spec, _check("other")])
+
+    assert not dialog._checks[0].IsEnabled()
+    assert dialog._checks[1].IsEnabled()
+    assert dialog._checks[0].GetName() == spec.help_text
+    dialog._capture_result()
+    assert dialog._result[0] == [True, False]
+    dialog.dialog.Destroy()
+
+
 def test_choices_keep_their_order_too(frame) -> None:
     dialog = _build(
         frame,

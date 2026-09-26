@@ -34,7 +34,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "stream, and streams that would fail the moment you pressed "
                     "Enter."
                 ),
-                command="radio.browse",
+                keys=("Ctrl+B",),
                 hear="Television, then By Country and By Category.",
                 check="window:Browse Stations",
             ),
@@ -160,7 +160,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "fortnight that may already have finished."
                 ),
                 command="radio.acb_calendar",
-                hear="Entered the schedule, then the next programme still to come.",
+                hear="ACB Media Schedule, then the next programme still to come.",
             ),
             Step(
                 title="Read the line above the list",
@@ -217,12 +217,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Book it, without doing the arithmetic",
                 body=(
-                    "Record confirms the channel, the date, the time and the length "
-                    "-- the four things the schedule already knows -- and schedules "
-                    "it. It then appears in Recordings and in Upcoming like any "
-                    "other scheduled recording."
+                    "Record opens Schedule Recording already filled in with the "
+                    "channel, the date, the time and the length -- the four things "
+                    "the schedule already knows -- so all that is left is to check "
+                    "them and press OK. It then appears in Recordings and in "
+                    "Upcoming like any other scheduled recording."
                 ),
-                hear="The four details read back, then the recording scheduled.",
+                hear="Schedule Recording, its fields already holding this programme's details.",
             ),
             Step(
                 title="Ask what is on without opening anything",
@@ -246,8 +247,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 command="radio.refresh_calendar",
                 hear=(
-                    "Pulled from ACB just now, with the clock time -- and it changes only when the "
-                    "fetch lands."
+                    "Reading the ACB Media schedule again, then how far the schedule runs "
+                    "and Pulled from ACB just now, with the clock time."
                 ),
             ),
             Step(
@@ -260,7 +261,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "meaning two different mornings would be one button too many."
                 ),
                 command="radio.upcoming",
-                hear="Entered Upcoming, then each item with its kind and time.",
+                hear="Upcoming, then each item with its kind and time.",
             ),
         ),
         closing=(
@@ -289,7 +290,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "transmitters -- is bundled inside the app, so this branch "
                     "works offline."
                 ),
-                command="radio.browse",
+                keys=("Ctrl+B",),
                 hear="The states, each with its count.",
                 check="window:Browse Stations",
             ),

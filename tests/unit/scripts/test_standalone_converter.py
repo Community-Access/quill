@@ -79,3 +79,34 @@ def test_tile_icon_has_all_resolutions() -> None:
     sizes = set(icon.info.get("sizes", []))
     for wanted in [(16, 16), (32, 32), (48, 48), (256, 256)]:
         assert wanted in sizes, wanted
+
+
+def test_the_portable_radio_bundles_yt_dlp_like_its_installer() -> None:
+    """Otherwise the first YouTube link in a portable copy runs pip, whose cache
+    lands in the host's %LOCALAPPDATA%. The inventory gate must expect it too."""
+    import json
+
+    bp = _load_build_portable()
+    assert "youtube" in bp.PRODUCTS["radio"].dep_groups
+    inventory = json.loads(
+        (_ROOT / "standalone" / "radio" / "portable-inventory.json").read_text(encoding="utf-8")
+    )
+    assert {"yt_dlp", "yt-dlp", "curl_cffi", "curl-cffi"} <= set(inventory["site-packages"])
+
+
+def test_pywin32_makepy_cache_stays_in_the_bundle(tmp_path: Path) -> None:
+    """With no win32com\gen_py package, pywin32 writes generated wrappers to
+    %TEMP%\gen_py on the host and never removes them."""
+    bp = _load_build_portable()
+    win32com = tmp_path / "Lib" / "site-packages" / "win32com"
+    win32com.mkdir(parents=True)
+
+    bp._keep_makepy_cache_in_bundle(tmp_path)
+
+    assert (win32com / "gen_py" / "__init__.py").is_file()
+
+
+def test_no_win32com_means_no_gen_py(tmp_path: Path) -> None:
+    bp = _load_build_portable()
+    bp._keep_makepy_cache_in_bundle(tmp_path)
+    assert not (tmp_path / "Lib").exists()

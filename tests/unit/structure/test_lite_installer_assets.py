@@ -1,6 +1,6 @@
 """Every Lite installer names a runtime asset that can actually exist.
 
-The seven "-Lite" installers ship a ~3 MB app and download the shared
+The six "-Lite" installers ship a ~3 MB app and download the shared
 QuillVille Runtime installer from a GitHub release URL baked into each
 ``standalone/*/installer/*-lite.iss``. For months that URL said
 ``releases/latest/download/`` -- but ``latest`` follows the repository's newest
@@ -51,7 +51,8 @@ def _lite_installers() -> list[Path]:
     found = sorted((_REPO_ROOT / "standalone").glob("*/installer/*-lite.iss"))
     # Seven apps ship a Lite edition today; fewer means the glob broke, not
     # that the family shrank overnight.
-    assert len(found) >= 7, f"expected at least 7 Lite installers, found {len(found)}: {found}"
+    # Six since Quill Radio 3.0.0 retired its thin installer (two downloads only).
+    assert len(found) >= 6, f"expected at least 6 Lite installers, found {len(found)}: {found}"
     return found
 
 

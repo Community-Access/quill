@@ -274,10 +274,10 @@ class BrowseTreeDialog:
         # The whole transport, on this window's own accelerator table: speed,
         # skip, chapters and play/pause were menu items on the main frame, so
         # standing here half the player did not exist (2026-08-18). The window
-        # manager's Ctrl+Tab / Ctrl+1..9 rows ride in the same table -- setting
-        # a table replaces the last one, so leaving them out killed traversal.
+        # manager's Ctrl+Tab / Ctrl+1..9 rows ride in the same table, which
+        # replaces the last. Embedded: on the page, never the main frame's table.
         transport_keys.install(
-            self._win,
+            self._surface if self._embedded else self._win,
             self,
             wx=wx,
             extra_entries=self._windows.accelerator_entries() if self._modeless else (),

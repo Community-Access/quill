@@ -31,7 +31,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "and Podcast Index, which is the open directory. Neither needs "
                     "a key, an account or a sign-in at any step."
                 ),
-                command="radio.browse",
+                keys=("Ctrl+B",),
                 hear="The branch, then its countries or categories.",
                 check="window:Browse Stations",
             ),
@@ -54,7 +54,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "On a show you already follow the same slot reads Unsubscribe."
                 ),
                 keys=("Shift+F10",),
-                hear="Subscribed, and the show's name.",
+                hear="Subscribing, then Subscribed to, and the show's name.",
             ),
             Step(
                 title="Find what you follow",
@@ -68,8 +68,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear="Subscriptions, with a number, then each show with its unheard count.",
                 note=(
                     "How many episodes each show lists is a preference -- 25 newest "
-                    "by default. It is deliberately Quill Radio's only podcast "
-                    "setting; the full archive lives in Cast."
+                    "by default. Radio keeps its podcast settings to that and how "
+                    "often to check; downloads, retention and the full archive "
+                    "live in Cast."
                 ),
             ),
             Step(
@@ -81,7 +82,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "not put it out of reach."
                 ),
                 keys=("Shift+F10",),
-                hear="What it found, counted and named -- or nothing at all if there was nothing.",
+                hear=(
+                    "Checking subscribed feeds, then what it found, counted and named -- "
+                    "or No new episodes."
+                ),
                 note=(
                     "Preferences can have Radio ask on its own, from every 15 "
                     "minutes to once a day, and at launch. Both start off: an app "
@@ -164,7 +168,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "Internet Archive holds Old Time Radio, the Live Music Archive, "
                     "radio programmes and more."
                 ),
-                command="radio.browse",
+                keys=("Ctrl+B",),
                 hear="The branch's own shelves.",
                 check="window:Browse Stations",
                 note=(
@@ -190,16 +194,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Quill Radio saves your place in anything with a timeline -- a "
                     "book chapter, an Old Time Radio episode, a podcast episode -- "
-                    "and offers it back the next time you play. A few seconds in is "
+                    "and picks up there the next time you play it. A few seconds in is "
                     "not a position and is not offered, and finishing something "
                     "clears its place so replaying starts at the beginning."
                 ),
-                hear="Picking up where you left off, and the time.",
+                hear="Resuming at, and the time -- 12 minutes 8 seconds, say.",
             ),
             Step(
                 title="Save a whole book at once",
                 body=(
-                    "Download All Files on a book's folder saves every chapter into "
+                    "Download All Files on a book's folder -- the item says the count, "
+                    "Download All 40 Files -- saves every chapter into "
                     "one folder, in order, while you carry on listening. It resumes "
                     "a part-finished file rather than starting again, one bad "
                     "chapter costs only that chapter, and stopping keeps everything "
@@ -217,7 +222,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "Folder, per-row cancel and remove, and Clear Finished."
                 ),
                 keys=("Ctrl+Shift+J",),
-                hear="Entered Downloads, then each row with its state.",
+                hear="Downloads, then each row with its state.",
                 check="window:Downloads",
                 note=(
                     "Close the window with downloads still going and Quill Radio "
@@ -293,7 +298,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "@name follows the channel; @name/live saves the broadcast."
                 ),
                 command="radio.add_youtube_link",
-                hear="The row added, under the video's own name.",
+                hear=(
+                    "Added the video. Find it under Browse Stations, YouTube -- and a "
+                    "moment later, That video is, and its own name."
+                ),
                 note=(
                     "If the link is already on your clipboard, the box starts "
                     "filled in. The row is saved before the lookup runs, so a video "
@@ -332,7 +340,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "of videos pages with More rather than trying to be one "
                     "enormous level."
                 ),
-                hear="The channel added, then its Uploads folder.",
+                hear="Checking that channel, then Added, and the channel's name.",
             ),
             Step(
                 title="Bring across the channels you already follow",
@@ -357,7 +365,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "View Transcript on any YouTube row fetches the video's "
                     "captions and opens the reader without playing anything. An "
                     "automatically generated track says so in the heading, so you "
-                    "know how much to trust the spelling."
+                    "know how much to trust the spelling. For the video already "
+                    "playing, Transcript on the Playback menu does the same."
                 ),
                 keys=("Shift+F10", "Ctrl+Shift+T"),
                 hear="The transcript, with its heading saying which kind it is.",
@@ -368,10 +377,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "The helper that looks up a video's audio is built in, so your "
                     "first link simply plays. YouTube changes how it serves audio "
                     "more often than Quill Radio ships releases, so Update YouTube "
-                    "Support fetches the current helper, tells you the version, and "
-                    "uses it from then on."
+                    "Support, on the Station menu, fetches the current helper, tells "
+                    "you the version, and uses it from then on."
                 ),
-                hear="The version it ended up with.",
+                keys=("Ctrl+Alt+Y",),
+                hear=(
+                    "Updating YouTube support, then YouTube support is now version, and the number."
+                ),
             ),
             Step(
                 title="Hear the honest limits",

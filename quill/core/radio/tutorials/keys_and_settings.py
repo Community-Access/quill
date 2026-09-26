@@ -27,28 +27,29 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Find the key you want to change",
                 body=(
-                    "The Keyboard Manager is a searchable, conflict-aware list of "
-                    "every command and the key assigned to it. Search by what the "
-                    "command does rather than by its name -- the search matches "
-                    "both."
+                    "Keyboard Shortcuts, on the Help menu, opens the Keymap "
+                    "Editor: a searchable, conflict-aware list of every command "
+                    "and the key assigned to it. Type part of a command's name, or "
+                    "type or record a key to find out what it already does."
                 ),
-                keys=("Alt+H",),
-                hear="A search box, then commands with their current keys.",
+                keys=("Ctrl+Alt+K",),
+                hear="Keymap Editor, then the Search box.",
             ),
             Step(
                 title="Assign a key and hear the objection",
                 body=(
-                    "Assign a new key and the manager warns you if it is already "
-                    "in use, or if it is a risky one such as a plain letter or an "
-                    "arrow key. Clear a key to leave a command reachable only by "
-                    "menu, or restore the defaults for everything."
+                    "Select a command and choose Edit Keybinding. If the key is "
+                    "already assigned, the editor names the command that has it "
+                    "and asks before taking it. A key your screen reader keeps for "
+                    "itself is refused outright, and a key another program holds "
+                    "system-wide gets a warning, because either would be assigned "
+                    "and never fire."
                 ),
-                hear="Either the new key confirmed, or the conflict named.",
+                keys=("Alt+E",),
+                hear="Either the new key confirmed, or the command that already owns it named.",
                 note=(
                     "The keymap is shared with QUILL and QUILL Cast, so a "
-                    "shortcut you change here changes it in the editor too. A few "
-                    "commands whose default is a two-key chord keep their built-in "
-                    "key until you next launch the app."
+                    "shortcut you change here changes it in the editor too."
                 ),
             ),
             Step(
@@ -67,19 +68,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Give the player a system-wide key",
                 body=(
-                    "Global Hotkeys assigns a key that works while another program "
-                    "has focus, for the safe playback verbs only: play/pause, "
-                    "stop, mute, volume up and down, and show or hide to the tray. "
-                    "A global key can never trigger anything that changes a "
-                    "document or a file."
+                    "Global Hotkeys, on the Help menu, assigns a key that works "
+                    "while another program has focus, for the safe playback verbs "
+                    "only: play/pause, stop, mute, volume up and down, and show or "
+                    "hide to the tray. A global key can never trigger anything "
+                    "that changes a document or a file. Choose Assign, press the "
+                    "key, then Save."
                 ),
-                keys=("Alt+H",),
-                hear="Each transport action with its global key, or none.",
+                keys=("Ctrl+Alt+G",),
+                hear=("Global Hotkeys, then a list of commands, each with its global key or none."),
                 note=(
-                    "None are set by default. The first time you assign one, Quill "
-                    "Radio reminds you that a system-wide key may override the "
-                    "same key in another program -- and a key another app already "
-                    "owns is left alone rather than fought over."
+                    "None are set by default. A key another program already owns "
+                    "is left alone rather than fought over, and Quill Radio says "
+                    "which ones were already in use by another app."
                 ),
             ),
             Step(
@@ -92,7 +93,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "uses its own chord, so they never clash."
                 ),
                 keys=("Ctrl+Alt+Shift+R",),
-                hear="Hidden to the tray, then Shown.",
+                hear="Quill Radio hidden to the tray, then Quill Radio shown.",
             ),
             Step(
                 title="Know the block that is not yours to take",
@@ -133,19 +134,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "something makes you want them."
                 ),
                 keys=("Ctrl+,",),
-                hear="Entered Preferences.",
+                hear="Quill Radio Preferences, and its first checkbox.",
             ),
             Step(
                 title="Decide what closing the window means",
                 body=(
                     "When closing the window offers Ask every time, Exit, or "
-                    "Minimize to Tray, and governs the titlebar X and Station > "
-                    "Exit. Beside it, Alt+F4 minimizes to the system tray is its "
-                    "own switch: turn it on and the reflexive close tucks the "
-                    "radio away still playing, while X and Exit keep the setting "
-                    "above."
+                    "Minimize to Tray, and governs closing the main window. "
+                    "Station > Exit always quits for real. Among the checkboxes, "
+                    "Alt+F4 minimizes to the system tray is its own switch: turn "
+                    "it on and the reflexive Alt+F4 tucks the radio away still "
+                    "playing."
                 ),
-                hear="The choice read back.",
+                hear="When closing the window, combo box, and its current choice.",
                 note=(
                     "The one thing that always asks first is a recording in "
                     "progress, because exiting stops the capture."
@@ -154,13 +155,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Leave the playback engine alone unless something is wrong",
                 body=(
-                    "Automatic uses the bundled mpv engine, which is what powers "
-                    "pausing and rewinding live radio, the output device choice, "
-                    "Volume Boost, track titles from the stream, and stations in "
-                    "more formats. Windows Media (classic) is exactly the "
+                    "Playback engine: Automatic uses the mpv engine when it is "
+                    "present, which is what powers pausing and rewinding live "
+                    "radio, the output device choice, Volume Boost, and stations "
+                    "in more formats. Windows Media (classic) is exactly the "
                     "pre-1.1 behaviour if you ever want it back."
                 ),
-                hear="The engine name read back.",
+                hear="Playback engine, combo box, Automatic (recommended).",
                 note=(
                     "If Rewind, Volume Boost or the output device say they need "
                     "the mpv engine, this setting is why -- or the bundled engine "
@@ -170,14 +171,15 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Send the radio to a different speaker",
                 body=(
-                    "Radio output device routes just the radio to a second sound "
+                    "Radio output device, in Preferences and as Output Device on "
+                    "the Audio menu, routes just the radio to a second sound "
                     "card or a USB headset. Your screen reader and Quill Radio's "
                     "own sounds stay on the system default device, which is the "
                     "whole reason this setting exists rather than your using "
                     "Windows' own."
                 ),
                 keys=("Ctrl+Shift+D",),
-                hear="The device list, and the one currently in use.",
+                hear="Output Device, the device list, then Output device and the name you chose.",
                 note=(
                     "An unplugged device is remembered rather than reset, and if "
                     "it cannot be used the radio plays through the default and "
@@ -191,31 +193,35 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "scales the favorites list, the buttons, the now-playing line "
                     "and the status bar. It is remembered between sessions."
                 ),
-                keys=("Alt+V",),
-                hear="The size read back, and the window redrawn.",
+                keys=("Ctrl+Alt+1", "Ctrl+Alt+2", "Ctrl+Alt+3"),
+                hear="Text size, and the size you chose.",
             ),
             Step(
                 title="Turn off whole areas you never use",
                 body=(
-                    "Customize Features leaves out a whole menu and every command "
-                    "under it -- Recording, for instance, if you want a plain "
-                    "radio and nothing else to arrow past. Nothing is deleted; "
-                    "tick it again and it comes back, and a feature added in a "
-                    "future version arrives switched on."
+                    "Customize Features, on the View menu, leaves out a whole menu "
+                    "and every command under it. Today that is Recording, for "
+                    "anybody who wants a plain radio and nothing else to arrow "
+                    "past. Nothing is deleted; tick it again and it comes back. "
+                    "The menu changes the next time you open Quill Radio."
                 ),
-                keys=("Alt+V",),
-                hear="Each area with a short description of what it covers.",
+                keys=("Ctrl+Alt+C",),
+                hear=(
+                    "Recording, with a short description of what it covers; after "
+                    "OK, Feature settings saved."
+                ),
             ),
             Step(
                 title="Put your setup where a sync service can see it",
                 body=(
-                    "The Data Folder button opens the family-wide data location -- "
+                    "The Data Folder button in Preferences opens the family-wide "
+                    "data location -- "
                     "settings, favorites, subscriptions and playback positions for "
                     "every Quill app. Point it at a folder Dropbox, OneDrive, "
                     "Google Drive or iCloud already syncs and your whole setup "
                     "travels between computers, with no account and no sign-in."
                 ),
-                hear="The current folder, and an offer to restart after a change.",
+                hear="Data Folder, the current folder, and an offer to restart after a change.",
                 note=(
                     "One rule: do not run Quill apps on two computers against the "
                     "same folder at the same time. If you do, the next launch says "

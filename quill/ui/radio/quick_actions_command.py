@@ -15,7 +15,18 @@ from typing import Any
 
 from quill.core.quick_actions import QuickActionOrders
 
-__all__ = ["current_orders", "open_quick_actions", "order_row_actions"]
+__all__ = ["current_orders", "offered_contexts", "open_quick_actions", "order_row_actions"]
+
+#: The contexts some Radio menu actually applies (``order_row_actions`` callers).
+#: "recording" is catalogued but no Recordings surface reads it yet, so offering
+#: it would be a list that can be reordered and saved to no effect (2026-09-25).
+APPLIED_CONTEXTS: frozenset[str] = frozenset({"station", "node"})
+
+
+def offered_contexts(labels: Any) -> list[tuple[str, str]]:
+    """The dialog's choices: only lists whose order changes something. Pure."""
+    return [(cid, label) for cid, label in labels if cid in APPLIED_CONTEXTS]
+
 
 _ATTR = "_radio_quick_actions"
 
@@ -64,9 +75,12 @@ def open_quick_actions(host: Any) -> None:
     dialog = QuickActionsDialog(
         getattr(host, "frame", None) or host,
         orders=orders,
-        context_labels=CONTEXT_LABELS,
+        context_labels=offered_contexts(CONTEXT_LABELS),
         announce_cb=getattr(host, "_announce", None),
         title="Quick Actions",
+        # Radio honours the order on the right-click menu only: Enter on a row
+        # always plays or opens it, and Ctrl+1..9 are the window keys.
+        direct_keys=False,
     )
     edited = dialog.show()
     if edited is None:

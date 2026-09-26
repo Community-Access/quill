@@ -32,7 +32,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "leave it running."
                 ),
                 command="radio.play_last",
-                hear="Connecting, then Playing.",
+                hear="The station's name as it starts playing.",
                 check="playing",
             ),
             Step(
@@ -44,13 +44,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "Recording with a time, and the now-playing line notes it."
                 ),
                 command="radio.record_toggle",
-                hear="Recording started, and the station's name.",
+                hear="Recording started, and the station's name, over the start-recording sound.",
                 check="recording-started",
             ),
             Step(
                 title="Read what the Record cell is counting",
                 body=(
-                    "Press F6 and arrow to the Record cell. Started with Record "
+                    "Press F6 in the main window and arrow to the Record cell. "
+                    "Started with Record "
                     "Now, it counts up -- 18 min so far -- because you asked for "
                     "no length at all. Asked for an hour, it counts down. The only "
                     "number the app has in the first case is a disk-safety cap, "
@@ -58,30 +59,31 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "you never made."
                 ),
                 keys=("F6", "Right arrow"),
-                hear="Stop Recording, and the elapsed time.",
+                hear="Stop Recording, and the elapsed time in brackets: 18 min so far.",
             ),
             Step(
                 title="Stop it, and hear where it went",
                 body=(
                     "The same command stops the recording of the station you are "
-                    "listening to, and names the file it saved. A recording of a "
+                    "listening to, and names the file once it has been written. A "
+                    "recording of a "
                     "different station running in the background is never stopped "
                     "by this -- those are stopped from the Recordings window."
                 ),
                 command="radio.record_toggle",
-                hear="The recording stopped, and the file it wrote.",
+                hear="Stopping recording, then Recording saved and the file's name.",
                 check="recording-finished",
             ),
             Step(
                 title="Open the recordings list",
                 body=(
-                    "Your recording is at the top -- the list is newest first. The "
-                    "line under the list leads with what is happening rather than "
-                    "with counts: recording, next scheduled, how many recorded, "
-                    "and the folder they are in."
+                    "Radio Recordings lists what you have recorded, newest first, "
+                    "so yours is near the top. Its summary line leads with what is "
+                    "happening rather than with counts: recording or not, next "
+                    "scheduled, how many recorded, and the folder they are in."
                 ),
                 command="radio.recordings",
-                hear="Entered Radio Recordings, then the summary line.",
+                hear="Radio Recordings, then the list and the row you land on.",
                 check="window:Radio Recordings",
             ),
             Step(
@@ -93,7 +95,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "live audio only."
                 ),
                 keys=("Enter",),
-                hear="The recording playing, from the beginning.",
+                hear="Playing recording, the recording's name, then the recording itself.",
             ),
             Step(
                 title="Throw it away",
@@ -103,22 +105,27 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "which is what makes deleting several in a row bearable."
                 ),
                 keys=("Delete",),
-                hear="A confirmation naming the file, then the row that took its place.",
+                hear=(
+                    "A confirmation naming the recording, then Removed recording and "
+                    "its name, and the row that took its place."
+                ),
                 note=(
                     "A recording deleted here can be brought back with Undo Last "
-                    "Action, which restores the bytes and not merely the intent."
+                    "Action, which restores the file and not merely its name in the "
+                    "list."
                 ),
             ),
             Step(
                 title="Decide where recordings live",
                 body=(
-                    "Recording Settings holds the format -- MP3, OGG, FLAC, WAV or "
-                    "raw -- the bitrate, the filename pattern, and the destination "
+                    "Recording Settings, on the Record menu, holds the format -- "
+                    "MP3, OGG Vorbis, FLAC, WAV or the raw stream -- the quality, the "
+                    "filename pattern, and the destination "
                     "folder. Recordings land in Music\\Quill Radio Recordings "
                     "under your user folder unless you point them somewhere else."
                 ),
                 command="radio.recording_settings",
-                hear="Entered Recording Settings.",
+                hear="Recording Settings, then Format and the format chosen now.",
                 note=(
                     "Set a temporary folder as well and a recording is written "
                     "there and moved when it finishes, so a half-written file "
@@ -159,19 +166,22 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Open the schedule",
                 body=(
-                    "Schedule Recording is a form above a list. The list is what "
-                    "you have booked, ordered by when each one next occurs -- "
-                    "soonest first, not the order you entered them."
+                    "Schedule Recording is a list above a form. The list, "
+                    "Scheduled recordings, is what you have booked, ordered by when "
+                    "each one next occurs -- soonest first, not the order you "
+                    "entered them. The form below it, Add a new schedule, is where "
+                    "you describe the next one."
                 ),
                 command="radio.schedule_recording",
-                hear="Entered Schedule Recording.",
+                hear="Schedule Recording, then the Scheduled recordings list.",
                 check="window:Schedule Recording",
             ),
             Step(
                 title="Pick the station from your favorites",
                 body=(
-                    "Choosing a favorite fills in both its name and its stream "
-                    "address. If the station you want is not listed, add it to "
+                    "Tab to Favorite station and arrow to one: choosing a favorite "
+                    "fills in both Station name and Stream URL. If the station you "
+                    "want is not listed, add it to "
                     "your favorites first -- or, for a one-off stream, type the "
                     "name and paste the address by hand instead. Both fields stay "
                     "editable either way."
@@ -182,12 +192,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Enter the time the way you think of it",
                 body=(
-                    "7:30 PM and 19:30 are both understood, so use whichever you "
-                    "have in your head. Then pin the entry to a time zone: leave "
-                    "it at local time for a show quoted in your own clock, and set "
-                    "the zone when the show is quoted in somebody else's."
+                    "In the Time field, 7:30 PM and 19:30 are both understood, so "
+                    "use whichever you have in your head. Then pin the entry with "
+                    "Time zone: leave it at (local time) for a show quoted in your "
+                    "own clock, and choose the zone when the show is quoted in "
+                    "somebody else's."
                 ),
-                hear="The time read back, with its zone.",
+                hear="Time (7:30 PM or 19:30), edit; then Time zone, reading (local time).",
                 note=(
                     "The list shows every entry's time with its zone, so two "
                     "similar bookings in different zones can be told apart at a "
@@ -197,12 +208,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Choose how often, and how long",
                 body=(
-                    "Once (with a date), Daily, or Weekly (with a weekday). Then "
-                    "the length, as Hours and Minutes -- a three-hour show is "
+                    "Repeats offers Once (with a date), Daily, or Weekly (with a "
+                    "day). Then the length, as Duration hours and minutes -- a "
+                    "three-hour show is "
                     "simply 3 and 0, with no arithmetic and no counting zeroes in "
                     "a seconds field."
                 ),
-                hear="The repeat and the duration read back.",
+                hear="Repeats, combo box, then each duration field with its number.",
             ),
             Step(
                 title="Commit it",
@@ -212,38 +224,46 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "are never left standing on the Add button wondering whether "
                     "it worked."
                 ),
-                hear="The entry added, then the entry itself as focus lands on it.",
+                hear=(
+                    "Scheduled recording added for, and the station, then the entry "
+                    "itself as focus lands on it."
+                ),
             ),
             Step(
                 title="Change one without deleting it",
                 body=(
-                    "Select an entry and choose Edit: the Add button relabels to "
-                    "Save Changes and the status line names the entry you are "
-                    "editing, so it is always clear you are changing that one "
-                    "rather than adding a new one. New abandons the edit."
+                    "Select an entry and choose Edit: the form fills in, the Add "
+                    "button relabels to Save Changes and the status line names the "
+                    "entry you are editing, so it is always clear you are changing "
+                    "that one rather than adding a new one. New abandons the edit."
                 ),
-                hear="The entry named as the one being edited.",
+                keys=("Alt+E",),
+                hear="Station name, holding the entry's name, where focus lands to edit it.",
             ),
             Step(
                 title="Make a similar one",
                 body=(
-                    "Duplicate starts a new, independent entry pre-filled from the "
+                    "Duplicate, beside Edit, starts a new, independent entry "
+                    "pre-filled from the "
                     "selected one, with (copy) on its name -- a starting point for "
                     "another day or a second slot. It keeps the original's stream "
                     "until you change it, so pick a different favorite if you "
                     "meant a different station."
                 ),
-                hear="A new form, pre-filled, with the copy's name.",
+                keys=("Alt+P",),
+                hear="Station name, holding the original name with (copy) after it.",
             ),
             Step(
                 title="Turn one off without losing it",
                 body=(
-                    "Enable and disable an entry rather than deleting it -- a "
-                    "disabled entry reads (disabled) in the list and does not "
-                    "fire. Remove names the schedule it will delete and dims when "
-                    "nothing is selected."
+                    "The Disable button turns an entry off rather than deleting "
+                    "it -- a disabled entry reads (disabled) in the list and does "
+                    "not fire, and the same button then reads Enable. Remove names "
+                    "the schedule it will delete, and Delete in the list does the "
+                    "same."
                 ),
-                hear="The entry read back with its new state.",
+                keys=("Alt+L",),
+                hear="The station's name, and disabled -- or enabled.",
             ),
             Step(
                 title="Know what a schedule needs from you",
@@ -258,9 +278,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 hear="At the next launch: what was missed, up to three named and the rest counted.",
                 note=(
-                    "The Wake-Up Timer can bring the machine round for it. Pair "
-                    "that with Keep the computer awake while playing or recording, "
-                    "which is on by default."
+                    "Three Preferences, all on by default, cover a sleeping "
+                    "computer: Keep the computer awake before a scheduled "
+                    "recording, Wake the computer for a scheduled recording, and "
+                    "Keep the computer awake while playing or recording."
                 ),
             ),
         ),

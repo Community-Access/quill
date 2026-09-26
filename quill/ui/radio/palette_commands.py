@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.ui.radio import volume_commands
+from quill.ui.radio import browse_door, volume_commands
 
 
 def _open_statistics(host: Any) -> None:
@@ -33,7 +33,11 @@ def _folder_step(host: Any, *, forward: bool) -> None:
 
 def register_radio_commands(host: Any) -> None:
     for command_id, title, handler in (
-        ("radio.browse", "Internet Radio: Browse Stations...", host.open_internet_radio),
+        (
+            "radio.browse",
+            "Internet Radio: Browse Stations...",
+            lambda: browse_door.open_browse(host),
+        ),
         (
             "radio.browse_sources",
             "Internet Radio: Choose Browse Sources...",

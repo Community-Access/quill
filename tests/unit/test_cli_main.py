@@ -216,10 +216,10 @@ def portable_env(monkeypatch: pytest.MonkeyPatch):
     together; the bug had been latent for as long as the tests had existed, and
     is exactly the kind that reads as "CI is flaky".
     """
-    for name in ("QUILL_APP_ROOT", "QUILL_PORTABLE"):
+    for name in ("QUILL_APP_ROOT", "QUILL_PORTABLE", "WEBVIEW2_USER_DATA_FOLDER"):
         monkeypatch.delenv(name, raising=False)
     yield
-    for name in ("QUILL_APP_ROOT", "QUILL_PORTABLE"):
+    for name in ("QUILL_APP_ROOT", "QUILL_PORTABLE", "WEBVIEW2_USER_DATA_FOLDER"):
         os.environ.pop(name, None)
 
 

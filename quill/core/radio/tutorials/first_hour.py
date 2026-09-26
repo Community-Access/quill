@@ -1,9 +1,12 @@
 """Track 1: your first hour with Quill Radio.
 
-Five lessons that assume nothing. Somebody who works down this track finishes
-with a station playing, a favorite kept, the transport in their fingers, and a
-way out of anywhere they get stuck. Everything else in the app is optional
-after this, and is written as though this track has been done.
+Five lessons that assume nothing -- the first four here, the fifth in
+:mod:`first_hour_unstuck` (split 2026-09-25 to keep this module under the
+600-line cap; ``__init__`` lists the two back to back, so the order holds).
+Somebody who works down this track finishes with a station playing, a
+favorite kept, the transport in their fingers, and a way out of anywhere they
+get stuck. Everything else in the app is optional after this, and is written
+as though this track has been done.
 
 The order is not arbitrary. Play something first, because an app that has made
 no sound yet is an app you have no reason to trust; keep it second, because
@@ -34,27 +37,30 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Start where the app puts you",
                 body=(
-                    "Launch Quill Radio and do not press anything yet. Focus is "
-                    "already in the Favorite stations tree -- there is nothing to "
-                    "Tab past first, and on a new installation that tree is empty. "
+                    "Launch Quill Radio. The very first time, three short welcome "
+                    "screens come up -- read them with the arrow keys, or press "
+                    "Alt+K to Skip. After that, focus lands in the Favorite "
+                    "stations tree, and on a new installation that tree is empty. "
                     "An empty list here is not a fault; it is a list you have not "
                     "filled in yet, and the next few minutes fill it."
                 ),
+                keys=("Alt+K",),
                 hear=(
-                    "Favorite stations, tree -- or whatever your screen reader calls an empty tree."
+                    "Welcome to Quill Radio, screen 1 of 3 on a first launch; then Favorite "
+                    "stations, tree -- or whatever your screen reader calls an empty tree."
                 ),
             ),
             Step(
                 title="Open Browse Stations",
                 body=(
-                    "Browse Stations is one window with one large tree in it, and "
-                    "the tree's top-level branches are the sources: your favorites, "
-                    "popular stations, whole world directories, weather radio, "
-                    "podcasts, audiobooks. Nothing has been fetched yet -- these "
-                    "are only the doors."
+                    "Browse Stations is one window with one large tree in it. The "
+                    "first row is Search All Sources; below it the top-level "
+                    "branches are the sources: your favorites, popular stations, "
+                    "whole world directories, weather radio, podcasts, audiobooks. "
+                    "Nothing has been fetched yet -- these are only the doors."
                 ),
-                command="radio.browse",
-                hear="Entered Browse Stations, then the first branch of the tree.",
+                keys=("Ctrl+B",),
+                hear="Browse Stations, then the first row of the tree: Search All Sources.",
                 check="window:Browse Stations",
             ),
             Step(
@@ -67,13 +73,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 keys=("Down arrow",),
                 hear=(
-                    "One source name per press: Favorites, Popular Stations, Radio Browser by "
-                    "Genre, and on down."
+                    "One source name per press: Favorites, Popular Stations, Trending Now, "
+                    "Recently Added or Changed, By Country, and on down."
                 ),
                 note=(
-                    "Twenty-eight sources is a lot to arrow past. When you know "
-                    "which ones you actually use, the lesson called Prune the "
-                    "browse tree turns the rest off."
+                    "More than thirty sources is a lot to arrow past. When you "
+                    "know which ones you actually use, Hide This Source on a "
+                    "branch's own menu turns the rest off -- the lesson called "
+                    "Wander the browse tree shows how."
                 ),
             ),
             Step(
@@ -86,7 +93,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "whatever is loud today."
                 ),
                 keys=("Right arrow",),
-                hear="A pause while it loads, then Quill Radio saying the stations have arrived.",
+                hear="Loading Popular Stations, then how many arrived: 100 items.",
             ),
             Step(
                 title="Play one",
@@ -98,7 +105,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "television channel."
                 ),
                 keys=("Down arrow", "Enter"),
-                hear="Connecting, then Playing, then the station itself.",
+                hear=(
+                    "Playing, and the station's name, over a short connecting sound; then the "
+                    "station itself."
+                ),
                 check="playing",
             ),
             Step(
@@ -110,7 +120,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "to go back to the main window to turn it down."
                 ),
                 command="radio.volume_down",
-                hear="Volume 80 percent, then Volume 70 percent.",
+                keys=("Ctrl+Down",),
+                hear="Volume, and a number, then a number ten lower: Volume 70 percent, say.",
                 check="volume-changed",
                 note=(
                     "A favorite remembers the volume you set while it plays, and "
@@ -121,16 +132,21 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Stop it, and start it again",
                 body=(
-                    "Press Play/Stop once to stop and once more to start. It says "
-                    "which way the toggle went, both times. A toggle that stays "
-                    "silent leaves you pressing it twice to find out where you are, "
-                    "which is how you end up back where you started."
+                    "Press Enter on the same row again. Enter on the station that "
+                    "is already playing stops it, and Enter once more starts it. "
+                    "It says which way it went, both times. A toggle that stays "
+                    "silent leaves you pressing it twice to find out where you "
+                    "are, which is how you end up back where you started."
                 ),
-                command="radio.play_pause",
-                hear="Stopped. Then Connecting, then Playing.",
+                keys=("Enter",),
+                hear="Radio stopped. Then Playing, and the station's name.",
+                note=(
+                    "Ctrl+Period is Stop in every window except the main one, "
+                    "where Ctrl+P is Play and Stop on the Playback menu."
+                ),
             ),
             Step(
-                title="Leave the tree open",
+                title="Close the tree, keep the music",
                 body=(
                     "Press Escape. Browse Stations closes and focus returns to the "
                     "favorites tree in the main window -- and the station keeps "
@@ -138,7 +154,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "audio; only Stop does that."
                 ),
                 keys=("Escape",),
-                hear="Exited Browse Stations, and the station still playing underneath.",
+                hear="Quill Radio, the favorites tree, and the station still playing underneath.",
             ),
         ),
         closing=(
@@ -161,17 +177,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Save what is playing",
                 body=(
-                    "With a station on, add it to your favorites. You do not have "
-                    "to find the row it came from, and you do not have to be in the "
-                    "window you found it in -- this command follows what is "
-                    "playing, from anywhere."
+                    "With a station on, add it to your favorites from the main "
+                    "window. You do not have to find the row it came from, and you "
+                    "do not have to go back to the window you found it in -- this "
+                    "command follows what is playing, not what is selected. It is "
+                    "on the Station menu as Add Playing Station to Favorites."
                 ),
                 command="radio.toggle_playing_favorite",
-                hear="Added, and the station's name.",
+                hear="Added, the station's name, to favorites.",
                 check="favorite-added",
                 note=(
-                    "The same command removes it again. It reads what is true now "
-                    "rather than offering both, so it can never add a second copy."
+                    "The same command removes it again, and the menu item "
+                    "relabels itself to say so. It reads what is true now rather "
+                    "than offering both, so it can never add a second copy."
                 ),
             ),
             Step(
@@ -193,7 +211,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "keystrokes and no navigation."
                 ),
                 keys=("Enter",),
-                hear="Connecting, then Playing.",
+                hear="Playing, and the station's name.",
             ),
             Step(
                 title="Give it a name you would actually say",
@@ -205,7 +223,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "clearing the field puts the directory's name back."
                 ),
                 keys=("F2",),
-                hear="An edit box with the current name in it, then your new name read back.",
+                hear=(
+                    "Rename Station, an edit box with your name for it; then Station renamed, and "
+                    "your new name."
+                ),
             ),
             Step(
                 title="Make the radio switch itself on",
@@ -215,12 +236,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "and becomes an appliance: you open it, and your station is "
                     "already playing."
                 ),
-                keys=("Alt+S",),
-                hear="The menu item read back with its ticked state.",
+                keys=("Alt+S", "Ctrl+Alt+L"),
+                hear="Quill Radio will pick up where you left off at launch.",
                 note=(
-                    "Pair it with Start Quill Radio with Windows, on the same menu, "
-                    "and the radio is simply on when you sit down. That entry is "
-                    "for your own account only and needs no administrator rights."
+                    "Pair it with Start Quill Radio with Windows, on the same menu "
+                    "(Ctrl+Alt+W), and the radio is simply on when you sit down. "
+                    "That entry is for your own account only and needs no "
+                    "administrator rights."
                 ),
             ),
             Step(
@@ -232,7 +254,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "after lunch."
                 ),
                 command="radio.play_last",
-                hear="Connecting, then Playing, and the station's name.",
+                keys=("Ctrl+L",),
+                hear="Playing, and the station's name.",
             ),
         ),
         closing=(
@@ -262,8 +285,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "with half a player here; the whole point of this lesson is "
                     "that they no longer do."
                 ),
-                command="radio.browse",
-                hear="Entered Browse Stations, over the top of the station still playing.",
+                keys=("Ctrl+B",),
+                hear="Browse Stations, over the top of the station still playing.",
             ),
             Step(
                 title="Change the volume from the wrong window",
@@ -274,6 +297,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "moves the same distance wherever you press it."
                 ),
                 command="radio.volume_up",
+                keys=("Ctrl+Up",),
                 hear="Volume, and a number ten higher than the last one.",
                 check="volume-changed",
             ),
@@ -285,9 +309,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "from the stream dropping -- which is exactly why this one "
                     "speaks both ways."
                 ),
-                command="radio.mute_toggle",
-                hear="Muted, then Unmuted.",
+                keys=("Ctrl+Shift+O",),
+                hear="Muted, then the volume you came back to: Volume 70 percent, say.",
                 check="muted",
+                note=(
+                    "Ctrl+Shift+O is Mute in every window but the main one, where "
+                    "the Audio menu's Mute/Unmute is Ctrl+M."
+                ),
             ),
             Step(
                 title="Summon the player",
@@ -299,7 +327,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 command="radio.transport.go_to_player",
                 keys=("Ctrl+Shift+G",),
-                hear="Entered Player.",
+                hear="Player, then the Now playing box.",
                 check="window:Player",
             ),
             Step(
@@ -308,8 +336,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "Tab from the top. First a read-only Now playing box saying "
                     "what is on, where you are in it, how fast it is playing and "
                     "how loud; then the buttons in the order people reach for "
-                    "them -- Play/Pause, Stop, Skip Back, Skip Forward, Where Am "
-                    "I, chapters, speed, volume, mute."
+                    "them -- Play or Stop, Pause, Skip Back, Skip Forward, Where "
+                    "Am I, the three chapter buttons, Slower, Faster, Normal "
+                    "Speed, Skip Silence, Volume Down, Volume Up, Mute, and last "
+                    "Add to Favorites."
                 ),
                 keys=("Tab",),
                 hear="Each control's name and state, one per press.",
@@ -336,7 +366,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "rotation, so you can keep it beside whatever you are doing."
                 ),
                 keys=("Escape", "Ctrl+Tab"),
-                hear="Exited Player, or the name of the window you moved to.",
+                hear="The name of the window you are back in, or of the window you moved to.",
             ),
             Step(
                 title="Find the status bar, which Tab never reaches",
@@ -352,8 +382,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 note=(
                     "Each cell has its own Applications-key menu, and that is "
                     "where the depth is: the Play cell offers your favorites and "
-                    "recent stations, Record offers scheduling and the recordings "
-                    "window, Volume offers boost, output device and enhancements."
+                    "recent stations, Record offers scheduling and the Recordings "
+                    "window, Volume offers boost, the output device and Sound "
+                    "Enhancements."
                 ),
             ),
         ),
@@ -459,116 +490,5 @@ TUTORIALS: tuple[Tutorial, ...] = (
             "of all four."
         ),
         then=("getting-unstuck",),
-    ),
-    Tutorial(
-        slug="getting-unstuck",
-        title="Getting unstuck",
-        track="first-hour",
-        minutes=4,
-        surfaces=("Quill Radio",),
-        summary=(
-            "The short list to reach for when something is not where you expected, "
-            "you missed what was said, or a menu item will not press. Read it once "
-            "now so it is familiar when you need it."
-        ),
-        steps=(
-            Step(
-                title="Escape steps back, and says where you landed",
-                body=(
-                    "Escape closes the window you are in and announces which one "
-                    "you left. Ctrl+W, Ctrl+F4, Alt+F4 and the titlebar all close "
-                    "a window too -- take your pick. Closing never stops playback "
-                    "and never loses anything you have not deliberately deleted."
-                ),
-                keys=("Escape",),
-                hear="Exited, and the name of the window you left.",
-            ),
-            Step(
-                title="Hear the last announcement again",
-                body=(
-                    "Speech disappears the moment it finishes, which is right "
-                    "almost always and wrong the one time the sentence you needed "
-                    "went past. Repeat Last Announcement says it again. Find it in "
-                    "the command palette by typing repeat."
-                ),
-                keys=("Ctrl+Shift+P",),
-                hear="Whatever Quill Radio last told you, in full.",
-            ),
-            Step(
-                title="Ask what is playing",
-                body=(
-                    "What's Playing answers in one sentence without opening "
-                    "anything: the station, and the track when the stream carries "
-                    "one. It is the fastest way to work out what you are listening "
-                    "to after coming back to the machine."
-                ),
-                command="radio.whats_playing",
-                keys=("Ctrl+T",),
-                hear="The station, and the track if there is one.",
-            ),
-            Step(
-                title="Read the list of what has failed",
-                body=(
-                    "Recent Problems is a list of what has gone wrong recently -- "
-                    "feeds that could not be read, downloads that died, streams "
-                    "that dropped -- each with its reason and the time. It exists "
-                    "because a spoken failure you missed used to be gone for good."
-                ),
-                keys=("Ctrl+Alt+Shift+P",),
-                hear="A list of problems, newest first, or a statement that there are none.",
-                note=(
-                    "Copy All takes the list as text, which is what to paste into "
-                    "a bug report. It carries addresses and error messages, never "
-                    "passwords, and nothing in it leaves this computer."
-                ),
-            ),
-            Step(
-                title="Find out why a menu item is dimmed",
-                body=(
-                    "A greyed item is not a dead end here. Every dimmed item "
-                    "carries its own reason -- Analyse Chapters: this episode is "
-                    "not downloaded yet, so there is nothing to analyse -- shown "
-                    "in the status bar and spoken by readers that voice menu help. "
-                    "The palette says the same reason instead of a bare "
-                    "unavailable."
-                ),
-                keys=("Alt+P",),
-                hear="The item, the word dimmed, and the sentence saying what would un-dim it.",
-            ),
-            Step(
-                title="Take back the last destructive thing",
-                body=(
-                    "Undo Last Action brings back the last thing you removed: an "
-                    "unsubscribe, a deleted recording, a Mark All as Played. It "
-                    "says what it brought back. It is one step and not a stack, on "
-                    "purpose -- an undo you have to count presses of is a puzzle."
-                ),
-                command="app.undo_last",
-                keys=("Ctrl+Z",),
-                hear="Undid, and what came back -- or Nothing to undo.",
-                note=(
-                    "Every action that can be undone ends its own announcement "
-                    "with Ctrl+Z undoes this, so you never have to remember "
-                    "whether this particular verb was one of them."
-                ),
-            ),
-            Step(
-                title="Report it rather than working around it",
-                body=(
-                    "If something does not happen the way a lesson says it should, "
-                    "that is worth reporting. Get Help from Support writes to a "
-                    "person from inside the app, stamped with this app's "
-                    "version. Your own mail program opens with it ready; "
-                    "nothing is sent until you send it."
-                ),
-                keys=("Ctrl+Alt+F2",),
-                hear="A form with most of it already filled in.",
-            ),
-        ),
-        closing=(
-            "That is the first hour. From here the tracks are independent: go to "
-            "Finding something to listen to if you want more stations, or to "
-            "Recording if you have a show to catch."
-        ),
     ),
 )
