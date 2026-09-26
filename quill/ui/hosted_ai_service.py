@@ -137,6 +137,15 @@ class AiService:
             return OWN_KEY_LIMITS
         return self._limits or GatewayLimits()
 
+    @property
+    def free_limits(self) -> GatewayLimits:
+        """The free service's limits, whichever way requests are going.
+
+        With an own key :attr:`limits` is deliberately unlimited; this is what
+        the pad compares against to say "more than the free AI would accept".
+        """
+        return self._limits or GatewayLimits()
+
     def refresh_limits(self, on_done: Callable[[GatewayLimits], None] | None = None) -> None:
         """Fetch the limits in the background. Failure is silent by design.
 

@@ -43,6 +43,10 @@ _FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "review_daily_request_cap": 5,
     "max_input_tokens": 1500,
     "max_output_tokens": 500,
+    # The general-question feature's own answer ceiling. Its fail-safe is the
+    # ordinary answer ceiling, not the seeded 1,000: a missing row must never
+    # make a request more expensive than intended.
+    "max_ask_output_tokens": 500,
     "max_chunks_per_request": 3,
     "max_image_bytes": 3 * 1024 * 1024,
     "max_image_edge_px": 1600,
@@ -74,6 +78,13 @@ _FAIL_SAFE_DEFAULTS: dict[str, float] = {
 SEED_DEFAULTS: dict[str, float] = {
     **_FAIL_SAFE_DEFAULTS,
     "global_monthly_budget_usd": 40.0,
+    # A general answer needs more room than a rewritten paragraph, and 1,000
+    # tokens is about 750 words. The per-person ceiling rises with it: sixty
+    # general questions at the full 1,000 plus forty other requests reach about
+    # $0.07 at a 3,000-token passage limit (migration 006), and a fence at
+    # $0.08 would sit right on top of that.
+    "max_ask_output_tokens": 1000,
+    "monthly_cost_cap_usd": 0.10,
 }
 
 # Per-feature monthly caps are a distinct family of config keys
@@ -90,6 +101,7 @@ _FEATURE_CAP_FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "proofread": 60,
     "explain": 60,
     "document_qna": 60,
+    "ask": 60,
     "alt_text": 0,
     "chat": 0,
 }

@@ -1,10 +1,18 @@
 """AI help with the user's own OpenAI key: no allowance, no QUILL server.
 
-The five AI help commands normally go through QUILL's free service, which keeps
+The six AI help features normally go through QUILL's free service, which keeps
 an allowance per person and a size limit per request. Somebody with their own
-OpenAI account can switch that off: the same five commands then go **straight
+OpenAI account can switch that off: the same six features then go **straight
 from this computer to OpenAI**, billed to their account, with no QUILL server in
 between and none of the free tier's limits.
+
+**No limits, and warnings instead.** With a key there is no allowance, no size
+ceiling on what is sent, no ceiling on the answer, and no excerpt picking: a
+question about a document sends the whole document. What replaces each limit is
+a sentence before sending (:func:`size_warning`) -- how big this is, roughly
+what it costs, and when it is big enough that OpenAI may refuse it -- because a
+person paying per token should know before a whole book goes, and should still
+be allowed to send it.
 
 Three things make it the same feature rather than a second one:
 
@@ -29,8 +37,10 @@ from quill.core.ai.gateway_client import GatewayLimits
 from quill.core.error_codes import CodedError
 
 __all__ = [
+    "CONTEXT_WARNING_TOKENS",
     "INSTRUCTIONS",
     "OWN_KEY_LIMITS",
+    "UNLIMITED",
     "OWN_KEY_PROVIDER",
     "OwnKeyError",
     "ask_with_own_key",
@@ -39,6 +49,7 @@ __all__ = [
     "load_settings_fields",
     "own_key_active",
     "request_for",
+    "size_warning",
 ]
 
 OWN_KEY_PROVIDER = "openai"
@@ -71,6 +82,13 @@ INSTRUCTIONS: dict[str, str] = {
         "from outside it. Return only the explanation, with no "
         "preamble."
     ),
+    "ask": (
+        "Answer the user's question directly and accurately, in plain "
+        "language suitable for a screen reader to read aloud. Be concise: "
+        "give the answer first, then only the detail that helps. If you are "
+        "not sure of something, say so rather than guessing. Do not use "
+        "tables, and keep any formatting simple."
+    ),
     "document_qna": (
         "You are answering a question about excerpts from the user's own "
         "document. Answer only from the excerpts provided; if they do not "
@@ -80,17 +98,24 @@ INSTRUCTIONS: dict[str, str] = {
     ),
 }
 
+#: Effectively no limit. The pad never refuses on size with a key; it warns
+#: (:func:`size_warning`), and OpenAI's own context window is the only ceiling.
+UNLIMITED = 1_000_000_000
+
 #: What the pad is told the limits are with an own key: every feature on, and
-#: sizes that are the model's rather than an allowance's. The pad still warns
-#: before sending something enormous, because a person paying per token should
-#: know before a whole book goes.
+#: no size, answer or excerpt ceiling at all.
 OWN_KEY_LIMITS = GatewayLimits(
-    max_input_tokens=100_000,
-    max_output_tokens=4_000,
-    max_chunks_per_request=8,
+    max_input_tokens=UNLIMITED,
+    max_output_tokens=UNLIMITED,
+    max_chunks_per_request=UNLIMITED,
     hosted_ai_enabled=True,
     feature_flags={feature: True for feature in INSTRUCTIONS},
 )
+
+#: Past this many tokens a request is big enough that the chosen model may not
+#: be able to read it at once. OpenAI refuses such a request before doing any
+#: work, so the warning says so -- it is a warning, never a refusal here.
+CONTEXT_WARNING_TOKENS = 100_000
 
 
 class OwnKeyError(CodedError):
@@ -170,13 +195,45 @@ def ask_with_own_key(
         host=default_host_for_provider(OWN_KEY_PROVIDER),
         model=model.strip() or default_model(),
     )
+    # No answer ceiling: the model's own maximum is the only one.
     text, error = generate_assistant_response(
         connection,
         key,
         user,
-        max_tokens=OWN_KEY_LIMITS.max_output_tokens,
+        max_tokens=None,
         system_prompt=system,
     )
     if error or not text:
         raise OwnKeyError(f"OpenAI did not answer: {error or 'the answer was empty'}.")
     return text.strip()
+
+
+def size_warning(text: str, model: str, *, free_limit_tokens: int) -> str:
+    """What sending *text* with the user's own key means, before it is sent.
+
+    Never a refusal. Always the rough cost of sending it, because that is the
+    thing an allowance used to answer for them; more than that only when it is
+    true: that this is more than the free service would take, and that it may
+    be more than *model* can read at once. The answer is not limited either,
+    and costs extra -- said once, here, rather than discovered on the bill.
+    """
+    from quill.core.ai.gateway_context import estimate_tokens, words_in
+    from quill.core.ai.own_key_models import estimate_for
+
+    tokens = estimate_tokens(text)
+    words = words_in(text)
+    cost = tokens * estimate_for(model).input_per_million / 1_000_000
+    spent = "less than 1 cent" if cost < 0.01 else f"about ${cost:,.2f}"
+    parts = [
+        f"Your own key has no limits. Sending these {words:,} words costs {spent} "
+        f"on your OpenAI account with {model}, plus the answer, which is not "
+        "limited in length."
+    ]
+    if tokens > free_limit_tokens:
+        parts.append("This is more than QUILL's free AI would accept.")
+    if tokens > CONTEXT_WARNING_TOKENS:
+        parts.append(
+            "It may be more than the model can read at once; if so, OpenAI "
+            "refuses it and nothing is charged."
+        )
+    return " ".join(parts)
