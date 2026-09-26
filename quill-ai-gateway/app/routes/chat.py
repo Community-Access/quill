@@ -140,7 +140,10 @@ def chat():
 
     # 4. Build the fixed-template prompt and make the one real call.
     full_prompt = build_prompt(feature, prompt, chunks)
-    max_output_tokens = int(resolve_limit(current_app, "max_output_tokens"))
+    # A general question has its own answer ceiling (app/prompts.py says why);
+    # every other feature shares the ordinary one.
+    output_key = "max_ask_output_tokens" if feature == "ask" else "max_output_tokens"
+    max_output_tokens = int(resolve_limit(current_app, output_key))
 
     try:
         completion = complete(

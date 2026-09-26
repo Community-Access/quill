@@ -250,6 +250,7 @@ KEYS: dict[str, ConfigKey] = {
         _feature_cap("proofread", "Proofread"),
         _feature_cap("explain", "Explain"),
         _feature_cap("document_qna", "Questions about documents"),
+        _feature_cap("ask", "General questions"),
         # --- How big one request can be -----------------------------------
         ConfigKey(
             key="max_input_tokens",
@@ -286,6 +287,27 @@ KEYS: dict[str, ConfigKey] = {
             consequence=(
                 "Output costs five times what input does, so raising this moves the "
                 "bill faster than raising the passage limit by the same amount."
+            ),
+            cost_relevant=True,
+        ),
+        ConfigKey(
+            key="max_ask_output_tokens",
+            name="Longest answer to a general question",
+            group="request_size",
+            unit="tokens",
+            minimum=50,
+            maximum=16_000,
+            step=50,
+            sentence=(
+                "The most the model may write back to a general question -- one "
+                "asked on its own rather than about a document. It has its own "
+                "limit because a useful general answer needs more room than a "
+                "rewritten paragraph does."
+            ),
+            consequence=(
+                "Output costs five times what input does. This is the longest "
+                "answer any request can get, so it sets the worst case for one "
+                "request and every projection on this page."
             ),
             cost_relevant=True,
         ),

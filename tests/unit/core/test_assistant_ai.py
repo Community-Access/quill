@@ -969,3 +969,12 @@ def test_unlock_failure_is_not_masked_by_an_environment_key(
 
 def _raise_unprotect(_value: str) -> str:
     raise ValueError("cannot decrypt with this user's keys")
+
+
+def test_build_chat_body_without_a_ceiling_omits_it() -> None:
+    """``max_tokens=None`` (AI help on the user's own key) sends no answer
+    ceiling; Claude, which cannot omit it, gets the default."""
+    body = assistant_ai.build_chat_body("openai", "gpt-6-luna", "Hi", max_tokens=None)
+    assert "max_completion_tokens" not in body and "max_tokens" not in body
+    claude = assistant_ai.build_chat_body("claude", "claude-x", "Hi", max_tokens=None)
+    assert isinstance(claude["max_tokens"], int) and claude["max_tokens"] > 0

@@ -4403,14 +4403,14 @@ phrase.</p>
 agreement</strong> — both, not either. See <em>AI help</em> under
 Customize Features for the reason the switch and the agreement are two
 separate things, and for the three doors to the agreement.</p>
-<p>Once it is on, there is <strong>one pad</strong>, five things it can
+<p>Once it is on, there is <strong>one pad</strong>, six things it can
 do, and two keys into it.</p>
 <p><strong>AI Assistant</strong> (<strong>Ctrl+Alt+G</strong>) opens the
 pad where you are. <strong>Ask About This Document</strong>
-(<strong>Ctrl+Alt+Z</strong>) opens the same pad with the last of the
-five already chosen, because that one takes a question rather than a
-selection and is worth a chord instead of one more row to arrow
-past.</p>
+(<strong>Ctrl+Alt+Z</strong>) opens the same pad with <strong>Ask a
+question about the document</strong> already chosen, because that one
+takes a question rather than a selection and is worth a chord instead of
+one more row to arrow past.</p>
 <h3 id="what-the-pad-looks-like-top-to-bottom">What the pad looks like,
 top to bottom</h3>
 <ol type="1">
@@ -4420,7 +4420,7 @@ document. Arrow through it before you press anything.</li>
 <li><strong>Send this much</strong> — a chooser, when there is more than
 one sensible answer: what you selected, the paragraph you are in, or the
 whole section. The box above rewrites itself as you change it.</li>
-<li><strong>What do you want done?</strong> — a list of the five:</li>
+<li><strong>What do you want done?</strong> — a list of the six:</li>
 </ol>
 <table>
 <thead>
@@ -4451,14 +4451,26 @@ whole section. The box above rewrites itself as you change it.</li>
 <td>You type a question; QUILL Lite finds the parts of the document that
 answer it and sends only those</td>
 </tr>
+<tr>
+<td><strong>Ask a general question</strong></td>
+<td>You type any question; only the question is sent, nothing from your
+document</td>
+</tr>
 </tbody>
 </table>
 <ol start="4" type="1">
-<li><strong>Your question</strong> — which appears only for that last
-one.</li>
-<li><strong>Send</strong> — and nothing at all has left this computer
-until you press it.</li>
+<li><strong>Your question</strong> — which appears only for the two
+question choices.</li>
 </ol>
+<p>A general question is one question and one answer. It is not a
+conversation: the next question does not remember the last, which is
+what keeps it inside the free allowance. Its answer may be longer than
+the others — about 1,000 tokens, roughly 750 words — because a useful
+general answer needs the room.</p>
+<p>Each of the six can be switched off on QUILL’s service without a new
+version of QUILL Lite. If one is off, the pad says so when you press
+Send, and nothing is used. 5. <strong>Send</strong> — and nothing at all
+has left this computer until you press it.</p>
 <h3 id="what-comes-back-and-what-you-can-do-with-it">What comes back,
 and what you can do with it</h3>
 <p>The answer arrives in a read-only box of its own, with buttons under
@@ -4521,7 +4533,7 @@ bigger than that, the pad says so <em>before</em> sending, in words
 rather than tokens — “that is about 4,000 words, and the free limit is
 about 2,250” — so you can select less and try again. Nothing is sent in
 the meantime. The answer itself is capped at about 500 tokens, a few
-hundred words.</p>
+hundred words, or about 1,000 for a general question.</p>
 <p><strong>A long document still works.</strong> Ask About This Document
 does not send the whole file. It picks the <strong>three passages most
 likely to answer your question</strong>, each about 180 words and
@@ -4734,10 +4746,19 @@ and that page’s address instead of the free allowance.</li>
 <li>You do not need to connect this computer, and the free service’s
 agreement is not asked for: it is about QUILL’s servers, which this
 route never touches.</li>
-<li>The pad, the five things it can do, and what comes back are
-<strong>exactly the same</strong>, down to the instructions sent with
-your text. The pad still tells you before sending something very large,
-because with your own key a large request costs you money.</li>
+<li>The pad, the six things it can do, and what comes back are the same,
+down to the instructions sent with your text.</li>
+<li><strong>There are no limits.</strong> Nothing is refused for being
+too long, the answer is not capped, and <strong>Ask a question about the
+document</strong> sends the whole document rather than the three
+best-matching passages, so nothing is missed.</li>
+<li><strong>Warnings instead of limits.</strong> The <em>About to
+send</em> line says how many words are going and roughly what they cost
+on your OpenAI account with the model you chose — an estimate, not
+OpenAI’s bill — and that the answer is extra. It adds that the text is
+more than the free service would accept when that is true, and, for
+something very large, that it may be more than the model can read at
+once; OpenAI then refuses it and charges nothing.</li>
 </ul>
 <p><strong>Where the key is kept.</strong> In Windows’ own credential
 store, not in a settings file, and it is never shown again once saved —

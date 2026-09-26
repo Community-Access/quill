@@ -28,7 +28,7 @@ from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, s
 
 __all__ = ["ACTIONS", "AiPadFrame", "AiResultFrame"]
 
-#: The five things the free tier does, in the order the list offers them.
+#: The six things the free tier does, in the order the list offers them.
 #:
 #: The sentence beside each is the control's inline ``SetHelpText``, which is
 #: what F1 reads, what the audit checks for, and what
@@ -62,7 +62,15 @@ ACTIONS: tuple[tuple[str, str, str], ...] = (
         "Type a question; QUILL Lite finds the parts of the document that answer "
         "it and sends only those.",
     ),
+    (
+        "ask",
+        "Ask a general question",
+        "Type any question. Only your question is sent -- nothing from your document.",
+    ),
 )
+
+#: The actions that take a typed question rather than a passage.
+_QUESTION_ACTIONS = frozenset({"document_qna", "ask"})
 
 _ACTION_TITLES = {
     "summarize": "Summary",
@@ -70,6 +78,7 @@ _ACTION_TITLES = {
     "proofread": "Proofread",
     "explain": "Explanation",
     "document_qna": "Answer",
+    "ask": "Answer",
 }
 
 
@@ -271,8 +280,9 @@ class AiPadFrame(wx.Frame):
         self._question = wx.TextCtrl(panel)
         set_accessible_name(self._question, "Your question")
         self._question.SetHelpText(
-            "What you want to know about this document. QUILL Lite finds the "
-            "parts that answer it and sends only those."
+            "What you want to know. For a question about the document, QUILL "
+            "finds the parts that answer it and sends only those; for a general "
+            "question, only the question is sent."
         )
         sizer.Add(self._question_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         sizer.Add(self._question, 0, wx.EXPAND | wx.ALL, _PAD)
@@ -310,10 +320,13 @@ class AiPadFrame(wx.Frame):
         return ACTIONS[index][0]
 
     def _asking(self) -> bool:
-        return self._action_id == "document_qna"
+        return self._action_id in _QUESTION_ACTIONS
+
+    def _own_key(self) -> bool:
+        return bool(getattr(self._service, "own_key_active", False))
 
     def _on_action_changed(self) -> None:
-        """Show the question field only for the one action that uses it.
+        """Show the question field only for the actions that use it.
 
         Shown, not enabled-and-empty: a control that is present but meaningless
         is a stop on every Tab cycle, forever, for a choice that does not exist.
@@ -325,6 +338,26 @@ class AiPadFrame(wx.Frame):
         self._refresh_preview()
 
     def _refresh_preview(self) -> None:
+        if self._action_id == "ask":
+            # Nothing from the document: the question is typed below, and it
+            # is the whole of what is sent.
+            self._preview.SetValue("")
+            self._summary.SetValue(
+                "About to send only your question, typed below. Nothing from "
+                f"this document is sent.{self._own_key_note('')}"
+            )
+            return
+        if self._asking() and self._own_key():
+            # With the user's own key there is no excerpt picking: the whole
+            # document goes, so no answer is missed for want of a fourth passage.
+            self._preview.SetValue(self._document)
+            self._summary.SetValue(
+                f"About to send the whole document ({ctx.words_in(self._document):,} "
+                f"words), and your question.{self._own_key_note(self._document)}"
+                if self._document.strip()
+                else "There is nothing in this document to search."
+            )
+            return
         if self._asking():
             found = ctx.pick_excerpts(
                 self._document,
@@ -380,6 +413,8 @@ class AiPadFrame(wx.Frame):
         where the count is startling, and this is what makes it visible before
         the request rather than after.
         """
+        if self._own_key():
+            return self._own_key_note(text)
         oversized, words, allowed = ctx.too_large(text, self._service.limits.max_input_tokens)
         if not oversized:
             return ""
@@ -388,6 +423,21 @@ class AiPadFrame(wx.Frame):
             "will be refused. Select less, or choose a smaller part above. "
             "Nothing is sent and nothing is used."
         )
+
+    def _own_key_note(self, text: str) -> str:
+        """With the user's own key: no limit, so a warning instead of a refusal.
+
+        Empty on the free service. The cost is of *text* (plus a question, which
+        is small); the sentence also says the answer is unlimited and extra.
+        """
+        if not self._own_key():
+            return ""
+        from quill.core.ai.own_key import size_warning
+
+        free = getattr(self._service, "free_limits", None)
+        free_tokens = free.max_input_tokens if free is not None else 1500
+        model = str(getattr(self._service, "own_key_model", "") or "your chosen model")
+        return " " + size_warning(text, model, free_limit_tokens=free_tokens)
 
     # -- sending ---------------------------------------------------------- #
 
@@ -408,14 +458,23 @@ class AiPadFrame(wx.Frame):
                 self._announce("Type a question first.")
                 self._question.SetFocus()
                 return
-            excerpts = ctx.pick_excerpts(
-                self._document, question, limit=self._service.limits.max_chunks_per_request
-            ).excerpts
-            if not excerpts:
-                self._say("There is nothing in this document to answer from.")
-                return
-            chunks = [e.text for e in excerpts]
             prompt = question
+            if feature == "document_qna":
+                if self._own_key():
+                    # No excerpt limit with an own key: the whole document.
+                    chunks = [self._document] if self._document.strip() else []
+                else:
+                    chunks = [
+                        e.text
+                        for e in ctx.pick_excerpts(
+                            self._document,
+                            question,
+                            limit=self._service.limits.max_chunks_per_request,
+                        ).excerpts
+                    ]
+                if not chunks:
+                    self._say("There is nothing in this document to answer from.")
+                    return
         else:
             prompt = self._preview.GetValue().strip()
             if not prompt:
@@ -423,8 +482,9 @@ class AiPadFrame(wx.Frame):
                 return
 
         combined = prompt + "".join(chunks or [])
+        # Never refused on size with an own key: the summary already warned.
         oversized, words, allowed = ctx.too_large(combined, self._service.limits.max_input_tokens)
-        if oversized:
+        if oversized and not self._own_key():
             self._say(
                 f"That is about {words} words, and the free limit is about "
                 f"{allowed}. Select less, or choose a smaller part above. "
