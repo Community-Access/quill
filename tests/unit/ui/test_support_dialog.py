@@ -186,6 +186,11 @@ def test_the_hub_keeps_its_local_copy_in_the_data_folder(
 
     monkeypatch.setattr(feedback_token, "server_transport_available", lambda: True)
     monkeypatch.setattr(feedback_token, "submission_kwargs", lambda: {})
+    # Both halves faked: CI does not install feedback-hub, and without the
+    # parent package the import fails before the dialog is ever built.
+    monkeypatch.setitem(
+        sys.modules, "feedback_hub", types.SimpleNamespace(load_schema=lambda _path: {})
+    )
     monkeypatch.setitem(
         sys.modules, "feedback_hub.wx_dialog", types.SimpleNamespace(FeedbackDialog=_Dialog)
     )
