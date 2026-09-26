@@ -125,22 +125,6 @@ def test_no_mail_program_still_leaves_the_message_and_the_address(
     assert dialog.ended == []
 
 
-def test_the_server_path_is_skipped_when_nothing_can_post_to_it(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Falling back to GitHub is the one thing that must never happen: the
-    repository is public and a support message is somebody's own words."""
-    import quill.core.feedback_token as feedback_token
-
-    monkeypatch.setattr(feedback_token, "server_transport_available", lambda: False)
-    assert (
-        support_dialog._server_path(
-            _Host(), "Quill Radio 3.0.0", prefill_summary="", prefill_body=""
-        )
-        is False
-    )
-
-
 def test_an_app_with_an_announcer_instead_of_a_shell_still_speaks(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -166,35 +150,12 @@ def test_an_app_with_an_announcer_instead_of_a_shell_still_speaks(
     assert said and "Nothing is sent until you send it there" in said[0][0]
 
 
-def test_the_hub_keeps_its_local_copy_in_the_data_folder(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """feedback-hub's default is %APPDATA%\Quill\feedback.db -- for a portable
-    copy, a message left on somebody else's computer."""
-    import sys
-    import types
+def test_support_never_goes_through_feedback_hub() -> None:
+    """2026-09-26: every message goes to support@ by email. The feedback-hub
+    dialog (and its GitHub token) is not a transport any more."""
+    import inspect
 
-    import quill.core.feedback_token as feedback_token
-    from quill.core.paths import app_data_dir
-
-    seen: dict[str, object] = {}
-
-    class _Dialog:
-        def __init__(self, _parent: object, **kwargs: object) -> None:
-            seen.update(kwargs)
-            raise RuntimeError("stop before any wx")
-
-    monkeypatch.setattr(feedback_token, "server_transport_available", lambda: True)
-    monkeypatch.setattr(feedback_token, "submission_kwargs", lambda: {})
-    # Both halves faked: CI does not install feedback-hub, and without the
-    # parent package the import fails before the dialog is ever built.
-    monkeypatch.setitem(
-        sys.modules, "feedback_hub", types.SimpleNamespace(load_schema=lambda _path: {})
-    )
-    monkeypatch.setitem(
-        sys.modules, "feedback_hub.wx_dialog", types.SimpleNamespace(FeedbackDialog=_Dialog)
-    )
-
-    support_dialog._server_path(_Host(), "Quill Radio 3.0.0", prefill_summary="", prefill_body="")
-
-    assert seen["db_path"] == app_data_dir() / "feedback.db"
+    source = inspect.getsource(support_dialog)
+    assert "feedback_hub" not in source
+    assert "github_token" not in source
+    assert not hasattr(support_dialog, "_server_path")

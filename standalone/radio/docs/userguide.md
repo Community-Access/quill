@@ -1927,13 +1927,47 @@ Good to know: the list is fetched fresh each time and checked against Community 
 
 ### Suggest a Station or Podcast, step by step
 
-1. Press **Ctrl+Alt+9** (**Community > Suggest a Station or Podcast...**). The form opens.
-2. **What is it** (Alt+W): A radio station, or A podcast.
-3. Fill in **Name** (Alt+N), **Address** (Alt+A), **Description** (Alt+D), **Language** (Alt+L) and **Why it belongs** (Alt+H).
-4. Choose **Send Suggestion** (Alt+S). If a field is missing, the first problem is spoken. Otherwise Quill Radio files the suggestion and says its number.
-5. If sending fails, you are offered your web browser instead.
+Know a station or podcast other listeners should hear? Suggest it for the Community Picks list. Your suggestion goes by email to **support@community-access.org**, where a person at Community Access reads it. You do not need an account of any kind, and nothing is posted on a website. (Changed 2026-09-26: suggestions used to become public GitHub issues. They now go to support like every other message from Quill Radio.)
 
-It is off in Safe Mode.
+**What the window asks**
+
+1. Press **Ctrl+Alt+9** (**Community > Suggest a Station or Podcast...**). The Suggest a Station or Podcast window opens. At the top it says where the suggestion goes and that nothing is sent until you press Send in your mail program.
+2. **What is it** (Alt+W) is a list with two choices: **A radio station** or **A podcast**. Use the Up and Down arrows. It starts on A radio station.
+3. **Name** (Alt+N): what it should be called in the list, such as "Radio Nowhere". This one is required, and it can be up to 120 characters.
+4. **Address** (Alt+A): the stream address for a station, or the feed address for a podcast. It is required and must start with `https://` or `http://`. The easiest way to get it: press **Shift+F10** on the station in Quill Radio and choose **Copy Stream Link**, or on a podcast show choose **Copy Feed Address**, then paste it here with **Ctrl+V**.
+5. **Description** (Alt+D): one or two sentences saying what it is, for somebody who has never heard it. Optional, up to 600 characters. Press **Tab** to leave this box; Enter starts a new line.
+6. **Language** (Alt+L): such as `en` or `en-US`. Optional.
+7. **Why it belongs** (Alt+H): anything that would help Community Access decide. Optional. Only the people who read the suggestion see it.
+
+**Sending it**
+
+1. Press **Alt+S** for **Send Suggestion**, or Tab to it and press **Space**.
+2. Quill Radio checks what you typed first. If something needs fixing, it speaks the first problem and shows the whole list in a message. Press **Enter** to close the message, fix the field, and press **Alt+S** again. It catches a missing name or address, an address that does not start with `https://` or `http://`, an address with a space in it (usually a copy that did not paste whole), and a station or podcast that is **already in the Community Picks list**.
+3. When everything is in order, your own mail program opens with a new email already written, and you hear "Your mail program has opened with your suggestion written. Press Send there." The Suggest window closes.
+4. In your mail program, the email is addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.0] Suggestion: Radio Nowhere". Read it over if you like, add anything you want to say, and **press Send there**. Nothing leaves your computer until you do.
+
+**If you have no mail program**
+
+Some computers have no mail program set up, only webmail such as Gmail or Outlook.com in a browser. Then nothing can open, and Quill Radio says so: "No mail program answered. Write to support@community-access.org." The whole suggestion, with the address and the subject at the top, is put on your clipboard. Open your webmail, start a new email to **support@community-access.org**, and paste it into the message with **Ctrl+V**. The Suggest window stays open, so what you typed is still there.
+
+A suggestion too long for a mail program to accept (usually a very long "Why it belongs") is shortened in the email, with a line saying so, and the complete text is put on your clipboard. Quill Radio tells you when this happens; select the email's text and paste the full version over it with **Ctrl+V**.
+
+**What is included, and what is not**
+
+- Included: exactly what you typed, whether it is a station or a podcast, and the app's name and version ("Quill Radio 3.0.0").
+- Not included: your name, your Windows version, your screen reader, your favorites or listening history, or any file on your computer.
+- Because the email goes from your own mail account, Community Access sees the address you send from, as with any email you write. It is not published anywhere.
+- Nothing goes to GitHub or any other public site, and Quill Radio itself makes no connection to send it: your mail program does the sending.
+
+**What happens next**
+
+A person at Community Access reads every suggestion. If it fits the list, they add it, and it appears in **Community Picks** for everybody the next time the list is fetched, with no update needed. They may write back to ask a question or to tell you it was added.
+
+**Closing without sending**
+
+Press **Escape**, or choose **Close** (Alt+O). Nothing is written or sent.
+
+Suggest a Station or Podcast is off in Safe Mode: it says "Safe Mode is on, so nothing is sent anywhere."
 
 ## Taking back the last thing you did
 
@@ -2571,13 +2605,50 @@ In every other window, Alt+S is the Station menu and Alt+W the Window menu. See 
 
 ## Getting help
 
-Support is run by **Community Access**. Write to **support@community-access.org** with questions, problems or ideas. A person reads it, and replies come by email.
+Support is run by **Community Access**. Write to **support@community-access.org** with questions, problems, ideas or suggestions. A person reads every message, and replies come by email.
 
-1. Press **Ctrl+Alt+F2** (**Help > Get Help from Support...**).
-2. A form opens with the app's name and version already filled in. Write your message.
-3. Send it. Your own mail program opens with the whole message ready, and nothing is sent until you send it there. On a computer with no mail program, the message is put on your clipboard instead.
+Every kind of feedback from Quill Radio goes to that one address: **Get Help from Support**, **Report Bad Station** and **Suggest a Station or Podcast**. None of them is posted on GitHub or any other public site. (Changed 2026-09-26. Earlier versions filed some reports as public GitHub issues.)
 
-Writing to the address yourself works just as well.
+### Get Help from Support, step by step
+
+**What the window asks**
+
+1. Press **Ctrl+Alt+F2** (**Help > Get Help from Support...**). The Get Help from Support window opens. At the top it says the message goes to support@community-access.org and that nothing is sent until you send it from your mail program.
+2. **What kind of message** (Alt+W) is a list: Something is broken, A question, An accessibility problem, or An idea or request. Use the Up and Down arrows. It only helps route your message; say anything you like below.
+3. **Subject** (Alt+U): a short line saying what this is about, the way an email subject does, such as "Recording stops after an hour". Required.
+4. **What happened** (Alt+H): describe it in as much or as little detail as you like. This is the part a person reads first. Required. Enter starts a new line; press **Tab** to move on.
+5. **What you expected** (Alt+X): what you thought would happen instead. Optional.
+6. **Steps to reproduce** (Alt+R): how somebody else could make it happen, such as "Play BBC Radio 4, press Ctrl+R, wait an hour". Optional, and worth more than anything else when you can give it.
+7. **Your email address** (Alt+E): where support should reply. Optional. The message goes from your own mail account, so support can answer that address anyway; fill this in only if you want the answer somewhere else.
+8. **Screen reader** (Alt+A): which one you use, if any. It is filled in from the screen reader that is running, so usually you can leave it.
+9. Below the fields, a line says what else is included, such as "Also included: Quill Radio 3.0.0, and your Windows version."
+
+**Sending it**
+
+1. Press **Enter**, or Tab to **Send** and press **Space**.
+2. If the subject or What happened is empty, or the email address does not look right, the first problem is spoken and the whole list is shown. Press **Enter** to close it, fix the field, and send again.
+3. Otherwise your own mail program opens with the whole message written, addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.0] Recording stops after an hour". You hear "Your mail program is opening with the message ready. Nothing is sent until you send it there." The Get Help window closes.
+4. **Press Send in your mail program.** Nothing leaves your computer until you do.
+
+**If you have no mail program**
+
+On a computer with only webmail, nothing can open, and Quill Radio says "No mail program answered. Write to support@community-access.org." The whole message, with the address and subject at the top, is on your clipboard. Start a new email to **support@community-access.org** in your webmail and paste it with **Ctrl+V**. The Get Help window stays open with what you typed.
+
+A very long message is shortened in the email, with a line saying so, and the complete text goes on your clipboard. Quill Radio says when this happens; paste the full text over the shortened one with **Ctrl+V**.
+
+**What is included, and what is not**
+
+- Included: what you typed, the kind of message, Quill Radio's name and version, your Windows version, and the screen reader you chose.
+- Not included: your favorites, recordings, listening history, passwords, or any file. If support needs more, they will ask, and **Copy All** in **Recent Problems** (Ctrl+Alt+Shift+P) gives them the details without any passwords.
+- It is an ordinary email from your own account to Community Access. Nothing is posted publicly, and Quill Radio itself makes no connection to send it.
+
+**What happens next**
+
+A person at Community Access reads it and replies by email, usually to the address you sent from. Press **Escape**, or choose **Cancel**, to close the window without writing anything.
+
+**Report Bad Station** (Shift+F10 on a station in Browse Stations or Search Stations) opens this same window with the station's name, stream, source and country already filled in. It never includes your name, email or file paths.
+
+Writing to support@community-access.org yourself, from any email account, works just as well.
 
 ## Troubleshooting
 

@@ -212,12 +212,14 @@ PURPOSES: dict[str, str] = {
         "offered -- nothing you added is ever removed for you."
     ),
     "Suggest a Station or Podcast": (
-        "Tell us about something worth adding to the Community Picks list. You "
-        "do not need a GitHub account and you are not sent to a website: Quill "
-        "Radio files it for you and reads back the number it was given. It is "
-        "checked before it is sent, so a missing address or something already "
-        "on the list is caught here. Nothing is sent until you press Send "
-        "Suggestion, and nothing is sent at all in Safe Mode."
+        "Tell us about something worth adding to the Community Picks list. It "
+        "goes by email to support@community-access.org, where a person at "
+        "Community Access reads it: press Send Suggestion and your own mail "
+        "program opens with it written, then press Send there. No account and "
+        "no website. It is checked first, so a missing address or something "
+        "already on the list is caught here. With no mail program, the whole "
+        "suggestion goes on your clipboard to paste into any email. Nothing is "
+        "sent at all in Safe Mode."
     ),
     "ACB Media Podcasts": (
         "Everything ACB Media publishes, so you can choose what to keep. The "

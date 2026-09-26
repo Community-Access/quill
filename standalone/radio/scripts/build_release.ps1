@@ -23,15 +23,12 @@
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
-#                               [-LibmpvDir <dir>] [-TokenFile <path>]
-#                               [-Iscc <path>] [-SkipToken] [-SkipSharedRuntime]
-#                               [-SkipCatalog] [-Sign]
+#                               [-LibmpvDir <dir>] [-Iscc <path>]
+#                               [-SkipSharedRuntime] [-SkipCatalog] [-Sign]
 #
-# Everything is bundled; the installer and zip perform no downloads. The
-# bundled feedback token (Report a Bug for users with no GitHub setup) is
-# generated into the quill package before PyInstaller runs -- a release
-# build FAILS if the token file is missing rather than shipping a build
-# with a silently broken bug reporter.
+# Everything is bundled; the installer and zip perform no downloads. No GitHub
+# token is generated or embedded (2026-09-26): all feedback goes by email to
+# support@community-access.org, so there is nothing to bundle.
 
 # Every path below defaults to "" and is resolved from the checkout itself, so a
 # clone builds on any machine. Hardcoded D:\ defaults used to make this script
@@ -40,10 +37,8 @@ param(
     [string]$Python = "",
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
-    [switch]$SkipToken,
     [switch]$SkipSharedRuntime,
     [switch]$SkipCatalog,
     [switch]$Sign
@@ -93,21 +88,17 @@ if (-not $SkipCatalog) {
 & $Python (Join-Path $QuillRepo "scripts\sync_site_radio_docs.py")
 if ($LASTEXITCODE -ne 0) { throw "Site radio-docs sync failed (see above)." }
 
-# -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
-# A public release must embed the issues-only token; -SkipToken builds a private
-# copy whose Report a Bug falls back to opening GitHub manually (same posture as
-# the Quill Weather build).
-if (-not $SkipToken) {
-    # -TokenFile is one of several sources generate_feedback_token.py accepts
-    # (env var, token file, Windows Credential Manager, or a token already
-    # bundled by this machine's last build). Pass it when given; otherwise let
-    # the generator resolve, and let ITS --require-token error explain every
-    # option rather than throwing here about the one source we happen to know.
-    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
-    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
-    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
-}
+# -- no feedback token (2026-09-26) ------------------------------------------
+# This build used to generate and embed the bundled GitHub "feedback token", and
+# a public release FAILED without one. It no longer does either: every piece of
+# feedback from Quill Radio -- Get Help from Support, Report Bad Station and
+# Suggest a Station or Podcast -- goes to support@community-access.org
+# through the reader's own mail program, and nothing is filed as a GitHub
+# issue, so there is no credential to ship.
+# -TokenFile and -SkipToken were removed with it; nothing else here used them.
+# One caveat: collect_all("quill") still sweeps up a quill\_feedback_token.py
+# that another app's build left in this checkout (it is gitignored, and those
+# builds regenerate it). Nothing this app runs reads it any more.
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 # SECURITY: ffmpeg is copied verbatim into the shipped runtime, so require an

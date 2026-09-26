@@ -1,16 +1,18 @@
 """Suggesting a station or podcast for the Community Picks catalogue.
 
-**Nobody should need a GitHub account to suggest a radio station.** Quill Radio
-already files real GitHub issues for people who have configured nothing, using
-the bundled issues-only token behind Report a Bug -- so a suggestion goes
-straight from an accessible dialog to a real issue, with no login, no browser
-and no form somebody else designed.
+**Nobody should need a GitHub account to suggest a radio station.** As of
+2026-09-26 the in-app dialog does not go to GitHub at all: a suggestion is an
+email to ``support@community-access.org``, written by
+:func:`support_message` and handed to the person's own mail program exactly the
+way Get Help from Support is. Every piece of feedback from Quill Radio now
+reaches a person at Community Access who can answer it, and the app no longer
+carries the bundled GitHub token it used to post with.
 
 This module is the part with no wx and no network in it: checking what the
-person typed, and composing an issue body a workflow can read back. Both the
-in-app dialog and the public web form produce the **same body**, so
-``picks-build.yml`` has one format to parse and the catalogue has one shape of
-input however it arrived.
+person typed, composing that email, and -- for the catalogue pipeline, which
+still reads GitHub issues -- composing and reading back an issue body.
+``issue_body`` is what the public web form and a curator filing an approved
+suggestion produce, so ``picks-build.yml`` has one format to parse.
 
 Design: docs/design/community-picks.md.
 """
@@ -19,8 +21,9 @@ from __future__ import annotations
 
 import json
 import re
-import urllib.parse
 from dataclasses import dataclass, field
+
+from quill.core.support_message import SupportMessage
 
 #: Where suggestions land, and the labels that drive the pipeline.
 REPO = "Community-Access/quill"
@@ -150,15 +153,8 @@ def issue_body(suggestion: Suggestion, *, submitted_from: str = "") -> str:
     lines = [
         f"**{payload['title']}** -- suggested for the Community Picks list.",
         "",
-        f"- Kind: {suggestion.type}",
-        f"- Address: {suggestion.url.strip()}",
+        *_fact_lines(suggestion),
     ]
-    if suggestion.description.strip():
-        lines.append(f"- Description: {suggestion.description.strip()}")
-    if suggestion.language.strip():
-        lines.append(f"- Language: {suggestion.language.strip()}")
-    if suggestion.collection.strip():
-        lines.append(f"- Suggested group: {suggestion.collection.strip()}")
     if suggestion.why.strip():
         lines += ["", "Why it belongs:", "", suggestion.why.strip()]
     if submitted_from:
@@ -195,18 +191,50 @@ def parse_issue_body(body: str) -> dict[str, str] | None:
     return {str(key): str(value) for key, value in payload.items()}
 
 
-def browser_url(suggestion: Suggestion) -> str:
-    """A pre-filled new-issue URL, for when posting directly is not possible.
+def _fact_lines(suggestion: Suggestion) -> list[str]:
+    """The typed facts, one per line: shared by the issue body and the email."""
+    lines = [
+        f"- Kind: {suggestion.type}",
+        f"- Address: {suggestion.url.strip()}",
+    ]
+    if suggestion.description.strip():
+        lines.append(f"- Description: {suggestion.description.strip()}")
+    if suggestion.language.strip():
+        lines.append(f"- Language: {suggestion.language.strip()}")
+    if suggestion.collection.strip():
+        lines.append(f"- Suggested group: {suggestion.collection.strip()}")
+    return lines
 
-    The fallback, never the main path: it needs a GitHub account, which is the
-    barrier this whole flow exists to remove.
+
+def email_subject_line(suggestion: Suggestion) -> str:
+    """The ``Suggestion: <name>`` summary the support subject is built from."""
+    return f"Suggestion: {suggestion.title.strip()}"[:_MAX_TITLE]
+
+
+def support_message(suggestion: Suggestion, *, product: str) -> SupportMessage:
+    """The suggestion as a message to support (2026-09-26).
+
+    Built on :class:`~quill.core.support_message.SupportMessage` rather than a
+    format of its own, so it arrives at ``support@community-access.org`` in the
+    shape every other message from the family does: product in the subject,
+    the person's words first, the facts after. No JSON block: this is read by
+    a person, and a curator who approves it files the catalogue entry.
     """
-    query = urllib.parse.urlencode({
-        "title": issue_title(suggestion),
-        "body": issue_body(suggestion, submitted_from="the browser"),
-        "labels": SUGGESTION_LABEL,
-    })
-    return f"https://github.com/{REPO}/issues/new?{query}"
+    kind = "podcast" if suggestion.is_podcast else "radio station"
+    lines = [
+        f"I would like to suggest a {kind} for the Community Picks list.",
+        "",
+        f"- Name: {suggestion.title.strip()}",
+        *_fact_lines(suggestion),
+    ]
+    if suggestion.why.strip():
+        lines += ["", "Why it belongs:", suggestion.why.strip()]
+    return SupportMessage(
+        product=product,
+        summary=email_subject_line(suggestion),
+        message="\n".join(lines),
+        category="Station or podcast suggestion",
+    )
 
 
 __all__ = [
@@ -216,10 +244,11 @@ __all__ = [
     "SUGGESTION_LABEL",
     "Suggestion",
     "Validation",
-    "browser_url",
+    "email_subject_line",
     "issue_body",
     "issue_title",
     "known_urls",
     "parse_issue_body",
+    "support_message",
     "validate",
 ]

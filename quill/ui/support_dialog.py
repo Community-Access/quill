@@ -12,17 +12,13 @@ whole message already written**. Nothing is sent until you press Send there,
 which is said out loud, because a form that claims to have sent something it
 has not is worse than a form that asks for one more keypress.
 
-Two transports, in this order:
+One transport: **the reader's own mail program**, addressed to
+``support@community-access.org``. No credential, no server, no account.
+Until 2026-09-26 a feedback-hub dialog was tried first, for a submission
+server that never shipped; with every message now going to the help desk by
+email it was a second door to the same room, and it is gone.
 
-1. **The submission server**, when the build has one and the installed
-   feedback-hub knows how to post to it. The app carries no credential; the
-   server relays to ``support@community-access.org``.
-2. **The reader's mail client**, otherwise. No credential, no server, no
-   account -- and it works today, which the server path does not
-   (feedback-hub 1.1.0 has no ``server_url``; see
-   ``quill.core.feedback_token.hub_accepts_server_url``).
-
-What there is *no* third fallback to is GitHub. ``Community-Access/quill`` is
+What there is *no* fallback to is GitHub. ``Community-Access/quill`` is
 public and a support message is somebody's own words about their own machine;
 ``docs/design/2026-08-26-feedback-redesign-for-freescout.md`` is the reasoning
 and this module is where it is enforced.
@@ -90,11 +86,6 @@ def open_support_message(
     if not isinstance(extra, dict):
         extra = {}
     facts = {key: value for key, value in (extra or {}).items() if value}
-    # The hub dialog has no field for these, so they ride on the version line
-    # it does send.
-    hub_product = "; ".join([product, *(f"{k} {v}" for k, v in facts.items())])
-    if _server_path(host, hub_product, prefill_summary=prefill_summary, prefill_body=prefill_body):
-        return
     import wx
 
     _SupportDialog(
@@ -105,54 +96,6 @@ def open_support_message(
         prefill_body=prefill_body,
         extra=facts,
     ).show()
-
-
-def _server_path(host: Any, product: str, *, prefill_summary: str, prefill_body: str) -> bool:
-    """Try the feedback-hub dialog. False means "use the mail client instead"."""
-    from quill.core.feedback_token import server_transport_available, submission_kwargs
-
-    if not server_transport_available():
-        return False
-    try:
-        from pathlib import Path
-
-        from feedback_hub import load_schema
-        from feedback_hub.wx_dialog import FeedbackDialog
-
-        import quill.core as _core
-        from quill.core.paths import app_data_dir
-
-        schema_path = Path(_core.__file__).parent / "schemas" / "feedback.json"
-        dialog = FeedbackDialog(
-            _parent(host),
-            schema=load_schema(schema_path),
-            app_version=product,
-            # The hub keeps a local copy of every message it sends. Its default is
-            # %APPDATA%\Quill, which for a portable copy is somebody else's
-            # computer; the data folder is the same place on an installed one.
-            db_path=app_data_dir() / "feedback.db",
-            **submission_kwargs(),
-        )
-    except Exception:  # noqa: BLE001 - any hub failure means the mail path
-        import logging
-
-        logging.getLogger(__name__).warning("feedback_hub dialog unavailable", exc_info=True)
-        return False
-    if prefill_body and _copy(host, prefill_body):
-        _announce(
-            host,
-            "The details are on your clipboard. Paste them into the description "
-            "with Control V, then submit.",
-        )
-    try:
-        import wx
-
-        result = _show_modal_dialog(host, dialog, TITLE)
-        if result == wx.ID_OK:
-            _announce(host, "Thank you. Your message was sent to support.")
-    finally:
-        dialog.Destroy()
-    return True
 
 
 class _SupportDialog:
@@ -229,8 +172,11 @@ class _SupportDialog:
         self._email = self._field(
             grid,
             "Your &email address:",
-            "Where support should reply. Optional -- leave it empty to send anyway, "
-            "and nobody will be able to answer you.",
+            # Reworded 2026-09-26: this form always sends from the reader's own
+            # mail account, so "nobody will be able to answer you" was untrue.
+            "Where support should reply. Optional -- the message goes from your own "
+            "mail account, so support can answer that; fill this in only if you "
+            "want the answer somewhere else.",
         )
         self._reader = self._choice(
             grid,
@@ -338,43 +284,65 @@ class _SupportDialog:
             _announce(self._host, problems[0])
             _message_box(self._host, "\n".join(problems))
             return
-        url, shortened = build_mailto_url(message)
-        full_text = (
-            f"To: {SUPPORT_EMAIL}\nSubject: {build_subject(message)}\n\n{build_body(message)}"
-        )
-        if shortened:
-            _copy(self._host, full_text)
-        if _launch(url):
-            tail = (
-                " It was too long for your mail program, so the complete text is on "
-                "your clipboard -- paste it in with Control V."
-                if shortened
-                else ""
-            )
-            _announce(
-                self._host,
-                "Your mail program is opening with the message ready. "
-                "Nothing is sent until you send it there." + tail,
-            )
+        if send_by_mail(self._host, message):
             self.dialog.EndModal(self._wx.ID_OK)
-            return
-        self._offer_clipboard(full_text)
 
-    def _offer_clipboard(self, full_text: str) -> None:
-        """No mail program answered. Say so, and hand over the whole message."""
-        copied = _copy(self._host, full_text)
-        where = (
-            "The whole message is on your clipboard."
-            if copied
-            else "Copy what you typed before closing this."
+
+# -- the mail handoff -----------------------------------------------------------
+
+
+def send_by_mail(
+    host: Any,
+    message: SupportMessage,
+    *,
+    title: str = TITLE,
+    opened: str = (
+        "Your mail program is opening with the message ready. "
+        "Nothing is sent until you send it there."
+    ),
+) -> bool:
+    """Hand *message* to the mail program. True when one answered.
+
+    Shared since 2026-09-26 so Suggest a Station or Podcast reaches support by
+    exactly this route -- the same length cut, the same clipboard copy, the
+    same "no mail program" answer -- rather than a second copy of it that
+    drifts. *opened* is what is said when the mail program opens; *title*
+    captions the message box when none does. False leaves the caller's window
+    open, so what was typed is still there to copy.
+    """
+    url, shortened = build_mailto_url(message)
+    full_text = f"To: {SUPPORT_EMAIL}\nSubject: {build_subject(message)}\n\n{build_body(message)}"
+    if shortened:
+        _copy(host, full_text)
+    if _launch(url):
+        tail = (
+            " It was too long for your mail program, so the complete text is on "
+            "your clipboard -- paste it in with Control V."
+            if shortened
+            else ""
         )
-        _message_box(
-            self._host,
-            "This machine has no mail program set up to answer, so nothing was "
-            f"opened.\n\nWrite to {SUPPORT_EMAIL} however you normally send "
-            f"email -- webmail is fine. {where}",
-        )
-        _announce(self._host, f"No mail program answered. Write to {SUPPORT_EMAIL}. {where}")
+        _announce(host, opened + tail)
+        return True
+    _offer_clipboard(host, full_text, title=title)
+    return False
+
+
+def _offer_clipboard(host: Any, full_text: str, *, title: str = TITLE) -> None:
+    """No mail program answered. Say so, and hand over the whole message."""
+    copied = _copy(host, full_text)
+    where = (
+        "The whole message is on your clipboard."
+        if copied
+        else "Copy what you typed before closing this."
+    )
+    _message_box(
+        host,
+        "This machine has no mail program set up to answer, so nothing was "
+        f"opened.\n\nWrite to {SUPPORT_EMAIL} however you normally send "
+        f"email -- webmail is fine. {where}",
+        title=title,
+    )
+    _announce(host, f"No mail program answered. Write to {SUPPORT_EMAIL}. {where}")
 
 
 # -- host plumbing --------------------------------------------------------------
@@ -423,18 +391,18 @@ def _show_modal_dialog(host: Any, dialog: Any, label: str) -> int:
     return int(show_modal_dialog(dialog, label, announce=getattr(host, "_announce", None)))
 
 
-def _message_box(host: Any, text: str) -> None:
+def _message_box(host: Any, text: str, *, title: str = TITLE) -> None:
     import wx
 
     box = getattr(host, "_show_message_box", None)
     if callable(box):
-        box(text, TITLE, wx.OK | wx.ICON_INFORMATION)
+        box(text, title, wx.OK | wx.ICON_INFORMATION)
         return
     from quill.ui.dialog_contract import show_message_box
 
     show_message_box(
         text,
-        TITLE,
+        title,
         wx.OK | wx.ICON_INFORMATION,
         _parent(host),
         announce=getattr(host, "_announce", None),

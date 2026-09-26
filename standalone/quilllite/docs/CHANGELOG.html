@@ -198,6 +198,28 @@
 <main id="main-content">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="120--unreleased">1.2.0 – unreleased</h2>
+<h3 id="support-2026-09-26">Support (2026-09-26)</h3>
+<ul>
+<li><strong>No GitHub token, in the app or the build.</strong> Every
+message from QUILL Lite already went to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+through your own mail program; now the build stops generating and
+embedding the bundled GitHub “feedback token” it never needed, and a
+release no longer fails without one (<code>-TokenFile</code> and
+<code>-SkipToken</code> are gone from
+<code>scripts/build_release.ps1</code>).</li>
+<li><strong>Get Help from Support is email, and only email.</strong> The
+feedback-hub dialog it used to try first is gone, and with it any way
+for a support message to end up as a public issue.</li>
+<li><strong>The email field says what is true.</strong> Its F1 help used
+to warn that leaving it empty meant nobody could answer you. The message
+goes from your own mail account, so support can answer that; the field
+is for an answer somewhere else.</li>
+<li>The user guide’s <strong>Getting help</strong> section is now a full
+step-by-step walkthrough: every field and its key, what happens after
+Send, what to do with no mail program, and what is and is not
+included.</li>
+</ul>
 <h3 id="ai-help">AI help</h3>
 <ul>
 <li><strong>Ask a general question.</strong> A sixth choice in the AI

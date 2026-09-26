@@ -1,48 +1,48 @@
-"""Community > Suggest a Station or Podcast...: no account, no browser.
+"""Community > Suggest a Station or Podcast...: no account, no GitHub.
 
-The whole point of this surface is that **it does not send anybody to GitHub**.
-Quill Radio already carries a bundled, issues-only token so Report a Bug works
-for people who have configured nothing; a suggestion rides the same path. You
-type it here and it becomes a real issue, with an issue number read back to
-you, without a login, an account, or a web form designed by somebody else.
+A suggestion is **an email to support@community-access.org** (2026-09-26). You
+fill in the form here; your own mail program opens with the suggestion already
+written; you press Send there. A person at Community Access reads it, and
+answers if you gave an address.
 
-The fallback still exists -- a pre-filled issue in the browser -- for a build
-with no token (dev checkouts) or a post that fails. It is a fallback and
-nothing more: it needs the GitHub account this flow exists to avoid.
+It used to be a GitHub issue, posted with a token bundled into the build, with
+a pre-filled issue page in the browser as the fallback. Both are gone: every
+piece of feedback from Quill Radio now goes to one support address, nothing is
+filed on a public site, and the app no longer carries a GitHub credential. The
+handoff is Get Help from Support's own (``support_dialog.send_by_mail``), so
+the length cut, the clipboard copy and the "no mail program" answer are the
+same code, not a second copy of it.
 
-Validation happens before anything is sent, because catching a duplicate here
-costs one dialog and catching it after moderation costs a round trip through a
-person.
+Validation happens before anything is written, because catching a duplicate
+here costs one dialog and catching it after it reaches a person costs a round
+trip through that person.
 """
 
 from __future__ import annotations
 
-import json
-import urllib.error
-import urllib.request
 from typing import Any
 
 from quill.core.pick_suggestion import (
-    REPO,
-    SUGGESTION_LABEL,
     Suggestion,
-    browser_url,
-    issue_body,
-    issue_title,
     known_urls,
+    support_message,
     validate,
 )
+from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.support_dialog import send_by_mail
 
 TITLE = "Suggest a Station or Podcast"
 
 _KINDS = (("A radio station", "stream"), ("A podcast", "podcast"))
-_API = f"https://api.github.com/repos/{REPO}/issues"
-_TIMEOUT_SECONDS = 20
+
+#: Said when the mail program opens. Plain about what happened and what is
+#: left to do, because the suggestion has not been sent yet.
+OPENED = "Your mail program has opened with your suggestion written. Press Send there."
 
 
 def open_suggest_dialog(host: Any) -> None:
-    """Collect a suggestion and file it. Never raises into the menu."""
+    """Collect a suggestion and hand it to the mail program. Never raises."""
     if getattr(host, "_safe_mode", False):
         host._announce("Safe Mode is on, so nothing is sent anywhere.")
         return
@@ -65,8 +65,9 @@ class _SuggestDialog:
                 self.dialog,
                 label=(
                     "Tell us about a station or podcast worth adding to the "
-                    "Community Picks list. You do not need a GitHub account -- "
-                    "Quill Radio sends it for you."
+                    f"Community Picks list. It goes to {SUPPORT_EMAIL}: your own "
+                    "mail program opens with it written, and nothing is sent "
+                    "until you press Send there."
                 ),
             ),
             0,
@@ -99,14 +100,19 @@ class _SuggestDialog:
         self._why = self._field(
             grid,
             "W&hy it belongs:",
-            "Anything that would help decide. Optional, and not published.",
+            "Anything that would help decide. Optional; only the people at "
+            "Community Access who read the suggestion see it.",
             multiline=True,
         )
         root.Add(grid, 1, wx.EXPAND | wx.ALL, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._send = wx.Button(self.dialog, wx.ID_OK, "&Send Suggestion")
-        self._send.SetHelpText("Checks what you typed, then files it. Nothing is sent until now.")
+        self._send.SetHelpText(
+            "Checks what you typed, then opens your mail program with the suggestion "
+            "written to support@community-access.org. Nothing is sent until you "
+            "press Send there."
+        )
         cancel = wx.Button(self.dialog, wx.ID_CANCEL, "Cl&ose")
         cancel.SetHelpText("Closes without sending anything.")
         buttons.AddStretchSpacer()
@@ -172,64 +178,13 @@ class _SuggestDialog:
                 "\n".join(result.errors), TITLE, self._wx.ICON_INFORMATION | self._wx.OK
             )
             return
-        number = _post_issue(suggestion, self._app_label())
-        if number:
-            self._host._announce(
-                f"Thank you. Your suggestion was sent as issue {number}. "
-                "It appears in the list once it is approved."
-            )
+        message = support_message(suggestion, product=self._app_label())
+        if send_by_mail(self._host, message, title=TITLE, opened=OPENED):
             self.dialog.EndModal(self._wx.ID_OK)
-            return
-        self._offer_browser(suggestion)
 
     def _app_label(self) -> str:
         version = getattr(self._host, "_app_version", "") or ""
         return f"Quill Radio {version}".strip()
 
-    def _offer_browser(self, suggestion: Suggestion) -> None:
-        answer = self._host._show_message_box(
-            "The suggestion could not be sent from here. Open it in your browser "
-            "instead? You will need a GitHub account for that route.",
-            TITLE,
-            self._wx.ICON_QUESTION | self._wx.YES_NO,
-        )
-        if answer == self._wx.YES:
-            self._wx.LaunchDefaultBrowser(browser_url(suggestion))
-            self.dialog.EndModal(self._wx.ID_OK)
 
-
-def _post_issue(suggestion: Suggestion, submitted_from: str) -> str:
-    """File the issue with the bundled token. "" when it could not be sent.
-
-    Never raises: every failure ends at the browser fallback, so a suggestion
-    is never simply lost with nothing said.
-    """
-    from quill.core.feedback_token import effective_github_token, github_token_present
-
-    if not github_token_present():
-        return ""
-    payload = json.dumps({
-        "title": issue_title(suggestion),
-        "body": issue_body(suggestion, submitted_from=submitted_from),
-        "labels": [SUGGESTION_LABEL],
-    }).encode("utf-8")
-    request = urllib.request.Request(
-        _API,
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {effective_github_token()}",
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json",
-            "User-Agent": "QUILL (community picks; +https://github.com/Community-Access/quill)",
-        },
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS) as response:
-            created = json.loads(response.read(1024 * 64).decode("utf-8", "replace"))
-        return f"#{created.get('number')}" if created.get("number") else ""
-    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
-        return ""
-
-
-__all__ = ["TITLE", "open_suggest_dialog"]
+__all__ = ["OPENED", "TITLE", "open_suggest_dialog"]

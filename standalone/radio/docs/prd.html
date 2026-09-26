@@ -883,6 +883,34 @@ Archive adapter’s cache is not optional – the Archive’s automated-access
 policy asks for caching, a descriptive User-Agent, restrained
 concurrency, and <code>Retry-After</code> on HTTP 429, and all four are
 honoured.</li>
+<li>N-9. <strong>All feedback goes to support by email, and nothing goes
+to GitHub (2026-09-26).</strong> Get Help from Support (Ctrl+Alt+F2),
+Report Bad Station and Suggest a Station or Podcast (Ctrl+Alt+9) all
+reach <code>support@community-access.org</code>, where a person at
+Community Access reads and answers. The route is the listener’s own mail
+program: <code>support_dialog.send_by_mail</code> builds a
+<code>mailto:</code> from a
+<code>core/support_message.SupportMessage</code> (product and version in
+the subject, the listener’s words first), cuts it to
+<code>MAILTO_URL_LIMIT</code> with the full text on the clipboard, and,
+when no mail program answers, puts the whole message on the clipboard
+and names the address. Nothing is sent until the listener presses Send
+in the mail program, and the app says exactly that. Quill Radio
+therefore makes <strong>no</strong> outbound request to deliver
+feedback, files nothing on a public site, and carries <strong>no GitHub
+credential</strong>: the bundled issues-only “feedback token” and its
+<code>-TokenFile</code>/<code>-SkipToken</code> build step are gone from
+<code>scripts/build_release.ps1</code>, and a public build no longer
+fails without one. Suggest a Station or Podcast keeps its local
+validation (required name and address, <code>http(s)://</code> only, no
+spaces, not already in Community Picks) and composes its message with
+<code>core/pick_suggestion.support_message</code>; it previously POSTed
+a GitHub issue with that token and fell back to a pre-filled issue page,
+both removed. Get Help from Support no longer tries the feedback-hub
+dialog first; email is its only route. The public web form under
+<code>docs/site/picks/suggest/</code> and the
+<code>picks-build.yml</code> catalogue pipeline are separate and
+unchanged.</li>
 </ul>
 <h2 id="6a-accessibility-rules-every-browse-branch-inherits">6a.
 Accessibility rules every browse branch inherits</h2>
@@ -2111,15 +2139,16 @@ stays within its size budget.</li>
 <li><em>Report Bad Station (#1218).</em>
 <code>bad_station_report.build_bad_station_report</code> turns a
 <code>RadioStation</code> into a <code>(summary, body)</code> pair for
-the existing Report a Bug flow, offered from the station context menu in
-both <code>BrowseTreeDialog</code> and <code>StationBrowserDialog</code>
-and dispatched by <code>AppShellFrame.report_bad_station</code>.
-Motivated by directories hiding stations their own checker believes are
-dead (<code>hidebroken=true</code>), which leaves the listener the only
-party able to flag a station that plays for the directory and fails for
-them. The body carries station metadata only – never identity or paths –
-so it is safe to place on the clipboard or in a browser issue form. Pure
-and wx-free, so the wording is unit-tested.</li>
+the existing Report a Bug flow (since 2026-09-26 an email to support;
+see N-9), offered from the station context menu in both
+<code>BrowseTreeDialog</code> and <code>StationBrowserDialog</code> and
+dispatched by <code>AppShellFrame.report_bad_station</code>. Motivated
+by directories hiding stations their own checker believes are dead
+(<code>hidebroken=true</code>), which leaves the listener the only party
+able to flag a station that plays for the directory and fails for them.
+The body carries station metadata only – never identity or paths – so it
+is safe to place on the clipboard or in a browser issue form. Pure and
+wx-free, so the wording is unit-tested.</li>
 <li><em>OS-live local clock for recording filenames (#1223).</em>
 <code>local_clock.local_now</code> reads Windows
 <code>GetLocalTime</code> instead of <code>datetime.now()</code>, whose

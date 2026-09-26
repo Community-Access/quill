@@ -110,6 +110,19 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
     key changes.
   - **Escape and Ctrl+F4 in the embedded player no longer close the whole
     app**, and the first-run tip no longer says live radio can be paused.
+- **All feedback goes to support@community-access.org, and none of it to
+  GitHub.** Suggest a Station or Podcast (Ctrl+Alt+9) now uses Get Help from
+  Support's own mail handoff (`support_dialog.send_by_mail`): the form and its
+  checks are unchanged, then the listener's mail program opens with the
+  suggestion written -- subject "[Quill Radio 3.0.0] Suggestion: <name>" -- and
+  the app says "Your mail program has opened with your suggestion written.
+  Press Send there." No mail program: the whole suggestion goes on the
+  clipboard, with the address named. Removed: the GitHub issues POST
+  (`_post_issue`, and its network-egress entry), the bundled-token lookup, and
+  the pre-filled GitHub issue page it fell back to (`pick_suggestion.browser_url`).
+  Get Help from Support no longer goes through the feedback-hub dialog at
+  all: email is its only route, so the hub and its token are not used. `scripts/build_release.ps1` no longer generates or requires
+  the bundled feedback token, and `-TokenFile`/`-SkipToken` are gone.
 - **One release-notes document instead of two.** Help > Release Notes
   (Shift+F1) opens `docs/release-notes-3.0.md`; the separate in-depth
   companion is retired.

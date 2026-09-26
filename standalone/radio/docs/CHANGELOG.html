@@ -328,6 +328,24 @@ Heal no longer deletes your QUILL key changes.</li>
 the whole app</strong>, and the first-run tip no longer says live radio
 can be paused.</li>
 </ul></li>
+<li><strong>All feedback goes to <a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+and none of it to GitHub.</strong> Suggest a Station or Podcast
+(Ctrl+Alt+9) now uses Get Help from Support’s own mail handoff
+(<code>support_dialog.send_by_mail</code>): the form and its checks are
+unchanged, then the listener’s mail program opens with the suggestion
+written – subject “[Quill Radio 3.0.0] Suggestion: <name>” – and the app
+says “Your mail program has opened with your suggestion written. Press
+Send there.” No mail program: the whole suggestion goes on the
+clipboard, with the address named. Removed: the GitHub issues POST
+(<code>_post_issue</code>, and its network-egress entry), the
+bundled-token lookup, and the pre-filled GitHub issue page it fell back
+to (<code>pick_suggestion.browser_url</code>). Get Help from Support no
+longer goes through the feedback-hub dialog at all: email is its only
+route, so the hub and its token are not used.
+<code>scripts/build_release.ps1</code> no longer generates or requires
+the bundled feedback token, and
+<code>-TokenFile</code>/<code>-SkipToken</code> are gone.</li>
 <li><strong>One release-notes document instead of two.</strong> Help
 &gt; Release Notes (Shift+F1) opens
 <code>docs/release-notes-3.0.md</code>; the separate in-depth companion

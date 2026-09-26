@@ -116,6 +116,12 @@ a frozen build without disturbing a running copy.
 Docs are rendered to HTML and EPUB from the Markdown by
 `scripts/render_docs.ps1`, which `build_release.ps1` runs first.
 
+No GitHub or feedback token is needed, and none is embedded (2026-09-26). Every
+message from QUILL Lite goes by email to support@community-access.org through
+the reader's own mail program, so there is no credential to ship; the old
+`-TokenFile` and `-SkipToken` switches are gone, and a release build no longer
+fails without a token.
+
 ---
 
 ## Where your data lives

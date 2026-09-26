@@ -1244,7 +1244,7 @@ Next: Watch television; YouTube, with no account anywhere.
 
 ### Community Picks, and suggesting one
 
-Add stations and podcasts from a curated list that is kept up to date on the web, and put something on that list yourself without a GitHub account or a browser.
+Add stations and podcasts from a curated list that is kept up to date on the web, and suggest something for that list yourself by email, with no account and no website.
 
 *5 steps, about 5 minutes.*
 
@@ -1263,9 +1263,9 @@ Add stations and podcasts from a curated list that is kept up to date on the web
    - Keys: Ctrl+Alt+I
    - You should hear: Reading ACB's podcast directory, then ACB Media Podcasts and its Available list.
 
-5. **Suggest something for the list.** Suggest a Station or Podcast takes your suggestion here and makes it a real issue, with the issue number read back to you -- no login, no account, no web form designed by somebody else. Duplicates are caught before anything is sent.
+5. **Suggest something for the list.** Suggest a Station or Podcast takes your suggestion here and opens your own mail program with it written to support@community-access.org -- press Send there, and a person at Community Access reads it. No login, no account, no website. Duplicates are caught before anything is written.
    - Keys: Ctrl+Alt+9
-   - You should hear: Thank you. Your suggestion was sent as issue, and its number.
+   - You should hear: Your mail program has opened with your suggestion written. Press Send there.
 
 The list is rebuilt on the site whenever a suggestion is approved, so a station added on a Tuesday reaches everybody on Tuesday rather than at the next installer.
 

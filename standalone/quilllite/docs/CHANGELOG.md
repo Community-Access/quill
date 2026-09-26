@@ -2,6 +2,24 @@
 
 ## 1.2.0 -- unreleased
 
+### Support (2026-09-26)
+
+- **No GitHub token, in the app or the build.** Every message from QUILL Lite
+  already went to support@community-access.org through your own mail program;
+  now the build stops generating and embedding the bundled GitHub "feedback
+  token" it never needed, and a release no longer fails without one
+  (`-TokenFile` and `-SkipToken` are gone from `scripts/build_release.ps1`).
+- **Get Help from Support is email, and only email.** The feedback-hub
+  dialog it used to try first is gone, and with it any way for a support
+  message to end up as a public issue.
+- **The email field says what is true.** Its F1 help used to warn that leaving
+  it empty meant nobody could answer you. The message goes from your own mail
+  account, so support can answer that; the field is for an answer somewhere
+  else.
+- The user guide's **Getting help** section is now a full step-by-step
+  walkthrough: every field and its key, what happens after Send, what to do
+  with no mail program, and what is and is not included.
+
 ### AI help
 
 - **Ask a general question.** A sixth choice in the AI pad (**Ctrl+Alt+G**):

@@ -120,7 +120,7 @@ Control coverage: 226 audited sites (110 helped, 116 named-help).
 
 **Station Catalog Status.** Where browsing's answers come from: which sources are stored in the local station catalog, how fresh each one is, and which are live-only and why. The catalog is derived data -- it can be rebuilt from here at any time without touching your favorites.
 
-**Suggest a Station or Podcast.** Tell us about something worth adding to the Community Picks list. You do not need a GitHub account and you are not sent to a website: Quill Radio files it for you and reads back the number it was given. It is checked before it is sent, so a missing address or something already on the list is caught here. Nothing is sent until you press Send Suggestion, and nothing is sent at all in Safe Mode.
+**Suggest a Station or Podcast.** Tell us about something worth adding to the Community Picks list. It goes by email to support@community-access.org, where a person at Community Access reads it: press Send Suggestion and your own mail program opens with it written, then press Send there. No account and no website. It is checked first, so a missing address or something already on the list is caught here. With no mail program, the whole suggestion goes on your clipboard to paste into any email. Nothing is sent at all in Safe Mode.
 
 **Upcoming.** Everything Quill Radio has planned -- reminders and scheduled recordings together, soonest first, with the kind on every row. Snooze and Dismiss work on a reminder; a recording is cancelled in Schedule Recording, where it was made, because Dismiss on the wrong row would mean a very different morning.
 
@@ -260,7 +260,7 @@ Control coverage: 226 audited sites (110 helped, 116 named-help).
 - `clear_btn`: Erases the local listening history after a confirmation. Nothing about your listening ever leaves this computer either way.
 #### _SuggestDialog (`quill/ui/radio/suggest_pick_dialog.py`)
 
-- `self._send`: Checks what you typed, then files it. Nothing is sent until now.
+- `self._send`: Checks what you typed, then opens your mail program with the suggestion written to support@community-access.org. Nothing is sent until you press Send there.
 - `cancel`: Closes without sending anything.
 #### (module level) (`quill/ui/radio/upcoming_dialog.py`)
 

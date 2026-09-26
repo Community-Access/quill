@@ -1002,16 +1002,29 @@ to copy out by hand.</p>
 <code>quill/core/support_message.py</code>): what kind of message this
 is, a subject, and what happened. What you expected and how to reproduce
 it are optional. <strong>Your email address is optional too</strong> — a
-problem can be reported without giving one; you simply cannot be replied
-to. Send opens <strong>your own mail program with the message already
-written</strong>, with QUILL Lite’s name and version, your Windows
-version and your screen reader appended. Nothing leaves the machine
-until you send it there, and the app says so out loud rather than
-claiming to have sent something it has not. A machine with no mail
-program set up — webmail only — gets the whole message and the address
-on the clipboard, so nothing typed is ever lost.</p>
+problem can be reported without giving one, and because the message goes
+from the reader’s own mail account, support can still reply to that
+(corrected 2026-09-26; this used to say nobody could answer). Send opens
+<strong>your own mail program with the message already written</strong>,
+with QUILL Lite’s name and version, your Windows version and your screen
+reader appended. Nothing leaves the machine until you send it there, and
+the app says so out loud rather than claiming to have sent something it
+has not. A machine with no mail program set up — webmail only — gets the
+whole message and the address on the clipboard, so nothing typed is ever
+lost.</p>
 <p>Writing to <code>support@community-access.org</code> directly works
 exactly as well. There is no form anybody is required to use.</p>
+<p><strong>No GitHub credential, anywhere (2026-09-26).</strong> Every
+piece of feedback from QUILL Lite and Quill Radio goes to
+<code>support@community-access.org</code>; nothing is filed as a GitHub
+issue. So the build no longer generates or embeds the bundled “feedback
+token” (<code>scripts/build_release.ps1</code> lost
+<code>-TokenFile</code>/<code>-SkipToken</code>, and a public build no
+longer fails without one), and the support form no longer tries the
+feedback-hub dialog first: email is its only route. The mail handoff is
+<code>support_dialog.send_by_mail</code>, shared with Quill Radio’s
+Suggest a Station or Podcast so both cut, copy and fall back
+identically.</p>
 <h3 id="56-ai-help-two-gates-not-one">5.6 AI help: two gates, not
 one</h3>
 <p>QUILL Lite carries five AI commands – summarize, rewrite, proofread,

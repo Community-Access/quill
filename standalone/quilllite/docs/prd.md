@@ -624,7 +624,9 @@ The form is the same one every app in the family opens
 (`quill/ui/support_dialog.py` over `quill/core/support_message.py`): what kind
 of message this is, a subject, and what happened. What you expected and how to
 reproduce it are optional. **Your email address is optional too** — a problem
-can be reported without giving one; you simply cannot be replied to. Send opens
+can be reported without giving one, and because the message goes from the
+reader's own mail account, support can still reply to that (corrected
+2026-09-26; this used to say nobody could answer). Send opens
 **your own mail program with the message already written**, with QUILL Lite's
 name and version, your Windows version and your screen reader appended. Nothing
 leaves the machine until you send it there, and the app says so out loud rather
@@ -634,6 +636,15 @@ clipboard, so nothing typed is ever lost.
 
 Writing to `support@community-access.org` directly works exactly as well. There
 is no form anybody is required to use.
+
+**No GitHub credential, anywhere (2026-09-26).** Every piece of feedback from
+QUILL Lite and Quill Radio goes to `support@community-access.org`; nothing is
+filed as a GitHub issue. So the build no longer generates or embeds the bundled
+"feedback token" (`scripts/build_release.ps1` lost `-TokenFile`/`-SkipToken`,
+and a public build no longer fails without one), and the support form no
+longer tries the feedback-hub dialog first: email is its only route. The mail handoff is `support_dialog.send_by_mail`, shared with
+Quill Radio's Suggest a Station or Podcast so both cut, copy and fall back
+identically.
 
 ### 5.6 AI help: two gates, not one
 

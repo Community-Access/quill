@@ -424,12 +424,15 @@ fresh each one is, and which are live-only and why. The catalog is
 derived data – it can be rebuilt from here at any time without touching
 your favorites.</p>
 <p><strong>Suggest a Station or Podcast.</strong> Tell us about
-something worth adding to the Community Picks list. You do not need a
-GitHub account and you are not sent to a website: Quill Radio files it
-for you and reads back the number it was given. It is checked before it
-is sent, so a missing address or something already on the list is caught
-here. Nothing is sent until you press Send Suggestion, and nothing is
-sent at all in Safe Mode.</p>
+something worth adding to the Community Picks list. It goes by email to
+<a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+where a person at Community Access reads it: press Send Suggestion and
+your own mail program opens with it written, then press Send there. No
+account and no website. It is checked first, so a missing address or
+something already on the list is caught here. With no mail program, the
+whole suggestion goes on your clipboard to paste into any email. Nothing
+is sent at all in Safe Mode.</p>
 <p><strong>Upcoming.</strong> Everything Quill Radio has planned –
 reminders and scheduled recordings together, soonest first, with the
 kind on every row. Snooze and Dismiss work on a reminder; a recording is
@@ -722,8 +725,10 @@ either way.</li>
 <h4 id="_suggestdialog-quilluiradiosuggest_pick_dialogpy">_SuggestDialog
 (<code>quill/ui/radio/suggest_pick_dialog.py</code>)</h4>
 <ul>
-<li><code>self._send</code>: Checks what you typed, then files it.
-Nothing is sent until now.</li>
+<li><code>self._send</code>: Checks what you typed, then opens your mail
+program with the suggestion written to <a
+href="mailto:support@community-access.org">support@community-access.org</a>.
+Nothing is sent until you press Send there.</li>
 <li><code>cancel</code>: Closes without sending anything.</li>
 </ul>
 <h4 id="module-level-quilluiradioupcoming_dialogpy">(module level)

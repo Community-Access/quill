@@ -623,7 +623,11 @@ Seeking needs the mpv engine and a finished recording.
 - A repeating programme that had vanished from the schedule now appears.
 - **ACB Media Podcasts (Ctrl+Alt+I)**.
 - **Community Picks (Ctrl+Alt+0)** and **Suggest a Station or Podcast
-  (Ctrl+Alt+9)**.
+  (Ctrl+Alt+9)**. A suggestion is an email to
+  support@community-access.org: fill in the form, press Send Suggestion,
+  and your own mail program opens with it written. Press Send there. A
+  person at Community Access reads it. You need no account, and nothing is
+  posted on GitHub or any other public site.
 - **Ask the Audio Description Project (Ctrl+Alt+8)** and its settings
   (Ctrl+Alt+Shift+A).
 - **Station > Update Radio Reading Services (Ctrl+Alt+F10)** refreshes the
@@ -653,7 +657,13 @@ Seeking needs the mpv engine and a finished recording.
   On)". Repeat Last Announcement and Announcement Self-Test are in the
   palette.
 - A dimmed menu item says why it is dimmed.
-- **Help > Get Help from Support (Ctrl+Alt+F2)**.
+- **Help > Get Help from Support (Ctrl+Alt+F2)** writes to
+  support@community-access.org. Your own mail program opens with the
+  message written, including the app's version, your Windows version and
+  your screen reader; nothing is sent until you press Send there. With no
+  mail program, the message goes on your clipboard. **Report Bad Station**
+  and **Suggest a Station or Podcast** go to the same address. Nothing from
+  Quill Radio is filed on GitHub, and the app carries no GitHub token.
 
 ### Knowing what went wrong
 

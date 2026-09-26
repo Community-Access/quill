@@ -61,9 +61,10 @@ python -m quill.apps.radio
 #   dist\QuillRadio\                         the staged app folder
 #   dist\Quill-Radio-Portable-<ver>.zip      the portable copy
 #   dist\Quill-Radio-Setup-Shared-<ver>.exe  the installer
-# The Python interpreter, Inno Setup (ISCC), FFmpeg and the bundled feedback
-# token are found from the checkout; pass -Python, -Iscc, -FfmpegDir or
-# -TokenFile to override. -Sign turns on Authenticode signing
+# The Python interpreter, Inno Setup (ISCC) and FFmpeg are found from the
+# checkout; pass -Python, -Iscc or -FfmpegDir to override. No GitHub or
+# feedback token is needed (2026-09-26): all feedback goes by email to
+# support@community-access.org. -Sign turns on Authenticode signing
 # (docs/code-signing.md). A release also rebuilds the station catalog seed;
 # -SkipCatalog is for development builds only.
 .\scripts\build_release.ps1 -Sign

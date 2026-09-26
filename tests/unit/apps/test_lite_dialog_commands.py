@@ -884,7 +884,6 @@ def test_a_support_message_carries_the_ai_support_id(monkeypatch):
     import quill.ui.support_dialog as support_dialog
 
     seen: dict = {}
-    monkeypatch.setattr(support_dialog, "_server_path", lambda *a, **k: False)
 
     class Dialog:
         def __init__(self, host, wx, **kwargs):

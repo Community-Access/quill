@@ -166,20 +166,10 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Safe Mode (checked by the caller in community_picks_wiring) leaves the "
         "picker working from the bundled list rather than empty."
     ),
-    "ui/radio/suggest_pick_dialog.py::_post_issue": (
-        "The one place QUILL sends something OUT rather than fetching: a POST "
-        "to api.github.com creating an issue on Community-Access/quill, so "
-        "somebody can suggest a station without a GitHub account. What leaves "
-        "the machine is exactly what the user typed into the dialog (kind, "
-        "name, address, description, language, and why) plus the app name and "
-        "version -- composed by core/pick_suggestion.issue_body, which is pure "
-        "and unit-tested, so what is sent can be read in one function. It is "
-        "authenticated with the bundled issues-only token already used by "
-        "Report a Bug (fine-grained, one repo, Issues read/write, nothing "
-        "else). Reached only on an explicit Send Suggestion press, after local "
-        "validation; refused entirely in Safe Mode by open_suggest_dialog. A "
-        "failed post never retries silently -- it offers the browser instead."
-    ),
+    # ui/radio/suggest_pick_dialog.py::_post_issue (a POST creating a GitHub
+    # issue with the bundled token) was removed 2026-09-26: a suggestion is now
+    # an email to support@community-access.org handed to the reader's own mail
+    # program (support_dialog.send_by_mail), so Quill Radio sends nothing itself.
     "core/podcasts/acb_media_podcasts.py::_fetch_opml_bytes": (
         "Single egress site for the ACB Media podcast directory: fetches "
         "ACB's published OPML subscription list (parsed locally; feeds it "

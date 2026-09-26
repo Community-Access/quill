@@ -19,8 +19,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
         surfaces=("Community Picks", "ACB Media Podcasts"),
         summary=(
             "Add stations and podcasts from a curated list that is kept up to "
-            "date on the web, and put something on that list yourself without a "
-            "GitHub account or a browser."
+            "date on the web, and suggest something for that list yourself by "
+            "email, with no account and no website."
         ),
         steps=(
             Step(
@@ -83,12 +83,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Suggest something for the list",
                 body=(
                     "Suggest a Station or Podcast takes your suggestion here and "
-                    "makes it a real issue, with the issue number read back to you -- "
-                    "no login, no account, no web form designed by somebody else. "
-                    "Duplicates are caught before anything is sent."
+                    "opens your own mail program with it written to "
+                    "support@community-access.org -- press Send there, and a person "
+                    "at Community Access reads it. No login, no account, no website. "
+                    "Duplicates are caught before anything is written."
                 ),
                 command="radio.suggest_pick",
-                hear="Thank you. Your suggestion was sent as issue, and its number.",
+                hear="Your mail program has opened with your suggestion written. Press Send there.",
             ),
         ),
         closing=(
