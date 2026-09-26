@@ -5766,10 +5766,17 @@ moment you do. Nothing else to find and turn off.
   page's address instead of the free allowance.
 - You do not need to connect this computer, and the free service's agreement
   is not asked for: it is about QUILL's servers, which this route never touches.
-- The pad, the five things it can do, and what comes back are **exactly the
-  same**, down to the instructions sent with your text. The pad still tells you
-  before sending something very large, because with your own key a large request
-  costs you money.
+- The pad, the six things it can do, and what comes back are the same, down
+  to the instructions sent with your text.
+- **There are no limits.** Nothing is refused for being too long, the answer is
+  not capped, and **Ask a question about the document** sends the whole
+  document rather than the three best-matching passages, so nothing is missed.
+- **Warnings instead of limits.** The *About to send* line says how many words
+  are going and roughly what they cost on your OpenAI account with the model
+  you chose — an estimate, not OpenAI's bill — and that the answer is extra.
+  It adds that the text is more than the free service would accept when that
+  is true, and, for something very large, that it may be more than the model
+  can read at once; OpenAI then refuses it and charges nothing.
 
 **Where the key is kept.** In Windows' own credential store, not in a settings
 file, and it is never shown again once saved — the box stays empty and says

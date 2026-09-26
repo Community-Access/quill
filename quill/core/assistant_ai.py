@@ -1019,7 +1019,7 @@ def build_chat_body(
     model: str,
     prompt: str,
     *,
-    max_tokens: int = _DEFAULT_MAX_TOKENS,
+    max_tokens: int | None = _DEFAULT_MAX_TOKENS,
     stream: bool = False,
     system_prompt: str = "",
 ) -> dict[str, object]:
@@ -1040,7 +1040,7 @@ def build_chat_body(
         # Claude requires an explicit max_tokens.
         body: dict[str, object] = {
             "model": model,
-            "max_tokens": max_tokens,
+            "max_tokens": _DEFAULT_MAX_TOKENS if max_tokens is None else max_tokens,
             "messages": [user_message],
         }
         if system_prompt:
@@ -1077,10 +1077,10 @@ def build_chat_body(
         messages_oa.append({"role": "system", "content": system_prompt})
     messages_oa.append(user_message)
     limit = "max_completion_tokens" if normalized == "openai" else "max_tokens"
-    body = {"model": model, "messages": messages_oa, limit: max_tokens}
-    if stream:
-        body["stream"] = True
-    return body
+    body_oa: dict[str, object] = {"model": model, "messages": messages_oa}
+    body_oa.update({} if max_tokens is None else {limit: max_tokens})  # None: no ceiling
+    body_oa.update({"stream": True} if stream else {})
+    return body_oa
 
 
 def build_chat_headers(
@@ -1213,7 +1213,7 @@ def generate_assistant_response(
     api_key: str,
     prompt: str,
     *,
-    max_tokens: int = _DEFAULT_MAX_TOKENS,
+    max_tokens: int | None = _DEFAULT_MAX_TOKENS,
     timeout_seconds: float = 60.0,
     max_attempts: int = 3,
     system_prompt: str = "",

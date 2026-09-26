@@ -68,6 +68,8 @@ class CostModel:
     max_input_tokens: int
     max_output_tokens: int
     monthly_request_cap: int
+    #: The general-question feature's own answer ceiling (0 when unset).
+    max_ask_output_tokens: int = 0
 
     @property
     def per_request_usd(self) -> float:
@@ -75,11 +77,13 @@ class CostModel:
 
         The worst case, deliberately: a projection built on the average of
         hoped-for usage is a projection that is only correct while nothing
-        goes wrong.
+        goes wrong. So the answer ceiling is the larger of the two: a person
+        may spend their whole allowance on general questions.
         """
+        longest_answer = max(self.max_output_tokens, self.max_ask_output_tokens)
         return (
             self.max_input_tokens / 1_000_000 * self.input_per_million_usd
-            + self.max_output_tokens / 1_000_000 * self.output_per_million_usd
+            + longest_answer / 1_000_000 * self.output_per_million_usd
         )
 
     @property
@@ -143,6 +147,7 @@ def load_cost_model(app) -> CostModel | None:
         max_input_tokens=int(resolve_limit(app, "max_input_tokens")),
         max_output_tokens=int(resolve_limit(app, "max_output_tokens")),
         monthly_request_cap=int(resolve_limit(app, "monthly_request_cap")),
+        max_ask_output_tokens=int(resolve_limit(app, "max_ask_output_tokens")),
     )
 
 
@@ -154,6 +159,8 @@ def _model_with(model: CostModel, key: str, value: float) -> CostModel:
         return CostModel(**{**_as_dict(model), "max_output_tokens": int(value)})
     if key == "monthly_request_cap":
         return CostModel(**{**_as_dict(model), "monthly_request_cap": int(value)})
+    if key == "max_ask_output_tokens":
+        return CostModel(**{**_as_dict(model), "max_ask_output_tokens": int(value)})
     return model
 
 
@@ -166,6 +173,7 @@ def _as_dict(model: CostModel) -> dict:
         "max_input_tokens": model.max_input_tokens,
         "max_output_tokens": model.max_output_tokens,
         "monthly_request_cap": model.monthly_request_cap,
+        "max_ask_output_tokens": model.max_ask_output_tokens,
     }
 
 

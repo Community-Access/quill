@@ -16,9 +16,16 @@ the answer: if it consumes ``max_output_tokens``, the user is charged for an
 empty reply. Both halves of that are handled — the effort floor here, and the
 no-charge-for-nothing rule in ``app/routes/chat.py``.
 
-Five features are shipped. Two more have templates and ids but are switched off,
+Six features are shipped. Two more have templates and ids but are switched off,
 and :data:`DEFERRED_FEATURES` says why in the words an operator will read in the
 console.
+
+The sixth, ``ask``, is the one that works on nothing from a document: a single
+question, answered on its own, with no history. It is what keeps it affordable
+where open-ended ``chat`` is not -- every request is one question and one answer,
+never a conversation resent in full on every turn -- and it is why its answer
+gets a ceiling of its own (``max_ask_output_tokens``): a general answer needs
+more room than a rewritten paragraph does.
 """
 
 from __future__ import annotations
@@ -60,6 +67,13 @@ TEMPLATES: dict[str, str] = {
         "from outside it. Return only the explanation, with no "
         "preamble.\n\n{prompt}"
     ),
+    "ask": (
+        "Answer the user's question directly and accurately, in plain "
+        "language suitable for a screen reader to read aloud. Be concise: "
+        "give the answer first, then only the detail that helps. If you are "
+        "not sure of something, say so rather than guessing. Do not use "
+        "tables, and keep any formatting simple.\n\n{prompt}"
+    ),
     "document_qna": (
         "You are answering a question about excerpts from the user's own "
         "document. Answer only from the excerpts provided; if they do not "
@@ -81,13 +95,14 @@ TEMPLATES: dict[str, str] = {
     ),
 }
 
-#: The five features the free tier actually offers today.
+#: The six features the free tier actually offers today.
 SHIPPED_FEATURES: tuple[str, ...] = (
     "summarize",
     "rewrite",
     "proofread",
     "explain",
     "document_qna",
+    "ask",
 )
 
 #: Features with an id and a template that are deliberately switched off, and
@@ -101,10 +116,10 @@ DEFERRED_FEATURES: dict[str, str] = {
         "it is deliberately last. Nothing in QUILL or QUILL Lite can reach it."
     ),
     "chat": (
-        "Open-ended chat is not part of the free tier. Every free feature "
-        "works on a passage you selected or a question about a document you "
-        "have open, which is what keeps requests small and predictable. Chat "
-        "is available with your own API key."
+        "Open-ended chat is not part of the free tier. The free tier answers "
+        "one question at a time: a conversation sends its whole history again "
+        "on every turn, so each reply costs more than the last. Chat is "
+        "available with your own API key."
     ),
 }
 
@@ -120,6 +135,7 @@ FEATURE_LABELS: dict[str, str] = {
     "proofread": "Proofread",
     "explain": "Explain",
     "document_qna": "Questions about documents",
+    "ask": "General questions",
     "alt_text": "Pictures (alt text)",
     "chat": "Open-ended chat",
 }
@@ -134,13 +150,14 @@ REASONING_EFFORT: dict[str, str] = {
     "proofread": "none",
     "explain": "none",
     "document_qna": "low",
+    "ask": "none",
     "alt_text": "none",
     "chat": "none",
 }
 
 #: The only values :data:`REASONING_EFFORT` may take, cheapest first. Anything
 #: above ``low`` is not reachable from this table on purpose: the tiers above it
-#: cost multiples more and none of the five shipped features needs one.
+#: cost multiples more and none of the six shipped features needs one.
 ALLOWED_EFFORTS: tuple[str, ...] = ("none", "low")
 
 

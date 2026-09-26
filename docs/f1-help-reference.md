@@ -1277,7 +1277,7 @@ Control coverage: 71 audited sites (71 helped).
 #### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `self._actions`: Choose what the AI should do with the text above. Each choice has its own description -- press F1 on one to hear it.
-- `self._question`: What you want to know about this document. QUILL Lite finds the parts that answer it and sends only those.
+- `self._question`: What you want to know. For a question about the document, QUILL finds the parts that answer it and sends only those; for a general question, only the question is sent.
 - `self._send`: Sends the text above and uses one of your free requests.
 #### AiResultFrame (`quill/ui/hosted_ai_pad.py`)
 

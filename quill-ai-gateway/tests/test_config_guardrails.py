@@ -75,13 +75,19 @@ def test_the_groups_an_operator_reads_are_ordered_and_populated():
         assert members
 
 
-def test_the_cost_relevant_keys_are_exactly_the_three_that_move_the_bill():
-    """Requests per person, and the two size limits. Everything else either
+def test_the_cost_relevant_keys_are_exactly_the_four_that_move_the_bill():
+    """Requests per person, and the three size limits (the passage, the ordinary
+    answer, and the general-question answer). Everything else either
     redistributes an existing allowance or bounds something that is already
     bounded, so flagging it would train an operator to click through the
     confirmation."""
     relevant = {key for key, entry in KEYS.items() if entry.cost_relevant}
-    assert relevant == {"monthly_request_cap", "max_input_tokens", "max_output_tokens"}
+    assert relevant == {
+        "monthly_request_cap",
+        "max_input_tokens",
+        "max_output_tokens",
+        "max_ask_output_tokens",
+    }
 
 
 # --- The routes that use it ------------------------------------------------------
