@@ -2242,9 +2242,8 @@ _IPC_SLOT = "radio"
 def main() -> int:
     from quill.core.data_location import apply_pending_at_launch
 
-    # A queued Data Folder move/import applies before a single data file is
-    # read (mirrors quill.__main__.main -- the family shares one profile, so
-    # whichever app launches next must be the one to apply it).
+    # A queued Data Folder move/import applies before any data file is read
+    # (as in quill.__main__.main: whichever family app launches next applies it).
     apply_pending_at_launch()
     from quill.core.paths import propagate_portable_environment
 
@@ -2258,10 +2257,9 @@ def main() -> int:
         try_claim_primary_instance,
     )
 
-    # Single instance (#1152): if a Quill Radio is already running -- including
-    # one sitting in the system tray -- do not open a second window. Ask the
-    # running copy to come to the foreground, then exit. Cheap, before any UI or
-    # logging setup, so a re-launch is near-instant.
+    # Single instance (#1152): if a Quill Radio is already running, even in the
+    # tray, ask it to come forward and exit. Cheap, before any UI or logging
+    # setup, so a re-launch is near-instant.
     if not try_claim_primary_instance(slot=_IPC_SLOT):
         enqueue_open_request(None, slot=_IPC_SLOT)
         return 0
@@ -2270,10 +2268,13 @@ def main() -> int:
 
     components.register_running_app("radio", REQUIRED_COMPONENTS)
 
-    # Configure file logging before the app comes up so startup records -- and
-    # everything radio debug mode raises to DEBUG -- land in quill.log
-    # (quill-radio #5). The folder is the log-location preference, or the
-    # default <data_dir>/logs.
+    # A new portable copy offers an earlier copy's favorites before anything
+    # reads the data folder. Then file logging, so startup records land in
+    # quill.log (quill-radio #5), in the log-location preference or <data>/logs.
+    app = wx.App()
+    from quill.ui.radio.portable_migration_ui import offer_earlier_favorites
+
+    offer_earlier_favorites()
     from pathlib import Path
 
     from quill.core.paths import app_data_dir
@@ -2283,7 +2284,6 @@ def main() -> int:
     history = radio_history.load_history(app_data_dir())
     log_dir = Path(history.log_dir) if history.log_dir else app_data_dir() / "logs"
     log_listener = configure_logging(log_dir)
-    app = wx.App()
     frame = RadioAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
     frame.frame.Show()

@@ -35,9 +35,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from quill.core import http_client
+from quill.core import paths as _paths
 from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.error_codes import CodedError
-from quill.core.paths import portable_bundle_root
 from quill.core.radio import radio_logging, recording_outcome
 from quill.core.radio.local_clock import local_now
 from quill.core.radio.recording_commands import (
@@ -1122,7 +1122,7 @@ def _default_dir(home: Path | None = None) -> Path:
     portable copy uses ``<bundle>\\Recordings`` (beside ``data``, so deleting
     ``data`` keeps them): the host's Music folder is somebody else's computer.
     """
-    bundle = portable_bundle_root() if home is None else None
+    bundle = _paths.portable_bundle_root() if home is None else None
     if bundle is not None:
         return bundle / "Recordings"
     base = home or Path.home()

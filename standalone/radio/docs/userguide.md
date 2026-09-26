@@ -71,6 +71,21 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 - **Wake the computer for a scheduled recording** is greyed out in Preferences, with the reason. Keeping the computer awake before a recording still works.
 - To turn a portable copy into an ordinary copy that uses this computer's profile, delete its `data` folder. Your Recordings and Downloads folders sit beside `data`, so deleting `data` keeps them.
 
+### Bring your favorites from Quill Radio 2.x
+
+Quill Radio 2.x kept its favorites in this computer's profile, even when it ran from the portable zip. A 3.0 portable copy keeps its own, so the first time it starts, it looks for them.
+
+1. Unzip `Quill-Radio-Portable-3.0.0.zip` and start `QuillRadio.exe`, as above.
+2. If an earlier Quill Radio on this computer has favorites, and this copy has none yet, a question opens: "Favorites from an earlier Quill Radio". It says how many favorite stations it found.
+3. Press **Enter** (Yes) to copy them, with your settings, recording schedule and reminders, into this portable copy. Quill Radio then opens with your favorites in the tree.
+4. Or choose **No** to start empty.
+
+Good to know:
+
+- The earlier copy is only read, never changed. Nothing is written to the computer.
+- You are asked once. Either answer is remembered in the portable copy.
+- The installed copy needs none of this: it reads the same profile 2.x did, so your favorites are simply there.
+
 ### If you had the Lite installer or the Companion zip
 
 Test builds of 3.0 also offered a thin "Lite" installer and a small Companion zip. Both are retired. Nothing is lost:

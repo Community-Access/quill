@@ -764,6 +764,9 @@ they were.
 - Only two downloads are published, the installer and the portable zip. The
   thin installer and Companion zip from 3.0 previews are retired; see
   Downloads.
+- Your favorites come with you. The installer upgrades 2.1.2 in place. A new
+  portable copy finds a 2.x copy's favorites on first launch and offers to
+  copy them in (Enter for Yes); the earlier copy is only read.
 
 ## Fixed in this release
 

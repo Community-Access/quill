@@ -57,6 +57,13 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
   network dependency. Nobody already on one is stranded: both installers share
   an AppId, so the full installer upgrades a thin install in place, and a
   Companion copy's Check for Updates falls through to the installer.
+- **A new portable copy offers an earlier copy's favorites.** Quill Radio 2.x
+  kept its data in the computer's profile even when run from the portable zip,
+  so a 3.0 portable copy would have opened empty. On first launch, when the
+  bundle has no favorites and the profile has some, it asks once whether to
+  copy them (with settings, recording schedule, reminders and download
+  preferences) into the bundle. The profile is only read; nothing in the
+  bundle is overwritten (`core/radio/portable_migration.py`).
 - **A portable copy writes nothing to the host computer.** Settings, favorites,
   history and everything else live in the `data` folder beside
   `QuillRadio.exe`, from the very first launch, with no setting to find first.
