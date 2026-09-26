@@ -252,6 +252,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
     "tools.hosted_ai_sign_in": "Ctrl+Alt+Shift+F4",
     "tools.hosted_ai_privacy": "Ctrl+Alt+Shift+K",
+    "tools.hosted_ai_own_key": "Alt+F2",  # rule 9; free in both editors
     # Thirteen commands that had no DEFAULT_KEYMAP entry at all and were bound
     # (or listed unbound) only in the shipped "QUILL Default" profile. That was
     # backwards: the profile is a delta over these defaults, so a command
@@ -497,6 +498,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.dictation_status": "Alt+F9",
     "tools.dictation_emergency_stop": "Escape",  # consumed only while recording
     "tools.dictation_cancel": "Shift+Escape",  # consumed only while recording
+    # Windows Dictation, shared with QUILL Lite on the same chords (rule 2); why
+    # Ctrl+F11 and not Ctrl+F9 or Word's Alt+grave is in quill/core/lite/commands.py.
+    "tools.windows_dictation_toggle": "Ctrl+F11",
+    "tools.windows_dictation_settings": "Alt+Shift+F6",
     "tools.describe_image": "Ctrl+Shift+Grave, I",
     # To the leader (bad.md 3.7): read once when a file arrives, not an
     # editing-loop verb -- and Ctrl+Shift+I is where Insert Image goes, so

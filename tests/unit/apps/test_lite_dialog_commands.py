@@ -824,6 +824,7 @@ def test_about_shows_the_support_id_and_the_servers_usage(lite_window, monkeypat
 
     class Service:
         signed_in = True
+        own_key_active = False
         support_id = "2DFD-22DB"
 
         def fetch_quota(self, *, on_done, on_error):
@@ -843,6 +844,7 @@ def test_about_shows_the_support_id_and_the_servers_usage(lite_window, monkeypat
 def test_about_says_nothing_about_ai_when_not_connected(lite_window, monkeypatch):
     class Service:
         signed_in = False
+        own_key_active = False
         support_id = ""
 
     win = lite_window("hello")
@@ -850,6 +852,30 @@ def test_about_says_nothing_about_ai_when_not_connected(lite_window, monkeypatch
     field = _Field("QUILL Lite 1.0")
     win.ai_about_usage(field)
     assert field.value == "QUILL Lite 1.0"
+
+
+def test_about_names_the_model_and_the_bill_with_an_own_key(lite_window, monkeypatch):
+    """No allowance and no support ID: neither applies, and an allowance shown to
+    somebody paying per request would describe a limit they do not have."""
+
+    class Service:
+        signed_in = True
+        own_key_active = True
+        own_key_model = "gpt-test"
+        support_id = "2DFD-22DB"
+
+        def fetch_quota(self, *, on_done, on_error):
+            raise AssertionError("nothing is fetched with an own key")
+
+    win = lite_window("hello")
+    monkeypatch.setattr(win, "_ai_service", lambda: Service())
+    field = _Field("QUILL Lite 1.0")
+    win.ai_about_usage(field)
+
+    assert "your own OpenAI key, with the model gpt-test" in field.value
+    assert "platform.openai.com/usage" in field.value
+    assert "Support ID" not in field.value
+    assert field.caret == 0
 
 
 def test_a_support_message_carries_the_ai_support_id(monkeypatch):

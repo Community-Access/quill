@@ -53,7 +53,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "1.0.1"
+$version = "1.1.0"
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -128,6 +128,19 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
 # that catches it, and it runs whether or not the runtime was rebuilt here.
 Assert-QuillRuntimeHasModule -RuntimeDir $sharedRuntimeDist -Module "quill.apps.lite" -ProbeArgs "--check"
 
+# -- dictation models -------------------------------------------------------
+# Fetched from sherpa-onnx's releases and checked against the SHA-256 digests
+# pinned in quill/core/windows_dictation/engines.py; a mismatch fails the build.
+# Staged beside the launcher in both artifacts, never inside the shared
+# runtime, which every QuillVille app installs.
+$modelsDir = Join-Path $QuillRepo "build\dictation-models"
+# The installer also carries the sherpa-onnx package itself: an installed copy
+# runs in the shared runtime, which deliberately does not freeze it in. The
+# portable zip has it in its own site-packages (the live-dictation group).
+$dictationPython = Join-Path $QuillRepo "build\dictation-python"
+& $Python (Join-Path $QuillRepo "scripts\fetch_dictation_models.py") --out $modelsDir --package-out $dictationPython
+if ($LASTEXITCODE -ne 0) { throw "Dictation models are missing or failed verification." }
+
 # -- portable bundle (self-contained, genuine embeddable runtime) -------------
 # NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
 # and docs/design/native-launcher-2026-07-24.md: genuine unmodified
@@ -146,6 +159,12 @@ if (-not (Test-Path (Join-Path $appDir "QuillLite.exe"))) {
 if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
     throw "Portable build did not stage the genuine pythonw.exe interpreter."
 }
+# Beside QuillLite.exe, where quill.core.windows_dictation.engines looks first
+# (QUILL_APP_ROOT is the portable folder). After the inventory gate above, which
+# counts the Python payload rather than the data beside it.
+$portableModels = Join-Path $appDir "dictation-models"
+if (Test-Path $portableModels) { Remove-Item $portableModels -Recurse -Force }
+Copy-Item $modelsDir $portableModels -Recurse
 
 # -- code signing (payload) ---------------------------------------------------
 # Sign every exe/dll in the shared runtime and the portable app BEFORE they are

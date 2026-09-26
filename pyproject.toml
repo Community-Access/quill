@@ -171,6 +171,12 @@ vosk = ["vosk>=0.3.45"]
 # OfflineRecognizer(model_type="nemo_transducer") and the Silero
 # VoiceActivityDetector tier (speech_vad.py) rely on API fixes newer than 1.10.
 nemotron = ["sherpa-onnx>=1.13.8", "numpy>=2.5.3"]
+# Dictation's built-in engines (quill/core/windows_dictation/local_recognizer.py):
+# Moonshine and Whisper through sherpa-onnx, which bundles its own ONNX runtime
+# (no torch), with the microphone read through sounddevice. Shipped, never
+# downloaded -- QUILL Lite's installer and portable zip carry the runtime and,
+# beside the launcher, the models (scripts/fetch_dictation_models.py).
+live-dictation = ["sherpa-onnx>=1.13.8", "numpy>=2.5.1", "sounddevice>=0.5.6"]
 # Optional C++ accelerator for the dictation vocabulary corrector
 # (speech/vocabulary.py). NEVER required: the stdlib implementation is the
 # behavioural contract and always present; this extra only makes the same
@@ -377,6 +383,7 @@ runtime = [
   "quill[audio]",
   "quill[speech]",
   "quill[dictation]",
+  "quill[live-dictation]",
   "quill[mp3]",
   "quill[docx]",
   "quill[math]",
@@ -653,6 +660,10 @@ module = [
     # Optional Nemotron engine (quill[nemotron]); sherpa-onnx imported lazily in
     # providers/nemotron_onnx.py. Ships no type stubs.
     "sherpa_onnx",
+    # numpy arrives with the live-dictation extra (windows_dictation/
+    # local_recognizer.py imports it lazily); the typing job installs only [dev].
+    "numpy",
+    "numpy.*",
     # PyNaCl (Ed25519 unlock-code verification, quill/core/unlock_codes.py); no stubs.
     "nacl",
     "nacl.*",

@@ -121,8 +121,29 @@ static int build_argv(
 
 static int set_quill_env(
     const char *install_root,
-    const char *data_dir
+    const char *data_dir,
+    const char *self_path
 ) {
+    /* QUILL_LAUNCHER_DIR: the folder this launcher sits in. On a shared-runtime
+     * install QUILL_APP_ROOT is the *runtime's* folder, so without this the app
+     * had no way to find files its own installer put beside its launcher --
+     * which is where the bundled dictation models live, deliberately outside
+     * the runtime every QuillVille app shares. */
+    if (self_path && *self_path) {
+        char launcher_dir[QL_PATH_MAX];
+        snprintf(launcher_dir, sizeof(launcher_dir), "%s", self_path);
+        char *cut = strrchr(launcher_dir, '\\');
+        char *slash = strrchr(launcher_dir, '/');
+        if (!cut || (slash && slash > cut)) cut = slash;
+        if (cut) {
+            *cut = 0;
+#ifdef _WIN32
+            SetEnvironmentVariableA("QUILL_LAUNCHER_DIR", launcher_dir);
+#else
+            setenv("QUILL_LAUNCHER_DIR", launcher_dir, 1);
+#endif
+        }
+    }
     if (install_root && *install_root) {
 #ifdef _WIN32
         SetEnvironmentVariableA("QUILL_APP_ROOT", install_root);
@@ -312,7 +333,7 @@ int wmain(int argc, wchar_t *wargv[])
     prefer_windowless_python(runtime.python, sizeof(runtime.python));
 
     /* Set environment for the child. */
-    set_quill_env(runtime.install_root, runtime.data_dir);
+    set_quill_env(runtime.install_root, runtime.data_dir, self_path);
 
     /* Build argv for the child. */
     char **child_argv = NULL;
@@ -440,7 +461,7 @@ int main(int argc, char *argv[])
         return fail_no_runtime(PRODUCT_DISPLAY_NAME);
     }
 
-    set_quill_env(runtime.install_root, runtime.data_dir);
+    set_quill_env(runtime.install_root, runtime.data_dir, self_path);
 
     char **child_argv = NULL;
     int child_argc = build_argv(runtime.python, PRODUCT_PYTHON_MODULE, argc, argv, &child_argv);

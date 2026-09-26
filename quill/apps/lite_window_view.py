@@ -209,6 +209,7 @@ class DocumentViewCommandsMixin:
         # caller's, exactly as it is for the features.
         self.app.save_settings()
         self.app.rebuild_all_menus()
+        self._dictation_feature_changed()  # switched off: the microphone closes
         self.control.SetFocus()
         self._announce("Features saved. The menus have been rebuilt.")
         # Switching AI help on here is one of the three doors to the agreement,

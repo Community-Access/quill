@@ -162,6 +162,46 @@ class HostedAiCommandsMixin(HostedAiMixin):
         """QUILL's switch is the Use AI item in the AI menu, not a feature area."""
         return "the AI menu, Use Artificial Intelligence"
 
+    def _own_key_menu_id(self) -> Any:
+        """The Use My Own OpenAI Key row's id, made once so a rebuilt menu reuses
+        the id its binding was made against."""
+        menu_id = getattr(self, "_hosted_ai_own_key_id", None)
+        if menu_id is None:
+            import wx
+
+            menu_id = wx.NewIdRef()
+            self._hosted_ai_own_key_id = menu_id
+        return menu_id
+
+    def _append_own_key_row(self, ai_menu: Any) -> None:
+        """The sixth row: the same shared command QUILL Lite has, on the same key.
+
+        Registered and bound here, once, rather than in main_frame_commands.py
+        and main_frame_menu_bindings.py, which are at their size budgets.
+        """
+        import wx
+
+        from quill.core.i18n import _
+
+        menu_id = self._own_key_menu_id()
+        ai_menu.Append(
+            menu_id, self._menu_label(_("Use My &Own OpenAI Key..."), "tools.hosted_ai_own_key")
+        )
+        if not getattr(self, "_hosted_ai_own_key_wired", False):
+            self._hosted_ai_own_key_wired = True
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_own_key(), id=menu_id)
+            self.commands.try_register(
+                "tools.hosted_ai_own_key",
+                "Use My Own OpenAI Key",
+                self.cmd_ai_own_key,
+                self._binding_for("tools.hosted_ai_own_key"),
+            )
+
+    def _command_to_menu_id_map(self) -> dict[str, int]:
+        mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
+        mapping["tools.hosted_ai_own_key"] = self._own_key_menu_id()
+        return mapping
+
     def _ai_host(self) -> QuillAiHost:
         host = getattr(self, "_quill_ai_host", None)
         if host is None:

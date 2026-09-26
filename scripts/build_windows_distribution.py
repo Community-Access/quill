@@ -519,6 +519,7 @@ def build_windows_distribution(
     )
 
     staged_docs = _stage_distribution_docs(portable_dir, resolved_source_root)
+    _stage_dictation_models(portable_dir, resolved_source_root)
     effective_bundled_tools = dict(bundled_tool_dirs or {})
     # Pandoc, Piper, Node.js, and the braille pack are NO LONGER bundled, and the
     # installer no longer ships or prompts for any of them (footprint unbundle,
@@ -2256,6 +2257,33 @@ def _stage_distribution_docs(portable_dir: Path, source_root: Path) -> list[Path
         shutil.copy2(source, target)
         staged.append(target)
     return staged
+
+
+def _stage_dictation_models(portable_dir: Path, source_root: Path) -> None:
+    """Put Live Dictation's speech models beside quill.exe.
+
+    The same Moonshine and Whisper models QUILL Lite ships, fetched and checked
+    against their pinned digests by scripts/fetch_dictation_models.py, so the
+    shared dictation code finds them at QUILL_APP_ROOT/dictation-models in
+    either editor. Shipped, not downloaded on first use: dictation that has to
+    fetch 230 MB before it can hear anything is not dictation anybody tries twice.
+    """
+    models = source_root / "build" / "dictation-models"
+    fetch = subprocess.run(
+        [
+            sys.executable,
+            str(source_root / "scripts" / "fetch_dictation_models.py"),
+            "--out",
+            str(models),
+        ],
+        check=False,
+    )
+    if fetch.returncode != 0:
+        raise RuntimeError("Dictation models are missing or failed verification.")
+    target = portable_dir / "dictation-models"
+    if target.exists():
+        shutil.rmtree(target)
+    shutil.copytree(models, target)
 
 
 def _stage_braille_pack(

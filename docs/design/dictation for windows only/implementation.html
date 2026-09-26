@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dictation: how the design was built</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="dictation-how-the-design-was-built">Dictation: how the design
+was built</h1>
+<p>What QUILL Lite 1.1 (and QUILL’s Live Dictation) did with each part
+of <em>QUILL Lite Basic Dictation</em> (the PRD in this folder), and the
+places it deliberately went another way. Written 2026-09-25, alongside
+the code.</p>
+<h2 id="where-it-lives">Where it lives</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The command table, phrase by phrase, with descriptions</td>
+<td><code>quill/core/windows_dictation/vocabulary.py</code></td>
+</tr>
+<tr>
+<td>Recognised words into words and marks; spelling mode</td>
+<td><code>quill/core/windows_dictation/parser.py</code></td>
+</tr>
+<tr>
+<td>Spacing, capitals, dash style, full stop before a paragraph</td>
+<td><code>quill/core/windows_dictation/composer.py</code></td>
+</tr>
+<tr>
+<td>Phrase transactions for scratch, select and case commands</td>
+<td><code>quill/core/windows_dictation/history.py</code></td>
+</tr>
+<tr>
+<td>The state machine, feedback, commands, wake phrase</td>
+<td><code>quill/core/windows_dictation/controller.py</code></td>
+</tr>
+<tr>
+<td>Wake phrase matching and validation</td>
+<td><code>quill/core/windows_dictation/wake.py</code></td>
+</tr>
+<tr>
+<td>Engines, model files and where they are found</td>
+<td><code>quill/core/windows_dictation/engines.py</code></td>
+</tr>
+<tr>
+<td>Moonshine and Whisper, with voice detection</td>
+<td><code>quill/core/windows_dictation/local_recognizer.py</code></td>
+</tr>
+<tr>
+<td>Windows speech recognition (SAPI)</td>
+<td><code>quill/platform/windows/sapi_dictation.py</code></td>
+</tr>
+<tr>
+<td>The user’s own words and phrases (<code>dictation.md</code>)</td>
+<td><code>quill/core/windows_dictation/profile.py</code></td>
+</tr>
+<tr>
+<td>The “what can I say” list and the published reference</td>
+<td><code>quill/core/windows_dictation/reference.py</code>,
+<code>scripts/build_dictation_commands.py</code></td>
+</tr>
+<tr>
+<td>Both editors’ commands, shared</td>
+<td><code>quill/ui/windows_dictation_commands.py</code></td>
+</tr>
+<tr>
+<td>Settings and the commands window</td>
+<td><code>quill/ui/windows_dictation_dialog.py</code></td>
+</tr>
+<tr>
+<td>QUILL’s hooks</td>
+<td><code>quill/ui/main_frame_windows_dictation.py</code></td>
+</tr>
+<tr>
+<td>Earcons, generated</td>
+<td><code>scripts/generate_dictation_sounds.py</code></td>
+</tr>
+<tr>
+<td>Models fetched and verified for a build</td>
+<td><code>scripts/fetch_dictation_models.py</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="prd-sections">PRD sections</h2>
+<table>
+<thead>
+<tr>
+<th>PRD</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-7 Summary, interaction, continuous dictation</td>
+<td>Done</td>
+<td>Ctrl+F11 toggles; phrases commit at pauses; focus stays in the
+editor.</td>
+</tr>
+<tr>
+<td>8-11 Command layer and parsing</td>
+<td>Done</td>
+<td>Data-driven table, longest phrase first, <code>literal</code>
+escape, action objects rather than string replacement.</td>
+</tr>
+<tr>
+<td>9 Command vocabulary</td>
+<td>Done</td>
+<td>Every listed phrase, plus braces, symbols, and single quotes. “new
+page” is not built: neither editor’s plain text has a page, and QUILL
+Lite has no page break command to reach.</td>
+</tr>
+<tr>
+<td>12-13 Transactions and undo</td>
+<td>Done</td>
+<td>Each phrase one undo step; scratch removes exactly its own range,
+after checking the text is unchanged.</td>
+</tr>
+<tr>
+<td>14 Selection</td>
+<td>Done</td>
+<td>The first phrase replaces a selection.</td>
+</tr>
+<tr>
+<td>15 Spacing</td>
+<td>Done</td>
+<td>Plus: a full stop an engine added at a pause is taken back when the
+next phrase continues the sentence.</td>
+</tr>
+<tr>
+<td>16-18 Architecture, dependency strategy</td>
+<td>Changed</td>
+<td>See “Engines” below.</td>
+</tr>
+<tr>
+<td>20 Packaging</td>
+<td>Done</td>
+<td>Models and the sherpa-onnx package ship beside the launcher; nothing
+is downloaded.</td>
+</tr>
+<tr>
+<td>21 Package identity</td>
+<td>Not needed</td>
+<td>SAPI and sherpa-onnx need no package identity.</td>
+</tr>
+<tr>
+<td>22 State machine</td>
+<td>Done</td>
+<td>Plus STANDBY, for the wake phrase.</td>
+</tr>
+<tr>
+<td>23-27 Earcons</td>
+<td>Done</td>
+<td>Generated byte-for-byte from the PRD’s generator; four Sound Scheme
+rows.</td>
+</tr>
+<tr>
+<td>28-29 Sound settings, announcements</td>
+<td>Done</td>
+<td>Start/stop/error tones and on/off words switchable; phrase feedback
+is the shared sound/speech/both/neither choice, where speech reads the
+words back.</td>
+</tr>
+<tr>
+<td>30 Microphone</td>
+<td>Done</td>
+<td>Chosen by name; an unplugged choice is refused, not replaced.</td>
+</tr>
+<tr>
+<td>31-32 Privacy, network</td>
+<td>Done</td>
+<td>Offline; nothing recorded, logged or sent.</td>
+</tr>
+<tr>
+<td>33 Wake word</td>
+<td>Done, with one change</td>
+<td>User-defined wake phrase. Uses the dictation engine and voice
+detection rather than a separate keyword model, which is what makes any
+phrase possible without training. Foreground only; see below.</td>
+</tr>
+<tr>
+<td>34 Windows Voice Typing</td>
+<td>Done</td>
+<td>An engine choice that hands over to Windows+H.</td>
+</tr>
+<tr>
+<td>35 Voice Access</td>
+<td>Coexists</td>
+<td>QUILL never drives Voice Access; both can run. Untested together by
+ear.</td>
+</tr>
+<tr>
+<td>36 Settings</td>
+<td>Done</td>
+<td>Engine, language (Windows speech), microphone, phrase feedback,
+dash, tones, words, wake phrase. The keyboard shortcut is changed in the
+Keyboard Manager like every other key.</td>
+</tr>
+<tr>
+<td>37 Errors</td>
+<td>Done</td>
+<td>Every failure is spoken with what to do.</td>
+</tr>
+<tr>
+<td>38 Performance</td>
+<td>Done</td>
+<td>Moonshine runs at about a twenty-fifth of real time on one core;
+first start loads for a second or two.</td>
+</tr>
+<tr>
+<td>39-40 Accessibility, visual status</td>
+<td>Done</td>
+<td>Menu check mark plus a Dictation cell in QUILL Lite’s status
+bar.</td>
+</tr>
+<tr>
+<td>45 Phase two</td>
+<td>Done</td>
+<td>Wake phrase, user vocabulary, user phrases, more punctuation,
+capitalization commands, selection commands, spelling mode, cursor
+commands. The macOS adapter is out of scope: QUILL Lite is Windows
+only.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="engines">Engines</h2>
+<p>The PRD proposed the WinRT speech API. It was replaced for two
+reasons found while building: WinRT’s recogniser cannot use any
+microphone but the Windows default, and choosing the microphone was a
+requirement; and Windows’ desktop recogniser (SAPI), the other built-in
+option, proved inaccurate on an untrained voice and does not punctuate.
+Eight candidates were measured (<code>engine-comparison.md</code>);
+Moonshine and Whisper, run by sherpa-onnx with no PyTorch, ship in the
+box, and SAPI stays as an option.</p>
+<h2 id="the-wake-phrase-listens-in-the-foreground-only">The wake phrase
+listens in the foreground only</h2>
+<p>The PRD allowed an opt-in background mode. It was left out: to write
+anything, waking would have to bring the window forward and take the
+focus from whatever the person was doing, which is exactly the kind of
+surprise a screen reader user cannot see coming. The microphone closes
+when another program comes to the front and reopens when QUILL comes
+back.</p>
+</main>
+</body>
+</html>

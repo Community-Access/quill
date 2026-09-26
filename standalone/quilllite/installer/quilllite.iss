@@ -36,7 +36,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "1.0.1"
+  #define AppVersion "1.1.0"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
@@ -67,7 +67,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=1.0.1.0
+VersionInfoVersion=1.1.0.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible plain text and rich text editor (shared runtime)
 ; The folder keeps the old name: an existing install upgrades in place.
@@ -123,6 +123,15 @@ Source: "..\dist\QuillLite\QuillLite.exe"; DestDir: "{app}"; Components: main; F
 ; The updater reads this to offer the right edition back (core/install_edition.py).
 Source: "..\installer\edition-installer-full.txt"; DestDir: "{app}"; DestName: "quill-edition.txt"; Components: main; Flags: ignoreversion
 Source: "..\dist\QuillLite\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
+; Dictation's speech models (Moonshine, Whisper, the pause detector), beside the
+; launcher rather than in the shared runtime every QuillVille app installs. The
+; launcher exports QUILL_LAUNCHER_DIR so quill.core.windows_dictation.engines
+; finds them here. Nothing is downloaded at install or at first use.
+Source: "..\dist\QuillLite\dictation-models\*"; DestDir: "{app}\dictation-models"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs
+; The sherpa-onnx package that runs them. The shared runtime deliberately does
+; not freeze it in (it would shadow QUILL's engine packs), so an installed copy
+; imports it from here -- quill.core.windows_dictation.engines.package_dirs.
+Source: "..\..\..\build\dictation-python\*"; DestDir: "{app}\dictation-models\python"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; The shared runtime (install-if-absent) + reference registration + orphan
 ; removal on uninstall. Defines RuntimeDir/RuntimeExe used by [Icons]/[Run].

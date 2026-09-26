@@ -31,8 +31,9 @@ from quill.core.sound_events import SoundEvent
 __all__ = ["APP_ROSTERS", "QUILLLITE_EVENTS", "events_for", "is_editor_app"]
 
 #: Everything QUILL Lite posts. Small on purpose: it is a text editor, so it has
-#: no assistant, no conversation mode, no radio and no dictation, and rows for
-#: those would be rows that cannot fire.
+#: no conversation mode and no radio, and rows for those would be rows that
+#: cannot fire. It does have Windows Dictation since 1.1 -- the four cues at the
+#: end of the set.
 QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.APP_STARTED,
     SoundEvent.APP_EXITING,
@@ -62,6 +63,11 @@ QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.SELECTION_STARTED,
     SoundEvent.SELECTION_COMPLETED,
     SoundEvent.ERROR,
+    # Tools > Dictation (quill/apps/lite_window_dictation.py).
+    SoundEvent.WINDOWS_DICTATION_ON,
+    SoundEvent.WINDOWS_DICTATION_PHRASE,
+    SoundEvent.WINDOWS_DICTATION_OFF,
+    SoundEvent.WINDOWS_DICTATION_ERROR,
 })
 
 # Not here, and each absence is a decision rather than an oversight: QUILL Lite

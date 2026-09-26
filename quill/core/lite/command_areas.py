@@ -71,6 +71,9 @@ MENU_AREA: dict[str, str] = {
     # still fires for a feature somebody has switched off is the feature not
     # being off -- and for this one that would mean a network call they declined.
     "&Tools|&AI": "hosted_ai",
+    # Both rows, so switching dictation off takes Ctrl+F11 with it: a key that
+    # still opened the microphone would be the feature not being off.
+    "&Tools|&Dictation": "dictation",
     "&Edit|Selectio&n": "selection",
     # The half of Find that answers "how many" and "where else". Find, Find
     # Next and Replace are in Edit itself and are not switchable: an editor

@@ -10,7 +10,7 @@ calling ``SetStatusText`` four times.
 
 What is *not* copied is QUILL's configurability. The full editor lets you
 reorder and hide thirty-odd cells and has a dialog for doing it; QUILL Lite has
-:data:`CELLS`, twelve of them, fixed. A notepad does not need a status-bar layout
+:data:`CELLS`, thirteen of them, fixed. A notepad does not need a status-bar layout
 editor, and every cell here is a fact a text editor is actually asked for:
 
 * **Message** -- the last thing that was announced, so speech can be re-read.
@@ -111,6 +111,7 @@ from quill.apps.lite_status_cells import (
     native_cell_labels,
     newline_name,
 )
+from quill.apps.lite_window_dictation import dictation_cell
 
 
 class DocumentStatusMixin:
@@ -350,6 +351,7 @@ class DocumentStatusMixin:
             "format": self.document_kind_label(),
             "heading": self._heading_text(text),
             "list": self._list_text(text),
+            "dictation": dictation_cell(self),
             "encoding": self._encoding_cell(),
             "line_endings": self._line_endings_cell(),
             "saved": "Modified" if self.modified else "Saved",
@@ -610,6 +612,7 @@ _CELL_ACTIONS: dict[str, str] = {
     # thing left to decide about a list is whether you want to keep hearing
     # about it.
     "list": "cmd_toggle_list_announcements",
+    "dictation": "cmd_toggle_dictation",
     "encoding": "cmd_file_format",
     "line_endings": "cmd_file_format",
     "saved": "cmd_save",

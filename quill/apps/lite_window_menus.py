@@ -66,6 +66,13 @@ def _quiet_mark(frame: object) -> bool:
     return bool(quiet()) if callable(quiet) else False
 
 
+def _dictation_mark(frame: object) -> bool:
+    """Whether Dictation On should read as checked -- a module function for the
+    same reason as :func:`_quiet_mark`, and unchecked when the host cannot say."""
+    active = getattr(frame, "dictation_active", None)
+    return bool(active()) if callable(active) else False
+
+
 class DocumentMenuMixin:
     """The menu bar of a :class:`~quill.apps.lite_window.DocumentFrame`."""
 
@@ -225,6 +232,9 @@ class DocumentMenuMixin:
             # in front of you.
             "cmd_toggle_status_bar": getattr(self.app.settings, "show_status_bar", True),
             "cmd_toggle_abbreviations": self.app.feature_enabled("abbreviations"),
+            # On while *this* document is being dictated into. There is one
+            # microphone, so at most one window's mark is ever on.
+            "cmd_toggle_dictation": _dictation_mark(self),
             # Quiet mode is *shared with QUILL*, so the mark cannot be cached on
             # this frame: the key pressed in another window -- or in the other
             # editor -- has already changed it by the time this menu opens.

@@ -27,6 +27,8 @@ def _menu_source() -> str:
         + (ui / "main_frame_braille_phase3.py").read_text(encoding="utf-8")
         + "\n"
         + (ui / "main_frame_power_tools_menu.py").read_text(encoding="utf-8")
+        + "\n"
+        + (ui / "main_frame_windows_dictation.py").read_text(encoding="utf-8")
     )
 
 

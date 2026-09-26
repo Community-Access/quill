@@ -50,6 +50,7 @@ same places; this list is here for reading through, and for the EPUB.
 - [Settings](#settings)
 - [Printing](#printing)
 - [Speech](#speech)
+- [Dictation](#dictation)
 - [AI help](#ai-help)
 - [Where your files are kept](#where-your-files-are-kept)
 - [Keeping QUILL Lite up to date](#keeping-quilllite-up-to-date)
@@ -1663,11 +1664,12 @@ than doing nothing.
 | **Format** | Which of the four kinds this document is: plain text, Markdown, HTML or rich text | rings on to the next kind |
 | **Heading** | Which heading you are inside | lists every heading |
 | **List** | Which list you are inside, how many items, which one you are on | stops or resumes announcing lists |
+| **Dictation** | What dictation is doing: off, listening, hearing you, writing, spelling, or waiting for the wake phrase | starts or stops dictation |
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
 
-Thirteen cells, in that order. Six of them are worth pointing out.
+Fourteen cells, in that order. Six of them are worth pointing out.
 
 **Typing Mode** is the one you cannot find out any other way. Every Windows
 editor has an overwrite mode, where what you type replaces the letters already
@@ -2331,12 +2333,12 @@ and change your mind.
 Under the box is a **read-only description you can read line by line**, and it
 answers two different questions. First, what the profile *is*, in its own words.
 Then what it would actually *do* to the app in front of you: how many of the
-19 areas it keeps and which, which ones it removes, and anything else it
+20 areas it keeps and which, which ones it removes, and anything else it
 changes -- Notepad, for instance, also makes **Ctrl+N** create a plain text
 document. **F1** on the Profile box reads the same thing.
 
 What is spoken when you choose a profile is the short version -- "Notepad
-profile: 2 of 19 features on. New documents will be plain text. Nothing is saved
+profile: 2 of 20 features on. New documents will be plain text. Nothing is saved
 until you press Save." -- because your screen reader is already reading the name
 and the description is there to be read at your own pace.
 
@@ -2353,24 +2355,24 @@ hand-edited a profile and want to start it over.
 **The same four profiles are in Preferences**, at the top, with the same
 description box. "Make this Notepad" is a preference like any other, and you
 should not have to know that a dialog called Customize Features is where it
-lives. Preferences offers the whole answers; the 19 individual
+lives. Preferences offers the whole answers; the 20 individual
 checkboxes stay in Customize Features.
 
 Here is what each one is, at a glance and then in full.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 15 of 19 | plain text (unchanged) |
-| **Everything** | 19 of 19 | plain text (unchanged) |
-| **WordPad** | 5 of 19 | **rich text** |
-| **Notepad** | 2 of 19 | **plain text** |
+| **Recommended** | 16 of 20 | plain text (unchanged) |
+| **Everything** | 20 of 20 | plain text (unchanged) |
+| **WordPad** | 5 of 20 | **rich text** |
+| **Notepad** | 2 of 20 | **plain text** |
 
 #### Recommended
 
-**What a new install is.** 15 of the 19 areas: rich text, headings, Markdown and
+**What a new install is.** 16 of the 20 areas: rich text, headings, Markdown and
 HTML, bookmarks, the line tools, the clipboard history, printing, abbreviations,
 the Selection submenu, spell check, Matches, Go Back and Go Forward, the Command
-Palette, Describe Character and text size.
+Palette, Describe Character, text size and dictation.
 
 **Off:** autocorrect, timestamped backups, Go To Anything and AI help. Those four
 are not missing features; they are the ones that would be *wrong* on by default
@@ -2384,7 +2386,7 @@ gets to decide for you.
 
 #### Everything
 
-**All 19 areas on**, including those four -- and that includes **AI help**, which
+**All 20 areas on**, including those four -- and that includes **AI help**, which
 is the one area here that sends anything off this computer, so choose this profile
 only if that is what you meant. Autocorrect will straighten your quotes and turn
 two hyphens into a dash (and nothing else -- it does not capitalise sentences),
@@ -2398,14 +2400,14 @@ them one at a time.
 
 **What WordPad was.** Rich text you can format, print, and check the spelling
 of: bold, italic, underline, headings, alignment, bullets, indenting and line
-spacing, plus Find and Replace, printing and text size. Five of the 19
+spacing, plus Find and Replace, printing and text size. Five of the 20
 areas.
 
-**Off**, all fourteen of them: the writing tools behind the formatting. No
+**Off**, all fifteen of them: the writing tools behind the formatting. No
 line tools (Edit ▸ Lines) and no Change Case, no clipboard history or Copy
 Tray, no bookmarks, no abbreviations, no Selection submenu, no Matches list, no
 Back and Forward, no Command Palette, no Go To Anything, no Describe Character,
-no autocorrect, no backups, **no Markdown or HTML** (Ctrl+B in a `.md` goes back
+no dictation, no autocorrect, no backups, **no Markdown or HTML** (Ctrl+B in a `.md` goes back
 to meaning rich text and saying so), and **no AI help**.
 
 **Ctrl+N makes a rich text document.** That is the half of this name a list of
@@ -2420,14 +2422,14 @@ without one in 2026 is a surprise rather than a simplification.
 #### Notepad
 
 **The smallest QUILL Lite gets**, and the one most people arriving here are
-replacing something with. Two of the 19 areas: **printing** and **text
+replacing something with. Two of the 20 areas: **printing** and **text
 size**.
 
-**Off**, all seventeen of them: the Format menu and everything under it,
+**Off**, all eighteen of them: the Format menu and everything under it,
 headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
 clipboard history, abbreviations, the Selection submenu, spell check, Matches,
 Back and Forward, the Command Palette, Go To Anything, Describe Character,
-autocorrect, backups and AI help. Nothing Notepad does not have -- which is the
+dictation, autocorrect, backups and AI help. Nothing Notepad does not have -- which is the
 point of choosing it.
 
 **Ctrl+N makes a plain text document**, and the Save As dialog stops offering
@@ -2455,13 +2457,13 @@ switch is a door that locks from the inside.
 
 ### Searching the list
 
-Nineteen checkboxes is a long way to Tab through, so the box below the profile
+Twenty checkboxes is a long way to Tab through, so the box below the profile
 row filters them as you type. It matches what an area **does** as well as what it
 is called, so typing "curly quotes" finds Autocorrect and typing "dictionary"
 finds Spell check. The line under the box says how many are left, and **Down**
 from the box moves straight into the list.
 
-### The 19 areas
+### The 20 areas
 
 | Area | What goes | Starts |
 |---|---|---|
@@ -2480,6 +2482,7 @@ from the box moves straight into the list.
 | **The Command Palette** | Ctrl+Shift+P, the search box for commands | on |
 | **Describe Character** | What the character under the cursor actually is | on |
 | **Text size** | Bigger, smaller, and reset | on |
+| **Dictation** | Tools ▸ Dictation: speaking into the document, and choosing the microphone | on |
 | **Autocorrect while typing** | Curly quotes and em dashes (see below -- it does not capitalise sentences) | **off** |
 | **Timestamped backups** | A dated copy kept every time you save | **off** |
 | **Go To Anything** | One box that searches everything at once | **off** |
@@ -2741,7 +2744,7 @@ the ones you change *while* you are working:
 | Overwrite mode, Tab key behaviour, the status bar | **View** |
 | Quiet mode | **Tools ▸ Quiet Mode** (**Alt+Shift+M**) |
 | Which sound each event makes | **Tools ▸ Sound Scheme** (**Ctrl+Alt+Shift+O**) |
-| Which of the 19 areas exist at all | **Tools ▸ Customize Features** (**Ctrl+Alt+F10**) |
+| Which of the 20 areas exist at all | **Tools ▸ Customize Features** (**Ctrl+Alt+F10**) |
 | What any key does | **Tools ▸ Keyboard Manager** (**Ctrl+Alt+Shift+R**) |
 | The twelve spelling announcement settings | **Tools ▸ Spelling ▸ Announcements** (**Ctrl+Alt+Shift+F7**) |
 | Whether you are asked about last session | The **Reopen Last Session** window itself (**Alt+Shift+F12**) |
@@ -2875,6 +2878,343 @@ Windows — and a key claimed system-wide never reaches the application at all,
 so the command looked broken on any machine with Drive installed. If you find
 another key that does nothing, the Keyboard Manager will now tell you when
 something outside QUILL Lite has taken it.
+
+## Dictation
+
+Press **Ctrl+F11**, talk, and pause. Each time you pause, what you said is
+written into the document at the cursor, you hear a short soft tone, and QUILL
+Lite reads the words back so you know they are right. Then it keeps listening,
+so you can go straight on to the next sentence. Press **Ctrl+F11** again, or say
+"stop dictation", to stop.
+
+You do not need to say punctuation. The built-in speech engines put in full
+stops, commas, question marks and capitals by themselves, the way you would
+write them. When you want a particular mark, say it -- "comma", "new
+paragraph" -- and your word always wins.
+
+Everything happens on this computer. The speech engines come with QUILL Lite,
+nothing is downloaded, nothing you say is sent anywhere, and no recording is
+kept: the words are recognised, written into your document, and forgotten.
+
+### Your first dictation, step by step
+
+1. Put the cursor where you want the words. If you select some text first, the
+   first phrase you say replaces it.
+2. Press **Ctrl+F11**. The first time after opening QUILL Lite it takes a second
+   or two while the speech engine loads. Then you hear two rising tones and
+   "Dictation on".
+3. Say a sentence the way you would say it to a person, and pause.
+4. A moment later the sentence is in the document, you hear the soft tone, and
+   the words are read back to you.
+5. Keep going. There is no need to press anything between sentences.
+6. When you are done, press **Ctrl+F11** or say "stop dictation". You hear two
+   falling tones and "Dictation off".
+
+A phrase is written when you have been quiet for a little under a second, so a
+breath in the middle of a sentence does not cut it in two. If a pause does
+split a sentence and the next part starts with a word like *and*, *but*,
+*which* or *to*, the full stop the pause put in is taken back out and the
+sentence carries on.
+
+### What you hear
+
+| When | Tones | Words |
+|---|---|---|
+| Dictation starts | two rising tones | "Dictation on" |
+| A phrase is written | one short, soft tone | the words that were written |
+| Dictation stops | two falling tones | "Dictation off" |
+| Something goes wrong | a low double tone | what happened, and what to do |
+
+Every row can be changed in **Dictation Settings**, and every tone can be
+changed or silenced in **Tools ▸ Sound Scheme**. Two things are never silenced:
+a failure is always spoken, and so is the answer to a command, because both
+answer a question.
+
+The soft tone plays only once the words are really in the document, so hearing
+it means they arrived. If you choose speech for each phrase, the words are
+read back a quarter of a second after they are written, so they are not cut
+off by your screen reader's own reaction to the new text.
+
+**Use headphones if the read-back is on.** Read back through speakers, the
+microphone can hear it and write it down a second time. With speakers, set
+"After each phrase is written, give me" to a sound only.
+
+### The speech engines
+
+Choose one in **Dictation Settings**. The first two come with QUILL Lite.
+
+| Engine | What it is like |
+|---|---|
+| **Moonshine** (the one it starts with) | Fast even on a modest computer, and punctuates by itself. English. |
+| **Whisper** | Punctuates by itself, a little slower. Try it if Moonshine often mishears your voice or your microphone. English. |
+| **Windows speech recognition** | Windows' own recogniser. Does not punctuate by itself -- say every mark -- and mishears an untrained voice often. Can use any speech language installed in Windows. |
+| **Windows voice typing (Windows+H)** | Hands over to Windows' own voice typing panel. Windows does the recognising and the typing, so none of the commands, tones, read-back or wake phrase apply here. |
+
+Moonshine and Whisper were chosen after measuring eight candidates on the same
+sentences for accuracy, punctuation, speed on one processor core, and size;
+Moonshine was the most accurate and by far the fastest.
+
+### Saying punctuation and layout
+
+You can say these anywhere in a phrase:
+
+- **Punctuation:** "period" or "full stop", "comma", "question mark",
+  "exclamation point", "colon", "semicolon", "ellipsis", "apostrophe", "open
+  quote" and "close quote", "open single quote" and "close single quote".
+- **Brackets:** "open parenthesis" and "close parenthesis", "open bracket" and
+  "close bracket", "open brace" and "close brace".
+- **Joining:** "hyphen", "dash", "slash", "backslash", "underscore".
+- **Symbols:** "at sign", "hash sign", "dollar sign", "percent sign",
+  "ampersand", "asterisk", "plus sign", "minus sign", "equals sign".
+- **Layout:** "new line" ends the line, "new paragraph" leaves a blank line,
+  and "tab" or "tab key" types a tab.
+
+Spaces go where they belong -- none before a comma, one after a full stop, none
+at the start of a line -- and the first word of each sentence gets its capital.
+What "dash" writes is your choice in Dictation Settings: an em dash, a spaced en
+dash, or two hyphens.
+
+To write one of these words as a word, say **"literal"** first: "literal new
+line" writes *new line*, and "literal comma" writes *comma*.
+
+### Commands
+
+A command works only when it is **the whole phrase**, said on its own after a
+pause. "Delete that line of text" inside a longer sentence is just words, and
+is written as words.
+
+**Correcting what you said:**
+
+| Say | What happens |
+|---|---|
+| "scratch that" or "delete that" | Removes the phrase you dictated last. Say it again to remove the one before. |
+| "undo that" or "undo" | The same as Ctrl+Z. |
+| "select that" | Selects the last phrase, so you can fix it with the keyboard. The next phrase you say replaces it. |
+| "capitalize that" | Gives every word of the last phrase a capital. |
+| "all caps that" | Puts the last phrase in capitals. |
+| "no caps that" | Puts the last phrase in small letters. |
+| "delete word" | Deletes the word before the cursor. |
+| "delete sentence" | Deletes the sentence the cursor is at the end of. |
+| "read that" or "repeat that" | Reads the last phrase aloud again. |
+
+**Moving the cursor:** "go to beginning of line", "go to end of line", "go to
+top", "go to end of document".
+
+**Dictation itself:** "start spelling" and "stop spelling" (below), "what can I
+say" (opens the full list), and "stop dictation".
+
+The commands that change the last phrase only change it while it is still
+exactly as it was written. If you have typed into it since, it is left alone
+and QUILL Lite says so, because changing it would change your typing too.
+
+### Spelling a word
+
+For a name the engine will never get right, say **"start spelling"**. Until you
+say **"stop spelling"**, everything you say is written as letters:
+
+- Say letters by name ("bee", "see") or, far more reliably, with the phonetic
+  alphabet: alpha, bravo, charlie, delta, echo, foxtrot, golf, hotel, india,
+  juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo, sierra,
+  tango, uniform, victor, whiskey, x-ray, yankee, zulu.
+- Say "capital" before a letter for a capital, and "space" for a space.
+- Numbers are written as digits: "one", "two" and so on.
+
+"Start spelling", then "capital bravo alpha delta", then "stop spelling" writes
+*Bad*. The letters are read back as they are written, so a wrong one is heard at
+once -- say "scratch that" to take the last run back.
+
+### The full list
+
+Say **"what can I say"** while dictating, or press **Dictation Commands...** in
+Dictation Settings, and QUILL Lite opens a window listing every phrase it acts
+on, with your own phrases and your wake phrase included. Read it with the arrow
+keys; Escape closes it. The same list is published as its own page,
+**Dictation commands**, next to this guide.
+
+### Starting with your voice: the wake phrase
+
+Switch on **Listen for the wake phrase while dictation is off** in Dictation
+Settings, and you can start dictation by saying the wake phrase instead of
+pressing a key. It is **"Quill dictate"** unless you choose another.
+
+- Say the wake phrase, pause, and start talking -- or say it and carry straight
+  on: "Quill dictate, dear Sam, thank you for your letter" wakes dictation and
+  writes *Dear Sam, thank you for your letter.*
+- "Stop dictation" (or Ctrl+F11) stops writing and goes back to waiting for the
+  wake phrase.
+- The wake phrase only counts at the start of what you say. "I told Quill to
+  dictate this" in a conversation does not start anything.
+- A near miss still works: "Quil dictate" wakes it.
+
+**Choosing your own.** Type any phrase in the **Wake phrase** box. It needs at
+least two words, and should be something you would not say in passing -- a
+name and a verb works well. A single word is refused, because it would start
+dictation by accident.
+
+**What it means for the microphone.** While the wake phrase is on, the
+microphone is open whenever QUILL Lite is the window in front. Nothing it hears
+is written, kept or sent anywhere unless it begins with the wake phrase; what
+does not is dropped the moment it has been checked. When another program comes
+to the front, the microphone closes, and dictation stops if it was running.
+When QUILL Lite comes back to the front, it listens for the wake phrase again.
+It does not listen while QUILL Lite is in the background: waking up would mean
+taking the focus from whatever you were doing, and that is not a surprise
+anyone should have to deal with. The wake phrase is off until you turn it on.
+
+The wake phrase works with Moonshine, Whisper and Windows speech recognition,
+but not with Windows voice typing, which Windows runs itself.
+
+### Stopping with your voice: the stop phrase
+
+Say **"stop dictation"** on its own, after a pause, and dictation stops. You can
+choose your own words as well: type them in the **Stop phrase** box in Dictation
+Settings, and saying them stops dictation just the same. "Stop dictation" keeps
+working either way.
+
+- The stop phrase counts only when it is **everything you said** in that breath.
+  "I will stop dictation for today" in the middle of a paragraph is written, not
+  obeyed.
+- Like the wake phrase, it forgives a near miss, and it needs at least two words
+  so ordinary talk does not stop you by accident.
+- With the wake phrase on, stopping goes back to listening for the wake phrase,
+  so you can start and stop without touching the keyboard at all.
+
+### Your own words and phrases
+
+Press **Edit My Words and Phrases...** in Dictation Settings. QUILL Lite opens a
+small file of your own in a new window; change it, save it with Ctrl+S, and the
+next phrase you dictate uses it. It has two parts:
+
+- **Vocabulary** -- names, jargon and acronyms, one per line, spelled the way you
+  want them. When the engine writes something that sounds or looks close to one
+  of these, it is corrected to your spelling: add *Tucson* and "tuxon" becomes
+  *Tucson*.
+- **Replacements** -- your own spoken phrases. `my email address =>
+  someone@example.com` writes the address whenever you say *my email address*.
+  Use `\n` for a new line and `\t` for a tab, so a signature can be two lines.
+
+Your own phrases appear in the "what can I say" list with everything else.
+
+### Choosing the microphone
+
+**Dictation Settings** lists every microphone by name. The first choice follows
+whatever Windows is using as the default recording device; choose a named
+microphone to keep using that one whatever the default becomes. If the
+microphone you chose is unplugged, starting dictation tells you so, rather than
+quietly listening on another one.
+
+### Talking in one long run: Just write what I say
+
+Some people think out loud in one long run and pause wherever the thought
+pauses. Normally each pause is where a phrase ends: it is written with a full
+stop, a tone plays, and the words are read back. Switch on **Just write what I
+say: nothing happens at a pause** in Dictation Settings, and a pause does
+nothing at all:
+
+- **No full stop because you paused.** The words carry on as one sentence until
+  you say "period", "question mark" or another mark yourself. Marks inside what
+  you say are still put in by Moonshine and Whisper.
+- **No tone and no read-back** after each phrase, so nothing talks over you.
+- **No voice commands.** "Scratch that" or "select that" said on its own is
+  written as words. Punctuation and layout you say -- "comma", "new paragraph"
+  -- still work, and so does the **stop phrase**, so there is always a way out
+  by voice.
+
+Everything is still written as you go, and **Ctrl+Z** still takes back a phrase
+at a time. Turn it off again when you want the commands back.
+
+### The finer choices
+
+- **Automatic punctuation (Moonshine and Whisper).** On, the engine puts in full
+  stops, commas and question marks by itself. Off, it adds none, and you say
+  every mark, exactly as with Windows speech recognition.
+- **Pause before a phrase is written.** Short (half a second), Normal (under a
+  second) or Long (about a second and a half). If dictation cuts you off while
+  you are still thinking, choose Long. Windows speech recognition is asked for
+  the same length.
+- **Remove filler words like um and uh.** Hesitations -- um, uh, erm, hmm -- are
+  left out instead of written. Real words are never removed.
+- **Stop dictation after silence.** Never, or after 1, 5 or 10 minutes of hearing
+  nothing, so dictation is not left writing in an empty room. With the wake
+  phrase on, it goes back to waiting for the wake phrase instead. You hear why:
+  "Dictation off after 5 minutes of silence."
+- **Test Microphone.** Beside the microphone list. Press it, wait for "Speak
+  now", and talk for four seconds. You hear how loud the microphone was --
+  almost nothing, quiet, working, or very loud -- and, with Moonshine or Whisper,
+  exactly what the engine heard. Nothing is kept. The result also stays in the
+  box beside the button, to read again.
+
+### Dictation Settings, every option
+
+**Tools ▸ Dictation ▸ Dictation Settings...** (**Alt+Shift+F6**). The
+window has two columns: what is heard and written on the left, starting and
+stopping on the right.
+
+| Option | What it does | Starts as |
+|---|---|---|
+| Speech engine | Moonshine, Whisper, Windows speech recognition, or Windows voice typing | Moonshine |
+| Automatic punctuation (Moonshine and Whisper) | The engine puts in the marks you do not say | On |
+| Language for Windows speech recognition | Which installed Windows speech language to use; the other engines understand English | Windows default |
+| Microphone | Which microphone to listen on | Windows default |
+| Test Microphone (button) | Four seconds of listening: how loud, and what was heard | -- |
+| After each phrase is written, give me | A sound, speech (the words read back), both, or neither | Both |
+| Saying "dash" writes | Em dash, spaced en dash, or two hyphens | Em dash |
+| Pause before a phrase is written | Short, Normal or Long | Normal |
+| Remove filler words like um and uh | Leave hesitations out | Off |
+| Just write what I say: nothing happens at a pause | No full stop, sound, read-back or command at a pause | Off |
+| Play sounds when dictation starts, stops or fails | The start, stop and error tones | On |
+| Say "Dictation on" and "Dictation off" | The words that go with those tones | On |
+| Listen for the wake phrase while dictation is off | Start dictation by voice | Off |
+| Wake phrase | The words that start it | Quill dictate |
+| Stop phrase | The words that stop it, said on their own | stop dictation |
+| Stop dictation after silence | Never, or after 1, 5 or 10 minutes | Never |
+
+Two buttons sit below them: **Dictation Commands...** opens the full list, and
+**Edit My Words and Phrases...** saves these settings and opens your own file.
+
+### Knowing what dictation is doing
+
+- **The status bar** has a **Dictation** part: Off, Listening, Hearing you,
+  Writing, Spelling, or Waiting for wake phrase. Press F6 to reach the status
+  bar and move to it; Enter there starts or stops dictation.
+- **Tools ▸ Dictation ▸ Dictation On** is checked while dictation is writing.
+- **The tones and the words** say when it starts and stops.
+
+### Where the words go
+
+Into the document you started dictation in, at the cursor, each phrase one step
+for **Ctrl+Z**. With the wake phrase, into whichever document is in front when
+you say it.
+
+Dictation stops by itself when that document closes, when you switch it between
+plain and rich text, or when you move somewhere else -- another window, another
+program, or a dialog -- and speak. What you said then is not written anywhere,
+and QUILL Lite tells you why it stopped. There is one microphone, so pressing
+Ctrl+F11 in a second document while dictation runs in the first stops it; press
+it again to start in the second.
+
+### If something goes wrong
+
+Dictation always says what happened and what to do. The usual reasons:
+
+- **No microphone was found.** Connect one and press Ctrl+F11 again.
+- **The microphone you chose is not connected.** Plug it in, or choose another
+  in Dictation Settings.
+- **The microphone could not be opened.** In Windows Settings, go to Privacy and
+  security, Microphone, and make sure desktop apps are allowed to use it.
+- **A speech engine is not included in this copy.** Choose another engine in
+  Dictation Settings; reinstalling QUILL Lite puts the missing one back.
+- **With Windows speech recognition: no speech recogniser is installed.** Add a
+  speech language in Windows Settings, Time and language, Speech.
+
+**If it keeps mishearing you:** try Whisper instead of Moonshine, or the other
+way round; use a headset microphone rather than a laptop's built-in one; turn
+the read-back to a sound only if you are using speakers; and add names you use
+often to your own vocabulary.
+
+Dictation is on in every profile except WordPad and Notepad, and can be
+switched off in **Customize Features** like any other area; switching it off
+removes the menu, the keys and the wake phrase.
 
 ## AI help
 
@@ -3097,6 +3437,76 @@ or update anything, and Usage shows the new number the next time you open it.
 Your support ID is also on **Help ▸ About** and in **Usage**, with a **Copy
 Support ID** button, if you would rather write from somewhere else.
 
+### Using your own OpenAI key: no limits
+
+If you have an OpenAI account, you can use **your own key** instead of QUILL's
+free service, and **every limit goes away**: no monthly, daily or hourly
+allowance, no 2,250-word ceiling, no smaller first 48 hours.
+
+**Tools ▸ AI ▸ Use My Own OpenAI Key** (**Alt+F2**) opens one window:
+
+1. **About this** — a read-only box saying exactly where your text goes.
+   Arrow through it once.
+2. **OpenAI API key** — paste your key here. You make one at
+   platform.openai.com, under API keys. It starts with `sk-`.
+3. **Model** — a list of every model your key can use for text, filled
+   from your OpenAI account once the key is checked: **Luna 6 first, then the
+   other GPT-6 models**, then the rest by name. Each row says roughly what it
+   costs, for example "gpt-6-luna, about $0.57 per 100 requests (estimate)", so
+   arrowing down the list is enough to compare them. Models that cannot answer
+   text — speech, transcription, images, embeddings — are left out.
+4. **Cost estimate** — the chosen model's estimate per request and per 100
+   requests. **These are estimates to help you compare, not OpenAI's prices.**
+   A typical request here is about a page in and a paragraph back; the real
+   prices are at openai.com/api/pricing.
+5. **Status** — whether a key is saved, and what the last test said.
+6. **Test the Key** — checks the key with OpenAI, fills the model list,
+   then sends one tiny request to the chosen model and says whether it
+   answered. The request costs a fraction of a cent.
+7. **Remove the Saved Key** — forgets the key **at once** and puts AI help
+   straight back on QUILL's free service.
+
+Press **OK** and the key is saved. QUILL Lite says "AI help uses your own OpenAI
+key, with no limits."
+
+**Change the model at any time.** With a key saved, opening this window
+lists your models straight away: press **Alt+F2**, pick another, press OK.
+
+**There is no separate switch.** While a key is saved, AI help uses it; remove
+the key and AI help is back on the free service, with its free allowance, the
+moment you do. Nothing else to find and turn off.
+
+**What changes with your own key:**
+
+- Your text goes **straight from this computer to OpenAI**, on your account.
+  Nothing passes through QUILL's servers, so QUILL records nothing at all —
+  not even the count it keeps for the free service.
+- **OpenAI bills you** for each request, under OpenAI's own terms and privacy
+  policy.
+- **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window: which model is
+  answering, that no allowance applies, and an **Open My OpenAI Usage** button
+  that takes you to your OpenAI account's usage page, which is where your
+  requests and charges are. There is no Sign Out and no support ID in it,
+  because neither applies. **Help ▸ About** likewise shows the model and that
+  page's address instead of the free allowance.
+- You do not need to connect this computer, and the free service's agreement
+  is not asked for: it is about QUILL's servers, which this route never touches.
+- The pad, the five things it can do, and what comes back are **exactly the
+  same**, down to the instructions sent with your text. The pad still tells you
+  before sending something very large, because with your own key a large request
+  costs you money.
+
+**Where the key is kept.** In Windows' own credential store, not in a settings
+file, and it is never shown again once saved — the box stays empty and says
+a key is saved. A portable copy keeps it in an encrypted file instead. QUILL and
+QUILL Lite share it: a key saved in either works in both, and removing it in
+either removes it from both.
+
+**If a request fails**, you hear why, followed by error code
+`QUILL-AI-OWN-KEY-FAILED`. The usual causes are a mistyped key, a model your
+account cannot use, or an OpenAI account with no credit. **Test the Key** tells
+you which.
+
 ## Where your files are kept
 
 Your settings, recent files, copy tray and any recovered work are kept in a
@@ -3165,9 +3575,15 @@ QUILL Lite starts"); Ctrl+Alt+U still works either way.
 
 QUILL Lite is a companion to **QUILL for All**, not a replacement for it.
 
-If you want dictation, document conversion, comparing two documents, publishing
-or braille tools, those are QUILL, and QUILL Lite is built so that it will not
-slowly grow into them.
+If you want document conversion, comparing two documents, publishing or braille
+tools, those are QUILL, and QUILL Lite is built so that it will not slowly grow
+into them.
+
+**Dictation moved in 1.1.** QUILL Lite has [Dictation](#dictation) -- built-in
+speech recognition that writes each phrase as you pause -- and QUILL has the very same
+feature on the same keys, in Tools ▸ Speech ▸ Live Dictation. QUILL's offline
+Locked Dictation, which records a passage and transcribes it with a model you
+download, stays QUILL's.
 
 **AI is the one line that moved**, and only a little. QUILL Lite has the five
 free commands described under [AI help](#ai-help) -- summarize, rewrite,
@@ -3483,6 +3899,14 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+F9** | Usage... |
 | **Ctrl+Alt+Shift+F10** | Connect or Sign Out... |
 | **Ctrl+Alt+Shift+K** | Privacy Agreement... |
+| **Alt+F2** | Use My Own OpenAI Key... |
+
+### Tools ▸ Dictation
+
+| Key | Command |
+|---|---|
+| **Ctrl+F11** | Dictation On |
+| **Alt+Shift+F6** | Dictation Settings... |
 
 ### Tools ▸ Change Case
 

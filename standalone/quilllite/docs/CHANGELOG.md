@@ -1,5 +1,129 @@
 # QUILL Lite changelog
 
+## 1.1.0 -- 2026-09-25
+
+### Dictation
+
+- **Dictation** (**Tools > Dictation**, **Ctrl+F11**). Press it, talk, and
+  pause: each phrase is written at the cursor, a soft tone confirms it went in,
+  and the words are read back so you can hear whether they are what you said.
+  It keeps listening until you press Ctrl+F11 again or say "stop dictation".
+  Nothing to download, nothing leaves the computer, and no recording is kept.
+- **Punctuation by itself.** The built-in engines add full stops, commas,
+  question marks and capitals as you speak. Saying a mark yourself always
+  wins, and a full stop that a mid-sentence pause put in is taken back out when
+  the next phrase carries on ("and", "which", "to"...). "New paragraph" ends
+  the sentence before it.
+- **Four speech engines.** Moonshine (the default) and Whisper ship inside
+  QUILL Lite and recognise English on the computer; Windows speech recognition
+  can use any speech language installed in Windows; Windows voice typing hands
+  over to Windows+H. Chosen after measuring eight candidates for accuracy,
+  punctuation, speed on one processor core and size -- Moonshine was the most
+  accurate and by far the fastest.
+- **Spoken punctuation, layout and symbols** anywhere in a phrase: punctuation,
+  quotes, brackets and braces, hyphen, dash, slash, backslash, underscore, at
+  sign, hash sign, dollar and percent signs, ampersand, asterisk, plus, minus
+  and equals signs, new line, new paragraph and tab. "Literal" in front writes
+  the word instead.
+- **Voice commands**, each as a whole phrase: scratch that, undo that, select
+  that, capitalize that, all caps that, no caps that, delete word, delete
+  sentence, read that, go to beginning or end of line, go to top, go to end of
+  document, what can I say, stop dictation. The ones that change the last
+  phrase refuse, and say so, if you have typed into it since.
+- **Spelling mode**: "start spelling", then letters -- by name or with the
+  phonetic alphabet -- with "capital" and "space", then "stop spelling".
+- **The wake phrase**: say "Quill dictate", or a phrase of your own, to start
+  dictation without the keyboard; anything said after it in the same breath is
+  written. Off until you switch it on. It listens only while QUILL Lite is the
+  window in front, drops everything that does not begin with the wake phrase,
+  and closes the microphone when another program comes forward.
+- **Your own words and phrases**: a vocabulary that corrects near misses to your
+  spelling, and replacements (`say => write`) that are your own spoken phrases,
+  in a file opened from Dictation Settings. The same format QUILL uses.
+- **What can I say**: every phrase dictation acts on, in a window you can read
+  with the arrow keys (say "what can I say", or press Dictation Commands in
+  Dictation Settings), and as a published page, **Dictation commands** --
+  both generated from the table dictation itself reads.
+- **Dictation Settings** (**Alt+Shift+F6**): engine, Windows speech language,
+  microphone by name, what you hear after each phrase (a sound, the words read
+  back, both, or neither), what "dash" writes, the tones and words for on and
+  off, and the wake phrase.
+- **A Dictation cell in the status bar**: off, listening, hearing you, writing,
+  spelling, or waiting for the wake phrase. Enter on it starts or stops
+  dictation. Fourteen cells now, where there were thirteen.
+- **Dictation is a feature area** in Customize Features, on by default and off
+  in the WordPad and Notepad profiles. Switching it off closes the microphone.
+  Twenty areas now, where there were nineteen.
+- **QUILL has the same feature on the same keys** (Tools > Speech > Live
+  Dictation), from the same shared code, and reads the same `dictation.md` its
+  Locked Dictation uses.
+
+### Five finer dictation choices, and Just write what I say
+
+- **Just write what I say** (`windows_dictation_continuous`, off): a pause does
+  nothing -- the engine's end-of-phrase full stop is removed and the next
+  phrase continues the sentence (a capital earned only by the pause goes; "I"
+  stays), no phrase tone, no read-back, and whole-phrase commands are written as
+  words. Spoken marks and the stop phrase still work.
+- **Automatic punctuation** on or off for Moonshine and Whisper
+  (`windows_dictation_auto_punctuation`): off strips the engine's marks and the
+  capitals they alone earned.
+- **Pause before a phrase is written** (`windows_dictation_pause`: short 0.5 s,
+  normal 0.8 s, long 1.4 s), handed to the voice detector, and to Windows
+  speech as `ComplexResponseSpeed`.
+- **Remove filler words** (`windows_dictation_remove_fillers`), word by word
+  with QUILL's own filler lists, so punctuation stays with real words.
+- **Stop after silence** (`windows_dictation_silence_minutes`: never, 1, 5, 10),
+  checked every 15 seconds only while writing; spoken as "Dictation off after N
+  minutes of silence."
+- **Test Microphone**: four seconds on the chosen microphone; the peak level in
+  words, and what Moonshine or Whisper heard; spoken and kept in a field.
+- Dictation Settings is now **two columns**, so it fits a 768-pixel screen.
+- `DictationPreferences` moved to `quill/core/windows_dictation/preferences.py`
+  (re-exported from the controller); the choices live in `options.py`.
+
+### Stop phrase
+
+- **Choose your own stop phrase** in Dictation Settings (`windows_dictation_stop_phrase`,
+  "stop dictation" by default). It stops dictation only when said on its own,
+  forgives a near miss like the wake phrase, needs two words, and returns to
+  standby when the wake phrase is on. "Stop dictation" always works as well. The
+  commands list names the user's own.
+
+### AI help on your own OpenAI key
+
+- **Use My Own OpenAI Key** (Tools > AI, Alt+F2): a saved OpenAI key lifts every
+  limit on AI help -- no allowance, no size ceiling -- and sends the passage
+  straight to OpenAI on the user's account, with no QUILL server in between.
+  There is no separate switch: the key's presence is the state, and **Remove the
+  Saved Key** returns to the free service immediately. The window also has
+  **Test the Key** (one tiny request, on a worker thread, result spoken) and a
+  model box. Code `QUILL-AI-OWN-KEY-FAILED` when a request fails.
+- **The same instructions** as the free service: the gateway's prompt templates
+  are sent as the system message, and a test fails if the two drift.
+- **One key store with QUILL**: Windows Credential Manager (an encrypted file in
+  a portable copy), shared with QUILL's AI Hub.
+- **QUILL has the same window on the same key**, in its AI menu, from the same
+  shared module (`quill/ui/hosted_ai_own_key.py`).
+- **Usage and About change with the key.** Usage opens its own window
+  (`OwnKeyUsageFrame`): the model, no allowance, and Open My OpenAI Usage; no
+  Sign Out, no support ID, and nothing fetched. About shows the model and the
+  OpenAI usage address in place of the free allowance.
+- **A model list, not a text box.** Filled from the account's `/v1/models`
+  once the key is checked -- Test the Key, or opening the window with a key
+  saved, so the model can be changed at any time. Luna 6 (`gpt-6-luna`) first,
+  then the other GPT-6 models, then the rest by name; models that cannot answer
+  text (speech, transcription, images, embeddings, moderation, `instruct`) are
+  left out (`quill/core/ai/own_key_models.py`).
+- **Estimated costs** on every row and in a Cost estimate box, labelled as
+  estimates everywhere, with OpenAI's real pricing address. Rough tiers from the
+  model's name; a typical request is 1,100 tokens in and 300 out.
+- **Fixed: GPT-6 refused every request.** OpenAI's newer models answer HTTP 400
+  to `max_tokens`; requests to OpenAI now send `max_completion_tokens`, which
+  every OpenAI chat model accepts. Shared with QUILL's AI Hub, which had the
+  same fault.
+- Setting: `ai_own_key_model` (empty means the default model).
+
 ## 1.0.1 -- 2026-09-25
 
 A fix for AI help on some Windows 10 computers.

@@ -757,6 +757,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_clipboard import DocumentClipboardMixin
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
+    from quill.apps.lite_window_dictation import DocumentDictationMixin
     from quill.apps.lite_window_file import DocumentFileMixin
     from quill.apps.lite_window_folding import DocumentFoldingMixin
     from quill.apps.lite_window_format import DocumentFormatCommandsMixin
@@ -780,6 +781,9 @@ def lite_window(tmp_path, lite_settings):
         # what is reached here is the handler the menu binds, with the
         # frames themselves patched at their own module.
         HostedAiMixin,
+        # Tools > Dictation, added 2026-09-25. The recogniser is patched in the
+        # test; what is reached is the shared handler the menu binds.
+        DocumentDictationMixin,
         DocumentSelectionMixin,
         DocumentMarksMixin,
         DocumentLineMixin,

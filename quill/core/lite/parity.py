@@ -172,6 +172,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # different services under one prefix would be one prefix meaning two things.
     "cmd_ai_ask_document": "tools.hosted_ai_ask_document",
     "cmd_ai_assistant": "tools.hosted_ai_assistant",
+    "cmd_ai_own_key": "tools.hosted_ai_own_key",
     "cmd_ai_privacy": "tools.hosted_ai_privacy",
     "cmd_ai_sign_in": "tools.hosted_ai_sign_in",
     "cmd_ai_usage": "tools.hosted_ai_usage",
@@ -207,6 +208,11 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_describe_character": "power.describe_character",
     "cmd_describe_character_detail": "power.describe_character_detail",
     "cmd_describe_indent": "format.describe_indent_depth",
+    # Windows Dictation: two commands both editors have, on the same two chords,
+    # from one shared module (quill/ui/windows_dictation_commands.py). Not
+    # tools.dictation_lock_toggle, which is QUILL's offline Whisper dictation --
+    # a different engine that records first and transcribes afterwards.
+    "cmd_dictation_settings": "tools.windows_dictation_settings",
     "cmd_duplicate_line": "format.duplicate_line",
     "cmd_duplicate_selection": "edit.duplicate_selection",
     "cmd_editor_font": "format.editor_font",
@@ -344,6 +350,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_toggle_abbreviations": "format.toggle_abbreviation_expansion",
     "cmd_toggle_case": "format.toggle_case",
     "cmd_toggle_dark": "view.toggle_dark_mode",
+    "cmd_toggle_dictation": "tools.windows_dictation_toggle",
     "cmd_toggle_extend_mode": "edit.toggle_selection_marker",
     "cmd_toggle_extend_selection_mode": "edit.toggle_extend_selection_mode",
     "cmd_toggle_fold": "edit.toggle_fold",

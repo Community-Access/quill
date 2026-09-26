@@ -26062,6 +26062,84 @@ number the next time you open it.</p>
 <p>Your support ID is also on <strong>Help ▸ About</strong> and in
 <strong>Usage</strong>, with a <strong>Copy Support ID</strong> button,
 if you would rather write from somewhere else.</p>
+<h3 id="using-your-own-openai-key-no-limits">Using your own OpenAI key:
+no limits</h3>
+<p>If you have an OpenAI account, you can use <strong>your own
+key</strong> instead of QUILL’s free service, and <strong>every limit
+goes away</strong>: no monthly, daily or hourly allowance, no 2,250-word
+ceiling, no smaller first 48 hours.</p>
+<p><strong>AI ▸ Use My Own OpenAI Key</strong> (<strong>Alt+F2</strong>)
+opens one window:</p>
+<ol type="1">
+<li><strong>About this</strong> — a read-only box saying exactly where
+your text goes. Arrow through it once.</li>
+<li><strong>OpenAI API key</strong> — paste your key here. You make one
+at platform.openai.com, under API keys. It starts with
+<code>sk-</code>.</li>
+<li><strong>Model</strong> — a list of every model your key can use for
+text, filled from your OpenAI account once the key is checked:
+<strong>Luna 6 first, then the other GPT-6 models</strong>, then the
+rest by name. Each row says roughly what it costs
+(<code>ai_own_key_model</code> holds your choice), for example
+“gpt-6-luna, about $0.57 per 100 requests (estimate)”, so arrowing down
+the list is enough to compare them. Models that cannot answer text —
+speech, transcription, images, embeddings — are left out.</li>
+<li><strong>Cost estimate</strong> — the chosen model’s estimate per
+request and per 100 requests. <strong>These are estimates to help you
+compare, not OpenAI’s prices.</strong> A typical request here is about a
+page in and a paragraph back; the real prices are at
+openai.com/api/pricing.</li>
+<li><strong>Status</strong> — whether a key is saved, and what the last
+test said.</li>
+<li><strong>Test the Key</strong> — checks the key with OpenAI, fills
+the model list, then sends one tiny request to the chosen model and says
+whether it answered. The request costs a fraction of a cent.</li>
+<li><strong>Remove the Saved Key</strong> — forgets the key <strong>at
+once</strong> and puts AI help straight back on QUILL’s free
+service.</li>
+</ol>
+<p>Press <strong>OK</strong> and the key is saved. QUILL says “AI help
+uses your own OpenAI key, with no limits.”</p>
+<p><strong>Change the model at any time.</strong> With a key saved,
+opening this window lists your models straight away: press
+<strong>Alt+F2</strong>, pick another, press OK.</p>
+<p><strong>There is no separate switch.</strong> While a key is saved,
+AI help uses it; remove the key and AI help is back on the free service,
+with its free allowance, the moment you do. Nothing else to find and
+turn off.</p>
+<p><strong>What changes with your own key:</strong></p>
+<ul>
+<li>Your text goes <strong>straight from this computer to
+OpenAI</strong>, on your account. Nothing passes through QUILL’s
+servers, so QUILL records nothing at all — not even the count it keeps
+for the free service.</li>
+<li><strong>OpenAI bills you</strong> for each request, under OpenAI’s
+own terms and privacy policy.</li>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens a
+different window: which model is answering, that no allowance applies,
+and an <strong>Open My OpenAI Usage</strong> button that takes you to
+your OpenAI account’s usage page, which is where your requests and
+charges are. There is no Sign Out and no support ID in it, because
+neither applies. <strong>Help ▸ About</strong> likewise shows the model
+and that page’s address instead of the free allowance.</li>
+<li>You do not need to connect this computer, and the free service’s
+agreement is not asked for: it is about QUILL’s servers, which this
+route never touches.</li>
+<li>The pad, the five things it can do, and what comes back are
+<strong>exactly the same</strong>, down to the instructions sent with
+your text. The pad still tells you before sending something very large,
+because with your own key a large request costs you money.</li>
+</ul>
+<p><strong>Where the key is kept.</strong> In Windows’ own credential
+store, not in a settings file, and it is never shown again once saved —
+the box stays empty and says a key is saved. A portable copy keeps it in
+an encrypted file instead. QUILL and QUILL Lite share it: a key saved in
+either works in both, and removing it in either removes it from
+both.</p>
+<p><strong>If a request fails</strong>, you hear why, followed by error
+code <code>QUILL-AI-OWN-KEY-FAILED</code>. The usual causes are a
+mistyped key, a model your account cannot use, or an OpenAI account with
+no credit. <strong>Test the Key</strong> tells you which.</p>
 <h3 id="basic-and-advanced--the-short-menu-and-the-long-one">Basic and
 Advanced — the short menu and the long one</h3>
 <p>The AI menu opens <strong>Basic</strong>: the five free-AI rows
@@ -26441,6 +26519,111 @@ count).</li>
 <li><strong>Dictation Microphone…</strong> chooses which microphone
 dictation uses, or the system default.</li>
 </ul>
+<h5 id="live-dictation-ctrlf11">Live Dictation (Ctrl+F11)</h5>
+<p>The dictation QUILL Lite has, in QUILL too, on the same keys:
+<strong>Tools &gt; Speech &gt; Live Dictation</strong>. Press
+<strong>Ctrl+F11</strong>, talk, and pause: each phrase is written at
+the cursor as you pause, a soft tone confirms it arrived, and the words
+are read back to you. It keeps listening until you press
+<strong>Ctrl+F11</strong> again or say “stop dictation”. Nothing leaves
+your computer, nothing is downloaded, and no recording is kept. Unlike
+<strong>Locked Dictation</strong> below, which records a passage and
+transcribes it afterwards, Live Dictation writes as you go.</p>
+<p>The full list of everything it understands is its own page,
+<strong><a href="dictation-commands.html">Dictation
+commands</a></strong>, generated from the table QUILL itself reads.
+While dictating, say <strong>“what can I say”</strong> to open the same
+list in a window.</p>
+<ul>
+<li><strong>You do not need to say punctuation.</strong> The built-in
+engines add full stops, commas, question marks and capitals by
+themselves. Say a mark when you want a particular one (“comma”, “new
+paragraph”) and your word wins. When a pause splits a sentence and the
+next part begins with a word like <em>and</em> or <em>which</em>, the
+full stop the pause put in is taken back out.</li>
+<li><strong>Speech engines.</strong> <strong>Moonshine</strong> (the
+default: fast even on a modest computer), <strong>Whisper</strong> (a
+little slower; try it if Moonshine often mishears you), both built in
+and English; <strong>Windows speech recognition</strong> (any speech
+language installed in Windows, but no punctuation of its own); and
+<strong>Windows voice typing</strong> (hands over to Windows+H, where
+none of the commands apply).</li>
+<li><strong>Punctuation and layout, anywhere in a phrase.</strong>
+“period”, “comma”, “question mark”, “open quote” and “close quote”,
+brackets, “hyphen”, “dash”, “slash”, symbols like “at sign” and “percent
+sign”, “new line”, “new paragraph”, “tab”. Say “literal” first to write
+one as a word.</li>
+<li><strong>Commands, as a whole phrase after a pause.</strong> “scratch
+that” removes the last phrase; “undo that”; “select that”; “capitalize
+that”, “all caps that”, “no caps that”; “delete word”, “delete
+sentence”; “read that”; “go to beginning of line”, “go to end of line”,
+“go to top”, “go to end of document”; “stop dictation”. Commands that
+change the last phrase leave it alone if you have typed into it since,
+and say so.</li>
+<li><strong>Spelling.</strong> Say “start spelling”, then letters – the
+phonetic alphabet (alpha, bravo, charlie…) is the reliable way – with
+“capital” before a capital and “space” for a space, then “stop
+spelling”.</li>
+<li><strong>The wake phrase.</strong> Switch on <strong>Listen for the
+wake phrase while dictation is off</strong> in Dictation Settings and
+say <strong>“Quill dictate”</strong> – or a phrase of your own, at least
+two words – to start without the keyboard. Anything you say after it in
+the same breath is written. While it is on, the microphone is open
+whenever QUILL is the window in front; nothing it hears is written, kept
+or sent unless it begins with the wake phrase, and it closes when
+another program comes to the front. It never listens in the
+background.</li>
+<li><strong>Your own words and phrases.</strong> <strong>Edit My Words
+and Phrases…</strong> in Dictation Settings opens your
+<code>dictation.md</code> – the same file Locked Dictation reads.
+<strong>Vocabulary</strong> entries correct near misses to your
+spelling; <strong>Replacements</strong> (<code>say =&gt; write</code>,
+with <code>\n</code> for a new line) are your own spoken phrases.</li>
+<li><strong>Dictation Settings – Alt+Shift+F6.</strong> The
+<strong>speech engine</strong> (<code>windows_dictation_engine</code>);
+the <strong>language</strong> for Windows speech recognition
+(<code>windows_dictation_language</code>); the
+<strong>microphone</strong> (<code>windows_dictation_microphone</code>,
+saved by name); <strong>what you hear after each phrase</strong>
+(<code>windows_dictation_phrase_feedback</code>: a sound, the words read
+back, both – the default – or neither); what <strong>“dash”</strong>
+writes (<code>windows_dictation_dash</code>: em dash, spaced en dash, or
+two hyphens); the <strong>start, stop and error tones</strong>
+(<code>windows_dictation_cue_sounds</code>); <strong>saying “Dictation
+on” and “Dictation off”</strong>
+(<code>windows_dictation_announce</code>); the <strong>wake
+phrase</strong> (<code>windows_dictation_wake_enabled</code>,
+<code>windows_dictation_wake_phrase</code>); and the <strong>stop
+phrase</strong> (<code>windows_dictation_stop_phrase</code>, “stop
+dictation” until you choose your own words, said on their own after a
+pause – “stop dictation” always works too). Five finer choices sit
+beside them: <strong>automatic punctuation</strong> for Moonshine and
+Whisper (<code>windows_dictation_auto_punctuation</code>; off, you say
+every mark); the <strong>pause before a phrase is written</strong>
+(<code>windows_dictation_pause</code>: short, normal or long);
+<strong>remove filler words</strong> such as um and uh
+(<code>windows_dictation_remove_fillers</code>); <strong>stop dictation
+after silence</strong> (<code>windows_dictation_silence_minutes</code>:
+never, 1, 5 or 10 minutes); and <strong>Just write what I say</strong>
+(<code>windows_dictation_continuous</code>), for talking in one long run
+– a pause then puts in no full stop, plays nothing, reads nothing back,
+and voice commands are written as words, with only spoken marks and the
+stop phrase still obeyed. <strong>Test Microphone</strong> records four
+seconds and says how loud it was and what the engine heard. A failure is
+always spoken whatever these say. If the read-back plays through
+speakers the microphone can hear it, so use headphones or choose a sound
+only.</li>
+<li><strong>Where the words go.</strong> Into the document you started
+in, replacing any selection, each phrase one step for
+<strong>Ctrl+Z</strong>. If you move to another tab, window, program or
+dialog and speak, nothing is written and dictation stops and tells you
+why; closing the document stops it too. If it will not start it says
+why: no microphone, microphone access turned off for desktop apps in
+Windows Settings, Privacy and security, Microphone, or – for Windows
+speech recognition – no speech language installed.</li>
+</ul>
+<p>Live Dictation and Locked Dictation each keep their own microphone
+choice.</p>
 <h5 id="locked-dictation-ctrlf9">Locked Dictation (Ctrl+F9)</h5>
 <p>One keyboard-only way to dictate without opening a dialog or leaving
 the editor. It uses the same on-device Whisper engine and microphone as

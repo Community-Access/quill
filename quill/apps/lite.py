@@ -2,9 +2,8 @@
 
 One document per window, plain text or rich text, and nothing else. It exists
 for the person who wants Notepad or WordPad with QUILL's accessibility and finds
-the full writing environment more than they need: no tabs, no AI, no dictation,
-no conversion, no comparison, no publishing, no extensions, no setup wizard, no
-command palette.
+the full writing environment more than they need: no tabs, no conversion, no
+comparison, no publishing, no extensions, no setup wizard, no command palette.
 
 It is explicitly **not** a replacement for QUILL, and explicitly **not** a place
 new features go. Anyone who wants any of the list above wants QUILL, and

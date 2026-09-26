@@ -556,6 +556,21 @@ def _no_ambient_provider_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Hide the developer's saved OpenAI key from AI help.
+
+    A saved key alone switches AI help to the user's own account
+    (``quill/core/ai/own_key.py``), and it is read from Windows' credential
+    store, which the environment fixture above cannot hide. A developer with a
+    key in QUILL's AI Hub would otherwise run every hosted-AI test down the
+    own-key route. Tests of that route patch ``has_own_key`` back themselves.
+    """
+    from quill.core.ai import own_key
+
+    monkeypatch.setattr(own_key, "has_own_key", lambda: False)
+
+
+@pytest.fixture(autouse=True)
 def _reclaim_leaked_wx_windows():
     """Destroy wx top-level windows a test created but never destroyed.
 

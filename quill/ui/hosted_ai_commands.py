@@ -112,15 +112,37 @@ class HostedAiMixin:
             return
         from quill.ui.hosted_ai_dialogs import AiUsageFrame
 
-        if not self._ai_service().signed_in:
+        if self._ai_service().own_key_active:  # no allowance: the model and the bill
+            from quill.ui.hosted_ai_own_key import OwnKeyUsageFrame as AiUsageFrame
+        elif not self._ai_service().signed_in:
             self._announce(
                 "This computer is not connected to QUILL's free AI. "
                 "Choose Connect or Sign Out in the AI menu to connect it."
             )
             return
         self._open_ai_window(
-            "usage", lambda: AiUsageFrame(self._ai_parent(), self._ai_service(), self._announce)
+            f"usage-{AiUsageFrame.__name__}",
+            lambda: AiUsageFrame(self._ai_parent(), self._ai_service(), self._announce),
         )
+
+    def cmd_ai_own_key(self) -> None:
+        """Use My Own OpenAI Key. Needs no agreement: nothing goes to QUILL's servers."""
+        if not self._ai_host().feature_enabled("hosted_ai"):
+            self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
+            return
+        from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.hosted_ai_own_key import OwnKeyDialog
+
+        settings = self._ai_host().settings
+        dialog = OwnKeyDialog(self._ai_parent(), settings, self._announce)
+        try:
+            if show_modal_dialog(dialog, "Use My Own OpenAI Key") != wx.ID_OK:
+                return
+            outcome = dialog.apply(settings)
+        finally:
+            dialog.Destroy()
+        self._ai_host().save_settings()
+        self._announce(outcome)
 
     def cmd_ai_sign_in(self) -> None:
         if not self._ai_ready():
@@ -183,8 +205,16 @@ class HostedAiMixin:
         the server every time -- limits can be raised or lowered there at any
         moment -- so a placeholder goes in and is replaced when the answer
         arrives, which it does while the About window is still open. The caret
-        stays where it was: somebody may already be reading.
+        stays where it was: somebody may already be reading. With the user's own
+        key there is no allowance to fetch, so the model and the bill go in instead.
         """
+        if self._ai_service().own_key_active:
+            from quill.ui.hosted_ai_own_key import own_key_about_text
+
+            where = field.GetInsertionPoint()
+            field.AppendText(own_key_about_text(self._ai_service().own_key_model))
+            field.SetInsertionPoint(where)
+            return
         support_id = self.ai_support_id()
         if not support_id:
             return
@@ -361,6 +391,11 @@ class HostedAiMixin:
         if not self._ai_host().feature_enabled("hosted_ai"):
             self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
             return False
+        # With the user's own key, the agreement about QUILL's servers does not
+        # apply -- nothing goes to them. The own-key window says where the text
+        # does go, and switching it on there is the consent.
+        if self._ai_service().own_key_active:
+            return True
         if not self._ai_privacy_accepted():
             return self._ask_ai_privacy()
         return True
@@ -454,7 +489,7 @@ class HostedAiMixin:
             return
 
         service = self._ai_service()
-        if not service.signed_in:
+        if not service.own_key_active and not service.signed_in:
             self._announce(
                 "This computer is not connected to QUILL's free AI. "
                 "Choose Connect or Sign Out in the AI menu to connect it."

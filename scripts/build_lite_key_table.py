@@ -149,7 +149,10 @@ def main() -> int:
     if updated == text:
         print(f"{GUIDE} key table already current.")
         return 0
-    GUIDE.write_text(updated, encoding="utf-8", newline="")
+    # Keep the guide's own line endings. read_text() turns CRLF into LF, so
+    # writing ``updated`` back as-is rewrote every line of a CRLF guide.
+    crlf = b"\r\n" in GUIDE.read_bytes()
+    GUIDE.write_text(updated, encoding="utf-8", newline="\r\n" if crlf else "")
     print(f"Rewrote the key table in {GUIDE}.")
     return 0
 

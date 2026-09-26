@@ -407,3 +407,32 @@ def test_the_toggle_flips_the_mode_rather_than_re_reading_it() -> None:
     """The original toggle saved the value it had just read, so nothing changed."""
     body = _source(_AI_MENU)
     assert "EXPERIENCE_ADVANCED if is_basic_mode() else EXPERIENCE_BASIC" in body
+
+
+def test_own_key_is_the_shared_command_on_lites_chord_and_joins_the_accelerator_map() -> None:
+    """Use My Own OpenAI Key: one implementation, the same key, and a menu id
+    that survives a rebuild so the accelerator keeps firing it."""
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+    from quill.core.lite.parity import COMMAND_EQUIVALENTS
+    from quill.ui.hosted_ai_commands import HostedAiMixin
+    from quill.ui.main_frame_hosted_ai import HostedAiCommandsMixin
+
+    assert "cmd_ai_own_key" in vars(HostedAiMixin)
+    assert "cmd_ai_own_key" not in vars(HostedAiCommandsMixin)
+    lite_keys = {row[3]: row[2] for row in COMMANDS if row[3]}
+    assert DEFAULT_KEYMAP[COMMAND_EQUIVALENTS["cmd_ai_own_key"]] == lite_keys["cmd_ai_own_key"]
+
+    class Base:
+        def _command_to_menu_id_map(self) -> dict[str, int]:
+            return {"file.new": 1}
+
+    class Frame(HostedAiCommandsMixin, Base):
+        pass
+
+    frame = Frame()
+    first = frame._own_key_menu_id()
+    assert frame._own_key_menu_id() is first
+    mapping = frame._command_to_menu_id_map()
+    assert mapping["file.new"] == 1
+    assert mapping["tools.hosted_ai_own_key"] == first
