@@ -65,6 +65,10 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         # deliberately left as a historical page) this one is generated from the
         # repo, so it cannot drift from the release it announces.
         "announcement": "announcement-3.0.html",
+        # The 41 tutorials and the changelog (2026-09-26): the site carries
+        # every 3.0 document, not only the guide and the notes.
+        "tutorials": "tutorials.html",
+        "changelog": "CHANGELOG.html",
     },
     "cast": {
         "userguide": "userguide.html",
