@@ -10,7 +10,7 @@ with the original context preserved.
 
 This repo is the standalone companion app, following the pattern set by
 [Quill Cast](https://github.com/Community-Access/quill-cast) and
-[Quill Radio](https://github.com/Community-Access/quill-radio). The full
+[Quill Radio](https://www.quillforall.org/radio.html). The full
 product requirements and implementation plan live in
 [Docs/PRD.md](Docs/PRD.md) (see section 44 for the grounded implementation
 plan and section 45 for the QuillSync server plan).

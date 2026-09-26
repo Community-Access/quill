@@ -2619,6 +2619,11 @@ never inside the QUILL editor.</p>
 </thead>
 <tbody>
 <tr>
+<td>(unbound by default)</td>
+<td>Sound Enhancements…</td>
+<td><code>media.sound_enhancements</code></td>
+</tr>
+<tr>
 <td>Alt+0</td>
 <td>Play favorite 10</td>
 <td><code>radio.play_favorite_10</code></td>
@@ -2674,9 +2679,19 @@ never inside the QUILL editor.</p>
 <td><code>radio.play_favorite</code></td>
 </tr>
 <tr>
+<td>Ctrl+.</td>
+<td>Radio: Stop</td>
+<td><code>radio.stop</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+0</td>
 <td>Community Picks…</td>
 <td><code>radio.community_picks</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+8</td>
+<td>ADP: Ask about Described Movies and TV…</td>
+<td><code>adp.ask</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+9</td>
@@ -2709,11 +2724,6 @@ never inside the QUILL editor.</p>
 <td><code>radio.add_youtube_link</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+P</td>
-<td>Radio: Stop</td>
-<td><code>radio.stop</code></td>
-</tr>
-<tr>
 <td>Ctrl+Alt+R</td>
 <td>Record Station…</td>
 <td><code>radio.record_station</code></td>
@@ -2724,9 +2734,24 @@ never inside the QUILL editor.</p>
 <td><code>radio.find_streams</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+A</td>
+<td>ADP: Settings…</td>
+<td><code>adp.settings</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+D</td>
+<td>Internet Radio: Download Preferences…</td>
+<td><code>radio.download_preferences</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+F</td>
 <td>Upcoming…</td>
 <td><code>radio.upcoming</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+G</td>
+<td>Internet Radio: Update Station Catalog</td>
+<td><code>radio.update_catalog</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+I</td>
@@ -2744,14 +2769,19 @@ never inside the QUILL editor.</p>
 <td><code>app.import_setup</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+O</td>
+<td>Internet Radio: Choose Browse Sources…</td>
+<td><code>radio.browse_sources</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+P</td>
 <td>Recent Problems…</td>
 <td><code>app.recent_problems</code></td>
 </tr>
 <tr>
-<td>Ctrl+Alt+Shift+Q</td>
-<td>ADP: Ask about Described Movies and TV…</td>
-<td><code>adp.ask</code></td>
+<td>Ctrl+Alt+Shift+S</td>
+<td>Internet Radio: Station Catalog Status…</td>
+<td><code>radio.catalog_status</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+V</td>
@@ -2799,9 +2829,29 @@ never inside the QUILL editor.</p>
 <td><code>radio.browse</code></td>
 </tr>
 <tr>
+<td>Ctrl+Down</td>
+<td>Radio: Volume Down</td>
+<td><code>radio.volume_down</code></td>
+</tr>
+<tr>
+<td>Ctrl+E</td>
+<td>Internet Radio: Sound Enhancements…</td>
+<td><code>radio.sound_enhancements</code></td>
+</tr>
+<tr>
 <td>Ctrl+G</td>
 <td>Go to</td>
 <td><code>radio.go_to</code></td>
+</tr>
+<tr>
+<td>Ctrl+L</td>
+<td>Play Last Station</td>
+<td><code>radio.play_last</code></td>
+</tr>
+<tr>
+<td>Ctrl+M</td>
+<td>Radio: Mute/Unmute</td>
+<td><code>radio.mute_toggle</code></td>
 </tr>
 <tr>
 <td>Ctrl+N</td>
@@ -2809,14 +2859,74 @@ never inside the QUILL editor.</p>
 <td><code>radio.add_custom_station</code></td>
 </tr>
 <tr>
+<td>Ctrl+P</td>
+<td>Radio: Play/Pause</td>
+<td><code>radio.play_pause</code></td>
+</tr>
+<tr>
 <td>Ctrl+R</td>
 <td>Record Now / Stop Recording</td>
 <td><code>radio.record_toggle</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+,</td>
+<td>Transport.previous chapter</td>
+<td><code>radio.transport.previous_chapter</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+.</td>
+<td>Transport.next chapter</td>
+<td><code>radio.transport.next_chapter</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+0</td>
+<td>Transport.speed reset</td>
+<td><code>radio.transport.speed_reset</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+9</td>
+<td>Transport.skip silence</td>
+<td><code>radio.transport.skip_silence</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+B</td>
+<td>Volume Boost</td>
+<td><code>radio.volume_boost</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+C</td>
+<td>Transport.chapter list</td>
+<td><code>radio.transport.chapter_list</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Down</td>
+<td>Transport.speed down</td>
+<td><code>radio.transport.speed_down</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+F</td>
 <td>Toggle playing favorite</td>
 <td><code>radio.toggle_playing_favorite</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+G</td>
+<td>Transport.go to player</td>
+<td><code>radio.transport.go_to_player</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+H</td>
+<td>Song History…</td>
+<td><code>radio.song_history</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+L</td>
+<td>Back to Live</td>
+<td><code>radio.jump_to_live</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Left</td>
+<td>Rewind 30 Seconds</td>
+<td><code>radio.rewind</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+M</td>
@@ -2829,9 +2939,19 @@ never inside the QUILL editor.</p>
 <td><code>radio.acb_calendar</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+Q</td>
+<td>Internet Radio: Listening Statistics…</td>
+<td><code>radio.statistics</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+R</td>
 <td>Recordings…</td>
 <td><code>radio.recordings</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Right</td>
+<td>Forward 30 Seconds</td>
+<td><code>radio.forward</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+S</td>
@@ -2839,14 +2959,39 @@ never inside the QUILL editor.</p>
 <td><code>radio.schedule_recording</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+Up</td>
+<td>Transport.speed up</td>
+<td><code>radio.transport.speed_up</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+W</td>
+<td>Transport.announce position</td>
+<td><code>radio.transport.announce_position</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+Y</td>
 <td>Internet Radio: Add from YouTube Playlist…</td>
 <td><code>radio.add_youtube_playlist</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+Z</td>
+<td>Media: Sleep Timer…</td>
+<td><code>media.sleep_timer</code></td>
+</tr>
+<tr>
 <td>Ctrl+Space</td>
 <td>Pause</td>
 <td><code>radio.pause</code></td>
+</tr>
+<tr>
+<td>Ctrl+T</td>
+<td>What’s Playing - Review and Copy…</td>
+<td><code>radio.whats_playing_details</code></td>
+</tr>
+<tr>
+<td>Ctrl+Up</td>
+<td>Radio: Volume Up</td>
+<td><code>radio.volume_up</code></td>
 </tr>
 <tr>
 <td>Ctrl+Z</td>

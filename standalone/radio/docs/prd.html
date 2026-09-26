@@ -198,7 +198,7 @@
 <main id="main-content">
 <h1 id="quill-radio--product-requirements">Quill Radio – Product
 Requirements</h1>
-<p>Version 3.0.0</p>
+<p>Version 3.0.0, released 2026-09-26.</p>
 <h2 id="1-product-statement">1. Product statement</h2>
 <p>Quill Radio is QUILL’s internet radio, shipped as its own small
 Windows app for people who want the radio on without loading a full
@@ -222,7 +222,9 @@ for content that exists because QUILL is not in the picture.</li>
 <li>R-3. Data is shared, not copied: favorites (folders, custom names,
 per-station volumes), recently-played history, recordings, schedules,
 the wake-up timer, and settings live in the same
-<code>%APPDATA%\Quill</code> store QUILL uses.</li>
+<code>%APPDATA%\Quill</code> store QUILL uses. The one exception is a
+portable copy, which keeps all of it in its own <code>data\</code>
+folder (P-3).</li>
 <li>R-4. Keystrokes are the app’s own (menu accelerators), kept separate
 from QUILL’s keymap so nothing collides with editor shortcuts.</li>
 </ul>
@@ -281,13 +283,14 @@ their own (Westwood One, NBC News Radio, ABC News Radio) open an
 affiliate name-search, labelled as such. CBS News Radio is deliberately
 excluded (the syndicated service ends 2026-05-22). Ten
 <code>radio.play_favorite_1..10</code> commands play the first ten
-favorites directly (default <code>Ctrl+Alt+Shift+1..0</code> since the
-plain number keys are already bound; rebindable, on the Command
-Palette). Browse Stations remembers the top-level source last selected
-and reopens there instead of collapsed. The equalizer target is already
-met by the existing Sound Enhancements (3-band EQ + presets +
-compressor/mono/night mode, applied via mpv’s native
-<code>af</code>).</li>
+favorites directly (<code>Alt+1..0</code> in Quill Radio via
+<code>APP_KEYMAPS["radio"]</code> – they were
+<code>Ctrl+Alt+Shift+1..0</code> until 2026-09-16, when QUILL’s editor
+took that row; rebindable, on the Command Palette). Browse Stations
+remembers the top-level source last selected and reopens there instead
+of collapsed. The equalizer target is already met by the existing Sound
+Enhancements (3-band EQ + presets + compressor/mono/night mode, applied
+via mpv’s native <code>af</code>).</li>
 <li>JavaScript-player resolution in the website stream finder (upstream
 <code>core/radio/triton.py</code>): Triton Digital / StreamTheWorld
 players (the <code>player.listenlive.co</code> network and thousands of
@@ -589,11 +592,12 @@ buttons kept colliding ones until 2026-08-16 (Add to Fa&amp;vorites vs
 &amp;View; &amp;Record vs &amp;Record), both silently dead. The rule is
 a <em>free</em> letter, never no letter: P&amp;lay/S&amp;top (Alt+L /
 Alt+T), Add to &amp;Favorites, Rec&amp;ord, &amp;Browse Stations, plus
-Ctrl+Alt+P as an unconditional stop beside Ctrl+P’s toggle. Status-bar
-cells are exempt – they are a read-out reached with F6 and arrows (A-6),
-and spending six letters on them would starve the actions that need
-them. Enforced by <code>tests/unit/ui/test_button_mnemonics.py</code>,
-which checks both halves (a key exists; the menu bar does not answer it
+Ctrl+. as an unconditional stop beside Ctrl+P’s toggle (Ctrl+Alt+P until
+3.0.0, when it collided with Connect to Spotify). Status-bar cells are
+exempt – they are a read-out reached with F6 and arrows (A-6), and
+spending six letters on them would starve the actions that need them.
+Enforced by <code>tests/unit/ui/test_button_mnemonics.py</code>, which
+checks both halves (a key exists; the menu bar does not answer it
 first).</li>
 <li>A-14. <strong>One transport table, and every window answers to
 it.</strong> Quill Radio has always had exactly one player object; what
@@ -757,44 +761,60 @@ on setup, and removed on uninstall only when the last referencing app is
 gone. ffmpeg and libmpv (the mpv playback engine, with its GPL license
 texts and source-offer note) stage into the runtime’s
 <code>tools\</code> and are found via <code>QUILL_APP_ROOT</code>.</li>
-<li>P-3. Four distribution editions, one per download need. Two full and
-two light:
+<li>P-3. Two distribution artifacts, one question – installed, or
+carried (3.0.0, 2026-09-26; the same two QUILL Lite ships):
 <ul>
-<li><em>Full portable zip</em>
-(<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>, approximately
-311 MB): fully self-contained, no install, no runtime network use, runs
-from a USB stick. Carries a genuine unmodified embeddable Python plus
-bundled ffmpeg/mpv, and a <code>data\</code> folder that switches
-storage to travel with the app (<code>quill/core/storage_mode.py</code>
-recognizes <code>QuillRadio.exe</code> as portable evidence).</li>
-<li><em>Companion edition</em>
-(<code>Quill-Radio-Companion-&lt;version&gt;.zip</code>, approximately 3
-MB): the native launcher plus docs only, running on the shared runtime.
-On first launch, if the runtime is absent, it offers to download and
-install it once (approximately 230 MB) behind the accessible progress UI
-(A-10).</li>
-<li><em>Full installer</em>
-(<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code>): installs
-the shared runtime (if absent) plus the app; Inno Setup, its own AppId,
-<code>{autopf}\Quill Radio</code>, per-user by default.</li>
-<li><em>Thin (“Lite”) installer</em>: a small installer that downloads
-the shared runtime only when it is not already present.</li>
+<li><em>Installer</em>
+(<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code>), recommended
+for most people: installs the shared runtime if it is absent, then the
+app, with a Start Menu entry and an uninstaller; Inno Setup, its own
+AppId, <code>{autopf}\Quill Radio</code>, per-user by default. Uses the
+shared <code>%APPDATA%\Quill</code> data (R-3).</li>
+<li><em>Portable zip</em>
+(<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>): fully
+self-contained, no install, no runtime network use, runs from anywhere
+including a USB stick. Carries a genuine unmodified embeddable Python
+plus bundled ffmpeg/mpv. <strong>A portable copy writes nothing to the
+host computer</strong>: settings, favorites, history and everything else
+live in the <code>data\</code> folder beside <code>QuillRadio.exe</code>
+from the very first launch, with no setting to find first
+(<code>quill/core/storage_mode.py</code> recognizes
+<code>QuillRadio.exe</code> as portable evidence). Deleting the
+<code>data\</code> folder turns it into an ordinary copy that uses this
+computer’s profile.</li>
+<li><em>Retired</em>: the thin (“Lite”) installer and the Companion zip,
+which shipped only in pre-release builds. The Companion zip installed
+nothing, so it bound to whatever shared runtime was on the machine –
+possibly older than the app, with no way to self-heal, because the
+bootstrap fires only when no runtime resolves. The thin installer traded
+download size for a first-launch runtime download and a network
+dependency. Retiring them strands nobody: both installers share an
+AppId, so the full installer upgrades a thin install in place, and the
+updater falls through to an installable asset when a release publishes
+none for the running edition
+(<code>core/updates.py::_app_asset_url</code>). Rationale of record: the
+header of <code>standalone/radio/scripts/build_release.ps1</code>.</li>
 </ul></li>
-<li>P-4. Runtime download is always accessible (A-10). Every fetch of
-the shared runtime – whether triggered by an installer or by the app’s
-own first launch – surfaces a progress bar that reads correctly under
-NVDA, JAWS, and Narrator, announcing progress as a percentage.</li>
+<li>P-4. No runtime download at install or first launch. Both artifacts
+bundle everything they need, so neither performs a download. Where any
+QuillVille surface does fetch the shared runtime, A-10 governs it.</li>
 <li>P-5. Uninstall never deletes <code>%APPDATA%\Quill</code> – QUILL,
 Quill Weather, or QUILL Cast may still use it; the shared runtime is
 likewise left in place while any other QuillVille app references
 it.</li>
 <li>P-6. Release artifacts:
-<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>,
-<code>Quill-Radio-Companion-&lt;version&gt;.zip</code>,
-<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code>, and the thin
-(“Lite”) installer, tagged <code>v&lt;version&gt;</code>, which Help
-&gt; Check for Updates compares against and downloads (the installer for
-an installed copy, the portable zip for a portable one).</li>
+<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code> and
+<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>, published on the
+QUILL repository’s releases under the tag
+<code>quill-radio-v&lt;version&gt;</code>. <strong>Help &gt; Check for
+Updates… (Ctrl+Alt+U)</strong> behaves exactly as QUILL Lite’s: it asks
+only “portable, or not” (<code>match_edition=False</code>) and offers
+the matching artifact; the Update Available dialog shows the release’s
+What’s New notes in a read-only box that takes focus, with Update
+(default, Enter) and Close (Escape); a manual check that finds nothing
+says “You are up to date” in a dialog; and the silent once-a-day launch
+check speaks only when an update exists and can be turned off in
+Preferences (Ctrl+,).</li>
 </ul>
 <h2 id="6-network-requirements">6. Network requirements</h2>
 <ul>
@@ -811,11 +831,12 @@ into any search box (<code>federated_browse</code>‘s
 <code>WEBSITE</code> source), which contacts no directory at all; the
 playing stream itself for ICY titles and, as a same-host last-resort for
 What’s Playing, that stream server’s own Icecast/SHOUTcast status
-endpoint; and this repository’s GitHub releases for the update check.
-Playback (mpv) and the metadata/status requests send a “Quill Radio”
-User-Agent. No telemetry of any kind. (Sound Enhancements’ local relay,
-§8, is loopback-only and never reaches the network itself – it filters
-the same stream this section already covers.)</li>
+endpoint; and the QUILL repository’s GitHub releases (tags
+<code>quill-radio-v*</code>) for the update check. Playback (mpv) and
+the metadata/status requests send a “Quill Radio” User-Agent. No
+telemetry of any kind. (Sound Enhancements’ local relay, §8, is
+loopback-only and never reaches the network itself – it filters the same
+stream this section already covers.)</li>
 <li>N-2. Safe Mode disables the radio’s network surfaces along with the
 feature, <strong>per branch</strong> rather than as one app-wide switch:
 <code>browse_sources.LOCAL_SOURCES</code> names the branches that need
@@ -1010,12 +1031,14 @@ re-importing skips what is already followed. 11 tests.</p></li>
 <li><p><strong>An update offers back the edition you are running (3.0.0;
 <code>core/install_edition.py</code>, <code>core/updates.py</code>,
 <code>ui/app_shell.py</code>, the <code>.iss</code> markers).</strong>
-Reported twice – #1100 (“what was downloaded was the portable version
-rather than the full installer”) and again 2026-08-16 (“whenever i
-update it shows me the portable”). #1100 was closed after fixing one
-axis, and the complaint outlived it because <strong>three</strong>
-faults produce the same symptom. (1)
-<code>_running_portable_build</code> looked for
+<em>Superseded for the final release: with two artifacts (P-3), Check
+for Updates asks only “portable, or not” (P-6); the edition marker
+remains for the family apps that still publish four.</em> Reported twice
+– #1100 (“what was downloaded was the portable version rather than the
+full installer”) and again 2026-08-16 (“whenever i update it shows me
+the portable”). #1100 was closed after fixing one axis, and the
+complaint outlived it because <strong>three</strong> faults produce the
+same symptom. (1) <code>_running_portable_build</code> looked for
 <code>unins000.exe</code> beside <code>sys.executable</code>; on the
 shared QuillVille Runtime that is
 <code>%LOCALAPPDATA%\QuillVille\Runtime\QuillVilleRuntime.exe</code>,
@@ -1613,7 +1636,7 @@ a sighted viewer can see. Broadcasters publish them; YouTube carries
 them on a growing number of videos; and the desktop-player state of the
 art is an audio-track menu reading “Track 1 / Track 2 / Track 3”, which
 for a blind listener is not a control but a puzzle solved by playing
-each in turn. <strong>Playback &gt; Audio and Described Audio…
+each in turn. <strong>Audio &gt; Audio and Described Audio…
 (Ctrl+Shift+A)</strong> and <strong>Play Described Audio
 (Ctrl+Alt+D)</strong>. <code>tracks_from_info</code> reads the
 renditions yt-dlp already reports on every resolve (audio-only,
@@ -1923,9 +1946,9 @@ the model to admit when it does not know the song. Persistence is
 classified <code>cache</code> in the persistence audit: an observed log
 with no default whose meaning could silently change. Off switch:
 <code>RadioHistory.song_history_enabled</code>.</li>
-<li><em>One volume for every station (Playback &gt; Use One Volume for
-All Stations).</em> <code>RadioHistory.use_global_volume</code> (default
-off, so behaviour is unchanged until switched on) makes
+<li><em>One volume for every station (Audio &gt; Use One Volume for All
+Stations, Ctrl+Alt+V).</em> <code>RadioHistory.use_global_volume</code>
+(default off, so behaviour is unchanged until switched on) makes
 <code>volume_percent</code> the single level
 <code>_radio_resolve_volume</code> returns for every station,
 deliberately outranking a favorite’s own remembered level – which is the
@@ -2078,7 +2101,7 @@ entries with no stream URL, and round-trips through
 <code>parse_m3u</code>. M3U is flat, so folder structure is not
 represented (matching import’s discard). Station-menu wiring in
 <code>ui/radio/playlist_export_ui.py</code>.</li>
-<li><em>Output Device quick picker (#1253).</em> Playback &gt;
+<li><em>Output Device quick picker (#1253).</em> Audio &gt;
 <strong>Output Device… (Ctrl+Shift+D)</strong> over the existing
 <code>mpv_radio_engine</code> device enumeration and the same
 <code>history.output_device</code> persistence Preferences uses, so the
@@ -2148,10 +2171,12 @@ embedded runtime, then legacy <code>pythonw.exe</code>) and
 ACB-reported AV false positive by no longer producing the
 repackaged-Python shape; signtool-ready for when signing lands. See
 P-1.</li>
-<li><em>Two new light editions.</em> A ~3 MB <strong>Companion</strong>
-zip (app + docs on the shared runtime, first-launch runtime fetch) and a
-thin <strong>“Lite” installer</strong> join the ~311 MB full portable
-zip and the full shared-runtime installer. See P-3.</li>
+<li><em>Two light editions (retired in 3.0.0; the release ships two
+downloads only).</em> A ~3 MB <strong>Companion</strong> zip (app + docs
+on the shared runtime, first-launch runtime fetch) and a thin
+<strong>“Lite” installer</strong> joined the full portable zip and the
+full shared-runtime installer. Both were retired before the 3.0.0
+release; see P-3.</li>
 <li><em>Accessible runtime download (A-10).</em> The runtime fetch shows
 an NVDA/JAWS/Narrator-readable progress bar announcing percent, whether
 an installer or the app’s own first launch triggers it. See P-4.</li>
@@ -2287,8 +2312,8 @@ family-navigation menu, which is what a brand name should label. The
 launcher runs a sibling’s own exe in a frozen build or
 <code>python -m quill.apps.&lt;app&gt;</code> from source; because every
 app is single-instance, launching one already running brings it forward.
-Quill Radio’s Weather menu also offers <strong>Open the Quill Weather
-App</strong>.</li>
+Quill Radio no longer has a Weather menu; <strong>QuillVille &gt; Open
+Quill Weather</strong> is the hand-off.</li>
 <li><em>Customize Features (<code>core/app_features.py</code>,
 <code>ui/app_features_dialog.py</code>).</em> <strong>View &gt;
 Customize Features…</strong> lists the app’s switchable areas – Quill
@@ -2377,20 +2402,22 @@ NOAA” source drops the fuzzy RadioBrowser name search
 authoritative <strong>WeatherIndex</strong> directory (api.wxindex.org):
 a lazy State -&gt; Station tree (call sign, frequency, place), SAME-code
 / callsign / “County, ST” routing in unified search
-(<code>directory_search.wxindex_search_stations</code>), and Weather
-menu &gt; <strong>Listen to your Local NOAA Weather Radio</strong>,
-resolved from the saved Weather location’s county and coordinates
-(<code>wxindex.local_stations</code>: county/SAME match first, nearest
-covering transmitter fallback). A three-tier resolver – live API
-(Safe-Mode-blocked, in the network-egress audit) -&gt; app-data cache
+(<code>directory_search.wxindex_search_stations</code>), and (until
+Radio’s Weather menu was retired) Weather menu &gt; <strong>Listen to
+your Local NOAA Weather Radio</strong>, resolved from the saved Weather
+location’s county and coordinates (<code>wxindex.local_stations</code>:
+county/SAME match first, nearest covering transmitter fallback). A
+three-tier resolver – live API (Safe-Mode-blocked, in the network-egress
+audit) -&gt; app-data cache
 (<code>&lt;app_data&gt;/radio/wxindex-cache/</code>) -&gt; bundled
 snapshot <code>quill/data/noaa_directory.json</code> (1,035 transmitters
 across every state and territory; regenerated by
 <code>scripts/snapshot_wxindex.py</code>) – keeps every capability
 working offline and outliving the API. Weather menu &gt; <strong>Update
-NOAA Weather Radio Directory</strong> force-pulls the directory into the
-cache tier on demand; the bundled snapshot is the permanent floor and is
-never overwritten. Stations adapt to <code>RadioStation</code>
+NOAA Weather Radio Directory</strong> (retired from Radio with that
+menu) force-pulls the directory into the cache tier on demand; the
+bundled snapshot is the permanent floor and is never overwritten.
+Stations adapt to <code>RadioStation</code>
 (<code>wxindex.to_radio_station</code>), so Favorites, recording, and
 scheduling work unchanged. Partially delivers the §18 NWR stream
 capability (directory + streams; alert interruption and generated audio
@@ -3123,11 +3150,12 @@ product</h2>
 monitoring, the alert model, voice/speech plans, and the roadmap) has
 its own home now that Quill Weather is a standalone app: see
 <strong><code>../../weather/docs/prd.md</code></strong>.</p>
-<p>Weather remains available inside Quill Radio via the
-<strong>Weather</strong> menu when the Weather feature is enabled (View
-&gt; Customize Features…), and that menu offers <strong>Open the Quill
-Weather App</strong> to hand off to the standalone watcher. The two are
-separate, independently-distributed apps that run side by side.</p>
+<p>Quill Radio has no Weather menu. <strong>QuillVille &gt; Open Quill
+Weather</strong> (Ctrl+Alt+Shift+F8) hands off to the standalone app,
+and the <strong>Weather / NOAA</strong> branch of Browse Stations keeps
+the radio part of weather: every NOAA Weather Radio transmitter with an
+internet feed. The two are separate, independently-distributed apps that
+run side by side.</p>
 <h2 id="10-spotify-integration-experimental">10. Spotify integration
 (experimental)</h2>
 <p>Quill Radio (music) and QUILL Cast (podcasts) can play directly from
@@ -5007,8 +5035,12 @@ history, for a file nobody can recompute. What was genuinely duplicated
 shared module, so “this week” cannot come to mean two different weeks in
 two apps a listener compares.</p>
 <h3 id="122-quick-actions-r1">12.2 Quick Actions (R1)</h3>
-<p>Three contexts – station, recording, browse node – each with the
-first action as Enter’s default and the first nine on Ctrl+1..9.</p>
+<p>Two lists – station actions and browse folder actions – each ordering
+the Browse Stations right-click menu, with <strong>Move to Top</strong>
+to put one first. <em>Revised for 3.0.0:</em> the order governs the menu
+only. Enter keeps its fixed meaning and there are no Ctrl+1..9 direct
+keys in Radio; the recording list was removed because nothing read
+it.</p>
 <p>The catalogue’s ids <strong>are</strong> <code>row_actions</code>’
 own ids, verbatim, and a test fails the build if Radio’s catalogue ever
 offers one no row menu builds. An action a listener can put first and
@@ -5246,11 +5278,11 @@ apps say the same thing. <code>RowAction</code> (Radio) and
 <code>ResolvedAction</code> (Cast) carry the reason beside the label, in
 the same wx-free table.</li>
 <li><strong>Where it is spent.</strong> The context menu’s help string;
-the Quick Action direct keys (Ctrl+1..Ctrl+9), which used to answer
-“that Quick Action is not available”; and the command palette, through
-the registry’s availability probe
-(<code>quill/ui/app_availability.py</code>) that every shell app now
-installs.</li>
+the Quick Action direct keys (Ctrl+1..Ctrl+9, QUILL Cast only since
+Radio’s were retired in 3.0.0), which used to answer “that Quick Action
+is not available”; and the command palette, through the registry’s
+availability probe (<code>quill/ui/app_availability.py</code>) that
+every shell app now installs.</li>
 <li><strong>Wording.</strong> Lower case, no trailing stop
 (<code>explain()</code> supplies both), state the condition rather than
 the fix, and prefer a count to an adjective: “nothing to download, all

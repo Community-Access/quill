@@ -102,9 +102,9 @@ Control coverage: 226 audited sites (110 helped, 116 named-help).
 
 **Recording Settings.** How recordings are made: where the files go, how they are named, the format they are kept in, and the safety limits that stop an open-ended capture from filling the disk.
 
-**Resume Recording.** Quill Radio closed while this recording was still being written -- a crash, a shutdown, a log-off. Resume picks the capture back up on the same station; Dismiss keeps what was saved and lets it go.
+**Resume Recording.** Quill Radio closed while this recording was still being written -- a crash, a shutdown, a log-off. Resume picks the capture back up on the same station; Skip keeps what was saved and lets it go. Don't ask me again remembers the answer; Preferences can change it.
 
-**Resume Recordings.** Quill Radio closed while these recordings were still being written. Resume picks the captures back up; Dismiss keeps what was saved and lets them go.
+**Resume Recordings.** Quill Radio closed while these recordings were still being written. Resume All picks the captures back up; Skip All keeps what was saved and lets them go.
 
 **Schedule Recording.** Record a station at a time you choose, once or on repeat. Add an entry with a station, a start time and a length; Quill Radio wakes for it, captures it, and files the recording where the Recordings window will list it.
 
@@ -483,7 +483,6 @@ Control coverage: 36 audited sites (23 helped, 13 named-help).
 - `self._up_btn`: Move the selected action one place earlier in the list. Alt+Up in the list does the same.
 - `self._down_btn`: Move the selected action one place later in the list. Alt+Down in the list does the same.
 - `reset_btn`: Put this one list back in the order it shipped with. The other lists are left alone.
-- `ok_btn`: Keep the new order for every list edited here. It is saved and shapes Enter, the Ctrl number keys, and the right-click menu from now on.
 - `cancel_btn`: Close without keeping anything. Every list stays in the order it had before this dialog opened.
 #### QuillMediaPlayerFrame (`quill/apps/player.py`)
 

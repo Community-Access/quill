@@ -526,6 +526,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| (unbound by default) | Sound Enhancements... | `media.sound_enhancements` |
 | Alt+0 | Play favorite 10 | `radio.play_favorite_10` |
 | Alt+1 | Play favorite 1 | `radio.play_favorite_1` |
 | Alt+2 | Play favorite 2 | `radio.play_favorite_2` |
@@ -537,22 +538,27 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
+| Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
+| Ctrl+Alt+8 | ADP: Ask about Described Movies and TV... | `adp.ask` |
 | Ctrl+Alt+9 | Suggest a Station or Podcast... | `radio.suggest_pick` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Internet Radio: Tutorials... | `radio.tutorials` |
 | Ctrl+Alt+H | What Is On Now | `radio.on_now` |
 | Ctrl+Alt+I | ACB Media Podcasts... | `radio.acb_podcasts` |
 | Ctrl+Alt+N | Internet Radio: Add YouTube Link... | `radio.add_youtube_link` |
-| Ctrl+Alt+P | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+R | Record Station... | `radio.record_station` |
 | Ctrl+Alt+S | Find Streams from a Website... | `radio.find_streams` |
+| Ctrl+Alt+Shift+A | ADP: Settings... | `adp.settings` |
+| Ctrl+Alt+Shift+D | Internet Radio: Download Preferences... | `radio.download_preferences` |
 | Ctrl+Alt+Shift+F | Upcoming... | `radio.upcoming` |
+| Ctrl+Alt+Shift+G | Internet Radio: Update Station Catalog | `radio.update_catalog` |
 | Ctrl+Alt+Shift+I | Recording Settings... | `radio.recording_settings` |
 | Ctrl+Alt+Shift+J | Bookmarks... | `app.bookmarks` |
 | Ctrl+Alt+Shift+N | Import My Setup... | `app.import_setup` |
+| Ctrl+Alt+Shift+O | Internet Radio: Choose Browse Sources... | `radio.browse_sources` |
 | Ctrl+Alt+Shift+P | Recent Problems... | `app.recent_problems` |
-| Ctrl+Alt+Shift+Q | ADP: Ask about Described Movies and TV... | `adp.ask` |
+| Ctrl+Alt+Shift+S | Internet Radio: Station Catalog Status... | `radio.catalog_status` |
 | Ctrl+Alt+Shift+V | Internet Radio: Forget Every Station's Own Volume... | `radio.forget_station_volumes` |
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Y | Internet Radio: Import YouTube Subscriptions... | `radio.import_youtube_subscriptions` |
@@ -562,16 +568,39 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+X | Stop All Recordings | `radio.stop_all_recordings` |
 | Ctrl+Alt+Z | Wake-Up Timer... | `radio.wake_timer` |
 | Ctrl+B | Browse Stations... | `radio.browse` |
+| Ctrl+Down | Radio: Volume Down | `radio.volume_down` |
+| Ctrl+E | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
 | Ctrl+G | Go to | `radio.go_to` |
+| Ctrl+L | Play Last Station | `radio.play_last` |
+| Ctrl+M | Radio: Mute/Unmute | `radio.mute_toggle` |
 | Ctrl+N | Add Custom Station... | `radio.add_custom_station` |
+| Ctrl+P | Radio: Play/Pause | `radio.play_pause` |
 | Ctrl+R | Record Now / Stop Recording | `radio.record_toggle` |
+| Ctrl+Shift+, | Transport.previous chapter | `radio.transport.previous_chapter` |
+| Ctrl+Shift+. | Transport.next chapter | `radio.transport.next_chapter` |
+| Ctrl+Shift+0 | Transport.speed reset | `radio.transport.speed_reset` |
+| Ctrl+Shift+9 | Transport.skip silence | `radio.transport.skip_silence` |
+| Ctrl+Shift+B | Volume Boost | `radio.volume_boost` |
+| Ctrl+Shift+C | Transport.chapter list | `radio.transport.chapter_list` |
+| Ctrl+Shift+Down | Transport.speed down | `radio.transport.speed_down` |
 | Ctrl+Shift+F | Toggle playing favorite | `radio.toggle_playing_favorite` |
+| Ctrl+Shift+G | Transport.go to player | `radio.transport.go_to_player` |
+| Ctrl+Shift+H | Song History... | `radio.song_history` |
+| Ctrl+Shift+L | Back to Live | `radio.jump_to_live` |
+| Ctrl+Shift+Left | Rewind 30 Seconds | `radio.rewind` |
 | Ctrl+Shift+M | Manage Favorites... | `radio.manage_favorites` |
 | Ctrl+Shift+N | ACB Media Schedule... | `radio.acb_calendar` |
+| Ctrl+Shift+Q | Internet Radio: Listening Statistics... | `radio.statistics` |
 | Ctrl+Shift+R | Recordings... | `radio.recordings` |
+| Ctrl+Shift+Right | Forward 30 Seconds | `radio.forward` |
 | Ctrl+Shift+S | Schedule Recording... | `radio.schedule_recording` |
+| Ctrl+Shift+Up | Transport.speed up | `radio.transport.speed_up` |
+| Ctrl+Shift+W | Transport.announce position | `radio.transport.announce_position` |
 | Ctrl+Shift+Y | Internet Radio: Add from YouTube Playlist... | `radio.add_youtube_playlist` |
+| Ctrl+Shift+Z | Media: Sleep Timer... | `media.sleep_timer` |
 | Ctrl+Space | Pause | `radio.pause` |
+| Ctrl+T | What's Playing - Review and Copy... | `radio.whats_playing_details` |
+| Ctrl+Up | Radio: Volume Up | `radio.volume_up` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
 | F5 | Refresh the ACB Media Schedule | `radio.refresh_calendar` |
 
