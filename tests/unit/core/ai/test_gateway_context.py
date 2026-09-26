@@ -183,6 +183,7 @@ def test_every_scope_has_a_label_a_person_would_read():
 # --- The bound that keeps the editor responsive --------------------------------
 
 
+@pytest.mark.perf
 def test_retrieval_does_not_freeze_the_editor_on_a_large_document():
     """The reason this is a stream rather than a list.
 
@@ -201,7 +202,11 @@ def test_retrieval_does_not_freeze_the_editor_on_a_large_document():
     elapsed = time.perf_counter() - start
 
     assert found.excerpts
-    assert elapsed < 1.5, f"retrieval took {elapsed:.2f}s on a {len(doc) // 1024} KB document"
+    # The stream takes about 0.25 s on a developer machine and 1.5 s on a
+    # loaded four-worker CI runner, where a 1.5 s ceiling failed main twice.
+    # The regression this guards took 3 s locally -- well over 10 s on CI --
+    # so 4 s still catches it without failing on runner noise.
+    assert elapsed < 4.0, f"retrieval took {elapsed:.2f}s on a {len(doc) // 1024} KB document"
 
 
 def test_a_capped_scan_says_so_rather_than_pretending_it_looked_everywhere():
