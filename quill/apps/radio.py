@@ -1377,7 +1377,7 @@ class RadioAppFrame(
         # GlobalHotkeysMixin), scoped to this app's own commands.
         shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+K")
-        help_menu.Append(hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+G")
+        help_menu.Append(hotkeys_id, "G&lobal Hotkeys...\tCtrl+Alt+G")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
         # Undo, Recent Problems, Quiet Hours and Export / Import My Setup:
@@ -1394,7 +1394,7 @@ class RadioAppFrame(
         help_menu.Append(sheet_id, "Keyboard Shortcuts S&heet...\tCtrl+Alt+Shift+K")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_keyboard_cheat_sheet(), id=sheet_id)
         bug_id = wx.NewIdRef()
-        help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
+        help_menu.Append(bug_id, "&Get Help from Support...\tCtrl+Alt+F2")  # as QUILL Lite
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.report_app_bug(source_app="Quill Radio", app_version=_VERSION),
@@ -1410,7 +1410,7 @@ class RadioAppFrame(
         # mpv matters more than FFmpeg -- it is the playback engine, so without
         # it Ogg, Opus and HLS stations do not play at all.
         mpv_id = wx.NewIdRef()
-        help_menu.Append(mpv_id, "Ge&t mpv Playback Engine...\tCtrl+Alt+M")
+        help_menu.Append(mpv_id, "Get &mpv Playback Engine...\tCtrl+Alt+M")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_mpv_component(), id=mpv_id)
         from quill.apps import radio_help_docs
 

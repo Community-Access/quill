@@ -110,7 +110,7 @@ def test_the_family_key_is_one_key() -> None:
 
     for module in {*_HELP_MENU.values(), "quill/ui/support_menu.py"}:
         for line in _source(module).splitlines():
-            if "Get Help from &Support" not in line:
+            if ".Append(" not in line or "Get Help from Support" not in line.replace("&", ""):
                 continue
             if "_menu_label" in line or "SUPPORT_MENU_KEY" in line:
                 continue  # the key comes from the keymap or the shared constant

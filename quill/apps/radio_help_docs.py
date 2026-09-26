@@ -61,7 +61,7 @@ def install_help_items(host: Any, help_menu: Any, wx: Any) -> list[Any]:
     help_menu.Append(ids["tutorials"], host._menu_label("&Tutorials...", "radio.tutorials"))
     help_menu.Append(ids["guide"], "&User Guide\tCtrl+F1")
     help_menu.Append(ids["notes"], "&Release Notes\tShift+F1")
-    help_menu.Append(ids["prd"], "&Product Requirements...\tAlt+Shift+F1")
+    help_menu.Append(ids["prd"], "Produ&ct Requirements...\tAlt+Shift+F1")
 
     frame = host.frame
     frame.Bind(wx.EVT_MENU, lambda _e: host._radio_show_context_help(), id=ids["what_is_this"])
