@@ -19,20 +19,23 @@ TUTORIALS: tuple[Tutorial, ...] = (
         surfaces=("Community Picks", "ACB Media Podcasts"),
         summary=(
             "Add stations and podcasts from a curated list that is kept up to "
-            "date on the web, and put something on that list yourself without a "
-            "GitHub account or a browser."
+            "date on the web, and suggest something for that list yourself by "
+            "email, with no account and no website."
         ),
         steps=(
             Step(
                 title="Open the picks",
                 body=(
                     "Community Picks is a hand-curated list of stations, podcasts "
-                    "and places rather than a directory. Arrow the list to hear what "
-                    "each one is, tick the ones you want, and they are added in one "
-                    "go."
+                    "and places rather than a directory. Arrow the Available list, "
+                    "Tab to Description to hear what one is, and press Add for the "
+                    "one you are on or Add All for the lot. Anything you already "
+                    "have is marked, so nothing is added twice."
                 ),
                 command="radio.community_picks",
-                hear="Entered Community Picks, then each entry with its description.",
+                hear=(
+                    "Reading the Community Picks list, then Community Picks and its Available list."
+                ),
             ),
             Step(
                 title="Know why it works offline",
@@ -42,7 +45,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "supersedes it and a failed fetch falls back to it -- never to an "
                     "empty window."
                 ),
-                hear="The summary line, saying how old this copy is.",
+                hear=(
+                    "The heading, adding Showing the list that came with the app when it "
+                    "is the bundled copy."
+                ),
                 note=(
                     "The list is signed, and the signature is checked against the "
                     "same publisher key that signs Quillins and releases. This file "
@@ -68,18 +74,22 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "rest without duplicating anything."
                 ),
                 command="radio.acb_podcasts",
-                hear="Entered ACB Media Podcasts, then the lineup.",
+                hear=(
+                    "Reading ACB's podcast directory, then ACB Media Podcasts and its "
+                    "Available list."
+                ),
             ),
             Step(
                 title="Suggest something for the list",
                 body=(
                     "Suggest a Station or Podcast takes your suggestion here and "
-                    "makes it a real issue, with the issue number read back to you -- "
-                    "no login, no account, no web form designed by somebody else. "
-                    "Duplicates are caught before anything is sent."
+                    "opens your own mail program with it written to "
+                    "support@community-access.org -- press Send there, and a person "
+                    "at Community Access reads it. No login, no account, no website. "
+                    "Duplicates are caught before anything is written."
                 ),
                 command="radio.suggest_pick",
-                hear="The issue number, read back.",
+                hear="Your mail program has opened with your suggestion written. Press Send there.",
             ),
         ),
         closing=(
@@ -159,6 +169,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "listening on for exactly that one moment."
                 ),
                 command="spotify.connect",
+                keys=("Ctrl+Alt+P",),
                 hear="Which kind of account you signed in with, straight away.",
                 note=(
                     "Your tokens go into the Windows credential vault -- never a "
@@ -176,6 +187,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "hotkeys you assigned."
                 ),
                 command="spotify.browse",
+                keys=("Ctrl+Alt+O",),
                 hear="The results, then playback if your account is Premium.",
             ),
             Step(
@@ -188,14 +200,16 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 hear="The refusal, with the reason, if you try.",
             ),
             Step(
-                title="Hide it if you are not going to use it",
+                title="Know where it lives if you do not use it",
                 body=(
-                    "Turn Spotify off in Customize Features and the two menu items "
-                    "disappear. An experimental capability you have decided against is "
-                    "just two more rows to arrow past."
+                    "Connect to Spotify and Browse Spotify sit together near the end "
+                    "of the Station menu, and are not there at all in Safe Mode. "
+                    "Customize Features in Quill Radio switches only the Record menu, "
+                    "so there is no switch for Spotify here: if you never set it up, "
+                    "it is two rows to arrow past and nothing more."
                 ),
-                keys=("Alt+V",),
-                hear="The feature list, with Spotify unticked.",
+                keys=("Alt+S",),
+                hear="Connect to Spotify, then Browse Spotify, on the Station menu.",
             ),
         ),
         closing=(
@@ -216,20 +230,22 @@ TUTORIALS: tuple[Tutorial, ...] = (
         ),
         steps=(
             Step(
-                title="Find the menu",
+                title="Know that there is no menu to find",
                 body=(
                     "Quill Radio runs Quillins -- QUILL's small, sandboxed, "
-                    "permission-gated add-ons -- from its own Quillins menu, opened "
-                    "with Alt+N. A Quillin says in its manifest which apps it is for, "
-                    "so only add-ons written for Quill Radio appear here."
+                    "permission-gated add-ons -- but in this release it has no "
+                    "Quillins menu: that menu is held back to developer builds. The "
+                    "bundled Quillins still load and still contribute, so what they "
+                    "add turns up where you already look, in the browse tree and in "
+                    "search."
                 ),
-                keys=("Alt+N",),
-                hear="The Quillins menu, listing the ones installed for this app.",
+                hear=(
+                    "Nothing: the menu bar goes from QuillVille straight to Help, and that "
+                    "is expected."
+                ),
                 note=(
-                    "It asked for Alt+Q until August 2026, which QuillVille already "
-                    "had, so it never opened. There is now a check that stops any "
-                    "menu in the family shipping without an Alt key or sharing one "
-                    "with its neighbour."
+                    "A Quillin says in its manifest which apps it is for, so only "
+                    "add-ons written for Quill Radio contribute here."
                 ),
             ),
             Step(
@@ -241,7 +257,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "source, with its categories and its stations, playable and "
                     "favouritable like anything else."
                 ),
-                command="radio.browse",
+                keys=("Ctrl+B",),
                 hear="Quillin Sources, and the contributed source beneath it.",
                 check="window:Browse Stations",
             ),
@@ -269,9 +285,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Quillins are off in Safe Mode, and third-party Quillins remain "
                     "disabled in this release -- the bundled ones are the foundation. "
-                    "If the menu is empty, that is why."
+                    "If the Quillin Sources branch is missing, that is why."
                 ),
-                hear="An empty or absent menu, rather than a failure.",
+                hear="An absent branch, rather than a failure.",
             ),
         ),
         closing=(

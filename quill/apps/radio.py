@@ -34,6 +34,10 @@ from quill.ui.main_frame_weather import WeatherMixin
 _TITLE = "Quill Radio"
 _VERSION = "3.0.0"
 _REPO = "Community-Access/quill"
+#: Radio publishes two downloads since 3.0.0 -- the installer and the portable
+#: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly
+#: as QUILL Lite does (AppShell.check_for_app_updates says why).
+_MATCH_EDITION = False
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for recording; mpv/libmpv is the playback engine).
 REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg", "mpv")
@@ -788,30 +792,29 @@ class RadioAppFrame(
         self._announce(f"{path}: {dict(zip(values, labels, strict=True))[chosen]}.")
 
     def import_stations_from_playlist(self) -> None:
-        """Station > Import Stations from Playlist...: read an M3U/M3U8 file,
-        pick (or create) a target folder at any depth, handle any duplicates
-        against the current favorites, and add the rest."""
+        """Station > Import Stations from Playlist...: read an M3U, PLS, XSPF
+        or ASX file, pick (or create) a target folder at any depth, handle any
+        duplicates against the current favorites, and add the rest."""
         from pathlib import Path
 
-        from quill.core.radio.playlist_import import parse_m3u, split_new_and_duplicates
+        from quill.core.radio import playlist_import as pi
         from quill.ui.radio.import_stations_dialog import prompt_import_target
 
         wx = self._wx
         with wx.FileDialog(
             self.frame,
             "Choose a playlist to import",
-            wildcard="Playlists (*.m3u;*.m3u8)|*.m3u;*.m3u8|All files (*.*)|*.*",
+            wildcard=pi.IMPORT_WILDCARD,
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
         ) as file_dialog:
             if file_dialog.ShowModal() != wx.ID_OK:
                 return
             source = Path(file_dialog.GetPath())
         try:
-            text = source.read_text(encoding="utf-8", errors="replace")
-        except OSError as exc:
-            self._announce(f"Could not read the playlist: {exc}.")
+            stations = pi.read_playlist_file(source)
+        except (OSError, pi.PlaylistFormatError) as exc:
+            self._announce(f"Could not read the playlist ({exc}).")
             return
-        stations = parse_m3u(text)
         if not stations:
             self._show_message_box(
                 "No radio stations were found in that playlist.",
@@ -825,7 +828,7 @@ class RadioAppFrame(
         if folder is None:
             return
         existing = {favorite.key for favorite in self._radio_favorites.favorites}
-        new, duplicates = split_new_and_duplicates(stations, existing)
+        new, duplicates = pi.split_new_and_duplicates(stations, existing)
         to_import = stations
         if duplicates:
             labels = [
@@ -1013,7 +1016,7 @@ class RadioAppFrame(
         station_menu.Append(browse_id, self._menu_label("&Browse Stations...", "radio.browse"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_browse_stations(), id=browse_id)
         rrs_update_id = wx.NewIdRef()
-        station_menu.Append(rrs_update_id, "Update Radio Reading &Services...\tCtrl+Alt+Shift+R")
+        station_menu.Append(rrs_update_id, "Update Radio Reading &Services...\tCtrl+Alt+F10")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.update_reading_services_directory(),
@@ -1143,7 +1146,7 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_manage_radio_favorites(), id=manage_id)
         station_menu.AppendSeparator()
         play_last_id = wx.NewIdRef()
-        station_menu.Append(play_last_id, "Play &Last Station\tCtrl+L")
+        station_menu.Append(play_last_id, self._menu_label("Play &Last Station", "radio.play_last"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_play_last(), id=play_last_id)
         # ACB Media and NFB Radio no longer nest here: both are bundled source
         # categories in Browse Stations already, so the flat menu copies only
@@ -1213,9 +1216,9 @@ class RadioAppFrame(
 
         radio_transport_menu.append_items(self, playback_menu, wx)
         mute_id, vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        audio_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
-        audio_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
-        audio_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
+        audio_menu.Append(mute_id, self._menu_label("&Mute/Unmute", "radio.mute_toggle"))
+        audio_menu.Append(vol_up_id, self._menu_label("Volume &Up", "radio.volume_up"))
+        audio_menu.Append(vol_down_id, self._menu_label("Volume &Down", "radio.volume_down"))
         self._volume_boost_item_id = wx.NewIdRef()
         audio_menu.AppendCheckItem(self._volume_boost_item_id, "Volume &Boost\tCtrl+Shift+B")
         audio_menu.Check(self._volume_boost_item_id, self._radio_history.volume_boost)
@@ -1230,9 +1233,9 @@ class RadioAppFrame(
         # Live DVR (mpv engine): pause is the Play/Stop item; these move
         # within the buffered live window.
         rewind_id, forward_id, live_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(rewind_id, "Re&wind 30 Seconds\tCtrl+Shift+Left")
-        playback_menu.Append(forward_id, "&Forward 30 Seconds\tCtrl+Shift+Right")
-        playback_menu.Append(live_id, "Back to &Live\tCtrl+Shift+L")
+        playback_menu.Append(rewind_id, self._menu_label("Re&wind 30 Seconds", "radio.rewind"))
+        playback_menu.Append(forward_id, self._menu_label("&Forward 30 Seconds", "radio.forward"))
+        playback_menu.Append(live_id, self._menu_label("Back to &Live", "radio.jump_to_live"))
         # Video: a finished YouTube video has a timeline, so it can be
         # scrubbed, sped up, navigated by chapter and read as a transcript --
         # none of which a live broadcast can do, and every one of which says so
@@ -1261,7 +1264,9 @@ class RadioAppFrame(
         # Ctrl+Shift+H is free in the standalone app; inside full QUILL the same
         # command ships unbound because there Ctrl+Shift+H is Replace All.
         song_history_id = wx.NewIdRef()
-        playback_menu.Append(song_history_id, "&Song History...\tCtrl+Shift+H")
+        playback_menu.Append(
+            song_history_id, self._menu_label("&Song History...", "radio.song_history")
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_song_history(), id=song_history_id)
         forget_volumes_id = radio_audio_menu.build_preferences(self, audio_menu, wx)
         sleep_id = wx.NewIdRef()
@@ -1293,7 +1298,9 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         playback_menu.AppendSeparator()
         enhance_id = wx.NewIdRef()
-        audio_menu.Append(enhance_id, "Sound &Enhancements...\tCtrl+E")
+        audio_menu.Append(
+            enhance_id, self._menu_label("Sound &Enhancements...", "radio.sound_enhancements")
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sound_enhancements(), id=enhance_id)
         menu_bar.Append(playback_menu, "&Playback")
         menu_bar.Append(audio_menu, "&Audio")
@@ -1370,7 +1377,7 @@ class RadioAppFrame(
         # GlobalHotkeysMixin), scoped to this app's own commands.
         shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+K")
-        help_menu.Append(hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+G")
+        help_menu.Append(hotkeys_id, "G&lobal Hotkeys...\tCtrl+Alt+G")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
         # Undo, Recent Problems, Quiet Hours and Export / Import My Setup:
@@ -1387,7 +1394,7 @@ class RadioAppFrame(
         help_menu.Append(sheet_id, "Keyboard Shortcuts S&heet...\tCtrl+Alt+Shift+K")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_keyboard_cheat_sheet(), id=sheet_id)
         bug_id = wx.NewIdRef()
-        help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
+        help_menu.Append(bug_id, "&Get Help from Support...\tCtrl+Alt+F2")  # as QUILL Lite
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.report_app_bug(source_app="Quill Radio", app_version=_VERSION),
@@ -1397,12 +1404,13 @@ class RadioAppFrame(
         help_menu.Append(ffmpeg_id, "G&et FFmpeg...\tCtrl+Alt+F")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
         # Beside Get FFmpeg because they are the same kind of thing: the two
-        # media tools every full installer bundles, and that a Lite install --
-        # which downloads the base runtime and no tools at all -- has neither
-        # of. Radio needs this one more than FFmpeg: mpv is the playback engine,
-        # so without it Ogg, Opus and HLS stations do not play at all.
+        # media tools both of Radio's downloads bundle. They stay as repair
+        # doors: a copy from the thin installer retired in 3.0.0 has neither
+        # until upgraded, and a runtime another app laid down can lack them.
+        # mpv matters more than FFmpeg -- it is the playback engine, so without
+        # it Ogg, Opus and HLS stations do not play at all.
         mpv_id = wx.NewIdRef()
-        help_menu.Append(mpv_id, "Ge&t mpv Playback Engine...\tCtrl+Alt+M")
+        help_menu.Append(mpv_id, "Get &mpv Playback Engine...\tCtrl+Alt+M")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_mpv_component(), id=mpv_id)
         from quill.apps import radio_help_docs
 
@@ -1418,7 +1426,10 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
-                repo_slug=_REPO, current_version=_VERSION, app_key="radio"
+                repo_slug=_REPO,
+                current_version=_VERSION,
+                app_key="radio",
+                match_edition=_MATCH_EDITION,
             ),
             id=updates_id,
         )
@@ -1815,6 +1826,9 @@ class RadioAppFrame(
         if not radio_startup.is_windows():
             self._announce("Starting with Windows is only available on Windows.")
             return
+        if radio_startup.running_portable():
+            self._announce(radio_startup.PORTABLE_REFUSAL)
+            return
         radio_startup.set_launch_at_startup(not radio_startup.is_launch_at_startup_enabled())
         actual = radio_startup.is_launch_at_startup_enabled()
         menu_bar = self.frame.GetMenuBar()
@@ -2027,7 +2041,11 @@ class RadioAppFrame(
         history.last_update_check = datetime.now(UTC).isoformat()
         radio_history.save_history(app_data_dir(), history)
         self.check_for_app_updates(
-            repo_slug=_REPO, current_version=_VERSION, app_key="radio", silent_no_update=True
+            repo_slug=_REPO,
+            current_version=_VERSION,
+            app_key="radio",
+            silent_no_update=True,
+            match_edition=_MATCH_EDITION,
         )
 
     def _show_about(self) -> None:
@@ -2224,10 +2242,12 @@ _IPC_SLOT = "radio"
 def main() -> int:
     from quill.core.data_location import apply_pending_at_launch
 
-    # A queued Data Folder move/import applies before a single data file is
-    # read (mirrors quill.__main__.main -- the family shares one profile, so
-    # whichever app launches next must be the one to apply it).
+    # A queued Data Folder move/import applies before any data file is read
+    # (as in quill.__main__.main: whichever family app launches next applies it).
     apply_pending_at_launch()
+    from quill.core.paths import propagate_portable_environment
+
+    propagate_portable_environment()  # a direct pythonw launch is still portable
     from quill.stability.safe_mode import should_enable_safe_mode
 
     safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)
@@ -2237,10 +2257,9 @@ def main() -> int:
         try_claim_primary_instance,
     )
 
-    # Single instance (#1152): if a Quill Radio is already running -- including
-    # one sitting in the system tray -- do not open a second window. Ask the
-    # running copy to come to the foreground, then exit. Cheap, before any UI or
-    # logging setup, so a re-launch is near-instant.
+    # Single instance (#1152): if a Quill Radio is already running, even in the
+    # tray, ask it to come forward and exit. Cheap, before any UI or logging
+    # setup, so a re-launch is near-instant.
     if not try_claim_primary_instance(slot=_IPC_SLOT):
         enqueue_open_request(None, slot=_IPC_SLOT)
         return 0
@@ -2249,10 +2268,13 @@ def main() -> int:
 
     components.register_running_app("radio", REQUIRED_COMPONENTS)
 
-    # Configure file logging before the app comes up so startup records -- and
-    # everything radio debug mode raises to DEBUG -- land in quill.log
-    # (quill-radio #5). The folder is the log-location preference, or the
-    # default <data_dir>/logs.
+    # A new portable copy offers an earlier copy's favorites before anything
+    # reads the data folder. Then file logging, so startup records land in
+    # quill.log (quill-radio #5), in the log-location preference or <data>/logs.
+    app = wx.App()
+    from quill.ui.radio.portable_migration_ui import offer_earlier_favorites
+
+    offer_earlier_favorites()
     from pathlib import Path
 
     from quill.core.paths import app_data_dir
@@ -2262,7 +2284,6 @@ def main() -> int:
     history = radio_history.load_history(app_data_dir())
     log_dir = Path(history.log_dir) if history.log_dir else app_data_dir() / "logs"
     log_listener = configure_logging(log_dir)
-    app = wx.App()
     frame = RadioAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
     frame.frame.Show()

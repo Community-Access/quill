@@ -180,6 +180,16 @@ So:
    with the issue number. Falls back to opening a pre-filled issue in the
    browser only when the token is absent (dev builds) or the post fails, so
    the flow degrades instead of dying.
+
+   **Superseded 2026-09-26.** Every piece of feedback from Quill Radio and
+   QUILL Lite now goes to `support@community-access.org`, and nothing is filed
+   as a GitHub issue. The in-app dialog keeps steps 1 and 2, then hands the
+   suggestion to the person's own mail program exactly as Get Help from Support
+   does (`support_dialog.send_by_mail`, message from
+   `pick_suggestion.support_message`). The token POST and the browser fallback
+   are gone, and Radio's build no longer embeds the token. A curator who
+   approves an emailed suggestion files it into the pipeline below; the web
+   form and the issue template are unchanged.
 4. **`.github/ISSUE_TEMPLATE/community_pick.yml`** still exists, for people who
    *do* live on GitHub and would rather file it there. Same fields, so both
    routes produce the same machine-readable body.

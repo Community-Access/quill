@@ -86,11 +86,11 @@ PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
-; The -Shared suffix matches the validation variant that was authored
-; in quill-radio-shared.iss; once the shared-runtime install is the
-; only shipping layout (Phase 2 ships today; Phase 4 drops the
-; PyInstaller bootloader), drop the -Shared so Radio and the other
-; products' installers line up.
+; The -Shared suffix stays: it is the name every QuillVille installer and
+; the updater's asset matching share (QUILL Lite is QuillLite-Setup-Shared).
+; Since 3.0.0 this is Radio's only installer -- the thin quill-radio-lite.iss
+; was retired with the Companion zip, so a release publishes this and the
+; portable zip and nothing else (scripts\build_release.ps1 says why).
 OutputBaseFilename=Quill-Radio-Setup-Shared-{#AppVersion}
 ; A 64-bit Setup (Inno 7) so the LZMA dictionary can exceed the 32-bit cap.
 ; 128 MB reaches across ffmpeg.exe -> ffprobe.exe (97 MB of near-identical
@@ -147,11 +147,15 @@ Source: "..\dist\QuillRadio\docs\*"; DestDir: "{app}\docs"; Components: docs; Fl
 #include "..\..\..\installer\shared-runtime.iss"
 
 [Icons]
-; Every shortcut launches through the shared runtime. WorkingDir is the
-; shared runtime dir so `python -m quill.apps.radio` finds the per-app
-; quill package at the shared location's sitecustomize path.
+; Every shortcut launches through {app}\QuillRadio.exe -- the native
+; launcher, which resolves the shared runtime itself and runs
+; `-m quill.apps.radio` in it (quilllite.iss says why a shortcut straight
+; into the runtime exe is wrong).
+; The guide shortcut opens the rendered HTML, as QUILL Lite's does: the .md
+; source opens in whatever Windows associates with .md -- on most machines
+; nothing at all, or a code editor that reads the markup aloud.
 Name: "{group}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; Components: main
-Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
+Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; Tasks: desktopicon; Components: main
 

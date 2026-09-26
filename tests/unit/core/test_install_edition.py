@@ -117,15 +117,37 @@ def test_running_portable_agrees_about_numbered_uninstallers(tmp_path, monkeypat
 def test_the_installers_ship_their_edition_marker() -> None:
     """The wiring half: each installer stages a marker the updater can read."""
     repo = Path(__file__).resolve().parents[3]
-    for name, expected in (
-        ("quill-radio.iss", edition.INSTALLER_FULL),
-        ("quill-radio-lite.iss", edition.INSTALLER_LITE),
+    # Quill Radio ships one installer since 3.0.0 (the thin one was retired, as
+    # QUILL Lite's was), so the thin-installer half is checked on Cast, which
+    # still ships both.
+    for app, name, expected in (
+        ("radio", "quill-radio.iss", edition.INSTALLER_FULL),
+        ("cast", "quill-cast-lite.iss", edition.INSTALLER_LITE),
     ):
-        source = (repo / "standalone" / "radio" / "installer" / name).read_text(encoding="utf-8")
+        installer_dir = repo / "standalone" / app / "installer"
+        source = (installer_dir / name).read_text(encoding="utf-8")
         assert f"edition-{expected}.txt" in source, name
         assert f'DestName: "{edition.MARKER_NAME}"' in source, name
-        marker = repo / "standalone" / "radio" / "installer" / f"edition-{expected}.txt"
+        marker = installer_dir / f"edition-{expected}.txt"
         assert marker.read_text(encoding="utf-8").strip() == expected
+
+
+def test_quill_radio_ships_two_downloads_not_four() -> None:
+    """Radio 3.0.0 publishes an installer and a portable zip, like QUILL Lite.
+
+    The thin installer and the Companion zip were retired for the same reasons
+    QUILL Lite retired them (standalone/radio/scripts/build_release.ps1). A
+    thin .iss left behind is one somebody compiles by hand and publishes.
+    """
+    repo = Path(__file__).resolve().parents[3]
+    installer_dir = repo / "standalone" / "radio" / "installer"
+    assert not (installer_dir / "quill-radio-lite.iss").exists()
+    assert not (installer_dir / "edition-installer-lite.txt").exists()
+    script = (repo / "standalone" / "radio" / "scripts" / "build_release.ps1").read_text(
+        encoding="utf-8"
+    )
+    assert "--no-runtime" not in script
+    assert "quill-radio-lite.iss" not in script
 
 
 #: QUILL Lite is the case the word-matching above cannot survive on its own: the

@@ -13,6 +13,17 @@
 > more complete reference (the tree browser replaced the dialog described
 > below, and Sound Enhancements, scheduled recording, custom stations and
 > backups are all documented there in their current form).
+>
+> **Reviewed 2026-09-26 for the Quill Radio 3.0.0 release.** The current
+> release ships two downloads -- the installer
+> (`Quill-Radio-Setup-Shared-3.0.0.exe`) and the portable ZIP
+> (`Quill-Radio-Portable-3.0.0.zip`), both on the
+> [Quill Radio 3.0.0 release page](https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.0).
+> Where this page and the app disagree, the app and its own User Guide
+> (`standalone/radio/docs/userguide.md`, Help > User Guide, Ctrl+F1) are right.
+> In particular, the main window no longer has Play/Pause, Stop, Record or
+> Browse Stations buttons (each kept its menu item and key), and live radio can
+> be rewound but not paused.
 
 | Relocated from | Section |
 |---|---|
@@ -107,7 +118,7 @@ On the next launch, QUILL first tidies the temp folder: any finished orphan file
 
 > A recording of WQXR was in progress until 9:00 AM. Resume it for the remaining 12 minute(s)?
 
-**Resume** (Enter) restarts the recording for the remaining minutes only. **Skip** (Escape) leaves it as it is. A **Don't ask me again** checkbox remembers your choice — always resume, or never ask — and you can change it later in Preferences. Nothing happens when nothing was in progress, and a corrupt marker file is discarded rather than driving a bogus resume.
+**Resume** (Enter) restarts the recording for the remaining minutes only. **Skip** (Escape) leaves it as it is. A **Don't ask me again** checkbox remembers your choice — always resume, or always skip. Change it later in Preferences, under **Interrupted recordings at launch**. Nothing happens when nothing was in progress, and a corrupt marker file is discarded rather than driving a bogus resume.
 
 ### How recordings survive a dropped connection
 

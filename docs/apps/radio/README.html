@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio material relocated from QUILL's
 documentation</title>
@@ -215,6 +215,18 @@ Guide is the current and far more complete reference (the tree browser
 replaced the dialog described below, and Sound Enhancements, scheduled
 recording, custom stations and backups are all documented there in their
 current form).</p>
+<p><strong>Reviewed 2026-09-26 for the Quill Radio 3.0.0
+release.</strong> The current release ships two downloads – the
+installer (<code>Quill-Radio-Setup-Shared-3.0.0.exe</code>) and the
+portable ZIP (<code>Quill-Radio-Portable-3.0.0.zip</code>), both on the
+<a
+href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.0">Quill
+Radio 3.0.0 release page</a>. Where this page and the app disagree, the
+app and its own User Guide
+(<code>standalone/radio/docs/userguide.md</code>, Help &gt; User Guide,
+Ctrl+F1) are right. In particular, the main window no longer has
+Play/Pause, Stop, Record or Browse Stations buttons (each kept its menu
+item and key), and live radio can be rewound but not paused.</p>
 </blockquote>
 <table>
 <thead>
@@ -599,9 +611,10 @@ remaining 12 minute(s)?</p>
 <p><strong>Resume</strong> (Enter) restarts the recording for the
 remaining minutes only. <strong>Skip</strong> (Escape) leaves it as it
 is. A <strong>Don’t ask me again</strong> checkbox remembers your choice
-— always resume, or never ask — and you can change it later in
-Preferences. Nothing happens when nothing was in progress, and a corrupt
-marker file is discarded rather than driving a bogus resume.</p>
+— always resume, or always skip. Change it later in Preferences, under
+<strong>Interrupted recordings at launch</strong>. Nothing happens when
+nothing was in progress, and a corrupt marker file is discarded rather
+than driving a bogus resume.</p>
 <h3 id="how-recordings-survive-a-dropped-connection">How recordings
 survive a dropped connection</h3>
 <p>A live stream can drop mid-recording. QUILL rides out short gaps

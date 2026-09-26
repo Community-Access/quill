@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Community Picks: a curated, living catalogue Radio reads from
 the web</title>
@@ -481,32 +481,43 @@ bundled, fine-grained, issues-only token
 never quietly broken in the field.</p>
 <p>So:</p>
 <ol type="1">
-<li><strong>Community &gt; Suggest a Station or Podcast…</strong> — an
-ordinary accessible wx dialog, one we control and can make good with a
-screen reader, rather than a web form somebody else designed. Type,
-title, URL, description, language, and why it belongs.</li>
-<li><strong>It checks what it can before sending</strong>: is the feed
-or stream reachable, does it already exist in the catalogue, is the URL
-well-formed. Rejecting a duplicate here costs one dialog; rejecting it
-after moderation costs a round trip through a person.</li>
-<li><strong>It posts the issue itself, with the bundled token.</strong>
-No account, no browser, no login — the submitter stays in Radio and gets
-a confirmation with the issue number. Falls back to opening a pre-filled
-issue in the browser only when the token is absent (dev builds) or the
-post fails, so the flow degrades instead of dying.</li>
-<li><strong><code>.github/ISSUE_TEMPLATE/community_pick.yml</code></strong>
+<li><p><strong>Community &gt; Suggest a Station or Podcast…</strong> —
+an ordinary accessible wx dialog, one we control and can make good with
+a screen reader, rather than a web form somebody else designed. Type,
+title, URL, description, language, and why it belongs.</p></li>
+<li><p><strong>It checks what it can before sending</strong>: is the
+feed or stream reachable, does it already exist in the catalogue, is the
+URL well-formed. Rejecting a duplicate here costs one dialog; rejecting
+it after moderation costs a round trip through a person.</p></li>
+<li><p><strong>It posts the issue itself, with the bundled
+token.</strong> No account, no browser, no login — the submitter stays
+in Radio and gets a confirmation with the issue number. Falls back to
+opening a pre-filled issue in the browser only when the token is absent
+(dev builds) or the post fails, so the flow degrades instead of
+dying.</p>
+<p><strong>Superseded 2026-09-26.</strong> Every piece of feedback from
+Quill Radio and QUILL Lite now goes to
+<code>support@community-access.org</code>, and nothing is filed as a
+GitHub issue. The in-app dialog keeps steps 1 and 2, then hands the
+suggestion to the person’s own mail program exactly as Get Help from
+Support does (<code>support_dialog.send_by_mail</code>, message from
+<code>pick_suggestion.support_message</code>). The token POST and the
+browser fallback are gone, and Radio’s build no longer embeds the token.
+A curator who approves an emailed suggestion files it into the pipeline
+below; the web form and the issue template are unchanged.</p></li>
+<li><p><strong><code>.github/ISSUE_TEMPLATE/community_pick.yml</code></strong>
 still exists, for people who <em>do</em> live on GitHub and would rather
 file it there. Same fields, so both routes produce the same
-machine-readable body.</li>
-<li><strong>Jeff approves by adding the <code>pick:approved</code>
+machine-readable body.</p></li>
+<li><p><strong>Jeff approves by adding the <code>pick:approved</code>
 label.</strong> That is the whole moderation UI, and it is auditable
-forever.</li>
-<li><strong>A workflow rebuilds the catalogue.</strong> On label or
+forever.</p></li>
+<li><p><strong>A workflow rebuilds the catalogue.</strong> On label or
 issue close, <code>picks-build.yml</code> merges the approved issues
 with a hand-curated <code>docs/picks-source.json</code> (Jeff’s own
 additions, which need no issue), validates against the schema, signs,
 and writes <code>docs/site/picks/v1/picks.json</code>. The existing
-Pages workflow deploys it because <code>docs/**</code> changed.</li>
+Pages workflow deploys it because <code>docs/**</code> changed.</p></li>
 </ol>
 <p>Time from “Jeff clicks a label” to “in everybody’s app”: one workflow
 run plus whatever the client’s cache TTL is.</p>

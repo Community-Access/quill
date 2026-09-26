@@ -311,7 +311,7 @@ class PlayerPanel:
         root.Add(fav_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self._refresh_favorite_button()
 
-        if not self._modeless:
+        if not self._modeless and not self._embedded:
             # Only the modal panel carries a Close button: a real window
             # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape. A sizer with a
             # stretch spacer, not wx.ALIGN_RIGHT: the banned-pattern gate
@@ -332,7 +332,12 @@ class PlayerPanel:
             close_row.Add(close_btn)
             root.Add(close_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        if self._modeless:
+        if self._embedded:
+            # The main window's page, which the frame already lays out. Setting
+            # the sizer on ``_win`` here would hand the *main frame* the
+            # player's rows and take its own layout away.
+            self._surface.SetSizer(root)
+        elif self._modeless:
             self._surface.SetSizer(root)
             outer = wx.BoxSizer(wx.VERTICAL)
             outer.Add(self._surface, 1, wx.EXPAND)
@@ -349,8 +354,13 @@ class PlayerPanel:
         # ``after`` is the refresh the buttons already use.
         from quill.ui.radio import transport_keys
 
+        # Embedded, the table goes on the panel, not the main frame: a frame has
+        # one accelerator table, it holds the WindowManager's Ctrl+Tab rows, and
+        # setting another *replaces* it -- which is how the Player as the main
+        # view used to cost the whole app its window traversal. wx walks a
+        # focused control's parents for accelerators, so the panel's still fire.
         transport_keys.install(
-            self._win,
+            self._surface if self._embedded else self._win,
             host,
             wx=wx,
             after=self._refresh,
@@ -396,6 +406,13 @@ class PlayerPanel:
         # A frame has no automatic Escape->Cancel; wire it to close, keeping
         # the "visit" contract the modal shape established. Ctrl+F4 closes
         # like any document window (Alt+F4 already works natively).
+        #
+        # Not when embedded: then ``_win`` is the *main window*, and Escape on
+        # the Player as the main view closed the whole app (2026-09-25). A
+        # hosted view is not a window and has nothing of its own to close.
+        if self._embedded:
+            event.Skip()
+            return
         if event.GetKeyCode() == self._wx.WXK_ESCAPE or (
             event.GetKeyCode() == self._wx.WXK_F4 and event.ControlDown()
         ):

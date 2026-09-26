@@ -441,14 +441,18 @@ def take_snapshot(host: Any) -> None:
     if engine is None or window is None:
         host._announce("There is no picture to snapshot. Show the video first.")
         return
-    from quill.core.radio.recording import _default_dir  # the recordings folder
+    from quill.core.radio.recordings_index import recordings_dir
 
     stream = _stream(host)
     stamp = int(getattr(host, "_snapshot_counter", 0)) + 1
     host._snapshot_counter = stamp
     title = str(getattr(stream, "title", "") or "video").strip() or "video"
     safe = "".join(ch for ch in title if ch.isalnum() or ch in " -_")[:60].strip() or "video"
-    target = _default_dir() / f"{safe} snapshot {stamp}.png"
+    # The recordings folder the listener chose, not the default one: a snapshot
+    # used to ignore the Destination folder setting entirely, and in a portable
+    # copy the default is inside the bundle anyway.
+    folder = recordings_dir(getattr(host, "_radio_recording_settings", None))
+    target = folder / f"{safe} snapshot {stamp}.png"
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
     except OSError:

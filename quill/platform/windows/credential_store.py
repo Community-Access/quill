@@ -57,8 +57,22 @@ def _cred_to_env_var(cred_name: str) -> str:
 
 
 def is_portable_mode() -> bool:
-    """Return True when ``QUILL_PORTABLE=1`` is set in the environment."""
-    return os.environ.get("QUILL_PORTABLE") == "1"
+    """Return True when secrets belong in the portable ``keys.enc`` store.
+
+    ``QUILL_PORTABLE=1`` (set by the native launcher) still counts, and so does
+    a run whose data demonstrably lives in a portable bundle. The environment
+    variable alone missed every launch that went straight into the bundle's
+    ``pythonw.exe`` -- a hand-made shortcut, a Run-key entry -- and those put
+    YouTube, Spotify and GitHub tokens in the host's Credential Manager.
+    """
+    if os.environ.get("QUILL_PORTABLE") == "1":
+        return True
+    try:
+        from quill.core.paths import portable_bundle_root
+
+        return portable_bundle_root() is not None
+    except Exception:  # noqa: BLE001 - an unreadable profile is not portable evidence
+        return False
 
 
 def _keys_enc_path() -> Path:

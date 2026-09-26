@@ -31,7 +31,9 @@ def _assets(prefix: str, version: str) -> list[dict[str, str]]:
 
 
 LITE = _assets("QuillLite", "1.0.0")
-RADIO = _assets("Quill-Radio", "3.0.0")
+#: Quill Radio shipped four until 3.0.0; Cast still does, so it is the four-asset
+#: example now.
+CAST = _assets("Quill-Cast", "3.0.0")
 
 
 @pytest.mark.parametrize(
@@ -66,8 +68,8 @@ def test_a_companion_listener_is_never_handed_an_exe(monkeypatch) -> None:
     import quill.core.install_edition as edition_module
 
     monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
-    assert _app_asset_url(RADIO, "Quill-Radio", prefer_portable=False).endswith(
-        "Quill-Radio-Companion-3.0.0.zip"
+    assert _app_asset_url(CAST, "Quill-Cast", prefer_portable=False).endswith(
+        "Quill-Cast-Companion-3.0.0.zip"
     )
 
 
@@ -150,8 +152,8 @@ def test_the_edition_step_is_untouched_for_the_apps_that_ship_four(monkeypatch) 
     import quill.core.install_edition as edition_module
 
     monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
-    assert _app_asset_url(RADIO, "Quill-Radio", prefer_portable=False).endswith(
-        "Quill-Radio-Companion-3.0.0.zip"
+    assert _app_asset_url(CAST, "Quill-Cast", prefer_portable=False).endswith(
+        "Quill-Cast-Companion-3.0.0.zip"
     )
 
 
@@ -159,7 +161,7 @@ def test_another_apps_assets_are_never_picked(monkeypatch) -> None:
     import quill.core.install_edition as edition_module
 
     monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.INSTALLER_FULL)
-    assert _app_asset_url(RADIO, "QuillLite", prefer_portable=False) == ""
+    assert _app_asset_url(CAST, "QuillLite", prefer_portable=False) == ""
 
 
 def test_a_non_https_url_is_ignored(monkeypatch) -> None:
@@ -173,3 +175,42 @@ def test_a_non_https_url_is_ignored(monkeypatch) -> None:
         }
     ]
     assert _app_asset_url(spoofed, "QuillLite", prefer_portable=False) == ""
+
+
+RADIO_TWO = [
+    {"name": n, "browser_download_url": f"https://example.test/{n}"}
+    for n in ("Quill-Radio-Portable-3.0.0.zip", "Quill-Radio-Setup-Shared-3.0.0.exe")
+]
+
+
+@pytest.mark.parametrize(
+    ("portable", "expected"),
+    [
+        (False, "Quill-Radio-Setup-Shared-3.0.0.exe"),
+        (True, "Quill-Radio-Portable-3.0.0.zip"),
+    ],
+)
+def test_quill_radio_is_a_two_asset_app(monkeypatch, portable, expected) -> None:
+    """Radio publishes two downloads since 3.0.0, and answers as QUILL Lite does."""
+    import quill.core.install_edition as edition_module
+
+    monkeypatch.setattr(edition_module, "detect", lambda *_a, **_k: edition.COMPANION)
+    url = _app_asset_url(RADIO_TWO, "Quill-Radio", prefer_portable=portable, match_edition=False)
+    assert url.endswith(expected)
+
+
+def test_quill_radio_asks_the_two_asset_question() -> None:
+    """The wiring half: both of Radio's update checks opt out of the edition step.
+
+    Read from source because the calls sit inside a wx menu binding and a launch
+    hook; what matters is that no call site was left on the four-way default.
+    """
+    from pathlib import Path
+
+    import quill.apps.radio as radio
+
+    assert radio._MATCH_EDITION is False
+    source = Path(radio.__file__).read_text(encoding="utf-8")
+    calls = source.count("self.check_for_app_updates(")
+    assert calls >= 2
+    assert source.count("match_edition=_MATCH_EDITION") == calls

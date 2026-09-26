@@ -120,7 +120,13 @@ class _MpvClient:
         self._handle = ctypes.c_void_p(handle)
         # Audio only, no window, no key bindings; keep-open so end-of-file is a
         # queryable state instead of an unload; idle so the core waits for us.
+        # config=no and ytdl=no: never read an mpv.conf from the user's profile,
+        # and never let mpv's ytdl hook shell out to a yt-dlp.exe it finds on the
+        # host's PATH (which would write ~/.cache/yt-dlp) -- Radio resolves
+        # YouTube itself, so the hook only ever ran on a URL that failed anyway.
         for option, value in (
+            ("config", "no"),
+            ("ytdl", "no"),
             ("vid", "no"),
             ("audio-display", "no"),
             ("terminal", "no"),

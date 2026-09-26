@@ -219,14 +219,21 @@ def maybe_run_first_run(host: Any) -> bool:
         if not needs_first_run(state, has_favorites=bool(favorites)):
             return False
 
-        browse = getattr(host, "open_internet_radio", None)
+        from quill.ui.radio import browse_door
+
+        # Browse Stations, the tree -- not Search Stations (see browse_door).
+        can_browse = any(
+            callable(getattr(host, name, None))
+            for name in ("open_browse_stations", "open_internet_radio")
+        )
+        browse = (lambda: browse_door.open_browse(host)) if can_browse else None
         dialog = RadioFirstRunDialog(
             getattr(host, "frame", None),
             state=state,
             announce=getattr(host, "_announce", None),
             show_modal_dialog=getattr(host, "_show_modal_dialog", None),
             resolve_key=lambda command_id: host._binding_for(command_id) or "",
-            on_browse=(lambda: browse()) if callable(browse) else None,
+            on_browse=browse,
         )
         dialog.show()
         saver = getattr(host, "_save_radio_history", None)

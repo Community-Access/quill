@@ -54,6 +54,9 @@
     "charset_normalizer",
     "comtypes",
     "cryptography",
+    "curl-cffi",
+    "curl_cffi",
+    "curl_cffi.libs",
     "defusedxml",
     "docx",
     "feedback-hub",
@@ -109,7 +112,9 @@
     "wx",
     "wx-accessible-webview",
     "wx_accessible_webview",
-    "wxpython"
+    "wxpython",
+    "yt-dlp",
+    "yt_dlp"
   ],
   "quill-data": [
     "__init__.py",

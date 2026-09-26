@@ -1,5 +1,9 @@
 """Parse an M3U / M3U8 playlist into radio stations for import.
 
+:func:`parse_playlist_file` is the Import Stations entry point for every
+format (M3U, PLS, XSPF, ASX); the other formats' parsers live in
+``playlist_formats``.
+
 Supports both extended M3U (``#EXTM3U`` with ``#EXTINF:<secs>,<Name>`` lines
 naming each entry) and plain M3U (one stream URL per line). Only http(s) stream
 URLs are taken; comments, blank lines, and non-network entries are ignored. A
@@ -10,9 +14,21 @@ Pure and wx-free so it is unit-tested without files or a UI.
 
 from __future__ import annotations
 
+from pathlib import Path, PureWindowsPath
 from urllib.parse import urlparse
 
 from quill.core.radio.models import RadioStation
+from quill.core.radio.playlist_formats import PlaylistFormatError, parse_playlist, sniff
+
+__all__ = [
+    "IMPORT_WILDCARD",
+    "PlaylistFormatError",
+    "dedup_key",
+    "parse_m3u",
+    "parse_playlist_file",
+    "read_playlist_file",
+    "split_new_and_duplicates",
+]
 
 
 def _name_from_url(url: str) -> str:
@@ -53,6 +69,49 @@ def parse_m3u(text: str) -> list[RadioStation]:
         stations.append(RadioStation(name=pending_name or _name_from_url(line), stream_url=line))
         pending_name = ""
     return stations
+
+
+#: The Import Stations file-dialog filter. Until 2026-09-25 it offered only
+#: M3U/M3U8 while PLS, XSPF and ASX parsers sat unused in ``playlist_formats``
+#: -- and a "Listen Live" link a listener saved is as likely to be one of those.
+IMPORT_WILDCARD = (
+    "Playlists (*.m3u;*.m3u8;*.pls;*.xspf;*.asx;*.wax;*.wvx)"
+    "|*.m3u;*.m3u8;*.pls;*.xspf;*.asx;*.wax;*.wvx"
+    "|M3U playlist (*.m3u;*.m3u8)|*.m3u;*.m3u8"
+    "|PLS playlist (*.pls)|*.pls"
+    "|XSPF playlist (*.xspf)|*.xspf"
+    "|ASX playlist (*.asx;*.wax;*.wvx)|*.asx;*.wax;*.wvx"
+    "|All files (*.*)|*.*"
+)
+
+
+def parse_playlist_file(text: str, filename: str = "") -> list[RadioStation]:
+    """Stations from an imported playlist file of any supported format (pure).
+
+    Dispatches through ``playlist_formats.sniff`` -- body first, then the
+    file's extension -- so a PLS saved as ``.m3u`` still imports. Two cases the
+    sniffer would otherwise drop: a plain M3U with no ``#EXTM3U`` header and an
+    unfamiliar name looks like a bare stream, so it falls back to
+    :func:`parse_m3u`; an HLS manifest is never a station list and yields
+    nothing. Hostile XML raises ``playlist_formats.PlaylistFormatError``.
+    """
+    name = PureWindowsPath(filename).name if filename else ""
+    kind = sniff(text, url=name)
+    if kind == "m3u8-hls":
+        return []
+    if kind in ("stream", "unknown"):
+        return parse_m3u(text)
+    return parse_playlist(text, url=name)
+
+
+def read_playlist_file(path: Path) -> list[RadioStation]:
+    """Read *path* and parse it with :func:`parse_playlist_file`.
+
+    Raises ``OSError`` when the file cannot be read and
+    :class:`PlaylistFormatError` for hostile XML; the importer reports both.
+    """
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return parse_playlist_file(text, path.name)
 
 
 def dedup_key(station: RadioStation) -> str:

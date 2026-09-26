@@ -104,7 +104,7 @@ class KeymapEditorMixin:
 
     def open_keymap_editor(self) -> None:
         wx = self._wx
-        entries = self._keymap_editor_entries()
+        entries = getattr(self, "_keymap_listed_entries", self._keymap_editor_entries)()
         if not entries:
             self._set_status("No commands available for keymap editing")
             return

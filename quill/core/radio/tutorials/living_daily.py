@@ -29,7 +29,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "without opening anything. It reads the metadata from the "
                     "stream you are already playing, and as a last resort the "
                     "station's own public now-playing page -- the same host, never "
-                    "a third party."
+                    "a third party. It has no key of its own in Quill Radio: type "
+                    "what's playing in the command palette."
                 ),
                 command="radio.whats_playing",
                 hear="The station, and the track if the stream carries one.",
@@ -40,9 +41,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "Speech is gone the moment it finishes, and a song title is "
                     "exactly the kind of thing you want to spell. The Now Playing "
                     "window is a read-only field you can arrow through character by "
-                    "character, with a Copy button."
+                    "character, with a Copy button. This is what What's Playing on "
+                    "the Playback menu opens."
                 ),
                 command="radio.whats_playing_details",
+                keys=("Ctrl+T",),
                 hear="The now-playing text, as ordinary reviewable text.",
                 check="window:Now Playing",
             ),
@@ -51,10 +54,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Copy What's Playing skips the window when all you want is the "
                     "text -- for a search, a note, or a message to whoever "
-                    "recommended the station."
+                    "recommended the station. It lives in the command palette, and "
+                    "the Now Playing window's Copy button does the same."
                 ),
                 command="radio.copy_whats_playing",
-                hear="Copied.",
+                hear="Copied, and the text that went to the clipboard.",
             ),
             Step(
                 title="Look back at what has played",
@@ -64,19 +68,23 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "the version of the question you ask ten minutes too late."
                 ),
                 command="radio.song_history",
-                hear="Entered Song History, then the tracks, newest first.",
+                keys=("Ctrl+Shift+H",),
+                hear="Song History, then the tracks, newest first.",
                 check="window:Song History",
             ),
             Step(
                 title="Ask about the track itself",
                 body=(
-                    "Where a track can be identified, Quill Radio can tell you more "
-                    "about it than the stream said -- and it says where each fact "
-                    "came from rather than presenting a lookup as something the "
-                    "station published."
+                    "In Song History, arrow to a song and press the Song Details "
+                    "button. Quill Radio asks MusicBrainz which release it came "
+                    "from, what year and how long it runs -- only when you ask, and "
+                    "never passing a lookup off as something the station published."
                 ),
-                keys=("Shift+F10",),
-                hear="What is known about the track, with its source named.",
+                keys=("Alt+D",),
+                hear=(
+                    "Looking up, and the song, then its release, year and length -- or "
+                    "that nothing more is known."
+                ),
             ),
             Step(
                 title="Keep the station instead of the song",
@@ -119,18 +127,18 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 command="app.bookmark_moment",
                 keys=("Ctrl+Alt+A",),
-                hear="Bookmarked, and what it was in.",
+                hear="Bookmarked, the position in words, and what it was in.",
             ),
             Step(
                 title="Add the note later, if there was one",
                 body=(
-                    "Open the Bookmarks list and use Edit Note on the row. Share "
+                    "Open the Bookmarks list and use the Edit Note button on the row. Share "
                     "copies the place, the note and what it is in together, because "
                     "the note on its own is a fragment nobody can act on."
                 ),
                 command="app.bookmarks",
                 keys=("Ctrl+Alt+Shift+J",),
-                hear="Entered Bookmarks, then the list.",
+                hear="Bookmarks, then the list.",
             ),
             Step(
                 title="Go back to one",
@@ -166,7 +174,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "marks costs nothing. Both sides, because the question a "
                     "chapter mark raises is does the programme turn here."
                 ),
-                hear="Twenty seconds of audio, and then silence -- your own playback is untouched.",
+                keys=("Alt+P",),
+                hear=(
+                    "Previewing, and the mark, then twenty seconds of audio -- your own "
+                    "playback is untouched."
+                ),
             ),
             Step(
                 title="Move by chapter while it plays",
@@ -213,13 +225,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Set a sleep timer",
                 body=(
-                    "The status bar's Sleep timer cell is the quickest route: press "
-                    "F6, arrow to it and press Enter. The radio stops itself after "
-                    "the time you choose, which is the whole point of a radio "
-                    "beside a bed."
+                    "Sleep Timer, on the Playback menu, asks how long; so does the "
+                    "status bar's Sleep timer cell -- press F6, arrow to it and press "
+                    "Enter. The radio stops itself after the time you choose, which "
+                    "is the whole point of a radio beside a bed."
                 ),
-                keys=("F6", "Enter"),
-                hear="The sleep timer set, and the time it will stop.",
+                keys=("Ctrl+Shift+Z", "F6", "Enter"),
+                hear="Sleep timer set for, and the number of minutes.",
             ),
             Step(
                 title="Set a wake-up timer",
@@ -229,7 +241,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "icon counts, and a closed app does not."
                 ),
                 command="radio.wake_timer",
-                hear="Entered the Wake-Up Timer.",
+                hear="Wake-Up Timer, and its first control.",
                 note=(
                     "It never retro-fires. Opening the app hours after the set time "
                     "stays silent until the next occurrence, rather than starting a "
@@ -239,13 +251,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Stop the app talking overnight",
                 body=(
-                    "Quiet Hours sets a window -- 22:00 to 07:00 by default, and it "
+                    "Quiet Hours, on the Help menu, sets a window -- 22:00 to "
+                    "07:00 by default, and it "
                     "may cross midnight -- in which the app stops speaking on its "
                     "own. Feeds are still checked, downloads still run, recordings "
                     "still record. Only the announcements about them wait."
                 ),
-                keys=("Ctrl+Alt+Shift+Z",),
-                hear="The window read back.",
+                command="app.quiet_hours",
+                hear=(
+                    "Quiet Hours, with its on switch, its From and To times, and the "
+                    "window read back."
+                ),
             ),
             Step(
                 title="Know what quiet hours never silence",
@@ -267,7 +283,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "only thing that comes through quiet hours on its own."
                 ),
                 keys=("Shift+F10",),
-                hear="The reminder set, and when it will come.",
+                hear="Reminder set for, the name, and when it will come.",
                 note=(
                     "Once a row has a reminder, the same menu slot reads Remove "
                     "Reminder instead. A menu that cannot tell you what you already "

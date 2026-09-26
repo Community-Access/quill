@@ -266,7 +266,7 @@ class ScheduleRecordingDialog:
         grid.Add(self._recurrence_choice, 0)
 
         grid.Add(
-            wx.StaticText(self._surface, label="On &day (weekly only):"),
+            wx.StaticText(self._surface, label="On da&y (weekly only):"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
@@ -433,9 +433,9 @@ class ScheduleRecordingDialog:
         close_id = wx.NewIdRef()
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
-        menu_bar.Append(surface_menu, "&Schedule")
-        # The app's own Station commands, so Alt+S opens the same menu here it
-        # opens in the main window -- see surface_app_menu for the report.
+        menu_bar.Append(surface_menu, "Sche&dule")
+        # Station owns Alt+S here as in the main window (surface_app_menu), so
+        # Schedule is Alt+D and On day moved to Y (GATE-14, 2026-09-25).
         from quill.ui.radio import surface_app_menu
 
         self._menu_id_refs.extend(
@@ -576,7 +576,7 @@ class ScheduleRecordingDialog:
             return
         self._load_entry_into_form(entry)
         self._editing_id = entry.id
-        self._add_btn.SetLabel("&Save Changes")
+        self._add_btn.SetLabel("S&ave Changes")
         self._new_btn.Enable(True)
         self._status.SetLabel(
             f"Editing {entry.station_name}. Change the fields, then choose Save Changes."

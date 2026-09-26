@@ -144,6 +144,22 @@ class TestDiagnostics:
         assert report.unknown_commands == ["ghost"]
         assert report.missing_dispatch == []
 
+    def test_diagnose_leaves_other_products_defaults_alone(self) -> None:
+        # Quill Radio loads the shared keymap, QUILL's editor commands included.
+        # Those are not orphans to heal away, nor duplicates of Radio's keys.
+        from quill.core.keymap import DEFAULT_KEYMAP
+
+        editor_id = next(iter(DEFAULT_KEYMAP))
+        keymap = {editor_id: "Ctrl+B", "radio.browse": "Ctrl+B", "ghost": "Ctrl+G"}
+        report = diagnose_keymap(
+            keymap,
+            known_commands={"radio.browse"},
+            dispatchable_commands={"radio.browse"},
+        )
+        assert report.unknown_commands == ["ghost"]
+        assert report.duplicates == {}
+        assert report.missing_dispatch == []
+
 
 class TestRewriteChordPrefixes:
     """The QUILL-key prefix rebind: every stored chord must follow the new prefix."""

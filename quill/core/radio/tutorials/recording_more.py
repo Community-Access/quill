@@ -33,7 +33,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "player -- that is why this is possible."
                 ),
                 command="radio.record_station",
-                hear="A dialog asking which station and for how long.",
+                hear=(
+                    "Record Station, asking for the Station and the Duration in "
+                    "minutes; after Start Recording, Recording started, the "
+                    "station, and for how many minutes."
+                ),
             ),
             Step(
                 title="Start another one",
@@ -44,7 +48,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "or being stopped never affects the others."
                 ),
                 command="radio.record_station",
-                hear="The second recording confirmed, alongside the first.",
+                hear="Recording started, the second station, and its minutes.",
             ),
             Step(
                 title="Watch them both in the list",
@@ -62,39 +66,40 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Stop one, or stop the lot",
                 body=(
-                    "Stop Recording stops the one selected in the list. Stop All "
-                    "Recordings stops every one at once, and appears as a button "
-                    "in this window whenever two or more are running. Record Now "
-                    "still only stops the recording of the station you are "
-                    "listening to."
+                    "The Stop Recording button stops the one selected in the list. "
+                    "Stop All Recordings, on the Record menu, stops every one at "
+                    "once, and appears as a button in this window whenever two or "
+                    "more are running. Record Now still only stops the recording "
+                    "of the station you are listening to."
                 ),
                 command="radio.stop_all_recordings",
-                hear="Each recording stopped, and its file named.",
+                hear="Stopping all, and how many, then Recording saved for each file.",
             ),
             Step(
                 title="Cap it if the machine cannot take it",
                 body=(
-                    "Maximum simultaneous recordings in Recording Settings is 0 -- "
+                    "Maximum simultaneous recordings, in Recording Settings, is 0 -- "
                     "unlimited -- by default. Set a number on a slower machine or "
                     "a metered connection, and a scheduled recording that would "
                     "exceed the cap is held pending and retried while its window "
                     "is still open rather than lost."
                 ),
                 command="radio.recording_settings",
-                hear="The cap read back.",
+                hear="Recording Settings; Tab to Maximum simultaneous recordings, reading 0.",
             ),
             Step(
                 title="Keep exactly what was broadcast",
                 body=(
-                    "The raw stream format copies the station's own audio packets "
+                    "In Recording Settings, the Format called Raw stream copies the "
+                    "station's own audio packets "
                     "straight to disk with no decoding and no re-encoding, so the "
                     "file is bit-for-bit what the station sent. Choose it when you "
                     "want the cleanest source to edit or convert yourself."
                 ),
-                hear="The format read back as raw stream.",
+                hear="Format, and Raw stream -- exactly as sent, no re-encoding.",
                 note=(
                     "The file type follows the stream -- .mp3, .aac, .ogg, .opus, "
-                    ".flac, and .mka for anything unusual. Bitrate and Apply Sound "
+                    ".flac, and .mka for anything unusual. Quality and Apply Sound "
                     "Enhancements have no effect on a raw recording and are "
                     "ignored rather than pretended at."
                 ),
@@ -102,12 +107,13 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Decide whether recordings are filtered",
                 body=(
-                    "Apply Sound Enhancements to recordings is off by default, so "
+                    "Apply Sound Enhancements to recordings, a checkbox in "
+                    "Recording Settings, is off by default, so "
                     "your recordings stay an unfiltered archival copy even while "
                     "you listen through EQ and compression. Turn it on and every "
                     "recording method captures the filtered audio instead."
                 ),
-                hear="The setting read back.",
+                hear="Apply Sound Enhancements to recordings, checkbox, not checked.",
             ),
         ),
         closing=(
@@ -131,13 +137,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Open it and read the summary line",
                 body=(
-                    "The line under the list leads with what is happening: "
+                    "The summary line under the list leads with what is happening: "
                     "Recording, 42 min left. Next: KFI at 11:00 tomorrow. 14 "
-                    "recorded. A recording due within the hour is given in "
+                    "recorded. In, and the folder. A recording due within the hour "
+                    "is given in "
                     "minutes, one further out by weekday, one past a week by date."
                 ),
                 command="radio.recordings",
-                hear="The summary line, then the list.",
+                hear="Radio Recordings, then the row you land on; the summary sits below the list.",
                 check="window:Radio Recordings",
             ),
             Step(
@@ -149,7 +156,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "your fingers, and every one of them says what it did."
                 ),
                 keys=("X", "C", "V"),
-                hear="Playing, Paused, Stopped -- each spoken.",
+                hear="Playing recording and its name, then Paused, then Stopped.",
             ),
             Step(
                 title="Move through the list",
@@ -210,13 +217,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Find the file on disk",
                 body=(
-                    "Open in Folder takes you to the finished file in Explorer. "
-                    "Remove deletes with a confirmation, and Refresh re-reads the "
-                    "folder -- worth pressing if something wrote a file there from "
-                    "outside the app."
+                    "The buttons below the list do the file work. Open in Folder "
+                    "takes you to the finished file in Explorer. Remove deletes "
+                    "with a confirmation, and Refresh re-reads the folder -- worth "
+                    "pressing if something wrote a file there from outside the "
+                    "app."
                 ),
-                keys=("Shift+F10",),
-                hear="The action's own confirmation.",
+                keys=("Alt+O", "Alt+F"),
+                hear="Explorer, with the file selected -- or the list re-read, where you left it.",
             ),
             Step(
                 title="Turn the letters off if you would rather type",
@@ -228,7 +236,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "are unaffected either way."
                 ),
                 keys=("Ctrl+,",),
-                hear="The setting read back.",
+                hear="Quill Radio Preferences; Tab to the Winamp-style checkbox and its state.",
             ),
         ),
         closing=(
@@ -252,13 +260,14 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Set how hard it should try",
                 body=(
-                    "Recording Settings holds an If the connection drops section: "
-                    "whether to reconnect at all, how many attempts, and how many "
-                    "seconds between them. Reconnect handling is per recording, so "
+                    "Recording Settings holds an If the connection drops group: "
+                    "Reconnect and keep recording automatically, Reconnect "
+                    "attempts, and Seconds between attempts. Reconnect handling is "
+                    "per recording, so "
                     "several running at once each ride out their own hiccups."
                 ),
                 command="radio.recording_settings",
-                hear="The reconnect settings read back.",
+                hear="Recording Settings, then each reconnect control as you Tab to it.",
             ),
             Step(
                 title="Know what a drop actually costs",
@@ -317,8 +326,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 note=(
                     "There is a Don't ask me again box that remembers your answer "
-                    "-- always resume, or never ask -- and Preferences can change "
-                    "it later."
+                    "-- always resume, or never ask. Leave it unticked if you would "
+                    "rather decide each time."
                 ),
             ),
             Step(

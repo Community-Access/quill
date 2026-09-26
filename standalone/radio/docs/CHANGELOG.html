@@ -205,7 +205,152 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
-<h2 id="300---2026-08-25">[3.0.0] - 2026-08-25</h2>
+<h2 id="300---2026-09-26">[3.0.0] - 2026-09-26</h2>
+<h3 id="30-in-brief">3.0 in brief</h3>
+<ul>
+<li><strong>Two downloads.</strong>
+<code>Quill-Radio-Setup-Shared-3.0.0.exe</code> (the installer,
+recommended) and <code>Quill-Radio-Portable-3.0.0.zip</code> (unpack
+anywhere), from <a
+href="https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.0">https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.0</a>.
+A portable copy writes nothing to the computer it runs on.</li>
+<li><strong>Browse Stations (Ctrl+B) is a place, not a list.</strong>
+One tree holds radio stations, radio reading services, podcasts,
+audiobook libraries, Television (iptv.org) and YouTube, and the Station
+Catalog keeps the whole station directory on your computer, so search
+still answers when a directory is down.</li>
+<li><strong>Live radio can be rewound, not paused.</strong> Rewind 30
+Seconds (Ctrl+Shift+Left) and Back to Live (Ctrl+Shift+L) work on a live
+station. Pause / Resume (Ctrl+Space) is for podcasts, recordings and
+files, and is dimmed with a reason on a live station.</li>
+<li><strong>Every big surface is its own window.</strong> Browse,
+Search, the player, Recordings and the rest sit side by side; Ctrl+Tab
+moves between them, and Go To (Ctrl+G) opens a numbered list of every
+place in the app.</li>
+<li><strong>Help that answers where you are.</strong> F1 explains any
+window and the control you are on; Help &gt; Tutorials… (Ctrl+Alt+F1)
+teaches the app in 41 lessons; every menu item shows its key; the
+Command Palette (Ctrl+Shift+P) finds any command by name.</li>
+<li><strong>Podcasts with no account, and video you can use.</strong>
+Keyless podcast search and subscriptions, transcripts with timings,
+chapters, captions, described audio and a Video window.</li>
+<li><strong>Recording you can trust.</strong> Record Now (Ctrl+R),
+Schedule Recording (Ctrl+Shift+S) and Recordings (Ctrl+Shift+R), with
+interrupted recordings offered back at the next launch.</li>
+<li><strong>Your favorites, one key away.</strong> Alt+1 through Alt+0
+play your first ten favorites without opening anything, and like every
+key they can be changed in Help &gt; Keyboard Shortcuts…
+(Ctrl+Alt+K).</li>
+<li><strong>Updates and support like QUILL Lite.</strong> Help &gt;
+Check for Updates… (Ctrl+Alt+U) shows what is new and offers the
+matching download; Help &gt; Get Help from Support… (Ctrl+Alt+F2) writes
+to a person at Community Access.</li>
+</ul>
+<h3 id="final-release-changes-2026-09-26">Final release changes
+(2026-09-26)</h3>
+<ul>
+<li><strong>Two downloads, not four.</strong> 3.0.0 publishes the
+installer (<code>Quill-Radio-Setup-Shared-3.0.0.exe</code>: installs the
+shared QuillVille Runtime if it is absent, then the app, with a Start
+Menu entry and an uninstaller – recommended for most people) and the
+portable zip (<code>Quill-Radio-Portable-3.0.0.zip</code>:
+self-contained, unpack anywhere, a USB stick included). The thin “Lite”
+installer and the Companion zip are retired, as QUILL Lite retired the
+same two (<code>scripts/build_release.ps1</code> header). The Companion
+zip installs nothing, so it binds to whatever shared runtime is on the
+machine – which can be older than the app, and cannot self-heal. The
+thin installer traded a smaller download for a first-launch runtime
+download and a network dependency. Nobody already on one is stranded:
+both installers share an AppId, so the full installer upgrades a thin
+install in place, and a Companion copy’s Check for Updates falls through
+to the installer.</li>
+<li><strong>A new portable copy offers an earlier copy’s
+favorites.</strong> Quill Radio 2.x kept its data in the computer’s
+profile even when run from the portable zip, so a 3.0 portable copy
+would have opened empty. On first launch, when the bundle has no
+favorites and the profile has some, it asks once whether to copy them
+(with settings, recording schedule, reminders and download preferences)
+into the bundle. The profile is only read; nothing in the bundle is
+overwritten (<code>core/radio/portable_migration.py</code>).</li>
+<li><strong>A portable copy writes nothing to the host
+computer.</strong> Settings, favorites, history and everything else live
+in the <code>data</code> folder beside <code>QuillRadio.exe</code>, from
+the very first launch, with no setting to find first. Deleting that
+folder turns it into an ordinary copy that uses this computer’s profile.
+The same rule as QUILL Lite.</li>
+<li><strong>Check for Updates works exactly as QUILL Lite’s.</strong>
+Help &gt; Check for Updates… (Ctrl+Alt+U) asks only “portable, or not”
+and offers the matching one of the two downloads
+(<code>match_edition=False</code>), replacing the four-way edition
+matching described under “Updates offer the edition you installed”
+below. The Update Available dialog shows the release’s What’s New notes
+in a read-only box that focus lands on, with <strong>Update</strong>
+(the default, Enter) and <strong>Close</strong> (Escape). A check you
+ask for that finds nothing says “You are up to date” in a dialog. The
+silent once-a-day check at launch speaks only when an update exists, and
+can be turned off in Preferences (Ctrl+,).</li>
+<li><strong>The last key and behaviour fixes</strong>, each with a test:
+<ul>
+<li><strong>Stop is Ctrl+.</strong> in every window, the main window
+included (<code>quill/apps/radio_main_keys.py</code>). It no longer
+shares Ctrl+Alt+P with Connect to Spotify.</li>
+<li><strong>Alt+1 through Alt+0 quick play and Mute on Ctrl+Shift+O now
+work in the main window.</strong> The first-run screen had always taught
+Alt+1; now it is true.</li>
+<li><strong>Update Radio Reading Services is Ctrl+Alt+F10, and Ask the
+Audio Description Project is Ctrl+Alt+8.</strong> Their old keys were
+swallowed by the system-wide show/hide hotkeys, and the generic
+Ctrl+Alt+Shift+Q show/hide default is no longer registered in an app
+that has its own.</li>
+<li><strong>Every “Browse Stations” opens the Browse tree</strong>
+(<code>quill/ui/radio/browse_door.py</code>). The Command Palette, the
+tray menu, the status bar and the first-run screen had been opening
+Search Stations.</li>
+<li><strong>Upcoming (Ctrl+Alt+Shift+F) lists your scheduled
+recordings</strong>, and its Go There button works.</li>
+<li><strong>Import Stations reads M3U, M3U8, PLS, XSPF and ASX</strong>
+(<code>core/radio/playlist_import.py</code>), not only M3U.</li>
+<li><strong>Restore from Backup and Clear Song History default to the
+safe button</strong>, so pressing Enter destroys nothing.</li>
+<li><strong>The Resume Recording window and the close confirmation
+(Radio and Cast) no longer crash as they open</strong> – a freed
+<code>wx.NewIdRef</code>. A new Preferences row, <strong>Interrupted
+recordings at launch</strong> (Ask each time, Always resume them, Never
+resume them), undoes “Don’t ask me again”.</li>
+<li><strong>Station &gt; Quick Actions… (Ctrl+Alt+Q) orders only the
+right-click menu</strong> of a station row and a Browse folder row. It
+no longer promises Enter or Ctrl+1 to Ctrl+9 behaviour it never had, and
+the recording list, which nothing read, is gone.</li>
+<li><strong>Keymap Diagnostics in Quill Radio no longer lists QUILL’s
+commands as orphans</strong> (<code>core/keymap_query.py</code>), so
+Heal no longer deletes your QUILL key changes.</li>
+<li><strong>Escape and Ctrl+F4 in the embedded player no longer close
+the whole app</strong>, and the first-run tip no longer says live radio
+can be paused.</li>
+</ul></li>
+<li><strong>All feedback goes to <a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+and none of it to GitHub.</strong> Suggest a Station or Podcast
+(Ctrl+Alt+9) now uses Get Help from Support’s own mail handoff
+(<code>support_dialog.send_by_mail</code>): the form and its checks are
+unchanged, then the listener’s mail program opens with the suggestion
+written – subject “[Quill Radio 3.0.0] Suggestion: <name>” – and the app
+says “Your mail program has opened with your suggestion written. Press
+Send there.” No mail program: the whole suggestion goes on the
+clipboard, with the address named. Removed: the GitHub issues POST
+(<code>_post_issue</code>, and its network-egress entry), the
+bundled-token lookup, and the pre-filled GitHub issue page it fell back
+to (<code>pick_suggestion.browser_url</code>). Get Help from Support no
+longer goes through the feedback-hub dialog at all: email is its only
+route, so the hub and its token are not used.
+<code>scripts/build_release.ps1</code> no longer generates or requires
+the bundled feedback token, and
+<code>-TokenFile</code>/<code>-SkipToken</code> are gone.</li>
+<li><strong>One release-notes document instead of two.</strong> Help
+&gt; Release Notes (Shift+F1) opens
+<code>docs/release-notes-3.0.md</code>; the separate in-depth companion
+is retired.</li>
+</ul>
 <h3 id="added">Added</h3>
 <ul>
 <li><p><strong>A person you can write to.</strong> Every app’s Help &gt;
@@ -378,10 +523,11 @@ in.</p></li>
 Sheet</strong> (<strong>Ctrl+Alt+Shift+K</strong>), at the top, with the
 Alt key that opens it – read off the bar in front of you, so it is right
 in every window and cannot drift. Quill Radio’s windows are peers and
-each carries its own single menu, which is why this matters: Alt+S is
-<strong>Station</strong> in the main window, <strong>Search</strong> in
-Find Stations, and nothing at all in Browse Stations, which is
-Alt+B.</p></li>
+each carries its own single menu, which is why this matters: the letter
+that opens a window’s own menu depends on the window –
+<strong>Browse</strong> in Browse Stations is Alt+B,
+<strong>Player</strong> in the Player is Alt+P – while Alt+S opens the
+Station menu that every window carries.</p></li>
 <li><p><strong>Search Results can be closed.</strong> The branch a
 cross-source search leaves at the top of the tree now goes away on
 <strong>Delete</strong>, or from <strong>Close Search Results</strong>
@@ -405,10 +551,10 @@ re-read it and exactly when there is no row to right-click. And
 window open it reloads the window, with it shut it fetches quietly and
 speaks the result, and in Safe Mode it says that it will not reach out
 rather than doing nothing silently.</p></li>
-<li><p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1): 36 guided tutorials,
-251 steps.</strong> Six tracks, from “you have never opened this app” to
-“you have relied on it for a month”, covering every feature Quill Radio
-has. They are not a second copy of the user guide:</p>
+<li><p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1): more than thirty
+guided tutorials.</strong> Six tracks, from “you have never opened this
+app” to “you have relied on it for a month”, covering every feature
+Quill Radio has. They are not a second copy of the user guide:</p>
 <ul>
 <li><strong>A step names a command, not a key</strong>, so the key you
 read is the key you actually have – rebind something and the tutorial
@@ -436,9 +582,8 @@ those are as it opens.</li>
 reading rather than doing, and the whole set ships as
 <code>docs/tutorials.md</code>, generated from the same lessons the
 window teaches from so the two cannot drift.</li>
-<li>The narrative version of all of this is
-<code>docs/release-notes-3.0.md</code>, Part Five, with the reasoning in
-<code>docs/release-notes-3.0-in-depth.md</code>, section 24.</li>
+<li>The plain-language summary of all of this is in
+<code>docs/release-notes-3.0.md</code>.</li>
 </ul></li>
 <li><p><strong>A feed offering several transcripts now gets read
 properly.</strong> Some podcasts publish the same episode’s transcript
@@ -803,14 +948,14 @@ Repeat rules are now expanded: daily, weekly (including several days a
 week), fortnightly, monthly and yearly, with cancelled dates honoured
 and each occurrence keeping its own identity, so a reminder set on next
 Tuesday stays on next Tuesday.</p></li>
-<li><p><strong>The ACB Media schedule, in Quill Radio.</strong> Station
-&gt; ACB Media Schedule (Ctrl+Shift+N) opens a week – Sunday to
-Saturday, a heading before each day, every day shown including the empty
-ones, because a week that quietly omits Wednesday reads as a week with
-no Wednesday. Search narrows it in place and a channel box narrows it to
-one of the ten. Previous Week, Next Week and Today move around it, and
-Export writes what you are looking at – filtered and all – to a Markdown
-file.</p></li>
+<li><p><strong>The ACB Media schedule, in Quill Radio.</strong>
+Community &gt; ACB Media Schedule (Ctrl+Shift+N) opens a week – Sunday
+to Saturday, a heading before each day, every day shown including the
+empty ones, because a week that quietly omits Wednesday reads as a week
+with no Wednesday. Search narrows it in place and a channel box narrows
+it to one of the ten. Previous Week, Next Week and Today move around it,
+and Export writes what you are looking at – filtered and all – to a
+Markdown file.</p></li>
 <li><p><strong>Six things you can do to a programme, three ways
 each.</strong> Play, Schedule a Recording, Set a Reminder, Add to the
 Play Queue, Copy Details and Show Notes, reachable from the context menu
@@ -937,11 +1082,12 @@ an upgrade from a version before this existed. Every keystroke it
 teaches is the one you actually have bound, so a key you changed in the
 Keyboard Manager is the key it names.</p></li>
 <li><p><strong>Tips: one sentence, once each.</strong> Six things worth
-knowing that no button label can say – that live radio can be paused and
-rewound, that Radio remembers a volume per station, that a recording can
-be scheduled for a programme that has not started and will wake the
-computer to catch it. Each appears once, ever, never takes the keyboard,
-and the whole feature has one switch on the welcome screen.</p></li>
+knowing that no button label can say – that live radio can be rewound,
+though not paused, that Radio remembers a volume per station, that a
+recording can be scheduled for a programme that has not started and will
+wake the computer to catch it. Each appears once, ever, never takes the
+keyboard, and the whole feature has one switch on the welcome
+screen.</p></li>
 <li><p><strong>Quill Radio says when it is missing a media
 tool.</strong> An installation that has lost <code>libmpv-2.dll</code>
 or FFmpeg now says so once, in one plain sentence naming what is gone,
@@ -1175,9 +1321,10 @@ URL column (falls back to the channel id), and junk rows. Premium
 benefits and watch-history sync are documented as impossible (YouTube
 developer policy; <code>watchHistoryNotAccessible</code>).</p></li>
 <li><p><strong>Updates offer the edition you installed</strong>
-(<code>core/install_edition.py</code>, 15 tests):
-<code>_pick_asset</code> chose among four published assets by file
-extension, and <code>_running_portable_build</code> looked for
+(<code>core/install_edition.py</code>, 15 tests; the final release
+replaced edition matching with “portable, or not” – see Final release
+changes): <code>_pick_asset</code> chose among four published assets by
+file extension, and <code>_running_portable_build</code> looked for
 <code>unins000.exe</code> beside <code>sys.executable</code> – which on
 the shared runtime is QuillVilleRuntime.exe in %LOCALAPPDATA%, with no
 uninstaller beside it. Every installed listener was therefore read as
@@ -1425,7 +1572,7 @@ decides which is descriptive (generously about form – “English (Audio
 Description)”, “descriptive”, “eng-desc”, “English AD”,
 <code>en-x-description</code> – and strictly about meaning), and
 <code>describe_track</code> names each one instead of numbering it.
-<strong>Playback &gt; Audio and Described Audio… (Ctrl+Shift+A)</strong>
+<strong>Audio &gt; Audio and Described Audio… (Ctrl+Shift+A)</strong>
 lists them with the described track first, the cursor on it, and the
 availability stated above the list; <strong>Play Described Audio
 (Ctrl+Alt+D)</strong> switches straight to it. A rendition is a separate
@@ -1463,15 +1610,17 @@ Station in Folder in the command palette. A folder always means its
 whole subtree, and the ends of a folder are announced rather than
 silently wrapping.</p></li>
 <li><p><strong>Quick Actions (Station &gt; Quick Actions…,
-Ctrl+Alt+Q)</strong> – reorder the actions on a station, a recording and
-a browse folder row, and choose what Enter does. The first nine of each
-answer to Ctrl+1 through Ctrl+9, as in QUILL Cast. The ordering
-machinery is shared with Cast rather than written twice.</p></li>
-<li><p><strong>Listening Statistics (Playback &gt; Listening
-Statistics…, Ctrl+Shift+Q)</strong> – time listened by station and by
-network over this week, month, year or all time, with Copy, Save as CSV
-and Delete My History. Time counts only while audio is actually coming
-out, and anything under ten seconds is not counted.</p></li>
+Ctrl+Alt+Q)</strong> – reorder the right-click menu of a station row and
+a browse folder row. The ordering machinery is shared with Cast rather
+than written twice. (It first arrived also promising a recording list, a
+choice of what Enter does and Ctrl+1 through Ctrl+9 as in Cast; none of
+those did anything in Radio, and the final release removed the
+promises.)</p></li>
+<li><p><strong>Listening Statistics (View &gt; Listening Statistics…,
+Ctrl+Shift+Q)</strong> – time listened by station and by network over
+this week, month, year or all time, with Copy, Save as CSV and Delete My
+History. Time counts only while audio is actually coming out, and
+anything under ten seconds is not counted.</p></li>
 <li><p><strong>Handoff to QUILL Cast from an episode row</strong> – Play
 Next in QUILL Cast, Add to QUILL Cast Queue, and Send to the QUILL Cast
 Inbox. Cast carries them out at its next launch, which is why every
@@ -1564,10 +1713,13 @@ claimed <strong>4–6</strong> — on top of the quick-play favorites those
 chords belong to, so one of each pair silently never fired. The
 launchers moved to <strong>Ctrl+Alt+Shift+F1–F3</strong> and Sort
 Favorites to <strong>F4–F6</strong>; quick-play keeps
-<strong>Ctrl+Alt+Shift+1–0</strong> exactly as documented. The conflict
-became visible the moment the Favorites submenu started advertising its
-real bindings, and the menu gate now tests a profile <em>with</em>
-favorites so this class cannot return.</p></li>
+<strong>Ctrl+Alt+Shift+1–0</strong> exactly as documented. (Later in 3.0
+the launchers moved again, to <strong>Ctrl+Alt+Shift+F7–F12</strong>,
+and quick-play to <strong>Alt+1</strong> through
+<strong>Alt+0</strong>.) The conflict became visible the moment the
+Favorites submenu started advertising its real bindings, and the menu
+gate now tests a profile <em>with</em> favorites so this class cannot
+return.</p></li>
 <li><p><strong>The Favorite Stations submenu shows its keys.</strong>
 Its rows offered no keyboard route at all — the cost the menu rule
 exists to prevent, missed because the gate walked an empty profile. The
@@ -1853,16 +2005,16 @@ stop that survived a restart would halt playback for a reason nobody
 could remember asking for. A recording that reaches its end is now
 followed by whatever the queue says is next. Shuffle and repeat are
 remembered.</p></li>
-<li><p><strong>Go to Position… (Ctrl+Shift+J) for a finished
+<li><p><strong>Go to Position… (Ctrl+Alt+J) for a finished
 video.</strong> Skipping thirty seconds at a time gets you near; this
 gets you exact. It reuses the same accessible Hours / Minutes / Seconds
 dialog the Quill Media Player uses – three labelled spin controls as the
 primary input, plus a timecode field for <code>1:23:45</code> – rather
 than growing a second, lesser prompt, and it clamps to the video’s
 length and says so if you asked for a point past the end.</p></li>
-<li><p><strong>One volume for every station (Playback &gt; Use One
-Volume for All Stations).</strong> Quill Radio remembers a volume per
-favorite, and that per-station level won outright – so with twenty
+<li><p><strong>One volume for every station (Audio &gt; Use One Volume
+for All Stations, Ctrl+Alt+V).</strong> Quill Radio remembers a volume
+per favorite, and that per-station level won outright – so with twenty
 favorites there was no way to turn them all down; you had to play each
 station and adjust it. Switch this on and a single level answers for
 every station, so Volume Up/Down turn <em>everything</em> up or down.
@@ -1906,12 +2058,11 @@ their local affiliate stations instead, and the label says so.
 <li><p><strong>Quick-play your favorites.</strong> Ten commands –
 <em>Play Favorite 1</em> through <em>Play Favorite 10</em> – play the
 first ten stations in your favorites list directly, without opening
-anything. They default to <strong>Ctrl+Alt+Shift+1</strong> through
-<strong>Ctrl+Alt+Shift+0</strong> (the plain number keys are already
-used by window switching, headings, and the copy tray), and like every
-command they are rebindable in <strong>Keyboard Shortcuts</strong> – set
-them to Alt+1 through Alt+0 if you prefer – and appear on the Command
-Palette.</p></li>
+anything. In Quill Radio they are <strong>Alt+1</strong> through
+<strong>Alt+0</strong> (they were Ctrl+Alt+Shift+1 through 0 until
+2026-09-16, when QUILL’s editor needed that row), and like every command
+they are rebindable in <strong>Keyboard Shortcuts</strong> and appear on
+the Command Palette.</p></li>
 <li><p><strong>Browse Stations remembers where you were.</strong> Play a
 station and reopen the browse tree, and it lands on the source you were
 last in – Networks, TuneIn, iHeart, wherever – instead of collapsed at
@@ -1973,20 +2124,20 @@ YouTube and starts being a player. On the <strong>Playback</strong>
 menu, working on any finished video: <strong>Chapters…</strong>
 (Ctrl+Shift+C) opens the uploader’s own chapter list, each entry read as
 a whole sentence with the one playing now marked, and Enter jumps to it;
-<strong>Next Chapter</strong> (Ctrl+Alt+Right) and <strong>Previous
-Chapter</strong> (Ctrl+Alt+Left, which restarts the current chapter
+<strong>Next Chapter</strong> (Ctrl+Shift+period) and <strong>Previous
+Chapter</strong> (Ctrl+Shift+comma, which restarts the current chapter
 first); <strong>Forward / Back 30 Seconds</strong> (Ctrl+Shift+Right /
 Ctrl+Shift+Left); <strong>Play Faster / Slower / Normal Speed</strong>
-(Ctrl+Alt+Up / Ctrl+Alt+Down / Ctrl+Alt+0), stepping through round,
-speakable values from 0.25x to 4x and remembered for the next video; and
-<strong>Where Am I?</strong> (Ctrl+Shift+P), which speaks position,
-length, and the chapter you are in. Every one of them <strong>says why
-when it declines</strong> – point any at a live stream and you hear
-“This is a live stream, so there is no timeline to move along”, because
-a control that silently does nothing is worse than one that is not
-offered: you cannot tell it from a broken app. Times are spoken in words
-(“5 minutes 31 seconds”) rather than as “5:31”, which read aloud is an
-ambiguous pair of numbers.</p></li>
+(Ctrl+Shift+Up / Ctrl+Shift+Down / Ctrl+Shift+0), stepping through
+round, speakable values from 0.25x to 4x and remembered for the next
+video; and <strong>Where Am I?</strong> (Ctrl+Shift+W), which speaks
+position, length, and the chapter you are in. Every one of them
+<strong>says why when it declines</strong> – point any at a live stream
+and you hear “This is a live stream, so there is no timeline to move
+along”, because a control that silently does nothing is worse than one
+that is not offered: you cannot tell it from a broken app. Times are
+spoken in words (“5 minutes 31 seconds”) rather than as “5:31”, which
+read aloud is an ambiguous pair of numbers.</p></li>
 <li><p><strong>Add from YouTube Playlist (Station menu).</strong> Paste
 a <code>youtube.com/playlist?list=...</code> link – prefilled from your
 clipboard if it is already there – and Quill Radio lists the videos in
@@ -2299,14 +2450,17 @@ installed once and reused by every app. Install any one app and every
 app you add afterward starts instantly. The runtime is reference-counted
 and removed only when the last app that needs it is uninstalled.</li>
 <li><strong>Companion edition (new download), about 3 MB.</strong>
-<code>Quill-Radio-Companion-&lt;version&gt;.zip</code> contains only the
-app and its docs and runs on the shared runtime. On first launch, if the
-runtime is not already installed, Quill Radio offers to download and
-install it once (about 230 MB) with a fully accessible progress bar;
-after that, this and every other QuillVille app start instantly.</li>
-<li><strong>Thin (“Lite”) installer (new download).</strong> A small
-installer that installs the app and downloads the shared runtime only if
-it is not already present.</li>
+<em>(Retired in the final 3.0.0 release – see Final release
+changes.)</em> <code>Quill-Radio-Companion-&lt;version&gt;.zip</code>
+contains only the app and its docs and runs on the shared runtime. On
+first launch, if the runtime is not already installed, Quill Radio
+offers to download and install it once (about 230 MB) with a fully
+accessible progress bar; after that, this and every other QuillVille app
+start instantly.</li>
+<li><strong>Thin (“Lite”) installer (new download).</strong>
+<em>(Retired in the final 3.0.0 release – see Final release
+changes.)</em> A small installer that installs the app and downloads the
+shared runtime only if it is not already present.</li>
 <li><strong>Accessible runtime download everywhere.</strong> Whenever
 the shared runtime is downloaded – by an installer or by the app’s own
 first launch – the progress bar reads correctly under NVDA, JAWS, and
@@ -2438,8 +2592,7 @@ renamed and modified copy of Python’s <code>pythonw.exe</code> as the
 launcher, a pattern some antivirus tools flagged as a false positive.
 That pattern is completely gone: the launcher is a genuine native
 program and the bundled Python is the official unmodified build.
-Releases are not yet code-signed (SmartScreen may caution on first run);
-signing is planned.</li>
+(Releases are code-signed from 3.0.0 on.)</li>
 </ul>
 <h2 id="212">[2.1.2]</h2>
 <h3 id="fixed-3">Fixed</h3>

@@ -1,18 +1,34 @@
 # Builds every Quill Radio release artifact from one onedir build:
 #
-#   dist\QuillRadio\                        the staged app folder
-#   dist\Quill-Radio-Portable-<ver>.zip     portable (with its data\ folder)
-#   dist\Quill-Radio-Setup-<ver>.exe        system installer
+#   dist\QuillRadio\                          the staged app folder
+#   dist\Quill-Radio-Portable-<ver>.zip       portable (with its data\ folder)
+#   dist\Quill-Radio-Setup-Shared-<ver>.exe   the installer (bundles the runtime)
+#
+# TWO artifacts, not four (3.0.0, 2026-09-26), for the reasons QUILL Lite
+# retired the same two on 2026-09-15 (standalone\quilllite\scripts\
+# build_release.ps1). The Companion zip installs nothing, so it binds to
+# whatever shared runtime is already on the machine -- including one frozen
+# before the Radio it is launching, which fails at launch and cannot self-heal
+# because the bootstrap only fires when NO runtime resolves. The thin "Lite"
+# installer traded a smaller download for a first-launch download of the
+# runtime plus a network dependency, which is the wrong trade for a radio a
+# listener wants playing the moment the installer closes. Two downloads also
+# make Check for Updates a question with one honest answer -- portable, or not
+# -- instead of a four-way guess (quill.apps.radio passes match_edition=False).
+#
+# Retiring them is safe for anyone already on one: both installers share an
+# AppId, so the full installer upgrades a thin install in place, and the
+# updater falls through to an installable asset when a release publishes none
+# for the running edition (core/updates.py::_app_asset_url).
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
-#                               [-TokenFile <path>] [-Iscc <path>]
+#                               [-LibmpvDir <dir>] [-Iscc <path>]
+#                               [-SkipSharedRuntime] [-SkipCatalog] [-Sign]
 #
-# Everything is bundled; the installer and zip perform no downloads. The
-# bundled feedback token (Report a Bug for users with no GitHub setup) is
-# generated into the quill package before PyInstaller runs -- a release
-# build FAILS if the token file is missing rather than shipping a build
-# with a silently broken bug reporter.
+# Everything is bundled; the installer and zip perform no downloads. No GitHub
+# token is generated or embedded (2026-09-26): all feedback goes by email to
+# support@community-access.org, so there is nothing to bundle.
 
 # Every path below defaults to "" and is resolved from the checkout itself, so a
 # clone builds on any machine. Hardcoded D:\ defaults used to make this script
@@ -21,10 +37,8 @@ param(
     [string]$Python = "",
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
-    [switch]$SkipToken,
     [switch]$SkipSharedRuntime,
     [switch]$SkipCatalog,
     [switch]$Sign
@@ -74,21 +88,17 @@ if (-not $SkipCatalog) {
 & $Python (Join-Path $QuillRepo "scripts\sync_site_radio_docs.py")
 if ($LASTEXITCODE -ne 0) { throw "Site radio-docs sync failed (see above)." }
 
-# -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
-# A public release must embed the issues-only token; -SkipToken builds a private
-# copy whose Report a Bug falls back to opening GitHub manually (same posture as
-# the Quill Weather build).
-if (-not $SkipToken) {
-    # -TokenFile is one of several sources generate_feedback_token.py accepts
-    # (env var, token file, Windows Credential Manager, or a token already
-    # bundled by this machine's last build). Pass it when given; otherwise let
-    # the generator resolve, and let ITS --require-token error explain every
-    # option rather than throwing here about the one source we happen to know.
-    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
-    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
-    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
-}
+# -- no feedback token (2026-09-26) ------------------------------------------
+# This build used to generate and embed the bundled GitHub "feedback token", and
+# a public release FAILED without one. It no longer does either: every piece of
+# feedback from Quill Radio -- Get Help from Support, Report Bad Station and
+# Suggest a Station or Podcast -- goes to support@community-access.org
+# through the reader's own mail program, and nothing is filed as a GitHub
+# issue, so there is no credential to ship.
+# -TokenFile and -SkipToken were removed with it; nothing else here used them.
+# One caveat: collect_all("quill") still sweeps up a quill\_feedback_token.py
+# that another app's build left in this checkout (it is gitignored, and those
+# builds regenerate it). Nothing this app runs reads it any more.
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 # SECURITY: ffmpeg is copied verbatim into the shipped runtime, so require an
@@ -163,6 +173,15 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
 . (Join-Path $QuillRepo "scripts\StageMediaTools.ps1")
 Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
 
+# -- the runtime must actually contain this app -------------------------------
+# The shared runtime carries its OWN frozen copy of the quill package, so a
+# runtime reused through -SkipSharedRuntime from before a Radio change can
+# compile, install, and then fail at first launch. QUILL Lite shipped exactly
+# that once (2026-09-08); one import is the cheapest check that catches it.
+# Radio has no no-window diagnostic switch, so no -ProbeArgs: the file check
+# and the frozen-tree freshness check are what answer this question anyway.
+Assert-QuillRuntimeHasModule -RuntimeDir $sharedRuntimeDist -Module "quill.apps.radio"
+
 # -- portable bundle (self-contained, genuine embeddable runtime) -------------
 # NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
 # and docs/design/native-launcher-2026-07-24.md: genuine unmodified
@@ -220,46 +239,18 @@ if (Test-Path $optilabExe) {
     Write-Host "No OptiLab adapter in this build; exact OptiLab processing will be unavailable."
 }
 
-# -- Companion bundle (the runtime-less stick) --------------------------------
-# Same native launcher and docs, no embedded Python: it runs off the shared
-# QuillVille Runtime the launcher resolves at %LOCALAPPDATA%\QuillVille\Runtime,
-# offering to install it on first launch. ~0.8 MB against the portable's 210.
-#
-# build_portable.py has had --no-runtime since the distribution overhaul, but
-# nothing ever called it from here, so Quill-Radio-Companion-<ver>.zip was made
-# by hand -- and every release since shipped whichever copy happened to be left
-# in dist\ from the last time somebody remembered. The 3.0.0 zip was four hours
-# stale against its own payload when this was wired in. Same reasoning as the
-# site-docs sync above: mechanical, or it rots.
-$companionDir = Join-Path $repoRoot "dist\QuillRadio-Companion"
-& $Python (Join-Path $QuillRepo "standalone\studio\scripts\build_portable.py") `
-    --product radio `
-    --no-runtime `
-    --out $companionDir `
-    --source-root $QuillRepo `
-    --version $version
-if ($LASTEXITCODE -ne 0) { throw "Companion bundle build failed." }
-if (-not (Test-Path (Join-Path $companionDir "QuillRadio.exe"))) {
-    throw "Companion build did not produce the native QuillRadio.exe launcher."
-}
-
 # -- code signing (payload) ---------------------------------------------------
-# Sign every exe/dll in the shared runtime and both app bundles BEFORE they are
+# Sign every exe/dll in the shared runtime and the portable app BEFORE they are
 # zipped or embedded in the installer, so the signed binaries are what ships.
 # Opt-in via -Sign / QUILL_SIGN; a no-op otherwise.
 $signer = Join-Path $QuillRepo "scripts\code_signing.py"
-& $Python $signer sign-build $sharedRuntimeDist $appDir $companionDir --label "radio payload"
+& $Python $signer sign-build $sharedRuntimeDist $appDir --label "radio payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
 $zipPath = Join-Path $repoRoot "dist\Quill-Radio-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
-
-$companionZip = Join-Path $repoRoot "dist\Quill-Radio-Companion-$version.zip"
-if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
-Write-Host "Compressing companion bundle -> $companionZip ..."
-Compress-Archive -Path $companionDir -DestinationPath $companionZip
 
 # -- installer (Inno signs Setup.exe + the uninstaller when signing is on) ----
 # When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
@@ -273,19 +264,22 @@ if ($env:QUILL_SIGN -eq "1") {
 & $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
-# -- Lite installer (the thin edition, same payload minus the runtime) --------
-# Both editions are shipped, and Check for Updates offers whichever one the user
-# installed back to them (installer\edition-installer-*.txt, core\install_edition.py),
-# so a release that compiles only the full setup leaves the thin edition
-# pointing at a stale download. quill-radio-lite.iss was being compiled by hand
-# -- same failure the Companion zip had above, same fix: build it here or it
-# rots. It embeds only the launcher + docs already staged in dist\QuillRadio,
-# so it costs seconds and needs nothing the full installer did not.
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
-if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
+# -- retired downloads never ride along ----------------------------------------
+# dist\ is a work area, and an older build of this script left the thin
+# installer and the Companion zip in it. Anything left there is one drag-and-drop
+# away from being published beside the real two, so this version's copies go.
+foreach ($retired in @("Quill-Radio-Lite-Setup-$version.exe", "Quill-Radio-Companion-$version.zip")) {
+    $stale = Join-Path $repoRoot "dist\$retired"
+    if (Test-Path $stale) {
+        Remove-Item $stale -Force
+        Write-Host "Removed retired artifact $retired (Radio ships two downloads since 3.0.0)."
+    }
+}
+$staleCompanion = Join-Path $repoRoot "dist\QuillRadio-Companion"
+if (Test-Path $staleCompanion) { Remove-Item $staleCompanion -Recurse -Force }
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"
-Get-ChildItem (Join-Path $repoRoot "dist") -File | ForEach-Object {
+Get-ChildItem (Join-Path $repoRoot "dist") -File -Filter "*-$version.*" | ForEach-Object {
     Write-Host ("  {0}  {1:N1} MB" -f $_.Name, ($_.Length / 1MB))
 }

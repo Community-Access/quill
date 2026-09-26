@@ -34,7 +34,7 @@ from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
-from quill.ui.radio import playback_status, quick_play, stats_session, youtube_ui
+from quill.ui.radio import browse_door, playback_status, quick_play, stats_session, youtube_ui
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
 from quill.ui.radio.player_controller import RadioPlayerController, ResolvedEnhancement
@@ -1591,7 +1591,7 @@ class RadioMixin(RadioStatusWindowsMixin):
         menu.AppendSeparator()
         browse_id = wx.NewIdRef()
         menu.Append(browse_id, "Browse Stations...")
-        menu.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: browse_door.open_browse(self), id=browse_id)
         self._retain_radio_menu_ids(
             play_id, pause_id, mute_id, record_id, schedule_id, rec_settings_id, browse_id
         )

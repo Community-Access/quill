@@ -149,7 +149,7 @@ class _CataloguePicker:
         self._available_list.SetHelpText(_help)
         box.Add(self._available_list, 1, wx.EXPAND)
 
-        box.Add(wx.StaticText(self.dialog, label="&Description:"), 0, wx.TOP | wx.BOTTOM, 4)
+        box.Add(wx.StaticText(self.dialog, label="Descri&ption:"), 0, wx.TOP | wx.BOTTOM, 4)
         # Read-only edit field, not static text: a description is the whole
         # reason somebody can choose, and static text cannot be tabbed to,
         # arrowed through, or re-read a word at a time (the same reason the ACB
@@ -227,7 +227,7 @@ class _CataloguePicker:
         row = wx.BoxSizer(wx.HORIZONTAL)
         self._summary = wx.StaticText(self.dialog, label="")
         row.Add(self._summary, 1, wx.ALIGN_CENTER_VERTICAL)
-        self._ok_btn = wx.Button(self.dialog, wx.ID_OK, "&Add These")
+        self._ok_btn = wx.Button(self.dialog, wx.ID_OK, "Add &These")
         self._ok_btn.SetHelpText(
             "Adds everything in your list, in the order shown, and closes this window."
         )

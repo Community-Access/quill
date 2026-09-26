@@ -22,6 +22,26 @@ except ImportError:  # pragma: no cover - non-Windows fallback
 _RUN_KEY_PATH = r"Software\Microsoft\Windows\CurrentVersion\Run"
 _VALUE_NAME = "QuillRadio"
 
+#: What the menu item says in a portable copy instead of changing the registry.
+PORTABLE_REFUSAL = (
+    "A portable copy does not add itself to this computer's startup. "
+    "Install Quill Radio to start it with Windows."
+)
+
+
+def running_portable() -> bool:
+    """True when this run keeps its data in a portable bundle.
+
+    A portable copy writes nothing to the computer it visits, and a Run-key
+    entry is exactly that: it would outlive the stick, and point at a drive
+    letter that means something else tomorrow. The check state reads False
+    too, so an installed Quill Radio's entry on the same computer neither
+    shows as this copy's nor gets removed by toggling it.
+    """
+    from quill.core.paths import portable_bundle_root
+
+    return portable_bundle_root() is not None
+
 
 def launch_command() -> str:
     """The command written to the Run key: Quill Radio's own executable, quoted."""
@@ -34,7 +54,7 @@ def is_windows() -> bool:
 
 def is_launch_at_startup_enabled() -> bool:
     """True if Quill Radio currently has its per-user Run-key entry."""
-    if not is_windows():
+    if not is_windows() or running_portable():
         return False
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, _RUN_KEY_PATH) as key:
@@ -49,8 +69,9 @@ def set_launch_at_startup(enabled: bool) -> None:
 
     A no-op on non-Windows platforms; never raises -- a locked-down registry
     (corporate policy) must not crash the app or block saving other settings.
+    Never writes anything from a portable copy.
     """
-    if not is_windows():
+    if not is_windows() or running_portable():
         return
     try:
         with winreg.OpenKey(

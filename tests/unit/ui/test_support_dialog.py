@@ -125,22 +125,6 @@ def test_no_mail_program_still_leaves_the_message_and_the_address(
     assert dialog.ended == []
 
 
-def test_the_server_path_is_skipped_when_nothing_can_post_to_it(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Falling back to GitHub is the one thing that must never happen: the
-    repository is public and a support message is somebody's own words."""
-    import quill.core.feedback_token as feedback_token
-
-    monkeypatch.setattr(feedback_token, "server_transport_available", lambda: False)
-    assert (
-        support_dialog._server_path(
-            _Host(), "Quill Radio 3.0.0", prefill_summary="", prefill_body=""
-        )
-        is False
-    )
-
-
 def test_an_app_with_an_announcer_instead_of_a_shell_still_speaks(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -164,3 +148,14 @@ def test_an_app_with_an_announcer_instead_of_a_shell_still_speaks(
     dialog._submit()
 
     assert said and "Nothing is sent until you send it there" in said[0][0]
+
+
+def test_support_never_goes_through_feedback_hub() -> None:
+    """2026-09-26: every message goes to support@ by email. The feedback-hub
+    dialog (and its GitHub token) is not a transport any more."""
+    import inspect
+
+    source = inspect.getsource(support_dialog)
+    assert "feedback_hub" not in source
+    assert "github_token" not in source
+    assert not hasattr(support_dialog, "_server_path")

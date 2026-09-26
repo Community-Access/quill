@@ -23,9 +23,8 @@
 # unchanged and still ship all four.
 #
 # Usage:
-#   .\scripts\build_release.ps1 [-Python <python.exe>] [-TokenFile <path>]
-#                               [-Iscc <path>] [-SkipToken] [-SkipSharedRuntime]
-#                               [-Sign]
+#   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
+#                               [-SkipSharedRuntime] [-Sign]
 #
 # QUILL Lite is a text editor: no ffmpeg, no libmpv, no media, AI or speech
 # stacks -- so, unlike Quill Radio's build, there is nothing to stage under its
@@ -43,10 +42,8 @@ param(
     # unused here, which is exactly the 304 MB QUILL Lite stops installing.
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
-    [switch]$SkipToken,
     [switch]$SkipSharedRuntime,
     [switch]$Sign
 )
@@ -76,18 +73,16 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
-# -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
-if (-not $SkipToken) {
-    # -TokenFile is one of several sources generate_feedback_token.py accepts
-    # (env var, token file, Windows Credential Manager, or a token already
-    # bundled by this machine's last build). Pass it when given; otherwise let
-    # the generator resolve, and let ITS --require-token error explain every
-    # option rather than throwing here about the one source we happen to know.
-    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
-    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
-    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
-}
+# -- no feedback token (2026-09-26) ------------------------------------------
+# This build used to generate and embed the bundled GitHub "feedback token", and
+# a public release FAILED without one. It no longer does either: every piece of
+# feedback from QUILL Lite -- Get Help from Support -- goes
+# to support@community-access.org through the reader's own mail program, and
+# nothing is filed as a GitHub issue, so there is no credential to ship.
+# -TokenFile and -SkipToken were removed with it; nothing else here used them.
+# One caveat: collect_all("quill") still sweeps up a quill\_feedback_token.py
+# that another app's build left in this checkout (it is gitignored, and those
+# builds regenerate it). Nothing this app runs reads it any more.
 
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the

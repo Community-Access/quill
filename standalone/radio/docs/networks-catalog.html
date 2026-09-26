@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Networks catalog for Quill Radio's browse tree</title>
   <style>
@@ -500,8 +500,8 @@ streams.</p>
 </tr>
 <tr>
 <td>Radio Paradise</td>
-<td>Direct</td>
-<td>publishes stream + a public JSON API</td>
+<td>Built-in</td>
+<td>its own Browse Stations branch, every channel in every quality</td>
 </tr>
 <tr>
 <td>FIP (Radio France)</td>
@@ -521,6 +521,11 @@ streams.</p>
 </tbody>
 </table>
 <h2 id="recommended-implementation">Recommended implementation</h2>
+<p><strong>Status (3.0.0, 2026-09-26): shipped</strong> as
+<code>quill/core/radio/networks.py</code>. The Browse Stations
+<strong>Networks</strong> branch has six groups: Public broadcasters, US
+news &amp; talk, US public radio, Sports, Syndicators (affiliates) and
+Music. The plan it was built from follows.</p>
 <p>A <strong>Networks</strong> branch in Browse Stations, grouped:</p>
 <ul>
 <li><strong>Public broadcasters</strong> (BBC, CBC, ABC AU, RTÉ, RNZ,

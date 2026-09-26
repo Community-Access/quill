@@ -466,9 +466,9 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         btn_row.Add(link_finder_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._refresh_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
-        if not self._modeless:
-            # Only the modal dialog carries a Close button: a real window
-            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
+        if not self._modeless and not self._embedded:
+            # Modal only (2026-08-23); never embedded, whose ``_win`` is the main
+            # window -- its Close button closed the whole app (2026-09-25).
             close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
             bind_close_button(self._win, close_btn, modeless=False)
             close_btn.SetName("Close (playback continues)")

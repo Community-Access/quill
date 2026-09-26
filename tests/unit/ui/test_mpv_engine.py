@@ -57,3 +57,30 @@ def test_preferred_backend_tracks_dll_presence(monkeypatch, tmp_path: Path) -> N
 def test_mpv_pack_dir_under_engine_packs() -> None:
     assert mpv_pack_dir().name == "mpv"
     assert mpv_pack_dir().parent.name != ""
+
+
+def test_the_client_reads_no_mpv_conf_and_never_runs_a_host_yt_dlp(monkeypatch) -> None:
+    """Set before mpv_initialize, where "config" only takes effect: no mpv.conf
+    from the user's profile, and no ytdl hook shelling out to a yt-dlp.exe on
+    the host's PATH (which would write ~/.cache/yt-dlp from a portable copy)."""
+    from unittest import mock
+
+    import quill.ui.audio.mpv_engine as me
+
+    lib = mock.MagicMock()
+    lib.mpv_create.return_value = 1
+    lib.mpv_initialize.return_value = 0
+    order: list[str] = []
+
+    def _option(_handle: object, key: bytes, value: bytes) -> int:
+        order.append(f"{key.decode()}={value.decode()}")
+        return 0
+
+    lib.mpv_set_option_string.side_effect = _option
+    lib.mpv_initialize.side_effect = lambda _h: order.append("init") or 0
+    monkeypatch.setattr(me.ctypes, "CDLL", lambda _path: lib)
+
+    me._MpvClient(Path("libmpv-2.dll"))
+
+    assert "config=no" in order and "ytdl=no" in order
+    assert order.index("config=no") < order.index("init")

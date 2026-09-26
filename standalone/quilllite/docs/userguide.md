@@ -4001,22 +4001,89 @@ Support is run by **Community Access**, and the address is
 **support@community-access.org**. A person reads it, and replies come back by
 email.
 
-The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2),
-which every app in the family answers with the same form: what kind of message
-this is, a subject, what happened, and -- if you want an answer -- an email
-address to reply to. What you expected and how to reproduce it are optional,
-and worth more than anything else when you can give them.
+Every message from QUILL Lite goes to that one address. Nothing is filed on
+GitHub or posted on any other public site, and QUILL Lite carries no GitHub
+token. (Stated here on 2026-09-26, when Quill Radio's feedback moved to the
+same address; QUILL Lite's always has.)
 
-Press Send and your **own mail program opens with the whole message already
-written**, addressed to support, with QUILL Lite's name and version and your Windows
-version filled in at the bottom. Nothing is sent until you send it there, so you
-can read it over, add anything, or change your mind.
+### Get Help from Support, step by step
 
-If this machine has no mail program set up -- webmail only, say -- the app puts
-the whole message on your clipboard and tells you the address, so nothing you
-typed is lost. And writing to **support@community-access.org** yourself always
-works just as well: there is no form you have to use. Say which app you were
-using and what happened.
+The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2).
+Every app in the family answers it with the same window.
+
+**What the window asks**
+
+1. Press **Ctrl+Alt+F2**. The Get Help from Support window opens. Its first line
+   says the message goes to support@community-access.org and that nothing is
+   sent until you send it from your mail program.
+2. **What kind of message** (Alt+W) is a list: Something is broken, A question,
+   An accessibility problem, or An idea or request. Use the Up and Down arrows.
+   It only helps route your message; say anything you like below.
+3. **Subject** (Alt+U): a short line saying what the message is about, the way
+   an email subject does, such as "Spelling stops after I paste". Required.
+4. **What happened** (Alt+H): describe it in as much or as little detail as you
+   like. This is the part a person reads first. Required. Enter starts a new
+   line here, so press **Tab** to move on.
+5. **What you expected** (Alt+X): what you thought would happen instead.
+   Optional.
+6. **Steps to reproduce** (Alt+R): how somebody else could make it happen, such
+   as "Open a .docx, press F7, press Ctrl+V". Optional, and worth more than
+   anything else when you can give it.
+7. **Your email address** (Alt+E): where support should reply. Optional. The
+   message goes from your own mail account, so support can answer that address
+   anyway; fill this in only if you want the answer somewhere else.
+8. **Screen reader** (Alt+A): which one you use, if any. It is filled in from
+   the screen reader that is running, so usually you can leave it.
+9. A line below the fields says what else goes in, such as "Also included:
+   QUILL Lite 1.1.0, your QUILL AI support ID (...), and your Windows version."
+
+**Sending it**
+
+1. Press **Enter**, or Tab to **Send** and press **Space**.
+2. If the subject or What happened is empty, or the email address does not look
+   right, the first problem is spoken and the whole list is shown. Press
+   **Enter** to close it, fix the field, and send again.
+3. Otherwise your **own mail program opens with the whole message already
+   written**, addressed to support@community-access.org, with a subject such as
+   "[QUILL Lite 1.1.0] Spelling stops after I paste". You hear "Your mail
+   program is opening with the message ready. Nothing is sent until you send it
+   there." The Get Help window closes.
+4. **Press Send in your mail program.** Nothing leaves your computer until you
+   do, so you can read it over, add anything, or change your mind.
+
+**If you have no mail program**
+
+On a computer with webmail only, nothing can open, and QUILL Lite says "No mail
+program answered. Write to support@community-access.org." The whole message,
+with the address and the subject at the top, is on your clipboard. Start a new
+email to **support@community-access.org** in your webmail and paste it with
+**Ctrl+V**. The Get Help window stays open with what you typed, so nothing is
+lost.
+
+A very long message is shortened in the email, with a line saying so, and the
+complete text is put on your clipboard. QUILL Lite says when this happens;
+paste the full text over the shortened one with **Ctrl+V**.
+
+**What is included, and what is not**
+
+- Included: what you typed, the kind of message, QUILL Lite's name and version,
+  your Windows version, the screen reader you chose, and -- when this computer
+  is connected to QUILL's free AI -- its **support ID**, which is how support
+  finds your AI allowance without an account name or password.
+- Not included: your documents, your file names, your settings, or anything
+  you did not type. If support needs more, they will ask.
+- It is an ordinary email from your own account to Community Access. Nothing is
+  posted publicly, and QUILL Lite itself makes no connection to send it.
+
+**What happens next**
+
+A person at Community Access reads it and replies by email, usually to the
+address you sent from. To close the window without writing anything, press
+**Escape** or choose **Cancel**.
+
+Writing to **support@community-access.org** yourself, from any email account,
+always works just as well: there is no form you have to use. Say which app you
+were using and what happened.
 
 ### The one thing worth attaching
 

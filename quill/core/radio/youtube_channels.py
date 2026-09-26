@@ -33,7 +33,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
-from quill.core.paths import app_data_dir
+from quill.core.paths import app_data_dir, yt_dlp_cache_dir
 from quill.core.radio.models import RadioStation
 from quill.core.storage import read_json, write_json_atomic
 
@@ -170,6 +170,7 @@ def _flat_entries(url: str, *, limit: int, offset: int) -> tuple[str, list[dict]
             "YouTube support is not installed. Use Station, Update YouTube Support to add it."
         ) from error
     options = {
+        "cachedir": yt_dlp_cache_dir(),
         "quiet": True,
         "no_warnings": True,
         "skip_download": True,

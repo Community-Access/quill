@@ -118,8 +118,10 @@ def matches_asset(edition: str, asset_name: str, *, app_prefix: str = "") -> boo
     """Whether *asset_name* is the download for *edition* (pure).
 
     Names are matched on what the build scripts actually produce:
-    ``Quill-Radio-Setup-Shared-3.0.0.exe``, ``Quill-Radio-Lite-Setup-3.0.0.exe``,
-    ``Quill-Radio-Portable-3.0.0.zip``, ``Quill-Radio-Companion-3.0.0.zip``.
+    ``Quill-Cast-Setup-Shared-3.0.0.exe``, ``Quill-Cast-Lite-Setup-3.0.0.exe``,
+    ``Quill-Cast-Portable-3.0.0.zip``, ``Quill-Cast-Companion-3.0.0.zip``.
+    (Quill Radio and QUILL Lite publish only the first and third, and skip this
+    question entirely -- ``fetch_app_releases(match_edition=False)``.)
 
     *app_prefix* is the app's own asset basename, stripped before matching, and
     it is not optional in spirit: the markers below are words, and an app whose

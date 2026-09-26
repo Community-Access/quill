@@ -324,6 +324,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # the apps speak, which is the shipped behaviour rather than a surprise.
     "core/quiet_hours.py::save_quiet_hours": "marker",
     "core/radio/recording_resume.py::save_marker": "marker",
+    # "Asked once" for the portable favorites offer (2026-09-26): {asked, copied}.
+    "core/radio/portable_migration.py::remember_answer": "marker",
     "core/onboarding.py::mark_assistant_onboarding_complete": "marker",
     "core/onboarding.py::mark_glow_onboarding_complete": "marker",
     "core/onboarding.py::mark_onboarding_complete": "marker",

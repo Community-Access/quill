@@ -120,7 +120,9 @@ def restore_radio_data(frame: Any) -> None:
         f"Restore {len(manifest.data_files)} settings file(s){extra} from this backup "
         f"(made {when})?\n\nThis replaces your current stations and settings.",
         "Restore Quill Radio",
-        wx.ICON_WARNING | wx.YES_NO,
+        # NO_DEFAULT (2026-09-25): this overwrites every station and setting,
+        # so Enter must not be the key that does it.
+        wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
     )
     if confirm != wx.YES:
         return

@@ -168,6 +168,78 @@ def app_data_dir() -> Path:
     return Path.home() / ".quill"
 
 
+def portable_bundle_root() -> Path | None:
+    """The bundle folder when this run keeps its data in a portable bundle, else None.
+
+    The one question every "do not touch the host computer" rule asks: not
+    "is this a portable bundle" (:func:`portable_root_dir` answers that) but
+    "is this run's data actually *going* there". An explicit "appdata" or
+    "custom" choice made inside a bundle answers no, and so does a bundle whose
+    ``data`` folder was deleted -- which is how a portable copy is turned into
+    an ordinary one on purpose.
+
+    Recordings, downloads, Task Scheduler, the Run key and the secret store
+    all ask this, rather than each growing its own check: five slightly
+    different answers to "am I portable?" is how one of them ends up wrong on
+    somebody else's computer.
+    """
+    root = portable_root_dir()
+    if root is None:
+        return None
+    try:
+        data = app_data_dir().resolve()
+    except (OSError, RuntimeError):
+        return None
+    return root.parent if data == root.resolve() else None
+
+
+def propagate_portable_environment() -> None:
+    """Set QUILL_APP_ROOT and QUILL_PORTABLE when running from a portable bundle.
+
+    The portable bundle's primary entry point is ``quill.exe`` at the bundle
+    root, next to a ``data/`` folder -- the evidence rules in
+    :func:`quill.core.storage_mode._resolve_app_root` apply here too. When
+    the host process can resolve a verified portable anchor, mirror the
+    fact into the env so the legacy ``QUILL_APP_ROOT`` consumers (braille
+    pack, bundled tool paths, read-aloud assets, AI key DPAPI fallback)
+    keep working without each doing its own walk-up from ``sys.executable``.
+
+    Skipped when the env vars are already set -- the launcher or a test
+    harness may have set them deliberately.
+
+    Shared by every app's ``main()`` rather than living in ``quill.__main__``
+    alone: Quill Radio never called it, so a launch straight into the bundle's
+    ``pythonw.exe`` (a Run-key entry, a hand-made shortcut) put secrets in the
+    host's Credential Manager and missed the bundled mpv and ffmpeg.
+
+    It also points WebView2's profile inside the bundle when the data lives
+    there. WebView2 otherwise keeps cookies, cache and any signed-in session
+    (the Spotify player) under the host's ``%LOCALAPPDATA%``; the environment
+    variable overrides whatever folder wx passes, and has to be set before the
+    first WebView is created, which is why it is here and not beside the
+    WebView.
+    """
+    if not (os.environ.get("QUILL_APP_ROOT") or os.environ.get("QUILL_PORTABLE")):
+        anchor = storage_mode._resolve_app_root()
+        if anchor is not None:
+            os.environ["QUILL_APP_ROOT"] = str(anchor)
+            os.environ["QUILL_PORTABLE"] = "1"
+    if portable_bundle_root() is not None:
+        webview_dir = str(app_data_dir() / "webview2")
+        os.environ.setdefault("WEBVIEW2_USER_DATA_FOLDER", webview_dir)
+
+
+def yt_dlp_cache_dir() -> str:
+    """The ``cachedir`` every ``yt_dlp.YoutubeDL`` options dict passes.
+
+    Left unset, yt-dlp caches YouTube's player code, signature answers and
+    proof-of-origin tokens in ``~/.cache/yt-dlp`` -- on the host computer, for a
+    portable copy, on every YouTube play. Here it follows the data folder like
+    every other regenerable cache.
+    """
+    return str(machine_local_dir() / "yt-dlp-cache")
+
+
 def machine_local_dir() -> Path:
     """Where machine-local, regenerable data (caches) belongs.
 

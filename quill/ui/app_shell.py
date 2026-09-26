@@ -55,6 +55,20 @@ class AppShellFrame(
     without a second copy.
     """
 
+    def _keymap_listed_entries(self) -> list[tuple[str, str]]:
+        """The Keyboard Shortcuts rows: this app's commands, not the editor's.
+
+        QUILL's Quick Nav letters are listed only where there is a document to
+        navigate. The editor showed fourteen "QUILL Quick Nav" rows on H, A,
+        L... in Quill Radio, keys that do nothing there (2026-09-25). Display
+        only: conflict naming and diagnostics still know the ids.
+        """
+        return [
+            (title, command_id)
+            for title, command_id in self._keymap_editor_entries()
+            if not command_id.startswith("quill.quick_nav.")
+        ]
+
     def _init_app_shell(
         self,
         title: str,
@@ -797,6 +811,7 @@ class AppShellFrame(
         current_version: str,
         silent_no_update: bool = False,
         app_key: str = "",
+        match_edition: bool = True,
     ) -> None:
         """The same in-app experience QUILL gives: check this app's own GitHub
         releases, download the installer in-app with spoken progress
@@ -810,6 +825,14 @@ class AppShellFrame(
         the place to announce nothing happened -- but a genuine available
         update still shows the same interactive prompt either way, since
         these small apps have no notification-center equivalent to defer to.
+
+        ``match_edition=False`` is for an app that publishes two downloads, an
+        installer and a portable zip, rather than four (Quill Radio since 3.0.0,
+        as QUILL Lite since 1.0): "portable, or not" is then the only question,
+        and the four-way edition chooser can only add a way to be wrong -- an
+        installed app's ``QUILL_APP_ROOT`` is the shared runtime's folder, where
+        ``install_edition.detect()`` answers "companion". See
+        :mod:`quill.apps.lite_updates`.
         """
         from quill.core.updates import fetch_app_releases, fetch_releases, is_newer_version
 
@@ -830,7 +853,12 @@ class AppShellFrame(
         def _fetch(**_kw: object) -> object:
             # Absorb the task manager's injected kwargs (cancellation_token, ...).
             if app_prefix:
-                return fetch_app_releases(app_prefix, api_url, prefer_portable=prefer_portable)
+                return fetch_app_releases(
+                    app_prefix,
+                    api_url,
+                    prefer_portable=prefer_portable,
+                    match_edition=match_edition,
+                )
             return fetch_releases(api_url, prefer_portable=prefer_portable)
 
         def _report(_name: str, releases: object) -> None:

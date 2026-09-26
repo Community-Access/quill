@@ -125,7 +125,7 @@ def test_tutorials_has_a_key_and_the_prd_moved_out_of_its_way() -> None:
     from quill.core.app_keymaps import APP_KEYMAPS
 
     assert APP_KEYMAPS["radio"]["radio.tutorials"] == "Ctrl+Alt+F1"
-    assert "&Product Requirements...\\tAlt+Shift+F1" in _src("quill/apps/radio_help_docs.py")
+    assert "Produ&ct Requirements...\\tAlt+Shift+F1" in _src("quill/apps/radio_help_docs.py")
 
 
 def test_the_window_states_its_purpose_for_f1() -> None:

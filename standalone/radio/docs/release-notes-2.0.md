@@ -6,10 +6,10 @@ It also widens the net for finding stations: **iHeart and TuneIn now join the se
 
 As always, everything below also lands in QUILL itself. Quill Radio and QUILL share one codebase and one data store, so these fixes arrive in both at once -- nothing here is vendored into the Quill Radio wrapper.
 
-> **Looking for 2.2?** The QuillVille Runtime, the Companion and Lite downloads,
-> YouTube and Live365 stations, Song History, and everything else in Quill Radio
-> 2.2.0 have their own document: **Quill Radio 2.2 Release Notes**, in the Help
-> menu. This file covers the 2.0 and 2.1 line only.
+> **Looking for something newer?** Everything after 2.1 -- YouTube and Live365
+> stations, Song History, and all of Quill Radio 3.0 -- is in the **Quill Radio
+> 3.0 Release Notes** (Help > Release Notes, Shift+F1) and the CHANGELOG. This
+> file covers the 2.0 and 2.1 line only.
 
 ## Update 2.1.2
 

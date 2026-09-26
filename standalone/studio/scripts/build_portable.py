@@ -119,7 +119,10 @@ PRODUCTS: dict[str, Product] = {
         exe="QuillRadio",
         display="Quill Radio",
         zip_name="Quill-Radio-Portable-{ver}.zip",
-        dep_groups=("ui", "speech", "feedback"),
+        # "youtube": the installer bundles yt-dlp (quill-radio.spec), so the
+        # portable copy does too -- a first YouTube link must not need a pip
+        # download, which also wrote pip's cache to the host computer.
+        dep_groups=("ui", "speech", "feedback", "youtube"),
         stage_engines=False,   # radio streams/records; no bundled speech engines
         stage_ffmpeg=True,     # podcast/stream recording
         stage_mpv=True,        # playback engine
@@ -260,6 +263,25 @@ def _bootstrap_pip_and_deps(
     deps = _runtime_dependencies(root_pyproject, groups)
     print(f"  installing {len(deps)} runtime dependencies")
     _pip(python_exe, "install", "--no-warn-script-location", "--no-compile", *deps)
+    _keep_makepy_cache_in_bundle(python_exe.parent)
+
+
+def _keep_makepy_cache_in_bundle(out_dir: Path) -> None:
+    r"""Give pywin32 a ``win32com\gen_py`` package so makepy writes inside the bundle.
+
+    Without one, pywin32 puts its generated COM wrappers in
+    ``%TEMP%\gen_py\<ver>`` and never cleans them up -- which the screen-reader
+    fallback (accessible_output2's SAPI and JAWS outputs) triggers on the host
+    computer the first time Prism cannot find a live screen reader. A portable
+    copy writes nothing outside itself; an existing ``gen_py`` package is the
+    documented way to keep the cache beside win32com.
+    """
+    win32com = out_dir / "Lib" / "site-packages" / "win32com"
+    if not win32com.is_dir():
+        return
+    gen_py = win32com / "gen_py"
+    gen_py.mkdir(exist_ok=True)
+    (gen_py / "__init__.py").touch()
 
 
 def _copy_quill_source(out_dir: Path, source_root: Path) -> None:
@@ -270,7 +292,7 @@ def _copy_quill_source(out_dir: Path, source_root: Path) -> None:
     quill_source = source_root / "quill"
     if not quill_source.is_dir():
         raise RuntimeError(f"quill/ package source not found under {source_root}")
-    print(f"  copying quill source -> Lib/site-packages/quill")
+    print("  copying quill source -> Lib/site-packages/quill")
     shutil.copytree(quill_source, site_packages / "quill", ignore=_DEV_CACHE_IGNORE)
     token = site_packages / "quill" / "_feedback_token.py"
     if not token.is_file():

@@ -102,12 +102,17 @@ All are RB-addable by name/country; most also publish Direct streams.
 | Network | Add method | Notes |
 | --- | --- | --- |
 | SomaFM | Built-in | via SomaFM's own `channels.json` |
-| Radio Paradise | Direct | publishes stream + a public JSON API |
+| Radio Paradise | Built-in | its own Browse Stations branch, every channel in every quality |
 | FIP (Radio France) | Direct/RB | genre-blend music |
 | KEXP, dublab, NTS | RB / Direct | tastemaker stations |
 | Radio Swiss Jazz/Classic/Pop | Direct/RB | commercial-free |
 
 ## Recommended implementation
+
+**Status (3.0.0, 2026-09-26): shipped** as `quill/core/radio/networks.py`. The
+Browse Stations **Networks** branch has six groups: Public broadcasters, US news
+& talk, US public radio, Sports, Syndicators (affiliates) and Music. The plan it
+was built from follows.
 
 A **Networks** branch in Browse Stations, grouped:
 

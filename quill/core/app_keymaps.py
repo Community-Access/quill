@@ -81,11 +81,58 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Record Now's shared binding is a QUILL-key chord, which a menu label
         # cannot carry (#612); the app gets a plain key of its own.
         "radio.record_toggle": "Ctrl+R",
-        # Ctrl+P toggles play/stop; this is the unconditional stop, one modifier
-        # away from it, for when you want silence and do not want to think about
-        # what state the player is in.
-        "radio.stop": "Ctrl+Alt+P",
-        "adp.ask": "Ctrl+Alt+Shift+Q",
+        # Ctrl+P toggles play/stop; this is the unconditional stop, for when you
+        # want silence and do not want to think about what state the player is
+        # in. Ctrl+. since 2026-09-25 -- the transport table's Stop, which every
+        # other window of the app already answered to. It was Ctrl+Alt+P, which
+        # no accelerator ever carried on the main window and which Station >
+        # Connect to Spotify also claimed; radio_main_keys now carries it.
+        "radio.stop": "Ctrl+.",
+        # Ctrl+Alt+8 since 2026-09-25, beside Community Picks (Ctrl+Alt+0) and
+        # Suggest (Ctrl+Alt+9) on the same menu. It was Ctrl+Alt+Shift+Q, which
+        # is the family's system-wide Show/Hide chord (QUILL and QUILL Cast
+        # register it), and a system-wide hotkey always wins -- so while either
+        # of them ran, this menu item's key silently did nothing.
+        "adp.ask": "Ctrl+Alt+8",
+        "adp.settings": "Ctrl+Alt+Shift+A",
+        # The keys Radio's own menus already bind, named so the Command Palette
+        # and Keyboard Shortcuts show them (2026-09-25). Without these the
+        # palette listed Play/Pause and Mute on QUILL leader chords
+        # (Ctrl+Shift+Grave, N) that do nothing here, and the rest with no key.
+        "radio.play_pause": "Ctrl+P",
+        "radio.mute_toggle": "Ctrl+M",
+        "radio.volume_up": "Ctrl+Up",
+        "radio.volume_down": "Ctrl+Down",
+        "radio.volume_boost": "Ctrl+Shift+B",
+        "radio.play_last": "Ctrl+L",
+        "radio.rewind": "Ctrl+Shift+Left",
+        "radio.forward": "Ctrl+Shift+Right",
+        "radio.jump_to_live": "Ctrl+Shift+L",
+        "radio.whats_playing_details": "Ctrl+T",
+        "radio.song_history": "Ctrl+Shift+H",
+        "radio.statistics": "Ctrl+Shift+Q",
+        "radio.sound_enhancements": "Ctrl+E",
+        # A QUILL leader chord Radio cannot dispatch; the Radio entry above is
+        # the same window on a real key.
+        "media.sound_enhancements": "",
+        "media.sleep_timer": "Ctrl+Shift+Z",
+        "radio.update_catalog": "Ctrl+Alt+Shift+G",
+        "radio.catalog_status": "Ctrl+Alt+Shift+S",
+        "radio.browse_sources": "Ctrl+Alt+Shift+O",
+        "radio.download_preferences": "Ctrl+Alt+Shift+D",
+        # The transport verbs the palette lists as "Radio: ...": the keys the
+        # transport table gives every window, which the main window's Playback
+        # menu also carries. (Skip Back / Skip Forward are left out: on the
+        # main window those keys are Rewind / Forward 30 Seconds, above.)
+        "radio.transport.speed_up": "Ctrl+Shift+Up",
+        "radio.transport.speed_down": "Ctrl+Shift+Down",
+        "radio.transport.speed_reset": "Ctrl+Shift+0",
+        "radio.transport.skip_silence": "Ctrl+Shift+9",
+        "radio.transport.next_chapter": "Ctrl+Shift+.",
+        "radio.transport.previous_chapter": "Ctrl+Shift+,",
+        "radio.transport.chapter_list": "Ctrl+Shift+C",
+        "radio.transport.announce_position": "Ctrl+Shift+W",
+        "radio.transport.go_to_player": "Ctrl+Shift+G",
         # One step of undo for the destructive verbs (11.3). Radio has no
         # editor, so Ctrl+Z is free here in exactly the way it is not in QUILL.
         "app.undo_last": "Ctrl+Z",

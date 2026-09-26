@@ -32,8 +32,10 @@ _GUIDE = (
 #: Keys the transport verbs used before 3.0 moved them. Ctrl+Alt+arrow is
 #: JAWS's and NVDA's table navigation, so a transport verb there works
 #: everywhere except while somebody is reading a table -- the reason for the
-#: move, and the reason a document must not still teach them.
-RETIRED = ("Ctrl+Alt+Right", "Ctrl+Alt+Left", "Ctrl+Alt+Up", "Ctrl+Alt+Down", "Ctrl+Alt+0")
+#: move, and the reason a document must not still teach them. Ctrl+Alt+0 was
+#: retired from the transport too, but has since been reused for Community
+#: Picks (APP_KEYMAPS), so the guide rightly teaches it again (2026-09-25).
+RETIRED = ("Ctrl+Alt+Right", "Ctrl+Alt+Left", "Ctrl+Alt+Up", "Ctrl+Alt+Down")
 
 
 def _guide_text() -> str:
@@ -76,4 +78,4 @@ def test_where_am_i_and_the_palette_are_not_the_same_key() -> None:
 
     assert where is not None and palette is not None
     assert where.key != palette.key
-    assert f"| Where am I? (position, length, chapter) | {where.key} |" in _guide_text()
+    assert f"| Where Am I? | {where.key} |" in _guide_text()

@@ -69,10 +69,16 @@ def register_surfaces(app: Any) -> None:
     have?" should have one answer in one place, and because ``radio.py`` is at
     its GATE-11 ceiling and is not improved by knowing either answer.
     """
+    import wx
+
+    from quill.apps import radio_main_keys
     from quill.ui.radio import bookmarks_wiring, calendar_wiring
 
     bookmarks_wiring.register(app)
     calendar_wiring.register(app)
+    # Alt+1..0, Stop and Ctrl+Shift+O: keys the main window answers that no
+    # menu item carries, so no accelerator did either (2026-09-25).
+    radio_main_keys.install(app, wx)
 
 
 def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:

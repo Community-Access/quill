@@ -25,6 +25,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
+from quill.core.paths import yt_dlp_cache_dir
 
 #: ``progress(fraction_0_to_1, message)`` — same shape the engine installs use.
 ProgressCallback = Callable[[float, str], None]
@@ -160,6 +161,7 @@ def _default_download(url: str, dest_dir: Path, progress: ProgressCallback | Non
                 captured["path"] = name
 
     options: dict[str, object] = {
+        "cachedir": yt_dlp_cache_dir(),
         "format": "bestaudio/best",
         "outtmpl": str(dest_dir / "%(title)s.%(ext)s"),
         "noplaylist": True,

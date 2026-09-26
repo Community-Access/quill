@@ -23,6 +23,21 @@ from quill.core.quick_actions import DIRECT_KEY_COUNT, QuickAction, QuickActionO
 from quill.ui.dialog_contract import apply_modal_ids
 
 
+def position_text(index: int, count: int, direct_keys: bool = True) -> str:
+    """Where a row sits, and -- only where the app honours it -- the key it has.
+
+    Pure, so the promise the description line makes is testable without wx.
+    """
+    text = f"Position {index + 1} of {count}"
+    if not direct_keys:
+        return text
+    if index == 0:
+        return text + " -- this is what Enter does"
+    if index < DIRECT_KEY_COUNT:
+        return text + f" -- Ctrl+{index + 1}"
+    return text
+
+
 class QuickActionsDialog:
     """Returns the edited :class:`QuickActionOrders`, or ``None`` on Cancel."""
 
@@ -34,13 +49,22 @@ class QuickActionsDialog:
         context_labels: Sequence[tuple[str, str]],
         announce_cb: Callable[[str], None] | None = None,
         title: str = "Quick Actions",
+        direct_keys: bool = True,
     ) -> None:
+        """*direct_keys* says whether the app honours the order with Enter and
+        Ctrl+1..9 as well as the context menu. Cast does; Radio does not --
+        Enter on a row always plays or opens it, and Ctrl+1..9 are the window
+        keys there -- so Radio passes False and the dialog promises only what
+        Radio does (2026-09-25: the text promised both keys, and neither
+        worked).
+        """
         import wx
 
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._labels = list(context_labels)
         self._title = title
+        self._direct_keys = direct_keys
         # Edit a copy: Cancel has to mean cancel, and the caller is holding the
         # live record its menus are already built from.
         self._orders = orders.copy()
@@ -60,6 +84,11 @@ class QuickActionsDialog:
                 f"{DIRECT_KEY_COUNT} also answer to Ctrl+1 through "
                 f"Ctrl+{DIRECT_KEY_COUNT}, and the whole list is the order of "
                 "the right-click menu."
+                if direct_keys
+                else "Each list is the order of the right-click menu (Shift+F10 "
+                "or the Applications key) for that kind of row, so the actions "
+                "you use most come first. Enter on a row still does what it "
+                "always has."
             ),
         )
         intro.Wrap(520)
@@ -83,7 +112,15 @@ class QuickActionsDialog:
         body = wx.BoxSizer(wx.HORIZONTAL)
         list_col = wx.BoxSizer(wx.VERTICAL)
         list_col.Add(
-            wx.StaticText(self.dialog, label="&Order (first is the default):"), 0, wx.BOTTOM, 4
+            wx.StaticText(
+                self.dialog,
+                label="&Order (first is the default):"
+                if direct_keys
+                else "&Order (first is at the top of the menu):",
+            ),
+            0,
+            wx.BOTTOM,
+            4,
         )
         self._list = wx.ListBox(self.dialog, choices=[], style=wx.LB_SINGLE)
         self._list.SetName(
@@ -106,8 +143,14 @@ class QuickActionsDialog:
             "Move the selected action one place later in the list. "
             "Alt+Down in the list does the same."
         )
-        self._top_btn = wx.Button(self.dialog, label="Make Defaul&t")
-        self._top_btn.SetName("Move the selected action to the top, making it what Enter does")
+        self._top_btn = wx.Button(
+            self.dialog, label="Make Defaul&t" if direct_keys else "Move to &Top"
+        )
+        self._top_btn.SetName(
+            "Move the selected action to the top, making it what Enter does"
+            if direct_keys
+            else "Move the selected action to the top of the menu"
+        )
         reset_btn = wx.Button(self.dialog, label="&Reset This List")
         reset_btn.SetHelpText(
             "Put this one list back in the order it shipped with. The other lists are left alone."
@@ -121,8 +164,12 @@ class QuickActionsDialog:
         ok_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
         ok_btn.SetHelpText(
             "Keep the new order for every list edited here. It is saved and "
-            "shapes Enter, the Ctrl number keys, and the right-click menu "
-            "from now on."
+            + (
+                "shapes Enter, the Ctrl number keys, and the right-click menu "
+                if direct_keys
+                else "shapes the right-click menu "
+            )
+            + "from now on."
         )
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         cancel_btn.SetHelpText(
@@ -184,12 +231,9 @@ class QuickActionsDialog:
             self._description.SetLabel("")
             return
         action = actions[index]
-        position = f"Position {index + 1} of {len(actions)}"
-        if index == 0:
-            position += " -- this is what Enter does"
-        elif index < DIRECT_KEY_COUNT:
-            position += f" -- Ctrl+{index + 1}"
-        self._description.SetLabel(f"{action.description} {position}.")
+        self._description.SetLabel(
+            f"{action.description} {position_text(index, len(actions), self._direct_keys)}."
+        )
 
     def _on_context_choice(self, _event: object) -> None:
         index = max(0, self._context_choice.GetSelection())
@@ -230,7 +274,8 @@ class QuickActionsDialog:
         order.insert(0, moved)
         self._orders.set_order(self._context, order)
         self._refill(select=0)
-        self._announce(f"{self._actions()[0].label} is now the default action")
+        tail = "the default action" if self._direct_keys else "first in the menu"
+        self._announce(f"{self._actions()[0].label} is now {tail}")
 
     def _reset(self) -> None:
         self._orders.reset(self._context)

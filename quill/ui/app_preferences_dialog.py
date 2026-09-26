@@ -36,6 +36,10 @@ class PreferenceCheckbox:
     #: Which labelled box this belongs in; empty for the ungrouped
     #: run at the top of the dialog.
     group: str = ""
+    #: False shows the box greyed out with its value kept -- for a setting this
+    #: copy of the app cannot honour (a portable copy does not change the
+    #: computer it visits). ``help_text`` must then say why.
+    enabled: bool = True
 
 
 @dataclass(slots=True)
@@ -211,6 +215,7 @@ class PreferencesDialog:
         check = self._wx.CheckBox(parent, label=spec.name)
         self._describe(check, spec.help_text)
         check.SetValue(spec.value)
+        check.Enable(spec.enabled)
         sizer.Add(check, 0, self._wx.ALL, 8)
         return check
 

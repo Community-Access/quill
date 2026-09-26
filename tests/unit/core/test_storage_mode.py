@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -287,26 +288,48 @@ def test_storage_mode_allowlist_is_internally_consistent() -> None:
         assert name, "empty name in allowlist"
 
 
-def test_storage_mode_falls_back_when_portable_path_is_not_writable(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
+@pytest.mark.parametrize("host_mode", ["appdata", "custom"])
+def test_a_host_storage_mode_file_never_hijacks_a_portable_bundle(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, host_mode: str
+) -> None:
+    """The stick's answer lives on the stick (portable audit finding 9).
+
+    The host's %APPDATA%\\Quill\\storage-mode.json used to be read too -- and
+    first, when the bundle's marker was missing or read-only -- so any computer
+    where somebody once saved an explicit data location took over a visiting
+    portable copy's data. A missing bundle marker means "never chosen", which
+    in a bundle means portable.
+    """
+    root = _make_portable_bundle(tmp_path)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(root))
+    monkeypatch.setenv("APPDATA", str(tmp_path / "appdata"))
+    monkeypatch.delenv("QUILL_DATA_DIR", raising=False)
+    host_file = tmp_path / "appdata" / "Quill" / "storage-mode.json"
+    host_file.parent.mkdir(parents=True)
+    document = {"mode": host_mode, "path": str(tmp_path / "host-custom")}
+    host_file.write_text(json.dumps(document), encoding="utf-8")
+
+    assert storage_mode.storage_mode_paths() == ((root / "data" / "storage-mode.json").resolve(),)
+    assert load_storage_mode() is None
+    assert custom_path() is None
+    assert app_data_dir() == (root / "data").resolve()
+
+    # An unreadable bundle marker is the same "never chosen".
+    (root / "data" / "storage-mode.json").write_text("not json", encoding="utf-8")
+    assert app_data_dir() == (root / "data").resolve()
+
+
+def test_saving_in_a_portable_bundle_writes_only_the_bundle_marker(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     root = _make_portable_bundle(tmp_path)
     monkeypatch.setenv("QUILL_APP_ROOT", str(root))
     monkeypatch.setenv("APPDATA", str(tmp_path / "appdata"))
-    monkeypatch.setattr("quill.core.storage_mode.os.access", lambda *_args: False)
 
-    save_storage_mode("appdata")
+    save_storage_mode("portable")
 
-    fallback_path = tmp_path / "appdata" / "Quill" / "storage-mode.json"
-    assert fallback_path.exists()
-    assert not (root / "data" / "storage-mode.json").exists()
-    assert load_storage_mode() == "appdata"
-
-    stale_portable_path = root / "data" / "storage-mode.json"
-    stale_portable_path.parent.mkdir(parents=True, exist_ok=True)
-    stale_portable_path.write_text('{"mode":"portable"}', encoding="utf-8")
-    assert load_storage_mode() == "appdata"
+    assert (root / "data" / "storage-mode.json").exists()
+    assert not (tmp_path / "appdata").exists()
 
 
 # ----------------------------------------------------------------------

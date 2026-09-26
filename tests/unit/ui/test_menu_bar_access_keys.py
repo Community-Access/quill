@@ -141,3 +141,76 @@ def test_the_menus_are_rows_on_the_sheet() -> None:
     assert first.group == "Menus"
     assert first.key == "Alt+S"
     assert "Station" in first.action
+
+
+# -- menus a helper appends ---------------------------------------------------
+#
+# The literal scan above cannot see a title a *helper* appends:
+# ``surface_app_menu.install`` puts "&Station" on every radio surface and the
+# WindowManager's ``install`` puts "&Window" there too. So Schedule Recording's
+# "&Schedule" and Song History's "&Songs" each shared Alt+S with Station while
+# this gate stayed green (found 2026-09-25) -- and on Windows two menus on one
+# letter cycle rather than open. These tests fold the helpers' titles in.
+
+_HELPER_TITLES: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\bsurface_app_menu\.install\s*\("), "&Station"),
+    (re.compile(r"\._windows\.install\s*\("), "&Window"),
+)
+
+
+def _bars_with_helper_titles() -> dict[str, list[str]]:
+    """``{file: [title, ...]}``: the literal titles plus the helpers' ones."""
+    bars: dict[str, list[str]] = {}
+    for path, entries in _menu_bar_titles().items():
+        text = (_ROOT.parent / path).read_text(encoding="utf-8", errors="replace")
+        titles = [title for title, _line in entries]
+        titles += [title for pattern, title in _HELPER_TITLES if pattern.search(text)]
+        bars[path] = titles
+    return bars
+
+
+def test_no_surface_menu_shares_a_letter_with_the_station_or_window_menu() -> None:
+    clashes: list[str] = []
+    for path, titles in _bars_with_helper_titles().items():
+        if "&Station" not in titles:
+            continue
+        seen: dict[str, str] = {}
+        for title in titles:
+            letter = _mnemonic(title)
+            if letter and letter in seen and seen[letter] != title:
+                clashes.append(f"{path}: Alt+{letter} is both {seen[letter]!r} and {title!r}")
+            seen.setdefault(letter, title)
+    assert not clashes, "two menus claiming one key:\n  " + "\n  ".join(clashes)
+
+
+def test_the_helper_scan_sees_the_surfaces() -> None:
+    """A scanner that finds nothing passes everything."""
+    bars = _bars_with_helper_titles()
+    with_station = [path for path, titles in bars.items() if "&Station" in titles]
+    assert len(with_station) >= 8
+    assert any(path.endswith("schedule_recording_dialog.py") for path in with_station)
+    assert any(path.endswith("song_history_dialog.py") for path in with_station)
+
+
+def test_the_sheet_names_each_surface_menu_by_the_letter_it_really_has() -> None:
+    """The cheat sheet's hand-kept "This window's X menu" rows are a second copy
+    of these titles; they told people Alt+S opened Schedule and Songs, and that
+    Find Stations had a Search menu, after both had stopped being true."""
+    from quill.core.radio.cheat_sheet import OFF_MENU_KEYS, clean_label
+
+    real = {
+        (clean_label(title), f"Alt+{_mnemonic(title)}")
+        for titles in _bars_with_helper_titles().values()
+        for title in titles
+        if _mnemonic(title)
+    }
+    wrong: list[str] = []
+    for surface, key, action in OFF_MENU_KEYS:
+        match = re.fullmatch(r"(?:This window's|The) (.+) menu", action)
+        if not match:
+            continue
+        if (match.group(1), key) not in real:
+            wrong.append(f"{surface}: {key} {action!r}")
+        if surface != "Every window" and key == "Alt+S":
+            wrong.append(f"{surface}: Alt+S is the Station menu in every window")
+    assert not wrong, "cheat-sheet rows that name the wrong menu key:\n  " + "\n  ".join(wrong)

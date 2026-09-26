@@ -364,6 +364,21 @@ def test_a_snapshot_needs_a_picture_and_says_so() -> None:
     assert any("no picture to snapshot" in m for m in host.said)
 
 
+def test_a_snapshot_lands_in_the_chosen_recordings_folder(tmp_path) -> None:
+    # It used to write to the default folder whatever Destination folder said --
+    # and in a portable copy that default was the host's Music folder.
+    from quill.core.radio.recording import RecordingSettings
+
+    engine = _Engine()
+    host = _Host(engine, _Stream())
+    host._video_window = _Window()
+    host._radio_recording_settings = RecordingSettings(destination_root=str(tmp_path / "rec"))
+
+    video_commands.take_snapshot(host)
+
+    assert engine.snapshots == [str(tmp_path / "rec" / "A Lecture snapshot 1.png")]
+
+
 def test_resizing_without_a_window_says_so() -> None:
     host = _Host(_Engine(), _Stream())
     video_commands.set_video_size(host, 200)
