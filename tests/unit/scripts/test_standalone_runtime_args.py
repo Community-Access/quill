@@ -32,8 +32,9 @@ _STAGE_CALL = "Stage-QuillMediaTools"
 
 #: App build script -> whether that app declares any media component.
 #: Radio and Studio declare ("ffmpeg", "mpv") -- Studio's libmpv backs the
-#: player preview its build has always shipped. Cast and Converter declare
-#: ("ffmpeg",). Weather, Inkwell, Beacon, Social and Player declare none.
+#: player preview its build has always shipped. Cast declares ("ffmpeg",).
+#: Converter declares ("ffmpeg", "mpv") since 1.0.0 (mpv: the Chapter Workbench).
+#: Weather, Inkwell, Beacon, Social and Player declare none.
 _DECLARES_MEDIA: dict[str, bool] = {
     "cast": True,
     "converter": True,

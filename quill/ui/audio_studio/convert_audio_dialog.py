@@ -39,6 +39,7 @@ from quill.core.audio.convert import (
 )
 from quill.core.audio.dsp import DspOptions, build_dsp_filters, loudness_choices
 from quill.core.audio.exact_optilab import ExactOptilab
+from quill.core.audio.formats import format_label, is_video_format, open_wildcard
 from quill.core.audio.presets import DEFAULT_PRESET_ID, preset_choices, preset_spec
 
 _TITLE = "Convert Audio"
@@ -48,13 +49,6 @@ _CONFLICT_CHOICES: tuple[tuple[OnExisting, str], ...] = (
     (OnExisting.RENAME, "Rename (auto-number) — never overwrites"),
     (OnExisting.SKIP, "Skip files that already exist"),
     (OnExisting.OVERWRITE, "Overwrite existing files"),
-)
-
-# File-open wildcard for "Add files" — audio + video containers (§3).
-_ADD_WILDCARD = (
-    "Audio and video files|*.mp3;*.wav;*.flac;*.ogg;*.oga;*.opus;*.m4a;*.m4b;*.aac;"
-    "*.wma;*.aiff;*.aif;*.alac;*.ape;*.wv;*.mka;*.amr;*.3gp;*.caf;"
-    "*.mp4;*.m4v;*.mkv;*.mov;*.webm;*.avi;*.flv;*.wmv|All files (*.*)|*.*"
 )
 
 
@@ -239,7 +233,10 @@ def plan_and_run(host: Any, request: ConvertRequest) -> None:
 
 
 def run_audio_conversion(
-    host: Any, *, initial_entries: list[tuple[Path, Path | None]] | None = None
+    host: Any,
+    *,
+    initial_entries: list[tuple[Path, Path | None]] | None = None,
+    include_video: bool = False,
 ) -> None:
     """Open the Convert Audio dialog and run the chosen conversion (§9.2).
 
@@ -252,6 +249,8 @@ def run_audio_conversion(
 
     ffmpeg = find_ffmpeg()
     formats = available_output_formats(ffmpeg)
+    if not include_video:  # Audio Studio converts audio; Quill Converter does both
+        formats = [fmt for fmt in formats if not is_video_format(fmt)]
     dialog = ConvertAudioDialog(host.frame, output_formats=formats, initial_entries=initial_entries)
     try:
         request = dialog.show(host._show_modal_dialog)
@@ -342,6 +341,9 @@ def _download_then_convert(host: Any, url: str) -> None:
 
     def on_success(downloaded: Any) -> None:
         path = Path(downloaded)
+        if hasattr(host, "queue_downloaded"):  # Quill Converter: into its own queue
+            host.queue_downloaded(path)
+            return
         host._set_status(f"Downloaded {path.name}. Choose how to convert it.")
         run_audio_conversion(host, initial_entries=[(path, None)])
 
@@ -428,7 +430,7 @@ class ConvertAudioDialog(wx.Dialog):
 
         # Convert to / Preset row.
         sizer.Add(wx.StaticText(self, label="Co&nvert to:"), 0, wx.LEFT | wx.TOP, 8)
-        self._format = wx.Choice(self, choices=[f.upper() for f in self._formats])
+        self._format = wx.Choice(self, choices=[format_label(f) for f in self._formats])
         self._format.SetSelection(0)
         set_accessible_name(self._format, "Convert to format")
         self._format.SetHelpText(
@@ -722,7 +724,7 @@ class ConvertAudioDialog(wx.Dialog):
         with wx.FileDialog(
             self,
             message="Add files to convert",
-            wildcard=_ADD_WILDCARD,
+            wildcard=open_wildcard(),  # generated from the format catalogue
             style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST,
         ) as picker:
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt

@@ -1,131 +1,236 @@
-# Quill Converter 1.0 -- Release Notes
+# Quill Converter 1.0.0 Release Notes
 
-Somewhere between "I recorded this in the wrong format" and "this download is an
-M4A and my player wants MP3," almost everybody hits the wall of audio
-conversion. The usual answer is a sketchy website that wants you to upload your
-file, sit through an advertisement, and trust a stranger with your recording.
+Released September 27, 2026.
 
-Quill Converter is a real one, and it runs entirely on your own machine.
+Somewhere between "I recorded this in the wrong format" and "my player will not
+open this," almost everybody hits the wall of media conversion. The usual answer
+is a website that wants you to upload your file, sit through an advertisement,
+and trust a stranger with your recording -- or a program whose every button is
+unlabeled to a screen reader.
 
-## What it is
+Quill Converter is the other answer. It runs entirely on your own computer, it
+was built for screen readers from the first line, and with 1.0.0 it converts
+video as well as sound.
 
-A small window with one job. A list of the files you want changed, a box for
-what you want them changed into, a preset if you want the decisions made for
-you, and a Convert button. That is the whole app.
+This is Quill Converter's first public release. The app was first built in July
+2026 as an audio converter; it did not ship then, and the months since went
+into making it the converter we wanted to hand people: video, effects you can
+hear before you commit, chapters that survive every conversion, joining and
+splitting, an Explorer right-click, and reasons instead of error codes when
+something fails.
 
-Open it and your cursor is already in the file list -- not floating in an empty
-window, not somewhere you have to go hunting for. Add a file, pick a format,
-press Convert. Every step is spoken, and the run ends by telling you what
-happened, including the name of anything that did not work. No conversion ever
-finishes by quietly claiming success.
+## Downloads
 
-## Nothing leaves your computer
+Two downloads. Choose one.
 
-There is no upload. There is no account. There is no "processing on our
-servers." Your audio is converted by the FFmpeg that ships inside the app, on
-your own disk, and it works with the network unplugged.
+- **Quill-Converter-Setup-Shared-1.0.0.exe** -- the installer, recommended. It
+  installs the shared QuillVille runtime if the computer does not already have
+  it, then the app, with a Start Menu entry and an uninstaller.
+- **Quill-Converter-Portable-1.0.0.zip** -- unpack anywhere, a USB stick
+  included. It keeps its settings in its own `data` folder next to the app and
+  writes nothing to the computer it runs on.
 
-The one feature that does reach the internet -- **Convert from URL**, which
-pulls the audio out of a web link -- is honest about it. The component that does
-the downloading is not bundled. The first time you use it, the app asks you
-once, in plain language: here is what this does, here is what it will install,
-about how big it is, where it comes from, and please only download things you
-have the right to use. Say no and nothing is installed. It stays off entirely in
-Safe Mode.
+## Everything is included
 
-## What it converts
+Nothing downloads the first time you use a feature. Both downloads carry:
 
-Almost anything you are likely to have. MP3, WAV, FLAC, OGG, Opus, M4A, M4B,
-AAC, WMA, AIFF, ALAC, and more -- and it will happily pull the audio track out
-of a video file (MP4, MKV, MOV, WebM, AVI, and the rest) on the way past.
+- **FFmpeg and ffprobe**, which do the converting and read what is inside a
+  file.
+- **libmpv**, the mpv playback engine, as the Chapter Workbench's player.
+- **yt-dlp**, for Convert from URL.
+- **mutagen**, for carrying cover art and chapters into the converted copy.
+- **The OptiLab Core adapter**, for broadcast polish in Advanced Options, in
+  builds that include it.
 
-Coming out, you can have MP3, M4A, M4B, Opus, OGG, FLAC, WAV, AAC, AIFF, ALAC,
-WMA, or CAF. The list is not decoration: when the app starts, it asks FFmpeg
-what it can genuinely encode and only offers those. That is a deliberate
-kindness. Nothing is worse than starting a hundred-file batch and finding out
-half way through that the encoder was never there.
+Conversion never touches the network. The only things that do are Check for
+Updates and Convert from URL, and both only when you ask.
 
-## Presets, for when you would rather not think about bitrates
+## What is new, and why
 
-Pick one and go:
+### Right-click to convert
 
-- **Just convert** -- change the format, change nothing else. This is the
-  default, and it is the right answer surprisingly often.
-- **Podcast** -- mono MP3 for talk, with the low rumble taken out.
-- **Audiobook** -- a compact mono M4B.
-- **Voice memo** -- tiny files for spoken notes.
-- **Web voice** -- the smallest thing that still sounds like a person.
-- **Archival** -- lossless FLAC, keeping your original rate and channels.
-- **Hearing-aid mono** -- everything downmixed to one channel.
-- Plus straightforward MP3 at 320, 192, and 128 kbps.
+The installer adds **Convert with Quill Converter** to the File Explorer
+right-click menu for every audio and video type the app reads. It is checked by
+default, applies to your Windows account only, and the uninstaller removes it.
+Select fifty files, choose it once, and all fifty arrive in one window, in one
+queue -- not fifty windows, and not one file and forty-nine lost. The fastest
+way to convert a file is from where you already are.
 
-Each one reads out with a sentence explaining what it is for, so you can choose
-by listening rather than by decoding jargon.
+### 34 formats out, 82 in
 
-## And Advanced, for when you would
+Quill Converter writes 25 sound formats and 9 video formats, and reads 82 file
+types: everyday audio, lossless and archival formats such as WavPack, APE and
+DSD, film sound such as AC-3 and DTS, phone formats such as AMR, older formats
+such as RealAudio and Musepack, tracker music, and 30 kinds of video file.
 
-Press **Advanced** and the full studio opens: exact bit rate, sample rate,
-channels and bit depth; loudness normalization to an audiobook or a podcast
-target; gain; a rumble-removing high-pass; silence trimming; a speed change that
-does not make anyone sound like a chipmunk; a compressor; a volume leveler; and
-fades in and out.
+Each format is spoken with what it is for -- "M4B audiobook -- remembers your
+place in book players" -- so you choose by purpose, not by acronym. And the list
+only offers what the bundled FFmpeg can really write, so a hundred-file batch
+never dies half way because an encoder was missing.
 
-Everything in there starts on "leave the preset alone," so opening the panel to
-look around cannot accidentally change your output. And when you tick the box to
-reveal it, your focus moves into the panel -- so you hear that it opened instead
-of wondering whether anything happened.
+Some formats are fussy, and that is now the converter's problem instead of
+yours. A format that only accepts certain sample rates (AC-3, E-AC-3, MP2, Opus,
+WebM audio, Speex, AMR) gets the nearest rate it accepts; AMR is made mono;
+lossless formats ignore a bit rate that means nothing to them.
 
-## Whole folders, safely
+### Video
 
-Point it at a folder and it works right through it, sub-folders and all, and
-rebuilds the same folder structure on the way out. It converts several files at
-once so a big batch is not an afternoon, and the window stays responsive
-throughout.
+Converting a video to a sound format keeps its sound. Converting it to a video
+format keeps it a video: MP4 (H.264 or H.265), MKV, WebM, MOV, AVI, WMV, MPEG-2
+or Ogg Theora. The video presets are named for the result, not the codec
+setting: **Same quality**, **Phones and the web, up to 1080p**, **Smaller file,
+up to 720p**, **Smallest file, up to 480p**, and **Change the container only**,
+which copies the picture and sound untouched in seconds.
 
-It will not overwrite your originals. If a file of that name already exists, the
-new one is numbered instead. If you actually want Skip or Overwrite, they are
-there in Advanced -- but you have to ask.
+A film's described-audio track and its second language come through in MP4,
+MKV, MOV and WebM, and MKV keeps the subtitles. We would rather a converter
+never quietly drop the one track a blind viewer needed.
 
-## It gets out of the way
+### Effects named for the problem they solve
 
-Press Ctrl+W and it tucks into the notification area and keeps working. Press
-Ctrl+Alt+Shift+C from anywhere in Windows and it comes back. While a batch runs,
-the tray tooltip carries the same progress the status bar does, so a minimized
-conversion is still something you can check on.
+A new **Effects** choice on the main window offers twelve recipes named for
+what is wrong: Clean up speech, Podcast ready, Audiobook ACX ready, Clearer voice
+for listening, Louder dialogue for films and TV, Night listening, music and
+broadcast loudness, hum, noise, long silences, and bass. You should not have to
+know what a de-esser is to fix sibilance.
 
-And it is one keystroke from the rest of the family: the QuillVille menu opens
-QUILL, Quill Radio, or Quill Weather without hunting through the Start Menu.
+**Custom Effects** (Ctrl+E) puts every switch on one page, starting from the
+recipe you chose, so you can take "Podcast ready" and change one thing. It also
+has loudness targets, gain, speed, fades, and "keep from" and "keep until" for
+trimming an intro or making a ringtone. Effects apply to the sound of video
+conversions too.
 
-## Five doors, one converter
+### Hear it before you convert
 
-You will meet the same converter wherever you happen to be:
+**Preview** (Ctrl+P) plays fifteen seconds exactly as the result will sound: the
+clip is really encoded in the chosen format with the chosen effects, then played
+back. **Hear Original** (Ctrl+Shift+P) plays the same fifteen seconds untouched.
+Compare them, change something, compare again -- before you spend an hour
+converting a whole audiobook.
 
-- **Quill Converter**, this app.
-- **Audio Studio > Voices > Convert Audio...**, inside QUILL.
-- **Right-click a file in Windows Explorer** and choose **Convert with Quill**.
-  This one is off until you turn it on, so nothing appears in your context menu
-  uninvited.
-- **Convert from URL**, for a link.
-- **`quill convert`** on the command line, with a dry-run planner, for scripts
-  and for people who like it that way.
+### Chapters, through every conversion
 
-They are not five copies. They are five doors onto one engine, so a thing fixed
-in one place is fixed in all of them.
+Chapter marks are how somebody who cannot glance at a waveform finds their way
+around a long recording, so Quill Converter treats them as content, not as
+metadata that may or may not survive. A new **Chapters** choice on the main
+window (Alt+K) says where they come from:
 
-## Built for a screen reader from the first line
+- **Keep each file's own chapters** -- the default.
+- **Use the chapter list beside each file** -- chapters you wrote yourself.
+- **Find chapters at the pauses** -- a pause of two seconds or more, and no
+  chapter shorter than 20 seconds.
+- **A chapter every 5, 10, 15, 30 or 60 minutes** -- Part 1, Part 2 and so on.
+- **Remove all chapters.**
 
-Not retrofitted. Focus starts where you need it. Every control has a name your
-screen reader can read. Every action says what it did -- through speech and
-through your braille display -- and writes the same words to the status bar, so
-nothing is spoken-only and nothing is colour-only. Every dialog has a real
-Cancel that Escape reaches. There is no drag and drop to be locked out of,
-because there is nothing that only a mouse can do.
+You can define chapters for any format with a plain text file. Beside
+`Lecture 3.mp3`, save `Lecture 3.chapters.txt` with lines such as
+`0:00 Welcome`, `1:30 Questions` and `1:02:05 Summary`, and choose "Use the
+chapter list beside each file". A `.cue` sheet, Podcasting 2.0 `.chapters.json`,
+Audacity labels (`.labels.txt`) or a plain `.txt` that reads as a chapter list
+work too. A file with no list keeps its own chapters, and the report says so.
 
-## Your settings, where you want them
+Chapters land wherever the format can hold them. FFmpeg writes them inside MP3
+(ID3 CHAP and CTOC), M4B, M4A, Apple Lossless, M4R, MP4, MOV, MKV, MKA, WebM,
+Opus and WMA. Ogg Vorbis, FLAC, Speex and Ogg video get the CHAPTER001 comments
+their players read. Every other format -- WAV, AIFF, WavPack, AC-3 and the rest
+-- has no place for chapters, so a `.cue` sheet is written beside the converted
+file. Nothing is silently lost, and the Conversion Report says where chapters
+went. Keep from and Keep until trim the chapters to the part you keep.
 
-Quill Converter shares one settings store with QUILL and the rest of the family,
-so what you set once holds everywhere. Running the portable build from a stick?
-Everything lives in the `data` folder beside the program and travels with you,
-leaving the machine you plugged into exactly as you found it. And uninstalling
-Quill Converter never touches that shared folder -- another app in the family
-may still be living there.
+The **Chapter Workbench** (Queue > Chapter Workbench..., Ctrl+H) opens the
+highlighted MP3, M4B or M4A in the Audio Studio's Chapter Workbench, with a
+player: rename, split at the playhead, set a start to the playhead, merge, find
+chapters at silences, import and export chapter lists (Audacity labels, CUE,
+timestamps, Podcasting 2.0 JSON, CSV), edit the book's tags, save, and split
+into files. The player is libmpv, now bundled in both downloads, so it seeks
+exactly.
+
+### Join and split
+
+**Join into One File** (Ctrl+J) puts the whole queue, in order, into one sound
+file with one chapter per source, named from its title or a tidied file name --
+inside the file for every format that holds chapters, MP3 included, and as
+comments or a `.cue` sheet for the rest. A folder of MP3 chapters becomes one
+audiobook your book player can navigate.
+
+**Split by Chapters** (Ctrl+Shift+S) goes the other way: one file per chapter,
+numbered, titled and tagged, in a folder named after the book. It follows the
+Chapters choice, so "A chapter every 30 minutes" cuts a ten-hour recording into
+30-minute files, "Find chapters at the pauses" cuts at the pauses, and a
+chapter list beside the file cuts exactly where you said.
+
+### Advanced Options, in the main window
+
+The exact encoder settings are on the main window, not in a second window.
+**View > Advanced Options** (Ctrl+Alt+V) shows or hides an Advanced section and
+moves focus into it: quality (bit rate), sample rate, channels, bit depth, what
+to do if a file already exists (number it, skip it or replace it), Broadcast
+polish where the build has the OptiLab Core engine, and "Look in subfolders
+too". Each starts on its neutral choice, so showing them changes nothing until
+you change one, and they shape the same Convert as everything else on the page.
+
+### A queue you can work with
+
+Paste files you copied in File Explorer (Ctrl+V), drop them on the list, reorder
+with Alt+Up and Alt+Down, clear with Ctrl+Shift+Delete. **File Properties**
+(Alt+Enter) tells you what is inside a file -- its length, tracks, languages,
+cover art and chapters -- in plain words, before you convert it.
+
+### Reasons, not error codes
+
+When a file fails, the report says why in words you can act on -- "The file is
+copy-protected and cannot be converted", "The output drive is full" -- followed
+by FFmpeg's own line for support. The **Conversion Report** (Ctrl+R) lists every
+file and has a Copy All button for an email.
+
+Convert becomes Stop while it runs. Progress is spoken every 25 percent and
+shown in the tray tooltip. Cover art is carried into MP3, M4A, M4B, FLAC, Ogg
+and Opus copies where FFmpeg would have dropped it. And your format, presets,
+effects and output folder are remembered for next time.
+
+### Help that matches the family
+
+The Help menu now has the same doors as Quill Radio and QUILL Lite, on the same
+keys: F1 for the window you are in, the User Guide, Release Notes, Changelog and
+Product Requirements, a Keyboard Shortcuts list (Ctrl+Alt+K), Get Help from
+Support (Ctrl+Alt+F2), Get FFmpeg for repair, and Check for Updates.
+
+Support is by email, to a person: **support@community-access.org**. Get Help
+from Support writes the message in your own mail program, with the app's version
+filled in, and nothing goes until you send it.
+
+### In the family
+
+Quill Converter now appears on the QuillVille menu of the other apps, and QUILL's
+own **Convert with Quill** Explorer entry, which opens Quill Converter, is
+available in public builds.
+
+## Fixes since the July build
+
+- **AIFF output works.** AIFF and AU are written in the byte order those formats
+  require; AIFF files from the July build failed.
+- **32-bit WAV is real 32-bit float**, as the Bit depth setting says.
+- **Several Explorer selections make one queue**, not a string of lost launches.
+- **A format's constraints no longer fail a file** half way through a batch.
+
+## Known limits
+
+- **Stop lets the current file finish.** Nothing after it starts, but the file
+  being encoded runs to the end, because a half-written file is worse than a
+  finished one. On a long video that can take a while.
+- **Video encodes can take a long time.** H.265 and VP9 especially, and a long
+  film can take longer than it lasts. Video files are converted one at a time.
+- **Change the container only can fail** when a file's picture or sound does
+  not fit the new container. The report says so in those words; choose Same
+  quality instead.
+- **Copy-protected (DRM) files cannot be converted**, such as protected Audible
+  books or iTunes purchases. The report says so.
+- **The Chapter Workbench saves MP3, M4B and M4A.** For other formats, write a
+  chapter list beside the file and choose it in Chapters, or convert to M4B or
+  MP3 first.
+- **Preview ignores chapters**; it plays fifteen seconds of sound.
+
+## Getting help
+
+Write to **support@community-access.org**, or use Help > Get Help from
+Support... (Ctrl+Alt+F2). Community Access reads every message.

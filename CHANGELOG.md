@@ -2,6 +2,48 @@
 
 ## 1.0.0
 
+### Quill Converter 1.0.0 ships, and the shared conversion engine grows (2026-09-27)
+
+Quill Converter's first public release; its own changelog is
+`standalone/converter/docs/CHANGELOG.md`. What changed in code QUILL and Audio
+Studio share:
+
+- **The format catalogue is `quill/core/audio/formats.py`.** 34 output formats
+  (25 sound, 9 video) and about 80 input types, each with the constraints it
+  imposes: a sample rate AC-3, MP2 or Opus cannot take moves to the nearest one
+  it can, AMR is forced to mono, lossless formats ignore a bit rate. **AIFF
+  output was broken** (a little-endian codec the AIFF muxer refuses) and now
+  writes big-endian PCM; 32-bit WAV is now the float it was labelled as.
+- **An audio conversion of a video with no sound fails in words** instead of
+  producing a video stream inside an .m4a (FFmpeg's fallback when every map is
+  optional and none matches).
+- **Loudness normalization writes 48 kHz**, not the 192 kHz `loudnorm` hands
+  on internally, unless a rate is chosen: WMA refused 192 kHz outright and
+  FLAC stored it (found by running every format with an effect chain on).
+- **Failures are explained** (`quill/core/audio/ffmpeg_errors.py`), quoting the
+  line that names the cause rather than FFmpeg's last line.
+- **Cover art is carried** into formats FFmpeg drops it from, with mutagen
+  (`quill/core/audio/cover_art.py`); the shared runtime now freezes mutagen in.
+- **Eight new effects** in the DSP catalogue (noise reduction, hum removal,
+  de-esser, voice clarity, bass, treble, dialogue boost, speech leveling) and
+  two loudness targets (-14 LUFS music, -23 LUFS EBU R128). Audio Studio's
+  Convert Audio dialog shows readable format names and the generated file
+  filter; the video formats appear only in Quill Converter.
+- **Check for Updates in Quill Converter and Quill Inkwell** found no asset
+  prefix (`companion_install.ASSET_PREFIX`) and would have fallen back to the
+  repository's newest release of any app. Both now match only their own.
+- **Chapters survive every conversion** (`quill/core/audio/chapter_plan.py`).
+  A file's chapters come from its own marks, a chapter list typed beside it
+  (`name.chapters.txt` with `0:00 Title` lines, `.cue`, Audacity labels,
+  chapters JSON), the pauses, or every N minutes, and land inside every format
+  that holds them, as CHAPTERnnn comments in Ogg and FLAC, or in a `.cue` beside
+  the rest. Join now writes MP3 chapters too. Quill Converter opens the Audio
+  Studio's Chapter Workbench as its chapter editor (its Publish button hides
+  when the host has no publishing), and bundles libmpv for it.
+- **Quill Converter is released** (`app_launcher.RELEASED_APPS`), so the other
+  apps' QuillVille menus list it and QUILL's "Convert with Quill" Explorer verb
+  works in public builds.
+
 ### Connecting to QUILL's free AI works, and takes one keystroke (2026-09-25)
 
 Four faults between accepting the agreement and being connected, all shared by

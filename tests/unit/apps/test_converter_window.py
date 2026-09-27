@@ -1,0 +1,222 @@
+"""Quill Converter's window, driven: queue, choices, effects, report, keys.
+
+The window registers a tray icon and the global show/hide hotkey, which is why
+the module is ``machine_global`` (tests/conftest.py groups those on one worker).
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+pytestmark = pytest.mark.machine_global
+
+
+@pytest.fixture()
+def converter(wx_app, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    from quill.apps import converter as app
+    from quill.core import converter_settings
+
+    monkeypatch.setattr(
+        converter_settings, "settings_path", lambda _d=None: tmp_path / "converter.json"
+    )
+    monkeypatch.setattr(app, "_find_ffmpeg", lambda: None)  # formats list: WAV only
+    frame = app.QuillConverterFrame()
+    frame._formats  # noqa: B018 - constructed
+    said: list[str] = []
+    boxes: list[str] = []
+    monkeypatch.setattr(frame, "_announce", lambda text, **_k: said.append(text))
+    monkeypatch.setattr(frame, "_show_message_box", lambda text, *_a, **_k: boxes.append(text))
+    frame.said, frame.boxes = said, boxes
+    yield frame
+    frame._ipc_timer.Stop()
+    frame._remove_tray_icon()
+    frame.frame.Destroy()
+    wx_app.Yield()
+
+
+def _files(tmp_path: Path, *names: str) -> list[Path]:
+    paths = []
+    for name in names:
+        path = tmp_path / name
+        path.write_bytes(b"x")
+        paths.append(path)
+    return paths
+
+
+def test_add_paths_queues_media_and_says_what_was_left_out(converter, tmp_path: Path) -> None:
+    song, clip, note = _files(tmp_path, "song.mp3", "clip.mkv", "notes.txt")
+    converter.add_paths([song, clip, note])
+    assert [entry for entry, _root in converter._entries] == [song, clip]
+    assert converter._list.GetCount() == 2
+    assert "Added 2" in converter.said[-1] and "1 not a media file" in converter.said[-1]
+    converter.add_paths([song])  # a duplicate is queued once
+    assert len(converter._entries) == 2
+
+
+def test_move_remove_and_clear(converter, tmp_path: Path) -> None:
+    a, b, c = _files(tmp_path, "a.mp3", "b.mp3", "c.mp3")
+    converter.add_paths([a, b, c], announce=False)
+    converter._list.SetSelection(2)
+    converter.move_entry(-1)
+    assert [e.name for e, _r in converter._entries] == ["a.mp3", "c.mp3", "b.mp3"]
+    assert converter.said[-1] == "Moved to position 2 of 3."
+    converter._on_remove(None)
+    assert [e.name for e, _r in converter._entries] == ["a.mp3", "b.mp3"]
+    converter.clear_queue()
+    assert converter._entries == [] and converter.said[-1] == "Queue cleared."
+
+
+def test_convert_with_an_empty_queue_explains(converter) -> None:
+    converter.convert_or_stop()
+    assert converter.boxes == ["Add some files or a folder first."]
+
+
+def test_convert_without_ffmpeg_points_at_the_repair(
+    converter, tmp_path: Path, monkeypatch
+) -> None:
+    import quill.core.speech.ffmpeg as ff
+
+    monkeypatch.setattr(ff, "find_ffmpeg", lambda: None)
+    converter.add_paths(_files(tmp_path, "a.mp3"), announce=False)
+    converter.convert_or_stop()
+    assert "Get FFmpeg" in converter.boxes[-1]
+
+
+def test_effects_and_keep_part_reach_the_spec(converter) -> None:
+    from quill.core.audio.dsp import DspOptions
+
+    converter._effect.SetSelection(converter._effect_ids.index("podcast"))
+    spec = converter.current_spec()
+    assert any(f.startswith("loudnorm=I=-16") for f in spec.filters)
+    converter._settings.custom_effects = DspOptions(bass_boost=True)
+    converter._settings.start_s, converter._settings.end_s = 3.0, 9.0
+    converter._effect.SetSelection(converter._effect_ids.index("custom"))
+    spec = converter.current_spec()
+    assert "bass=g=6:f=100" in spec.filters and (spec.start_s, spec.end_s) == (3.0, 9.0)
+    assert "custom effects (bass boost)" in converter.describe_choices()
+    assert "keeping 3 seconds to 9" in converter.describe_choices()
+
+
+def test_choices_are_remembered(converter, tmp_path: Path) -> None:
+    from quill.core import converter_settings
+
+    converter._effect.SetSelection(converter._effect_ids.index("night"))
+    converter._dest.SetValue(str(tmp_path / "out"))
+    converter._remember()
+    saved = converter_settings.ConverterSettings.from_json(
+        __import__("json").loads((tmp_path / "converter.json").read_text(encoding="utf-8"))
+    )
+    assert saved.effect == "night" and saved.dest_dir == str(tmp_path / "out")
+
+
+def test_report_lists_failures_with_reasons(converter, tmp_path: Path) -> None:
+    from quill.core.audio.convert import BatchResult, ConversionJob, ConversionSpec, JobResult
+
+    job = ConversionJob(tmp_path / "a.mp3", tmp_path / "out" / "a.wav", ConversionSpec(fmt="wav"))
+    result = BatchResult(results=[JobResult(job=job, ok=False, error="The output drive is full.")])
+    converter.add_paths(_files(tmp_path, "a.mp3"), announce=False)
+    converter._busy = True
+    converter._finish_batch(result, 1, tmp_path / "out", "", 2.0)
+    assert not converter._busy
+    assert "Press Ctrl+R for the report." in converter.said[-1]
+    assert (
+        "FAILED" in converter._last_report and "The output drive is full." in converter._last_report
+    )
+
+
+def test_every_menu_item_names_a_key_and_no_key_is_claimed_twice(converter) -> None:
+    from quill.apps.converter_menu import shortcut_list
+
+    text = shortcut_list(converter.frame.GetMenuBar())
+    keys = [
+        line.rsplit(": ", 1)[1]
+        for line in text.splitlines()
+        if line.startswith("  ") and ": " in line
+    ]
+    assert len(keys) == len(set(keys)), keys
+    for wanted in (
+        "Ctrl+Enter",
+        "Ctrl+P",
+        "Ctrl+Shift+P",
+        "Ctrl+J",
+        "Alt+Enter",
+        "Ctrl+Alt+F2",
+        "Ctrl+F1",
+    ):
+        assert wanted in keys, wanted
+
+
+def test_main_window_access_keys_are_unique_and_leave_the_menu_bar_alone(converter) -> None:
+    """Alt+F must open the File menu, not jump to a control (reported 2026-09-27:
+    "the converter doesn't let me see the menu bar")."""
+    letters = []
+    for child in converter._main_panel.GetChildren():
+        label = child.GetLabel() if hasattr(child, "GetLabel") else ""
+        if "&" in label:
+            letters.append(label[label.index("&") + 1].lower())
+    assert len(letters) == len(set(letters)), letters
+    bar = converter.frame.GetMenuBar()
+    menu_letters = set()
+    for index in range(bar.GetMenuCount()):
+        title = bar.GetMenuLabel(index)
+        assert "&" in title, title
+        menu_letters.add(title[title.index("&") + 1].lower())
+    assert len(menu_letters) == bar.GetMenuCount()
+    assert not menu_letters & set(letters), sorted(menu_letters & set(letters))
+
+
+def test_custom_effects_dialog_round_trips(converter) -> None:
+    from quill.core.audio.dsp import DspOptions
+    from quill.ui.converter_dialogs import ConverterEffectsDialog
+
+    dialog = ConverterEffectsDialog(
+        converter.frame, DspOptions(deesser=True, loudness="audiobook"), start_s=2.0, end_s=1.0
+    )
+    try:
+        dsp, start, end = dialog.result()
+        assert dsp.deesser and dsp.loudness == "audiobook" and not dsp.bass_boost
+        assert (start, end) == (2.0, 0.0)  # an end before the start means "to the end"
+        dialog._boxes["bass_boost"].SetValue(True)
+        assert dialog.result()[0].bass_boost
+    finally:
+        dialog.Destroy()
+
+
+def test_view_advanced_options_shows_the_settings_in_the_main_window(converter) -> None:
+    from quill.core.audio.convert import Channels
+
+    assert not converter._main_sizer.IsShown(converter._advanced_box)
+    converter.set_advanced_visible(True)
+    assert converter._main_sizer.IsShown(converter._advanced_box)
+    assert converter._settings.show_advanced is True
+    ctrl, table = converter._advanced_choices["adv_channels"]
+    ctrl.SetSelection([value for value, _t in table].index(Channels.MONO))
+    rate_ctrl, rate_table = converter._advanced_choices["adv_rate"]
+    rate_ctrl.SetSelection([value for value, _t in rate_table].index("16000"))
+    spec = converter.current_spec()
+    assert spec.channels is Channels.MONO and spec.sample_rate == 16000
+    converter.set_advanced_visible(False)
+    assert not converter._main_sizer.IsShown(converter._advanced_box)
+
+
+def test_the_view_menu_holds_advanced_options(converter) -> None:
+    bar = converter.frame.GetMenuBar()
+    titles = [bar.GetMenuLabelText(i) for i in range(bar.GetMenuCount())]
+    assert titles[:4] == ["File", "Queue", "View", "Convert"]
+    view = bar.GetMenu(2)
+    item = view.GetMenuItems()[0]
+    assert item.IsCheckable() and item.GetItemLabel().endswith("\tCtrl+Alt+V")
+
+
+def test_the_chapters_choice_reaches_the_spec_and_the_summary(converter) -> None:
+    converter._chapters.SetSelection(converter._chapter_ids.index("every-30"))
+    assert converter.current_spec().chapter_source == "every-30"
+    assert "a chapter every 30 minutes" in converter.describe_choices()
+
+
+def test_the_workbench_explains_other_formats(converter, tmp_path: Path) -> None:
+    converter.add_paths(_files(tmp_path, "talk.wav"), announce=False)
+    converter.open_chapter_workbench()
+    assert "talk.chapters.txt" in converter.boxes[-1]

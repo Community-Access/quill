@@ -163,15 +163,17 @@ PRODUCTS: dict[str, Product] = {
         exe="QuillConverter",
         display="Quill Converter",
         zip_name="Quill-Converter-Portable-{ver}.zip",
-        # Basic app: the whole job is FFmpeg format conversion, so ffmpeg is
-        # staged as a bundled binary (tools/ffmpeg), but no Python media stack,
-        # no speech engines, and no playback (mpv) are needed. yt-dlp (URL
-        # import) is never bundled -- it installs on demand into the user dir.
-        # No "feedback" group: Get Help from Support is email to support@.
-        dep_groups=("ui",),
+        # The whole job is FFmpeg conversion, so ffmpeg is staged as a bundled
+        # binary (tools/ffmpeg), and mpv (tools/mpv) is the Chapter Workbench's
+        # player; no speech engines.
+        # Everything else it can use ships inside, so nothing downloads on
+        # first use (1.0.0, 2026-09-27): "youtube" is yt-dlp for Convert from
+        # URL, and "mp3" is mutagen, which carries cover art into formats
+        # FFmpeg drops it from (quill/core/audio/cover_art.py).
+        dep_groups=("ui", "youtube", "mp3"),
         stage_engines=False,
         stage_ffmpeg=True,
-        stage_mpv=False,
+        stage_mpv=True,
         feedback_token=False,  # feedback is email to support@ (2026-09-26)
     ),
     "quilllite": Product(

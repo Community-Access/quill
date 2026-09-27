@@ -38,82 +38,37 @@ from enum import StrEnum
 from pathlib import Path
 
 from quill.core.audio.exact_optilab import ExactOptilab
-from quill.core.speech.ffmpeg import ENCODE_FORMATS, MP3_VBR_QUALITY, AudioMetadata
+from quill.core.audio.formats import (
+    AUDIO_EXTENSIONS,
+    AUDIO_OUTPUT_FORMATS,
+    FIXED_BITRATE_FORMATS,
+    INPUT_EXTENSIONS,
+    LOSSLESS_FORMATS,
+    MONO_ONLY_FORMATS,
+    OUTPUT_ORDER,
+    PCM_CODECS,
+    VIDEO_EXTENSIONS,
+    VIDEO_OUTPUT_FORMATS,
+    VideoQuality,
+    fit_sample_rate,
+    is_video_format,
+    output_extension,
+    parse_encoder_names,
+    required_encoders,
+    video_quality_args,
+    video_scale_filter,
+)
+from quill.core.speech.ffmpeg import MP3_VBR_QUALITY, AudioMetadata
 
-# --------------------------------------------------------------------------- #
-# Format matrix
-# --------------------------------------------------------------------------- #
+# The format matrix -- inputs, outputs, and the constraints each output
+# imposes -- lives in quill.core.audio.formats (extracted 2026-09-27, GATE-11)
+# and is re-exported here under the names callers have always imported.
 
-# Audio containers discovered by extension for a folder add (§3). Each file is
-# still probed by the caller, so a mislabeled/corrupt file fails that job alone.
-AUDIO_EXTENSIONS: frozenset[str] = frozenset({
-    ".mp3",
-    ".wav",
-    ".flac",
-    ".ogg",
-    ".oga",
-    ".opus",
-    ".m4a",
-    ".m4b",
-    ".aac",
-    ".wma",
-    ".aiff",
-    ".aif",
-    ".alac",
-    ".ape",
-    ".wv",
-    ".mka",
-    ".amr",
-    ".3gp",
-    ".caf",
-})
-
-# Video containers whose audio track can be extracted (-map 0:a). Kept separate
-# so the UI can label an "Extract audio from video" path (§3).
-VIDEO_EXTENSIONS: frozenset[str] = frozenset({
-    ".mp4",
-    ".m4v",
-    ".mkv",
-    ".mov",
-    ".webm",
-    ".avi",
-    ".flv",
-    ".wmv",
-})
-
-# All input extensions the converter recognizes for a folder scan.
-INPUT_EXTENSIONS: frozenset[str] = AUDIO_EXTENSIONS | VIDEO_EXTENSIONS
-
-# ``sample_fmt`` values offered for PCM (WAV) / FLAC bit depth (§6).
+# ``sample_fmt`` values offered for FLAC bit depth (§6).
 _BIT_DEPTH_SAMPLE_FMT: dict[int, str] = {16: "s16", 24: "s32", 32: "s32"}
-# WAV encodes by bit depth (24-bit PCM WAV is pcm_s24le, not a sample_fmt of a
-# generic encoder). FLAC takes -sample_fmt; WAV takes an explicit pcm codec.
-_WAV_PCM_CODEC: dict[int, str] = {16: "pcm_s16le", 24: "pcm_s24le", 32: "pcm_s32le"}
 
-# Output formats beyond the speech ENCODE_FORMATS (§3 "extensions to add"). Each
-# is (codec, default extra args, muxer) like ENCODE_FORMATS. ``wav`` is handled
-# specially (bit-depth-driven pcm codec) and is always available (no encoder
-# probe needed). The capability probe hides any whose encoder is absent.
-_EXTRA_ENCODE_FORMATS: dict[str, tuple[str, list[str], str]] = {
-    "wav": ("pcm_s16le", [], ""),
-    "aac": ("aac", ["-b:a", "192k"], "adts"),
-    "aiff": ("pcm_s16le", [], "aiff"),
-    "alac": ("alac", [], "ipod"),
-    "wma": ("wmav2", ["-b:a", "192k"], "asf"),
-    "caf": ("pcm_s16le", [], "caf"),
-}
-
-#: Every output format id the converter knows (subject to the runtime probe).
-ALL_OUTPUT_FORMATS: dict[str, tuple[str, list[str], str]] = {
-    **ENCODE_FORMATS,
-    **_EXTRA_ENCODE_FORMATS,
-}
-
-# ffmpeg encoder name that must be present for a format id (probed via
-# ``ffmpeg -encoders``). WAV/AIFF/CAF ride on always-present pcm encoders.
-_FORMAT_REQUIRED_ENCODER: dict[str, str] = {
-    fmt: codec for fmt, (codec, _extra, _mux) in ALL_OUTPUT_FORMATS.items()
-}
+#: Every audio output format id (the historical name for the audio table).
+ALL_OUTPUT_FORMATS: dict[str, tuple[str, list[str], str]] = AUDIO_OUTPUT_FORMATS
 
 
 class OnExisting(StrEnum):
@@ -175,27 +130,32 @@ class ConversionSpec:
     # through, so ``build_convert_command`` describes only the encode half and
     # the runner wires up the pipeline.
     exact_optilab: ExactOptilab | None = None
+    # Video outputs (formats.VIDEO_OUTPUT_FORMATS): how hard the encode works to
+    # keep detail, an optional height cap (720 -> "up to 720p"), and a remux
+    # fast path that copies every stream into the new container untouched.
+    video_quality: VideoQuality = VideoQuality.HIGH
+    video_max_height: int | None = None
+    copy_video: bool = False
+    # Copy caption tracks where the container keeps them (MKV); the runner
+    # turns this off and retries when a caption format will not fit.
+    keep_subtitles: bool = True
+    # An explicit channel count, for sources whose layout FFmpeg cannot name.
+    force_channels: int | None = None
+    # Keep only part of each file: start at ``start_s`` seconds and stop at
+    # ``end_s`` (0 = the end). Both 0 keeps the whole file.
+    start_s: float = 0.0
+    end_s: float = 0.0
+    # Where chapters come from: see quill.core.audio.chapter_plan (keep, list,
+    # pauses, every-N, none). The runner resolves it per file.
+    chapter_source: str = "keep"
 
     def output_extension(self) -> str:
         """The file extension (with dot) for this spec's format."""
-        return _OUTPUT_EXTENSION.get(self.fmt.strip().lower(), "." + self.fmt.strip().lower())
+        return output_extension(self.fmt)
 
-
-# Output file extension per format id (m4b/m4a/alac all ride .m4a-ish containers).
-_OUTPUT_EXTENSION: dict[str, str] = {
-    "mp3": ".mp3",
-    "ogg": ".ogg",
-    "opus": ".opus",
-    "flac": ".flac",
-    "m4a": ".m4a",
-    "m4b": ".m4b",
-    "wav": ".wav",
-    "aac": ".aac",
-    "aiff": ".aiff",
-    "alac": ".m4a",
-    "wma": ".wma",
-    "caf": ".caf",
-}
+    def is_video(self) -> bool:
+        """True when this spec writes a video file."""
+        return is_video_format(self.fmt)
 
 
 @dataclass(frozen=True, slots=True)
@@ -230,54 +190,21 @@ def _probe_encoders(ffmpeg: str, runner: Callable[..., object] | None = None) ->
     return names
 
 
-def parse_encoder_names(encoders_output: str) -> frozenset[str]:
-    """Parse ``ffmpeg -encoders`` output into a set of encoder names (pure).
-
-    Each listed line looks like `` A..... libmp3lame  MP3 (MPEG audio layer 3)``:
-    a flags column, the encoder name, then a description. We take the second
-    whitespace token of any line whose first token is all flag characters.
-    """
-    names: set[str] = set()
-    past_legend = False
-    for raw in encoders_output.splitlines():
-        line = raw.strip()
-        if line and set(line) <= {"-"}:
-            # The ``------`` rule separates the flag legend from the real list.
-            past_legend = True
-            continue
-        if not past_legend or not line:
-            continue
-        parts = line.split()
-        if len(parts) < 2:
-            continue
-        flags, name = parts[0], parts[1]
-        # A real encoder line: a >=2-char flag column whose first char is the
-        # stream type (V/A/S), and an identifier name (skips the '= Audio' legend).
-        if len(flags) >= 2 and flags[0] in "VAS" and all(c in ".VASFXBDEILT" for c in flags):
-            if name[:1].isalnum():
-                names.add(name)
-    return frozenset(names)
-
-
 def available_output_formats(
     ffmpeg: str | None, runner: Callable[..., object] | None = None
 ) -> list[str]:
     """Output format ids the resolved ffmpeg can actually encode (§3).
 
-    WAV/AIFF/CAF (pcm) are always offered. The rest are advertised only when
-    their required encoder appears in ``ffmpeg -encoders`` so the UI never offers
-    a format that would fail mid-run. Returns ids in a stable, friendly order.
+    PCM formats (WAV, AIFF, CAF, AU, Wave64) are always offered. The rest --
+    video included, which needs both its video and its audio encoder -- are
+    advertised only when every encoder they need appears in
+    ``ffmpeg -encoders``, so the UI never offers a format that would fail
+    mid-run. Returns ids in :data:`OUTPUT_ORDER`.
     """
-    order = ["mp3", "m4a", "m4b", "opus", "ogg", "flac", "wav", "aac", "aiff", "alac", "wma", "caf"]
     if not ffmpeg:
         return ["wav"]  # no ffmpeg: only the always-present pcm path is offered
     encoders = _probe_encoders(ffmpeg, runner)
-    always = {"wav", "aiff", "caf"}  # pcm muxers/encoders ship with every build
-    out: list[str] = []
-    for fmt in order:
-        if fmt in always or _FORMAT_REQUIRED_ENCODER.get(fmt, "") in encoders:
-            out.append(fmt)
-    return out
+    return [fmt for fmt in OUTPUT_ORDER if all(name in encoders for name in required_encoders(fmt))]
 
 
 def clear_probe_cache() -> None:
@@ -431,6 +358,11 @@ def plan_jobs(
     total = len(inputs)
     for index0, (src, root) in enumerate(inputs):
         job_spec = spec
+        if spec.is_video() and src.suffix.lower() in AUDIO_EXTENSIONS:
+            # A sound file has no picture to make a video from; it is reported
+            # as skipped rather than failing half-way through the encode.
+            skipped.append(src)
+            continue
         if src.suffix.lower() in VIDEO_EXTENSIONS and not spec.extract_from_video:
             job_spec = replace(spec, extract_from_video=True)
         out = _output_path(
@@ -469,16 +401,18 @@ def build_convert_command(
     *,
     out_path: Path | None = None,
     pcm_input: tuple[int, int] | None = None,
+    chapters_meta: Path | None = None,
 ) -> list[str]:
     """Compose the ffmpeg argv that converts ``job.source`` -> ``out_path`` (§9.1).
 
-    Reuses :data:`ALL_OUTPUT_FORMATS` for the codec/muxer base and layers the
-    converter's own bitrate / sample-rate / channel / bit-depth / DSP options.
-    ``out_path`` overrides ``job.dest`` so the runner can encode to a temp file
-    and move it into place (atomic, never a truncated output). Pure — safe to
-    hand to a subprocess: all paths are controlled and ffmpeg is caller-resolved.
+    Audio formats come from :data:`ALL_OUTPUT_FORMATS`, video formats from
+    :data:`VIDEO_OUTPUT_FORMATS`; both layer the spec's bitrate / sample-rate /
+    channel / bit-depth / DSP options onto the audio. ``out_path`` overrides
+    ``job.dest`` so the runner can encode to a temp file and move it into place
+    (atomic, never a truncated output). Pure -- safe to hand to a subprocess:
+    all paths are controlled and ffmpeg is caller-resolved.
 
-    ``pcm_input`` — ``(sample_rate, channels)`` — replaces the file input with
+    ``pcm_input`` -- ``(sample_rate, channels)`` -- replaces the file input with
     raw PCM on stdin: this is the *encode half* of an exact-OptiLab pass, where
     the source has already been decoded and processed by another two processes
     (see :mod:`quill.core.audio.exact_optilab`). The source's own ``-af`` filters
@@ -487,70 +421,146 @@ def build_convert_command(
     """
     spec = job.spec
     fmt = spec.fmt.strip().lower()
+    video = VIDEO_OUTPUT_FORMATS.get(fmt)
     profile = ALL_OUTPUT_FORMATS.get(fmt)
-    if profile is None:
+    if profile is None and video is None:
         raise ValueError(f"Unsupported output format: {spec.fmt!r}")
     target = out_path if out_path is not None else job.dest
 
+    args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
     if pcm_input is not None:
         from quill.core.audio.exact_optilab import build_pcm_input_args
 
-        args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
         args += build_pcm_input_args(pcm_input[0], pcm_input[1])
     else:
-        args = [ffmpeg, "-hide_banner", "-loglevel", "error", "-i", str(job.source)]
-        # Select only the audio track (drops any video); for a video source this
-        # is the "extract audio" path, for an audio source a harmless no-op.
-        args += ["-map", "0:a:0?"] if spec.extract_from_video else ["-vn"]
+        args += _clip_args(spec)
+        args += ["-i", str(job.source)]
+        if chapters_meta is not None:  # chapters made for this file (FFMETADATA)
+            args += ["-i", str(chapters_meta), "-map_chapters", "1"]
+        elif spec.chapter_source == "none":
+            args += ["-map_chapters", "-1"]
+        if video is not None:
+            # The picture (never an attached cover image, hence capital V),
+            # every audio track the container can carry, and captions where
+            # the container takes them.
+            args += ["-map", "0:V:0"]
+            args += ["-map", "0:a?"] if video.all_audio_tracks else ["-map", "0:a:0?"]
+            if video.keep_subtitles and spec.keep_subtitles:
+                args += ["-map", "0:s?", "-c:s", "copy"]
+        else:
+            # Select only the audio track (drops any video); for a video source
+            # this is the "extract audio" path, for an audio source a no-op.
+            # -vn/-sn/-dn as well: with no sound to map, FFmpeg would otherwise
+            # fall back to copying whatever it found -- a video inside an .m4a.
+            args += (["-map", "0:a:0?"] if spec.extract_from_video else []) + ["-vn", "-sn", "-dn"]
 
-    if spec.copy_audio:
+    if video is not None:
+        args += _video_args(spec, video)
+        if spec.copy_video:
+            args += ["-f", video.muxer]
+            return _finish(args, spec, target)
+        codec, extra, muxer = video.audio_codec, list(video.audio_args), video.muxer
+    elif spec.copy_audio:
         # Stream-copy fast path: no codec/filter/rate options apply.
         args += ["-c:a", "copy"]
+        return _finish(args, spec, target)
     else:
+        assert profile is not None
         codec, extra, muxer = profile
-        # WAV/AIFF/CAF bit depth selects the concrete pcm codec.
-        if fmt in ("wav", "aiff", "caf") and spec.bit_depth in _WAV_PCM_CODEC:
-            codec = _WAV_PCM_CODEC[spec.bit_depth]
-        args += ["-c:a", codec]
+        pcm = PCM_CODECS.get(fmt)
+        if pcm is not None:
+            codec = pcm.get(spec.bit_depth, pcm[None])
+    args += ["-c:a", codec]
 
-        # Quality: explicit CBR bitrate wins; else VBR for mp3/ogg; else the
-        # format's own default extra args.
-        if spec.bitrate_kbps and fmt not in ("wav", "flac", "aiff", "caf"):
-            args += ["-b:a", f"{int(spec.bitrate_kbps)}k"]
-        elif fmt == "mp3":
-            args += ["-q:a", str(spec.vbr_quality)]
-        else:
-            args += extra
+    # Quality: explicit CBR bitrate wins where a bit rate means something;
+    # else VBR for mp3; else the format's own default extra args.
+    if spec.bitrate_kbps and fmt not in LOSSLESS_FORMATS | FIXED_BITRATE_FORMATS:
+        args += ["-b:a", f"{int(spec.bitrate_kbps)}k"]
+    elif fmt == "mp3":
+        args += ["-q:a", str(spec.vbr_quality)]
+    else:
+        args += extra
 
-        # FLAC bit depth via sample_fmt (WAV handled by the pcm codec above).
-        if fmt == "flac" and spec.bit_depth in _BIT_DEPTH_SAMPLE_FMT:
-            args += ["-sample_fmt", _BIT_DEPTH_SAMPLE_FMT[spec.bit_depth]]
+    # FLAC bit depth via sample_fmt (the PCM formats chose a codec above).
+    if fmt in ("flac", "mka") and spec.bit_depth in _BIT_DEPTH_SAMPLE_FMT:
+        args += ["-sample_fmt", _BIT_DEPTH_SAMPLE_FMT[spec.bit_depth]]
 
-        # With a PCM input the spec's own DSP filters have already run, in the
-        # decode step, ahead of the OptiLab engine -- the same order the live
-        # chain uses (everything else first, broadcast polish last). Only the
-        # channel layout is left to do here.
-        filters = [] if pcm_input is not None else list(spec.filters)
-        chan = _channel_filter(spec.channels)
-        if chan:
-            filters.append(chan)
-        if filters:
-            args += ["-af", ",".join(filters)]
+    # With a PCM input the spec's own DSP filters have already run, in the
+    # decode step, ahead of the OptiLab engine -- the same order the live
+    # chain uses (everything else first, broadcast polish last). Only the
+    # channel layout is left to do here.
+    filters = [] if pcm_input is not None else list(spec.filters)
+    channels = (
+        Channels.MONO
+        if fmt in MONO_ONLY_FORMATS and spec.channels in (Channels.KEEP, Channels.STEREO)
+        else spec.channels
+    )
+    chan = _channel_filter(channels)
+    if chan:
+        filters.append(chan)
+    if filters:
+        args += ["-af", ",".join(filters)]
 
-        # -ac only when a fixed count is wanted and no channel filter already set
-        # the layout (mono/left/right imply 1 channel via the filter).
-        if spec.channels is Channels.STEREO:
-            args += ["-ac", "2"]
+    # -ac only when a fixed count is wanted and no channel filter already set
+    # the layout (mono/left/right imply 1 channel via the filter).
+    if channels is Channels.STEREO:
+        args += ["-ac", "2"]
+    elif fmt in MONO_ONLY_FORMATS:
+        args += ["-ac", "1"]
+    elif spec.force_channels:
+        args += ["-ac", str(int(spec.force_channels))]
 
-        if spec.sample_rate:
-            args += ["-ar", str(int(spec.sample_rate))]
+    # A rate the format cannot take is moved to the nearest one it can; a video
+    # format's sound follows the rules of the audio codec it carries.
+    rules = _RATE_RULES_FOR_CODEC.get(video.audio_codec, fmt) if video is not None else fmt
+    # loudnorm resamples to 192 kHz internally and hands that on; encoders that
+    # do not list their rates (WMA) then refuse it, and FLAC would store it.
+    wanted = spec.sample_rate or (48000 if any(f.startswith("loudnorm") for f in filters) else None)
+    rate = fit_sample_rate(rules, wanted)
+    if rate:
+        args += ["-ar", str(int(rate))]
 
-        if muxer:
-            args += ["-f", muxer]
+    if muxer:
+        args += ["-f", muxer]
+    return _finish(args, spec, target)
 
+
+#: A video format's audio codec -> the audio format whose rate rules it obeys.
+_RATE_RULES_FOR_CODEC: dict[str, str] = {"mp2": "mp2", "libopus": "opus"}
+
+
+def _clip_args(spec: ConversionSpec) -> list[str]:
+    """Input-side seek and length for "keep only part of each file"."""
+    args: list[str] = []
+    start = max(0.0, float(spec.start_s or 0.0))
+    end = max(0.0, float(spec.end_s or 0.0))
+    if start:
+        args += ["-ss", f"{start:g}"]
+    if end and end > start:
+        args += ["-t", f"{end - start:g}"]
+    return args
+
+
+def _video_args(spec: ConversionSpec, video: object) -> list[str]:
+    """The video-stream half of a video conversion (pure)."""
+    from quill.core.audio.formats import VideoProfile
+
+    assert isinstance(video, VideoProfile)
+    if spec.copy_video:
+        return ["-c", "copy"]
+    args = ["-c:v", video.video_codec]
+    args += video_quality_args(video.video_codec, spec.video_quality)
+    args += list(video.video_args)
+    scale = video_scale_filter(video.video_codec, spec.video_max_height)
+    if scale:
+        args += ["-vf", scale]
+    return args
+
+
+def _finish(args: list[str], spec: ConversionSpec, target: Path) -> list[str]:
+    """Metadata, overwrite, and the output path: the end of every command."""
     if spec.metadata is not None:
         args += spec.metadata.ffmpeg_args()
-
     args += ["-y", str(target)]
     return args
 
@@ -701,80 +711,6 @@ def _default_probe_runner(command: Sequence[str]) -> object:
     return run_subprocess_safely(list(command), timeout_seconds=30.0)
 
 
-def _default_single_runner(ffmpeg: str, job: ConversionJob) -> JobResult:
-    """Encode one job to a temp file, then move it into place (atomic, safe)."""
-    import shutil
-    import tempfile
-
-    if not job.source.is_file():
-        return JobResult(job=job, ok=False, error="input file not found")
-    from quill.stability.safe_subprocess import run_subprocess_safely
-
-    job.dest.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp_name = tempfile.mkstemp(
-        prefix=".convert-", suffix=job.dest.suffix, dir=str(job.dest.parent)
-    )
-    os.close(fd)
-    tmp_path = Path(tmp_name)
-    exact = job.spec.exact_optilab
-    # A stream copy is never decoded, so it can never be processed and stay a
-    # copy. The pair is refused here rather than half-honoured.
-    if exact is not None and exact.active and not job.spec.copy_audio:
-        return _exact_optilab_runner(ffmpeg, job, tmp_path)
-    try:
-        command = build_convert_command(ffmpeg, job, out_path=tmp_path)
-        completed = run_subprocess_safely(command, timeout_seconds=3600.0)
-        if int(getattr(completed, "returncode", 1)) != 0:
-            detail = str(getattr(completed, "stderr", "") or "").strip()[-300:]
-            tmp_path.unlink(missing_ok=True)
-            return JobResult(job=job, ok=False, error=detail or "ffmpeg failed")
-        shutil.move(str(tmp_path), str(job.dest))
-        return JobResult(job=job, ok=True)
-    except Exception as exc:  # noqa: BLE001 - clean up the temp, report the reason
-        tmp_path.unlink(missing_ok=True)
-        return JobResult(job=job, ok=False, error=str(exc))
-
-
-def _exact_optilab_runner(ffmpeg: str, job: ConversionJob, tmp_path: Path) -> JobResult:
-    """Convert one job through the real OptiLab engine instead of an ffmpeg
-    approximation of it: decode -> ``quill-optilab`` -> encode.
-
-    Falls back to nothing: if the optional component is absent the job fails with
-    a reason the batch summary can say out loud, rather than quietly producing a
-    file that says "exact" in the log and is not. The caller decides whether to
-    offer the option at all (:func:`quill.core.audio.exact_optilab.available`).
-    """
-    import shutil
-
-    from quill.core.audio import exact_optilab
-
-    spec = job.spec
-    exact = spec.exact_optilab
-    assert exact is not None  # guarded by the caller
-    if not exact_optilab.available():
-        tmp_path.unlink(missing_ok=True)
-        return JobResult(job=job, ok=False, error=exact_optilab.unavailable_reason())
-    rate, channels = exact_optilab.probe_shape(job.source)
-    try:
-        encode_command = build_convert_command(
-            ffmpeg, job, out_path=tmp_path, pcm_input=(rate, channels)
-        )
-        exact_optilab.process_file(
-            job.source,
-            tmp_path,
-            exact,
-            encode_command=encode_command,
-            filter_graph=",".join(spec.filters),
-            sample_rate=rate,
-            channels=channels,
-        )
-        shutil.move(str(tmp_path), str(job.dest))
-        return JobResult(job=job, ok=True)
-    except Exception as exc:  # noqa: BLE001 - one bad file must never sink the batch
-        tmp_path.unlink(missing_ok=True)
-        return JobResult(job=job, ok=False, error=str(exc))
-
-
 def default_worker_count() -> int:
     """A sensible default worker count: one per core, minus one for the UI (§8)."""
     return max(1, (os.cpu_count() or 2) - 1)
@@ -786,3 +722,13 @@ def queue_from_paths(paths: Iterable[Path]) -> list[tuple[Path, Path | None]]:
     for p in paths:
         out.append((p, p if p.is_dir() else None))
     return out
+
+
+# The per-file runners live in convert_runner (extracted 2026-09-27, GATE-11);
+# imported last because they build their commands with this module.
+from quill.core.audio.convert_runner import (  # noqa: E402
+    _default_single_runner as _default_single_runner,
+)
+from quill.core.audio.convert_runner import (  # noqa: E402
+    _exact_optilab_runner as _exact_optilab_runner,
+)

@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from quill.core.audio.convert import Channels, ConversionSpec
+from quill.core.audio.formats import VideoQuality
 
 # A gentle rumble high-pass, safe to apply single-pass (§6 "High-pass (rumble)").
 _RUMBLE_HIGHPASS = "highpass=f=30"
@@ -30,6 +31,9 @@ class Preset:
     name: str  # shown in the preset choice (spoken on focus)
     description: str  # a plain-language "what this is good for"
     spec: ConversionSpec
+    # "audio" presets shape a sound file; "video" presets shape a video file's
+    # picture (its sound follows the format's own audio codec and the effects).
+    kind: str = "audio"
 
 
 BUILTIN_PRESETS: tuple[Preset, ...] = (
@@ -97,10 +101,54 @@ BUILTIN_PRESETS: tuple[Preset, ...] = (
     ),
 )
 
+#: Presets for the video output formats (Quill Converter 1.0.0). Named for the
+#: result, never for a codec setting: "up to 720p" rather than "CRF 28".
+VIDEO_PRESETS: tuple[Preset, ...] = (
+    Preset(
+        id="video_same",
+        name="Same quality (recommended)",
+        description="Looks the same as the original, at the original size.",
+        spec=ConversionSpec(fmt="mp4", video_quality=VideoQuality.HIGH),
+        kind="video",
+    ),
+    Preset(
+        id="video_web",
+        name="Phones and the web, up to 1080p",
+        description="Good quality in a noticeably smaller file.",
+        spec=ConversionSpec(fmt="mp4", video_quality=VideoQuality.BALANCED, video_max_height=1080),
+        kind="video",
+    ),
+    Preset(
+        id="video_small",
+        name="Smaller file, up to 720p",
+        description="For sharing and messaging; about a quarter of the size.",
+        spec=ConversionSpec(fmt="mp4", video_quality=VideoQuality.SMALL, video_max_height=720),
+        kind="video",
+    ),
+    Preset(
+        id="video_tiny",
+        name="Smallest file, up to 480p",
+        description="For slow connections and small screens.",
+        spec=ConversionSpec(fmt="mp4", video_quality=VideoQuality.SMALL, video_max_height=480),
+        kind="video",
+    ),
+    Preset(
+        id="video_remux",
+        name="Change the container only (fastest, no quality loss)",
+        description="Copies picture and sound untouched into the new format. "
+        "Effects cannot apply, and some combinations do not fit every container.",
+        spec=ConversionSpec(fmt="mp4", copy_video=True),
+        kind="video",
+    ),
+)
+
+#: The video preset selected when a video format is first chosen.
+DEFAULT_VIDEO_PRESET_ID = "video_same"
+
 #: The preset selected by default in Basic mode (a safe, no-surprises choice).
 DEFAULT_PRESET_ID = "just_convert"
 
-_BY_ID: dict[str, Preset] = {p.id: p for p in BUILTIN_PRESETS}
+_BY_ID: dict[str, Preset] = {p.id: p for p in BUILTIN_PRESETS + VIDEO_PRESETS}
 
 
 def preset_by_id(preset_id: str) -> Preset | None:
@@ -116,10 +164,13 @@ def preset_spec(preset_id: str) -> ConversionSpec:
     return _BY_ID[DEFAULT_PRESET_ID].spec
 
 
-def preset_choices() -> list[tuple[str, str]]:
+def preset_choices(kind: str = "audio") -> list[tuple[str, str]]:
     """``(id, spoken_label)`` pairs for the preset choice control, in order.
 
     The label carries the plain-language description so a screen reader announces
-    the trade-off on focus (mirroring the guided-speech engine picker).
+    the trade-off on focus (mirroring the guided-speech engine picker). *kind*
+    picks the audio presets (the default, and all Audio Studio ever shows) or
+    the video ones.
     """
-    return [(p.id, f"{p.name} — {p.description}") for p in BUILTIN_PRESETS]
+    pool = VIDEO_PRESETS if kind == "video" else BUILTIN_PRESETS
+    return [(p.id, f"{p.name} — {p.description}") for p in pool]

@@ -15,12 +15,12 @@ import pytest
 
 from quill.core.app_launcher import RELEASED_APPS, is_app_released
 
-PUBLIC = ("quill", "radio", "weather", "inkwell")
-GATED = ("player", "cast", "studio", "converter", "beacon")
+PUBLIC = ("quill", "radio", "weather", "inkwell", "converter")
+GATED = ("player", "cast", "studio", "beacon")
 
 
 def test_released_apps_are_only_the_public_set() -> None:
-    assert RELEASED_APPS == frozenset({"quill", "radio", "weather", "inkwell"})
+    assert RELEASED_APPS == frozenset({"quill", "radio", "weather", "inkwell", "converter"})
 
 
 def test_public_apps_are_always_released(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -41,7 +41,9 @@ def test_developer_build_reveals_every_app(monkeypatch: pytest.MonkeyPatch) -> N
         assert is_app_released(key), key
 
 
-def test_convert_shell_verb_absent_in_public_build(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_convert_shell_verb_present_in_public_build_since_1_0(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     from quill.core.shell_verbs import enabled_verbs
 
     class _Settings:
@@ -55,7 +57,8 @@ def test_convert_shell_verb_absent_in_public_build(monkeypatch: pytest.MonkeyPat
             settings_values=_Settings(), master_enabled=True, assistant_enabled=False
         )
     }
-    assert "convert" not in actions
+    # Quill Converter 1.0.0 is public (2026-09-27), so its Explorer verb is too.
+    assert "convert" in actions
 
 
 def test_gated_apps_not_offered_for_download_in_public(monkeypatch: pytest.MonkeyPatch) -> None:

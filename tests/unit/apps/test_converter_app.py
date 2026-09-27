@@ -28,11 +28,10 @@ def test_build_launch_argv_from_source_runs_the_module(monkeypatch) -> None:
     assert argv[1:] == ["-m", "quill.apps.converter"]
 
 
-def test_converter_in_quillville_order_but_not_yet_released() -> None:
-    # Ordered (so siblings know about it) but unreleased -> not advertised yet,
-    # exactly like cast/studio.
+def test_converter_is_ordered_and_released() -> None:
+    # Released publicly with 1.0.0 (2026-09-27): siblings advertise it.
     assert "converter" in qv.QUILLVILLE_APP_ORDER
-    assert "converter" not in qv.RELEASED_APPS
+    assert "converter" in qv.RELEASED_APPS
 
 
 # --------------------------------------------------------------------------- #
@@ -41,21 +40,29 @@ def test_converter_in_quillville_order_but_not_yet_released() -> None:
 
 
 def _src() -> str:
-    return _CONVERTER.read_text(encoding="utf-8")
+    # The window, its menu bar and its commands are three modules since 1.0.0.
+    modules = sorted(_CONVERTER.parent.glob("converter*.py"))
+    return "\n".join(path.read_text(encoding="utf-8") for path in modules)
 
 
 def test_app_reuses_shared_converter_logic() -> None:
     src = _src()
     # Reuses the tested engine + orchestration, does not reimplement it.
     assert "from quill.core.audio.convert import" in src
-    assert "build_request" in src and "plan_and_run(self, request)" in src
+    assert "plan_jobs(" in src and "run_conversion_batch(" in src
     assert "run_url_conversion(self)" in src  # URL import
-    assert "run_audio_conversion(self, initial_entries=" in src  # Advanced -> full dialog
+    # View > Advanced Options shows the encoder settings in the main window
+    # (2026-09-27); the separate Convert Audio dialog is no longer opened.
+    assert "converter_advanced.apply(self, spec)" in src
+    assert "run_audio_conversion(" not in src
 
 
 def test_app_shell_and_bootstrap_present() -> None:
     src = _src()
-    assert "class QuillConverterFrame(AppShellFrame)" in src
+    frame_class = (
+        "class QuillConverterFrame(ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame)"
+    )
+    assert frame_class in src
     assert "def _run_background_task(" in src  # self-contained batch runner
     assert "def main() -> int:" in src
     assert "try_claim_primary_instance(slot=_IPC_SLOT)" in src  # single instance

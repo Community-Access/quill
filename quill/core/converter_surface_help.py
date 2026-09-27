@@ -10,9 +10,13 @@ surface purposes keyed by window title, composed by
 
 Keyed by **window title** for the same reasons the siblings are: the title is
 the one identity a window already announces, and it is what a person quotes
-back in a bug report. The Converter is a single-file app, so the catalogue is
-small -- the main window, the two shared conversion surfaces it opens, and
-the help window itself.
+back in a bug report. The Converter is three modules --
+``quill/apps/converter.py`` (the window), ``converter_menu.py`` (the menu bar)
+and ``converter_actions.py`` (what the commands do) -- plus its own windows in
+``quill/ui/converter_dialogs.py``. The catalogue covers the main window, the
+two shared conversion surfaces it opens, its own windows (Custom Effects, and
+the read-only report window under three titles: File Properties, Conversion
+Report and Keyboard Shortcuts), and the help window itself.
 
 The catalogue is **gated** (GATE-CONVERTER-HELP,
 ``quill/tools/converter_help_audit.py``): every ``wx.Frame``/``wx.Dialog``
@@ -32,27 +36,57 @@ from __future__ import annotations
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Chapter Workbench": (
+        "Edit the chapters of an MP3, M4B or M4A: hear it, then add, rename, "
+        "move, split and merge chapters at the playhead, find them at the "
+        "pauses, or import and export a chapter list. Save writes them into "
+        "the file itself, and every later conversion carries them."
+    ),
     "Quill Converter": (
-        "The Universal Audio Converter: queue audio or video files (or whole "
-        "folders), choose an output format and a preset, and Convert. "
-        "Everything runs on this computer, your originals are never touched, "
-        "and converted copies land in the output folder -- existing files "
-        "are auto-numbered, never overwritten. Closing to the tray keeps it "
-        "running a hotkey away while a batch finishes."
+        "Convert audio and video between formats: sound to sound, video to "
+        "sound, or video to video. Queue your files or folders, choose a "
+        "format, a preset and any effects -- Preview lets you hear fifteen "
+        "seconds of the result first -- and Convert. Everything runs on this "
+        "computer, your originals are never touched, and a file already in "
+        "the output folder is numbered around, never overwritten."
     ),
     "Convert Audio": (
-        "The full conversion dialog, seeded with your queue: everything the "
-        "main window offers plus the advanced catalog -- bitrate, sample "
-        "rate, channels, loudness, and what to do when an output file "
-        "already exists. Anything you leave alone keeps the preset's answer; "
-        "only what you deliberately change is overridden."
+        "The full conversion dialog, seeded with your queue: every format the "
+        "main window offers, video included, plus exact settings -- bit rate, "
+        "sample rate, channels, loudness -- and what to do when an output file "
+        "already exists. It converts with its own settings, so the main "
+        "window's effects do not apply here; anything you leave alone keeps "
+        "the preset's answer."
     ),
     "Convert from URL": (
         "Paste a web link -- YouTube and many other sites -- and its audio "
-        "is downloaded and handed to the converter. The downloader installs "
-        "on demand, once, with your consent; the page's best audio stream is "
-        "fetched, and nothing else about the page is kept. Unavailable in "
-        "Safe Mode."
+        "is downloaded and handed to the converter. The page's best audio "
+        "stream is fetched and nothing else about the page is kept; only "
+        "download what you have the right to use. Unavailable in Safe Mode."
+    ),
+    "Custom Effects": (
+        "Every effect on one page, starting from the effect recipe you had "
+        "chosen: cleanup, tone, leveling, a loudness target, gain, speed, "
+        "fades, and keeping only part of each file. OK makes these your "
+        "Custom effects for the next conversion and for Preview; Cancel "
+        "changes nothing."
+    ),
+    "File Properties": (
+        "What is inside the file you highlighted, in plain words: its length "
+        "and size, its tags, each video, audio and subtitle track, whether it "
+        "has cover art, and its chapters. It is read-only, and Copy All puts "
+        "it on the clipboard."
+    ),
+    "Conversion Report": (
+        "Your last conversion, file by file: the settings used, where the files "
+        "went, what converted, and why anything failed -- in plain words, then "
+        "FFmpeg's own message. Copy All puts it on the clipboard, ready to "
+        "paste into an email to support."
+    ),
+    "Keyboard Shortcuts": (
+        "Every key in Quill Converter, grouped by menu, in one read-only list "
+        "you can arrow through or copy. It is a reference; nothing here "
+        "changes a key."
     ),
 }
 

@@ -13,12 +13,14 @@
 ; install-if-absent + reference counting is owned by installer\shared-runtime.iss;
 ; this script declares the identifiers it needs and `#include`s it.
 ;
-; No Explorer integration is written here, on purpose. The "Convert with Quill"
-; right-click verb belongs to QUILL: installer\quill.iss writes it (opt-in) and
-; points it at `quill --action convert`, and QUILL's settings turn it on and off
-; (quill.core.shell_verbs). Quill Converter registers no verb, association or
-; protocol of its own and reads none, so a registry write here would be one
-; nothing expects and nothing cleans up.
+; The Explorer verb (1.0.0, decided 2026-09-26): a native checkbox, checked by
+; default, adds "Convert with Quill Converter" to the right-click menu of every
+; audio and video type the Converter reads, per user (HKCU), under the key
+; QuillConverter.Convert -- distinct from QUILL's own Quill.convert, so the two
+; never remove each other's -- and the uninstaller removes it. The block is
+; generated from the format catalogue (explorer-verb.isi,
+; scriptsuild_converter_verb_iss.py); a test keeps it current. Selecting many
+; files queues them all in one window (the IPC hand-over in the app).
 ;
 ; Build inputs (must exist before ISCC runs):
 ;   - the shared runtime at ..\..\runtime\dist\QuillVilleRuntime (built by
@@ -52,9 +54,11 @@
 #define RuntimeVersion "3.13.15"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "converter"
-; The media tool Converter declares (quill.apps.converter REQUIRED_COMPONENTS =
-; ("ffmpeg",)). Without it the app can only write WAV. No mpv: it plays nothing.
+; The media tools Converter declares (quill.apps.converter REQUIRED_COMPONENTS =
+; ("ffmpeg", "mpv")). Without ffmpeg the app can only write WAV; mpv is the
+; Chapter Workbench's player, for exact seeking.
 #define ToolFfmpeg
+#define ToolMpv
 
 [Setup]
 #ifdef Sign
@@ -77,7 +81,7 @@ AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
 VersionInfoVersion=1.0.0.0
 VersionInfoCompany={#AppPublisher}
-VersionInfoDescription={#AppName} accessible audio format converter (shared runtime)
+VersionInfoDescription={#AppName} accessible audio and video converter (shared runtime)
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableDirPage=no
@@ -121,7 +125,7 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 ; Without it the per-app C launcher has no Python to spawn, and no ffmpeg.
 Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed once, reused by every QuillVille app"; Types: full compact custom; Flags: fixed
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
-Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
+Name: "docs"; Description: "Documentation (User Guide, Release Notes, Changelog, Product Requirements)"; Types: full custom
 
 [Files]
 ; Converter's own payload is tiny: its icon, the per-app C launcher (the
@@ -134,8 +138,12 @@ Source: "..\dist\QuillConverter\QuillConverter.exe"; DestDir: "{app}"; Component
 Source: "..\installer\edition-installer-full.txt"; DestDir: "{app}"; DestName: "quill-edition.txt"; Components: main; Flags: ignoreversion
 Source: "..\dist\QuillConverter\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.epub"
 
+; The Explorer verb's registry entries, gated by WantsExplorerVerb. Included
+; before the shared-runtime fragment, which ends in a [Code] section.
+#include "explorer-verb.isi"
+
 ; The shared runtime (install-if-absent) + reference registration + orphan
-; removal on uninstall, plus the ffmpeg this app declares (ToolFfmpeg above).
+; removal on uninstall, plus the tools this app declares (ToolFfmpeg/ToolMpv).
 #include "..\..\..\installer\shared-runtime.iss"
 
 [Icons]
@@ -169,6 +177,7 @@ Type: filesandordirs; Name: "{app}"
 var
   { Native checkboxes; see the note at the top of [Icons]. }
   DesktopIconCheck: TNewCheckBox;
+  ExplorerVerbCheck: TNewCheckBox;
   LaunchCheck: TNewCheckBox;
 
 procedure InitializeWizard;
@@ -187,6 +196,18 @@ begin
   DesktopIconCheck.Width := TasksPage.SurfaceWidth;
   DesktopIconCheck.Caption := 'Create a &desktop icon';
   DesktopIconCheck.Checked := False;
+  ExplorerVerbCheck := TNewCheckBox.Create(TasksPage);
+  ExplorerVerbCheck.Parent := TasksPage.Surface;
+  ExplorerVerbCheck.Left := 0;
+  ExplorerVerbCheck.Top := DesktopIconCheck.Top + DesktopIconCheck.Height + ScaleY(12);
+  ExplorerVerbCheck.Width := TasksPage.SurfaceWidth;
+  ExplorerVerbCheck.Caption := 'Add "Convert with Quill Converter" to the File &Explorer right-click menu';
+  ExplorerVerbCheck.Checked := True;
+end;
+
+function WantsExplorerVerb(): Boolean;
+begin
+  Result := (ExplorerVerbCheck = nil) or ExplorerVerbCheck.Checked;
 end;
 
 function WantsDesktopIcon(): Boolean;
