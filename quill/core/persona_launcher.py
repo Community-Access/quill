@@ -22,7 +22,9 @@ def build_launch_argv(persona_name: str) -> list[str]:
     Frozen builds (``quill.exe``) run ``sys.executable`` directly; running
     from source needs ``-m quill`` so Python resolves the package.
     """
-    if getattr(sys, "frozen", False):
+    from quill.core.app_command import is_generic_interpreter
+
+    if getattr(sys, "frozen", False) and not is_generic_interpreter(sys.executable):
         return [sys.executable, "--persona", persona_name]
     return [sys.executable, "-m", "quill", "--persona", persona_name]
 

@@ -151,6 +151,12 @@ if ($LASTEXITCODE -ne 0) { throw "Portable bundle build failed." }
 if (-not (Test-Path (Join-Path $appDir "QuillLite.exe"))) {
     throw "Portable build did not produce the native QuillLite.exe launcher."
 }
+# The installer ships its own launcher (with the runtime self-heal URL); the
+# portable's has none, so a damaged portable never offers a download.
+$installerLauncherDir = Join-Path $repoRoot "dist\QuillLite-installer"
+if (-not (Test-Path (Join-Path $installerLauncherDir "QuillLite.exe"))) {
+    throw "Portable build did not produce the installer's QuillLite.exe launcher."
+}
 if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
     throw "Portable build did not stage the genuine pythonw.exe interpreter."
 }
@@ -165,7 +171,7 @@ Copy-Item $modelsDir $portableModels -Recurse
 # Sign every exe/dll in the shared runtime and the portable app BEFORE they are
 # zipped or embedded in the installer. Opt-in via -Sign / QUILL_SIGN; else no-op.
 $signer = Join-Path $QuillRepo "scripts\code_signing.py"
-& $Python $signer sign-build $sharedRuntimeDist $appDir --label "quilllite payload"
+& $Python $signer sign-build $sharedRuntimeDist $appDir $installerLauncherDir --label "quilllite payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
 $zipPath = Join-Path $repoRoot "dist\QuillLite-Portable-$version.zip"

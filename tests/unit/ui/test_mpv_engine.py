@@ -84,3 +84,18 @@ def test_the_client_reads_no_mpv_conf_and_never_runs_a_host_yt_dlp(monkeypatch) 
 
     assert "config=no" in order and "ytdl=no" in order
     assert order.index("config=no") < order.index("init")
+
+
+def test_find_libmpv_beside_the_runtime_without_app_root(monkeypatch, tmp_path: Path) -> None:
+    # Started straight through QuillVilleRuntime.exe (a taskbar pin), no
+    # launcher exported QUILL_APP_ROOT; the runtime's own tools\mpv still counts.
+    import quill.ui.audio.mpv_engine as me
+
+    monkeypatch.delenv("QUILL_LIBMPV", raising=False)
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setattr(me, "mpv_pack_dir", lambda: tmp_path / "empty")
+    runtime = tmp_path / "Runtime" / "3.13"
+    (runtime / "tools" / "mpv").mkdir(parents=True)
+    (runtime / "tools" / "mpv" / "libmpv-2.dll").write_bytes(b"MZ")
+    monkeypatch.setattr(me.sys, "executable", str(runtime / "QuillVilleRuntime.exe"))
+    assert find_libmpv() == runtime / "tools" / "mpv" / "libmpv-2.dll"

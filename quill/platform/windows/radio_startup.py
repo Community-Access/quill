@@ -43,9 +43,21 @@ def running_portable() -> bool:
     return portable_bundle_root() is not None
 
 
+#: The native launcher an installed Quill Radio starts from.
+LAUNCHER_NAME = "QuillRadio.exe"
+MODULE = "quill.apps.radio"
+
+
 def launch_command() -> str:
-    """The command written to the Run key: Quill Radio's own executable, quoted."""
-    return f'"{sys.executable}"'
+    """The command written to the Run key: the command that starts Quill Radio.
+
+    Not ``sys.executable`` alone -- on the shared runtime that is
+    ``QuillVilleRuntime.exe``, which run bare is not an app (2026-09-27). See
+    :mod:`quill.core.app_command`.
+    """
+    from quill.core.app_command import app_command
+
+    return app_command(MODULE, LAUNCHER_NAME)
 
 
 def is_windows() -> bool:
@@ -62,6 +74,19 @@ def is_launch_at_startup_enabled() -> bool:
     except OSError:
         return False
     return bool(value)
+
+
+def heal_launch_at_startup(*, frozen: bool | None = None) -> bool:
+    """Rewrite an existing, stale Run-key entry to :func:`launch_command`.
+
+    Never creates one, never from a portable copy, never raises. True when
+    the entry was rewritten. See :mod:`quill.platform.windows.launch_heal`.
+    """
+    from quill.platform.windows import launch_heal
+
+    if not is_windows() or not launch_heal.heal_allowed(frozen=frozen):
+        return False
+    return launch_heal.heal_run_value(winreg, _VALUE_NAME, launch_command())
 
 
 def set_launch_at_startup(enabled: bool) -> None:

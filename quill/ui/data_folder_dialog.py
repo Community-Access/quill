@@ -206,9 +206,13 @@ def _offer_restart(host: Any, *, app_title: str, target: object) -> None:
     import sys
 
     from quill.core.relaunch import build_relaunch_command
+    from quill.core.self_update import main_module
 
+    # The module this process is, not always "quill": Radio and its siblings
+    # share this dialog and run as `QuillVilleRuntime.exe -m <module>`.
+    module = main_module() or "quill"
     try:
-        subprocess.Popen(build_relaunch_command(sys.executable, sys.argv))
+        subprocess.Popen(build_relaunch_command(sys.executable, sys.argv, module=module))
     except OSError as error:
         host._announce(f"Could not restart automatically: {error}. Please restart {app_title}.")
         return

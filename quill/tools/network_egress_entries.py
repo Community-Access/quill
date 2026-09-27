@@ -325,6 +325,20 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "an explicit assistant action, with HTTPS enforced for cloud endpoints by "
         "_validate_endpoint_security and a verified TLS context."
     ),
+    "core/speech/yt_dlp_update.py::_default_fetch": (
+        "Repair YouTube Support (Quill Radio's Station menu, and the one-time offer "
+        "after a YouTube play fails for the stale-component reason): GET "
+        "https://pypi.org/pypi/yt-dlp/json -- and, only when the new yt-dlp pins a "
+        "different challenge solver, https://pypi.org/pypi/yt-dlp-ejs/<pin>/json -- "
+        "to learn the newest pure-Python wheel and the SHA-256 PyPI publishes for "
+        "it. Sends nothing but the fixed URL; no QUILL data or credential. The "
+        "wheel itself then downloads through release_assets.download_verified "
+        "(https, files.pythonhosted.org only, hash-verified before use). Emergency "
+        "repair only: yt-dlp is bundled, and this runs solely on an explicit "
+        "user action behind a confirmation. Refused in Safe Mode "
+        "(engine_install.install_yt_dlp). Replaces the pip subprocess the repair "
+        "used to run, which the shipped runtime and portable cannot do."
+    ),
     "core/release_assets.py::_download_resumable": (
         "User-initiated on-demand fetch of a redistributable runtime component "
         "(currently the MIT whisper.cpp engine) from QUILL's own pinned, "

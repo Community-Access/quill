@@ -46,7 +46,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "3.0.0"
+$version = "3.0.1"
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run by setting QUILL_SIGN=1, which the shared signer
@@ -144,6 +144,16 @@ if (-not $LibmpvDir) {
 if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
     throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."
 }
+
+# -- deno to bundle -------------------------------------------------------------
+# yt-dlp needs a JavaScript runtime to solve YouTube's signature and "n"
+# challenges. deno ships in the shared runtime's tools\deno and the portable's,
+# pinned and SHA-256-verified by fetch_build_deps.py -- never from PATH, and
+# never downloaded at run time (owner's rule, 2026-09-27: nothing on first use).
+Write-Host "Staging deno from its pinned release..."
+& $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only deno
+if ($LASTEXITCODE -ne 0) { throw "Could not stage deno (see scripts/fetch_build_deps.py)." }
+$DenoDir = Join-Path $QuillRepo "build\deps\deno"
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
 # per-app installer (quill-radio.iss) installs into
@@ -171,7 +181,7 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
     }
 }
 . (Join-Path $QuillRepo "scripts\StageMediaTools.ps1")
-Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
+Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir -DenoDir $DenoDir
 
 # -- the runtime must actually contain this app -------------------------------
 # The shared runtime carries its OWN frozen copy of the quill package, so a
@@ -194,57 +204,63 @@ $appDir = Join-Path $repoRoot "dist\QuillRadio"
     --source-root $QuillRepo `
     --ffmpeg-dir $FfmpegDir `
     --mpv-dir $LibmpvDir `
+    --deno-dir $DenoDir `
     --version $version
 if ($LASTEXITCODE -ne 0) { throw "Portable bundle build failed." }
 if (-not (Test-Path (Join-Path $appDir "QuillRadio.exe"))) {
     throw "Portable build did not produce the native QuillRadio.exe launcher."
 }
+# The installer ships its own launcher (with the runtime self-heal URL); the
+# portable's has none, so a damaged portable never offers a download.
+$installerLauncherDir = Join-Path $repoRoot "dist\QuillRadio-installer"
+if (-not (Test-Path (Join-Path $installerLauncherDir "QuillRadio.exe"))) {
+    throw "Portable build did not produce the installer's QuillRadio.exe launcher."
+}
 if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
     throw "Portable build did not stage the genuine pythonw.exe interpreter."
 }
 
-# -- OptiLab Core adapter (optional) -----------------------------------------
+# -- OptiLab Core adapter (required) -----------------------------------------
 # quill-optilab.exe links OptiLab Core (Lanes Audio / dgl1984), vendored at
 # v1.4.0 under quill/native/optilab/upstream and licensed Apache-2.0 WITH the
-# Commons Clause. It is what "exact OptiLab processing" runs. Best-effort: with
-# no C++ toolchain the build script says so and exits 0, the app reports the
-# option as unavailable, and the built-in chain works exactly as before -- so a
-# missing toolchain must not fail the release. Its LICENSE and NOTICE ship
-# beside it, which is now an obligation rather than a courtesy: the engine is
-# redistributed here, not merely imitated.
-& $Python (Join-Path $QuillRepo "scripts\build_native_optilab.py") --out $appDir
+# Commons Clause. It is what "exact OptiLab processing" runs. A RELEASE build
+# must carry it (owner's rule, 2026-09-27: every component ships in both
+# downloads), so a missing C++ toolchain or a failed compile stops the build
+# here instead of quietly shipping without it. Its LICENSE and NOTICE ship
+# beside it: the engine is redistributed here, not merely imitated.
+& $Python (Join-Path $QuillRepo "scripts\build_native_optilab.py") --out $appDir --require
+if ($LASTEXITCODE -ne 0) { throw "The OptiLab Core adapter build failed (scripts\build_native_optilab.py)." }
 $optilabExe = Join-Path $appDir "quill-optilab.exe"
-if (Test-Path $optilabExe) {
-    $upstream = Join-Path $QuillRepo "quill\native\optilab\upstream"
-    foreach ($dest in @($appDir, $sharedRuntimeDist)) {
-        # Both homes: the portable stick carries its own copy, and the shared
-        # runtime is where an *installed* app finds it (the per-app installer
-        # ships only the launcher and docs, so the runtime is beside
-        # sys.executable -- exactly where optilab_adapter.find_adapter looks).
-        $optilabTarget = Join-Path $dest "quill-optilab.exe"
-        # ...but `--out $appDir` above already wrote it into the first of those,
-        # so that copy is the file onto itself -- which PowerShell treats as a
-        # hard error, not a no-op. With $ErrorActionPreference = "Stop" that
-        # took the whole release build down at the last step before signing, on
-        # any machine with a C++ toolchain to build the adapter in the first
-        # place.
-        if ([IO.Path]::GetFullPath($optilabTarget) -ne [IO.Path]::GetFullPath($optilabExe)) {
-            Copy-Item $optilabExe $optilabTarget -Force
-        }
-        Copy-Item (Join-Path $upstream "LICENSE") (Join-Path $dest "OptiLabCore-LICENSE.txt") -Force
-        Copy-Item (Join-Path $upstream "NOTICE")  (Join-Path $dest "OptiLabCore-NOTICE.txt")  -Force
-    }
-    Write-Host "Staged the OptiLab Core adapter and its licence files."
-} else {
-    Write-Host "No OptiLab adapter in this build; exact OptiLab processing will be unavailable."
+if (-not (Test-Path $optilabExe)) {
+    throw "No quill-optilab.exe was built. Install the MSVC C++ build tools and CMake; a release must ship exact OptiLab processing."
 }
+$upstream = Join-Path $QuillRepo "quill\native\optilab\upstream"
+foreach ($dest in @($appDir, $sharedRuntimeDist)) {
+    # Both homes: the portable stick carries its own copy, and the shared
+    # runtime is where an *installed* app finds it (the per-app installer
+    # ships only the launcher and docs, so the runtime is beside
+    # sys.executable -- exactly where optilab_adapter.find_adapter looks).
+    $optilabTarget = Join-Path $dest "quill-optilab.exe"
+    # ...but `--out $appDir` above already wrote it into the first of those,
+    # so that copy is the file onto itself -- which PowerShell treats as a
+    # hard error, not a no-op. With $ErrorActionPreference = "Stop" that
+    # took the whole release build down at the last step before signing, on
+    # any machine with a C++ toolchain to build the adapter in the first
+    # place.
+    if ([IO.Path]::GetFullPath($optilabTarget) -ne [IO.Path]::GetFullPath($optilabExe)) {
+        Copy-Item $optilabExe $optilabTarget -Force
+    }
+    Copy-Item (Join-Path $upstream "LICENSE") (Join-Path $dest "OptiLabCore-LICENSE.txt") -Force
+    Copy-Item (Join-Path $upstream "NOTICE")  (Join-Path $dest "OptiLabCore-NOTICE.txt")  -Force
+}
+Write-Host "Staged the OptiLab Core adapter and its licence files."
 
 # -- code signing (payload) ---------------------------------------------------
 # Sign every exe/dll in the shared runtime and the portable app BEFORE they are
 # zipped or embedded in the installer, so the signed binaries are what ships.
 # Opt-in via -Sign / QUILL_SIGN; a no-op otherwise.
 $signer = Join-Path $QuillRepo "scripts\code_signing.py"
-& $Python $signer sign-build $sharedRuntimeDist $appDir --label "radio payload"
+& $Python $signer sign-build $sharedRuntimeDist $appDir $installerLauncherDir --label "radio payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
 $zipPath = Join-Path $repoRoot "dist\Quill-Radio-Portable-$version.zip"

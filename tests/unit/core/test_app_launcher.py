@@ -36,6 +36,17 @@ def test_frozen_sibling_not_installed_returns_none(monkeypatch, tmp_path) -> Non
     assert app_launcher.launch_app("radio") is False
 
 
+def test_on_the_shared_runtime_a_sibling_is_the_same_interpreter(monkeypatch, tmp_path) -> None:
+    # Every QuillVille app shares one runtime, so a sibling is -m <module> on
+    # it; looking for a sibling .exe beside the runtime found nothing (2026-09-27).
+    runtime = tmp_path / "QuillVilleRuntime.exe"
+    runtime.write_bytes(b"MZ")
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", str(runtime), raising=False)
+    argv = app_launcher.build_launch_argv("weather")
+    assert argv is not None and argv[:2] == [str(runtime), "-m"]
+
+
 def test_frozen_sibling_installed_alongside_launches(monkeypatch, tmp_path) -> None:
     # When the sibling .exe IS present next to the running app, launch it by path.
     (tmp_path / "QuillRadio.exe").write_bytes(b"MZ")

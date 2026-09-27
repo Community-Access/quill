@@ -20,7 +20,7 @@
 ;     by ..\..\runtime\quillville-runtime.spec, marker stamped,
 ;     ffmpeg/mpv staged into its tools\ so Radio finds them via
 ;     QUILL_APP_ROOT);
-;   - the per-app QuillRadio.exe at ..\dist\QuillRadio\QuillRadio.exe
+;   - the per-app QuillRadio.exe at ..\dist\QuillRadio-installer\QuillRadio.exe
 ;     (built by build_native_launcher.py);
 ;   - the per-app icon at ..\assets\quill-radio.ico;
 ;   - the rendered Radio docs at ..\dist\QuillRadio\docs.
@@ -34,7 +34,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "3.0.0"
+  #define AppVersion "3.0.1"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"
@@ -52,6 +52,10 @@
 ; Radio gets its playback engine whatever order the apps were installed in.
 #define ToolFfmpeg
 #define ToolMpv
+; deno (yt-dlp's JavaScript runtime for YouTube) and the OptiLab Core adapter,
+; both bundled and installed ungated so install order cannot drop them.
+#define ToolDeno
+#define ToolOptiLab
 
 [Setup]
 #ifdef Sign
@@ -73,7 +77,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=3.0.0.0
+VersionInfoVersion=3.0.1.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible internet radio (shared runtime)
 DefaultDirName={autopf}\{#AppName}
@@ -135,7 +139,10 @@ Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Re
 ; (the portable-mode anchor), and (optionally) its docs. The program
 ; itself lives in the shared runtime, installed by the fragment below.
 Source: "..\assets\quill-radio.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "..\dist\QuillRadio\QuillRadio.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion
+; The installer's own launcher: built with the shared-runtime self-heal URL.
+; The portable's QuillRadio.exe in ..\dist\QuillRadio has none (build_portable.py
+; offline_portable_launcher: nothing downloads from a portable copy).
+Source: "..\dist\QuillRadio-installer\QuillRadio.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion
 ; Which edition this is, so Check for Updates offers THIS installer back
 ; rather than guessing from a file extension (a user got the thin setup
 ; after installing the full one; see core/install_edition.py).
@@ -187,6 +194,33 @@ var
   DesktopIconCheck: TNewCheckBox;
   LaunchCheck: TNewCheckBox;
 
+{ A desktop icon an earlier Quill Radio left behind (3.0.1, 2026-09-27).
+  Installers before 3.0 pointed it straight at the shared runtime,
+  "QuillVilleRuntime.exe -m quill.apps.radio", which skips the native
+  launcher -- so the app never learns where the runtime folder is and falls
+  back to Windows Media instead of the bundled mpv engine. Such an icon is
+  replaced, not kept: the box starts checked when one exists, the old one is
+  removed, and [Icons] writes a fresh one through QuillRadio.exe. }
+function HadDesktopIcon(): Boolean;
+begin
+  Result := FileExists(ExpandConstant('{commondesktop}\{#AppName}.lnk')) or
+            FileExists(ExpandConstant('{userdesktop}\{#AppName}.lnk'));
+end;
+
+procedure RemoveOldDesktopIcons();
+begin
+  { Best effort: a per-user install may not be allowed to touch the public
+    desktop, and a missing file is not an error. }
+  DeleteFile(ExpandConstant('{commondesktop}\{#AppName}.lnk'));
+  DeleteFile(ExpandConstant('{userdesktop}\{#AppName}.lnk'));
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then
+    RemoveOldDesktopIcons();
+end;
+
 procedure InitializeWizard;
 var
   TasksPage: TWizardPage;
@@ -202,7 +236,9 @@ begin
   DesktopIconCheck.Top := ScaleY(8);
   DesktopIconCheck.Width := TasksPage.SurfaceWidth;
   DesktopIconCheck.Caption := 'Create a &desktop icon';
-  DesktopIconCheck.Checked := False;
+  { Unchecked by default, as the task was -- unless an icon is already there,
+    which is then kept (and repaired; see HadDesktopIcon). }
+  DesktopIconCheck.Checked := HadDesktopIcon();
 end;
 
 function WantsDesktopIcon(): Boolean;

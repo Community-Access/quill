@@ -18,6 +18,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 from quill.stability.safe_subprocess import run_subprocess_safely
 
@@ -43,8 +44,13 @@ def _schtasks_path() -> str:
 
 
 def launch_command() -> str:
-    """The command Task Scheduler runs: this executable, one-shot check mode."""
-    return f'"{sys.executable}" --check-once'
+    """The command Task Scheduler runs: Quill Weather, one-shot check mode.
+
+    Through its launcher (or ``-m quill.apps.weather`` on the runtime), never
+    the bare runtime exe -- see :mod:`quill.core.app_command`."""
+    from quill.core.app_command import app_command
+
+    return app_command("quill.apps.weather", "QuillWeather.exe", args=("--check-once",))
 
 
 def _schtasks(args: list[str]) -> bool:
@@ -92,3 +98,39 @@ def unregister() -> bool:
     # Deleting a task that was never there reports failure; treat "already
     # absent" as success so a toggle-off is idempotent.
     return not is_registered()
+
+
+def _interval_minutes(xml: str) -> int | None:
+    """The repetition interval of a task definition (``PT15M``, ``PT1H``)."""
+    import re
+
+    from quill.platform.windows import launch_heal
+
+    match = re.fullmatch(r"PT(?:(\d+)H)?(?:(\d+)M)?", launch_heal.task_element(xml, "Interval"))
+    if not match or not any(match.groups()):
+        return None
+    return int(match.group(1) or 0) * 60 + int(match.group(2) or 0)
+
+
+def heal_registered_task(
+    fallback_interval_minutes: int = 15, *, frozen: bool | None = None, query: Any = None
+) -> bool:
+    """Re-register an existing, stale background-check task at its own cadence.
+
+    Every shared-runtime build until 2026-09-27 registered it as the bare
+    runtime exe plus ``--check-once``, which the runtime cannot read as an app
+    -- so instead of a silent check, every run showed the runtime's "not an
+    app" message. Only an existing, enabled task is touched (never created),
+    never from a portable copy, never raising. True when it was re-registered.
+    """
+    from quill.platform.windows import launch_heal
+
+    try:
+        if not is_windows() or not launch_heal.heal_allowed(frozen=frozen):
+            return False
+        xml = query() if query else launch_heal.query_task_xml(_schtasks_path(), _TASK_NAME)
+        if not launch_heal.task_needs_heal(xml, launch_command()):
+            return False
+        return register(_interval_minutes(xml) or fallback_interval_minutes)
+    except Exception:  # noqa: BLE001 - a heal must never cost the launch
+        return False

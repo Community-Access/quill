@@ -195,11 +195,11 @@ class MediaHealth:
                 "They also ship inside the Quill Radio installer, so reinstalling restores them."
             )
         if not self.ffmpeg and self.mpv:
-            return f"Choose Help, then Get FFmpeg, to download the official build. {also_one}"
+            return f"Choose Help, then Repair FFmpeg, to download the official build. {also_one}"
         if self.ffmpeg and not self.mpv:
-            return f"Choose Help, then Get mpv Playback Engine, to download it. {also_one}"
+            return f"Choose Help, then Repair mpv Playback Engine, to download it. {also_one}"
         return (
-            "Choose Help, then Get FFmpeg, and Help, then Get mpv Playback Engine, "
+            "Choose Help, then Repair FFmpeg, and Help, then Repair mpv Playback Engine, "
             f"to download them. {also_both}"
         )
 

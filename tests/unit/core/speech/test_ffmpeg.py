@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -112,3 +113,33 @@ def test_transcode_success_returns_wav(monkeypatch, tmp_path) -> None:
     result = ffmpeg.transcode_to_wav(src, out_dir=out_dir)
     assert result.is_file()
     assert result.suffix == ".wav"
+
+
+def test_search_dirs_include_runtime_folder_after_app_root(monkeypatch, tmp_path) -> None:
+    """The runtime/portable folder is searched right after QUILL_APP_ROOT.
+
+    An app started straight through QuillVilleRuntime.exe has no launcher to
+    export QUILL_APP_ROOT, and must still find the ffmpeg staged beside it.
+    """
+    import sys
+
+    app_root = tmp_path / "app"
+    runtime = tmp_path / "runtime"
+    monkeypatch.setenv("QUILL_APP_ROOT", str(app_root))
+    monkeypatch.setattr(sys, "executable", str(runtime / "QuillVilleRuntime.exe"))
+    dirs = ffmpeg.ffmpeg_search_dirs()
+    assert dirs[0] == app_root / "tools" / "ffmpeg"
+    assert dirs[1] == runtime / "tools" / "ffmpeg"
+
+
+def test_runtime_folder_ffmpeg_found_without_app_root(monkeypatch, tmp_path) -> None:
+    import sys
+
+    runtime = tmp_path / "runtime"
+    tool = runtime / "tools" / "ffmpeg"
+    tool.mkdir(parents=True)
+    exe = tool / ("ffmpeg.exe" if os.name == "nt" else "ffmpeg")
+    exe.write_bytes(b"")
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setattr(sys, "executable", str(runtime / "QuillVilleRuntime.exe"))
+    assert ffmpeg._resolve_tool("ffmpeg", ffmpeg._ALLOWED_FFMPEG) == str(exe)

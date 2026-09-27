@@ -163,7 +163,7 @@ def _mpv_row(present: bool) -> HealthRow:
     return HealthRow(
         "mpv playback engine",
         "missing. Without it you lose " + _join(MPV_CAPABILITIES) + ". "
-        "Help, then Get mpv Playback Engine, downloads it; the full installer "
+        "Help, then Repair mpv Playback Engine, downloads it; the full installer "
         "also carries it.",
         DEGRADED,
     )
@@ -175,7 +175,7 @@ def _ffmpeg_row(present: bool) -> HealthRow:
     return HealthRow(
         "FFmpeg",
         "missing. Without it you lose " + _join(FFMPEG_CAPABILITIES) + ". "
-        "Help > Get FFmpeg fetches it on its own.",
+        "Help > Repair FFmpeg fetches it on its own.",
         DEGRADED,
     )
 

@@ -45,7 +45,12 @@ function Stage-QuillMediaTools {
         # only ffmpeg (Cast) -- 110 MB they have no use for. Radio and Studio
         # both declare mpv: Radio as its playback engine, Studio for the
         # player preview its build has always bundled.
-        [string]$LibmpvDir = ""
+        [string]$LibmpvDir = "",
+        # A vetted directory holding deno.exe and DENO-LICENSE.txt
+        # (scripts\fetch_build_deps.py --only deno). yt-dlp's JavaScript runtime
+        # for YouTube's challenges; staged by the app that plays YouTube
+        # (Radio), found by quill.core.js_runtime.find_deno.
+        [string]$DenoDir = ""
     )
 
     if (-not (Test-Path (Join-Path $RuntimeDist "QuillVilleRuntime.exe"))) {
@@ -80,5 +85,21 @@ function Stage-QuillMediaTools {
         Get-ChildItem $LibmpvDir -File -Filter *.txt -ErrorAction SilentlyContinue |
             ForEach-Object { Copy-Item $_.FullName $target -Force }
         Write-Host "Staged libmpv into the shared runtime."
+    }
+
+    if ($DenoDir) {
+        $source = Join-Path $DenoDir "deno.exe"
+        if (-not (Test-Path $source)) {
+            throw "deno.exe not found in -DenoDir '$DenoDir'."
+        }
+        $license = Join-Path $DenoDir "DENO-LICENSE.txt"
+        if (-not (Test-Path $license)) {
+            throw "DENO-LICENSE.txt not found in -DenoDir '$DenoDir' -- deno ships with its licence."
+        }
+        $target = Join-Path $RuntimeDist "tools\deno"
+        New-Item -ItemType Directory -Force $target | Out-Null
+        Copy-Item $source $target -Force
+        Copy-Item $license $target -Force
+        Write-Host "Staged deno into the shared runtime."
     }
 }

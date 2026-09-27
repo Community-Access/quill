@@ -97,6 +97,13 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             wx.CallAfter(self._start_expansion)
         self._start_ipc_poll()
         self._refresh_status()
+        # Repair "start with Windows" if an older build wrote it as the bare
+        # runtime exe (launch_heal, 2026-09-27).
+        if not safe_mode:
+            from quill.platform.windows import inkwell_startup, launch_heal
+
+            heal = inkwell_startup.heal_launch_at_startup
+            launch_heal.heal_in_background(self._task_manager, heal)
 
     # -- menus -------------------------------------------------------------------
 

@@ -66,12 +66,17 @@ def find_libmpv() -> Path | None:
     app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
     if app_root:
         candidates += [Path(app_root) / "tools" / "mpv" / name for name in _DLL_NAMES]
+    # The runtime's own folder. A Quill Radio started straight through
+    # QuillVilleRuntime.exe -- a taskbar pin Windows made from the running
+    # process -- has no launcher to export QUILL_APP_ROOT, and missed the
+    # libmpv bundled beside the runtime (2026-09-27).
+    exe_dir = Path(sys.executable).parent
+    candidates += [exe_dir / "tools" / "mpv" / name for name in _DLL_NAMES]
     try:
         pack = mpv_pack_dir()
         candidates += [pack / name for name in _DLL_NAMES]
     except Exception:  # noqa: BLE001 - no app data dir in odd harnesses
         pass
-    exe_dir = Path(sys.executable).parent
     candidates += [exe_dir / name for name in _DLL_NAMES]
     for candidate in candidates:
         if candidate.is_file():
