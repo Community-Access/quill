@@ -236,11 +236,15 @@ function Resolve-QuillIscc {
     .SYNOPSIS
     Locate the Inno Setup compiler without hardcoding a drive.
     .DESCRIPTION
-    Inno Setup 7 first, 6 as the fallback (2026-08-17): the 64-bit v7 compiler
-    is what allows LZMADictionarySize above 64 MB, which the shared installers
-    rely on to deduplicate ffmpeg/ffprobe (-27 MB on Quill Radio alone), and
-    both editions compile the v6-era scripts unchanged. The two can coexist;
-    pass -Iscc explicitly to build with a specific one.
+    Inno Setup 7 only. The 64-bit v7 compiler is what allows
+    LZMADictionarySize above 64 MB, which the shared installers rely on to
+    deduplicate ffmpeg/ffprobe (-27 MB on Quill Radio alone), and quill.iss
+    uses the v7-only SetupArchitecture directive. Version 6 was a fallback
+    until 2026-09-26; it was removed so a machine without 7 fails here with a
+    message that says so, instead of part-way through a build with an error
+    that reads like a fault in the script. An ISCC.exe on PATH is used only
+    when it does not live in another version's "Inno Setup <n>" folder
+    (ISCC.exe carries no version resource, so the folder is the signal).
     #>
     param([string]$Preferred = "")
 
@@ -249,17 +253,20 @@ function Resolve-QuillIscc {
     $tried += @(
         (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 7\ISCC.exe"),
         (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 7\ISCC.exe"),
-        (Join-Path $env:ProgramFiles "Inno Setup 7\ISCC.exe"),
-        (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 6\ISCC.exe"),
-        (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"),
-        (Join-Path $env:ProgramFiles "Inno Setup 6\ISCC.exe")
+        (Join-Path $env:ProgramFiles "Inno Setup 7\ISCC.exe")
     )
     foreach ($candidate in $tried) {
         if ($candidate -and (Test-Path $candidate)) { return $candidate }
     }
     $onPath = Get-Command ISCC.exe -ErrorAction SilentlyContinue
-    if ($onPath) { return $onPath.Source }
-    throw "ISCC.exe not found (looked in $($tried -join '; ')) -- pass -Iscc <path>."
+    if ($onPath) {
+        $folder = Split-Path -Leaf (Split-Path -Parent $onPath.Source)
+        if (-not ($folder -like "Inno Setup *") -or $folder -eq "Inno Setup 7") {
+            return $onPath.Source
+        }
+        $tried += "$($onPath.Source) (skipped: not Inno Setup 7)"
+    }
+    throw "Inno Setup 7 is required and was not found (looked in $($tried -join '; ')). Install Inno Setup 7 from https://jrsoftware.org/isdl.php, or pass -Iscc <path to v7 ISCC.exe>."
 }
 
 function Assert-QuillBuildEnv {

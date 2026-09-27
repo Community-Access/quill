@@ -10,6 +10,36 @@ Quill Converter is the product wrapper; the application code lives in the
 
 ## Unreleased
 
+### 2026-09-26 -- an installer, and two downloads
+
+- **Quill Converter has an installer.** Until now it shipped only as a portable
+  zip. A release now publishes the same two downloads Quill Radio and QUILL Lite
+  do, and nothing else: `Quill-Converter-Setup-Shared-<version>.exe` and
+  `Quill-Converter-Portable-<version>.zip`. The installer puts in the shared
+  QuillVille Runtime when the computer does not already have a current one, then
+  the app and its bundled FFmpeg, a Start Menu entry and an uninstaller.
+  Uninstalling leaves the shared runtime for any other QuillVille app still
+  using it, and never touches settings or converted files.
+- **Every installer choice is a checkbox a screen reader can read.** The
+  desktop icon and "Launch Quill Converter" are native Windows checkboxes that
+  announce checked and not checked, not the wizard's task list, which reads
+  every box as "not checked" whatever it is. Both are off by default, and a
+  silent install never launches the app.
+- **The portable copy writes nothing to the host computer.** It carries its own
+  Python, its own FFmpeg and its own `data` folder.
+- **No GitHub token and no feedback service ship in either download.** Get Help
+  from Support goes by email to support@community-access.org, so the portable
+  bundle no longer includes feedback-hub.
+- **One script builds a release** (`scripts/build_release.ps1`), with optional
+  Authenticode signing (`-Sign`). It refuses to build when its version and the
+  app's disagree, and checks that the shared runtime it packages actually
+  contains this Converter.
+- The Explorer **Convert with Quill** right-click entry is unchanged: it
+  belongs to QUILL, which offers it in its settings, and neither Converter
+  download writes it.
+
+### The tile icon
+
 - **The tile icon moved to the family generator.** Quill Converter's icon was
   already generated rather than hand-drawn -- it had its own
   `assets/make_quill_converter_icon.py` -- which made it the only app in the

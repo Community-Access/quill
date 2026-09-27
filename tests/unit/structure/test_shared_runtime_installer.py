@@ -47,6 +47,7 @@ def test_the_skip_test_compares_the_payload_build_against_the_installed_one() ->
 SHARED_RUNTIME_INSTALLERS = {
     "standalone/beacon/installer/quill-beacon-shared.iss",
     "standalone/cast/installer/quill-cast-shared.iss",
+    "standalone/converter/installer/quill-converter.iss",
     "standalone/inkwell/installer/quill-inkwell.iss",
     "standalone/quilllite/installer/quilllite.iss",
     "standalone/radio/installer/quill-radio.iss",
@@ -153,6 +154,7 @@ def test_every_thin_installer_probes_that_same_versioned_path() -> None:
 MEDIA_TOOL_DEFINES = {
     "standalone/radio/installer/quill-radio.iss": {"ToolFfmpeg", "ToolMpv"},
     "standalone/cast/installer/quill-cast-shared.iss": {"ToolFfmpeg"},
+    "standalone/converter/installer/quill-converter.iss": {"ToolFfmpeg"},
     "standalone/studio/installer/quill-audio-studio.iss": {"ToolFfmpeg", "ToolMpv"},
 }
 
@@ -162,6 +164,7 @@ MEDIA_TOOL_DEFINES = {
 APP_MODULE_FOR_INSTALLER = {
     "standalone/radio/installer/quill-radio.iss": "radio",
     "standalone/cast/installer/quill-cast-shared.iss": "podcasts",
+    "standalone/converter/installer/quill-converter.iss": "converter",
     "standalone/studio/installer/quill-audio-studio.iss": "studio",
 }
 
