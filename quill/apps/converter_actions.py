@@ -470,6 +470,31 @@ class ConverterActionsMixin:
         frame.Raise()
         self._list.SetFocus()
 
+    def edit_tags(self) -> None:
+        """Queue > Edit Tags (Ctrl+T): every tag and the cover of the highlighted file.
+
+        The Audio Studio's Tag Editor, shared rather than rebuilt: title,
+        artist, album and twenty-three more fields over five pages, and the
+        cover art. It writes MP3 (ID3) and M4A/M4B/MP4 tags; other formats are
+        refused in words, because writing an ID3 block onto a FLAC or a WAV
+        would damage it.
+        """
+        source = self._preview_source()
+        if source is None:
+            self._announce("Highlight a file in the queue first.")
+            return
+        if source.suffix.lower() not in (".mp3", ".m4a", ".m4b", ".mp4"):
+            self._show_message_box(
+                f"The Tag Editor edits MP3, M4A, M4B and MP4 files. {source.name} is not one "
+                "of those; convert it to one of them first -- its tags come along -- and "
+                "edit the converted copy.",
+                "Tag Editor",
+            )
+            return
+        from quill.ui.audio_studio.tag_editor import open_tags_in_editor
+
+        open_tags_in_editor(self, source)
+
     def queue_downloaded(self, path: Path) -> None:
         """Convert from URL: the downloaded file joins this window's queue."""
         self.add_paths([path], announce=False)

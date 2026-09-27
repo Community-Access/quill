@@ -40,6 +40,9 @@ Studio share:
   the rest. Join now writes MP3 chapters too. Quill Converter opens the Audio
   Studio's Chapter Workbench as its chapter editor (its Publish button hides
   when the host has no publishing), and bundles libmpv for it.
+- **Quill Converter gets the Tag Editor.** Audio Studio's Tag Editor opens
+  from Queue > Edit Tags (Ctrl+T), for MP3, M4A, M4B and MP4; the first piece of
+  Audio Studio shared into the Converter.
 - **Quill Converter is released** (`app_launcher.RELEASED_APPS`), so the other
   apps' QuillVille menus list it and QUILL's "Convert with Quill" Explorer verb
   works in public builds.

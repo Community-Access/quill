@@ -23,6 +23,8 @@ published as an installer, and everything in it is part of 1.0.0.
   `Quill-Converter-Portable-1.0.0.zip` (settings in its own `data` folder).
   FFmpeg and ffprobe, libmpv, yt-dlp, mutagen and, when built, the OptiLab
   Core adapter are inside both.
+- **Edit Tags** (Ctrl+T): Audio Studio's Tag Editor, built in -- every tag and
+  the cover art of an MP3, M4A, M4B or MP4.
 - **Chapters through every conversion.** A Chapters choice (keep, a chapter
   list beside the file, at pauses, every N minutes, or none); chapters land
   inside every format that holds them and in a `.cue` beside the rest; a

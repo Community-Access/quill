@@ -851,6 +851,8 @@ Control coverage: 22 audited sites (22 helped).
 
 **Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten.
 
+**Tag Editor.** Every tag of one MP3, M4A, M4B or MP4 file, over five pages -- title, artist and album, the people, the dates and numbers, sorting, and the cover art. Control+Tab moves between pages. OK writes the tags into the file; the sound itself is not touched.
+
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
 ### Every authored control help sentence

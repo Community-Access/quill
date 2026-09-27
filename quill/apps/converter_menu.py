@@ -65,6 +65,7 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     queue_menu = wx.Menu()
     add(queue_menu, "File &Properties...\tAlt+Enter", host.show_properties)
     add(queue_menu, "Chapter &Workbench...\tCtrl+H", host.open_chapter_workbench)
+    add(queue_menu, "Edit &Tags...\tCtrl+T", host.edit_tags)
     add(queue_menu, "&Remove from Queue\tCtrl+Delete", lambda: host._on_remove(None))
     add(queue_menu, "&Clear Queue\tCtrl+Shift+Delete", host.clear_queue)
     add(queue_menu, "Move &Up\tAlt+Up", lambda: host.move_entry(-1))
@@ -75,7 +76,7 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     # rather than opening a second window with its own Convert button.
     view_menu = wx.Menu()
     advanced_item = wx.NewIdRef()
-    view_menu.AppendCheckItem(advanced_item, "&Advanced Options" + chr(9) + "Ctrl+Alt+V")
+    view_menu.AppendCheckItem(advanced_item, "&Advanced Options\tCtrl+Alt+V")
     view_menu.Check(advanced_item, host._settings.show_advanced)
     host.frame.Bind(
         wx.EVT_MENU, lambda e: host.set_advanced_visible(e.IsChecked()), id=advanced_item
