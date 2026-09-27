@@ -58,7 +58,58 @@ class MainViewHost:
         self.book = wx.Simplebook(parent)
         self.book.AddPage(favorites_page, main_view.label(main_view.FAVORITES))
         self._pages[main_view.FAVORITES] = favorites_page
+        self.book.Bind(wx.EVT_NAVIGATION_KEY, self._on_navigation_key)
         return self.book
+
+    def _on_navigation_key(self, event: Any) -> None:
+        """Carry Tab across the book, in both directions.
+
+        A page at the end of its own controls hands Tab upward with *itself* as
+        the current focus. The Simplebook, unlike a Notebook, has no navigation
+        handling, so the main panel got an event naming a window that is not
+        its child, started again from its first child -- the book -- and focus
+        went straight back into the page: Tab on the favorites tree stayed on
+        the tree while Shift+Tab left it (reported 2026-09-27). Leaving a page
+        is now re-asked with the book as the current focus, so the panel moves
+        to the book's next or previous sibling; arriving goes into the page.
+        """
+        book = self.book
+        parent = book.GetParent()
+        page = book.GetCurrentPage()
+        if parent is not None and self._is_within(event.GetCurrentFocus(), page):
+            event.SetCurrentFocus(book)
+            event.SetEventObject(book)
+            parent.HandleWindowEvent(event)
+            return
+        if page is None:
+            return
+        stops = self._tab_stops(page)
+        if not stops:
+            page.SetFocus()
+            return
+        (stops[0] if event.GetDirection() else stops[-1]).SetFocusFromKbd()
+
+    @classmethod
+    def _tab_stops(cls, window: Any) -> list[Any]:
+        """The controls inside *window* that Tab can land on, in Tab order."""
+        stops: list[Any] = []
+        for child in window.GetChildren():
+            if not (child.IsShown() and child.IsEnabled()):
+                continue
+            if child.AcceptsFocusFromKeyboard() and not child.GetChildren():
+                stops.append(child)
+            else:
+                stops.extend(cls._tab_stops(child))
+        return stops
+
+    @staticmethod
+    def _is_within(window: Any, ancestor: Any) -> bool:
+        """True when *window* is *ancestor* or sits anywhere inside it."""
+        while window is not None and ancestor is not None:
+            if window is ancestor:
+                return True
+            window = window.GetParent()
+        return False
 
     # -- switching --------------------------------------------------------------
 
