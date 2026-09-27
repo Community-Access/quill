@@ -60,8 +60,6 @@
     "curl_cffi.libs",
     "defusedxml",
     "docx",
-    "feedback-hub",
-    "feedback_hub",
     "feedparser",
     "feedparser-sgmllib",
     "feedparser_sgmllib",

@@ -99,6 +99,11 @@ class Product:
     stage_engines: bool
     stage_ffmpeg: bool
     stage_mpv: bool
+    # Whether the bundle carries QUILL's GitHub feedback token. Quill Radio and
+    # QUILL Lite send all feedback to support@community-access.org by email
+    # (2026-09-26), so they carry neither the token nor feedback-hub: a
+    # credential an app never uses is only a credential somebody can extract.
+    feedback_token: bool = True
 
 
 PRODUCTS: dict[str, Product] = {
@@ -122,10 +127,11 @@ PRODUCTS: dict[str, Product] = {
         # "youtube": the installer bundles yt-dlp (quill-radio.spec), so the
         # portable copy does too -- a first YouTube link must not need a pip
         # download, which also wrote pip's cache to the host computer.
-        dep_groups=("ui", "speech", "feedback", "youtube"),
+        dep_groups=("ui", "speech", "youtube"),
         stage_engines=False,   # radio streams/records; no bundled speech engines
         stage_ffmpeg=True,     # podcast/stream recording
         stage_mpv=True,        # playback engine
+        feedback_token=False,  # feedback is email to support@ (2026-09-26)
     ),
     "weather": Product(
         key="weather",
@@ -177,10 +183,11 @@ PRODUCTS: dict[str, Product] = {
         # nothing to download. The one engine it carries is dictation's
         # (live-dictation: sherpa-onnx, numpy, sounddevice); the models are
         # staged beside the launcher by build_release.ps1, not in here.
-        dep_groups=("ui", "feedback", "live-dictation"),
+        dep_groups=("ui", "live-dictation"),
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
+        feedback_token=False,  # feedback is email to support@ (2026-09-26)
     ),
     "quill": Product(
         key="quill",
@@ -284,7 +291,7 @@ def _keep_makepy_cache_in_bundle(out_dir: Path) -> None:
     (gen_py / "__init__.py").touch()
 
 
-def _copy_quill_source(out_dir: Path, source_root: Path) -> None:
+def _copy_quill_source(out_dir: Path, source_root: Path, *, feedback_token: bool = True) -> None:
     site_packages = out_dir / "Lib" / "site-packages"
     site_packages.mkdir(parents=True, exist_ok=True)
     if (site_packages / "quill").exists():
@@ -295,6 +302,11 @@ def _copy_quill_source(out_dir: Path, source_root: Path) -> None:
     print("  copying quill source -> Lib/site-packages/quill")
     shutil.copytree(quill_source, site_packages / "quill", ignore=_DEV_CACHE_IGNORE)
     token = site_packages / "quill" / "_feedback_token.py"
+    if not feedback_token:
+        # Whatever another app's build left in the checkout, this bundle ships
+        # without it (see Product.feedback_token).
+        token.unlink(missing_ok=True)
+        return
     if not token.is_file():
         raise RuntimeError(
             "quill/_feedback_token.py missing -- generate the feedback token first "
@@ -466,7 +478,7 @@ def main() -> int:
         _bootstrap_pip_and_deps(python_exe, source_root / "pyproject.toml", product.dep_groups)
 
         print("[3/8] quill package source")
-        _copy_quill_source(out_dir, source_root)
+        _copy_quill_source(out_dir, source_root, feedback_token=product.feedback_token)
         _prune_build_only(out_dir)
 
     print(f"[{'2/6' if args.no_runtime else '4/8'}] native launcher")
