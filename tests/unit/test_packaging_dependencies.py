@@ -381,7 +381,11 @@ def test_the_yt_dlp_upgrade_floor_matches_the_bundled_pin(project: dict) -> None
 
     from quill.core.speech import engine_install
 
-    bundled = [r for r in project["optional-dependencies"]["youtube"] if r.startswith("yt-dlp")]
+    bundled = [
+        r
+        for r in project["optional-dependencies"]["youtube"]
+        if r.startswith("yt-dlp") and not r.startswith("yt-dlp-ejs")
+    ]
     assert len(bundled) == 1, bundled
     pack = [r for r in engine_install._YT_DLP_REQUIREMENTS if r.startswith("yt-dlp")]
     assert len(pack) == 1, pack

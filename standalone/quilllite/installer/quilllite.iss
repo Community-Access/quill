@@ -21,7 +21,7 @@
 ;   - the shared runtime at ..\..\runtime\dist\QuillVilleRuntime
 ;     (built by ..\..\runtime\quillville-runtime.spec, marker stamped;
 ;     build_runtime.ps1 chains the spec, the marker stamp, and the staging);
-;   - the per-app QuillLite.exe at ..\dist\QuillLite\QuillLite.exe
+;   - the per-app QuillLite.exe at ..\dist\QuillLite-installer\QuillLite.exe
 ;     (built by build_native_launcher.py);
 ;   - the per-app icon at ..\assets\quill-lite.ico;
 ;   - the rendered QUILL Lite docs at ..\dist\QuillLite\docs.
@@ -119,7 +119,10 @@ Name: "assoc"; Description: "Open .txt and .rtf files with {#AppName}"; Types: c
 
 [Files]
 Source: "..\assets\quill-lite.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion
-Source: "..\dist\QuillLite\QuillLite.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion
+; The installer's own launcher: built with the shared-runtime self-heal URL.
+; The portable's QuillLite.exe in ..\dist\QuillLite has none (build_portable.py
+; offline_portable_launcher: nothing downloads from a portable copy).
+Source: "..\dist\QuillLite-installer\QuillLite.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion
 ; The updater reads this to offer the right edition back (core/install_edition.py).
 Source: "..\installer\edition-installer-full.txt"; DestDir: "{app}"; DestName: "quill-edition.txt"; Components: main; Flags: ignoreversion
 Source: "..\dist\QuillLite\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs

@@ -183,7 +183,7 @@ def add_youtube_playlist(host: Any) -> None:
     host._task_manager.submit("youtube-playlist", _work, on_success=_done, on_failure=_failed)
 
 
-UPDATE_TITLE = "Update YouTube Support"
+UPDATE_TITLE = "Repair YouTube Support"
 
 
 def update_youtube_support(host: Any) -> None:
@@ -203,11 +203,12 @@ def update_youtube_support(host: Any) -> None:
         host._announce("Updating YouTube support is disabled in Safe Mode.")
         return
     answer = host._show_message_box(
-        "Quill Radio already includes YouTube support, so you only need this if "
-        "YouTube links have stopped working.\n\n"
-        "It downloads the current version of the yt-dlp helper (about 3 MB) from "
-        "the Python package index and uses it in place of the built-in copy from "
-        "now on.\n\nDownload it now?",
+        "This is an emergency repair. Quill Radio already includes YouTube "
+        "support, so you only need this if YouTube links have stopped working.\n\n"
+        "It downloads the newest yt-dlp helper (about 3 MB) from the Python "
+        "package index, checks it, and uses it in place of the built-in copy "
+        "from now on -- but only while it is newer than the built-in one.\n\n"
+        "Download it now?",
         UPDATE_TITLE,
         wx.ICON_QUESTION | wx.YES_NO,
     )
@@ -256,7 +257,7 @@ def offer_stale_component_update(host: Any, state: Any) -> bool:
         wx.ICON_QUESTION | wx.YES_NO,
     )
     if answer != wx.YES:
-        host._announce("Left as it is. Station, Update YouTube Support does this at any time.")
+        host._announce("Left as it is. Station, Repair YouTube Support does this at any time.")
         return False
     _install_youtube_support(host, retry=station)
     return True
@@ -302,6 +303,12 @@ def _install_youtube_support(host: Any, *, retry: Any = None) -> None:
 
     def _failed(*args: object) -> None:
         detail = str(args[-1]) if args else ""
+        from quill.core.speech.engine_install import YtDlpAlreadyCurrent
+
+        if args and isinstance(args[-1], YtDlpAlreadyCurrent):
+            # Nothing needed repairing: an answer, not a failure.
+            host._wx.CallAfter(_report, detail, host._wx.ICON_INFORMATION)
+            return
         host._wx.CallAfter(
             _report,
             "YouTube support could not be updated, so the built-in version is still in use."

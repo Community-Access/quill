@@ -402,25 +402,52 @@ def test_install_mp3_support_blocked_in_safe_mode(monkeypatch, tmp_path: Path) -
         ei.install_mp3_support(dest_dir=tmp_path / "mp3", runner=_make_runner({}))
 
 
-def test_install_yt_dlp_builds_wheel_only_command(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(ei, "is_yt_dlp_available", lambda: True)
-    captured: dict = {}
+def test_install_yt_dlp_needs_no_pip(monkeypatch, tmp_path: Path) -> None:
+    """The repair must work in the shared runtime and the portable, neither of
+    which carries pip: it hands off to yt_dlp_update, never to a subprocess."""
+    from quill.core.speech import yt_dlp_update
+
+    calls: dict = {}
+
+    def fake_repair(dest, *, floor, progress, fetch, download):
+        calls.update(dest=dest, floor=floor)
+        return "2099.1.1"
+
+    monkeypatch.setattr(yt_dlp_update, "repair", fake_repair)
+    monkeypatch.setattr(ei, "_default_runner", lambda *a, **k: pytest.fail("pip ran"))
     dest = tmp_path / "ytdlp"
-    out = ei.install_yt_dlp(
-        dest_dir=dest, python_executable="py.exe", runner=_make_runner(captured)
-    )
-    cmd = captured["command"]
-    assert out == dest and dest.is_dir()
-    assert cmd[1:4] == ["-m", "pip", "install"]
-    assert "--only-binary=:all:" in cmd
-    assert any(c.startswith("yt-dlp>=") for c in cmd)
-    assert str(dest) in sys.path  # activated on success
+    assert ei.install_yt_dlp(dest_dir=dest) == dest
+    assert calls == {"dest": dest, "floor": ei._YT_DLP_REQUIREMENTS[0].split(">=")[1]}
+    assert ei.yt_dlp_install_supported() is True
+
+
+def test_install_yt_dlp_already_current_is_its_own_answer(monkeypatch, tmp_path: Path) -> None:
+    from quill.core.speech import yt_dlp_update
+
+    def fake_repair(*_a, **_k):
+        raise yt_dlp_update.YtDlpAlreadyCurrent("already the newest version (2026.08.19)")
+
+    monkeypatch.setattr(yt_dlp_update, "repair", fake_repair)
+    with pytest.raises(ei.YtDlpAlreadyCurrent, match="newest"):
+        ei.install_yt_dlp(dest_dir=tmp_path / "ytdlp")
+
+
+def test_install_yt_dlp_failure_is_coded(monkeypatch, tmp_path: Path) -> None:
+    from quill.core.speech import yt_dlp_update
+
+    def fake_repair(*_a, **_k):
+        raise yt_dlp_update.YtDlpRepairError("offline")
+
+    monkeypatch.setattr(yt_dlp_update, "repair", fake_repair)
+    with pytest.raises(ei.EngineInstallError, match="offline") as info:
+        ei.install_yt_dlp(dest_dir=tmp_path / "ytdlp")
+    assert not isinstance(info.value, ei.YtDlpAlreadyCurrent)
 
 
 def test_install_yt_dlp_blocked_in_safe_mode(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("QUILL_SAFE_MODE", "1")
     with pytest.raises(ei.EngineInstallError, match="Safe Mode"):
-        ei.install_yt_dlp(dest_dir=tmp_path / "ytdlp", runner=_make_runner({}))
+        ei.install_yt_dlp(dest_dir=tmp_path / "ytdlp")
 
 
 def test_yt_dlp_pack_registered_for_startup_activation() -> None:

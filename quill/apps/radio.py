@@ -32,7 +32,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "3.0.0"
+_VERSION = "3.0.1"
 _REPO = "Community-Access/quill"
 #: Radio publishes two downloads since 3.0.0 -- the installer and the portable
 #: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly
@@ -1062,7 +1062,7 @@ class RadioAppFrame(
         # next to the YouTube commands because that is where someone whose
         # YouTube links stopped working will look for it.
         yt_update_id = wx.NewIdRef()
-        station_menu.Append(yt_update_id, "&Update YouTube Support...\tCtrl+Alt+Y")
+        station_menu.Append(yt_update_id, "Repair YouTube S&upport...\tCtrl+Alt+Y")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.radio_update_youtube_support(), id=yt_update_id
         )
@@ -1401,16 +1401,16 @@ class RadioAppFrame(
             id=bug_id,
         )
         ffmpeg_id = wx.NewIdRef()
-        help_menu.Append(ffmpeg_id, "G&et FFmpeg...\tCtrl+Alt+F")
+        help_menu.Append(ffmpeg_id, "R&epair FFmpeg...\tCtrl+Alt+F")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
-        # Beside Get FFmpeg because they are the same kind of thing: the two
-        # media tools both of Radio's downloads bundle. They stay as repair
-        # doors: a copy from the thin installer retired in 3.0.0 has neither
+        # Beside Repair FFmpeg: the two media tools both downloads bundle, so
+        # these are emergency repair only (named so in 3.0.1). A copy from the
+        # thin installer retired in 3.0.0 has neither
         # until upgraded, and a runtime another app laid down can lack them.
         # mpv matters more than FFmpeg -- it is the playback engine, so without
         # it Ogg, Opus and HLS stations do not play at all.
         mpv_id = wx.NewIdRef()
-        help_menu.Append(mpv_id, "Get &mpv Playback Engine...\tCtrl+Alt+M")
+        help_menu.Append(mpv_id, "Repair &mpv Playback Engine...\tCtrl+Alt+M")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_mpv_component(), id=mpv_id)
         from quill.apps import radio_help_docs
 
@@ -1630,7 +1630,7 @@ class RadioAppFrame(
     def _radio_no_ffmpeg_message(self) -> str:
         return (
             "Recording needs FFmpeg, which normally ships inside Quill Radio. "
-            "It looks like it's missing -- choose Help > Get FFmpeg... to "
+            "It looks like it's missing -- choose Help > Repair FFmpeg... to "
             "download the official build, then try again."
         )
 

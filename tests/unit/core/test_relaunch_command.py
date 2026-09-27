@@ -38,3 +38,15 @@ def test_frozen_defaults_to_sys_flag() -> None:
     # No sys.frozen in a plain interpreter -> module invocation.
     command = build_relaunch_command("python", ["whatever/__main__.py", "-x"])
     assert command == ["python", "-m", "quill", "-x"]
+
+
+def test_the_shared_runtime_relaunches_its_module() -> None:
+    # QuillVilleRuntime.exe is frozen but only an interpreter: without -m it
+    # is not an app (2026-09-27). Radio's data-folder restart hit exactly this.
+    command = build_relaunch_command(
+        "C:/R/QuillVilleRuntime.exe",
+        ["C:/R/_internal/quill/apps/radio.py", "--safe-mode"],
+        frozen=True,
+        module="quill.apps.radio",
+    )
+    assert command == ["C:/R/QuillVilleRuntime.exe", "-m", "quill.apps.radio", "--safe-mode"]

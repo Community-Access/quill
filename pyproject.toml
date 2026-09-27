@@ -371,6 +371,14 @@ youtube = [
   # succeeds and hands back a dead address is the worst shape this failure
   # takes: nothing upstream of it can tell that anything went wrong.
   "yt-dlp>=2026.8.19",
+  # The scripts yt-dlp runs (in the bundled deno, tools/deno) to solve YouTube's
+  # signature and "n" challenges. yt-dlp checks the solver's major.minor against
+  # its own, so this moves with the yt-dlp floor: 2026.8.19 (and the locked
+  # nightly) pin exactly 0.8.0 in their "pin" extra. Bundled so no challenge
+  # script is ever fetched from npm or GitHub at run time (remote_components
+  # stays off); Repair YouTube Support fetches a matching one if a newer yt-dlp
+  # pins a different solver.
+  "yt-dlp-ejs==0.8.0",
   # yt-dlp's optional TLS-impersonation backend, imported lazily when a site
   # blocks the default client. It ships in the current runtime and imports
   # cleanly there (probed 2026-08-18); undeclared, it only shipped because the

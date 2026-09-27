@@ -9,7 +9,7 @@ YouTube is the whole feature.
 This is the closest thing to a podcast subscription that YouTube offers a
 keyless client, and it is built on machinery Quill Radio already has: yt-dlp
 enumerates a channel exactly as it resolves a single video, the consent gate and
-the rights notice already exist, and **Station > Update YouTube Support...**
+the rights notice already exist, and **Station > Repair YouTube Support...**
 already repairs extraction when YouTube changes something.
 
 Enumeration is **flat** (``extract_flat``): it lists what is there without
@@ -167,7 +167,7 @@ def _flat_entries(url: str, *, limit: int, offset: int) -> tuple[str, list[dict]
         import yt_dlp
     except ImportError as error:
         raise YouTubeChannelsError(
-            "YouTube support is not installed. Use Station, Update YouTube Support to add it."
+            "YouTube support is not installed. Use Station, Repair YouTube Support to add it."
         ) from error
     options = {
         "cachedir": yt_dlp_cache_dir(),

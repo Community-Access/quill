@@ -92,6 +92,16 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         # Resume/start the alert watch once the frame and task manager are up
         # (deferred: it touches the network).
         wx.CallAfter(self._weather_app_startup_monitoring)
+        # Repair "start with Windows" and the background check if an older
+        # build wrote them as the bare runtime exe (launch_heal, 2026-09-27).
+        if not safe_mode:
+            from quill.platform.windows import launch_heal, scheduled_task, weather_startup
+
+            launch_heal.heal_in_background(
+                self._task_manager,
+                weather_startup.heal_launch_at_startup,
+                scheduled_task.heal_registered_task,
+            )
         # Watch for a second launch asking us to come forward (#1152).
         self._start_ipc_poll()
 

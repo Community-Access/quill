@@ -11,8 +11,21 @@ from quill.platform.windows import radio_startup
 def test_launch_command_is_this_executable_quoted() -> None:
     cmd = radio_startup.launch_command()
     assert sys.executable in cmd
-    assert cmd.startswith('"') and cmd.rstrip().endswith('"')
+    assert cmd.startswith(f'"{sys.executable}"')
     assert "--tray" not in cmd  # Radio launches to its normal window, not the tray
+
+
+def test_launch_command_names_the_app_not_the_bare_runtime(monkeypatch, tmp_path) -> None:
+    # 2026-09-27: on the shared runtime, sys.executable is QuillVilleRuntime.exe,
+    # and the Run key held that alone -- the runtime's "not an app" at login.
+    runtime = tmp_path / "Runtime" / "QuillVilleRuntime.exe"
+    monkeypatch.setattr(sys, "executable", str(runtime))
+    monkeypatch.delenv("QUILL_LAUNCHER_DIR", raising=False)
+    assert radio_startup.launch_command() == f'"{runtime}" -m quill.apps.radio'
+
+    (tmp_path / "QuillRadio.exe").write_bytes(b"MZ")
+    monkeypatch.setenv("QUILL_LAUNCHER_DIR", str(tmp_path))
+    assert radio_startup.launch_command() == f'"{tmp_path / "QuillRadio.exe"}"'
 
 
 def test_distinct_value_names_across_apps() -> None:

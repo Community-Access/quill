@@ -34,6 +34,7 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from quill.stability.safe_subprocess import run_subprocess_safely
 
@@ -76,6 +77,7 @@ _TASK_XML = """<?xml version="1.0" encoding="UTF-16"?>
   <Actions Context="Author">
     <Exec>
       <Command>{command}</Command>
+      <Arguments>{arguments}</Arguments>
     </Exec>
   </Actions>
 </Task>
@@ -104,11 +106,17 @@ def launch_command() -> str:
     scheduler already inside the running app does the recording. If it is
     *not* running, this starts it in time for the entry to fire, which is the
     case the wake exists for.
+
+    Through ``QuillRadio.exe`` when this run came from it, else
+    ``-m quill.apps.radio`` on the runtime -- never the runtime exe alone,
+    which is what every shared-runtime build wrote until 2026-09-27 (the
+    ``sys.frozen`` test here took the runtime for the app). See
+    :mod:`quill.core.app_command`.
     """
-    executable = Path(sys.executable)
-    if getattr(sys, "frozen", False):
-        return f'"{executable}"'
-    return f'"{executable}" -m quill.apps.radio'
+    from quill.core.app_command import app_command
+    from quill.platform.windows.radio_startup import LAUNCHER_NAME, MODULE
+
+    return app_command(MODULE, LAUNCHER_NAME)
 
 
 def _run(args: list[str]) -> bool:
@@ -128,6 +136,26 @@ def is_registered() -> bool:
     return _run(["/Query", "/TN", TASK_NAME])
 
 
+def task_xml(local: datetime, command: str) -> str:
+    """The task definition for a wake at naive-local *local* running *command*.
+
+    The executable and its arguments go in their own elements: Task Scheduler
+    runs ``<Command>`` as a path, so a whole command line there -- which is
+    what stripping the outer quotes used to leave -- names no file at all.
+    """
+    from xml.sax.saxutils import escape
+
+    from quill.core.app_command import split_command
+
+    executable, arguments = split_command(command)
+    return _TASK_XML.format(
+        task_name=TASK_NAME,
+        start=local.strftime("%Y-%m-%dT%H:%M:%S"),
+        command=escape(executable),
+        arguments=escape(arguments),
+    )
+
+
 def register(when: datetime, *, command: str = "") -> bool:
     """Register (or replace) a one-shot wake for *when*. True when it took.
 
@@ -137,11 +165,7 @@ def register(when: datetime, *, command: str = "") -> bool:
     if not is_windows():
         return False
     local = when.astimezone().replace(tzinfo=None) if when.tzinfo is not None else when
-    xml = _TASK_XML.format(
-        task_name=TASK_NAME,
-        start=local.strftime("%Y-%m-%dT%H:%M:%S"),
-        command=(command or launch_command()).strip('"'),
-    )
+    xml = task_xml(local, command or launch_command())
     # UTF-16 with a BOM: Task Scheduler rejects the file otherwise, and the
     # declaration above says so, so the two must agree.
     handle = None
@@ -161,6 +185,53 @@ def register(when: datetime, *, command: str = "") -> bool:
                 Path(handle.name).unlink(missing_ok=True)
             except OSError:
                 pass
+
+
+def stored_task(xml: str) -> tuple[str, datetime | None, bool]:
+    """``(command, start, enabled)`` read back from the wake's XML definition."""
+    from quill.platform.windows import launch_heal
+
+    try:
+        start: datetime | None = datetime.fromisoformat(
+            launch_heal.task_element(xml, "StartBoundary")
+        )
+    except ValueError:
+        start = None
+    if start is not None and start.tzinfo is not None:
+        start = start.astimezone().replace(tzinfo=None)
+    return launch_heal.task_command(xml), start, launch_heal.task_enabled(xml)
+
+
+def heal_registered_task(
+    *, frozen: bool | None = None, now: datetime | None = None, query: Any = None
+) -> bool:
+    """Re-register a pending wake whose stored command is stale.
+
+    Every shared-runtime build until 3.0.1 registered the wake with the
+    runtime exe as a whole command line, so a wake already on the machine
+    would still run nothing. Only an existing, enabled task whose moment is
+    still ahead is touched -- none is ever created -- and never from a
+    portable copy. True when it was re-registered; never raises.
+    """
+    from quill.core.app_command import should_replace
+    from quill.platform.windows import launch_heal
+
+    try:
+        if not is_windows() or not launch_heal.heal_allowed(frozen=frozen):
+            return False
+        xml = query() if query else launch_heal.query_task_xml(_schtasks_path(), TASK_NAME)
+        if not xml:
+            return False
+        stored, start, enabled = stored_task(xml)
+        current = launch_command()
+        if not enabled or start is None or start <= (now or datetime.now()):
+            return False
+        if not stored or not should_replace(stored, current):
+            return False
+        return register(start, command=current)
+    except Exception:  # noqa: BLE001 - a heal must never cost the launch
+        logger.info("Could not repair the recording wake task.", exc_info=True)
+        return False
 
 
 def unregister() -> bool:

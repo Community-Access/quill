@@ -376,9 +376,10 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "The helper that looks up a video's audio is built in, so your "
                     "first link simply plays. YouTube changes how it serves audio "
-                    "more often than Quill Radio ships releases, so Update YouTube "
-                    "Support, on the Station menu, fetches the current helper, tells "
-                    "you the version, and uses it from then on."
+                    "more often than Quill Radio ships releases, so Repair YouTube "
+                    "Support, on the Station menu, is the emergency repair: it "
+                    "fetches the newest helper, tells you the version, and uses it "
+                    "from then on."
                 ),
                 keys=("Ctrl+Alt+Y",),
                 hear=(

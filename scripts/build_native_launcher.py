@@ -23,8 +23,15 @@ launcher is expected) while a release build still cannot silently ship without
 one.
 
 The executable's basename is the product's ``PRODUCT_NAME``, and it must match
-what the Inno installer copies (``dist\\QuillRadio\\QuillRadio.exe``) and what
-``quill.core.storage_mode`` looks for when deciding a portable install.
+what the Inno installer copies and what ``quill.core.storage_mode`` looks for
+when deciding a portable install.
+
+**A portable launcher never offers the runtime download.** ``--no-runtime-download``
+compiles an empty ``PRODUCT_RUNTIME_URL``, so a portable bundle that has lost
+its own ``pythonw.exe`` says the copy is incomplete instead of offering a
+230 MB download (owner's rule, 2026-09-27: nothing downloads at install or
+first use). Installed apps keep the self-healing URL. The two flavours build in
+separate CMake trees, because a ``-D`` value persists in the cache.
 """
 
 from __future__ import annotations
@@ -43,6 +50,14 @@ _LAUNCHER_SRC = _REPO_ROOT / "quill" / "native" / "launcher"
 
 #: The GitHub repo the launcher's in-app updater points at.
 _REPO = "Community-Access/quill"
+
+#: Where an installed launcher self-heals a missing shared runtime from (the
+#: moving ``runtime-latest`` tag; mirrors CMakeLists.txt's default). Always
+#: passed explicitly, never left to the CMake cache.
+DEFAULT_RUNTIME_URL = (
+    "https://github.com/Community-Access/quill/releases/download/runtime-latest/"
+    "QuillVille-Runtime-Setup.exe"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -326,7 +341,56 @@ def product_icon(product: Product) -> Path | None:
 # -- build --------------------------------------------------------------------
 
 
-def build_launcher(product: Product, out_dir: Path, *, build_root: Path | None = None) -> Path:
+def launcher_build_dir(product: Product, build_root: Path, *, runtime_url: str) -> Path:
+    """One CMake tree per product and flavour (a cached -D value persists)."""
+    return build_root / (product.key if runtime_url else f"{product.key}-portable")
+
+
+def configure_args(
+    cmake: str,
+    product: Product,
+    build_dir: Path,
+    *,
+    version: str,
+    runtime_url: str,
+    icon: Path | None = None,
+) -> list[str]:
+    """The CMake configure command line (pure, so the plumbing is testable).
+
+    ``PRODUCT_RUNTIME_URL`` is always passed, empty for a portable launcher:
+    left out, CMake would reuse whatever the cache last held.
+    """
+    args = [
+        cmake,
+        "-S",
+        str(_LAUNCHER_SRC),
+        "-B",
+        str(build_dir),
+        "-G",
+        "Visual Studio 17 2022",
+        "-A",
+        "x64",
+        f"-DPRODUCT_NAME={product.name}",
+        f"-DPRODUCT_DISPLAY_NAME={product.display}",
+        f"-DPRODUCT_VERSION={version}",
+        f"-DPRODUCT_PYTHON_MODULE={product.module}",
+        f"-DPRODUCT_REPO={_REPO}",
+        f"-DPRODUCT_APP_ID={product.app_id}",
+        f"-DPRODUCT_RUNTIME_URL={runtime_url}",
+    ]
+    if icon is not None:
+        # Forward slashes: CMake treats a backslash as an escape in -D values.
+        args.append(f"-DPRODUCT_ICON={icon.as_posix()}")
+    return args
+
+
+def build_launcher(
+    product: Product,
+    out_dir: Path,
+    *,
+    build_root: Path | None = None,
+    runtime_url: str = DEFAULT_RUNTIME_URL,
+) -> Path:
     """Configure, build, and stage the launcher. Returns the copied exe path.
 
     Raises :class:`LauncherToolchainMissing` when MSVC or CMake is absent, so
@@ -346,31 +410,20 @@ def build_launcher(product: Product, out_dir: Path, *, build_root: Path | None =
         )
 
     version = product_version(product)
-    build_dir = (build_root or _REPO_ROOT / "build" / "launcher") / product.key
+    build_dir = launcher_build_dir(
+        product, build_root or _REPO_ROOT / "build" / "launcher", runtime_url=runtime_url
+    )
     _discard_relocated_cmake_cache(build_dir)
     build_dir.mkdir(parents=True, exist_ok=True)
 
-    configure = [
+    configure = configure_args(
         cmake,
-        "-S",
-        str(_LAUNCHER_SRC),
-        "-B",
-        str(build_dir),
-        "-G",
-        "Visual Studio 17 2022",
-        "-A",
-        "x64",
-        f"-DPRODUCT_NAME={product.name}",
-        f"-DPRODUCT_DISPLAY_NAME={product.display}",
-        f"-DPRODUCT_VERSION={version}",
-        f"-DPRODUCT_PYTHON_MODULE={product.module}",
-        f"-DPRODUCT_REPO={_REPO}",
-        f"-DPRODUCT_APP_ID={product.app_id}",
-    ]
-    icon = product_icon(product)
-    if icon is not None:
-        # Forward slashes: CMake treats a backslash as an escape in -D values.
-        configure.append(f"-DPRODUCT_ICON={icon.as_posix()}")
+        product,
+        build_dir,
+        version=version,
+        runtime_url=runtime_url,
+        icon=product_icon(product),
+    )
 
     print(f"  configuring {product.name} {version}")
     subprocess.run(configure, check=True)
@@ -403,11 +456,20 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Exit non-zero when the C toolchain is missing instead of skipping.",
     )
+    parser.add_argument(
+        "--no-runtime-download",
+        action="store_true",
+        help=(
+            "Portable launcher: compile no runtime URL, so a damaged portable says "
+            "it is incomplete instead of offering to download the shared runtime."
+        ),
+    )
     args = parser.parse_args(argv)
 
     product = PRODUCTS[args.product]
+    runtime_url = "" if args.no_runtime_download else DEFAULT_RUNTIME_URL
     try:
-        build_launcher(product, args.out)
+        build_launcher(product, args.out, runtime_url=runtime_url)
     except LauncherToolchainMissing as exc:
         # Best-effort by design: the caller checks for the exe and decides.
         print(f"Skipping the native launcher for {product.name}: {exc}", file=sys.stderr)

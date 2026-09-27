@@ -13,6 +13,7 @@ One builder, many products (studio / radio / weather). Layout (mirrors the old
         Lib/site-packages/       quill dependency closure + the quill source
         data/                    (studio) offline speech/TTS engines
         tools/ffmpeg, tools/mpv  (studio/radio) recording + playback binaries
+        tools/deno               (radio) yt-dlp's JS runtime for YouTube
         docs/
 
 Why this shape, and why NOT a PyInstaller onedir or a stamped pythonw:
@@ -104,6 +105,16 @@ class Product:
     # (2026-09-26), so they carry neither the token nor feedback-hub: a
     # credential an app never uses is only a credential somebody can extract.
     feedback_token: bool = True
+    # tools/deno: the JavaScript runtime the bundled yt-dlp solves YouTube's
+    # challenges with. Required (the build fails without --deno-dir) for the
+    # apps that play YouTube.
+    stage_deno: bool = False
+    # Owner's rule (2026-09-27): nothing downloads at install or first use. So
+    # this product's PORTABLE launcher is compiled with no runtime URL (a damaged
+    # portable says what is missing instead of offering a download), and the
+    # launcher its installer ships is built separately, with the URL, into
+    # dist/<exe>-installer/ -- the path its .iss copies from.
+    offline_portable_launcher: bool = False
 
 
 PRODUCTS: dict[str, Product] = {
@@ -132,6 +143,8 @@ PRODUCTS: dict[str, Product] = {
         stage_ffmpeg=True,     # podcast/stream recording
         stage_mpv=True,        # playback engine
         feedback_token=False,  # feedback is email to support@ (2026-09-26)
+        stage_deno=True,       # YouTube's JS challenges
+        offline_portable_launcher=True,
     ),
     "weather": Product(
         key="weather",
@@ -192,6 +205,7 @@ PRODUCTS: dict[str, Product] = {
         stage_ffmpeg=False,
         stage_mpv=False,
         feedback_token=False,  # feedback is email to support@ (2026-09-26)
+        offline_portable_launcher=True,
     ),
     "quill": Product(
         key="quill",
@@ -339,11 +353,34 @@ def _prune_build_only(out_dir: Path) -> None:
     (site_packages / "distutils-precedence.pth").unlink(missing_ok=True)
 
 
-def _build_native_launcher(out_dir: Path, source_root: Path, product: Product) -> None:
-    build_script = source_root / "scripts" / "build_native_launcher.py"
+def installer_launcher_dir(out_dir: Path, product: Product) -> Path:
+    """Where the installer's own launcher goes: dist/<exe>-installer/."""
+    return out_dir.parent / f"{product.exe}-installer"
+
+
+def launcher_command(
+    source_root: Path, product: Product, out_dir: Path, *, runtime_download: bool
+) -> list[str]:
+    """The build_native_launcher.py call (pure, so the plumbing is testable)."""
+    command = [
+        sys.executable,
+        str(source_root / "scripts" / "build_native_launcher.py"),
+        "--product",
+        product.key,
+        "--out",
+        str(out_dir),
+    ]
+    if not runtime_download:
+        command.append("--no-runtime-download")
+    return command
+
+
+def _build_native_launcher(
+    out_dir: Path, source_root: Path, product: Product, *, runtime_download: bool = True
+) -> None:
     print(f"  building native launcher ({product.exe}.exe)")
     subprocess.run(
-        [sys.executable, str(build_script), "--product", product.key, "--out", str(out_dir)],
+        launcher_command(source_root, product, out_dir, runtime_download=runtime_download),
         check=True,
     )
     if not (out_dir / f"{product.exe}.exe").is_file():
@@ -389,6 +426,23 @@ def _write_portable_marker(out_dir: Path, display: str) -> None:
         "Windows profile instead.\n",
         encoding="utf-8",
     )
+
+
+def _stage_deno(out_dir: Path, deno_dir: Path | None) -> None:
+    """tools/deno/deno.exe + its licence. Required: raises when not supplied."""
+    if deno_dir is None or not (deno_dir / "deno.exe").is_file():
+        raise RuntimeError(
+            "This product bundles deno (YouTube's JS challenges): pass --deno-dir "
+            "build/deps/deno after `python scripts/fetch_build_deps.py --only deno`."
+        )
+    license_file = deno_dir / "DENO-LICENSE.txt"
+    if not license_file.is_file():
+        raise RuntimeError(f"{license_file} is missing -- deno ships with its licence.")
+    dest = out_dir / "tools" / "deno"
+    dest.mkdir(parents=True, exist_ok=True)
+    print("  staging tools/deno/deno.exe")
+    shutil.copy2(deno_dir / "deno.exe", dest / "deno.exe")
+    shutil.copy2(license_file, dest / "DENO-LICENSE.txt")
 
 
 def _stage_tools(out_dir: Path, product: Product, ffmpeg_dir: Path | None, mpv_dir: Path | None) -> None:
@@ -439,6 +493,12 @@ def main() -> int:
     parser.add_argument("--ffmpeg-dir", type=Path, default=None)
     parser.add_argument("--mpv-dir", type=Path, default=None)
     parser.add_argument(
+        "--deno-dir",
+        type=Path,
+        default=None,
+        help="Staged deno (fetch_build_deps.py --only deno); required for radio.",
+    )
+    parser.add_argument(
         "--engines-dir",
         type=Path,
         default=Path(os.environ.get("APPDATA", "")) / "Quill",
@@ -486,7 +546,11 @@ def main() -> int:
         _prune_build_only(out_dir)
 
     print(f"[{'2/6' if args.no_runtime else '4/8'}] native launcher")
-    _build_native_launcher(out_dir, source_root, product)
+    # The Companion edition runs off the shared runtime, so it keeps the offer.
+    offline = product.offline_portable_launcher and not args.no_runtime
+    _build_native_launcher(out_dir, source_root, product, runtime_download=not offline)
+    if offline:
+        _build_native_launcher(installer_launcher_dir(out_dir, product), source_root, product)
 
     if args.no_runtime:
         # Companion: ffmpeg/mpv come from the shared runtime's tools\ (found via
@@ -506,8 +570,10 @@ def main() -> int:
             print("      (product ships no bundled engines)")
         _write_portable_marker(out_dir, product.display)
 
-        print("[6/8] tools/ (ffmpeg, mpv)")
+        print("[6/8] tools/ (ffmpeg, mpv, deno)")
         _stage_tools(out_dir, product, args.ffmpeg_dir, args.mpv_dir)
+        if product.stage_deno:
+            _stage_deno(out_dir, args.deno_dir)
 
         print("[7/8] docs/")
         _stage_docs(out_dir, product, source_root)

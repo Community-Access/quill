@@ -20,8 +20,18 @@ def test_build_launch_argv_frozen_runs_executable_directly(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", r"C:\Program Files\QUILL\quill.exe")
     argv = build_launch_argv("Work")
     assert argv == [sys.executable, "--persona", "Work"]
+
+
+def test_build_launch_argv_on_the_shared_runtime_names_the_module(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The runtime run bare starts nothing (2026-09-27).
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", r"C:\Rt\QuillVilleRuntime.exe")
+    assert build_launch_argv("Work") == [sys.executable, "-m", "quill", "--persona", "Work"]
 
 
 def test_write_launch_shortcut_creates_some_launchable_file(tmp_path: Path) -> None:

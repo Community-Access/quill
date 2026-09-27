@@ -20,6 +20,7 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from quill.core.app_command import GENERIC_INTERPRETERS
 from quill.core.error_codes import CodedError
 
 #: How many ~1s poll iterations the helper waits for the app to exit before
@@ -147,7 +148,8 @@ def install_root_and_exe() -> tuple[Path, Path] | None:
 #: by design -- it exists to be handed ``-m <module>`` (see
 #: ``standalone/runtime/runtime_launcher.py``), and every installed QuillVille
 #: shortcut passes it one.
-_GENERIC_INTERPRETERS = frozenset({"quillvilleruntime", "pythonw", "python"})
+#: One list, shared with :mod:`quill.core.app_command` (autostart, wake task).
+_GENERIC_INTERPRETERS = GENERIC_INTERPRETERS
 
 
 def main_module() -> str:

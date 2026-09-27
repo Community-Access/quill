@@ -66,3 +66,66 @@ def test_is_staged_is_false_for_an_empty_cache(fbd, tmp_path, monkeypatch) -> No
     monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path))
     for component in fbd.COMPONENTS:
         assert fbd.is_staged(component) is False
+
+
+def test_deno_is_offered_pinned_and_official(fbd) -> None:
+    """YouTube's challenge solver ships bundled; its pin is exact and official."""
+    import re
+
+    assert "deno" in fbd.COMPONENTS
+    assert fbd.component_dir("deno").name == "deno"
+    assert fbd._sentinel("deno") == "deno.exe"
+    assert fbd.DENO_URL.startswith("https://github.com/denoland/deno/releases/download/v")
+    assert f"/v{fbd.DENO_VERSION}/" in fbd.DENO_URL
+    assert fbd.DENO_URL.endswith("deno-x86_64-pc-windows-msvc.zip")
+    assert re.fullmatch(r"[0-9a-f]{64}", fbd.DENO_SHA256)
+    assert re.fullmatch(r"[0-9a-f]{64}", fbd.DENO_LICENSE_SHA256)
+    assert f"/v{fbd.DENO_VERSION}/" in fbd.DENO_LICENSE_URL
+
+
+def test_fetch_deno_extracts_only_deno_exe_and_the_licence(fbd, tmp_path, monkeypatch) -> None:
+    import zipfile
+
+    monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
+    calls: list[tuple[str, str]] = []
+
+    def fake_download(url, dest, *, sha256="", progress=None, **_kw):
+        calls.append((url, sha256))
+        dest = Path(dest)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if url == fbd.DENO_URL:
+            with zipfile.ZipFile(dest, "w") as zf:
+                zf.writestr("deno.exe", b"MZ fake")
+        else:
+            dest.write_text("MIT License", encoding="utf-8")
+        return dest
+
+    monkeypatch.setattr(fbd, "download_verified", fake_download)
+    out = fbd.fetch_deno()
+    assert (out / "deno.exe").read_bytes() == b"MZ fake"
+    assert (out / fbd.DENO_LICENSE_NAME).is_file()
+    assert calls == [
+        (fbd.DENO_URL, fbd.DENO_SHA256),
+        (fbd.DENO_LICENSE_URL, fbd.DENO_LICENSE_SHA256),
+    ]
+    # Staged: a second call downloads nothing.
+    calls.clear()
+    fbd.fetch_deno()
+    assert calls == []
+
+
+def test_fetch_deno_refuses_an_unexpected_archive(fbd, tmp_path, monkeypatch) -> None:
+    import zipfile
+
+    monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
+
+    def fake_download(url, dest, *, sha256="", progress=None, **_kw):
+        with zipfile.ZipFile(dest, "w") as zf:
+            zf.writestr("deno.exe", b"x")
+            zf.writestr("extra.dll", b"y")
+        return dest
+
+    monkeypatch.setattr(fbd, "download_verified", fake_download)
+    with pytest.raises(fbd.ReleaseAssetError):
+        fbd.fetch_deno()
+    assert not (fbd.component_dir("deno") / "deno.exe").exists()

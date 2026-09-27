@@ -1,6 +1,6 @@
 # Quill Radio User Guide
 
-Version 3.0.0, released 2026-09-26.
+Version 3.0.1, released 2026-09-27.
 
 Quill Radio is internet radio built for screen reader users. It is a small window. The favorites tree has focus the moment it opens. The menus say everything they do, every action speaks, and a tray icon keeps the music playing while you work. It runs the same radio code as QUILL itself and, when installed, shares its data, so nothing you set up here is stranded.
 
@@ -37,16 +37,16 @@ The chapters, in order, grouped by what you want to do. Each one is a level 2 he
 
 ### The two downloads
 
-Quill Radio 3.0.0 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.0.
+Quill Radio 3.0.1 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.1. (3.0.1 replaces 3.0.0, which was withdrawn.)
 
 1. **The installer**, `Quill-Radio-Setup-Shared-<version>.exe`. This is the right choice for most people. It gives Quill Radio a Start Menu entry and an uninstaller. It installs the shared QuillVille Runtime if it is not already on the computer, then the app. Your favorites, history and settings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
 2. **The portable copy**, `Quill-Radio-Portable-<version>.zip`. It is fully self-contained. It carries its own genuine, unmodified Python and the bundled ffmpeg (for recording) and mpv (for playback). Unpack it anywhere, a USB stick included. Nothing downloads when it runs. Use it when you want the whole radio to travel with you, or when you cannot install software.
 
-Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.0`.
+Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.1`.
 
 ### Install with the installer, step by step
 
-1. Download `Quill-Radio-Setup-Shared-3.0.0.exe` and open it from your Downloads folder.
+1. Download `Quill-Radio-Setup-Shared-3.0.1.exe` and open it from your Downloads folder.
 2. If Windows SmartScreen shows a warning, see "About security software" below.
 3. Setup may first ask whether to install for you only or for all users. Choose **Install for me only**. That needs no administrator rights. Installing for all users asks Windows for permission.
 4. The setup wizard opens. Press Enter on each page to accept the defaults. The full installation includes this guide and the release notes. Then choose **Install**.
@@ -58,7 +58,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 ### Use the portable copy, step by step
 
-1. Download `Quill-Radio-Portable-3.0.0.zip`.
+1. Download `Quill-Radio-Portable-3.0.1.zip`.
 2. In File Explorer, select the zip, press the Applications key, and choose **Extract All...**. Choose a folder, for example on a USB stick, and choose **Extract**.
 3. Open the extracted folder, then the `QuillRadio` folder inside it.
 4. Select `QuillRadio.exe` and press Enter. Quill Radio opens with focus in the Favorite stations tree.
@@ -75,7 +75,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 Quill Radio 2.x kept its favorites in this computer's profile, even when it ran from the portable zip. A 3.0 portable copy keeps its own, so the first time it starts, it looks for them.
 
-1. Unzip `Quill-Radio-Portable-3.0.0.zip` and start `QuillRadio.exe`, as above.
+1. Unzip `Quill-Radio-Portable-3.0.1.zip` and start `QuillRadio.exe`, as above.
 2. If an earlier Quill Radio on this computer has favorites, and this copy has none yet, a question opens: "Favorites from an earlier Quill Radio". It says how many favorite stations it found.
 3. Press **Enter** (Yes) to copy them, with your settings, recording schedule and reminders, into this portable copy. Quill Radio then opens with your favorites in the tree.
 4. Or choose **No** to start empty.
@@ -90,7 +90,7 @@ Good to know:
 
 Test builds of 3.0 also offered a thin "Lite" installer and a small Companion zip. Both are retired. Nothing is lost:
 
-- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.0.exe`. It upgrades your installation in place and keeps your data.
+- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.1.exe`. It upgrades your installation in place and keeps your data.
 - If you used the Companion zip, run the installer, or unpack the portable zip instead. Check for Updates on a Companion copy offers the installer.
 
 ### The QuillVille Runtime
@@ -486,7 +486,7 @@ Every menu item shows its own shortcut. If you rebind a key, the menu shows your
 - **Add YouTube Link...** (Ctrl+Alt+N) -- file any YouTube link under Browse Stations, YouTube.
 - **Add from YouTube Playlist...** (Ctrl+Shift+Y) -- turn videos from a playlist into favorites.
 - **Import YouTube Subscriptions...** (Ctrl+Alt+Shift+Y) -- follow every channel in a Google Takeout file.
-- **Update YouTube Support...** (Ctrl+Alt+Y) -- fetch the current YouTube helper.
+- **Repair YouTube Support...** (Ctrl+Alt+Y) -- emergency repair: fetch the newest YouTube helper.
 - **Find Streams from a Website...** (Ctrl+Alt+S) -- scan a station's web page for its stream.
 - **Search Sources...** (Ctrl+Alt+Shift+U) -- choose which directories Search Stations asks.
 - **Choose Browse Sources...** (Ctrl+Shift+Alt+O) -- choose which branches Browse Stations shows.
@@ -618,7 +618,7 @@ Opens the other apps in the family:
 - **Export My Setup...** (Ctrl+Alt+Shift+X) and **Import My Setup...** (Ctrl+Alt+Shift+N).
 - **Keyboard Shortcuts Sheet...** (Ctrl+Alt+Shift+K).
 - **Get Help from Support...** (Ctrl+Alt+F2).
-- **Get FFmpeg...** (Ctrl+Alt+F) and **Get mpv Playback Engine...** (Ctrl+Alt+M) -- repair tools, for when a bundled tool has gone missing.
+- **Repair FFmpeg...** (Ctrl+Alt+F) and **Repair mpv Playback Engine...** (Ctrl+Alt+M) -- emergency repair tools, for when a bundled tool has gone missing. Everything ships inside Quill Radio, so you should never need them.
 - **What Is This?** (F1) -- help for the window you are in and the control that has focus.
 - **Tutorials...** (Ctrl+Alt+F1).
 - **User Guide** (Ctrl+F1), **Release Notes** (Shift+F1) and **Product Requirements...** (Alt+Shift+F1). Each opens in your web browser.
@@ -900,7 +900,7 @@ Worth knowing:
 - The first time you add or play anything from YouTube, Quill Radio asks once whether it may contact YouTube, and remembers the answer.
 - A row takes the video's own name, with the channel and length spoken after it. The row is saved first, so a video whose details will not load is still saved and still plays.
 - **View Transcript...** on any YouTube row fetches the captions and opens the transcript reader without playing anything.
-- If a video will not play, Quill Radio offers to fetch the current YouTube helper. Say yes and it installs it, says the version, and plays the video. See "Update YouTube Support".
+- If a video will not play, Quill Radio offers to fetch the current YouTube helper. Say yes and it installs it, says the version, and plays the video. See "Repair YouTube Support".
 - YouTube is unavailable in Safe Mode.
 
 ### My Servers, step by step
@@ -997,7 +997,7 @@ If OK does nothing, a field is missing or wrong. The reason is in the status tex
 
 Three kinds of link get extra help:
 
-- **A YouTube link becomes a station.** A video link, a `youtu.be` short link or a channel's live page plays like a radio station. It sits in your favorites, records with Record Now, and can be scheduled. Quill Radio saves the page address and looks up the audio fresh every time, so a recording you schedule today still works next week. The YouTube helper is built into the app. A private, removed, region-blocked or not-yet-live video says so in plain words.
+- **A YouTube link becomes a station.** A video link, a `youtu.be` short link or a channel's live page plays like a radio station. It sits in your favorites, records with Record Now, and can be scheduled. Quill Radio saves the page address and looks up the audio fresh every time, so a recording you schedule today still works next week. The YouTube helper, and the JavaScript engine YouTube needs, are built into the app; nothing downloads on first use. A private, removed, region-blocked or not-yet-live video says so in plain words.
 - **A Live365 link is fixed for you.** A Live365 station page, a player link such as `player.live365.com/a25891`, or a bare station id is rewritten to the real stream address, and the dialog says so. Nothing is fetched to do this.
 - **A SecureNet player link** (`securenetsystems.net/v5/...`) is saved as typed, because its stream must be read from the page. Use Find Streams from a Website with the link, or just save it and play it: the repair described below finds the stream.
 
@@ -1052,15 +1052,15 @@ It is a one-time import. Channels you subscribe to later appear when you export 
 
 Quill Radio cannot sign you in to YouTube Premium, and Premium's benefits do not carry over: YouTube's terms forbid a third-party app from background play or offline storage. Watch history cannot be brought across by any third-party app.
 
-### Update YouTube Support
+### Repair YouTube Support
 
-YouTube changes how it serves audio more often than Quill Radio ships releases.
+This is an emergency repair. YouTube support is built in, but YouTube changes how it serves audio more often than Quill Radio ships releases.
 
-1. Press **Ctrl+Alt+Y** (**Station > Update YouTube Support...**).
+1. Press **Ctrl+Alt+Y** (**Station > Repair YouTube Support...**).
 2. You should hear "Updating YouTube support...".
-3. A message says the new version, such as "YouTube support is now version ...", or that it could not be updated. Press Enter to close it.
+3. A message says the new version, such as "YouTube support is now version ...", that the built-in version is already the newest, or that it could not be updated. Press Enter to close it.
 
-It asks before it reaches the network and is off in Safe Mode. You should not need it unless YouTube links stop playing.
+It asks before it reaches the network and is off in Safe Mode. A repaired helper is used only while it is newer than the built-in one, so a later Quill Radio update never runs an older copy. You should not need it unless YouTube links stop playing.
 
 ### Import Stations from Playlist, step by step
 
@@ -1944,7 +1944,7 @@ Know a station or podcast other listeners should hear? Suggest it for the Commun
 1. Press **Alt+S** for **Send Suggestion**, or Tab to it and press **Space**.
 2. Quill Radio checks what you typed first. If something needs fixing, it speaks the first problem and shows the whole list in a message. Press **Enter** to close the message, fix the field, and press **Alt+S** again. It catches a missing name or address, an address that does not start with `https://` or `http://`, an address with a space in it (usually a copy that did not paste whole), and a station or podcast that is **already in the Community Picks list**.
 3. When everything is in order, your own mail program opens with a new email already written, and you hear "Your mail program has opened with your suggestion written. Press Send there." The Suggest window closes.
-4. In your mail program, the email is addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.0] Suggestion: Radio Nowhere". Read it over if you like, add anything you want to say, and **press Send there**. Nothing leaves your computer until you do.
+4. In your mail program, the email is addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.1] Suggestion: Radio Nowhere". Read it over if you like, add anything you want to say, and **press Send there**. Nothing leaves your computer until you do.
 
 **If you have no mail program**
 
@@ -1954,7 +1954,7 @@ A suggestion too long for a mail program to accept (usually a very long "Why it 
 
 **What is included, and what is not**
 
-- Included: exactly what you typed, whether it is a station or a podcast, and the app's name and version ("Quill Radio 3.0.0").
+- Included: exactly what you typed, whether it is a station or a podcast, and the app's name and version ("Quill Radio 3.0.1").
 - Not included: your name, your Windows version, your screen reader, your favorites or listening history, or any file on your computer.
 - Because the email goes from your own mail account, Community Access sees the address you send from, as with any email you write. It is not published anywhere.
 - Nothing goes to GitHub or any other public site, and Quill Radio itself makes no connection to send it: your mail program does the sending.
@@ -2205,7 +2205,7 @@ Audio Health answers "is this going to work?" in one list. It tests nothing: no 
 1. Press **Ctrl+Alt+Shift+M** (**View > Audio Health...**). A headline sums up, and focus is in **What the radio is using right now** (Alt+W).
 2. Arrow through the list. It covers: which playback engine is really in use (and whether Automatic has fallen back to Windows Media because mpv is missing), whether mpv and ffmpeg are present and what their absence costs, where the audio is going, what Sound Enhancements are doing, whether exact OptiLab is included, and whether a recording could be written to your recordings folder now.
 3. **Check Again** (Alt+C) re-reads everything, for example after plugging in a headset. It speaks the headline.
-4. **Get FFmpeg...** and **Get mpv...** are enabled only when that tool is missing.
+4. **Repair FFmpeg...** (Alt+R) and **Repair mpv...** (Alt+M) are enabled only when that tool is missing.
 5. Press **Escape** to close.
 
 ### Repair a missing tool
@@ -2217,7 +2217,7 @@ Both mpv and ffmpeg ship inside every copy of Quill Radio. If one goes missing, 
 
 To repair:
 
-1. Press **Ctrl+Alt+F** (**Help > Get FFmpeg...**) or **Ctrl+Alt+M** (**Help > Get mpv Playback Engine...**).
+1. Press **Ctrl+Alt+F** (**Help > Repair FFmpeg...**) or **Ctrl+Alt+M** (**Help > Repair mpv Playback Engine...**).
 2. Confirm the download. Quill Radio fetches the official build and says when it is ready.
 
 Reinstalling Quill Radio also restores both. A healthy installation says nothing about any of this.
@@ -2501,7 +2501,7 @@ In every other window, Alt+S is the Station menu and Alt+W the Window menu. See 
 | Add YouTube Link | Ctrl+Alt+N |
 | Add from YouTube Playlist | Ctrl+Shift+Y |
 | Import YouTube Subscriptions | Ctrl+Alt+Shift+Y |
-| Update YouTube Support | Ctrl+Alt+Y |
+| Repair YouTube Support | Ctrl+Alt+Y |
 | Find Streams from a Website | Ctrl+Alt+S |
 | Search Sources | Ctrl+Alt+Shift+U |
 | Choose Browse Sources | Ctrl+Shift+Alt+O |
@@ -2597,8 +2597,8 @@ In every other window, Alt+S is the Station menu and Alt+W the Window menu. See 
 | Bookmarks | Ctrl+Alt+Shift+J |
 | Export My Setup / Import My Setup | Ctrl+Alt+Shift+X / Ctrl+Alt+Shift+N |
 | Get Help from Support | Ctrl+Alt+F2 |
-| Get FFmpeg | Ctrl+Alt+F |
-| Get mpv Playback Engine | Ctrl+Alt+M |
+| Repair FFmpeg | Ctrl+Alt+F |
+| Repair mpv Playback Engine | Ctrl+Alt+M |
 | Check for Updates | Ctrl+Alt+U |
 
 **Nothing here sits on Ctrl+Alt+arrow.** That block belongs to JAWS's and NVDA's table navigation. Speed and chapters moved off it in 3.0, to Ctrl+Shift+Up and Down and Ctrl+Shift+comma and period. If you have notes from an earlier version, those are the keys that changed.
@@ -2621,13 +2621,13 @@ Every kind of feedback from Quill Radio goes to that one address: **Get Help fro
 6. **Steps to reproduce** (Alt+R): how somebody else could make it happen, such as "Play BBC Radio 4, press Ctrl+R, wait an hour". Optional, and worth more than anything else when you can give it.
 7. **Your email address** (Alt+E): where support should reply. Optional. The message goes from your own mail account, so support can answer that address anyway; fill this in only if you want the answer somewhere else.
 8. **Screen reader** (Alt+A): which one you use, if any. It is filled in from the screen reader that is running, so usually you can leave it.
-9. Below the fields, a line says what else is included, such as "Also included: Quill Radio 3.0.0, and your Windows version."
+9. Below the fields, a line says what else is included, such as "Also included: Quill Radio 3.0.1, and your Windows version."
 
 **Sending it**
 
 1. Press **Enter**, or Tab to **Send** and press **Space**.
 2. If the subject or What happened is empty, or the email address does not look right, the first problem is spoken and the whole list is shown. Press **Enter** to close it, fix the field, and send again.
-3. Otherwise your own mail program opens with the whole message written, addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.0] Recording stops after an hour". You hear "Your mail program is opening with the message ready. Nothing is sent until you send it there." The Get Help window closes.
+3. Otherwise your own mail program opens with the whole message written, addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.1] Recording stops after an hour". You hear "Your mail program is opening with the message ready. Nothing is sent until you send it there." The Get Help window closes.
 4. **Press Send in your mail program.** Nothing leaves your computer until you do.
 
 **If you have no mail program**
@@ -2664,7 +2664,7 @@ Writing to support@community-access.org yourself, from any email account, works 
 - **A scheduled recording did not start.** Quill Radio must be running, in the tray at least. Check that the entry is not "(disabled)" in Schedule Recording, and that **Wake the computer for a scheduled recording** is on in Preferences if the computer sleeps.
 - **The wake-up timer did not fire.** Quill Radio must be running at the set time. The tray counts; a closed app does not. It never fires late: opening the app hours after the set time stays silent until the next occurrence.
 - **The tray icon is gone.** Check the "Show hidden icons" area, or set Quill Radio to always show in the Windows taskbar settings.
-- **Rewind, Volume Boost or the output device "needs the mpv playback engine".** In Preferences, **Playback engine** is set to Windows Media (classic), or the bundled engine is missing. Set it to Automatic, or use **Help > Get mpv Playback Engine...**.
+- **Rewind, Volume Boost or the output device "needs the mpv playback engine".** In Preferences, **Playback engine** is set to Windows Media (classic), or the bundled engine is missing. Set it to Automatic, or use **Help > Repair mpv Playback Engine...**.
 - **Playback sounds different since 1.1.0.** In Preferences, **Playback engine** set to Windows Media (classic) is exactly the old behaviour. Please tell us what you heard (Ctrl+Alt+F2).
 - **Quill Radio is too chatty, or too quiet.** Quiet Hours (Ctrl+Alt+Shift+Z) holds back speech nobody asked for. Recent Problems (Ctrl+Alt+Shift+P) keeps any failure you missed.
 - **A feature says it is "off in Safe Mode".** Safe Mode is a troubleshooting start that turns off network features, the station catalog refresh, YouTube, Spotify and Quillins, so a problem can be narrowed down. Quill Radio starts in Safe Mode only when it is asked to. If support asks you to use it, they will tell you how, and an ordinary launch afterwards brings everything back.

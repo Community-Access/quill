@@ -24,8 +24,15 @@ _VALUE_NAME = "Quill"
 
 
 def launch_command() -> str:
-    """The command written to the Run key: QUILL's own executable, quoted."""
-    return f'"{sys.executable}"'
+    """The command written to the Run key: QUILL's own executable, quoted.
+
+    An installed ``quill.exe`` starts QUILL bare (its sitecustomize); a source
+    run's ``python.exe`` needs ``-m quill`` (:mod:`quill.core.app_command`).
+    QUILL has no native launcher, so none is looked for.
+    """
+    from quill.core.app_command import app_command
+
+    return app_command("quill")
 
 
 def is_windows() -> bool:

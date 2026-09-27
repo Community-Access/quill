@@ -204,10 +204,22 @@ static void show_error(
 
 static int fail_no_runtime(const char *display_name) {
     char msg[1024];
-    snprintf(msg, sizeof(msg),
-        "%s could not find a Python runtime.\n\n"
-        "Please reinstall %s. The application will now exit.",
-        display_name, display_name);
+    if (PRODUCT_RUNTIME_URL[0] == '\0') {
+        /* A portable launcher (built --no-runtime-download): its Python lives
+         * in its own folder and nothing is downloaded, so say what is wrong. */
+        snprintf(msg, sizeof(msg),
+            "This portable copy of %s is incomplete: pythonw.exe and the files "
+            "beside it are missing from its folder.\n\n"
+            "Unpack the whole portable zip again, keeping every file together, "
+            "or check whether antivirus quarantined part of it. "
+            "The application will now exit.",
+            display_name);
+    } else {
+        snprintf(msg, sizeof(msg),
+            "%s could not find a Python runtime.\n\n"
+            "Please reinstall %s. The application will now exit.",
+            display_name, display_name);
+    }
     show_error(display_name, msg);
     return 2;
 }
@@ -319,8 +331,9 @@ int wmain(int argc, wchar_t *wargv[])
         /* Self-heal: offer to download + install the shared runtime once, then
          * re-resolve. A feather-light "Companion" build (no bundled Python)
          * relies on this on its first launch; a full build only ever gets here
-         * if its own runtime is missing. If the user declines or it fails, fall
-         * back to the clean "please reinstall" error. */
+         * if its own runtime is missing. A portable launcher has no URL, so
+         * ql_bootstrap_runtime returns at once and it says what is wrong. If
+         * the user declines or it fails, fall back to the clean error. */
         if (ql_bootstrap_runtime(PRODUCT_DISPLAY_NAME, PRODUCT_RUNTIME_URL) != 0 ||
             ql_resolve_runtime(self_path, &runtime) != 0 || !runtime.python[0]) {
             for (int i = 0; i < argc; ++i) free(argv[i]);

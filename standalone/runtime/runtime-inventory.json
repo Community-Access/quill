@@ -93,10 +93,13 @@
     "wx",
     "yaml",
     "yt-dlp",
-    "yt_dlp"
+    "yt-dlp-ejs",
+    "yt_dlp",
+    "yt_dlp_ejs"
   ],
   "tools": [],
   "optional": [
+    "deno",
     "ffmpeg",
     "mpv",
     "optilabcore-license.txt",

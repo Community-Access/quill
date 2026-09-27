@@ -1047,7 +1047,7 @@ Turn a link, a playlist or a whole channel into rows you can play, favorite and 
    - Keys: Shift+F10, Ctrl+Shift+T
    - You should hear: The transcript, with its heading saying which kind it is.
 
-7. **Keep it playing when YouTube changes.** The helper that looks up a video's audio is built in, so your first link simply plays. YouTube changes how it serves audio more often than Quill Radio ships releases, so Update YouTube Support, on the Station menu, fetches the current helper, tells you the version, and uses it from then on.
+7. **Keep it playing when YouTube changes.** The helper that looks up a video's audio is built in, so your first link simply plays. YouTube changes how it serves audio more often than Quill Radio ships releases, so Repair YouTube Support, on the Station menu, is the emergency repair: it fetches the newest helper, tells you the version, and uses it from then on.
    - Keys: Ctrl+Alt+Y
    - You should hear: Updating YouTube support, then YouTube support is now version, and the number.
 
@@ -1516,7 +1516,7 @@ Take a copy of everything you have built, move it to another machine, stay up to
 6. **Check the installation itself.** If playback or recording is misbehaving, Audio Health answers whether this installation can do the thing at all: which engine is really in use, whether mpv and FFmpeg are present, where the audio is going, and whether a recording could be written right now.
    - Keys: Ctrl+Alt+Shift+M
    - You should hear: Audio Health, then each check with its own verdict.
-   - Worth knowing: mpv and FFmpeg ship inside every installer, so a missing one means a damaged installation -- antivirus quarantine and a half-finished update are the two usual causes. Get FFmpeg and Get mpv Playback Engine on the Help menu fetch them back.
+   - Worth knowing: mpv and FFmpeg ship inside every installer, so a missing one means a damaged installation -- antivirus quarantine and a half-finished update are the two usual causes. Repair FFmpeg and Repair mpv Playback Engine on the Help menu fetch them back.
 
 7. **Report it properly.** Get Help from Support writes to a person from inside the app, stamped with this app's own version. Paste in Copy All from Recent Problems -- it carries addresses and error messages, never passwords.
    - Keys: Ctrl+Alt+F2, Ctrl+Alt+Shift+P

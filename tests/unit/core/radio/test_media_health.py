@@ -90,17 +90,17 @@ def test_each_hint_offers_the_download_for_the_tool_that_is_actually_missing() -
     # Both tools have an in-app download now (2026-08-21), so each hint names
     # exactly the one that is missing. Offering the other is a dead route in the
     # most misleading direction: it looks like a fix and does nothing.
-    assert "Get FFmpeg" in NO_FFMPEG.repair_hint()
-    assert "Get mpv" not in NO_FFMPEG.repair_hint()
-    assert "Get mpv Playback Engine" in NO_MPV.repair_hint()
-    assert "Get FFmpeg" not in NO_MPV.repair_hint()
+    assert "Repair FFmpeg" in NO_FFMPEG.repair_hint()
+    assert "Repair mpv" not in NO_FFMPEG.repair_hint()
+    assert "Repair mpv Playback Engine" in NO_MPV.repair_hint()
+    assert "Repair FFmpeg" not in NO_MPV.repair_hint()
 
 
 def test_the_repair_hint_for_both_names_both_downloads_and_the_installer() -> None:
     hint = NEITHER.repair_hint()
     assert "reinstalling restores them" in hint
-    assert "Get FFmpeg" in hint
-    assert "Get mpv Playback Engine" in hint
+    assert "Repair FFmpeg" in hint
+    assert "Repair mpv Playback Engine" in hint
 
 
 def test_the_notice_is_the_summary_followed_by_the_hint() -> None:
@@ -192,8 +192,8 @@ def test_a_full_install_is_still_told_that_reinstalling_works() -> None:
 def test_the_download_is_offered_to_a_lite_install_too() -> None:
     # The whole point of having a download: it is the one repair that does not
     # depend on which edition the listener installed.
-    assert "Get mpv Playback Engine" in NO_MPV.repair_hint(lite=True)
-    assert "Get FFmpeg" in NO_FFMPEG.repair_hint(lite=True)
+    assert "Repair mpv Playback Engine" in NO_MPV.repair_hint(lite=True)
+    assert "Repair FFmpeg" in NO_FFMPEG.repair_hint(lite=True)
 
 
 def test_the_lite_notice_and_refusal_carry_the_edition_through() -> None:

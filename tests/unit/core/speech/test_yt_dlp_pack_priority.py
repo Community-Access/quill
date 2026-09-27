@@ -26,10 +26,18 @@ def _restore_meta_path():
     sys.meta_path[:] = original
 
 
-def _make_pack(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, marker: str) -> Path:
+def _make_pack(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    marker: str,
+    version: str = "2999.1.1",
+) -> Path:
+    """A repaired pack; newer than any real bundled copy unless told otherwise."""
     pack = tmp_path / "engine-packs" / "yt-dlp"
     (pack / "yt_dlp").mkdir(parents=True)
     (pack / "yt_dlp" / "__init__.py").write_text(f"MARKER = {marker!r}\n", encoding="utf-8")
+    (pack / f"yt_dlp-{version}.dist-info").mkdir()
     monkeypatch.setattr(engine_install, "yt_dlp_pack_dir", lambda: pack)
     return pack
 
@@ -133,3 +141,56 @@ def test_the_pack_copy_wins_over_an_earlier_one_on_sys_path(
         assert yt_dlp.MARKER == "pack"
     finally:
         sys.modules.pop("yt_dlp", None)
+
+
+def test_an_older_pack_never_shadows_the_bundled_copy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A pack left by an old repair, after an app update shipped a newer
+    yt-dlp, must be ignored -- shadowing would downgrade YouTube support."""
+    from quill.core.speech import yt_dlp_update
+
+    monkeypatch.setattr(yt_dlp_update, "bundled_version", lambda *_a, **_k: "2026.08.19")
+    _make_pack(tmp_path, monkeypatch, marker="old", version="2026.7.4")
+    before = list(sys.meta_path)
+    assert engine_install.prefer_engine_pack_yt_dlp() is False
+    assert sys.meta_path == before
+
+
+def test_an_equal_pack_does_not_shadow_either(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.speech import yt_dlp_update
+
+    monkeypatch.setattr(yt_dlp_update, "bundled_version", lambda *_a, **_k: "2026.08.19")
+    _make_pack(tmp_path, monkeypatch, marker="same", version="2026.8.19")
+    assert engine_install.prefer_engine_pack_yt_dlp() is False
+
+
+def test_a_newer_pack_shadows_the_bundled_copy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.speech import yt_dlp_update
+
+    monkeypatch.setattr(yt_dlp_update, "bundled_version", lambda *_a, **_k: "2026.08.19")
+    _make_pack(tmp_path, monkeypatch, marker="new", version="2026.9.20")
+    assert engine_install.prefer_engine_pack_yt_dlp() is True
+
+
+def test_a_build_without_yt_dlp_uses_any_pack(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.speech import yt_dlp_update
+
+    monkeypatch.setattr(yt_dlp_update, "bundled_version", lambda *_a, **_k: "")
+    _make_pack(tmp_path, monkeypatch, marker="only", version="2026.1.1")
+    assert engine_install.prefer_engine_pack_yt_dlp() is True
+
+
+def test_activation_never_puts_the_yt_dlp_pack_on_sys_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """sys.path would let even an OLDER pack shadow an unfrozen bundled copy."""
+    pack = _make_pack(tmp_path, monkeypatch, marker="old", version="2020.1.1")
+    engine_install.activate_engine_packs()
+    assert str(pack) not in sys.path
