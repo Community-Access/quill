@@ -45,7 +45,7 @@ Invoke-WithSourceDateEpoch {
         $pageTitle = if ($h1) { $h1.Matches[0].Groups[1].Value } else { $_.BaseName }
         # +smart turns ASCII "--", "..." and straight quotes into real typography.
         # Without it Pandoc slugifies a literal "--" straight into the heading id
-        # (quill-radio----product-requirements), changing every anchor on the page
+        # (quill-converter----product-requirements), changing every anchor on the page
         # and breaking existing deep links into these docs.
         & $pandocExe $_.FullName -f gfm+smart -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
         if ($LASTEXITCODE -ne 0) { throw "Pandoc HTML render failed for $($_.Name)" }

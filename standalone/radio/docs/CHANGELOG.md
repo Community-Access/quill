@@ -44,6 +44,9 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ### Final release changes (2026-09-26)
 
+- **The installer's checkboxes are real Windows checkboxes.** Create a desktop
+  icon and Launch Quill Radio now say "checked" or "not checked" to a screen
+  reader; the old task list read every box as not checked. Defaults unchanged.
 - **Two downloads, not four.** 3.0.0 publishes the installer
   (`Quill-Radio-Setup-Shared-3.0.0.exe`: installs the shared QuillVille Runtime
   if it is absent, then the app, with a Start Menu entry and an uninstaller --

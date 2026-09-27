@@ -904,7 +904,7 @@ def _render_readme(
 
             To rebuild the installer from this portable bundle, open
             ..\\installer\\quill.iss (the installer folder next to this
-            portable folder) in Inno Setup 6.
+            portable folder) in Inno Setup 7.
             """
         ).strip()
         + "\r\n"
@@ -923,7 +923,8 @@ def build_shell_verb_registry_lines(
     extension under
     ``Software\\Classes\\SystemFileAssociations\\<ext>\\shell\\Quill.<verb_id>``
     so QUILL appears in the file right-click menu without owning the file's
-    default association. Every key is gated behind the opt-in ``shellverbs`` task
+    default association. Every key is gated behind the opt-in "Send to Quill"
+    checkbox (``Check: WantsShellVerbs``)
     and tagged ``uninsdeletekey`` so a full uninstall removes the verbs cleanly.
 
     The launch command is ``"{app}\\{#AppExeName}" -m quill --action <action>
@@ -945,17 +946,17 @@ def build_shell_verb_registry_lines(
             lines.append(
                 f'Root: HKCU; Subkey: "{base}";'
                 f' ValueType: string; ValueName: ""; ValueData: "{label}";'
-                " Flags: uninsdeletekey; Tasks: shellverbs"
+                " Flags: uninsdeletekey; Check: WantsShellVerbs"
             )
             lines.append(
                 f'Root: HKCU; Subkey: "{base}";'
                 f' ValueType: string; ValueName: "MUIVerb"; ValueData: "{label}";'
-                " Tasks: shellverbs"
+                " Check: WantsShellVerbs"
             )
             lines.append(
                 f'Root: HKCU; Subkey: "{base}\\command";'
                 f' ValueType: string; ValueName: ""; ValueData: {command};'
-                " Tasks: shellverbs"
+                " Check: WantsShellVerbs"
             )
     return lines
 
@@ -1084,7 +1085,7 @@ def build_inno_setup_script(
         "; install it on a non-x64-compatible CPU and place it in the real",
         "; 64-bit Program Files (not the x86 folder). x64compatible also covers",
         "; ARM64 Windows, which runs the x64 runtime under emulation.",
-        "; (Requires Inno Setup 6.3 or newer.)",
+        "; (Requires Inno Setup 7, like every script in the family.)",
         "ArchitecturesAllowed=x64compatible",
         "ArchitecturesInstallIn64BitMode=x64compatible",
         "; Quill targets Windows 10 and 11: the zero-install OCR backend, winget",
@@ -1125,23 +1126,16 @@ def build_inno_setup_script(
         "[Languages]",
         'Name: "english"; MessagesFile: "compiler:Default.isl"',
         "",
-        "[Tasks]",
-        'Name: "fileassoc"; Description: "Register Quill in the Open With menu'
-        ' for common text formats (.txt, .md, .rst, .log, .csv, .json)";'
-        ' GroupDescription: "File associations:"; Flags: unchecked',
-        'Name: "shellverbs"; Description: "Add ""Send to Quill"" actions'
-        ' (OCR, Open, Read aloud) to the file right-click menu";'
-        ' GroupDescription: "File associations:"; Flags: unchecked',
-        'Name: "companionicons"; Description: "Create a desktop icon for'
-        ' Quill Radio (the standalone internet radio app)";'
-        ' GroupDescription: "Companion apps:"; Flags: unchecked',
-        # community#941: launching "quill" from a terminal or a shortcut's Target
-        # field needs the install directory on PATH. Opt-in (unchecked), same as
-        # the other Tasks above -- PATH is shared system/user state, so this is
-        # never silently applied.
-        'Name: "addtopath"; Description: "Add Quill to PATH (lets you run'
-        ' ""quill"" from a terminal or a shortcut Target field without the full'
-        ' path)"; GroupDescription: "Command line:"; Flags: unchecked',
+        "; There is no [Tasks] section and no postinstall [Run] entry, on purpose.",
+        "; Both put their checkboxes in the wizard's TNewCheckListBox, a custom-drawn",
+        "; control that does not expose its checked state: a screen reader announces",
+        '; every box as "not checked" whatever it is. The [Code] section builds the',
+        "; same choices, with the same defaults (all unchecked), out of native Windows",
+        "; checkboxes (TNewCheckBox), which announce checked and not checked: the",
+        "; four former tasks on an Additional Tasks page (WantsFileAssoc,",
+        "; WantsShellVerbs, WantsCompanionIcons, WantsAddToPath) and the three",
+        "; former run entries on the Finished page.",
+        "; tests/unit/scripts/test_installer_accessible_checkboxes.py keeps it so.",
         "",
         "; No [Types] or [Components] section: every optional component is fetched",
         "; on demand from its verified source, so the installer shows no setup-type",
@@ -1267,17 +1261,17 @@ def build_inno_setup_script(
         "; Companion apps: Quill Radio runs Radio standalone (quill/apps/*;",
         "; PRD 5.89e). QUILL Cast is gated out of public 1.0.0 builds",
         "; (RELEASED_APPS) so it gets no shortcuts. Start Menu entry always;",
-        "; the desktop icon is the opt-in companionicons task above.",
+        "; the desktop icon is the opt-in companion-icons checkbox (see [Code]).",
         'Name: "{group}\\Quill Radio"; Filename: "{code:BundledLauncherPath}";'
         ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: HasBundledLauncher',
         'Name: "{group}\\Quill Radio"; Filename: "{app}\\{#AppExeName}";'
         ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: not HasBundledLauncher',
         'Name: "{autodesktop}\\Quill Radio"; Filename: "{code:BundledLauncherPath}";'
         ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}";'
-        " Tasks: companionicons; Check: HasBundledLauncher",
+        " Check: WantsCompanionIcons and HasBundledLauncher",
         'Name: "{autodesktop}\\Quill Radio"; Filename: "{app}\\{#AppExeName}";'
         ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}";'
-        " Tasks: companionicons; Check: not HasBundledLauncher",
+        " Check: WantsCompanionIcons and not HasBundledLauncher",
         "",
         "[Registry]",
         "; Register Quill in the OpenWithList for common text formats. We",
@@ -1289,13 +1283,13 @@ def build_inno_setup_script(
             ' Subkey: "Software\\Classes\\Applications\\{#AppExeName}\\shell\\open\\command";'
             ' ValueType: string; ValueName: "";'
             ' ValueData: """{app}\\{#AppExeName}"" -m quill ""%1""";'
-            " Flags: uninsdeletekey; Tasks: fileassoc"
+            " Flags: uninsdeletekey; Check: WantsFileAssoc"
         ),
     ]
     for extension in (".txt", ".md", ".rst", ".log", ".csv", ".json"):
         lines.append(
             f'Root: HKCU; Subkey: "Software\\Classes\\{extension}\\OpenWithList\\{{#AppExeName}}";'
-            " Flags: uninsdeletekey; Tasks: fileassoc"
+            " Flags: uninsdeletekey; Check: WantsFileAssoc"
         )
     lines += [
         "; The formats quill/io actually reads and writes were missing from this",
@@ -1307,36 +1301,25 @@ def build_inno_setup_script(
     for extension in (".rtf", ".docx", ".odt", ".html", ".htm", ".epub"):
         lines.append(
             f'Root: HKCU; Subkey: "Software\\Classes\\{extension}\\OpenWithList\\{{#AppExeName}}";'
-            " Flags: uninsdeletekey; Tasks: fileassoc"
+            " Flags: uninsdeletekey; Check: WantsFileAssoc"
         )
     lines += [
         "",
         '; "Send to Quill" file right-click verbs (SHELL-3). Generated from',
         "; quill.core.shell_verbs so the installer, runtime registry writer, CLI",
         "; --action map, and Settings toggles stay in lockstep. Opt-in via the",
-        "; shellverbs task; uninsdeletekey removes them on uninstall.",
+        "; WantsShellVerbs checkbox; uninsdeletekey removes them on uninstall.",
     ]
     lines += build_shell_verb_registry_lines()
     lines += [
         "",
-        "; community#941: opt-in PATH registration (addtopath task). Per-user only",
+        "; community#941: opt-in PATH registration (WantsAddToPath). Per-user only",
         "; (HKCU) -- no elevation needed and no other account is touched. The",
         "; actual add/remove happens in [Code] (EnvAddToPath / EnvRemoveFromPath",
         "; below), not a declarative [Registry] entry -- that gives install *and*",
         "; uninstall symmetry (a plain [Registry] value has no safe way to undo a",
         "; delimited PATH append on uninstall) plus a live WM_SETTINGCHANGE",
         "; broadcast so an already-open shell picks up the change immediately.",
-        "",
-        "[Run]",
-        'Filename: "{app}\\README.txt"; Description: "View the Quill README";'
-        " Flags: postinstall shellexec skipifsilent unchecked",
-        'Filename: "{app}\\docs\\userguide.html";'
-        ' Description: "View the User Guide";'
-        " Flags: postinstall shellexec skipifsilent unchecked",
-        'Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill"; Description: "Launch {#AppName}";'
-        " Flags: postinstall nowait skipifsilent unchecked; Check: HasBundledLauncher",
-        'Filename: "{app}\\{#AppExeName}"; Description: "Launch {#AppName}";'
-        " Flags: postinstall nowait skipifsilent unchecked; Check: not HasBundledLauncher",
         "",
         "[UninstallDelete]",
         "; Always remove install-dir build junk. Whether to also remove the",
@@ -1376,7 +1359,154 @@ def build_inno_setup_script(
         "  Result := BundledLauncherPath('') <> '';",
         "end;",
         "",
-        "// -- PATH management (opt-in 'addtopath' task, #941) -----------------------",
+        "// -- Native checkboxes (no [Tasks], no postinstall [Run]) -----------------",
+        "// TNewCheckBox is a real Windows BUTTON control, so a screen reader hears",
+        "// 'checked' and 'not checked'. The check list box that [Tasks] and",
+        "// postinstall [Run] entries use is custom-drawn and always reads as not",
+        "// checked.",
+        "var",
+        "  FileAssocCheck: TNewCheckBox;",
+        "  ShellVerbsCheck: TNewCheckBox;",
+        "  CompanionIconsCheck: TNewCheckBox;",
+        "  AddToPathCheck: TNewCheckBox;",
+        "  ViewReadmeCheck: TNewCheckBox;",
+        "  ViewGuideCheck: TNewCheckBox;",
+        "  LaunchCheck: TNewCheckBox;",
+        "",
+        "// One checkbox and, under it, a wrapped line of detail. TNewCheckBox cannot",
+        "// wrap, so the caption -- which is what a screen reader speaks -- is kept",
+        "// short enough to fit and carries the whole choice; the detail line holds",
+        "// the rest of the former task description. Top advances past both.",
+        "function AddTaskCheck(Page: TWizardPage; var Top: Integer;",
+        "  Caption, Detail: String): TNewCheckBox;",
+        "var",
+        "  Note: TNewStaticText;",
+        "begin",
+        "  Result := TNewCheckBox.Create(Page);",
+        "  Result.Parent := Page.Surface;",
+        "  Result.Left := 0;",
+        "  Result.Top := Top;",
+        "  Result.Width := Page.SurfaceWidth;",
+        "  Result.Caption := Caption;",
+        "  Result.Checked := False;",
+        "  Note := TNewStaticText.Create(Page);",
+        "  Note.AutoSize := False;",
+        "  Note.WordWrap := True;",
+        "  Note.Left := ScaleX(18);",
+        "  Note.Top := Result.Top + Result.Height + ScaleY(2);",
+        "  Note.Width := Page.SurfaceWidth - Note.Left;",
+        "  Note.Caption := Detail;",
+        "  Note.Parent := Page.Surface;",
+        "  Note.AdjustHeight;",
+        "  Top := Note.Top + Note.Height + ScaleY(10);",
+        "end;",
+        "",
+        "procedure InitializeWizard;",
+        "var",
+        "  TasksPage: TWizardPage;",
+        "  Top: Integer;",
+        "begin",
+        "  // Where the [Tasks] page was (after the Start Menu folder page), with the",
+        "  // same four choices, all unchecked by default as the tasks were.",
+        "  TasksPage := CreateCustomPage(wpSelectProgramGroup,",
+        "    SetupMessage(msgWizardSelectTasks), SetupMessage(msgSelectTasksDesc));",
+        "  Top := ScaleY(8);",
+        "  FileAssocCheck := AddTaskCheck(TasksPage, Top,",
+        "    'Add Quill to the &Open With menu for text files',",
+        "    'Common text and document formats (.txt, .md, .rst, .log, .csv, .json' +",
+        "    ' and more). Never makes Quill the default app.');",
+        "  ShellVerbsCheck := AddTaskCheck(TasksPage, Top,",
+        "    'Add \"&Send to Quill\" to the file right-click menu',",
+        "    'OCR, Open and Read aloud actions for supported files.');",
+        "  CompanionIconsCheck := AddTaskCheck(TasksPage, Top,",
+        "    'Create a &desktop icon for Quill Radio',",
+        "    'Quill Radio is the standalone internet radio app.');",
+        "  // community#941: launching quill from a terminal or a shortcut's Target",
+        "  // field needs the install directory on PATH. Opt-in, like the others --",
+        "  // PATH is shared system/user state, so this is never silently applied.",
+        "  AddToPathCheck := AddTaskCheck(TasksPage, Top,",
+        "    'Add Quill to &PATH',",
+        "    'Lets you run \"quill\" from a terminal or a shortcut Target field' +",
+        "    ' without the full path.');",
+        "end;",
+        "",
+        "function WantsFileAssoc(): Boolean;",
+        "begin",
+        "  Result := (FileAssocCheck <> nil) and FileAssocCheck.Checked;",
+        "end;",
+        "",
+        "function WantsShellVerbs(): Boolean;",
+        "begin",
+        "  Result := (ShellVerbsCheck <> nil) and ShellVerbsCheck.Checked;",
+        "end;",
+        "",
+        "function WantsCompanionIcons(): Boolean;",
+        "begin",
+        "  Result := (CompanionIconsCheck <> nil) and CompanionIconsCheck.Checked;",
+        "end;",
+        "",
+        "function WantsAddToPath(): Boolean;",
+        "begin",
+        "  Result := (AddToPathCheck <> nil) and AddToPathCheck.Checked;",
+        "end;",
+        "",
+        "function AddFinishedCheck(Top: Integer; Caption: String): TNewCheckBox;",
+        "begin",
+        "  Result := TNewCheckBox.Create(WizardForm);",
+        "  Result.Parent := WizardForm.FinishedPage;",
+        "  Result.Left := WizardForm.FinishedLabel.Left;",
+        "  Result.Top := Top;",
+        "  Result.Width := WizardForm.FinishedLabel.Width;",
+        "  Result.Caption := Caption;",
+        "  Result.Checked := False;",
+        "end;",
+        "",
+        "procedure CurPageChanged(CurPageID: Integer);",
+        "begin",
+        "  // The three former postinstall run entries, built when the Finished page",
+        "  // is reached (its label is only laid out by then), each unchecked as the",
+        "  // entries were. Never in a silent install (they were skipifsilent), nor",
+        "  // when the page is asking to restart (Setup hides its run list then too).",
+        "  if (CurPageID = wpFinished) and (LaunchCheck = nil) and not WizardSilent",
+        "     and not WizardForm.YesRadio.Visible then",
+        "  begin",
+        "    ViewReadmeCheck := AddFinishedCheck(WizardForm.FinishedLabel.Top +",
+        "      WizardForm.FinishedLabel.Height + ScaleY(16), 'View the Quill &README');",
+        "    ViewGuideCheck := AddFinishedCheck(ViewReadmeCheck.Top +",
+        "      ViewReadmeCheck.Height + ScaleY(8), 'View the User &Guide');",
+        "    LaunchCheck := AddFinishedCheck(ViewGuideCheck.Top +",
+        "      ViewGuideCheck.Height + ScaleY(8), '&Launch {#AppName}');",
+        "  end;",
+        "end;",
+        "",
+        "function NextButtonClick(CurPageID: Integer): Boolean;",
+        "var",
+        "  ErrorCode: Integer;",
+        "begin",
+        "  Result := True;",
+        "  // The Finish button arrives here as wpFinished. As the original",
+        "  // (non-elevated) user and without waiting, which is what Setup did for",
+        "  // the postinstall nowait / shellexec entries these replace.",
+        "  if (CurPageID <> wpFinished) or (LaunchCheck = nil) or WizardSilent then",
+        "    Exit;",
+        "  if ViewReadmeCheck.Checked then",
+        "    ShellExecAsOriginalUser('', ExpandConstant('{app}\\README.txt'), '', '',",
+        "      SW_SHOWNORMAL, ewNoWait, ErrorCode);",
+        "  if ViewGuideCheck.Checked then",
+        "    ShellExecAsOriginalUser('', ExpandConstant('{app}\\docs\\userguide.html'), '', '',",
+        "      SW_SHOWNORMAL, ewNoWait, ErrorCode);",
+        "  if LaunchCheck.Checked then",
+        "  begin",
+        "    if HasBundledLauncher() then",
+        "      ExecAsOriginalUser(BundledLauncherPath(''), '-m quill', ExpandConstant('{app}'),",
+        "        SW_SHOWNORMAL, ewNoWait, ErrorCode)",
+        "    else",
+        "      ExecAsOriginalUser(ExpandConstant('{app}\\{#AppExeName}'), '',",
+        "        ExpandConstant('{app}'), SW_SHOWNORMAL, ewNoWait, ErrorCode);",
+        "  end;",
+        "end;",
+        "",
+        "// -- PATH management (opt-in WantsAddToPath checkbox, #941) ----------------",
         "// Adds/removes {app} in HKCU\\Environment\\Path (per-user, no admin needed --",
         "// matches PrivilegesRequired=lowest) so 'quill <file>' works from a shell",
         "// without typing the full install path. TStringList does the split/join so",
@@ -1490,7 +1620,7 @@ def build_inno_setup_script(
         "  if CurStep = ssPostInstall then",
         "  begin",
         "    SaveStringToFile(ExpandConstant('{app}\\quill-new-install.txt'), 'new-install', False);",
-        "    if WizardIsTaskSelected('addtopath') then",
+        "    if WantsAddToPath() then",
         "      EnvAddToPath(ExpandConstant('{app}'));",
         "  end;",
         "end;",
@@ -1581,7 +1711,7 @@ def build_inno_setup_script(
         "begin",
         "  if CurUninstallStep = usUninstall then",
         "  begin",
-        "    // Safe no-op if the addtopath task was never selected (not found -> Exit).",
+        "    // Safe no-op if Add to PATH was never chosen (not found -> Exit).",
         "    EnvRemoveFromPath(ExpandConstant('{app}'));",
         "    DataDir := ExpandConstant('{userappdata}\\Quill');",
         "    // Read the custom-location pointer BEFORE DataDir is deleted below.",
@@ -1623,8 +1753,9 @@ def compile_inno_setup_installer(
     compiler = iscc_path or find_inno_setup_compiler()
     if compiler is None:
         raise RuntimeError(
-            "Inno Setup compiler not found. Install Inno Setup 7 (quill.iss "
-            "uses the v7 SetupArchitecture directive) or pass --iscc-path."
+            "Inno Setup 7 not found (Inno Setup 6 is not supported: quill.iss "
+            "uses the v7 SetupArchitecture directive). Install Inno Setup 7 or "
+            "pass --iscc-path."
         )
     subprocess.run([str(compiler), *_inno_sign_args(), str(installer_script)], check=True)
     # The Offline Edition uses a distinct OutputBaseFilename (Quill-Offline-Setup)
@@ -1653,8 +1784,8 @@ def inno_setup_search_roots() -> list[Path]:
     backstop. ``%LOCALAPPDATA%\\Programs`` matters as much as Program Files:
     Inno Setup's "install for me only" option -- the one you get without
     administrator rights -- lands there, and a build machine set up by a
-    non-admin will have it nowhere else. Missing it made the compile step fail
-    with "Install Inno Setup 6" on a machine that had Inno Setup 6 installed.
+    non-admin will have it nowhere else. Missing it once made the compile step
+    fail with "Install Inno Setup" on a machine that had it installed.
     """
     roots: list[Path] = []
     for var in ("ProgramFiles(x86)", "ProgramFiles", "ProgramW6432"):
@@ -1677,24 +1808,33 @@ def inno_setup_search_roots() -> list[Path]:
     return unique
 
 
-#: Inno Setup versions to look for, newest first. **Order is load-bearing.**
-#: ``quill.iss`` uses ``SetupArchitecture``, which is a version 7 directive; a
-#: version 6 compiler rejects it outright with "Unrecognized [Setup] section
-#: directive". A machine with both installed -- this one -- built the whole
-#: QuillVille family fine and then failed on QUILL itself, because every app's
-#: ``build_release.ps1`` goes through ``scripts/BuildEnv.ps1``, which has
-#: preferred 7 since 2026-08-17, and this script had its own search that only
-#: ever knew about 6.
-_INNO_SETUP_DIRS = ("Inno Setup 7", "Inno Setup 6")
+#: The only Inno Setup the family builds with. ``quill.iss`` uses
+#: ``SetupArchitecture``, a version 7 directive that a version 6 compiler
+#: rejects with "Unrecognized [Setup] section directive" -- an error that reads
+#: like a fault in the script rather than in the compiler choice. Version 6 used
+#: to be a fallback here; it was removed (2026-09-26) so a machine without
+#: Inno Setup 7 fails up front with a message that says so, the same rule
+#: ``scripts/BuildEnv.ps1`` ``Resolve-QuillIscc`` enforces for every app.
+_INNO_SETUP_DIRS = ("Inno Setup 7",)
+
+
+def _is_other_inno_version(compiler: Path) -> bool:
+    """True when ``compiler`` sits in a versioned folder that is not 7's.
+
+    ISCC.exe carries no version resource, so the folder name is the only
+    cheap signal; an unversioned folder on PATH is given the benefit of the
+    doubt (a v6 compiler then fails on ``SetupArchitecture`` anyway).
+    """
+    folder = compiler.parent.name.lower()
+    return folder.startswith("inno setup") and folder not in {d.lower() for d in _INNO_SETUP_DIRS}
 
 
 def find_inno_setup_compiler() -> Path | None:
-    """The newest installed Inno Setup compiler, or None.
+    """The installed Inno Setup 7 compiler, or None.
 
-    The versioned directories are checked *before* ``PATH``: whichever ISCC
-    happens to be on PATH is not necessarily the newest, and picking an older
-    one produces a failure ("Unrecognized [Setup] section directive") that reads
-    like a fault in the script rather than in the compiler choice.
+    The versioned directories are checked *before* ``PATH``. An ISCC on PATH
+    that lives in another version's folder (``Inno Setup 6``) is skipped rather
+    than returned, so the caller reports Inno Setup 7 missing.
     """
     for root in inno_setup_search_roots():
         for version_dir in _INNO_SETUP_DIRS:
@@ -1703,7 +1843,7 @@ def find_inno_setup_compiler() -> Path | None:
                 return candidate
     for candidate_name in ("ISCC.exe", "iscc"):
         discovered = shutil.which(candidate_name)
-        if discovered:
+        if discovered and not _is_other_inno_version(Path(discovered)):
             return Path(discovered)
     return None
 

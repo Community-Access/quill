@@ -200,6 +200,9 @@ had is included here.
 
 ### Installer and portable
 
+- The installer's choices -- desktop icon, the File Explorer entry, launching
+  when done -- are real Windows checkboxes that announce checked and not
+  checked, like every family installer since 2026-09-26.
 - The installer (Inno Setup 7) installs the shared QuillVille runtime if it is
   absent, then the app, with Start Menu entries and the documents.
 - An installer task, checked by default, adds "Convert with Quill Converter" to

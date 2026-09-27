@@ -53,6 +53,17 @@ $QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
 $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
 
+# -- the version is one number ---------------------------------------------
+# The app's _VERSION, this script's $version and the .iss fallback must agree,
+# or Check for Updates compares against the wrong number.
+$appSource = Get-Content -Raw (Join-Path $QuillRepo "quill/apps/converter.py")
+if ($appSource -notmatch '(?m)^_VERSION\s*=\s*"([^"]+)"') {
+    throw "Could not read _VERSION from quill/apps/converter.py."
+}
+if ($Matches[1] -ne $version) {
+    throw "quill/apps/converter.py says $($Matches[1]) but this script builds $version -- bump them together."
+}
+
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
@@ -62,7 +73,7 @@ if ($LASTEXITCODE -ne 0) { throw "Site docs sync failed (see above)." }
 
 # -- the Explorer verb block, regenerated from the format catalogue -----------
 & $Python (Join-Path $QuillRepo "scripts\build_converter_verb_iss.py")
-if ($LASTEXITCODE -ne 0) { throw "Could not generate installer\explorer-verb.iss." }
+if ($LASTEXITCODE -ne 0) { throw "Could not generate installer\explorer-verb.isi." }
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 # SECURITY: copied verbatim into the release, so never resolved from the

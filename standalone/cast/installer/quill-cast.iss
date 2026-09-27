@@ -90,17 +90,17 @@ Source: "..\dist\QUILLCast\*"; DestDir: "{app}"; Components: main; Flags: ignore
 Source: "..\dist\QUILLCast\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
+; There is no [Tasks] section and no postinstall [Run] entry, on purpose.
+; Both put their checkboxes in the wizard's TNewCheckListBox, a custom-drawn
+; control that does not expose its checked state: a screen reader announces
+; every box as "not checked" whatever it is. The [Code] section at the end of
+; this script builds the same choices, with the same defaults, out of native
+; Windows checkboxes (TNewCheckBox), which announce checked and not checked.
+; tests/unit/scripts/test_installer_accessible_checkboxes.py keeps it so.
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
-
-[Tasks]
-Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
-; Opt-in, and unchecked: taking over a file type without being asked is how an
-; installer earns a reputation. Somebody who exported a subscription list from
-; another podcast app can then open it the way they open anything else.
-Name: "opmlassoc"; Description: "Open &subscription lists (.opml) with {#AppName}"; GroupDescription: "File types:"; Flags: unchecked
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Check: WantsDesktopIcon
 
 [Registry]
 ; The .opml association, written under HKA so it follows the install scope --
@@ -112,13 +112,13 @@ Name: "opmlassoc"; Description: "Open &subscription lists (.opml) with {#AppName
 ; command line: .xml belongs to no single application and claiming it would
 ; break unrelated files. A .xml subscription list still imports fine through
 ; Import OPML... or by dragging it onto the app.
-Root: HKA; Subkey: "Software\Classes\.opml"; ValueType: string; ValueName: ""; ValueData: "QUILLCast.opml"; Flags: uninsdeletevalue; Tasks: opmlassoc
-Root: HKA; Subkey: "Software\Classes\QUILLCast.opml"; ValueType: string; ValueName: ""; ValueData: "Podcast subscription list"; Flags: uninsdeletekey; Tasks: opmlassoc
-Root: HKA; Subkey: "Software\Classes\QUILLCast.opml\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#AppExeName},0"; Tasks: opmlassoc
-Root: HKA; Subkey: "Software\Classes\QUILLCast.opml\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Tasks: opmlassoc
+Root: HKA; Subkey: "Software\Classes\.opml"; ValueType: string; ValueName: ""; ValueData: "QUILLCast.opml"; Flags: uninsdeletevalue; Check: WantsOpmlAssoc
+Root: HKA; Subkey: "Software\Classes\QUILLCast.opml"; ValueType: string; ValueName: ""; ValueData: "Podcast subscription list"; Flags: uninsdeletekey; Check: WantsOpmlAssoc
+Root: HKA; Subkey: "Software\Classes\QUILLCast.opml\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#AppExeName},0"; Check: WantsOpmlAssoc
+Root: HKA; Subkey: "Software\Classes\QUILLCast.opml\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Check: WantsOpmlAssoc
 ; Listed in Explorer's "Open with" for .opml even when it is not the default,
 ; so a file that belongs to another app can still be sent here once.
-Root: HKA; Subkey: "Software\Classes\.opml\OpenWithProgids"; ValueType: string; ValueName: "QUILLCast.opml"; ValueData: ""; Flags: uninsdeletevalue; Tasks: opmlassoc
+Root: HKA; Subkey: "Software\Classes\.opml\OpenWithProgids"; ValueType: string; ValueName: "QUILLCast.opml"; ValueData: ""; Flags: uninsdeletevalue; Check: WantsOpmlAssoc
 
 ; The quill-cast:// URI scheme, for "Share This Moment" links -- a link that
 ; reopens an episode at the second it was shared from. Written unconditionally
@@ -135,9 +135,6 @@ Root: HKA; Subkey: "Software\Classes\quill-cast"; ValueType: string; ValueName: 
 Root: HKA; Subkey: "Software\Classes\quill-cast\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#AppExeName},0"
 Root: HKA; Subkey: "Software\Classes\quill-cast\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""
 
-[Run]
-Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
-
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\_internal"
 
@@ -145,3 +142,87 @@ Type: filesandordirs; Name: "{app}\_internal"
 ; settings, subscriptions, and downloads store (%APPDATA%\Quill) with QUILL
 ; and Quill Radio. Removing this app must never destroy data a sibling app
 ; still uses; the full QUILL uninstaller owns that decision.
+
+[Code]
+var
+  { Native checkboxes; see the note at the top of [Icons]. }
+  DesktopIconCheck: TNewCheckBox;
+  OpmlAssocCheck: TNewCheckBox;
+  LaunchCheck: TNewCheckBox;
+
+procedure InitializeWizard;
+var
+  TasksPage: TWizardPage;
+begin
+  { The page the [Tasks] section used to produce, in the same place in the
+    wizard (after the Start Menu folder page), rebuilt from announcing
+    controls. Unchecked by default, as the tasks were. }
+  TasksPage := CreateCustomPage(wpSelectProgramGroup,
+    SetupMessage(msgWizardSelectTasks), SetupMessage(msgSelectTasksDesc));
+  DesktopIconCheck := TNewCheckBox.Create(TasksPage);
+  DesktopIconCheck.Parent := TasksPage.Surface;
+  DesktopIconCheck.Left := 0;
+  DesktopIconCheck.Top := ScaleY(8);
+  DesktopIconCheck.Width := TasksPage.SurfaceWidth;
+  DesktopIconCheck.Caption := 'Create a &desktop icon';
+  DesktopIconCheck.Checked := False;
+  { Opt-in, and unchecked: taking over a file type without being asked is how
+    an installer earns a reputation. Somebody who exported a subscription list
+    from another podcast app can then open it the way they open anything else. }
+  OpmlAssocCheck := TNewCheckBox.Create(TasksPage);
+  OpmlAssocCheck.Parent := TasksPage.Surface;
+  OpmlAssocCheck.Left := 0;
+  OpmlAssocCheck.Top := DesktopIconCheck.Top + DesktopIconCheck.Height + ScaleY(8);
+  OpmlAssocCheck.Width := TasksPage.SurfaceWidth;
+  OpmlAssocCheck.Caption := 'Open &subscription lists (.opml) with {#AppName}';
+  OpmlAssocCheck.Checked := False;
+end;
+
+function WantsDesktopIcon(): Boolean;
+begin
+  Result := (DesktopIconCheck <> nil) and DesktopIconCheck.Checked;
+end;
+
+function WantsOpmlAssoc(): Boolean;
+begin
+  Result := (OpmlAssocCheck <> nil) and OpmlAssocCheck.Checked;
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  { Built when the Finished page is reached, because its label is only laid
+    out by then. Unchecked by default, matching the run entry this replaces.
+    Never offered in a silent install (the entry was skipifsilent), nor when
+    the page is asking to restart (Setup hides its run list then too). }
+  if (CurPageID = wpFinished) and (LaunchCheck = nil) and not WizardSilent
+     and not WizardForm.YesRadio.Visible then
+  begin
+    LaunchCheck := TNewCheckBox.Create(WizardForm);
+    LaunchCheck.Parent := WizardForm.FinishedPage;
+    LaunchCheck.Left := WizardForm.FinishedLabel.Left;
+    LaunchCheck.Top := WizardForm.FinishedLabel.Top +
+      WizardForm.FinishedLabel.Height + ScaleY(16);
+    LaunchCheck.Width := WizardForm.FinishedLabel.Width;
+    LaunchCheck.Caption := '&Launch {#AppName}';
+    LaunchCheck.Checked := False;
+  end;
+end;
+
+{ The Finish button arrives in NextButtonClick as wpFinished. ewNoWait, like
+  the nowait run entry it replaces, and as the original (non-elevated) user,
+  which is what Setup does for a postinstall entry. }
+procedure LaunchIfChosen(CurPageID: Integer);
+var
+  LaunchResult: Integer;
+begin
+  if (CurPageID = wpFinished) and (LaunchCheck <> nil) and LaunchCheck.Checked
+     and not WizardSilent then
+    ExecAsOriginalUser(ExpandConstant('{app}\{#AppExeName}'), '', ExpandConstant('{app}'),
+      SW_SHOWNORMAL, ewNoWait, LaunchResult);
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  LaunchIfChosen(CurPageID);
+end;

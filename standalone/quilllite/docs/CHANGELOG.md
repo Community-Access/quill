@@ -1,6 +1,12 @@
 # QUILL Lite changelog
 
-## 1.2.0 -- unreleased
+## 1.1.0 -- unreleased
+
+### Installer (2026-09-26)
+
+- **The installer's checkboxes are real Windows checkboxes.** Create a desktop
+  icon and Launch QUILL Lite now tell a screen reader whether they are checked;
+  the old list announced every box as not checked. Both still start unchecked.
 
 ### Support (2026-09-26)
 
@@ -31,8 +37,6 @@
   sends the whole document rather than three passages. Before you send, the pad
   says how many words are going, roughly what they cost with your chosen model,
   and when the text is more than the free service or the model would take.
-
-## 1.1.0 -- 2026-09-25
 
 ### Dictation
 

@@ -619,11 +619,12 @@ def test_shell_verb_registry_lines_cover_every_verb_and_extension() -> None:
 
 
 def test_shell_verb_registry_lines_are_optin_and_uninstall_clean() -> None:
-    # Every verb key is gated behind the opt-in shellverbs task and tagged
-    # uninsdeletekey so a full uninstall removes the context-menu entries.
+    # Every verb key is gated behind the opt-in "Send to Quill" checkbox and
+    # tagged uninsdeletekey so a full uninstall removes the context-menu entries.
     lines = build_shell_verb_registry_lines()
     assert lines, "expected at least one generated verb registry line"
-    assert all("Tasks: shellverbs" in line for line in lines)
+    assert all("Check: WantsShellVerbs" in line for line in lines)
+    assert not any("Tasks:" in line for line in lines)
     # The verb root keys (not the MUIVerb/command values) carry uninsdeletekey.
     root_key_lines = [line for line in lines if 'ValueName: ""' in line and "\\command" not in line]
     assert root_key_lines
@@ -646,7 +647,8 @@ def test_shell_verb_command_launches_quill_exe_with_action() -> None:
 def test_inno_setup_script_includes_shell_verb_task_and_registry() -> None:
     # SHELL-3 is wired end-to-end into the generated installer script.
     script = build_inno_setup_script("9.9.9")
-    assert 'Name: "shellverbs"; Description: "Add ""Send to Quill"" actions' in script
+    assert "'Add \"&Send to Quill\" to the file right-click menu'" in script
+    assert "function WantsShellVerbs(): Boolean;" in script
     assert 'Send to Quill" file right-click verbs (SHELL-3)' in script
     # Spot-check one concrete verb/extension pair made it into the [Registry].
     assert 'Subkey: "Software\\Classes\\SystemFileAssociations\\.png\\shell\\Quill.ocr"' in script
@@ -737,12 +739,12 @@ def test_find_inno_setup_compiler_checks_common_locations(monkeypatch, tmp_path:
     """A Program Files install is found when it is not on PATH.
 
     Uses a real directory tree rather than stubbing ``Path``: the lookup builds
-    each candidate as ``root / "Inno Setup 6" / "ISCC.exe"``, so a stub keyed on
+    each candidate as ``root / "Inno Setup 7" / "ISCC.exe"``, so a stub keyed on
     the string passed to ``Path()`` never saw the final path and silently
     stopped exercising anything.
     """
     program_files = tmp_path / "Program Files"
-    compiler = program_files / "Inno Setup 6" / "ISCC.exe"
+    compiler = program_files / "Inno Setup 7" / "ISCC.exe"
     compiler.parent.mkdir(parents=True)
     compiler.write_text("binary", encoding="utf-8")
 
@@ -760,10 +762,10 @@ def test_find_inno_setup_compiler_finds_a_per_user_install(monkeypatch, tmp_path
 
     That is what you get without administrator rights, so a build machine set up
     by a non-admin has it nowhere else. Searching only Program Files made the
-    build fail with "Install Inno Setup 6" on a machine that had Inno Setup 6.
+    build fail with "Install Inno Setup" on a machine that had it.
     """
     local_app_data = tmp_path / "AppData" / "Local"
-    compiler = local_app_data / "Programs" / "Inno Setup 6" / "ISCC.exe"
+    compiler = local_app_data / "Programs" / "Inno Setup 7" / "ISCC.exe"
     compiler.parent.mkdir(parents=True)
     compiler.write_text("binary", encoding="utf-8")
 
@@ -774,6 +776,77 @@ def test_find_inno_setup_compiler_finds_a_per_user_install(monkeypatch, tmp_path
         monkeypatch.setenv(var, str(tmp_path / "no-such-program-files"))
 
     assert find_inno_setup_compiler() == compiler
+
+
+def test_find_inno_setup_compiler_ignores_inno_setup_6(monkeypatch, tmp_path: Path) -> None:
+    """Inno Setup 7 only: a machine with just version 6 finds no compiler.
+
+    quill.iss uses the v7-only ``SetupArchitecture`` directive, so a v6
+    compiler would fail part-way with an error that reads like a script fault.
+    Returning None makes the caller say "Inno Setup 7 not found" instead --
+    whether v6 sits in Program Files or is the ISCC on PATH.
+    """
+    program_files = tmp_path / "Program Files"
+    old = program_files / "Inno Setup 6" / "ISCC.exe"
+    old.parent.mkdir(parents=True)
+    old.write_text("binary", encoding="utf-8")
+
+    monkeypatch.setattr("scripts.build_windows_distribution.shutil.which", lambda _name: str(old))
+    monkeypatch.setenv("ProgramFiles", str(program_files))
+    monkeypatch.setenv("ProgramFiles(x86)", str(tmp_path / "no-such-x86"))
+    monkeypatch.delenv("ProgramW6432", raising=False)
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "no-such-appdata"))
+
+    assert find_inno_setup_compiler() is None
+
+
+def test_find_inno_setup_compiler_accepts_an_unversioned_iscc_on_path(
+    monkeypatch, tmp_path: Path
+) -> None:
+    """An ISCC on PATH outside any "Inno Setup <n>" folder is still used."""
+    tools = tmp_path / "tools" / "inno"
+    tools.mkdir(parents=True)
+    compiler = tools / "ISCC.exe"
+    compiler.write_text("binary", encoding="utf-8")
+
+    monkeypatch.setattr(
+        "scripts.build_windows_distribution.shutil.which", lambda _name: str(compiler)
+    )
+    for var in ("ProgramFiles(x86)", "ProgramFiles", "ProgramW6432"):
+        monkeypatch.setenv(var, str(tmp_path / "no-such-program-files"))
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "no-such-appdata"))
+
+    assert find_inno_setup_compiler() == compiler
+
+
+def test_generated_installer_uses_native_checkboxes_not_tasks() -> None:
+    """Every former task and postinstall entry is a TNewCheckBox, default off.
+
+    [Tasks] and postinstall [Run] entries render in a custom-drawn check list
+    box that screen readers announce as "not checked" whatever its state.
+    """
+    script = build_inno_setup_script("9.9.9")
+    assert "\n[Tasks]\n" not in script
+    assert "\n[Run]\n" not in script
+    assert not re.search(r"(?m)^[^;].*Flags:.*\bpostinstall\b", script)
+    assert not re.search(r"(?m)^[^;].*\bTasks:", script)
+    assert "WizardIsTaskSelected" not in script
+    sections, code = script.split("\n[Code]\n", 1)
+    for name in ("WantsFileAssoc", "WantsShellVerbs", "WantsCompanionIcons", "WantsAddToPath"):
+        assert f"function {name}(): Boolean;" in code
+    # Three gate [Icons]/[Registry] entries; Add to PATH is acted on in [Code].
+    for name in ("WantsFileAssoc", "WantsShellVerbs", "WantsCompanionIcons"):
+        assert f"Check: {name}" in sections
+    # Every default stays off, as the unchecked tasks and run entries were.
+    assert "Checked := True" not in code
+    assert code.count("Result.Checked := False;") == 2
+    # Silent installs never launch anything (the entries were skipifsilent).
+    assert "WizardSilent" in code
+    # Launch keeps the bundled-launcher split and its "-m quill" parameter.
+    assert "ExecAsOriginalUser(BundledLauncherPath(''), '-m quill'" in code
+    assert "if WantsAddToPath() then" in code
+    assert "Check: WantsCompanionIcons and HasBundledLauncher" in script
+    assert "Check: WantsCompanionIcons and not HasBundledLauncher" in script
 
 
 def test_inno_setup_search_roots_are_unique_and_env_first(monkeypatch, tmp_path: Path) -> None:

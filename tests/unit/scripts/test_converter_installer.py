@@ -36,7 +36,7 @@ def test_release_files_exist() -> None:
         "LICENSE",
         ".gitignore",
         "installer/quill-converter.iss",
-        "installer/explorer-verb.iss",
+        "installer/explorer-verb.isi",
         "installer/edition-installer-full.txt",
         "scripts/build_release.ps1",
         "scripts/render_docs.ps1",
@@ -68,11 +68,12 @@ def test_installer_ships_ffmpeg_and_the_explorer_verb_task() -> None:
     iss = _ISS.read_text(encoding="utf-8")
     assert "#define ToolFfmpeg" in iss and "#define ToolMpv" in iss  # mpv: the Workbench
     assert '#define AppRefId "converter"' in iss
-    assert '#include "explorer-verb.iss"' in iss
-    assert 'Name: "explorerverb"' in iss
-    # Checked by default: no "unchecked" flag on that task line.
-    task = next(line for line in iss.splitlines() if line.startswith('Name: "explorerverb"'))
-    assert "unchecked" not in task
+    assert '#include "explorer-verb.isi"' in iss
+    # A native checkbox (TNewCheckBox), checked by default -- never a [Tasks]
+    # entry, which screen readers read as "not checked" whatever its state.
+    assert "ExplorerVerbCheck.Checked := True;" in iss
+    assert "function WantsExplorerVerb(): Boolean;" in iss
+    assert iss.index('#include "explorer-verb.isi"') < iss.index('shared-runtime.iss"')
     assert "OutputBaseFilename=Quill-Converter-Setup-Shared-{#AppVersion}" in iss
 
 
@@ -88,10 +89,11 @@ def test_explorer_verb_block_is_current() -> None:
 def test_explorer_verb_covers_every_media_extension_and_uninstalls() -> None:
     from quill.core.shell_verbs import MEDIA_EXTENSIONS
 
-    block = (_APP / "installer" / "explorer-verb.iss").read_text(encoding="utf-8")
+    block = (_APP / "installer" / "explorer-verb.isi").read_text(encoding="utf-8")
     for ext in MEDIA_EXTENSIONS:
         assert f"SystemFileAssociations\\{ext}\\shell\\QuillConverter.Convert" in block, ext
     assert block.count("uninsdeletekey") == len(MEDIA_EXTENSIONS)
+    assert "Tasks:" not in block and "Check: WantsExplorerVerb" in block
     assert "Root: HKCU" in block and "HKLM" not in block
 
 

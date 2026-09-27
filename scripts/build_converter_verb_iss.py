@@ -28,7 +28,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-TARGET = REPO / "standalone" / "converter" / "installer" / "explorer-verb.iss"
+TARGET = REPO / "standalone" / "converter" / "installer" / "explorer-verb.isi"
 KEY = "QuillConverter.Convert"
 LABEL = "Convert with Quill Converter"
 
@@ -44,7 +44,7 @@ def render() -> str:
     ]
     for ext in sorted(MEDIA_EXTENSIONS):
         base = rf"Software\Classes\SystemFileAssociations\{ext}\shell\{KEY}"
-        common = "Tasks: explorerverb"
+        common = "Check: WantsExplorerVerb"
         lines.append(
             f'Root: HKCU; Subkey: "{base}"; ValueType: string; ValueName: ""; '
             f'ValueData: "{LABEL}"; Flags: uninsdeletekey; {common}'
@@ -71,7 +71,7 @@ def main(argv: list[str]) -> int:
         if current != text:
             print(f"{TARGET} is stale; run python scripts/build_converter_verb_iss.py")
             return 1
-        print("explorer-verb.iss is current.")
+        print("explorer-verb.isi is current.")
         return 0
     TARGET.write_text(text, encoding="utf-8", newline="\n")
     print(f"Wrote {TARGET} ({text.count('[Registry]') and len(text.splitlines()) - 4} lines).")

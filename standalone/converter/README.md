@@ -83,7 +83,7 @@ From this folder, in PowerShell:
 ```
 
 It renders the documents (Pandoc), regenerates the Explorer verb block
-(`installer\explorer-verb.iss`, from `scripts/build_converter_verb_iss.py` at
+(`installer\explorer-verb.isi`, from `scripts/build_converter_verb_iss.py` at
 the repository root), stages QUILL's pinned FFmpeg and ffprobe, builds the
 shared QuillVille runtime the installer carries (`-SkipSharedRuntime` reuses
 one already built), builds the portable folder with the shared QuillVille builder, verifies that yt-dlp and

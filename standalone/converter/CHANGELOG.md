@@ -29,7 +29,11 @@ published as an installer, and everything in it is part of 1.0.0.
   Chapter Workbench (Ctrl+H) edits them at the playhead.
 - **Advanced Options in the main window**, shown or hidden with View >
   Advanced Options (Ctrl+Alt+V), replacing the separate Convert Audio dialog.
-- **File Explorer right-click.** An installer task, checked by default, adds
+- **An installer a screen reader can read.** Every choice in it -- the desktop
+  icon, the File Explorer entry, launching when done -- is a real Windows
+  checkbox that says whether it is checked (the family's installers moved to
+  this on 2026-09-26; Inno Setup's own task list always read "not checked").
+- **File Explorer right-click.** An installer checkbox, checked by default, adds
   "Convert with Quill Converter" for every audio and video type the app reads,
   per user, removed on uninstall. Many files selected at once arrive in one
   queue.
