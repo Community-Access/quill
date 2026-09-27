@@ -10,6 +10,10 @@ from pathlib import Path
 
 import pytest
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file builds a
+#: real Quill Converter window, which registers the system-wide show/hide hotkey
+#: (RegisterHotKey is per-desktop, not per-process) and a tray icon.
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
 pytestmark = pytest.mark.machine_global
 
 
