@@ -38,6 +38,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from quill.core.error_codes import CodedError
+from quill.core.js_runtime import yt_dlp_js_options
 from quill.core.paths import yt_dlp_cache_dir
 
 # The pure URL readers live in youtube_urls (a GATE-11 extraction) and are
@@ -256,6 +257,7 @@ def _default_resolver(page_url: str) -> YouTubeStream:
             "youtube": {"player_client": ["default", "ios"], "formats": ["missing_pot"]}
         },
     }
+    options.update(yt_dlp_js_options())  # the bundled deno solves YouTube's JS
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(page_url, download=False)
     if not isinstance(info, dict):
@@ -414,7 +416,7 @@ def search_youtube(
     the sanctioned Data API would require every listener to create a Google
     Cloud project and paste a key, which is a wall in front of a search box.
     The trade-off is that this can break when YouTube changes -- which is
-    exactly what **Station > Update YouTube Support...** is for, since a newer
+    exactly what **Station > Repair YouTube Support...** is for, since a newer
     yt-dlp supersedes the bundled one without waiting for a Quill release.
 
     Flat, like a playlist listing: one request for the whole result set, and no
@@ -456,6 +458,7 @@ def _default_search_resolver(spec: str) -> dict[str, object]:
         "no_warnings": True,
         "skip_download": True,
     }
+    options.update(yt_dlp_js_options())  # the bundled deno solves YouTube's JS
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(spec, download=False)
     return info if isinstance(info, dict) else {}
@@ -477,6 +480,7 @@ def _default_playlist_resolver(url: str) -> dict[str, object]:
         "no_warnings": True,
         "skip_download": True,
     }
+    options.update(yt_dlp_js_options())  # the bundled deno solves YouTube's JS
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(url, download=False)
     return info if isinstance(info, dict) else {}

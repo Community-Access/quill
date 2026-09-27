@@ -21,10 +21,18 @@ _RUN_KEY_PATH = r"Software\Microsoft\Windows\CurrentVersion\Run"
 _VALUE_NAME = "QuillInkwell"
 
 
+#: The native launcher an installed copy starts from, and the app's module;
+#: on the shared runtime ``sys.executable`` alone is not the app (2026-09-27).
+LAUNCHER_NAME = "QuillInkwell.exe"
+MODULE = "quill.apps.inkwell"
+
+
 def launch_command() -> str:
     """The command written to the Run key: this app's own executable, quoted,
     with the start-in-tray flag."""
-    return f'"{sys.executable}" --tray'
+    from quill.core.app_command import app_command
+
+    return app_command(MODULE, LAUNCHER_NAME, args=("--tray",))
 
 
 def is_windows() -> bool:
@@ -41,6 +49,19 @@ def is_launch_at_startup_enabled() -> bool:
     except OSError:
         return False
     return bool(value)
+
+
+def heal_launch_at_startup(*, frozen: bool | None = None) -> bool:
+    """Rewrite an existing, stale Run-key entry to :func:`launch_command`.
+
+    Never creates one, never from a portable copy, never raises. See
+    :mod:`quill.platform.windows.launch_heal`.
+    """
+    from quill.platform.windows import launch_heal
+
+    if not is_windows() or not launch_heal.heal_allowed(frozen=frozen):
+        return False
+    return launch_heal.heal_run_value(winreg, _VALUE_NAME, launch_command())
 
 
 def set_launch_at_startup(enabled: bool) -> None:

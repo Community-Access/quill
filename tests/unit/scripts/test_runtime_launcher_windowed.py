@@ -84,3 +84,36 @@ def test_a_crash_is_saved_and_explained(windowed, monkeypatch, tmp_path) -> None
     reports = list((tmp_path / "QuillVille" / "Runtime" / "crash-reports").glob("crash-*.txt"))
     assert len(reports) == 1 and "kaboom" in reports[0].read_text(encoding="utf-8")
     assert told and "support@community-access.org" in told[0]
+
+
+def test_a_launch_without_the_app_launcher_still_knows_its_root(
+    windowed, monkeypatch, tmp_path
+) -> None:
+    # A taskbar pin targets QuillVilleRuntime.exe directly: nothing exported
+    # QUILL_APP_ROOT, so libmpv beside the runtime was missed (2026-09-27).
+    launcher, _told = windowed
+    seen: list[str] = []
+    monkeypatch.setattr(
+        launcher.runpy,
+        "run_module",
+        lambda module, **_k: seen.append(launcher.os.environ.get("QUILL_APP_ROOT", "")),
+    )
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "QuillVilleRuntime.exe"))
+    monkeypatch.setenv("QUILL_APP_ROOT", "placeholder")
+    monkeypatch.delenv("QUILL_APP_ROOT")
+    monkeypatch.setattr(sys, "argv", ["QuillVilleRuntime.exe", "-m", "quill.apps.radio"])
+
+    assert launcher.main() == 0
+    assert seen == [str(tmp_path)]
+
+
+def test_the_launcher_s_app_root_is_kept(windowed, monkeypatch, tmp_path) -> None:
+    launcher, _told = windowed
+    monkeypatch.setattr(launcher.runpy, "run_module", lambda module, **_k: None)
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "from-launcher"))
+    monkeypatch.setattr(sys, "argv", ["QuillVilleRuntime.exe", "-m", "quill.apps.radio"])
+
+    assert launcher.main() == 0
+    assert launcher.os.environ["QUILL_APP_ROOT"] == str(tmp_path / "from-launcher")

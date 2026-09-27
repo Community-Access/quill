@@ -323,8 +323,8 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 note=(
                     "mpv and FFmpeg ship inside every installer, so a missing one "
                     "means a damaged installation -- antivirus quarantine and a "
-                    "half-finished update are the two usual causes. Get FFmpeg and "
-                    "Get mpv Playback Engine on the Help menu fetch them back."
+                    "half-finished update are the two usual causes. Repair FFmpeg and "
+                    "Repair mpv Playback Engine on the Help menu fetch them back."
                 ),
             ),
             Step(

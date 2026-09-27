@@ -24,6 +24,9 @@ They are ordered, and the order is the argument:
 6. **Reminders**, armed the same way and for the same reason -- plus one look
    straight away, which is what makes a reminder that came due while the app
    was closed still get said.
+7. **Stale launch entries** -- "start with Windows" and the recording wake
+   written by an older build -- rewritten off the UI thread, and only when
+   they exist.
 
 Extracted from ``apps/radio.py`` under GATE-11.
 """
@@ -56,6 +59,17 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
     from quill.ui.radio import calendar_wiring
 
     app._reminder_monitor = calendar_wiring.install_reminders(app, wx)
+    # 7. **Stale launch entries**, repaired in the background: shared-runtime
+    #    builds before 3.0.1 wrote "start with Windows" and the recording wake
+    #    as the bare runtime exe, which runs no app (2026-09-27).
+    if not safe_mode:
+        from quill.platform.windows import launch_heal, radio_startup, recording_wake_task
+
+        launch_heal.heal_in_background(
+            getattr(app, "_task_manager", None),
+            radio_startup.heal_launch_at_startup,
+            recording_wake_task.heal_registered_task,
+        )
     return radio_podcast_refresh.install(app, wx, safe_mode=safe_mode)
 
 

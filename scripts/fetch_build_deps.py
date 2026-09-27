@@ -25,6 +25,15 @@ Piper voice previews with ``scripts/gen_voice_previews.py`` needs the engine, an
 a hand-staged copy is exactly the unreproducible setup this script exists to
 remove. Windows-only, like the runtime install it reuses.
 
+``deno`` is the JavaScript runtime yt-dlp needs to solve YouTube's signature
+and "n" challenges (with the ``yt-dlp-ejs`` scripts from pyproject's
+``youtube`` group). It ships in ``tools/deno`` of the shared runtime and every
+portable that plays YouTube, so nothing downloads on first use (owner's rule,
+2026-09-27). QUILL never downloads deno at run time, so unlike ffmpeg/libmpv its
+pin lives here rather than in a runtime module: the official
+github.com/denoland/deno release zip, and the MIT licence text from the same
+tag, both SHA-256-pinned.
+
 Usage::
 
     python scripts/fetch_build_deps.py                 # fetch whatever is missing
@@ -33,6 +42,7 @@ Usage::
     python scripts/fetch_build_deps.py --print-paths   # machine-readable NAME=DIR
     python scripts/fetch_build_deps.py --only ffmpeg   # one component
     python scripts/fetch_build_deps.py --only piper    # the preview-generation engine
+    python scripts/fetch_build_deps.py --only deno     # YouTube's JS challenge solver
 
 The cache lives under ``build/deps/`` (already gitignored) unless
 ``QUILL_BUILD_DEPS_DIR`` overrides it. Re-running is cheap: a component whose
@@ -78,14 +88,31 @@ LIBMPV_DIR_NAME = "mpv"
 LIBMPV_SENTINEL = "libmpv-2.dll"
 PIPER_DIR_NAME = "piper"
 PIPER_SENTINEL = "piper.exe"
+DENO_DIR_NAME = "deno"
+DENO_SENTINEL = "deno.exe"
 
-COMPONENTS = ("ffmpeg", "libmpv", "piper")
+#: Deno for Windows x64, pinned and verified 2026-09-27: the GitHub release
+#: asset digest, the release's own ``.zip.sha256sum`` file and a local
+#: download all agreed on this hash. Bump all three constants together.
+DENO_VERSION = "2.9.7"
+DENO_URL = (
+    f"https://github.com/denoland/deno/releases/download/v{DENO_VERSION}/"
+    "deno-x86_64-pc-windows-msvc.zip"
+)
+DENO_SHA256 = "a0c3101b4158d1dfb7d6a78a7bf0f3de80c96bb423c152beec8beb22786f2238"
+#: Deno's MIT licence, from the same tag; shipped beside deno.exe.
+DENO_LICENSE_URL = f"https://raw.githubusercontent.com/denoland/deno/v{DENO_VERSION}/LICENSE.md"
+DENO_LICENSE_SHA256 = "f62497fffecc0852960c8d3e6934b9db86d16396e9b604072e923892cae3a588"
+DENO_LICENSE_NAME = "DENO-LICENSE.txt"
+
+COMPONENTS = ("ffmpeg", "libmpv", "piper", "deno")
 
 #: component -> (cache subdirectory, the file that proves it is really staged).
 _LAYOUT: dict[str, tuple[str, str]] = {
     "ffmpeg": (FFMPEG_DIR_NAME, FFMPEG_SENTINEL),
     "libmpv": (LIBMPV_DIR_NAME, LIBMPV_SENTINEL),
     "piper": (PIPER_DIR_NAME, PIPER_SENTINEL),
+    "deno": (DENO_DIR_NAME, DENO_SENTINEL),
 }
 
 
@@ -186,6 +213,38 @@ def fetch_piper(*, force: bool = False) -> Path:
     return dest
 
 
+def fetch_deno(*, force: bool = False) -> Path:
+    """Stage deno.exe and its licence text into the cache; return the directory.
+
+    The zip holds exactly one file, ``deno.exe``; anything else in it is
+    refused rather than extracted, so a changed upstream layout fails the build
+    instead of shipping something unreviewed.
+    """
+    import zipfile
+
+    dest = component_dir("deno")
+    if is_staged("deno") and (dest / DENO_LICENSE_NAME).is_file() and not force:
+        print(f"  deno {DENO_VERSION}: already staged at {dest}")
+        return dest
+
+    print(f"  deno {DENO_VERSION}: downloading (SHA-256 pinned)...")
+    dest.mkdir(parents=True, exist_ok=True)
+    tmp = Path(tempfile.mkdtemp(prefix="quill-build-dep-"))
+    try:
+        archive = tmp / "deno.zip"
+        download_verified(DENO_URL, archive, sha256=DENO_SHA256, progress=_progress)
+        with zipfile.ZipFile(archive) as zf:
+            names = zf.namelist()
+            if names != [DENO_SENTINEL]:
+                raise ReleaseAssetError(f"Unexpected deno archive layout: {names!r}")
+            (dest / DENO_SENTINEL).write_bytes(zf.read(DENO_SENTINEL))
+        download_verified(DENO_LICENSE_URL, dest / DENO_LICENSE_NAME, sha256=DENO_LICENSE_SHA256)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    print(f"  deno {DENO_VERSION}: staged at {dest}")
+    return dest
+
+
 def fetch_all(components: tuple[str, ...], *, force: bool = False) -> dict[str, Path]:
     staged: dict[str, Path] = {}
     for component in components:
@@ -195,6 +254,8 @@ def fetch_all(components: tuple[str, ...], *, force: bool = False) -> dict[str, 
             staged[component] = fetch_libmpv(force=force)
         elif component == "piper":
             staged[component] = fetch_piper(force=force)
+        elif component == "deno":
+            staged[component] = fetch_deno(force=force)
         else:  # pragma: no cover - argparse constrains the choices
             raise ReleaseAssetError(f"Unknown build dependency: {component!r}")
     return staged

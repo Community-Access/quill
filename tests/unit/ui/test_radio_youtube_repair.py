@@ -114,7 +114,7 @@ def test_declining_leaves_everything_alone_and_says_where_the_door_is(
     )
 
     assert runs == []
-    assert any("Update YouTube Support" in m for m in host.said)
+    assert any("Repair YouTube Support" in m for m in host.said)
 
 
 def test_it_is_asked_once_per_session(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -179,3 +179,34 @@ def test_the_menu_command_shares_the_same_install(monkeypatch: pytest.MonkeyPatc
 
     assert runs == [1]
     assert any("2026.08.19" in box for box in host.boxes)
+
+
+def test_already_newest_is_reported_as_information_not_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Nothing to repair is an answer, not an error -- and nothing is retried."""
+    from quill.core.speech import engine_install
+
+    def _current(*_a: Any, **_k: Any) -> None:
+        raise engine_install.YtDlpAlreadyCurrent(
+            "YouTube support is already the newest version (2026.08.19)."
+        )
+
+    monkeypatch.setattr(engine_install, "install_yt_dlp", _current)
+    host = _Host(answer=_Wx.YES)
+
+    youtube_ui.update_youtube_support(host)
+
+    assert any("already the newest" in box for box in host.boxes)
+    assert not any("could not be updated" in box for box in host.boxes)
+    assert host._radio_controller.played == []
+
+
+def test_the_menu_command_calls_itself_an_emergency_repair(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _install(monkeypatch)
+    host = _Host(answer=_Wx.NO)
+    youtube_ui.update_youtube_support(host)
+    assert "emergency repair" in host.boxes[0]
+    assert youtube_ui.UPDATE_TITLE == "Repair YouTube Support"

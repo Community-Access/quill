@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
+## [3.0.1] - 2026-09-27
+
+A fix release. 3.0.0 is withdrawn and its downloads are gone; 3.0.1 replaces it.
+
+- **3.0.0 was withdrawn; everything in it is in 3.0.1.** Download
+  `Quill-Radio-Setup-Shared-3.0.1.exe` (the installer) or
+  `Quill-Radio-Portable-3.0.1.zip` (unpack anywhere) from
+  <https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.1>.
+  Install 3.0.1 over 3.0.0; your favorites, settings and recordings stay.
+- **The installer's checkboxes are real Windows checkboxes.** Create a desktop
+  icon and Launch Quill Radio now tell a screen reader whether they are
+  checked. In 3.0.0 they did not.
+- **The app starts on a fresh install.** 3.0.0 could stop at launch with a
+  script error ("'NoneType' object has no attribute 'write'"). The runtime
+  launcher no longer depends on a console window that a windowed app does not
+  have.
+- **Start with Windows and the scheduled-recording wake start the app.** Both
+  started the shared runtime without saying which app to run, so nothing useful
+  opened. They now start Quill Radio itself.
+- **Entries an older build wrote are repaired.** If Start with Windows or a
+  pending recording wake was set up by 3.0.0, Quill Radio rewrites it the next
+  time it starts; nothing is created that you had not turned on.
+- **The bundled mpv engine is found however Quill Radio is started.** Started
+  straight through the runtime, 3.0.0 could report "mpv engine not available"
+  and fall back to a lesser player.
+- Everything is bundled: ffmpeg, mpv, yt-dlp and the JavaScript engine YouTube
+  needs; nothing downloads on first use. The Repair items on the Help menu are
+  for emergencies.
+- **An old desktop icon is repaired.** Icons from earlier installers started
+  the runtime directly and skipped the app's launcher. If one is there, the
+  installer keeps the desktop icon box checked and replaces it with one that
+  starts Quill Radio properly.
+
 ## [3.0.0] - 2026-09-26
 
 ### 3.0 in brief
@@ -44,9 +77,6 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ### Final release changes (2026-09-26)
 
-- **The installer's checkboxes are real Windows checkboxes.** Create a desktop
-  icon and Launch Quill Radio now say "checked" or "not checked" to a screen
-  reader; the old task list read every box as not checked. Defaults unchanged.
 - **Two downloads, not four.** 3.0.0 publishes the installer
   (`Quill-Radio-Setup-Shared-3.0.0.exe`: installs the shared QuillVille Runtime
   if it is absent, then the app, with a Start Menu entry and an uninstaller --

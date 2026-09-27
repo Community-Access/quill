@@ -43,7 +43,11 @@ def default_command() -> str:
     repo ``launcher.py``. Either can be overridden with an explicit ``--command``.
     """
     if getattr(sys, "frozen", False):
-        return f'"{sys.executable}" "%1"'
+        from quill.core.app_command import app_argv, to_command_line
+
+        # The launcher, or the shared runtime with -m: the runtime run bare
+        # starts nothing (2026-09-27).
+        return to_command_line(app_argv("quill.apps.beacon", "QuillBeacon.exe")) + ' "%1"'
     # Source: python <repo>/launcher.py "%1".
     here = Path(__file__).resolve().parent.parent  # repo root
     launcher = here / "launcher.py"

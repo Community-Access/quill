@@ -118,6 +118,13 @@ def build_launch_argv(app_key: str) -> list[str] | None:
     if entry is None:
         return None
     module, exe_names = entry
+    from quill.core.app_command import is_generic_interpreter
+
+    if getattr(sys, "frozen", False) and is_generic_interpreter(sys.executable):
+        # Every QuillVille app shares one runtime: a sibling is the same
+        # interpreter with a different module (2026-09-27; searching for a
+        # sibling .exe beside the runtime found nothing).
+        return [sys.executable, "-m", module]
     if getattr(sys, "frozen", False):
         here = Path(sys.executable).resolve().parent
         # 1) Same folder as the current app (co-located / shared-folder install).

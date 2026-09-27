@@ -142,8 +142,8 @@ Control coverage: 226 audited sites (110 helped, 116 named-help).
 
 #### (module level) (`quill/ui/radio/audio_health_dialog.py`)
 
-- `ffmpeg_btn`: Downloads FFmpeg, the converter recording needs. Offered only when this installation is missing it.
-- `close_btn`: Closes Audio Health. Nothing here changes anything until a Get button runs.
+- `ffmpeg_btn`: Emergency repair: downloads FFmpeg, the converter recording needs, which normally ships inside Quill Radio. Offered only when this installation is missing it.
+- `close_btn`: Closes Audio Health. Nothing here changes anything until a Repair button runs.
 #### AudioTrackDialog (`quill/ui/radio/audio_track_dialog.py`)
 
 - `self._play_btn`: Switches playback to the highlighted audio track -- described audio, another language, a commentary -- without stopping.

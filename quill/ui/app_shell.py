@@ -981,11 +981,12 @@ class AppShellFrame(
         """Launch a full Quill process (v1: always a new process rather than
         focusing an existing one -- see docs/planning/apps.md for the
         follow-up IPC-based version)."""
-        command = (
-            [sys.executable, *paths]
-            if getattr(sys, "frozen", False)
-            else [sys.executable, "-m", "quill", *paths]
-        )
+        from quill.core.app_command import is_generic_interpreter
+
+        # A frozen quill.exe starts QUILL bare; the shared runtime (and any
+        # python) needs -m quill, or it starts nothing (2026-09-27).
+        bare = getattr(sys, "frozen", False) and not is_generic_interpreter(sys.executable)
+        command = [sys.executable, *paths] if bare else [sys.executable, "-m", "quill", *paths]
         try:
             # A detached, independent GUI process, not a monitored tool
             # invocation -- run_subprocess_safely blocks on a timeout, which

@@ -16,6 +16,10 @@
 ; and, for a media app, one define per tool it declares in REQUIRED_COMPONENTS:
 ;   #define ToolFfmpeg                    ; quill.apps.radio declares "ffmpeg"
 ;   #define ToolMpv                       ; ...and "mpv"
+; plus, for an app that plays YouTube (Radio), the JavaScript runtime yt-dlp
+; solves YouTube's challenges with, and for Radio the OptiLab Core adapter:
+;   #define ToolDeno                      ; tools\deno\deno.exe + DENO-LICENSE.txt
+;   #define ToolOptiLab                   ; quill-optilab.exe + its LICENSE/NOTICE
 ; and its [Icons]/[Run] should launch the app via:
 ;   {code:RuntimeExe} -m <the app's module>     (e.g. -m quill.apps.radio)
 
@@ -25,9 +29,10 @@
 ; build already installed. Without it the check could only see one side.
 Source: "{#RuntimeSourceDir}\quillville-runtime.json"; Flags: dontcopy noencryption
 ; The runtime itself, gated by RuntimeNeedsInstall so a second app skips it.
-; tools\ is excluded here and installed unconditionally below -- see why.
+; tools\ and the OptiLab adapter are excluded here and installed
+; unconditionally below -- see why.
 Source: "{#RuntimeSourceDir}\*"; DestDir: "{code:RuntimeDir}"; Components: runtime; \
-  Excludes: "tools,tools\*"; \
+  Excludes: "tools,tools\*,quill-optilab.exe,OptiLabCore-LICENSE.txt,OptiLabCore-NOTICE.txt"; \
   Check: RuntimeNeedsInstall; \
   Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
 
@@ -70,6 +75,31 @@ Source: "{#RuntimeSourceDir}\tools\ffmpeg\*"; DestDir: "{code:RuntimeDir}\tools\
 Source: "{#RuntimeSourceDir}\tools\mpv\*"; DestDir: "{code:RuntimeDir}\tools\mpv"; \
   Components: runtime; \
   Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+#endif
+; deno: yt-dlp's JavaScript runtime for YouTube's signature and "n" challenges
+; (quill.core.js_runtime.find_deno). Same reasoning as the tools above --
+; ungated, or a second app installed after a newer runtime would skip it and
+; YouTube would degrade with nothing downloaded to repair it (2026-09-27).
+#ifdef ToolDeno
+#pragma message "shared-runtime: packing tools\deno (this app plays YouTube)"
+Source: "{#RuntimeSourceDir}\tools\deno\*"; DestDir: "{code:RuntimeDir}\tools\deno"; \
+  Components: runtime; \
+  Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+#endif
+; The OptiLab Core adapter sits beside QuillVilleRuntime.exe (where
+; exact_optilab looks), so it used to ride inside the gated runtime wildcard
+; and a second app skipped it -- exactly the install-order trap the tools had.
+#ifdef ToolOptiLab
+#pragma message "shared-runtime: packing quill-optilab.exe (this app declares OptiLab)"
+Source: "{#RuntimeSourceDir}\quill-optilab.exe"; DestDir: "{code:RuntimeDir}"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
+Source: "{#RuntimeSourceDir}\OptiLabCore-LICENSE.txt"; DestDir: "{code:RuntimeDir}"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
+Source: "{#RuntimeSourceDir}\OptiLabCore-NOTICE.txt"; DestDir: "{code:RuntimeDir}"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
 #endif
 
 [Run]

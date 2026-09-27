@@ -46,6 +46,12 @@ nacl_datas, nacl_binaries, nacl_hidden = collect_all("nacl")
 # Collected explicitly -- its ~940 site extractors load through a lazy
 # registry the import tracer cannot follow.
 ytdlp_datas, ytdlp_binaries, ytdlp_hidden = collect_all("yt_dlp")
+# yt-dlp-ejs: the challenge-solver scripts (.js data files) yt-dlp hands to the
+# bundled deno. Imported lazily by yt-dlp, and data the tracer cannot see.
+ejs_datas, ejs_binaries, ejs_hidden = collect_all("yt_dlp_ejs")
+ytdlp_datas += ejs_datas
+ytdlp_binaries += ejs_binaries
+ytdlp_hidden += ejs_hidden
 
 a = Analysis(
     ["runtime_launcher.py"],

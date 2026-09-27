@@ -53,7 +53,7 @@ def is_youtube_station(station: RadioStation | None) -> bool:
 #: on "connecting", with no way to tell that the fix is one menu item away.
 STALE_COMPONENT_MESSAGE = (
     "YouTube refused the stream address. That usually means the YouTube support "
-    "component is out of date: use Station, then Update YouTube Support, and try again."
+    "component is out of date: use Station, then Repair YouTube Support, and try again."
 )
 
 

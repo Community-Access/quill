@@ -6236,6 +6236,11 @@ kokoro = [
     { name = "kokoro-onnx" },
     { name = "soundfile" },
 ]
+live-dictation = [
+    { name = "numpy" },
+    { name = "sherpa-onnx" },
+    { name = "sounddevice" },
+]
 mac = [
     { name = "pyobjc-framework-cocoa", marker = "sys_platform == 'darwin'" },
 ]
@@ -6299,6 +6304,7 @@ runtime = [
     { name = "latex2mathml" },
     { name = "markitdown", extra = ["docx", "pdf", "pptx", "xls", "xlsx"] },
     { name = "mutagen" },
+    { name = "numpy" },
     { name = "openpyxl" },
     { name = "pdfplumber" },
     { name = "pillow" },
@@ -6312,6 +6318,7 @@ runtime = [
     { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "quill-glow-core", extra = ["glow"] },
     { name = "quill-social" },
+    { name = "sherpa-onnx" },
     { name = "sound-lib" },
     { name = "sounddevice" },
     { name = "soundfile" },
@@ -6325,6 +6332,7 @@ runtime = [
     { name = "wx-accessible-webview" },
     { name = "wxpython" },
     { name = "yt-dlp" },
+    { name = "yt-dlp-ejs" },
 ]
 signing = [
     { name = "pynacl" },
@@ -6359,6 +6367,7 @@ vosk = [
 youtube = [
     { name = "curl-cffi" },
     { name = "yt-dlp" },
+    { name = "yt-dlp-ejs" },
 ]
 
 [package.metadata]
@@ -6402,7 +6411,9 @@ requires-dist = [
     { name = "mutagen", marker = "extra == 'mp3'", specifier = ">=1.48.1" },
     { name = "mutagen", marker = "extra == 'runtime'", specifier = ">=1.48.1" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.3.0" },
+    { name = "numpy", marker = "extra == 'live-dictation'", specifier = ">=2.5.1" },
     { name = "numpy", marker = "extra == 'nemotron'", specifier = ">=2.5.3" },
+    { name = "numpy", marker = "extra == 'runtime'", specifier = ">=2.5.1" },
     { name = "openai-agents", marker = "extra == 'ai-openai'", specifier = ">=0.22.3" },
     { name = "openpyxl", marker = "extra == 'office-text'", specifier = ">=3.1.5" },
     { name = "openpyxl", marker = "extra == 'runtime'", specifier = ">=3.1.5" },
@@ -6454,9 +6465,12 @@ requires-dist = [
     { name = "requests", specifier = ">=2.34.2" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.16.8" },
     { name = "setuptools", marker = "sys_platform == 'darwin' and extra == 'macos'", specifier = "<85" },
+    { name = "sherpa-onnx", marker = "extra == 'live-dictation'", specifier = ">=1.13.8" },
     { name = "sherpa-onnx", marker = "extra == 'nemotron'", specifier = ">=1.13.8" },
+    { name = "sherpa-onnx", marker = "extra == 'runtime'", specifier = ">=1.13.8" },
     { name = "sound-lib", marker = "extra == 'audio'", specifier = ">=0.83" },
     { name = "sound-lib", marker = "extra == 'runtime'", specifier = ">=0.83" },
+    { name = "sounddevice", marker = "extra == 'live-dictation'", specifier = ">=0.5.6" },
     { name = "sounddevice", marker = "extra == 'runtime'", specifier = ">=0.5.6" },
     { name = "sounddevice", marker = "extra == 'speech'", specifier = ">=0.5.6" },
     { name = "soundfile", marker = "extra == 'kokoro'", specifier = ">=0.14.0" },
@@ -6482,8 +6496,10 @@ requires-dist = [
     { name = "wxpython", marker = "extra == 'ui'", specifier = "==4.3.1" },
     { name = "yt-dlp", marker = "extra == 'runtime'", specifier = ">=2026.8.19" },
     { name = "yt-dlp", marker = "extra == 'youtube'", specifier = ">=2026.8.19" },
+    { name = "yt-dlp-ejs", marker = "extra == 'runtime'", specifier = "==0.8.0" },
+    { name = "yt-dlp-ejs", marker = "extra == 'youtube'", specifier = "==0.8.0" },
 ]
-provides-extras = ["ai", "ai-claude", "ai-copilot", "ai-openai", "audio", "dev", "dictation", "docx", "elevenlabs", "fasterwhisper", "feedback", "github", "glow", "kokoro", "mac", "macos", "math", "mp3", "native-build", "nemotron", "ocr", "office-text", "packaging", "pages", "pdf-ocr", "rapidfuzz", "runtime", "signing", "social-app", "speech", "spellcheck", "ssh", "ui", "vosk", "youtube"]
+provides-extras = ["ai", "ai-claude", "ai-copilot", "ai-openai", "audio", "dev", "dictation", "docx", "elevenlabs", "fasterwhisper", "feedback", "github", "glow", "kokoro", "live-dictation", "mac", "macos", "math", "mp3", "native-build", "nemotron", "ocr", "office-text", "packaging", "pages", "pdf-ocr", "rapidfuzz", "runtime", "signing", "social-app", "speech", "spellcheck", "ssh", "ui", "vosk", "youtube"]
 
 [[package]]
 name = "quill-glow-core"
@@ -7435,4 +7451,13 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/41/f2/807798fc6bd0f69fa2779f88b8f754b5e930db0486b09fd87cb91a23985e/yt_dlp-2026.9.16.232951.dev0.tar.gz", hash = "sha256:5e83673631da906cd920e275df07b4874c64f1135e5f18d0503ebebe290a313c", size = 3055019, upload-time = "2026-09-16T23:33:57.046Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f5/d6/d14bdbfa1a7e41ce4fad4a277dddeb925117faef33f063478f6b45587756/yt_dlp-2026.9.16.232951.dev0-py3-none-any.whl", hash = "sha256:6d2bfe8655e45d7d08a2a868c09ee39738f032aad3295904f51a8bc061338309", size = 3187199, upload-time = "2026-09-16T23:33:54.102Z" },
+]
+
+[[package]]
+name = "yt-dlp-ejs"
+version = "0.8.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d3/e6/cceb9530e8f4e5940f6f7822d90e9d94f1b85343329a16baaf47bbbb3de1/yt_dlp_ejs-0.8.0.tar.gz", hash = "sha256:d5fa1639f63b5c4af8d932495f60689d5370f1a095782c944f7f62a303eb104e", size = 96571, upload-time = "2026-03-17T22:49:19.299Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/bd/520769863744b669440a924271a6159ddd82ad5ae26b4ac4d4b69e9f8d44/yt_dlp_ejs-0.8.0-py3-none-any.whl", hash = "sha256:79300e5fca7f937a1eeede11f0456862c1b41107ce1d726871e0207424f4bdb4", size = 53443, upload-time = "2026-03-17T22:49:17.736Z" },
 ]

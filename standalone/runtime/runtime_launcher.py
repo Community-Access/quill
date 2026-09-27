@@ -99,6 +99,12 @@ def main() -> int:
     else:
         _tell(_USAGE)
         return 2
+    # Started without an app launcher -- a taskbar pin Windows made from the
+    # running process targets this exe directly -- nothing exported the app
+    # root, and every "bundled beside the runtime" lookup (libmpv, ffmpeg)
+    # missed. The launcher sets it to this same folder, so default to that.
+    if getattr(sys, "frozen", False):
+        os.environ.setdefault("QUILL_APP_ROOT", os.path.dirname(os.path.abspath(sys.executable)))
     # Re-shape argv so the target module sees itself as __main__ with its own
     # arguments, just as `python -m module ...` would.
     sys.argv = [module, *rest]

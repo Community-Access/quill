@@ -2,6 +2,19 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.0.md` (Help > Release Notes, Shift+F1) for the fuller narrative version of the latest release.
 
+## [3.0.1] - 2026-09-27
+
+A fix release. 3.0.0 is withdrawn and its downloads are gone; 3.0.1 replaces it.
+
+- **3.0.0 was withdrawn; everything in it is in 3.0.1.** Download `Quill-Radio-Setup-Shared-3.0.1.exe` (the installer) or `Quill-Radio-Portable-3.0.1.zip` (unpack anywhere) from <https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.1>. Install 3.0.1 over 3.0.0; your favorites, settings and recordings stay.
+- **The installer's checkboxes are real Windows checkboxes.** Create a desktop icon and Launch Quill Radio now tell a screen reader whether they are checked. In 3.0.0 they did not.
+- **The app starts on a fresh install.** 3.0.0 could stop at launch with a script error ("'NoneType' object has no attribute 'write'"). The runtime launcher no longer depends on a console window that a windowed app does not have.
+- **Start with Windows and the scheduled-recording wake start the app.** Both started the shared runtime without saying which app to run, so nothing useful opened. They now start Quill Radio itself.
+- **Entries an older build wrote are repaired.** If Start with Windows or a pending recording wake was set up by 3.0.0, Quill Radio rewrites it the next time it starts; nothing is created that you had not turned on.
+- **The bundled mpv engine is found however Quill Radio is started.** Started straight through the runtime, 3.0.0 could report "mpv engine not available" and fall back to a lesser player.
+- Everything is bundled: ffmpeg, mpv, yt-dlp and the JavaScript engine YouTube needs; nothing downloads on first use. The Repair items on the Help menu are for emergencies.
+- **An old desktop icon is repaired.** Icons from earlier installers started the runtime directly and skipped the app's launcher. If one is there, the installer keeps the desktop icon box checked and replaces it with one that starts Quill Radio properly.
+
 ## [3.0.0] - 2026-09-26
 
 ### 3.0 in brief
@@ -18,7 +31,6 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
 
 ### Final release changes (2026-09-26)
 
-- **The installer's checkboxes are real Windows checkboxes.** Create a desktop icon and Launch Quill Radio now tell a screen reader whether they are checked; the old list announced every box as not checked. Both still start unchecked.
 - **Two downloads, not four.** The installer, `Quill-Radio-Setup-Shared-3.0.0.exe`, is the one most people want: it installs the shared QuillVille Runtime if it is not already there, then the app, with a Start Menu entry and an uninstaller. The portable zip, `Quill-Radio-Portable-3.0.0.zip`, is self-contained and unpacks anywhere, a USB stick included. The thin "Lite" installer and the Companion zip are retired, for the reasons QUILL Lite retired them: the Companion zip installed nothing and ran on whatever runtime was already on the machine, which could be older than the app and could not repair itself; the thin installer saved download size by adding a first-launch runtime download and a network dependency. If you have either, you lose nothing -- the installer upgrades a thin install in place, and Check for Updates on a Companion copy offers you the installer.
 - **A new portable copy offers an earlier copy's favorites.** Quill Radio 2.x kept its data in the computer's profile even when run from the portable zip. On first launch, a 3.0 portable copy with no favorites of its own asks once whether to copy the earlier copy's favorites, settings, recording schedule and reminders into itself. The earlier copy is only read.
 - **A portable copy writes nothing to the computer it runs on.** Settings, favorites, history and everything else live in the `data` folder beside `QuillRadio.exe`, from the very first launch, with no setting to find first. Delete that folder and the copy becomes an ordinary one that uses this computer's profile.

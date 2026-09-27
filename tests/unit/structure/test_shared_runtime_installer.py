@@ -209,10 +209,37 @@ def test_the_runtime_wildcard_excludes_the_tools_it_no_longer_installs() -> None
     source = FRAGMENT.read_text(encoding="utf-8")
     gated = _files_entry(source, r'Source: "{#RuntimeSourceDir}\*"')
     assert "Check: RuntimeNeedsInstall" in gated, "the runtime itself must stay gated"
-    assert r'Excludes: "tools,tools\*"' in gated, (
+    assert r'Excludes: "tools,tools\*,' in gated, (
         "the gated runtime wildcard must exclude tools\\, which is now installed "
         "by its own entries -- otherwise the payload carries them twice"
     )
+
+
+def test_deno_is_installed_unconditionally_for_the_apps_that_play_youtube() -> None:
+    """yt-dlp's JS runtime: bundled, ungated, and only where YouTube is used."""
+    source = FRAGMENT.read_text(encoding="utf-8")
+    marker = r'Source: "{#RuntimeSourceDir}\tools\deno\*"'
+    assert marker in source
+    entry = _files_entry(source, marker)
+    assert "Check:" not in entry
+    assert r'DestDir: "{code:RuntimeDir}\tools\deno"' in entry
+    assert "#ifdef ToolDeno" in source
+    wanted = {"standalone/radio/installer/quill-radio.iss"}
+    for relative in SHARED_RUNTIME_INSTALLERS:
+        text = (REPO / relative).read_text(encoding="utf-8")
+        assert ("#define ToolDeno" in text) == (relative in wanted), relative
+
+
+def test_the_optilab_adapter_is_not_behind_the_runtime_gate() -> None:
+    """quill-optilab.exe rode the gated wildcard, so a second app skipped it."""
+    source = FRAGMENT.read_text(encoding="utf-8")
+    gated = _files_entry(source, r'Source: "{#RuntimeSourceDir}\*"')
+    assert "quill-optilab.exe" in gated.split("Excludes:", 1)[1].split(";", 1)[0]
+    entry = _files_entry(source, r'Source: "{#RuntimeSourceDir}\quill-optilab.exe"')
+    assert "Check:" not in entry
+    assert "#ifdef ToolOptiLab" in source
+    radio = (REPO / "standalone/radio/installer/quill-radio.iss").read_text(encoding="utf-8")
+    assert "#define ToolOptiLab" in radio
 
 
 def test_each_media_installer_declares_exactly_the_tools_its_app_requires() -> None:

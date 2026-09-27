@@ -105,10 +105,10 @@ _MP3_MODULE = "mutagen"
 _MP3_REQUIREMENTS: tuple[str, ...] = ("mutagen>=1.48.1",)
 
 #: yt-dlp (Quill Radio's YouTube stations; the audio-converter URL import,
-#: #1255 §4.6). Now *bundled* (pyproject's ``youtube`` extra), so this is the
-#: **upgrade** path, and still consent-gated at the call site. The floor tracks
-#: the bundled pin -- an engine-pack copy *shadows* the bundled one, so a pack
-#: resolved older would be an "update" that breaks YouTube (pinned by a test).
+#: #1255 §4.6). *Bundled* (pyproject's ``youtube`` extra), so this is the
+#: emergency **repair** path (yt_dlp_update: PyPI wheel, no pip), consent-gated
+#: at the call site. The floor tracks the bundled pin, and a pack copy shadows
+#: the bundled one only when it is newer (pinned by tests).
 _YT_DLP_PACK = "yt-dlp"
 _YT_DLP_MODULE = "yt_dlp"
 _YT_DLP_REQUIREMENTS: tuple[str, ...] = ("yt-dlp>=2026.8.19",)
@@ -177,6 +177,8 @@ def activate_engine_packs() -> None:
     """
     changed = False
     for pack in _known_pack_dirs():
+        if pack == yt_dlp_pack_dir():
+            continue  # a meta-path finder, and only when newer (below)
         try:
             if not pack.is_dir() or not any(pack.iterdir()):
                 continue
@@ -192,12 +194,19 @@ def activate_engine_packs() -> None:
 
 
 def prefer_engine_pack_yt_dlp() -> bool:
-    """Make an updated engine-pack yt-dlp shadow the bundled copy (idempotent).
+    """Let a repaired yt-dlp shadow the bundled copy -- only if it is NEWER.
 
-    Needs a meta-path finder, not a ``sys.path`` entry, once the app is frozen:
-    see :mod:`quill.core.speech.engine_pack_imports`.
+    A pack left by an older repair, after an app update shipped a newer
+    yt-dlp, is ignored. A meta-path finder, not a ``sys.path`` entry, because
+    of the frozen build: see :mod:`quill.core.speech.engine_pack_imports`.
     """
-    return prefer_pack_module(yt_dlp_pack_dir(), _YT_DLP_MODULE)
+    from quill.core.speech.yt_dlp_update import EJS_MODULE, pack_is_newer_than_bundled
+
+    pack = yt_dlp_pack_dir()
+    if not pack_is_newer_than_bundled(pack):
+        return False
+    prefer_pack_module(pack, EJS_MODULE)  # its matching solver, when it brought one
+    return prefer_pack_module(pack, _YT_DLP_MODULE)
 
 
 def faster_whisper_install_supported() -> bool:
@@ -512,12 +521,13 @@ def install_mp3_support(
 
 
 def yt_dlp_install_supported() -> bool:
-    """True when QUILL can install yt-dlp on demand (pip must be importable)."""
-    return importlib.util.find_spec("pip") is not None
+    """Always True: the repair downloads a wheel directly and needs no pip."""
+    return True
 
 
 def is_yt_dlp_available() -> bool:
-    """True when the ``yt_dlp`` module is importable (after activation)."""
+    """True when ``yt_dlp`` is importable, a newer repaired pack preferred."""
+    prefer_engine_pack_yt_dlp()
     return importlib.util.find_spec(_YT_DLP_MODULE) is not None
 
 
@@ -525,71 +535,50 @@ def install_yt_dlp(
     progress: ProgressCallback | None = None,
     *,
     dest_dir: Path | None = None,
-    python_executable: str | None = None,
-    timeout_seconds: float = _INSTALL_TIMEOUT_S,
-    runner: Callable[..., object] | None = None,
+    fetch: Callable[[str], bytes] | None = None,
+    download: Callable[[str, Path, str], None] | None = None,
 ) -> Path:
-    """Install yt-dlp wheel-only into an engine-pack, returning the pack folder.
+    """Repair YouTube support: the newest yt-dlp wheel into its engine pack.
 
-    Mirrors :func:`install_mp3_support`: pure-Python, activated on ``sys.path``
-    immediately, and prefers the Offline Edition's bundled wheelhouse
-    (:func:`_bundled_wheelhouse_dir`) over PyPI when present. The caller must
-    have already obtained explicit user consent (URL import reaches arbitrary
-    media hosts). Raises :class:`EngineInstallError` on Safe Mode, unavailable
-    pip, a non-zero pip exit, or if yt-dlp still cannot import.
+    Emergency repair only -- yt-dlp is bundled -- and an explicit user action
+    (the caller has asked). No pip: :mod:`quill.core.speech.yt_dlp_update`
+    reads PyPI's JSON, verifies the wheel's published SHA-256 and unzips it,
+    so it works in the shared runtime and the portable alike. Raises
+    :class:`EngineInstallError` on Safe Mode or failure, and
+    ``YtDlpAlreadyCurrent`` (a subclass) when nothing needed repairing.
     """
+    from quill.core.speech import yt_dlp_update
+
     if os.environ.get("QUILL_SAFE_MODE") == "1":
         raise EngineInstallError("Downloading components is disabled in Safe Mode.")
-    if not yt_dlp_install_supported():
-        raise EngineInstallError(
-            "This build cannot install yt-dlp automatically (pip is unavailable). "
-            "Install it from source with: pip install yt-dlp"
-        )
     dest = Path(dest_dir) if dest_dir is not None else yt_dlp_pack_dir()
-    dest.mkdir(parents=True, exist_ok=True)
-    python_exe = python_executable or sys.executable
-    if not python_exe:
-        raise EngineInstallError("Could not locate the Python runtime to install into.")
-    wheelhouse = _bundled_wheelhouse_dir("yt-dlp")
-    extra_args = ("--no-index", "--find-links", str(wheelhouse)) if wheelhouse is not None else ()
-    if progress is not None:
-        progress(0.05, "Preparing to install yt-dlp...")
-    command = _pip_command(dest, _YT_DLP_REQUIREMENTS, python_exe, extra_args=extra_args)
-    run = runner if runner is not None else _default_runner
-    _LOG.info("yt-dlp install: running %s", " ".join(command))
-    if progress is not None:
-        label = (
-            "Installing yt-dlp from the offline bundle..."
-            if wheelhouse is not None
-            else "Downloading yt-dlp..."
-        )
-        progress(0.15, label)
+    floor = _YT_DLP_REQUIREMENTS[0].split(">=", 1)[1]
     try:
-        result = run(command, timeout_seconds=timeout_seconds)
-    except Exception as exc:  # noqa: BLE001
-        _LOG.exception("yt-dlp install: pip runner could not start")
-        raise EngineInstallError(f"Could not run the installer: {exc}") from exc
-    returncode = int(getattr(result, "returncode", 1))
-    if returncode != 0:
-        detail = _tail(getattr(result, "stderr", "") or getattr(result, "stdout", ""))
-        _LOG.error("yt-dlp install failed (pip exit %s). Output tail: %s", returncode, detail)
-        raise EngineInstallError(f"yt-dlp installation failed (pip exit {returncode}). {detail}")
-    if progress is not None:
-        progress(0.9, "Finishing up...")
-    if str(dest) not in sys.path:
-        sys.path.insert(0, str(dest))
-    importlib.invalidate_caches()
-    # yt-dlp is bundled, so a sys.path entry alone would still lose to the
-    # built-in copy in a frozen build. This is what makes an update take.
-    prefer_engine_pack_yt_dlp()
-    if not is_yt_dlp_available():
-        _LOG.error("yt-dlp installed into %s but the module is not importable", dest)
-        raise EngineInstallError(
-            "yt-dlp was installed but could not be imported. Try restarting QUILL."
+        version = yt_dlp_update.repair(
+            dest, floor=floor, progress=progress, fetch=fetch, download=download
         )
+    except yt_dlp_update.YtDlpAlreadyCurrent as exc:
+        raise YtDlpAlreadyCurrent(str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001 - one clean, coded message
+        _LOG.error("yt-dlp repair failed: %s", exc)
+        raise EngineInstallError(f"YouTube support could not be repaired. {exc}") from exc
+    _LOG.info("yt-dlp repaired to %s in %s", version, dest)
+    # Forget the copy already imported this session, so the next import
+    # resolves through the finder to the repaired one.
+    for name in [m for m in sys.modules if m.split(".")[0] in ("yt_dlp", "yt_dlp_ejs")]:
+        sys.modules.pop(name, None)
+    importlib.invalidate_caches()
+    if dest_dir is None and not prefer_engine_pack_yt_dlp():
+        raise EngineInstallError("yt-dlp was repaired but is not in use. Try restarting.")
     if progress is not None:
         progress(1.0, "Done.")
     return dest
+
+
+class YtDlpAlreadyCurrent(EngineInstallError):
+    """The YouTube support in use is already the newest release."""
+
+    code = "QUILL-SPEECH-YTDLP-UPTODATE"
 
 
 def install_vosk(

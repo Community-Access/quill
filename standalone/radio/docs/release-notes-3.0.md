@@ -1,6 +1,25 @@
 # Quill Radio 3.0 Release Notes
 
-Version 3.0.0, released 2026-09-26.
+Version 3.0.1, released 2026-09-27.
+
+## 3.0.1
+
+3.0.1 replaces 3.0.0, which was withdrawn; everything in 3.0.0 is in 3.0.1.
+It fixes five things 3.0.0 got wrong:
+
+- The installer's checkboxes are real Windows checkboxes, so a screen reader
+  says whether Create a desktop icon and Launch Quill Radio are checked.
+- The app starts on a fresh install. 3.0.0 could stop at launch with a script
+  error.
+- Start with Windows and the scheduled-recording wake start Quill Radio
+  correctly.
+- The bundled mpv engine is found however Quill Radio is started, so it no
+  longer reports "mpv engine not available".
+- Everything is bundled: ffmpeg, mpv, yt-dlp and the JavaScript engine YouTube
+  needs; nothing downloads on first use. The Repair items on the Help menu are
+  for emergencies.
+
+Install 3.0.1 over 3.0.0; your favorites, settings and recordings stay.
 
 ## What Quill Radio is
 
@@ -16,11 +35,11 @@ published, so its changes are included here too.
 
 There are two downloads. Both are code-signed.
 
-- **Quill-Radio-Setup-Shared-3.0.0.exe** is the installer, and the right choice
+- **Quill-Radio-Setup-Shared-3.0.1.exe** is the installer, and the right choice
   for most people. It installs the shared QuillVille Runtime if it is not
   already on the computer, then Quill Radio, with a Start Menu entry and an
   uninstaller.
-- **Quill-Radio-Portable-3.0.0.zip** is the portable copy. Unpack it anywhere,
+- **Quill-Radio-Portable-3.0.1.zip** is the portable copy. Unpack it anywhere,
   including a USB stick, and run `QuillRadio.exe`. It needs no installation and
   no internet.
 
@@ -395,8 +414,9 @@ point.
   subscriptions.csv file from your own Google export. No sign-in, nothing
   stored, nothing sent to Google.
 - The yt-dlp helper is built in, so your first link just plays.
-  **Station > Update YouTube Support (Ctrl+Alt+Y)** fetches a newer helper when
-  YouTube changes. It asks first and is off in Safe Mode.
+  **Station > Repair YouTube Support (Ctrl+Alt+Y)** is the emergency repair: it
+  fetches a newer helper when YouTube changes. It asks first and is off in
+  Safe Mode.
 - Quill Radio does not download YouTube videos, and YouTube Premium and watch
   history cannot be used, because YouTube's terms do not allow it.
 
@@ -673,8 +693,8 @@ Seeking needs the mpv engine and a finished recording.
   saved. It tests nothing, so it is safe during a recording.
 - If mpv or FFmpeg goes missing, Quill Radio says so once at launch, with what
   it costs and the fix. A station that needs mpv says which format and why.
-- **Help > Get mpv Playback Engine (Ctrl+Alt+M)** and **Get FFmpeg
-  (Ctrl+Alt+F)** fetch them. Installing family apps in any order now installs
+- **Help > Repair mpv Playback Engine (Ctrl+Alt+M)** and **Repair FFmpeg
+  (Ctrl+Alt+F)** fetch them in an emergency. Installing family apps in any order now installs
   both correctly, and reinstalling restores them.
 - **Help > Recent Problems (Ctrl+Alt+Shift+P)** lists recent failures with the
   reason and time. Retry tries again, and Copy All copies the list without

@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import sys
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from functools import lru_cache
@@ -58,12 +59,19 @@ def ffmpeg_search_dirs() -> list[Path]:
 
     1. ``{QUILL_APP_ROOT}/tools/ffmpeg`` — a copy shipped beside a portable build
        or dropped in by the user (mirrors the whisper.cpp engine layout).
-    2. ``<data>/tools/ffmpeg`` — a copy a future "Download FFmpeg" action installs.
+    2. ``<exe dir>/tools/ffmpeg`` — the shared runtime's (or portable bundle's)
+       own folder. An app started straight through ``QuillVilleRuntime.exe`` --
+       a taskbar pin Windows made from the running process -- has no launcher
+       to export ``QUILL_APP_ROOT``; this mirrors ``find_libmpv``.
+    3. ``<data>/tools/ffmpeg`` — a copy the Help-menu repair action installs.
     """
     dirs: list[Path] = []
     app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
     if app_root:
         dirs.append(Path(app_root) / "tools" / "ffmpeg")
+    exe_dir = Path(sys.executable).parent / "tools" / "ffmpeg"
+    if exe_dir not in dirs:
+        dirs.append(exe_dir)
     dirs.append(models.app_data_dir() / "tools" / "ffmpeg")
     return dirs
 

@@ -278,7 +278,7 @@ def test_a_youtube_failure_names_the_repair(wx_app) -> None:
 
     spoken = playback_failure_message(_youtube_station(), "the engine gave up")
 
-    assert "Update YouTube Support" in spoken
+    assert "Repair YouTube Support" in spoken
     assert spoken.startswith(STALE_COMPONENT_MESSAGE)
     # Everything else keeps the engine's own words.
     assert (
