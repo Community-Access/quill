@@ -36,6 +36,12 @@ from __future__ import annotations
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Tag Editor": (
+        "Every tag of one MP3, M4A, M4B or MP4 file, over five pages -- title, "
+        "artist and album, the people, the dates and numbers, sorting, and the "
+        "cover art. Control+Tab moves between pages. OK writes the tags into "
+        "the file; the sound itself is not touched."
+    ),
     "Chapter Workbench": (
         "Edit the chapters of an MP3, M4B or M4A: hear it, then add, rename, "
         "move, split and merge chapters at the playhead, find them at the "

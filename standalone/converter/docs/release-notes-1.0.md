@@ -174,7 +174,9 @@ you change one, and they shape the same Convert as everything else on the page.
 Paste files you copied in File Explorer (Ctrl+V), drop them on the list, reorder
 with Alt+Up and Alt+Down, clear with Ctrl+Shift+Delete. **File Properties**
 (Alt+Enter) tells you what is inside a file -- its length, tracks, languages,
-cover art and chapters -- in plain words, before you convert it.
+cover art and chapters -- in plain words, before you convert it. **Edit Tags**
+(Ctrl+T) opens Audio Studio's Tag Editor right inside Quill Converter: every
+tag of an MP3, M4A, M4B or MP4 over five pages, and its cover art.
 
 ### Reasons, not error codes
 

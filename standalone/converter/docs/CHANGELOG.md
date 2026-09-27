@@ -150,6 +150,11 @@ had is included here.
 
 ### Queue and reports
 
+- **Edit Tags (Queue > Edit Tags..., Ctrl+T).** The Audio Studio's Tag
+  Editor, shared into Quill Converter: every tag of an MP3, M4A, M4B or MP4 over
+  five pages, and the cover art, written into the file without touching the
+  sound or the chapters. Other formats are refused in words rather than risk
+  damage.
 - Paste files copied in File Explorer with Ctrl+V (a text box still pastes
   text), and drag and drop onto the queue.
 - Reorder with Alt+Up and Alt+Down; Remove from Queue (Ctrl+Delete); Clear

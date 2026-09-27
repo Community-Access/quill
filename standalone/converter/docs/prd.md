@@ -130,6 +130,11 @@ In scope for 1.0.0:
   CSV), book tags, Save (MP3 in place, tags only; M4B Save As, lossless) and
   split into files. Other formats are pointed at the chapter-list route or a
   conversion to M4B or MP3 first. Preview ignores chapters.
+- **Edit Tags** (Queue > Edit Tags..., Ctrl+T). Audio Studio's Tag Editor,
+  shared: every modelled tag (26 fields over four pages) plus cover art, for
+  MP3, M4A, M4B and MP4, written in place without re-encoding and without
+  touching chapter frames. Other formats are refused in words: an ID3 block
+  written onto FLAC or WAV would damage it.
 - **Join into One File.** The queue, in order, into one sound file, with a
   chapter per source in every format that holds chapters (MP3 included), and
   as comments or a `.cue` sheet for the rest; sources of different shapes are
@@ -178,9 +183,11 @@ In scope for 1.0.0:
 
 Out of scope, by decision:
 
-- Cover-art editing and recording. Those are Audio Studio and QUILL Cast
-  territory. (Chapter and book-tag editing are in scope only through the reused
-  Chapter Workbench; the Converter builds no editor of its own.)
+- Recording. That is Audio Studio and QUILL Cast territory. (Chapter, tag and
+  cover-art editing are in scope only through reused Audio Studio surfaces --
+  the Chapter Workbench and the Tag Editor; the Converter builds no editor of
+  its own. The rest of Audio Studio -- the audiobook-from-a-folder journey, the
+  ACX check, captions, documents to speech, publishing -- is for later.)
 - Saving user-defined named presets in 1.0. Custom Effects is one remembered
   custom recipe.
 - Video effects (picture filters, cropping, rotation) and subtitle burn-in.

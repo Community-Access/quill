@@ -10,6 +10,10 @@ from pathlib import Path
 
 import pytest
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file builds a
+#: real Quill Converter window, which registers the system-wide show/hide hotkey
+#: (RegisterHotKey is per-desktop, not per-process) and a tray icon.
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
 pytestmark = pytest.mark.machine_global
 
 
@@ -220,3 +224,28 @@ def test_the_workbench_explains_other_formats(converter, tmp_path: Path) -> None
     converter.add_paths(_files(tmp_path, "talk.wav"), announce=False)
     converter.open_chapter_workbench()
     assert "talk.chapters.txt" in converter.boxes[-1]
+
+
+def test_edit_tags_opens_the_shared_tag_editor_for_mp3_and_m4b(
+    converter, tmp_path, monkeypatch
+) -> None:
+    import quill.ui.audio_studio.tag_editor as tag_editor
+
+    opened: list[Path] = []
+    monkeypatch.setattr(tag_editor, "open_tags_in_editor", lambda _host, path: opened.append(path))
+    book, talk = _files(tmp_path, "book.m4b", "talk.flac")
+    converter.add_paths([book, talk], announce=False)
+    converter._list.SetSelection(0)
+    converter.edit_tags()
+    assert opened == [book]
+    converter._list.SetSelection(1)
+    converter.edit_tags()
+    assert opened == [book]  # a FLAC is refused, never given an ID3 block
+    assert "MP3, M4A, M4B and MP4" in converter.boxes[-1]
+
+
+def test_edit_tags_is_on_the_queue_menu(converter) -> None:
+    bar = converter.frame.GetMenuBar()
+    queue = bar.GetMenu(1)
+    labels = [item.GetItemLabel() for item in queue.GetMenuItems()]
+    assert "Edit &Tags...	Ctrl+T" in labels

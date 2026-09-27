@@ -521,6 +521,25 @@ the summary and left alone.
 Adding the same file twice queues it once. A file that is not a media file is
 left out, and the announcement says how many were.
 
+## Editing tags
+
+**Queue > Edit Tags...** (Ctrl+T) opens the Tag Editor on the highlighted file:
+the same editor Audio Studio uses, built into Quill Converter so nothing else
+needs installing. Every tag the file can carry is there, over five pages --
+the title, artist and album; the people (composer, narrator and the rest); the
+dates and numbers (year, track, disc); sorting; and the cover art, which you
+can add, replace or remove from a JPEG or PNG. Control+Tab moves to the next
+page and Control+Shift+Tab to the previous one; Tab moves between the fields.
+
+Press OK and the tags are written into the file; the sound itself is not
+touched, and chapter marks are kept. Cancel changes nothing.
+
+The Tag Editor works on MP3, M4A, M4B and MP4 files. For another format, such
+as FLAC or WAV, Quill Converter says so rather than risk damaging it: convert it
+to one of those four first -- its tags come along -- and edit the converted copy.
+Tags also travel through every conversion by themselves, and the Chapter
+Workbench has the five most-used book tags on its own page.
+
 ## During and after a conversion
 
 - **Stop:** Ctrl+Enter or the Stop Converting button. The file being converted is allowed
@@ -630,6 +649,7 @@ every key in a read-only window you can arrow through.
 | --- | --- |
 | File Properties... | Alt+Enter |
 | Chapter Workbench... | Ctrl+H |
+| Edit Tags... | Ctrl+T |
 | Remove from Queue | Ctrl+Delete |
 | Clear Queue | Ctrl+Shift+Delete |
 | Move Up | Alt+Up |
