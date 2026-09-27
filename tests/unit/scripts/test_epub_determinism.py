@@ -65,7 +65,7 @@ def test_epoch_matches_the_powershell_implementation() -> None:
 
 def test_powershell_scripts_pin_the_epoch_and_identifier() -> None:
     """Every render script must go through both determinism controls."""
-    for app in ("radio", "weather", "cast", "social", "studio"):
+    for app in ("radio", "weather", "cast", "social", "studio", "converter"):
         script = Path(f"standalone/{app}/scripts/render_docs.ps1").read_text(encoding="utf-8")
         assert "Invoke-WithSourceDateEpoch" in script, f"{app} does not pin SOURCE_DATE_EPOCH"
         assert "Get-QuillEpubIdentifier" in script, f"{app} does not pin the EPUB identifier"

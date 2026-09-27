@@ -145,6 +145,13 @@ Type: filesandordirs; Name: "{autoprograms}\QuillLite"
 Type: files; Name: "{autodesktop}\QuillLite.lnk"
 
 [Icons]
+; There is no [Tasks] section and no postinstall [Run] entry, on purpose.
+; Both put their checkboxes in the wizard's TNewCheckListBox, a custom-drawn
+; control that does not expose its checked state: a screen reader announces
+; every box as "not checked" whatever it is. The [Code] section at the end of
+; this script builds the same choices, with the same defaults, out of native
+; Windows checkboxes (TNewCheckBox), which announce checked and not checked.
+; tests/unit/scripts/test_installer_accessible_checkboxes.py keeps it so.
 ; Every shortcut launches through {app}\QuillLite.exe -- the native launcher,
 ; which resolves the shared runtime itself and runs `-m quill.apps.lite` in it.
 ;
@@ -166,10 +173,7 @@ Type: files; Name: "{autodesktop}\QuillLite.lnk"
 Name: "{group}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; Tasks: desktopicon; Components: main
-
-[Tasks]
-Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; Check: WantsDesktopIcon; Components: main
 
 [Registry]
 ; "Open with QUILL Lite" on .txt and .rtf, as an OPTIONAL component and never as
@@ -189,9 +193,6 @@ Root: HKA; Subkey: "Software\Classes\.markdown\OpenWithList\QuillLite.exe"; Flag
 Root: HKA; Subkey: "Software\Classes\.html\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\.htm\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
 
-[Run]
-Filename: "{app}\QuillLite.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
-
 [UninstallDelete]
 ; Remove only QUILL Lite's own {app} payload. The shared runtime is left to the
 ; fragment's CurUninstallStepChanged, which deletes it only when unreferenced.
@@ -202,3 +203,71 @@ Type: filesandordirs; Name: "{app}"
 ; somebody may not have finished with, and an uninstaller is the worst possible
 ; moment to discover that. The folder is named in Help > About, and deleting it
 ; is one keystroke for anyone who wants to.
+
+[Code]
+var
+  { Native checkboxes; see the note at the top of [Icons]. }
+  DesktopIconCheck: TNewCheckBox;
+  LaunchCheck: TNewCheckBox;
+
+procedure InitializeWizard;
+var
+  TasksPage: TWizardPage;
+begin
+  { The page the [Tasks] section used to produce, in the same place in the
+    wizard (after the Start Menu folder page), rebuilt from announcing
+    controls. Unchecked by default, as the tasks were. }
+  TasksPage := CreateCustomPage(wpSelectProgramGroup,
+    SetupMessage(msgWizardSelectTasks), SetupMessage(msgSelectTasksDesc));
+  DesktopIconCheck := TNewCheckBox.Create(TasksPage);
+  DesktopIconCheck.Parent := TasksPage.Surface;
+  DesktopIconCheck.Left := 0;
+  DesktopIconCheck.Top := ScaleY(8);
+  DesktopIconCheck.Width := TasksPage.SurfaceWidth;
+  DesktopIconCheck.Caption := 'Create a &desktop icon';
+  DesktopIconCheck.Checked := False;
+end;
+
+function WantsDesktopIcon(): Boolean;
+begin
+  Result := (DesktopIconCheck <> nil) and DesktopIconCheck.Checked;
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  { Built when the Finished page is reached, because its label is only laid
+    out by then. Unchecked by default, matching the run entry this replaces.
+    Never offered in a silent install (the entry was skipifsilent), nor when
+    the page is asking to restart (Setup hides its run list then too). }
+  if (CurPageID = wpFinished) and (LaunchCheck = nil) and not WizardSilent
+     and not WizardForm.YesRadio.Visible then
+  begin
+    LaunchCheck := TNewCheckBox.Create(WizardForm);
+    LaunchCheck.Parent := WizardForm.FinishedPage;
+    LaunchCheck.Left := WizardForm.FinishedLabel.Left;
+    LaunchCheck.Top := WizardForm.FinishedLabel.Top +
+      WizardForm.FinishedLabel.Height + ScaleY(16);
+    LaunchCheck.Width := WizardForm.FinishedLabel.Width;
+    LaunchCheck.Caption := '&Launch {#AppName}';
+    LaunchCheck.Checked := False;
+  end;
+end;
+
+{ The Finish button arrives in NextButtonClick as wpFinished. ewNoWait, like
+  the nowait run entry it replaces, and as the original (non-elevated) user,
+  which is what Setup does for a postinstall entry. }
+procedure LaunchIfChosen(CurPageID: Integer);
+var
+  LaunchResult: Integer;
+begin
+  if (CurPageID = wpFinished) and (LaunchCheck <> nil) and LaunchCheck.Checked
+     and not WizardSilent then
+    ExecAsOriginalUser(ExpandConstant('{app}\QuillLite.exe'), '', ExpandConstant('{app}'),
+      SW_SHOWNORMAL, ewNoWait, LaunchResult);
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  LaunchIfChosen(CurPageID);
+end;

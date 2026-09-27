@@ -122,6 +122,7 @@ def test_the_installers_ship_their_edition_marker() -> None:
     # still ships both.
     for app, name, expected in (
         ("radio", "quill-radio.iss", edition.INSTALLER_FULL),
+        ("converter", "quill-converter.iss", edition.INSTALLER_FULL),
         ("cast", "quill-cast-lite.iss", edition.INSTALLER_LITE),
     ):
         installer_dir = repo / "standalone" / app / "installer"
@@ -148,6 +149,26 @@ def test_quill_radio_ships_two_downloads_not_four() -> None:
     )
     assert "--no-runtime" not in script
     assert "quill-radio-lite.iss" not in script
+
+
+CONVERTER_ASSETS = [
+    {"name": "Quill-Converter-Portable-1.0.0.zip", "browser_download_url": "u/portable"},
+    {"name": "Quill-Converter-Setup-Shared-1.0.0.exe", "browser_download_url": "u/full"},
+]
+
+
+@pytest.mark.parametrize(
+    ("edition_name", "expected"),
+    [(edition.INSTALLER_FULL, "u/full"), (edition.PORTABLE, "u/portable")],
+)
+def test_quill_converter_two_downloads_are_told_apart(edition_name: str, expected: str) -> None:
+    """Converter publishes Radio's two downloads (2026-09-26): each edition finds its own."""
+    found = [
+        asset["browser_download_url"]
+        for asset in CONVERTER_ASSETS
+        if edition.matches_asset(edition_name, asset["name"])
+    ]
+    assert found == [expected]
 
 
 #: QUILL Lite is the case the word-matching above cannot survive on its own: the

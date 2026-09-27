@@ -167,10 +167,12 @@ PRODUCTS: dict[str, Product] = {
         # staged as a bundled binary (tools/ffmpeg), but no Python media stack,
         # no speech engines, and no playback (mpv) are needed. yt-dlp (URL
         # import) is never bundled -- it installs on demand into the user dir.
-        dep_groups=("ui", "feedback"),
+        # No "feedback" group: Get Help from Support is email to support@.
+        dep_groups=("ui",),
         stage_engines=False,
         stage_ffmpeg=True,
         stage_mpv=False,
+        feedback_token=False,  # feedback is email to support@ (2026-09-26)
     ),
     "quilllite": Product(
         key="quilllite",

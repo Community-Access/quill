@@ -39,7 +39,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 ; install it on a non-x64-compatible CPU and place it in the real
 ; 64-bit Program Files (not the x86 folder). x64compatible also covers
 ; ARM64 Windows, which runs the x64 runtime under emulation.
-; (Requires Inno Setup 6.3 or newer.)
+; (Requires Inno Setup 7, like every script in the family.)
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 ; Quill targets Windows 10 and 11: the zero-install OCR backend, winget
@@ -76,11 +76,16 @@ SetupLogging=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Tasks]
-Name: "fileassoc"; Description: "Register Quill in the Open With menu for common text formats (.txt, .md, .rst, .log, .csv, .json)"; GroupDescription: "File associations:"; Flags: unchecked
-Name: "shellverbs"; Description: "Add ""Send to Quill"" actions (OCR, Open, Read aloud) to the file right-click menu"; GroupDescription: "File associations:"; Flags: unchecked
-Name: "companionicons"; Description: "Create a desktop icon for Quill Radio (the standalone internet radio app)"; GroupDescription: "Companion apps:"; Flags: unchecked
-Name: "addtopath"; Description: "Add Quill to PATH (lets you run ""quill"" from a terminal or a shortcut Target field without the full path)"; GroupDescription: "Command line:"; Flags: unchecked
+; There is no [Tasks] section and no postinstall [Run] entry, on purpose.
+; Both put their checkboxes in the wizard's TNewCheckListBox, a custom-drawn
+; control that does not expose its checked state: a screen reader announces
+; every box as "not checked" whatever it is. The [Code] section builds the
+; same choices, with the same defaults (all unchecked), out of native Windows
+; checkboxes (TNewCheckBox), which announce checked and not checked: the
+; four former tasks on an Additional Tasks page (WantsFileAssoc,
+; WantsShellVerbs, WantsCompanionIcons, WantsAddToPath) and the three
+; former run entries on the Finished page.
+; tests/unit/scripts/test_installer_accessible_checkboxes.py keeps it so.
 
 ; No [Types] or [Components] section: every optional component is fetched
 ; on demand from its verified source, so the installer shows no setup-type
@@ -149,274 +154,268 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "
 ; Companion apps: Quill Radio runs Radio standalone (quill/apps/*;
 ; PRD 5.89e). QUILL Cast is gated out of public 1.0.0 builds
 ; (RELEASED_APPS) so it gets no shortcuts. Start Menu entry always;
-; the desktop icon is the opt-in companionicons task above.
+; the desktop icon is the opt-in companion-icons checkbox (see [Code]).
 Name: "{group}\Quill Radio"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: HasBundledLauncher
 Name: "{group}\Quill Radio"; Filename: "{app}\{#AppExeName}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: not HasBundledLauncher
-Name: "{autodesktop}\Quill Radio"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Tasks: companionicons; Check: HasBundledLauncher
-Name: "{autodesktop}\Quill Radio"; Filename: "{app}\{#AppExeName}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Tasks: companionicons; Check: not HasBundledLauncher
+Name: "{autodesktop}\Quill Radio"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: WantsCompanionIcons and HasBundledLauncher
+Name: "{autodesktop}\Quill Radio"; Filename: "{app}\{#AppExeName}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: WantsCompanionIcons and not HasBundledLauncher
 
 [Registry]
 ; Register Quill in the OpenWithList for common text formats. We
 ; never overwrite the user's chosen default app for any extension.
-Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill ""%1"""; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.txt\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.md\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.rst\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.log\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.csv\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.json\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill ""%1"""; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.txt\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.md\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.rst\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.log\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.csv\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.json\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
 ; The formats quill/io actually reads and writes were missing from this
 ; list until 2026-09-16: somebody who installed QUILL to open .docx files
 ; could not reach it from Explorer's Open With, which is the one menu
 ; Windows offers for "open this in something else" (bad.md A2). Still
 ; never the default handler.
-Root: HKCU; Subkey: "Software\Classes\.rtf\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.docx\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.odt\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.html\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.htm\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
-Root: HKCU; Subkey: "Software\Classes\.epub\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Tasks: fileassoc
+Root: HKCU; Subkey: "Software\Classes\.rtf\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.docx\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.odt\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.html\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.htm\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
+Root: HKCU; Subkey: "Software\Classes\.epub\OpenWithList\{#AppExeName}"; Flags: uninsdeletekey; Check: WantsFileAssoc
 
 ; "Send to Quill" file right-click verbs (SHELL-3). Generated from
 ; quill.core.shell_verbs so the installer, runtime registry writer, CLI
 ; --action map, and Settings toggles stay in lockstep. Opt-in via the
-; shellverbs task; uninsdeletekey removes them on uninstall.
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp3\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp3\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp3\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wav\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wav\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wav\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flac\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flac\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flac\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ogg\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ogg\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ogg\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.oga\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.oga\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.oga\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.opus\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.opus\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.opus\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4a\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4a\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4a\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4b\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4b\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4b\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aac\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aac\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aac\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wma\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wma\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wma\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aiff\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aiff\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aiff\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aif\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aif\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aif\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.alac\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.alac\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.alac\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ape\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ape\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ape\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mka\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mka\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mka\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.amr\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.amr\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.amr\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.3gp\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.3gp\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.3gp\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.caf\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.caf\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.caf\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp4\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp4\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp4\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4v\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4v\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4v\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mkv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mkv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mkv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mov\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mov\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mov\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webm\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webm\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webm\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.avi\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.avi\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.avi\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wmv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wmv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Tasks: shellverbs
-Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wmv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Tasks: shellverbs
+; WantsShellVerbs checkbox; uninsdeletekey removes them on uninstall.
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action ocr-structured ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.open"; ValueType: string; ValueName: ""; ValueData: "Open in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.open"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Open in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action open ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.txt\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.md\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.markdown\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mdx\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.html\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.htm\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.xhtml\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.png\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpg\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.jpeg\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tif\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.tiff\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.bmp\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action read ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp3\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp3\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp3\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wav\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wav\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wav\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flac\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flac\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flac\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ogg\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ogg\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ogg\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.oga\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.oga\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.oga\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.opus\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.opus\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.opus\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4a\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4a\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4a\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4b\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4b\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4b\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aac\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aac\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aac\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wma\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wma\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wma\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aiff\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aiff\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aiff\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aif\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aif\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.aif\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.alac\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.alac\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.alac\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ape\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ape\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.ape\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mka\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mka\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mka\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.amr\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.amr\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.amr\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.3gp\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.3gp\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.3gp\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.caf\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.caf\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.caf\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp4\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp4\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mp4\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4v\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4v\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.m4v\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mkv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mkv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mkv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mov\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mov\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.mov\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webm\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webm\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webm\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.avi\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.avi\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.avi\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.flv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wmv\shell\Quill.convert"; ValueType: string; ValueName: ""; ValueData: "Convert with Quill"; Flags: uninsdeletekey; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wmv\shell\Quill.convert"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Convert with Quill"; Check: WantsShellVerbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.wmv\shell\Quill.convert\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" -m quill --action convert ""%1"""; Check: WantsShellVerbs
 
-; community#941: opt-in PATH registration (addtopath task). Per-user only
+; community#941: opt-in PATH registration (WantsAddToPath). Per-user only
 ; (HKCU) -- no elevation needed and no other account is touched. The
 ; actual add/remove happens in [Code] (EnvAddToPath / EnvRemoveFromPath
 ; below), not a declarative [Registry] entry -- that gives install *and*
 ; uninstall symmetry (a plain [Registry] value has no safe way to undo a
 ; delimited PATH append on uninstall) plus a live WM_SETTINGCHANGE
 ; broadcast so an already-open shell picks up the change immediately.
-
-[Run]
-Filename: "{app}\README.txt"; Description: "View the Quill README"; Flags: postinstall shellexec skipifsilent unchecked
-Filename: "{app}\docs\userguide.html"; Description: "View the User Guide"; Flags: postinstall shellexec skipifsilent unchecked
-Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked; Check: HasBundledLauncher
-Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked; Check: not HasBundledLauncher
 
 [UninstallDelete]
 ; Always remove install-dir build junk. Whether to also remove the
@@ -456,7 +455,154 @@ begin
   Result := BundledLauncherPath('') <> '';
 end;
 
-// -- PATH management (opt-in 'addtopath' task, #941) -----------------------
+// -- Native checkboxes (no [Tasks], no postinstall [Run]) -----------------
+// TNewCheckBox is a real Windows BUTTON control, so a screen reader hears
+// 'checked' and 'not checked'. The check list box that [Tasks] and
+// postinstall [Run] entries use is custom-drawn and always reads as not
+// checked.
+var
+  FileAssocCheck: TNewCheckBox;
+  ShellVerbsCheck: TNewCheckBox;
+  CompanionIconsCheck: TNewCheckBox;
+  AddToPathCheck: TNewCheckBox;
+  ViewReadmeCheck: TNewCheckBox;
+  ViewGuideCheck: TNewCheckBox;
+  LaunchCheck: TNewCheckBox;
+
+// One checkbox and, under it, a wrapped line of detail. TNewCheckBox cannot
+// wrap, so the caption -- which is what a screen reader speaks -- is kept
+// short enough to fit and carries the whole choice; the detail line holds
+// the rest of the former task description. Top advances past both.
+function AddTaskCheck(Page: TWizardPage; var Top: Integer;
+  Caption, Detail: String): TNewCheckBox;
+var
+  Note: TNewStaticText;
+begin
+  Result := TNewCheckBox.Create(Page);
+  Result.Parent := Page.Surface;
+  Result.Left := 0;
+  Result.Top := Top;
+  Result.Width := Page.SurfaceWidth;
+  Result.Caption := Caption;
+  Result.Checked := False;
+  Note := TNewStaticText.Create(Page);
+  Note.AutoSize := False;
+  Note.WordWrap := True;
+  Note.Left := ScaleX(18);
+  Note.Top := Result.Top + Result.Height + ScaleY(2);
+  Note.Width := Page.SurfaceWidth - Note.Left;
+  Note.Caption := Detail;
+  Note.Parent := Page.Surface;
+  Note.AdjustHeight;
+  Top := Note.Top + Note.Height + ScaleY(10);
+end;
+
+procedure InitializeWizard;
+var
+  TasksPage: TWizardPage;
+  Top: Integer;
+begin
+  // Where the [Tasks] page was (after the Start Menu folder page), with the
+  // same four choices, all unchecked by default as the tasks were.
+  TasksPage := CreateCustomPage(wpSelectProgramGroup,
+    SetupMessage(msgWizardSelectTasks), SetupMessage(msgSelectTasksDesc));
+  Top := ScaleY(8);
+  FileAssocCheck := AddTaskCheck(TasksPage, Top,
+    'Add Quill to the &Open With menu for text files',
+    'Common text and document formats (.txt, .md, .rst, .log, .csv, .json' +
+    ' and more). Never makes Quill the default app.');
+  ShellVerbsCheck := AddTaskCheck(TasksPage, Top,
+    'Add "&Send to Quill" to the file right-click menu',
+    'OCR, Open and Read aloud actions for supported files.');
+  CompanionIconsCheck := AddTaskCheck(TasksPage, Top,
+    'Create a &desktop icon for Quill Radio',
+    'Quill Radio is the standalone internet radio app.');
+  // community#941: launching quill from a terminal or a shortcut's Target
+  // field needs the install directory on PATH. Opt-in, like the others --
+  // PATH is shared system/user state, so this is never silently applied.
+  AddToPathCheck := AddTaskCheck(TasksPage, Top,
+    'Add Quill to &PATH',
+    'Lets you run "quill" from a terminal or a shortcut Target field' +
+    ' without the full path.');
+end;
+
+function WantsFileAssoc(): Boolean;
+begin
+  Result := (FileAssocCheck <> nil) and FileAssocCheck.Checked;
+end;
+
+function WantsShellVerbs(): Boolean;
+begin
+  Result := (ShellVerbsCheck <> nil) and ShellVerbsCheck.Checked;
+end;
+
+function WantsCompanionIcons(): Boolean;
+begin
+  Result := (CompanionIconsCheck <> nil) and CompanionIconsCheck.Checked;
+end;
+
+function WantsAddToPath(): Boolean;
+begin
+  Result := (AddToPathCheck <> nil) and AddToPathCheck.Checked;
+end;
+
+function AddFinishedCheck(Top: Integer; Caption: String): TNewCheckBox;
+begin
+  Result := TNewCheckBox.Create(WizardForm);
+  Result.Parent := WizardForm.FinishedPage;
+  Result.Left := WizardForm.FinishedLabel.Left;
+  Result.Top := Top;
+  Result.Width := WizardForm.FinishedLabel.Width;
+  Result.Caption := Caption;
+  Result.Checked := False;
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  // The three former postinstall run entries, built when the Finished page
+  // is reached (its label is only laid out by then), each unchecked as the
+  // entries were. Never in a silent install (they were skipifsilent), nor
+  // when the page is asking to restart (Setup hides its run list then too).
+  if (CurPageID = wpFinished) and (LaunchCheck = nil) and not WizardSilent
+     and not WizardForm.YesRadio.Visible then
+  begin
+    ViewReadmeCheck := AddFinishedCheck(WizardForm.FinishedLabel.Top +
+      WizardForm.FinishedLabel.Height + ScaleY(16), 'View the Quill &README');
+    ViewGuideCheck := AddFinishedCheck(ViewReadmeCheck.Top +
+      ViewReadmeCheck.Height + ScaleY(8), 'View the User &Guide');
+    LaunchCheck := AddFinishedCheck(ViewGuideCheck.Top +
+      ViewGuideCheck.Height + ScaleY(8), '&Launch {#AppName}');
+  end;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  ErrorCode: Integer;
+begin
+  Result := True;
+  // The Finish button arrives here as wpFinished. As the original
+  // (non-elevated) user and without waiting, which is what Setup did for
+  // the postinstall nowait / shellexec entries these replace.
+  if (CurPageID <> wpFinished) or (LaunchCheck = nil) or WizardSilent then
+    Exit;
+  if ViewReadmeCheck.Checked then
+    ShellExecAsOriginalUser('', ExpandConstant('{app}\README.txt'), '', '',
+      SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  if ViewGuideCheck.Checked then
+    ShellExecAsOriginalUser('', ExpandConstant('{app}\docs\userguide.html'), '', '',
+      SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  if LaunchCheck.Checked then
+  begin
+    if HasBundledLauncher() then
+      ExecAsOriginalUser(BundledLauncherPath(''), '-m quill', ExpandConstant('{app}'),
+        SW_SHOWNORMAL, ewNoWait, ErrorCode)
+    else
+      ExecAsOriginalUser(ExpandConstant('{app}\{#AppExeName}'), '',
+        ExpandConstant('{app}'), SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  end;
+end;
+
+// -- PATH management (opt-in WantsAddToPath checkbox, #941) ----------------
 // Adds/removes {app} in HKCU\Environment\Path (per-user, no admin needed --
 // matches PrivilegesRequired=lowest) so 'quill <file>' works from a shell
 // without typing the full install path. TStringList does the split/join so
@@ -570,7 +716,7 @@ begin
   if CurStep = ssPostInstall then
   begin
     SaveStringToFile(ExpandConstant('{app}\quill-new-install.txt'), 'new-install', False);
-    if WizardIsTaskSelected('addtopath') then
+    if WantsAddToPath() then
       EnvAddToPath(ExpandConstant('{app}'));
   end;
 end;
@@ -661,7 +807,7 @@ var
 begin
   if CurUninstallStep = usUninstall then
   begin
-    // Safe no-op if the addtopath task was never selected (not found -> Exit).
+    // Safe no-op if Add to PATH was never chosen (not found -> Exit).
     EnvRemoveFromPath(ExpandConstant('{app}'));
     DataDir := ExpandConstant('{userappdata}\Quill');
     // Read the custom-location pointer BEFORE DataDir is deleted below.

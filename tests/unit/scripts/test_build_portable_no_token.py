@@ -1,7 +1,8 @@
-"""Quill Radio and QUILL Lite portable bundles carry no GitHub credential.
+"""Quill Radio, QUILL Lite and Quill Converter portable bundles carry no GitHub
+credential.
 
-Both apps send all feedback to support@community-access.org by email
-(2026-09-26), so neither needs feedback-hub or QUILL's bundled GitHub feedback
+All three send all feedback to support@community-access.org by email
+(2026-09-26), so none needs feedback-hub or QUILL's bundled GitHub feedback
 token. A gitignored ``quill/_feedback_token.py`` left in the checkout by
 another app's build used to ride along in the copied ``quill`` source anyway.
 """
@@ -32,7 +33,7 @@ def _load_build_portable():
 bp = _load_build_portable()
 
 
-@pytest.mark.parametrize("key", ["radio", "quilllite"])
+@pytest.mark.parametrize("key", ["radio", "quilllite", "converter"])
 def test_email_only_apps_carry_no_token_and_no_feedback_hub(key: str) -> None:
     product = bp.PRODUCTS[key]
     assert product.feedback_token is False
