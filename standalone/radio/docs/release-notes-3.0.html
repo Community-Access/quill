@@ -198,25 +198,163 @@
 <main id="main-content">
 <h1 id="quill-radio-30-release-notes">Quill Radio 3.0 Release Notes</h1>
 <p>Version 3.0.1, released 2026-09-27.</p>
-<h2 id="301">3.0.1</h2>
-<p>3.0.1 replaces 3.0.0, which was withdrawn; everything in 3.0.0 is in
-3.0.1. It fixes five things 3.0.0 got wrong:</p>
+<h2 id="whats-new-in-301">What’s new in 3.0.1</h2>
+<p>Quill Radio 3.0.1 is the release to install. It replaces 3.0.0, which
+was withdrawn the day after it shipped; everything 3.0 brought is here,
+and so is the thing 3.0.0 could not always manage: opening. 3.0.1 starts
+every way you can start it, arrives with its full playback engine every
+time, and carries every tool it uses inside the download. It is a small
+release with one promise: press the key, and the radio is there.</p>
+<h3 id="if-you-have-300">If you have 3.0.0</h3>
+<p>Install 3.0.1 over it. Your favorites, settings, history, recordings,
+schedule and keys all stay. If your 3.0.0 opens, Help &gt; Check for
+Updates… (Ctrl+Alt+U) offers the matching download. For a portable copy,
+unpack the 3.0.1 zip and copy the <code>data</code> folder from beside
+your old <code>QuillRadio.exe</code> into the new folder before you
+first open it.</p>
+<p>There is nothing else to do. Anything 3.0.0 set up wrongly on your
+computer is put right for you, as the rest of this section explains.</p>
+<h3 id="it-opens-every-time">It opens, every time</h3>
+<p>Quill Radio runs on the shared QuillVille Runtime, the one engine
+every app in the family uses. On some fresh installs 3.0.0 never got
+past that engine: Windows showed a box titled “Unhandled exception in
+script” where the app should have been. The cause was small and unkind.
+A windowed program has no console, and the runtime tried to write to one
+anyway. 3.0.1 gives those writes somewhere harmless to go before
+anything else happens.</p>
+<p>Two more things change so that a problem at start is never a mystery
+again:</p>
 <ul>
-<li>The installer’s checkboxes are real Windows checkboxes, so a screen
-reader says whether Create a desktop icon and Launch Quill Radio are
-checked.</li>
-<li>The app starts on a fresh install. 3.0.0 could stop at launch with a
-script error.</li>
-<li>Start with Windows and the scheduled-recording wake start Quill
-Radio correctly.</li>
-<li>The bundled mpv engine is found however Quill Radio is started, so
-it no longer reports “mpv engine not available”.</li>
-<li>Everything is bundled: ffmpeg, mpv, yt-dlp and the JavaScript engine
-YouTube needs; nothing downloads on first use. The Repair items on the
-Help menu are for emergencies.</li>
+<li>If you open <code>QuillVilleRuntime.exe</code> by itself, it now
+tells you, in a plain message box, that it is the engine the apps run on
+rather than an app, and to start Quill Radio from its own Start Menu
+shortcut.</li>
+<li>If the runtime ever meets an error it cannot handle while starting
+an app, it writes the details to a text file in
+<code>%LOCALAPPDATA%\QuillVille\Runtime\crash-reports</code>. Send that
+file to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+and a person can see exactly what happened.</li>
 </ul>
-<p>Install 3.0.1 over 3.0.0; your favorites, settings and recordings
-stay.</p>
+<h3 id="start-with-windows-and-recordings-that-wake-the-computer">Start
+with Windows, and recordings that wake the computer</h3>
+<p>Two features start Quill Radio when you are not there to press
+anything, and in 3.0.0 both started the wrong thing.</p>
+<ul>
+<li><strong>Start with Windows</strong> told Windows to run the shared
+runtime, with nothing to say which app it should be. So each time you
+signed in, the radio did not appear. It now starts Quill Radio through
+its own <code>QuillRadio.exe</code>, which keeps working even when a
+future runtime update moves the runtime to a new folder.</li>
+<li><strong>Waking the computer for a recording</strong> registers a
+Windows task that starts Quill Radio at the right moment. 3.0.0 wrote
+that task so that it named a file that did not exist, and the computer
+woke to silence. Now the wake starts Quill Radio in time, and the
+recording you scheduled is made.</li>
+</ul>
+<p>Fixing the command was not enough on its own, because 3.0.0’s entries
+are already on people’s computers. So every time Quill Radio opens, it
+quietly checks its own entries in the background, without slowing the
+launch:</p>
+<ul>
+<li>A Start with Windows entry that is there and out of date is
+rewritten.</li>
+<li>A recording wake that is turned on, still ahead of you and out of
+date is registered again for the same moment.</li>
+</ul>
+<p>It only ever repairs what you turned on. It never creates an entry,
+never touches the computer from a portable copy, does nothing in Safe
+Mode, and if Windows refuses the change, the app opens anyway.</p>
+<h3 id="the-full-player-however-you-open-it">The full player, however
+you open it</h3>
+<p>Quill Radio plays through the bundled mpv engine, which is what lets
+you rewind live radio, boost the volume and choose an output device. In
+3.0.0 two ordinary ways of opening the app could lose it:</p>
+<ul>
+<li><strong>A taskbar pin.</strong> Pin Quill Radio while it is running
+and Windows may pin the runtime underneath it rather than the app.</li>
+<li><strong>A desktop icon from an earlier installer</strong>, which
+pointed straight at the runtime.</li>
+</ul>
+<p>Started either way, 3.0.0 could not find its own folder, reported
+“mpv engine not available”, and fell back to the classic Windows Media
+player. 3.0.1 looks for mpv and ffmpeg beside the runtime as well, so
+the full engine, and recording, are there from every starting point.</p>
+<p>The installer also mends the icon itself. If it finds a Quill Radio
+desktop icon, it checks Create a desktop icon for you, removes the old
+icon and writes a new one that starts Quill Radio properly. Uncheck the
+box if you would rather have no desktop icon at all.</p>
+<p>Opening another app from the Apps menu is fixed for the same reason:
+every QuillVille app is the same runtime started with a different app,
+and 3.0.1 starts it that way.</p>
+<h3 id="everything-in-the-box">Everything in the box</h3>
+<p>Nothing downloads the first time you use a feature. Both downloads
+carry every tool Quill Radio uses:</p>
+<ul>
+<li><strong>ffmpeg</strong>, for recording and converting.</li>
+<li><strong>mpv</strong>, the playback engine.</li>
+<li><strong>yt-dlp</strong>, which plays YouTube.</li>
+<li><strong>Deno 2.9.7 and yt-dlp-ejs 0.8.0</strong>, new in 3.0.1.
+YouTube guards its audio with small puzzles written in JavaScript;
+without an engine to solve them, some formats went missing or played
+slowly. Deno solves them on your own computer. Its checksum is pinned
+when Quill Radio is built, the puzzle scripts come only from inside the
+app, and yt-dlp never fetches code from the internet. A Deno you happen
+to have installed elsewhere is never used, only the one Quill Radio
+shipped.</li>
+<li><strong>The OptiLab Core adapter</strong>, for Exact OptiLab
+processing.</li>
+</ul>
+<p>The installer adds Deno and OptiLab even when another QuillVille app
+put the shared runtime on your computer first, so what you can do never
+depends on which app you installed first.</p>
+<h3 id="repair-only-for-emergencies">Repair, only for emergencies</h3>
+<p>Because everything ships inside the app, the Help menu items that
+used to say Get now say what they are for:</p>
+<ul>
+<li><strong>Help &gt; Repair FFmpeg…</strong> (Ctrl+Alt+F)</li>
+<li><strong>Help &gt; Repair mpv Playback Engine…</strong>
+(Ctrl+Alt+M)</li>
+<li><strong>Station &gt; Repair YouTube Support…</strong>
+(Ctrl+Alt+Y)</li>
+</ul>
+<p>In Audio Health (Ctrl+Alt+Shift+M), the buttons are <strong>Repair
+FFmpeg…</strong> (Alt+R) and <strong>Repair mpv…</strong> (Alt+M). The
+keys have not changed, and every message that used to point at a Get
+item now names the Repair item.</p>
+<p>Repair YouTube Support is for the day YouTube changes faster than
+Quill Radio releases, and in 3.0.0 it failed on exactly the copies that
+needed it: it used a Python installer tool that neither the installed
+nor the portable app carries. In 3.0.1 it fetches the newest yt-dlp from
+the Python Package Index directly, checks it against the published
+SHA-256 checksum before using it, and tells you the version it
+installed. If the built-in helper is already the newest, it says so, as
+good news rather than an error. And a repaired helper is used only while
+it is newer than the built-in one, so a later Quill Radio update never
+leaves you on an older copy. It still asks before it goes online and
+stays off in Safe Mode.</p>
+<p>A portable copy never offers to download anything. If part of one is
+missing, it now says the copy is incomplete and suggests unpacking the
+whole zip again, or checking whether antivirus quarantined part of
+it.</p>
+<h3 id="an-installer-a-screen-reader-can-read">An installer a screen
+reader can read</h3>
+<p>The installer’s two choices, <strong>Create a desktop icon</strong>
+and <strong>Launch Quill Radio</strong>, are now real Windows
+checkboxes. 3.0.0 drew them as a custom list that screen readers
+announced as “not checked” whatever their state; now you hear the truth,
+and Space changes it. Both still start unchecked (unless the installer
+is replacing an old desktop icon, as above), and a silent install
+launches nothing.</p>
+<h3 id="if-something-still-is-not-right">If something still is not
+right</h3>
+<p>Help &gt; Get Help from Support… (Ctrl+Alt+F2) writes to a person at
+Community Access, with the app’s version already filled in. You can also
+write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+from any email account, and attach a crash file from
+<code>%LOCALAPPDATA%\QuillVille\Runtime\crash-reports</code> if there is
+one.</p>
 <h2 id="what-quill-radio-is">What Quill Radio is</h2>
 <p>Quill Radio is an internet radio player for Windows, built for people
 who use a screen reader. It plays live stations, podcasts, audiobooks,
