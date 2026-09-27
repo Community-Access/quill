@@ -67,7 +67,7 @@ function Test-QuillPythonExe {
     Existing on disk is not the same as runnable: a virtualenv whose base
     interpreter was moved or uninstalled still has a python.exe, and it dies with
     "did not find executable at ...". Preferring it blindly wedged builds several
-    steps later with a misleading "Bundled feedback token generation failed", so
+    steps later with a misleading error far from the cause, so
     prove the interpreter runs before committing to it.
     #>
     param([string]$Exe)
@@ -290,40 +290,6 @@ function Assert-QuillBuildEnv {
     if ($LASTEXITCODE -ne 0) {
         throw "Build environment does not match pyproject [$Groups] -- see above."
     }
-}
-
-function Resolve-QuillTokenFile {
-    <#
-    .SYNOPSIS
-    Find the bundled-feedback-token file, if the builder has one.
-    .DESCRIPTION
-    Returns "" when nothing is found, which is correct: tools\generate_feedback_token.py
-    resolves a token from four sources (env var, this file, Windows Credential
-    Manager, or the token already bundled by the last build), so a missing file is
-    not a missing token. The old hardcoded "S:\token.txt" default made Cast throw
-    "a release build must embed the issues-only token" on every other machine even
-    when a perfectly good token was already bundled.
-    #>
-    param([string]$Preferred = "")
-
-    if ($Preferred) {
-        if (-not (Test-Path $Preferred)) { throw "Token file not found: $Preferred." }
-        return [System.IO.Path]::GetFullPath($Preferred)
-    }
-    if ($env:QUILL_FEEDBACK_TOKEN_FILE -and (Test-Path $env:QUILL_FEEDBACK_TOKEN_FILE)) {
-        return [System.IO.Path]::GetFullPath($env:QUILL_FEEDBACK_TOKEN_FILE)
-    }
-    # A token.txt kept beside the checkout, or inside it, is the drive-agnostic
-    # form of the old "S:\token.txt" habit -- a convenience, never a requirement.
-    # Split-Path -Parent returns "" when the checkout IS a drive root (X:\), so
-    # guard it rather than letting Join-Path throw on an empty Path.
-    $parent = Split-Path -Parent $script:QuillBuildEnvRoot
-    foreach ($dir in @($parent, $script:QuillBuildEnvRoot)) {
-        if (-not $dir) { continue }
-        $beside = Join-Path $dir "token.txt"
-        if (Test-Path $beside) { return [System.IO.Path]::GetFullPath($beside) }
-    }
-    return ""
 }
 
 

@@ -16,7 +16,7 @@ six-second freeze buried in a hundred routine lines is a signal nobody finds.
 
 from __future__ import annotations
 
-from quill.core.issue_submit import find_stall_evidence
+from quill.stability.crash_email import find_stall_evidence
 from quill.stability.crash_submit import build_session_context
 
 STALL = (

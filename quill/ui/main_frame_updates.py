@@ -151,7 +151,6 @@ class UpdatesMixin:
         beta: bool,
     ) -> None:
         """UI-thread callback once the background update-network fetch finishes."""
-        from quill.core.feedback_token import github_token_present
         from quill.core.updates import (
             find_release,
             is_newer_version,
@@ -224,12 +223,10 @@ class UpdatesMixin:
 
         target = latest_any if beta else latest_stable
         newer = target is not None and is_newer_version(current_version, target.version)
-        # #919 self-heal: a build running without its bundled bug-report token
-        # can't file in-app issues. Offer the latest release even at the same
-        # version, so installing it restores the token. This stops the moment
-        # the token is back, and the user can silence it with "Skip this version".
-        token_selfheal = target is not None and not github_token_present()
-        if target is not None and (newer or token_selfheal):
+        # #919's same-version "self-heal" offer is gone (2026-09-26): it existed
+        # to restore a bundled GitHub token, and no build carries one any more --
+        # support messages and crash reports go by email.
+        if target is not None and newer:
             if silent_no_update and target.version == getattr(
                 self.settings, "skipped_update_version", ""
             ):
@@ -238,25 +235,10 @@ class UpdatesMixin:
                 )
                 return
             if silent_no_update:
-                if newer:
-                    self._record_notification(
-                        f"Update {target.version} found; downloading", "update"
-                    )
-                    self._download_update_release(target)
-                else:
-                    # Self-heal at the same version: don't auto-download in the
-                    # background. Surface a notification so the user chooses to
-                    # reinstall via Check for Updates.
-                    self._record_notification(
-                        "A build that restores the crash-report token is available."
-                        " Use Check for Updates to install it.",
-                        "update",
-                    )
-                    self._set_status("Update available (restores crash-report token)")
+                self._record_notification(f"Update {target.version} found; downloading", "update")
+                self._download_update_release(target)
                 return
-            action = self._show_update_available_dialog(
-                current_version, target, self_heal=token_selfheal and not newer
-            )
+            action = self._show_update_available_dialog(current_version, target)
             if action == "download":
                 self._download_update_release(target)
             elif action == "skip":
@@ -475,43 +457,19 @@ class UpdatesMixin:
             wx_module=self._wx,
         )
 
-    def _show_update_available_dialog(
-        self, current_version: str, release: GitHubRelease, *, self_heal: bool = False
-    ) -> str:
+    def _show_update_available_dialog(self, current_version: str, release: GitHubRelease) -> str:
         """Present an available update. Returns one of ``"download"``,
         ``"skip"`` (don't offer this version again) or ``"later"``.
-
-        When ``self_heal`` is set, the offered release is the *same* version the
-        user already runs, reinstalled to restore the bundled token (#919) that
-        crash reports and suggestions still need (support messages do not). The
-        dialog says so, so "the version you already have" is not confusing.
         """
         from quill.ui.update_notice import show_update_available, update_header
 
-        header = ""
-        notes_prefix = ""
-        if self_heal:
-            channel = "Beta / prerelease" if release.prerelease else "Stable"
-            published = f"Published: {release.published_at}\n" if release.published_at else ""
-            header = (
-                f"Restore the crash-report token: {release.version}\n"
-                f"Channel: {channel}\n"
-                f"{published}"
-                f"Current version: {current_version}"
-            )
-            notes_prefix = (
-                "Your build is missing its bundled token, so crash reports and "
-                "suggestions cannot be filed from the app; installing this build "
-                "(the same version) restores it. Support messages need no token."
-            )
-        else:
-            header = update_header(
-                "QUILL",
-                current_version,
-                release.version,
-                prerelease=release.prerelease,
-                published_at=release.published_at,
-            )
+        header = update_header(
+            "QUILL",
+            current_version,
+            release.version,
+            prerelease=release.prerelease,
+            published_at=release.published_at,
+        )
         choice = show_update_available(
             self.frame,
             app_name="QUILL",
@@ -523,7 +481,6 @@ class UpdatesMixin:
             # version in, so it is the only one that offers the third button.
             allow_skip=True,
             header=header,
-            notes_prefix=notes_prefix,
             wx_module=self._wx,
         )
         if choice == "update":

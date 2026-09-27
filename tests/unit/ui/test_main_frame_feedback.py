@@ -81,6 +81,62 @@ def test_report_bug_opens_the_shared_support_surface(monkeypatch) -> None:
     assert calls[0]["source_app"] == "QUILL"
 
 
+def test_report_bug_carries_the_ai_support_id_like_quill_lite(monkeypatch) -> None:
+    """The support form asks its host for ``ai_support_facts``, as in QUILL Lite.
+
+    QUILL gets it from the shared hosted-AI mixin, so the ID support asks for
+    first is written into the message without the person looking it up.
+    """
+    import quill.ui.support_dialog as support_dialog
+
+    built: list[dict] = []
+
+    class _FakeDialog:
+        def __init__(self, host, wx, **kwargs):
+            built.append(kwargs)
+
+        def show(self) -> None:
+            return None
+
+    monkeypatch.setattr(support_dialog, "_SupportDialog", _FakeDialog)
+    assert callable(getattr(MainFrame, "ai_support_facts", None))
+    frame = _build_frame()
+    frame.ai_support_facts = lambda: {"QUILL AI support ID": "SUP-7"}
+
+    frame.report_bug()
+
+    assert built and built[0]["extra"] == {"QUILL AI support ID": "SUP-7"}
+    assert built[0]["product"].startswith("QUILL ")
+
+
+def test_help_menu_item_is_get_help_from_support_on_ctrl_alt_f2() -> None:
+    """Command id kept (rebinding survives), label and chord shared with QUILL Lite."""
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    assert DEFAULT_KEYMAP["help.report_bug"] == "Ctrl+Alt+F2"
+    menu_source = (
+        Path(main_frame_module.__file__).with_name("main_frame_menu.py").read_text(encoding="utf-8")
+    )
+    assert '_("Get He&lp from Support..."), "help.report_bug"' in menu_source
+
+
+def test_nothing_in_quill_imports_feedback_hub_or_a_bundled_token() -> None:
+    """feedback-hub and the bundled GitHub token are gone from the application."""
+    root = Path(main_frame_module.__file__).resolve().parents[1]
+    offenders = []
+    for path in root.rglob("*.py"):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if (
+            "import feedback_hub" in text
+            or "from feedback_hub" in text
+            or "_feedback_token" in text
+            or "quill.core.feedback_token" in text
+            or "quill.core.issue_submit" in text
+        ):
+            offenders.append(str(path.relative_to(root)))
+    assert offenders == []
+
+
 def test_get_help_from_support_is_the_same_flow() -> None:
     """Two names, one implementation: the menu's name and the command id's."""
     assert MainFrame.get_help_from_support is MainFrame.report_bug
@@ -336,12 +392,14 @@ def test_check_for_updates_silent_honors_skipped_version(monkeypatch) -> None:
     assert frame._notification == ("Update 9.9.9 available (skipped by you)", "update")
 
 
-def test_check_for_updates_offers_self_heal_when_tokenless(monkeypatch) -> None:
-    """#919 self-heal: a tokenless build is offered the latest release even at the
-    same version, with a dialog that says it restores the bug-report token (so
-    'update to the version you already have' is not confusing)."""
-    import quill.core.feedback_token as feedback_token_module
+def test_check_for_updates_never_offers_the_running_version(monkeypatch) -> None:
+    """#919's same-version "self-heal" offer is gone (2026-09-26).
 
+    It reinstalled the running version to restore a bundled GitHub token. No
+    build carries that token any more -- support messages and crash reports go
+    by email -- so a check that finds only the version already installed must
+    offer nothing, interactively or in the background.
+    """
     frame = _build_frame()
     frame.settings.beta_updates = False
     frame.settings.skipped_update_version = ""
@@ -356,65 +414,27 @@ def test_check_for_updates_offers_self_heal_when_tokenless(monkeypatch) -> None:
         version="0.9.0",
         download_url="https://example.com/Quill-Setup-0.9.0.exe",
         published_at="2026-07-09",
-        notes="Same version, now with the bundled token.",
-        prerelease=False,
-    )
-    monkeypatch.setattr(updates_module, "fetch_releases", lambda: [release])
-    # Same version as latest -> not newer; the offer fires only because the
-    # bundled bug-report token is missing (the self-heal path).
-    monkeypatch.setattr(updates_module, "is_newer_version", lambda _current, _available: False)
-    monkeypatch.setattr(feedback_token_module, "github_token_present", lambda: False)
-    captured: dict[str, object] = {}
-    monkeypatch.setattr(
-        frame,
-        "_show_update_available_dialog",
-        lambda _current, _release, *, self_heal=False: (
-            captured.__setitem__("self_heal", self_heal) or "skip"
-        ),
-    )
-    monkeypatch.setattr(frame, "_skip_update_version", lambda _v: None)
-
-    frame.check_for_updates()
-
-    assert captured.get("self_heal") is True
-
-
-def test_check_for_updates_silent_self_heal_does_not_auto_download(monkeypatch) -> None:
-    """#919 self-heal: a silent (background) check on a tokenless build does NOT
-    auto-download the same version; it records a notification so the user
-    chooses, avoiding a confusing background reinstall of the running version."""
-    import quill.core.feedback_token as feedback_token_module
-
-    frame = _build_frame()
-    frame.settings.beta_updates = False
-    frame.settings.skipped_update_version = ""
-    frame.settings.last_update_check = ""
-    monkeypatch.setattr(frame_updates_module, "save_settings", lambda _settings: None)
-    monkeypatch.setattr(
-        updates_module,
-        "fetch_update_manifest",
-        lambda *_a, **_k: (_ for _ in ()).throw(URLError("offline")),
-    )
-    release = GitHubRelease(
-        version="0.9.0",
-        download_url="https://example.com/Quill-Setup-0.9.0.exe",
-        published_at="2026-07-09",
-        notes="Same version, now with the bundled token.",
+        notes="Same version.",
         prerelease=False,
     )
     monkeypatch.setattr(updates_module, "fetch_releases", lambda: [release])
     monkeypatch.setattr(updates_module, "is_newer_version", lambda _c, _a: False)
-    monkeypatch.setattr(feedback_token_module, "github_token_present", lambda: False)
 
-    def _no_download(_release: GitHubRelease) -> None:
-        raise AssertionError("silent self-heal must not auto-download the same version")
+    def _no_offer(*_a, **_k):
+        raise AssertionError("the running version must not be offered")
 
-    monkeypatch.setattr(frame, "_download_update_release", _no_download)
+    monkeypatch.setattr(frame, "_show_update_available_dialog", _no_offer)
+    monkeypatch.setattr(frame, "_download_update_release", _no_offer)
+    frame._html_info = lambda *_a, **_k: None
 
     frame.check_for_updates(silent_no_update=True)
 
-    # "crash-report", not "bug-report": since 2026-09-11 writing to support needs
-    # no token at all, so what a tokenless build actually costs is crash reports
-    # and community suggestions -- and the offer has to say the true thing.
-    assert "crash-report token" in frame._notification[0]
-    assert frame._status_message == "Update available (restores crash-report token)"
+    assert "token" not in str(getattr(frame, "_notification", ("",))[0])
+    assert "token" not in str(getattr(frame, "_status_message", ""))
+
+
+def test_update_flow_no_longer_reads_a_bundled_token() -> None:
+    """Nothing in the update flow asks whether a feedback token is present."""
+    source = Path(frame_updates_module.__file__).read_text(encoding="utf-8")
+    assert "feedback_token" not in source
+    assert "self_heal" not in source

@@ -69,15 +69,10 @@ jobs:
           if (-not $match) { throw 'Could not find ISCC.exe after installing Inno Setup.' }
           "ISCC_PATH=$match" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Build Windows distribution
-        # QUILL_FEEDBACK_GITHUB_TOKEN is the issues-only PAT baked into the build so
-        # users who never configured a personal token can still Report a Bug. It must
-        # be provided here (macOS already did this in #864; Windows never did, which
-        # shipped an empty bundled token and broke the field bug reporter), and
-        # --require-feedback-token makes a missing secret HARD-FAIL the release build
-        # rather than silently shipping a broken reporter.
-        env:
-          QUILL_FEEDBACK_GITHUB_TOKEN: ${{ secrets.QUILL_FEEDBACK_GITHUB_TOKEN }}
-        run: python scripts/build_windows_distribution.py --bundle-python --compile-installer --require-feedback-token --iscc-path "$env:ISCC_PATH" --output-dir dist/windows
+        # No bug-report credential ships in any build (2026-09-26): Report a Bug and
+        # crash reports go by email to support@community-access.org, and the build
+        # itself fails if a _feedback_token.py or feedback_hub package is staged.
+        run: python scripts/build_windows_distribution.py --bundle-python --compile-installer --iscc-path "$env:ISCC_PATH" --output-dir dist/windows
       - name: Generate release artifacts
         run: python scripts/generate_release_artifacts.py --output-dir dist/release-artifacts --include-optional
       - name: Generate SBOM

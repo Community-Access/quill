@@ -7,7 +7,7 @@
 # and the app starts instantly instead of re-extracting ~175 MB to a temp
 # folder on every launch. collect_all("quill") brings the entire quill
 # package -- code and package data (schemas, sounds, bundled quillins,
-# assets, and the build-time _feedback_token module) -- so nothing the
+# and assets) -- so nothing the
 # shared feature code needs is missing.
 #
 # As of 2026-07-24, the entry-point EXE is NOT produced by PyInstaller
@@ -15,9 +15,17 @@
 # (quill-audio-studio.exe) which is placed at the onedir root by
 # scripts/build_release.ps1. See quill/native/launcher/README.md.
 
+import os
+
 from PyInstaller.utils.hooks import collect_all
 
 quill_datas, quill_binaries, quill_hiddenimports = collect_all("quill")
+# No bug-report credential ships in any QuillVille build (2026-09-26; feedback
+# is email-only). collect_all("quill") would sweep a stale, gitignored
+# quill/_feedback_token.py left in the checkout, so drop it here, exclude it
+# below, and let scripts/check_no_credentials.py refuse the build if it or
+# feedback_hub reaches the archive anyway.
+quill_hiddenimports = [m for m in quill_hiddenimports if m != "quill._feedback_token"]
 # PyNaCl (Ed25519 signature verification: signed update manifests, Quillin
 # verification in the shared feature code). Its imports are lazy inside
 # quill.tools.signing, so collect it explicitly rather than trusting the
@@ -50,6 +58,9 @@ a = Analysis(
     hookspath=[],
     runtime_hooks=[],
     excludes=[
+        # The retired bug-report credential and its client (see above).
+        "quill._feedback_token",
+        "feedback_hub",
         # The heavy speech/science stacks are NOT bundled: Audio Studio fetches
         # the neural TTS engine (Kokoro/Piper) and any transcription engine on
         # demand through QUILL's shared, SHA-verified component system (the same
@@ -88,6 +99,13 @@ a = Analysis(
     ],
     noarchive=False,
 )
+
+import sys as _sys  # noqa: E402
+
+_sys.path.insert(0, os.path.join(SPECPATH, "..", "..", "scripts"))
+from check_no_credentials import assert_toc_clean  # noqa: E402
+
+assert_toc_clean(a.pure)
 
 pyz = PYZ(a.pure)
 

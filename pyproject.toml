@@ -118,21 +118,6 @@ spellcheck = ["pyenchant>=3.3.0"]
 # for end users to install. This extra covers source/pip installs on a Mac.
 # The code path still degrades to converted rich if the bridge is ever absent.
 mac = ["pyobjc-framework-Cocoa>=12.2.2; sys_platform == 'darwin'"]
-# Direct GitHub issue submission for Report a Bug (#210): feedback_hub provides
-# the accessible FeedbackDialog driven by quill/core/schemas/feedback.json and
-# files the issue via the GitHub API. Ships in every build (this is the only
-# Report a Bug form); on failure QUILL copies the online support-form URL.
-# 1.0.1 fixes the wx sizer-parenting crash that broke the dialog on wx 4.2.5+.
-# 1.1.0 adds crash fingerprinting: a repeat of a crash somebody already
-# reported comments on that issue instead of filing another one.
-#
-# 1.1.0 was published 2026-08-13, so the floor moves with it -- this extra is
-# installed by scripts/build_windows_distribution.py, and it was deliberately
-# held at 1.0.2 until then rather than pointing a shipping build at a version
-# that did not exist. The call site stays version-tolerant either way:
-# issue_submit._submit_parameters() asks the installed signature what it
-# accepts, so an older feedback-hub still works and simply files duplicates.
-feedback = ["feedback-hub>=1.1.0"]
 # Cross-platform earcon audio via BASS (Un4seen). Enables true mixing so multiple
 # sounds can play simultaneously. Falls back to winsound (Windows) or silence without
 # this extra. Confirm Un4seen commercial license terms before paid distribution.
@@ -398,10 +383,6 @@ runtime = [
   # that the runtime-inventory baseline already expects. Install with
   # --find-links vendor/wheels until the glow wheels are published.
   "quill[glow]",
-  # Report a Bug + crash fingerprinting (quill.core.issue_submit,
-  # crash_fingerprint, the wx FeedbackDialog). feedback-hub has zero hard
-  # dependencies; the 1.1.0 wheel is vendored beside the glow wheels.
-  "quill[feedback]",
   # File > Open Remote > GitHub (quill.core.github.github_provider imports
   # PyGithub). In the shipped runtime and working; declared so it stays that
   # way on every build machine.
@@ -409,7 +390,7 @@ runtime = [
   # QUILL Social's application package. The runtime spec has collected
   # quill_social since the shared-runtime design landed -- silently
   # collecting nothing, because the package was never installed on any build
-  # machine. Declared (wheel vendored beside glow/feedback-hub), the
+  # machine. Declared (wheel vendored beside the glow wheels), the
   # collection is finally real and the runtime can launch `-m quill_social`.
   "quill[social-app]",
   "quill[office-text]",
@@ -703,13 +684,6 @@ module = [
     # it untyped here to keep the scoped gate clean.
     "PIL",
     "PIL.*",
-    # Optional crash-reporting integration; imported lazily in
-    # core/issue_submit.py behind a try/except. Not in the dev extra.
-    "feedback_hub",
-    # ...and its wx dialog, which core/feedback_token.py asks for its
-    # signature: whether the installed package can post to a server at all
-    # is read from the parameter list, never assumed.
-    "feedback_hub.*",
     # Optional native Word writer (quill[docx]); python-docx is imported lazily in
     # io/docx_writer.py with a Pandoc fallback, so the scoped gate must not depend
     # on it being installed.

@@ -6,26 +6,22 @@
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
-#                               [-TokenFile <path>] [-Iscc <path>]
+#                               [-Iscc <path>]
 #
 # Every path defaults to "" and is resolved from the checkout itself (see
 # scripts\BuildEnv.ps1), so a clone builds on any machine and any drive. These
 # used to be literal "S:\QUILL..." defaults, which made this script runnable on
 # exactly one computer.
 #
-# Everything is bundled; the installer and zip perform no downloads. The
-# bundled feedback token (Report a Bug for users with no GitHub setup) is
-# generated into the quill package before PyInstaller runs -- a release
-# build FAILS if the token file is missing rather than shipping a build
-# with a silently broken bug reporter.
+# Everything is bundled; the installer and zip perform no downloads. No GitHub
+# token is generated or embedded (2026-09-26): all feedback goes by email to
+# support@community-access.org, so there is nothing to bundle.
 
 param(
     [string]$Python = "",
     [string]$FfmpegDir = "",
-    [string]$TokenFile = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
-    [switch]$SkipToken,
     [switch]$SkipSharedRuntime,
     [switch]$Sign
 )
@@ -53,19 +49,13 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
-# -- bundled feedback token (hard requirement for a release build) -----------
-# A token file is one of FOUR sources generate_feedback_token.py accepts (env
-# var, token file, Windows Credential Manager, or a token already bundled by
-# this machine's last build), so a missing file is not a missing token. This
-# used to throw on a hardcoded "S:\token.txt" being absent, failing the build on
-# every other machine even when a perfectly good token was already bundled.
-# --require-token below is still what makes the token mandatory for a release.
-if (-not $SkipToken) {
-    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
-    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
-    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
-}
+# -- no feedback token (2026-09-26) ------------------------------------------
+# Builds used to generate and embed a bundled GitHub "feedback token" here. No
+# QuillVille build does any more: all feedback goes to support@community-access.org
+# by email, so there is no credential to ship. -TokenFile and -SkipToken went with
+# it. The spec excludes quill._feedback_token and refuses to freeze it or
+# feedback_hub (scripts\check_no_credentials.py), so a stale gitignored copy in
+# the checkout can no longer ride along.
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 # SECURITY: ffmpeg is copied verbatim into shipped artifacts, so it must come

@@ -268,3 +268,129 @@ def test_installed_handler_saves_local_crash_file(monkeypatch, tmp_path: Path) -
         assert "RuntimeError" in files[0].read_text(encoding="utf-8")
     finally:
         sys.excepthook = saved
+
+
+# ---------------------------------------------------------------------------
+# _act_on_crash_choice (2026-09-26: email to support, never GitHub)
+# ---------------------------------------------------------------------------
+
+
+def _payload():
+    from quill.stability.crash_submit import build_crash_report_payload
+
+    exc_type, exc_value, exc_tb = _raise()
+    return build_crash_report_payload(
+        exc_type=exc_type,
+        exc_value=exc_value,
+        exc_tb=exc_tb,
+        local_crash_file=None,
+        app_version="9.8.7",
+        portable=False,
+        screen_reader_name="JAWS",
+        recent_commands=["file.save"],
+        active_document=None,
+    )
+
+
+class _Host:
+    frame = None
+
+    def __init__(self) -> None:
+        self.spoken: list[str] = []
+
+    def _announce(self, text: str) -> None:
+        self.spoken.append(text)
+
+    def _copy_to_clipboard(self, _text: str) -> bool:
+        return True
+
+    def ai_support_facts(self) -> dict[str, str]:
+        return {"QUILL AI support ID": "SUP-1"}
+
+
+def test_crash_send_opens_a_support_mailto_with_redacted_details(monkeypatch) -> None:
+    import quill.ui.support_dialog as support_dialog
+    from quill.core.support_message import SUPPORT_EMAIL
+    from quill.ui.crash_report_dialog import CrashReportDialogResult
+
+    launched: list[str] = []
+    monkeypatch.setattr(support_dialog, "_launch", lambda url: launched.append(url) or True)
+    host = _Host()
+    result = CrashReportDialogResult(
+        act="send", what_doing_text="Saving; my password=hunter2 was in the clipboard"
+    )
+
+    outcome = quill_main._act_on_crash_choice(_payload(), result, host)
+
+    assert outcome == "mailed"
+    assert len(launched) == 1
+    url = launched[0]
+    assert url.startswith("mailto:" + SUPPORT_EMAIL + "?")
+    assert "github" not in url.lower()
+    assert "hunter2" not in url
+    assert "excepthook%20test%20boom" in url
+    assert host.spoken and "mail program" in host.spoken[0]
+
+
+def test_crash_send_message_carries_version_reader_and_support_id(monkeypatch) -> None:
+    import quill.ui.support_dialog as support_dialog
+    from quill.core.support_message import build_body
+    from quill.ui.crash_report_dialog import CrashReportDialogResult
+
+    captured: list[object] = []
+    monkeypatch.setattr(
+        support_dialog,
+        "send_by_mail",
+        lambda _host, message, **_k: captured.append(message) or True,
+    )
+    quill_main._act_on_crash_choice(_payload(), CrashReportDialogResult(act="send"), _Host())
+
+    message = captured[0]
+    assert message.product == "QUILL 9.8.7"
+    body = build_body(message)
+    assert "Screen reader: JAWS" in body
+    assert "QUILL AI support ID: SUP-1" in body
+
+
+def test_crash_send_without_a_mail_program_reports_clipboard(monkeypatch) -> None:
+    import quill.ui.support_dialog as support_dialog
+    from quill.ui.crash_report_dialog import CrashReportDialogResult
+
+    monkeypatch.setattr(support_dialog, "send_by_mail", lambda *_a, **_k: False)
+    outcome = quill_main._act_on_crash_choice(
+        _payload(), CrashReportDialogResult(act="send"), _Host()
+    )
+    assert outcome == "clipboard"
+
+
+def test_crash_copy_and_cancel_never_open_mail(monkeypatch) -> None:
+    import quill.ui.support_dialog as support_dialog
+    from quill.ui.crash_report_dialog import CrashReportDialogResult
+
+    monkeypatch.setattr(
+        support_dialog,
+        "send_by_mail",
+        lambda *_a, **_k: (_ for _ in ()).throw(AssertionError("must not mail")),
+    )
+    copied: list[str] = []
+    monkeypatch.setattr(quill_main, "_copy_to_clipboard", lambda text: copied.append(text) or True)
+    notices: list[str] = []
+    monkeypatch.setattr(quill_main, "_notify_crash_action", notices.append)
+
+    assert (
+        quill_main._act_on_crash_choice(_payload(), CrashReportDialogResult(act="cancel"))
+        == "cancelled"
+    )
+    assert copied == []
+    assert (
+        quill_main._act_on_crash_choice(_payload(), CrashReportDialogResult(act="copy")) == "copied"
+    )
+    assert copied and "Traceback" in copied[0]
+    assert "support@community-access.org" in notices[0]
+
+
+def test_excepthook_module_has_no_github_path() -> None:
+    source = Path(quill_main.__file__).read_text(encoding="utf-8")
+    assert "issue_submit" not in source
+    assert "feedback_token" not in source
+    assert "github_token" not in source

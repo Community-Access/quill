@@ -3895,63 +3895,33 @@ class MainFrame(
         )
 
     def _send_crash_report(self, offer: object, logs_path: Path) -> bool:
-        """File a crash report from the recovery dialog. Returns True to close it.
+        """Email Support from the Crash Recovery dialog. Returns True to close it.
 
-        The Quill issue tracker is public, so this asks for explicit consent and
-        only sends a redacted log summary. With a stored GitHub token it creates
-        the issue directly, clears the logs, and returns True (close the dialog);
-        without one it opens the manual report form and returns False.
+        Opens the user's own mail program with a redacted report of the
+        unclean exit addressed to support@community-access.org -- the same
+        handoff as Help > Get Help from Support. Nothing is sent until the
+        user sends it there. Returns True when a mail program answered (the
+        dialog closes); False when none did, in which case the report is on
+        the clipboard and the dialog stays open. Until 2026-09-26 this filed
+        a public GitHub issue with a bundled token; neither exists now.
         """
-        wx = self._wx
-        from quill.core.feedback_token import effective_github_token
-        from quill.core.issue_submit import (
+        from quill.stability.crash_email import (
             NEWLINE,
+            build_crash_support_message,
             build_log_summary,
             find_stall_evidence,
-            fingerprint_for_traceback,
-            submit_crash_issue,
         )
+        from quill.ui.support_dialog import send_by_mail
 
-        with wx.MessageDialog(
-            self.frame,
-            "This files a report on Quill's PUBLIC issue tracker and includes a "
-            "redacted summary of your most recent log file. Personal data is "
-            "scrubbed, but the issue is visible to anyone. Send it now?",
-            "Send Bug Report",
-            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-        ) as consent:
-            if (
-                self._show_modal_dialog(consent, "Send Bug Report", restore_editor_focus=False)
-                != wx.ID_YES
-            ):
-                self._set_status("Bug report cancelled")
-                return False
-
-        if not effective_github_token():
-            self._set_status("No GitHub token: opening the issue form")
-            self.report_bug()
-            return False
-
-        # #1013: the report's log summary is a short tail (issue_submit's
-        # _MAX_LOG_CHARS) that can miss the error evidence which actually
-        # justified this offer, since the offer decision scans a much larger
-        # window (recovery._LOG_TAIL_SCAN_BYTES). Include that evidence
-        # explicitly so the filed report is self-explanatory.
-        #
-        # #1045/#1046: use the evidence begin_session() already captured on
-        # the offer, not a fresh find_error_evidence(logs_path) scan here --
-        # by the time this button is clicked (possibly long after launch),
-        # the current session's own routine logging can have grown
-        # quill.log enough to push the original evidence out of the scan
-        # window, so a fresh scan would find nothing even though the offer
-        # was correctly justified.
+        # #1013/#1045/#1046: quote the evidence begin_session() captured on
+        # the offer, not a fresh scan -- by now this session's own logging can
+        # have pushed the original evidence out of the scan window.
         evidence = getattr(offer, "error_evidence", None)
         evidence_section = (
             f"Error evidence that triggered this offer:\n{evidence}\n\n" if evidence else ""
         )
         # Group D (#1079/#1085/#1095): stitch the real traceback from the last
-        # crash-*.txt (top-level excepthook) so the report is actionable, not
-        # log-only. Bounded near the crashed session's snapshot mtime so an
+        # crash-*.txt, bounded near the crashed session's snapshot mtime so an
         # ancient crash is never attached.
         snapshot = getattr(offer, "snapshot", None)
         try:
@@ -3962,74 +3932,37 @@ class MainFrame(
         crash_section = (
             f"Last local crash report (full traceback):\n{crash_report}\n\n" if crash_report else ""
         )
-        # #1464/#1466/#1480: three unclean-exit reports arrived that nobody
-        # could act on. A crash *with* a traceback has always filed the version,
-        # the portable flag, the screen reader and the last ten commands; an
-        # unclean exit filed a log tail and nothing else -- and a log tail is
-        # mostly five-minute idle sweeps. The context below is the only evidence
-        # this kind of report can carry, so it carries all of it, and the stall
-        # lines are lifted to the top, because a six-second UI freeze buried in
-        # the middle of a hundred routine lines is a signal nobody finds.
-        context_section = self._unclean_exit_context()
+        # #1464/#1466/#1480: an unclean exit has no traceback, so the session
+        # context and any UI-stall lines are the evidence; stalls go first.
         stall = find_stall_evidence(logs_path)
         stall_section = (
             "UI stalls recorded before the exit:" + NEWLINE + stall + NEWLINE * 2 if stall else ""
         )
         body = (
-            "Quill offered crash recovery after an unclean exit. Submitted "
-            "automatically from the Crash Recovery dialog.\n\n"
-            + context_section
+            "QUILL offered crash recovery after an unclean exit. Written from "
+            "the Crash Recovery dialog.\n\n"
+            + self._unclean_exit_context()
             + stall_section
             + crash_section
             + evidence_section
             + build_log_summary(logs_path)
         )
-        # Deduplicate on the stitched traceback when there is one. Without a
-        # crash-*.txt this offer is log-only, and a log tail is not a stable
-        # identity -- so it files normally rather than guessing, which is the
-        # right trade: a duplicate issue beats two different crashes silently
-        # merged into one.
-        fingerprint = fingerprint_for_traceback(crash_report or "")
-        metadata: dict[str, object] = {
-            "session": getattr(offer, "session_id", ""),
-            "snapshot": str(getattr(offer, "snapshot", "")),
-        }
-        if fingerprint:
-            metadata["fingerprint"] = fingerprint
-        issue_url, error = submit_crash_issue(
-            summary="Crash recovery: Quill detected an unclean exit",
-            message=body,
-            app_version=__version__ or "0.0.0",
-            github_token=effective_github_token(),
-            metadata=metadata,
-            fingerprint=fingerprint,
-        )
-        if not issue_url:
-            self._set_status(f"Could not file report: {error}")
-            with wx.MessageDialog(
-                self.frame,
-                f"The report could not be filed automatically:\n{error}\n\n"
-                "Opening the manual report form instead.",
-                "Bug Report",
-                wx.OK | wx.ICON_WARNING,
-            ) as failed:
-                self._show_modal_dialog(failed, "Bug Report", restore_editor_focus=False)
-            self.report_bug()
-            return False
+        import platform as platform_module
 
-        self._copy_to_clipboard(issue_url)
-        self._clear_recovery_logs(logs_path)
-        self._record_notification(f"Filed crash report: {issue_url}", "support")
-        self._set_status(f"Filed crash report: {issue_url}")
-        with wx.MessageDialog(
-            self.frame,
-            f"Thanks. Your report was filed and the logs were cleared:\n{issue_url}\n\n"
-            "The link is on your clipboard.",
-            "Bug Report Sent",
-            wx.OK | wx.ICON_INFORMATION,
-        ) as done:
-            self._show_modal_dialog(done, "Bug Report Sent", restore_editor_focus=False)
-        return True
+        facts_of = getattr(self, "ai_support_facts", None)
+        message = build_crash_support_message(
+            summary="QUILL detected an unclean exit",
+            body=body,
+            app_version=__version__ or "0.0.0",
+            platform_name=platform_module.platform(),
+            extra=facts_of() if callable(facts_of) else {},
+        )
+        if send_by_mail(self, message, title="Crash Recovery"):
+            self._record_notification("Crash report opened in your mail program", "support")
+            self._set_status("Crash report ready in your mail program")
+            return True
+        self._set_status("No mail program: crash report copied to the clipboard")
+        return False
 
     def _prepare_crash_recovery_payload(
         self,
@@ -4179,7 +4112,9 @@ class MainFrame(
         open_logs_button = wx.Button(dialog, label="Open Logs Folder")
         clear_logs_button = wx.Button(dialog, label="Clear Logs")
         save_diagnostics_button = wx.Button(dialog, label="Save Diagnostics...")
-        send_report_button = wx.Button(dialog, label="Send Bug Report")
+        # Email Support (2026-09-26): was "Send Bug Report", which filed a
+        # public GitHub issue. It now opens the mail program to support@.
+        send_report_button = wx.Button(dialog, label="Email Support")
         skip_label = "Discard and Continue" if offer.dismissal_count >= 3 else "Skip Recovery"
         skip_button = wx.Button(dialog, id=wx.ID_NO, label=skip_label)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -9518,6 +9453,14 @@ class MainFrame(
         the feature map all carry it; what it does is the family flow in
         :mod:`quill.ui.support_dialog`, which reaches a person who can answer
         instead of filing the reporter's own words into a public repository.
+
+        The menu label is QUILL Lite's, "Get Help from Support...", but its
+        access key is L rather than Lite's G: Open User &Guide already owns G
+        in QUILL's Help menu, and a duplicate mnemonic makes Windows cycle
+        between the two instead of pressing either (GATE-14). The command id
+        stays ``help.report_bug`` so a user's rebinding survives; the chord,
+        Ctrl+Alt+F2, is the same in both editors. The QUILL AI support ID goes
+        in through ``ai_support_facts`` (the shared hosted-AI mixin).
         """
         from quill.ui.support_dialog import open_support_message
 

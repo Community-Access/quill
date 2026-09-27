@@ -10,9 +10,9 @@ own -- it resolves the right script, runs it from the repo root, and tees the
 output to local\build-logs\ so a 500,000-line PyInstaller log never lands in
 the terminal.
 
-Everything else resolves itself: Python, ISCC, ffmpeg, libmpv and the bundled
-feedback token all come from scripts\BuildEnv.ps1, so no paths need passing on
-any machine.
+Everything else resolves itself: Python, ISCC, ffmpeg and libmpv all come
+from scripts\BuildEnv.ps1, so no paths need passing on any machine. No build
+bakes a bug-report credential (feedback is email-only since 2026-09-26).
 
 .PARAMETER Product
 Which product to build. Run ".\build.ps1 list" to see them all.
@@ -69,7 +69,7 @@ param(
     [switch]$NoCopy,
 
     # Anything else is handed straight to the underlying build script, so
-    # -SkipSharedRuntime, -SkipCatalog, -SkipToken, -Offline, -Iscc <path>,
+    # -SkipSharedRuntime, -SkipCatalog, -Offline, -Iscc <path>,
     # -Python <exe> and friends all keep working unchanged.
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Rest

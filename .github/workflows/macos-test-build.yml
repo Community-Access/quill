@@ -28,15 +28,14 @@ jobs:
       - name: Install macOS build dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[ui,spellcheck,macos,feedback,github]"
+          python -m pip install -e ".[ui,spellcheck,macos,github]"
 
-      - name: Generate build-identity and feedback-token modules
-        # Without --require-token a missing QUILL_FEEDBACK_GITHUB_TOKEN writes
-        # an empty token: fine for a test build (Report a Bug falls back to a
-        # web link), and exactly why release builds must NOT use this workflow.
+      - name: Generate build-identity and ADP client-key modules
+        # No bug-report credential is generated: since 2026-09-26 every QuillVille
+        # build reports by email to support@community-access.org and ships no
+        # GitHub token at all.
         run: |
           python tools/generate_build_info.py || echo "no build/version.toml - unversioned test build"
-          python tools/generate_feedback_token.py
           # Lenient: without QUILL_ADP_CLIENT_KEY this bakes an empty ADP key
           # (Ask ADP falls back to a key pasted in ADP Settings) -- fine for a
           # test build. Release builds set QUILL_ADP_CLIENT_KEY to ship the key.

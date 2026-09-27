@@ -6784,35 +6784,106 @@ Menu stability note: Quill now defers internal menu-state updates while native m
 > works. See [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2) for the full
 > list.
 
-### How to report a problem from inside Quill
+### Get Help from Support: step by step
 
-Use this path when Quill is behaving unexpectedly or when you want to send the team a feature request.
+*Updated 2026-09-26.* Use this whenever QUILL is behaving unexpectedly, you are
+stuck, you have a question, or you want to suggest something. It is the same
+form QUILL Lite and Quill Radio use, and it reaches a person at **Community
+Access** -- not a public issue tracker.
 
-1. Open **Help -> Get Help from Support...** (Ctrl+Alt+F2). The form opens as a dialog; the fields are plain, labelled controls your screen reader reads by name.
-2. Pick what kind of message it is, give it a subject, and describe what happened. What you expected and the steps to reproduce it are optional, and worth more than anything else when you can give them.
-3. Fill in **your email address** if you want an answer. It is optional on purpose — you can report a problem without giving one, you simply will not be able to be replied to.
-4. Choose **Send**. Your own mail program opens with the whole message already written, addressed to **support@community-access.org**, with QUILL's version, your Windows version and your screen reader filled in at the bottom. **Nothing is sent until you send it there**, so you can read it over or add anything first. Escape cancels without writing anything.
+1. Open **Help > Get Help from Support...** or press **Ctrl+Alt+F2** from
+   anywhere in QUILL. (The Help menu access key is **L**, because **G** already
+   opens the user guide in that menu; the command's keymap id is still
+   `help.report_bug`, so a shortcut you rebound earlier keeps working.)
+2. The form opens with focus on **What kind of message**. Choose one of:
+   something is broken, a question, an accessibility problem, or an idea or
+   request. It only helps route the message.
+3. Tab to **Subject** and type one short line, as you would for an email.
+4. Tab to **What happened** and describe it in your own words. This is the part
+   a person reads first.
+5. **What you expected** and **Steps to reproduce** are optional. Steps are
+   worth more than anything else when you can give them.
+6. **Your email address** is optional too. The message goes from your own mail
+   account, so support can already answer you there; fill this in only if you
+   want the reply somewhere else.
+7. **Screen reader** is filled in from what is running. Change it if it is
+   wrong.
+8. Below the fields, QUILL tells you what else goes in: its version, your
+   Windows version and -- when this computer is connected to QUILL's free AI --
+   your **QUILL AI support ID**, the number support asks for first.
+9. Press **Send** (or Enter). Your own mail program opens with the whole message
+   already written and addressed to **support@community-access.org**. **Nothing
+   is sent until you press Send in your mail program**, so read it over, attach
+   a diagnostics bundle if you like, or close it to change your mind. Escape
+   in the form cancels without writing anything.
 
-If this machine has no mail program set up — webmail only, say — QUILL puts the whole message on your clipboard and tells you the address, so nothing you typed is lost. Writing to **support@community-access.org** yourself always works just as well; there is no form you have to use. Need to share more detail? **Help -> Save Diagnostics...** remains available as a standalone export you can attach to your reply.
+If a required field is empty, QUILL says which one and leaves you in the form.
+If the message is too long for a mail link, the mail program opens with the
+start of it and QUILL puts the complete text on your clipboard and tells you to
+paste it in with Control V. If this machine has no mail program set up --
+webmail only, say -- QUILL shows the address, puts the whole message on your
+clipboard, and nothing you typed is lost. Writing to
+**support@community-access.org** yourself always works just as well.
 
-The in-app submit works on every install, including right after an upgrade: every build (Windows and macOS, release or beta) now bundles the reporting token, with no opt-out, so the "no token" message some of you saw after upgrading an earlier beta cannot recur.
+Need to share more detail? **Help > Save Diagnostics...** writes a reviewed,
+redacted bundle you can attach to the email.
 
-If a build that is already running is found to be missing the bundled token, **Check for Updates** offers to reinstall the latest release even when it is the same version you already have — the dialog explains that the install restores the bug-report token, so reinstalling the same version is not confusing. A silent background update check only records a notification instead of auto-reinstalling the running version; choose **Skip this version** to silence it, and the offer stops the moment the token is present again.
+Nothing in QUILL files GitHub issues on your behalf any more, and no build
+carries a bundled GitHub "reporting token". (Your own GitHub sign-in for
+QUILL's GitHub features is separate, and unchanged.) The same-version
+"restore the token" offer that **Check for Updates** used to make is gone with
+it: Check for Updates now only ever offers a newer version.
 
-### When QUILL crashes: the new crash-submit dialog
+### When QUILL crashes: emailing a crash report
 
-When an unhandled exception closes QUILL, a dialog now appears during the beta phase so you can review a redacted summary and choose whether to send it to the developers.
+*Updated 2026-09-26.* When an unhandled error stops QUILL, it first saves a
+local crash file, then offers to email a redacted report to support.
 
-1. A native dialog appears with the heading **Report Crash**.
-2. The dialog opens with a read-only **Report preview** panel showing the redacted summary: the last 10 commands you ran, the active document's name and encoding, the platform and screen-reader information, and the last 12 frames of the traceback. Personal data and credential-shaped strings are scrubbed before the preview is rendered.
-3. Three free-text fields are ready to type into: **What were you doing when this happened?**, **What command do you think triggered it?**, and **Expected behaviour**. Each field is redacted before the report is built, so a path or token you paste by accident never leaves your machine.
-4. Three buttons:
-   - **Don't send** (the default button) -- close the dialog, leave the local crash file in place, send nothing. Escape is also bound to this button.
-   - **Copy to clipboard** -- put the same redacted summary on the system clipboard so you can paste it into a manual report.
-   - **Send report** -- submit the redacted summary to the project's public issue tracker. This requires a configured GitHub token; if the token is absent the report is copied to the clipboard instead, and nothing is submitted silently.
-5. The local crash file is always saved to `app_data_dir()/crash-reports/`, regardless of which button you choose. You can find it later from **Help -> Open Diagnostics Folder**.
+1. A dialog titled **Report Crash** appears. Focus starts in the first text
+   field.
+2. The **Report preview** is a read-only panel showing exactly what the report
+   says: QUILL's version, whether it is portable, your screen reader, the
+   active document's name and encoding (never its text or folder), the last
+   ten commands you ran, and the last frames of the error. Personal data,
+   file paths and anything shaped like a password or key are scrubbed before
+   the preview is built.
+3. Three optional fields: **What were you doing when this happened?**, **What
+   command do you think triggered it?** and **Expected behaviour**. Each is
+   scrubbed the same way before it is added, so something you paste by
+   accident does not leave your machine.
+4. Choose one of three buttons:
+   - **Email support** (Alt+E) -- your own mail program opens with the report
+     written and addressed to **support@community-access.org**, the subject
+     starting "Crash report". Nothing is sent until you press Send there. With
+     no mail program, the report goes to your clipboard and QUILL tells you
+     the address to write to.
+   - **Copy to clipboard** (Alt+C) -- puts the same redacted report on the
+     clipboard so you can paste it into an email yourself.
+   - **Don't send** (Alt+D, or Escape) -- closes the dialog and sends nothing.
+5. The local crash file is always kept in the `crash-reports` folder of
+   QUILL's data folder, whichever button you choose. **Tools > Customize and
+   Support > Open Diagnostics Folder** takes you near it.
 
-If you do not want the dialog at all, turn it off in **Preferences -> General -> Offer to send crash reports automatically**. The local crash file is still saved; the dialog is the only opt-in here.
+If you do not want the dialog at all, turn it off in **Preferences > General >
+Offer to email crash reports to support**. The local crash file is still saved.
+
+### After an unclean exit: Crash Recovery > Email Support
+
+If QUILL closed without a traceback -- a freeze, a power cut, a forced close --
+the next launch shows **Crash Recovery**, which offers your unsaved work back.
+Its **Email Support** button (it used to say "Send Bug Report") writes the same
+kind of message for an exit that left no error behind:
+
+1. Press **Email Support** in Crash Recovery.
+2. Your mail program opens with a message to **support@community-access.org**
+   containing QUILL's version, platform and screen reader, your last commands,
+   any "the UI stopped answering" lines from the log (listed first), the saved
+   crash traceback when there is one, and a short, redacted tail of the newest
+   log.
+3. Read it, add a sentence about what you were doing, and send it from your
+   mail program. Crash Recovery closes once the mail program has opened. If no
+   mail program answers, the report is on your clipboard and Crash Recovery
+   stays open so you can still restore your work.
 
 ### Application Status page
 
@@ -9928,7 +9999,7 @@ Today, Quill already has the foundations for careful support work:
 - extraction review
 - bad-extraction package export for extraction-related issues
 - a general-purpose **Save Diagnostics...** command that writes a local bundle
-- a **Report a Bug...** command that lets you review the report in-app and then opens the Community Access support-hub form with environment context
+- a **Get Help from Support...** command (Ctrl+Alt+F2; it was **Report a Bug...** until 2026) that writes a message to support@community-access.org in your own mail program, with environment context filled in
 - a diagnostics runbook and PRD-backed support model in the documentation set
 
 ### What still needs to improve
@@ -9942,7 +10013,7 @@ Before the broadest public rollout, publish one secure feedback route that does 
 1. a Community Access HTTPS feedback form
 2. optional upload of a user-reviewed diagnostics bundle
 3. a plain-language bug template with environment summary and reproduction steps
-4. the current **Help -> Report a Bug...** handoff kept as the guided in-app bridge until the fuller route is live
+4. the in-app **Help -> Get Help from Support...** form, which since 2026-09-26 is the one route: it emails support through your own mail program and never files anything on GitHub
 
 Until that exists, use the current Help-menu path as the practical bridge. The important improvement in Quill 0.5.0 Beta is that Quill now helps users gather diagnostics locally, review what is being shared, and start a structured support report without forcing them to begin outside the tool.
 

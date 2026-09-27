@@ -4,6 +4,21 @@ Written 2026-08-26, against
 *Community Access Support, FreeScout, Postmark, and GitHub Integration Plan —
 Free-Software Baseline* (v4).
 
+> **Status: done (2026-09-26).** The rule this document is built on is now
+> enforced in every app. QUILL, QUILL Lite, Quill Radio and the rest of the
+> family send Help > Get Help from Support to `support@community-access.org`
+> through the user's own mail program, and QUILL's two crash-report paths (the
+> Report Crash dialog and Crash Recovery > Email Support) do the same. The
+> bundled GitHub token, `quill/core/feedback_token.py`,
+> `quill/core/issue_submit.py`, `quill/core/crash_fingerprint.py` and QUILL's
+> use of feedback-hub are gone; nothing files a GitHub issue on anybody's
+> behalf. The route taken differs from section 7 in one way: steps 2 and 3 (a
+> `POST /submit/support` relay behind feedback-hub) were **not** built. The
+> mail-program handoff needs no server and no credential, so step 4 (delete
+> the token) went ahead without them. The user's own GitHub sign-in for QUILL's
+> GitHub features is separate and unchanged. The rest of this document is kept
+> as the reasoning.
+
 **The short version.** The plan makes one rule that QUILL currently breaks in
 every app: *FreeScout is authoritative for customer communication, GitHub is
 authoritative for engineering work.* Today **Report a Bug writes the customer's
@@ -228,6 +243,9 @@ lands, it is a setting rather than a rebuild.
 ---
 
 ## 7. Suggested order
+
+*(Historical -- see the status note at the top: step 4 is done,
+and 2 and 3 were superseded by the mail-program handoff.)*
 
 Small, and each step independently useful:
 

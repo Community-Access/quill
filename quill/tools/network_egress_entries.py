@@ -455,39 +455,20 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "(_EditorHostServices reaches fetch only after the host's capability + "
         "consent check passes); there is no silent path."
     ),
-    # feedback_hub is an optional external library (not in quill/); its urlopen
-    # call is not found by this AST scan but is documented here for auditability.
-    # Two explicit-user-action call sites reach it:
-    #   report_bug() -> ui.support_dialog.open_support_message -> the
-    #       feedback-hub dialog, and ONLY when a submission server is
-    #       configured and the installed package accepts server_url
-    #       (feedback_token.server_transport_available). Since 2026-09-11
-    #       the default path files nothing: it hands a mailto: URL to the
-    #       reader's own mail client, which is not egress by this app at
-    #       all -- nothing leaves the machine until the person presses Send
-    #       in their own mail program. Support messages never go to GitHub.
-    #   _send_crash_report() -> core.issue_submit.submit_crash_issue -> submit
-    #       -> create_issue -> urlopen
-    # The crash-report path requires an explicit consent confirmation, sends
-    # only a REDACTED log summary (stability.redaction), and runs only when a
-    # GitHub token is configured. Both fall back to the legacy browser/manual
-    # path when feedback_hub or a token is absent.
-    # #622: the crash-submit flow adds a third path:
-    #   sys.excepthook -> quill.__main__._install_excepthook
-    #       -> _try_offer_crash_submit (builds the redacted payload via
-    #          stability.crash_submit.build_crash_report_payload)
-    #       -> wx.CallAfter(schedule) -> CrashReportDialog.show()
-    #       -> on Send: quill.core.issue_submit.submit_crash_issue -> submit
-    #          -> create_issue -> urlopen
-    # The dialog path runs only when (a) wx is alive, (b) the user has the
-    # `auto_ask_crash_submit` setting enabled (default True during the beta
-    # phase), and (c) the user explicitly clicks **Send report** after
-    # reviewing the redacted preview. The default button is **Don't send**
-    # so an accidental dialog open does not send anything. When the GitHub
-    # token is absent the report is copied to the clipboard instead. The
-    # local crash file is always saved regardless of the user's choice.
-    # Every step is wrapped in try/except so the handler can never prevent
-    # the standard interpreter traceback from firing.
+    # Support and crash reports (2026-09-26): NO egress by this app. feedback_hub
+    # and the bundled GitHub "feedback token" are gone, and nothing files a
+    # GitHub issue on the user's behalf. Three explicit-user-action paths hand
+    # a mailto: URL to the reader's own mail program (ui.support_dialog
+    # .send_by_mail -> webbrowser.open / wx.LaunchDefaultBrowser), which is not
+    # egress by QUILL at all -- nothing leaves the machine until the person
+    # presses Send in their own mail program:
+    #   report_bug() (Help > Get Help from Support) -> open_support_message
+    #   _send_crash_report() (Crash Recovery > Email Support) -> send_by_mail
+    #   sys.excepthook -> quill.__main__._try_offer_crash_submit
+    #       -> CrashReportDialog -> _act_on_crash_choice -> send_by_mail
+    # Crash bodies are redacted (stability.redaction) before the mail program
+    # sees them. There is deliberately no _REVIEWED_EGRESS entry: there is no
+    # in-package call site to review.
     # Browser read-aloud (Experimental, opt-in): QUILL itself makes NO network
     # call here -- it writes a self-contained local HTML page (quill/core/
     # browser_reader.py) and opens it in the user's browser. The AST scan finds

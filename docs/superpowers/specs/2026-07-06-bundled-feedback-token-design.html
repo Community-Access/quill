@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Bundled feedback-hub GitHub token — design</title>
   <style>
@@ -198,6 +198,16 @@
 <main id="main-content">
 <h1 id="bundled-feedback-hub-github-token--design">Bundled feedback-hub
 GitHub token — design</h1>
+<blockquote>
+<p><strong>Superseded 2026-09-26.</strong> The owner removed
+feedback-hub from every QuillVille product, and no build ships the
+bundled GitHub “feedback token” any more: all feedback goes to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+by email. <code>tools/generate_feedback_token.py</code> is deleted, and
+<code>scripts/check_no_credentials.py</code> fails any build that would
+ship <code>quill/_feedback_token.py</code> or <code>feedback_hub</code>.
+This document is kept as a historical record only.</p>
+</blockquote>
 <h2 id="problem">Problem</h2>
 <p>The “Report a Bug” dialog (and the crash-recovery auto-report path)
 needs a GitHub token to file an issue against

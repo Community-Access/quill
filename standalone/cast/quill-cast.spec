@@ -7,8 +7,10 @@
 # and the app starts instantly instead of re-extracting to a temp folder on
 # every launch. Same rationale as quill-radio.spec. collect_all("quill")
 # brings the entire quill package -- code and package data (schemas, sounds,
-# bundled quillins, assets, and the build-time _feedback_token module) -- so
+# bundled quillins, and assets) -- so
 # nothing the shared feature code needs is missing from the frozen build.
+
+import os
 
 from PyInstaller.utils.hooks import collect_all
 
@@ -33,6 +35,12 @@ def drop_dev_caches(entries):
 
 
 quill_datas, quill_binaries, quill_hiddenimports = collect_all("quill")
+# No bug-report credential ships in any QuillVille build (2026-09-26; feedback
+# is email-only). collect_all("quill") would sweep a stale, gitignored
+# quill/_feedback_token.py left in the checkout, so drop it here, exclude it
+# below, and let scripts/check_no_credentials.py refuse the build if it or
+# feedback_hub reaches the archive anyway.
+quill_hiddenimports = [m for m in quill_hiddenimports if m != "quill._feedback_token"]
 # PyNaCl (Ed25519 signature verification: signed update manifests, Quillin
 # verification in the shared feature code). Its imports are lazy inside
 # quill.tools.signing, so collect it explicitly rather than trusting the
@@ -57,6 +65,9 @@ a = Analysis(
     hookspath=[],
     runtime_hooks=[],
     excludes=[
+        # The retired bug-report credential and its client (see above).
+        "quill._feedback_token",
+        "feedback_hub",
         # yt-dlp (~3 MB) is bundled only in the apps with a YouTube or
         # URL-import path (Radio, Studio, Converter). collect_all("quill")
         # force-includes quill.core.radio.youtube here too, so without this
@@ -117,6 +128,13 @@ a = Analysis(
     ],
     noarchive=False,
 )
+
+import sys as _sys  # noqa: E402
+
+_sys.path.insert(0, os.path.join(SPECPATH, "..", "..", "scripts"))
+from check_no_credentials import assert_toc_clean  # noqa: E402
+
+assert_toc_clean(a.pure)
 
 pyz = PYZ(a.pure)
 

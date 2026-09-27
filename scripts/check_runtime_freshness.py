@@ -55,14 +55,6 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 #: ``quill/native``, which are compiler output and are never frozen.
 _SKIP_SEGMENTS = frozenset({"__pycache__", ".mypy_cache", "build"})
 
-#: Files excluded by name, each for a stated reason.
-#:
-#: ``_feedback_token.py`` is written into the checkout by the build itself
-#: (tools/generate_feedback_token.py) immediately before packaging, so a runtime
-#: reused from an earlier build legitimately carries the previous write. It is
-#: gitignored, machine-specific, and carries no app behaviour.
-_SKIP_NAMES = frozenset({"_feedback_token.py"})
-
 
 @dataclass(frozen=True, slots=True)
 class Finding:
@@ -80,8 +72,6 @@ def _sources(root: Path) -> dict[str, Path]:
     for path in root.rglob("*.py"):
         relative = path.relative_to(root)
         if _SKIP_SEGMENTS.intersection(relative.parts):
-            continue
-        if path.name in _SKIP_NAMES:
             continue
         found[relative.as_posix()] = path
     return found

@@ -5,8 +5,8 @@
 #   dist\Quill-Inkwell-Setup-<ver>.exe        system installer
 #
 # Usage:
-#   .\scripts\build_release.ps1 [-Python <python.exe>] [-TokenFile <path>]
-#                               [-Iscc <path>] [-SkipToken] [-SkipSharedRuntime]
+#   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
+#                               [-SkipSharedRuntime]
 #                               [-FfmpegDir <dir>] [-LibmpvDir <dir>]
 #
 # Quill Inkwell is a small app: no ffmpeg, no mpv, no media/AI stacks -- so,
@@ -30,10 +30,8 @@ param(
     # unused here, which is exactly the 304 MB Inkwell stops installing.
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
-    [switch]$SkipToken,
     [switch]$SkipSharedRuntime,
     [switch]$Sign
 )
@@ -52,7 +50,7 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 if (-not $QuillRepo) {
     $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
 }
-# The interpreter/ISCC/token resolution this script used to carry privately now
+# The interpreter/ISCC resolution this script used to carry privately now
 # lives in scripts\BuildEnv.ps1, shared by every standalone build script so the
 # seven copies stop drifting apart.
 . (Join-Path $QuillRepo "scripts\BuildEnv.ps1")
@@ -63,18 +61,13 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
-# -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
-if (-not $SkipToken) {
-    # -TokenFile is one of several sources generate_feedback_token.py accepts
-    # (env var, token file, Windows Credential Manager, or a token already
-    # bundled by this machine's last build). Pass it when given; otherwise let
-    # the generator resolve, and let ITS --require-token error explain every
-    # option rather than throwing here about the one source we happen to know.
-    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
-    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
-    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
-}
+# -- no feedback token (2026-09-26) ------------------------------------------
+# Builds used to generate and embed a bundled GitHub "feedback token" here. No
+# QuillVille build does any more: all feedback goes to support@community-access.org
+# by email, so there is no credential to ship. -TokenFile and -SkipToken went with
+# it. The spec excludes quill._feedback_token and refuses to freeze it or
+# feedback_hub (scripts\check_no_credentials.py), so a stale gitignored copy in
+# the checkout can no longer ride along.
 
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the

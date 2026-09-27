@@ -1,5 +1,13 @@
 # Bundled feedback-hub GitHub token — design
 
+> **Superseded 2026-09-26.** The owner removed feedback-hub from every
+> QuillVille product, and no build ships the bundled GitHub "feedback token"
+> any more: all feedback goes to support@community-access.org by email.
+> `tools/generate_feedback_token.py` is deleted, and
+> `scripts/check_no_credentials.py` fails any build that would ship
+> `quill/_feedback_token.py` or `feedback_hub`. This document is kept as a
+> historical record only.
+
 ## Problem
 
 The "Report a Bug" dialog (and the crash-recovery auto-report path) needs a

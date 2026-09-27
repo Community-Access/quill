@@ -62,7 +62,7 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 if (-not $QuillRepo) {
     $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
 }
-# The interpreter/ISCC/token resolution this script used to carry privately now
+# The interpreter/ISCC resolution this script used to carry privately now
 # lives in scripts\BuildEnv.ps1, shared by every standalone build script so the
 # seven copies stop drifting apart.
 . (Join-Path $QuillRepo "scripts\BuildEnv.ps1")
@@ -80,9 +80,9 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # to support@community-access.org through the reader's own mail program, and
 # nothing is filed as a GitHub issue, so there is no credential to ship.
 # -TokenFile and -SkipToken were removed with it; nothing else here used them.
-# One caveat: collect_all("quill") still sweeps up a quill\_feedback_token.py
-# that another app's build left in this checkout (it is gitignored, and those
-# builds regenerate it). Nothing this app runs reads it any more.
+# No build regenerates quill\_feedback_token.py now, and the spec excludes it and
+# refuses to freeze it or feedback_hub (scripts\check_no_credentials.py), so
+# a stale gitignored copy left in the checkout can no longer ride along.
 
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the

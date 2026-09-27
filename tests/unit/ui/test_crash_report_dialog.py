@@ -73,7 +73,7 @@ def test_dialog_controls_have_accessible_names(wx_app, tmp_path):
             assert dialog._what_ctrl.GetName() == "What were you doing"
             assert dialog._trigger_ctrl.GetName() == "Triggering command"
             assert dialog._expect_ctrl.GetName() == "Expected behaviour"
-            assert dialog._btn_send.GetName() == "Send report"
+            assert dialog._btn_send.GetName() == "Email support"
             assert dialog._btn_copy.GetName() == "Copy to clipboard"
             assert dialog._btn_cancel.GetName() == "Don't send"
         finally:

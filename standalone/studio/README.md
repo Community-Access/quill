@@ -46,10 +46,10 @@ python -m quill.apps.studio
 
 ```powershell
 # One command, both artifacts (staged portable folder -> portable zip + installer).
-# Needs: the quill package in the Python env, Inno Setup 6.3+, an ffmpeg.exe to
-# bundle, and the issues-only feedback token file (the build FAILS without it
-# rather than shipping a broken Report a Bug).
-.\scripts\build_release.ps1 -TokenFile S:\token.txt -FfmpegDir C:\path\to\ffmpeg\bin
+# Needs: the quill package in the Python env, Inno Setup 6.3+ and an ffmpeg.exe to
+# bundle. No GitHub token is embedded: feedback goes by email to
+# support@community-access.org (2026-09-26).
+.\scripts\build_release.ps1 -FfmpegDir C:\path\to\ffmpeg\bin
 ```
 
 The portable bundle is a genuine, unmodified CPython embeddable runtime with a small native launcher -- not a PyInstaller onedir, and not a renamed `pythonw.exe`, the pattern antivirus tools used to flag. One staged folder feeds both the portable zip and the installer. It pulls the entire `quill` package -- code and data -- and excludes the heavy speech/science stacks, which are fetched on demand.

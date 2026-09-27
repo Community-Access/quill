@@ -1109,14 +1109,6 @@ wheels = [
 ]
 
 [[package]]
-name = "feedback-hub"
-version = "1.1.0"
-source = { registry = "vendor/wheels" }
-wheels = [
-    { path = "feedback_hub-1.1.0-py3-none-any.whl" },
-]
-
-[[package]]
 name = "feedparser"
 version = "6.0.14"
 source = { registry = "https://pypi.org/simple" }
@@ -6221,9 +6213,6 @@ fasterwhisper = [
     { name = "faster-whisper" },
     { name = "huggingface-hub" },
 ]
-feedback = [
-    { name = "feedback-hub" },
-]
 github = [
     { name = "pygithub" },
 ]
@@ -6235,6 +6224,11 @@ kokoro = [
     { name = "babel" },
     { name = "kokoro-onnx" },
     { name = "soundfile" },
+]
+live-dictation = [
+    { name = "numpy" },
+    { name = "sherpa-onnx" },
+    { name = "sounddevice" },
 ]
 mac = [
     { name = "pyobjc-framework-cocoa", marker = "sys_platform == 'darwin'" },
@@ -6292,13 +6286,13 @@ runtime = [
     { name = "certifi" },
     { name = "curl-cffi" },
     { name = "faster-whisper" },
-    { name = "feedback-hub" },
     { name = "html-to-text" },
     { name = "huggingface-hub" },
     { name = "kokoro-onnx" },
     { name = "latex2mathml" },
     { name = "markitdown", extra = ["docx", "pdf", "pptx", "xls", "xlsx"] },
     { name = "mutagen" },
+    { name = "numpy" },
     { name = "openpyxl" },
     { name = "pdfplumber" },
     { name = "pillow" },
@@ -6312,6 +6306,7 @@ runtime = [
     { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "quill-glow-core", extra = ["glow"] },
     { name = "quill-social" },
+    { name = "sherpa-onnx" },
     { name = "sound-lib" },
     { name = "sounddevice" },
     { name = "soundfile" },
@@ -6382,8 +6377,6 @@ requires-dist = [
     { name = "elevenlabs", marker = "extra == 'elevenlabs'", specifier = ">=2.68.0,<3" },
     { name = "faster-whisper", marker = "extra == 'fasterwhisper'", specifier = ">=1.2.1" },
     { name = "faster-whisper", marker = "extra == 'runtime'", specifier = ">=1.2.1" },
-    { name = "feedback-hub", marker = "extra == 'feedback'", specifier = ">=1.1.0" },
-    { name = "feedback-hub", marker = "extra == 'runtime'", specifier = ">=1.1.0" },
     { name = "feedparser", specifier = ">=6.0.14" },
     { name = "github-copilot-sdk", marker = "extra == 'ai-copilot'", specifier = ">=1.0.14" },
     { name = "html-to-text", marker = "extra == 'runtime'", specifier = ">=1.0.0" },
@@ -6402,7 +6395,9 @@ requires-dist = [
     { name = "mutagen", marker = "extra == 'mp3'", specifier = ">=1.48.1" },
     { name = "mutagen", marker = "extra == 'runtime'", specifier = ">=1.48.1" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.3.0" },
+    { name = "numpy", marker = "extra == 'live-dictation'", specifier = ">=2.5.1" },
     { name = "numpy", marker = "extra == 'nemotron'", specifier = ">=2.5.3" },
+    { name = "numpy", marker = "extra == 'runtime'", specifier = ">=2.5.1" },
     { name = "openai-agents", marker = "extra == 'ai-openai'", specifier = ">=0.22.3" },
     { name = "openpyxl", marker = "extra == 'office-text'", specifier = ">=3.1.5" },
     { name = "openpyxl", marker = "extra == 'runtime'", specifier = ">=3.1.5" },
@@ -6454,9 +6449,12 @@ requires-dist = [
     { name = "requests", specifier = ">=2.34.2" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.16.8" },
     { name = "setuptools", marker = "sys_platform == 'darwin' and extra == 'macos'", specifier = "<85" },
+    { name = "sherpa-onnx", marker = "extra == 'live-dictation'", specifier = ">=1.13.8" },
     { name = "sherpa-onnx", marker = "extra == 'nemotron'", specifier = ">=1.13.8" },
+    { name = "sherpa-onnx", marker = "extra == 'runtime'", specifier = ">=1.13.8" },
     { name = "sound-lib", marker = "extra == 'audio'", specifier = ">=0.83" },
     { name = "sound-lib", marker = "extra == 'runtime'", specifier = ">=0.83" },
+    { name = "sounddevice", marker = "extra == 'live-dictation'", specifier = ">=0.5.6" },
     { name = "sounddevice", marker = "extra == 'runtime'", specifier = ">=0.5.6" },
     { name = "sounddevice", marker = "extra == 'speech'", specifier = ">=0.5.6" },
     { name = "soundfile", marker = "extra == 'kokoro'", specifier = ">=0.14.0" },
@@ -6483,7 +6481,7 @@ requires-dist = [
     { name = "yt-dlp", marker = "extra == 'runtime'", specifier = ">=2026.8.19" },
     { name = "yt-dlp", marker = "extra == 'youtube'", specifier = ">=2026.8.19" },
 ]
-provides-extras = ["ai", "ai-claude", "ai-copilot", "ai-openai", "audio", "dev", "dictation", "docx", "elevenlabs", "fasterwhisper", "feedback", "github", "glow", "kokoro", "mac", "macos", "math", "mp3", "native-build", "nemotron", "ocr", "office-text", "packaging", "pages", "pdf-ocr", "rapidfuzz", "runtime", "signing", "social-app", "speech", "spellcheck", "ssh", "ui", "vosk", "youtube"]
+provides-extras = ["ai", "ai-claude", "ai-copilot", "ai-openai", "audio", "dev", "dictation", "docx", "elevenlabs", "fasterwhisper", "github", "glow", "kokoro", "live-dictation", "mac", "macos", "math", "mp3", "native-build", "nemotron", "ocr", "office-text", "packaging", "pages", "pdf-ocr", "rapidfuzz", "runtime", "signing", "social-app", "speech", "spellcheck", "ssh", "ui", "vosk", "youtube"]
 
 [[package]]
 name = "quill-glow-core"

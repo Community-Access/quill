@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Feedback, redesigned for FreeScout — and the simple form
 survives</title>
@@ -203,6 +203,24 @@ redesigned for FreeScout — and the simple form survives</h1>
 <p>Written 2026-08-26, against <em>Community Access Support, FreeScout,
 Postmark, and GitHub Integration Plan — Free-Software Baseline</em>
 (v4).</p>
+<blockquote>
+<p><strong>Status: done (2026-09-26).</strong> The rule this document is
+built on is now enforced in every app. QUILL, QUILL Lite, Quill Radio
+and the rest of the family send Help &gt; Get Help from Support to
+<code>support@community-access.org</code> through the user’s own mail
+program, and QUILL’s two crash-report paths (the Report Crash dialog and
+Crash Recovery &gt; Email Support) do the same. The bundled GitHub
+token, <code>quill/core/feedback_token.py</code>,
+<code>quill/core/issue_submit.py</code>,
+<code>quill/core/crash_fingerprint.py</code> and QUILL’s use of
+feedback-hub are gone; nothing files a GitHub issue on anybody’s behalf.
+The route taken differs from section 7 in one way: steps 2 and 3 (a
+<code>POST /submit/support</code> relay behind feedback-hub) were
+<strong>not</strong> built. The mail-program handoff needs no server and
+no credential, so step 4 (delete the token) went ahead without them. The
+user’s own GitHub sign-in for QUILL’s GitHub features is separate and
+unchanged. The rest of this document is kept as the reasoning.</p>
+</blockquote>
 <p><strong>The short version.</strong> The plan makes one rule that
 QUILL currently breaks in every app: <em>FreeScout is authoritative for
 customer communication, GitHub is authoritative for engineering
@@ -454,6 +472,8 @@ so that whichever answer lands, it is a setting rather than a
 rebuild.</p>
 <hr />
 <h2 id="7-suggested-order">7. Suggested order</h2>
+<p><em>(Historical – see the status note at the top: step 4 is done, and
+2 and 3 were superseded by the mail-program handoff.)</em></p>
 <p>Small, and each step independently useful:</p>
 <ol type="1">
 <li><strong>Create the labels</strong> — the seven

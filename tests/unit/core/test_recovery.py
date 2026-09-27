@@ -343,7 +343,7 @@ def test_find_error_evidence_returns_none_when_log_missing(tmp_path: Path) -> No
 def test_find_error_evidence_returns_marker_with_context(tmp_path: Path) -> None:
     # #1013: a filed crash-recovery report showed only a routine log tail
     # with no visible justification for the offer, because the report
-    # bundler's tail (issue_submit._MAX_LOG_CHARS, 6000 chars) is far
+    # bundler's tail (crash_submit._MAX_LOG_CHARS, 6000 chars) is far
     # smaller than the window that actually gates the offer (262,144
     # bytes) -- real error evidence earlier in that window never made it
     # into the filed report. find_error_evidence() lets the report

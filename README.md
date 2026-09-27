@@ -166,8 +166,8 @@ Notes for a working developer setup:
   (on-device llama.cpp assistant), `spellcheck`, `speech`, `dictation`,
   `ocr`, `glow` (document accessibility engine), and more. The everything
   set a release runtime ships is `pip install -e ".[runtime,packaging]"`.
-- **Vendored wheels**: a few first-party dependencies (the GLOW engine,
-  feedback-hub) are not yet on PyPI and live in `vendor/wheels`. Installs
+- **Vendored wheels**: a few first-party dependencies (the GLOW engine)
+  are not yet on PyPI and live in `vendor/wheels`. Installs
   that need them take `--find-links vendor/wheels`.
 - **Useful launch flags**: `--safe-mode` (disables AI, watch folder, and
   extensions), `--version`, `--diagnostics`, `--new-window`,
@@ -234,14 +234,17 @@ do exactly the same thing; `build.ps1 list` prints the roster with a
 one-line description apiece. (`converter`, `player`, and `radio-mac` have
 no build shell yet, and `list` says so rather than leaving you guessing.)
 
-Nothing needs a path. The interpreter, ISCC, ffmpeg, libmpv, and the
-bundled feedback token are all resolved by `scripts\BuildEnv.ps1`, so the
-same command works on any machine and from any drive letter.
+Nothing needs a path. The interpreter, ISCC, ffmpeg, and libmpv are all
+resolved by `scripts\BuildEnv.ps1`, so the same command works on any machine
+and from any drive letter. No build embeds a bug-report credential: all
+feedback goes to support@community-access.org by email (2026-09-26), and
+`scripts\check_no_credentials.py` fails any build that would ship the old
+token or feedback-hub.
 
 **Options pass straight through** to the real build script, so anything it
 accepts still works -- `-SkipSharedRuntime` (reuse the runtime already in
 `standalone\runtime\dist`, saving roughly ten minutes), `-Offline` (Audio
-Studio's Offline Edition), `-SkipCatalog`, `-SkipToken`, `-Iscc <path>`,
+Studio's Offline Edition), `-SkipCatalog`, `-Iscc <path>`,
 `-Python <exe>`. `-Sign` is understood by every product, including QUILL's
 own Python build, where it sets the `QUILL_SIGN` the signer reads
 (`docs/code-signing.md`). Two options belong to the wrapper itself:
