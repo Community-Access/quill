@@ -1,15 +1,63 @@
 # Changelog
 
-All notable changes to Quill Converter are documented here. See
-`docs/release-notes-1.0.md` for the fuller narrative version.
+All notable changes to Quill Converter are documented here in summary. The
+itemized list is `docs/CHANGELOG.md`, which is the one the app's Help menu
+opens (Help > Changelog); `docs/release-notes-1.0.md` is the narrative version.
 
 Quill Converter is the product wrapper; the application code lives in the
-`quill` package, so the entries below are drawn from the commit history of
-`quill/apps/converter.py`, the shared conversion engine under
+`quill` package, so the entries below are drawn from the history of
+`quill/apps/converter.py`, `converter_menu.py`, `converter_actions.py`,
+`converter_chapters.py` and `converter_advanced.py`,
+`quill/ui/converter_dialogs.py`, the shared conversion engine under
 `quill/core/audio/`, the shared Convert Audio dialog, and this folder.
 
-## Unreleased
+## 1.0.0 - 2026-09-27
 
+The first public release. The app was first built in July 2026 as an audio
+converter (an entry here once dated it 2026-07-31); that build was never
+published as an installer, and everything in it is part of 1.0.0.
+
+- **Two downloads**, both with everything bundled and nothing downloaded on
+  first use: `Quill-Converter-Setup-Shared-1.0.0.exe` (Inno Setup 7; installs
+  the shared QuillVille runtime if it is absent) and
+  `Quill-Converter-Portable-1.0.0.zip` (settings in its own `data` folder).
+  FFmpeg and ffprobe, libmpv, yt-dlp, mutagen and, when built, the OptiLab
+  Core adapter are inside both.
+- **Chapters through every conversion.** A Chapters choice (keep, a chapter
+  list beside the file, at pauses, every N minutes, or none); chapters land
+  inside every format that holds them and in a `.cue` beside the rest; a
+  Chapter Workbench (Ctrl+H) edits them at the playhead.
+- **Advanced Options in the main window**, shown or hidden with View >
+  Advanced Options (Ctrl+Alt+V), replacing the separate Convert Audio dialog.
+- **File Explorer right-click.** An installer task, checked by default, adds
+  "Convert with Quill Converter" for every audio and video type the app reads,
+  per user, removed on uninstall. Many files selected at once arrive in one
+  queue.
+- **Formats.** 25 sound and 9 video output formats, each labeled with what it
+  is for; 82 input types. Format constraints (sample rates, mono-only AMR,
+  bit rates on lossless formats) are handled rather than failing. AIFF and AU
+  are written big-endian (AIFF output was broken); 32-bit WAV is real float.
+- **Video.** Video to sound keeps the sound; video to video keeps the picture,
+  with five video presets including Change the container only. Every audio
+  track is kept in MP4, MKV, MOV and WebM; MKV keeps subtitles.
+- **Effects.** Named effect recipes on the main window, a Custom Effects dialog
+  (Ctrl+E) with every switch, loudness targets, gain, speed, fades and keep
+  from / keep until. Effects apply to the sound of video conversions too.
+- **Preview** (Ctrl+P) and **Preview Original** (Ctrl+Shift+P): fifteen seconds
+  exactly as the result will sound, and the same fifteen seconds untouched.
+- **Join into One File** (Ctrl+J), with a chapter per source in every format
+  that holds chapters, MP3 included; **Split by Chapters** (Ctrl+Shift+S),
+  following the Chapters choice.
+- **Queue and reports.** Paste and drag and drop, reorder, clear, File
+  Properties (Alt+Enter), Convert that becomes Stop, progress every 25 percent,
+  a Conversion Report (Ctrl+R) with plain-language failure reasons, Open
+  Output Folder, cover art carried across, and choices remembered between runs.
+- **Help menu** matching Quill Radio and QUILL Lite, a Keyboard Shortcuts list
+  (Ctrl+Alt+K), and support by email only: Help > Get Help from Support
+  (Ctrl+Alt+F2) writes to support@community-access.org.
+- **In the family.** Quill Converter is on the QuillVille menu of the other
+  apps, and QUILL's own "Convert with Quill" Explorer entry is available in
+  public builds.
 - **The tile icon moved to the family generator.** Quill Converter's icon was
   already generated rather than hand-drawn -- it had its own
   `assets/make_quill_converter_icon.py` -- which made it the only app in the
@@ -20,63 +68,11 @@ Quill Converter is the product wrapper; the application code lives in the
   passing in opposite directions, on a violet tile); what changed is that no two
   apps can now drift apart, or collide, because a test asserts that no two
   render the same face.
+- **Carried from the July build:** the tray-resident single-instance window
+  and its Ctrl+Alt+Shift+C show/hide key, folder scanning with the source
+  layout mirrored, a conflict policy that never overwrites unless asked, ten
+  sound presets, exact encoder settings, Convert from URL
+  (yt-dlp now bundled rather than installed on demand), and the headless
+  `quill convert` command.
 
-## 1.0.0 - 2026-07-31
-
-The first release: the Universal Audio Converter as its own tray-resident
-Windows app.
-
-### The app
-
-- Standalone Quill Converter app: a small window whose whole job is audio
-  conversion -- a queue, an output format, a preset, an output folder, and a
-  Convert button. Single-instance, tray-resident, with a show/hide global
-  hotkey (Ctrl+Alt+Shift+C) and the shared QuillVille menu for opening the
-  sibling apps. Focus lands on the queue the moment the window opens.
-  (2026-07-31)
-- Windows Explorer verb: right-click an audio or video file and choose
-  **Convert with Quill** to open it in Quill Converter, already queued. Off by
-  default; turn it on in QUILL's settings ("Offer Convert with QUILL").
-  (2026-07-31)
-- Standalone build entry and tile icon, produced by the shared QuillVille
-  portable builder. (2026-07-31)
-
-### The conversion engine (shared with QUILL and Audio Studio)
-
-- Universal audio converter core: a mixed file/folder queue, folder scanning
-  with source-tree mirroring, a conflict policy that never overwrites an
-  original unless asked, atomic writes, multi-worker batching, and a spoken
-  end-of-run summary that names the files that failed. Output formats are
-  probed against the resolved FFmpeg so the app never offers a format it
-  cannot actually encode. (2026-07-30)
-- One-click presets: Just convert, MP3 320 / 192 / 128, Podcast, Audiobook
-  (M4B), Voice memo, Web voice (Opus), Archival (FLAC), and Hearing-aid mono.
-  (2026-07-30)
-- Convert Audio dialog and its Audio Studio entry: the accessible, house-
-  contract dialog behind the **Advanced...** button, with a real Convert /
-  Cancel pair, a Delete-to-remove queue, and named controls throughout.
-  (2026-07-30)
-- Advanced-mode DSP catalog, revealed by an **Advanced options** checkbox:
-  bit rate, sample rate, channels, bit depth, loudness normalization
-  (audiobook / podcast targets), gain, a rumble-removing high-pass, silence
-  trimming, a compressor, and a volume leveler. Every control starts on a
-  neutral "leave the preset alone" choice. (2026-07-30)
-- Speed (tempo) and fade in / fade out added to the Advanced panel.
-  (2026-07-30)
-- **Convert from URL...**: paste a link, Quill Converter downloads its audio
-  and drops it straight into the converter. yt-dlp is not bundled -- the first
-  use asks once, shows a plain rights notice, and installs the component on
-  demand. Unavailable in Safe Mode. (2026-07-30)
-- Headless `quill convert` command over the same engine, with `--dry-run`,
-  `--list-presets`, and the whole option set on the command line.
-  (2026-07-30)
-
-### Fixes
-
-- Conversion progress now travels through the shared background-task callback,
-  so the status bar, the tray tooltip, and the spoken milestones all update
-  together and a batch stays reviewable while the window is minimized.
-  (2026-07-30)
-- The Convert Audio dialog is a real `wx.Dialog` subclass, so it is shown
-  through the accessible modal-dialog path like every other dialog in the
-  family. (2026-07-30)
+See `docs/CHANGELOG.md` for the full itemized list.

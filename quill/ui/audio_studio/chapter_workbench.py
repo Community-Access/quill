@@ -373,6 +373,7 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
             "chapter edits must be saved first."
         )
         self._publish_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_publish())
+        self._publish_btn.Show(on_publish is not None)  # Quill Converter has no publishing
         close_btn = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
         close_btn.SetHelpText(
             "Closes the Workbench, remembering your listening position. "

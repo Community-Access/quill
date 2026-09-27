@@ -106,19 +106,27 @@ def test_convert_verb_media_matches_engine_extensions() -> None:
     from quill.core.audio.convert import AUDIO_EXTENSIONS, VIDEO_EXTENSIONS
     from quill.core.shell_verbs import MEDIA_EXTENSIONS
 
-    assert set(MEDIA_EXTENSIONS) == set(AUDIO_EXTENSIONS) | set(VIDEO_EXTENSIONS)
+    # .ts is deliberately off the Explorer verb (TypeScript owns it on most machines).
+    assert set(MEDIA_EXTENSIONS) == (set(AUDIO_EXTENSIONS) | set(VIDEO_EXTENSIONS)) - {".ts"}
 
 
-def test_convert_verb_gated_in_public_enabled_in_dev(monkeypatch) -> None:
-    kwargs = dict(
-        settings_values=_FakeSettings(shell_verb_convert=True),
-        master_enabled=True,
-        assistant_enabled=False,
-    )
-    # Public build: the Convert verb launches the gated Quill Converter app, so it
-    # is withheld even when its own toggle is on.
-    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
-    assert [verb.action for verb in enabled_verbs(**kwargs)] == []
-    # Developer build: the toggle enables it.
-    monkeypatch.setenv("QUILL_DEV_BUILD", "1")
-    assert [verb.action for verb in enabled_verbs(**kwargs)] == ["convert"]
+def test_convert_verb_follows_its_toggle_now_the_converter_is_released(monkeypatch) -> None:
+    # Quill Converter shipped publicly on 2026-09-27, so the verb is no longer
+    # withheld from public builds: its own toggle decides, in either build.
+    for dev in (None, "1"):
+        if dev is None:
+            monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+        else:
+            monkeypatch.setenv("QUILL_DEV_BUILD", dev)
+        on = enabled_verbs(
+            settings_values=_FakeSettings(shell_verb_convert=True),
+            master_enabled=True,
+            assistant_enabled=False,
+        )
+        off = enabled_verbs(
+            settings_values=_FakeSettings(shell_verb_convert=False),
+            master_enabled=True,
+            assistant_enabled=False,
+        )
+        assert [verb.action for verb in on] == ["convert"]
+        assert [verb.action for verb in off] == []

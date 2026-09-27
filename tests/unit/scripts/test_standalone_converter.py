@@ -33,7 +33,7 @@ def test_converter_is_a_registered_build_product() -> None:
     # The converter's whole job is FFmpeg conversion: stage ffmpeg, nothing else.
     assert product.stage_ffmpeg is True
     assert product.stage_engines is False
-    assert product.stage_mpv is False
+    assert product.stage_mpv is True  # the Chapter Workbench's player (1.0.0)
 
 
 def test_converter_exe_in_portable_evidence_allowlist() -> None:

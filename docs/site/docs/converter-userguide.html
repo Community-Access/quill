@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill Converter User Guide</title>
+  <title>Quill Converter User Guide: Converting Audio and Video on Your
+Own Computer</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -196,322 +197,938 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
-<h1 id="quill-converter-user-guide">Quill Converter User Guide</h1>
-<p>Version 1.0</p>
-<p>Quill Converter is one job done properly: changing audio from one
-format into another, on your own machine, without uploading anything to
-a website. It is a small window with a queue, a couple of choice
-controls, and a Convert button. Focus lands on the queue the instant it
-opens, every control has a name and an access key, and the whole thing
-runs from the keyboard.</p>
-<h2 id="getting-started">Getting started</h2>
-<p>Launch Quill Converter from the Start Menu, or
-<code>run-quill-converter.bat</code> from a source checkout, or
-<code>python -m quill.apps.converter</code> if you have the
-<code>quill</code> package installed.</p>
-<p>The window opens with keyboard focus on the <strong>Files to
-convert</strong> list. From there:</p>
-<ol type="1">
-<li>Press Alt+A (<strong>Add Files…</strong>) and pick one or more
-files, or Alt+O (<strong>Add Folder…</strong>) and pick a whole
-folder.</li>
-<li>Choose an output format in <strong>Convert to</strong> (Alt+V).</li>
-<li>Choose a <strong>Preset</strong> (Alt+P), or leave it on “Just
-convert (no processing)”.</li>
-<li>Optionally set an <strong>Output folder</strong>. Leave it blank and
-Quill Converter creates a <code>Converted</code> folder beside your
-source.</li>
-<li>Press Alt+C (<strong>Convert</strong>).</li>
-</ol>
-<p>Progress is spoken and written to the status bar as it goes, and the
-run ends with a summary that says how many files converted and names any
-that failed.</p>
-<p>Only one copy of Quill Converter runs at a time. Launching it again
-while it is already running does not open a second window.</p>
-<h2 id="what-it-converts">What it converts</h2>
-<p><strong>Input.</strong> Audio files: MP3, WAV, FLAC, OGG, OGA, Opus,
-M4A, M4B, AAC, WMA, AIFF, AIF, ALAC, APE, WV, MKA, AMR, 3GP, and CAF.
-Video files, from which the audio track is pulled out: MP4, M4V, MKV,
-MOV, WebM, AVI, FLV, and WMV.</p>
-<p><strong>Output.</strong> MP3, M4A, M4B, Opus, OGG, FLAC, WAV, AAC,
-AIFF, ALAC, WMA, and CAF.</p>
-<p>The <strong>Convert to</strong> list is not a fixed menu: at startup
-Quill Converter asks the bundled FFmpeg which encoders it actually has
-and lists only the formats it can really produce. That is deliberate – a
-batch should never die half way through because an encoder was missing.
-WAV, AIFF, and CAF are always available. If FFmpeg cannot be found at
-all, WAV is the only format offered, and starting a conversion tells you
-that FFmpeg is needed and points you at QUILL’s <strong>Help &gt;
-Download Optional Components</strong>.</p>
-<h2 id="the-five-ways-files-get-in">The five ways files get in</h2>
-<p>There is no drag and drop, by design – everything below is reachable
-from the keyboard.</p>
-<ol type="1">
-<li><strong>Add Files…</strong> (Alt+A, or File &gt; Add Files…,
-Ctrl+O). A standard multi-select file picker filtered to audio and video
-files, with an “All files” option if you need it.</li>
-<li><strong>Add Folder…</strong> (Alt+O, or File &gt; Add Folder…).
-Queues the whole folder. From the main window a folder is always scanned
-right through its sub-folders, and the output mirrors the source folder
-structure.</li>
-<li><strong>The command line.</strong> Pass file or folder paths when
-you launch the app and each one that exists is queued immediately:
-<code>python -m quill.apps.converter song.wav album\</code></li>
-<li><strong>The Windows Explorer right-click menu.</strong> Turn on the
-“Offer Convert with QUILL” setting in QUILL, and audio and video files
-gain a <strong>Convert with Quill</strong> entry that opens Quill
-Converter with your selection already queued. The verb is <strong>off by
-default</strong> – nothing is added to your context menu until you ask
-for it.</li>
-<li><strong>Convert from URL…</strong> (Alt+U, or File &gt; Convert from
-URL…). Described in its own section below; the downloaded audio arrives
-in the converter ready to go.</li>
-</ol>
-<p>Duplicate paths are ignored, so adding the same file twice queues it
-once.</p>
-<p>To take something out of the queue, select the row and press
-<strong>Delete</strong>, or use the <strong>Remove</strong> button
-(Alt+R).</p>
-<h2 id="the-main-window-control-by-control">The main window, control by
-control</h2>
-<p>Tab order, top to bottom:</p>
+<h1
+id="quill-converter-user-guide-converting-audio-and-video-on-your-own-computer">Quill
+Converter User Guide: Converting Audio and Video on Your Own
+Computer</h1>
+<p>Version 1.0.0 – September 27, 2026</p>
+<p>Quill Converter changes audio and video files from one format into
+another, on your own computer, without uploading anything to a website.
+Sound to sound, video to sound, and video to video. It can clean up the
+sound on the way through, let you hear the result before you commit,
+join a pile of files into one audiobook, and split a chaptered book back
+into its chapters.</p>
+<p>Chapters are a headline feature. Keep a file’s own chapters, write
+your own in a plain text file beside it, find them at the pauses, or
+have one every few minutes – in any format. Where a format has no place
+for chapters, a <code>.cue</code> sheet is written beside the converted
+file, so nothing is silently lost. The Chapter Workbench lets you hear a
+book and edit its chapters at the playhead.</p>
+<p>It is a small window with a queue, a few choices and a Convert
+button. Focus lands on the queue the moment it opens, every control has
+a name and an access key, and everything runs from the keyboard. It was
+built for screen readers from the first line: every action says what it
+did, and the status bar always carries the same words.</p>
+<h2 id="installing">Installing</h2>
+<p>There are two downloads. Choose one.</p>
 <ul>
-<li><strong>Files to convert</strong> (Alt+F, a list box). One row per
-queued item; a folder reads as “name (folder)”. Delete removes the
-selected row.</li>
+<li><strong>Quill-Converter-Setup-Shared-1.0.0.exe</strong> – the
+installer, recommended for most people. It installs the shared
+QuillVille runtime if this computer does not have it yet (the same
+runtime QUILL and Quill Radio use), then the app, with a Start Menu
+entry and an uninstaller.</li>
+<li><strong>Quill-Converter-Portable-1.0.0.zip</strong> – the portable
+copy. Unpack it anywhere, including a USB stick, and run
+<code>QuillConverter.exe</code>. It keeps its settings in its own
+<code>data</code> folder next to the app and writes nothing to the
+computer it runs on.</li>
+</ul>
+<p>Nothing downloads the first time you use a feature. Both downloads
+already contain everything the app needs: FFmpeg and ffprobe (which do
+the converting and reading), libmpv (the mpv playback engine, the
+Chapter Workbench’s player), yt-dlp (for Convert from URL), mutagen (for
+carrying cover art and chapters across) and, in builds that include it,
+the OptiLab Core broadcast-polish adapter.</p>
+<h3 id="the-file-explorer-right-click-menu">The File Explorer
+right-click menu</h3>
+<p>The installer has one option, checked by default: <strong>Add
+“Convert with Quill Converter” to the File Explorer right-click menu for
+audio and video files</strong>. With it on, right-click any audio or
+video file Quill Converter reads and choose <strong>Convert with Quill
+Converter</strong>. The file opens in Quill Converter, already
+queued.</p>
+<ul>
+<li>Select many files first and choose it once: they all land in the
+same window, in one queue. Quill Converter only ever runs one copy of
+itself, so a second launch hands its files to the window that is already
+open.</li>
+<li>The entry is added for your Windows account only, and the
+uninstaller removes it.</li>
+<li><code>.ts</code> files are left off this menu, because on many
+computers <code>.ts</code> is a TypeScript source file rather than
+video. Add Files and Add Folder still take them.</li>
+</ul>
+<p>QUILL has its own, separate setting for a <strong>Convert with
+Quill</strong> entry; it also opens Quill Converter. You do not need
+both.</p>
+<h2 id="your-first-conversion">Your first conversion</h2>
+<ol type="1">
+<li>Start Quill Converter from the Start Menu. Focus is on the
+<strong>Files to convert</strong> list.</li>
+<li>Press Alt+A (<strong>Add Files…</strong>) and choose one or more
+files. Or press Alt+O (<strong>Add Folder…</strong>) to add a whole
+folder, sub-folders included. You can also paste files you copied in
+File Explorer with Ctrl+V, or drop them on the list.</li>
+<li>Press Alt+T to reach <strong>Convert to</strong> and choose a format
+with the arrow keys. Each format is spoken with what it is for, for
+example “MP3 audio – plays everywhere”.</li>
+<li>Press Alt+P for <strong>Preset</strong> and choose how the result is
+made, or leave it on “Just convert (no processing)”.</li>
+<li>If you want the sound improved, press Alt+E for
+<strong>Effects</strong> and choose a recipe named for the problem it
+solves, such as “Clean up speech”.</li>
+<li>If the files have chapters, or you want some, press Alt+K for
+<strong>Chapter marks</strong>. The default, “Keep each file’s own
+chapters”, carries them across as they are. See <a
+href="#chapters">Chapters</a>.</li>
+<li>Press Alt+Y (<strong>Play Preview</strong>) to hear fifteen seconds
+exactly as the converted file will sound. Press it again to stop.</li>
+<li>Press Ctrl+Enter or the <strong>Convert</strong> button, or
+Ctrl+Enter from anywhere in the window.</li>
+</ol>
+<p>Progress is announced every 25 percent and shown in the status bar.
+The run ends by saying how many files converted and naming any that did
+not. If anything failed, Ctrl+R opens the Conversion Report with the
+reason for each one.</p>
+<p>Converted files go to the <strong>Output folder</strong>. Leave it
+empty and Quill Converter makes a folder named <code>Converted</code>
+beside the first file in the queue. Your originals are never changed,
+and an existing file is not overwritten: a converted file whose name is
+taken is numbered instead, unless you choose otherwise in <a
+href="#advanced-options">Advanced Options</a>.</p>
+<p>Quill Converter remembers your format, presets, effects, custom
+effects, the keep-from and keep-until times, the Chapters choice, the
+Advanced Options, and the output folder between runs, so the next job
+starts where the last one ended.</p>
+<h2 id="the-main-window">The main window</h2>
+<p>Tab order, top to bottom, with each control’s access key:</p>
+<ul>
+<li><strong>Files to convert</strong> – the queue (focus starts here). A
+folder reads as “name (folder)”.</li>
 <li><strong>Add Files…</strong> (Alt+A), <strong>Add Folder…</strong>
 (Alt+O), <strong>Remove</strong> (Alt+R).</li>
-<li><strong>Convert to</strong> (Alt+V, a combo box). The output format,
-in capitals.</li>
-<li><strong>Preset</strong> (Alt+P, a combo box). Each entry is spoken
-as its name plus a plain-language description of what it is good for, so
-you can choose by hearing rather than by guessing.</li>
-<li><strong>Output folder</strong> (a text field) and
-<strong>Browse…</strong> (Alt+B). Leave it blank to get a
-<code>Converted</code> folder beside the first thing in your queue.</li>
-<li><strong>Convert</strong> (Alt+C), <strong>Convert from URL…</strong>
-(Alt+U), <strong>Advanced…</strong>.</li>
+<li><strong>Convert to</strong> (Alt+T) – the output format. Sound
+formats come first, then video.</li>
+<li><strong>Preset</strong> (Alt+P) – quality settings chosen for a
+purpose. The list changes with the format: sound presets for a sound
+format, video presets for a video format.</li>
+<li><strong>Effects</strong> (Alt+E) and <strong>Custom
+Effects…</strong> (Alt+S).</li>
+<li><strong>Chapter marks</strong> (Alt+K) – where the converted files’
+chapters come from – and <strong>Chapter Workbench…</strong>.</li>
+<li><strong>Output folder</strong> (Alt+D) and <strong>Browse…</strong>
+(Alt+B).</li>
+<li>The <strong>Advanced</strong> section, when View &gt; Advanced
+Options (Ctrl+Alt+V) is checked. See <a
+href="#advanced-options">Advanced Options</a>.</li>
+<li><strong>Convert</strong> (Ctrl+Enter), <strong>Play Preview</strong>
+(Alt+Y), <strong>Hear Original</strong> (Alt+G), <strong>From
+URL…</strong> (Alt+L).</li>
 </ul>
-<p>Two access keys are shared on this window: Alt+O reaches both
-<strong>Add Folder…</strong> and the <strong>Output folder</strong>
-field, and Alt+V reaches both <strong>Convert to</strong> and
-<strong>Advanced…</strong>. Pressing the key repeatedly cycles between
-them, and Tab reaches everything in order, so nothing is unreachable –
-but Tab is the reliable route to Advanced.</p>
-<p>The status bar reports how many items are queued, then per-file
-progress during a run, then the summary.</p>
-<p>From the main window, conversions never overwrite an existing file:
-if the output name is already taken, the new file is auto-numbered
-instead. If you want Skip or Overwrite instead, use
-<strong>Advanced…</strong> (below), which exposes the conflict
-policy.</p>
-<h2 id="presets">Presets</h2>
+<p>The menu bar is File, Queue, View, Convert, QuillVille, Help and
+Window, and no control on the window uses a menu’s letter, so Alt+F
+always opens the File menu.</p>
+<p>While a conversion runs, the Convert button becomes <strong>Stop
+Converting</strong>, and Ctrl+Enter stops as well.</p>
+<p>Press F1 on any control to hear what it does, after a sentence about
+what the window is for.</p>
+<h2 id="what-it-reads">What it reads</h2>
+<p>Quill Converter reads 82 file types. Sound files:</p>
+<ul>
+<li><strong>Everyday:</strong> MP3, WAV, FLAC, OGG, OGA, Opus, M4A, M4B,
+AAC, WMA, AIFF, AIF, AIFC, ALAC, CAF, MKA, WEBA, M4R.</li>
+<li><strong>Lossless and archival:</strong> APE (Monkey’s Audio), WV
+(WavPack), TTA, TAK, SHN (Shorten), W64, RF64, BWF, DSF, DFF.</li>
+<li><strong>Film and broadcast:</strong> AC3, EAC3, EC3, DTS, THD, MLP,
+MP2, MP1, MPA.</li>
+<li><strong>Phones, voice and telephony:</strong> AMR, AWB, SPX (Speex),
+GSM, AU, SND, VOC.</li>
+<li><strong>Older and specialist:</strong> MPC (Musepack), RA
+(RealAudio), OMA, AA3.</li>
+<li><strong>Tracker music:</strong> MOD, XM, IT, S3M.</li>
+</ul>
+<p>Video files:</p>
+<ul>
+<li>MP4, M4V, MKV, MOV, QT, WebM, AVI, DIVX, FLV, F4V, WMV, ASF, MPG,
+MPEG, MPE, VOB, TS, MTS, M2TS, M2T, 3GP, 3G2, OGV, RM, RMVB, MXF, DV,
+WTV, DVR-MS, NUT.</li>
+</ul>
+<p>A file with a name ending in one of these that turns out to be
+damaged, or not really that kind of file, fails on its own; the rest of
+the batch carries on.</p>
+<h2 id="what-it-writes">What it writes</h2>
+<p>34 formats: 25 sound and 9 video. The <strong>Convert to</strong>
+list only shows the ones the bundled FFmpeg can actually write, so a
+batch never stops half way because an encoder was missing.</p>
+<p>Sound formats, in the order the list offers them:</p>
+<ul>
+<li>MP3 audio – plays everywhere</li>
+<li>M4A audio (AAC) – Apple devices and phones</li>
+<li>M4B audiobook – remembers your place in book players</li>
+<li>Opus audio – smallest files for speech</li>
+<li>Ogg Vorbis audio – open format</li>
+<li>FLAC – lossless, smaller than WAV</li>
+<li>WAV – uncompressed, for editing</li>
+<li>AAC audio stream (.aac)</li>
+<li>AIFF – uncompressed, Apple</li>
+<li>Apple Lossless (ALAC, .m4a)</li>
+<li>WMA – Windows Media Audio</li>
+<li>CAF – Core Audio Format</li>
+<li>AC-3 (Dolby Digital) – DVD and home theater</li>
+<li>E-AC-3 (Dolby Digital Plus)</li>
+<li>MP2 – broadcast and DVD audio</li>
+<li>WavPack – lossless</li>
+<li>TTA (True Audio) – lossless</li>
+<li>MKA – Matroska audio, lossless FLAC inside</li>
+<li>WebM audio (Opus) – for web pages</li>
+<li>M4R – iPhone ringtone</li>
+<li>Speex – low bit rate speech</li>
+<li>AMR narrowband – phone voice memos</li>
+<li>AMR wideband – clearer phone voice</li>
+<li>AU – Sun and Java audio</li>
+<li>Wave64 – WAV for files over 4 GB</li>
+</ul>
+<p>Video formats:</p>
+<ul>
+<li>MP4 video (H.264) – plays everywhere</li>
+<li>MP4 video (H.265, HEVC) – half the size, newer devices</li>
+<li>MKV video (H.264) – keeps every audio and subtitle track</li>
+<li>WebM video (VP9) – for the web</li>
+<li>MOV video (H.264) – QuickTime and Apple editing</li>
+<li>AVI video (Xvid) – older players and TVs</li>
+<li>WMV video – Windows Media</li>
+<li>MPEG-2 video – DVD players</li>
+<li>Ogg video (Theora) – open format</li>
+</ul>
+<h3 id="what-the-formats-decide-for-you">What the formats decide for
+you</h3>
+<p>Some formats only accept certain settings. Quill Converter makes the
+file right rather than letting it fail:</p>
+<ul>
+<li><strong>Sample rates.</strong> AC-3, E-AC-3, MP2, Opus, WebM audio,
+Speex and AMR only accept certain sample rates. If a preset or Advanced
+Options asks for one they do not accept, the file gets the nearest rate
+the format does accept. AMR narrowband is always 8 kHz and AMR wideband
+16 kHz.</li>
+<li><strong>Channels.</strong> AMR is always mono, so a stereo file is
+mixed down.</li>
+<li><strong>Bit rates.</strong> Lossless and uncompressed formats (WAV,
+FLAC, AIFF, ALAC, CAF, WavPack, TTA, MKA, AU, Wave64) ignore a bit rate,
+because it means nothing to them.</li>
+<li><strong>Byte order.</strong> AIFF and AU are written the way those
+formats require, so an AIFF made by Quill Converter opens
+everywhere.</li>
+<li><strong>32-bit.</strong> Choosing 32-bit in Advanced Options for
+WAV, Wave64 or CAF gives real 32-bit floating point.</li>
+</ul>
+<h2 id="converting-video">Converting video</h2>
+<ul>
+<li><strong>Video to a sound format</strong> keeps its sound. This is
+how you get the audio out of a recorded lecture, a film or a music
+video.</li>
+<li><strong>Video to a video format</strong> keeps it a video, with the
+picture re-encoded in the new format.</li>
+<li><strong>A sound file queued for a video format</strong> is skipped,
+because a video needs a picture. The end-of-run summary says how many
+were skipped and why.</li>
+<li><strong>Every audio track is kept</strong> in MP4, MKV, MOV and WebM
+– a described-audio track or a second language comes through. The other
+video formats keep the first audio track.</li>
+<li><strong>Subtitles</strong> are kept in MKV.</li>
+<li><strong>Effects apply to the sound</strong> of a video conversion
+too, so “Louder dialogue for films and TV” on a film gives you a new
+film with clearer speech.</li>
+<li><strong>Video files are converted one at a time</strong>, because a
+video encoder already uses every core of the computer. Several at once
+would only make each slower.</li>
+</ul>
+<h3 id="video-presets">Video presets</h3>
+<p>When the format is a video format, the Preset list offers:</p>
+<ul>
+<li><strong>Same quality (recommended)</strong> – looks the same as the
+original, at the original size.</li>
+<li><strong>Phones and the web, up to 1080p</strong> – good quality in a
+noticeably smaller file.</li>
+<li><strong>Smaller file, up to 720p</strong> – for sharing and
+messaging; about a quarter of the size.</li>
+<li><strong>Smallest file, up to 480p</strong> – for slow connections
+and small screens.</li>
+<li><strong>Change the container only (fastest, no quality
+loss)</strong> – copies the picture and sound untouched into the new
+format. It takes seconds rather than minutes, but effects cannot apply
+(you are told they were skipped), and some combinations of picture and
+sound do not fit every container. When that happens the file fails with
+a reason that says so; choose one of the other presets instead.</li>
+</ul>
+<p>A size limit never makes a picture bigger: a 480p video on “up to
+1080p” stays 480p.</p>
+<h2 id="sound-presets">Sound presets</h2>
+<p>When the format is a sound format, the Preset list offers:</p>
 <ul>
 <li><strong>Just convert (no processing)</strong> – a pure format
 change. The default.</li>
 <li><strong>MP3 320 kbps (maximum quality)</strong>, <strong>MP3 192
 kbps</strong>, <strong>MP3 128 kbps (small)</strong>.</li>
-<li><strong>Podcast (MP3, spoken word)</strong> – mono MP3 with a
-rumble-removing high-pass.</li>
-<li><strong>Audiobook (M4B)</strong> – mono M4B at a compact
-bitrate.</li>
+<li><strong>Podcast (MP3, spoken word)</strong> – mono MP3 for talk,
+with a rumble filter.</li>
+<li><strong>Audiobook (M4B)</strong> – mono M4B at a compact bit
+rate.</li>
 <li><strong>Voice memo (small MP3)</strong> – mono, 22 kHz, tiny files
 for spoken notes.</li>
-<li><strong>Web voice (Opus)</strong> – mono Opus at a low bitrate, the
+<li><strong>Web voice (Opus)</strong> – mono Opus at a low bit rate, the
 smallest for the web.</li>
 <li><strong>Archival (FLAC, lossless)</strong> – keeps the original rate
 and channels.</li>
-<li><strong>Hearing-aid mono</strong> – downmix to a single
+<li><strong>Hearing-aid mono</strong> – everything mixed down to one
 channel.</li>
 </ul>
-<p>A preset sets the starting recipe; the <strong>Convert to</strong>
-choice always wins over the preset’s own format, so you can take the
-Podcast preset and still ask for Opus.</p>
-<h2 id="advanced">Advanced</h2>
-<p><strong>Advanced…</strong> (also File &gt; Advanced Options…) hands
-your current queue to the full <strong>Convert Audio</strong> dialog. It
-is the same dialog QUILL’s Audio Studio opens, so there is only one
-converter to learn.</p>
-<p>The dialog repeats the queue and the format/preset/output controls,
-and adds:</p>
+<p>Each preset is spoken with a sentence about what it is for. The
+<strong>Convert to</strong> choice always wins over a preset’s own
+format, so you can take the Podcast preset and still ask for Opus. Quill
+Converter remembers your last sound preset and your last video preset
+separately.</p>
+<h2 id="effects">Effects</h2>
+<p>The <strong>Effects</strong> choice (Alt+E) is what to do to the
+sound on the way through. Each recipe is named for the problem it
+solves, so you do not need to know what a de-esser is to use one.</p>
 <ul>
-<li><strong>Include sub-folders</strong> (Alt+I, a check box, on by
-default) – whether a queued folder is scanned right through or only at
-its top level. Each folder row in the queue says which it will be.</li>
-<li><strong>On conflict</strong> (Alt+C, a combo box): “Rename
-(auto-number) – never overwrites” (the default), “Skip files that
-already exist”, or “Overwrite existing files”.</li>
-<li><strong>Advanced options</strong> (Alt+P, a check box). Ticking it
-reveals the panel below and moves focus to its first control, so the
-reveal is announced rather than being a silent resize. Unticking it puts
-focus back on the check box.</li>
+<li><strong>No effects</strong> – the sound is converted exactly as it
+is.</li>
+<li><strong>Clean up speech</strong> – removes rumble, hum and steady
+background hiss, softens harsh s sounds, and sets a comfortable
+listening level.</li>
+<li><strong>Podcast ready</strong> – cleans the voice, evens out loud
+and quiet speakers, and meets the podcast loudness standard of -16
+LUFS.</li>
+<li><strong>Audiobook, ACX ready</strong> – rumble filter, gentle noise
+reduction and the ACX loudness window of -20 LUFS with peaks held under
+-3 dB, as Audible requires.</li>
+<li><strong>Clearer voice for listening</strong> – lifts the frequencies
+that carry consonants, trims muddiness, and evens out the level; easier
+on the ears and on hearing aids.</li>
+<li><strong>Louder dialogue for films and TV</strong> – brings speech
+forward over music and effects, then evens out the loudness so
+explosions and whispers sit closer together.</li>
+<li><strong>Night listening</strong> – quiet parts come up and loud
+parts come down, so you can listen at low volume without reaching for
+the control.</li>
+<li><strong>Music, streaming loudness</strong> – normalizes to -14 LUFS,
+the level Spotify, YouTube and Apple Music play at, with a safety
+limiter.</li>
+<li><strong>Broadcast standard, EBU R128</strong> – normalizes to -23
+LUFS, the loudness standard for television and radio.</li>
+<li><strong>Remove electrical hum</strong> – notches out 50 and 60 Hz
+mains hum and its first harmonic, and the rumble below it.</li>
+<li><strong>Reduce background noise</strong> – takes down steady hiss,
+fan and air-conditioner noise.</li>
+<li><strong>Remove long silences</strong> – cuts every pause longer than
+half a second; lectures and voice memos get shorter without losing a
+word.</li>
+<li><strong>Bass boost</strong> – adds warmth and weight to
+thin-sounding music or small speakers.</li>
+<li><strong>Custom</strong> – the effects you chose in the Custom
+Effects dialog.</li>
 </ul>
-<p>The revealed panel, in order:</p>
+<h3 id="custom-effects">Custom Effects</h3>
+<p><strong>Custom Effects…</strong> (Alt+S on the main window, or Ctrl+E
+from anywhere) puts every effect on one page. It opens showing exactly
+what the current Effects choice does, so you can pick “Podcast ready”,
+open Custom Effects, and change one thing. Pressing OK makes the result
+your <strong>Custom</strong> recipe and selects it.</p>
+<p>Check boxes, in the order they are applied:</p>
 <ul>
-<li><strong>Bit rate</strong> (Alt+R): Auto (use preset), 96, 128, 192,
-256, or 320 kbps.</li>
-<li><strong>Sample rate</strong> (Alt+M): Keep source rate, 48 kHz, 44.1
-kHz, 22.05 kHz, 16 kHz.</li>
-<li><strong>Channels</strong> (Alt+H): Keep source channels, Mono,
-Stereo.</li>
-<li><strong>Bit depth</strong> (Alt+D): Keep source depth, 16-bit,
-24-bit, 32-bit float.</li>
-<li><strong>Loudness</strong> (Alt+L): No loudness normalization,
-Audiobook / ACX (-20 LUFS), or Podcast / streaming (-16 LUFS).</li>
-<li><strong>Gain (dB)</strong> (Alt+G): -30 to +30 in half-decibel
-steps. 0 means no change.</li>
-<li><strong>Speed (tempo)</strong> (Alt+S): 0.5x to 2.0x, no pitch
-shift. 1.0 is unchanged.</li>
-<li><strong>Fade in (seconds)</strong> (Alt+I) and <strong>Fade out
-(seconds)</strong> (Alt+O): 0 to 10.</li>
-<li><strong>Remove low-frequency rumble (high-pass)</strong>
-(Alt+U).</li>
-<li><strong>Trim leading and trailing silence</strong> (Alt+T).</li>
-<li><strong>Compress dynamics (even out loud/quiet)</strong>
-(Alt+C).</li>
-<li><strong>Level volume across the file</strong> (Alt+V).</li>
+<li><strong>Remove low rumble</strong> – cuts the rumble below 30 Hz:
+traffic, handling noise, air conditioning.</li>
+<li><strong>Remove electrical hum</strong> – the 50 and 60 Hz mains hum
+a ground loop or a cheap cable adds.</li>
+<li><strong>Reduce background noise</strong> – steady hiss and fan
+noise, gently.</li>
+<li><strong>Remove long silences</strong> – every pause longer than half
+a second.</li>
+<li><strong>De-ess (soften harsh s sounds)</strong>.</li>
+<li><strong>Voice clarity</strong> – lifts consonants and trims
+muddiness.</li>
+<li><strong>Bass boost</strong> – six decibels of warmth below 100
+Hz.</li>
+<li><strong>Treble boost</strong> – brightness above 4 kHz.</li>
+<li><strong>Dialogue boost (films and TV)</strong> – speech forward over
+music and effects. The result is stereo.</li>
+<li><strong>Compress dynamics</strong> – evens out loud and quiet
+passages.</li>
+<li><strong>Speech leveling</strong> – brings each phrase to a similar
+level, quickly; good for a speaker who drifts away from the
+microphone.</li>
+<li><strong>Night mode leveler</strong> – slowly rides the volume for
+listening quietly.</li>
+<li><strong>Peak limiter</strong> – stops any peak going above -1 dB, so
+a loudness boost can never clip. Recommended whenever loudness or gain
+is on.</li>
 </ul>
-<p>Every one of these starts on a neutral “leave the preset alone”
-value, so an Advanced panel you opened but did not touch changes
-nothing.</p>
-<p>The dialog’s affirmative button is labelled <strong>Convert</strong>;
-<strong>Cancel</strong> and Escape both back out without converting, and
-cancelling is announced.</p>
-<h2 id="convert-from-url">Convert from URL</h2>
-<p><strong>Convert from URL…</strong> (Alt+U, or File &gt; Convert from
-URL…) takes a web address, downloads the audio from it, and opens the
-Convert Audio dialog with that file already in the queue.</p>
-<p>What happens, in order:</p>
+<p>Then:</p>
+<ul>
+<li><strong>Loudness target</strong> – no normalization, Audiobook / ACX
+(-20 LUFS), Podcast / streaming (-16 LUFS), Music streaming (-14 LUFS),
+or Broadcast TV and radio, EBU R128 (-23 LUFS).</li>
+<li><strong>Gain in decibels</strong> – a flat volume change from -30 to
++30. 0 changes nothing.</li>
+<li><strong>Playback speed</strong> – from 0.5 to 2.0, without changing
+pitch. 1.0 is unchanged.</li>
+<li><strong>Fade in</strong> and <strong>Fade out</strong>, in seconds,
+up to 30.</li>
+<li><strong>Keep from, seconds into each file</strong> – start every
+converted file this far in. Handy for trimming an intro, or making a
+ringtone.</li>
+<li><strong>Keep until, seconds</strong> – stop every converted file
+here. 0 keeps everything to the end.</li>
+</ul>
+<p>Keep from and Keep until apply to every file in the run, whichever
+effect recipe is chosen, and they are remembered until you change them.
+When they are set, Quill Converter says so as part of what Convert will
+do. Chapters follow the cut: a chapter partly inside the kept part is
+trimmed to it, one wholly outside is dropped, and the rest are shifted
+so the first starts at zero.</p>
+<h2 id="preview-hear-it-before-you-convert">Preview: hear it before you
+convert</h2>
+<ul>
+<li><strong>Play Preview</strong> (Alt+Y, or Ctrl+P) plays fifteen
+seconds of the highlighted file, or of the first file in the queue,
+exactly as it will sound after conversion. The clip is really encoded
+through the chosen format and effects and then played back, so a low bit
+rate sounds like a low bit rate.</li>
+<li><strong>Hear Original</strong> (Alt+G, or Ctrl+Shift+P) plays the
+same fifteen seconds untouched, so you can compare the two back to
+back.</li>
+<li>Press either one again to stop.</li>
+</ul>
+<p>The fifteen seconds start a quarter of the way into the file, and
+never more than 30 seconds in, because the first seconds of most
+recordings are silence, a jingle or somebody asking whether the
+microphone is on. For a video format you hear the sound the new video
+will have.</p>
+<h2 id="chapters">Chapters</h2>
+<p>Chapter marks are how you find your way around a long recording
+without seeing a waveform, so Quill Converter treats them as part of the
+content. The <strong>Chapter marks</strong> choice (Alt+K) says where
+the converted files’ chapters come from:</p>
+<ul>
+<li><strong>Keep each file’s own chapters</strong> – the default.
+Chapters already in the file are carried across as they are.</li>
+<li><strong>Use the chapter list beside each file (.cue, .chapters.txt,
+Audacity labels, .chapters.json)</strong> – chapters you wrote yourself.
+See below.</li>
+<li><strong>Find chapters at the pauses</strong> – a chapter starts at
+every pause of two seconds or more, and no chapter is shorter than 20
+seconds.</li>
+<li><strong>A chapter every 5 minutes</strong>, and every
+<strong>10</strong>, <strong>15</strong>, <strong>30</strong> or
+<strong>60 minutes</strong> – evenly spaced chapters titled Part 1, Part
+2 and so on, for a lecture or a ten-hour recording. A last piece under a
+minute joins the one before it.</li>
+<li><strong>Remove all chapters</strong> – the converted files have
+none.</li>
+</ul>
+<p>To see whether a file already has chapters, highlight it and press
+Alt+Enter (File Properties).</p>
+<h3 id="writing-your-own-chapters">Writing your own chapters</h3>
+<p>You can define chapters for any file, in any format, with a text
+file. Put it beside the source with the same name and
+<code>.chapters.txt</code> on the end: for <code>Lecture 3.mp3</code>,
+that is <code>Lecture 3.chapters.txt</code>. One chapter per line, the
+time first:</p>
+<pre><code>0:00 Welcome
+1:30 Questions
+1:02:05 Summary</code></pre>
+<p>Times are minutes and seconds, or hours, minutes and seconds
+(h:mm:ss). Then choose <strong>Use the chapter list beside each
+file</strong> and convert.</p>
+<p>Quill Converter also accepts, beside the file and with the same
+name:</p>
+<ul>
+<li><code>name.cue</code> – a CUE sheet.</li>
+<li><code>name.chapters.json</code> – Podcasting 2.0 chapters.</li>
+<li><code>name.labels.txt</code> – labels exported from Audacity.</li>
+<li><code>name.txt</code> – if it reads as a chapter list. A transcript
+or other text is ignored.</li>
+</ul>
+<p>A file with no chapter list beside it keeps its own chapters, and the
+Conversion Report says so.</p>
+<h3 id="where-chapters-land">Where chapters land</h3>
+<ul>
+<li><strong>Inside the file</strong>, written by FFmpeg: MP3 (ID3 CHAP
+and CTOC frames), M4B, M4A, Apple Lossless, M4R, MP4, MOV, MKV, MKA,
+WebM, WebM audio, Opus, and WMA and WMV.</li>
+<li><strong>As chapter comments</strong> (CHAPTER001, CHAPTER001NAME and
+so on, the convention their players read): Ogg Vorbis, FLAC, Speex and
+Ogg video.</li>
+<li><strong>In a .cue sheet beside the file</strong>: every other format
+– WAV, AIFF, WavPack, AC-3, the AAC stream, MP2 and the rest – has no
+place for chapters inside the file, so a <code>.cue</code> sheet with
+the same name is written next to the converted file.</li>
+</ul>
+<p>Nothing is silently lost. The Conversion Report (Ctrl+R) notes where
+each file’s chapters went.</p>
+<h3 id="chapter-workbench">Chapter Workbench</h3>
+<p><strong>Queue &gt; Chapter Workbench…</strong> (Ctrl+H, or the
+<strong>Chapter Workbench…</strong> button) opens the highlighted MP3,
+M4B or M4A in the Chapter Workbench, the same one QUILL’s Audio Studio
+uses. It has a player, so you can hear the book and work at the
+playhead:</p>
+<ul>
+<li>rename a chapter, split one at the playhead, set a chapter’s start
+to the playhead, and merge chapters;</li>
+<li>find chapters at silences;</li>
+<li>import and export chapter lists: Audacity labels, CUE, timestamps,
+Podcasting 2.0 JSON and CSV;</li>
+<li>edit the book’s tags;</li>
+<li>save: an MP3 is saved in place, with only its tags rewritten; an M4B
+is saved as a new file (Save As), losslessly;</li>
+<li>split the book into one file per chapter.</li>
+</ul>
+<p>The player is libmpv, bundled with both downloads, so it seeks
+exactly in every format.</p>
+<p>For any other format, the Workbench explains the other routes: write
+a chapter list beside the file and choose it in Chapters, or convert the
+file to M4B or MP3 first and open that.</p>
+<p>Preview and Hear Original ignore chapters; they play fifteen seconds
+of sound.</p>
+<h2 id="join-into-one-file">Join into One File</h2>
+<p><strong>Convert &gt; Join into One File…</strong> (Ctrl+J) joins
+every file in the queue, in queue order, into one sound file. A folder
+in the queue contributes its files in name order.</p>
 <ol type="1">
-<li>A text box asks you to paste a link. Anything that is not a full
-<code>http://</code> or <code>https://</code> address is rejected with a
-plain explanation.</li>
-<li>The first time only, a consent dialog explains that this feature
-uses <strong>yt-dlp</strong> to download audio from a web address, that
-Quill Converter will download and install that component on demand
-(about 3 MB, from PyPI), that you should only download content you have
-the right to use, and that no account or credential of yours is sent to
-the site. Answer <strong>Yes</strong> to continue or <strong>No</strong>
-to stop; answering No is announced and nothing is installed.</li>
-<li>The download runs in the background with spoken progress, then the
-Convert Audio dialog opens on the downloaded file.</li>
+<li>Put the files in order. Alt+Up and Alt+Down move the highlighted
+file.</li>
+<li>Choose a sound format, preset and effects as usual.</li>
+<li>Press Ctrl+J and choose where to save the joined file.</li>
 </ol>
-<p>yt-dlp is never bundled with Quill Converter. It is installed only if
-you say yes, and the whole feature is <strong>unavailable in Safe
-Mode</strong> – asking for it there says so and stops.</p>
-<h2 id="the-tray-and-staying-out-of-the-way">The tray, and staying out
-of the way</h2>
-<p>Quill Converter lives in the notification area while it works.</p>
+<p>The joined file gets one chapter per source. Each chapter is named
+from the source’s title tag, or from a tidied file name when it has
+none: “01 - Intro” becomes “Intro”. The chapters go wherever the format
+keeps them (see <a href="#where-chapters-land">Where chapters land</a>):
+inside the file for MP3, M4B, M4A, Apple Lossless, MKA, M4R, Opus and
+the other formats that hold chapters; as chapter comments for Ogg
+Vorbis, FLAC and Speex; and in a <code>.cue</code> sheet beside the file
+for the rest. Files with different sample rates or channel counts join
+cleanly.</p>
+<p>Join needs at least two files and a sound format; a video format is
+refused with a reason.</p>
+<h2 id="split-by-chapters">Split by Chapters</h2>
+<p><strong>Convert &gt; Split by Chapters</strong> (Ctrl+Shift+S) makes
+one file per chapter from every queued file that has chapters: an
+audiobook, a podcast episode, a film.</p>
+<p>Split uses the same <strong>Chapters</strong> choice as Convert, so
+it can cut where the file has no chapters of its own:</p>
 <ul>
-<li><strong>Minimize to Tray</strong> (Ctrl+W, or File &gt; Minimize to
-Tray) hides the window; the same command brings it back. Hiding and
-showing are both announced.</li>
-<li><strong>Ctrl+Alt+Shift+C</strong> does the same thing from anywhere
-in Windows, even when another program has focus. If another program
-already owns that chord, Quill Converter quietly leaves it alone rather
-than fighting for it.</li>
-<li>Right-click the tray icon (or double-click it to just restore the
-window) for <strong>Show Quill Converter</strong>, <strong>Open Quill
-Converter</strong>, and <strong>Exit Quill Converter</strong>.</li>
-<li>While a batch runs, the tray tooltip carries the same progress text
-as the status bar, so a minimized conversion is still reviewable.</li>
-<li>Starting the app with <code>--tray</code> opens it straight into the
-tray with no window.</li>
+<li><strong>Keep each file’s own chapters</strong> and Split cuts at the
+chapters already in the file.</li>
+<li><strong>A chapter every 30 minutes</strong> and Split cuts a
+ten-hour recording into 30-minute files.</li>
+<li><strong>Find chapters at the pauses</strong> and Split cuts at the
+pauses.</li>
+<li><strong>Use the chapter list beside each file</strong> and Split
+cuts exactly where your list says.</li>
 </ul>
-<p><strong>Exit</strong> (File &gt; Exit, or the tray menu) really
-exits. Alt+F4 closes the window.</p>
-<h2 id="the-other-menus">The other menus</h2>
-<p><strong>QuillVille</strong> lists the sibling apps that have shipped
-a public release – Open QUILL, Open Quill Radio, Open Quill Weather – so
-the family is always one keystroke apart. Choosing one that is not
-installed offers to get it rather than failing silently.</p>
-<p><strong>Window</strong> carries the standard window switcher:
-Ctrl+Tab for the next window, Ctrl+Shift+Tab for the previous, and
-Ctrl+1 through Ctrl+9 to jump to one directly.</p>
-<p><strong>Help</strong> has <strong>Check for Updates…</strong> and
-<strong>About Quill Converter</strong>. Check for Updates looks at Quill
-Converter’s own releases, downloads the right one for how you installed
-(installer or portable), speaks progress milestones, and then offers to
-install it. Each app in the family updates independently.</p>
-<h2 id="using-it-with-a-screen-reader">Using it with a screen
-reader</h2>
+<p>The pieces go into a folder named after the source, inside the output
+folder. Each file is named with its number and chapter title, for
+example “01 - Chapter title”, and tagged with that title and its track
+number. The chosen format, preset and effects apply to every piece.
+Files without chapters are named in the summary and left alone.</p>
+<h2 id="managing-the-queue">Managing the queue</h2>
 <ul>
-<li><strong>Focus at launch</strong> lands on the Files to convert list,
-never on a bare frame.</li>
-<li><strong>Everything is announced.</strong> Queue counts, progress,
-the end-of-run summary, “nothing to convert”, hiding and showing to the
-tray – all of it goes through the shared announcement engine, which
-speaks through your screen reader (JAWS, NVDA, Narrator) without
-stealing focus, and writes to your <strong>braille display</strong> as
-well as speaking.</li>
-<li><strong>The status bar is the visual floor</strong>, so nothing is
-spoken-only and nothing is colour-only.</li>
-<li><strong>Every control has an accessible name</strong>, including the
-ones whose visible label sits beside them.</li>
-<li><strong>Access keys</strong> are on every button and field (listed
-above). Menus are Alt+F for File, Alt+Q for QuillVille, Alt+W for
-Window, Alt+H for Help. On the File menu: Alt+A Add Files, Alt+O Add
-Folder, Alt+U Convert from URL, Alt+V Advanced Options, Alt+T Minimize
-to Tray, Alt+X Exit.</li>
-<li><strong>Delete</strong> removes the selected queue row; you never
-need a mouse to manage the queue.</li>
-<li><strong>No dialog traps.</strong> The Convert Audio dialog has a
-real Cancel that Escape reaches, and its Advanced reveal moves focus so
-you hear the change.</li>
+<li><strong>Add files:</strong> Alt+A, or File &gt; Add Files…
+(Ctrl+O).</li>
+<li><strong>Add a folder:</strong> Alt+O, or File &gt; Add Folder…
+(Ctrl+Shift+O). A folder is scanned right through its sub-folders, and
+the output reproduces its folder layout. To take only the top level,
+clear <strong>Look in subfolders too</strong> in Advanced Options.</li>
+<li><strong>Paste files</strong> copied in File Explorer: Ctrl+V. In a
+text box, such as the Output folder, Ctrl+V pastes text as usual.</li>
+<li><strong>Drag and drop</strong> files or folders onto the list.</li>
+<li><strong>Reorder:</strong> Alt+Up and Alt+Down move the highlighted
+row.</li>
+<li><strong>Remove:</strong> Delete in the list, the Remove button
+(Alt+R), or Queue &gt; Remove from Queue (Ctrl+Delete). Nothing is
+deleted from disk.</li>
+<li><strong>Clear the queue:</strong> Queue &gt; Clear Queue
+(Ctrl+Shift+Delete).</li>
+<li><strong>File Properties:</strong> Alt+Enter describes the
+highlighted file: its length, size, container, overall bit rate, tags,
+each video, audio and subtitle track, whether it has cover art, and its
+chapters.</li>
 </ul>
-<h2 id="where-your-settings-live">Where your settings live</h2>
-<p>Quill Converter shares one settings store with QUILL and the rest of
-the family, so a preference set in one app is honoured in the
-others.</p>
+<p>Adding the same file twice queues it once. A file that is not a media
+file is left out, and the announcement says how many were.</p>
+<h2 id="during-and-after-a-conversion">During and after a
+conversion</h2>
 <ul>
-<li><strong>Installed:</strong> <code>%APPDATA%\Quill</code>.</li>
-<li><strong>Portable:</strong> if you run the portable build, the folder
-beside the program contains a <code>data</code> folder, and once you
-choose portable storage everything – settings, logs, keymap – lives
-there and travels with the stick instead of touching the machine you
-plug it into.</li>
+<li><strong>Stop:</strong> Ctrl+Enter or the Stop Converting button. The
+file being converted is allowed to finish, because a half-written file
+is worse than a finished one; nothing after it starts.</li>
+<li><strong>Progress</strong> is announced at 25, 50 and 75 percent,
+shown in the status bar, and shown in the tray icon’s tooltip, so a
+conversion running in the tray is still something you can check on.</li>
+<li><strong>Conversion Report</strong> (Ctrl+R) lists every file:
+converted (with its new name), skipped, or failed with the reason. It
+also says what settings were used, where the files went and how long it
+took. <strong>Copy All</strong> puts the whole report on the clipboard,
+ready to paste into an email.</li>
+<li><strong>Open Output Folder</strong> (Ctrl+Shift+F) opens the folder
+in File Explorer.</li>
+<li><strong>Open Output Folder When Done</strong> (Ctrl+Shift+W) is a
+check item on the Convert menu: when checked, the output folder opens by
+itself when a conversion finishes.</li>
+<li><strong>Cover art</strong> is carried into the converted copy where
+FFmpeg would drop it: MP3, M4A, M4B, M4R, FLAC, Ogg, Opus and Speex.
+Text tags such as title, artist and album are normally kept as
+well.</li>
 </ul>
-<p>Uninstalling Quill Converter never deletes that shared folder; QUILL
-or another family app may still be using it.</p>
-<h2 id="safe-mode">Safe Mode</h2>
-<p>Setting <code>QUILL_SAFE_MODE=1</code> before launching starts Quill
-Converter in Safe Mode: the default keymap is used instead of your saved
-one, unlocks are not persisted, and <strong>Convert from URL</strong> is
-refused outright. Ordinary conversion still works completely – it is all
-local.</p>
-<h2 id="for-scripts-quill-convert">For scripts:
-<code>quill convert</code></h2>
-<p>Everything above is also available without a window, over the same
-engine:</p>
-<pre><code>python -m quill convert INPUT... --to FORMAT [options]</code></pre>
-<p>Inputs can be files, folders, or glob patterns; folders mirror their
-tree. <code>--preset</code> picks a starting recipe
-(<code>--list-presets</code> prints them), <code>--out</code> sets the
-destination, <code>--recurse</code> descends into sub-folders, and
-<code>--dry-run</code> plans the batch and prints what it would do
-without converting anything.</p>
+<h3 id="why-a-file-failed">Why a file failed</h3>
+<p>A failure is explained in plain words first, then FFmpeg’s own last
+line, which support may ask for. The explanations are:</p>
+<ul>
+<li>The file has no track of the kind this format needs – for example, a
+sound file cannot become a video.</li>
+<li>The file could not be found; it may have been moved, renamed or
+deleted.</li>
+<li>The file is damaged, or is not really the kind of file its name
+says.</li>
+<li>Windows refused access to the file or the output folder.</li>
+<li>The output drive is full.</li>
+<li>That combination of tracks cannot be copied into this container;
+choose a preset that converts rather than copies.</li>
+<li>The chosen format could not accept this file’s sound or picture
+settings.</li>
+<li>The file is copy-protected and cannot be converted.</li>
+<li>This file uses a codec the bundled FFmpeg cannot read.</li>
+<li>The file contains no audio or video.</li>
+</ul>
+<h2 id="advanced-options">Advanced Options</h2>
+<p><strong>View &gt; Advanced Options</strong> (Ctrl+Alt+V) is a check
+item that shows or hides an <strong>Advanced</strong> section in the
+main window, just above the Convert button. Showing it moves focus to
+its first control, and Quill Converter remembers whether it is shown.
+Its settings shape the same Convert as everything else on the page.</p>
+<p>Every setting starts on its neutral choice – use the preset, or keep
+the file’s own – so showing the section to look around changes
+nothing.</p>
+<ul>
+<li><strong>Bit rate (size and quality)</strong> (Alt+Z) – 96 to 320
+kbps for compressed formats. Lossless formats ignore it.</li>
+<li><strong>Sample rate</strong> (Alt+M) – resample every file to this
+rate. A format that cannot take it gets the nearest rate it can.</li>
+<li><strong>Channels</strong> (Alt+N) – mono or stereo. Mono halves the
+size of speech.</li>
+<li><strong>Bit depth</strong> – 16, 24 or 32-bit float for WAV, AIFF,
+FLAC and the other lossless formats. Compressed formats ignore it.</li>
+<li><strong>If a file already exists</strong> (Alt+X) – number the new
+one (the default, which never destroys anything), skip it, or replace
+it.</li>
+<li><strong>Broadcast polish</strong> (Alt+I) – runs each converted file
+through the OptiLab Core engine: Podcast Leveler for speech, Stream
+Polish for music, Smooth Limiter for peaks. Off by default, and
+unavailable when the build does not include it.</li>
+<li><strong>Look in subfolders too</strong> – a check box, on by
+default. When a folder is in the queue, its subfolders are converted
+too, and the same folder layout is rebuilt in the output folder.</li>
+</ul>
+<h2 id="convert-from-url">Convert from URL</h2>
+<p><strong>From URL…</strong> (Alt+L, or File &gt; Convert from URL…,
+Ctrl+U) takes a web address – YouTube and many other sites – downloads
+its audio, and then asks how to convert the downloaded file.</p>
+<p>The downloader, yt-dlp, is included, so nothing is installed. Only
+download content you have the right to use; no account or password of
+yours is sent to the site. Anything that is not a full
+<code>http://</code> or <code>https://</code> address is refused with a
+plain explanation. Convert from URL is unavailable in Safe Mode.</p>
+<h2 id="the-tray">The tray</h2>
+<ul>
+<li><strong>Minimize to Tray</strong> (File &gt; Minimize to Tray,
+Ctrl+W) hides the window to the notification area; the same command
+brings it back. A conversion keeps running.</li>
+<li><strong>Ctrl+Alt+Shift+C</strong> shows or hides Quill Converter
+from anywhere in Windows. If another program already owns that key,
+Quill Converter leaves it alone.</li>
+<li>The tray icon’s menu has Show and Exit.</li>
+<li><strong>Exit</strong> (File &gt; Exit, Ctrl+Q) really exits. Alt+F4
+closes the window.</li>
+</ul>
+<h2 id="keyboard-reference">Keyboard reference</h2>
+<p>The same list is in the app: Help &gt; Keyboard Shortcuts…
+(Ctrl+Alt+K) shows every key in a read-only window you can arrow
+through.</p>
+<h3 id="file-menu">File menu</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add Files…</td>
+<td>Ctrl+O</td>
+</tr>
+<tr>
+<td>Add Folder…</td>
+<td>Ctrl+Shift+O</td>
+</tr>
+<tr>
+<td>Paste Files</td>
+<td>Ctrl+V</td>
+</tr>
+<tr>
+<td>Convert from URL…</td>
+<td>Ctrl+U</td>
+</tr>
+<tr>
+<td>Open Output Folder</td>
+<td>Ctrl+Shift+F</td>
+</tr>
+<tr>
+<td>Minimize to Tray</td>
+<td>Ctrl+W</td>
+</tr>
+<tr>
+<td>Exit</td>
+<td>Ctrl+Q</td>
+</tr>
+</tbody>
+</table>
+<h3 id="queue-menu">Queue menu</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File Properties…</td>
+<td>Alt+Enter</td>
+</tr>
+<tr>
+<td>Chapter Workbench…</td>
+<td>Ctrl+H</td>
+</tr>
+<tr>
+<td>Remove from Queue</td>
+<td>Ctrl+Delete</td>
+</tr>
+<tr>
+<td>Clear Queue</td>
+<td>Ctrl+Shift+Delete</td>
+</tr>
+<tr>
+<td>Move Up</td>
+<td>Alt+Up</td>
+</tr>
+<tr>
+<td>Move Down</td>
+<td>Alt+Down</td>
+</tr>
+</tbody>
+</table>
+<h3 id="view-menu">View menu</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Advanced Options (show or hide)</td>
+<td>Ctrl+Alt+V</td>
+</tr>
+</tbody>
+</table>
+<h3 id="convert-menu">Convert menu</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Convert Now (Stop while running)</td>
+<td>Ctrl+Enter</td>
+</tr>
+<tr>
+<td>Preview with Your Settings</td>
+<td>Ctrl+P</td>
+</tr>
+<tr>
+<td>Preview Original</td>
+<td>Ctrl+Shift+P</td>
+</tr>
+<tr>
+<td>Custom Effects…</td>
+<td>Ctrl+E</td>
+</tr>
+<tr>
+<td>Join into One File…</td>
+<td>Ctrl+J</td>
+</tr>
+<tr>
+<td>Split by Chapters</td>
+<td>Ctrl+Shift+S</td>
+</tr>
+<tr>
+<td>Conversion Report…</td>
+<td>Ctrl+R</td>
+</tr>
+<tr>
+<td>Open Output Folder When Done</td>
+<td>Ctrl+Shift+W</td>
+</tr>
+</tbody>
+</table>
+<h3 id="help-menu">Help menu</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Help for This Window</td>
+<td>F1</td>
+</tr>
+<tr>
+<td>User Guide</td>
+<td>Ctrl+F1</td>
+</tr>
+<tr>
+<td>Release Notes</td>
+<td>Shift+F1</td>
+</tr>
+<tr>
+<td>Changelog</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Product Requirements</td>
+<td>Alt+Shift+F1</td>
+</tr>
+<tr>
+<td>Keyboard Shortcuts…</td>
+<td>Ctrl+Alt+K</td>
+</tr>
+<tr>
+<td>Get Help from Support…</td>
+<td>Ctrl+Alt+F2</td>
+</tr>
+<tr>
+<td>Get FFmpeg…</td>
+<td>Ctrl+Alt+F</td>
+</tr>
+<tr>
+<td>Check for Updates…</td>
+<td>Ctrl+Alt+U</td>
+</tr>
+<tr>
+<td>About Quill Converter</td>
+<td>Alt+F1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anywhere">Anywhere</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Show or hide Quill Converter</td>
+<td>Ctrl+Alt+Shift+C</td>
+</tr>
+<tr>
+<td>Remove the highlighted queue row</td>
+<td>Delete</td>
+</tr>
+<tr>
+<td>Next window, previous window</td>
+<td>Ctrl+Tab, Ctrl+Shift+Tab</td>
+</tr>
+<tr>
+<td>Go to window 1 to 9</td>
+<td>Ctrl+1 to Ctrl+9</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>QuillVille</strong> menu opens the other released apps in
+the family – QUILL, Quill Radio, Quill Weather and Quill Inkwell – and
+each item shows its key. The <strong>Window</strong> menu lists the open
+windows.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>“Quill Converter cannot find FFmpeg.”</strong> FFmpeg is
+installed with the app, so this means it was removed or damaged. Help
+&gt; Get FFmpeg… (Ctrl+Alt+F) puts it back.</li>
+<li><strong>Only a few formats are listed.</strong> The list shows what
+the FFmpeg in use can write. The same fix applies: Get FFmpeg.</li>
+<li><strong>Sound files were skipped.</strong> The format is a video
+format, and a sound file has no picture. Choose a sound format for
+them.</li>
+<li><strong>“Change the container only” failed.</strong> That picture
+and sound cannot be copied into that container as they are. Choose Same
+quality instead, which converts rather than copies.</li>
+<li><strong>A video is taking a long time.</strong> Video encoding is
+slow, especially H.265 and VP9, and a long film can take longer than it
+lasts. Progress is per file, so a single long video may sit at the start
+for a while. The tray tooltip and status bar say which file is in
+progress.</li>
+<li><strong>Stop did not stop at once.</strong> The file in progress
+finishes first, on purpose.</li>
+<li><strong>A file failed as copy-protected.</strong> Files with DRM,
+such as purchased Audible books or protected iTunes purchases, cannot be
+converted.</li>
+<li><strong>Preview is silent.</strong> Preview plays through the
+Windows default sound device. Check that it is the one you are listening
+on.</li>
+</ul>
+<h2 id="settings-and-safe-mode">Settings and Safe Mode</h2>
+<p>Your choices are kept in <code>converter.json</code> in the app’s
+data folder: the shared QuillVille data folder for the installed app, or
+the <code>data</code> folder beside the program for the portable copy.
+Uninstalling never deletes the shared data folder; another app in the
+family may still be using it.</p>
+<p>Starting with the environment variable <code>QUILL_SAFE_MODE=1</code>
+runs Quill Converter in Safe Mode. Everything local still works; Convert
+from URL is refused.</p>
 <h2 id="getting-help">Getting help</h2>
 <p>Support is run by <strong>Community Access</strong>, and the address
 is <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>.
 A person reads it, and replies come back by email.</p>
 <p>The quickest way there is <strong>Help &gt; Get Help from
-Support…</strong> (Ctrl+Alt+F2), which every app in the family answers
-with the same form: what kind of message this is, a subject, what
-happened, and – if you want an answer – an email address to reply to.
-What you expected and how to reproduce it are optional, and worth more
-than anything else when you can give them.</p>
+Support…</strong> (Ctrl+Alt+F2). It asks what kind of message this is, a
+subject, what happened, and – if you want an answer somewhere other than
+the address you send from – an email address. What you expected and how
+to reproduce it are optional, and worth more than anything else when you
+can give them.</p>
 <p>Press Send and your <strong>own mail program opens with the whole
 message already written</strong>, addressed to support, with Quill
 Converter’s name and version and your Windows version filled in at the
 bottom. Nothing is sent until you send it there, so you can read it
 over, add anything, or change your mind.</p>
-<p>If this machine has no mail program set up – webmail only, say – the
+<p>If this computer has no mail program set up – webmail only, say – the
 app puts the whole message on your clipboard and tells you the address,
-so nothing you typed is lost. And writing to <strong><a
+so nothing you typed is lost. Writing to <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>
-yourself always works just as well: there is no form you have to use.
-Say which app you were using and what happened.</p>
+yourself always works just as well. Say which app you were using and
+what happened. If a conversion failed, open the Conversion Report
+(Ctrl+R), press Copy All, and paste it into your message.</p>
 </main>
 </body>
 </html>

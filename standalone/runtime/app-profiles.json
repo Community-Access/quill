@@ -194,17 +194,19 @@
       "entry": "quill/apps/converter.py",
       "standalone": "standalone/converter",
       "components": [
-        "ffmpeg"
+        "ffmpeg",
+        "mpv"
       ],
       "optional_components": [],
       "layers": [],
       "notes": [
+        "mpv (1.0.0) is the Chapter Workbench's player, for exact seeking.",
         "ffmpeg is the app's whole job: without it available_output_formats()",
         "is exactly [\"wav\"] -- an audio converter that cannot convert.",
         "Declared and refcounted at launch since 2026-08-28 (was the",
-        "UNDECLARED MEDIA USE finding recorded here). Converter ships no",
-        "Windows installer yet; when one appears, its build must call",
-        "Stage-QuillMediaTools -FfmpegDir like Cast's does."
+        "UNDECLARED MEDIA USE finding recorded here). Its 1.0.0 installer",
+        "(2026-09-27) stages it through Stage-QuillMediaTools -FfmpegDir,",
+        "as Cast's does."
       ]
     },
     "player": {

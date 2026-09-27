@@ -42,11 +42,11 @@ from quill.tools.help_audit import (
 
 SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "converter_help_inventory.json"
 
-#: The whole Converter UI is one module -- a single-file app with no
-#: ``quill/ui`` subpackage of its own (the Advanced dialog it opens belongs
-#: to the Audio Studio surface).
+#: The Converter UI: the window, its menu bar and commands (three modules
+#: since 1.0.0) and its own two dialogs. The Advanced dialog it opens belongs
+#: to the Audio Studio surface and is audited there.
 _SCAN_DIRS: tuple[str, ...] = ()
-_SCAN_GLOBS: tuple[str, ...] = ("quill/apps/converter.py",)
+_SCAN_GLOBS: tuple[str, ...] = ("quill/apps/converter*.py", "quill/ui/converter_dialogs.py")
 
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.
