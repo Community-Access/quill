@@ -154,7 +154,7 @@ def test_every_thin_installer_probes_that_same_versioned_path() -> None:
 MEDIA_TOOL_DEFINES = {
     "standalone/radio/installer/quill-radio.iss": {"ToolFfmpeg", "ToolMpv"},
     "standalone/cast/installer/quill-cast-shared.iss": {"ToolFfmpeg"},
-    "standalone/converter/installer/quill-converter.iss": {"ToolFfmpeg"},
+    "standalone/converter/installer/quill-converter.iss": {"ToolFfmpeg", "ToolMpv"},
     "standalone/studio/installer/quill-audio-studio.iss": {"ToolFfmpeg", "ToolMpv"},
 }
 

@@ -53,12 +53,20 @@ ytdlp_datas += ejs_datas
 ytdlp_binaries += ejs_binaries
 ytdlp_hidden += ejs_hidden
 
+# mutagen: Quill Converter carries cover art into the formats FFmpeg drops it
+# from (quill/core/audio/cover_art.py), and QUILL writes MP3 chapter frames
+# with it. Pure Python and imported lazily inside functions, so it is named
+# here rather than trusted to the tracer.
+from PyInstaller.utils.hooks import collect_submodules  # noqa: E402
+
+mutagen_hidden = collect_submodules("mutagen")
+
 a = Analysis(
     ["runtime_launcher.py"],
     pathex=[],
     binaries=quill_binaries + social_binaries + nacl_binaries + ytdlp_binaries,
     datas=drop_dev_caches(quill_datas + social_datas + nacl_datas + ytdlp_datas),
-    hiddenimports=quill_hidden + social_hidden + nacl_hidden + ytdlp_hidden,
+    hiddenimports=quill_hidden + social_hidden + nacl_hidden + ytdlp_hidden + mutagen_hidden,
     hookspath=[],
     runtime_hooks=[],
     excludes=[

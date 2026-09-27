@@ -71,6 +71,6 @@ def test_is_active_true_when_any_option_set() -> None:
 def test_loudness_choices_pairs() -> None:
     choices = d.loudness_choices()
     values = {v for v, _label in choices}
-    assert values == {"", "audiobook", "podcast"}
+    assert values == {"", "audiobook", "podcast", "music", "broadcast"}
     for _v, label in choices:
         assert label

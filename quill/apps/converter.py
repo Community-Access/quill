@@ -1,44 +1,48 @@
-"""Quill Converter -- the Universal Audio Converter as a standalone app (#1255).
+"""Quill Converter -- the Universal Converter as a standalone app (#1255).
 
-A small, tray-resident QuillVille window whose whole job is audio conversion. It
-reuses the exact same wx-free engine (:mod:`quill.core.audio.convert` + presets +
-dsp) and the exact same orchestration the Audio Studio menu uses
-(:mod:`quill.ui.audio_studio.convert_audio_dialog`): the main window is a
-build-a-queue converter form, an **Advanced...** button opens the full dialog for
-the DSP catalog, and **Convert from URL...** pulls a link's audio (on-demand
-yt-dlp, consent-gated). So there is one converter, surfaced two ways.
+A small, tray-resident QuillVille window whose whole job is conversion: audio
+to audio, video to audio, and (since 1.0.0) video to video, with named effect
+recipes, a fifteen-second before-and-after preview, Join into One File, and
+Split by Chapters, and chapters carried through every conversion. It reuses the
+wx-free engine (:mod:`quill.core.audio.convert` and its neighbours ``formats``,
+``dsp``, ``effect_recipes``, ``chapter_plan``, ``assemble``, ``media_probe``)
+and the Audio Studio's Chapter Workbench as its chapter editor.
+
+This file is the window: the queue and its choices. The menu bar is
+:mod:`quill.apps.converter_menu`; View > Advanced Options is
+:mod:`quill.apps.converter_advanced`; the commands are
+:mod:`quill.apps.converter_actions` and :mod:`quill.apps.converter_chapters`;
+the Custom Effects and report windows are :mod:`quill.ui.converter_dialogs`.
+
+No control on the window takes a letter the menu bar uses: Alt+F must open the
+File menu (reported 2026-09-27 as "the converter doesn't let me see the menu
+bar", when Alt+F went to the queue and Alt+C pressed Convert).
 
 Bootstrap mirrors Quill Weather / Radio: single-instance via ``core.ipc``, an
-:class:`~quill.ui.app_shell.AppShellFrame` host (which supplies ``_announce`` /
-``_set_status`` / ``_show_message_box`` / ``_show_modal_dialog`` / tray), plus a
-self-contained ``_run_background_task`` so the shared orchestration can run a
-batch off the UI thread with tray-aware progress.
+:class:`~quill.ui.app_shell.AppShellFrame` host (``_announce`` /
+``_set_status`` / ``_show_message_box`` / ``_show_modal_dialog`` / tray).
 """
 
 from __future__ import annotations
 
 import os
 import sys
-import threading
 from pathlib import Path
 from typing import Any
 
 import wx
 
-from quill.core.audio.convert import (
-    OnExisting,
-    available_output_formats,
-    default_destination,
-)
-from quill.core.audio.presets import DEFAULT_PRESET_ID, preset_choices
+from quill.apps.converter_actions import ConverterActionsMixin
+from quill.apps.converter_chapters import ConverterChaptersMixin
+from quill.core import converter_settings
+from quill.core.audio.chapter_plan import CHAPTER_SOURCES
+from quill.core.audio.convert import available_output_formats
+from quill.core.audio.effect_recipes import CUSTOM_RECIPE_ID, recipe_by_id, recipe_choices
+from quill.core.audio.formats import INPUT_EXTENSIONS, format_label, is_video_format, open_wildcard
+from quill.core.audio.presets import preset_choices
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
-from quill.ui.audio_studio.convert_audio_dialog import (
-    build_request,
-    plan_and_run,
-    run_audio_conversion,
-    run_url_conversion,
-)
+from quill.ui.audio_studio.convert_audio_dialog import run_url_conversion
 
 _TITLE = "Quill Converter"
 _VERSION = "1.0.0"
@@ -46,29 +50,33 @@ _REPO = "Community-Access/quill"
 _IPC_SLOT = "converter"
 
 #: Shared-store components this app's job depends on: without ffmpeg,
-#: available_output_formats() is exactly ["wav"] -- an audio converter that
-#: cannot convert. Declared so the family's refcount registry knows an
-#: installed Converter still needs the shared copy (app-profiles.json).
-REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
-
-_ADD_WILDCARD = (
-    "Audio and video files|*.mp3;*.wav;*.flac;*.ogg;*.oga;*.opus;*.m4a;*.m4b;*.aac;"
-    "*.wma;*.aiff;*.aif;*.alac;*.ape;*.wv;*.mka;*.amr;*.3gp;*.caf;"
-    "*.mp4;*.m4v;*.mkv;*.mov;*.webm;*.avi;*.flv;*.wmv|All files (*.*)|*.*"
-)
+#: available_output_formats() is exactly ["wav"] -- a converter that cannot
+#: convert -- and mpv is the Chapter Workbench's player, which needs exact
+#: seeking in every format to set a chapter at the playhead (1.0.0). Declared
+#: so the family's refcount registry knows an installed Converter still needs
+#: the shared copies (app-profiles.json).
+REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg", "mpv")
 
 
-class QuillConverterFrame(AppShellFrame):
-    """A standalone converter window (queue + convert), tray-resident."""
+class _QueueDropTarget(wx.FileDropTarget):
+    """Files and folders dropped on the queue join it."""
+
+    def __init__(self, owner: QuillConverterFrame) -> None:
+        super().__init__()
+        self._owner = owner
+
+    def OnDropFiles(self, _x: int, _y: int, filenames: list[str]) -> bool:  # noqa: N802 - wx API
+        wx.CallAfter(self._owner.add_paths, [Path(name) for name in filenames])
+        return True
+
+
+class QuillConverterFrame(ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame):
+    """The Converter window: a queue, four choices, and Convert."""
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 460), app_id="converter")
-        # The shell already activated the shared F1 engine (help provider +
-        # dialog-contract hook + main-frame binding); this re-activation swaps
-        # in the Converter's own window-purpose resolver so the authored
-        # paragraphs lead every answer instead of the generic sentence
-        # (GATE-CONVERTER-HELP). A single-file app needs no ui shim -- there is
-        # no quill/ui/converter package to hold one.
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(620, 560), app_id="converter")
+        # Swap in the Converter's own window-purpose resolver so the authored
+        # paragraphs lead every F1 answer (GATE-CONVERTER-HELP).
         from quill.core import converter_surface_help
         from quill.ui import app_context_help
 
@@ -78,94 +86,36 @@ class QuillConverterFrame(AppShellFrame):
 
         self._windows = WindowManager(wx)
         self._entries: list[tuple[Path, Path | None]] = []
+        self._settings = converter_settings.load()
+        self._busy = False
+        self._cancel: Any = None
+        self._milestone = 0
+        self._previewing = False
+        self._last_report = ""
+        self._last_output: Path | None = None
         self._formats = available_output_formats(_find_ffmpeg())
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
         self._register_tray_hotkey("Ctrl+Alt+Shift+C")  # show/hide to the tray
-        # Seed from the command line (the Explorer "Convert with Quill" verb, or
-        # `python -m quill.apps.converter <files>`): queue each existing path.
-        for raw in initial_paths or []:
-            if raw.exists():
-                self._add_entry(raw, is_folder=raw.is_dir())
-        if self._entries:
-            self._reload()
-        else:
-            self._refresh_statusbar()
+        # Seed from the command line (the Explorer verb, or `python -m
+        # quill.apps.converter <files>`): queue each existing path.
+        self.add_paths(initial_paths or [], announce=False)
+        self._refresh_statusbar()
+        self._start_ipc_poll()
 
     # -- menu bar --------------------------------------------------------------
 
     def _build_menu_bar(self) -> None:
-        menu_bar = wx.MenuBar()
+        from quill.apps.converter_menu import build_menu_bar
 
-        file_menu = wx.Menu()
-        add_files_id, add_folder_id, url_id, advanced_id = (wx.NewIdRef() for _ in range(4))
-        tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
-        file_menu.Append(add_files_id, "&Add Files...\tCtrl+O")
-        file_menu.Append(add_folder_id, "Add F&older...\tCtrl+Shift+O")
-        file_menu.Append(url_id, "Convert from &URL...\tCtrl+U")
-        file_menu.Append(advanced_id, "Ad&vanced Options...\tCtrl+Alt+V")
-        file_menu.AppendSeparator()
-        file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
-        file_menu.Append(exit_id, "E&xit\tCtrl+Q")
-        menu_bar.Append(file_menu, "&File")
-        for item_id, handler in (
-            (add_files_id, self._on_add_files),
-            (add_folder_id, self._on_add_folder),
-            (url_id, self._on_convert_url),
-            (advanced_id, self._on_advanced),
-            (tray_id, lambda _e: self.toggle_window_to_tray()),
-            (exit_id, lambda _e: self._exit_application()),
-        ):
-            self.frame.Bind(wx.EVT_MENU, handler, id=item_id)
-
-        from quill.ui.quillville_menu import build_quillville_menu
-
-        menu_bar.Append(
-            build_quillville_menu(
-                wx,
-                self.frame,
-                self._launch_sibling,
-                exclude="converter",
-                retain=self._keep_menu_ids,
-            ),
-            "&QuillVille",
-        )
-
-        help_menu = wx.Menu()
-        updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
-        # Every app in the family answers the same question the same way:
-        # one item, one key, one form that reaches a person who can reply.
-        from quill.ui.support_menu import append_get_help_item
-
-        append_get_help_item(self, help_menu, wx, source_app=_TITLE, app_version=_VERSION)
-        help_menu.Append(about_id, "&About Quill Converter\tCtrl+Alt+A")
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.check_for_app_updates(
-                repo_slug=_REPO, current_version=_VERSION, app_key="converter"
-            ),
-            id=updates_id,
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
-        menu_bar.Append(help_menu, "&Help")
-
+        menu_bar = build_menu_bar(self, wx, title=_TITLE, version=_VERSION, repo=_REPO)
         self._windows.install(self.frame, menu_bar)
         self.frame.SetMenuBar(menu_bar)
         self._windows.register(self.frame, _TITLE)
-        self._keep_menu_ids(
-            add_files_id, add_folder_id, url_id, advanced_id, tray_id, exit_id, updates_id, about_id
-        )
 
     def _build_tray_menu(self, menu: wx.Menu) -> None:
-        """Nothing of its own, and that is the whole entry (#1465).
-
-        The shared tray menu already opens with "Show <title>" and closes with
-        "Exit <title>". This used to add a second row that did the same thing as
-        the first -- and did not even do it, because it was bound on the frame,
-        which is not where a tray menu's commands are routed.
-        """
+        """Nothing of its own: the shared tray menu already has Show and Exit (#1465)."""
         return
 
     # -- main panel ------------------------------------------------------------
@@ -174,15 +124,18 @@ class QuillConverterFrame(AppShellFrame):
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        root.Add(wx.StaticText(panel, label="&Files to convert:"), 0, wx.ALL, 8)
+        root.Add(wx.StaticText(panel, label="Files to convert:"), 0, wx.ALL, 8)
         self._list = wx.ListBox(panel, name="Files to convert")
         set_accessible_name(self._list, "Files to convert")
         self._list.SetHelpText(
-            "The queue. Every file here is converted when you press Convert, "
-            "and a folder in the queue brings the audio files inside it, "
-            "including subfolders. Delete removes the highlighted row from the "
-            "queue; it never deletes anything from disk."
+            "The queue. Every file here is converted when you press Convert, and "
+            "a folder brings the audio and video files inside it, subfolders "
+            "included. Delete removes the highlighted row, Alt+Up and Alt+Down "
+            "move it, and Alt+Enter describes the file. You can also paste files "
+            "copied in File Explorer, or drop them here. Nothing is ever deleted "
+            "from disk."
         )
+        self._list.SetDropTarget(_QueueDropTarget(self))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         add_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -193,8 +146,8 @@ class QuillConverterFrame(AppShellFrame):
         )
         self._add_folder_btn = wx.Button(panel, label="Add F&older...")
         self._add_folder_btn.SetHelpText(
-            "Add a whole folder to the queue. Every audio file inside it is "
-            "converted, subfolders included, and the folder layout is "
+            "Add a whole folder to the queue. Every audio and video file inside "
+            "it is converted, subfolders included, and the folder layout is "
             "reproduced in the output folder."
         )
         self._remove_btn = wx.Button(panel, label="&Remove")
@@ -207,40 +160,87 @@ class QuillConverterFrame(AppShellFrame):
         root.Add(add_row, 0, wx.ALL, 8)
 
         root.Add(wx.StaticText(panel, label="Convert &to:"), 0, wx.LEFT | wx.TOP, 8)
-        self._format = wx.Choice(panel, choices=[f.upper() for f in self._formats])
-        self._format.SetSelection(0)
+        self._format = wx.Choice(panel, choices=[format_label(f) for f in self._formats])
         set_accessible_name(self._format, "Convert to format")
         self._format.SetHelpText(
-            "The format every queued file is converted to. The list holds only "
-            "the formats this machine can actually write: without ffmpeg "
-            "bundled or installed it is a short list, and with it the full one. "
-            "A preset below may carry its own format, and where they disagree "
-            "the preset wins."
+            "The format every queued file becomes: sound formats first, then video. "
+            "A video file converted to a sound format keeps its sound; converted "
+            "to a video format it stays a video. Only the formats this computer "
+            "can actually write are listed."
         )
         root.Add(self._format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         root.Add(wx.StaticText(panel, label="&Preset:"), 0, wx.LEFT | wx.TOP, 8)
-        self._preset_ids = [pid for pid, _label in preset_choices()]
-        self._preset = wx.Choice(panel, choices=[label for _pid, label in preset_choices()])
-        self._preset.SetSelection(max(0, self._preset_ids.index(DEFAULT_PRESET_ID)))
+        self._preset = wx.Choice(panel)
         set_accessible_name(self._preset, "Preset")
         self._preset.SetHelpText(
-            "A named set of quality settings -- bit rate, sample rate and "
-            "channels -- so you do not have to know any of them. The default is "
-            "chosen to suit spoken-word audio. Advanced opens the full dialog "
-            "if you want the individual settings."
+            "How the result is made. For a sound format: quality settings -- bit "
+            "rate, sample rate and channels -- chosen for a purpose, so you do not "
+            "have to know any of them. For a video format: how hard to work at "
+            "keeping picture detail, and how large the picture may be. The format "
+            "above always wins over a preset's own."
         )
         root.Add(self._preset, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        root.Add(wx.StaticText(panel, label="Output fo&lder:"), 0, wx.LEFT | wx.TOP, 8)
+        root.Add(wx.StaticText(panel, label="&Effects:"), 0, wx.LEFT | wx.TOP, 8)
+        effect_row = wx.BoxSizer(wx.HORIZONTAL)
+        choices = recipe_choices()
+        self._effect_ids = [rid for rid, _label in choices]
+        self._effect = wx.Choice(panel, choices=[label for _rid, label in choices])
+        set_accessible_name(self._effect, "Effects")
+        self._effect.SetHelpText(
+            "What to do to the sound on the way through, named for the problem it "
+            "solves: clean up speech, make a podcast or an ACX audiobook, bring "
+            "film dialogue forward, remove hum or noise, even out loud and quiet "
+            "parts. Custom uses whatever you set in Custom Effects. Effects apply "
+            "to the sound of video conversions too. Preview lets you hear them "
+            "before you convert."
+        )
+        self._effects_btn = wx.Button(panel, label="Cu&stom Effects...")
+        self._effects_btn.SetHelpText(
+            "Every effect on one page, starting from the recipe chosen now: "
+            "noise, hum, rumble, de-essing, voice clarity, bass and treble, "
+            "dialogue boost, compression, leveling, loudness target, gain, speed, "
+            "fades, and keeping only part of each file."
+        )
+        effect_row.Add(self._effect, 1, wx.RIGHT, 6)
+        effect_row.Add(self._effects_btn, 0)
+        root.Add(effect_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+
+        root.Add(wx.StaticText(panel, label="Chapter mar&ks:"), 0, wx.LEFT | wx.TOP, 8)
+        chapter_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._chapter_ids = [key for key, _label in CHAPTER_SOURCES]
+        self._chapters = wx.Choice(panel, choices=[label for _key, label in CHAPTER_SOURCES])
+        set_accessible_name(self._chapters, "Chapters")
+        self._chapters.SetHelpText(
+            "Where the converted files' chapter marks come from: each file's own "
+            "chapters, a chapter list you wrote beside the file (book.cue, "
+            "book.chapters.txt with lines like 0:00 Introduction, Audacity labels, "
+            "or chapters.json), chapters found at the pauses, one every few "
+            "minutes, or none. Chapters land in every format that can hold them; "
+            "for the ones that cannot, such as WAV, a .cue sheet is written beside "
+            "the file. Split by Chapters and Join use the same choice."
+        )
+        self._workbench_btn = wx.Button(panel, label="Chapter Workbench...")
+        self._workbench_btn.SetHelpText(
+            "Open the highlighted MP3, M4B or M4A in the Chapter Workbench: hear "
+            "it, add, rename, move and merge chapters at the playhead, find them "
+            "at pauses, import or export chapter lists, and save them into the "
+            "file itself."
+        )
+        chapter_row.Add(self._chapters, 1, wx.RIGHT, 6)
+        chapter_row.Add(self._workbench_btn, 0)
+        root.Add(chapter_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+
+        root.Add(wx.StaticText(panel, label="Output fol&der:"), 0, wx.LEFT | wx.TOP, 8)
         dest_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._dest = wx.TextCtrl(panel)
+        self._dest = wx.TextCtrl(panel, value=self._settings.dest_dir)
         set_accessible_name(self._dest, "Output folder")
         self._dest.SetHelpText(
             "Where the converted files are written. Leave it empty and they go "
             "into a folder named Converted beside the first file in the queue. "
             "An existing file is never overwritten: a converted file that would "
-            "collide is auto-numbered instead."
+            "collide is numbered instead."
         )
         self._browse_btn = wx.Button(panel, label="&Browse...")
         self._browse_btn.SetHelpText("Pick the output folder with a folder chooser.")
@@ -248,62 +248,191 @@ class QuillConverterFrame(AppShellFrame):
         dest_row.Add(self._browse_btn, 0)
         root.Add(dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
+        # View > Advanced Options: hidden until asked for (converter_advanced).
+        from quill.apps import converter_advanced
+
+        self._advanced_box = converter_advanced.build(self, panel)
+        root.Add(self._advanced_box, 0, wx.EXPAND)
+        self._main_sizer = root
+
         action_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._convert_btn = wx.Button(panel, label="&Convert")
+        self._convert_btn = wx.Button(panel, label="Convert")
         self._convert_btn.SetHelpText(
-            "Convert everything in the queue, using the format, preset and "
-            "output folder above. Progress is announced as it runs, and the "
-            "window can go to the tray while it works."
+            "Convert everything in the queue with the choices above. Progress is "
+            "announced every quarter, the window can go to the tray while it "
+            "works, and while it runs this button is Stop."
         )
-        self._url_btn = wx.Button(panel, label="Convert from &URL...")
+        self._preview_btn = wx.Button(panel, label="Pla&y Preview")
+        self._preview_btn.SetHelpText(
+            "Plays fifteen seconds of the highlighted file -- or the first in the "
+            "queue -- exactly as it will sound after converting, effects and all. "
+            "Press again to stop. Hear Original plays the same fifteen seconds "
+            "untouched, so you can compare."
+        )
+        self._original_btn = wx.Button(panel, label="Hear Ori&ginal")
+        self._original_btn.SetHelpText(
+            "Plays the same fifteen seconds Preview does, with nothing changed. "
+            "Press again to stop."
+        )
+        self._url_btn = wx.Button(panel, label="From UR&L...")
         self._url_btn.SetHelpText(
-            "Paste a web address and convert its audio. The downloader this "
-            "needs is fetched on demand, with your consent, the first time you "
-            "use it; in Safe Mode this is declined rather than attempted."
+            "Paste a web address and convert its audio. The downloader is "
+            "included with Quill Converter; in Safe Mode this is declined."
         )
-        self._advanced_btn = wx.Button(panel, label="Ad&vanced...")
-        self._advanced_btn.SetHelpText(
-            "Open the full conversion dialog with the current queue already in "
-            "it: individual quality settings, the Advanced DSP catalogue, and "
-            "the per-run options this window keeps out of your way."
-        )
-        for btn in (self._convert_btn, self._url_btn, self._advanced_btn):
+        for btn in (
+            self._convert_btn,
+            self._preview_btn,
+            self._original_btn,
+            self._url_btn,
+        ):
             action_row.Add(btn, 0, wx.RIGHT, 6)
         root.Add(action_row, 0, wx.ALL, 8)
 
         panel.SetSizer(root)
         self._main_panel = panel
+        self._restore_choices()
+        root.Show(self._advanced_box, self._settings.show_advanced, recursive=True)
 
         self._add_files_btn.Bind(wx.EVT_BUTTON, self._on_add_files)
         self._add_folder_btn.Bind(wx.EVT_BUTTON, self._on_add_folder)
         self._remove_btn.Bind(wx.EVT_BUTTON, self._on_remove)
         self._browse_btn.Bind(wx.EVT_BUTTON, self._on_browse)
-        self._convert_btn.Bind(wx.EVT_BUTTON, self._on_convert)
+        self._convert_btn.Bind(wx.EVT_BUTTON, lambda _e: self.convert_or_stop())
+        self._preview_btn.Bind(wx.EVT_BUTTON, lambda _e: self.preview(original=False))
+        self._original_btn.Bind(wx.EVT_BUTTON, lambda _e: self.preview(original=True))
         self._url_btn.Bind(wx.EVT_BUTTON, self._on_convert_url)
-        self._advanced_btn.Bind(wx.EVT_BUTTON, self._on_advanced)
+        self._effects_btn.Bind(wx.EVT_BUTTON, self._on_custom_effects)
+        self._format.Bind(wx.EVT_CHOICE, self._on_format_changed)
+        # Remembered as they change, so a closed window or a crash loses nothing.
+        self._preset.Bind(wx.EVT_CHOICE, self._on_choice_changed)
+        self._effect.Bind(wx.EVT_CHOICE, self._on_choice_changed)
+        self._chapters.Bind(wx.EVT_CHOICE, self._on_choice_changed)
+        self._workbench_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_chapter_workbench())
+        self._dest.Bind(wx.EVT_KILL_FOCUS, self._on_choice_changed)
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
 
     def _focus_initial_control(self) -> None:
         self._list.SetFocus()
 
-    # -- queue helpers ---------------------------------------------------------
+    # -- remembered choices ----------------------------------------------------
 
-    def _reload(self) -> None:
+    def _restore_choices(self) -> None:
+        fmt = self._settings.fmt if self._settings.fmt in self._formats else self._formats[0]
+        self._format.SetSelection(self._formats.index(fmt))
+        self._fill_presets()
+        effect = self._settings.effect if self._settings.effect in self._effect_ids else "none"
+        self._effect.SetSelection(self._effect_ids.index(effect))
+        chapters = (
+            self._settings.chapters if self._settings.chapters in self._chapter_ids else "keep"
+        )
+        self._chapters.SetSelection(self._chapter_ids.index(chapters))
+
+    def _fill_presets(self) -> None:
+        """The preset list for the chosen format's kind, keeping the last choice."""
+        kind = "video" if is_video_format(self._chosen_format()) else "audio"
+        wanted = self._settings.video_preset if kind == "video" else self._settings.audio_preset
+        choices = preset_choices(kind)
+        self._preset_ids = [pid for pid, _label in choices]
+        self._preset.Set([label for _pid, label in choices])
+        self._preset.SetSelection(
+            self._preset_ids.index(wanted) if wanted in self._preset_ids else 0
+        )
+
+    def _on_format_changed(self, _event: Any) -> None:
+        was_video = self._preset_ids[0].startswith("video_")
+        self._remember_preset(was_video)
+        if was_video != is_video_format(self._chosen_format()):
+            self._fill_presets()
+        self._remember()
+
+    def _remember_preset(self, video: bool) -> None:
+        if video:
+            self._settings.video_preset = self._chosen_preset_id()
+        else:
+            self._settings.audio_preset = self._chosen_preset_id()
+
+    def _remember(self) -> None:
+        self._settings.fmt = self._chosen_format()
+        self._remember_preset(is_video_format(self._settings.fmt))
+        self._settings.effect = self._chosen_effect_id()
+        self._settings.chapters = self._chapter_ids[max(0, self._chapters.GetSelection())]
+        self._settings.dest_dir = self._dest.GetValue().strip()
+        if hasattr(self, "_advanced_choices"):
+            from quill.apps import converter_advanced
+
+            converter_advanced.remember(self)
+        converter_settings.save(self._settings)
+
+    def set_open_when_done(self, value: bool) -> None:
+        self._settings.open_folder_when_done = bool(value)
+        self._remember()
+        self._announce(
+            "The output folder opens when a conversion finishes."
+            if value
+            else "The output folder no longer opens by itself."
+        )
+
+    def _on_choice_changed(self, event: Any) -> None:
+        self._remember()
+        event.Skip()
+
+    # -- queue -----------------------------------------------------------------
+
+    def _reload(self, *, select: int | None = None) -> None:
         self._list.Clear()
         for entry, _root in self._entries:
-            self._list.Append(entry.name if entry.is_file() else f"{entry.name} (folder)")
+            self._list.Append(entry.name if not entry.is_dir() else f"{entry.name} (folder)")
+        if self._entries:
+            index = select if select is not None else len(self._entries) - 1
+            self._list.SetSelection(max(0, min(index, len(self._entries) - 1)))
         self._set_status(f"{len(self._entries)} item(s) queued.")
 
-    def _add_entry(self, path: Path, *, is_folder: bool) -> None:
+    def _add_entry(self, path: Path, *, is_folder: bool) -> bool:
         pair = (path, path if is_folder else None)
-        if pair not in self._entries:
-            self._entries.append(pair)
+        if pair in self._entries:
+            return False
+        self._entries.append(pair)
+        return True
+
+    def add_paths(self, paths: list[Path], *, announce: bool = True) -> None:
+        """Queue each existing file or folder in *paths* (drop, paste, command line)."""
+        added = skipped = 0
+        for path in paths:
+            if path.is_dir():
+                added += self._add_entry(path, is_folder=True)
+            elif path.is_file() and path.suffix.lower() in INPUT_EXTENSIONS:
+                added += self._add_entry(path, is_folder=False)
+            else:
+                skipped += 1
+        if added or paths:
+            self._reload()
+        if announce:
+            note = f" {skipped} not a media file, left out." if skipped else ""
+            self._announce(f"Added {added} to the queue, {len(self._entries)} in all.{note}")
+
+    def paste_files(self) -> None:
+        """Ctrl+V: files copied in File Explorer join the queue; in a text box, paste text."""
+        focused = wx.Window.FindFocus()
+        if isinstance(focused, wx.TextCtrl):
+            focused.Paste()
+            return
+        data = wx.FileDataObject()
+        ok = False
+        if wx.TheClipboard.Open():
+            try:
+                ok = wx.TheClipboard.GetData(data)
+            finally:
+                wx.TheClipboard.Close()
+        if not ok or not data.GetFilenames():
+            self._announce("The clipboard has no files. Copy them in File Explorer first.")
+            return
+        self.add_paths([Path(name) for name in data.GetFilenames()])
 
     def _on_add_files(self, _event: Any) -> None:
         with wx.FileDialog(
             self.frame,
             "Add audio or video files",
-            wildcard=_ADD_WILDCARD,
+            wildcard=open_wildcard(),
             style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST,
         ) as picker:
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
@@ -314,7 +443,7 @@ class QuillConverterFrame(AppShellFrame):
 
     def _on_add_folder(self, _event: Any) -> None:
         with wx.DirDialog(
-            self.frame, "Add a folder of audio files", style=wx.DD_DIR_MUST_EXIST
+            self.frame, "Add a folder of audio or video files", style=wx.DD_DIR_MUST_EXIST
         ) as picker:
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
                 return
@@ -324,12 +453,35 @@ class QuillConverterFrame(AppShellFrame):
     def _on_remove(self, _event: Any) -> None:
         index = self._list.GetSelection()
         if index != wx.NOT_FOUND and 0 <= index < len(self._entries):
+            name = self._entries[index][0].name
             del self._entries[index]
-            self._reload()
+            self._reload(select=index)
+            self._announce(f"Removed {name}. {len(self._entries)} left.")
+
+    def clear_queue(self) -> None:
+        if self._busy:
+            self._announce("Stop the conversion before clearing the queue.")
+            return
+        self._entries.clear()
+        self._reload()
+        self._announce("Queue cleared.")
+
+    def move_entry(self, step: int) -> None:
+        index = self._list.GetSelection()
+        target = index + step
+        if index == wx.NOT_FOUND or not 0 <= target < len(self._entries):
+            return
+        self._entries[index], self._entries[target] = self._entries[target], self._entries[index]
+        self._reload(select=target)
+        self._announce(f"Moved to position {target + 1} of {len(self._entries)}.")
 
     def _on_list_key(self, event: Any) -> None:
-        if event.GetKeyCode() == wx.WXK_DELETE:
+        code = event.GetKeyCode()
+        if code == wx.WXK_DELETE and not event.HasAnyModifiers():
             self._on_remove(event)
+            return
+        if event.AltDown() and code in (wx.WXK_UP, wx.WXK_DOWN):
+            self.move_entry(-1 if code == wx.WXK_UP else 1)
             return
         event.Skip()
 
@@ -339,102 +491,35 @@ class QuillConverterFrame(AppShellFrame):
                 return
             self._dest.SetValue(picker.GetPath())
 
-    # -- actions ---------------------------------------------------------------
+    # -- other windows -----------------------------------------------------------
 
-    def _on_convert(self, _event: Any) -> None:
-        if not self._entries:
-            self._show_message_box("Add some files or a folder first.", _TITLE)
-            return
-        dest = self._dest.GetValue().strip()
-        if not dest:
-            dest = str(default_destination(self._entries[0][0]))
-        request = build_request(
-            self._entries,
-            fmt=self._formats[max(0, self._format.GetSelection())],
-            preset_id=self._preset_ids[max(0, self._preset.GetSelection())],
-            dest_dir=Path(dest),
-            recurse=True,
-            on_existing=OnExisting.RENAME,
+    def _on_custom_effects(self, _event: Any) -> None:
+        from quill.ui.converter_dialogs import edit_effects
+
+        current = self._chosen_effect_id()
+        recipe = recipe_by_id(current)
+        base = recipe.dsp if recipe is not None else self._settings.custom_effects
+        edited = edit_effects(
+            self, base, start_s=self._settings.start_s, end_s=self._settings.end_s
         )
-        if request is None:
-            self._show_message_box("Nothing to convert.", _TITLE)
+        if edited is None:
             return
-        plan_and_run(self, request)
+        self._settings.custom_effects, self._settings.start_s, self._settings.end_s = edited
+        self._effect.SetSelection(self._effect_ids.index(CUSTOM_RECIPE_ID))
+        self._remember()
+        self._announce(f"Custom effects set: {self.describe_choices()}.")
 
     def _on_convert_url(self, _event: Any) -> None:
         run_url_conversion(self)
 
-    def _on_advanced(self, _event: Any) -> None:
-        # Hand the current queue to the full dialog (Advanced DSP, per-run options).
-        run_audio_conversion(self, initial_entries=list(self._entries))
+    def set_advanced_visible(self, visible: bool) -> None:
+        """View > Advanced Options (Ctrl+Alt+V): show or hide the encoder settings."""
+        from quill.apps import converter_advanced
 
-    def _show_about(self) -> None:
-        self._show_message_box(
-            f"{_TITLE} {_VERSION}\n\n"
-            "The Universal Audio Converter: convert audio and video-audio between "
-            "formats, with presets, an Advanced DSP catalog, and URL import -- "
-            "offline, on your machine.\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
-        )
-
-    # -- background task (self-contained; tray-aware progress) ------------------
-
-    def _run_background_task(
-        self,
-        label: str,
-        work: Any,
-        on_success: Any,
-        *,
-        notify_on_success: bool = False,
-        notify_on_error: bool = True,
-        notification_category: str = "",
-        protect_on_close: bool = False,
-    ) -> None:
-        """Run ``work(progress)`` off the UI thread; deliver on the UI thread.
-
-        Honours the shared contract: ``progress(message, current, total)`` drives
-        the status bar and the tray tooltip; errors surface as a message box.
-        """
-        del notify_on_success, notify_on_error, notification_category, protect_on_close
-        self._set_status(f"{label} started")
-
-        def progress(message: str, current: int, total: int) -> None:
-            wx.CallAfter(self._note_progress, label, message, current, total)
-
-        def worker() -> None:
-            try:
-                result = work(progress)
-            except Exception as error:  # noqa: BLE001 - surfaced on the UI thread
-                wx.CallAfter(self._finish_task, label, error, None, on_success)
-                return
-            wx.CallAfter(self._finish_task, label, None, result, on_success)
-
-        threading.Thread(target=worker, daemon=True).start()
-
-    def _note_progress(self, label: str, message: str, current: int, total: int) -> None:
-        pct = int(current * 100 / total) if total else 0
-        text = message or f"{label}: {pct}%"
-        self._set_status(text)
-        if self._tray_icon is not None:
-            icon = self._app_icon or wx.ArtProvider.GetIcon(
-                wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
-            )
-            try:
-                self._tray_icon.SetIcon(icon, f"{_TITLE} -- {text}")
-            except Exception:  # noqa: BLE001 - a tooltip update must never break a run
-                pass
-
-    def _finish_task(self, label: str, error: Any, result: Any, on_success: Any) -> None:
-        if error is not None:
-            self._set_status(f"{label} failed")
-            self._show_message_box(f"{label} failed.\n\n{error}", label, wx.ICON_ERROR | wx.OK)
-            self._refresh_statusbar()
-            return
-        self._set_status(f"{label} finished")
-        try:
-            on_success(result)
-        finally:
-            self._refresh_statusbar()
+        converter_advanced.show(self, visible)
+        self._remember()
+        if not visible:
+            self._format.SetFocus()
 
 
 def _find_ffmpeg() -> str | None:
@@ -447,8 +532,7 @@ def main() -> int:
     from quill.core.data_location import apply_pending_at_launch
 
     # A queued Data Folder move/import applies before a single data file is
-    # read (mirrors quill.__main__.main -- the family shares one profile, so
-    # whichever app launches next must be the one to apply it).
+    # read (mirrors quill.__main__.main).
     apply_pending_at_launch()
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
     start_in_tray = "--tray" in sys.argv
@@ -461,7 +545,11 @@ def main() -> int:
     )
 
     if not try_claim_primary_instance(slot=_IPC_SLOT):
-        enqueue_open_request(None, slot=_IPC_SLOT)
+        # Hand every file to the running window; with none, just bring it forward.
+        for path in initial_paths:
+            enqueue_open_request(path.resolve(), slot=_IPC_SLOT)
+        if not initial_paths:
+            enqueue_open_request(None, slot=_IPC_SLOT)
         return 0
 
     from quill.core import components

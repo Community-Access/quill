@@ -33,7 +33,7 @@ def test_converter_is_a_registered_build_product() -> None:
     # The converter's whole job is FFmpeg conversion: stage ffmpeg, nothing else.
     assert product.stage_ffmpeg is True
     assert product.stage_engines is False
-    assert product.stage_mpv is False
+    assert product.stage_mpv is True  # the Chapter Workbench's player (1.0.0)
 
 
 def test_converter_exe_in_portable_evidence_allowlist() -> None:
@@ -173,11 +173,12 @@ def test_build_signs_and_carries_no_token() -> None:
     assert "#ifdef Sign" in iss and "SignTool=quilltrusted" in iss
 
 
-def test_build_stages_ffmpeg_not_mpv() -> None:
+def test_build_stages_ffmpeg_and_mpv() -> None:
+    # mpv joined in 1.0.0 as the Chapter Workbench's player (exact seeking).
     script = _BUILD.read_text(encoding="utf-8")
     assert "--product converter" in script
     assert "--ffmpeg-dir" in script
-    assert "--mpv-dir" not in script and "LibmpvDir" not in script
+    assert "--mpv-dir" in script and "-LibmpvDir $LibmpvDir" in script
     assert (
         'Assert-QuillRuntimeHasModule -RuntimeDir $sharedRuntimeDist -Module "quill.apps.converter"'
         in script
@@ -212,10 +213,23 @@ def test_installer_has_its_own_app_id_and_ref() -> None:
     assert "{app}\\QuillConverter.exe" in iss
 
 
-def test_installer_writes_no_registry_the_app_does_not_expect() -> None:
-    """The Convert with Quill verb is QUILL's (installer/quill.iss), not this app's."""
+def test_installer_writes_only_its_own_explorer_verb() -> None:
+    """The one registry block is the generated, checkbox-gated Explorer verb.
+
+    Decided for 1.0.0 (2026-09-26): the Converter's installer offers "Convert
+    with Quill Converter" under its own key, QuillConverter.Convert, so it
+    never touches QUILL's Quill.convert and each uninstaller removes only its
+    own. Nothing else is written.
+    """
     iss = _ISS.read_text(encoding="utf-8")
     assert "[Registry]" not in iss
+    block = (_CONVERTER / "installer" / "explorer-verb.isi").read_text(encoding="utf-8")
+    assert "QuillConverter.Convert" in block and "Quill.convert" not in block
+    assert all(
+        "Check: WantsExplorerVerb" in line
+        for line in block.splitlines()
+        if line.startswith("Root:")
+    )
 
 
 def test_the_icon_generator_draws_the_converter() -> None:

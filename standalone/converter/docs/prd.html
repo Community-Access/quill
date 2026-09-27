@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>prd</title>
+  <title>Quill Converter -- Product Requirements</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,175 +173,336 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-converter-product-requirements">Quill Converter – Product
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-converter--product-requirements">Quill Converter – Product
 Requirements</h1>
-<p>Version 1.0</p>
-<h2 id="product-statement">1. Product statement</h2>
-<p>Quill Converter is the Universal Audio Converter shipped as its own
-small Windows app, for people who need to change an audio file’s format
-and do not want to load a writing environment – or hand their file to a
-website – to do it. It is screen-reader-first, keyboard-complete,
-offline, and deliberately single-purpose.</p>
-<h2 id="architecture-requirement-not-a-fork">2. Architecture
+<p>Version 1.0.0 – status: released September 27, 2026 (first public
+release)</p>
+<h2 id="1-product-statement">1. Product statement</h2>
+<p>Quill Converter is the Universal Converter shipped as its own small
+Windows app, for people who need to change an audio or video file’s
+format and do not want to load a writing environment – or hand their
+file to a website – to do it. It converts sound to sound, video to sound
+and video to video, can improve the sound on the way through, and lets
+the listener hear the result before committing. It is
+screen-reader-first, keyboard-complete, offline, and deliberately
+focused on conversion.</p>
+<h2 id="2-architecture-requirement-not-a-fork">2. Architecture
 requirement: not a fork</h2>
 <ul>
 <li>R-1. All feature code lives in the upstream <code>quill</code>
 package: the wx-free engine (<code>quill.core.audio.convert</code>,
-<code>.presets</code>, <code>.dsp</code>, <code>.url_import</code>), the
-shared dialog and orchestration
-(<code>quill.ui.audio_studio.convert_audio_dialog</code>), and the app
-frame (<code>quill.apps.converter</code>). This folder is the product
-wrapper only – entry point, tile icon, build and installer
-plumbing.</li>
+<code>.formats</code>, <code>.presets</code>, <code>.dsp</code>,
+<code>.effect_recipes</code>, <code>.assemble</code>,
+<code>.media_probe</code>, <code>.cover_art</code>,
+<code>.ffmpeg_errors</code>, <code>.url_import</code>,
+<code>.chapter_plan</code>) and settings
+(<code>quill.core.converter_settings</code>); the shared choice tables
+and URL orchestration
+(<code>quill.ui.audio_studio.convert_audio_dialog</code>); the Audio
+Studio’s Chapter Workbench
+(<code>quill.ui.audio_studio.chapter_workbench</code>), reused rather
+than rebuilt; the app’s own windows
+(<code>quill.ui.converter_dialogs</code>); and the app itself in five
+modules – <code>quill.apps.converter</code> (the window),
+<code>quill.apps.converter_menu</code> (the menu bar and Help menu),
+<code>quill.apps.converter_actions</code> (what the commands do),
+<code>quill.apps.converter_chapters</code> (Join, Split by Chapters and
+the Chapter Workbench) and <code>quill.apps.converter_advanced</code>
+(the Advanced section). This folder is the product wrapper only –
+launcher, tile icon, build and installer plumbing, and documents.</li>
 <li>R-2. <strong>One converter, surfaced several ways.</strong> The
-standalone app, QUILL’s Audio Studio menu item, the Explorer verb, and
+standalone app, QUILL’s Audio Studio menu item, the Explorer verbs, and
 the headless <code>quill convert</code> command are all doors onto the
-same engine and the same dialog. A behaviour fixed once is fixed
-everywhere; no surface reimplements a feature.</li>
-<li>R-3. Data is shared, not copied: settings, keymap, unlock state and
-logs live in the same store QUILL uses, so a preference set in one app
-holds in the others.</li>
+same engine. A behaviour fixed once is fixed everywhere; no surface
+reimplements a feature.</li>
+<li>R-3. Data is shared where it should be: settings, keymap and logs
+live in the family’s data folder. The Converter’s own remembered choices
+are one file, <code>converter.json</code>, written atomically and read
+forgivingly (a damaged value falls back to its default rather than
+stopping the app from opening).</li>
 <li>R-4. The app frame is hosted on the shared
 <code>AppShellFrame</code>, which supplies announcements, the status
-bar, the accessible modal-dialog path, the tray, the QuillVille menu,
-and the per-app update check. The app supplies only its own menus, its
-own panel, and a background-task runner that meets the shared progress
-contract.</li>
+bar, the accessible modal-dialog path, the tray, the QuillVille menu, F1
+help, and the per-app update check.</li>
+<li>R-5. Every long job – a batch, a Join, a preview render, File
+Properties’ probe – runs off the UI thread and reports back through
+<code>wx.CallAfter</code>.</li>
 </ul>
-<h2 id="users">3. Users</h2>
+<h2 id="3-users">3. Users</h2>
 <ul>
 <li>A screen reader user with a file in the wrong format and a player
 that will not take it – the primary case.</li>
 <li>A podcaster or audiobook producer batching a folder into a delivery
-format at a loudness target.</li>
-<li>Someone converting a video’s audio track out to MP3.</li>
+format at a loudness target, joining chapter files into an M4B,
+splitting one, or giving a long recording chapters it never had.</li>
+<li>Someone taking the sound out of a video, or making a video smaller
+or playable on another device, without losing a described-audio
+track.</li>
+<li>A listener who wants a recording clearer, louder or quieter at
+night, and knows the problem but not the name of the effect that fixes
+it.</li>
 <li>A power user or script author who wants the same conversion without
 a window (<code>quill convert</code>).</li>
 </ul>
-<h2 id="functional-surface">4. Functional surface</h2>
-<p>In scope for 1.0:</p>
+<h2 id="4-functional-surface">4. Functional surface</h2>
+<p>In scope for 1.0.0:</p>
 <ul>
 <li><strong>Queue.</strong> A mixed file and folder queue. Folders are
-scanned for known audio and video extensions and the output mirrors the
-source tree. Duplicates are ignored. Delete or a Remove button takes a
-row out.</li>
-<li><strong>Getting files in.</strong> Add Files (multi-select picker),
-Add Folder, positional command-line paths, the Windows Explorer
-<strong>Convert with Quill</strong> verb (off by default, opt-in per
-user), and Convert from URL. Drag and drop is out of scope; every route
-must be keyboard-reachable.</li>
-<li><strong>Output.</strong> MP3, M4A, M4B, Opus, OGG, FLAC, WAV, AAC,
-AIFF, ALAC, WMA, CAF – filtered at startup to the formats the resolved
-FFmpeg can genuinely encode. WAV, AIFF and CAF are always offered; with
-no FFmpeg at all, WAV only.</li>
-<li><strong>Presets.</strong> Ten built-in one-click recipes, each
-announced with a plain-language description of what it is good for. The
-chosen output format always overrides the preset’s own.</li>
+scanned for known audio and video extensions, sub-folders included, and
+the output mirrors the source tree. Duplicates are ignored. Delete,
+Remove, Remove from Queue and Clear Queue take rows out; Alt+Up and
+Alt+Down reorder; File Properties describes the highlighted file in
+plain words (length, size, container, bit rate, tags, each track, cover
+art, chapters).</li>
+<li><strong>Getting files in.</strong> Add Files, Add Folder, Paste
+Files (files copied in File Explorer; a text box keeps its own paste),
+drag and drop, positional command-line paths, the installer’s
+<strong>Convert with Quill Converter</strong> Explorer verb, QUILL’s own
+<strong>Convert with Quill</strong> verb, and Convert from URL. A second
+launch hands its files to the running window, so a multi-file Explorer
+selection lands in one queue.</li>
+<li><strong>Inputs.</strong> 82 extensions: 52 sound (everyday, lossless
+and archival, film and broadcast, telephony, older and specialist,
+tracker music) and 30 video. <code>.ts</code> is read but not registered
+for the Explorer verb (TypeScript clash).</li>
+<li><strong>Outputs.</strong> 34 formats – 25 sound and 9 video (MP4
+H.264, MP4 H.265, MKV, WebM VP9, MOV, AVI Xvid, WMV, MPEG-2, Ogg Theora)
+– each with a plain-language label, and filtered at startup to what the
+resolved FFmpeg can genuinely encode.</li>
+<li><strong>Format constraints.</strong> A requested sample rate a
+format cannot take is moved to the nearest it accepts (AC-3, E-AC-3,
+MP2, Opus, WebM audio, Speex, AMR); AMR is forced to mono; lossless
+formats ignore a bit rate; AIFF and AU are written big-endian; 32-bit
+WAV, Wave64 and CAF are real float.</li>
+<li><strong>Video.</strong> Video to a sound format keeps the sound;
+video to a video format keeps the picture. Five video presets named for
+the result (Same quality; up to 1080p; up to 720p; up to 480p; Change
+the container only). MP4, MKV, MOV and WebM keep every audio track; MKV
+keeps subtitles. A sound file queued for a video format is skipped with
+a spoken reason. Video encodes run one at a time.</li>
+<li><strong>Presets.</strong> Ten sound presets and five video presets,
+each announced with a description of what it is good for. The chosen
+output format always overrides the preset’s own. The last sound and
+video preset are remembered separately.</li>
+<li><strong>Effects.</strong> Named recipes on the main window, each
+named for the problem it solves, plus Custom. The Custom Effects dialog
+exposes every switch (rumble, hum, noise, long silences, de-ess, voice
+clarity, bass, treble, dialogue boost, compressor, speech leveling,
+night mode leveler, peak limiter), a loudness target (-16, -20, -14, -23
+LUFS), gain, speed, fades, and keep from / keep until. Effects apply to
+the sound of video conversions; Change the container only skips them and
+says so.</li>
+<li><strong>Preview.</strong> Fifteen seconds of the highlighted or
+first file, rendered through the chosen format and effects and decoded
+back, starting a quarter of the way in (at most 30 seconds); Preview
+Original plays the same window untouched. Pressing again stops.</li>
+<li><strong>Chapters.</strong> A headline feature: chapter marks are
+content, not metadata that may or may not survive. A Chapters choice on
+the main window
+(<code>quill.core.audio.chapter_plan.CHAPTER_SOURCES</code>) says where
+each file’s chapters come from: keep its own (default); a chapter list
+beside it (<code>name.chapters.txt</code> of <code>0:00 Title</code>
+lines, <code>name.cue</code>, <code>name.chapters.json</code> Podcasting
+2.0, <code>name.labels.txt</code> Audacity labels, or
+<code>name.txt</code> when it parses as a chapter list); found at pauses
+(two seconds of quiet, chapters at least 20 seconds); every 5, 10, 15,
+30 or 60 minutes (Part 1, Part 2…; a last piece under a minute joins the
+one before); or removed. A missing list or a failed scan falls back to
+the file’s own chapters and says so in the report.</li>
+<li><strong>Where chapters land.</strong> FFmpeg writes them natively
+into MP3 (ID3 CHAP and CTOC), the MP4 family (M4A, M4B, ALAC, M4R, MP4,
+MOV), Matroska and WebM, Opus, and WMA/WMV. Ogg Vorbis, FLAC, Speex and
+Ogg video get <code>CHAPTERnnn</code> comments written with mutagen.
+Every other format gets a <code>.cue</code> sheet of the same name
+beside the output. Nothing is silently lost; the report notes where
+chapters went. Keep from / keep until clips the chapters to the kept
+window and shifts them to zero.</li>
+<li><strong>Chapter Workbench.</strong> Queue &gt; Chapter Workbench
+(and a main-window button) opens the highlighted MP3, M4B or M4A in the
+Audio Studio’s Chapter Workbench: libmpv playback with exact seeking,
+rename, split at the playhead, set start to the playhead, merge, find at
+silences, import and export chapter lists (Audacity labels, CUE,
+timestamps, Podcasting 2.0 JSON, CSV), book tags, Save (MP3 in place,
+tags only; M4B Save As, lossless) and split into files. Other formats
+are pointed at the chapter-list route or a conversion to M4B or MP3
+first. Preview ignores chapters.</li>
+<li><strong>Join into One File.</strong> The queue, in order, into one
+sound file, with a chapter per source in every format that holds
+chapters (MP3 included), and as comments or a <code>.cue</code> sheet
+for the rest; sources of different shapes are normalized first so they
+join cleanly.</li>
+<li><strong>Split by Chapters.</strong> One file per chapter, into a
+folder named after the source, numbered, titled and tagged. It follows
+the Chapters choice, so it can cut every N minutes, at pauses, or
+exactly where a chapter list says.</li>
 <li><strong>Destination and conflicts.</strong> Default destination is a
-<code>Converted</code> folder beside the source. The main window never
-overwrites (auto-numbering instead); the Advanced dialog exposes Rename
-/ Skip / Overwrite.</li>
-<li><strong>Advanced.</strong> The full Convert Audio dialog:
-include-sub-folders, conflict policy, and a revealable panel for bit
-rate, sample rate, channels, bit depth, loudness normalization
-(audiobook and podcast targets), gain, tempo, fade in, fade out,
-high-pass, silence trim, compressor and leveler. Every control defaults
-to a neutral “leave the preset alone” value.</li>
-<li><strong>Convert from URL.</strong> Prompt, one-time consent with a
-rights notice, on-demand yt-dlp install, background download with
-progress, then the Convert Audio dialog seeded with the downloaded
-file.</li>
-<li><strong>Running a batch.</strong> Off the UI thread, multi-worker,
-with progress reported through the shared task callback so the status
-bar, the tray tooltip and the spoken milestones update together. The run
-ends with a summary that names failures rather than reporting a blanket
-success.</li>
-<li><strong>Tray.</strong> Tray icon with Show / Open / Exit,
-minimize-to-tray on Ctrl+W, and a system-wide show/hide chord
-(Ctrl+Alt+Shift+C) claimed best-effort.</li>
-<li><strong>Family.</strong> The shared QuillVille menu, listing the
-released sibling apps.</li>
-<li><strong>Help.</strong> Check for Updates against this app’s own
-release assets, and About.</li>
+<code>Converted</code> folder beside the first queued item. The default
+never overwrites (auto-numbering); Advanced Options offers number / skip
+/ replace.</li>
+<li><strong>Advanced Options.</strong> View &gt; Advanced Options, a
+check item, shows or hides an Advanced section in the main window (the
+Windows way to show more of a window, rather than a second window with
+its own Convert button): quality (bit rate), sample rate, channels, bit
+depth, the conflict policy, Exact OptiLab broadcast polish where the
+adapter is present, and “Look in subfolders too”. Each starts on its
+neutral choice, shapes the same Convert as the rest of the page, and is
+remembered, as is whether the section is shown.</li>
+<li><strong>Convert from URL.</strong> Prompt, background download with
+progress through the bundled yt-dlp, then the shared URL orchestration’s
+conversion choices, seeded with the file. Refused in Safe Mode.</li>
+<li><strong>Running a batch.</strong> Off the UI thread, multi-worker
+for sound and one at a time for video. Convert becomes Stop; Stop
+finishes the file in progress and starts nothing after it. Progress is
+spoken every 25 percent and mirrored in the status bar and tray
+tooltip.</li>
+<li><strong>Results.</strong> A summary that names failures; a
+Conversion Report with the settings, destination, time taken and a
+plain-language reason per failure (then FFmpeg’s own last line), with
+Copy All; Open Output Folder and Open Output Folder When Done. Cover art
+is carried into MP3, M4A/M4B/M4R, FLAC and Ogg/Opus/Speex copies where
+FFmpeg drops it.</li>
+<li><strong>Remembered choices.</strong> Format, presets, effect, custom
+effects, keep from / keep until, the Chapters choice, the Advanced
+Options (and whether they are shown) and output folder persist between
+runs.</li>
+<li><strong>Menus.</strong> File, Queue, View, Convert, QuillVille, Help
+and Window.</li>
+<li><strong>Tray.</strong> Minimize to tray (Ctrl+W), the shared tray
+menu, and a system-wide show/hide chord (Ctrl+Alt+Shift+C) claimed
+best-effort.</li>
+<li><strong>Family.</strong> The shared QuillVille menu lists the
+released siblings, and the siblings list Quill Converter.</li>
+<li><strong>Help.</strong> The family Help menu, on Quill Radio’s and
+QUILL Lite’s keys: F1 help for the window and control, User Guide,
+Release Notes, Changelog, Product Requirements, Keyboard Shortcuts (a
+read-only list of every key), Get Help from Support, Get FFmpeg
+(repair), Check for Updates, and About.</li>
+<li><strong>Support.</strong> Email only, to <a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+through Get Help from Support (Ctrl+Alt+F2), which composes the message
+in the user’s own mail program. No GitHub path and no token.</li>
 </ul>
 <p>Out of scope, by decision:</p>
 <ul>
-<li>Video output of any kind. Video files are inputs only, and only
-their audio track is taken.</li>
-<li>Tagging, cover art, chapter editing, splitting, joining, and
-recording. Those are Audio Studio and QUILL Cast territory.</li>
-<li>Saving user-defined presets in 1.0. Advanced settings apply to the
-run in front of you.</li>
-<li>Transcription, translation, and text-to-speech. Different
+<li>Cover-art editing and recording. Those are Audio Studio and QUILL
+Cast territory. (Chapter and book-tag editing are in scope only through
+the reused Chapter Workbench; the Converter builds no editor of its
+own.)</li>
+<li>Saving user-defined named presets in 1.0. Custom Effects is one
+remembered custom recipe.</li>
+<li>Video effects (picture filters, cropping, rotation) and subtitle
+burn-in.</li>
+<li>Joining video files.</li>
+<li>Converting copy-protected (DRM) files.</li>
+<li>Transcription, translation and text-to-speech. Different
 products.</li>
 <li>Any cloud or upload path. Conversion is local, always.</li>
 </ul>
-<h2 id="accessibility-contract">5. Accessibility contract</h2>
+<h2 id="5-accessibility-contract">5. Accessibility contract</h2>
 <ul>
 <li>A-1. Focus lands on the <strong>Files to convert</strong> list at
 launch. A bare-frame focus dead zone is a defect.</li>
 <li>A-2. Every interactive control carries an accessible name, set
-explicitly where the visible label is a separate static text. Labels are
-created before the control they describe, so reading order matches tab
-order.</li>
+explicitly where the visible label is a separate static text, and an
+access key unique within its window (GATE-14). OK, Cancel and Close
+carry none.</li>
 <li>A-3. Every action announces its outcome through the shared
-announcement service – speech through the user’s screen reader plus the
-braille display – and the status bar always carries the same text as the
-visual floor. A silent state change is a defect.</li>
-<li>A-4. Nothing is conveyed by colour alone; queue rows and progress
-are words.</li>
-<li>A-5. Full keyboard operation. Delete removes a queue row; access
-keys reach every button and field; the tray is reachable from the
-keyboard.</li>
+announcement service, and the status bar carries the same text as the
+visual floor. A silent state change is a defect; announcing what the
+screen reader already says (GATE-13) is too.</li>
+<li>A-4. Nothing is conveyed by colour alone; queue rows, progress and
+failures are words, and failures are explained in plain language.</li>
+<li>A-5. Full keyboard operation. Every enabled menu item shows its key,
+no key is claimed twice, and Keyboard Shortcuts lists them all in one
+read-only window.</li>
 <li>A-6. All modal dialogs go through the shared accessible modal path
-with a real affirmative/cancel pair and Escape that works. The Convert
-Audio dialog’s affirmative is labelled <strong>Convert</strong>.</li>
-<li>A-7. A progressive reveal (the Advanced panel) moves focus to the
-first revealed control, so the change is announced rather than being a
-silent resize.</li>
-<li>A-8. Long work never owns the window: batches run off the UI thread
-and stay reviewable from the tray tooltip while minimized.</li>
+with a real affirmative/cancel pair and Escape that works.</li>
+<li>A-7. A progressive reveal (the Advanced section, shown from View
+&gt; Advanced Options) moves focus to the first revealed control.</li>
+<li>A-8. Long work never owns the window, and stays reviewable from the
+tray tooltip while minimized.</li>
+<li>A-9. Every window answers F1 with an authored purpose and the
+focused control’s own help (GATE-CONVERTER-HELP): the main window (the
+Chapters choice and the Advanced section included), Chapter Workbench,
+Convert from URL and the Convert Audio window it leads to, Custom
+Effects, File Properties, Conversion Report and Keyboard Shortcuts.</li>
+<li>A-10. Reports and descriptions are shown in a read-only multi-line
+text box, the one surface every screen reader reviews line by line
+without a special mode.</li>
 </ul>
-<h2 id="privacy-and-network-requirements">6. Privacy and network
+<h2 id="6-privacy-and-network-requirements">6. Privacy and network
 requirements</h2>
 <ul>
 <li>N-1. Conversion is entirely local. Nothing is uploaded, ever.</li>
-<li>N-2. Exactly two outbound paths exist: <strong>Check for
-Updates</strong> (this app’s own releases) and <strong>Convert from
-URL</strong>. Both are user-initiated.</li>
-<li>N-3. yt-dlp is never bundled. It is installed only after an explicit
-one-time consent that states what it does, roughly how large it is,
-where it comes from, and that the user must only download what they have
-the right to use. No account or credential of the user’s is sent to the
-site.</li>
+<li>N-2. Exactly three outbound paths exist, all user-initiated:
+<strong>Check for Updates</strong> (this app’s own releases),
+<strong>Convert from URL</strong>, and <strong>Get FFmpeg</strong>
+(repair, when the bundled copy is missing).</li>
+<li>N-3. yt-dlp is bundled; Convert from URL downloads only the address
+the user pasted, sends no account or credential to the site, and reminds
+the user to download only what they have the right to use.</li>
 <li>N-4. Convert from URL is refused in Safe Mode.</li>
+<li>N-5. Support messages leave only through the user’s own mail
+program, and only when the user sends them.</li>
 </ul>
-<h2 id="packaging-requirements">7. Packaging requirements</h2>
+<h2 id="7-packaging-requirements">7. Packaging requirements</h2>
 <ul>
-<li>P-1. The released launcher is the native QuillVille launcher,
-spawning <code>pythonw.exe -m quill.apps.converter</code>, built by the
-shared portable builder with the app’s own tile icon.</li>
-<li>P-2. FFmpeg ships with the app; nothing is downloaded at install
-time.</li>
-<li>P-3. Portable mode: a <code>data</code> folder beside the program
-makes settings, logs and keymap travel with the bundle instead of
-touching the host machine.</li>
-<li>P-4. Uninstalling never deletes the shared
-<code>%APPDATA%\Quill</code> store – another family app may still be
-using it.</li>
-<li>P-5. Single instance, via the shared IPC slot. Launching a second
-copy does not open a second window.</li>
-<li>P-6. The update check resolves this app’s own release asset, so
-every QuillVille app updates independently of the others.</li>
+<li>P-1. Two artifacts:
+<code>Quill-Converter-Setup-Shared-1.0.0.exe</code> (Inno Setup 7;
+installs the shared QuillVille runtime if absent, then the native
+launcher, docs and uninstaller) and
+<code>Quill-Converter-Portable-1.0.0.zip</code>. Both are built by
+<code>standalone/converter/scripts/build_release.ps1</code>.</li>
+<li>P-2. Nothing downloads at install time or on first use: FFmpeg and
+ffprobe (pinned, SHA-256-verified), libmpv (the Chapter Workbench’s
+player), yt-dlp, mutagen and, when a C++ toolchain is available at build
+time, the OptiLab Core adapter ship inside both artifacts.</li>
+<li>P-3. Portable mode: the <code>data</code> folder beside the program
+holds settings, logs and <code>converter.json</code>, so nothing touches
+the host machine.</li>
+<li>P-4. The installer’s “Convert with Quill Converter” Explorer task is
+checked by default, registers per user (HKCU) for every extension in
+<code>quill.core.shell_verbs.MEDIA_EXTENSIONS</code>, and is removed on
+uninstall. The registry block is generated by
+<code>scripts/build_converter_verb_iss.py</code>.</li>
+<li>P-5. Uninstalling never deletes the shared data folder – another
+family app may still be using it.</li>
+<li>P-6. Single instance, via the shared IPC slot. A second launch hands
+its paths to the running window and exits.</li>
+<li>P-7. The update check resolves this app’s own release asset and
+offers the matching download, installer or portable.</li>
+<li>P-8. No GitHub token is generated or embedded in any artifact.</li>
 </ul>
-<h2 id="non-goals">8. Non-goals</h2>
+<h2 id="8-non-goals">8. Non-goals</h2>
 <p>macOS and Linux standalone builds (the tray pattern this app leans on
-does not exist there in the same form), background or automatic
-conversion, watched folders, telemetry of any kind, and any feature that
-would require uploading a user’s audio anywhere.</p>
-<p>See <code>CHANGELOG.md</code> for the versioned history and
+does not exist there in the same form), watched folders, telemetry of
+any kind, and any feature that would require uploading a user’s media
+anywhere.</p>
+<p>See <code>docs/CHANGELOG.md</code> for the versioned history and
 <code>docs/userguide.md</code> for the user-facing documentation.</p>
+</main>
 </body>
 </html>

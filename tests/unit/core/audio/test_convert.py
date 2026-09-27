@@ -90,7 +90,9 @@ def test_build_command_extract_from_video_maps_audio() -> None:
     spec = ConversionSpec(fmt="mp3", extract_from_video=True)
     cmd = cv.build_convert_command("ffmpeg", _job("clip.mp4", "out.mp3", spec))
     assert "-map" in cmd and "0:a:0?" in cmd
-    assert "-vn" not in cmd
+    # -vn too since 1.0.0: a video with no sound track must fail in words, not
+    # come out as a video stream inside an audio container (found end to end).
+    assert "-vn" in cmd
 
 
 def test_build_command_out_path_override_for_temp_write() -> None:

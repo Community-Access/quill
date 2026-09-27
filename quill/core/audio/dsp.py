@@ -30,7 +30,26 @@ from quill.core.speech.audio_edit import atempo_filter
 _LOUDNESS_TARGETS: dict[str, str] = {
     "audiobook": "loudnorm=I=-20.0:TP=-3.1:LRA=11.0",  # ACX window
     "podcast": "loudnorm=I=-16.0:TP=-1.5:LRA=11.0",  # streaming/podcast
+    "music": "loudnorm=I=-14.0:TP=-1.0:LRA=11.0",  # music streaming services
+    "broadcast": "loudnorm=I=-23.0:TP=-1.0:LRA=15.0",  # EBU R128 television/radio
 }
+
+# The repair and tone effects added for Quill Converter 1.0.0 (2026-09-27). Each
+# is one stock FFmpeg filter with settings chosen for speech first, because
+# speech is what most people bring to a converter to fix.
+_NOISE_REDUCTION = "afftdn=nr=12:nf=-40:tn=1"  # steady hiss and fan noise
+_DEHUM = (
+    "bandreject=f=50:width_type=h:w=4,bandreject=f=60:width_type=h:w=4,"
+    "bandreject=f=100:width_type=h:w=4,bandreject=f=120:width_type=h:w=4"
+)
+_DEESSER = "deesser=i=0.4:m=0.5:f=0.5"
+_VOICE_CLARITY = "equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3000:t=q:w=1.2:g=4"
+_BASS_BOOST = "bass=g=6:f=100"
+_TREBLE_BOOST = "treble=g=4:f=4000"
+# Film and TV speech: pull the centre (dialogue) forward, then fold back to
+# stereo so every output format can carry it.
+_DIALOGUE = "dialoguenhance=original=0.8:enhance=2:voice=4,aformat=channel_layouts=stereo"
+_SPEECH_NORMALIZE = "speechnorm=e=6.25:r=0.00001:l=1"
 
 # A rumble high-pass (§6 "High-pass") — same 30 Hz corner audio_enhance uses.
 _HIGH_PASS = "highpass=f=30"
@@ -53,6 +72,14 @@ class DspOptions:
     fade_in_s: float = 0.0
     fade_out_s: float = 0.0
     limiter: bool = False  # brickwall safety limiter
+    noise_reduction: bool = False
+    remove_hum: bool = False  # 50 and 60 Hz mains hum and their first harmonic
+    deesser: bool = False
+    voice_clarity: bool = False
+    bass_boost: bool = False
+    treble_boost: bool = False
+    dialogue_boost: bool = False
+    speech_normalize: bool = False  # fast per-phrase leveling for speech
 
     def is_active(self) -> bool:
         """True when any option would add a filter (nothing to do otherwise)."""
@@ -71,14 +98,30 @@ def build_dsp_filters(dsp: DspOptions) -> tuple[str, ...]:
     filters: list[str] = []
     if dsp.high_pass:
         filters.append(_HIGH_PASS)
+    if dsp.remove_hum:
+        filters.append(_DEHUM)
+    if dsp.noise_reduction:
+        filters.append(_NOISE_REDUCTION)
     if dsp.trim_silence:
         filters.append(_SMART_SPEED_FILTER)
     if dsp.gain_db:
         filters.append(f"volume={dsp.gain_db:g}dB")
     if dsp.tempo and abs(dsp.tempo - 1.0) > 1e-6:
         filters.append(atempo_filter(_clamp_tempo(dsp.tempo)))
+    if dsp.deesser:
+        filters.append(_DEESSER)
+    if dsp.voice_clarity:
+        filters.append(_VOICE_CLARITY)
+    if dsp.bass_boost:
+        filters.append(_BASS_BOOST)
+    if dsp.treble_boost:
+        filters.append(_TREBLE_BOOST)
+    if dsp.dialogue_boost:
+        filters.append(_DIALOGUE)
     if dsp.compressor:
         filters.append(_COMPRESSOR_FILTER)
+    if dsp.speech_normalize:
+        filters.append(_SPEECH_NORMALIZE)
     if dsp.leveler:
         filters.append(_NIGHT_MODE_FILTER)
     target = _LOUDNESS_TARGETS.get(dsp.loudness.strip().lower())
@@ -108,4 +151,6 @@ def loudness_choices() -> list[tuple[str, str]]:
         ("", "No loudness normalization"),
         ("audiobook", "Audiobook / ACX (−20 LUFS)"),
         ("podcast", "Podcast / streaming (−16 LUFS)"),
+        ("music", "Music streaming (−14 LUFS)"),
+        ("broadcast", "Broadcast TV and radio, EBU R128 (−23 LUFS)"),
     ]

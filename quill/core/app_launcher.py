@@ -75,13 +75,14 @@ def app_name(app_key: str) -> str:
 
 
 #: Apps that may be surfaced (launched/advertised) in a public 1.0.0 build. Quill
-#: Cast, Audio Studio, Quill Converter, the Media Player, and QuillBeacon are built
+#: Cast, Audio Studio, the Media Player, and QuillBeacon are built
 #: but gated for now -- add a key here when it ships publicly. This is the single
 #: source of truth every launcher/menu should gate on (via :func:`is_app_released`).
 #: Quill Inkwell ships in 1.0.0: it is the system-wide half of the editor's own
 #: abbreviation expansion, sharing one library with it, so gating it would leave
 #: that feature visibly half-present.
-RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather", "inkwell"})
+#: Quill Converter ships on 2026-09-27 (1.0.0), with its own installer and portable zip.
+RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather", "inkwell", "converter"})
 
 
 def is_dev_build() -> bool:

@@ -82,6 +82,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # expressed a preference -- taken directly rather than through the
     # migration machinery, which has nothing to migrate from at 1.0.0.
     "core/lite/settings.py::save": "versioned",
+    "core/converter_settings.py::save": "versioned",
     "core/speech/dictation/recovery.py::save_metadata": "framework",
     # --- export / output (user picks the file) ---
     # "Move my setup to another machine" (11.10): the import writes each store

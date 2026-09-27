@@ -831,15 +831,25 @@ Control coverage: 40 audited sites (40 helped).
 
 ## Quill Converter
 
-Control coverage: 11 audited sites (11 helped).
+Control coverage: 22 audited sites (22 helped).
 
 ### Every window, and what it is for
 
-**Convert Audio.** The full conversion dialog, seeded with your queue: everything the main window offers plus the advanced catalog -- bitrate, sample rate, channels, loudness, and what to do when an output file already exists. Anything you leave alone keeps the preset's answer; only what you deliberately change is overridden.
+**Chapter Workbench.** Edit the chapters of an MP3, M4B or M4A: hear it, then add, rename, move, split and merge chapters at the playhead, find them at the pauses, or import and export a chapter list. Save writes them into the file itself, and every later conversion carries them.
 
-**Convert from URL.** Paste a web link -- YouTube and many other sites -- and its audio is downloaded and handed to the converter. The downloader installs on demand, once, with your consent; the page's best audio stream is fetched, and nothing else about the page is kept. Unavailable in Safe Mode.
+**Conversion Report.** Your last conversion, file by file: the settings used, where the files went, what converted, and why anything failed -- in plain words, then FFmpeg's own message. Copy All puts it on the clipboard, ready to paste into an email to support.
 
-**Quill Converter.** The Universal Audio Converter: queue audio or video files (or whole folders), choose an output format and a preset, and Convert. Everything runs on this computer, your originals are never touched, and converted copies land in the output folder -- existing files are auto-numbered, never overwritten. Closing to the tray keeps it running a hotkey away while a batch finishes.
+**Convert Audio.** The full conversion dialog, seeded with your queue: every format the main window offers, video included, plus exact settings -- bit rate, sample rate, channels, loudness -- and what to do when an output file already exists. It converts with its own settings, so the main window's effects do not apply here; anything you leave alone keeps the preset's answer.
+
+**Convert from URL.** Paste a web link -- YouTube and many other sites -- and its audio is downloaded and handed to the converter. The page's best audio stream is fetched and nothing else about the page is kept; only download what you have the right to use. Unavailable in Safe Mode.
+
+**Custom Effects.** Every effect on one page, starting from the effect recipe you had chosen: cleanup, tone, leveling, a loudness target, gain, speed, fades, and keeping only part of each file. OK makes these your Custom effects for the next conversion and for Preview; Cancel changes nothing.
+
+**File Properties.** What is inside the file you highlighted, in plain words: its length and size, its tags, each video, audio and subtitle track, whether it has cover art, and its chapters. It is read-only, and Copy All puts it on the clipboard.
+
+**Keyboard Shortcuts.** Every key in Quill Converter, grouped by menu, in one read-only list you can arrow through or copy. It is a reference; nothing here changes a key.
+
+**Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
@@ -847,17 +857,22 @@ Control coverage: 11 audited sites (11 helped).
 
 #### QuillConverterFrame (`quill/apps/converter.py`)
 
-- `self._list`: The queue. Every file here is converted when you press Convert, and a folder in the queue brings the audio files inside it, including subfolders. Delete removes the highlighted row from the queue; it never deletes anything from disk.
+- `self._list`: The queue. Every file here is converted when you press Convert, and a folder brings the audio and video files inside it, subfolders included. Delete removes the highlighted row, Alt+Up and Alt+Down move it, and Alt+Enter describes the file. You can also paste files copied in File Explorer, or drop them here. Nothing is ever deleted from disk.
 - `self._add_files_btn`: Choose audio or video files to add to the queue. You may select several at once, and adding the same file twice queues it once.
-- `self._add_folder_btn`: Add a whole folder to the queue. Every audio file inside it is converted, subfolders included, and the folder layout is reproduced in the output folder.
+- `self._add_folder_btn`: Add a whole folder to the queue. Every audio and video file inside it is converted, subfolders included, and the folder layout is reproduced in the output folder.
 - `self._remove_btn`: Take the highlighted row out of the queue. Delete does the same thing from the list itself. Nothing is removed from disk.
-- `self._format`: The format every queued file is converted to. The list holds only the formats this machine can actually write: without ffmpeg bundled or installed it is a short list, and with it the full one. A preset below may carry its own format, and where they disagree the preset wins.
-- `self._preset`: A named set of quality settings -- bit rate, sample rate and channels -- so you do not have to know any of them. The default is chosen to suit spoken-word audio. Advanced opens the full dialog if you want the individual settings.
-- `self._dest`: Where the converted files are written. Leave it empty and they go into a folder named Converted beside the first file in the queue. An existing file is never overwritten: a converted file that would collide is auto-numbered instead.
+- `self._format`: The format every queued file becomes: sound formats first, then video. A video file converted to a sound format keeps its sound; converted to a video format it stays a video. Only the formats this computer can actually write are listed.
+- `self._preset`: How the result is made. For a sound format: quality settings -- bit rate, sample rate and channels -- chosen for a purpose, so you do not have to know any of them. For a video format: how hard to work at keeping picture detail, and how large the picture may be. The format above always wins over a preset's own.
+- `self._effect`: What to do to the sound on the way through, named for the problem it solves: clean up speech, make a podcast or an ACX audiobook, bring film dialogue forward, remove hum or noise, even out loud and quiet parts. Custom uses whatever you set in Custom Effects. Effects apply to the sound of video conversions too. Preview lets you hear them before you convert.
+- `self._effects_btn`: Every effect on one page, starting from the recipe chosen now: noise, hum, rumble, de-essing, voice clarity, bass and treble, dialogue boost, compression, leveling, loudness target, gain, speed, fades, and keeping only part of each file.
+- `self._chapters`: Where the converted files' chapter marks come from: each file's own chapters, a chapter list you wrote beside the file (book.cue, book.chapters.txt with lines like 0:00 Introduction, Audacity labels, or chapters.json), chapters found at the pauses, one every few minutes, or none. Chapters land in every format that can hold them; for the ones that cannot, such as WAV, a .cue sheet is written beside the file. Split by Chapters and Join use the same choice.
+- `self._workbench_btn`: Open the highlighted MP3, M4B or M4A in the Chapter Workbench: hear it, add, rename, move and merge chapters at the playhead, find them at pauses, import or export chapter lists, and save them into the file itself.
+- `self._dest`: Where the converted files are written. Leave it empty and they go into a folder named Converted beside the first file in the queue. An existing file is never overwritten: a converted file that would collide is numbered instead.
 - `self._browse_btn`: Pick the output folder with a folder chooser.
-- `self._convert_btn`: Convert everything in the queue, using the format, preset and output folder above. Progress is announced as it runs, and the window can go to the tray while it works.
-- `self._url_btn`: Paste a web address and convert its audio. The downloader this needs is fetched on demand, with your consent, the first time you use it; in Safe Mode this is declined rather than attempted.
-- `self._advanced_btn`: Open the full conversion dialog with the current queue already in it: individual quality settings, the Advanced DSP catalogue, and the per-run options this window keeps out of your way.
+- `self._convert_btn`: Convert everything in the queue with the choices above. Progress is announced every quarter, the window can go to the tray while it works, and while it runs this button is Stop.
+- `self._preview_btn`: Plays fifteen seconds of the highlighted file -- or the first in the queue -- exactly as it will sound after converting, effects and all. Press again to stop. Hear Original plays the same fifteen seconds untouched, so you can compare.
+- `self._original_btn`: Plays the same fifteen seconds Preview does, with nothing changed. Press again to stop.
+- `self._url_btn`: Paste a web address and convert its audio. The downloader is included with Quill Converter; in Safe Mode this is declined.
 
 ## Quill Beacon
 

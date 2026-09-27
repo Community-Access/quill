@@ -37,6 +37,12 @@ ASSET_PREFIX: dict[str, str] = {
     "radio": "Quill-Radio",
     "weather": "Quill-Weather",
     "cast": "Quill-Cast",
+    # Quill Converter 1.0.0 (2026-09-27). Without an entry here its Check for
+    # Updates had no asset prefix, fell back to the repository's newest release
+    # of ANY app -- QUILL's own -- and would have offered that installer.
+    "converter": "Quill-Converter",
+    # Quill Inkwell had the same gap since 1.0.0; found while adding the above.
+    "inkwell": "Quill-Inkwell",
     # Audio Studio's two artifacts are named inconsistently by its own build
     # scripts -- "QUILL-Audio-Studio-Portable-Lean-*.zip" but
     # "Quill-AudioStudio-Setup-*.exe" (no hyphen inside "AudioStudio") -- so the

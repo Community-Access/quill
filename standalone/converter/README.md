@@ -1,14 +1,59 @@
 # Quill Converter
 
-An accessible, screen-reader-first **audio format converter** as its own
-standalone Windows app. Convert audio (and pull the audio track out of video)
-between MP3, M4A/M4B, Opus, Ogg, FLAC, WAV, AAC, and more — with presets and a
-full Advanced DSP catalog — entirely on your machine through the bundled FFmpeg.
+An accessible, screen-reader-first **audio and video converter** as its own
+standalone Windows app, from Community Access. Sound to sound, video to sound
+and video to video -- 25 sound formats and 9 video formats out, 82 file types
+in -- with presets, named effect recipes you can preview before you convert,
+chapters carried through every conversion (kept, written by you in a text file
+beside the source, found at pauses or every few minutes, and saved inside the
+file or in a `.cue` beside it), a Chapter Workbench, Join into One File, and
+Split by Chapters. Everything runs on your own computer through the bundled
+FFmpeg; nothing is uploaded.
 
-The application itself lives in the [`quill`](https://github.com/Community-Access/quill)
-package (`quill.apps.converter`) and runs the exact same wx-free conversion
-engine QUILL and Audio Studio use. This folder is only the **product wrapper**:
-the launcher entry point, the tile icon, and the build/installer plumbing.
+Version 1.0.0, released 2026-09-27. See `docs/userguide.md`,
+`docs/release-notes-1.0.md` and `docs/CHANGELOG.md`.
+
+## Downloads
+
+- `Quill-Converter-Setup-Shared-1.0.0.exe` -- the installer (recommended).
+  Installs the shared QuillVille runtime if it is absent, then the app, and
+  offers (checked by default) a "Convert with Quill Converter" entry on the
+  File Explorer right-click menu for audio and video files.
+- `Quill-Converter-Portable-1.0.0.zip` -- unpack anywhere; settings stay in its
+  own `data` folder next to the app.
+
+### What is bundled
+
+Neither download fetches anything on first use. Both contain:
+
+- FFmpeg and ffprobe (pinned, SHA-256-verified) -- converting, and reading
+  what is in a file.
+- libmpv (the mpv playback engine) -- the Chapter Workbench's player.
+- yt-dlp -- Convert from URL.
+- mutagen -- carrying cover art and chapters into converted copies.
+- The OptiLab Core adapter -- broadcast polish in Advanced Options, when the
+  build machine has a C++ toolchain.
+
+## Where the code lives
+
+The application lives in the [`quill`](https://github.com/Community-Access/quill)
+package and runs the same wx-free conversion engine QUILL and Audio Studio use:
+
+- `quill/apps/converter.py` -- the window: the queue and the choices.
+- `quill/apps/converter_menu.py` -- the menu bar and the family Help menu.
+- `quill/apps/converter_actions.py` -- convert, stop, preview, report.
+- `quill/apps/converter_chapters.py` -- join, split by chapters, and the
+  Chapter Workbench.
+- `quill/apps/converter_advanced.py` -- the Advanced section shown from
+  View > Advanced Options.
+- `quill/ui/converter_dialogs.py` -- Custom Effects and the read-only report
+  window.
+- `quill/core/audio/` -- the engine (`convert`, `formats`, `presets`, `dsp`,
+  `effect_recipes`, `assemble`, `media_probe`, `cover_art`, `ffmpeg_errors`,
+  `chapter_plan`).
+
+This folder is only the **product wrapper**: the launcher entry point, the tile
+icon, the installer, the build scripts and the documents.
 
 ## Run from source
 
@@ -22,80 +67,53 @@ or, with a checkout that has `quill` installed:
 python -m quill.apps.converter
 ```
 
-Pass one or more file paths to queue them immediately (this is what the Windows
-Explorer "Convert with Quill" right-click entry does):
+Pass one or more file or folder paths to queue them immediately (this is what
+the Explorer right-click entry does):
 
 ```
 python -m quill.apps.converter song.wav album\
 ```
 
-## Download and install
-
-Each release publishes two downloads, and nothing else:
-
-- **`Quill-Converter-Setup-Shared-<version>.exe`** -- the installer. It installs
-  the shared QuillVille Runtime (the Python every QuillVille app uses) if this
-  computer does not already have a current one, then Quill Converter and its
-  bundled FFmpeg. It adds a Start Menu entry and an uninstaller. Two choices are
-  offered as ordinary checkboxes, both off unless you turn them on: a desktop
-  icon, and launching Quill Converter when setup finishes. Nothing is downloaded
-  during installation. Uninstalling removes the app; the shared runtime stays
-  until the last QuillVille app that uses it is uninstalled, and your settings
-  and converted files are never touched.
-- **`Quill-Converter-Portable-<version>.zip`** -- the portable copy. Unzip it
-  anywhere (a USB stick is fine) and run `QuillConverter.exe`. It carries its own
-  Python, its own FFmpeg and its own `data` folder, and writes nothing to the
-  host computer: no registry entries, no files outside its folder.
-
-The Explorer **Convert with Quill** right-click entry belongs to QUILL, not to
-this app: turn it on in QUILL's settings ("Offer Convert with QUILL"). Neither
-Quill Converter download writes it.
-
-Need help? Choose **Get Help from Support** on the Help menu, or email
-support@community-access.org.
-
 ## Build
 
-A release is built by one script, from a QUILL checkout on Windows:
+From this folder, in PowerShell:
 
 ```
-.\standalone\converter\scripts\build_release.ps1 [-Sign] [-SkipSharedRuntime] [-FfmpegDir <dir>]
+.\scripts\build_release.ps1
 ```
 
-It renders the docs, stages FFmpeg (from QUILL's pinned, SHA-256-verified build
-assets unless `-FfmpegDir` names a vetted folder), builds or reuses the shared
-runtime and checks that it contains this version of `quill.apps.converter`,
-builds the portable bundle, zips it, and compiles `installer\quill-converter.iss`
-with Inno Setup 7 (found by `scripts\BuildEnv.ps1`). The two artifacts land in
-`standalone\converter\dist\`. `-Sign` turns on Authenticode signing through
-`scripts\code_signing.py` (see `docs/code-signing.md`); without it the build is
-unsigned and otherwise identical. No GitHub token or feedback service is bundled.
+It renders the documents (Pandoc), regenerates the Explorer verb block
+(`installer\explorer-verb.isi`, from `scripts/build_converter_verb_iss.py` at
+the repository root), stages QUILL's pinned FFmpeg and ffprobe, builds the
+shared QuillVille runtime the installer carries (`-SkipSharedRuntime` reuses
+one already built), builds the portable folder with the shared QuillVille builder, verifies that yt-dlp and
+mutagen are inside it, adds the OptiLab Core adapter when it can be built, and
+writes:
 
-The version is `_VERSION` in `quill/apps/converter.py`; `build_release.ps1`
-refuses to build if its own `$version` disagrees.
+- `dist\QuillConverter\` -- the staged portable folder,
+- `dist\Quill-Converter-Portable-1.0.0.zip`,
+- `dist\Quill-Converter-Setup-Shared-1.0.0.exe` -- compiled with **Inno Setup
+  7** (`ISCC.exe`) from `installer\quill-converter.iss`.
 
-The first build also writes `portable-inventory.json`, the baseline the portable
-builder checks every later bundle against. Review it and commit it.
-
-The portable bundle alone can still be built directly:
-
-```
-python standalone/studio/scripts/build_portable.py --product converter \
-    --out standalone/converter/dist/QuillConverter \
-    --source-root . --ffmpeg-dir <vetted ffmpeg dir> --version 1.0.0
-```
+Options: `-Python`, `-FfmpegDir` (a vetted FFmpeg folder; never taken from
+PATH), `-Iscc`, and `-Sign` (Authenticode signing through
+Azure Trusted Signing; see `docs/code-signing.md` at the repository root).
 
 `quill-converter.spec` is the PyInstaller onedir spec (legacy path, preserved
 like the sibling apps); the released launcher is the native QuillVille C
-launcher, which spawns `pythonw.exe -m quill.apps.converter`.
+launcher, which runs `quill.apps.converter` on the shared runtime.
 
 The tile icon is generated by `scripts/build_app_icons.py` at the repository
 root, which owns the design system for every app in the family. Do not edit
 `assets/quill-converter.ico` directly; change the `_converter` glyph and re-run
-the script. (Converter used to carry its own private generator -- the family one
-replaced it so no two apps can drift apart, or collide.)
+the script.
+
+## Support
+
+Email **support@community-access.org**, or use Help > Get Help from Support in
+the app (Ctrl+Alt+F2).
 
 ## License
 
-MIT. The bundled FFmpeg keeps its own license; the app never bundles yt-dlp
-(URL import installs it on demand, with a one-time consent + rights notice).
+MIT. The bundled FFmpeg (LGPL/GPL), libmpv, yt-dlp (Unlicense), mutagen (GPL)
+and the OptiLab Core adapter keep their own licenses.

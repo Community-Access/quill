@@ -93,6 +93,8 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         "userguide": "userguide.html",
         "prd": "prd.html",
         "release-notes": "release-notes-1.0.html",
+        # The changelog joined the site with the 1.0.0 release (2026-09-27).
+        "changelog": "CHANGELOG.html",
     },
     "player": {
         "userguide": "userguide.html",
