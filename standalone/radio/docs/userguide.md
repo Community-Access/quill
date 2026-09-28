@@ -850,6 +850,7 @@ Worth knowing:
 - A show you follow has housekeeping on its menu: **Move to Folder...**, **Mark All as Played...** (with a "Don't ask me again" box shared with Quill Cast), **Download All Episodes...** and **Remove All Downloads...** (files go; the subscription stays).
 - Finish an episode here and the show's unheard count drops at once.
 - When Subscriptions is empty it offers **Add a Podcast by URL...**, **Import Podcasts from OPML...** and **Search for a Podcast...**.
+- **Export Podcasts to OPML...** (from 3.0.4) is on the menu of the **Subscriptions** folder and of the **Podcasts (Apple)** branch, beside Import. It writes every show you follow, folders included, to an OPML file, the format every podcast app reads, and says how many it wrote, for example "Exported 12 podcasts to quill-radio-podcasts.opml." It is the same file Quill Cast's Subscriptions > Export OPML writes, so nothing is lost between the two.
 - The rich side of podcasting, such as automatic downloads, retention and the play queue, is Quill Cast's job.
 
 To check your shows for new episodes, see "Checking your subscribed podcasts".

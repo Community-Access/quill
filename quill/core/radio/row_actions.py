@@ -86,6 +86,7 @@ DELETE_PODCAST_FOLDER = "podcastfolder.delete"
 MOVE_SHOW_TO_FOLDER = "podcast.move_to_folder"
 MARK_ALL_PLAYED = "podcast.mark_all_played"
 IMPORT_OPML = "podcast.import_opml"
+EXPORT_OPML = "podcast.export_opml"
 ADD_PODCAST_URL = "podcast.add_by_url"
 DOWNLOAD_ALL_EPISODES = "podcast.download_all_episodes"
 REMOVE_DOWNLOADS = "podcast.remove_downloads"
@@ -453,33 +454,10 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
             )
         )
 
-    if kind == "mypodcasts":
-        # The Subscriptions root organizes the library in place -- and grows
-        # it: pasting a feed address is how a show that no directory lists
-        # gets in. On this branch and the Podcasts branch only, never on a
-        # show or an episode (they already ARE subscriptions).
-        actions.append(RowAction(NEW_PODCAST_FOLDER, "New Fo&lder..."))
-        actions.append(RowAction(ADD_PODCAST_URL, "Add a Podcast by &URL..."))
-        # Refresh on a *show* re-reads that show. This is the other question --
-        # "is there anything new anywhere?" -- which otherwise could only be
-        # answered by opening every show in turn, and which the automatic check
-        # answers on a cadence somebody may not have turned on.
-        actions.append(RowAction(REFRESH_ALL_PODCASTS, "Chec&k All Feeds Now"))
+    # Folders, feeds, OPML in and out: the library verbs (row_actions_podcasts).
+    from quill.core.radio.row_actions_podcasts import library_actions
 
-    if kind == "apple" and state.root_source:
-        # On the Podcasts branch itself: a whole OPML file's worth of shows
-        # becomes subscriptions, folders included, shared with Quill Cast --
-        # and the paste-a-feed door, same rule as the Subscriptions root.
-        actions.append(RowAction(IMPORT_OPML, "I&mport Podcasts from OPML..."))
-        actions.append(RowAction(ADD_PODCAST_URL, "Add a Podcast by &URL..."))
-
-    if kind == "mypodcastfolder":
-        # The same verbs Cast's manager offers on a folder, on the folder.
-        # Delete promotes contents -- it can never silently unsubscribe.
-        actions.append(RowAction(NEW_PODCAST_FOLDER, "New Fo&lder Inside..."))
-        actions.append(RowAction(RENAME_PODCAST_FOLDER, "R&ename Folder..."))
-        actions.append(RowAction(DELETE_PODCAST_FOLDER, "Dele&te Folder..."))
-        actions.append(RowAction(REFRESH_ALL_PODCASTS, "Chec&k All Feeds Now"))
+    actions.extend(library_actions(kind, state))
 
     if is_followed_channel(kind) or state.is_followed_channel:
         # "&P", not "&C": an expanded channel's menu now leads with "&Close".

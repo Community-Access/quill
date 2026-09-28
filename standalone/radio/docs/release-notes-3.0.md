@@ -56,6 +56,20 @@ rule now applies to every slider in Quill Radio, so the bass, mid and treble
 sliders in Sound Enhancements answer Up with more, and to every slider in the
 other QuillVille apps.
 
+### Export Podcasts to OPML
+
+Quill Radio could bring a podcast library in from an OPML file and could not
+write one out. The way out lived in Quill Cast, which is no use to someone
+who only has Radio, or whose portable copy keeps its own data folder.
+
+**Export Podcasts to OPML...** is now beside Import, on the menu of the
+Subscriptions folder and of the Podcasts branch (Shift+F10 on either), and
+in the command palette. It writes every show you follow, folders included,
+to the file every podcast app reads, suggests the name
+`quill-radio-podcasts.opml`, and tells you how many it wrote. With nothing
+to export it says so instead of writing an empty file. It is the same
+document Quill Cast writes, from the same code, so the two never disagree.
+
 ## What's new in 3.0.3
 
 3.0.3 answers five things listeners told us about in the first days of 3.0,

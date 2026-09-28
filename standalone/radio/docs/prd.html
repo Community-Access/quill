@@ -5855,6 +5855,21 @@ mouse and every chord are untouched
 slider one app fixes and another leaves native is a worse bug than the
 one reported – and enforced: a new horizontal <code>wx.Slider</code>
 whose module does not bind the helper fails the build.</p>
+<p><strong>OPML out, same release.</strong> Radio imported OPML
+(Podcasts branch, and the empty Subscriptions folder) and never exported
+it; the way out was Quill Cast’s alone, and a Radio-only listener, or a
+portable copy with its own data folder, had none. Requirement:
+<strong>Export Podcasts to OPML…</strong> beside Import on the
+Subscriptions root and the Podcasts branch, and in the palette
+(<code>exportpodcastsopml</code>); the whole shared library through the
+one core exporter Cast uses
+(<code>core/podcasts/opml.export_opml</code>), so the two apps write the
+same document; the count always spoken; an empty library said, never
+written; a write failure reported. The library verbs moved out of
+<code>row_actions.py</code>, at its GATE-11 ceiling, into
+<code>row_actions_podcasts.py</code>
+(<code>ui/radio/browse_podcast_actions.export_opml</code>;
+<code>tests/unit/ui/test_radio_export_opml.py</code>).</p>
 </main>
 </body>
 </html>

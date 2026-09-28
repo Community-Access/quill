@@ -418,6 +418,44 @@ def import_opml(dialog: Any) -> None:
     dialog._task_manager.submit("radio-opml-import", _work, on_success=_ok, on_failure=_failed)
 
 
+def export_opml(dialog: Any) -> None:
+    """Export Podcasts to OPML... on the Subscriptions root and the Podcasts branch.
+
+    The other half of the pair (3.0.4): the whole shared library, folders
+    included, as the file every podcast app reads -- the same document Quill
+    Cast's Subscriptions > Export OPML writes, from the same core exporter.
+    Nothing to export is said as such, never written as an empty file; the
+    count is always spoken, because no tone carries a number.
+    """
+    wx = dialog._wx
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts.opml import export_opml as build_opml
+    from quill.core.podcasts.subscriptions import load_library
+
+    library = load_library(app_data_dir())
+    if not library.shows:
+        dialog._announce("No podcasts to export. Subscribe to a show first.")
+        return
+    with wx.FileDialog(  # dialog_button_contract: exempt
+        dialog._win,
+        "Export Podcasts to OPML",
+        defaultFile="quill-radio-podcasts.opml",
+        wildcard="OPML files (*.opml)|*.opml|All files (*.*)|*.*",
+        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+    ) as chooser:
+        if chooser.ShowModal() != wx.ID_OK:
+            return
+        path = chooser.GetPath()
+    try:
+        Path(path).write_text(build_opml(library), encoding="utf-8")
+    except OSError as error:
+        dialog._announce(f"Could not write that file. {error}.")
+        return
+    count = len(library.shows)
+    noun = "podcast" if count == 1 else "podcasts"
+    dialog._announce(f"Exported {count} {noun} to {Path(path).name}.")
+
+
 def refresh_all_feeds(dialog: Any) -> None:
     """Check every subscribed feed now, paused shows included.
 

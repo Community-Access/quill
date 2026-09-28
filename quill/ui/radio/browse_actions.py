@@ -416,6 +416,12 @@ def _import_podcasts_opml(host: Any) -> None:
     browse_podcast_actions.import_opml(host)
 
 
+def _export_podcasts_opml(host: Any) -> None:
+    from quill.ui.radio import browse_podcast_actions
+
+    browse_podcast_actions.export_opml(host)
+
+
 def _search_podcasts(host: Any) -> None:
     """Search for a Podcast...: the same in-tree search, narrowed to podcasts.
 
@@ -516,6 +522,7 @@ _ACTIONS: dict[str, Callable[[Any], None]] = {
     "searchall": _search_all,
     "addpodcasturl": _add_podcast_url,
     "importpodcastsopml": _import_podcasts_opml,
+    "exportpodcastsopml": _export_podcasts_opml,
     "searchpodcasts": _search_podcasts,
     "searchpodcastindex": _search_podcast_index,
     "antennaweb": _antennaweb,
