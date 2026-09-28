@@ -37,6 +37,9 @@ download. Help > Release Notes (Shift+F1) tells the same story at more length.
   (Ctrl+Alt+Y) are named for what they are: emergency tools you should never
   need. Repair YouTube Support now actually works in an installed or portable
   copy.
+- **Tab moves on from your favorites.** In the main window, Tab on the favorite
+  stations list stayed on the list; only Shift+Tab left it. Tab now moves on to
+  Mute and Volume, and back round, the way Shift+Tab always did.
 - **An installer a screen reader can read.** Create a desktop icon and Launch
   Quill Radio are real Windows checkboxes that say whether they are checked.
 
@@ -130,6 +133,15 @@ download. Help > Release Notes (Shift+F1) tells the same story at more length.
   missing, it says the copy is incomplete and suggests unpacking the whole zip
   again, keeping every file together, or checking whether antivirus quarantined
   part of it.
+- **Tab leaves the favorite stations list.** In the main window, Tab on the
+  favorites list stayed on the list while Shift+Tab left it, so the only way
+  forward was the long way round. The list sits in the main window's swappable
+  middle (the part that can also show Browse, Search, Recordings or the
+  Player), and a Tab leaving that middle named the wrong window, so it came
+  straight back in. Tab now goes on to Mute, then Volume, then the now-playing
+  line and back to your favorites; Shift+Tab walks the same circle the other
+  way, and whichever view the main window shows is entered at its first control
+  going forward and its last going back.
 - **The installer's checkboxes tell a screen reader their state.** Create a
   desktop icon and Launch Quill Radio were drawn as a custom list that screen
   readers announced as "not checked" whatever their state. They are now native

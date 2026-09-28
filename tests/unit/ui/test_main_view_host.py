@@ -231,3 +231,63 @@ def test_a_view_that_fails_stores_the_one_actually_showing(tmp_path, monkeypatch
         assert app._radio_history.main_view == main_view.FAVORITES
     finally:
         frame.Destroy()
+
+
+# -- Tab across the book --------------------------------------------------------
+#
+# Reported 2026-09-27: on the main window, Tab on the favorites tree stayed on
+# the tree while Shift+Tab left it. The page hands Tab upward naming *itself* as
+# the current focus; the Simplebook had no navigation handling, so the main
+# panel -- which cannot find the page among its own children -- started again at
+# its first child, the book, and focus went straight back into the page. These
+# drive the handler directly: a shown window and real key presses would take
+# focus from whatever the person running the suite is doing.
+
+
+def _tab_layout() -> tuple[Any, MainViewHost, Any, Any, Any]:
+    frame = wx.Frame(None)
+    panel = wx.Panel(frame, style=wx.TAB_TRAVERSAL)
+    before = wx.TextCtrl(panel)
+    page = wx.Panel(panel, style=wx.TAB_TRAVERSAL)
+    host = MainViewHost(_App(frame), wx)
+    host.build(panel, page)
+    page.Reparent(host.book)
+    first = wx.TextCtrl(page)
+    tree = wx.TreeCtrl(page)
+    return frame, host, before, first, tree
+
+
+def _nav_event(*, forward: bool, current: Any, source: Any) -> Any:
+    event = wx.NavigationKeyEvent()
+    event.SetDirection(forward)
+    event.SetCurrentFocus(current)
+    event.SetEventObject(source)
+    return event
+
+
+@pytest.mark.parametrize("forward", [True, False])
+def test_tab_out_of_the_page_is_asked_again_from_the_book(forward: bool) -> None:
+    frame, host, _before, _first, _tree = _tab_layout()
+    try:
+        panel = host.book.GetParent()
+        asked: list[Any] = []
+        panel.HandleWindowEvent = lambda event: asked.append(event.GetCurrentFocus()) or True
+        page = host.book.GetCurrentPage()
+        host._on_navigation_key(_nav_event(forward=forward, current=page, source=panel))
+        assert asked == [host.book]
+    finally:
+        frame.Destroy()
+
+
+@pytest.mark.parametrize(("forward", "expected"), [(True, "first"), (False, "tree")])
+def test_tab_into_the_book_lands_on_the_near_end_of_the_page(forward: bool, expected: str) -> None:
+    frame, host, before, first, tree = _tab_layout()
+    try:
+        landed: list[str] = []
+        first.SetFocusFromKbd = lambda: landed.append("first")
+        tree.SetFocusFromKbd = lambda: landed.append("tree")
+        panel = host.book.GetParent()
+        host._on_navigation_key(_nav_event(forward=forward, current=before, source=panel))
+        assert landed == [expected]
+    finally:
+        frame.Destroy()

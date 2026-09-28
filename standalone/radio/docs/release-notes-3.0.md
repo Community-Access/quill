@@ -142,6 +142,14 @@ A portable copy never offers to download anything. If part of one is missing,
 it now says the copy is incomplete and suggests unpacking the whole zip again,
 or checking whether antivirus quarantined part of it.
 
+### Tab moves on from your favorites
+
+In the main window, Tab on the favorite stations list stayed on the list;
+only Shift+Tab could leave it. Now Tab goes on to Mute, then Volume, then the
+now-playing line and back to your favorites, and Shift+Tab walks the same
+circle the other way. It works the same whichever view the main window is
+showing -- Favorites, Browse, Search, Recordings or the Player.
+
 ### An installer a screen reader can read
 
 The installer's two choices, **Create a desktop icon** and **Launch Quill
