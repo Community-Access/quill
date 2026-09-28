@@ -224,7 +224,12 @@ def test_deno_is_installed_unconditionally_for_the_apps_that_play_youtube() -> N
     assert "Check:" not in entry
     assert r'DestDir: "{code:RuntimeDir}\tools\deno"' in entry
     assert "#ifdef ToolDeno" in source
-    wanted = {"standalone/radio/installer/quill-radio.iss"}
+    # Quill Converter joined 2026-09-28: Convert from URL takes YouTube videos,
+    # playlists and channels, and without deno YouTube links can fail.
+    wanted = {
+        "standalone/radio/installer/quill-radio.iss",
+        "standalone/converter/installer/quill-converter.iss",
+    }
     for relative in SHARED_RUNTIME_INSTALLERS:
         text = (REPO / relative).read_text(encoding="utf-8")
         assert ("#define ToolDeno" in text) == (relative in wanted), relative
