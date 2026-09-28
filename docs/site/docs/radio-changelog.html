@@ -206,10 +206,11 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="303---2026-09-28">[3.0.3] - 2026-09-28</h2>
-<p>Westwood One’s live sports channels, and four fixes from the first
-days of 3.0: favorites that started slowly every time, Help documents
-that did not open, the Stop button, and updates – which a portable copy
-can now install itself, now or when you close.</p>
+<p>Westwood One’s live sports channels, and five fixes from the first
+days of 3.0: keys that are easier to press, favorites that started
+slowly every time, Help documents that did not open, the Stop button,
+and updates – which a portable copy can now install itself, now or when
+you close.</p>
 <ul>
 <li><strong>Westwood One Sports</strong> in Browse Stations: the
 network’s ten live event channels (StreamTheWorld mounts
@@ -220,6 +221,14 @@ channel never goes stale; during the NCAA tournaments each carries a
 different game (<code>quill/core/radio/westwood_one.py</code>). The
 recovery ladder now reads the mount out of a redirect address too, so a
 channel that fails is re-resolved.</li>
+<li><strong>Keys that are easier to press</strong> (BITS, BrailleNote
+Evolve): the QuillVille menu’s rows carry access letters, so Alt+Q then
+one letter opens an app, and each row is now a command
+(<code>quillville.open_&lt;app&gt;</code>) registered with the app and
+bound through its keymap, so Keyboard Shortcuts lists it and it can be
+rebound; the Ctrl+Alt+Shift+F7-and-up chords are only defaults
+(<code>quill/ui/quillville_menu.py</code>, shared by every app and
+QUILL). The user guide gains “Keyboard access without chords”.</li>
 <li><strong>A repaired favorite stays repaired.</strong> When a
 favorite’s saved address stopped working, Quill Radio found the current
 one and played it, then looked the favorite up by the <em>new</em>

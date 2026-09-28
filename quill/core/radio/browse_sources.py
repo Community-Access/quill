@@ -69,19 +69,13 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 
 from quill.core.radio import (
-    acb_media,
     iheart,
     m3u_catalog,
     networks,
-    nfb_media,
     radio_browser,
-    radio_paradise,
-    reading_services,
     shoutcast,
-    soma_fm,
     source_health,
     tunein,
-    westwood_one,
     xiph,
 )
 from quill.core.radio.browse_directories import (
@@ -125,6 +119,7 @@ from quill.core.radio.browse_failure import (
 from quill.core.radio.browse_failure import (
     remember_failure as _remember_failure,
 )
+from quill.core.radio.browse_flat import FLAT
 
 # The free-music catalogs -- Audius, Mixcloud, ccMixter -- live in their own
 # module (GATE-11 extraction); registered in _HANDLERS like every other source.
@@ -278,17 +273,7 @@ LOCAL_SOURCES = frozenset({
 
 # --- flat station sources -----------------------------------------------------
 
-_FLAT: dict[str, Callable[[bool], list[RadioStation]]] = {
-    "popular": lambda safe: radio_browser.popular_stations(safe_mode=safe),
-    "trending": lambda safe: radio_browser.trending_stations(safe_mode=safe),
-    "recent": lambda safe: radio_browser.recently_changed_stations(safe_mode=safe),
-    "acb": lambda _safe: acb_media.acb_media_stations(),
-    "nfb": lambda _safe: nfb_media.nfb_media_stations(),
-    "westwood": lambda _safe: westwood_one.westwood_one_stations(),
-    "reading": lambda safe: reading_services.list_reading_services(safe_mode=safe),
-    "soma": lambda safe: soma_fm.search_stations("", safe_mode=safe),
-    "radioparadise": lambda safe: radio_paradise.fetch_stations(safe_mode=safe),
-}
+_FLAT = FLAT  # quill/core/radio/browse_flat.py -- where flat branches grow
 
 #: Sources that expose the shared genre protocol (fetch_genres / genre_display /
 #: fetch_genre_stations). One code path for three catalogs.

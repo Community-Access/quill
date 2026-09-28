@@ -55,7 +55,9 @@ def test_root_labels_are_unique_so_expand_source_can_find_them() -> None:
 
 
 def test_flat_sources_yield_playable_leaves(monkeypatch) -> None:
-    monkeypatch.setattr(bs.acb_media, "acb_media_stations", lambda: [_station("ACB 1")])
+    from quill.core.radio import acb_media
+
+    monkeypatch.setattr(acb_media, "acb_media_stations", lambda: [_station("ACB 1")])
     nodes = bs.browse("acb")
     assert len(nodes) == 1
     assert nodes[0].is_leaf and nodes[0].station is not None

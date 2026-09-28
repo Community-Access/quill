@@ -4,7 +4,7 @@ Version 3.0.3, released 2026-09-28.
 
 ## What's new in 3.0.3
 
-3.0.3 answers four things listeners told us about in the first days of 3.0,
+3.0.3 answers five things listeners told us about in the first days of 3.0,
 and adds Westwood One's live sports channels.
 
 ### Favorites that start slowly start quickly again
@@ -34,6 +34,26 @@ The main window has a **Stop** button again (Alt+T), first in the row, before
 Mute and Volume. It stops whatever is playing -- the same as **Ctrl+Period** and
 **Station > Stop**. Stopping is the one thing everybody needs at once without
 knowing a key.
+
+### Keys that are easier to press
+
+Every command in Quill Radio can now be reached without holding several keys
+down at once -- which matters on a braille notetaker such as the BrailleNote
+Evolve, and for anybody for whom a four-key chord is hard. Thank you to BITS for
+raising it.
+
+- **The QuillVille menu has access letters.** Alt+Q, then one letter, opens an
+  app: Q for QUILL, W for Quill Weather, V for Quill Converter. Two single keys,
+  nothing held down.
+- **The QuillVille "Open" commands can be rebound.** They used to be fixed to
+  Ctrl+Alt+Shift+F7 and upward. Now each is a command in **Help > Keyboard
+  Shortcuts** (Ctrl+Alt+K) -- search for "QuillVille" -- and you can give it any
+  key you like; the menu shows your key from then on.
+- **Every enabled menu item has an access letter as well as a key**, which a
+  test checks on every build. Preferences, Exit, the Sort Favorites and Main
+  Window Shows choices, the Spotify items and Play Favorite Station had none.
+- A new user guide section, **Keyboard access without chords**, gathers every
+  way in: menu letters, rebinding, the Command Palette, and Sticky Keys.
 
 ### Westwood One Sports: every game channel, in Browse
 

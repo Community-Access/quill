@@ -600,13 +600,15 @@ See "The ACB Media schedule", "Reminders and Upcoming" and "The Community menu".
 
 ### QuillVille menu (Alt+Q)
 
-Opens the other apps in the family:
+Opens the other apps in the family. Every row has an access letter, so **Alt+Q and then one letter** opens an app -- two single keys, nothing held down:
 
-- **Open QUILL** (Ctrl+Alt+Shift+F7)
-- **Open Quill Weather** (Ctrl+Alt+Shift+F8)
-- **Open Quill Cast** (Ctrl+Alt+Shift+F9)
-- **Open Audio Studio** (Ctrl+Alt+Shift+F10)
-- **Open Quill Converter** (Ctrl+Alt+Shift+F11)
+- **Open QUILL** -- Alt+Q, Q (or Ctrl+Alt+Shift+F7)
+- **Open Quill Weather** -- Alt+Q, W (or Ctrl+Alt+Shift+F8)
+- **Open Quill Converter** -- Alt+Q, V (or Ctrl+Alt+Shift+F9)
+
+Each app keeps its letter as more of the family is released: C for Quill Cast, A for Audio Studio, I for Quill Inkwell.
+
+The long chords are only defaults. Each row is a command named **QuillVille: Open** and the app, and you can give it any key you like in **Help > Keyboard Shortcuts...** (Ctrl+Alt+K). See "Keyboard access without chords".
 
 ### Help menu (Alt+H)
 
@@ -2102,6 +2104,16 @@ To leave a view, choose another one with Ctrl+Shift+1 to Ctrl+Shift+5. A view ha
 If you used "Open Browse Stations at startup" in an older version, your main window now shows Browse, and nothing else opens by itself.
 
 ## Keyboard Shortcuts, the Sheet, and Global Hotkeys
+
+### Keyboard access without chords
+
+Every command in Quill Radio can be reached without holding several keys down at once, which matters on a braille notetaker such as the BrailleNote Evolve and for anyone for whom a three- or four-key chord is hard.
+
+- **Every menu is one Alt+letter away, and every item in it has an access letter.** Press Alt and the menu's letter, then the item's letter: **Alt+Q, then W** opens Quill Weather; **Alt+S, then B** opens Browse Stations. Two keys, one after the other. A long menu has more items than the alphabet has letters, so a few share one: pressing that letter again moves to the next item with it, and Enter chooses. A test checks on every build that no enabled item is left without a letter.
+- **Any key can be changed.** **Help > Keyboard Shortcuts...** (Ctrl+Alt+K) lists every command -- the QuillVille "Open" commands included since 3.0.3 -- and you can give any of them a shorter key, or one your notetaker can type. The menus show your key from then on.
+- **The Command Palette** (Ctrl+Shift+P) finds any command by typing part of its name and pressing Enter.
+- **The menus themselves always work**: Alt, then the arrow keys and Enter, one key at a time.
+- **Windows' Sticky Keys** lets a chord be typed one key at a time: press Shift five times to turn it on.
 
 ### Change a key, step by step
 

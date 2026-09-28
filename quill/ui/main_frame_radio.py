@@ -1589,7 +1589,7 @@ class RadioMixin(RadioStatusWindowsMixin):
         item_id = self._wx.NewIdRef()
         menu.Append(
             item_id,
-            self._menu_label("Play Favorite Station...", "radio.play_favorite"),
+            self._menu_label("Play Fa&vorite Station...", "radio.play_favorite"),
         )
         self.frame.Bind(
             self._wx.EVT_MENU,

@@ -8,7 +8,7 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [3.0.3] - 2026-09-28
 
-Westwood One's live sports channels, and four fixes from the first days of 3.0: favorites that started slowly every
+Westwood One's live sports channels, and five fixes from the first days of 3.0: keys that are easier to press, favorites that started slowly every
 time, Help documents that did not open, the Stop button, and updates -- which a
 portable copy can now install itself, now or when you close.
 
@@ -19,6 +19,13 @@ portable copy can now install itself, now or when you close.
   never goes stale; during the NCAA tournaments each carries a different game
   (`quill/core/radio/westwood_one.py`). The recovery ladder now reads the mount
   out of a redirect address too, so a channel that fails is re-resolved.
+- **Keys that are easier to press** (BITS, BrailleNote Evolve): the QuillVille
+  menu's rows carry access letters, so Alt+Q then one letter opens an app, and
+  each row is now a command (`quillville.open_<app>`) registered with the app
+  and bound through its keymap, so Keyboard Shortcuts lists it and it can be
+  rebound; the Ctrl+Alt+Shift+F7-and-up chords are only defaults
+  (`quill/ui/quillville_menu.py`, shared by every app and QUILL). The user
+  guide gains "Keyboard access without chords".
 - **A repaired favorite stays repaired.** When a favorite's saved address
   stopped working, Quill Radio found the current one and played it, then looked
   the favorite up by the *new* address to save it -- so a favorite keyed by its

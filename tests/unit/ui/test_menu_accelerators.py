@@ -158,3 +158,17 @@ def test_no_menu_item_claims_a_table_navigation_key(radio_menu_bar) -> None:
             offenders.append(f"{where} -> {key}")
 
     assert not offenders, "menu items on a table-navigation key: " + "; ".join(offenders)
+
+
+def test_every_enabled_menu_item_has_an_access_letter(radio_menu_bar) -> None:
+    """Alt, the menu's letter, then the item's: every command reachable one key
+    at a time, with nothing held down (BITS, 2026-09-28 -- a BrailleNote Evolve,
+    or anyone for whom a four-key chord is hard). A menu of more than 26 items
+    must share some letters, and pressing a shared letter again moves on to the
+    next item that has it, so sharing is allowed; having none is not."""
+    missing = [
+        where
+        for where, label, enabled in _items(radio_menu_bar)
+        if enabled and "&" not in label.split(chr(9))[0]
+    ]
+    assert missing == [], "menu items with no access letter: " + "; ".join(missing)

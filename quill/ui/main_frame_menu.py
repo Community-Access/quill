@@ -3349,8 +3349,7 @@ class MenuBuilderMixin:
         if adp_menu is not None:
             menu_bar.Append(adp_menu, _("A&udio Description Project"))
         menu_bar.Append(window_menu, _("&Window"))
-        # The standard QuillVille cross-app switcher, just before Help -- the
-        # same menu every QuillVille app carries.
+        # The QuillVille cross-app switcher, just before Help, as in every app.
         from quill.ui.quillville_menu import build_quillville_menu
 
         self._quillville_menu_ids: list[object] = []
@@ -3360,6 +3359,7 @@ class MenuBuilderMixin:
             self.open_companion_app,
             exclude="quill",
             retain=self._quillville_menu_ids.append,
+            host=self,
         )
         menu_bar.Append(quillville_menu, _("&QuillVille"))
         menu_bar.Append(help_menu, _("&Help"))

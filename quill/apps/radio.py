@@ -1085,8 +1085,8 @@ class RadioAppFrame(
         spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
         if self.features.is_enabled("future.spotify") and not self._safe_mode:
             station_menu.AppendSeparator()
-            station_menu.Append(spotify_connect_id, "Connect to Spotify...\tCtrl+Alt+P")
-            station_menu.Append(spotify_browse_id, "Browse Spotify...\tCtrl+Alt+O")
+            station_menu.Append(spotify_connect_id, "Connect to Spot&ify...\tCtrl+Alt+P")
+            station_menu.Append(spotify_browse_id, "Browse Spoti&fy...\tCtrl+Alt+O")
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
             )
@@ -1184,11 +1184,11 @@ class RadioAppFrame(
         (download_prefs_id,) = build_download_prefs_item(self, station_menu, wx)
         self._keep_menu_ids(download_prefs_id)
         prefs_id = wx.NewIdRef()
-        station_menu.Append(prefs_id, "Preferences...\tCtrl+,")
+        station_menu.Append(prefs_id, "Pre&ferences...\tCtrl+,")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_preferences(), id=prefs_id)
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
-        station_menu.Append(exit_id, "Exit\tCtrl+Q")
+        station_menu.Append(exit_id, "E&xit\tCtrl+Q")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
         # Explicit Exit must quit for real, not minimize-to-tray (#1193).
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
@@ -1470,7 +1470,7 @@ class RadioAppFrame(
             sort_accels,
             strict=True,
         ):
-            sort_menu.AppendRadioItem(item_id, label + accel)
+            sort_menu.AppendRadioItem(item_id, f"&{label}{accel}")  # A, D, U
             sort_menu.Check(item_id, self._radio_history.favorites_sort == value)
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e, v=value: self._set_favorites_sort(v), id=item_id
