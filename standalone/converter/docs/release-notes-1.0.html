@@ -198,7 +198,7 @@
 <main id="main-content">
 <h1 id="quill-converter-100-release-notes">Quill Converter 1.0.0 Release
 Notes</h1>
-<p>Released September 27, 2026.</p>
+<p>Released September 28, 2026.</p>
 <p>Somewhere between “I recorded this in the wrong format” and “my
 player will not open this,” almost everybody hits the wall of media
 conversion. The usual answer is a website that wants you to upload your
@@ -304,8 +304,8 @@ conversion</h3>
 <p>Chapter marks are how somebody who cannot glance at a waveform finds
 their way around a long recording, so Quill Converter treats them as
 content, not as metadata that may or may not survive. A new
-<strong>Chapters</strong> choice on the main window (Alt+K) says where
-they come from:</p>
+<strong>Chapter marks</strong> choice on the main window (Alt+K) says
+where they come from:</p>
 <ul>
 <li><strong>Keep each file’s own chapters</strong> – the default.</li>
 <li><strong>Use the chapter list beside each file</strong> – chapters
@@ -323,24 +323,23 @@ with lines such as <code>0:00 Welcome</code>,
 “Use the chapter list beside each file”. A <code>.cue</code> sheet,
 Podcasting 2.0 <code>.chapters.json</code>, Audacity labels
 (<code>.labels.txt</code>) or a plain <code>.txt</code> that reads as a
-chapter list work too. A file with no list keeps its own chapters, and
-the report says so.</p>
+chapter list work too. A file with no list keeps its own chapters.</p>
 <p>Chapters land wherever the format can hold them. FFmpeg writes them
 inside MP3 (ID3 CHAP and CTOC), M4B, M4A, Apple Lossless, M4R, MP4, MOV,
 MKV, MKA, WebM, Opus and WMA. Ogg Vorbis, FLAC, Speex and Ogg video get
 the CHAPTER001 comments their players read. Every other format – WAV,
 AIFF, WavPack, AC-3 and the rest – has no place for chapters, so a
 <code>.cue</code> sheet is written beside the converted file. Nothing is
-silently lost, and the Conversion Report says where chapters went. Keep
-from and Keep until trim the chapters to the part you keep.</p>
+silently lost. Keep from and Keep until trim the chapters to the part
+you keep.</p>
 <p>The <strong>Chapter Workbench</strong> (Queue &gt; Chapter
 Workbench…, Ctrl+H) opens the highlighted MP3, M4B or M4A in the Audio
 Studio’s Chapter Workbench, with a player: rename, split at the
 playhead, set a start to the playhead, merge, find chapters at silences,
 import and export chapter lists (Audacity labels, CUE, timestamps,
-Podcasting 2.0 JSON, CSV), edit the book’s tags, save, and split into
-files. The player is libmpv, now bundled in both downloads, so it seeks
-exactly.</p>
+Podcasting 2.0 JSON, CSV), edit the book’s details or, with All tags…,
+every tag in the Tag Editor, save, and split into files. The player is
+libmpv, now bundled in both downloads, so it seeks exactly.</p>
 <h3 id="join-and-split">Join and split</h3>
 <p><strong>Join into One File</strong> (Ctrl+J) puts the whole queue, in
 order, into one sound file with one chapter per source, named from its
@@ -350,10 +349,10 @@ sheet for the rest. A folder of MP3 chapters becomes one audiobook your
 book player can navigate.</p>
 <p><strong>Split by Chapters</strong> (Ctrl+Shift+S) goes the other way:
 one file per chapter, numbered, titled and tagged, in a folder named
-after the book. It follows the Chapters choice, so “A chapter every 30
-minutes” cuts a ten-hour recording into 30-minute files, “Find chapters
-at the pauses” cuts at the pauses, and a chapter list beside the file
-cuts exactly where you said.</p>
+after the book. It follows the Chapter marks choice, so “A chapter every
+30 minutes” cuts a ten-hour recording into 30-minute files, “Find
+chapters at the pauses” cuts at the pauses, and a chapter list beside
+the file cuts exactly where you said.</p>
 <h3 id="advanced-options-in-the-main-window">Advanced Options, in the
 main window</h3>
 <p>The exact encoder settings are on the main window, not in a second
@@ -379,11 +378,19 @@ file is copy-protected and cannot be converted”, “The output drive is
 full” – followed by FFmpeg’s own line for support. The
 <strong>Conversion Report</strong> (Ctrl+R) lists every file and has a
 Copy All button for an email.</p>
-<p>Convert becomes Stop while it runs. Progress is spoken every 25
-percent and shown in the tray tooltip. Cover art is carried into MP3,
-M4A, M4B, FLAC, Ogg and Opus copies where FFmpeg would have dropped it.
-And your format, presets, effects and output folder are remembered for
-next time.</p>
+<p>Convert becomes Stop while it runs, and Stop is immediate: the file
+being converted stops as well, its unfinished output is removed, and the
+report lists it as skipped. Progress is counted inside each file from
+FFmpeg’s own progress output, so one long audiobook moves from 0 to 100
+percent rather than sitting silent until it ends. It is spoken at 25, 50
+and 75 percent; the status bar and tray tooltip update about once a
+second with the percentage and about how long is left (“Converting
+Book.m4b: 42 percent, about 3 minutes left”); and a progress bar under
+the buttons fills as it goes. The bar stays out of the Tab order, since
+the status bar already says the same in words. Cover art is carried into
+MP3, M4A, M4B, FLAC, Ogg and Opus copies where FFmpeg would have dropped
+it. And your format, presets, effects and output folder are remembered
+for next time.</p>
 <h3 id="help-that-matches-the-family">Help that matches the family</h3>
 <p>The Help menu now has the same doors as Quill Radio and QUILL Lite,
 on the same keys: F1 for the window you are in, the User Guide, Release
@@ -412,10 +419,6 @@ way through a batch.</li>
 </ul>
 <h2 id="known-limits">Known limits</h2>
 <ul>
-<li><strong>Stop lets the current file finish.</strong> Nothing after it
-starts, but the file being encoded runs to the end, because a
-half-written file is worse than a finished one. On a long video that can
-take a while.</li>
 <li><strong>Video encodes can take a long time.</strong> H.265 and VP9
 especially, and a long film can take longer than it lasts. Video files
 are converted one at a time.</li>
@@ -427,7 +430,7 @@ such as protected Audible books or iTunes purchases. The report says
 so.</li>
 <li><strong>The Chapter Workbench saves MP3, M4B and M4A.</strong> For
 other formats, write a chapter list beside the file and choose it in
-Chapters, or convert to M4B or MP3 first.</li>
+Chapter marks, or convert to M4B or MP3 first.</li>
 <li><strong>Preview ignores chapters</strong>; it plays fifteen seconds
 of sound.</li>
 </ul>

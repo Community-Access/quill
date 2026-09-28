@@ -70,7 +70,16 @@ function Stage-QuillMediaTools {
         # chaptered audiobooks in Cast and Studio.
         $ffprobe = Join-Path $FfmpegDir "ffprobe.exe"
         if (Test-Path $ffprobe) { Copy-Item $ffprobe $target -Force }
-        Write-Host "Staged ffmpeg into the shared runtime."
+        # This FFmpeg build is GPLv3: its licence and source offer ship beside
+        # it, as mpv's do. They are kept in the repo (scripts\notices\ffmpeg)
+        # because the pinned zip's own copies are not extracted.
+        $notices = Join-Path $PSScriptRoot "notices\ffmpeg"
+        $noticeFiles = @(Get-ChildItem $notices -File -Filter *.txt -ErrorAction SilentlyContinue)
+        if ($noticeFiles.Count -lt 2) {
+            throw "FFmpeg licence notices not found in '$notices' -- FFmpeg ships with its licence."
+        }
+        $noticeFiles | ForEach-Object { Copy-Item $_.FullName $target -Force }
+        Write-Host "Staged ffmpeg and its licence notices into the shared runtime."
     }
 
     if ($LibmpvDir) {

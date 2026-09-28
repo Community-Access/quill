@@ -95,6 +95,9 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         "release-notes": "release-notes-1.0.html",
         # The changelog joined the site with the 1.0.0 release (2026-09-27).
         "changelog": "CHANGELOG.html",
+        # The 1.0 announcement, generated from the repo like Radio's and QUILL
+        # Lite's, so the page a newsletter links to matches the release.
+        "announcement": "announcement.html",
     },
     "player": {
         "userguide": "userguide.html",

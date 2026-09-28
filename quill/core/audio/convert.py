@@ -31,7 +31,6 @@ Design rules (mirroring the tested ffmpeg wrapper):
 
 from __future__ import annotations
 
-import os
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field, replace
 from enum import StrEnum
@@ -625,81 +624,6 @@ class BatchResult:
         return ". ".join(parts) + "."
 
 
-# A single-job runner: (ffmpeg, job) -> JobResult. Injectable for tests; the
-# default one shells out through safe_subprocess with a temp-then-move write.
-SingleJobRunner = Callable[[str, ConversionJob], JobResult]
-
-ProgressCallback = Callable[[int, int, ConversionJob], None]  # (done, total, current)
-
-
-def run_conversion_batch(
-    ffmpeg: str,
-    jobs: Sequence[ConversionJob],
-    *,
-    workers: int = 0,
-    on_progress: ProgressCallback | None = None,
-    cancel: CancelToken | None = None,
-    single_runner: SingleJobRunner | None = None,
-) -> BatchResult:
-    """Convert ``jobs`` across up to ``workers`` threads, reporting progress (§8).
-
-    ``workers`` <= 0 auto-picks ``max(1, cpu-1)``. Cancellation is cooperative:
-    ``cancel`` is checked before each job is dispatched, so any in-flight encode
-    finishes cleanly and the remainder are marked skipped. Pure of ``wx`` and of
-    any UI, so both the dialog and a headless caller reuse it; ``single_runner``
-    is injectable so the fan-out is unit-testable without spawning ffmpeg.
-    """
-    from concurrent.futures import ThreadPoolExecutor
-
-    runner = single_runner if single_runner is not None else _default_single_runner
-    token = cancel if cancel is not None else CancelToken()
-    n_workers = workers if workers > 0 else max(1, (os.cpu_count() or 2) - 1)
-    total = len(jobs)
-    result = BatchResult()
-    done = 0
-
-    if total == 0:
-        return result
-
-    with ThreadPoolExecutor(max_workers=n_workers) as pool:
-        futures = []
-        for job in jobs:
-            if token.is_cancelled():
-                result.results.append(JobResult(job=job, ok=False, skipped=True))
-                continue
-            futures.append((job, pool.submit(_guarded_run, runner, ffmpeg, job)))
-        for job, fut in futures:
-            job_result = fut.result()
-            result.results.append(job_result)
-            done += 1
-            if on_progress is not None:
-                on_progress(done, total, job)
-    result.cancelled = token.is_cancelled()
-    return result
-
-
-def _guarded_run(runner: SingleJobRunner, ffmpeg: str, job: ConversionJob) -> JobResult:
-    try:
-        return runner(ffmpeg, job)
-    except Exception as exc:  # noqa: BLE001 - one bad file must never sink the batch
-        return JobResult(job=job, ok=False, error=str(exc))
-
-
-class CancelToken:
-    """A thread-safe cooperative cancel flag (a thin ``threading.Event`` wrapper)."""
-
-    def __init__(self) -> None:
-        import threading
-
-        self._event = threading.Event()
-
-    def cancel(self) -> None:
-        self._event.set()
-
-    def is_cancelled(self) -> bool:
-        return self._event.is_set()
-
-
 # --------------------------------------------------------------------------- #
 # Default runners (thin subprocess shells; not unit-tested directly)
 # --------------------------------------------------------------------------- #
@@ -711,11 +635,6 @@ def _default_probe_runner(command: Sequence[str]) -> object:
     return run_subprocess_safely(list(command), timeout_seconds=30.0)
 
 
-def default_worker_count() -> int:
-    """A sensible default worker count: one per core, minus one for the UI (§8)."""
-    return max(1, (os.cpu_count() or 2) - 1)
-
-
 def queue_from_paths(paths: Iterable[Path]) -> list[tuple[Path, Path | None]]:
     """Build a plan_jobs queue from bare paths (files as-is, folders as roots)."""
     out: list[tuple[Path, Path | None]] = []
@@ -724,8 +643,28 @@ def queue_from_paths(paths: Iterable[Path]) -> list[tuple[Path, Path | None]]:
     return out
 
 
-# The per-file runners live in convert_runner (extracted 2026-09-27, GATE-11);
-# imported last because they build their commands with this module.
+# The batch runner (convert_batch, extracted 2026-09-28) and the per-file
+# runners (convert_runner, 2026-09-27) left this module under GATE-11; they are
+# imported last because they are built on it, and re-exported so callers keep
+# importing from here.
+from quill.core.audio.convert_batch import (  # noqa: E402
+    CancelToken as CancelToken,
+)
+from quill.core.audio.convert_batch import (  # noqa: E402
+    FileProgressCallback as FileProgressCallback,
+)
+from quill.core.audio.convert_batch import (  # noqa: E402
+    ProgressCallback as ProgressCallback,
+)
+from quill.core.audio.convert_batch import (  # noqa: E402
+    SingleJobRunner as SingleJobRunner,
+)
+from quill.core.audio.convert_batch import (  # noqa: E402
+    default_worker_count as default_worker_count,
+)
+from quill.core.audio.convert_batch import (  # noqa: E402
+    run_conversion_batch as run_conversion_batch,
+)
 from quill.core.audio.convert_runner import (  # noqa: E402
     _default_single_runner as _default_single_runner,
 )

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Converter 1.0: every sound and video format, from the
+keyboard</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="quill-converter-10-every-sound-and-video-format-from-the-keyboard">Quill
+Converter 1.0: every sound and video format, from the keyboard</h1>
+<p><strong>September 28, 2026 – from Community Access</strong></p>
+<p><strong>Right-click a file, choose Convert with Quill Converter,
+press Ctrl+Enter. Hear how far it has got, hear when it is done, and
+hear why if anything went wrong.</strong></p>
+<p>Somewhere between “I recorded this in the wrong format” and “my
+player will not open this,” almost everybody hits the wall of media
+conversion. The usual answer is a website that wants your recording
+uploaded to a stranger, or a program whose buttons a screen reader
+cannot name.</p>
+<p><strong>Quill Converter</strong> is the other answer. It is a free
+converter for Windows, part of the QuillVille family, built for screen
+readers from the first line. It runs entirely on your own computer, and
+nothing you convert ever leaves it.</p>
+<hr />
+<h2 id="what-it-does">What it does</h2>
+<ul>
+<li><strong>34 formats out, 82 in.</strong> 25 sound formats and 9 video
+formats, from MP3, M4A and M4B audiobooks to FLAC, Opus, WAV, MP4, MKV
+and WebM. Every format is spoken with what it is for – “M4B audiobook –
+remembers your place in book players” – so you choose by purpose, not by
+acronym.</li>
+<li><strong>Video, with every track that matters.</strong> A film’s
+described-audio track and its second language come through, and MKV
+keeps the subtitles. Video presets are named for the result: Same
+quality, Phones and the web, Smaller file, Smallest file, and Change the
+container only.</li>
+<li><strong>Effects named for the problem.</strong> Clean up speech,
+Podcast ready, Audiobook ACX ready, Louder dialogue for films and TV,
+Night listening and more. You should not need to know what a de-esser is
+to fix sibilance.</li>
+<li><strong>Hear it first.</strong> Preview (Ctrl+P) plays fifteen
+seconds exactly as the result will sound; Hear Original (Ctrl+Shift+P)
+plays the same fifteen seconds untouched.</li>
+<li><strong>Chapters, kept.</strong> A file’s own chapter marks survive
+every conversion, and Quill Converter can make them for you – at the
+pauses, every few minutes, or from a list you wrote. The Chapter
+Workbench (Ctrl+H) edits them by ear.</li>
+<li><strong>Join and split.</strong> Join into One File (Ctrl+J) makes
+one audiobook from a folder of tracks, each track a chapter. Split by
+Chapters (Ctrl+Shift+S) goes the other way.</li>
+<li><strong>Edit Tags</strong> (Ctrl+T): title, artist, album and cover
+art, without leaving the queue.</li>
+<li><strong>Right-click in File Explorer.</strong> Select fifty files,
+choose Convert with Quill Converter once, and all fifty arrive in one
+window, in one queue.</li>
+</ul>
+<h2 id="it-tells-you-what-is-happening">It tells you what is
+happening</h2>
+<p>A conversion is not silence until it ends. Progress is counted inside
+each file, so a two-hour audiobook moves from 0 to 100 percent just as a
+queue of fifty songs does. It is spoken at 25, 50 and 75 percent, and
+the status bar, the progress bar and the tray icon’s tooltip say how far
+it has got and about how long is left: “Converting Book.m4b: 42 percent,
+about 3 minutes left”.</p>
+<p><strong>Stop means stop.</strong> Ctrl+Enter or the Stop button ends
+the conversion at once – the file in progress too – and removes its
+unfinished output, so nothing half-written is left behind.</p>
+<p>When something fails, the reason is in words – “This file is
+copy-protected and cannot be converted”, “The output drive is full” –
+and <strong>Conversion Report</strong> (Ctrl+R) lists every file with
+what happened to it, ready to paste into an email.</p>
+<h2 id="everything-is-included">Everything is included</h2>
+<p>Nothing downloads the first time you use a feature. FFmpeg, the mpv
+playback engine, the URL downloader and the tagging library are all
+inside both downloads. Conversion never touches the network; only Check
+for Updates and Convert from URL do, and only when you ask.</p>
+<p>Two downloads, choose one:</p>
+<ul>
+<li><strong>The installer</strong> – adds a Start Menu entry, the File
+Explorer right-click, and an uninstaller. It installs the shared
+QuillVille runtime if the computer does not already have it.</li>
+<li><strong>The portable ZIP</strong> – unpack anywhere, a USB stick
+included. It keeps its settings in its own folder and writes nothing to
+the computer it runs on.</li>
+</ul>
+<p>Press <strong>F1</strong> anywhere in Quill Converter to hear what
+the window is for and what the focused control does.
+<strong>Ctrl+F1</strong> opens the full user guide.</p>
+<hr />
+<h2 id="it-is-free-and-it-is-yours">It is free, and it is yours</h2>
+<p>Quill Converter is free and open source. No account, no subscription,
+no advertising, nothing phoning home.</p>
+<p>If it does something wrong, or does not do something you need, write
+to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+A person reads every message.</p>
+<ul>
+<li><strong>Download, guides and news:</strong> <a
+href="https://www.quillforall.org/converter.html">https://www.quillforall.org/converter.html</a></li>
+<li><strong>Source code:</strong> <a
+href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a></li>
+</ul>
+<hr />
+<h2 id="please-pass-it-on">Please pass it on</h2>
+<p>If you know somebody who has been uploading their recordings to a
+website just to change the format – or who gave up on a converter whose
+buttons had no names – send them this. That is the entire point.</p>
+</main>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Quill Converter -- Product Requirements
 
-Version 1.0.0 -- status: released September 27, 2026 (first public release)
+Version 1.0.0 -- status: released September 28, 2026 (first public release)
 
 ## 1. Product statement
 
@@ -105,7 +105,7 @@ In scope for 1.0.0:
   the way in (at most 30 seconds); Preview Original plays the same window
   untouched. Pressing again stops.
 - **Chapters.** A headline feature: chapter marks are content, not metadata
-  that may or may not survive. A Chapters choice on the main window
+  that may or may not survive. A Chapter marks choice on the main window
   (`quill.core.audio.chapter_plan.CHAPTER_SOURCES`) says where each file's
   chapters come from: keep its own (default); a chapter list beside it
   (`name.chapters.txt` of `0:00 Title` lines, `name.cue`,
@@ -114,24 +114,26 @@ In scope for 1.0.0:
   of quiet, chapters at least 20 seconds); every 5, 10, 15, 30 or 60 minutes
   (Part 1, Part 2...; a last piece under a minute joins the one before); or
   removed. A missing list or a failed scan falls back to the file's own
-  chapters and says so in the report.
+  chapters.
 - **Where chapters land.** FFmpeg writes them natively into MP3 (ID3 CHAP and
   CTOC), the MP4 family (M4A, M4B, ALAC, M4R, MP4, MOV), Matroska and WebM,
   Opus, and WMA/WMV. Ogg Vorbis, FLAC, Speex and Ogg video get `CHAPTERnnn`
   comments written with mutagen. Every other format gets a `.cue` sheet of
-  the same name beside the output. Nothing is silently lost; the report notes
-  where chapters went. Keep from / keep until clips the chapters to the kept
+  the same name beside the output. Nothing is silently lost. Keep from / keep until clips the chapters to the kept
   window and shifts them to zero.
 - **Chapter Workbench.** Queue > Chapter Workbench (and a main-window button)
   opens the highlighted MP3, M4B or M4A in the Audio Studio's Chapter
   Workbench: libmpv playback with exact seeking, rename, split at the
   playhead, set start to the playhead, merge, find at silences, import and
   export chapter lists (Audacity labels, CUE, timestamps, Podcasting 2.0 JSON,
-  CSV), book tags, Save (MP3 in place, tags only; M4B Save As, lossless) and
+  CSV), the five Book details fields and All tags... (the Tag Editor), Save
+  (MP3 in place, tags only; M4B or M4A in place when only tags changed, Save
+  As, lossless, when chapters changed) and
   split into files. Other formats are pointed at the chapter-list route or a
   conversion to M4B or MP3 first. Preview ignores chapters.
 - **Edit Tags** (Queue > Edit Tags..., Ctrl+T). Audio Studio's Tag Editor,
-  shared: every modelled tag (26 fields over four pages) plus cover art, for
+  shared: every modelled tag (26 fields over four pages) plus a cover-art
+  page, for
   MP3, M4A, M4B and MP4, written in place without re-encoding and without
   touching chapter frames. Other formats are refused in words: an ID3 block
   written onto FLAC or WAV would damage it.
@@ -140,33 +142,42 @@ In scope for 1.0.0:
   as comments or a `.cue` sheet for the rest; sources of different shapes are
   normalized first so they join cleanly.
 - **Split by Chapters.** One file per chapter, into a folder named after the
-  source, numbered, titled and tagged. It follows the Chapters choice, so it
+  source, numbered, titled and tagged. It follows the Chapter marks choice, so it
   can cut every N minutes, at pauses, or exactly where a chapter list says.
 - **Destination and conflicts.** Default destination is a `Converted` folder
   beside the first queued item. The default never overwrites (auto-numbering);
   Advanced Options offers number / skip / replace.
 - **Advanced Options.** View > Advanced Options, a check item, shows or hides
   an Advanced section in the main window (the Windows way to show more of a
-  window, rather than a second window with its own Convert button): quality
-  (bit rate), sample rate, channels, bit depth, the conflict policy, Exact
+  window, rather than a second window with its own Convert button): bit rate
+  (size and quality), sample rate, channels, bit depth, the conflict policy, Exact
   OptiLab broadcast polish where the adapter is present, and "Look in
   subfolders too". Each starts on its neutral choice, shapes the same Convert
   as the rest of the page, and is remembered, as is whether the section is
   shown.
 - **Convert from URL.** Prompt, background download with progress through the
-  bundled yt-dlp, then the shared URL orchestration's conversion choices,
-  seeded with the file. Refused in Safe Mode.
+  bundled yt-dlp (the shared URL orchestration), then the downloaded file
+  joins the main window's queue, converted by the same Convert as everything
+  else. Refused in Safe Mode.
 - **Running a batch.** Off the UI thread, multi-worker for sound and one at a
-  time for video. Convert becomes Stop; Stop finishes the file in progress and
-  starts nothing after it. Progress is spoken every 25 percent and mirrored in
-  the status bar and tray tooltip.
+  time for video. Convert becomes Stop; Stop kills the encode in progress
+  (its temp file is removed), starts nothing after it, and the report lists
+  every stopped file as skipped. A Join stops before its next source. Progress is measured
+  inside each file from FFmpeg's `-progress` output
+  (`quill/core/audio/ffmpeg_live.py`), combined across the batch by
+  `batch_progress.py`, spoken every 25 percent and mirrored, with an estimate
+  of the time left, in the status bar and tray tooltip at most once a second
+  ("Converting Book.m4b: 42 percent, about 3 minutes left"; "Converted 3 of
+  10, 47 percent overall"). A progress bar ("Progress:", a `wx.Gauge` named
+  "Conversion progress") under the action buttons shows the same fraction; it
+  is not in the Tab order, because the status bar carries the same words.
 - **Results.** A summary that names failures; a Conversion Report with the
   settings, destination, time taken and a plain-language reason per failure
   (then FFmpeg's own last line), with Copy All; Open Output Folder and Open
   Output Folder When Done. Cover art is carried into MP3, M4A/M4B/M4R, FLAC and
   Ogg/Opus/Speex copies where FFmpeg drops it.
 - **Remembered choices.** Format, presets, effect, custom effects, keep from /
-  keep until, the Chapters choice, the Advanced Options (and whether they are
+  keep until, the Chapter marks choice, the Advanced Options (and whether they are
   shown) and output folder persist between runs.
 - **Menus.** File, Queue, View, Convert, QuillVille, Help and Window.
 - **Tray.** Minimize to tray (Ctrl+W), the shared tray menu, and a system-wide
@@ -219,9 +230,9 @@ Out of scope, by decision:
   tooltip while minimized.
 - A-9. Every window answers F1 with an authored purpose and the focused
   control's own help (GATE-CONVERTER-HELP): the main window (the Chapters
-  choice and the Advanced section included), Chapter Workbench, Convert from
-  URL and the Convert Audio window it leads to, Custom Effects, File
-  Properties, Conversion Report and Keyboard Shortcuts.
+  choice, the Advanced section and the progress bar included), Chapter
+  Workbench, Tag Editor, Convert from URL, Custom Effects, File Properties,
+  Conversion Report and Keyboard Shortcuts.
 - A-10. Reports and descriptions are shown in a read-only multi-line text box,
   the one surface every screen reader reviews line by line without a special
   mode.
@@ -251,8 +262,8 @@ Out of scope, by decision:
   available at build time, the OptiLab Core adapter ship inside both artifacts.
 - P-3. Portable mode: the `data` folder beside the program holds settings, logs
   and `converter.json`, so nothing touches the host machine.
-- P-4. The installer's "Convert with Quill Converter" Explorer task is checked
-  by default, registers per user (HKCU) for every extension in
+- P-4. The installer's "Convert with Quill Converter" Explorer checkbox (a
+  native checkbox, not an Inno `[Tasks]` entry) is checked by default, registers per user (HKCU) for every extension in
   `quill.core.shell_verbs.MEDIA_EXTENSIONS`, and is removed on uninstall. The
   registry block is generated by `scripts/build_converter_verb_iss.py`.
 - P-5. Uninstalling never deletes the shared data folder -- another family app

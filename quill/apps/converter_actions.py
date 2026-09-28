@@ -7,9 +7,11 @@ which supplies the queue (``_entries``), the choices on screen, and the shell
 
 Every long job runs on a worker thread and reports back through
 ``wx.CallAfter`` -- the family's threading rule -- and every one can be
-stopped: a batch stops before its next file, a Join before its next source.
-The file being encoded when you press Stop is allowed to finish, because a
-half-written file is worse than a finished one, and the announcement says so.
+stopped. A batch reports how far each file has got, not only how many are
+finished, so a single long audiobook is not silence until it ends; and Stop
+stops the file being encoded as well as the rest, removing its unfinished
+output, because FFmpeg writes to a temp file that only a finished encode
+moves into place. A Join still stops before its next source.
 """
 
 from __future__ import annotations
@@ -24,6 +26,7 @@ from typing import Any
 
 import wx
 
+from quill.core.audio.batch_progress import BatchProgress
 from quill.core.audio.convert import (
     BatchResult,
     CancelToken,
@@ -103,7 +106,14 @@ class ConverterActionsMixin:
 
     def _destination(self) -> Path:
         dest = self._dest.GetValue().strip()
-        return Path(dest) if dest else default_destination(self._entries[0][0])
+        if dest:
+            return Path(dest)
+        first = self._entries[0][0]
+        # A file from Convert from URL sits in a temp folder that Windows may
+        # empty; its conversion goes where downloads go instead.
+        if _is_under(first, Path(tempfile.gettempdir())):
+            return Path.home() / "Downloads" / "Converted"
+        return default_destination(first)
 
     # -- convert / stop -------------------------------------------------------
 
@@ -160,19 +170,28 @@ class ConverterActionsMixin:
         workers = 1 if any(job.spec.is_video() for job in jobs) else 0
         total = len(jobs)
         started = time.monotonic()
+        tracker = BatchProgress(total)
+
+        def post(update: tuple[str, float] | None) -> None:
+            if update is not None:
+                text, overall = update
+                wx.CallAfter(self._note_progress, text, int(overall * 1000), 1000)
 
         def on_progress(done: int, total_jobs: int, job: ConversionJob) -> None:
-            wx.CallAfter(
-                self._note_progress,
-                f"Converted {done} of {total_jobs}: {job.source.name}",
-                done,
-                total_jobs,
-            )
+            post(tracker.file_done(job.source))
+
+        def on_file_progress(job: ConversionJob, fraction: float) -> None:
+            post(tracker.file_progress(job.source, fraction))
 
         def worker() -> None:
             try:
                 result = run_conversion_batch(
-                    ffmpeg, jobs, workers=workers, on_progress=on_progress, cancel=cancel
+                    ffmpeg,
+                    jobs,
+                    workers=workers,
+                    on_progress=on_progress,
+                    on_file_progress=on_file_progress,
+                    cancel=cancel,
                 )
             except Exception as error:  # noqa: BLE001 - reported on the UI thread
                 result = BatchResult(results=[JobResult(job=jobs[0], ok=False, error=str(error))])
@@ -214,6 +233,8 @@ class ConverterActionsMixin:
                 lines.append(f"Skipped (stopped): {item.job.source.name}")
             elif item.ok:
                 lines.append(f"Converted: {item.job.source.name} -> {item.job.dest.name}")
+                if item.error:  # on success, a note: where the chapters went, and so on
+                    lines.append(f"  Note: {item.error}")
             else:
                 lines.append(f"FAILED: {item.job.source}")
                 lines.append(f"  Reason: {item.error}")
@@ -222,13 +243,14 @@ class ConverterActionsMixin:
     def stop_work(self) -> None:
         if self._cancel is not None:
             self._cancel.cancel()
-            self._announce("Stopping after the file in progress.", force=True)
+            self._announce("Stopping.", force=True)
 
     def _begin_work(self, label: str, cancel: CancelToken) -> None:
         self._busy = True
         self._cancel = cancel
         self._milestone = 0
         self._convert_btn.SetLabel("Stop Converting")
+        self._set_progress(0, 1)
         self._set_status(f"{label} started")
         self._announce(f"{label}. Press Ctrl+Enter or the Stop button to stop.")
 
@@ -236,10 +258,17 @@ class ConverterActionsMixin:
         self._busy = False
         self._cancel = None
         self._convert_btn.SetLabel("Convert")
+        self._set_progress(0, 1)
         self._refresh_statusbar()
+
+    def _set_progress(self, current: int, total: int) -> None:
+        gauge = getattr(self, "_progress", None)
+        if gauge is not None:
+            gauge.SetValue(int(gauge.GetRange() * current / total) if total else 0)
 
     def _note_progress(self, text: str, current: int, total: int) -> None:
         self._set_status(text)
+        self._set_progress(current, total)
         pct = int(current * 100 / total) if total else 0
         milestone = pct - pct % 25
         if 0 < milestone < 100 and milestone > self._milestone:
@@ -513,6 +542,14 @@ class ConverterActionsMixin:
                 _TITLE,
             )
         return found
+
+
+def _is_under(path: Path, folder: Path) -> bool:
+    try:
+        path.resolve().relative_to(folder.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
 
 
 def _version() -> str:
