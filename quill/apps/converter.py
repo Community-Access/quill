@@ -34,6 +34,7 @@ import wx
 
 from quill.apps.converter_actions import ConverterActionsMixin
 from quill.apps.converter_chapters import ConverterChaptersMixin
+from quill.apps.converter_url import ConverterUrlMixin
 from quill.core import converter_settings
 from quill.core.audio.chapter_plan import CHAPTER_SOURCES
 from quill.core.audio.convert import available_output_formats
@@ -42,7 +43,6 @@ from quill.core.audio.formats import INPUT_EXTENSIONS, format_label, is_video_fo
 from quill.core.audio.presets import preset_choices
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
-from quill.ui.audio_studio.convert_audio_dialog import run_url_conversion
 
 _TITLE = "Quill Converter"
 _VERSION = "1.0.0"
@@ -70,7 +70,9 @@ class _QueueDropTarget(wx.FileDropTarget):
         return True
 
 
-class QuillConverterFrame(ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame):
+class QuillConverterFrame(
+    ConverterUrlMixin, ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame
+):
     """The Converter window: a queue, four choices, and Convert."""
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
@@ -276,8 +278,9 @@ class QuillConverterFrame(ConverterChaptersMixin, ConverterActionsMixin, AppShel
         )
         self._url_btn = wx.Button(panel, label="From UR&L...")
         self._url_btn.SetHelpText(
-            "Paste a web address and convert its audio. The downloader is "
-            "included with Quill Converter; in Safe Mode this is declined."
+            "Paste a web address and convert its audio: one video, a whole "
+            "playlist, or a channel's newest videos. The downloader is included "
+            "with Quill Converter; in Safe Mode this is declined."
         )
         for btn in (
             self._convert_btn,
@@ -526,7 +529,7 @@ class QuillConverterFrame(ConverterChaptersMixin, ConverterActionsMixin, AppShel
         self._announce(f"Custom effects set: {self.describe_choices()}.")
 
     def _on_convert_url(self, _event: Any) -> None:
-        run_url_conversion(self)
+        self.convert_from_url()
 
     def set_advanced_visible(self, visible: bool) -> None:
         """View > Advanced Options (Ctrl+Alt+V): show or hide the encoder settings."""

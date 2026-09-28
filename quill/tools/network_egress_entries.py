@@ -29,6 +29,18 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "(url_import.download_audio refuses when QUILL_SAFE_MODE=1) and gated off "
         "when the future.url_import feature is disabled."
     ),
+    "core/audio/url_collections.py::_default_extract": (
+        "Quill Converter's Convert from URL for playlists and channels "
+        "(2026-09-28): the same bundled yt-dlp as url_import, used first to read "
+        "what a pasted link is without downloading media (flat listing: kind, "
+        "title, count, which channel sections exist), then, after the user "
+        "chooses how much to take in the Download a Playlist or Channel window, "
+        "to fetch each video's best audio. Reached only by pasting a link into "
+        "Convert from URL and confirming; never scheduled or repeated in the "
+        "background. yt-dlp performs the HTTP itself; no QUILL credential is "
+        "sent. Pauses between videos on long runs. Refused in Safe Mode "
+        "(_refuse_in_safe_mode)."
+    ),
     "core/ai/gateway_client.py::_urlopen_json": (
         "The family's free hosted AI (quill-ai-gateway-spec.md sections 12 "
         "and 14). The single "

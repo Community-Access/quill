@@ -837,7 +837,7 @@ Control coverage: 40 audited sites (40 helped).
 
 ## Quill Converter
 
-Control coverage: 23 audited sites (23 helped).
+Control coverage: 26 audited sites (26 helped).
 
 ### Every window, and what it is for
 
@@ -847,9 +847,11 @@ Control coverage: 23 audited sites (23 helped).
 
 **Convert Audio.** The full conversion dialog, seeded with your queue: every format the main window offers, video included, plus exact settings -- bit rate, sample rate, channels, loudness -- and what to do when an output file already exists. It converts with its own settings, so the main window's effects do not apply here; anything you leave alone keeps the preset's answer.
 
-**Convert from URL.** Paste a web link -- YouTube and many other sites -- and its audio is downloaded and handed to the converter. The page's best audio stream is fetched and nothing else about the page is kept; only download what you have the right to use. Unavailable in Safe Mode.
+**Convert from URL.** Paste a web link -- YouTube and many other sites -- and its audio is downloaded and handed to the converter. The page's best audio stream is fetched and nothing else about the page is kept; only download what you have the right to use. A playlist or a channel link asks how much of it to take. Unavailable in Safe Mode.
 
 **Custom Effects.** Every effect on one page, starting from the effect recipe you had chosen: cleanup, tone, leveling, a loudness target, gain, speed, fades, and keeping only part of each file. OK makes these your Custom effects for the next conversion and for Preview; Cancel changes nothing.
+
+**Download a Playlist or Channel.** The link is a playlist or a YouTube channel. Choose how much of it to download -- the whole playlist or the first few, a channel's newest videos, Shorts or live streams, from any date or only recent ones. Every video's audio joins the queue in order, tagged as one album, and pasting the same link later fetches only what is new.
 
 **File Properties.** What is inside the file you highlighted, in plain words: its length and size, its tags, each video, audio and subtitle track, whether it has cover art, and its chapters. It is read-only, and Copy All puts it on the clipboard.
 
@@ -880,7 +882,7 @@ Control coverage: 23 audited sites (23 helped).
 - `self._convert_btn`: Convert everything in the queue with the choices above. Progress is announced every quarter, the window can go to the tray while it works, and while it runs this button is Stop.
 - `self._preview_btn`: Plays fifteen seconds of the highlighted file -- or the first in the queue -- exactly as it will sound after converting, effects and all. Press again to stop. Hear Original plays the same fifteen seconds untouched, so you can compare.
 - `self._original_btn`: Plays the same fifteen seconds Preview does, with nothing changed. Press again to stop.
-- `self._url_btn`: Paste a web address and convert its audio. The downloader is included with Quill Converter; in Safe Mode this is declined.
+- `self._url_btn`: Paste a web address and convert its audio: one video, a whole playlist, or a channel's newest videos. The downloader is included with Quill Converter; in Safe Mode this is declined.
 - `self._progress`: How far the conversion has got, counting inside each file as well as across the queue. The status bar says the same in words, with about how long is left. Empty when nothing is converting.
 
 ## Quill Beacon

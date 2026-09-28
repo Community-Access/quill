@@ -234,7 +234,8 @@ carry:</p>
 read what is inside a file.</li>
 <li><strong>libmpv</strong>, the mpv playback engine, as the Chapter
 Workbench’s player.</li>
-<li><strong>yt-dlp</strong>, for Convert from URL.</li>
+<li><strong>yt-dlp</strong>, for Convert from URL, and
+<strong>deno</strong>, the JavaScript runtime it needs for YouTube.</li>
 <li><strong>mutagen</strong>, for carrying cover art and chapters into
 the converted copy.</li>
 <li><strong>The OptiLab Core adapter</strong>, for broadcast polish in
@@ -243,6 +244,18 @@ Advanced Options, in builds that include it.</li>
 <p>Conversion never touches the network. The only things that do are
 Check for Updates and Convert from URL, and both only when you ask.</p>
 <h2 id="what-is-new-and-why">What is new, and why</h2>
+<h3 id="a-video-a-whole-playlist-or-a-channel">A video, a whole
+playlist, or a channel</h3>
+<p>Paste a link into <strong>Convert from URL</strong> (Ctrl+U). One
+video downloads its audio. A playlist asks whether you want all of it or
+the first few; a YouTube channel asks which section (videos, Shorts,
+live streams), how many of the newest, and from how recently. Every
+video’s audio joins the queue in order, numbered and tagged as one album
+with track numbers, ready for Ctrl+Enter – or for Join into One File,
+which makes a lecture series one audiobook with a chapter per video.
+Paste the same link next week and only the new videos download. A
+private or removed video is listed in the report rather than stopping
+the rest, and Stop works mid-download like everywhere else.</p>
 <h3 id="right-click-to-convert">Right-click to convert</h3>
 <p>The installer adds <strong>Convert with Quill Converter</strong> to
 the File Explorer right-click menu for every audio and video type the

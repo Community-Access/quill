@@ -194,6 +194,7 @@
   "quill/ui/convert_file_dialog.py::ConvertFileDialog._browse_output::wx.DirDialog": "native",
   "quill/ui/convert_file_dialog.py::ConvertFileDialog._browse_source::wx.FileDialog": "native",
   "quill/ui/converter_dialogs.py::ConverterEffectsDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/converter_dialogs.py::ConverterLinkDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/converter_dialogs.py::ConverterTextDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/copilot_onboarding_dialog.py::CopilotOnboardingDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/copy_tray_dialog.py::CopyTrayDialog.__init__::wx.Dialog": "hardened_custom",

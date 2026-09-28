@@ -188,6 +188,9 @@ PRODUCTS: dict[str, Product] = {
         stage_ffmpeg=True,
         stage_mpv=True,
         feedback_token=False,  # feedback is email to support@ (2026-09-26)
+        # Convert from URL (videos, playlists, channels): yt-dlp needs a
+        # JavaScript runtime for YouTube's challenges; bundled, never PATH.
+        stage_deno=True,
     ),
     "quilllite": Product(
         key="quilllite",

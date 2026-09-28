@@ -652,17 +652,49 @@ file's own -- so showing the section to look around changes nothing.
 ## Convert from URL
 
 **From URL...** (Alt+L, or File > Convert from URL..., Ctrl+U) takes a web
-address -- YouTube and many other sites -- and downloads its audio, with
-progress in the status bar. The downloaded file then joins the queue, and
-Ctrl+Enter converts it with the choices on the window, like any other file.
-The download itself is kept in a temporary folder, so when it is the first file
-in the queue and the **Output folder** is empty, the converted copy goes to a
-`Converted` folder inside your Downloads folder rather than beside it.
+address -- YouTube and many other sites -- and downloads its audio. Quill
+Converter first reads the link, without downloading anything, to find out what
+it is:
 
-The downloader, yt-dlp, is included, so nothing is installed. Only download
-content you have the right to use; no account or password of yours is sent to
-the site. Anything that is not a full `http://` or `https://` address is
-refused with a plain explanation. Convert from URL is unavailable in Safe Mode.
+- **One video.** Its audio downloads, with progress in the status bar, and
+  joins the queue.
+- **A playlist.** The **Download a Playlist or Channel** window says how many
+  videos it has and asks **How many**: all of it, or the first 10, 25 or 100.
+  A link to one video inside a playlist (a YouTube address with both `v=` and
+  `list=`) also asks **What to download**: only that video, or the whole
+  playlist.
+- **A YouTube channel.** The same window asks which **Section** -- Videos,
+  Shorts or Live streams; only the ones the channel has are listed -- **How
+  many** of the newest (10, 25, 100, or all of it, which can be thousands),
+  and **Published**: any date, or only the past week, month or year.
+
+Either way, **Skip videos already downloaded from here** is checked: Quill
+Converter remembers what it has fetched from each playlist and channel, so
+pasting the same link next week downloads only what is new. Clear it to fetch
+everything again.
+
+A playlist or channel downloads as one job, exactly like a conversion: the
+progress bar, the status bar ("Downloading 7 of 42: the video's title") and
+25, 50 and 75 percent spoken; Ctrl+Enter or Stop Converting stops it at once;
+and every video that downloaded joins the queue, in order. A playlist's files
+are numbered in playlist order ("001 - ..."), a channel's are named by date,
+and all of them are tagged with the playlist or channel as the **album** and a
+**track number**, so they play in order in any player -- and **Join into One
+File** (Ctrl+J) turns a lecture series into one audiobook with a chapter per
+video. A video that cannot be downloaded (private, removed, or blocked where
+you are) does not stop the rest; the summary counts them and **Conversion
+Report** (Ctrl+R) lists each with the site's reason. Long runs pause a few
+seconds between videos, so the site does not block your computer.
+
+The downloads are kept in a temporary folder, so when the Output folder is
+empty the converted copies go to `Converted` inside your Downloads folder -- a
+playlist or channel into its own folder there, named after it.
+
+The downloader, yt-dlp, and the JavaScript runtime it needs for YouTube, deno,
+are both included, so nothing is installed. Only download content you have the
+right to use; no account or password of yours is sent to the site. Anything
+that is not a full `http://` or `https://` address is refused with a plain
+explanation. Convert from URL is unavailable in Safe Mode.
 
 ## The tray
 
