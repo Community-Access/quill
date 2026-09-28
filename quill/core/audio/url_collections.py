@@ -188,9 +188,7 @@ def download_collection(
 
     def hook(status: dict[str, Any]) -> None:
         if cancelled is not None and cancelled():
-            from yt_dlp.utils import DownloadCancelled
-
-            raise DownloadCancelled("Stopped.")
+            raise _stop_error()("Stopped.")
         info = status.get("info_dict") or {}
         current[0] = str(info.get("title") or current[0])
         n = info.get("n_entries")
@@ -212,7 +210,9 @@ def download_collection(
     try:
         run(choice.url, options, True)
     except Exception as exc:  # noqa: BLE001 - a stop, or a whole-list failure
-        if type(exc).__name__ == "DownloadCancelled" or (cancelled is not None and cancelled()):
+        if type(exc).__name__ in ("DownloadCancelled", "_Stopped") or (
+            cancelled is not None and cancelled()
+        ):
             result.stopped = True
         else:
             raise UrlImportError(f"Could not download that list: {_first_line(exc)}") from exc
@@ -232,8 +232,7 @@ def collection_options(
     ffmpeg: str | None = None,
 ) -> dict[str, Any]:
     """The yt-dlp options for one collection download (pure, and tested)."""
-    from yt_dlp.postprocessor.metadataparser import MetadataParserPP
-
+    interpret = _interpret_action()
     # A playlist keeps its order; a channel section is newest first, so its
     # files are named by date, which sorts the same way in any folder.
     name = (
@@ -258,8 +257,8 @@ def collection_options(
                 "actions": [
                     # A template whose field never exists, so its default --
                     # the collection's own name -- becomes the album.
-                    (MetadataParserPP.Actions.INTERPRET, _literal(album), "%(album)s"),
-                    (MetadataParserPP.Actions.INTERPRET, "playlist_index", "%(track_number)s"),
+                    (interpret, _literal(album), "%(album)s"),
+                    (interpret, "playlist_index", "%(track_number)s"),
                 ],
             },
             {"key": "FFmpegMetadata", "add_metadata": True},
@@ -306,6 +305,27 @@ class _Collector:
         text = re.sub(r"^ERROR:\s*", "", str(msg)).strip()
         if text:
             self._failed.append(text.splitlines()[0])
+
+
+def _stop_error() -> type[Exception]:
+    """yt-dlp's own "stop now" exception, which it lets through its error handling."""
+    try:
+        from yt_dlp.utils import DownloadCancelled
+    except ImportError:  # the unit tests' machine; nothing downloads there
+        return _Stopped
+    return DownloadCancelled  # type: ignore[no-any-return]
+
+
+class _Stopped(Exception):
+    """Stands in for yt-dlp's DownloadCancelled when yt-dlp is absent."""
+
+
+def _interpret_action() -> Any:
+    try:
+        from yt_dlp.postprocessor.metadataparser import MetadataParserPP
+    except ImportError:  # the unit tests' machine; nothing downloads there
+        return "INTERPRET"
+    return MetadataParserPP.Actions.INTERPRET
 
 
 def _literal(text: str) -> str:

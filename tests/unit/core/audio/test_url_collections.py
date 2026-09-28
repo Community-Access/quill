@@ -119,6 +119,7 @@ def test_a_playlist_is_numbered_in_order_and_tagged_as_one_album(tmp_path: Path)
 
 
 def test_a_channel_is_named_by_date_limited_and_paused(tmp_path: Path) -> None:
+    pytest.importorskip("yt_dlp")  # the date limit is yt-dlp's own filter
     choice = uc.CollectionChoice(
         url="https://www.youtube.com/@x/videos",
         title="X - Videos",
