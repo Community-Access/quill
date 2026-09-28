@@ -33,6 +33,10 @@ def _station(**kw: object) -> RadioStation:
     [
         (_STW, "KMGLFM"),
         ("https://29306.live.streamtheworld.com/WABCFMAAC", "WABCFMAAC"),
+        (
+            "https://playerservices.streamtheworld.com/api/livestream-redirect/WWODEN1.mp3",
+            "WWODEN1",
+        ),
         ("https://example.com/stream.mp3", ""),
         ("https://streamtheworld.com/", ""),
     ],

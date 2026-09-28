@@ -8,10 +8,17 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [3.0.3] - 2026-09-28
 
-Four fixes from the first days of 3.0: favorites that started slowly every
+Westwood One's live sports channels, and four fixes from the first days of 3.0: favorites that started slowly every
 time, Help documents that did not open, the Stop button, and updates -- which a
 portable copy can now install itself, now or when you close.
 
+- **Westwood One Sports** in Browse Stations: the network's ten live event
+  channels (StreamTheWorld mounts `WWODEN1` to `WWODEN10`, found from its own
+  Triton player -- one to ten answer Triton's lookup, nothing else does),
+  listed by StreamTheWorld's stable `livestream-redirect` address so a channel
+  never goes stale; during the NCAA tournaments each carries a different game
+  (`quill/core/radio/westwood_one.py`). The recovery ladder now reads the mount
+  out of a redirect address too, so a channel that fails is re-resolved.
 - **A repaired favorite stays repaired.** When a favorite's saved address
   stopped working, Quill Radio found the current one and played it, then looked
   the favorite up by the *new* address to save it -- so a favorite keyed by its

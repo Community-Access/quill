@@ -689,29 +689,30 @@ After **Search All Sources...**, the branches are:
 10. **ACB Media** -- ACB Media 1 to 10.
 11. **NFB Radio** -- the NFB Radio Network.
 12. **Radio Reading Services** -- services that read print aloud for blind and print-disabled listeners.
-13. **SomaFM**.
-14. **TuneIn** -- TuneIn's own folder tree, from continent down to city.
-15. **iHeart** -- **By City** first, then genres.
-16. **Networks** -- well-known broadcasters, grouped by type.
-17. **Community M3U (Music Genres)**.
-18. **Xiph / Icecast Directory** -- off by default.
-19. **SHOUTcast Directory** -- the live Top 500, then 313 genres.
-20. **Live365** -- about 5,500 independent stations, A to Z.
-21. **Quillin Sources** -- only when an installed Quillin contributes a source.
-22. **Radio Paradise** -- including lossless FLAC.
-23. **Podcasts (Apple)** -- your Subscriptions, then 16 national storefronts.
-24. **Podcast Index**.
-25. **Internet Archive**.
-26. **LibriVox Audiobooks**.
-27. **Project Gutenberg Audiobooks**.
-28. **AudioPub (Community Audio)**.
-29. **Audius (Independent Music)**.
-30. **Mixcloud (Shows & DJ Sets)**.
-31. **ccMixter (Creative Commons)**.
-32. **My Servers** -- Icecast or SHOUTcast servers you add yourself.
-33. **Television (iptv.org)**.
-34. **YouTube** -- channels, playlists and videos you save.
-35. **Explore (Wikidata)** -- off by default.
+13. **Westwood One Sports** -- Westwood One's ten live event channels: during the NCAA tournaments, the NFL and other big events, each carries a different game.
+14. **SomaFM**.
+15. **TuneIn** -- TuneIn's own folder tree, from continent down to city.
+16. **iHeart** -- **By City** first, then genres.
+17. **Networks** -- well-known broadcasters, grouped by type.
+18. **Community M3U (Music Genres)**.
+19. **Xiph / Icecast Directory** -- off by default.
+20. **SHOUTcast Directory** -- the live Top 500, then 313 genres.
+21. **Live365** -- about 5,500 independent stations, A to Z.
+22. **Quillin Sources** -- only when an installed Quillin contributes a source.
+23. **Radio Paradise** -- including lossless FLAC.
+24. **Podcasts (Apple)** -- your Subscriptions, then 16 national storefronts.
+25. **Podcast Index**.
+26. **Internet Archive**.
+27. **LibriVox Audiobooks**.
+28. **Project Gutenberg Audiobooks**.
+29. **AudioPub (Community Audio)**.
+30. **Audius (Independent Music)**.
+31. **Mixcloud (Shows & DJ Sets)**.
+32. **ccMixter (Creative Commons)**.
+33. **My Servers** -- Icecast or SHOUTcast servers you add yourself.
+34. **Television (iptv.org)**.
+35. **YouTube** -- channels, playlists and videos you save.
+36. **Explore (Wikidata)** -- off by default.
 
 That is 35 sources. A new installation shows 33 of them, because Xiph and Wikidata start switched off. Quillin Sources appears only when something contributes to it. Turn branches on and off with **Choose Browse Sources** (see below).
 
@@ -721,6 +722,7 @@ More about some of them:
 - **Radio Reading Services** has twenty vetted services bundled, including WRBH 88.3 Reading Radio, Sun Sounds of Arizona, CRIS Radio, the KPBS and WKAR reading services, ACB Media 1 to 5 and the NFB Radio Network. Play, favorite, record and schedule them like any other station.
 - **iHeart** opens into **By City** (317 markets) and then genres. Each genre opens into A to Z letter folders of stations.
 - **By Country, By Language, Trending Now** and **Recently Added or Changed** are views of the same community directory. Trending and Popular often disagree, on purpose.
+- **Westwood One Sports** lists the network's own ten live event channels, Westwood One Sports channel 1 to channel 10 -- every stream Westwood One publishes. During a big event such as the NCAA basketball tournament, each channel carries a different game at the same time; the schedule at westwoodonesports.com says which game is on which channel. Between events a channel may be silent. Favorite, record and schedule them like any station: a recording scheduled on channel 3 records whatever game channel 3 carries at that time. Rights can keep a game off the internet, and the channel then says so.
 - **Networks** groups well-known broadcasters: public broadcasters such as the BBC, NPR, CBC, ABC Australia, Radio France and Deutschlandfunk, plus US news and talk, sports, music, and syndicators. A syndicator such as Westwood One has no single stream, so it opens a search across its affiliate stations, and the label says so.
 - **SHOUTcast Directory** starts with **Top 500 (most listeners right now)**, then 313 genres. Each genre is sorted by live listeners, most first. SHOUTcast returns at most 500 stations per genre. A SHOUTcast station takes a moment to start, because its address is looked up when you press Enter. If it cannot be resolved, it says so.
 - **Live365** is arranged A to Z. Names that start with a number or symbol are under **#**. The whole list is fetched once a day, so opening a letter costs no wait.

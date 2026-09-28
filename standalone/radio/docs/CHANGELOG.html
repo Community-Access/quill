@@ -206,11 +206,20 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="303---2026-09-28">[3.0.3] - 2026-09-28</h2>
-<p>Four fixes from the first days of 3.0: favorites that started slowly
-every time, Help documents that did not open, the Stop button, and
-updates – which a portable copy can now install itself, now or when you
-close.</p>
+<p>Westwood One’s live sports channels, and four fixes from the first
+days of 3.0: favorites that started slowly every time, Help documents
+that did not open, the Stop button, and updates – which a portable copy
+can now install itself, now or when you close.</p>
 <ul>
+<li><strong>Westwood One Sports</strong> in Browse Stations: the
+network’s ten live event channels (StreamTheWorld mounts
+<code>WWODEN1</code> to <code>WWODEN10</code>, found from its own Triton
+player – one to ten answer Triton’s lookup, nothing else does), listed
+by StreamTheWorld’s stable <code>livestream-redirect</code> address so a
+channel never goes stale; during the NCAA tournaments each carries a
+different game (<code>quill/core/radio/westwood_one.py</code>). The
+recovery ladder now reads the mount out of a redirect address too, so a
+channel that fails is re-resolved.</li>
 <li><strong>A repaired favorite stays repaired.</strong> When a
 favorite’s saved address stopped working, Quill Radio found the current
 one and played it, then looked the favorite up by the <em>new</em>

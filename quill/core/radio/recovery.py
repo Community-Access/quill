@@ -111,11 +111,18 @@ def recover_stream(
 
 
 def streamtheworld_mount(url: str) -> str:
-    """The mount of a ``*.streamtheworld.com/<MOUNT>`` URL, or "" (pure)."""
+    """The mount of a ``*.streamtheworld.com/<MOUNT>`` URL, or "" (pure).
+
+    A ``livestream-redirect/<MOUNT>.mp3`` address (Westwood One's channels, and
+    what StreamTheWorld's own players link to) names the mount with its format
+    as an extension, which Triton's lookup does not accept -- so it is dropped.
+    """
     parts = urllib.parse.urlsplit(url)
     if not parts.netloc.lower().endswith("streamtheworld.com"):
         return ""
-    return parts.path.strip("/").split("/")[-1] if parts.path.strip("/") else ""
+    last = parts.path.strip("/").split("/")[-1] if parts.path.strip("/") else ""
+    stem, dot, ext = last.rpartition(".")
+    return stem if dot and ext.lower() in ("mp3", "aac", "m3u8", "pls") else last
 
 
 def _recover_from_streamtheworld(station: RadioStation) -> RadioStation | None:

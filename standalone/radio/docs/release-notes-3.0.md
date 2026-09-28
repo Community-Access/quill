@@ -4,7 +4,8 @@ Version 3.0.3, released 2026-09-28.
 
 ## What's new in 3.0.3
 
-3.0.3 answers four things listeners told us about in the first days of 3.0.
+3.0.3 answers four things listeners told us about in the first days of 3.0,
+and adds Westwood One's live sports channels.
 
 ### Favorites that start slowly start quickly again
 
@@ -33,6 +34,18 @@ The main window has a **Stop** button again (Alt+T), first in the row, before
 Mute and Volume. It stops whatever is playing -- the same as **Ctrl+Period** and
 **Station > Stop**. Stopping is the one thing everybody needs at once without
 knowing a key.
+
+### Westwood One Sports: every game channel, in Browse
+
+**Browse Stations** (Ctrl+B) has a new branch, **Westwood One Sports**, with the
+network's own ten live event channels. During a big event -- the NCAA basketball
+tournaments, the NFL, the Masters -- Westwood One streams several games at once,
+one per channel, and now every one of them is a row you can play, favorite,
+record or schedule. The schedule at westwoodonesports.com says which game is on
+which channel; between events a channel may be silent.
+
+These ten are every stream Westwood One publishes. Its syndicated shows reach
+listeners through local stations, which **Networks** already finds.
 
 ### Updates install themselves, now or when you close
 

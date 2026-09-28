@@ -81,6 +81,7 @@ from quill.core.radio import (
     soma_fm,
     source_health,
     tunein,
+    westwood_one,
     xiph,
 )
 from quill.core.radio.browse_directories import (
@@ -235,6 +236,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("acb", "ACB Media"),
     ("nfb", "NFB Radio"),
     ("reading", "Radio Reading Services"),
+    ("westwood", "Westwood One Sports"),
     ("soma", "SomaFM"),
     ("tunein", "TuneIn"),
     ("iheart", "iHeart"),
@@ -265,6 +267,7 @@ LOCAL_SOURCES = frozenset({
     "favorites",
     "acb",
     "nfb",
+    "westwood",
     "networks",
     "networkgroup",
     # The lists themselves are local; only opening one reaches the network.
@@ -281,6 +284,7 @@ _FLAT: dict[str, Callable[[bool], list[RadioStation]]] = {
     "recent": lambda safe: radio_browser.recently_changed_stations(safe_mode=safe),
     "acb": lambda _safe: acb_media.acb_media_stations(),
     "nfb": lambda _safe: nfb_media.nfb_media_stations(),
+    "westwood": lambda _safe: westwood_one.westwood_one_stations(),
     "reading": lambda safe: reading_services.list_reading_services(safe_mode=safe),
     "soma": lambda safe: soma_fm.search_stations("", safe_mode=safe),
     "radioparadise": lambda safe: radio_paradise.fetch_stations(safe_mode=safe),
