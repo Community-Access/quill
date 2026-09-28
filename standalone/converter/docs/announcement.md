@@ -41,6 +41,9 @@ It runs entirely on your own computer, and nothing you convert ever leaves it.
 - **Join and split.** Join into One File (Ctrl+J) makes one audiobook from a
   folder of tracks, each track a chapter. Split by Chapters (Ctrl+Shift+S) goes
   the other way.
+- **A video, a whole playlist, or a channel.** Paste a YouTube link and choose
+  how much to take; every video's audio arrives in order, tagged as one album,
+  and next time only the new ones download.
 - **Edit Tags** (Ctrl+T): title, artist, album and cover art, without leaving
   the queue.
 - **Right-click in File Explorer.** Select fifty files, choose Convert with

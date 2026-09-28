@@ -283,3 +283,109 @@ def test_edit_tags_is_on_the_queue_menu(converter) -> None:
     queue = bar.GetMenu(1)
     labels = [item.GetItemLabel() for item in queue.GetMenuItems()]
     assert "Edit &Tags...	Ctrl+T" in labels
+
+
+# -- Convert from URL: playlists and channels ---------------------------------
+
+
+def _channel_info():
+    from quill.core.audio.url_collections import LinkInfo
+
+    return LinkInfo(
+        url="https://www.youtube.com/@x",
+        kind="channel",
+        title="X",
+        sections=(
+            ("Videos", "https://www.youtube.com/channel/UCx/videos"),
+            ("Shorts", "https://www.youtube.com/channel/UCx/shorts"),
+        ),
+    )
+
+
+def test_a_single_video_link_takes_the_one_video_path(
+    converter, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.audio.url_collections import LinkInfo
+    from quill.ui.audio_studio import convert_audio_dialog
+
+    fetched: list[str] = []
+    monkeypatch.setattr(
+        convert_audio_dialog, "_download_then_convert", lambda _host, url: fetched.append(url)
+    )
+    converter._link_read("https://youtu.be/a", LinkInfo("https://youtu.be/a", "video", "A"))
+    assert fetched == ["https://youtu.be/a"]
+
+
+def test_the_channel_dialog_reads_back_a_choice(converter) -> None:
+    from quill.ui.converter_dialogs import ConverterLinkDialog
+
+    dialog = ConverterLinkDialog(converter.frame, _channel_info())
+    try:
+        dialog._section.SetSelection(1)
+        dialog._since.SetSelection(2)  # the past month
+        choice = dialog.result()
+    finally:
+        dialog.Destroy()
+    assert choice.url == "https://www.youtube.com/channel/UCx/shorts"
+    assert (choice.title, choice.is_channel, choice.newest, choice.within_days) == (
+        "X - Shorts",
+        True,
+        25,
+        31,
+    )
+    assert choice.only_new is True
+
+
+def test_a_video_inside_a_playlist_can_be_taken_alone(converter) -> None:
+    from quill.core.audio.url_collections import LinkInfo
+    from quill.ui.converter_dialogs import ConverterLinkDialog
+
+    info = LinkInfo("https://y/watch?v=a&list=P", "playlist", "Talks", 9, "Talk 3")
+    dialog = ConverterLinkDialog(converter.frame, info)
+    try:
+        assert dialog.result().newest is None  # the whole playlist by default
+        dialog._scope.SetSelection(0)
+        assert dialog.result() == "video"
+    finally:
+        dialog.Destroy()
+
+
+def test_a_cancelled_question_downloads_nothing(converter, monkeypatch) -> None:
+    from quill.ui import converter_dialogs
+
+    monkeypatch.setattr(converter_dialogs, "ask_what_to_download", lambda _h, _i: None)
+    started: list[object] = []
+    monkeypatch.setattr(converter, "_download_collection", started.append)
+    converter._link_read("https://www.youtube.com/@x", _channel_info())
+    assert started == []
+
+
+def test_a_finished_download_fills_the_queue_and_the_report(converter, tmp_path: Path) -> None:
+    from quill.core.audio.url_collections import CollectionChoice, CollectionResult
+
+    folder = tmp_path / "quill-url-list-abc" / "Talks"
+    folder.mkdir(parents=True)
+    files = _files(folder, "001 - One.webm", "002 - Two.webm")
+    result = CollectionResult(folder=folder, files=files, failed=["zzz: Video unavailable"])
+    converter._busy = True
+    converter._collection_done(CollectionChoice(url="u", title="Talks"), result)
+    assert not converter._busy
+    assert [path for path, _root in converter._entries] == files
+    assert converter.said[-1] == (
+        "Downloaded 2 files from Talks into the queue. 1 could not be downloaded; "
+        "Ctrl+R lists them."
+    )
+    assert "FAILED: zzz: Video unavailable" in converter._last_report
+
+
+def test_a_downloaded_playlist_converts_into_its_own_folder(
+    converter, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import tempfile
+
+    temp = tmp_path / "temp"
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: str(temp))
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "home"))
+    converter._dest.SetValue("")
+    converter._entries = [(temp / "quill-url-list-abc" / "Talks" / "001 - One.webm", None)]
+    assert converter._destination() == tmp_path / "home" / "Downloads" / "Converted" / "Talks"

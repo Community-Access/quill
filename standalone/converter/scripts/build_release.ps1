@@ -120,9 +120,18 @@ if (-not $LibmpvDir) {
 if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
     throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."
 }
-# Converter declares ffmpeg and mpv (REQUIRED_COMPONENTS).
+# -- deno to bundle -------------------------------------------------------------
+# yt-dlp needs a JavaScript runtime to solve YouTube's challenges, for Convert
+# from URL (one video, a playlist or a channel). Pinned and SHA-256-verified by
+# fetch_build_deps.py, as Quill Radio's is -- never from PATH, never downloaded
+# at run time.
+Write-Host "Staging deno from its pinned release..."
+& $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only deno
+if ($LASTEXITCODE -ne 0) { throw "Could not stage deno (see scripts/fetch_build_deps.py)." }
+$DenoDir = Join-Path $QuillRepo "build\deps\deno"
+# Converter declares ffmpeg and mpv (REQUIRED_COMPONENTS), and deno for yt-dlp.
 . (Join-Path $QuillRepo "scripts\StageMediaTools.ps1")
-Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
+Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir -DenoDir $DenoDir
 
 # -- the runtime must actually contain this app, and what it needs -----------
 Assert-QuillRuntimeHasModule -RuntimeDir $sharedRuntimeDist -Module "quill.apps.converter"
@@ -136,6 +145,7 @@ $appDir = Join-Path $repoRoot "dist\QuillConverter"
     --source-root $QuillRepo `
     --ffmpeg-dir $FfmpegDir `
     --mpv-dir $LibmpvDir `
+    --deno-dir $DenoDir `
     --version $version
 if ($LASTEXITCODE -ne 0) { throw "Portable bundle build failed." }
 foreach ($required in @("QuillConverter.exe", "pythonw.exe", "tools\ffmpeg\ffmpeg.exe", "tools\ffmpeg\ffprobe.exe", "tools\mpv\libmpv-2.dll")) {

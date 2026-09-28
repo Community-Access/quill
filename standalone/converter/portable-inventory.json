@@ -129,6 +129,7 @@
     "words_alpha.txt"
   ],
   "tools": [
+    "deno",
     "ffmpeg",
     "mpv"
   ],

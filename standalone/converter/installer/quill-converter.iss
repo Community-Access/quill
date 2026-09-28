@@ -59,6 +59,9 @@
 ; Chapter Workbench's player, for exact seeking.
 #define ToolFfmpeg
 #define ToolMpv
+; deno, yt-dlp's JavaScript runtime for YouTube, for Convert from URL (one
+; video, a playlist or a channel). Without it YouTube links can fail.
+#define ToolDeno
 
 [Setup]
 #ifdef Sign

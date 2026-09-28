@@ -19,6 +19,9 @@
   "quill/apps/converter_advanced.py::build::wx.Choice": "helped",
   "quill/ui/converter_dialogs.py::ConverterEffectsDialog.__init__::wx.Choice": "helped",
   "quill/ui/converter_dialogs.py::ConverterEffectsDialog.__init__::wx.SpinCtrlDouble": "helped",
+  "quill/ui/converter_dialogs.py::ConverterLinkDialog.__init__::wx.Choice": "helped",
+  "quill/ui/converter_dialogs.py::ConverterLinkDialog.__init__::wx.Choice#2": "helped",
+  "quill/ui/converter_dialogs.py::ConverterLinkDialog.__init__::wx.Choice#3": "helped",
   "quill/ui/converter_dialogs.py::ConverterTextDialog.__init__::wx.Button": "helped",
   "quill/ui/converter_dialogs.py::ConverterTextDialog.__init__::wx.Button#2": "helped",
   "quill/ui/converter_dialogs.py::ConverterTextDialog.__init__::wx.TextCtrl": "helped"

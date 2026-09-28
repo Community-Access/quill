@@ -68,7 +68,15 @@ PURPOSES: dict[str, str] = {
         "Paste a web link -- YouTube and many other sites -- and its audio "
         "is downloaded and handed to the converter. The page's best audio "
         "stream is fetched and nothing else about the page is kept; only "
-        "download what you have the right to use. Unavailable in Safe Mode."
+        "download what you have the right to use. A playlist or a channel "
+        "link asks how much of it to take. Unavailable in Safe Mode."
+    ),
+    "Download a Playlist or Channel": (
+        "The link is a playlist or a YouTube channel. Choose how much of it to "
+        "download -- the whole playlist or the first few, a channel's newest "
+        "videos, Shorts or live streams, from any date or only recent ones. "
+        "Every video's audio joins the queue in order, tagged as one album, "
+        "and pasting the same link later fetches only what is new."
     ),
     "Custom Effects": (
         "Every effect on one page, starting from the effect recipe you had "

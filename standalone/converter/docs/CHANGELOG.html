@@ -412,6 +412,21 @@ order; the status bar says the same in words.</li>
 queue, ready for Ctrl+Enter with the choices already on the window. With
 no Output folder set, its converted copy goes to Downloads\Converted
 rather than into the temporary folder the download sits in.</li>
+<li>Convert from URL takes playlists and YouTube channels as well as
+single videos (quill/core/audio/url_collections.py,
+quill/apps/converter_url.py). The link is read first without downloading
+anything; a playlist or channel opens Download a Playlist or Channel:
+only this video or the whole playlist, how many (a channel is newest
+first and defaults to 25), which channel section (Videos, Shorts, Live
+streams – only those that exist), published within a week, month or
+year, and Skip videos already downloaded from here (a per-link record of
+what was fetched). Files are numbered in order (a channel’s by date),
+tagged with the playlist or channel as album and a track number, and
+join the queue; failures are listed in the report, long runs pause
+between videos, and Stop is immediate. Output defaults to
+Downloads\Converted&lt;playlist&gt;.</li>
+<li>deno, yt-dlp’s JavaScript runtime for YouTube, is bundled in both
+downloads; without it YouTube links could fail.</li>
 <li>Conversion Report (Ctrl+R) lists every file with the settings used,
 a plain-language reason for each failure, and any note on a converted
 file (where its chapters went, captions left out), with a Copy All

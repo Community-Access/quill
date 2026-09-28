@@ -112,7 +112,11 @@ class ConverterActionsMixin:
         # A file from Convert from URL sits in a temp folder that Windows may
         # empty; its conversion goes where downloads go instead.
         if _is_under(first, Path(tempfile.gettempdir())):
-            return Path.home() / "Downloads" / "Converted"
+            converted = Path.home() / "Downloads" / "Converted"
+            # A playlist or channel keeps its own folder, named after it.
+            if first.parent.parent.name.startswith("quill-url-list-"):
+                return converted / first.parent.name
+            return converted
         return default_destination(first)
 
     # -- convert / stop -------------------------------------------------------

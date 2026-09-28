@@ -732,6 +732,7 @@ module = [
     # Optional yt-dlp (audio-converter URL import, #1255 §4.6); installed on
     # demand and imported lazily in core/audio/url_import.py. Ships no stubs.
     "yt_dlp",
+    "yt_dlp.*",
     # Optional WinRT connectivity namespace (core/net_metered.py, the metered
     # -connection guard). pywinrt ships the namespace packages QUILL actually
     # uses -- OCR and Imaging -- and not this one, and the module is imported
