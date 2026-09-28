@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 226 audited sites (110 helped, 116 named-help).
+Control coverage: 227 audited sites (111 helped, 116 named-help).
 
 ### Every window, and what it is for
 

@@ -49,9 +49,11 @@ raising it.
   Ctrl+Alt+Shift+F7 and upward. Now each is a command in **Help > Keyboard
   Shortcuts** (Ctrl+Alt+K) -- search for "QuillVille" -- and you can give it any
   key you like; the menu shows your key from then on.
-- **Every enabled menu item has an access letter as well as a key**, which a
-  test checks on every build. Preferences, Exit, the Sort Favorites and Main
-  Window Shows choices, the Spotify items and Play Favorite Station had none.
+- **More menu items have an access letter as well as a key**: the Sort
+  Favorites and Main Window Shows choices and Play Favorite Station had none.
+  A test now checks every build. The Station menu has more items than the
+  alphabet has letters, so Preferences (Ctrl+comma), Exit (Ctrl+Q) and the two
+  Spotify items keep only their keys.
 - A new user guide section, **Keyboard access without chords**, gathers every
   way in: menu letters, rebinding, the Command Palette, and Sticky Keys.
 
