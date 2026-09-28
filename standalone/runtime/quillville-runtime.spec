@@ -38,6 +38,18 @@ def drop_dev_caches(entries):
     return kept
 
 
+# Freeze the quill of the checkout this spec sits in, whatever else is
+# importable. The build interpreter's editable install points at one checkout
+# (S:\QUILL), so a build from a second worktree silently froze the first one's
+# code -- 422 files of it, caught by check_runtime_freshness (2026-09-27).
+# PYTHONPATH did not help: it never reached PyInstaller's module search path.
+import os  # noqa: E402
+import sys  # noqa: E402
+
+_CHECKOUT_ROOT = os.path.abspath(os.path.join(SPECPATH, "..", ".."))  # noqa: F821
+if sys.path[:1] != [_CHECKOUT_ROOT]:
+    sys.path.insert(0, _CHECKOUT_ROOT)
+
 quill_datas, quill_binaries, quill_hidden = collect_all("quill")
 social_datas, social_binaries, social_hidden = collect_all("quill_social")
 nacl_datas, nacl_binaries, nacl_hidden = collect_all("nacl")
@@ -63,7 +75,7 @@ mutagen_hidden = collect_submodules("mutagen")
 
 a = Analysis(
     ["runtime_launcher.py"],
-    pathex=[],
+    pathex=[_CHECKOUT_ROOT],
     binaries=quill_binaries + social_binaries + nacl_binaries + ytdlp_binaries,
     datas=drop_dev_caches(quill_datas + social_datas + nacl_datas + ytdlp_datas),
     hiddenimports=quill_hidden + social_hidden + nacl_hidden + ytdlp_hidden + mutagen_hidden,
