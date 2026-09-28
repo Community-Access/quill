@@ -1,6 +1,102 @@
 # Quill Radio 3.0 Release Notes
 
-Version 3.0.2, released 2026-09-28.
+Version 3.0.3, released 2026-09-28.
+
+## What's new in 3.0.3
+
+3.0.3 answers five things listeners told us about in the first days of 3.0,
+and adds Westwood One's live sports channels.
+
+### Favorites that start slowly start quickly again
+
+A favorite whose saved address has stopped working used to take a long time to
+start, then say it was trying the station's current address, and play. Quill
+Radio was finding the right address every time -- and then failing to save it,
+so the next time, and every time after, it waited out the dead address and
+repaired it again. For a favorite added from StreamTheWorld, a station's
+website or by hand, the repair never stuck.
+
+Now it does. The first time a favorite needs repairing, the current address is
+saved into it, and from then on it starts straight away. Nothing to do: it
+happens the next time you play it.
+
+### Help opens its documents again
+
+**Help > User Guide** (Ctrl+F1), **Release Notes** (Shift+F1) and **Product
+Requirements** (Alt+Shift+F1) did nothing in 3.0.0 to 3.0.2, in both the
+installed and the portable copy. They were looking beside the shared engine for
+documents that are installed beside Quill Radio. They open again in 3.0.3, in
+your web browser.
+
+### The Stop button is back
+
+The main window has a **Stop** button again (Alt+T), first in the row, before
+Mute and Volume. It stops whatever is playing -- the same as **Ctrl+Period** and
+**Station > Stop**. Stopping is the one thing everybody needs at once without
+knowing a key.
+
+### Keys that are easier to press
+
+Every command in Quill Radio can now be reached without holding several keys
+down at once -- which matters on a braille notetaker such as the BrailleNote
+Evolve, and for anybody for whom a four-key chord is hard. Thank you to BITS for
+raising it.
+
+- **The QuillVille menu has access letters.** Alt+Q, then one letter, opens an
+  app: Q for QUILL, W for Quill Weather, V for Quill Converter. Two single keys,
+  nothing held down.
+- **The QuillVille "Open" commands can be rebound.** They used to be fixed to
+  Ctrl+Alt+Shift+F7 and upward. Now each is a command in **Help > Keyboard
+  Shortcuts** (Ctrl+Alt+K) -- search for "QuillVille" -- and you can give it any
+  key you like; the menu shows your key from then on.
+- **More menu items have an access letter as well as a key**: the Sort
+  Favorites and Main Window Shows choices and Play Favorite Station had none.
+  A test now checks every build. The Station menu has more items than the
+  alphabet has letters, so Preferences (Ctrl+comma), Exit (Ctrl+Q) and the two
+  Spotify items keep only their keys.
+- A new user guide section, **Keyboard access without chords**, gathers every
+  way in: menu letters, rebinding, the Command Palette, and Sticky Keys.
+
+### Westwood One Sports: every game channel, in Browse
+
+**Browse Stations** (Ctrl+B) has a new branch, **Westwood One Sports**, with the
+network's own ten live event channels. During a big event -- the NCAA basketball
+tournaments, the NFL, the Masters -- Westwood One streams several games at once,
+one per channel, and now every one of them is a row you can play, favorite,
+record or schedule. The schedule at westwoodonesports.com says which game is on
+which channel; between events a channel may be silent.
+
+These ten are every stream Westwood One publishes. Its syndicated shows reach
+listeners through local stations, which **Networks** already finds.
+
+### Updates install themselves, now or when you close
+
+When an update has downloaded, the **Update downloaded** window now offers:
+
+- **Install and restart now** (Enter) -- Quill Radio closes, updates and opens
+  again.
+- **Install when I close** (Alt+C) -- new. Keep listening; the update is
+  installed the next time you close Quill Radio, and the next time you open
+  it, it is the new version.
+
+**A portable copy now updates itself.** In 3.0.0 to 3.0.2 it could not: it said
+it could not install the update automatically and left the zip in
+`data\updates`. Now the new files replace the old ones in the copy's own folder,
+and the `data` folder -- your favorites, settings, history and recordings -- is
+never touched.
+
+**If you have a portable 3.0.0, 3.0.1 or 3.0.2**, update it once by hand, because
+those versions cannot run the new updater: close Quill Radio, unzip
+`Quill-Radio-Portable-3.0.3.zip`, and copy everything inside its `QuillRadio`
+folder over your copy's folder, replacing files when asked. Your `data` folder
+is not in the zip, so it is left exactly as it is. From 3.0.3 on, updates
+install themselves.
+
+**Coming from a 2.x portable copy?** Its updater is 2.x's own, and it can leave a
+window reading "find" on screen while it waits. Close that window, unzip the
+3.0.3 zip into a new folder, and start it: it offers to bring your 2.x
+favorites in on its first launch. Or copy the old copy's `data` folder into the
+new one before you first open it.
 
 ## What's new in 3.0.2
 
@@ -41,10 +137,10 @@ promise: press the key, and the radio is there.
 
 ### If you have 3.0.0
 
-Install 3.0.2 over it. Your favorites, settings, history, recordings, schedule
+Install 3.0.3 over it. Your favorites, settings, history, recordings, schedule
 and keys all stay. If your 3.0.0 opens, Help > Check for Updates...
 (Ctrl+Alt+U) offers the matching download. For a portable copy, unpack the
-3.0.2 zip and copy the `data` folder from beside your old `QuillRadio.exe` into
+3.0.3 zip and copy the `data` folder from beside your old `QuillRadio.exe` into
 the new folder before you first open it.
 
 There is nothing else to do. Anything 3.0.0 set up wrongly on your computer is
@@ -208,11 +304,11 @@ published, so its changes are included here too.
 
 There are two downloads. Both are code-signed.
 
-- **Quill-Radio-Setup-Shared-3.0.2.exe** is the installer, and the right choice
+- **Quill-Radio-Setup-Shared-3.0.3.exe** is the installer, and the right choice
   for most people. It installs the shared QuillVille Runtime if it is not
   already on the computer, then Quill Radio, with a Start Menu entry and an
   uninstaller.
-- **Quill-Radio-Portable-3.0.2.zip** is the portable copy. Unpack it anywhere,
+- **Quill-Radio-Portable-3.0.3.zip** is the portable copy. Unpack it anywhere,
   including a USB stick, and run `QuillRadio.exe`. It needs no installation and
   no internet.
 

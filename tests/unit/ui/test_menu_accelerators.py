@@ -158,3 +158,32 @@ def test_no_menu_item_claims_a_table_navigation_key(radio_menu_bar) -> None:
             offenders.append(f"{where} -> {key}")
 
     assert not offenders, "menu items on a table-navigation key: " + "; ".join(offenders)
+
+
+def test_every_enabled_menu_item_has_an_access_letter(radio_menu_bar) -> None:
+    """Alt, the menu's letter, then the item's: every command reachable one key
+    at a time, with nothing held down (BITS, 2026-09-28 -- a BrailleNote Evolve,
+    or anyone for whom a four-key chord is hard). A menu of more than 26 items
+    must share some letters, and pressing a shared letter again moves on to the
+    next item that has it, so sharing is allowed; having none is not."""
+    missing = [
+        where
+        for where, label, enabled in _items(radio_menu_bar)
+        if enabled
+        and "&" not in label.split(chr(9))[0]
+        and where.split(" > ")[-1] not in _STATION_MENU_OUT_OF_LETTERS
+    ]
+    assert missing == [], "menu items with no access letter: " + "; ".join(missing)
+
+
+#: The Station menu has more items than the alphabet has letters, and a letter
+#: may not be claimed twice (test_menu_item_access_keys). Every letter in these
+#: four labels is already another item's, so they keep only their keys --
+#: Ctrl+comma, Ctrl+Q, Ctrl+Alt+P and Ctrl+Alt+O -- and Alt+S then the arrows.
+#: Shrink this, never grow it: a new Station item takes a free letter.
+_STATION_MENU_OUT_OF_LETTERS = frozenset({
+    "Preferences...",
+    "Exit",
+    "Connect to Spotify...",
+    "Browse Spotify...",
+})

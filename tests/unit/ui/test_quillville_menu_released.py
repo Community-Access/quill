@@ -51,7 +51,8 @@ def test_released_siblings_are_offered_and_self_is_excluded() -> None:
     labels = _build(exclude="radio")  # from Quill Radio
     # Every item carries a numbered accelerator (the house rule that a menu
     # item always shows a way to reach it), so compare on the name alone.
-    names = [label.split(chr(9))[0] for label in labels]
+    # Access letters (Alt+Q, then the letter) are part of the label since 3.0.3.
+    names = [label.split(chr(9))[0].replace("&", "") for label in labels]
     assert "Open QUILL" in names
     assert "Open Quill Weather" in names
     assert "Open Quill Radio" not in names  # self excluded
@@ -110,3 +111,46 @@ def test_an_app_can_leave_a_sibling_off_its_own_menu(monkeypatch) -> None:
     assert not any("Inkwell" in label for label in offered)
     # The rest of the family is untouched.
     assert any("QUILL" in label for label in offered)
+
+
+# -- reachable without chords (BITS, 2026-09-28) ------------------------------
+
+
+class _Host:
+    """Just enough of an app shell: a registry, a keymap, and a binding lookup."""
+
+    def __init__(self, keymap: dict[str, str] | None = None) -> None:
+        from quill.core.commands import CommandRegistry
+
+        self.commands = CommandRegistry()
+        self.keymap = dict(keymap or {})
+
+    def _binding_for(self, command_id: str) -> str | None:
+        return self.keymap.get(command_id) or None
+
+
+def test_every_row_has_its_own_access_letter() -> None:
+    from quill.ui.quillville_menu import MENU_NAMES
+
+    letters = [name[name.index("&") + 1].lower() for name in MENU_NAMES.values()]
+    assert len(letters) == len(set(letters))
+    labels = _build(exclude="radio")
+    assert all("&" in label.split(chr(9))[0][len("Open ") :] for label in labels)
+
+
+def test_each_row_is_a_command_the_listener_can_rebind() -> None:
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+
+    frame = SimpleNamespace(Bind=lambda *a, **k: None)
+    host = _Host()
+    qv.build_quillville_menu(
+        _FakeWx(), frame, lambda _k: None, exclude="radio", retain=lambda _i: None, host=host
+    )
+    assert host.commands.get(qv.command_id("quill")) is not None
+    assert host.keymap[qv.command_id("quill")] == SIBLING_APP_ACCELERATORS[0]
+
+    rebound = _Host({qv.command_id("quill"): "Ctrl+Alt+1"})
+    menu = qv.build_quillville_menu(
+        _FakeWx(), frame, lambda _k: None, exclude="radio", retain=lambda _i: None, host=rebound
+    )
+    assert menu.labels[0] == "Open &QUILL	Ctrl+Alt+1"

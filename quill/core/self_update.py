@@ -8,8 +8,21 @@ downloaded zip, and launches the helper detached. Every Quill app's update flow
 QUILL, and Quill Social's own frame) calls :func:`begin_self_update` from its
 post-download dialog and then closes the window; the helper waits for this PID
 to exit before touching a single file. wx-free, strict-typed, Windows-only in
-effect (a dev or non-frozen run reports nothing to apply and callers fall back
-to revealing the download).
+effect (a dev run reports nothing to apply and callers fall back to revealing
+the download).
+
+**Where the app is** (3.0.3). Since the shared runtime, the running Python is
+not the app: an installed QuillVille app runs ``QuillVilleRuntime.exe`` from
+the runtime folder, and a portable one runs its bundle's ``pythonw.exe``, which
+is not a frozen build at all -- so the portable updater refused with "not a
+packaged build" and left the zip in ``updates`` for somebody to unpack by hand
+(reported 2026-09-28). The app's own launcher (``QuillRadio.exe``,
+``QuillLite.exe``) exports its folder as ``QUILL_LAUNCHER_DIR``; that folder and
+that exe are what an update replaces and what it starts again.
+
+**Update when I close.** ``when="on_close"`` stages the same helper but tells it
+to wait for as long as the app stays open, then apply the update and *not*
+restart: the next time the app is opened, it is the new version.
 """
 
 from __future__ import annotations
@@ -47,6 +60,9 @@ def build_apply_update_script(
     setup_exe: Path | None = None,
     data_dirname: str = "data",
     relaunch_args: Sequence[str] = (),
+    also_wait_for: Sequence[int] = (),
+    relaunch: bool = True,
+    wait_limit_seconds: int | None = _PID_WAIT_SECONDS,
 ) -> str:
     """The Windows ``.bat`` that applies an update after this process exits (pure).
 
@@ -65,6 +81,11 @@ def build_apply_update_script(
     exits 2 -- invisibly, since it is a windowed build -- and bare ``pythonw.exe``
     opens an interpreter with no script. The update applied correctly and the
     app simply never came back. See :func:`relaunch_command`.
+
+    ``also_wait_for`` are more processes that must be gone first -- the app's
+    launcher, which holds ``QuillRadio.exe`` open until the app exits.
+    ``relaunch=False`` with ``wait_limit_seconds=None`` is "update when I
+    close": wait however long the app stays open, apply, and leave it closed.
     """
     if mode == "portable" and source_dir is None:
         raise SelfUpdateError("Portable apply needs a staged source directory.")
@@ -81,14 +102,27 @@ def build_apply_update_script(
         'set "PATH=%SystemRoot%\\System32;%SystemRoot%\\System32\\WindowsPowerShell\\v1.0;%PATH%"',
         f'set "LOG={log_path}"',
         f'echo [apply] start pid={pid} mode={mode} >>"%LOG%" 2>&1',
-        # Wait for the app process to exit (up to the ceiling), then proceed.
+        # Wait for the app (and its launcher) to exit -- up to the ceiling, or
+        # for as long as it takes when the update is to happen on close.
         "set /a WAITED=0",
         ":waitloop",
-        f'tasklist /FI "PID eq {pid}" 2>NUL | find " {pid} " >NUL',
-        "if errorlevel 1 goto :exited",
+    ]
+    for waited_pid in (pid, *also_wait_for):
+        lines += [
+            f'tasklist /FI "PID eq {waited_pid}" 2>NUL | find " {waited_pid} " >NUL',
+            "if not errorlevel 1 goto :stillrunning",
+        ]
+    lines += [
+        "goto :exited",
+        ":stillrunning",
         "ping -n 2 127.0.0.1 >NUL",
         "set /a WAITED+=1",
-        f"if %WAITED% LSS {_PID_WAIT_SECONDS} goto :waitloop",
+    ]
+    if wait_limit_seconds is None:
+        lines.append("goto :waitloop")
+    else:
+        lines.append(f"if %WAITED% LSS {wait_limit_seconds} goto :waitloop")
+    lines += [
         ":exited",
         'echo [apply] app exited (waited %WAITED%s) >>"%LOG%" 2>&1',
     ]
@@ -114,11 +148,14 @@ def build_apply_update_script(
     # Quoted only when it needs to be: a module name never contains a space, and
     # an unquoted "-m quill.apps.lite" is what the Start Menu shortcut passes and
     # what the apply log should show.
-    relaunch = " ".join(f'"{arg}"' if (not arg or " " in arg) else arg for arg in relaunch_args)
-    lines += [
-        f'echo [apply] relaunching "{exe_path}" {relaunch} >>"%LOG%" 2>&1',
-        f'start "" "{exe_path}" {relaunch}'.rstrip(),
-    ]
+    arguments = " ".join(f'"{arg}"' if (not arg or " " in arg) else arg for arg in relaunch_args)
+    if relaunch:
+        lines += [
+            f'echo [apply] relaunching "{exe_path}" {arguments} >>"%LOG%" 2>&1',
+            f'start "" "{exe_path}" {arguments}'.rstrip(),
+        ]
+    else:
+        lines.append('echo [apply] not relaunching: updated on close >>"%LOG%" 2>&1')
     if mode == "portable" and source_dir is not None:
         # Delete the staging *parent* (…/staging) so a re-run starts clean.
         lines.append(f'rmdir /S /Q "{source_dir.parent}" >>"%LOG%" 2>&1')
@@ -130,13 +167,34 @@ def build_apply_update_script(
     return "\r\n".join(lines) + "\r\n"
 
 
-def install_root_and_exe() -> tuple[Path, Path] | None:
-    """The frozen exe and its install directory, or ``None`` in a dev run.
+def launcher_exe(env: dict[str, str] | None = None) -> Path | None:
+    """The app's own launcher (``QuillRadio.exe``), when it started this app.
 
-    ``sys.frozen`` is set only in a PyInstaller build; ``sys.executable`` is
-    then the app exe (QuillRadio.exe / QUILLCast.exe / quill.exe / ...). A dev
-    run (``python -m quill``) returns ``None`` so callers fall back to reveal.
+    The launcher exports its folder as ``QUILL_LAUNCHER_DIR``; its file name is
+    the app's (``quill.core.runtime_apps``). ``None`` for a dev run, for an app
+    started some other way, or when the file is not where it should be.
     """
+    from quill.core.runtime_apps import app_for_module
+
+    folder = ((os.environ if env is None else env).get("QUILL_LAUNCHER_DIR") or "").strip()
+    app = app_for_module(main_module())
+    if not folder or app is None:
+        return None
+    exe = Path(folder) / app.launcher_exe
+    return exe if exe.is_file() else None
+
+
+def install_root_and_exe() -> tuple[Path, Path] | None:
+    """The app's program and the folder it lives in, or ``None`` in a dev run.
+
+    The app's own launcher first (see the module docstring for why the running
+    Python is no longer the answer); otherwise a frozen build's own exe
+    (QUILL's ``quill.exe``). A dev run (``python -m quill``) returns ``None`` so
+    callers fall back to revealing the download.
+    """
+    launcher = launcher_exe()
+    if launcher is not None:
+        return launcher.parent, launcher
     if not getattr(sys, "frozen", False):
         return None
     exe = Path(sys.executable).resolve()
@@ -250,8 +308,12 @@ def begin_self_update(
     portable: bool,
     app_data_dir: Path,
     pid: int | None = None,
+    when: str = "now",
 ) -> None:
     """Apply the already-downloaded update at ``download_path`` and relaunch.
+
+    ``when="on_close"`` applies it after the app is closed, however long that
+    takes, and does not relaunch.
 
     Stages a portable zip (or targets the setup exe), builds the helper script,
     and launches it detached. Raises :class:`SelfUpdateError` if this is not a
@@ -269,6 +331,16 @@ def begin_self_update(
     log_path = updates_dir / "apply-update.log"
     resolved_pid = os.getpid() if pid is None else pid
     relaunch_args = relaunch_command(exe_path)
+    on_close = when == "on_close"
+    # The launcher that started us holds its own exe open until we exit, so
+    # the helper waits for it too -- but only a launcher: any other parent
+    # (Explorer, for a frozen quill.exe) is not ours to wait for.
+    parent = os.getppid() if launcher_exe() is not None else 0
+    timing = {
+        "also_wait_for": (parent,) if parent and pid is None else (),
+        "relaunch": not on_close,
+        "wait_limit_seconds": None if on_close else _PID_WAIT_SECONDS,
+    }
 
     if portable:
         staging = updates_dir / "staging"
@@ -281,6 +353,7 @@ def begin_self_update(
             log_path=log_path,
             source_dir=source,
             relaunch_args=relaunch_args,
+            **timing,  # type: ignore[arg-type]
         )
     else:
         script = build_apply_update_script(
@@ -291,6 +364,7 @@ def begin_self_update(
             log_path=log_path,
             setup_exe=download_path,
             relaunch_args=relaunch_args,
+            **timing,  # type: ignore[arg-type]
         )
     helper_dir = Path(tempfile.gettempdir()) / "quill-apply-update"
     write_and_launch_helper(script, helper_dir)
@@ -301,6 +375,7 @@ __all__ = [
     "begin_self_update",
     "build_apply_update_script",
     "install_root_and_exe",
+    "launcher_exe",
     "main_module",
     "relaunch_command",
     "stage_portable_update",

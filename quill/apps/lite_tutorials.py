@@ -17,7 +17,6 @@ answering a question nobody had.
 
 from __future__ import annotations
 
-import sys
 import webbrowser
 from pathlib import Path
 from typing import Any
@@ -42,9 +41,9 @@ def _book_path() -> Path | None:
     Weather share has no host here to hang off.
     """
     stem = "tutorials"
-    roots: list[Path] = []
-    if getattr(sys, "frozen", False):
-        roots.append(Path(sys.executable).resolve().parent / "docs")
+    from quill.core.app_folders import app_folders
+
+    roots: list[Path] = [folder / "docs" for folder in app_folders()]
     roots.append(Path(__file__).resolve().parents[2] / "standalone" / "quilllite" / "docs")
     for root in roots:
         for suffix in (".html", ".md"):

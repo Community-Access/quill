@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### The QuillVille menu without chords (2026-09-28)
+
+- **Access letters and rebindable launchers**, in QUILL and every QuillVille app:
+  Alt+Q (Alt+U in Quill Converter) then one letter opens a sibling app, and each
+  "Open" row is a command (`quillville.open_<app>`) that Keyboard Shortcuts lists
+  and can rebind; Ctrl+Alt+Shift+F7 and upward are only its defaults. Asked for by
+  BITS for BrailleNote Evolve users and anyone for whom a four-key chord is hard
+  (`quill/ui/quillville_menu.py`).
+
 ### Quill Converter 1.0.0 ships, and the shared conversion engine grows (2026-09-27)
 
 Quill Converter's first public release; its own changelog is

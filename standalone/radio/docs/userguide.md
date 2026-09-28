@@ -1,6 +1,6 @@
 # Quill Radio User Guide
 
-Version 3.0.2, released 2026-09-28.
+Version 3.0.3, released 2026-09-28.
 
 Quill Radio is internet radio built for screen reader users. It is a small window. The favorites tree has focus the moment it opens. The menus say everything they do, every action speaks, and a tray icon keeps the music playing while you work. It runs the same radio code as QUILL itself and, when installed, shares its data, so nothing you set up here is stranded.
 
@@ -37,16 +37,16 @@ The chapters, in order, grouped by what you want to do. Each one is a level 2 he
 
 ### The two downloads
 
-Quill Radio 3.0.2 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.2.
+Quill Radio 3.0.3 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.3.
 
 1. **The installer**, `Quill-Radio-Setup-Shared-<version>.exe`. This is the right choice for most people. It gives Quill Radio a Start Menu entry and an uninstaller. It installs the shared QuillVille Runtime if it is not already on the computer, then the app. Your favorites, history and settings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
 2. **The portable copy**, `Quill-Radio-Portable-<version>.zip`. It is fully self-contained. It carries its own genuine, unmodified Python and the bundled ffmpeg (for recording) and mpv (for playback). Unpack it anywhere, a USB stick included. Nothing downloads when it runs. Use it when you want the whole radio to travel with you, or when you cannot install software.
 
-Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.2`.
+Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.3`.
 
 ### Install with the installer, step by step
 
-1. Download `Quill-Radio-Setup-Shared-3.0.2.exe` and open it from your Downloads folder.
+1. Download `Quill-Radio-Setup-Shared-3.0.3.exe` and open it from your Downloads folder.
 2. If Windows SmartScreen shows a warning, see "About security software" below.
 3. Setup may first ask whether to install for you only or for all users. Choose **Install for me only**. That needs no administrator rights. Installing for all users asks Windows for permission.
 4. The setup wizard opens. Press Enter on each page to accept the defaults. The full installation includes this guide and the release notes. Then choose **Install**.
@@ -58,7 +58,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 ### Use the portable copy, step by step
 
-1. Download `Quill-Radio-Portable-3.0.2.zip`.
+1. Download `Quill-Radio-Portable-3.0.3.zip`.
 2. In File Explorer, select the zip, press the Applications key, and choose **Extract All...**. Choose a folder, for example on a USB stick, and choose **Extract**.
 3. Open the extracted folder, then the `QuillRadio` folder inside it.
 4. Select `QuillRadio.exe` and press Enter. Quill Radio opens with focus in the Favorite stations tree.
@@ -75,7 +75,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 Quill Radio 2.x kept its favorites in this computer's profile, even when it ran from the portable zip. A 3.0 portable copy keeps its own, so the first time it starts, it looks for them.
 
-1. Unzip `Quill-Radio-Portable-3.0.2.zip` and start `QuillRadio.exe`, as above.
+1. Unzip `Quill-Radio-Portable-3.0.3.zip` and start `QuillRadio.exe`, as above.
 2. If an earlier Quill Radio on this computer has favorites, and this copy has none yet, a question opens: "Favorites from an earlier Quill Radio". It says how many favorite stations it found.
 3. Press **Enter** (Yes) to copy them, with your settings, recording schedule and reminders, into this portable copy. Quill Radio then opens with your favorites in the tree.
 4. Or choose **No** to start empty.
@@ -90,7 +90,7 @@ Good to know:
 
 Test builds of 3.0 also offered a thin "Lite" installer and a small Companion zip. Both are retired. Nothing is lost:
 
-- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.2.exe`. It upgrades your installation in place and keeps your data.
+- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.3.exe`. It upgrades your installation in place and keeps your data.
 - If you used the Companion zip, run the installer, or unpack the portable zip instead. Check for Updates on a Companion copy offers the installer.
 
 ### The QuillVille Runtime
@@ -296,16 +296,17 @@ You can also make the Player the main window's view. See "What the main window s
 
 ### What is in it
 
-Tab moves through four stops, in this order. It is a list you play from, not a player.
+Tab moves through five stops, in this order. It is a list you play from, not a player.
 
 1. **Now playing**, a read-only box. It says the station and what the player is doing, the track when there is one, and anything else true, such as a recording running. You can arrow through it and copy it with Ctrl+C. It is never rewritten while you are reading it: an update that arrives while it has focus waits until you leave. It does not show elapsed time. Press **Ctrl+Shift+W** for that.
 2. **Favorite stations**, the tree. It shows the same folders you build in the Favorites Manager. **Alt+F** jumps to it from anywhere in the window.
-3. **Mute**, a toggle button. It shows the true state, even when you muted from somewhere else.
-4. **Volume**, a slider. Use the arrow keys or Page Up and Page Down. The slider, Ctrl+Up and Ctrl+Down, and the status bar's Volume cell always agree, including with each station's remembered volume.
+3. **Stop** (Alt+T), a button. It stops whatever is playing -- the same as **Ctrl+Period** and **Station > Stop**. Back in 3.0.3, because stopping is the one thing everyone needs at once without knowing a key.
+4. **Mute**, a toggle button. It shows the true state, even when you muted from somewhere else.
+5. **Volume**, a slider. Use the arrow keys or Page Up and Page Down. The slider, Ctrl+Up and Ctrl+Down, and the status bar's Volume cell always agree, including with each station's remembered volume.
 
 Along the bottom is the **status bar**. Tab never reaches it. Press **F6**. See "The status bar".
 
-The buttons older versions had here have moved, not gone. Play and Stop are **Enter** on a station or **Ctrl+P**. Record is **Ctrl+R**. Browse Stations is **Ctrl+B**. Chapters are in the Player (**Ctrl+Shift+G**). Adding the playing station to favorites is **Ctrl+Shift+F**.
+The other buttons older versions had here have moved, not gone. Play is **Enter** on a station or **Ctrl+P**. Record is **Ctrl+R**. Browse Stations is **Ctrl+B**. Chapters are in the Player (**Ctrl+Shift+G**). Adding the playing station to favorites is **Ctrl+Shift+F**.
 
 ### The favorites tree, step by step
 
@@ -599,13 +600,15 @@ See "The ACB Media schedule", "Reminders and Upcoming" and "The Community menu".
 
 ### QuillVille menu (Alt+Q)
 
-Opens the other apps in the family:
+Opens the other apps in the family. Every row has an access letter, so **Alt+Q and then one letter** opens an app -- two single keys, nothing held down:
 
-- **Open QUILL** (Ctrl+Alt+Shift+F7)
-- **Open Quill Weather** (Ctrl+Alt+Shift+F8)
-- **Open Quill Cast** (Ctrl+Alt+Shift+F9)
-- **Open Audio Studio** (Ctrl+Alt+Shift+F10)
-- **Open Quill Converter** (Ctrl+Alt+Shift+F11)
+- **Open QUILL** -- Alt+Q, Q (or Ctrl+Alt+Shift+F7)
+- **Open Quill Weather** -- Alt+Q, W (or Ctrl+Alt+Shift+F8)
+- **Open Quill Converter** -- Alt+Q, V (or Ctrl+Alt+Shift+F9)
+
+Each app keeps its letter as more of the family is released: C for Quill Cast, A for Audio Studio, I for Quill Inkwell.
+
+The long chords are only defaults. Each row is a command named **QuillVille: Open** and the app, and you can give it any key you like in **Help > Keyboard Shortcuts...** (Ctrl+Alt+K). See "Keyboard access without chords".
 
 ### Help menu (Alt+H)
 
@@ -688,29 +691,30 @@ After **Search All Sources...**, the branches are:
 10. **ACB Media** -- ACB Media 1 to 10.
 11. **NFB Radio** -- the NFB Radio Network.
 12. **Radio Reading Services** -- services that read print aloud for blind and print-disabled listeners.
-13. **SomaFM**.
-14. **TuneIn** -- TuneIn's own folder tree, from continent down to city.
-15. **iHeart** -- **By City** first, then genres.
-16. **Networks** -- well-known broadcasters, grouped by type.
-17. **Community M3U (Music Genres)**.
-18. **Xiph / Icecast Directory** -- off by default.
-19. **SHOUTcast Directory** -- the live Top 500, then 313 genres.
-20. **Live365** -- about 5,500 independent stations, A to Z.
-21. **Quillin Sources** -- only when an installed Quillin contributes a source.
-22. **Radio Paradise** -- including lossless FLAC.
-23. **Podcasts (Apple)** -- your Subscriptions, then 16 national storefronts.
-24. **Podcast Index**.
-25. **Internet Archive**.
-26. **LibriVox Audiobooks**.
-27. **Project Gutenberg Audiobooks**.
-28. **AudioPub (Community Audio)**.
-29. **Audius (Independent Music)**.
-30. **Mixcloud (Shows & DJ Sets)**.
-31. **ccMixter (Creative Commons)**.
-32. **My Servers** -- Icecast or SHOUTcast servers you add yourself.
-33. **Television (iptv.org)**.
-34. **YouTube** -- channels, playlists and videos you save.
-35. **Explore (Wikidata)** -- off by default.
+13. **Westwood One Sports** -- Westwood One's ten live event channels: during the NCAA tournaments, the NFL and other big events, each carries a different game.
+14. **SomaFM**.
+15. **TuneIn** -- TuneIn's own folder tree, from continent down to city.
+16. **iHeart** -- **By City** first, then genres.
+17. **Networks** -- well-known broadcasters, grouped by type.
+18. **Community M3U (Music Genres)**.
+19. **Xiph / Icecast Directory** -- off by default.
+20. **SHOUTcast Directory** -- the live Top 500, then 313 genres.
+21. **Live365** -- about 5,500 independent stations, A to Z.
+22. **Quillin Sources** -- only when an installed Quillin contributes a source.
+23. **Radio Paradise** -- including lossless FLAC.
+24. **Podcasts (Apple)** -- your Subscriptions, then 16 national storefronts.
+25. **Podcast Index**.
+26. **Internet Archive**.
+27. **LibriVox Audiobooks**.
+28. **Project Gutenberg Audiobooks**.
+29. **AudioPub (Community Audio)**.
+30. **Audius (Independent Music)**.
+31. **Mixcloud (Shows & DJ Sets)**.
+32. **ccMixter (Creative Commons)**.
+33. **My Servers** -- Icecast or SHOUTcast servers you add yourself.
+34. **Television (iptv.org)**.
+35. **YouTube** -- channels, playlists and videos you save.
+36. **Explore (Wikidata)** -- off by default.
 
 That is 35 sources. A new installation shows 33 of them, because Xiph and Wikidata start switched off. Quillin Sources appears only when something contributes to it. Turn branches on and off with **Choose Browse Sources** (see below).
 
@@ -720,6 +724,7 @@ More about some of them:
 - **Radio Reading Services** has twenty vetted services bundled, including WRBH 88.3 Reading Radio, Sun Sounds of Arizona, CRIS Radio, the KPBS and WKAR reading services, ACB Media 1 to 5 and the NFB Radio Network. Play, favorite, record and schedule them like any other station.
 - **iHeart** opens into **By City** (317 markets) and then genres. Each genre opens into A to Z letter folders of stations.
 - **By Country, By Language, Trending Now** and **Recently Added or Changed** are views of the same community directory. Trending and Popular often disagree, on purpose.
+- **Westwood One Sports** lists the network's own ten live event channels, Westwood One Sports channel 1 to channel 10 -- every stream Westwood One publishes. During a big event such as the NCAA basketball tournament, each channel carries a different game at the same time; the schedule at westwoodonesports.com says which game is on which channel. Between events a channel may be silent. Favorite, record and schedule them like any station: a recording scheduled on channel 3 records whatever game channel 3 carries at that time. Rights can keep a game off the internet, and the channel then says so.
 - **Networks** groups well-known broadcasters: public broadcasters such as the BBC, NPR, CBC, ABC Australia, Radio France and Deutschlandfunk, plus US news and talk, sports, music, and syndicators. A syndicator such as Westwood One has no single stream, so it opens a search across its affiliate stations, and the label says so.
 - **SHOUTcast Directory** starts with **Top 500 (most listeners right now)**, then 313 genres. Each genre is sorted by live listeners, most first. SHOUTcast returns at most 500 stations per genre. A SHOUTcast station takes a moment to start, because its address is looked up when you press Enter. If it cannot be resolved, it says so.
 - **Live365** is arranged A to Z. Names that start with a number or symbol are under **#**. The whole list is fetched once a day, so opening a letter costs no wait.
@@ -1944,7 +1949,7 @@ Know a station or podcast other listeners should hear? Suggest it for the Commun
 1. Press **Alt+S** for **Send Suggestion**, or Tab to it and press **Space**.
 2. Quill Radio checks what you typed first. If something needs fixing, it speaks the first problem and shows the whole list in a message. Press **Enter** to close the message, fix the field, and press **Alt+S** again. It catches a missing name or address, an address that does not start with `https://` or `http://`, an address with a space in it (usually a copy that did not paste whole), and a station or podcast that is **already in the Community Picks list**.
 3. When everything is in order, your own mail program opens with a new email already written, and you hear "Your mail program has opened with your suggestion written. Press Send there." The Suggest window closes.
-4. In your mail program, the email is addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.2] Suggestion: Radio Nowhere". Read it over if you like, add anything you want to say, and **press Send there**. Nothing leaves your computer until you do.
+4. In your mail program, the email is addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.3] Suggestion: Radio Nowhere". Read it over if you like, add anything you want to say, and **press Send there**. Nothing leaves your computer until you do.
 
 **If you have no mail program**
 
@@ -1954,7 +1959,7 @@ A suggestion too long for a mail program to accept (usually a very long "Why it 
 
 **What is included, and what is not**
 
-- Included: exactly what you typed, whether it is a station or a podcast, and the app's name and version ("Quill Radio 3.0.2").
+- Included: exactly what you typed, whether it is a station or a podcast, and the app's name and version ("Quill Radio 3.0.3").
 - Not included: your name, your Windows version, your screen reader, your favorites or listening history, or any file on your computer.
 - Because the email goes from your own mail account, Community Access sees the address you send from, as with any email you write. It is not published anywhere.
 - Nothing goes to GitHub or any other public site, and Quill Radio itself makes no connection to send it: your mail program does the sending.
@@ -2100,6 +2105,16 @@ If you used "Open Browse Stations at startup" in an older version, your main win
 
 ## Keyboard Shortcuts, the Sheet, and Global Hotkeys
 
+### Keyboard access without chords
+
+Every command in Quill Radio can be reached without holding several keys down at once, which matters on a braille notetaker such as the BrailleNote Evolve and for anyone for whom a three- or four-key chord is hard.
+
+- **Every menu is one Alt+letter away, and every item in it has an access letter.** Press Alt and the menu's letter, then the item's letter: **Alt+Q, then W** opens Quill Weather; **Alt+S, then B** opens Browse Stations. Two keys, one after the other. A few items share a letter: pressing it again moves to the next item with it, and Enter chooses. The Station menu has more items than the alphabet has letters, so four of its items have a key but no letter: **Preferences** (Ctrl+comma), **Exit** (Ctrl+Q), **Connect to Spotify** (Ctrl+Alt+P) and **Browse Spotify** (Ctrl+Alt+O). A test checks on every build that no other enabled item is left without a letter.
+- **Any key can be changed.** **Help > Keyboard Shortcuts...** (Ctrl+Alt+K) lists every command -- the QuillVille "Open" commands included since 3.0.3 -- and you can give any of them a shorter key, or one your notetaker can type. The menus show your key from then on.
+- **The Command Palette** (Ctrl+Shift+P) finds any command by typing part of its name and pressing Enter.
+- **The menus themselves always work**: Alt, then the arrow keys and Enter, one key at a time.
+- **Windows' Sticky Keys** lets a chord be typed one key at a time: press Shift five times to turn it on.
+
 ### Change a key, step by step
 
 **Help > Keyboard Shortcuts...** (Ctrl+Alt+K) opens the Keymap Editor, a searchable list of every command and its key.
@@ -2192,9 +2207,14 @@ The same lessons are in `tutorials.md` beside this guide, with the shipped keys.
 2. If there is nothing new, a message says "You are up to date" and your version. Press Enter to close it.
 3. If there is an update, the Update Available window opens. Focus is in **What's new** (Alt+N), a read-only box with the release notes. Arrow through them.
 4. Choose **Update** (Enter) to download it, with spoken progress. Or choose **Close** (Escape) to leave it for now.
-5. When the download finishes, follow the offer to install it.
+5. When the download finishes, the **Update downloaded** window offers three choices:
+   - **Install and restart now** (Enter): Quill Radio closes, the update is installed, and Quill Radio opens again, updated.
+   - **Install when I close** (Alt+C): keep listening. The update is installed the next time you close Quill Radio, and the next time you open it, it is the new version. It does not reopen by itself.
+   - **Open folder**, to find the downloaded file yourself, or **Close** (Escape) to leave it.
 
-Quill Radio offers the download that matches your copy: the portable zip to a portable copy, and the installer otherwise.
+Quill Radio offers the download that matches your copy: the portable zip to a portable copy, and the installer otherwise. **A portable copy updates itself in place**: the new files replace the old ones in its folder, and the `data` folder -- your favorites, settings, history and recordings -- is never touched.
+
+**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.0.3.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
 
 Quill Radio also checks quietly once a day at launch. It speaks only when it finds something. Turn it off with **Check for updates automatically on launch** in Preferences.
 
@@ -2621,13 +2641,13 @@ Every kind of feedback from Quill Radio goes to that one address: **Get Help fro
 6. **Steps to reproduce** (Alt+R): how somebody else could make it happen, such as "Play BBC Radio 4, press Ctrl+R, wait an hour". Optional, and worth more than anything else when you can give it.
 7. **Your email address** (Alt+E): where support should reply. Optional. The message goes from your own mail account, so support can answer that address anyway; fill this in only if you want the answer somewhere else.
 8. **Screen reader** (Alt+A): which one you use, if any. It is filled in from the screen reader that is running, so usually you can leave it.
-9. Below the fields, a line says what else is included, such as "Also included: Quill Radio 3.0.2, and your Windows version."
+9. Below the fields, a line says what else is included, such as "Also included: Quill Radio 3.0.3, and your Windows version."
 
 **Sending it**
 
 1. Press **Enter**, or Tab to **Send** and press **Space**.
 2. If the subject or What happened is empty, or the email address does not look right, the first problem is spoken and the whole list is shown. Press **Enter** to close it, fix the field, and send again.
-3. Otherwise your own mail program opens with the whole message written, addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.2] Recording stops after an hour". You hear "Your mail program is opening with the message ready. Nothing is sent until you send it there." The Get Help window closes.
+3. Otherwise your own mail program opens with the whole message written, addressed to support@community-access.org, with a subject such as "[Quill Radio 3.0.3] Recording stops after an hour". You hear "Your mail program is opening with the message ready. Nothing is sent until you send it there." The Get Help window closes.
 4. **Press Send in your mail program.** Nothing leaves your computer until you do.
 
 **If you have no mail program**
@@ -2652,6 +2672,8 @@ Writing to support@community-access.org yourself, from any email account, works 
 
 ## Troubleshooting
 
+- **A favorite takes a long time to start, then says it is trying the station's current address.** Its saved address has stopped working, and Quill Radio found the current one. From 3.0.3 the current address is saved into the favorite, so this happens once, not every time you play it. If a station still starts slowly every time, find it again in Browse Stations (Ctrl+B) or search (Ctrl+F), play it, and press Ctrl+Shift+F to save it fresh.
+- **Help > User Guide, Release Notes or Product Requirements does nothing.** That was a fault in 3.0.0 to 3.0.2: they looked for the documents beside the shared engine instead of beside `QuillRadio.exe`. Fixed in 3.0.3. The same documents are always on quillforall.org.
 - **A pinned Quill Radio says "QuillVilleRuntime.exe is the shared engine ... it is not an app of its own".** That pin was made from the running window before 3.0.2, so Windows pinned the shared engine rather than Quill Radio. From 3.0.2 the pin starts Quill Radio anyway (or, with several QuillVille apps installed, asks which to open). To make the pin a proper one, right-click it, choose Unpin from taskbar, and pin Quill Radio again from the Start Menu or its running window.
 - **A station will not play.** Streams move. For a directory station, Quill Radio fetches its current address and retries, and can scan the station's own site (see "When a station will not play"). If it still fails, search for it again, or re-add it as a custom station. If a station is simply dead, press **Shift+F10** on it in Browse Stations or Search Stations and choose **Report Bad Station...**. The report is filled in with the station's name, stream, source and country, and never your name, email or file paths.
 - **A station plays for twenty or thirty seconds, then stops.** This was a real fault, fixed in 3.0. Some stations, iHeart's in particular, arrive in short chunks, and one failed top-up used to drain the buffer and go silent. Quill Radio now reconnects instead: you hear "Reconnecting to" the station, "Attempt 1 of 3", up to three times. If a station still stops dead with no reconnect attempt, please report it with **Report Bad Station...**.

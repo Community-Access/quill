@@ -24,6 +24,7 @@ def apply_update_and_restart(
     app_data_dir: Path,
     announce: Callable[[str], None],
     show_error: Callable[[str], None],
+    when: str = "now",
 ) -> bool:
     """Stage + launch the update helper for the downloaded ``target``.
 
@@ -37,12 +38,16 @@ def apply_update_and_restart(
     """
     from quill.core import self_update
 
-    announce(f"Installing update {version} and restarting")
+    if when == "on_close":
+        announce(f"Update {version} will be installed when you close the app.")
+    else:
+        announce(f"Installing update {version} and restarting")
     try:
         self_update.begin_self_update(
             download_path=target,
             portable=portable,
             app_data_dir=app_data_dir,
+            when=when,
         )
     except self_update.SelfUpdateError as exc:
         show_error(

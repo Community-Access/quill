@@ -195,6 +195,7 @@
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog.__init__::wx.Button#4": "named-help",
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog.__init__::wx.Choice": "named-help",
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog.__init__::wx.TextCtrl": "named-help",
+  "quill/ui/radio/stop_button.py::add_stop_button::wx.Button": "helped",
   "quill/ui/radio/suggest_pick_dialog.py::_SuggestDialog._choice::wx.Choice": "helped",
   "quill/ui/radio/suggest_pick_dialog.py::_SuggestDialog._field::wx.TextCtrl": "helped",
   "quill/ui/radio/suggest_pick_dialog.py::_SuggestDialog.show::wx.Button": "helped",

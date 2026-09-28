@@ -85,6 +85,12 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         "Services for blind and print-disabled listeners.",
         group="Accessibility",
     ),
+    BrowseSourceInfo(
+        "westwood",
+        "Westwood One Sports",
+        "Westwood One's ten live event channels: NCAA tournaments, the NFL and more.",
+        network=False,
+    ),
     BrowseSourceInfo("soma", "SomaFM", "Curated, commercial-free channels."),
     BrowseSourceInfo("tunein", "TuneIn", "TuneIn's own category tree."),
     BrowseSourceInfo("iheart", "iHeart", "iHeart by city and by genre."),

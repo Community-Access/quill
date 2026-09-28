@@ -2,6 +2,18 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.0.md` (Help > Release Notes, Shift+F1) for the fuller narrative version of the latest release.
 
+## [3.0.3] - 2026-09-28
+
+Westwood One's live sports channels, and five fixes from the first days of 3.0: keys that are easier to press, favorites that started slowly every time, Help documents that did not open, the Stop button, and updates -- which a portable copy can now install itself, now or when you close.
+
+- **Westwood One Sports** in Browse Stations: the network's ten live event channels (StreamTheWorld mounts `WWODEN1` to `WWODEN10`, found from its own Triton player -- one to ten answer Triton's lookup, nothing else does), listed by StreamTheWorld's stable `livestream-redirect` address so a channel never goes stale; during the NCAA tournaments each carries a different game (`quill/core/radio/westwood_one.py`). The recovery ladder now reads the mount out of a redirect address too, so a channel that fails is re-resolved.
+- **Keys that are easier to press** (BITS, BrailleNote Evolve): the QuillVille menu's rows carry access letters, so Alt+Q then one letter opens an app, and each row is now a command (`quillville.open_<app>`) registered with the app and bound through its keymap, so Keyboard Shortcuts lists it and it can be rebound; the Ctrl+Alt+Shift+F7-and-up chords are only defaults (`quill/ui/quillville_menu.py`, shared by every app and QUILL). The user guide gains "Keyboard access without chords".
+- **A repaired favorite stays repaired.** When a favorite's saved address stopped working, Quill Radio found the current one and played it, then looked the favorite up by the *new* address to save it -- so a favorite keyed by its address (one from StreamTheWorld, a station's website, or added by hand) was never found, never healed, and every session waited out the dead address and repaired it again: the slow start and "reconnect" a listener heard on KSPN. It is looked up by the station that failed now (`quill/ui/radio/stream_recovery.py`, extracted from `main_frame_radio.py`).
+- **Help > User Guide, Release Notes and Product Requirements open again**, in both editions. They looked for documents beside the running Python -- the shared engine when installed, and not at all in a portable copy, which is not a frozen build -- instead of beside `QuillRadio.exe`. The launcher's folder (`QUILL_LAUNCHER_DIR`) is searched first now (`quill/core/app_folders.py`); Cast, Weather, Audio Studio, the Converter and QUILL Lite's tutorial book used the same lookup and are fixed with it.
+- **The Stop button is back** in the main window (Alt+T), first in the row before Mute and Volume; the same as Ctrl+Period and Station > Stop (`quill/ui/radio/stop_button.py`).
+- **Install when I close.** The Update downloaded window offers it beside Install and restart now: the update is applied when the app is next closed, however long that is, and the app is not reopened (`self_update`: `when="on_close"`). Shared with QUILL Lite and the other apps.
+- **A portable copy updates itself.** In 3.0.0 to 3.0.2 the portable updater refused ("not a packaged build") because the running Python is the bundle's `pythonw.exe`; it now updates the launcher's folder in place, keeping `data`, waits for both the app and its launcher to exit, and restarts through `QuillRadio.exe`. A portable 3.0.0 to 3.0.2 has to be updated once by hand; the release notes say how.
+
 ## [3.0.2] - 2026-09-28
 
 A fix release for one thing a listener met on the first day of 3.0.1: pressing a Quill Radio pinned to the taskbar opened a message instead of the radio.

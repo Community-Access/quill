@@ -201,8 +201,9 @@ def offer_install(
         "win"
     )
     action_line = (
-        "Select 'Install and restart now' to update and relaunch automatically "
-        "-- your settings and data are kept -- or "
+        "Select 'Install and restart now' to update and relaunch automatically, "
+        "or 'Install when I close' to keep using the app and update the next "
+        "time you close it -- your settings and data are kept either way -- or "
         if applyable
         else ""
     )
@@ -232,6 +233,14 @@ def offer_install(
     buttons.Add(close_btn, 0, wx.RIGHT, 6)
     buttons.Add(folder_btn, 0, wx.RIGHT, 6)
     if applyable:
+        later_btn = wx.Button(dialog, wx.ID_APPLY, label="Install when I &close")
+        later_btn.SetHelpText(
+            "Keeps the app open now, and installs the update the next time you "
+            "close it. It does not reopen by itself; the next time you open it, "
+            "it is the new version."
+        )
+        later_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_APPLY))
+        buttons.Add(later_btn, 0, wx.RIGHT, 6)
         apply_btn = wx.Button(dialog, wx.ID_OK, label="Install and restart now")
         apply_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
         apply_btn.SetDefault()
@@ -247,14 +256,17 @@ def offer_install(
     if result == wx.ID_OPEN:
         subprocess.Popen(reveal_command(target))  # noqa: S603 - shared, tested argv
         return
-    if result == wx.ID_OK and applyable:
+    if result in (wx.ID_OK, wx.ID_APPLY) and applyable:
+        on_close = result == wx.ID_APPLY
         apply_and_restart(
             release=release,
             target=Path(str(target)),
             portable=portable,
             announce=announce,
             show_message_box=show_message_box,
-            close_app=close_app,
+            # Updating on close leaves the app open: nothing to close now.
+            close_app=(lambda: None) if on_close else close_app,
+            when="on_close" if on_close else "now",
         )
 
 
@@ -266,8 +278,10 @@ def apply_and_restart(
     announce: Callable[[str], Any],
     show_message_box: Callable[..., Any],
     close_app: Callable[[], Any],
+    when: str = "now",
 ) -> None:
-    """Apply the downloaded update and relaunch (one click).
+    """Apply the downloaded update and relaunch (one click), or -- with
+    ``when="on_close"`` -- arrange for it to be applied when the app closes.
 
     *close_app* is called only on success -- on any failure the app stays open
     and the user can still open the folder and update by hand, because an
@@ -285,5 +299,6 @@ def apply_and_restart(
         app_data_dir=app_data_dir(),
         announce=announce,
         show_error=lambda msg: show_message_box(msg, "Update", wx.ICON_ERROR | wx.OK),
+        when=when,
     ):
         close_app()

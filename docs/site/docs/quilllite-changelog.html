@@ -198,6 +198,22 @@
 <main id="main-content">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="110--unreleased">1.1.0 – unreleased</h2>
+<h3 id="updates-2026-09-28">Updates (2026-09-28)</h3>
+<ul>
+<li><strong>Install when I close.</strong> When an update has
+downloaded, the window offers it beside <strong>Install and restart
+now</strong>: keep working, and the update is installed the next time
+you close QUILL Lite; the next time you open it, it is the new
+version.</li>
+<li><strong>A portable copy updates itself.</strong> The portable
+updater refused (“not a packaged build”) because the running Python is
+the bundle’s <code>pythonw.exe</code>; it now updates the folder
+<code>QuillLite.exe</code> is in, keeping <code>data</code>, and
+restarts through <code>QuillLite.exe</code>.</li>
+<li><strong>The Tutorials book opens</strong> from a packaged copy
+again: it looked for its documents beside the shared engine rather than
+beside <code>QuillLite.exe</code>.</li>
+</ul>
 <h3 id="installer-2026-09-26">Installer (2026-09-26)</h3>
 <ul>
 <li><strong>The installer’s checkboxes are real Windows

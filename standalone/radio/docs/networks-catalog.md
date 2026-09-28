@@ -71,7 +71,7 @@ CBS announced on 2026-03-20 that service to its ~700 remaining affiliates ends
 | ESPN Radio | RB / Direct | iHeart-distributed national feed |
 | CBS Sports Radio | **Affiliates** | Audacy |
 | Fox Sports Radio | **Affiliates** | iHeart / Premiere |
-| Westwood One Sports | **Affiliates** | event-based (NFL, NCAA) |
+| Westwood One Sports | **Own branch (3.0.3)** | ten live event channels, `WWODEN1`-`WWODEN10`; see Browse > Westwood One Sports |
 
 ## International public broadcasters (the strongest candidates — real streams)
 

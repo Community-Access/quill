@@ -2,6 +2,19 @@
 
 ## 1.1.0 -- unreleased
 
+### Updates (2026-09-28)
+
+- **Install when I close.** When an update has downloaded, the window offers
+  it beside **Install and restart now**: keep working, and the update is
+  installed the next time you close QUILL Lite; the next time you open it, it
+  is the new version.
+- **A portable copy updates itself.** The portable updater refused ("not a
+  packaged build") because the running Python is the bundle's `pythonw.exe`;
+  it now updates the folder `QuillLite.exe` is in, keeping `data`, and restarts
+  through `QuillLite.exe`.
+- **The Tutorials book opens** from a packaged copy again: it looked for its
+  documents beside the shared engine rather than beside `QuillLite.exe`.
+
 ### Installer (2026-09-26)
 
 - **The installer's checkboxes are real Windows checkboxes.** Create a desktop

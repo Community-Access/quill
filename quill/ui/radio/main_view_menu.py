@@ -42,7 +42,9 @@ def append(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:
     for index, (view_id, label) in enumerate(main_view.MAIN_VIEWS):
         item_id = wx.NewIdRef()
         key = KEYS[index] if index < len(KEYS) else ""
-        item = submenu.AppendRadioItem(item_id, f"{label}\t{key}" if key else label)
+        # Access letter on the first letter: F, B, S, R, P (Alt+V, M, then it).
+        text = f"&{label}\t{key}" if key else f"&{label}"
+        item = submenu.AppendRadioItem(item_id, text)
         item.SetHelp(main_view.description(view_id))
         submenu.Check(item_id, view_id == current)
         app.frame.Bind(wx.EVT_MENU, lambda _e, v=view_id: switch(app, v), id=item_id)
