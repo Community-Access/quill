@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
+## [3.0.2] - 2026-09-28
+
+A fix release for one thing a listener met on the first day of 3.0.1: pressing
+a Quill Radio pinned to the taskbar opened a message instead of the radio.
+
+- **A pinned Quill Radio starts Quill Radio.** Pin a running app to the taskbar
+  and Windows pins the program it sees -- the shared QuillVille engine every
+  app runs on -- with nothing to say which app. Pressed, that pin said
+  "QuillVilleRuntime.exe is the shared engine the QuillVille apps run on; it is
+  not an app of its own." Now the engine starts the app instead: Quill Radio,
+  when it is the only QuillVille app on the computer.
+- **With several QuillVille apps installed, it asks which.** A short list, Open
+  a QuillVille app, names the installed apps with Quill Radio first; arrow to
+  one and press Enter, or Escape to open nothing.
+- **New pins are made right.** Quill Radio now tells Windows which app it is,
+  and its Start Menu and desktop shortcuts carry the same identity, so pinning
+  the running window pins the Quill Radio shortcut itself, which starts the app
+  the proper way.
+- **A pin made before 3.0.2 still works**, through the fix above. To have it
+  join the running window on the taskbar again, right-click it, choose Unpin
+  from taskbar, then pin Quill Radio again from the Start Menu or from its
+  running window.
+
 ## [3.0.1] - 2026-09-27
 
 A fix release, and the one to install. Quill Radio 3.0.0 is withdrawn and its

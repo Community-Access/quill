@@ -21,6 +21,13 @@ reported exactly that on a fresh install. Both streams now point at os.devnull
 before anything runs, an unhandled exception is written to a crash file the
 listener can send to support, and a launch with no module is explained in a
 message box instead of a traceback.
+
+**A launch with no module starts the app anyway** (3.0.2). Windows pins a
+running app to the taskbar by the process it sees -- this exe -- with no
+arguments, so "press the pinned Quill Radio" arrived here with nothing to run
+and heard the explanation instead of the radio. The runtime knows which apps
+are installed on it (:mod:`quill.core.runtime_apps`): with one it starts that
+one, with several it asks which, and only with none does it explain.
 """
 
 from __future__ import annotations
@@ -78,6 +85,48 @@ def _tell(text: str, title: str = "QuillVille Runtime") -> None:
     sys.stderr.write(text + "\n")
 
 
+def _choose_app() -> str:
+    """The module to run when started with none: the one installed app, the
+    one somebody picks, or "" for nothing (explained, or cancelled)."""
+    try:
+        from quill.core.paths import app_data_dir
+        from quill.core.runtime_apps import installed_apps
+
+        apps = installed_apps(app_data_dir())
+    except Exception:  # noqa: BLE001 - no answer means the explanation below
+        apps = []
+    if len(apps) == 1:
+        return apps[0].module
+    if not apps:
+        _tell(_USAGE)
+        return ""
+    index = _pick([entry.display for entry in apps])
+    return apps[index].module if 0 <= index < len(apps) else ""
+
+
+def _pick(names: list[str]) -> int:
+    """Ask which app to open. The index chosen, or -1 for Cancel."""
+    try:
+        import wx
+
+        app = wx.App(False)
+        dialog = wx.SingleChoiceDialog(
+            None,
+            "Several QuillVille apps are installed. Which one do you want to open?",
+            "Open a QuillVille app",
+            names,
+        )
+        dialog.SetSelection(0)
+        chosen = dialog.ShowModal() == wx.ID_OK
+        index = dialog.GetSelection()
+        dialog.Destroy()
+        app.Destroy()
+    except Exception:  # noqa: BLE001 - a chooser that cannot open is the explanation
+        _tell(_USAGE)
+        return -1
+    return index if chosen else -1
+
+
 def _looks_like_module(text: str) -> bool:
     return (
         bool(text)
@@ -97,14 +146,25 @@ def main() -> int:
         # refusing a restart the app asked for.
         module, rest = argv[0], argv[1:]
     else:
-        _tell(_USAGE)
-        return 2
+        # Started bare -- almost always a taskbar pin Windows made from the
+        # running process. Start the app it was pinned from rather than refuse.
+        module, rest = _choose_app(), argv
+        if not module:
+            return 2
     # Started without an app launcher -- a taskbar pin Windows made from the
     # running process targets this exe directly -- nothing exported the app
     # root, and every "bundled beside the runtime" lookup (libmpv, ffmpeg)
     # missed. The launcher sets it to this same folder, so default to that.
     if getattr(sys, "frozen", False):
         os.environ.setdefault("QUILL_APP_ROOT", os.path.dirname(os.path.abspath(sys.executable)))
+    # Before any window exists: the app's taskbar identity, so pinning it pins
+    # its shortcut (and its launcher) rather than this exe with no arguments.
+    try:
+        from quill.core.runtime_apps import claim_taskbar_identity
+
+        claim_taskbar_identity(module)
+    except Exception:  # noqa: BLE001 - cosmetic; never cost the launch
+        pass
     # Re-shape argv so the target module sees itself as __main__ with its own
     # arguments, just as `python -m module ...` would.
     sys.argv = [module, *rest]

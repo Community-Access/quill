@@ -34,7 +34,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "3.0.1"
+  #define AppVersion "3.0.2"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"
@@ -77,7 +77,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=3.0.1.0
+VersionInfoVersion=3.0.2.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible internet radio (shared runtime)
 DefaultDirName={autopf}\{#AppName}
@@ -168,10 +168,15 @@ Source: "..\dist\QuillRadio\docs\*"; DestDir: "{app}\docs"; Components: docs; Fl
 ; The guide shortcut opens the rendered HTML, as QUILL Lite's does: the .md
 ; source opens in whatever Windows associates with .md -- on most machines
 ; nothing at all, or a code editor that reads the markup aloud.
-Name: "{group}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; Components: main
+; AppUserModelID (3.0.2): the running app claims the same id
+; (quill.core.runtime_apps, shortcuts_carry_id), so pinning Quill Radio to the
+; taskbar pins THIS shortcut -- through QuillRadio.exe -- instead of the shared
+; runtime with no arguments, which is what Windows pinned before and what
+; started "not an app" in place of the radio (2026-09-27).
+Name: "{group}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; AppUserModelID: "CommunityAccess.QuillRadio"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; Check: WantsDesktopIcon; Components: main
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; AppUserModelID: "CommunityAccess.QuillRadio"; Check: WantsDesktopIcon; Components: main
 
 [UninstallDelete]
 ; Remove only Radio's own {app} payload. The shared runtime is left to

@@ -1,11 +1,39 @@
 # Quill Radio 3.0 Release Notes
 
-Version 3.0.1, released 2026-09-27.
+Version 3.0.2, released 2026-09-28.
+
+## What's new in 3.0.2
+
+3.0.2 fixes one thing a listener met on the first day of 3.0.1: pressing a
+Quill Radio pinned to the taskbar opened a message instead of the radio.
+
+### A pinned Quill Radio starts Quill Radio
+
+When you pin a running app to the taskbar, Windows pins the program it can see.
+For Quill Radio that is the shared QuillVille engine every app in the family
+runs on, and Windows pinned it with nothing to say which app to open. Pressed,
+the pin said "QuillVilleRuntime.exe is the shared engine the QuillVille apps
+run on; it is not an app of its own."
+
+Now the engine starts the app. If Quill Radio is the only QuillVille app on the
+computer, it opens, as the pin always should have. If several are installed, a
+short list, Open a QuillVille app, asks which one: arrow to it and press Enter,
+or press Escape to open nothing.
+
+### New pins are made right
+
+Quill Radio now tells Windows which app it is, and its Start Menu and desktop
+shortcuts carry the same identity. Pinning the running window pins the Quill
+Radio shortcut itself, which starts the app the proper way.
+
+A pin made before 3.0.2 still works, through the fix above. To have it join
+the running window on the taskbar again, right-click it, choose Unpin from
+taskbar, then pin Quill Radio again from the Start Menu or its running window.
 
 ## What's new in 3.0.1
 
-Quill Radio 3.0.1 is the release to install. It replaces 3.0.0, which was
-withdrawn the day after it shipped; everything 3.0 brought is here, and so is
+Quill Radio 3.0.1 replaced 3.0.0, which was withdrawn the day after it
+shipped; everything 3.0 brought is here, and so is
 the thing 3.0.0 could not always manage: opening. 3.0.1 starts every way you
 can start it, arrives with its full playback engine every time, and carries
 every tool it uses inside the download. It is a small release with one
@@ -13,10 +41,10 @@ promise: press the key, and the radio is there.
 
 ### If you have 3.0.0
 
-Install 3.0.1 over it. Your favorites, settings, history, recordings, schedule
+Install 3.0.2 over it. Your favorites, settings, history, recordings, schedule
 and keys all stay. If your 3.0.0 opens, Help > Check for Updates...
 (Ctrl+Alt+U) offers the matching download. For a portable copy, unpack the
-3.0.1 zip and copy the `data` folder from beside your old `QuillRadio.exe` into
+3.0.2 zip and copy the `data` folder from beside your old `QuillRadio.exe` into
 the new folder before you first open it.
 
 There is nothing else to do. Anything 3.0.0 set up wrongly on your computer is
@@ -180,11 +208,11 @@ published, so its changes are included here too.
 
 There are two downloads. Both are code-signed.
 
-- **Quill-Radio-Setup-Shared-3.0.1.exe** is the installer, and the right choice
+- **Quill-Radio-Setup-Shared-3.0.2.exe** is the installer, and the right choice
   for most people. It installs the shared QuillVille Runtime if it is not
   already on the computer, then Quill Radio, with a Start Menu entry and an
   uninstaller.
-- **Quill-Radio-Portable-3.0.1.zip** is the portable copy. Unpack it anywhere,
+- **Quill-Radio-Portable-3.0.2.zip** is the portable copy. Unpack it anywhere,
   including a USB stick, and run `QuillRadio.exe`. It needs no installation and
   no internet.
 

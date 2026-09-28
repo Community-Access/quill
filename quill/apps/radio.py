@@ -32,7 +32,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "3.0.1"
+_VERSION = "3.0.2"
 _REPO = "Community-Access/quill"
 #: Radio publishes two downloads since 3.0.0 -- the installer and the portable
 #: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly
