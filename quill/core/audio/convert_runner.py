@@ -54,6 +54,11 @@ def _output_seconds(job: ConversionJob) -> float:
 
 def _retry_spec(job: ConversionJob, stderr: str) -> tuple[ConversionJob, str] | None:
     """A changed job worth one more attempt, and what changed -- or None."""
+    if job.spec.video_encoder:  # the graphics card failed: the processor next
+        from quill.core.audio.video_accel import mark_broken
+
+        mark_broken(job.spec.video_encoder)
+        return replace(job, spec=replace(job.spec, video_encoder="")), ""
     lowered = stderr.lower()
     caption_trouble = any(
         needle in lowered
@@ -103,7 +108,7 @@ def _default_single_runner(
         return _exact_optilab_runner(ffmpeg, job, tmp_path, hooks=hooks)
     # A feature-length video encode can outlast the hour an audio file gets.
     timeout = 6 * 3600.0 if job.spec.is_video() else 3600.0
-    attempt, notes = job, []
+    attempt, notes = _with_graphics_card(ffmpeg, job), []
     meta = tmp_path.with_suffix(".ffmeta")
     try:
         chapters, chapter_note, write_meta = _chapters_for(job)
@@ -117,7 +122,7 @@ def _default_single_runner(
                 encoding="utf-8",
             )
         length = _output_seconds(job) if hooks is not None and hooks.on_fraction else 0.0
-        for _try in range(3):
+        for _try in range(4):
             command = build_convert_command(
                 ffmpeg, attempt, out_path=tmp_path, chapters_meta=meta if meta.is_file() else None
             )
@@ -162,6 +167,19 @@ def _default_single_runner(
         return JobResult(job=job, ok=False, error=str(exc))
     finally:
         meta.unlink(missing_ok=True)
+
+
+def _with_graphics_card(ffmpeg: str, job: ConversionJob) -> ConversionJob:
+    """*job* on the graphics card's video encoder, when this machine has one."""
+    spec = job.spec
+    if not spec.is_video() or spec.copy_video or spec.video_encoder:
+        return job
+    from quill.core.audio.formats import VIDEO_OUTPUT_FORMATS
+    from quill.core.audio.video_accel import hardware_encoder
+
+    profile = VIDEO_OUTPUT_FORMATS.get(spec.fmt.strip().lower())
+    encoder = hardware_encoder(ffmpeg, profile.video_codec) if profile else None
+    return replace(job, spec=replace(spec, video_encoder=encoder)) if encoder else job
 
 
 def _chapters_for(job: ConversionJob) -> tuple[list[Chapter] | None, str, bool]:

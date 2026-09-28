@@ -454,6 +454,16 @@ film with clearer speech.</li>
 <li><strong>Video files are converted one at a time</strong>, because a
 video encoder already uses every core of the computer. Several at once
 would only make each slower.</li>
+<li><strong>The graphics card does the heavy lifting when it
+can.</strong> MP4, MKV and MOV video (H.264) and MP4 H.265 are encoded
+on the computer’s graphics chip when it has a video encoder – NVIDIA,
+Intel or AMD, which most Windows computers have – typically several
+times faster than on the processor. Quill Converter tries it once per
+session with a fraction of a second of test picture and uses it only if
+it works; if a real conversion on it ever fails, that file is converted
+again on the processor, and the processor is used for the rest of the
+session. There is nothing to set. WebM (VP9), AVI, WMV, MPEG-2 and Ogg
+Theora always use the processor.</li>
 </ul>
 <h3 id="video-presets">Video presets</h3>
 <p>When the format is a video format, the Preset list offers:</p>
@@ -744,6 +754,9 @@ ten-hour recording into 30-minute files.</li>
 pauses.</li>
 <li><strong>Use the chapter list beside each file</strong> and Split
 cuts exactly where your list says.</li>
+<li><strong>Remove all chapters</strong> is about what a converted copy
+keeps, so Split uses each file’s own chapters instead, and the summary
+says so.</li>
 </ul>
 <p>The pieces go into a folder named after the source, inside the output
 folder. Each file is named with its number and chapter title, for
@@ -812,8 +825,8 @@ conversion</h2>
 Stop is immediate: the file being converted stops too, and its
 unfinished output is removed, so nothing half-written is left in the
 output folder. Files already finished are kept, and the Conversion
-Report lists the stopped ones as skipped. A Join is the exception: it
-stops before its next source file rather than mid-file.</li>
+Report lists the stopped ones as skipped. A Join stops the same way,
+part way through a file, and saves nothing.</li>
 <li><strong>Progress</strong> is counted inside each file, not only by
 files finished: a single two-hour audiobook moves from 0 to 100 like a
 queue of fifty songs does. It is announced at 25, 50 and 75 percent, and
@@ -1154,10 +1167,11 @@ them.</li>
 <li><strong>“Change the container only” failed.</strong> That picture
 and sound cannot be copied into that container as they are. Choose Same
 quality instead, which converts rather than copies.</li>
-<li><strong>A video is taking a long time.</strong> Video encoding is
-slow, especially H.265 and VP9, and a long film can take longer than it
-lasts. The status bar and tray tooltip say how far the file has got and
-about how long is left.</li>
+<li><strong>A video is taking a long time.</strong> On a computer whose
+graphics chip has no video encoder, H.264 runs at about the speed of
+playback and H.265 slower; WebM (VP9) is slow everywhere. MP4 H.264 is
+the fastest choice. The status bar and tray tooltip say how far the file
+has got and about how long is left.</li>
 <li><strong>A file failed as copy-protected.</strong> Files with DRM,
 such as purchased Audible books or protected iTunes purchases, cannot be
 converted.</li>

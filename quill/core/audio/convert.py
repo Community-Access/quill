@@ -54,7 +54,6 @@ from quill.core.audio.formats import (
     output_extension,
     parse_encoder_names,
     required_encoders,
-    video_quality_args,
     video_scale_filter,
 )
 from quill.core.speech.ffmpeg import MP3_VBR_QUALITY, AudioMetadata
@@ -135,6 +134,7 @@ class ConversionSpec:
     video_quality: VideoQuality = VideoQuality.HIGH
     video_max_height: int | None = None
     copy_video: bool = False
+    video_encoder: str = ""  # a graphics-card encoder (video_accel); "" = the processor
     # Copy caption tracks where the container keeps them (MKV); the runner
     # turns this off and retries when a caption format will not fit.
     keep_subtitles: bool = True
@@ -543,13 +543,13 @@ def _clip_args(spec: ConversionSpec) -> list[str]:
 def _video_args(spec: ConversionSpec, video: object) -> list[str]:
     """The video-stream half of a video conversion (pure)."""
     from quill.core.audio.formats import VideoProfile
+    from quill.core.audio.video_accel import video_codec_args
 
     assert isinstance(video, VideoProfile)
     if spec.copy_video:
         return ["-c", "copy"]
-    args = ["-c:v", video.video_codec]
-    args += video_quality_args(video.video_codec, spec.video_quality)
-    args += list(video.video_args)
+    encoder = spec.video_encoder or video.video_codec
+    args = video_codec_args(video, spec.video_quality, encoder)
     scale = video_scale_filter(video.video_codec, spec.video_max_height)
     if scale:
         args += ["-vf", scale]

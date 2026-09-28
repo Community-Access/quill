@@ -2,9 +2,10 @@ FFmpeg for QuillVille apps -- provenance and corresponding source
 =================================================================
 
 This folder contains ffmpeg.exe and ffprobe.exe from FFmpeg, redistributed
-unmodified. QuillVille apps (Quill Converter, Quill Radio, Audio Studio,
-Quill Cast) run them as separate programs to convert, play and inspect sound
-and video files.
+unmodified. QUILL and the QuillVille apps (Quill Converter, Quill Radio,
+Audio Studio, Quill Cast) run them as separate programs to convert, play and
+inspect sound and video files -- bundled in the installers, or fetched when
+you ask QUILL to get FFmpeg.
 
 Binary provenance
 -----------------

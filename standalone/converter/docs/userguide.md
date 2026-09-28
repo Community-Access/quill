@@ -239,6 +239,15 @@ rather than letting it fail:
   for films and TV" on a film gives you a new film with clearer speech.
 - **Video files are converted one at a time**, because a video encoder already
   uses every core of the computer. Several at once would only make each slower.
+- **The graphics card does the heavy lifting when it can.** MP4, MKV and MOV
+  video (H.264) and MP4 H.265 are encoded on the computer's graphics chip when it
+  has a video encoder -- NVIDIA, Intel or AMD, which most Windows computers
+  have -- typically several times faster than on the processor. Quill
+  Converter tries it once per session with a fraction of a second of test
+  picture and uses it only if it works; if a real conversion on it ever fails,
+  that file is converted again on the processor, and the processor is used for
+  the rest of the session. There is nothing to set. WebM (VP9), AVI, WMV,
+  MPEG-2 and Ogg Theora always use the processor.
 
 ### Video presets
 
@@ -507,6 +516,8 @@ file has no chapters of its own:
 - **Find chapters at the pauses** and Split cuts at the pauses.
 - **Use the chapter list beside each file** and Split cuts exactly where your
   list says.
+- **Remove all chapters** is about what a converted copy keeps, so Split uses
+  each file's own chapters instead, and the summary says so.
 
 The pieces go into a folder named after the source, inside the output folder.
 Each file is named with its number and chapter title, for example "01 - Chapter
@@ -569,8 +580,8 @@ Workbench has the five fields an audiobook needs in its Book details, with an
 - **Stop:** Ctrl+Enter or the Stop Converting button. Stop is immediate: the file
   being converted stops too, and its unfinished output is removed, so nothing
   half-written is left in the output folder. Files already finished are kept,
-  and the Conversion Report lists the stopped ones as skipped. A Join is the
-  exception: it stops before its next source file rather than mid-file.
+  and the Conversion Report lists the stopped ones as skipped. A Join stops
+  the same way, part way through a file, and saves nothing.
 - **Progress** is counted inside each file, not only by files finished: a single
   two-hour audiobook moves from 0 to 100 like a queue of fifty songs does. It is
   announced at 25, 50 and 75 percent, and the status bar and the tray icon's
@@ -753,9 +764,11 @@ The **Window** menu lists the open windows.
 - **"Change the container only" failed.** That picture and sound cannot be
   copied into that container as they are. Choose Same quality instead, which
   converts rather than copies.
-- **A video is taking a long time.** Video encoding is slow, especially H.265 and
-  VP9, and a long film can take longer than it lasts. The status bar and tray
-  tooltip say how far the file has got and about how long is left.
+- **A video is taking a long time.** On a computer whose graphics chip has no
+  video encoder, H.264 runs at about the speed of playback and H.265 slower;
+  WebM (VP9) is slow everywhere. MP4 H.264 is the fastest choice. The status
+  bar and tray tooltip say how far the file has got and about how long is
+  left.
 - **A file failed as copy-protected.** Files with DRM, such as purchased
   Audible books or protected iTunes purchases, cannot be converted.
 - **Preview is silent.** Preview plays through the Windows default sound device.

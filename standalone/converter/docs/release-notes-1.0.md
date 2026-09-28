@@ -82,6 +82,14 @@ setting: **Same quality**, **Phones and the web, up to 1080p**, **Smaller file,
 up to 720p**, **Smallest file, up to 480p**, and **Change the container only**,
 which copies the picture and sound untouched in seconds.
 
+H.264 and H.265 run on the computer's graphics chip when it has a video
+encoder -- NVIDIA, Intel or AMD, which most Windows computers have -- typically
+several times faster than the processor alone: on our test laptop a 1080p film
+to H.265 went from half the speed of playback to five times it, with a file
+the same size. It is tried once with a moment of test picture and used only if
+it works, and any file it fails on is converted again on the processor.
+Nothing to set.
+
 A film's described-audio track and its second language come through in MP4,
 MKV, MOV and WebM, and MKV keeps the subtitles. We would rather a converter
 never quietly drop the one track a blind viewer needed.
@@ -223,8 +231,9 @@ available in public builds.
 
 ## Known limits
 
-- **Video encodes can take a long time.** H.265 and VP9 especially, and a long
-  film can take longer than it lasts. Video files are converted one at a time.
+- **WebM (VP9) video is slow**, and so is H.265 on a computer whose graphics
+  chip has no video encoder. MP4 H.264 is the fastest choice. Video files are
+  converted one at a time.
 - **Change the container only can fail** when a file's picture or sound does
   not fit the new container. The report says so in those words; choose Same
   quality instead.

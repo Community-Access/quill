@@ -23,6 +23,8 @@ It runs entirely on your own computer, and nothing you convert ever leaves it.
   M4A and M4B audiobooks to FLAC, Opus, WAV, MP4, MKV and WebM. Every format is
   spoken with what it is for -- "M4B audiobook -- remembers your place in book
   players" -- so you choose by purpose, not by acronym.
+- **Fast video.** H.264 and H.265 are encoded on your graphics chip when it
+  can, several times faster than the processor alone.
 - **Video, with every track that matters.** A film's described-audio track and
   its second language come through, and MKV keeps the subtitles. Video presets
   are named for the result: Same quality, Phones and the web, Smaller file,

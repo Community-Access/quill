@@ -22,6 +22,7 @@ Command builders are pure; the two ``run_*`` functions shell out.
 from __future__ import annotations
 
 import re
+import shutil
 import tempfile
 from collections.abc import Callable, Sequence
 from dataclasses import replace
@@ -35,6 +36,7 @@ from quill.core.audio.convert import (
     build_convert_command,
     discover_inputs,
 )
+from quill.core.audio.ffmpeg_live import LiveHooks, run_ffmpeg_live
 from quill.core.audio.formats import VIDEO_EXTENSIONS, VIDEO_OUTPUT_FORMATS
 from quill.core.audio.media_probe import Chapter, probe
 from quill.core.speech.ffmpeg import AudioMetadata, build_ffmetadata
@@ -252,8 +254,13 @@ def run_join(
     cancelled: Callable[[], bool] | None = None,
     run: Callable[[list[str]], object] | None = None,
 ) -> Path:
-    """Join *sources* into *out_path*. Raises ``RuntimeError`` with a reason."""
-    runner = run or _run
+    """Join *sources* into *out_path*. Raises ``RuntimeError`` with a reason.
+
+    Progress is reported inside each step as well as between them, and a stop
+    ends the FFmpeg step in progress at once. The joined file is written in the
+    temp folder and moved into place only when it is finished, so a stopped or
+    failed Join leaves nothing at *out_path*.
+    """
     if not sources:
         raise RuntimeError("There is nothing to join.")
     fmt = spec.fmt.strip().lower()
@@ -262,6 +269,22 @@ def run_join(
     channels = 1 if spec.channels in (Channels.MONO, Channels.LEFT, Channels.RIGHT) else 2
     rate = int(spec.sample_rate or 48000 if fmt in ("opus", "weba") else spec.sample_rate or 44100)
     total = len(sources) + 1
+
+    def step(command: list[str], index: int, text: str, seconds: float) -> None:
+        if run is not None:
+            _check(run(command))
+            return
+
+        def report(fraction: float) -> None:
+            if progress is not None:
+                progress(text, int((index + fraction) * 1000), total * 1000)
+
+        hooks = LiveHooks(on_fraction=report, cancel=_Stop(cancelled))
+        done = run_ffmpeg_live(command, duration_s=seconds, hooks=hooks, timeout_seconds=6 * 3600.0)
+        if done.cancelled:
+            raise RuntimeError("Join was stopped.")
+        _check(done)
+
     with tempfile.TemporaryDirectory(prefix="quill_join_") as tmp:
         folder = Path(tmp)
         parts: list[Path] = []
@@ -270,15 +293,19 @@ def run_join(
         for index, source in enumerate(sources):
             if cancelled is not None and cancelled():
                 raise RuntimeError("Join was stopped.")
+            text = f"Preparing {index + 1} of {len(sources)}: {source.name}"
             if progress is not None:
-                progress(f"Preparing {index + 1} of {len(sources)}: {source.name}", index, total)
+                progress(text, index * 1000, total * 1000)
             part = folder / f"part{index:05d}.flac"
-            _check(
-                runner(build_normalize_command(ffmpeg, source, part, rate=rate, channels=channels))
+            original = probe(source)
+            step(
+                build_normalize_command(ffmpeg, source, part, rate=rate, channels=channels),
+                index,
+                text,
+                original.duration_s,
             )
             info = probe(part)
             length_ms = int(round(info.duration_s * 1000))
-            original = probe(source)
             chapters.append((
                 chapter_title_for(source, original.tags),
                 position_ms,
@@ -294,10 +321,20 @@ def run_join(
             meta.write_text(
                 build_ffmetadata(chapters, spec.metadata or AudioMetadata()), encoding="utf-8"
             )
+        text = f"Joining {len(sources)} files into {out_path.name}"
         if progress is not None:
-            progress(f"Joining {len(sources)} files into {out_path.name}", len(sources), total)
+            progress(text, len(sources) * 1000, total * 1000)
+        if cancelled is not None and cancelled():
+            raise RuntimeError("Join was stopped.")
+        joined = folder / ("joined" + out_path.suffix)
+        step(
+            build_join_command(ffmpeg, concat, meta, spec, joined),
+            len(sources),
+            text,
+            position_ms / 1000,
+        )
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        _check(runner(build_join_command(ffmpeg, concat, meta, spec, out_path)))
+        shutil.move(str(joined), str(out_path))
     if meta is None:
         from quill.core.speech.audio_tags_core import Chapter as MarkChapter
 
@@ -351,6 +388,16 @@ def _run(command: list[str]) -> object:
     from quill.stability.safe_subprocess import run_subprocess_safely
 
     return run_subprocess_safely(command, timeout_seconds=6 * 3600.0)
+
+
+class _Stop:
+    """``cancelled()`` in the shape :class:`LiveHooks` polls."""
+
+    def __init__(self, cancelled: Callable[[], bool] | None) -> None:
+        self._cancelled = cancelled
+
+    def is_cancelled(self) -> bool:
+        return self._cancelled is not None and self._cancelled()
 
 
 def _check(completed: object) -> None:

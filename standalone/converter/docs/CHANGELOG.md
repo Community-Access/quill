@@ -168,7 +168,20 @@ had is included here.
   moves into place). Before this, a stop only took effect between files, and
   in a batch of sound files it never took effect at all, because every file
   had already been handed to a worker. The report lists stopped files as
-  skipped. A Join still stops before its next source.
+  skipped. A Join stops part way through a file too, reports progress inside
+  each file, and writes the joined file in a temp folder that is moved into
+  place only when it is finished, so a stopped Join saves nothing.
+- H.264 and H.265 video are encoded on the graphics chip when it has a video
+  encoder (NVIDIA NVENC, Intel Quick Sync, AMD AMF), typically several times
+  faster: measured 2026-09-28, 1080p H.265 went from 0.6x to 5x real time on
+  an AMD laptop, at the same file size. Each encoder is tried once per session
+  on a test picture; a real encode that fails is retried on the processor, and
+  the card is not used again that session. No setting.
+- Split by Chapters with Chapter marks set to Remove all chapters uses each
+  file's own chapters, and says so, rather than doing it silently.
+- FFmpeg's licence (GPLv3) and source offer now ship beside ffmpeg.exe in
+  both downloads, and mutagen's licence in the shared runtime; both were
+  missing, in every QuillVille app that carries them.
 - Progress is counted inside each file from FFmpeg's own progress report, not
   only by files finished, so a one-file batch of a long audiobook or film is
   no longer silent until it ends. It is announced at 25, 50 and 75 percent;

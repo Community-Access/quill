@@ -162,7 +162,11 @@ In scope for 1.0.0:
 - **Running a batch.** Off the UI thread, multi-worker for sound and one at a
   time for video. Convert becomes Stop; Stop kills the encode in progress
   (its temp file is removed), starts nothing after it, and the report lists
-  every stopped file as skipped. A Join stops before its next source. Progress is measured
+  every stopped file as skipped. A Join stops mid-file too and saves nothing
+  (it writes to a temp folder first). H.264 and H.265 run on the graphics
+  chip's encoder when one works (`quill/core/audio/video_accel.py`: probed once
+  per session, a failed real encode falls back to the processor and disables
+  the card for the session). Progress is measured
   inside each file from FFmpeg's `-progress` output
   (`quill/core/audio/ffmpeg_live.py`), combined across the batch by
   `batch_progress.py`, spoken every 25 percent and mirrored, with an estimate
