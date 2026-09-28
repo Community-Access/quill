@@ -204,12 +204,14 @@ class AiService:
         *,
         on_done: Callable[[str, GatewayQuota | None], None],
         on_error: Callable[[str], None],
+        language: str = "",
     ) -> None:
         """Run one AI request. Returns at once; answers on the UI thread.
 
         *on_error* receives a finished sentence, never an exception. Every
         failure in the client is already a coded error whose text was written
         for a person to hear, so rendering one at a user is the whole job.
+        *language* is Translate's target language.
         """
         if self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
@@ -217,13 +219,16 @@ class AiService:
             model = self.own_key_model
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
-                return ask_with_own_key(feature, prompt, chunks, model=model), None
+                answer = ask_with_own_key(
+                    feature, prompt, chunks, model=model, language=language or "English"
+                )
+                return answer, None
 
         else:
             client = self.client()
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
-                return client.ask(feature, prompt, chunks)
+                return client.ask(feature, prompt, chunks, language=language)
 
         def done(_name: str, result: Any) -> None:
             text, quota = result
@@ -233,6 +238,47 @@ class AiService:
             _call_after(on_error, _sentence(error))
 
         _submit("quill-ai-ask", work, on_success=done, on_failure=failed)
+
+    def converse(
+        self,
+        prompt: str,
+        chunks: list[str] | None,
+        history: list[dict[str, str]],
+        *,
+        on_done: Callable[[str, GatewayQuota | None, int], None],
+        on_error: Callable[[str], None],
+    ) -> None:
+        """One conversation turn (:mod:`quill.core.ai.hosted_chat`). Returns at
+        once; answers on the UI thread with ``(reply, quota, turns_dropped)``.
+
+        With an own key the history goes to OpenAI as it is -- the window has
+        already trimmed it only as far as the model can read -- and nothing is
+        counted; on QUILL's service the service may trim further and says by
+        how many turns.
+        """
+        if self.own_key_active:
+            from quill.core.ai.own_key import ask_with_own_key
+
+            model = self.own_key_model
+
+            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
+                reply = ask_with_own_key("chat", prompt, chunks, model=model, history=history)
+                return reply, None, 0
+
+        else:
+            client = self.client()
+
+            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
+                return client.converse(prompt, chunks, history)
+
+        def done(_name: str, result: Any) -> None:
+            text, quota, dropped = result
+            _call_after(on_done, text, quota, dropped)
+
+        def failed(_name: str, error: BaseException) -> None:
+            _call_after(on_error, _sentence(error))
+
+        _submit("quill-ai-converse", work, on_success=done, on_failure=failed)
 
     def fetch_quota(
         self,

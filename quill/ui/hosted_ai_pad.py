@@ -23,63 +23,24 @@ from typing import Any
 import wx
 
 from quill.core.ai import gateway_context as ctx
+from quill.core.ai.writing_tools import (
+    ACTION_TITLES,
+    ACTIONS,
+    CONVERSATION,
+    DEFAULT_LANGUAGE,
+    LANGUAGES,
+    QUESTION_ACTIONS,
+)
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, show_problem
 
 __all__ = ["ACTIONS", "AiPadFrame", "AiResultFrame"]
 
-#: The six things the free tier does, in the order the list offers them.
-#:
-#: The sentence beside each is the control's inline ``SetHelpText``, which is
-#: what F1 reads, what the audit checks for, and what
-#: ``docs/f1-help-reference.md`` renders. One sentence, written once, reaching
-#: three places -- and written to be *heard*, since arriving on a row in a list
-#: is how most people will meet it.
-ACTIONS: tuple[tuple[str, str, str], ...] = (
-    (
-        "summarize",
-        "Summarize",
-        "A few plain sentences saying what this passage says.",
-    ),
-    (
-        "rewrite",
-        "Rewrite",
-        "The same meaning, clearer and shorter.",
-    ),
-    (
-        "proofread",
-        "Proofread",
-        "Spelling, grammar and punctuation corrected, wording left alone.",
-    ),
-    (
-        "explain",
-        "Explain",
-        "What this passage means, in plain language.",
-    ),
-    (
-        "document_qna",
-        "Ask a question about the document",
-        "Type a question; QUILL Lite finds the parts of the document that answer "
-        "it and sends only those.",
-    ),
-    (
-        "ask",
-        "Ask a general question",
-        "Type any question. Only your question is sent -- nothing from your document.",
-    ),
-)
-
-#: The actions that take a typed question rather than a passage.
-_QUESTION_ACTIONS = frozenset({"document_qna", "ask"})
-
-_ACTION_TITLES = {
-    "summarize": "Summary",
-    "rewrite": "Rewrite",
-    "proofread": "Proofread",
-    "explain": "Explanation",
-    "document_qna": "Answer",
-    "ask": "Answer",
-}
+#: What AI help can do, in the order the list offers it, and what each result
+#: window is called. Seventeen since 1.1; the table and its reasons live in
+#: :mod:`quill.core.ai.writing_tools`, wx-free, so tests and docs can read it.
+_QUESTION_ACTIONS = QUESTION_ACTIONS
+_ACTION_TITLES = ACTION_TITLES
 
 
 # --------------------------------------------------------------------------- #
@@ -106,6 +67,7 @@ class AiResultFrame(wx.Frame):
         on_insert: Callable[[str], None] | None,
         on_again: Callable[[], None] | None,
         announce: Callable[[str], None],
+        on_follow_up: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(parent, title=_ACTION_TITLES.get(action, "AI Result"))
         self._text = text
@@ -158,6 +120,21 @@ class AiResultFrame(wx.Frame):
 
             again.Bind(wx.EVT_BUTTON, _retry)
             extra.append(again)
+
+        if on_follow_up is not None:
+            follow = wx.Button(panel, label="Follow &Up")
+            follow.SetHelpText(
+                "Carries on from this answer in a conversation: ask for it shorter, "
+                "ask about one part of it, or ask something new. Each message uses "
+                "one request."
+            )
+
+            def _follow(_event: wx.CommandEvent) -> None:
+                self.Close()
+                on_follow_up()
+
+            follow.Bind(wx.EVT_BUTTON, _follow)
+            extra.append(follow)
 
         _close_row(self, sizer, *extra)
 
@@ -217,6 +194,7 @@ class AiPadFrame(wx.Frame):
         announce: Callable[[str], None],
         on_result: Callable[[str, str, str], None],
         initial_action: str = "",
+        on_chat: Callable[[str], None] | None = None,
     ) -> None:
         super().__init__(parent, title="AI Assistant")
         self._service = service
@@ -226,6 +204,10 @@ class AiPadFrame(wx.Frame):
         self._selection = selection
         self._position = position
         self._scope = ""
+        self._on_chat = on_chat
+        #: ``(feature, prompt, chunks)`` of the request whose answer is showing,
+        #: so Follow Up can carry the conversation on from it.
+        self.last_request: tuple[str, str, list[str] | None] | None = None
 
         panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -287,6 +269,16 @@ class AiPadFrame(wx.Frame):
         sizer.Add(self._question_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         sizer.Add(self._question, 0, wx.EXPAND | wx.ALL, _PAD)
 
+        self._language_label = wx.StaticText(panel, label="Translate &into")
+        self._language = wx.Choice(panel, choices=list(LANGUAGES))
+        set_accessible_name(self._language, "Translate into")
+        self._language.SetHelpText(
+            "The language Translate writes in. Only these languages are offered."
+        )
+        self._language.SetSelection(LANGUAGES.index(DEFAULT_LANGUAGE))
+        sizer.Add(self._language_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        sizer.Add(self._language, 0, wx.EXPAND | wx.ALL, _PAD)
+
         self._send = wx.Button(panel, label="&Send")
         self._send.SetHelpText("Sends the text above and uses one of your free requests.")
         self._send.Bind(wx.EVT_BUTTON, self._on_send)
@@ -331,13 +323,36 @@ class AiPadFrame(wx.Frame):
         Shown, not enabled-and-empty: a control that is present but meaningless
         is a stop on every Tab cycle, forever, for a choice that does not exist.
         """
+        # F1 on the list answers for the row you are on: that row's own
+        # sentence first, then what the list is for.
+        _aid, label, help_text = ACTIONS[max(0, self._actions.GetSelection())]
+        self._actions.SetHelpText(
+            f"{label}: {help_text} Choose what the AI should do with the text above; "
+            "each choice has its own description."
+        )
         asking = self._asking()
         self._question_label.Show(asking)
         self._question.Show(asking)
+        translating = self._action_id == "translate"
+        self._language_label.Show(translating)
+        self._language.Show(translating)
         self._panel.Layout()
         self._refresh_preview()
 
     def _refresh_preview(self) -> None:
+        if self._action_id == CONVERSATION:
+            self._preview.SetValue("")
+            self._summary.SetValue(
+                "Opens a conversation window. Only what you type is sent, with the "
+                "conversation so far; nothing from this document. Type a first "
+                "message below if you like."
+                + (
+                    " With your own key the whole conversation goes each time."
+                    if self._own_key()
+                    else " Each message uses one of your free requests."
+                )
+            )
+            return
         if self._action_id == "ask":
             # Nothing from the document: the question is typed below, and it
             # is the whole of what is sent.
@@ -448,6 +463,14 @@ class AiPadFrame(wx.Frame):
             return
 
         feature = self._action_id
+        if feature == CONVERSATION:
+            # Not sent from here: the conversation window does the sending,
+            # and the first message goes with it.
+            first = self._question.GetValue().strip()
+            if self._on_chat is not None:
+                self.Close()
+                self._on_chat(first)
+            return
         chunks: list[str] | None = None
         if self._asking():
             question = self._question.GetValue().strip()
@@ -495,12 +518,19 @@ class AiPadFrame(wx.Frame):
         self._send.Disable()
         self._status.SetValue("Working...")
         self._announce("Working.")
+        self.last_request = (feature, prompt, chunks)
+        # Only Translate carries a language, so every other request keeps the
+        # call shape it always had.
+        extra: dict[str, str] = {}
+        if feature == "translate":
+            extra["language"] = LANGUAGES[max(0, self._language.GetSelection())]
         self._service.ask(
             feature,
             prompt,
             chunks,
             on_done=lambda text, quota: self._done(feature, text, quota),
             on_error=self._failed,
+            **extra,
         )
 
     def _done(self, feature: str, text: str, quota: Any) -> None:

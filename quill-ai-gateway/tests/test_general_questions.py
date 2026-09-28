@@ -48,10 +48,9 @@ def _capture(monkeypatch) -> dict:
     return seen
 
 
-def test_general_questions_are_shipped_and_chat_is_not():
+def test_general_questions_are_shipped():
     assert "ask" in SHIPPED_FEATURES
     assert "ask" not in DEFERRED_FEATURES
-    assert "chat" in DEFERRED_FEATURES
 
 
 def test_a_general_question_does_no_reasoning():
@@ -89,7 +88,6 @@ def test_other_features_keep_the_ordinary_ceiling(client, caller, monkeypatch):
 def test_the_client_is_told_general_questions_are_on(client, caller):
     flags = client.get("/v1/config").get_json()["feature_flags"]
     assert flags["ask"] is True
-    assert flags["chat"] is False
 
 
 def test_the_worst_case_costs_the_longer_answer():
@@ -110,14 +108,13 @@ def test_the_worst_case_costs_the_longer_answer():
 
 
 def test_the_per_person_fence_still_sits_above_the_reachable_worst_case():
-    """Sixty general questions at the full answer plus forty other requests,
-    at the seeded sizes, must stay under the seeded per-person ceiling -- or
-    the fence cuts off people who did nothing wrong."""
-    from app.limits import _FEATURE_CAP_FAIL_SAFE_DEFAULTS, SEED_DEFAULTS
+    """The whole month at the longer answer -- every request a general
+    question, a conversation turn or a long writing tool -- at the seeded
+    sizes, must stay under the seeded per-person ceiling, or the fence cuts off
+    people who did nothing wrong."""
+    from app.limits import SEED_DEFAULTS
 
     per_input = 3000 / 1_000_000 * 0.10
-    ask = _FEATURE_CAP_FAIL_SAFE_DEFAULTS["ask"]
-    others = SEED_DEFAULTS["monthly_request_cap"] - ask
-    reachable = ask * (per_input + SEED_DEFAULTS["max_ask_output_tokens"] / 1_000_000 * 0.50)
-    reachable += others * (per_input + SEED_DEFAULTS["max_output_tokens"] / 1_000_000 * 0.50)
+    per_long_answer = SEED_DEFAULTS["max_ask_output_tokens"] / 1_000_000 * 0.50
+    reachable = SEED_DEFAULTS["monthly_request_cap"] * (per_input + per_long_answer)
     assert reachable < SEED_DEFAULTS["monthly_cost_cap_usd"]

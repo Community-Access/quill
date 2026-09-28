@@ -334,7 +334,7 @@ costs is a reviewed code change, not a runtime admin knob. Add a
 | `summarize` | `none` | Extraction from supplied text |
 | `explain` | `none` | Short explanation of supplied text |
 | `document_qna` | `low` | The one feature with genuine synthesis; measure before keeping it above `none` |
-| `chat` | `none` | **Not shipped.** Open-ended chat is not part of the free tier |
+| `chat` | `none` | **Shipped 2026-09**, on the condition in 5.8: history trimmed to the input ceiling |
 | `alt_text` | `none` | **Not shipped.** Switched off in the database; see 5.7 |
 
 Two mechanical changes in `app/openai_client.py` go with this: `max_tokens`
@@ -424,9 +424,11 @@ very providers it exists to make unnecessary.
    best-matching local chunks, with "the document does not say" as an allowed and
    expected answer.
 
-Deliberately excluded from the free tier: chat with history, agents and the tool
-loop, translation, cloud TTS, streaming, and any multi-turn context. Each of
-those is a multiplier on cost, a multiplier on complexity, or both.
+Deliberately excluded from the free tier: agents and the tool loop,
+translation, cloud TTS and streaming. Each of those is a multiplier on cost, a
+multiplier on complexity, or both. Chat with history was on this list too, and
+shipped in 2026-09 once a way was found to make it no multiplier at all -- see
+5.8.
 
 **And images. Not in QUILL Lite at all** — see 5.7, which is a decision rather
 than an omission.
@@ -492,6 +494,71 @@ anyone outside the team:
   currently true. It must stay true, and the privacy text must not outrun it.
 
 ---
+
+### 5.8 Conversations: shipped 2026-09, on one condition
+
+A conversation was excluded because it resends its whole history on every turn,
+so each reply costs more than the last: a 20-turn chat with 200-word questions
+and 700-word answers sends about 177,000 input tokens, roughly $0.025 at Luna's
+prices -- a quarter of one person's monthly fence in one sitting, where the same
+twenty questions asked separately cost about $0.008.
+
+It ships (`feature = "chat"`, migration 008) on the condition that removes the
+multiplier: **the history is trimmed to the same `max_input_tokens` every other
+request has**, oldest turns first. A turn therefore never costs more than any
+other request, and the worst case per person does not move:
+
+| | Before | With conversations |
+|---|---|---|
+| Most one request can cost | $0.0008 (3,000 in, 1,000 out) | $0.0008 |
+| Requests per person | 100 a month, 20 a day | unchanged; each turn is one |
+| Conversation share | -- | `feature_cap.chat` = 40 of the 100 |
+| Per-person fence | $0.10 | $0.10 |
+| Global budget | $40 | $40 |
+
+What a long conversation loses is **memory of its opening, never money**. The
+client says so aloud when it happens.
+
+How it works:
+
+- **The wire.** `POST /v1/chat` with `feature: "chat"`, `prompt` (the latest
+  message), optional `chunks` (document excerpts the conversation is about,
+  sent on every turn and never trimmed) and `history` -- a list of
+  `{"role": "user" | "assistant", "content": str}`. Any other shape, a `system`
+  turn included, is `400 bad_history`: the client never supplies instructions.
+  Only the newest 60 turns are even considered.
+- **Trimming** (`app/limits.py::fit_history`). The message and excerpts are
+  checked by the ordinary size rule first and refused if they alone are too
+  large (refunded, as always). The history then fills whatever room is left,
+  newest turn first. The client trims too, so the server usually drops
+  nothing; the response's `history_dropped` says how many turns it did drop.
+- **The prompt** (`app/prompts.py::chat_message`): excerpts, then "The
+  conversation so far", then "The user's latest message", inside the fixed
+  `chat` template. `quill/core/ai/own_key.py` builds the same text on the
+  user's computer for an own-key conversation, and a test fails if the two
+  drift.
+- **The answer ceiling** is `max_ask_output_tokens` (1,000), like a general
+  question. Reasoning effort is `none`.
+
+**With the user's own OpenAI key there is no trimming and no cap** -- the
+conversation goes straight to OpenAI, whole, billed to their account, and is
+only shortened if it outgrows the model's own context window, which is said
+aloud when it happens.
+
+### 5.9 Ten writing tools (2026-09)
+
+Shipped with migration 008 alongside conversations: `shorten`, `simplify`,
+`formal`, `friendly`, `make_list`, `action_items`, `headings`, `continue`,
+`email_reply` and `translate`. The admission rule is Summarize's shape -- one
+passage in, one result out, under `max_input_tokens` -- so none is a new worst
+case. Each has `feature_cap` 60 and reasoning effort `none`. The answer ceiling
+is `max_ask_output_tokens` for the tools whose result can run long (translate,
+continue, email_reply, headings, make_list, simplify, plus ask and chat:
+`LONG_ANSWER_FEATURES`); the Limits page already prices every request at that
+ceiling. Translate's `language` is the one value a client fills into a
+template, so it must be one of the twenty in `app/prompts.py::LANGUAGES`
+(`400 unknown_language` otherwise); the client's copy is
+`quill/core/ai/writing_tools.py`, and a test fails if they differ.
 
 ## 6. Gaps in the built server, ranked
 

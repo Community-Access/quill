@@ -16,16 +16,33 @@ the answer: if it consumes ``max_output_tokens``, the user is charged for an
 empty reply. Both halves of that are handled — the effort floor here, and the
 no-charge-for-nothing rule in ``app/routes/chat.py``.
 
-Six features are shipped. Two more have templates and ids but are switched off,
-and :data:`DEFERRED_FEATURES` says why in the words an operator will read in the
-console.
+Seventeen features are shipped. One more has a template and an id but is
+switched off, and :data:`DEFERRED_FEATURES` says why in the words an operator
+will read in the console.
 
 The sixth, ``ask``, is the one that works on nothing from a document: a single
-question, answered on its own, with no history. It is what keeps it affordable
-where open-ended ``chat`` is not -- every request is one question and one answer,
-never a conversation resent in full on every turn -- and it is why its answer
-gets a ceiling of its own (``max_ask_output_tokens``): a general answer needs
-more room than a rewritten paragraph does.
+question, answered on its own, with no history. Its answer gets a ceiling of its
+own (``max_ask_output_tokens``): a general answer needs more room than a
+rewritten paragraph does.
+
+The seventh, ``chat``, is a conversation -- and was deferred until 2026-09 for
+the reason a conversation is usually expensive: it resends its whole history on
+every turn, so each reply costs more than the last. It is shipped on the one
+condition that removes that: **the history is trimmed to the same input ceiling
+every other request has** (``app/routes/chat.py``, oldest turns first), so a
+turn can never cost more than any other request, and every turn is a counted
+request with a monthly share of its own (``feature_cap.chat``). What a long
+conversation loses is memory of its opening, never money. The prompt is built by
+:func:`build_prompt` from the history the client sends; the client still never
+supplies the instructions.
+
+The ten after that are the **writing tools** (2026-09, QUILL Lite 1.1):
+Shorten, Simplify, Make more formal, Make friendlier, Turn into a list, Find
+action items, Suggest headings, Continue writing, Write an email reply and
+Translate. Each is the shape of Summarize -- one passage in, one result out,
+under the same input ceiling -- so none of them moves a worst case. Translate's
+target language is the one value a client fills into a template, and it must
+be one of :data:`LANGUAGES`.
 """
 
 from __future__ import annotations
@@ -34,6 +51,8 @@ __all__ = [
     "DEFERRED_FEATURES",
     "FEATURES",
     "FEATURE_LABELS",
+    "LANGUAGES",
+    "LONG_ANSWER_FEATURES",
     "REASONING_EFFORT",
     "SHIPPED_FEATURES",
     "TEMPLATES",
@@ -81,21 +100,89 @@ TEMPLATES: dict[str, str] = {
         "answer concise and in plain language suitable for a screen reader "
         "to read aloud.\n\nExcerpts:\n{context}\n\nQuestion: {prompt}"
     ),
+    # --- The writing tools (2026-09, QUILL Lite 1.1). Each is one passage in,
+    # one result out, at the same size as every other request. -------------
+    "shorten": (
+        "Shorten the following text to about half its length. Keep every "
+        "important fact, the meaning and the tone; cut repetition and "
+        "padding. Return only the shortened text, with no preamble.\n\n{prompt}"
+    ),
+    "simplify": (
+        "Rewrite the following text in plain language that is easy to read: "
+        "short sentences, everyday words, and any necessary technical term "
+        "explained the first time it appears. Keep every fact and do not add "
+        "any. Return only the rewritten text, with no preamble.\n\n{prompt}"
+    ),
+    "formal": (
+        "Rewrite the following text in a more formal, professional tone, "
+        "suitable for work or official correspondence. Keep the meaning and "
+        "every fact. Return only the rewritten text, with no preamble.\n\n{prompt}"
+    ),
+    "friendly": (
+        "Rewrite the following text in a warmer, friendlier tone, as if to "
+        "someone the writer knows. Keep the meaning and every fact. Return "
+        "only the rewritten text, with no preamble.\n\n{prompt}"
+    ),
+    "make_list": (
+        "Turn the following text into a clear list: numbered steps if it "
+        "describes a process, otherwise bullet points. Start each item on its "
+        "own line with a hyphen and a space, or with its number and a full "
+        "stop. Keep every fact and add none. Return only the list, with no "
+        "preamble.\n\n{prompt}"
+    ),
+    "action_items": (
+        "List the action items in the following text: every task someone has "
+        "to do, with who and by when wherever the text says, and every date "
+        "or deadline it mentions. One item per line, starting with a hyphen "
+        "and a space. If there are none, say so in one sentence. Do not add "
+        "anything the text does not say.\n\n{prompt}"
+    ),
+    "headings": (
+        "Suggest headings that would divide the following text into clear "
+        "sections a reader can jump between. For each, give the heading on "
+        "its own line, then on the next line the first few words of the "
+        "paragraph it belongs above, in quotation marks. Keep headings short "
+        "and plain. Return only the headings and their places, with no "
+        "preamble.\n\n{prompt}"
+    ),
+    "continue": (
+        "Write the next paragraph of the following text, continuing it "
+        "naturally in the same voice, tone and tense. Do not repeat or "
+        "summarize what is already there, and do not add a conclusion unless "
+        "the text is clearly ending. Return only the new paragraph.\n\n{prompt}"
+    ),
+    "email_reply": (
+        "The following is an email the user received. Write a clear, polite "
+        "reply that the user can edit before sending: answer each question "
+        "it asks, and where the user must decide something, leave a short "
+        "placeholder in square brackets. Return only the body of the reply, "
+        "with no subject line and no preamble.\n\n{prompt}"
+    ),
+    "translate": (
+        "Translate the following text into {language}. Keep the meaning, the "
+        "tone and any formatting such as line breaks and lists. Return only "
+        "the translation, with no preamble or notes.\n\n{prompt}"
+    ),
+    "chat": (
+        "You are a helpful assistant inside QUILL, an accessibility-first "
+        "text editor, in a conversation with the user. Reply to their latest "
+        "message directly and concisely, in plain language suitable for a "
+        "screen reader to read aloud, using the conversation so far for "
+        "context. If excerpts from the user's document are included, answer "
+        "questions about the document only from them, and say so plainly "
+        "when they do not contain the answer. If you are not sure of "
+        "something, say so rather than guessing. Do not use tables, and keep "
+        "any formatting simple.\n\n{prompt}"
+    ),
     # --- Not shipped. See DEFERRED_FEATURES. --------------------------------
     "alt_text": (
         "Describe this image in one concise sentence suitable as alt text "
         "for a screen reader. Focus on what the image conveys, not "
         "incidental visual detail.\n\n{prompt}"
     ),
-    "chat": (
-        "You are a helpful writing assistant inside QUILL, an "
-        "accessibility-first text editor. Answer the user's message "
-        "directly and concisely, in plain language suitable for a screen "
-        "reader to read aloud.\n\n{prompt}"
-    ),
 }
 
-#: The six features the free tier actually offers today.
+#: The seven features the free tier actually offers today.
 SHIPPED_FEATURES: tuple[str, ...] = (
     "summarize",
     "rewrite",
@@ -103,6 +190,60 @@ SHIPPED_FEATURES: tuple[str, ...] = (
     "explain",
     "document_qna",
     "ask",
+    "chat",
+    "shorten",
+    "simplify",
+    "formal",
+    "friendly",
+    "make_list",
+    "action_items",
+    "headings",
+    "continue",
+    "email_reply",
+    "translate",
+)
+
+#: Features whose answer gets the longer ceiling (``max_ask_output_tokens``)
+#: rather than the ordinary one: a general answer, a conversation reply, and the
+#: writing tools whose result can be longer than a summary -- a translation or a
+#: new paragraph is as long as it needs to be. The Limits page prices every
+#: request at the longer ceiling already, so this moves no worst case.
+LONG_ANSWER_FEATURES: frozenset[str] = frozenset({
+    "ask",
+    "chat",
+    "translate",
+    "continue",
+    "email_reply",
+    "headings",
+    "make_list",
+    "simplify",
+})
+
+#: The languages Translate offers. The client shows the same list
+#: (``quill/core/ai/writing_tools.py``); anything else is refused, because the
+#: language is the one piece of a template a client fills in, and a free-text
+#: field there would be a place to smuggle instructions.
+LANGUAGES: tuple[str, ...] = (
+    "English",
+    "Spanish",
+    "French",
+    "German",
+    "Italian",
+    "Portuguese",
+    "Dutch",
+    "Swedish",
+    "Polish",
+    "Russian",
+    "Ukrainian",
+    "Turkish",
+    "Arabic",
+    "Hebrew",
+    "Hindi",
+    "Chinese (Simplified)",
+    "Japanese",
+    "Korean",
+    "Vietnamese",
+    "Tagalog",
 )
 
 #: Features with an id and a template that are deliberately switched off, and
@@ -114,12 +255,6 @@ DEFERRED_FEATURES: dict[str, str] = {
         "Describing pictures is not a shipped feature yet. It costs several "
         "times more per request than text does and needs its own limits, so "
         "it is deliberately last. Nothing in QUILL or QUILL Lite can reach it."
-    ),
-    "chat": (
-        "Open-ended chat is not part of the free tier. The free tier answers "
-        "one question at a time: a conversation sends its whole history again "
-        "on every turn, so each reply costs more than the last. Chat is "
-        "available with your own API key."
     ),
 }
 
@@ -137,7 +272,17 @@ FEATURE_LABELS: dict[str, str] = {
     "document_qna": "Questions about documents",
     "ask": "General questions",
     "alt_text": "Pictures (alt text)",
-    "chat": "Open-ended chat",
+    "chat": "Conversations",
+    "shorten": "Shorten",
+    "simplify": "Simplify",
+    "formal": "Make more formal",
+    "friendly": "Make friendlier",
+    "make_list": "Turn into a list",
+    "action_items": "Find action items",
+    "headings": "Suggest headings",
+    "continue": "Continue writing",
+    "email_reply": "Write an email reply",
+    "translate": "Translate",
 }
 
 #: How hard the model may think, per feature. Code, not config — see the module
@@ -153,6 +298,16 @@ REASONING_EFFORT: dict[str, str] = {
     "ask": "none",
     "alt_text": "none",
     "chat": "none",
+    "shorten": "none",
+    "simplify": "none",
+    "formal": "none",
+    "friendly": "none",
+    "make_list": "none",
+    "action_items": "none",
+    "headings": "none",
+    "continue": "none",
+    "email_reply": "none",
+    "translate": "none",
 }
 
 #: The only values :data:`REASONING_EFFORT` may take, cheapest first. Anything
@@ -169,14 +324,50 @@ def reasoning_effort_for(feature: str) -> str:
     return effort if effort in ALLOWED_EFFORTS else "none"
 
 
-def build_prompt(feature: str, prompt: str, chunks: list[str] | None = None) -> str:
+#: Who said a turn, as the model reads it. The only two roles a history may hold.
+HISTORY_SPEAKERS: dict[str, str] = {"user": "User", "assistant": "Assistant"}
+
+
+def chat_message(prompt: str, chunks: list[str] | None, history: list[dict] | None) -> str:
+    """The user half of a ``chat`` request: document excerpts, the conversation
+    so far, then the latest message.
+
+    Mirrored word for word by ``quill/core/ai/own_key.py`` (an own-key chat is
+    built on the user's computer), and ``tests/unit/core/ai/test_own_key.py``
+    fails if the two drift -- a conversation must read the same to the model
+    whichever way it travels.
+    """
+    parts: list[str] = []
+    if chunks:
+        parts.append("Excerpts from the user's document:\n" + "\n\n---\n\n".join(chunks))
+    if history:
+        lines = [f"{HISTORY_SPEAKERS[turn['role']]}: {turn['content']}" for turn in history]
+        parts.append("The conversation so far:\n" + "\n\n".join(lines))
+    parts.append(f"The user's latest message:\n{prompt}")
+    return "\n\n".join(parts)
+
+
+def build_prompt(
+    feature: str,
+    prompt: str,
+    chunks: list[str] | None = None,
+    history: list[dict] | None = None,
+    language: str = "English",
+) -> str:
     """The exact text sent to the model for *feature*, wrapping the
-    client-supplied *prompt* (and, for document Q&A, its *chunks*) in the
-    feature's fixed template. Raises :class:`KeyError` for an unknown feature —
-    the caller (``app/routes/chat.py``) validates ``feature`` against
-    :data:`FEATURES` before ever reaching here."""
+    client-supplied *prompt* (and, for document Q&A, its *chunks*; for a
+    conversation, its *history* too) in the feature's fixed template. Raises
+    :class:`KeyError` for an unknown feature — the caller
+    (``app/routes/chat.py``) validates ``feature`` against :data:`FEATURES`
+    before ever reaching here, and validates *history* as well."""
     template = TEMPLATES[feature]
     if feature == "document_qna":
         context = "\n\n---\n\n".join(chunks or [])
         return template.format(context=context, prompt=prompt)
+    if feature == "chat":
+        return template.format(prompt=chat_message(prompt, chunks, history))
+    if feature == "translate":
+        # The caller has checked *language* against LANGUAGES; a value that is
+        # not in it never reaches a template.
+        return template.format(prompt=prompt, language=language)
     return template.format(prompt=prompt)

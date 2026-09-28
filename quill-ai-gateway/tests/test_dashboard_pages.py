@@ -246,7 +246,8 @@ def test_the_locked_page_names_the_deferred_features(dash):
     c, _user, _device = dash
     html = c.get("/dashboard/locked").get_data(as_text=True)
     assert "not a shipped feature" in html
-    assert "not part of the free tier" in html
+    # Conversations shipped in 2026-09 (migration 008): no longer locked.
+    assert "not part of the free tier" not in html
 
 
 # --- Safety checks ---------------------------------------------------------------
@@ -477,7 +478,7 @@ def test_the_client_is_told_about_every_feature_including_the_new_ones(app, clie
     assert flags["summarize"] is True
     assert flags["rewrite"] is True
     assert flags["document_qna"] is True
-    # And the two that were never built are reported off, so the client never
-    # offers a button for them.
+    # Conversations shipped in 2026-09 (migration 008); pictures were never
+    # built and are reported off, so the client never offers a button for them.
+    assert flags["chat"] is True
     assert flags["alt_text"] is False
-    assert flags["chat"] is False

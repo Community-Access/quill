@@ -3222,8 +3222,8 @@ AI help is **off until you turn it on and accept the agreement** — both, not
 either. See *AI help* under Customize Features for the reason the switch and the
 agreement are two separate things, and for the three doors to the agreement.
 
-Once it is on, there is **one pad**, six things it can do, and two keys into
-it.
+Once it is on, there is **one pad**, seventeen things it can do, and two keys
+into it.
 
 **AI Assistant** (**Ctrl+Alt+G**) opens the pad where you are. **Ask About
 This Document** (**Ctrl+Alt+Z**) opens the same pad with **Ask a question about
@@ -3238,7 +3238,8 @@ selection and is worth a chord instead of one more row to arrow past.
 2. **Send this much** — a chooser, when there is more than one sensible
    answer: what you selected, the paragraph you are in, or the whole section.
    The box above rewrites itself as you change it.
-3. **What do you want done?** — a list of the six:
+3. **What do you want done?** — a list of the seventeen. Arrow through it,
+   or press a letter to jump:
 
 | Choose | You get |
 |---|---|
@@ -3246,17 +3247,33 @@ selection and is worth a chord instead of one more row to arrow past.
 | **Rewrite** | The same meaning, clearer and shorter |
 | **Proofread** | Spelling, grammar and punctuation corrected, wording left alone |
 | **Explain** | What this passage means, in plain language |
+| **Shorten** | The same passage at about half the length, every important fact kept |
+| **Simplify** | Plain, easy-to-read language: short sentences, everyday words, technical terms explained |
+| **Make more formal** | The same meaning in a professional tone, for work or official letters |
+| **Make friendlier** | The same meaning in a warmer tone, as if to someone you know |
+| **Turn into a list** | A bulleted list, or numbered steps when the passage describes a process |
+| **Find action items** | Every task, who does it and by when, and every date or deadline, one per line |
+| **Suggest headings** | Headings that divide a long passage into sections you can jump between by heading, and where each goes |
+| **Continue writing** | A next paragraph in the same voice, for you to keep, change or throw away |
+| **Write an email reply** | Select an email you received; get a polite reply to edit, with decisions left in [square brackets] |
+| **Translate** | The passage in the language you choose, from twenty, meaning and formatting kept |
 | **Ask a question about the document** | You type a question; QUILL Lite finds the parts of the document that answer it and sends only those |
 | **Ask a general question** | You type any question; only the question is sent, nothing from your document |
+| **Have a conversation** | A window where you talk back and forth; each reply remembers what was said before |
 
-4. **Your question** — which appears only for the two question choices.
+4. **Your question** — which appears only for the three choices that take
+   typing. For **Have a conversation** it is your first message, and it is
+   optional: leave it empty and the conversation window opens ready for you.
+   For **Translate**, a **Translate into** list appears instead, with twenty
+   languages; Spanish is chosen until you pick another.
 
-A general question is one question and one answer. It is not a conversation:
-the next question does not remember the last, which is what keeps it inside the
-free allowance. Its answer may be longer than the others — about 1,000 tokens,
-roughly 750 words — because a useful general answer needs the room.
+A general question is one question and one answer: the next question does not
+remember the last. When you want it to remember, choose **Have a conversation**
+instead — see *Having a conversation*, below. A general answer and a
+conversation reply may be longer than the others — about 1,000 tokens, roughly
+750 words — because a useful answer needs the room.
 
-Each of the six can be switched off on QUILL's service without a new version
+Each of the seventeen can be switched off on QUILL's service without a new version
 of QUILL Lite. If one is off, the pad says so when you press Send, and nothing
 is used.
 5. **Send** — and nothing at all has left this computer until you press it.
@@ -3264,7 +3281,8 @@ is used.
 ### What comes back, and what you can do with it
 
 The answer arrives in a read-only box of its own, with buttons under it:
-**Replace My Selection**, **Insert Below**, **Copy**, and **Try Again**. The
+**Replace My Selection**, **Insert Below**, **Copy**, **Try Again** and **Follow
+Up**, which carries on from this answer in a conversation. The
 first two appear only when they make sense — there is nothing to replace if
 you selected nothing.
 
@@ -3277,6 +3295,43 @@ commands. When you do, the text you asked about — the selection, or the docume
 — is sent to QUILL's own service and the answer comes back. Nothing is sent as
 you type, nothing is sent in the background, and closing the pad without asking
 sends nothing at all.
+
+### Having a conversation
+
+**Have a conversation** opens the **AI Conversation** window: talk back and
+forth, and each reply knows what was said before it. Choose it in the pad, or
+press **Follow Up** in any answer window to carry on from that answer — a
+follow-up to a question about your document keeps sending the same passages,
+so you can keep asking about them.
+
+What the window holds, top to bottom:
+
+1. **About this conversation** — what goes with each message and what it uses.
+2. **Conversation** — everything said so far, newest at the end, as "You:" and
+   "AI:" paragraphs. Read-only; Shift+Tab reaches it from the message box.
+3. **Your message** — where focus lives. Type and press **Enter** to send.
+4. **Send**, **New Conversation**, **Copy Last Reply**, **Insert Last Reply
+   Below**, and Close.
+5. **Status** — working, what was used, or what went wrong.
+
+**The reply is read aloud** when it arrives, and added to the conversation. You
+stay in the message box, so you can answer straight away.
+
+**What a conversation costs on the free AI.** Each message is one request —
+nothing more — and conversations have a monthly share of their own (40 of the
+100). To stay inside the ordinary size limit, the conversation so far goes with
+each message only as far as it fits, newest first. So a long conversation
+gradually forgets its beginning. The window **says so the first time it
+happens** — "The beginning of this conversation is no longer sent, to stay
+within the free limit" — and **New Conversation** starts fresh.
+
+**With your own OpenAI key there is no such limit.** The whole conversation goes
+with every message, billed to your OpenAI account, so a long conversation costs
+more per reply. It is only shortened if it grows past what the model can read at
+once, and the window says so if that happens.
+
+**Nothing goes into your document** unless you press **Insert Last Reply Below**,
+and **Ctrl+Z** takes that back like any other edit.
 
 ### Connecting this computer
 

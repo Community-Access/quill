@@ -442,17 +442,46 @@ class GatewayClient:
     # -- the one that costs something ------------------------------------- #
 
     def ask(
-        self, feature: str, prompt: str, chunks: list[str] | None = None
+        self,
+        feature: str,
+        prompt: str,
+        chunks: list[str] | None = None,
+        *,
+        language: str = "",
     ) -> tuple[str, GatewayQuota | None]:
         """Run one AI request. Returns ``(answer, quota_after)``.
 
         The quota comes back with the answer so the display updates without a
         second round trip -- which matters because the alternative is a second
-        network call on the success path of every single request.
+        network call on the success path of every single request. *language*
+        is Translate's target, one of ``writing_tools.LANGUAGES``.
         """
         body: dict[str, Any] = {"feature": feature, "prompt": prompt}
         if chunks:
             body["chunks"] = chunks
+        if language:
+            body["language"] = language
+        text, quota, _dropped = self._chat(body)
+        return text, quota
+
+    def converse(
+        self,
+        prompt: str,
+        chunks: list[str] | None,
+        history: list[dict[str, str]],
+    ) -> tuple[str, GatewayQuota | None, int]:
+        """One conversation turn. Returns ``(reply, quota_after, turns_dropped)``.
+
+        *history* is already trimmed to fit (``hosted_chat.Conversation``); the
+        service trims again, authoritatively, and says how many more turns it
+        left out, which the window adds to what it tells the person.
+        """
+        body: dict[str, Any] = {"feature": "chat", "prompt": prompt, "history": history}
+        if chunks:
+            body["chunks"] = chunks
+        return self._chat(body)
+
+    def _chat(self, body: dict[str, Any]) -> tuple[str, GatewayQuota | None, int]:
         reply = self._open(f"{self.base_url}/v1/chat", token=self.token, body=body)
 
         text = str(reply.get("text", ""))
@@ -470,7 +499,7 @@ class GatewayClient:
                 daily_cap=int(remaining.get("daily", 0)),
                 daily_used=0,
             )
-        return text, quota
+        return text, quota, int(reply.get("history_dropped", 0) or 0)
 
     # -- signing out ------------------------------------------------------ #
 
