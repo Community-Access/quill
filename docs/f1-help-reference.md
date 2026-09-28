@@ -258,6 +258,9 @@ Control coverage: 226 audited sites (110 helped, 116 named-help).
 - `copy_btn`: Copies the whole report to the clipboard as plain text.
 - `export_btn`: Saves the listening history as a CSV file a spreadsheet can open.
 - `clear_btn`: Erases the local listening history after a confirmation. Nothing about your listening ever leaves this computer either way.
+#### (module level) (`quill/ui/radio/stop_button.py`)
+
+- `button`: Stops the radio, podcast or recording you are listening to. The same as Ctrl+Period and Station, Stop.
 #### _SuggestDialog (`quill/ui/radio/suggest_pick_dialog.py`)
 
 - `self._send`: Checks what you typed, then opens your mail program with the suggestion written to support@community-access.org. Nothing is sent until you press Send there.

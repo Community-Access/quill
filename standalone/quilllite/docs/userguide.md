@@ -3573,8 +3573,16 @@ If there **is** something newer, the window opens on **what changed** -- the
 release notes for that version, in a read-only box you can arrow through like a
 document. Tab from there reaches two buttons:
 
-- **Update** downloads the new version and then offers to install it and restart
-  for you. Your settings, your recent files and your recovered work are kept.
+- **Update** downloads the new version and then offers to install it. Your
+  settings, your recent files and your recovered work are kept either way:
+  - **Install and restart now** (Enter) closes QUILL Lite, installs the update
+    and opens QUILL Lite again.
+  - **Install when I close** (Alt+C) lets you keep writing; the update is
+    installed the next time you close QUILL Lite, and the next time you open
+    it, it is the new version.
+
+  A portable copy updates itself in place: the new files replace the old ones
+  in its folder, and its `data` folder is never touched.
 - **Close** does nothing at all. Nothing is downloaded until you press Update.
 
 While the download runs you hear it reach a quarter, a half and three quarters,

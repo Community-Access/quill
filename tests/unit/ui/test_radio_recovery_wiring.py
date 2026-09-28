@@ -71,3 +71,29 @@ def test_non_result_is_ignored() -> None:
     frame._radio_apply_recovery("not a result")
     assert frame._played == []
     assert frame._announced == []
+
+
+class _KeyedFavorites:
+    """Favorites that answer only for the keys they really hold."""
+
+    def __init__(self, favorites: dict[str, Any]) -> None:
+        self._favorites = favorites
+
+    def find(self, key: str) -> Any:
+        return self._favorites.get(key)
+
+
+def test_a_favorite_without_a_directory_id_heals_by_its_old_address() -> None:
+    """KSPN (reported 2026-09-28): a favorite with no station id is keyed by its
+    address, and the healed station's address is the NEW one. Looked up by
+    that, the favorite was never found, never healed, and every session waited
+    out the dead address and repaired it again."""
+    favorite = SimpleNamespace(station=None)
+    frame = _frame()
+    frame._radio_favorites = _KeyedFavorites({"https://old.streamtheworld.com/KSPNAM": favorite})
+    failed = RadioStation(name="KSPN", stream_url="https://old.streamtheworld.com/KSPNAM")
+    healed = RadioStation(name="KSPN", stream_url="https://new.streamtheworld.com/KSPNAMAAC")
+    frame._radio_apply_recovery(RecoveryResult(station=healed), failed)
+    assert favorite.station is healed
+    assert frame._saved == [True]
+    assert frame._played == [healed]

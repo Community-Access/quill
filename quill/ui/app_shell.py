@@ -676,11 +676,15 @@ class AppShellFrame(
         ``standalone/``, so the sibling layout (``D:\\quill-weather`` beside
         ``D:\\QUILL``) no longer exists and a dev run found no docs at all.
         Best-effort: a stem resolving nowhere is a quiet announcement."""
+        from quill.core.app_folders import app_folders
+
         candidates: list[Path] = []
-        if getattr(sys, "frozen", False):
-            exe_dir = Path(sys.executable).resolve().parent
-            candidates.append(exe_dir / "docs" / f"{stem}.html")
-            candidates.append(exe_dir / "docs" / f"{stem}.md")
+        # The app's own folder -- beside QuillRadio.exe, which the launcher
+        # names -- not the shared runtime's, which holds no documents
+        # (quill.core.app_folders says how 3.0 lost the User Guide).
+        for folder in app_folders():
+            candidates.append(folder / "docs" / f"{stem}.html")
+            candidates.append(folder / "docs" / f"{stem}.md")
         repo_root = Path(__file__).resolve().parents[2]
         app = repo_dir_name.removeprefix("quill-")  # quill-weather -> weather
         for root in (repo_root / "standalone" / app, repo_root.parent / repo_dir_name):

@@ -32,7 +32,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "3.0.2"
+_VERSION = "3.0.3"
 _REPO = "Community-Access/quill"
 #: Radio publishes two downloads since 3.0.0 -- the installer and the portable
 #: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly
@@ -329,11 +329,11 @@ class RadioAppFrame(
         self._favorites_tree.Bind(wx.EVT_KEY_DOWN, self._on_favorites_key)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        # A favorites list you play from, not a player. Play/Stop, Add to
-        # Favorites, Record, the chapter buttons and Browse all left this row on
-        # 2026-08-21, each keeping its menu item and key; player_panel.py had
-        # already argued it -- "an always-open player is mostly furniture". Mute
-        # and Volume stay, and are exactly the pair the Browse window has.
+        # A favorites list you play from, not a player: the rest of the player
+        # left this row on 2026-08-21, and Stop came back first in 3.0.3.
+        from quill.ui.radio.stop_button import add_stop_button
+
+        add_stop_button(self, panel, buttons, wx)
         # A volume control right in the Tab order, so the volume can be adjusted
         # by arrowing a focused slider while listening -- not only via Ctrl+Up/
         # Down or the status bar (#1214). Kept in step with the real volume by

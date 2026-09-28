@@ -1,6 +1,6 @@
 # Quill Radio -- Product Requirements
 
-Version 3.0.2, released 2026-09-28.
+Version 3.0.3, released 2026-09-28.
 
 ## 1. Product statement
 

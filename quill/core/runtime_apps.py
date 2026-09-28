@@ -54,6 +54,15 @@ class RuntimeApp:
     #: without the shortcut would split the app's taskbar button in two.
     shortcuts_carry_id: bool = False
 
+    @property
+    def launcher_exe(self) -> str:
+        """The native launcher's file name: ``QuillRadio.exe``.
+
+        The launcher is named after the app's AppUserModelID
+        (``scripts/build_native_launcher.py``: ``CommunityAccess.<name>``).
+        """
+        return self.app_user_model_id.rsplit(".", 1)[-1] + ".exe"
+
 
 #: Every app the shared runtime can start, in the order a chooser lists them.
 RUNTIME_APPS: tuple[RuntimeApp, ...] = (

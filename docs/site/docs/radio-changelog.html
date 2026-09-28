@@ -205,6 +205,47 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
+<h2 id="303---2026-09-28">[3.0.3] - 2026-09-28</h2>
+<p>Four fixes from the first days of 3.0: favorites that started slowly
+every time, Help documents that did not open, the Stop button, and
+updates – which a portable copy can now install itself, now or when you
+close.</p>
+<ul>
+<li><strong>A repaired favorite stays repaired.</strong> When a
+favorite’s saved address stopped working, Quill Radio found the current
+one and played it, then looked the favorite up by the <em>new</em>
+address to save it – so a favorite keyed by its address (one from
+StreamTheWorld, a station’s website, or added by hand) was never found,
+never healed, and every session waited out the dead address and repaired
+it again: the slow start and “reconnect” a listener heard on KSPN. It is
+looked up by the station that failed now
+(<code>quill/ui/radio/stream_recovery.py</code>, extracted from
+<code>main_frame_radio.py</code>).</li>
+<li><strong>Help &gt; User Guide, Release Notes and Product Requirements
+open again</strong>, in both editions. They looked for documents beside
+the running Python – the shared engine when installed, and not at all in
+a portable copy, which is not a frozen build – instead of beside
+<code>QuillRadio.exe</code>. The launcher’s folder
+(<code>QUILL_LAUNCHER_DIR</code>) is searched first now
+(<code>quill/core/app_folders.py</code>); Cast, Weather, Audio Studio,
+the Converter and QUILL Lite’s tutorial book used the same lookup and
+are fixed with it.</li>
+<li><strong>The Stop button is back</strong> in the main window (Alt+T),
+first in the row before Mute and Volume; the same as Ctrl+Period and
+Station &gt; Stop (<code>quill/ui/radio/stop_button.py</code>).</li>
+<li><strong>Install when I close.</strong> The Update downloaded window
+offers it beside Install and restart now: the update is applied when the
+app is next closed, however long that is, and the app is not reopened
+(<code>self_update</code>: <code>when="on_close"</code>). Shared with
+QUILL Lite and the other apps.</li>
+<li><strong>A portable copy updates itself.</strong> In 3.0.0 to 3.0.2
+the portable updater refused (“not a packaged build”) because the
+running Python is the bundle’s <code>pythonw.exe</code>; it now updates
+the launcher’s folder in place, keeping <code>data</code>, waits for
+both the app and its launcher to exit, and restarts through
+<code>QuillRadio.exe</code>. A portable 3.0.0 to 3.0.2 has to be updated
+once by hand; the release notes say how.</li>
+</ul>
 <h2 id="302---2026-09-28">[3.0.2] - 2026-09-28</h2>
 <p>A fix release for one thing a listener met on the first day of 3.0.1:
 pressing a Quill Radio pinned to the taskbar opened a message instead of

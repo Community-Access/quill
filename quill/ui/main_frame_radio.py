@@ -1299,62 +1299,15 @@ class RadioMixin(RadioStatusWindowsMixin):
     # -- self-healing stream recovery (#1065) -----------------------------------
 
     def _radio_maybe_try_fallback_url(self, state: RadioPlaybackState) -> None:
-        """A station whose stream fails heals itself (#1065).
+        """A failing station heals itself; see :mod:`quill.ui.radio.stream_recovery`."""
+        from quill.ui.radio import stream_recovery
 
-        On a playback error, run the recovery ladder off-thread: re-resolve a
-        moved StreamTheWorld mount, refresh from the directory, and -- unless
-        the user turned it off -- scan the station's own website (Triton players
-        and "Listen Live" links included). A confident hit is played
-        automatically; anything ambiguous is announced so the user can pick it
-        up in Find Streams. One attempt per station per session, so a truly dead
-        station never loops."""
-        from quill.ui.radio.playback_state import RadioPlayerState
+        stream_recovery.maybe_recover(self, state)
 
-        station = state.station
-        if state.state is not RadioPlayerState.ERROR or station is None or self._safe_mode:
-            return
-        key = station.station_uuid or station.stream_url
-        if self._radio_fallback_tried == key:
-            return
-        self._radio_fallback_tried = key
-        allow_website = bool(getattr(self._radio_history, "recover_from_website", True))
+    def _radio_apply_recovery(self, result: object, failed: object = None) -> None:
+        from quill.ui.radio import stream_recovery
 
-        def _recover(**_kwargs: object) -> object:
-            from quill.core.radio.recovery import recover_stream
-
-            return recover_stream(station, allow_website=allow_website, safe_mode=self._safe_mode)
-
-        def _done(_op: str, result: object) -> None:
-            self._wx.CallAfter(self._radio_apply_recovery, result)
-
-        self._task_manager.submit(
-            "radio-stream-recovery",
-            _recover,
-            on_success=_done,
-            on_failure=lambda *_a: None,
-        )
-
-    def _radio_apply_recovery(self, result: object) -> None:
-        from quill.core.radio.recovery import RecoveryResult
-
-        if not isinstance(result, RecoveryResult):
-            return
-        if result.station is not None:
-            self._announce(result.message)
-            # Self-heal the saved favorite so the next play starts from the good
-            # URL, then play the healed station.
-            favorite = self._radio_favorites.find(
-                result.station.station_uuid or result.station.stream_url
-            )
-            if favorite is not None:
-                favorite.station = result.station
-                self._save_radio_favorites()
-            self._radio_controller.play_station(result.station)
-            return
-        # No confident stream -- announce whatever we learned (candidates to
-        # try via Find Streams, or simply that nothing was found).
-        if result.message:
-            self._announce(result.message)
+        stream_recovery.apply_recovery(self, result, failed)
 
     # -- wake-up timer ------------------------------------------------------------
 
