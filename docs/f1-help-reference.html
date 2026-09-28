@@ -220,7 +220,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 227 audited sites (111 helped, 116 named-help).</p>
+<p>Control coverage: 226 audited sites (112 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -762,6 +762,15 @@ Schedule Recording, where it was made.</li>
 announces itself. Arrow through it for the title, position, chapter and
 audio track.</li>
 </ul>
+<h4 id="module-level-quilluiradiovolume_rowpy">(module level)
+(<code>quill/ui/radio/volume_row.py</code>)</h4>
+<ul>
+<li><code>slider</code>: Internet Radio’s own volume, 0 to 100 percent,
+separate from the system volume and your screen reader. Up and Right
+make it louder, Down and Left quieter; Page Up and Page Down move it in
+bigger steps. It follows Ctrl+Up and Ctrl+Down and the main window’s
+Volume slider.</li>
+</ul>
 <h4
 id="wakeuptimerdialog-quilluiradiowake_timer_dialogpy">WakeUpTimerDialog
 (<code>quill/ui/radio/wake_timer_dialog.py</code>)</h4>
@@ -789,10 +798,10 @@ renames, Shift+F10 opens all actions.</li>
 <li><code>self._mute_btn</code>: Silences the radio without stopping it;
 press again to unmute. It follows Ctrl+M and every other mute in the
 app.</li>
-<li><code>self._volume_slider</code>: The radio’s volume. Arrow keys
-nudge it, Page Up and Page Down move it in bigger steps – and it stays
-in step with Ctrl+Up and Ctrl+Down and each station’s remembered
-level.</li>
+<li><code>self._volume_slider</code>: The radio’s volume. Up and Right
+make it louder, Down and Left quieter; Page Up and Page Down move it in
+bigger steps – and it stays in step with Ctrl+Up and Ctrl+Down and each
+station’s remembered level.</li>
 </ul>
 <h4 id="module-level-quillappsradio_chapter_buttonspy">(module level)
 (<code>quill/apps/radio_chapter_buttons.py</code>)</h4>

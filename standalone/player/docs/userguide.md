@@ -394,8 +394,10 @@ settings.
 ## 16. Accessibility notes
 
 - Every control is keyboard-operable and screen-reader- and braille-announced.
-- Sliders are arrow-adjustable and speak their values; lists read a full sentence
-  per row and support first-letter search; reordering never needs a drag.
+- Sliders are arrow-adjustable and speak their values: Up and Right mean more
+  (louder, further on), Down and Left less, Page Up and Page Down in bigger steps.
+  Lists read a full sentence per row and support first-letter search; reordering
+  never needs a drag.
 - The player honors your system High Contrast, dark mode, reduced-motion, and text
   scaling.
 - Nothing important is conveyed by color alone.

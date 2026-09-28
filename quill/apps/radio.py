@@ -30,6 +30,8 @@ from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
+from quill.ui.radio.volume_keys import volume_chord_handled
+from quill.ui.slider_keys import bind_up_means_more
 
 _TITLE = "Quill Radio"
 _VERSION = "3.0.3"
@@ -364,11 +366,15 @@ class RadioAppFrame(
         )
         set_accessible_name(self._volume_slider, "Volume, percent")
         self._volume_slider.SetHelpText(
-            "The radio's volume. Arrow keys nudge it, Page Up and Page Down "
-            "move it in bigger steps -- and it stays in step with Ctrl+Up and "
-            "Ctrl+Down and each station's remembered level."
+            "The radio's volume. Up and Right make it louder, Down and Left "
+            "quieter; Page Up and Page Down move it in bigger steps -- and it "
+            "stays in step with Ctrl+Up and Ctrl+Down and each station's "
+            "remembered level."
         )
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
+        # A Windows trackbar answers Up with quieter (reported 2026-09-28);
+        # Up is louder here, as in the Windows volume mixer.
+        bind_up_means_more(self._volume_slider)
         buttons.Add(self._volume_slider, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -496,20 +502,9 @@ class RadioAppFrame(
         if code == wx.WXK_F2:
             self._on_tree_rename()
             return
-        # The tree wants arrow keys for its own navigation (Win32 grants a
-        # focused TreeCtrl first claim on WM_KEYDOWN for Up/Down), so the
-        # Playback menu's Ctrl+Up/Ctrl+Down accelerator never reaches the
-        # frame while focus is here -- the tree just moves its selection
-        # cursor instead. Handle the volume chord directly, same as Enter/
-        # Delete/F2 above, so it works from the tree (the default focus on
-        # launch) and not only when focus happens to be elsewhere.
-        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
-            if code == wx.WXK_UP:
-                self.radio_volume_up()
-                return
-            if code == wx.WXK_DOWN:
-                self.radio_volume_down()
-                return
+        # The tree claims Up/Down before the menu accelerator can (volume_keys).
+        if volume_chord_handled(self, event, code):
+            return
         # Alt+Shift+Up/Down reordering is handled in the frame char hook
         # (_on_radio_char_hook) -- Windows steals Alt+arrow for the menu before
         # a focused TreeCtrl's EVT_KEY_DOWN can see it.
@@ -1912,17 +1907,7 @@ class RadioAppFrame(
         # hook runs before the focused control, so this makes the volume keys
         # work regardless of focus -- except inside a text field, where Ctrl+arrow
         # must stay available for editing.
-        if (
-            event.ControlDown()
-            and not event.ShiftDown()
-            and not event.AltDown()
-            and code in (wx.WXK_UP, wx.WXK_DOWN)
-            and not isinstance(wx.Window.FindFocus(), (wx.TextCtrl, wx.ComboBox))
-        ):
-            if code == wx.WXK_UP:
-                self.radio_volume_up()
-            else:
-                self.radio_volume_down()
+        if volume_chord_handled(self, event, code, skip_text_fields=True):
             return
         event.Skip()
 

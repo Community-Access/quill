@@ -39,6 +39,13 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 ### Fixed
 
+- **Up is more on every slider.** The player's Position and Volume sliders
+  answered Up with less, because a Windows slider on its own treats Up as
+  "towards the start", the left end. A Quill Radio listener reported the
+  volume slider as backwards, and the fix is family-wide: Up and Page Up now
+  raise every slider in every QuillVille app and Down and Page Down lower it;
+  Left, Right, Home and End are unchanged (`quill/ui/slider_keys.py`, 2026-09-28,
+  with a gate that fails the build for a new slider without it).
 - **Kokoro narration no longer stops mid-run on a portable copy.** A long, dense passage could overrun the neural model's input window; the Studio then fell back to a heavyweight code path that a portable copy does not carry, and reported "Kokoro voices need one more component" for a component you had already installed -- 29 chapters into a run. The Studio now re-splits that one passage at safe boundaries and carries on, so a portable narration completes; the per-passage size limit is capped below the model's window everywhere it is used, including translated editions; and when a passage genuinely cannot be synthesized the message names the real cause and where to find the report instead of pointing at a download you do not need.
 - **A conversion's progress reaches the tray.** Converter progress is reported through the same channel as a narration run, so it appears in the status bar's Progress cell and the tray tooltip rather than only inside the dialog.
 

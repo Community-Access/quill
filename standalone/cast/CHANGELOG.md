@@ -4,6 +4,16 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### Up means more on every slider (2026-09-28)
+
+- **Up is more on the Sound Enhancements sliders.** Bass, mid, treble and
+  Auto-Adapt answered Up with less, because a Windows slider on its own treats
+  Up as "towards the start", the left end. A Quill Radio listener reported the
+  volume slider as backwards, and the fix is family-wide: Up and Page Up now
+  raise every slider in every QuillVille app and Down and Page Down lower it;
+  Left, Right, Home and End are unchanged (`quill/ui/slider_keys.py`, with a
+  gate that fails the build for a new slider without it).
+
 ### A podcast can answer for itself (2026-08-29)
 
 Almost every complaint a podcast listener has is about **one podcast behaving

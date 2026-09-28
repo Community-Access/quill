@@ -4005,6 +4005,30 @@ the spelling wx understands.
 
 ## Getting help
 
+### If QUILL Lite does not start
+
+`QuillLite.exe` never fails silently. If the app's engine cannot start, a
+plain message opens that your screen reader reads on its own: "QUILL Lite did
+not start", the reason in words, the launch log that holds the details, and
+the support address.
+
+- If it says the zip was opened from inside, extract the whole zip first
+  (Applications key on the zip, then **Extract All...**) and open
+  `QuillLite.exe` from the extracted folder.
+- If it names a missing file or DLL, extract the zip again into an empty
+  folder and check your antivirus quarantine.
+- If it says Windows refused to run its files, move the folder somewhere you
+  own, such as Documents or a USB stick.
+- If it says "Python reported", send the launch log to support:
+  `data\logs\launch.log` beside a portable copy, or
+  `%APPDATA%\Quill\logs\QuillLite-launch.log` for an installed one. Each start
+  replaces it, so send it before you try again.
+- If nothing at all happens and there is no message, a QUILL Lite is probably
+  already running and the new launch handed over to it. Check the taskbar and
+  Task Manager.
+
+### Support by email
+
 Support is run by **Community Access**, and the address is
 **support@community-access.org**. A person reads it, and replies come back by
 email.

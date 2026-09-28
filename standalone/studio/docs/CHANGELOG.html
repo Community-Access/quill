@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -389,6 +389,14 @@ only the packaged documentation is optional.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li><strong>Up is more on every slider.</strong> The player’s Position
+and Volume sliders answered Up with less, because a Windows slider on
+its own treats Up as “towards the start”, the left end. A Quill Radio
+listener reported the volume slider as backwards, and the fix is
+family-wide: Up and Page Up now raise every slider in every QuillVille
+app and Down and Page Down lower it; Left, Right, Home and End are
+unchanged (<code>quill/ui/slider_keys.py</code>, 2026-09-28, with a gate
+that fails the build for a new slider without it).</li>
 <li><strong>Kokoro narration no longer stops mid-run on a portable
 copy.</strong> A long, dense passage could overrun the neural model’s
 input window; the Studio then fell back to a heavyweight code path that

@@ -34,6 +34,7 @@ from quill.core.audio_enhance import (
     OPTILAB_MODE_LABELS,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.slider_keys import bind_up_means_more
 
 _PRESET_NAMES = ("Custom", *EQ_PRESETS)
 
@@ -176,6 +177,7 @@ class SoundEnhanceDialog:
         self._preset_choice.Bind(wx.EVT_CHOICE, self._on_preset_choice)
         for slider in (self._bass_slider, self._mid_slider, self._treble_slider):
             slider.Bind(wx.EVT_SLIDER, self._on_slider_changed)
+            bind_up_means_more(slider)  # Up is more decibels, family rule (2026-09-28)
 
         self._compressor_check = wx.CheckBox(self.dialog, label="&Even Out Volume")
         self._compressor_check.SetName(
@@ -396,6 +398,7 @@ class SoundEnhanceDialog:
                 self._optilab_input_ctrl.Bind(wx.EVT_SPINCTRL, self._on_control_changed)
             if self._optilab_adapt_slider is not None:
                 self._optilab_adapt_slider.Bind(wx.EVT_SLIDER, self._on_control_changed)
+                bind_up_means_more(self._optilab_adapt_slider)
             if self._optilab_exact_choice is not None:
                 self._optilab_exact_choice.Bind(wx.EVT_CHOICE, self._on_control_changed)
 

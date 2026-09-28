@@ -113,6 +113,7 @@ add_executable(${PRODUCT_NAME}
     launcher.c
     runtime_resolve.c
     runtime_bootstrap.c
+    launch_report.c
 )
 
 if(WIN32)

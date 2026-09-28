@@ -6053,6 +6053,28 @@ the same physical key and the spelling wx understands.</p>
 <!-- keys:end -->
 
 <h2 id="getting-help">Getting help</h2>
+<h3 id="if-quill-lite-does-not-start">If QUILL Lite does not start</h3>
+<p><code>QuillLite.exe</code> never fails silently. If the app’s engine
+cannot start, a plain message opens that your screen reader reads on its
+own: “QUILL Lite did not start”, the reason in words, the launch log
+that holds the details, and the support address.</p>
+<ul>
+<li>If it says the zip was opened from inside, extract the whole zip
+first (Applications key on the zip, then <strong>Extract All…</strong>)
+and open <code>QuillLite.exe</code> from the extracted folder.</li>
+<li>If it names a missing file or DLL, extract the zip again into an
+empty folder and check your antivirus quarantine.</li>
+<li>If it says Windows refused to run its files, move the folder
+somewhere you own, such as Documents or a USB stick.</li>
+<li>If it says “Python reported”, send the launch log to support:
+<code>data\logs\launch.log</code> beside a portable copy, or
+<code>%APPDATA%\Quill\logs\QuillLite-launch.log</code> for an installed
+one. Each start replaces it, so send it before you try again.</li>
+<li>If nothing at all happens and there is no message, a QUILL Lite is
+probably already running and the new launch handed over to it. Check the
+taskbar and Task Manager.</li>
+</ul>
+<h3 id="support-by-email">Support by email</h3>
 <p>Support is run by <strong>Community Access</strong>, and the address
 is <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>.

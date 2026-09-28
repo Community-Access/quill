@@ -5781,6 +5781,80 @@ left.</p>
 <p>Rebuilding is simpler and throws away the tree somebody spent time
 expanding, which is the same reason the browse tree remembers its
 position at all.</p>
+<h2
+id="20-a-launcher-that-says-why-it-did-not-start-and-a-slider-whose-up-is-up-304-2026-09-28">20.
+A launcher that says why it did not start, and a slider whose Up is up
+(3.0.4, 2026-09-28)</h2>
+<p><strong>The report.</strong> A listener’s portable copy did not open,
+did not say why, and left nothing behind, “no matter what she does”. The
+cause was structural, not a bug in any one file:
+<code>QuillRadio.exe</code> is a native launcher that spawns
+<code>pythonw.exe -m quill.apps.radio</code>, waits, and until 3.0.4
+discarded the exit code. <code>pythonw.exe</code> has no console, so a
+traceback at import time went nowhere; a DLL Windows refused to load
+ended the process before Python ran, with no text at all. Silence was
+the design.</p>
+<p><strong>Requirements.</strong></p>
+<ul>
+<li>R-1. The launcher points the interpreter’s stdout and stderr at a
+launch log, truncated on every launch so it always holds the last run:
+<code>data\logs\launch.log</code> beside a portable copy,
+<code>%APPDATA%\Quill\logs\QuillRadio-launch.log</code> next to
+<code>quill.log</code> for an installed one, <code>%TEMP%</code> as the
+last resort. Opened share-read only, so the single-instance hand-off (a
+second launcher that exits 0 at once) cannot truncate a running
+instance’s log.</li>
+<li>R-2. A non-zero exit shows exactly one <code>MessageBox</code>, the
+surface every screen reader reads unaided: “Quill Radio did not start.”
+(or “stopped unexpectedly.” after a minute of running), the reason in
+words, the log’s path, and <a
+href="mailto:support@community-access.org">support@community-access.org</a>.
+Exit 0 stays silent: an ordinary close and the hand-off both exit
+0.</li>
+<li>R-3. Windows’ silent endings are translated, never shown as numbers:
+<code>STATUS_DLL_NOT_FOUND</code> names the two things to check (extract
+the whole zip again; antivirus quarantine),
+<code>STATUS_INVALID_IMAGE_FORMAT</code> says damaged or 32-bit,
+<code>STATUS_ACCESS_DENIED</code> names antivirus, application control
+and folder permissions, <code>STATUS_DLL_INIT_FAILED</code> says sign
+out and back in, and the memory faults say “crashed inside a component”.
+A Python traceback’s last line is quoted, with a hint for the three
+shapes support sees (“No module named”, “DLL load failed”, “Permission
+denied”).</li>
+<li>R-4. Running from an archive tool’s scratch folder (Explorer’s
+<code>Temp&lt;n&gt;_&lt;name&gt;.zip</code>, 7-Zip’s
+<code>7zO&lt;hex&gt;</code>, WinRAR’s <code>Rar$...</code>) – the exe
+pressed <em>inside</em> the zip, so only that one file exists on disk –
+is recognised before the runtime lookup and explained as “extract the
+whole zip first, Extract All”, not as “this portable copy is
+incomplete”.</li>
+<li>R-5. The logic is shared
+(<code>quill/native/launcher/launch_report.c</code>) and mirrored in
+Python with every constant and phrase pinned to the C source
+(<code>tests/unit/native/test_launch_failure.py</code>), so every
+QuillVille app gains it at its next launcher build and the words cannot
+drift.</li>
+</ul>
+<p><strong>Verified</strong> on the real dialog text by Win32 window
+enumeration against three staged failures (no <code>quill</code>
+package, the exe alone in a <code>Temp1_*.zip</code> folder,
+<code>python313.dll</code> removed). Rejected on the way: silently
+stripping Mark of the Web from the extracted files – Windows does not
+refuse a native DLL for that, so it would have been a fix for a cause
+never observed.</p>
+<p><strong>The slider, same release.</strong> A second listener wrote
+“your volume is backwards, when you turn it up it’s down arrow”. True,
+and nobody chose it: a Win32 horizontal trackbar treats Up as “towards
+the start”, the left end. To someone who cannot see the bar there is no
+left end, only louder and quieter; the app’s own Ctrl+Up and the Windows
+mixer already said Up is louder, and the WinUI slider in Settings does
+too. Requirement: on every horizontal slider in the family, Up and Page
+Up mean more and Down and Page Down less; Left, Right, Home, End, the
+mouse and every chord are untouched
+(<code>quill/ui/slider_keys.py</code>). Family-wide on purpose – a
+slider one app fixes and another leaves native is a worse bug than the
+one reported – and enforced: a new horizontal <code>wx.Slider</code>
+whose module does not bind the helper fails the build.</p>
 </main>
 </body>
 </html>

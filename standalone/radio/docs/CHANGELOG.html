@@ -205,6 +205,51 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
+<h2 id="304---2026-09-28">[3.0.4] - 2026-09-28</h2>
+<p>One fix, for the worst thing an app can do: nothing. A listener’s
+portable copy did not open, did not say why, and left no trace. From
+3.0.4 the launcher says what happened.</p>
+<ul>
+<li><strong>When Quill Radio cannot start, it says so.</strong>
+<code>QuillRadio.exe</code> starts the app’s Python engine and, until
+now, waited for it and discarded the result: the engine has no console,
+so an error at start-up went nowhere, and a file Windows refused to load
+ended it before any Python ran. Now the launcher keeps a launch log of
+everything the engine reports (<code>data\logs\launch.log</code> beside
+a portable copy; <code>%APPDATA%\Quill\logs\QuillRadio-launch.log</code>
+for an installed one, next to <code>quill.log</code>), and when the
+engine exits with an error it opens one plain message a screen reader
+reads on its own: “Quill Radio did not start”, the reason in words,
+where the log is, and the support address to send it to. Windows’ own
+silent endings get their words too: a missing DLL says which two things
+to check, a 32-bit or damaged file says so, and “access denied” names
+antivirus and folder permissions. An ordinary close, and a second launch
+that hands over to the copy already running, stay silent as before
+(<code>quill/native/launcher/launch_report.c</code>, shared by every
+QuillVille app’s launcher).</li>
+<li><strong>Opening <code>QuillRadio.exe</code> from inside the zip is
+recognised.</strong> File Explorer, 7-Zip and WinRAR all let you press
+Enter on a file inside a zip; they copy that one file to a scratch
+folder and run it alone, and nothing else in the program is there. That
+used to read as “this portable copy is incomplete”, which was true and
+no help. Now it says the zip was never extracted and walks through
+Extract All.</li>
+<li><strong>Up is louder on the volume slider.</strong> A listener wrote
+that the slider was backwards: Up made it quieter and Down louder. It
+was, because a Windows slider on its own treats Up as “towards the
+start”, the left end. Now Up and Page Up raise it and Down and Page Down
+lower it, on the main window’s slider and the ones in Browse Stations
+and Search Stations, and on every other slider in Quill Radio (Sound
+Enhancements’ bass, mid, treble and Auto-Adapt, caption opacity). Left,
+Right, Home and End are unchanged, and Ctrl+Up and Ctrl+Down still reach
+Volume Up and Volume Down from the slider. The rule is family-wide: the
+same helper (<code>quill/ui/slider_keys.py</code>) is on every slider in
+every QuillVille app, and a gate fails the build for a new slider
+without it.</li>
+<li><strong>Version 3.0.4</strong> in the app, the installer, the
+portable zip and the documents. The user guide gains “If Quill Radio
+does not start” in Troubleshooting.</li>
+</ul>
 <h2 id="303---2026-09-28">[3.0.3] - 2026-09-28</h2>
 <p>Westwood One’s live sports channels, and five fixes from the first
 days of 3.0: keys that are easier to press, favorites that started

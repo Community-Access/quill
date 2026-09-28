@@ -1,6 +1,60 @@
 # Quill Radio 3.0 Release Notes
 
-Version 3.0.3, released 2026-09-28.
+Version 3.0.4, released 2026-09-28.
+
+## What's new in 3.0.4
+
+One fix, for the worst thing an app can do, which is nothing at all.
+
+### If it cannot start, it says so
+
+A listener wrote that her portable copy did not open: no window, no message,
+nothing in the tray, however she started it. That was possible because
+`QuillRadio.exe` is a small launcher that starts the app's engine and, until
+now, waited for it and threw the result away. The engine has no console
+window, so whatever it said went nowhere, and a file Windows refused to load
+ended it before it could say anything.
+
+From 3.0.4 the launcher listens. Everything the engine reports goes to a
+launch log, and if the engine stops with an error the launcher opens one
+plain message, the kind every screen reader reads without help. It says
+"Quill Radio did not start", gives the reason in words, names the file that
+holds the details, and gives the support address to send it to. Windows' own
+silent endings get words too: a missing DLL says which two things to check,
+a damaged or 32-bit file says so, and "access denied" names antivirus and
+folder permissions.
+
+It also recognises the commonest way a portable copy is started wrong:
+pressing Enter on `QuillRadio.exe` while still inside the zip. File Explorer
+copies that one file out and runs it alone, with none of the program beside
+it. Instead of "this copy is incomplete", the message now says the zip was
+never extracted and walks through Extract All.
+
+Nothing changes when the app closes normally, and a second launch that hands
+over to the copy already running stays silent as before. The launch log lives
+at `data\logs\launch.log` beside a portable copy, and at
+`%APPDATA%\Quill\logs\QuillRadio-launch.log` next to `quill.log` for an
+installed one. The user guide's Troubleshooting chapter opens with "If Quill
+Radio does not start".
+
+The launcher is shared by every QuillVille app, so each one gains this the
+next time it is released.
+
+### Up is louder on the volume slider
+
+A listener wrote: "your volume is backwards, when you turn it up it's down
+arrow, when you turn it down it's up arrow." It was. A Windows slider on its
+own treats Up as "towards the start", which on a bar that runs left to right
+is the left end, the quiet end. Nobody chose that, and to someone who cannot
+see the bar there is no left end, only louder and quieter.
+
+From 3.0.4, Up and Page Up make it louder and Down and Page Down quieter, on
+the main window's Volume slider and on the ones in Browse Stations and Search
+Stations, matching Ctrl+Up and Ctrl+Down and the Windows volume mixer. Left
+and Right were already right and are unchanged, as are Home and End. The same
+rule now applies to every slider in Quill Radio, so the bass, mid and treble
+sliders in Sound Enhancements answer Up with more, and to every slider in the
+other QuillVille apps.
 
 ## What's new in 3.0.3
 
