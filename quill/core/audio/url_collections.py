@@ -316,8 +316,10 @@ def _stop_error() -> type[Exception]:
     return DownloadCancelled  # type: ignore[no-any-return]
 
 
-class _Stopped(Exception):
+class _Stopped(UrlImportError):
     """Stands in for yt-dlp's DownloadCancelled when yt-dlp is absent."""
+
+    code = "QUILL-AUDIO-URLLIST-STOPPED"
 
 
 def _interpret_action() -> Any:
