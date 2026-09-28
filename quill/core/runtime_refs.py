@@ -92,6 +92,11 @@ def unregister(data_dir: Path, app_id: str) -> None:
         _save(data_dir, refs)
 
 
+def all_refs(data_dir: Path) -> dict[str, list[str]]:
+    """Every runtime version and the installed apps on it (a copy)."""
+    return _load(data_dir)
+
+
 def apps_requiring(data_dir: Path, runtime_version: str) -> list[str]:
     """The installed apps that still run on *runtime_version* (sorted)."""
     return _load(data_dir).get(str(runtime_version), [])

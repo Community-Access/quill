@@ -14,11 +14,11 @@
 > below, and Sound Enhancements, scheduled recording, custom stations and
 > backups are all documented there in their current form).
 >
-> **Reviewed 2026-09-27 for the Quill Radio 3.0.1 release.** The current
+> **Reviewed 2026-09-28 for the Quill Radio 3.0.2 release.** The current
 > release ships two downloads -- the installer
-> (`Quill-Radio-Setup-Shared-3.0.1.exe`) and the portable ZIP
-> (`Quill-Radio-Portable-3.0.1.zip`), both on the
-> [Quill Radio 3.0.1 release page](https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.1).
+> (`Quill-Radio-Setup-Shared-3.0.2.exe`) and the portable ZIP
+> (`Quill-Radio-Portable-3.0.2.zip`), both on the
+> [Quill Radio 3.0.2 release page](https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.2).
 > Where this page and the app disagree, the app and its own User Guide
 > (`standalone/radio/docs/userguide.md`, Help > User Guide, Ctrl+F1) are right.
 > In particular, the main window no longer has Play/Pause, Stop, Record or
