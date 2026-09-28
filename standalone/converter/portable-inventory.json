@@ -110,7 +110,9 @@
     "wx_accessible_webview",
     "wxpython",
     "yt-dlp",
-    "yt_dlp"
+    "yt-dlp-ejs",
+    "yt_dlp",
+    "yt_dlp_ejs"
   ],
   "quill-data": [
     "__init__.py",
