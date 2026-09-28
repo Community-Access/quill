@@ -155,10 +155,16 @@ In scope for 1.0.0:
   subfolders too". Each starts on its neutral choice, shapes the same Convert
   as the rest of the page, and is remembered, as is whether the section is
   shown.
-- **Convert from URL.** Prompt, background download with progress through the
-  bundled yt-dlp (the shared URL orchestration), then the downloaded file
-  joins the main window's queue, converted by the same Convert as everything
-  else. Refused in Safe Mode.
+- **Convert from URL.** Prompt, then read the link off the UI thread without
+  downloading (`url_collections.read_link`: video, playlist with count, or
+  channel with the sections that exist). A video: background download through
+  the bundled yt-dlp and deno (the shared URL orchestration). A playlist or
+  channel: the Download a Playlist or Channel window (scope, how many, section,
+  published within, skip already downloaded), then one Converter job with
+  progress, Stop and a report; files numbered in order, tagged album + track,
+  a per-link download archive, pauses on long runs. Everything joins the main
+  window's queue, converted by the same Convert as everything else. Refused in
+  Safe Mode.
 - **Running a batch.** Off the UI thread, multi-worker for sound and one at a
   time for video. Convert becomes Stop; Stop kills the encode in progress
   (its temp file is removed), starts nothing after it, and the report lists

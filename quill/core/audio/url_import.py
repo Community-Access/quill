@@ -169,6 +169,11 @@ def _default_download(url: str, dest_dir: Path, progress: ProgressCallback | Non
         "no_warnings": True,
         "progress_hooks": [hook],
     }
+    # YouTube's challenges need a JavaScript runtime; the bundled deno, never
+    # one from PATH (quill.core.js_runtime).
+    from quill.core.js_runtime import yt_dlp_js_options
+
+    options.update(yt_dlp_js_options())
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(url, download=True)
         path = captured.get("path") or ydl.prepare_filename(info)

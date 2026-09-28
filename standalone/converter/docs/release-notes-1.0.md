@@ -37,7 +37,8 @@ Nothing downloads the first time you use a feature. Both downloads carry:
 - **FFmpeg and ffprobe**, which do the converting and read what is inside a
   file.
 - **libmpv**, the mpv playback engine, as the Chapter Workbench's player.
-- **yt-dlp**, for Convert from URL.
+- **yt-dlp**, for Convert from URL, and **deno**, the JavaScript runtime it
+  needs for YouTube.
 - **mutagen**, for carrying cover art and chapters into the converted copy.
 - **The OptiLab Core adapter**, for broadcast polish in Advanced Options, in
   builds that include it.
@@ -46,6 +47,18 @@ Conversion never touches the network. The only things that do are Check for
 Updates and Convert from URL, and both only when you ask.
 
 ## What is new, and why
+
+### A video, a whole playlist, or a channel
+
+Paste a link into **Convert from URL** (Ctrl+U). One video downloads its
+audio. A playlist asks whether you want all of it or the first few; a YouTube
+channel asks which section (videos, Shorts, live streams), how many of the
+newest, and from how recently. Every video's audio joins the queue in order,
+numbered and tagged as one album with track numbers, ready for Ctrl+Enter --
+or for Join into One File, which makes a lecture series one audiobook with a
+chapter per video. Paste the same link next week and only the new videos
+download. A private or removed video is listed in the report rather than
+stopping the rest, and Stop works mid-download like everywhere else.
 
 ### Right-click to convert
 

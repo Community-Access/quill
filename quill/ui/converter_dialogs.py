@@ -296,3 +296,165 @@ def show_text(host: Any, title: str, text: str) -> None:
         host._show_modal_dialog(dialog, title)  # dialog_button_contract: exempt
     finally:
         dialog.Destroy()
+
+
+LINK_TITLE = "Download a Playlist or Channel"
+
+#: (label, how many -- None is all) for a playlist, in playlist order.
+_PLAYLIST_COUNTS: tuple[tuple[str, int | None], ...] = (
+    ("All of it", None),
+    ("The first 10", 10),
+    ("The first 25", 25),
+    ("The first 100", 100),
+)
+#: The same for a channel section, newest first. A channel can hold thousands
+#: of videos, so the default is 25, not all.
+_CHANNEL_COUNTS: tuple[tuple[str, int | None], ...] = (
+    ("The newest 10", 10),
+    ("The newest 25", 25),
+    ("The newest 100", 100),
+    ("All of it (can be thousands)", None),
+)
+_SINCE: tuple[tuple[str, int | None], ...] = (
+    ("Any date", None),
+    ("The past week", 7),
+    ("The past month", 31),
+    ("The past year", 365),
+)
+
+
+class ConverterLinkDialog(wx.Dialog):
+    """How much of a playlist or channel to download. :meth:`result` reads it back."""
+
+    def __init__(self, parent: Any, info: Any) -> None:
+        super().__init__(
+            parent,
+            title=LINK_TITLE,
+            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            name="converter.link",
+        )
+        self._info = info
+        channel = info.kind == "channel"
+        root = wx.BoxSizer(wx.VERTICAL)
+        if channel:
+            about = f"{info.title} is a YouTube channel."
+        else:
+            videos = f"{info.count} videos" if info.count else "videos"
+            about = f"The playlist {info.title} has {videos}."
+        summary = wx.StaticText(self, label=about)
+        root.Add(summary, 0, wx.ALL, 8)
+
+        self._scope: wx.RadioBox | None = None
+        if not channel and info.video_title:
+            self._scope = wx.RadioBox(
+                self,
+                label="What to &download",
+                choices=[f"Only this video: {info.video_title}", "The whole playlist"],
+                majorDimension=1,
+                style=wx.RA_SPECIFY_COLS,
+            )
+            self._scope.SetSelection(1)
+            self._scope.SetHelpText(
+                "The link points at one video inside a playlist. Choose the video "
+                "alone, or every video in the playlist."
+            )
+            root.Add(self._scope, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+
+        self._sections = list(info.sections)
+        self._section: wx.Choice | None = None
+        if channel:
+            root.Add(wx.StaticText(self, label="&Section:"), 0, wx.LEFT | wx.TOP, 8)
+            self._section = wx.Choice(self, choices=[label for label, _url in self._sections])
+            self._section.SetSelection(0)
+            set_accessible_name(self._section, "Section")
+            self._section.SetHelpText(
+                "Which part of the channel: its videos, its Shorts, or its past live "
+                "streams. Only the sections this channel has are listed."
+            )
+            root.Add(self._section, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+
+        self._counts = _CHANNEL_COUNTS if channel else _PLAYLIST_COUNTS
+        root.Add(wx.StaticText(self, label="How &many:"), 0, wx.LEFT | wx.TOP, 8)
+        self._count = wx.Choice(self, choices=[label for label, _n in self._counts])
+        self._count.SetSelection(1 if channel else 0)
+        set_accessible_name(self._count, "How many")
+        self._count.SetHelpText(
+            "How many videos to take. A channel is newest first and can hold "
+            "thousands, so it starts at the newest 25; a playlist keeps its order."
+        )
+        root.Add(self._count, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+
+        self._since: wx.Choice | None = None
+        if channel:
+            root.Add(wx.StaticText(self, label="&Published:"), 0, wx.LEFT | wx.TOP, 8)
+            self._since = wx.Choice(self, choices=[label for label, _d in _SINCE])
+            self._since.SetSelection(0)
+            set_accessible_name(self._since, "Published")
+            self._since.SetHelpText(
+                "Only videos published in this window of time. Together with How "
+                "many, whichever limit is reached first ends the download."
+            )
+            root.Add(self._since, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+
+        self._only_new = wx.CheckBox(self, label="S&kip videos already downloaded from here")
+        self._only_new.SetValue(True)
+        self._only_new.SetHelpText(
+            "Quill Converter remembers what it has downloaded from each playlist and "
+            "channel, so the next time you paste the same link it fetches only what "
+            "is new. Clear this to download everything again."
+        )
+        root.Add(self._only_new, 0, wx.ALL, 8)
+
+        buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+        root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
+        apply_modal_ids(
+            self,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="Download",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Cancel",
+        )
+        self.SetSizerAndFit(root)
+        (self._scope or self._section or self._count).SetFocus()
+
+    def result(self) -> Any:
+        """``"video"`` for the one video, otherwise a ``CollectionChoice``."""
+        from quill.core.audio.url_collections import CollectionChoice
+
+        if self._scope is not None and self._scope.GetSelection() == 0:
+            return "video"
+        channel = self._info.kind == "channel"
+        url = self._info.url
+        if channel and self._section is not None and self._sections:
+            label, url = self._sections[max(0, self._section.GetSelection())]
+            title = f"{self._info.title} - {label}"
+        else:
+            title = self._info.title
+        return CollectionChoice(
+            url=url,
+            title=title,
+            is_channel=channel,
+            newest=self._counts[max(0, self._count.GetSelection())][1],
+            within_days=(
+                _SINCE[max(0, self._since.GetSelection())][1] if self._since is not None else None
+            ),
+            only_new=self._only_new.GetValue(),
+        )
+
+
+def ask_what_to_download(host: Any, info: Any) -> Any:
+    """Ask how much of a playlist or channel to take; ``None`` when cancelled."""
+    if info.kind == "channel" and not info.sections:
+        host._show_message_box(
+            f"{info.title} has no videos Quill Converter can download.", LINK_TITLE
+        )
+        return None
+    dialog = ConverterLinkDialog(host.frame, info)
+    try:
+        if (
+            host._show_modal_dialog(dialog, LINK_TITLE) != wx.ID_OK
+        ):  # dialog_button_contract: exempt
+            return None
+        return dialog.result()
+    finally:
+        dialog.Destroy()

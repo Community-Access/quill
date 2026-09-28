@@ -50,7 +50,10 @@ def test_app_reuses_shared_converter_logic() -> None:
     # Reuses the tested engine + orchestration, does not reimplement it.
     assert "from quill.core.audio.convert import" in src
     assert "plan_jobs(" in src and "run_conversion_batch(" in src
-    assert "run_url_conversion(self)" in src  # URL import
+    # URL import: one video through the shared orchestration; playlists and
+    # channels through url_collections (2026-09-28).
+    assert "_download_then_convert(self, url)" in src
+    assert "download_collection(" in src
     # View > Advanced Options shows the encoder settings in the main window
     # (2026-09-27); the separate Convert Audio dialog is no longer opened.
     assert "converter_advanced.apply(self, spec)" in src
@@ -60,7 +63,9 @@ def test_app_reuses_shared_converter_logic() -> None:
 def test_app_shell_and_bootstrap_present() -> None:
     src = _src()
     frame_class = (
-        "class QuillConverterFrame(ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame)"
+        "class QuillConverterFrame(\n"
+        "    ConverterUrlMixin, ConverterChaptersMixin, ConverterActionsMixin, AppShellFrame\n"
+        "):"
     )
     assert frame_class in src
     assert "def _run_background_task(" in src  # self-contained batch runner
