@@ -1,6 +1,6 @@
 # Quill Converter User Guide: Converting Audio and Video on Your Own Computer
 
-Version 1.0.0 -- September 27, 2026
+Version 1.0.0 -- September 28, 2026
 
 Quill Converter changes audio and video files from one format into another, on
 your own computer, without uploading anything to a website. Sound to sound,
@@ -15,8 +15,8 @@ sheet is written beside the converted file, so nothing is silently lost. The
 Chapter Workbench lets you hear a book and edit its chapters at the playhead.
 
 It is a small window with a queue, a few choices and a Convert button. Focus
-lands on the queue the moment it opens, every control has a name and an access
-key, and everything runs from the keyboard. It was built for screen readers
+lands on the queue the moment it opens, every control has a name, most have an
+access key, and everything runs from the keyboard. It was built for screen readers
 from the first line: every action says what it did, and the status bar always
 carries the same words.
 
@@ -42,9 +42,12 @@ adapter.
 
 ### The File Explorer right-click menu
 
-The installer has one option, checked by default: **Add "Convert with Quill
-Converter" to the File Explorer right-click menu for audio and video files**.
-With it on, right-click any audio or video file Quill Converter reads and choose
+The installer offers three choices, each a real Windows checkbox that a screen
+reader announces as checked or not checked: **Create a desktop icon** (off by
+default), **Add "Convert with Quill Converter" to the File Explorer
+right-click menu** (on by default), and, on the last page, **Launch Quill
+Converter** (off by default). With the File Explorer entry on, right-click
+any audio or video file Quill Converter reads and choose
 **Convert with Quill Converter**. The file opens in Quill Converter, already
 queued.
 
@@ -80,9 +83,12 @@ opens Quill Converter. You do not need both.
    are. See [Chapters](#chapters).
 7. Press Alt+Y (**Play Preview**) to hear fifteen seconds exactly as the converted
    file will sound. Press it again to stop.
-8. Press Ctrl+Enter or the **Convert** button, or Ctrl+Enter from anywhere in the window.
+8. Press the **Convert** button, or Ctrl+Enter from anywhere in the window.
 
-Progress is announced every 25 percent and shown in the status bar. The run ends
+Progress is announced at 25, 50 and 75 percent, counted inside each file as well
+as across the queue, so one long audiobook is not silence until it ends. The status
+bar says how far it has got and, once it can tell, about how long is left, and the
+**Progress** bar under the buttons fills as it goes. The run ends
 by saying how many files converted and naming any that did not. If anything
 failed, Ctrl+R opens the Conversion Report with the reason for each one.
 
@@ -93,7 +99,7 @@ converted file whose name is taken is numbered instead, unless you choose
 otherwise in [Advanced Options](#advanced-options).
 
 Quill Converter remembers your format, presets, effects, custom effects, the
-keep-from and keep-until times, the Chapters choice, the Advanced Options, and
+keep-from and keep-until times, the Chapter marks choice, the Advanced Options, and
 the output folder between runs, so the next job starts where the last one
 ended.
 
@@ -116,6 +122,12 @@ Tab order, top to bottom, with each control's access key:
   checked. See [Advanced Options](#advanced-options).
 - **Convert** (Ctrl+Enter), **Play Preview** (Alt+Y), **Hear Original** (Alt+G),
   **From URL...** (Alt+L).
+- **Progress** -- a progress bar, named "Conversion progress", under the
+  buttons. It shows how far a conversion has got, counting inside each file as
+  well as across the queue, and is empty when nothing is converting. It is not
+  in the Tab order, because a progress bar never takes focus; review the window
+  to find it, or simply listen to the status bar, which says the same in words
+  with about how long is left.
 
 The menu bar is File, Queue, View, Convert, QuillVille, Help and Window, and no
 control on the window uses a menu's letter, so Alt+F always opens the File menu.
@@ -227,6 +239,15 @@ rather than letting it fail:
   for films and TV" on a film gives you a new film with clearer speech.
 - **Video files are converted one at a time**, because a video encoder already
   uses every core of the computer. Several at once would only make each slower.
+- **The graphics card does the heavy lifting when it can.** MP4, MKV and MOV
+  video (H.264) and MP4 H.265 are encoded on the computer's graphics chip when it
+  has a video encoder -- NVIDIA, Intel or AMD, which most Windows computers
+  have -- typically several times faster than on the processor. Quill
+  Converter tries it once per session with a fraction of a second of test
+  picture and uses it only if it works; if a real conversion on it ever fails,
+  that file is converted again on the processor, and the processor is used for
+  the rest of the session. There is nothing to set. WebM (VP9), AVI, WMV,
+  MPEG-2 and Ogg Theora always use the processor.
 
 ### Video presets
 
@@ -413,8 +434,7 @@ Quill Converter also accepts, beside the file and with the same name:
 - `name.txt` -- if it reads as a chapter list. A transcript or other text is
   ignored.
 
-A file with no chapter list beside it keeps its own chapters, and the
-Conversion Report says so.
+A file with no chapter list beside it keeps its own chapters.
 
 ### Where chapters land
 
@@ -428,8 +448,8 @@ Conversion Report says so.
   inside the file, so a `.cue` sheet with the same name is written next to the
   converted file.
 
-Nothing is silently lost. The Conversion Report (Ctrl+R) notes where each
-file's chapters went.
+Nothing is silently lost: where a format cannot hold chapters inside the file,
+look beside the converted file for its `.cue` sheet.
 
 ### Chapter Workbench
 
@@ -443,16 +463,19 @@ book and work at the playhead:
 - find chapters at silences;
 - import and export chapter lists: Audacity labels, CUE, timestamps,
   Podcasting 2.0 JSON and CSV;
-- edit the book's tags;
-- save: an MP3 is saved in place, with only its tags rewritten; an M4B is
-  saved as a new file (Save As), losslessly;
+- edit the book's details -- book title, author, narrator, genre and year --
+  and, with **All tags...**, every other tag and the cover art in the Tag
+  Editor (see [Editing tags](#editing-tags));
+- save: an MP3 is saved in place, with only its tags rewritten; an M4B or M4A
+  whose tags alone changed is also saved in place, while changed chapters in
+  one are saved as a new file (Save As), losslessly;
 - split the book into one file per chapter.
 
 The player is libmpv, bundled with both downloads, so it seeks exactly in every
 format.
 
 For any other format, the Workbench explains the other routes: write a chapter
-list beside the file and choose it in Chapters, or convert the file to M4B or
+list beside the file and choose it in Chapter marks, or convert the file to M4B or
 MP3 first and open that.
 
 Preview and Hear Original ignore chapters; they play fifteen seconds of sound.
@@ -483,7 +506,7 @@ a reason.
 **Convert > Split by Chapters** (Ctrl+Shift+S) makes one file per chapter from
 every queued file that has chapters: an audiobook, a podcast episode, a film.
 
-Split uses the same **Chapters** choice as Convert, so it can cut where the
+Split uses the same **Chapter marks** choice as Convert, so it can cut where the
 file has no chapters of its own:
 
 - **Keep each file's own chapters** and Split cuts at the chapters already in
@@ -493,6 +516,8 @@ file has no chapters of its own:
 - **Find chapters at the pauses** and Split cuts at the pauses.
 - **Use the chapter list beside each file** and Split cuts exactly where your
   list says.
+- **Remove all chapters** is about what a converted copy keeps, so Split uses
+  each file's own chapters instead, and the summary says so.
 
 The pieces go into a folder named after the source, inside the output folder.
 Each file is named with its number and chapter title, for example "01 - Chapter
@@ -525,11 +550,20 @@ left out, and the announcement says how many were.
 
 **Queue > Edit Tags...** (Ctrl+T) opens the Tag Editor on the highlighted file:
 the same editor Audio Studio uses, built into Quill Converter so nothing else
-needs installing. Every tag the file can carry is there, over five pages --
-the title, artist and album; the people (composer, narrator and the rest); the
-dates and numbers (year, track, disc); sorting; and the cover art, which you
-can add, replace or remove from a JPEG or PNG. Control+Tab moves to the next
-page and Control+Shift+Tab to the previous one; Tab moves between the fields.
+needs installing. Its 26 fields and the cover art are spread over five pages:
+
+- **Main** -- title, subtitle, artist, album, album artist, track and disc
+  (each a number of a total), genre and year.
+- **Details** -- original release date, comment, lyrics or transcript,
+  grouping, language, beats per minute, and a Part of a compilation check box.
+- **Publishing** -- composer, conductor, publisher, copyright, encoded by and
+  ISRC.
+- **Sort order** -- sort title, sort artist, sort album and sort album artist.
+- **Cover art** -- what the current cover is, with **Load image...** (a JPEG
+  or PNG, up to 8 MB), **Save image as...** and **Remove image**.
+
+Control+Tab moves to the next page and Control+Shift+Tab to the previous one;
+Tab moves between the fields.
 
 Press OK and the tags are written into the file; the sound itself is not
 touched, and chapter marks are kept. Cancel changes nothing.
@@ -538,18 +572,28 @@ The Tag Editor works on MP3, M4A, M4B and MP4 files. For another format, such
 as FLAC or WAV, Quill Converter says so rather than risk damaging it: convert it
 to one of those four first -- its tags come along -- and edit the converted copy.
 Tags also travel through every conversion by themselves, and the Chapter
-Workbench has the five most-used book tags on its own page.
+Workbench has the five fields an audiobook needs in its Book details, with an
+**All tags...** button that opens this same editor.
 
 ## During and after a conversion
 
-- **Stop:** Ctrl+Enter or the Stop Converting button. The file being converted is allowed
-  to finish, because a half-written file is worse than a finished one; nothing
-  after it starts.
-- **Progress** is announced at 25, 50 and 75 percent, shown in the status bar,
-  and shown in the tray icon's tooltip, so a conversion running in the tray is
-  still something you can check on.
+- **Stop:** Ctrl+Enter or the Stop Converting button. Stop is immediate: the file
+  being converted stops too, and its unfinished output is removed, so nothing
+  half-written is left in the output folder. Files already finished are kept,
+  and the Conversion Report lists the stopped ones as skipped. A Join stops
+  the same way, part way through a file, and saves nothing.
+- **Progress** is counted inside each file, not only by files finished: a single
+  two-hour audiobook moves from 0 to 100 like a queue of fifty songs does. It is
+  announced at 25, 50 and 75 percent, and the status bar and the tray icon's
+  tooltip update about once a second -- "Converting Book.m4b: 42 percent, about 3
+  minutes left", or "Converted 3 of 10, 47 percent overall" for a queue -- so a
+  conversion running in the tray is still something you can check on. The time
+  left appears once there is enough to estimate from. The **Progress** bar under
+  the buttons moves with it.
 - **Conversion Report** (Ctrl+R) lists every file: converted (with its new
-  name), skipped, or failed with the reason. It also says what settings were
+  name, and a note when there is one -- where its chapters went, or that
+  subtitles a container cannot hold were left out), skipped, or failed with the
+  reason. It also says what settings were
   used, where the files went and how long it took. **Copy All** puts the whole
   report on the clipboard, ready to paste into an email.
 - **Open Output Folder** (Ctrl+Shift+F) opens the folder in File Explorer.
@@ -576,7 +620,7 @@ support may ask for. The explanations are:
 - The chosen format could not accept this file's sound or picture settings.
 - The file is copy-protected and cannot be converted.
 - This file uses a codec the bundled FFmpeg cannot read.
-- The file contains no audio or video.
+- The file has no sound track to convert -- for example, a video with no audio.
 
 ## Advanced Options
 
@@ -608,8 +652,12 @@ file's own -- so showing the section to look around changes nothing.
 ## Convert from URL
 
 **From URL...** (Alt+L, or File > Convert from URL..., Ctrl+U) takes a web
-address -- YouTube and many other sites -- downloads its audio, and then asks
-how to convert the downloaded file.
+address -- YouTube and many other sites -- and downloads its audio, with
+progress in the status bar. The downloaded file then joins the queue, and
+Ctrl+Enter converts it with the choices on the window, like any other file.
+The download itself is kept in a temporary folder, so when it is the first file
+in the queue and the **Output folder** is empty, the converted copy goes to a
+`Converted` folder inside your Downloads folder rather than beside it.
 
 The downloader, yt-dlp, is included, so nothing is installed. Only download
 content you have the right to use; no account or password of yours is sent to
@@ -698,8 +746,10 @@ every key in a read-only window you can arrow through.
 | Next window, previous window | Ctrl+Tab, Ctrl+Shift+Tab |
 | Go to window 1 to 9 | Ctrl+1 to Ctrl+9 |
 
-The **QuillVille** menu opens the other released apps in the family -- QUILL,
-Quill Radio, Quill Weather and Quill Inkwell -- and each item shows its key.
+The **QuillVille** menu (Alt+U) opens the other released apps in the family --
+QUILL, Quill Radio, Quill Weather and Quill Inkwell. Each item has an access
+letter, so Alt+U and then Q, R, W or I opens that app with nothing held down,
+and each shows its key, which you can see in Keyboard Shortcuts.
 The **Window** menu lists the open windows.
 
 ## Troubleshooting
@@ -714,12 +764,11 @@ The **Window** menu lists the open windows.
 - **"Change the container only" failed.** That picture and sound cannot be
   copied into that container as they are. Choose Same quality instead, which
   converts rather than copies.
-- **A video is taking a long time.** Video encoding is slow, especially H.265 and
-  VP9, and a long film can take longer than it lasts. Progress is per file, so
-  a single long video may sit at the start for a while. The tray tooltip and
-  status bar say which file is in progress.
-- **Stop did not stop at once.** The file in progress finishes first, on
-  purpose.
+- **A video is taking a long time.** On a computer whose graphics chip has no
+  video encoder, H.264 runs at about the speed of playback and H.265 slower;
+  WebM (VP9) is slow everywhere. MP4 H.264 is the fastest choice. The status
+  bar and tray tooltip say how far the file has got and about how long is
+  left.
 - **A file failed as copy-protected.** Files with DRM, such as purchased
   Audible books or protected iTunes purchases, cannot be converted.
 - **Preview is silent.** Preview plays through the Windows default sound device.

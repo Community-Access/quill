@@ -70,6 +70,9 @@ msg.txt
 # (they describe work rather than being it). Untracked like the rest; listed
 # because tests/unit/structure/test_repo_layout.py reads exact patterns only.
 /ear.md
+# Ship checklist for Quill Converter 1.0.0 (2026-09-28): the steps left before
+# it reaches users. Describes work rather than being it, like ear.md.
+/converter.md
 
 # Running work list for the current push (2026-08-23). Describes what is left
 # to build rather than being part of the build; untracked like the notes above,

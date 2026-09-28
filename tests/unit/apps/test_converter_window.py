@@ -130,6 +130,40 @@ def test_report_lists_failures_with_reasons(converter, tmp_path: Path) -> None:
     )
 
 
+def test_report_keeps_the_note_on_a_converted_file(converter, tmp_path: Path) -> None:
+    from quill.core.audio.convert import BatchResult, ConversionJob, ConversionSpec, JobResult
+
+    job = ConversionJob(tmp_path / "a.wav", tmp_path / "out" / "a.ogg", ConversionSpec(fmt="ogg"))
+    note = "3 chapters are in a.cue beside it."
+    result = BatchResult(results=[JobResult(job=job, ok=True, error=note)])
+    converter.add_paths(_files(tmp_path, "a.wav"), announce=False)
+    converter._finish_batch(result, 1, tmp_path / "out", "", 1.0)
+    assert f"Converted: a.wav -> a.ogg\n  Note: {note}" in converter._last_report
+
+
+def test_a_download_converts_into_downloads_not_the_temp_folder(
+    converter, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import tempfile
+
+    temp = tmp_path / "temp"
+    (temp / "dl").mkdir(parents=True)
+    monkeypatch.setattr(tempfile, "gettempdir", lambda: str(temp))
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "home"))
+    converter._dest.SetValue("")
+    converter._entries = [(temp / "dl" / "talk.m4a", None)]
+    assert converter._destination() == tmp_path / "home" / "Downloads" / "Converted"
+    converter._entries = [(tmp_path / "music" / "song.wav", None)]
+    assert converter._destination() == tmp_path / "music" / "Converted"
+
+
+def test_the_progress_bar_follows_the_work_and_empties_after(converter) -> None:
+    converter._note_progress("Converting a.wav: 42 percent", 420, 1000)
+    assert converter._progress.GetValue() == 420
+    converter._end_work()
+    assert converter._progress.GetValue() == 0
+
+
 def test_every_menu_item_names_a_key_and_no_key_is_claimed_twice(converter) -> None:
     from quill.apps.converter_menu import shortcut_list
 

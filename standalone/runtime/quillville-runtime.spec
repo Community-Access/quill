@@ -69,9 +69,13 @@ ytdlp_hidden += ejs_hidden
 # from (quill/core/audio/cover_art.py), and QUILL writes MP3 chapter frames
 # with it. Pure Python and imported lazily inside functions, so it is named
 # here rather than trusted to the tracer.
-from PyInstaller.utils.hooks import collect_submodules  # noqa: E402
+from PyInstaller.utils.hooks import collect_submodules, copy_metadata  # noqa: E402
 
 mutagen_hidden = collect_submodules("mutagen")
+# mutagen is GPL-2.0-or-later: its dist-info (licenses/COPYING) ships with it,
+# as yt-dlp's already does through collect_all. Without this the runtime
+# carried the code and not the licence.
+ytdlp_datas += copy_metadata("mutagen")
 
 a = Analysis(
     ["runtime_launcher.py"],

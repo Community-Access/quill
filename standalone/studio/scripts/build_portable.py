@@ -453,9 +453,16 @@ def _stage_tools(out_dir: Path, product: Product, ffmpeg_dir: Path | None, mpv_d
             if (ffmpeg_dir / name).is_file():
                 print(f"  staging tools/ffmpeg/{name}")
                 shutil.copy2(ffmpeg_dir / name, dest / name)
-        lic = ffmpeg_dir.parent / "LICENSE"
-        if lic.is_file():
-            shutil.copy2(lic, dest / "FFMPEG-LICENSE.txt")
+        # The GPLv3 licence and source offer (quill/data/notices/ffmpeg), the
+        # same pair StageMediaTools.ps1 puts beside the installer's copy. The
+        # old guess at a LICENSE beside the ffmpeg folder never matched the
+        # pinned staging layout, so the portables shipped FFmpeg with neither.
+        notices = Path(__file__).resolve().parents[3] / "quill" / "data" / "notices" / "ffmpeg"
+        found = sorted(notices.glob("*.txt"))
+        if len(found) < 2:
+            raise RuntimeError(f"FFmpeg licence notices not found in {notices}.")
+        for txt in found:
+            shutil.copy2(txt, dest / txt.name)
     if product.stage_mpv and mpv_dir:
         dest = out_dir / "tools" / "mpv"
         dest.mkdir(parents=True, exist_ok=True)

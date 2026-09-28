@@ -13,6 +13,7 @@
   "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Choice#2": "helped",
   "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Choice#3": "helped",
   "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Choice#4": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Gauge": "helped",
   "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.ListBox": "helped",
   "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.TextCtrl": "helped",
   "quill/apps/converter_advanced.py::build::wx.Choice": "helped",

@@ -28,13 +28,37 @@ from dataclasses import replace
 from pathlib import Path
 
 from quill.core.audio.convert import ConversionJob, JobResult, build_convert_command
+from quill.core.audio.ffmpeg_live import LiveHooks, run_ffmpeg_live
 from quill.core.speech.audio_tags_core import Chapter
 
 _UNNAMED_LAYOUT = re.compile(r'Unsupported channel layout "(\d+) channels"')
 
+#: The report line for a file that was being converted when Stop was pressed.
+STOPPED_NOTE = "Stopped part way; the unfinished file was removed."
+
+
+def _output_seconds(job: ConversionJob) -> float:
+    """How long the output should be, for progress -- 0 when it cannot be told."""
+    from quill.core.audio.media_probe import probe
+
+    try:
+        whole = float(probe(job.source).duration_s or 0.0)
+    except Exception:  # noqa: BLE001 - no length means no percentage, not no file
+        return 0.0
+    start = max(0.0, float(job.spec.start_s or 0.0))
+    end = float(job.spec.end_s or 0.0)
+    if end > start:
+        whole = min(whole, end) if whole else end
+    return max(0.0, whole - start)
+
 
 def _retry_spec(job: ConversionJob, stderr: str) -> tuple[ConversionJob, str] | None:
     """A changed job worth one more attempt, and what changed -- or None."""
+    if job.spec.video_encoder:  # the graphics card failed: the processor next
+        from quill.core.audio.video_accel import mark_broken
+
+        mark_broken(job.spec.video_encoder)
+        return replace(job, spec=replace(job.spec, video_encoder="")), ""
     lowered = stderr.lower()
     caption_trouble = any(
         needle in lowered
@@ -58,8 +82,15 @@ def _retry_spec(job: ConversionJob, stderr: str) -> tuple[ConversionJob, str] | 
     return None
 
 
-def _default_single_runner(ffmpeg: str, job: ConversionJob) -> JobResult:
-    """Encode one job to a temp file, then move it into place (atomic, safe)."""
+def _default_single_runner(
+    ffmpeg: str, job: ConversionJob, *, hooks: LiveHooks | None = None
+) -> JobResult:
+    """Encode one job to a temp file, then move it into place (atomic, safe).
+
+    With ``hooks`` the encode reports how far it has got and stops the moment
+    the batch is stopped; the temp file is removed either way, so a stopped
+    file leaves nothing behind.
+    """
     if not job.source.is_file():
         return JobResult(job=job, ok=False, error="input file not found")
     from quill.stability.safe_subprocess import run_subprocess_safely
@@ -74,10 +105,10 @@ def _default_single_runner(ffmpeg: str, job: ConversionJob) -> JobResult:
     # A stream copy is never decoded, so it can never be processed and stay a
     # copy. The pair is refused here rather than half-honoured.
     if exact is not None and exact.active and not job.spec.copy_audio:
-        return _exact_optilab_runner(ffmpeg, job, tmp_path)
+        return _exact_optilab_runner(ffmpeg, job, tmp_path, hooks=hooks)
     # A feature-length video encode can outlast the hour an audio file gets.
     timeout = 6 * 3600.0 if job.spec.is_video() else 3600.0
-    attempt, notes = job, []
+    attempt, notes = _with_graphics_card(ffmpeg, job), []
     meta = tmp_path.with_suffix(".ffmeta")
     try:
         chapters, chapter_note, write_meta = _chapters_for(job)
@@ -90,11 +121,20 @@ def _default_single_runner(ffmpeg: str, job: ConversionJob) -> JobResult:
                 build_ffmetadata([(c.title, c.start_ms, c.end_ms) for c in chapters]),
                 encoding="utf-8",
             )
-        for _try in range(3):
+        length = _output_seconds(job) if hooks is not None and hooks.on_fraction else 0.0
+        for _try in range(4):
             command = build_convert_command(
                 ffmpeg, attempt, out_path=tmp_path, chapters_meta=meta if meta.is_file() else None
             )
-            completed = run_subprocess_safely(command, timeout_seconds=timeout)
+            if hooks is None:
+                completed: object = run_subprocess_safely(command, timeout_seconds=timeout)
+            else:
+                completed = run_ffmpeg_live(
+                    command, duration_s=length, hooks=hooks, timeout_seconds=timeout
+                )
+                if getattr(completed, "cancelled", False):
+                    tmp_path.unlink(missing_ok=True)
+                    return JobResult(job=job, ok=False, skipped=True, error=STOPPED_NOTE)
             if int(getattr(completed, "returncode", 1)) == 0:
                 break
             stderr = str(getattr(completed, "stderr", "") or "")
@@ -127,6 +167,19 @@ def _default_single_runner(ffmpeg: str, job: ConversionJob) -> JobResult:
         return JobResult(job=job, ok=False, error=str(exc))
     finally:
         meta.unlink(missing_ok=True)
+
+
+def _with_graphics_card(ffmpeg: str, job: ConversionJob) -> ConversionJob:
+    """*job* on the graphics card's video encoder, when this machine has one."""
+    spec = job.spec
+    if not spec.is_video() or spec.copy_video or spec.video_encoder:
+        return job
+    from quill.core.audio.formats import VIDEO_OUTPUT_FORMATS
+    from quill.core.audio.video_accel import hardware_encoder
+
+    profile = VIDEO_OUTPUT_FORMATS.get(spec.fmt.strip().lower())
+    encoder = hardware_encoder(ffmpeg, profile.video_codec) if profile else None
+    return replace(job, spec=replace(spec, video_encoder=encoder)) if encoder else job
 
 
 def _chapters_for(job: ConversionJob) -> tuple[list[Chapter] | None, str, bool]:
@@ -162,7 +215,9 @@ def _chapters_for(job: ConversionJob) -> tuple[list[Chapter] | None, str, bool]:
     return chapters, note, native
 
 
-def _exact_optilab_runner(ffmpeg: str, job: ConversionJob, tmp_path: Path) -> JobResult:
+def _exact_optilab_runner(
+    ffmpeg: str, job: ConversionJob, tmp_path: Path, *, hooks: LiveHooks | None = None
+) -> JobResult:
     """Convert one job through the real OptiLab engine instead of an ffmpeg
     approximation of it: decode -> ``quill-optilab`` -> encode.
 
@@ -192,9 +247,12 @@ def _exact_optilab_runner(ffmpeg: str, job: ConversionJob, tmp_path: Path) -> Jo
             filter_graph=",".join(spec.filters),
             sample_rate=rate,
             channels=channels,
+            should_cancel=hooks.cancelled if hooks is not None else None,
         )
         shutil.move(str(tmp_path), str(job.dest))
         return JobResult(job=job, ok=True)
     except Exception as exc:  # noqa: BLE001 - one bad file must never sink the batch
         tmp_path.unlink(missing_ok=True)
+        if hooks is not None and hooks.cancelled():
+            return JobResult(job=job, ok=False, skipped=True, error=STOPPED_NOTE)
         return JobResult(job=job, ok=False, error=str(exc))

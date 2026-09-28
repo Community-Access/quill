@@ -138,12 +138,28 @@ def install_ffmpeg(
         if progress is not None:
             progress(0.95, "Extracting ffmpeg...")
         ffmpeg_path = _extract_ffmpeg_from_zip(tmp_zip, dest)
+        write_license_notices(dest)
     finally:
         tmp_zip.unlink(missing_ok=True)
     _clear_resolver_cache()
     if progress is not None:
         progress(1.0, "Done.")
     return ffmpeg_path
+
+
+def write_license_notices(dest: Path) -> None:
+    """Put FFmpeg's GPL licence and source offer beside the binaries in *dest*.
+
+    The pinned build is GPLv3, and distributing it means shipping its licence
+    and where its source is. The zip's own copies are not extracted (only the
+    two executables are), so the texts come from the package instead -- the
+    same files the standalone apps' builds stage (scripts/StageMediaTools.ps1).
+    """
+    from importlib import resources
+
+    folder = resources.files("quill.data").joinpath("notices", "ffmpeg")
+    for name in ("LICENSE.GPLv3.txt", "README-SOURCE.txt"):
+        (Path(dest) / name).write_bytes(folder.joinpath(name).read_bytes())
 
 
 def _clear_resolver_cache() -> None:

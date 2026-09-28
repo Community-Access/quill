@@ -210,7 +210,7 @@ and <code>converter_advanced.py</code>, its windows in
 Audio Studio at the same time. The <code>standalone/converter</code>
 folder carries only the launcher, installer, icon and these
 documents.</p>
-<h2 id="100--2026-09-27">1.0.0 – 2026-09-27</h2>
+<h2 id="100--2026-09-28">1.0.0 – 2026-09-28</h2>
 <p>The first public release. The app was first built in July 2026 as an
 audio converter; that build was never published as an installer, and
 everything it had is included here.</p>
@@ -234,7 +234,7 @@ remove them; they land inside every format that holds them, and in a
 <code>.cue</code> sheet beside the rest. The Chapter Workbench edits
 them at the playhead.</li>
 <li><strong>Join and split.</strong> Join into One File with a chapter
-per source; Split by Chapters, cutting wherever the Chapters choice
+per source; Split by Chapters, cutting wherever the Chapter marks choice
 says.</li>
 <li><strong>Advanced Options in the main window</strong>, shown and
 hidden from the View menu.</li>
@@ -321,14 +321,14 @@ with the same name, <code>name.chapters.txt</code> (lines such as
 <code>name.chapters.json</code> (Podcasting 2.0),
 <code>name.labels.txt</code> (Audacity labels), or <code>name.txt</code>
 when it parses as a chapter list (a transcript is ignored). A file with
-no list keeps its own chapters, and the report says so.</li>
+no list keeps its own chapters.</li>
 <li>Where chapters land: FFmpeg writes them inside MP3 (ID3 CHAP and
 CTOC), M4B, M4A, Apple Lossless, M4R, MP4, MOV, MKV, MKA, WebM, WebM
 audio, Opus and WMA/WMV. Ogg Vorbis, FLAC, Speex and Ogg video get
 CHAPTER001 / CHAPTER001NAME comments, written with mutagen. Every other
 format (WAV, AIFF, WavPack, AC-3, the AAC stream, MP2 and the rest) gets
-a <code>.cue</code> sheet with the same name beside the converted file.
-The Conversion Report notes where chapters went.</li>
+a <code>.cue</code> sheet with the same name beside the converted
+file.</li>
 <li>Keep from / Keep until trim the chapters to the kept part and shift
 them to start at zero.</li>
 <li>Chapter Workbench (Queue &gt; Chapter Workbench…, Ctrl+H, or the
@@ -336,9 +336,11 @@ Chapter Workbench button) opens the highlighted MP3, M4B or M4A in the
 Audio Studio’s Chapter Workbench: a player, rename, split at the
 playhead, set a start to the playhead, merge, find chapters at silences,
 import and export chapter lists (Audacity labels, CUE, timestamps,
-Podcasting 2.0 JSON, CSV), book tags, Save (MP3 in place, tags only; M4B
-as a new file, lossless) and split into files. Other formats are told
-the chapter-list route, or to convert to M4B or MP3 first.</li>
+Podcasting 2.0 JSON, CSV), the five Book details fields plus All tags…
+(the Tag Editor), Save (MP3 in place, tags only; an M4B or M4A in place
+when only tags changed, as a new file, lossless, when chapters did) and
+split into files. Other formats are told the chapter-list route, or to
+convert to M4B or MP3 first.</li>
 <li>libmpv, the mpv playback engine, is bundled in the installer and the
 portable zip as the Workbench’s player, for exact seeking.</li>
 <li>Preview and Preview Original ignore chapters.</li>
@@ -354,9 +356,10 @@ sample rates and channel counts join cleanly.</li>
 <li>Split by Chapters (Ctrl+Shift+S): one file per chapter, into a
 folder named after the source inside the output folder, named “01 -
 Chapter title” and tagged with the title and track number. It follows
-the Chapters choice: “A chapter every 30 minutes” cuts a long recording
-into 30-minute files, “Find chapters at the pauses” cuts at the pauses,
-and a chapter list beside the file cuts exactly where it says.</li>
+the Chapter marks choice: “A chapter every 30 minutes” cuts a long
+recording into 30-minute files, “Find chapters at the pauses” cuts at
+the pauses, and a chapter list beside the file cuts exactly where it
+says.</li>
 </ul>
 <h3 id="queue-and-reports">Queue and reports</h3>
 <ul>
@@ -373,35 +376,70 @@ Clear Queue (Ctrl+Shift+Delete).</li>
 tags, each video, audio and subtitle track, cover art, and chapters,
 read by ffprobe.</li>
 <li>Convert (Ctrl+Enter or the Convert button) becomes Stop while
-running; stopping lets the file in progress finish.</li>
-<li>Progress is announced every 25 percent, and the tray tooltip shows
-it.</li>
-<li>Conversion Report (Ctrl+R) lists every file with the settings used
-and a plain-language reason for each failure, with a Copy All
+running. Stop is immediate: the file being encoded is stopped too and
+its unfinished output removed (FFmpeg writes to a temp file that only a
+finished encode moves into place). Before this, a stop only took effect
+between files, and in a batch of sound files it never took effect at
+all, because every file had already been handed to a worker. The report
+lists stopped files as skipped. A Join stops part way through a file
+too, reports progress inside each file, and writes the joined file in a
+temp folder that is moved into place only when it is finished, so a
+stopped Join saves nothing.</li>
+<li>H.264 and H.265 video are encoded on the graphics chip when it has a
+video encoder (NVIDIA NVENC, Intel Quick Sync, AMD AMF), typically
+several times faster: measured 2026-09-28, 1080p H.265 went from 0.6x to
+5x real time on an AMD laptop, at the same file size. Each encoder is
+tried once per session on a test picture; a real encode that fails is
+retried on the processor, and the card is not used again that session.
+No setting.</li>
+<li>Split by Chapters with Chapter marks set to Remove all chapters uses
+each file’s own chapters, and says so, rather than doing it
+silently.</li>
+<li>FFmpeg’s licence (GPLv3) and source offer now ship beside ffmpeg.exe
+in both downloads, and mutagen’s licence in the shared runtime; both
+were missing, in every QuillVille app that carries them.</li>
+<li>Progress is counted inside each file from FFmpeg’s own progress
+report, not only by files finished, so a one-file batch of a long
+audiobook or film is no longer silent until it ends. It is announced at
+25, 50 and 75 percent; the status bar and tray tooltip update about once
+a second with the percentage and, once it can be estimated, the time
+left (“Converting Book.m4b: 42 percent, about 3 minutes left”;
+“Converted 3 of 10, 47 percent overall”).</li>
+<li>A progress bar (“Progress:”, named “Conversion progress”) sits under
+the action buttons and fills with the same count. It is not in the Tab
+order; the status bar says the same in words.</li>
+<li>Convert from URL puts the downloaded file into the main window’s
+queue, ready for Ctrl+Enter with the choices already on the window. With
+no Output folder set, its converted copy goes to Downloads\Converted
+rather than into the temporary folder the download sits in.</li>
+<li>Conversion Report (Ctrl+R) lists every file with the settings used,
+a plain-language reason for each failure, and any note on a converted
+file (where its chapters went, captions left out), with a Copy All
 button.</li>
 <li>Failures are explained in plain words – no track of the needed kind,
 file not found, damaged file, access refused, drive full, tracks that
 cannot be copied into the container, settings the encoder refused, copy
-protection, an unreadable codec, no audio or video – followed by
-FFmpeg’s own last line.</li>
+protection, an unreadable codec, no sound track – followed by FFmpeg’s
+own last line.</li>
 <li>Open Output Folder (Ctrl+Shift+F) and Open Output Folder When Done
 (Ctrl+Shift+W, a check item).</li>
 <li>Cover art is carried into the converted copy where FFmpeg drops it:
 MP3, M4A, M4B, M4R, FLAC, Ogg, Opus and Speex.</li>
 <li>Format, presets, effects, custom effects, keep from and keep until,
-the Chapters choice, the Advanced Options and the output folder are
+the Chapter marks choice, the Advanced Options and the output folder are
 remembered between runs, in <code>converter.json</code> in the data
 folder.</li>
 <li>View &gt; Advanced Options (Ctrl+Alt+V), a check item, shows or
 hides an Advanced section in the main window and moves focus to its
-first control; whether it is shown is remembered. It holds Quality (bit
-rate), Sample rate, Channels, Bit depth, If a file already exists
-(number the new one, skip or replace), Broadcast polish (OptiLab Core:
-Podcast Leveler, Stream Polish, Smooth Limiter; disabled when the build
-lacks it) and “Look in subfolders too” (on by default). Each starts on
-its neutral choice. This replaces the Advanced button and the Advanced
-Options command that opened the Audio Studio’s Convert Audio dialog, a
-second window with its own queue and its own Convert button.</li>
+first control; whether it is shown is remembered. It holds Bit rate
+(size and quality), Sample rate, Channels, Bit depth, If a file already
+exists (number the new one, skip or replace), Broadcast polish (OptiLab
+Core: Podcast Leveler, Stream Polish, Smooth Limiter; disabled when the
+build lacks it) and “Look in subfolders too” (on by default). Each
+starts on its neutral choice. This replaces the Advanced button and the
+Advanced Options command that opened the Audio Studio’s Convert Audio
+dialog, a second window with its own queue and its own Convert
+button.</li>
 <li>Menus are now File, Queue, View, Convert, QuillVille, Help and
 Window, and every item shows its key.</li>
 </ul>
@@ -418,19 +456,20 @@ href="mailto:support@community-access.org">support@community-access.org</a>
 through your own mail program. There is no GitHub token and no GitHub
 path.</li>
 <li>F1 help for the new windows: Custom Effects, File Properties,
-Conversion Report and Keyboard Shortcuts.</li>
+Conversion Report, Keyboard Shortcuts and the Tag Editor.</li>
 </ul>
 <h3 id="installer-and-portable">Installer and portable</h3>
 <ul>
-<li>The installer’s choices – desktop icon, the File Explorer entry,
-launching when done – are real Windows checkboxes that announce checked
-and not checked, like every family installer since 2026-09-26.</li>
+<li>The installer’s choices – a desktop icon (off by default), the File
+Explorer entry (on) and launching when done (off) – are real Windows
+checkboxes that announce checked and not checked, like every family
+installer since 2026-09-26.</li>
 <li>The installer (Inno Setup 7) installs the shared QuillVille runtime
 if it is absent, then the app, with Start Menu entries and the
 documents.</li>
-<li>An installer task, checked by default, adds “Convert with Quill
-Converter” to the File Explorer right-click menu for every audio and
-video type the app reads, per user, removed on uninstall.
+<li>The File Explorer checkbox, checked by default, adds “Convert with
+Quill Converter” to the File Explorer right-click menu for every audio
+and video type the app reads, per user, removed on uninstall.
 <code>.ts</code> is left off because it is commonly a TypeScript
 file.</li>
 <li>Selecting many files in Explorer and choosing the entry queues them

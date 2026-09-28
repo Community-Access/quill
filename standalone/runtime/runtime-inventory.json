@@ -53,6 +53,7 @@
     "libwinpthread-1-cd4f4bcf906810bdc5341685d1696fa6.dll",
     "markupsafe",
     "msvcp140.dll",
+    "mutagen",
     "nacl",
     "numpy",
     "numpy.libs",

@@ -288,6 +288,22 @@ class QuillConverterFrame(ConverterChaptersMixin, ConverterActionsMixin, AppShel
             action_row.Add(btn, 0, wx.RIGHT, 6)
         root.Add(action_row, 0, wx.ALL, 8)
 
+        # Not in the Tab order (a progress bar never takes focus); a screen
+        # reader finds it by reviewing the window, and NVDA can beep it when
+        # background progress bars are on. The status bar says the same in words.
+        progress_row = wx.BoxSizer(wx.HORIZONTAL)
+        progress_label = wx.StaticText(panel, label="Progress:")
+        self._progress = wx.Gauge(panel, range=1000, style=wx.GA_HORIZONTAL | wx.GA_SMOOTH)
+        self._progress.SetName("Conversion progress")
+        self._progress.SetHelpText(
+            "How far the conversion has got, counting inside each file as well "
+            "as across the queue. The status bar says the same in words, with "
+            "about how long is left. Empty when nothing is converting."
+        )
+        progress_row.Add(progress_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        progress_row.Add(self._progress, 1, wx.ALIGN_CENTER_VERTICAL)
+        root.Add(progress_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
         panel.SetSizer(root)
         self._main_panel = panel
         self._restore_choices()

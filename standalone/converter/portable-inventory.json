@@ -118,6 +118,7 @@
     "__init__.py",
     "emoji_catalog.json",
     "noaa_directory.json",
+    "notices",
     "radio-catalog",
     "reading_services.json",
     "th_en_us_license.txt",

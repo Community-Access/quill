@@ -834,7 +834,7 @@ Control coverage: 40 audited sites (40 helped).
 
 ## Quill Converter
 
-Control coverage: 22 audited sites (22 helped).
+Control coverage: 23 audited sites (23 helped).
 
 ### Every window, and what it is for
 
@@ -878,6 +878,7 @@ Control coverage: 22 audited sites (22 helped).
 - `self._preview_btn`: Plays fifteen seconds of the highlighted file -- or the first in the queue -- exactly as it will sound after converting, effects and all. Press again to stop. Hear Original plays the same fifteen seconds untouched, so you can compare.
 - `self._original_btn`: Plays the same fifteen seconds Preview does, with nothing changed. Press again to stop.
 - `self._url_btn`: Paste a web address and convert its audio. The downloader is included with Quill Converter; in Safe Mode this is declined.
+- `self._progress`: How far the conversion has got, counting inside each file as well as across the queue. The status bar says the same in words, with about how long is left. Empty when nothing is converting.
 
 ## Quill Beacon
 

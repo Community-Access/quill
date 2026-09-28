@@ -85,7 +85,11 @@ class ConverterChaptersMixin:
                 )
                 message = f"Joined {len(sources)} files into {out_path.name}{chapters}."
             except Exception as error:  # noqa: BLE001 - said out loud on the UI thread
-                message = f"Join failed. {error}"
+                message = (
+                    "Join stopped. Nothing was saved."
+                    if cancel.is_cancelled()
+                    else f"Join failed. {error}"
+                )
             wx.CallAfter(self._finish_simple, message, out_path.parent)
 
         threading.Thread(target=worker, daemon=True, name="converter-join").start()
@@ -134,6 +138,14 @@ class ConverterChaptersMixin:
         notes = (
             f"{len(without)} file(s) have no chapters: {', '.join(without[:3])}." if without else ""
         )
+        if how == "none":
+            # "Remove all chapters" is about what a converted copy keeps; a
+            # split needs chapters to cut at, so it uses each file's own. Said
+            # rather than silently reinterpreted.
+            notes = (
+                "Split used each file's own chapters; Remove all chapters applies "
+                "to converting, not splitting. " + notes
+            ).strip()
         if not jobs:
             self._show_message_box(
                 "None of the queued files has chapters to split by. Choose where "
