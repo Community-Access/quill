@@ -786,6 +786,19 @@ The **Window** menu lists the open windows.
 
 ## Troubleshooting
 
+- **Quill Converter does not open.** It never fails silently: if the app's
+  engine cannot start, a plain message opens that your screen reader reads on
+  its own. It says "Quill Converter did not start", gives the reason in words,
+  names the launch log that holds the details, and gives the support address.
+  If it says the zip was opened from inside, extract the whole zip first
+  (Applications key on the zip, then **Extract All...**) and open
+  `QuillConverter.exe` from the extracted folder. If it names a missing file
+  or DLL, extract the zip again into an empty folder and check your antivirus
+  quarantine. If it says "Python reported", send the launch log to support:
+  `data\logs\launch.log` beside a portable copy, or
+  `%APPDATA%\Quill\logs\QuillConverter-launch.log` for an installed one. If
+  nothing at all happens and there is no message, a Quill Converter is
+  probably already running; check the notification area and Task Manager.
 - **"Quill Converter cannot find FFmpeg."** FFmpeg is installed with the app,
   so this means it was removed or damaged. Help > Get FFmpeg... (Ctrl+Alt+F)
   puts it back.

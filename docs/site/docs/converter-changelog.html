@@ -497,6 +497,21 @@ OptiLab Core adapter are bundled in both; nothing downloads on first
 use.</li>
 <li>Check for Updates offers the matching download, installer or
 portable.</li>
+<li><strong>When Quill Converter cannot start, it says so.</strong>
+<code>QuillConverter.exe</code> starts the app’s Python engine; the
+launcher keeps a launch log of everything the engine reports
+(<code>data\logs\launch.log</code> beside a portable copy;
+<code>%APPDATA%\Quill\logs\QuillConverter-launch.log</code> for an
+installed one) and, when the engine exits with an error, opens one plain
+message a screen reader reads on its own: “Quill Converter did not
+start”, the reason in words, where the log is, and the support address.
+A missing DLL, a damaged or 32-bit file and “access denied” each get
+their own words. Opening <code>QuillConverter.exe</code> from inside the
+zip, before extracting it, is recognised and explained. Shared with
+every QuillVille app
+(<code>quill/native/launcher/launch_report.c</code>, 2026-09-28, first
+in Quill Radio 3.0.4); the user guide’s Troubleshooting opens with
+it.</li>
 <li>Quill Converter is listed on the QuillVille menu of the other apps,
 and QUILL’s own “Convert with Quill” Explorer entry is available in
 public builds.</li>

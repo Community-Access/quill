@@ -52,6 +52,7 @@ from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
 from quill.ui.radio.results_view import ResultsViewMixin
 from quill.ui.radio.search_fanout import run_search
 from quill.ui.radio.search_recents import RecentSearchesMixin
+from quill.ui.radio.volume_row import add_volume_slider
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
@@ -424,17 +425,12 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
-        volume_row.Add(
-            wx.StaticText(self._surface, label="Radio volume:"),
-            0,
-            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
-            6,
+        self._volume_slider = add_volume_slider(
+            self._surface,
+            volume_row,
+            label="Radio volume:",
+            name="Internet Radio's own volume, separate from your system volume and screen reader",
         )
-        self._volume_slider = wx.Slider(self._surface, value=100, minValue=0, maxValue=100)
-        self._volume_slider.SetName(
-            "Internet Radio's own volume, separate from your system volume and screen reader"
-        )
-        volume_row.Add(self._volume_slider, 1, wx.EXPAND | wx.RIGHT, 6)
         self._mute_btn = wx.ToggleButton(self._surface, label="Mute")
         self._mute_btn.SetName("Mute or unmute Internet Radio")
         volume_row.Add(self._mute_btn, 0)

@@ -27,6 +27,10 @@
  * If none of the above yield a runnable interpreter, the launcher shows a
  * clean error message and exits with code 2 -- never a crash dialog.
  *
+ * Once the interpreter runs, its stdout and stderr go to a launch log, and a
+ * non-zero exit is reported in one dialog with the reason in words -- see
+ * launch_report.c. A GUI child with no console otherwise dies in silence.
+ *
  * Cross-platform: this same source compiles on macOS and Linux. The Windows
  * path uses Win32 APIs; the POSIX path uses execve. The product macros are
  * shared.
@@ -34,6 +38,7 @@
 
 #include "runtime_resolve.h"
 #include "runtime_bootstrap.h"
+#include "launch_report.h"
 #include "product.h"
 
 #include <stdio.h>
@@ -202,9 +207,18 @@ static void show_error(
 #endif
 }
 
-static int fail_no_runtime(const char *display_name) {
+static int fail_no_runtime(const char *display_name, const char *self_path) {
     char msg[1024];
-    if (PRODUCT_RUNTIME_URL[0] == '\0') {
+    if (ql_looks_like_archive_preview(self_path)) {
+        /* The exe was double-clicked inside the zip: Explorer (or 7-Zip, or
+         * WinRAR) copied that one file to a scratch folder and ran it there,
+         * alone. "Incomplete copy" is true but useless; say what to do. */
+        const char *exe_name = strrchr(self_path, '\\');
+        const char *slash = strrchr(self_path, '/');
+        if (!exe_name || (slash && slash > exe_name)) exe_name = slash;
+        exe_name = exe_name ? exe_name + 1 : self_path;
+        ql_archive_preview_message(display_name, exe_name, msg, sizeof(msg));
+    } else if (PRODUCT_RUNTIME_URL[0] == '\0') {
         /* A portable launcher (built --no-runtime-download): its Python lives
          * in its own folder and nothing is downloaded, so say what is wrong. */
         snprintf(msg, sizeof(msg),
@@ -338,7 +352,7 @@ int wmain(int argc, wchar_t *wargv[])
             ql_resolve_runtime(self_path, &runtime) != 0 || !runtime.python[0]) {
             for (int i = 0; i < argc; ++i) free(argv[i]);
             free(argv);
-            return fail_no_runtime(PRODUCT_DISPLAY_NAME);
+            return fail_no_runtime(PRODUCT_DISPLAY_NAME, self_path);
         }
     }
 
@@ -400,6 +414,34 @@ int wmain(int argc, wchar_t *wargv[])
     ZeroMemory(&pi, sizeof(pi));
 
     /*
+     * The child's stdout and stderr go to a launch log. pythonw.exe has no
+     * console, so without this a traceback at import time went nowhere and
+     * the user saw nothing at all (2026-09-28: a portable Quill Radio that
+     * "just doesn't return anything"). The log is truncated on every launch,
+     * so it always holds the last run; ql_report_failed_exit reads its tail
+     * when the child exits non-zero. Best effort: if the file cannot be
+     * opened (a running instance holds it, or the folder is read-only) the
+     * launch proceeds unlogged, exactly as before.
+     */
+    char log_path[QL_PATH_MAX] = {0};
+    char log_header[QL_PATH_MAX];
+    snprintf(log_header, sizeof(log_header), "%s %s launcher: %s -m %s",
+             PRODUCT_DISPLAY_NAME, PRODUCT_VERSION, runtime.python,
+             PRODUCT_PYTHON_MODULE);
+    HANDLE hLog = INVALID_HANDLE_VALUE;
+    if (ql_launch_log_path(runtime.data_dir, PRODUCT_NAME, log_path, sizeof(log_path)) == 0) {
+        hLog = ql_open_launch_log(log_path, log_header);
+        if (hLog == INVALID_HANDLE_VALUE) log_path[0] = 0;
+    }
+    if (hLog != INVALID_HANDLE_VALUE) {
+        si.dwFlags |= STARTF_USESTDHANDLES;
+        si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+        si.hStdOutput = hLog;
+        si.hStdError = hLog;
+    }
+    ULONGLONG started_at = GetTickCount64();
+
+    /*
      * A Job Object with JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE ties the whole child
      * process tree to this launcher: if the launcher dies (or the job handle is
      * closed), Windows terminates the interpreter and everything it spawned, so
@@ -433,6 +475,9 @@ int wmain(int argc, wchar_t *wargv[])
         NULL,
         &si, &pi);
 
+    /* The child holds its own inherited copy; ours can go at once. */
+    if (hLog != INVALID_HANDLE_VALUE) CloseHandle(hLog);
+
     int exit_code = 0;
     if (!ok) {
         exit_code = fail_spawn_failed(PRODUCT_DISPLAY_NAME, runtime.python);
@@ -449,6 +494,14 @@ int wmain(int argc, wchar_t *wargv[])
          * kill-on-close limit never reaps a still-running interpreter. */
         if (hJob) CloseHandle(hJob);
         exit_code = (int)code;
+        if (code != 0) {
+            /* Exit 0 covers the ordinary close and the single-instance
+             * hand-off (a second launch asks the first to come forward and
+             * exits 0), so both stay silent. Anything else gets words. */
+            ql_report_failed_exit(PRODUCT_DISPLAY_NAME, (unsigned long)code,
+                                  GetTickCount64() - started_at, log_path,
+                                  log_header);
+        }
     }
 
     for (int i = 0; i < argc; ++i) free(argv[i]);
@@ -471,7 +524,7 @@ int main(int argc, char *argv[])
 
     QlRuntime runtime;
     if (ql_resolve_runtime(self_path, &runtime) != 0 || !runtime.python[0]) {
-        return fail_no_runtime(PRODUCT_DISPLAY_NAME);
+        return fail_no_runtime(PRODUCT_DISPLAY_NAME, self_path);
     }
 
     set_quill_env(runtime.install_root, runtime.data_dir, self_path);

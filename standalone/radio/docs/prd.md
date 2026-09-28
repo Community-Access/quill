@@ -2564,3 +2564,75 @@ about where you are.
 
 Rebuilding is simpler and throws away the tree somebody spent time expanding,
 which is the same reason the browse tree remembers its position at all.
+
+## 20. A launcher that says why it did not start, and a slider whose Up is up (3.0.4, 2026-09-28)
+
+**The report.** A listener's portable copy did not open, did not say why,
+and left nothing behind, "no matter what she does". The cause was structural,
+not a bug in any one file: `QuillRadio.exe` is a native launcher that spawns
+`pythonw.exe -m quill.apps.radio`, waits, and until 3.0.4 discarded the exit
+code. `pythonw.exe` has no console, so a traceback at import time went
+nowhere; a DLL Windows refused to load ended the process before Python ran,
+with no text at all. Silence was the design.
+
+**Requirements.**
+
+- R-1. The launcher points the interpreter's stdout and stderr at a launch log,
+  truncated on every launch so it always holds the last run: `data\logs\launch.log`
+  beside a portable copy, `%APPDATA%\Quill\logs\QuillRadio-launch.log` next to
+  `quill.log` for an installed one, `%TEMP%` as the last resort. Opened
+  share-read only, so the single-instance hand-off (a second launcher that
+  exits 0 at once) cannot truncate a running instance's log.
+- R-2. A non-zero exit shows exactly one `MessageBox`, the surface every screen
+  reader reads unaided: "Quill Radio did not start." (or "stopped
+  unexpectedly." after a minute of running), the reason in words, the log's
+  path, and support@community-access.org. Exit 0 stays silent: an ordinary
+  close and the hand-off both exit 0.
+- R-3. Windows' silent endings are translated, never shown as numbers:
+  `STATUS_DLL_NOT_FOUND` names the two things to check (extract the whole zip
+  again; antivirus quarantine), `STATUS_INVALID_IMAGE_FORMAT` says damaged or
+  32-bit, `STATUS_ACCESS_DENIED` names antivirus, application control and
+  folder permissions, `STATUS_DLL_INIT_FAILED` says sign out and back in, and
+  the memory faults say "crashed inside a component". A Python traceback's
+  last line is quoted, with a hint for the three shapes support sees ("No
+  module named", "DLL load failed", "Permission denied").
+- R-4. Running from an archive tool's scratch folder (Explorer's
+  `Temp<n>_<name>.zip`, 7-Zip's `7zO<hex>`, WinRAR's `Rar$...`) -- the exe
+  pressed *inside* the zip, so only that one file exists on disk -- is
+  recognised before the runtime lookup and explained as "extract the whole
+  zip first, Extract All", not as "this portable copy is incomplete".
+- R-5. The logic is shared (`quill/native/launcher/launch_report.c`) and
+  mirrored in Python with every constant and phrase pinned to the C source
+  (`tests/unit/native/test_launch_failure.py`), so every QuillVille app gains
+  it at its next launcher build and the words cannot drift.
+
+**Verified** on the real dialog text by Win32 window enumeration against three
+staged failures (no `quill` package, the exe alone in a `Temp1_*.zip` folder,
+`python313.dll` removed). Rejected on the way: silently stripping Mark of the
+Web from the extracted files -- Windows does not refuse a native DLL for that,
+so it would have been a fix for a cause never observed.
+
+**The slider, same release.** A second listener wrote "your volume is
+backwards, when you turn it up it's down arrow". True, and nobody chose it: a
+Win32 horizontal trackbar treats Up as "towards the start", the left end. To
+someone who cannot see the bar there is no left end, only louder and quieter;
+the app's own Ctrl+Up and the Windows mixer already said Up is louder, and the
+WinUI slider in Settings does too. Requirement: on every horizontal slider in
+the family, Up and Page Up mean more and Down and Page Down less; Left, Right,
+Home, End, the mouse and every chord are untouched (`quill/ui/slider_keys.py`).
+Family-wide on purpose -- a slider one app fixes and another leaves native is
+a worse bug than the one reported -- and enforced: a new horizontal
+`wx.Slider` whose module does not bind the helper fails the build.
+
+**OPML out, same release.** Radio imported OPML (Podcasts branch, and the
+empty Subscriptions folder) and never exported it; the way out was Quill
+Cast's alone, and a Radio-only listener, or a portable copy with its own data
+folder, had none. Requirement: **Export Podcasts to OPML...** beside Import on
+the Subscriptions root and the Podcasts branch, and in the palette
+(`exportpodcastsopml`); the whole shared library through the one core
+exporter Cast uses (`core/podcasts/opml.export_opml`), so the two apps write
+the same document; the count always spoken; an empty library said, never
+written; a write failure reported. The library verbs moved out of
+`row_actions.py`, at its GATE-11 ceiling, into `row_actions_podcasts.py`
+(`ui/radio/browse_podcast_actions.export_opml`;
+`tests/unit/ui/test_radio_export_opml.py`).

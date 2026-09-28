@@ -19,6 +19,7 @@ import wx
 
 from quill.core.media import EQ_BANDS_HZ, EQ_PRESETS, DspSettings, Equalizer
 from quill.ui.accessible_names import set_accessible_name
+from quill.ui.slider_keys import bind_up_means_more
 
 _EQ_KEYS = ("flat", "voice", "bass", "treble", "night", "podcast")
 _BOOST_VALUES = (0, 3, 6)
@@ -63,6 +64,7 @@ class AudioDspPanel(wx.Panel):
                 "engine."
             )
             slider.Bind(wx.EVT_SLIDER, self._fire)
+            bind_up_means_more(slider)  # Up is more gain, family rule (2026-09-28)
             bands.Add(slider, 1, wx.EXPAND)
             self._band_sliders.append(slider)
         root.Add(bands, 0, wx.EXPAND | wx.ALL, 6)

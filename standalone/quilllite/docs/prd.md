@@ -840,6 +840,26 @@ older than QUILL Lite and both live in every companion app:
   from `__main__.__spec__`, whenever the running executable is a generic
   interpreter rather than the app's own exe.
 
+### 6.2 When it cannot start, it says so (2026-09-28)
+
+`QuillLite.exe` is the family's native launcher, and until 2026-09-28 it
+spawned `pythonw.exe`, waited, and threw the exit code away. A portable Quill
+Radio that "just doesn't return anything" was the report that ended that.
+Now the launcher writes the engine's stdout and stderr to a launch log
+(`data\logs\launch.log` beside a portable copy,
+`%APPDATA%\Quill\logs\QuillLite-launch.log` for an installed one, replaced on
+every launch) and, on a non-zero exit, shows one `MessageBox` a screen reader
+reads unaided: "QUILL Lite did not start", the reason in words, the log's
+path and the support address. Windows' silent endings (a DLL not found, a
+damaged or 32-bit file, access denied) are translated; a Python traceback's
+last line is quoted with a hint. Pressing Enter on the exe *inside* the zip is
+recognised from the archive tool's scratch-folder name and explained as
+"extract the whole zip first". Exit 0 stays silent, so the single-instance
+hand-off is unchanged. Shared code (`quill/native/launcher/launch_report.c`,
+pinned to a Python mirror in `tests/unit/native/test_launch_failure.py`);
+QUILL Lite gains it at its next launcher build, and the user guide's Getting
+help chapter already opens with "If QUILL Lite does not start".
+
 ## 6a. The family pass (2026-09-18)
 
 A twenty-nine item audit of the two editors against each other, closed in

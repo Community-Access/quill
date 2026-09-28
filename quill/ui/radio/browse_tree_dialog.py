@@ -43,6 +43,7 @@ from quill.ui.dialog_contract import (
     dialog_alive,
 )
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
+from quill.ui.radio.volume_row import add_volume_slider
 
 #: Item data for the "Loading..." child that makes a node look expandable.
 _PLACEHOLDER = {"kind": "placeholder"}
@@ -182,15 +183,9 @@ class BrowseTreeDialog:
             root.Hide(self._details)  # View > Show Station Details (honored per surface)
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
-        volume_row.Add(
-            wx.StaticText(self._surface, label="Radio vol&ume:"),
-            0,
-            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
-            6,
+        self._volume_slider = add_volume_slider(
+            self._surface, volume_row, label="Radio vol&ume:", name="Internet Radio volume"
         )
-        self._volume_slider = wx.Slider(self._surface, value=100, minValue=0, maxValue=100)
-        self._volume_slider.SetName("Internet Radio volume")
-        volume_row.Add(self._volume_slider, 1, wx.EXPAND | wx.RIGHT, 6)
         self._mute_btn = wx.ToggleButton(self._surface, label="&Mute")
         self._mute_btn.SetHelpText(
             "Silences the radio without stopping it; press again to unmute. "

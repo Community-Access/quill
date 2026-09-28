@@ -1,6 +1,6 @@
 # Quill Radio User Guide
 
-Version 3.0.3, released 2026-09-28.
+Version 3.0.4, released 2026-09-28.
 
 Quill Radio is internet radio built for screen reader users. It is a small window. The favorites tree has focus the moment it opens. The menus say everything they do, every action speaks, and a tray icon keeps the music playing while you work. It runs the same radio code as QUILL itself and, when installed, shares its data, so nothing you set up here is stranded.
 
@@ -37,16 +37,16 @@ The chapters, in order, grouped by what you want to do. Each one is a level 2 he
 
 ### The two downloads
 
-Quill Radio 3.0.3 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.3.
+Quill Radio 3.0.4 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.4.
 
 1. **The installer**, `Quill-Radio-Setup-Shared-<version>.exe`. This is the right choice for most people. It gives Quill Radio a Start Menu entry and an uninstaller. It installs the shared QuillVille Runtime if it is not already on the computer, then the app. Your favorites, history and settings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
 2. **The portable copy**, `Quill-Radio-Portable-<version>.zip`. It is fully self-contained. It carries its own genuine, unmodified Python and the bundled ffmpeg (for recording) and mpv (for playback). Unpack it anywhere, a USB stick included. Nothing downloads when it runs. Use it when you want the whole radio to travel with you, or when you cannot install software.
 
-Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.3`.
+Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.4`.
 
 ### Install with the installer, step by step
 
-1. Download `Quill-Radio-Setup-Shared-3.0.3.exe` and open it from your Downloads folder.
+1. Download `Quill-Radio-Setup-Shared-3.0.4.exe` and open it from your Downloads folder.
 2. If Windows SmartScreen shows a warning, see "About security software" below.
 3. Setup may first ask whether to install for you only or for all users. Choose **Install for me only**. That needs no administrator rights. Installing for all users asks Windows for permission.
 4. The setup wizard opens. Press Enter on each page to accept the defaults. The full installation includes this guide and the release notes. Then choose **Install**.
@@ -58,10 +58,13 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 ### Use the portable copy, step by step
 
-1. Download `Quill-Radio-Portable-3.0.3.zip`.
+1. Download `Quill-Radio-Portable-3.0.4.zip`.
 2. In File Explorer, select the zip, press the Applications key, and choose **Extract All...**. Choose a folder, for example on a USB stick, and choose **Extract**.
 3. Open the extracted folder, then the `QuillRadio` folder inside it.
 4. Select `QuillRadio.exe` and press Enter. Quill Radio opens with focus in the Favorite stations tree.
+5. If it does not open, wait a moment: from 3.0.4 a message says what happened and what to do. See "If Quill Radio does not start" under Troubleshooting.
+
+Pressing Enter on `QuillRadio.exe` while you are still inside the zip, before extracting it, runs that one file alone; Quill Radio says so and asks you to extract the whole zip first.
 
 **A portable copy writes nothing to the computer it runs on.** This is true from the very first launch, and there is no setting to find first.
 
@@ -75,7 +78,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 Quill Radio 2.x kept its favorites in this computer's profile, even when it ran from the portable zip. A 3.0 portable copy keeps its own, so the first time it starts, it looks for them.
 
-1. Unzip `Quill-Radio-Portable-3.0.3.zip` and start `QuillRadio.exe`, as above.
+1. Unzip `Quill-Radio-Portable-3.0.4.zip` and start `QuillRadio.exe`, as above.
 2. If an earlier Quill Radio on this computer has favorites, and this copy has none yet, a question opens: "Favorites from an earlier Quill Radio". It says how many favorite stations it found.
 3. Press **Enter** (Yes) to copy them, with your settings, recording schedule and reminders, into this portable copy. Quill Radio then opens with your favorites in the tree.
 4. Or choose **No** to start empty.
@@ -90,7 +93,7 @@ Good to know:
 
 Test builds of 3.0 also offered a thin "Lite" installer and a small Companion zip. Both are retired. Nothing is lost:
 
-- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.3.exe`. It upgrades your installation in place and keeps your data.
+- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.4.exe`. It upgrades your installation in place and keeps your data.
 - If you used the Companion zip, run the installer, or unpack the portable zip instead. Check for Updates on a Companion copy offers the installer.
 
 ### The QuillVille Runtime
@@ -302,7 +305,7 @@ Tab moves through five stops, in this order. It is a list you play from, not a p
 2. **Favorite stations**, the tree. It shows the same folders you build in the Favorites Manager. **Alt+F** jumps to it from anywhere in the window.
 3. **Stop** (Alt+T), a button. It stops whatever is playing -- the same as **Ctrl+Period** and **Station > Stop**. Back in 3.0.3, because stopping is the one thing everyone needs at once without knowing a key.
 4. **Mute**, a toggle button. It shows the true state, even when you muted from somewhere else.
-5. **Volume**, a slider. Use the arrow keys or Page Up and Page Down. The slider, Ctrl+Up and Ctrl+Down, and the status bar's Volume cell always agree, including with each station's remembered volume.
+5. **Volume**, a slider. Up and Right make it louder, Down and Left quieter, and Page Up and Page Down move it in bigger steps. (Until 3.0.4 Up was quieter, because that is what a Windows slider does on its own; a listener reported it as backwards, and it was.) The slider, Ctrl+Up and Ctrl+Down, and the status bar's Volume cell always agree, including with each station's remembered volume.
 
 Along the bottom is the **status bar**. Tab never reaches it. Press **F6**. See "The status bar".
 
@@ -847,6 +850,7 @@ Worth knowing:
 - A show you follow has housekeeping on its menu: **Move to Folder...**, **Mark All as Played...** (with a "Don't ask me again" box shared with Quill Cast), **Download All Episodes...** and **Remove All Downloads...** (files go; the subscription stays).
 - Finish an episode here and the show's unheard count drops at once.
 - When Subscriptions is empty it offers **Add a Podcast by URL...**, **Import Podcasts from OPML...** and **Search for a Podcast...**.
+- **Export Podcasts to OPML...** (from 3.0.4) is on the menu of the **Subscriptions** folder and of the **Podcasts (Apple)** branch, beside Import. It writes every show you follow, folders included, to an OPML file, the format every podcast app reads, and says how many it wrote, for example "Exported 12 podcasts to quill-radio-podcasts.opml." It is the same file Quill Cast's Subscriptions > Export OPML writes, so nothing is lost between the two.
 - The rich side of podcasting, such as automatic downloads, retention and the play queue, is Quill Cast's job.
 
 To check your shows for new episodes, see "Checking your subscribed podcasts".
@@ -2214,7 +2218,7 @@ The same lessons are in `tutorials.md` beside this guide, with the shipped keys.
 
 Quill Radio offers the download that matches your copy: the portable zip to a portable copy, and the installer otherwise. **A portable copy updates itself in place**: the new files replace the old ones in its folder, and the `data` folder -- your favorites, settings, history and recordings -- is never touched.
 
-**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.0.3.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
+**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.0.4.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
 
 Quill Radio also checks quietly once a day at launch. It speaks only when it finds something. Turn it off with **Check for updates automatically on launch** in Preferences.
 
@@ -2671,6 +2675,21 @@ A person at Community Access reads it and replies by email, usually to the addre
 Writing to support@community-access.org yourself, from any email account, works just as well.
 
 ## Troubleshooting
+
+### If Quill Radio does not start
+
+From 3.0.4, `QuillRadio.exe` never fails silently. If the app's engine cannot start, or stops with an error, a plain message opens that your screen reader reads on its own. It says "Quill Radio did not start" (or "stopped unexpectedly", if it had been running a while), gives the reason in words, names the file where the details are, and gives the support address.
+
+- **The message says the zip was opened from inside.** You pressed Enter on `QuillRadio.exe` while still inside the zip, so only that one file was copied out. Select the zip in File Explorer, press the Applications key, choose **Extract All...**, and open `QuillRadio.exe` from the extracted folder.
+- **The message says a file is missing, or a DLL could not be found.** Extract the whole zip again into an empty folder, and check your antivirus program's quarantine for anything it took from the Quill Radio folder.
+- **The message says Windows refused to run its files, or access was denied.** Move the folder somewhere you own, such as Documents, or a USB stick, and check antivirus and any application-control setting.
+- **The message says a file is damaged, or the wrong kind for this computer.** Quill Radio needs 64-bit Windows 10 or 11. Download the zip again.
+- **The message says "Python reported", followed by an error.** Send the launch log to support; the next paragraph says where it is.
+- **Nothing at all happens, and no message.** A Quill Radio is probably already running, in the tray, and the new launch handed over to it. Check the notification area and Task Manager. If a copy is running but not responding, end it there and start again.
+
+The launch log holds what the engine reported the last time it was started. A portable copy keeps it at `data\logs\launch.log` beside `QuillRadio.exe`; an installed copy at `%APPDATA%\Quill\logs\QuillRadio-launch.log`, next to `quill.log`. Each start replaces it, so send it before you try again. It contains file paths from your computer and nothing else personal.
+
+### Everything else
 
 - **A favorite takes a long time to start, then says it is trying the station's current address.** Its saved address has stopped working, and Quill Radio found the current one. From 3.0.3 the current address is saved into the favorite, so this happens once, not every time you play it. If a station still starts slowly every time, find it again in Browse Stations (Ctrl+B) or search (Ctrl+F), play it, and press Ctrl+Shift+F to save it fresh.
 - **Help > User Guide, Release Notes or Product Requirements does nothing.** That was a fault in 3.0.0 to 3.0.2: they looked for the documents beside the shared engine instead of beside `QuillRadio.exe`. Fixed in 3.0.3. The same documents are always on quillforall.org.

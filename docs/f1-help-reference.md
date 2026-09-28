@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 227 audited sites (111 helped, 116 named-help).
+Control coverage: 226 audited sites (112 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -276,6 +276,9 @@ Control coverage: 227 audited sites (111 helped, 116 named-help).
 #### VideoWindow (`quill/ui/radio/video_window.py`)
 
 - `self._status`: A read-on-demand status line -- it never announces itself. Arrow through it for the title, position, chapter and audio track.
+#### (module level) (`quill/ui/radio/volume_row.py`)
+
+- `slider`: Internet Radio's own volume, 0 to 100 percent, separate from the system volume and your screen reader. Up and Right make it louder, Down and Left quieter; Page Up and Page Down move it in bigger steps. It follows Ctrl+Up and Ctrl+Down and the main window's Volume slider.
 #### WakeUpTimerDialog (`quill/ui/radio/wake_timer_dialog.py`)
 
 - `cancel_btn`: Closes without changing the wake-up timer.
@@ -289,7 +292,7 @@ Control coverage: 227 audited sites (111 helped, 116 named-help).
 - `self._now_playing_text`: What is playing. Ctrl+Shift+W says where you are in it; Ctrl+T opens the full details.
 - `self._favorites_tree`: Enter plays, Delete removes, F2 renames, Shift+F10 opens all actions.
 - `self._mute_btn`: Silences the radio without stopping it; press again to unmute. It follows Ctrl+M and every other mute in the app.
-- `self._volume_slider`: The radio's volume. Arrow keys nudge it, Page Up and Page Down move it in bigger steps -- and it stays in step with Ctrl+Up and Ctrl+Down and each station's remembered level.
+- `self._volume_slider`: The radio's volume. Up and Right make it louder, Down and Left quieter; Page Up and Page Down move it in bigger steps -- and it stays in step with Ctrl+Up and Ctrl+Down and each station's remembered level.
 #### (module level) (`quill/apps/radio_chapter_buttons.py`)
 
 - `button`: A chapter control; it appears only while what is playing has chapters, and runs the same command as its key.

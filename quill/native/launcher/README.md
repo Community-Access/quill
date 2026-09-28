@@ -30,6 +30,7 @@ CPython. It:
 | `launcher.c` | The launcher body. `wmain` on Windows, `main` on POSIX. |
 | `runtime_resolve.c` | Path-walk + version-marker validation. The never-crash contract. |
 | `runtime_resolve.h` | `QlRuntime` struct + the two public entry points. |
+| `launch_report.c` / `.h` | The "it did not start" report: the launch log the child's stderr goes to, the words for a non-zero exit, and the archive-preview check. See "When the app does not start" below. |
 | `product.h.in` | Per-product identity template. CMake substitutes the values at configure time. |
 | `CMakeLists.txt` | Build script. One executable target per product, configured by `-DPRODUCT_NAME=…` etc. |
 
@@ -84,16 +85,58 @@ cmake --build . --config Release
 # Result: build/Release/QuillRadio.exe
 ```
 
+## When the app does not start
+
+Until 2026-09-28 the launcher waited for `pythonw.exe` and threw its exit
+code away. `pythonw.exe` has no console, so a traceback at import time
+went nowhere, and a DLL Windows refused to load ended the child before
+Python ran, with no text at all. A portable Quill Radio that "just doesn't
+return anything" was the first report. `launch_report.c` closes that gap:
+
+- **Launch log.** Before the spawn, the launcher opens (truncating) a log
+  and hands its inheritable handle to the child as stdout and stderr. The
+  first line is the launcher's own header (product, version, interpreter,
+  module). Portable copies (`<dir>\data` exists) log to
+  `data\logs\launch.log`; installed ones to
+  `%APPDATA%\Quill\logs\<PRODUCT_NAME>-launch.log`, beside `quill.log`;
+  `%TEMP%` is the last resort. Opened with `FILE_SHARE_READ` only, so a
+  second launcher (the single-instance hand-off) cannot truncate a running
+  instance's log; it launches unlogged instead.
+- **The dialog.** On a non-zero exit the launcher reads the log's last
+  non-blank line and shows one `MessageBox`: "<App> did not start." (or
+  "stopped unexpectedly." after `QL_STARTED_AFTER_MS`), the reason, the
+  log's path, and the support address. NTSTATUS exits that leave no text
+  (`0xC0000135` DLL not found, `0xC0000142`, `0xC000007B`, `0xC0000022`, the
+  memory faults) are translated to words; a Python line is quoted with a
+  hint for "No module named", "DLL load failed" and "Permission denied".
+  Exit 0 stays silent: an ordinary close and the hand-off both exit 0.
+- **Archive preview.** If the launcher's own path runs through an archive
+  tool's scratch folder (`Temp<n>_<name>.zip`, `7zO<hex>`, `Rar$...`), the
+  user pressed Enter on the exe *inside* the zip and only that file exists
+  on disk. `fail_no_runtime` says so and walks through Extract All, instead
+  of "this portable copy is incomplete".
+
+**Rollout (2026-09-28).** The change is in the shared source, so every
+product picks it up at its next launcher build; nothing per product is
+needed in C. What each product still owes when it ships: a changelog entry
+and a user-guide "If <App> does not start" section naming its own log file.
+Done: Quill Radio (3.0.4), Quill Converter (1.0.0, unreleased at the time),
+QUILL Lite (1.1.0 docs, ahead of its next build). Owed: QUILL, Cast, Weather, Audio Studio,
+Player, Inkwell, Beacon.
+
 ## Tests
 
 ```powershell
 pytest tests/unit/native/test_runtime_resolver.py -v
+pytest tests/unit/native/test_launch_failure.py -v
 pytest tests/unit/scripts/test_build_native_launcher.py -v
 ```
 
 The first is a Python mirror of the C runtime resolver and exercises
-the algorithm in isolation. The second is the per-product identity
-contract and the cross-product storage-mode allowlist check.
+the algorithm in isolation. The second mirrors `launch_report.c` the same
+way and pins every constant and phrase to the C source. The third is the
+per-product identity contract and the cross-product storage-mode allowlist
+check.
 
 ## What this is NOT
 

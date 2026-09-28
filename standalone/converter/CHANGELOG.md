@@ -39,6 +39,12 @@ published as an installer, and everything in it is part of 1.0.0.
   "Convert with Quill Converter" for every audio and video type the app reads,
   per user, removed on uninstall. Many files selected at once arrive in one
   queue.
+- **When Quill Converter cannot start, it says so.** The launcher keeps a
+  launch log of what the app's engine reports and, when the engine exits with
+  an error, opens one plain message: "Quill Converter did not start", the
+  reason in words, where the log is, and the support address. Opening
+  `QuillConverter.exe` from inside the zip is recognised. Shared launcher
+  code (2026-09-28, first in Quill Radio 3.0.4); itemized in `docs/CHANGELOG.md`.
 - **Formats.** 25 sound and 9 video output formats, each labeled with what it
   is for; 82 input types. Format constraints (sample rates, mono-only AMR,
   bit rates on lossless formats) are handled rather than failing. AIFF and AU

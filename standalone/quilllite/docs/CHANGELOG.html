@@ -198,6 +198,24 @@
 <main id="main-content">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="110--unreleased">1.1.0 – unreleased</h2>
+<h3 id="launcher-2026-09-28">Launcher (2026-09-28)</h3>
+<ul>
+<li><strong>When QUILL Lite cannot start, it says so.</strong>
+<code>QuillLite.exe</code> starts the app’s Python engine and used to
+discard the result: the engine has no console, so an error at start-up
+went nowhere, and a file Windows refused to load ended it before any
+Python ran. Now the launcher keeps a launch log of everything the engine
+reports (<code>data\logs\launch.log</code> beside a portable copy;
+<code>%APPDATA%\Quill\logs\QuillLite-launch.log</code> for an installed
+one) and, when the engine exits with an error, opens one plain message a
+screen reader reads on its own: “QUILL Lite did not start”, the reason
+in words, where the log is, and the support address. A missing DLL, a
+damaged or 32-bit file and “access denied” each get their own words.
+Opening <code>QuillLite.exe</code> from inside the zip, before
+extracting it, is recognised and explained. Shared with every QuillVille
+app (<code>quill/native/launcher/launch_report.c</code>); first shipped
+in Quill Radio 3.0.4 and Quill Converter 1.0.0.</li>
+</ul>
 <h3 id="updates-2026-09-28">Updates (2026-09-28)</h3>
 <ul>
 <li><strong>Install when I close.</strong> When an update has

@@ -2,6 +2,57 @@
 
 ## 1.0.0
 
+### Up means more on every slider (2026-09-28)
+
+- **Up and Page Up raise a horizontal slider; Down and Page Down lower it**,
+  on every `wx.Slider` in the family (`quill/ui/slider_keys.py`). A Win32
+  trackbar answers Up with *less*: to the control Up is "towards the start",
+  and on a horizontal bar the start is the left end. A Quill Radio listener
+  reported the volume slider as backwards ("when you turn it up it's down
+  arrow"), and to someone who cannot see the bar there is no left end, only
+  louder and quieter; the app's own Ctrl+Up and the Windows mixer already said
+  Up is louder, and the WinUI slider in Settings does too. The helper takes
+  the four unmodified vertical keys, moves the value the expected way and
+  fires `EVT_SLIDER` so the bound handler hears it; Left, Right, Home, End,
+  the mouse and every Ctrl, Shift and Alt chord pass through untouched. Wired
+  into all nine sliders: Radio's three volume sliders, Sound Enhancements'
+  bands and Auto-Adapt (Radio, Cast, QUILL), the player panel's Position and
+  Volume (Audio Studio, Media Player, the mini player), the Media Player's
+  equaliser bands and Radio's caption opacity. Family-wide on purpose: a slider
+  one app fixes and another leaves native is a worse bug than the one reported,
+  so `tests/unit/ui/test_slider_keys.py` fails for a new horizontal slider
+  whose module does not bind it. Ships first in Quill Radio 3.0.4; each app's
+  changelog carries its own entry.
+
+### A launcher that says why it did not start (2026-09-28)
+
+- **Every QuillVille launcher reports a failed start**, QUILL's own included.
+  The native launcher (`quill/native/launcher/`) starts `pythonw.exe -m
+  quill...` and used to wait for it and discard the result: the engine has no
+  console, so a traceback at import time went nowhere, and a DLL Windows
+  refused to load ended the process before Python ran. A listener's portable
+  Quill Radio "just doesn't return anything" was the first report. Now the
+  launcher points the engine's stdout and stderr at a launch log
+  (`data\logs\launch.log` beside a portable copy; `%APPDATA%\Quill\logs\<App>-launch.log`
+  next to `quill.log` for an installed one, truncated on every launch) and,
+  on a non-zero exit, shows one MessageBox -- the surface every screen reader
+  reads unaided -- with "<App> did not start" (or "stopped unexpectedly" after
+  a minute), the reason in words, the log's path and the support address.
+  Windows' silent endings are translated (`STATUS_DLL_NOT_FOUND`,
+  `STATUS_DLL_INIT_FAILED`, `STATUS_INVALID_IMAGE_FORMAT`,
+  `STATUS_ACCESS_DENIED`, the memory faults); a Python traceback's last line is
+  quoted with a hint for the three shapes seen in support ("No module named",
+  "DLL load failed", "Permission denied"). Exit 0 stays silent, so the
+  single-instance hand-off is unchanged. Running from an archive tool's
+  scratch folder (Explorer's `Temp1_*.zip`, 7-Zip's `7zO*`, WinRAR's `Rar$*`)
+  -- the exe pressed inside the zip -- is recognised before the runtime lookup
+  and explained as "extract the whole zip first" instead of "incomplete copy"
+  (`launch_report.c`; Python mirror and lexical pin in
+  `tests/unit/native/test_launch_failure.py`). Ships with Quill Radio 3.0.4;
+  every other app's launcher gains it at its next build, and each app's
+  changelog and user guide carry the entry when it does (Converter 1.0.0 and QUILL
+  Lite 1.1.0 already do).
+
 ### The QuillVille menu without chords (2026-09-28)
 
 - **Access letters and rebindable launchers**, in QUILL and every QuillVille app:

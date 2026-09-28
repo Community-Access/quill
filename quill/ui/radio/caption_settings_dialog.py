@@ -30,6 +30,7 @@ from quill.core.radio.caption_style import (
     describe,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.slider_keys import bind_up_means_more
 
 
 class CaptionSettingsDialog:
@@ -78,6 +79,7 @@ class CaptionSettingsDialog:
         self._opacity.SetName(
             "Background opacity, 0 to 100 percent; solid is recommended for readable captions"
         )
+        bind_up_means_more(self._opacity)  # Up is more opaque, family rule (2026-09-28)
         grid.Add(self._opacity, 1, wx.EXPAND)
 
         self._position = self._row(grid, "&Position:", [label for label, _v in POSITIONS])

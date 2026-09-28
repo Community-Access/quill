@@ -268,6 +268,18 @@ had is included here.
 - FFmpeg and ffprobe, libmpv, yt-dlp, mutagen and, when built, the OptiLab
   Core adapter are bundled in both; nothing downloads on first use.
 - Check for Updates offers the matching download, installer or portable.
+- **When Quill Converter cannot start, it says so.** `QuillConverter.exe` starts
+  the app's Python engine; the launcher keeps a launch log of everything the
+  engine reports (`data\logs\launch.log` beside a portable copy;
+  `%APPDATA%\Quill\logs\QuillConverter-launch.log` for an installed one)
+  and, when the engine exits with an error, opens one plain message a screen
+  reader reads on its own: "Quill Converter did not start", the reason in
+  words, where the log is, and the support address. A missing DLL, a damaged
+  or 32-bit file and "access denied" each get their own words. Opening
+  `QuillConverter.exe` from inside the zip, before extracting it, is
+  recognised and explained. Shared with every QuillVille app
+  (`quill/native/launcher/launch_report.c`, 2026-09-28, first in Quill Radio
+  3.0.4); the user guide's Troubleshooting opens with it.
 - Quill Converter is listed on the QuillVille menu of the other apps, and
   QUILL's own "Convert with Quill" Explorer entry is available in public
   builds.

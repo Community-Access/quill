@@ -23,6 +23,8 @@ from quill.core.speech.chapter_io import format_timestamp
 from quill.core.speech.chapters import Chapter
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
 from quill.ui.audio_studio.pages_base import set_accessible_name
+from quill.ui.audio_studio.player_volume import PlayerVolumeMixin
+from quill.ui.slider_keys import bind_up_means_more
 
 _log = logging.getLogger(__name__)
 
@@ -40,7 +42,7 @@ def _rate_label(rate: float) -> str:
     return f"{float(rate):g}x"
 
 
-class PlayerPanel(wx.Panel):
+class PlayerPanel(PlayerVolumeMixin, wx.Panel):
     """Chapter-aware transport controls over one loaded audio file."""
 
     def __init__(
@@ -164,6 +166,7 @@ class PlayerPanel(wx.Panel):
             "line below speaks the position in human time."
         )
         self._position.Bind(wx.EVT_SLIDER, self._on_slider)
+        bind_up_means_more(self._position)  # Up is forward, family rule (2026-09-28)
         slider_row.Add(self._position, 3, wx.EXPAND | wx.RIGHT, 8)
         self._volume = wx.Slider(self, value=100, minValue=0, maxValue=100)
         set_accessible_name(self._volume, _("Volume"))
@@ -173,6 +176,7 @@ class PlayerPanel(wx.Panel):
             "only -- the system volume is untouched."
         )
         self._volume.Bind(wx.EVT_SLIDER, self._on_volume)
+        bind_up_means_more(self._volume)  # Up is louder, as in the Windows mixer
         slider_row.Add(self._volume, 1, wx.EXPAND)
         self._mute_btn = wx.Button(self, label=_("M&ute"), name="player.mute")
         self._mute_btn.SetHelpText(
@@ -314,63 +318,6 @@ class PlayerPanel(wx.Panel):
 
     def has_media(self) -> bool:
         return self._loaded
-
-    def toggle_mute(self) -> None:
-        """Flip mute; unmuting restores the pre-mute engine volume."""
-        if self._engine is None:
-            return
-        if self._muted:
-            self._muted = False
-            self._engine.set_volume(self._pre_mute_volume)
-            self._mute_btn.SetLabel(_("M&ute"))
-        else:
-            self._pre_mute_volume = self._volume.GetValue()
-            self._muted = True
-            self._engine.set_volume(0)
-            self._mute_btn.SetLabel(_("Un&mute"))
-        self._announce(_("Muted") if self._muted else _("Unmuted"))
-        if self._on_mute_cb is not None:
-            self._on_mute_cb(self._muted)
-
-    def volume(self) -> int:
-        """The current volume (0-100)."""
-        return int(self._volume.GetValue())
-
-    def set_volume(self, percent: int) -> int:
-        """Set the volume (0-100) and return what it ended up as.
-
-        Moves the slider and then takes the *same* path a manual drag does,
-        so the mute state, the engine and the on-volume callback all stay in
-        step -- a keyboard volume change that only told the engine would
-        leave the slider lying about the level, and the slider is what
-        :meth:`toggle_mute` restores to.
-        """
-        self._volume.SetValue(max(0, min(100, int(percent))))
-        self._on_volume(None)  # type: ignore[arg-type]
-        return int(self._volume.GetValue())
-
-    def duck(self, level_percent: int = 20) -> None:
-        """Temporarily lower the *engine* volume for a spoken prompt.
-
-        Leaves the slider (the user's chosen level) untouched so :meth:`unduck`
-        restores exactly what was playing. Used while listening for a voice
-        command so an earcon/announcement is clearly audible over the book
-        without pausing or losing the user's place.
-        """
-        if self._engine is None:
-            return
-        self._duck_saved = int(self._volume.GetValue())
-        self._engine.set_volume(min(self._duck_saved, max(0, int(level_percent))))
-
-    def unduck(self) -> None:
-        """Restore the volume ducked by :meth:`duck` (respecting mute)."""
-        if self._engine is None:
-            return
-        saved = getattr(self, "_duck_saved", None)
-        if saved is None:
-            return
-        self._engine.set_volume(0 if self._muted else saved)
-        self._duck_saved = None
 
     # -- helpers ----------------------------------------------------------------
 
@@ -591,19 +538,6 @@ class PlayerPanel(wx.Panel):
         if self._engine is not None and self._loaded:
             self._engine.seek(self._position.GetValue())
             self._update_status()
-
-    def _on_volume(self, _evt: wx.Event) -> None:
-        if self._engine is not None:
-            value = self._volume.GetValue()
-            self._engine.set_volume(value)
-            # A manual volume change exits the muted state (slider is the
-            # source of truth for the level we restored to).
-            if self._muted and value > 0:
-                self._muted = False
-                self._pre_mute_volume = value
-                self._mute_btn.SetLabel(_("M&ute"))
-            if self._on_volume_cb is not None:
-                self._on_volume_cb(value)
 
     def _apply_book_prefs(self, book_prefs: BookPrefs | None) -> None:
         """Apply remembered per-book volume + mute to the slider and engine."""

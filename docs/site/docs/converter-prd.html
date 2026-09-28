@@ -526,6 +526,17 @@ its paths to the running window and exits.</li>
 <li>P-7. The update check resolves this app’s own release asset and
 offers the matching download, installer or portable.</li>
 <li>P-8. No GitHub token is generated or embedded in any artifact.</li>
+<li>P-9. <code>QuillConverter.exe</code> never fails silently. The
+native launcher writes the engine’s stdout and stderr to a launch log
+(<code>data\logs\launch.log</code> beside a portable copy,
+<code>%APPDATA%\Quill\logs\QuillConverter-launch.log</code> for an
+installed one) and, on a non-zero exit, shows one
+<code>MessageBox</code>: “Quill Converter did not start”, the reason in
+words (Windows’ own silent endings translated, a Python traceback’s last
+line quoted with a hint), the log’s path and the support address.
+Opening the exe from inside the zip is recognised and explained. Shared
+launcher code (2026-09-28, first shipped in Quill Radio 3.0.4); the user
+guide’s Troubleshooting opens with it.</li>
 </ul>
 <h2 id="8-non-goals">8. Non-goals</h2>
 <p>macOS and Linux standalone builds (the tray pattern this app leans on
