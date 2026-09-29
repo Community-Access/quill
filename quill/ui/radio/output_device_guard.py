@@ -48,7 +48,7 @@ Five rules, all here so the controller (at its GATE-11 ceiling) delegates:
    windows media" -- the sound sat on the default while the setting said
    speakers.
 5. **Windows Media routes wherever Windows offers the modern engine.** From
-   3.0.5 the Windows engine is ``Windows.Media.Playback.MediaPlayer`` on every
+   3.1.0 the Windows engine is ``Windows.Media.Playback.MediaPlayer`` on every
    Windows 10 and 11 build, and it takes the same device names mpv does, so
    rule 4 is the exception for old machines and not the rule. "All of this
    needs to be fixed across the quill family so that output devices work across

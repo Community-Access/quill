@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.podcasts import settings_help
+from quill.core.podcasts import episode_alerts, refresh_policy, settings_help
 from quill.core.podcasts.models_queue import coerce_int
 from quill.core.podcasts.settings_types import (
     CATEGORY_PLAYBACK,
@@ -366,6 +366,53 @@ SETTINGS: tuple[SettingDef, ...] = (
         settings_field="chapters_preview_seconds",
         aliases=("chapters", "preview"),
         describe=_seconds("Chapter preview"),
+    ),
+    # -- checking for new episodes (3.1.0) ---------------------------------
+    #
+    # Both of these are in the catalogue rather than in an app's own options so
+    # the per-folder and per-podcast levels come for free: the show settings
+    # panel is built from this list, so "hourly, except this one, quietly" is
+    # expressible the moment these two rows exist.
+    define(
+        "check_interval_minutes",
+        "Check this feed for new &episodes:",
+        "How often Quill Radio and QUILL Cast ask this feed whether anything "
+        "new has arrived. Both apps read this one setting, so turning it on in "
+        "either turns it on. **Manually only** is a real answer, not an "
+        "absence of one: an app that reaches the network on a schedule nobody "
+        "chose is spending somebody else's data allowance. Set on one podcast "
+        "it leaves that podcast alone while the rest keep their cadence, and "
+        "Refresh on a row always asks, whatever this says.",
+        kind=KIND_CHOICE,
+        category=CATEGORY_PLAYBACK,
+        default=0,
+        choices=choices(*refresh_policy.INTERVAL_CHOICES),
+        settings_field="check_interval_minutes",
+        aliases=("refresh", "feed", "interval", "poll", "check", "new episodes"),
+        describe=lambda value: (
+            "Checked manually only"
+            if not coerce_int(value, 0)
+            else f"Checked every {coerce_int(value, 0)} minutes"
+        ),
+    ),
+    define(
+        "new_episode_alert",
+        "When new episodes &arrive:",
+        "What happens when a check finds something. **Notify me** shows a "
+        "desktop notification and plays a short sound. **Quietly** adds it to "
+        "Notifications and says nothing at all -- which is what makes a daily "
+        "show bearable: nine new episodes is something you want to be able to "
+        "find, not something you want announced nine times. **Not at all** "
+        "records nothing. Quiet is the default, because an app that starts "
+        "putting notifications over what you are reading has made a decision "
+        "that was yours. Either way the episodes still arrive.",
+        kind=KIND_CHOICE,
+        category=CATEGORY_PLAYBACK,
+        default=episode_alerts.ALERT_DEFAULT,
+        choices=choices(*episode_alerts.ALERT_CHOICES),
+        settings_field="new_episode_alert",
+        aliases=("notify", "notification", "alert", "quiet", "toast", "sound"),
+        describe=episode_alerts.describe_alert,
     ),
 )
 

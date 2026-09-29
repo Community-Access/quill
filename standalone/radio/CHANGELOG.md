@@ -2,7 +2,7 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.0.md` (Help > Release Notes, Shift+F1) for the fuller narrative version of the latest release.
 
-## [3.0.5] - 2026-09-29
+## [3.1.0] - 2026-09-29
 
 Eight fixes. The sound card switches, or says why it cannot and puts the setting back; Windows Media gets a route to a device of its own; Preferences names only the engines this copy has; a minimized window comes back when its menu item is chosen; and four smaller things that came in the same week.
 

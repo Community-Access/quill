@@ -2637,7 +2637,7 @@ written; a write failure reported. The library verbs moved out of
 (`ui/radio/browse_podcast_actions.export_opml`;
 `tests/unit/ui/test_radio_export_opml.py`).
 
-## 21. The output device is a promise the radio keeps, or says out loud that it cannot (3.0.5, 2026-09-29)
+## 21. The output device is a promise the radio keeps, or says out loud that it cannot (3.1.0, 2026-09-29)
 
 **The report.** "Changing the sound card in Audio's menu is not switching to a
 different card." Investigated in order: libmpv was probed on a machine with

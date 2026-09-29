@@ -205,9 +205,13 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
-<h2 id="305---2026-09-29">[3.0.5] - 2026-09-29</h2>
-<p>Twelve fixes. The sound card switches, or says why it cannot and puts
-the setting back; Windows Media gets a route to a device of its own;
+<h2 id="310---2026-09-29">[3.1.0] - 2026-09-29</h2>
+<p><strong>Three new things, and twelve fixes.</strong> Quill Radio
+checks your subscribed podcasts on its own and tells you what arrived,
+in the way each podcast asks for; there is a list of everything you have
+been told; and you can leave yourself a note on any station or podcast.
+Then: the sound card switches, or says why it cannot and puts the
+setting back; Windows Media gets a route to a device of its own;
 Preferences names only the engines this copy has; a minimized window
 comes back when its menu item or key asks for it; a stale “start with
 Windows” entry is repaired by the installer rather than waiting for a
@@ -285,6 +289,49 @@ although in earlier versions the key itself hid the source. It does
 again, through the same function the menu uses, so the two cannot
 disagree; Reset Sources to Default is the way back and the announcement
 names it (<code>quill/ui/radio/browse_delete.py</code>).</li>
+<li><strong>Quill Radio checks your subscribed podcasts and tells you
+what arrived.</strong> Set how often in Preferences, or on one podcast
+in its own settings – <em>Manually only</em> through <em>Once a
+day</em>, and both Quill Radio and QUILL Cast read the one setting now,
+so turning it on in either turns it on. (They used to read two, which
+meant setting it in one app did nothing in the other; a cadence you had
+already chosen in Radio is carried over once.) Per podcast, <em>Check
+this feed for new episodes</em> can say <strong>Manually only</strong>
+while the rest keep their cadence, and Refresh on a row always asks
+whatever it says. Nothing subscribed, or everything set to never, and no
+check happens at all – no thread, no request
+(<code>quill/core/podcasts/episode_alerts.py</code>).</li>
+<li><strong>What happens when something arrives is yours to set,
+globally or per podcast.</strong> <em>Notify me</em> shows a desktop
+notification and plays a short new sound. <em>Quietly</em> adds it to
+Notifications and says nothing at all – which is what makes a daily show
+bearable, because nine new episodes is something you want to be able to
+find rather than something you want announced nine times. <em>Not at
+all</em> records nothing. <strong>Quiet is the default</strong>: an app
+that starts putting notifications over what you are reading has made a
+decision that was yours. Quiet hours hold back the notification and the
+sound and deliberately not the list entry – being quiet about something
+is not the same as never having been told.</li>
+<li><strong>Notifications… (Ctrl+Alt+Shift+F3, Help menu): everything
+the apps have told you.</strong> A desktop notification is a good way to
+be told something and a terrible way to remember it – it appears over
+what you were reading, leaves on its own schedule, and if your screen
+reader was mid-sentence it may never have been read at all. So the
+notification is not the record; this list is. One line per item, newest
+first, unread marked with the word “New” rather than a colour or a
+bullet so it survives being read aloud. Enter opens what it was about.
+It is a shared list, so a notification Quill Radio raised is one QUILL
+Cast can show you (<code>quill/core/notifications.py</code>,
+<code>quill/ui/notification_center.py</code>).</li>
+<li><strong>A note to yourself on any station or podcast.</strong>
+<strong>Note to Self…</strong> on any row, beside Set a Reminder.
+Whatever you write is read back in the details pane the next time you
+arrow onto that row – which is the point: a note you have to open a
+window to see is a note you have to remember you wrote. “The morning
+show is the good one.” “Only worth it on Sundays.” Emptying the box
+removes the note, and it is kept against the station’s address rather
+than its name, so it survives a rename or a catalogue refresh
+(<code>quill/core/radio/item_notes.py</code>).</li>
 <li><strong>Windows can say what Quill Radio is playing.</strong> The
 now-playing card on the volume flyout and the lock screen – one per app,
 and Quill Radio’s was blank – now carries the station with the song
@@ -317,7 +364,7 @@ named overload – slow, never broken
 <li><strong>Running from a source checkout finds the mpv it already
 has.</strong> Reported: “why is mpv not working when running the
 run-quill-radio script from the d:\quill folder? I only see automatic
-and windows media.” The engine list was right – 3.0.5 offers no row for
+and windows media.” The engine list was right – 3.1.0 offers no row for
 an engine this copy does not have – but the search for libmpv looked at
 every shipped location (the <code>QUILL_LIBMPV</code> override, an
 Offline Edition’s <code>tools\mpv</code>, the runtime folder, the

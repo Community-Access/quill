@@ -11,7 +11,7 @@ is documented, it ships inside Windows 10 and 11, and the thin ``winrt-*``
 projection wheels that reach it are the same family QUILL's Windows OCR
 already uses (``quill/platform/windows/windows_ocr.py``).
 
-So this is "Windows Media" for the QuillVille family from 3.0.5 on: the same
+So this is "Windows Media" for the QuillVille family from 3.1.0 on: the same
 ``AudioEngine`` protocol as the wx.media and libmpv backends, plus
 :meth:`WinRtMediaEngine.set_audio_device` taking the same ``wasapi/{guid}``
 names libmpv uses -- Windows' endpoint id carries the same GUID, so one saved

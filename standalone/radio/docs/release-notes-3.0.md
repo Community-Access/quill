@@ -1,10 +1,80 @@
 # Quill Radio 3.0 Release Notes
 
-Version 3.0.5, released 2026-09-29.
+Version 3.1.0, released 2026-09-29.
 
-## What's new in 3.0.5
+## What's new in 3.1.0
 
-Twelve fixes. Three are about the sound card, two are about speed, and the rest came in the same week.
+Three new things, and twelve fixes. Quill Radio can now watch your subscribed podcasts for you, keep a list of what it has told you, and hold a note you write to yourself about any station or podcast.
+
+### Quill Radio watches your podcasts for you
+
+Quill Radio has always refreshed a podcast when you opened it. Now it can check
+them on its own and tell you what arrived.
+
+**How often** is in Preferences, under *Check subscribed podcast feeds*, from
+*Manually only* through *Once a day*. Quill Radio and QUILL Cast read the same
+setting now, so turning it on in either turns it on -- they used to keep
+separate ones, which meant choosing a cadence in one app did nothing in the
+other. If you had already chosen one in Quill Radio, it is carried over.
+
+**Per podcast** too. Each podcast's own settings can say *Manually only* while
+the rest keep the shared cadence, so a finished show or one that publishes twice
+a year stops costing you a request every hour. Refresh on a row always asks,
+whatever the setting says -- a switch that could strand a podcast would be a
+trap rather than a preference.
+
+If you are subscribed to nothing, or everything is set to never, no check
+happens at all. Nothing wakes up to do nothing.
+
+### And tells you in the way you asked
+
+*When new episodes arrive* -- globally, or on one podcast:
+
+- **Notify me** -- a desktop notification and a short sound.
+- **Quietly** -- it goes in the Notifications list and nothing is said. This is
+  what makes a daily show bearable: nine new episodes is something you want to
+  be able to find, not something you want announced nine times.
+- **Not at all** -- nothing is recorded.
+
+**Quietly is the default.** An app that starts putting notifications over what
+you are reading, because you subscribed to something, has made a decision that
+was yours to make.
+
+Quiet hours hold back the notification and the sound. They deliberately do not
+hold back the list entry: being quiet about something is not the same as never
+having been told.
+
+### Notifications: what you have been told
+
+**Ctrl+Alt+Shift+F3**, or Help > Notifications.
+
+A desktop notification is a good way to be told something and a poor way to
+remember it. It appears over whatever you were reading, it leaves on its own
+schedule, and if your screen reader was in the middle of a sentence when it
+arrived you may never have heard it at all.
+
+So the notification is not the record -- this list is. One line for each thing,
+newest first, and anything you have not read yet begins with the word "New".
+Press Enter on a row to open what it was about. **Mark All as Read** clears the
+markers without removing anything; **Clear List** empties it, and removes only
+the record of being told.
+
+It is one list shared with QUILL Cast, so whichever app is open can show you
+what the other found.
+
+### A note to yourself about any station
+
+**Note to Self...** on any row, next to Set a Reminder.
+
+Write whatever you like -- "the morning show is the good one", "only worth it on
+Sundays", "the 6am repeat is the one with the interview" -- and it is read back
+in the details pane the next time you arrow onto that row. That is the whole
+point: a note you have to open a window to find is a note you have to remember
+you wrote.
+
+Emptying the box removes it. It is kept against the station's address rather
+than its name, so renaming it, re-sorting your favorites or refreshing the
+catalogue does not lose it or move it onto somebody else's row.
 
 ### Choosing a sound card switches to it, or says why it cannot
 
@@ -17,7 +87,7 @@ program was holding, a device whose Windows id had changed -- the station
 was quietly rescued on Windows Media, which plays on the device Windows gives
 the app, and nobody was told.
 
-From 3.0.5:
+From 3.1.0:
 
 - A playing station switches device the moment you choose one, live, with no
   break in the sound.
@@ -94,7 +164,7 @@ window that had been minimized, from the taskbar, Windows+M or Windows+D,
 counted as already open and stayed minimized: showing it did nothing and
 raising it did not restore it, so the command went silent.
 
-From 3.0.5 the window is restored first, then brought forward with focus on
+From 3.1.0 the window is restored first, then brought forward with focus on
 the control you left it on. If Recordings... still does nothing for you,
 send `%APPDATA%\Quill\logs\QuillRadio-launch.log` (or `data\logs\launch.log`
 beside a portable copy) to support: since 3.0.4 anything the app could not do
@@ -118,7 +188,7 @@ time it opened since. But that repair needed you to open Quill Radio, and the
 broken entry is the one thing stopping it from opening -- and nothing told you
 that opening the radio by hand would cure your login.
 
-From 3.0.5 the installer repairs the entry while it installs, so the next login
+From 3.1.0 the installer repairs the entry while it installs, so the next login
 is right whether or not you open the radio first. It writes this copy's own
 `QuillRadio.exe`, so the entry keeps working through future engine updates. If
 you never asked for Quill Radio to start with Windows, nothing is added; a
