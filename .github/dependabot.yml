@@ -1,7 +1,27 @@
 version: 2
+
+# Dependabot's proxy blocks any package host the configuration has not named,
+# and reports the refusal as `private_source_authentication_failure` -- which
+# reads as "these credentials are wrong" when the truth is "I was not told this
+# host exists". requirements.txt carries an `--extra-index-url` for the
+# llama-cpp-python CPU wheels, so *every* update job consulted that host while
+# resolving, and every update job failed: eight open pull requests whose real
+# problem had nothing to do with the package each was bumping.
+#
+# Declaring it here is the fix. It is a public index and takes no credentials,
+# so there are none to give; `replaces-base: false` keeps PyPI as the primary
+# and this as the extra, which is exactly what the `--extra-index-url` means.
+registries:
+  llama-cpp-python-cpu:
+    type: python-index
+    url: https://abetlen.github.io/llama-cpp-python/whl/cpu
+    replaces-base: false
+
 updates:
   - package-ecosystem: "pip"
     directory: "/"
+    registries:
+      - llama-cpp-python-cpu
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -10,6 +30,15 @@ updates:
     labels:
       - "dependencies"
       - "security"
+    ignore:
+      # Deliberately pinned, and only a person may move it. The pin tracks the
+      # newest version with a prebuilt CPU **wheel** on the index above, and
+      # Dependabot cannot see that: it reads PyPI, where an sdist always
+      # exists, so it would happily bump to a version that makes pip compile
+      # llama.cpp from source -- which fails or hangs on Windows. The full
+      # reasoning, and the curl that checks for a wheel, are in
+      # requirements.txt beside the pin.
+      - dependency-name: "llama-cpp-python"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -29,6 +58,8 @@ updates:
   # branch to merge. The "uv" ecosystem reads uv.lock directly.
   - package-ecosystem: "uv"
     directory: "/"
+    registries:
+      - llama-cpp-python-cpu
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -37,3 +68,6 @@ updates:
     labels:
       - "dependencies"
       - "security"
+    ignore:
+      # See the pip ecosystem above: the pin is a human's to move.
+      - dependency-name: "llama-cpp-python"

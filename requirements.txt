@@ -14,7 +14,7 @@ defusedxml>=0.7.1
 # TOM surface, the Narrator bridge, and persona .lnk shortcuts (WScript.Shell).
 # A base dependency, not a UI one: quill/core reaches it through
 # persona_launcher.py and read_aloud.py.
-comtypes>=1.4.16; sys_platform == "win32"
+comtypes>=1.4.17; sys_platform == "win32"
 
 # UI
 # Exact pin (not a floor): wxPython 4.3.x tracks wxWidgets master, which is
@@ -84,4 +84,4 @@ PyNaCl>=1.6.2
 # Azure Document Intelligence / Content Understanding SDKs, none of which Quill
 # uses — excluding them keeps the installed surface small.
 keynote-parser>=1.14.5.0
-markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.7
+markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.8

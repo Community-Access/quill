@@ -322,6 +322,13 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # rather than dropped on read, so a renamed lesson in a later build cannot
     # erase a place this build never heard of.
     "core/tutorials/progress.py::save_progress": "cache",
+    # A line the listener wrote themselves about a station or a podcast. Their
+    # own words, so it is content rather than configuration: additive and
+    # self-describing (a flat key -> text map), with no defaults that could
+    # change meaning under it, and nothing to migrate. Losing it would lose
+    # something somebody made, which is why it is written atomically -- but
+    # not something the versioned-delta contract helps with.
+    "core/radio/item_notes.py::set_note": "content",
     # --- marker / small state flags ---
     # Radio's active-recording resume marker (R1-R4): transient state written
     # when a recording starts and cleared on clean stop; absent by default, and

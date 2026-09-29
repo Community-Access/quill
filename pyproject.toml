@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.32.3"]
+requires = ["hatchling>=1.32.4"]
 build-backend = "hatchling.build"
 
 [project]
@@ -50,7 +50,7 @@ dependencies = [
     # WScript.Shell, and quill/platform/windows (sapi5, narrator_announce,
     # comtypes_setup) is imported from quill/core/read_aloud.py. Core-layer use
     # means this belongs in the base dependency set, Windows-gated.
-    "comtypes>=1.4.16; sys_platform == 'win32'",
+    "comtypes>=1.4.17; sys_platform == 'win32'",
     # NOTE: huggingface_hub is deliberately NOT a base dependency. QUILL's default
     # speech models (whisper.cpp, Faster Whisper) and Piper voices download from
     # QUILL's own SHA-verified assets-v1 release, not Hugging Face, so a clean
@@ -97,7 +97,7 @@ ui = [
     # HEIC/HEIF image support for AI image description (iPhone default format).
     # Registers a PIL opener so HEIC files can be read and converted to JPEG
     # in memory before being sent to the vision API.
-    "pillow-heif>=1.7.0",
+    "pillow-heif>=1.8.0",
     # HTML-to-text converter for intelligent paste cleaning (AccessibleApps, MIT).
     "html_to_text>=1.0.0",
     # Ed25519 / minisign-shaped Quillin signature verification (PyNaCl). Bundled
@@ -192,7 +192,7 @@ docx = ["python-docx>=1.1.0"]
 # quietly resolve elevenlabs 3.0.0a1 -- an alpha of a major version, chosen by
 # a lock refresh rather than by anybody. A major bump of a provider SDK is a
 # decision; raise the ceiling when it is made.
-elevenlabs = ["elevenlabs>=2.68.0,<3"]
+elevenlabs = ["elevenlabs>=2.69.0,<3"]
 # Native Windows OCR (OCR-1): thin pip wheels projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
 # OS component, so end users install nothing extra — bundling these wheels makes
@@ -259,7 +259,7 @@ pages = ["keynote-parser>=1.14.5.0"]
 # Optional Components (quill/core/pdf_ocr_install.py). Shipped builds bundle the
 # lean `office-text` extra below instead of this one -- see the note there.
 pdf-ocr = [
-    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.7",
+    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.8",
     "pdfplumber>=0.11.10",
     "pypdf>=6.19.0",
 ]
@@ -326,7 +326,7 @@ github = [
 # same normalized events; none edits the buffer directly. The Native harness
 # always works without any of these.
 ai-copilot = ["github-copilot-sdk>=1.0.14"]  # PyPI package; imports as `copilot`
-ai-claude = ["claude-agent-sdk>=0.2.152"]
+ai-claude = ["claude-agent-sdk>=0.2.159"]
 ai-openai = ["openai-agents>=0.22.3"]
 # Build-time only: compile the optional Table Studio native UIA provider
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
@@ -465,7 +465,7 @@ dev = [
   # Property-based testing for the pure parsers (find_model, regex_helper,
   # quill/io readers): generates edge cases a hand-written example never
   # thinks of. See tests/unit/core/test_find_model_properties.py.
-  "hypothesis>=6.165.2",
+  "hypothesis>=6.168.1",
   # Randomized test ordering, DISABLED by default via addopts (-p no:randomly).
   # Opt in with `pytest -p randomly ...` to hunt order-dependent coupling.
   "pytest-randomly>=5.0.0",
