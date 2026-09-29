@@ -517,9 +517,10 @@ class HostedAiMixin:
             position=self._ai_control().GetInsertionPoint(),
             announce=self._announce,
             on_result=lambda feature, text, used: self._show_ai_result(
-                feature, text, used, start, end, selection, action
+                feature, text, used, start, end, selection, action, pad.last_request
             ),
             initial_action=action,
+            on_chat=lambda first: self._open_ai_chat(first_message=first),
         )
         bind_field_dictation(pad, [getattr(pad, "_question", None)], self)
         # Built now, shown once the agreement (if one was just asked for) has
@@ -536,7 +537,9 @@ class HostedAiMixin:
         end: int,
         original: str,
         action: str,
+        request: tuple[str, str, list[str] | None] | None = None,
     ) -> None:
+        from quill.ui.hosted_ai_chat import follow_up_seed
         from quill.ui.hosted_ai_pad import AiResultFrame
 
         can_replace = bool(original) and self._selection_unchanged(start, end, original)
@@ -552,8 +555,19 @@ class HostedAiMixin:
             on_insert=self._insert_below,
             on_again=lambda: self._open_ai_pad(action=action),
             announce=self._announce,
+            on_follow_up=(
+                (lambda: self._open_ai_chat(seed=follow_up_seed(request, text)))
+                if request is not None
+                else None
+            ),
         )
         self._show_ai_window(frame)
+
+    def _open_ai_chat(self, *, first_message: str = "", seed: Any = None) -> None:
+        """The AI Conversation window; :func:`quill.ui.hosted_ai_chat.open_for` says how."""
+        from quill.ui.hosted_ai_chat import open_for
+
+        open_for(self, first_message=first_message, seed=seed)
 
     def _selection_unchanged(self, start: int, end: int, original: str) -> bool:
         """Is the text this answer came from still exactly where it was?

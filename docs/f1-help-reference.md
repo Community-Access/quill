@@ -1268,6 +1268,13 @@ Control coverage: 71 audited sites (71 helped).
 - `suggestions`: Choosing between two spellings by ear is exactly as impossible in a list of corrections as it is in the document. Arrowing on cancels it.
 - `sug_delay`: How long to wait after landing on a suggestion before spelling it.
 - `first`: When the review reaches a new misspelling, spell the top suggestion as well as the word. Off by default: it doubles the arrival announcement, which is welcome when you are learning a word and noise when you are checking one.
+#### AiChatFrame (`quill/ui/hosted_ai_chat.py`)
+
+- `self._message`: Type what you want to say and press Enter to send it. The reply is read aloud and added to the conversation above.
+- `self._send_button`: Sends your message, with as much of the conversation so far as fits.
+- `fresh`: Forgets this conversation and starts again. Nothing is sent.
+- `copy`: Puts the most recent reply on the clipboard.
+- `insert`: Puts the most recent reply into your document underneath the current paragraph. Control Z takes it back.
 #### (module level) (`quill/ui/hosted_ai_dialogs.py`)
 
 - `close`: Closes this window. Nothing is sent, and nothing in your document changes.
@@ -1304,12 +1311,14 @@ Control coverage: 71 audited sites (71 helped).
 
 - `self._actions`: Choose what the AI should do with the text above. Each choice has its own description -- press F1 on one to hear it.
 - `self._question`: What you want to know. For a question about the document, QUILL finds the parts that answer it and sends only those; for a general question, only the question is sent.
+- `self._language`: The language Translate writes in. Only these languages are offered.
 - `self._send`: Sends the text above and uses one of your free requests.
 #### AiResultFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `replace`: Puts this in place of the text you had selected. Control Z takes it back.
 - `insert`: Puts this into your document underneath the current paragraph. Control Z takes it back.
 - `again`: Sends the same text again. This uses one more of your free requests.
+- `follow`: Carries on from this answer in a conversation: ask for it shorter, ask about one part of it, or ask something new. Each message uses one request.
 #### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `choice`: Which part of your document to send: what you selected, the paragraph you are in, or the whole section.

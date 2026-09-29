@@ -1,10 +1,17 @@
 # QUILL Lite 1.1 — What's New
 
-Two things are new in 1.1:
+Four things are new in 1.1:
 
 - **[Dictation](#dictation).** Press **Ctrl+F11**, talk, and pause. What you
   said is written at the cursor with the punctuation put in for you, and QUILL
   Lite reads it back so you know it is right.
+- **[Conversations with AI help](#conversations-with-ai-help).** Talk back and
+  forth, and each reply remembers what was said before -- free, inside your
+  ordinary allowance.
+- **[Ten writing tools](#ten-writing-tools).** Shorten, Simplify, Make more
+  formal, Make friendlier, Turn into a list, Find action items, Suggest
+  headings, Continue writing, Write an email reply, and Translate into twenty
+  languages -- all in the same AI pad.
 - **[AI help with your own OpenAI key](#ai-help-with-your-own-openai-key).**
   Paste a key and every limit on AI help is lifted.
 
@@ -144,6 +151,85 @@ Dictation On** is checked while it writes.
 
 ---
 
+## Conversations with AI help
+
+Until now, AI help answered one thing at a time: the next question never
+remembered the last. Now you can talk it through.
+
+### Starting one
+
+- In the AI pad (**Ctrl+Alt+G**), choose **Have a conversation**, type your
+  first message if you like, and press **Send**. The **AI Conversation**
+  window opens.
+- Or press **Follow Up** in any answer window to carry on from that answer.
+  Following up a question about your document keeps sending the same passages,
+  so you can keep asking about them.
+
+### Talking
+
+Focus stays in **Your message**. Type, press **Enter**, and the reply is read
+aloud as it arrives and added to the **Conversation** above, which Shift+Tab
+reaches for reading again word by word. **Copy Last Reply** and **Insert Last
+Reply Below** put the latest reply where you want it -- nothing goes into your
+document otherwise, and **Ctrl+Z** takes an insert back. **New Conversation**
+starts fresh.
+
+### It stays free
+
+Each message is one request, with a monthly share of its own (40 of your 100).
+The conversation so far goes with each message only as far as the ordinary
+size limit allows, newest first -- so no message ever costs more than any other
+request. The price of a very long conversation is that it gradually forgets
+its beginning, and the window **says so the first time that happens**.
+
+### With your own OpenAI key
+
+No limit at all: the whole conversation goes with every message, straight to
+OpenAI on your account. A long conversation therefore costs more per reply, and
+the window says so. It is only shortened if it outgrows what the model can read
+at once, and you are told if that happens.
+
+---
+
+## Ten writing tools
+
+The AI pad (**Ctrl+Alt+G**) goes from seven choices to seventeen. The ten new
+ones work on the same passage Summarize does -- your selection, else the
+paragraph you are in, else the section -- and each is one request, the same
+size as any other, so none of them costs more of your allowance than Summarize.
+Press a letter in the list to jump to one.
+
+| Choose | You get |
+|---|---|
+| **Shorten** | The same passage at about half the length, every important fact kept |
+| **Simplify** | Plain, easy-to-read language: short sentences, everyday words, technical terms explained |
+| **Make more formal** | The same meaning in a professional tone, for work or official letters |
+| **Make friendlier** | The same meaning in a warmer tone, as if to someone you know |
+| **Turn into a list** | A bulleted list, or numbered steps when the passage describes a process |
+| **Find action items** | Every task, who does it and by when, and every date or deadline, one per line |
+| **Suggest headings** | Headings that divide a long passage into sections you can jump between by heading, and where each goes |
+| **Continue writing** | A next paragraph in the same voice, for you to keep, change or throw away |
+| **Write an email reply** | Select an email you received; get a polite reply to edit, with decisions left in [square brackets] |
+| **Translate** | The passage in the language you choose, from twenty, meaning and formatting kept |
+
+A few that are worth knowing about:
+
+- **Suggest headings** is about navigation: headings are what a screen reader
+  jumps between, so this is how a long, flat passage becomes one you can move
+  through by heading. It suggests; you place the ones you want.
+- **Find action items** turns meeting notes or a long thread into the list of
+  who does what by when -- and says so plainly when there is nothing to do.
+- **Write an email reply** leaves anything only you can decide in [square
+  brackets], so nothing is decided for you.
+- **Translate** shows a **Translate into** list with twenty languages when you
+  choose it; Spanish is chosen until you pick another.
+
+Every result arrives in the answer window with **Replace My Selection**,
+**Insert Below**, **Copy**, **Try Again** and **Follow Up** -- so "shorter
+still" or "more formal than that" is one button away.
+
+---
+
 ## AI help with your own OpenAI key
 
 **Tools ▸ AI ▸ Use My Own OpenAI Key** (**Alt+F2**). Paste an OpenAI key, press
@@ -164,8 +250,9 @@ can change the model at any time with **Alt+F2**.
 Your text goes straight from this computer to OpenAI on your account, and
 nothing passes through QUILL's servers. OpenAI bills your account for each
 request. You do not need to connect this computer or accept the free service's
-agreement. The five things AI help can do, and what comes back, are exactly the
-same.
+agreement. The seventeen things AI help can do, and what comes back, are
+exactly the same -- and a conversation has no limit at all (see *Conversations with AI
+help*, above).
 
 ### Usage and About
 
@@ -202,5 +289,6 @@ same key: saving or removing it in either program does it for both.
 
 ## Also in QUILL
 
-Both features are in QUILL too, on the same keys: Live Dictation under Tools ▸
-Speech, and Use My Own OpenAI Key in the AI menu.
+All four are in QUILL too, on the same keys: Live Dictation under Tools ▸
+Speech, Use My Own OpenAI Key in the AI menu, and the writing tools and Have a
+conversation in the same AI pad, with Follow Up in the same answer window.

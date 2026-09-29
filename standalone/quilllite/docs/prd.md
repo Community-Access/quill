@@ -692,6 +692,53 @@ module. QUILL Lite is not ahead of QUILL here; QUILL has more AI, not less, and
 none of its existing provider list, default cascade, bring-your-own-key, agent or
 local-model paths changed to make room for this.
 
+### 5.6a Conversations: memory without a multiplier (1.1)
+
+A conversation was the one AI shape deliberately left out of the free tier,
+because it resends its history on every turn and so each reply costs more than
+the last. It ships in 1.1 on the condition that removes the multiplier: **the
+conversation so far is trimmed to the same input ceiling every request has**,
+newest turns first, on this computer (`quill/core/ai/hosted_chat.py`) and again,
+authoritatively, on the service. A turn is one request and never costs more than
+any other; conversations have a monthly share of their own (`feature_cap.chat`,
+40 of 100). What a long conversation loses is memory of its opening, and the
+window says so aloud the first time that happens rather than leaving somebody to
+infer it from a puzzling answer.
+
+**No new command, no new chord.** Chords free in both editors are the scarcest
+resource in the family (section 5.6), so a conversation is reached from the pad
+(**Have a conversation**, a seventh choice) and from the result window (**Follow
+Up**, which seeds the conversation with that question and answer, and keeps a
+document question's excerpts attached). The window is modeless; focus lives in
+the message box and each reply is announced, because it lands in a transcript
+that does not have focus -- the one case GATE-13 says the app must speak.
+
+**With the user's own OpenAI key there is no trimming**: the whole conversation
+goes, and is shortened only past what the model can read at once.
+
+**Family rule 10 holds**: the window, the pad row and Follow Up live in the
+shared `quill/ui/hosted_ai_*` modules, so QUILL has them in the same release on
+the same keys.
+
+### 5.6b Ten writing tools (1.1)
+
+The pad grows from seven choices to seventeen: Shorten, Simplify, Make more
+formal, Make friendlier, Turn into a list, Find action items, Suggest headings,
+Continue writing, Write an email reply, and Translate. The rule for admitting a
+tool is the same one that admitted Summarize: **one passage in, one result out,
+at the ordinary size**, so no tool is a new worst case for the free service
+(each is one request, with a monthly share of 60). Each is a fixed template on
+the service; the client sends only the passage, and Translate's target language
+is the one value it fills in, from a fixed list of twenty checked on both ends,
+because a free-text field there would be a place to smuggle instructions.
+
+The choice of tools is aimed at the people this product is for: **Simplify**
+for letters from banks, hospitals and lawyers; **Turn into a list** and **Find
+action items** because a list is far quicker to review by ear than a
+paragraph; **Suggest headings** because headings are what a screen reader
+navigates by, so it turns a flat passage into one you can move through. The
+list of seventeen is a list box, so a first letter jumps to a tool.
+
 ### 5.7 Every switch has a way back, from inside the app
 
 A preference somebody can turn off and cannot turn back on is not a preference;

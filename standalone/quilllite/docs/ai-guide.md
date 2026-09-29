@@ -15,11 +15,12 @@ which text is sent, what happens to the answer, the limits, and your privacy.
 - [Starting, in about a minute](#starting-in-about-a-minute)
 - [The keys](#the-keys)
 - [The AI pad](#the-ai-pad)
-- [The five things it can do](#the-five-things-it-can-do)
+- [The seventeen things it can do](#the-seventeen-things-it-can-do)
 - [Exactly what is sent](#exactly-what-is-sent)
 - [Asking about a whole document](#asking-about-a-whole-document)
 - [When something is too long](#when-something-is-too-long)
 - [The answer window](#the-answer-window)
+- [Having a conversation](#having-a-conversation)
 - [Usage, About and your support ID](#usage-about-and-your-support-id)
 - [Limits, and when they start again](#limits-and-when-they-start-again)
 - [When something goes wrong](#when-something-goes-wrong)
@@ -88,10 +89,12 @@ bottom:
    text itself. Arrow through it at your own pace.
 3. **Send this much** — which part of your document to send. Only offered when
    there is a real choice; see [Exactly what is sent](#exactly-what-is-sent).
-4. **What do you want done?** — the five things, in a list. Press **F1** on any
+4. **What do you want done?** — the seventeen things, in a list; press a
+   letter to jump. Press **F1** on any
    one to hear what it does.
-5. **Your question** — only there when you choose **Ask a question about the
-   document**.
+5. **Your question** — only there for the choices that take typing: **Ask a
+   question about the document**, **Ask a general question**, and **Have a
+   conversation** (where it is your first message, and optional).
 6. **Send**, and **Close**.
 7. **Status** — what happened to the last request: working, how many requests
    it used, or what went wrong.
@@ -102,7 +105,7 @@ status, so nothing is said once and lost.
 **The editor never waits for the AI.** Requests run in the background. Keep
 typing, save, switch documents, or close the pad while the answer is on its way.
 
-## The five things it can do
+## The seventeen things it can do
 
 - **Summarize** — a few plain sentences saying what the passage says. Good for
   the long email, the dense report, the terms and conditions nobody reads.
@@ -113,9 +116,49 @@ typing, save, switch documents, or close the pad while the answer is on its way.
   in your document changes until you choose to put it there.
 - **Explain** — what the passage means, in plain language. Good for jargon, a
   legal clause, or a paragraph that will not sit still.
+
+The **writing tools**, new in 1.1 — each works on the same passage the four
+above do, and each uses one request:
+
+- **Shorten** — about half the length, every important fact kept. Good for the
+  message that has to fit a character limit.
+- **Simplify** — plain, easy-to-read language: short sentences, everyday words,
+  technical terms explained. Good for a letter from a bank, a hospital or a
+  lawyer — or for writing something anyone can read.
+- **Make more formal** — the same meaning in a professional tone. Good for the
+  email to a manager or an official complaint.
+- **Make friendlier** — the same meaning in a warmer tone. Good for the note that
+  came out colder than you meant.
+- **Turn into a list** — bullet points, or numbered steps when the passage
+  describes a process. Lists are far quicker to review by ear than paragraphs.
+- **Find action items** — every task, who does it and by when, and every date
+  or deadline, one per line. Good for meeting notes and long email threads. If
+  there are none, it says so.
+- **Suggest headings** — headings that would divide a long passage into
+  sections, and where each goes. Headings are what a screen reader jumps
+  between, so this is how a wall of text becomes navigable. Nothing is inserted
+  for you; you place the ones you want.
+- **Continue writing** — a next paragraph in the same voice, for when you are
+  stuck. Insert Below puts it after the paragraph you are in.
+- **Write an email reply** — select an email you received and get a polite,
+  clear reply to edit, answering each question it asks, with anything only you
+  can decide left in [square brackets] for you to fill in.
+- **Translate** — into the language you choose from the **Translate into** list,
+  which appears when Translate is chosen: English, Spanish, French, German,
+  Italian, Portuguese, Dutch, Swedish, Polish, Russian, Ukrainian, Turkish,
+  Arabic, Hebrew, Hindi, Chinese (Simplified), Japanese, Korean, Vietnamese and
+  Tagalog. Meaning, tone, line breaks and lists are kept.
+
+And the three that take typing:
 - **Ask a question about the document** — type a question, and QUILL Lite finds
   the parts of the document that answer it. See [Asking about a whole
   document](#asking-about-a-whole-document).
+- **Ask a general question** — type any question; only the question is sent,
+  nothing from your document. One question, one answer, of up to about 750
+  words.
+- **Have a conversation** — talk back and forth in a window of its own, and
+  each reply remembers what was said before. See [Having a
+  conversation](#having-a-conversation).
 
 **Ctrl+Alt+Z** opens the pad with the question already chosen, so you can type
 straight away.
@@ -199,10 +242,48 @@ lands on the answer, so your screen reader starts reading it. Under it:
 - **Copy** — puts the answer on the clipboard.
 - **Try Again** — sends the same text again for a different answer. This uses
   one more request.
+- **Follow Up** — carries on from this answer in a conversation: "make it
+  shorter", "and the second point?". See [Having a
+  conversation](#having-a-conversation).
 - **Requests** — how much of your allowance this answer used.
 
 **Every edit can be undone.** Replace and Insert Below go through the ordinary
 undo, so **Ctrl+Z** takes an AI edit back exactly like your own typing.
+
+## Having a conversation
+
+Choose **Have a conversation** in the pad, or press **Follow Up** in an answer
+window. The **AI Conversation** window opens:
+
+1. **About this conversation** — what goes with each message and what it uses.
+2. **Conversation** — everything said so far, newest at the end, as "You:" and
+   "AI:" paragraphs. Read-only.
+3. **Your message** — focus lives here. Type and press **Enter**.
+4. **Send**, **New Conversation**, **Copy Last Reply**, **Insert Last Reply
+   Below**, and **Close**.
+5. **Status** — working, what was used, or what went wrong.
+
+Each reply is **read aloud as it arrives** and added to the conversation, while
+you stay in the message box; **Shift+Tab** reaches the conversation to read it
+again at your own pace.
+
+**What is sent.** Your message, and the conversation so far. A follow-up to a
+question about your document also sends the same passages the question did,
+with every message, so you can keep asking about them. A conversation you
+start from the pad sends nothing from your document.
+
+**What it uses, on the free AI.** Each message is **one request**, and
+conversations have a monthly share of their own: **40** of the 100. So that no
+message costs more than any other request, the conversation so far goes with
+each message only **as far as the ordinary 3,000-token limit allows**, newest
+first. A long conversation therefore gradually forgets its beginning; the window
+says so **the first time it happens**, and **New Conversation** starts fresh. A
+single message too long to fit on its own is refused before anything is sent.
+
+**With your own OpenAI key**, none of that applies: the whole conversation goes
+with every message, billed to your OpenAI account — so a long conversation costs
+more per reply — and it is only shortened if it outgrows what the model can read
+at once, which the window says.
 
 ## Usage, About and your support ID
 

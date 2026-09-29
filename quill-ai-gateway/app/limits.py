@@ -91,10 +91,16 @@ SEED_DEFAULTS: dict[str, float] = {
 # (feature_cap.<feature>) with their own fail-safes, since they're ceilings
 # *within* the overall monthly total, not standalone limits.
 #
-# The two deferred features (app/prompts.py's DEFERRED_FEATURES) get a cap of
-# zero as well as a disabled flag. Belt and braces on purpose: a feature that is
+# The deferred feature (app/prompts.py's DEFERRED_FEATURES) gets a cap of zero
+# as well as a disabled flag. Belt and braces on purpose: a feature that is
 # switched off in one place and uncapped in another is one flag flip away from
 # being live and unlimited at the same time.
+#
+# ``chat`` is capped lower than the rest: a conversation is many requests by
+# nature, and forty turns a month still leaves sixty of the hundred for
+# everything else. Each turn costs no more than any other request (its history
+# is trimmed to max_input_tokens -- see fit_history), so the cap is about
+# sharing the month, not about price.
 _FEATURE_CAP_FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "summarize": 60,
     "rewrite": 60,
@@ -102,8 +108,20 @@ _FEATURE_CAP_FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "explain": 60,
     "document_qna": 60,
     "ask": 60,
+    "chat": 40,
+    # The writing tools (2026-09): each a passage in and a result out, the
+    # shape of Summarize, so the same share of the month.
+    "shorten": 60,
+    "simplify": 60,
+    "formal": 60,
+    "friendly": 60,
+    "make_list": 60,
+    "action_items": 60,
+    "headings": 60,
+    "continue": 60,
+    "email_reply": 60,
+    "translate": 60,
     "alt_text": 0,
-    "chat": 0,
 }
 
 _CONFIG_CACHE_TTL_SECONDS = 30
@@ -844,6 +862,59 @@ def reject_if_too_large(app, prompt: str, chunks: list[str] | None) -> None:
             max_tokens,
             counted,
         )
+
+
+#: The most turns a conversation may send, trimmed before anything is counted.
+#: Far above what fits the input ceiling anyway; it only bounds the work done on
+#: a hostile body before the ceiling does the real trimming.
+MAX_HISTORY_TURNS = 60
+
+
+def clean_history(raw: object) -> list[dict] | None:
+    """A conversation's history as the route will use it, or ``None`` if it is
+    malformed.
+
+    Each turn is ``{"role": "user" | "assistant", "content": str}``. Anything
+    else -- a system turn a modified client hoped would pass as instructions, a
+    number, a nested object -- makes the whole request malformed rather than
+    being quietly dropped: the client never supplies instructions (PRD §8).
+    Only the newest :data:`MAX_HISTORY_TURNS` turns are kept.
+    """
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        return None
+    turns: list[dict] = []
+    for turn in raw:
+        if not isinstance(turn, dict):
+            return None
+        role, content = turn.get("role"), turn.get("content")
+        if role not in ("user", "assistant") or not isinstance(content, str):
+            return None
+        turns.append({"role": role, "content": content})
+    return turns[-MAX_HISTORY_TURNS:]
+
+
+def fit_history(
+    app, prompt: str, chunks: list[str] | None, history: list[dict]
+) -> tuple[list[dict], int]:
+    """``(history_to_send, turns_dropped)``: the newest turns that fit.
+
+    What makes a conversation affordable on the free tier. The latest message
+    and any document excerpts are checked by :func:`reject_if_too_large` first
+    and are never trimmed; the history fills whatever room is left under
+    ``max_input_tokens``, newest turn first, and the oldest turns are dropped.
+    A turn therefore never costs more than any other request, however long the
+    conversation has run. The client trims too, so this usually drops nothing;
+    it is here because the server's ceiling is the real one.
+    """
+    from app.prompts import chat_message
+
+    max_tokens = int(resolve_limit(app, "max_input_tokens"))
+    kept = list(history)
+    while kept and count_tokens(chat_message(prompt, chunks, kept)) > max_tokens:
+        kept.pop(0)
+    return kept, len(history) - len(kept)
 
 
 @dataclass(slots=True)

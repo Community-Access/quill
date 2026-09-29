@@ -1,8 +1,8 @@
 """AI help with the user's own OpenAI key: no allowance, no QUILL server.
 
-The six AI help features normally go through QUILL's free service, which keeps
+The AI help features normally go through QUILL's free service, which keeps
 an allowance per person and a size limit per request. Somebody with their own
-OpenAI account can switch that off: the same six features then go **straight
+OpenAI account can switch that off: the same features then go **straight
 from this computer to OpenAI**, billed to their account, with no QUILL server in
 between and none of the free tier's limits.
 
@@ -96,6 +96,78 @@ INSTRUCTIONS: dict[str, str] = {
         "answer concise and in plain language suitable for a screen reader "
         "to read aloud."
     ),
+    "chat": (
+        "You are a helpful assistant inside QUILL, an accessibility-first "
+        "text editor, in a conversation with the user. Reply to their latest "
+        "message directly and concisely, in plain language suitable for a "
+        "screen reader to read aloud, using the conversation so far for "
+        "context. If excerpts from the user's document are included, answer "
+        "questions about the document only from them, and say so plainly when"
+        " they do not contain the answer. If you are not sure of something, "
+        "say so rather than guessing. Do not use tables, and keep any "
+        "formatting simple."
+    ),
+    "shorten": (
+        "Shorten the following text to about half its length. Keep every "
+        "important fact, the meaning and the tone; cut repetition and "
+        "padding. Return only the shortened text, with no preamble."
+    ),
+    "simplify": (
+        "Rewrite the following text in plain language that is easy to read: "
+        "short sentences, everyday words, and any necessary technical term "
+        "explained the first time it appears. Keep every fact and do not add "
+        "any. Return only the rewritten text, with no preamble."
+    ),
+    "formal": (
+        "Rewrite the following text in a more formal, professional tone, "
+        "suitable for work or official correspondence. Keep the meaning and "
+        "every fact. Return only the rewritten text, with no preamble."
+    ),
+    "friendly": (
+        "Rewrite the following text in a warmer, friendlier tone, as if to "
+        "someone the writer knows. Keep the meaning and every fact. Return "
+        "only the rewritten text, with no preamble."
+    ),
+    "make_list": (
+        "Turn the following text into a clear list: numbered steps if it "
+        "describes a process, otherwise bullet points. Start each item on its"
+        " own line with a hyphen and a space, or with its number and a full "
+        "stop. Keep every fact and add none. Return only the list, with no "
+        "preamble."
+    ),
+    "action_items": (
+        "List the action items in the following text: every task someone has "
+        "to do, with who and by when wherever the text says, and every date "
+        "or deadline it mentions. One item per line, starting with a hyphen "
+        "and a space. If there are none, say so in one sentence. Do not add "
+        "anything the text does not say."
+    ),
+    "headings": (
+        "Suggest headings that would divide the following text into clear "
+        "sections a reader can jump between. For each, give the heading on "
+        "its own line, then on the next line the first few words of the "
+        "paragraph it belongs above, in quotation marks. Keep headings short "
+        "and plain. Return only the headings and their places, with no "
+        "preamble."
+    ),
+    "continue": (
+        "Write the next paragraph of the following text, continuing it "
+        "naturally in the same voice, tone and tense. Do not repeat or "
+        "summarize what is already there, and do not add a conclusion unless "
+        "the text is clearly ending. Return only the new paragraph."
+    ),
+    "email_reply": (
+        "The following is an email the user received. Write a clear, polite "
+        "reply that the user can edit before sending: answer each question it"
+        " asks, and where the user must decide something, leave a short "
+        "placeholder in square brackets. Return only the body of the reply, "
+        "with no subject line and no preamble."
+    ),
+    "translate": (
+        "Translate the following text into {language}. Keep the meaning, the "
+        "tone and any formatting such as line breaks and lists. Return only "
+        "the translation, with no preamble or notes."
+    ),
 }
 
 #: Effectively no limit. The pad never refuses on size with a key; it warns
@@ -161,19 +233,46 @@ def load_settings_fields(data: Any) -> dict[str, Any]:
     return {"ai_own_key_model": str(data.get("ai_own_key_model", "") or "")}
 
 
-def request_for(feature: str, prompt: str, chunks: list[str] | None = None) -> tuple[str, str]:
-    """``(system, user)`` messages for *feature* -- the gateway's, split in two."""
+def request_for(
+    feature: str,
+    prompt: str,
+    chunks: list[str] | None = None,
+    history: list[dict[str, str]] | None = None,
+    language: str = "English",
+) -> tuple[str, str]:
+    """``(system, user)`` messages for *feature* -- the gateway's, split in two.
+
+    A conversation's user half is :func:`quill.core.ai.hosted_chat.chat_message`
+    (the gateway's own formatting); Translate names *language*, which must be
+    one of :data:`quill.core.ai.writing_tools.LANGUAGES`.
+    """
     instructions = INSTRUCTIONS.get(feature)
     if instructions is None:
         raise OwnKeyError(f"{feature.replace('_', ' ').capitalize()} is not available.")
     if feature == "document_qna":
         context = "\n\n---\n\n".join(chunks or [])
         return instructions, f"Excerpts:\n{context}\n\nQuestion: {prompt}"
+    if feature == "chat":
+        from quill.core.ai.hosted_chat import chat_message
+
+        return instructions, chat_message(prompt, chunks, history)
+    if feature == "translate":
+        from quill.core.ai.writing_tools import LANGUAGES
+
+        if language not in LANGUAGES:
+            raise OwnKeyError(f"{language} is not a language Translate offers.")
+        return instructions.format(language=language), prompt
     return instructions, prompt
 
 
 def ask_with_own_key(
-    feature: str, prompt: str, chunks: list[str] | None = None, *, model: str = ""
+    feature: str,
+    prompt: str,
+    chunks: list[str] | None = None,
+    *,
+    model: str = "",
+    history: list[dict[str, str]] | None = None,
+    language: str = "English",
 ) -> str:
     """Send one AI help request to OpenAI with the user's key. Blocking.
 
@@ -189,7 +288,7 @@ def ask_with_own_key(
     key = load_provider_api_key(OWN_KEY_PROVIDER)
     if not key:
         raise OwnKeyError("No OpenAI key is stored on this computer.")
-    system, user = request_for(feature, prompt, chunks)
+    system, user = request_for(feature, prompt, chunks, history, language)
     connection = AssistantConnectionSettings(
         provider=OWN_KEY_PROVIDER,
         host=default_host_for_provider(OWN_KEY_PROVIDER),

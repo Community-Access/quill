@@ -61,13 +61,14 @@ def agreement_text() -> str:
         "What happens when you use AI help",
         "The passage you have selected -- or, for a question about a document, "
         "up to three excerpts QUILL Lite picks on this computer, or, for a "
-        "general question, only the question -- is sent over "
+        "general question, only the question; for a conversation, your "
+        "message and as much of the conversation so far as fits -- is sent over "
         "the internet to QUILL's servers, and from there to OpenAI, which "
         "writes the answer. The answer comes back to you and is shown in a "
         "window. Nothing is put into your document until you choose to put it "
         "there.",
         "What QUILL keeps",
-        "How many requests you made, how big they were, which of the six "
+        "How many requests you made, how big they were, which of the "
         "features you used, and what they cost. That is all, and it is what "
         "lets QUILL keep the service free and notice if something goes wrong.",
         "What QUILL does not keep",

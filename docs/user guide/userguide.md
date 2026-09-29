@@ -5597,6 +5597,32 @@ rather than writing the answer somewhere it does not belong.
 **The editor never waits.** Requests run in the background: you can keep typing,
 save, switch documents or close the window while an answer is on its way.
 
+**Seventeen things, one pad.** The pad's **What do you want done?** list holds
+Summarize, Rewrite, Proofread and Explain; ten writing tools — **Shorten**,
+**Simplify**, **Make more formal**, **Make friendlier**, **Turn into a list**,
+**Find action items**, **Suggest headings**, **Continue writing**, **Write an
+email reply** and **Translate** (into one of twenty languages, from a **Translate
+into** list that appears when it is chosen); and the three that take typing: Ask
+a question about the document, Ask a general question, and Have a conversation.
+Every one is one request of the same size, so the writing tools cost no more of
+the allowance than Summarize. Press a letter in the list to jump.
+
+**Conversations.** Choose **Have a conversation** in the Free AI Assistant pad
+(**Ctrl+Alt+G**), or press **Follow Up** in any answer window, and the **AI
+Conversation** window opens: talk back and forth, and each reply remembers what
+was said before. Focus stays in **Your message** — type, press **Enter** — and
+each reply is read aloud as it arrives and added to the **Conversation** above
+(**Shift+Tab** reaches it). **Copy Last Reply**, **Insert Last Reply Below** and
+**New Conversation** are beside Send. A follow-up to a question about the
+document keeps sending the same passages, so you can keep asking about them.
+
+On the free AI each message is one request, conversations have a monthly share
+of 40 of the 100, and the conversation so far goes with each message only as far
+as the ordinary size limit allows — so no message costs more than any other
+request, and a long conversation gradually forgets its beginning. The window
+says so the first time that happens. With your own OpenAI key (below) there is
+no such limit: the whole conversation goes, billed to your account.
+
 **How much.** There is a monthly, a daily and an hourly allowance, and a smaller
 one for a computer's first 48 hours; *Free AI limits, and when they start
 again* has every number and every rule.

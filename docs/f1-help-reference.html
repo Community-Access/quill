@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>The Quill family F1 help reference</title>
   <style>
@@ -3190,6 +3190,20 @@ the top suggestion as well as the word. Off by default: it doubles the
 arrival announcement, which is welcome when you are learning a word and
 noise when you are checking one.</li>
 </ul>
+<h4 id="aichatframe-quilluihosted_ai_chatpy">AiChatFrame
+(<code>quill/ui/hosted_ai_chat.py</code>)</h4>
+<ul>
+<li><code>self._message</code>: Type what you want to say and press
+Enter to send it. The reply is read aloud and added to the conversation
+above.</li>
+<li><code>self._send_button</code>: Sends your message, with as much of
+the conversation so far as fits.</li>
+<li><code>fresh</code>: Forgets this conversation and starts again.
+Nothing is sent.</li>
+<li><code>copy</code>: Puts the most recent reply on the clipboard.</li>
+<li><code>insert</code>: Puts the most recent reply into your document
+underneath the current paragraph. Control Z takes it back.</li>
+</ul>
 <h4 id="module-level-quilluihosted_ai_dialogspy">(module level)
 (<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
 <ul>
@@ -3268,6 +3282,8 @@ hear it.</li>
 <li><code>self._question</code>: What you want to know. For a question
 about the document, QUILL finds the parts that answer it and sends only
 those; for a general question, only the question is sent.</li>
+<li><code>self._language</code>: The language Translate writes in. Only
+these languages are offered.</li>
 <li><code>self._send</code>: Sends the text above and uses one of your
 free requests.</li>
 </ul>
@@ -3280,6 +3296,9 @@ selected. Control Z takes it back.</li>
 current paragraph. Control Z takes it back.</li>
 <li><code>again</code>: Sends the same text again. This uses one more of
 your free requests.</li>
+<li><code>follow</code>: Carries on from this answer in a conversation:
+ask for it shorter, ask about one part of it, or ask something new. Each
+message uses one request.</li>
 </ul>
 <h4 id="aipadframe-quilluihosted_ai_padpy-1">AiPadFrame
 (<code>quill/ui/hosted_ai_pad.py</code>)</h4>

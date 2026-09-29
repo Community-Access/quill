@@ -100,6 +100,25 @@ Nine items from the dictation plan, all shared with QUILL's Live Dictation.
 
 ### AI help
 
+- **Ten writing tools** in the AI pad (**Ctrl+Alt+G**), which goes from seven
+  choices to seventeen: **Shorten**, **Simplify**, **Make more formal**, **Make
+  friendlier**, **Turn into a list**, **Find action items**, **Suggest
+  headings**, **Continue writing**, **Write an email reply** and **Translate**
+  (a **Translate into** list of twenty languages appears when it is chosen).
+  Each works on the same passage Summarize does and is one request of the same
+  size; each has a monthly share of 60 and can be switched off on the service.
+  The table lives in `quill/core/ai/writing_tools.py`, shared with QUILL.
+- **Have a conversation.** A seventh choice in the AI pad (**Ctrl+Alt+G**)
+  opens the **AI Conversation** window: talk back and forth, and each reply
+  remembers what was said before. **Follow Up** in every answer window carries
+  on from that answer (a follow-up to a question about the document keeps
+  sending the same passages). Focus stays in the message box; each reply is
+  read aloud as it arrives. On the free service every message is one request,
+  conversations have a monthly share of 40, and the conversation so far is sent
+  only as far as the ordinary size limit allows -- so a turn never costs more
+  than any other request, and the window says when a long conversation starts
+  forgetting its beginning. With your own OpenAI key the whole conversation
+  goes, with no limit.
 - **Ask a general question.** A sixth choice in the AI pad (**Ctrl+Alt+G**):
   type any question and get an answer, with nothing from your document sent.
   One question, one answer -- not a conversation -- so it fits the free

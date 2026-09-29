@@ -763,8 +763,8 @@ above <code>none</code></td>
 <tr>
 <td><code>chat</code></td>
 <td><code>none</code></td>
-<td><strong>Not shipped.</strong> Open-ended chat is not part of the
-free tier</td>
+<td><strong>Shipped 2026-09</strong>, on the condition in 5.8: history
+trimmed to the input ceiling</td>
 </tr>
 <tr>
 <td><code>alt_text</code></td>
@@ -876,10 +876,11 @@ language.</li>
 from the three best-matching local chunks, with “the document does not
 say” as an allowed and expected answer.</li>
 </ol>
-<p>Deliberately excluded from the free tier: chat with history, agents
-and the tool loop, translation, cloud TTS, streaming, and any multi-turn
-context. Each of those is a multiplier on cost, a multiplier on
-complexity, or both.</p>
+<p>Deliberately excluded from the free tier: agents and the tool loop,
+translation, cloud TTS and streaming. Each of those is a multiplier on
+cost, a multiplier on complexity, or both. Chat with history was on this
+list too, and shipped in 2026-09 once a way was found to make it no
+multiplier at all – see 5.8.</p>
 <p><strong>And images. Not in QUILL Lite at all</strong> — see 5.7,
 which is a decision rather than an omission.</p>
 <p>Every result lands in a <strong>result window, not the
@@ -948,6 +949,107 @@ text, or a full AI response” — and it is currently true. It must stay
 true, and the privacy text must not outrun it.</li>
 </ul>
 <hr />
+<h3 id="58-conversations-shipped-2026-09-on-one-condition">5.8
+Conversations: shipped 2026-09, on one condition</h3>
+<p>A conversation was excluded because it resends its whole history on
+every turn, so each reply costs more than the last: a 20-turn chat with
+200-word questions and 700-word answers sends about 177,000 input
+tokens, roughly $0.025 at Luna’s prices – a quarter of one person’s
+monthly fence in one sitting, where the same twenty questions asked
+separately cost about $0.008.</p>
+<p>It ships (<code>feature = "chat"</code>, migration 008) on the
+condition that removes the multiplier: <strong>the history is trimmed to
+the same <code>max_input_tokens</code> every other request has</strong>,
+oldest turns first. A turn therefore never costs more than any other
+request, and the worst case per person does not move:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Before</th>
+<th>With conversations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Most one request can cost</td>
+<td>$0.0008 (3,000 in, 1,000 out)</td>
+<td>$0.0008</td>
+</tr>
+<tr>
+<td>Requests per person</td>
+<td>100 a month, 20 a day</td>
+<td>unchanged; each turn is one</td>
+</tr>
+<tr>
+<td>Conversation share</td>
+<td>–</td>
+<td><code>feature_cap.chat</code> = 40 of the 100</td>
+</tr>
+<tr>
+<td>Per-person fence</td>
+<td>$0.10</td>
+<td>$0.10</td>
+</tr>
+<tr>
+<td>Global budget</td>
+<td>$40</td>
+<td>$40</td>
+</tr>
+</tbody>
+</table>
+<p>What a long conversation loses is <strong>memory of its opening,
+never money</strong>. The client says so aloud when it happens.</p>
+<p>How it works:</p>
+<ul>
+<li><strong>The wire.</strong> <code>POST /v1/chat</code> with
+<code>feature: "chat"</code>, <code>prompt</code> (the latest message),
+optional <code>chunks</code> (document excerpts the conversation is
+about, sent on every turn and never trimmed) and <code>history</code> –
+a list of <code>{"role": "user" | "assistant", "content": str}</code>.
+Any other shape, a <code>system</code> turn included, is
+<code>400 bad_history</code>: the client never supplies instructions.
+Only the newest 60 turns are even considered.</li>
+<li><strong>Trimming</strong> (<code>app/limits.py::fit_history</code>).
+The message and excerpts are checked by the ordinary size rule first and
+refused if they alone are too large (refunded, as always). The history
+then fills whatever room is left, newest turn first. The client trims
+too, so the server usually drops nothing; the response’s
+<code>history_dropped</code> says how many turns it did drop.</li>
+<li><strong>The prompt</strong>
+(<code>app/prompts.py::chat_message</code>): excerpts, then “The
+conversation so far”, then “The user’s latest message”, inside the fixed
+<code>chat</code> template. <code>quill/core/ai/own_key.py</code> builds
+the same text on the user’s computer for an own-key conversation, and a
+test fails if the two drift.</li>
+<li><strong>The answer ceiling</strong> is
+<code>max_ask_output_tokens</code> (1,000), like a general question.
+Reasoning effort is <code>none</code>.</li>
+</ul>
+<p><strong>With the user’s own OpenAI key there is no trimming and no
+cap</strong> – the conversation goes straight to OpenAI, whole, billed
+to their account, and is only shortened if it outgrows the model’s own
+context window, which is said aloud when it happens.</p>
+<h3 id="59-ten-writing-tools-2026-09">5.9 Ten writing tools
+(2026-09)</h3>
+<p>Shipped with migration 008 alongside conversations:
+<code>shorten</code>, <code>simplify</code>, <code>formal</code>,
+<code>friendly</code>, <code>make_list</code>,
+<code>action_items</code>, <code>headings</code>, <code>continue</code>,
+<code>email_reply</code> and <code>translate</code>. The admission rule
+is Summarize’s shape – one passage in, one result out, under
+<code>max_input_tokens</code> – so none is a new worst case. Each has
+<code>feature_cap</code> 60 and reasoning effort <code>none</code>. The
+answer ceiling is <code>max_ask_output_tokens</code> for the tools whose
+result can run long (translate, continue, email_reply, headings,
+make_list, simplify, plus ask and chat:
+<code>LONG_ANSWER_FEATURES</code>); the Limits page already prices every
+request at that ceiling. Translate’s <code>language</code> is the one
+value a client fills into a template, so it must be one of the twenty in
+<code>app/prompts.py::LANGUAGES</code>
+(<code>400 unknown_language</code> otherwise); the client’s copy is
+<code>quill/core/ai/writing_tools.py</code>, and a test fails if they
+differ.</p>
 <h2 id="6-gaps-in-the-built-server-ranked">6. Gaps in the built server,
 ranked</h2>
 <p>These are the concrete deltas. Four of them were things this request

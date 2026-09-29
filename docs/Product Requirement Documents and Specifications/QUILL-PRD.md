@@ -4463,6 +4463,46 @@ the feature is turned on through.
 
 ---
 
+### 5.84m2 Conversations and ten writing tools with the free AI (2026-09-28)
+
+**Writing tools.** Ten more fixed gateway templates -- `shorten`, `simplify`,
+`formal`, `friendly`, `make_list`, `action_items`, `headings`, `continue`,
+`email_reply`, `translate` -- each one passage in and one result out at the
+ordinary `max_input_tokens`, each with `feature_cap` 60 (migration 008). The
+longer answer ceiling (`max_ask_output_tokens`) goes to the tools whose result
+can be longer than a summary (`app/prompts.py::LONG_ANSWER_FEATURES`); the Limits
+page already prices every request there, so no worst case moves. Translate's
+language comes from `LANGUAGES`, checked on the server and mirrored in
+`quill/core/ai/writing_tools.py`. The pad's action table moved to that wx-free
+module so tests and docs read the same seventeen rows the pad shows.
+
+**Conversations.**
+
+**Goal.** Let somebody say "shorter" or "and the second point?" without starting
+again, on the free service, without a conversation costing more per reply than
+any other request.
+
+**How.** A seventh gateway feature, `chat`, shipped with its history trimmed to
+the ordinary `max_input_tokens`, newest turns first -- on the client
+(`quill/core/ai/hosted_chat.py::Conversation.history_for`) and again on the
+server (`quill-ai-gateway/app/limits.py::fit_history`, migration 008). Each turn
+is one request; `feature_cap.chat` is 40 of the monthly 100; the answer ceiling
+is `max_ask_output_tokens`. The per-person worst case ($0.08) and fence ($0.10)
+do not move. The gateway spec's section 5.8 has the arithmetic.
+
+**Where it lives.** `quill/ui/hosted_ai_chat.py` (the **AI Conversation**
+window), a **Have a conversation** row in the shared pad and **Follow Up** in the
+shared result window. Both editors reach it through `HostedAiMixin`, so QUILL and
+QUILL Lite 1.1 have it together and `HostedAiCommandsMixin` still has no commands
+of its own. With the user's own OpenAI key the whole conversation goes
+(`own_key.ask_with_own_key(..., history=...)`), shortened only past
+`CONTEXT_WARNING_TOKENS`.
+
+**Accessibility.** Focus stays in the message box; each reply is announced
+because it lands in an unfocused transcript (GATE-13's case for speaking); the
+transcript is a read-only field Tab reaches; the window says, once, when a long
+conversation stops sending its beginning.
+
 ### 5.84d Free / low-cost AI for everyone (writing-first)
 
 **Goal.** Give every user a meaningful AI writing experience without a paid

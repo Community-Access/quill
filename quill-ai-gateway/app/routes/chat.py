@@ -1,9 +1,11 @@
 """The one real inference endpoint: ``POST /v1/chat`` (PRD §24).
 
-Every feature (summarize, rewrite, proofread, explain, document Q&A) is the same
-route with a different ``feature`` value -- the fixed server-side prompt template
-for that feature (``app/prompts.py``) is what actually varies, never a
-client-supplied system prompt.
+Every feature (summarize, rewrite, proofread, explain, document Q&A, general
+questions, conversations) is the same route with a different ``feature`` value
+-- the fixed server-side prompt template for that feature (``app/prompts.py``)
+is what actually varies, never a client-supplied system prompt. A conversation
+also sends its history, which is validated and trimmed here and formatted by
+``app/prompts.py``; it never carries instructions.
 
 This module is deliberately thin: it is the glue between ``app/limits.py``
 (quota, size and refunds), ``app/model_registry.py`` (which model),
@@ -32,6 +34,8 @@ from app.limits import (
     RequestTooLarge,
     check_network_budget,
     check_request_allowed,
+    clean_history,
+    fit_history,
     record_usage,
     refund_network_request,
     refund_request,
@@ -41,7 +45,13 @@ from app.limits import (
 )
 from app.model_registry import NoDefaultModel, resolve_default_model
 from app.openai_client import OpenAICallError, complete
-from app.prompts import FEATURES, build_prompt, reasoning_effort_for
+from app.prompts import (
+    FEATURES,
+    LANGUAGES,
+    LONG_ANSWER_FEATURES,
+    build_prompt,
+    reasoning_effort_for,
+)
 
 bp = Blueprint("chat", __name__)
 
@@ -55,6 +65,12 @@ def chat():
     feature = body.get("feature", "")
     prompt = body.get("prompt", "")
     chunks = body.get("chunks") or []
+    # Only a conversation carries history; every other feature ignores it, so
+    # a client cannot make a summary longer by attaching one.
+    history = clean_history(body.get("history")) if feature == "chat" else []
+    # Only Translate takes a language, and only one from the fixed list: it is
+    # the one value a client fills into a template.
+    language = body.get("language") or "English"
 
     if feature not in FEATURES:
         return (
@@ -62,6 +78,24 @@ def chat():
                 "status": "rejected",
                 "reason": "unknown_feature",
                 "message": f"Unknown feature: {feature!r}.",
+            }),
+            400,
+        )
+    if feature == "translate" and language not in LANGUAGES:
+        return (
+            jsonify({
+                "status": "rejected",
+                "reason": "unknown_language",
+                "message": "That language is not one Translate offers.",
+            }),
+            400,
+        )
+    if history is None:
+        return (
+            jsonify({
+                "status": "rejected",
+                "reason": "bad_history",
+                "message": "The conversation history was not in a form the service accepts.",
             }),
             400,
         )
@@ -117,6 +151,15 @@ def chat():
             422,
         )
 
+    # 2a. A conversation's history fills whatever room the message and any
+    #     excerpts left under the same ceiling, oldest turns dropped first
+    #     (app/limits.py::fit_history). Trimming, never refusing: the message
+    #     itself already fitted, and a conversation that has run long should
+    #     lose its opening, not stop working.
+    history_dropped = 0
+    if history:
+        history, history_dropped = fit_history(current_app, prompt, chunks, history)
+
     # 3. Resolve the active model (admin-configured, never client-chosen).
     try:
         model = resolve_default_model()
@@ -139,10 +182,11 @@ def chat():
         )
 
     # 4. Build the fixed-template prompt and make the one real call.
-    full_prompt = build_prompt(feature, prompt, chunks)
-    # A general question has its own answer ceiling (app/prompts.py says why);
-    # every other feature shares the ordinary one.
-    output_key = "max_ask_output_tokens" if feature == "ask" else "max_output_tokens"
+    full_prompt = build_prompt(feature, prompt, chunks, history, language)
+    # The features whose answer may be long have the longer ceiling
+    # (app/prompts.py::LONG_ANSWER_FEATURES says why); every other feature
+    # shares the ordinary one.
+    output_key = "max_ask_output_tokens" if feature in LONG_ANSWER_FEATURES else "max_output_tokens"
     max_output_tokens = int(resolve_limit(current_app, output_key))
 
     try:
@@ -236,6 +280,7 @@ def chat():
             "text": completion.text,
             "tokens_in": completion.tokens_in,
             "tokens_out": completion.tokens_out,
+            "history_dropped": history_dropped,
             "remaining_quota": {
                 "monthly": max(0, quota.monthly_cap - quota.monthly_used),
                 "daily": max(0, quota.daily_cap - quota.daily_used),

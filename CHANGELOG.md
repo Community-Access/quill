@@ -90,6 +90,34 @@
   BITS for BrailleNote Evolve users and anyone for whom a four-key chord is hard
   (`quill/ui/quillville_menu.py`).
 
+### Conversations and ten writing tools, in QUILL and QUILL Lite (2026-09-28)
+
+- **Ten writing tools** join the Free AI Assistant pad (**Ctrl+Alt+G**):
+  Shorten, Simplify, Make more formal, Make friendlier, Turn into a list, Find
+  action items, Suggest headings, Continue writing, Write an email reply, and
+  Translate into twenty languages. Each is a fixed server-side template
+  (`quill-ai-gateway/app/prompts.py`), one passage in and one result out at the
+  ordinary size, with a monthly share of 60; Translate's language is checked
+  against a fixed list on both ends. The pad's table is now
+  `quill/core/ai/writing_tools.py`, and the own-key path mirrors every template
+  word for word.
+
+- **Have a conversation**, a seventh choice in the Free AI Assistant pad
+  (**Ctrl+Alt+G**), and **Follow Up** in every answer window, open the new **AI
+  Conversation** window (`quill/ui/hosted_ai_chat.py`): talk back and forth,
+  focus in the message box, each reply read aloud as it arrives. Shared by both
+  editors through the hosted-AI mixin, so QUILL and QUILL Lite 1.1 have it
+  together, with no new command and no new key.
+- **Free, because it is trimmed.** The conversation so far is sent only as far
+  as the ordinary input ceiling allows, newest first
+  (`quill/core/ai/hosted_chat.py`; the gateway trims again in
+  `app/limits.py::fit_history`), so a turn never costs more than any other
+  request. Each turn is one request; `feature_cap.chat` gives conversations 40
+  of the monthly 100 (gateway migration 008). The window says when a long
+  conversation starts forgetting its beginning.
+- **With your own OpenAI key, no limit**: the whole conversation goes, and is
+  only shortened past what the model can read at once.
+
 ### Quill Converter 1.0.0 ships, and the shared conversion engine grows (2026-09-27)
 
 Quill Converter's first public release; its own changelog is
