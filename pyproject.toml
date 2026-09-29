@@ -50,7 +50,7 @@ dependencies = [
     # WScript.Shell, and quill/platform/windows (sapi5, narrator_announce,
     # comtypes_setup) is imported from quill/core/read_aloud.py. Core-layer use
     # means this belongs in the base dependency set, Windows-gated.
-    "comtypes>=1.4.16; sys_platform == 'win32'",
+    "comtypes>=1.4.17; sys_platform == 'win32'",
     # NOTE: huggingface_hub is deliberately NOT a base dependency. QUILL's default
     # speech models (whisper.cpp, Faster Whisper) and Piper voices download from
     # QUILL's own SHA-verified assets-v1 release, not Hugging Face, so a clean
