@@ -51,6 +51,7 @@ _RECOGNIZER_CATEGORY = r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Recognizer
 _SLO_STATIC = 0
 _SGDS_INACTIVE = 0
 _SGDS_ACTIVE = 1
+_SRS_ACTIVE = 1
 _SRS_INACTIVE_WITH_PURGE = 3
 _GRAMMAR_ID = 1
 
@@ -296,6 +297,22 @@ class SapiDictationRecognizer:
         except Exception as error:  # noqa: BLE001 - the microphone refused
             self.stop()
             raise DictationStartError(_NO_ACCESS) from error
+
+    def discard(self) -> None:
+        """Throw away the phrase being heard (Escape): purge what the engine has
+        buffered and listen afresh. Best effort, and never raises."""
+        recognizer, grammar = self._recognizer, self._grammar
+        if not self._running or recognizer is None or grammar is None:
+            return
+        for step in (
+            lambda: setattr(recognizer, "State", _SRS_INACTIVE_WITH_PURGE),
+            lambda: setattr(recognizer, "State", _SRS_ACTIVE),
+            lambda: grammar.DictationSetState(_SGDS_ACTIVE),
+        ):
+            try:
+                step()
+            except Exception:  # noqa: BLE001 - the controller's own guard still drops it
+                pass
 
     def stop(self) -> None:
         """Close the microphone. Safe to call twice, and never raises."""

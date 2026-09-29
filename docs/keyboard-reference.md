@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 458.
+Editor commands with default bindings: 460.
 
 ## The QUILL editor
 
@@ -296,6 +296,7 @@ Editor commands with default bindings: 458.
 | Alt+F2 | Use My Own OpenAI Key... | `tools.hosted_ai_own_key` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill... | `tools.ask_quill_chat` |
+| Alt+Shift+F10 | Windows dictation words | `tools.windows_dictation_words` |
 | Alt+Shift+F11 | Bring My QUILL Lite Settings | `tools.bring_from_quilllite` |
 | Alt+Shift+F6 | Windows dictation settings | `tools.windows_dictation_settings` |
 | Alt+Shift+F7 | Spell Check Word | `tools.spell_check_word_at_cursor` |
@@ -340,6 +341,7 @@ Editor commands with default bindings: 458.
 | QUILL Key + Shift+R | Read Aloud Stop | `tools.read_aloud_stop` |
 | QUILL Key + Y | Audiobook  Batch Speech... | `tools.speech_batch_export` |
 | Shift+Escape | Cancel Dictation (discard) | `tools.dictation_cancel` |
+| Shift+F11 | Windows dictation recent | `tools.windows_dictation_recent` |
 | Shift+F7 | Thesaurus... | `tools.thesaurus` |
 
 ### Windows and Tabs

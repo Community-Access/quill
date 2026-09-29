@@ -213,6 +213,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # tools.dictation_lock_toggle, which is QUILL's offline Whisper dictation --
     # a different engine that records first and transcribes afterwards.
     "cmd_dictation_settings": "tools.windows_dictation_settings",
+    "cmd_dictation_recent": "tools.windows_dictation_recent",
+    "cmd_dictation_words": "tools.windows_dictation_words",
     "cmd_duplicate_line": "format.duplicate_line",
     "cmd_duplicate_selection": "edit.duplicate_selection",
     "cmd_editor_font": "format.editor_font",

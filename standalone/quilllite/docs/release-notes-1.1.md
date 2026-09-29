@@ -77,9 +77,42 @@ heard.
 
 ### Your own words and phrases
 
-**Edit My Words and Phrases** in Dictation Settings opens a small file where you
-list names dictation should spell your way, and phrases of your own: say *my
-email address* and it writes your address.
+**My Words and Phrases** (Alt+Shift+F10, or the button in Dictation Settings)
+is a window, not a file to edit. It lists everything dictation has been taught,
+one line each, with Add Word, Add Phrase, Add Correction, Edit and Remove. A
+**word** is a name spelled your way; a **phrase** is something you say that
+writes something longer (*my email address*); a **correction** is what the
+engine keeps hearing wrong and what to write instead (*quill light* becomes
+*QUILL Lite*). Each change is saved the moment you make it and used by the next
+phrase. The file behind it, `dictation.md`, is still plain text, and Open the
+File opens it for anyone who prefers that.
+
+### Escape cancels, and the microphone can drop
+
+While a phrase is being heard, **Escape** throws it away and says "Cancelled";
+nothing is written. If the microphone is unplugged or goes silent, dictation
+pauses, says so, and resumes by itself when it is back. If the speech engine
+stops answering it is restarted once without a word, and only a second failure
+is reported, by name, with the engine to try instead.
+
+### One Ctrl+Z per phrase, one session at a time
+
+Every phrase is one undo step, even one that replaced a selection. Ctrl+F11 in a
+second document while dictation runs in the first moves it there and says
+"Dictation moved to" the document's name. A read-only document refuses before
+the microphone opens.
+
+### Dictate into any box
+
+**Ctrl+F11** in the Find box, either Replace box, or the AI pad's question
+dictates into that box, with the same engine and your own words. "New paragraph"
+is a space there.
+
+### Recent phrases
+
+**Recent Phrases** (Shift+F11) lists the last twenty phrases of the session,
+newest first; Enter writes one again at the cursor, Copy puts it on the
+clipboard. The rescue for a "scratch that" that went one too far.
 
 ### Every command, in one place
 
@@ -160,8 +193,11 @@ same key: saving or removing it in either program does it for both.
 
 | Key | What it does |
 |---|---|
-| **Ctrl+F11** | Dictation On (start or stop) |
+| **Ctrl+F11** | Dictation On (start or stop); in Find, Replace or the AI question box, dictate there |
+| **Escape** | Throw away the phrase being heard |
 | **Alt+Shift+F6** | Dictation Settings |
+| **Shift+F11** | Recent Phrases |
+| **Alt+Shift+F10** | My Words and Phrases |
 | **Alt+F2** | Use My Own OpenAI Key |
 
 ## Also in QUILL

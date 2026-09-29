@@ -2,6 +2,34 @@
 
 ## 1.0.0
 
+### Live Dictation: the reliability pass, and words taught in a window (2026-09-28)
+
+- **Nine items from QUILL Lite's dictation plan, in the shared Live Dictation
+  stack, so QUILL has each on the same keys.** Escape throws away the phrase
+  being heard ("Cancelled"; `controller.cancel_phrase`, a char hook on the
+  document window, `recognizer.discard()` on both engines). A microphone that
+  stops delivering, or delivers digital silence for three seconds, pauses
+  dictation -- a new *paused* state that is still "on" -- and it resumes when
+  the device is back (`local_recognizer.py` watchdog and watcher thread). Every
+  phrase is one undo step through `replace_as_one_undo`. A read-only document
+  refuses before the microphone opens. The engine is restarted once, silently
+  (a raising decode is retried on a reloaded engine; a dead recogniser is
+  reopened), and a second failure is named with the engine to try instead.
+  Ctrl+F11 in a second document moves dictation there ("Dictation moved to
+  ..."). Ctrl+F11 in Find, Replace or the AI pad's question box dictates into
+  that box (`bind_field_dictation`; one-line boxes take no paragraph breaks or
+  closing full stops). **Recent Phrases...** (Shift+F11) lists the session's
+  last twenty phrases with Insert Again and Copy. **My Words and Phrases...**
+  (Alt+Shift+F10, and the Dictation Settings button that used to open the
+  file) adds, edits and removes words, phrases and **corrections** -- heard
+  this, write that, a new `## Corrections` heading the profile parser already
+  folds into replacements -- and saves each change at once
+  (`core/windows_dictation/{resilience,words_file}.py`,
+  `ui/windows_dictation_tools.py`, `ui/dictation_words_dialog.py`). Found on
+  the way: the starter `dictation.md`'s explanatory sentences were parsed as
+  vocabulary words (`looks_like_prose`). GATE-11 paid by extracting the macOS
+  chord helpers from `keymap.py` into `keymap_darwin.py`.
+
 ### Up means more on every slider (2026-09-28)
 
 - **Up and Page Up raise a horizontal slider; Down and Page Down lower it**,

@@ -40,6 +40,7 @@ separate moments and people want different things from each:
 from __future__ import annotations
 
 import re
+from collections import deque
 from collections.abc import Callable
 from enum import StrEnum
 from typing import Protocol
@@ -61,6 +62,7 @@ from quill.core.windows_dictation.preferences import (
     DEFAULT_PHRASE_FEEDBACK,
     DictationPreferences,
 )
+from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
 from quill.core.windows_dictation.vocabulary import Command
 from quill.core.windows_dictation.wake import is_stop_phrase, match_wake
 
@@ -97,6 +99,7 @@ class DictationState(StrEnum):
     LISTENING = "listening"
     RECOGNIZING = "recognizing"
     PROCESSING = "processing"
+    PAUSED = "paused"  # the microphone went away; still on, writing nothing
     STOPPING = "stopping"
 
 
@@ -192,7 +195,7 @@ class FeedbackPort(Protocol):
         ...
 
 
-class DictationController(EditingMixin):
+class DictationController(ResilienceMixin, EditingMixin):
     """One app's dictation session: one microphone, one document at a time."""
 
     def __init__(
@@ -211,6 +214,10 @@ class DictationController(EditingMixin):
         self._state = DictationState.OFF
         self.spelling = False
         self.history = PhraseHistory()
+        #: What was dictated this app session, newest first, for Recent Phrases.
+        self.recent: deque[str] = deque(maxlen=20)
+        self._ignore_until_speech = False  # Escape threw the phrase being heard away
+        self._restarted = False  # the one silent engine restart, spent
         self._last_spoken = ""
         #: Called when the wake phrase is heard, before dictation starts: the
         #: host points the controller at whichever document is in front now.
@@ -225,7 +232,8 @@ class DictationController(EditingMixin):
     @property
     def active(self) -> bool:
         """Whether dictation is writing -- the Dictation On check mark."""
-        return self._state in _LIVE or self._state is DictationState.STARTING
+        on_hold = (DictationState.STARTING, DictationState.PAUSED)
+        return self._state in _LIVE or self._state in on_hold
 
     @property
     def standing_by(self) -> bool:
@@ -279,6 +287,7 @@ class DictationController(EditingMixin):
             return
         self.history.clear()
         self.spelling = False
+        self._restarted = False
         self._set_state(DictationState.LISTENING)
         self._announce_edge(Moment.ON, "Dictation on.", preferences)
 
@@ -323,13 +332,17 @@ class DictationController(EditingMixin):
         self.history.clear()
         self._set_state(DictationState.OFF)
 
-    def _open(self, preferences: DictationPreferences, *, quiet: bool = False) -> bool:
+    def _open(
+        self, preferences: DictationPreferences, *, quiet: bool = False, report: bool = True
+    ) -> bool:
         self._set_state(DictationState.STARTING)
         try:
             recognizer = self._make_recognizer(self, preferences)
             recognizer.start(preferences.microphone)
         except DictationStartError as error:
             self._set_state(DictationState.OFF)
+            if not report:
+                return False
             if not quiet:
                 self._fail(str(error.args[0]) if error.args else str(error), preferences)
             else:
@@ -347,6 +360,7 @@ class DictationController(EditingMixin):
     # -- recogniser events ------------------------------------------------ #
 
     def on_speech_started(self) -> None:
+        self._ignore_until_speech = False
         if self._state is DictationState.LISTENING:
             self._set_state(DictationState.RECOGNIZING)
 
@@ -360,6 +374,8 @@ class DictationController(EditingMixin):
             language="en" if preferences.engine in {"moonshine", "whisper"} else "",
         )
         phrase = self._rewrite(phrase, preferences)
+        if self._ignore_until_speech:
+            return  # the phrase Escape threw away, arriving late
         if self._state is DictationState.STANDBY:
             self._on_standby_phrase(phrase, preferences)
             return
@@ -389,9 +405,15 @@ class DictationController(EditingMixin):
         return ParsedPhrase(pieces=tuple(Piece(w.display) for w in phrase.words if w.display))
 
     def on_failure(self, message: str) -> None:
-        """The recogniser stopped on its own: a microphone unplugged, an engine error."""
-        if self.active or self.standing_by:
-            self._abandon(message)
+        """The recogniser stopped on its own. Once, the engine is restarted silently
+        (resilience.restart_once); the second time it is reported by name."""
+        if not (self.active or self.standing_by):
+            return
+        if self.restart_once():
+            return
+        if "microphone" not in message.lower():
+            message = engine_failure_message(self._preferences().engine)
+        self._abandon(message)
 
     def _rewrite(
         self, phrase: RecognizedPhrase, preferences: DictationPreferences
@@ -484,12 +506,13 @@ class DictationController(EditingMixin):
             before=before,
             after=after,
             dash=preferences.dash,
-            close_paragraphs=preferences.engine_punctuates,
+            close_paragraphs=preferences.engine_punctuates and not self._one_line(),
         )
         if not text:
             return
         start, end = self._document.insert(text)
         self.history.push(DictatedPhrase(text, start, end, auto_period=parsed.auto_period))
+        self.recent.appendleft(" ".join(text.split()))
         spoken = spoken_form(pieces, text)
         self._last_spoken = spoken
         play, speak = resolve(
@@ -505,6 +528,11 @@ class DictationController(EditingMixin):
         if speak and spoken:
             self._feedback.read_back(spoken)
         self._feedback.show(f"Dictated: {spoken}" if spoken else "Dictated.")
+
+    def _one_line(self) -> bool:
+        """A one-line box (Find, a question): no paragraph to close with a full stop."""
+        single = getattr(self._document, "single_line", None)
+        return bool(single()) if callable(single) else False
 
     # -- endings and feedback --------------------------------------------- #
 

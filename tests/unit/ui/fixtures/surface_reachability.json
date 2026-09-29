@@ -66,6 +66,7 @@
   "quill.ui.dialog_contract": "reachable",
   "quill.ui.dictation_history_dialog": "reachable",
   "quill.ui.dictation_settings_dialog": "reachable",
+  "quill.ui.dictation_words_dialog": "reachable",
   "quill.ui.external_change_dialog": "reachable",
   "quill.ui.field_apply_dialog": "reachable",
   "quill.ui.file_format_dialog": "reachable",

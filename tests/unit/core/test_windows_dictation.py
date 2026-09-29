@@ -412,13 +412,159 @@ def test_a_phrase_that_cannot_be_written_ends_the_session() -> None:
     assert feedback.cues[-1] is Moment.ERROR
 
 
-def test_a_recogniser_failure_closes_everything_and_says_why() -> None:
+def test_the_first_recogniser_failure_restarts_the_engine_silently() -> None:
+    """dict.md 2.7: one silent restart, then the phrase pipeline carries on."""
+    controller, recognizer, document, feedback = _controller()
+    controller.start()
+    said_before = list(feedback.said)
+    controller.on_failure("Dictation stopped: the speech engine could not go on.")
+    assert controller.state is DictationState.LISTENING
+    assert recognizer.stopped == 1  # the old one closed...
+    assert recognizer.started_with is not None  # ...and the same maker gave a new start
+    assert feedback.said == said_before  # nothing spoken: it healed
+    _hear(controller, "still here")
+    assert document.text == "Still here"
+
+
+def test_the_second_failure_is_reported_by_engine_name_with_a_next_step() -> None:
+    controller, recognizer, _, feedback = _controller()
+    controller.start()
+    controller.on_failure("engine gone")
+    controller.on_failure("engine gone again")
+    assert controller.state is DictationState.OFF
+    assert recognizer.stopped == 2
+    assert feedback.said[-1] == "Moonshine stopped working. Try Whisper in Dictation Settings."
+    assert feedback.cues[-1] is Moment.ERROR
+
+
+def test_a_restart_that_cannot_reopen_reports_at_once() -> None:
+    controller, recognizer, _, feedback = _controller()
+    controller.start()
+    recognizer.fail = "no microphone"  # the reopen will refuse
+    controller.on_failure("engine gone")
+    assert controller.state is DictationState.OFF
+    assert feedback.said[-1] == "Moonshine stopped working. Try Whisper in Dictation Settings."
+
+
+def test_a_microphone_failure_message_keeps_its_own_words_on_the_second_time() -> None:
     controller, recognizer, _, feedback = _controller()
     controller.start()
     controller.on_failure("The microphone stopped.")
+    controller.on_failure("The microphone stopped.")
+    assert controller.state is DictationState.OFF
+    assert feedback.said[-1] == "The microphone stopped."
+
+
+def test_starting_again_earns_a_fresh_silent_restart() -> None:
+    controller, _, _, feedback = _controller()
+    controller.start()
+    controller.on_failure("x")
+    controller.stop()
+    controller.start()
+    controller.on_failure("x")  # first failure of the new session: silent again
+    assert controller.state is DictationState.LISTENING
+    assert not any("stopped working" in text for text in feedback.said)
+
+
+# -- Escape cancels the phrase being heard (dict.md 2.2) ---------------------- #
+
+
+class DiscardingRecognizer(FakeRecognizer):
+    def __init__(self) -> None:
+        super().__init__()
+        self.discarded = 0
+
+    def discard(self) -> None:
+        self.discarded += 1
+
+
+def test_escape_throws_away_the_phrase_being_heard() -> None:
+    recognizer = DiscardingRecognizer()
+    document = FakeDocument()
+    feedback = FakeFeedback()
+    controller = DictationController(
+        recognizer=lambda _c, _p: recognizer,
+        document=document,
+        feedback=feedback,
+        preferences=lambda: DictationPreferences(),
+    )
+    controller.start()
+    controller.on_speech_started()
+    assert controller.state is DictationState.RECOGNIZING
+    assert controller.cancel_phrase() is True
+    assert controller.state is DictationState.LISTENING
+    assert recognizer.discarded == 1
+    assert feedback.said[-1] == "Cancelled."
+    # The engine finalises what it already had: dropped, not written.
+    _hear(controller, "the words you did not want")
+    assert document.text == ""
+    # The next real utterance is heard as usual.
+    controller.on_speech_started()
+    _hear(controller, "the next phrase")
+    assert document.text == "The next phrase"
+
+
+def test_escape_does_nothing_while_nothing_is_being_heard() -> None:
+    controller, _, _, feedback = _controller()
+    controller.start()
+    assert controller.state is DictationState.LISTENING
+    assert controller.cancel_phrase() is False
+    assert "Cancelled." not in feedback.said
+    controller.stop()
+    assert controller.cancel_phrase() is False
+
+
+# -- The microphone watchdog (dict.md 2.3) ------------------------------------ #
+
+
+def test_a_lost_microphone_pauses_and_a_returning_one_resumes() -> None:
+    controller, _, document, feedback = _controller()
+    controller.start()
+    controller.on_microphone_lost()
+    assert controller.state is DictationState.PAUSED
+    assert controller.active  # the menu mark stays on
+    assert feedback.said[-1] == (
+        "The microphone stopped. Dictation is paused and will resume when it comes back."
+    )
+    _hear(controller, "said into nothing")
+    assert document.text == ""
+    controller.on_microphone_back()
+    assert controller.state is DictationState.LISTENING
+    assert feedback.said[-1] == "Microphone back. Listening."
+    _hear(controller, "and now it writes")
+    assert document.text == "And now it writes"
+
+
+def test_microphone_events_outside_a_session_are_ignored() -> None:
+    controller, _, _, feedback = _controller()
+    controller.on_microphone_lost()
+    controller.on_microphone_back()
+    assert controller.state is DictationState.OFF
+    assert feedback.said == []
+
+
+def test_stopping_while_paused_closes_the_microphone() -> None:
+    controller, recognizer, _, _ = _controller()
+    controller.start()
+    controller.on_microphone_lost()
+    controller.stop()
     assert controller.state is DictationState.OFF
     assert recognizer.stopped == 1
-    assert feedback.said[-1] == "The microphone stopped."
+
+
+# -- Recent phrases (dict.md 3.3) --------------------------------------------- #
+
+
+def test_recent_phrases_are_kept_newest_first_across_stop_and_start() -> None:
+    controller, _, _, _ = _controller()
+    controller.start()
+    _hear(controller, "first thing")
+    _hear(controller, "second thing")
+    controller.stop()
+    controller.start()
+    _hear(controller, "third thing")
+    assert [p.lower() for p in controller.recent] == ["third thing", "second thing", "first thing"]
+    assert all(p == p.strip() for p in controller.recent)  # no joining spaces in the list
 
 
 def test_an_exception_while_writing_never_escapes() -> None:

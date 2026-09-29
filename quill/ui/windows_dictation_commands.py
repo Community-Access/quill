@@ -43,6 +43,8 @@ from quill.core.windows_dictation.controller import (
     DictationState,
     Moment,
 )
+from quill.ui.atomic_edit import replace_as_one_undo
+from quill.ui.windows_dictation_tools import DictationToolsMixin
 
 __all__ = [
     "DICTATION_CUES",
@@ -106,13 +108,17 @@ class _EditorDocument:
 
     def unavailable_reason(self, *, writing: bool) -> str:
         control = self._control
-        if not _alive(control) or control is not self._host._dictation_control():
+        if not _alive(control) or control is not self._host._dictation_targeted():
             return "Dictation stopped: the document it was writing into has closed or changed."
         if not control.IsEditable():
-            return "This document is read-only, so dictation has nowhere to write."
+            return "This document is read-only, so dictation cannot write here."
         if writing and wx.Window.FindFocus() is not control:
             return "Dictation stopped because the document no longer has the focus."
         return ""
+
+    def single_line(self) -> bool:
+        multiline = getattr(self._control, "IsMultiLine", None)
+        return callable(multiline) and not multiline()
 
     def context(self) -> tuple[str, str]:
         control = self._control
@@ -129,23 +135,19 @@ class _EditorDocument:
         self._control.SetSelection(start, end)
 
     def insert(self, text: str) -> tuple[int, int]:
-        control = self._control
-        start, end = control.GetSelection()
-        if end > start:
-            # Removed first and written second, rather than trusting WriteText to
-            # replace a selection: the rich edit control does and the Scintilla
-            # one QUILL can also use does not.
-            control.Remove(start, end)
-            control.SetInsertionPoint(start)
-        control.WriteText(text)
-        self._host._dictation_after_edit()
-        return start, control.GetInsertionPoint()
+        start, end = self._control.GetSelection()
+        return self.replace(int(start), int(end), text)
 
     def replace(self, start: int, end: int, text: str) -> tuple[int, int]:
         control = self._control
-        control.Remove(start, end)
-        control.SetInsertionPoint(start)
-        control.WriteText(text)
+        multiline = getattr(control, "IsMultiLine", None)
+        if callable(multiline) and not multiline():
+            # A one-line box (Find, the AI question): a new paragraph is a space.
+            text = " ".join(text.replace("\n", " ").split()) or text.strip()
+        # One undo step per phrase, the same path the AI inserts and paste take
+        # (dict.md 2.5): select the range and write over it, which the native
+        # control records as one reversible edit -- Remove then WriteText was two.
+        replace_as_one_undo(control, start, end, text)
         self._host._dictation_after_edit()
         return start, control.GetInsertionPoint()
 
@@ -256,7 +258,7 @@ class _HostFeedback:
             self._host._dictation_show_commands()
 
 
-class WindowsDictationMixin:
+class WindowsDictationMixin(DictationToolsMixin):
     """The dictation commands. Mixed into both editors' document windows."""
 
     # ------------------------------------------------------------------ #
@@ -349,6 +351,12 @@ class WindowsDictationMixin:
             self._dictation_voice_typing()
             return
         controller = self._dictation_controller()
+        if controller.active and _host is not self:
+            # One session at a time (dict.md 2.8): the microphone follows the
+            # key to this document instead of stopping, and says so.
+            self._dictation_target(self)
+            self._dictation_say(f"Dictation moved to {self._dictation_document_name()}.")
+            return
         if not controller.active:
             self._dictation_target(self)
         controller.toggle()
@@ -378,7 +386,7 @@ class WindowsDictationMixin:
         self._dictation_status("Dictation settings saved.")
         self._dictation_rearm()
         if answer == EDIT_WORDS:
-            self._dictation_edit_words()
+            self.cmd_dictation_words()
 
     # ------------------------------------------------------------------ #
     # Plumbing
@@ -404,6 +412,7 @@ class WindowsDictationMixin:
             DictationState.LISTENING: "Dictation: listening",
             DictationState.RECOGNIZING: "Dictation: hearing you",
             DictationState.PROCESSING: "Dictation: writing",
+            DictationState.PAUSED: "Dictation: paused, microphone lost",
         }.get(state, "")
 
     def _dictation_install(self) -> None:
@@ -413,6 +422,10 @@ class WindowsDictationMixin:
         if id(top) not in _watched_tops:
             _watched_tops.add(id(top))
             top.Bind(wx.EVT_ACTIVATE, self._on_dictation_top_activate)
+        # Escape throws away the phrase being heard (dict.md 2.2). A char hook,
+        # so it runs before the control sees the key, and only consumes it when
+        # there was something to cancel.
+        self._dictation_parent().Bind(wx.EVT_CHAR_HOOK, self._dictation_cancel_key)
         try:
             wx.CallAfter(self._dictation_rearm)
         except Exception:  # noqa: BLE001 - no event loop (tests)
@@ -485,11 +498,14 @@ class WindowsDictationMixin:
             )
         return _controller
 
-    def _dictation_target(self, host: Any) -> None:
-        """Point the controller at *host*'s document."""
+    def _dictation_target(self, host: Any, control: Any = None) -> None:
+        """Point the controller at *host*'s document, or at one of its fields."""
         global _host
         controller = self._dictation_controller()
-        control = host._dictation_control()
+        control = control if control is not None else host._dictation_control()
+        # A field is remembered as the target only while it is one; the
+        # document is the default and needs no record.
+        host._dictation_targeted_control = None if control is host._dictation_control() else control
         controller.retarget(_EditorDocument(host, control), _HostFeedback(host))
         if host is not _host:
             _host = host
@@ -549,6 +565,8 @@ class WindowsDictationMixin:
             dialog.Destroy()
 
     def _dictation_edit_words(self) -> None:
+        """Open ``dictation.md`` itself, for whoever prefers a file (the words
+        window's Open the File button). The window is the front door now."""
         from quill.core.windows_dictation.profile import ensure_file
 
         try:

@@ -47,6 +47,7 @@ from quill.core.lite import APP_NAME
 from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import RICH
+from quill.ui.windows_dictation_tools import bind_field_dictation
 
 __all__ = ["DocumentFindMixin"]
 
@@ -79,6 +80,8 @@ class DocumentFindMixin:
             self._do_find,
             self.peek_match_count,
         )
+        # Ctrl+F11 in the box dictates into it (dict.md 3.1).
+        bind_field_dictation(self._find_dialog, [getattr(self._find_dialog, "text", None)], self)
         self._find_dialog.Bind(wx.EVT_WINDOW_DESTROY, self._forget_find_dialog)
         self._find_dialog.Show()
 
@@ -307,13 +310,16 @@ class DocumentFindMixin:
         self._touch_status()
 
     def cmd_replace(self) -> None:
-        ReplaceDialog(
+        dialog = ReplaceDialog(
             self,
             self._selected_or_last_needle(),
             self._do_find,
             self._do_replace,
             self._do_replace_all,
-        ).Show()
+        )
+        fields = [getattr(dialog, "text", None), getattr(dialog, "replacement", None)]
+        bind_field_dictation(dialog, fields, self)
+        dialog.Show()
 
     def _do_replace(self, options: dict[str, Any]) -> None:
         """Replace the match the selection is on, then move to the next one."""

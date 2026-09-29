@@ -2,6 +2,49 @@
 
 ## 1.1.0 -- unreleased
 
+### Dictation, made reliable, and taught your words in a window (2026-09-28)
+
+Nine items from the dictation plan, all shared with QUILL's Live Dictation.
+
+- **Escape cancels the phrase being heard.** While the status cell says
+  "hearing you", Escape throws the phrase away, nothing is written, and you
+  hear "Cancelled". Ctrl+F11 still stops and keeps what you said; when nothing
+  is being heard, Escape is untouched. The engine's half-finished audio is
+  discarded too, so a phrase it finalises afterwards is not written late.
+- **The microphone watchdog.** A device that stops delivering sound, or delivers
+  digital silence for three seconds, pauses dictation: "The microphone stopped.
+  Dictation is paused and will resume when it comes back." Dictation stays on,
+  the status cell says "paused, microphone lost", and the device is tried every
+  two seconds; "Microphone back. Listening." resumes it. A quiet room never
+  counts as silence.
+- **One Ctrl+Z per phrase.** A phrase that replaced a selection was two undo
+  steps (remove, then write). Every phrase now goes in through the same
+  single-undo path the AI inserts and paste use, so "scratch that" and Ctrl+Z
+  always agree.
+- **Read-only documents refuse before the microphone opens**, in the plan's
+  words: "This document is read-only, so dictation cannot write here."
+- **The engine heals itself.** The first time the speech engine stops
+  answering, it is restarted silently; a decode that raises is retried once on
+  a freshly loaded engine. The second failure is reported by name with a next
+  step: "Moonshine stopped working. Try Whisper in Dictation Settings."
+- **One dictation session at a time.** Ctrl+F11 in a second document while
+  dictation runs in the first moves it there -- "Dictation moved to Letter.txt"
+  -- instead of two sessions fighting for one microphone.
+- **Dictate into any text box.** Ctrl+F11 in Find, either Replace box, or the
+  AI pad's question dictates there; a paragraph break is a space in a one-line
+  box, and nothing there gets a closing full stop.
+- **Recent Phrases...** (Shift+F11): the last twenty phrases this session,
+  newest first, with Insert Again (one undo step) and Copy. Memory only.
+- **My Words and Phrases...** (Alt+Shift+F10, and the button in Dictation
+  Settings that used to open the file): a window with Add Word, Add Phrase,
+  Add Correction, Edit and Remove. **Corrections** are new: what the engine
+  keeps hearing wrong and what to write instead, applied after recognition on
+  every engine. Each change is saved at once and said back. Open the File is
+  still there for anyone who prefers `dictation.md`, which is unchanged in
+  shape apart from its new Corrections heading.
+- Also fixed on the way: the explanatory sentences in the starter
+  `dictation.md` were being read as vocabulary words.
+
 ### Launcher (2026-09-28)
 
 - **When QUILL Lite cannot start, it says so.** `QuillLite.exe` starts the
