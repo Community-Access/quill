@@ -238,18 +238,18 @@ the engine choice is left alone.</strong> Nothing in the Windows Media
 control takes a device name, so under that engine the output device list
 could never move the sound, and an earlier draft of this release
 answered by switching the engine to Automatic. It does not: the engine
-is yours. Under Windows Media, Audio &gt; Output Device now says which
-engine is playing and offers the thing that does work for it – Windows’
-own Sound settings, where under Volume mixer every app has its own
-output device, and the choice sticks across restarts – and opens that
-page on Yes. The same offer is made in a copy without the mpv engine at
-all, where there is no device list to show. A device that is in the
-setting while the engine is Windows Media (a preference switched after a
-device was chosen, or a copied settings file) is given back with the
-same sentence, because a setting that names a device the engine does not
-use is the confusion this release exists to end. This is the answer
-QUILL Cast already gives (<code>quill/ui/media/output_device.py</code>),
-now shared with the radio.</li>
+is yours. Under Windows Media, choosing a device in Audio &gt; Output
+Device now says so in one sentence and opens Windows’ own Sound
+settings, where under Volume mixer every app has its own output device
+and the choice sticks across restarts – no question first. A copy
+without the mpv engine at all, where there is no device list to show,
+goes straight to the same page. A device that is in the setting while
+the engine is Windows Media (a preference switched after a device was
+chosen, or a copied settings file) is given back with the same sentence,
+because a setting that names a device the engine does not use is the
+confusion this release exists to end. This is the answer QUILL Cast
+already gives (<code>quill/ui/media/output_device.py</code>), now shared
+with the radio.</li>
 <li><strong>Preferences offers only the playback engines this copy
 has.</strong> With mpv present the rows are Automatic (recommended, uses
 mpv), Windows Media (classic) and mpv; without it there is no mpv row

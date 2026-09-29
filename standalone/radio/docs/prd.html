@@ -5916,17 +5916,18 @@ choice is the listener’s.</strong> Nothing in <code>wx.media</code>
 takes a device name, and there is no documented way to point a running
 Windows Media stream at an endpoint from outside it. So under the
 Windows Media (classic) preference, and in a copy with no libmpv at all,
-Ctrl+Shift+D says which engine is playing and offers Windows’ own
-per-app output device (Sound settings, Volume mixer;
-<code>ms-settings:apps-volume</code>, opened on Yes), which is
+choosing a device says in one sentence that the engine is Windows Media
+and opens Windows’ own per-app output device page at once (Sound
+settings, Volume mixer; <code>ms-settings:apps-volume</code>), which is
 persistent and accessible – the answer
-<code>ui/media/output_device.py</code> already gives for QUILL Cast. A
-device found in the setting under that engine is given back with the
-same sentence (<code>revert_for_windows_media</code>). An earlier draft
-of this release switched the engine to Automatic instead; it was
-withdrawn before shipping. “Why is it forcing automatic mode and mpv
-when switching if windows media is selected, that should not be
-necessary at all. What if mpv is not enabled?” (Jeff, 2026-09-29.)</li>
+<code>ui/media/output_device.py</code> already gives for QUILL Cast,
+minus its Yes/No (“drop the yes/no directly, no need to ask”). A device
+found in the setting under that engine is given back with the same
+sentence (<code>revert_for_windows_media</code>). An earlier draft of
+this release switched the engine to Automatic instead; it was withdrawn
+before shipping. “Why is it forcing automatic mode and mpv when
+switching if windows media is selected, that should not be necessary at
+all. What if mpv is not enabled?” (Jeff, 2026-09-29.)</li>
 <li>R-5. Every decision is logged at INFO or WARNING; the mpv client
 returns the status of a property set instead of discarding it, and a
 refused <code>audio-device</code> is logged.</li>

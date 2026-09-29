@@ -2675,11 +2675,12 @@ controller, which is at its GATE-11 ceiling):
   listener's.** Nothing in `wx.media` takes a device name, and there is no
   documented way to point a running Windows Media stream at an endpoint from
   outside it. So under the Windows Media (classic) preference, and in a copy
-  with no libmpv at all, Ctrl+Shift+D says which engine is playing and offers
-  Windows' own per-app output device (Sound settings, Volume mixer;
-  `ms-settings:apps-volume`, opened on Yes), which is persistent and
-  accessible -- the answer `ui/media/output_device.py` already gives for
-  QUILL Cast. A device found in the setting under that engine is given back
+  with no libmpv at all, choosing a device says in one sentence that the
+  engine is Windows Media and opens Windows' own per-app output device page
+  at once (Sound settings, Volume mixer; `ms-settings:apps-volume`), which is
+  persistent and accessible -- the answer `ui/media/output_device.py` already
+  gives for QUILL Cast, minus its Yes/No ("drop the yes/no directly, no need
+  to ask"). A device found in the setting under that engine is given back
   with the same sentence (`revert_for_windows_media`). An earlier draft of
   this release switched the engine to Automatic instead; it was withdrawn
   before shipping. "Why is it forcing automatic mode and mpv when switching if

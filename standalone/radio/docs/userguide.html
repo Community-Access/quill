@@ -2966,12 +2966,13 @@ device</strong> in Preferences. It needs the mpv playback engine.</p>
 without the mpv engine, the list cannot move the sound: that engine
 plays on the device Windows gives Quill Radio, and nothing in it takes a
 device name. Quill Radio does not change your engine choice to get
-around this. Instead, Ctrl+Shift+D says which engine is playing and asks
-whether to open Windows’ Sound settings. Say Yes: the page opens, and
-under <strong>Volume mixer</strong> every app has its own output device.
-Find Quill Radio in that list and pick the device. Windows remembers it
-across restarts. If a device is in the setting while the engine is
-Windows Media, Quill Radio gives it back and says the same thing.</p>
+around this. Instead, choosing a device says so in one sentence and
+opens Windows’ Sound settings at once, where under <strong>Volume
+mixer</strong> every app has its own output device. Find Quill Radio in
+that list and pick the device. Windows remembers it across restarts. A
+copy without the mpv engine opens the same page as soon as you press
+Ctrl+Shift+D. If a device is in the setting while the engine is Windows
+Media, Quill Radio gives it back and says the same thing.</p>
 <p><strong>If the device cannot be opened</strong> – a Bluetooth or USB
 headset that has gone to sleep, a device another program is holding, one
 whose Windows id changed – Quill Radio says so, names it, and puts the
@@ -5762,15 +5763,15 @@ device is back to …” means Windows would not open that device for Quill
 Radio just now: wake the headset, close whatever else is using the card,
 or plug it back in, then choose it again. “The playback engine is
 Windows Media (classic)” means the list cannot move the sound on that
-engine; say Yes to open Windows’ Sound settings and give Quill Radio its
-device under Volume mixer, or set <strong>Playback engine</strong> to
-Automatic in Preferences to choose it here. “Windows Media is playing
-this station, and it cannot use the chosen output device” means the
-station itself would not play on the mpv engine, so it is on Windows
-Media for now; try the station again, or another stream of it. Before
-3.0.5 none of this was said, which is why a card that would not open
-looked like a switch that did nothing. Check the row you chose, too:
-Windows calls both a laptop’s built-in card and a USB headset
+engine; Windows’ Sound settings open in the same breath, so give Quill
+Radio its device there under Volume mixer, or set <strong>Playback
+engine</strong> to Automatic in Preferences to choose it here. “Windows
+Media is playing this station, and it cannot use the chosen output
+device” means the station itself would not play on the mpv engine, so it
+is on Windows Media for now; try the station again, or another stream of
+it. Before 3.0.5 none of this was said, which is why a card that would
+not open looked like a switch that did nothing. Check the row you chose,
+too: Windows calls both a laptop’s built-in card and a USB headset
 “Speakers”, and only the make in brackets tells them apart.</p>
 <h3 id="if-quill-radio-does-not-start">If Quill Radio does not
 start</h3>
@@ -5897,7 +5898,7 @@ engine</strong> is set to Windows Media (classic), or the bundled engine
 is missing. Set it to Automatic, or use <strong>Help &gt; Repair mpv
 Playback Engine…</strong>. For the output device alone, Windows’ Sound
 settings can give Quill Radio a device under Volume mixer on any engine;
-Ctrl+Shift+D offers to open that page.</li>
+Ctrl+Shift+D opens that page.</li>
 <li><strong>Playback sounds different since 1.1.0.</strong> In
 Preferences, <strong>Playback engine</strong> set to Windows Media
 (classic) is exactly the old behaviour. Please tell us what you heard
