@@ -94,6 +94,79 @@ class QuillLiteShell(wx.MDIParentFrame):
         # harmlessly, but this is the binding that actually fires -- without it
         # a document's Format rows were only ever right at build time.
         self.Bind(wx.EVT_MENU_OPEN, self._on_menu_open)
+        # Alt+Tab back into QUILL Lite must land in the document. THIS window is
+        # what Alt+Tab targets -- an MDI child is not a top-level window -- and
+        # Windows restores focus to whatever HWND this window last had, which
+        # after an Alt+Tab can be the shell, the MDI client or the child frame
+        # rather than the editor inside it. Reported 2026-09-29: "if I Alt+Tab
+        # to another application and then back, focus doesn't always return to
+        # the edit box". Intermittent for a reason -- it depends on what Windows
+        # remembered, and Ctrl+F6/Ctrl+Tab go through `LiteApp.focus_frame`,
+        # which sets focus explicitly and thereby fixes what Windows remembers,
+        # so the bug cures itself for the rest of the session once a listener
+        # switches documents once. QUILL learned the same thing at #170.
+        self.Bind(wx.EVT_ACTIVATE, self._on_activate)
+
+    def _on_activate(self, event: wx.ActivateEvent) -> None:
+        """Coming back to QUILL Lite puts focus in the document.
+
+        Deferred with ``CallAfter`` because this handler runs *before* Windows
+        has finished restoring its own focus: setting focus here is simply
+        overwritten a moment later, which is what makes this class of bug look
+        random. Contained, because an exception escaping native activation
+        dispatch takes the process down (QUILL's #956) and returning focus is a
+        convenience that is never worth the app.
+        """
+        try:
+            if event.GetActive():
+                wx.CallAfter(self.return_focus_to_document)
+        except Exception:  # noqa: BLE001 - activation must never crash the app
+            pass
+        event.Skip()
+
+    def return_focus_to_document(self) -> None:
+        """Put focus in the active document when nothing interactive holds it.
+
+        Only then. The shell, the MDI client and the child frame are containers
+        a listener cannot type into, and focus sitting on one of them (or
+        nowhere) is the bug. A control somebody actually moved to -- a Find
+        box, a field they tabbed to, a dialog that opened as the window came
+        forward -- keeps focus: stealing it back would be a worse bug than this
+        one, and an unpredictable one.
+
+        Says nothing. The screen reader announces a focus move itself, and
+        announcing it here would be GATE-13 over-announcing.
+        """
+        try:
+            child = self.GetActiveChild()
+        except RuntimeError:
+            return  # the shell is on its way out
+        if child is None:
+            # wxMSW can report no active child for a moment around activation
+            # and child creation. The app tracks the same thing from the
+            # child's own EVT_ACTIVATE, so ask it rather than give up: giving
+            # up here is exactly the "sometimes it works" the report describes.
+            child = getattr(self.app, "active_frame", None)
+        control = getattr(child, "control", None)
+        if control is None:
+            return
+        containers: set[object] = {None, self, child}
+        client = getattr(self, "GetClientWindow", None)
+        if callable(client):
+            try:
+                containers.add(client())
+            except Exception:  # noqa: BLE001 - no client window is not a failure
+                pass
+        try:
+            focused = wx.Window.FindFocus()
+        except RuntimeError:
+            return
+        if focused not in containers:
+            return
+        try:
+            control.SetFocus()
+        except RuntimeError:
+            pass  # the child is on its way out; the next activation focuses it
 
     def _on_menu_open(self, event: wx.MenuEvent) -> None:
         """Hand the opening menu to the document whose rows it holds."""
