@@ -4,7 +4,7 @@ Version 3.0.5, released 2026-09-29.
 
 ## What's new in 3.0.5
 
-Seven fixes. Three are about the sound card; four came in the same week.
+Eight fixes. Three are about the sound card; five came in the same week.
 
 ### Choosing a sound card switches to it, or says why it cannot
 
@@ -77,6 +77,23 @@ QuillVille app's Preferences.
 On a top-level branch such as Podcasts, Delete now hides the source, as it did
 in earlier versions and as Hide This Source on the context menu does. Reset
 Sources to Default brings it back.
+
+### A minimized window comes back when you ask for it
+
+A listener wrote that the recordings list was out of reach: **Record >
+Recordings...** and Ctrl+Shift+R did nothing, though the folder itself was
+fine. Since 3.0 every big surface -- Recordings, Browse Stations, Search
+Stations, Favorites, the player -- is a window of its own, and asking for one
+that is already open brings it forward instead of opening a second copy. A
+window that had been minimized, from the taskbar, Windows+M or Windows+D,
+counted as already open and stayed minimized: showing it did nothing and
+raising it did not restore it, so the command went silent.
+
+From 3.0.5 the window is restored first, then brought forward with focus on
+the control you left it on. If Recordings... still does nothing for you,
+send `%APPDATA%\Quill\logs\QuillRadio-launch.log` (or `data\logs\launch.log`
+beside a portable copy) to support: since 3.0.4 anything the app could not do
+is written there.
 
 ### A portable copy's favorites import now imports
 

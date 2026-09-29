@@ -137,6 +137,38 @@ def test_register_tracks_and_activates() -> None:
     assert b.calls == ["Show", "Raise", "SetFocus"]  # raised, shown, focused
 
 
+class _IconizedFrame(_FakeFrame):
+    """A wx.Frame the listener minimized (Windows+M, the taskbar, or Windows+D)."""
+
+    def __init__(self, frame_id: int) -> None:
+        super().__init__(frame_id)
+        self.iconized = True
+
+    def IsIconized(self) -> bool:  # noqa: N802
+        return self.iconized
+
+    def Iconize(self, iconize: bool = True) -> None:  # noqa: N802
+        self.calls.append(f"Iconize({iconize})")
+        self.iconized = iconize
+
+
+def test_activate_restores_a_minimized_window() -> None:
+    """Recordings... on a minimized Radio Recordings window must bring it
+    back, not answer "already open" and leave it in the taskbar.
+
+    Show() is a no-op on a shown-but-iconized frame and Raise() does not
+    restore one on Windows, so the opener's "already open means come to the
+    front" guard fired, returned None, and nothing happened -- the menu item
+    and Ctrl+Shift+R both went silent (reported 2026-09-28).
+    """
+    a, b = _FakeFrame(1), _IconizedFrame(2)
+    wm = _wm_with(a, b)
+    assert wm.activate_title("Browse") is b
+    assert b.iconized is False
+    assert "Iconize(False)" in b.calls
+    assert b.calls.index("Iconize(False)") < b.calls.index("Raise")
+
+
 def test_next_previous_cycle() -> None:
     a, b, c = _FakeFrame(1), _FakeFrame(2), _FakeFrame(3)
     wm = _wm_with(a, b, c)

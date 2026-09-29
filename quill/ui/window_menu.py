@@ -98,6 +98,19 @@ class WindowManager:
         if frame is None:
             return None
         self._remember_focus()
+        # A minimized frame first: Show() is a no-op on a shown-but-iconized
+        # window and Raise() does not restore one on Windows, so a Recordings
+        # window sitting in the taskbar answered "already open", the opener
+        # returned None, and Recordings... and Ctrl+Shift+R both went silent
+        # (reported 2026-09-28).
+        is_iconized = getattr(frame, "IsIconized", None)
+        iconize = getattr(frame, "Iconize", None)
+        if callable(is_iconized) and callable(iconize):
+            try:
+                if is_iconized():
+                    iconize(False)
+            except Exception:  # noqa: BLE001 - a dying window must not crash traversal
+                return None
         for method in ("Show", "Raise"):
             call = getattr(frame, method, None)
             if callable(call):
