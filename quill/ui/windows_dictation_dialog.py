@@ -54,9 +54,20 @@ from quill.core.windows_dictation.wake import (
     stop_phrase_problem,
     wake_phrase_problem,
 )
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_message_box
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    bind_close_button,
+    show_message_box,
+)
 
-__all__ = ["EDIT_WORDS", "SHOW_COMMANDS", "DictationCommandsDialog", "WindowsDictationDialog"]
+__all__ = [
+    "EDIT_WORDS",
+    "SHOW_COMMANDS",
+    "DictationCommandsDialog",
+    "RecentPhrasesDialog",
+    "WindowsDictationDialog",
+]
 
 #: What the two extra buttons end the dialog with. Edit My Words saves the
 #: settings first -- a person who changed the engine and then went to add a word
@@ -364,11 +375,12 @@ class WindowsDictationDialog(wx.Dialog):
             "while dictating opens the same list."
         )
         commands.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(SHOW_COMMANDS))
-        words = wx.Button(self, label="Edit My Wo&rds and Phrases...")
+        words = wx.Button(self, label="My Wo&rds and Phrases...")
         words.SetHelpText(
-            "Open your own list of words and phrases for dictation in the editor: "
-            "names and jargon to spell your way, and phrases of your own that "
-            "write whatever you choose. Saves these settings first."
+            "Add, change and remove your own words for dictation in a window: "
+            "names and jargon to spell your way, phrases that write whatever you "
+            "choose, and corrections for what the engine keeps hearing wrong. "
+            "Saves these settings first."
         )
         words.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(EDIT_WORDS))
         more.Add(commands, 0, wx.RIGHT, _PAD)
@@ -512,3 +524,61 @@ class DictationCommandsDialog(wx.Dialog):
         bind_close_button(self, close, modeless=False)
         self.text.SetFocus()
         self.text.SetInsertionPoint(0)
+
+
+class RecentPhrasesDialog(wx.Dialog):
+    """The last phrases dictated this session, newest first (dict.md 3.3).
+
+    Insert Again (Enter) writes the chosen phrase at the cursor as one undo
+    step; Copy puts it on the clipboard. The list is memory only: it is what
+    the user said, and it goes when the app closes.
+    """
+
+    def __init__(self, parent: Any, phrases: list[str]) -> None:
+        super().__init__(
+            parent, title="Recent Phrases", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
+        self.chosen: str | None = None
+        self.verb = "insert"
+        self._phrases = list(phrases)
+        root = wx.BoxSizer(wx.VERTICAL)
+        label = wx.StaticText(self, label="&Phrases, newest first:")
+        self.list = wx.ListBox(self, choices=self._phrases)
+        self.list.SetHelpText(
+            "What you dictated this session, newest first. Enter inserts the one "
+            "you are on at the cursor again; Copy puts it on the clipboard."
+        )
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        insert = wx.Button(self, wx.ID_OK, "&Insert Again")
+        insert.SetHelpText("Write this phrase at the cursor again, as one undo step.")
+        copy = wx.Button(self, label="&Copy")
+        copy.SetHelpText("Put this phrase on the clipboard without writing it.")
+        close = wx.Button(self, wx.ID_CANCEL, "Close")
+        close.SetHelpText("Close the list without inserting anything.")
+        for button in (insert, copy, close):
+            buttons.Add(button, 0, wx.RIGHT, _PAD)
+        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.list, 1, wx.EXPAND | wx.ALL, _PAD)
+        root.Add(buttons, 0, wx.ALL, _PAD)
+        self.SetSizer(root)
+        self.SetSize((560, 400))
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        bind_close_button(self, close, modeless=False)
+        self.Bind(wx.EVT_BUTTON, self._on_insert, id=wx.ID_OK)
+        copy.Bind(wx.EVT_BUTTON, self._on_copy)
+        apply_listbox_activation(self.list, self._on_insert)  # Enter, Space and double-click
+        if self._phrases:
+            self.list.SetSelection(0)
+        self.list.SetFocus()
+
+    def _selected(self) -> str | None:
+        index = self.list.GetSelection()
+        return self._phrases[int(index)] if index != wx.NOT_FOUND else None
+
+    def _on_insert(self, _event: Any) -> None:
+        self.chosen, self.verb = self._selected(), "insert"
+        self.EndModal(wx.ID_OK)
+
+    def _on_copy(self, _event: Any) -> None:
+        self.chosen, self.verb = self._selected(), "copy"
+        self.EndModal(wx.ID_OK)

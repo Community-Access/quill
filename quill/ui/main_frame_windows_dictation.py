@@ -34,6 +34,8 @@ __all__ = ["WindowsDictationCommandsMixin"]
 
 _TOGGLE = "tools.windows_dictation_toggle"
 _SETTINGS = "tools.windows_dictation_settings"
+_RECENT = "tools.windows_dictation_recent"
+_WORDS = "tools.windows_dictation_words"
 
 
 class WindowsDictationCommandsMixin(WindowsDictationMixin):
@@ -90,14 +92,14 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
 
     # -- wiring ----------------------------------------------------------- #
 
-    def _windows_dictation_ids(self) -> tuple[Any, Any]:
+    def _windows_dictation_ids(self) -> tuple[Any, Any, Any, Any]:
         """The two menu ids, made once: a menu rebuild must reuse them, because
         the bindings were made against the first pair."""
         ids = getattr(self, "_windows_dictation_menu_ids", None)
         if ids is None:
             import wx
 
-            ids = (wx.NewIdRef(), wx.NewIdRef())
+            ids = (wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef())
             self._windows_dictation_menu_ids = ids
         return ids
 
@@ -109,18 +111,22 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
 
         from quill.core.i18n import _
 
-        toggle_id, settings_id = self._windows_dictation_ids()
+        toggle_id, settings_id, recent_id, words_id = self._windows_dictation_ids()
         menu = wx.Menu()
         menu.Append(toggle_id, self._menu_label(_("Start or Stop &Dictation"), _TOGGLE))
         menu.Append(settings_id, self._menu_label(_("Dictation &Settings..."), _SETTINGS))
+        menu.Append(recent_id, self._menu_label(_("Recent &Phrases..."), _RECENT))
+        menu.Append(words_id, self._menu_label(_("My &Words and Phrases..."), _WORDS))
         speech_menu.AppendSubMenu(menu, _("L&ive Dictation"))
 
     def _bind_windows_dictation_menu(self) -> None:
         import wx
 
-        toggle_id, settings_id = self._windows_dictation_ids()
+        toggle_id, settings_id, recent_id, words_id = self._windows_dictation_ids()
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_toggle_dictation(), id=toggle_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_settings(), id=settings_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_recent(), id=recent_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_words(), id=words_id)
         # And follow the frame's activation, for the wake phrase.
         self._dictation_install()
 
@@ -137,10 +143,24 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
             self.cmd_dictation_settings,
             self._binding_for(_SETTINGS),
         )
+        self.commands.try_register(
+            _RECENT,
+            "Live Dictation: Recent Phrases",
+            self.cmd_dictation_recent,
+            self._binding_for(_RECENT),
+        )
+        self.commands.try_register(
+            _WORDS,
+            "Live Dictation: My Words and Phrases",
+            self.cmd_dictation_words,
+            self._binding_for(_WORDS),
+        )
 
     def _command_to_menu_id_map(self) -> dict[str, int]:
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
-        toggle_id, settings_id = self._windows_dictation_ids()
+        toggle_id, settings_id, recent_id, words_id = self._windows_dictation_ids()
         mapping[_TOGGLE] = toggle_id
         mapping[_SETTINGS] = settings_id
+        mapping[_RECENT] = recent_id
+        mapping[_WORDS] = words_id
         return mapping

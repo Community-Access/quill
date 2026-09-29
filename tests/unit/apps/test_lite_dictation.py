@@ -8,6 +8,7 @@ cues and speech the window actually makes.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -226,7 +227,34 @@ def test_the_commands_button_opens_the_list(lite_window, settings_dialog, focuse
     assert shown and "scratch that" in shown[0]
 
 
-def test_edit_my_words_saves_and_opens_the_file(lite_window, settings_dialog, focused):
+class _WordsWindow:
+    """Stands in for DictationWordsDialog: records how it was opened."""
+
+    opened: list[dict[str, Any]] = []
+
+    def __init__(self, parent: Any, path: Path, *, say: Any, open_file: Any = None) -> None:
+        _WordsWindow.opened.append({"parent": parent, "path": path, "say": say, "open": open_file})
+
+    def ShowModal(self) -> int:  # noqa: N802 - wx API shape
+        return wx.ID_CANCEL
+
+    def Destroy(self) -> None:  # noqa: N802 - wx API shape
+        pass
+
+
+@pytest.fixture
+def words_window(monkeypatch):
+    from quill.ui import dictation_words_dialog as module
+
+    _WordsWindow.opened = []
+    monkeypatch.setattr(module, "DictationWordsDialog", _WordsWindow)
+    return _WordsWindow.opened
+
+
+def test_the_words_button_saves_and_opens_the_words_window(
+    lite_window, settings_dialog, focused, words_window
+):
+    """dict.md 5: the button opens a window that edits the file, not the file."""
     from quill.ui import windows_dictation_dialog as dialogs
 
     settings_dialog.answer = dialogs.EDIT_WORDS
@@ -234,9 +262,31 @@ def test_edit_my_words_saves_and_opens_the_file(lite_window, settings_dialog, fo
     before = win.app.saved_settings
     win.cmd_dictation_settings()
     assert win.app.saved_settings == before + 1
-    path = win.app.data_dir / "dictation.md"
-    assert path.is_file() and "## Replacements" in path.read_text(encoding="utf-8")
-    assert win.app.opened[-1][0][0] == path
+    assert words_window and words_window[-1]["path"] == win.app.data_dir / "dictation.md"
+    assert win.app.opened == []  # nothing opened as a document
+
+
+def test_my_words_and_phrases_is_its_own_command(lite_window, focused, words_window):
+    win = _window(lite_window, focused)
+    win.cmd_dictation_words()
+    assert words_window[-1]["path"] == win.app.data_dir / "dictation.md"
+    # The window's Open the File button is the old door, still there.
+    words_window[-1]["open"](win.app.data_dir / "dictation.md")
+    assert win.app.opened[-1][0][0] == win.app.data_dir / "dictation.md"
+
+
+def test_a_correction_added_through_the_model_is_heard(lite_window, recognizers, focused):
+    """A correction is a replacement at recognition time: no new runtime path."""
+    from quill.core.windows_dictation.words_file import Entry, WordsFile, save_words
+
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    words = WordsFile()
+    words.add(Entry("correction", "quill light", "QUILL Lite"))
+    save_words(win.app.data_dir / "dictation.md", words)
+    win.cmd_toggle_dictation()
+    made[0].hear("I write in quill light")
+    assert win.control.GetValue() == "I write in QUILL Lite"
 
 
 def test_windows_voice_typing_hands_over_and_opens_no_microphone(
@@ -275,3 +325,224 @@ def test_my_own_phrases_are_used_while_dictating(lite_window, recognizers, focus
     win.cmd_toggle_dictation()
     made[0].hear("I live in my town")
     assert win.control.GetValue() == "I live in Tucson, Arizona"
+
+
+# -- Recent Phrases (dict.md 3.3) --------------------------------------------- #
+
+
+class _RecentWindow:
+    """Stands in for RecentPhrasesDialog: answers with a chosen phrase and a verb."""
+
+    answer: tuple[str | None, str] = (None, "insert")
+    shown: list[list[str]] = []
+
+    def __init__(self, _parent: Any, phrases: list[str]) -> None:
+        _RecentWindow.shown.append(list(phrases))
+        self.chosen, self.verb = _RecentWindow.answer
+
+    def Destroy(self) -> None:  # noqa: N802 - wx API shape
+        pass
+
+
+@pytest.fixture
+def recent_window(monkeypatch):
+    from quill.ui import windows_dictation_dialog as dialogs
+
+    _RecentWindow.shown = []
+    _RecentWindow.answer = (None, "insert")
+    monkeypatch.setattr(dialogs, "RecentPhrasesDialog", _RecentWindow)
+    monkeypatch.setattr(shared, "_dictation_run_modal_answer", wx.ID_OK, raising=False)
+    return _RecentWindow
+
+
+def test_recent_phrases_with_nothing_said_yet(lite_window, focused, recent_window):
+    win = _window(lite_window, focused)
+    win.cmd_dictation_recent()
+    assert recent_window.shown == []
+    assert "Nothing has been dictated yet this session." in win.announcements
+
+
+def test_recent_phrases_lists_newest_first_and_inserts_again(
+    lite_window, recognizers, focused, recent_window, monkeypatch
+):
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    win.cmd_toggle_dictation()
+    made[0].hear("first phrase")
+    made[0].hear("second phrase")
+    win.cmd_toggle_dictation()  # off; the list survives the session ending
+    monkeypatch.setattr(win, "_dictation_run_modal", lambda _d, _l: wx.ID_OK)
+    recent_window.answer = ("First phrase", "insert")
+    win.control.SetSelection(0, 0)
+    win.cmd_dictation_recent()
+    assert [p.lower() for p in recent_window.shown[0]] == ["second phrase", "first phrase"]
+    assert win.control.GetValue().startswith("First phrase")
+    assert "Inserted: First phrase" in win.announcements
+
+
+def test_recent_phrases_copy_puts_it_on_the_clipboard(
+    lite_window, recognizers, focused, recent_window, monkeypatch
+):
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    win.cmd_toggle_dictation()
+    made[0].hear("keep this")
+    monkeypatch.setattr(win, "_dictation_run_modal", lambda _d, _l: wx.ID_OK)
+    copied: list[str] = []
+
+    class _Clipboard:
+        def Open(self) -> bool:  # noqa: N802
+            return True
+
+        def SetData(self, data: Any) -> None:  # noqa: N802
+            copied.append(data.GetText())
+
+        def Close(self) -> None:  # noqa: N802
+            pass
+
+    monkeypatch.setattr(wx, "TheClipboard", _Clipboard())
+    recent_window.answer = ("Keep this", "copy")
+    before = win.control.GetValue()
+    win.cmd_dictation_recent()
+    assert copied == ["Keep this"]
+    assert win.control.GetValue() == before
+    assert "Copied: Keep this" in win.announcements
+
+
+# -- Escape cancels the phrase being heard (dict.md 2.2) ---------------------- #
+
+
+class _Key:
+    def __init__(self, code: int) -> None:
+        self.code = code
+        self.skipped = False
+
+    def GetKeyCode(self) -> int:  # noqa: N802
+        return self.code
+
+    def Skip(self, skip: bool = True) -> None:  # noqa: N802
+        self.skipped = skip
+
+
+def test_escape_throws_away_the_phrase_being_heard(lite_window, recognizers, focused):
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    win.cmd_toggle_dictation()
+    made[0].controller.on_speech_started()
+    assert win.dictation_state_text() == "Dictation: hearing you"
+    key = _Key(wx.WXK_ESCAPE)
+    win._dictation_cancel_key(key)
+    assert key.skipped is False  # consumed
+    assert "Cancelled." in win.announcements
+    assert win.dictation_state_text() == "Dictation: listening"
+    made[0].hear("the words that were being heard")
+    assert win.control.GetValue() == ""
+    made[0].controller.on_speech_started()
+    made[0].hear("the next thing")
+    assert win.control.GetValue() == "The next thing"
+
+
+def test_escape_passes_through_when_nothing_is_being_heard(lite_window, recognizers, focused):
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    key = _Key(wx.WXK_ESCAPE)
+    win._dictation_cancel_key(key)
+    assert key.skipped is True  # dictation off: not ours
+    win.cmd_toggle_dictation()
+    key = _Key(wx.WXK_ESCAPE)
+    win._dictation_cancel_key(key)
+    assert key.skipped is True  # listening, nothing heard: not ours either
+    assert "Cancelled." not in win.announcements
+    other = _Key(wx.WXK_F2)
+    win._dictation_cancel_key(other)
+    assert other.skipped is True
+
+
+# -- One Ctrl+Z per phrase (dict.md 2.5) --------------------------------------- #
+
+
+def test_a_phrase_over_a_selection_is_one_undo_step(lite_window, recognizers, focused):
+    made, _ = recognizers
+    win = _window(lite_window, focused, "keep THIS keep")
+    win.control.SetSelection(5, 9)
+    win.cmd_toggle_dictation()
+    made[0].hear("that")
+    assert win.control.GetValue() == "keep that keep"
+    win.control.Undo()
+    assert win.control.GetValue() == "keep THIS keep"
+
+
+# -- Read-only documents (dict.md 2.6) ---------------------------------------- #
+
+
+def test_a_read_only_document_refuses_before_the_microphone_opens(
+    lite_window, recognizers, focused, monkeypatch
+):
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    monkeypatch.setattr(win.control, "IsEditable", lambda: False)
+    win.cmd_toggle_dictation()
+    assert made == []  # no recogniser was even made
+    assert not win.dictation_active()
+    assert "This document is read-only, so dictation cannot write here." in win.announcements
+
+
+# -- One session at a time (dict.md 2.8) -------------------------------------- #
+
+
+def test_ctrl_f11_in_a_second_document_moves_dictation_there(lite_window, recognizers, focused):
+    made, _ = recognizers
+    first = _window(lite_window, focused)
+    second = lite_window("")
+    second.available_sounds = first.available_sounds
+    first.cmd_toggle_dictation()
+    made[0].hear("in the first")
+    focused["control"] = second.control
+    second.cmd_toggle_dictation()
+    assert first.dictation_active() is False
+    assert second.dictation_active() is True
+    assert any(a.startswith("Dictation moved to ") for a in second.announcements)
+    assert len(made) == 1  # the same microphone, not a second one
+    made[0].hear("and now the second")
+    assert first.control.GetValue() == "In the first"
+    assert second.control.GetValue() == "And now the second"
+
+
+# -- Dictate into any text field (dict.md 3.1) -------------------------------- #
+
+
+def test_ctrl_f11_in_a_one_line_field_dictates_there(lite_window, recognizers, focused):
+    from conftest import FakeControl
+
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+
+    class _OneLine(FakeControl):
+        def IsMultiLine(self) -> bool:  # noqa: N802
+            return False
+
+    field = _OneLine("")
+    focused["control"] = field
+    win.cmd_dictation_into(field)
+    assert win.dictation_active()
+    made[0].hear("hello new paragraph world")
+    assert field.GetValue().lower() == "hello world"  # a paragraph break is a space in a box
+    assert win.control.GetValue() == ""
+    win.cmd_dictation_into(field)  # again: off
+    assert not win.dictation_active()
+
+
+# -- The microphone watchdog, as the window shows it (dict.md 2.3) ------------ #
+
+
+def test_the_status_cell_says_paused_while_the_microphone_is_gone(
+    lite_window, recognizers, focused
+):
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    win.cmd_toggle_dictation()
+    made[0].controller.on_microphone_lost()
+    assert win.dictation_state_text() == "Dictation: paused, microphone lost"
+    assert win.dictation_active()  # the menu mark stays on
+    made[0].controller.on_microphone_back()
+    assert win.dictation_state_text() == "Dictation: listening"

@@ -6113,6 +6113,14 @@ The full list of everything it understands is its own page,
 QUILL itself reads. While dictating, say **"what can I say"** to open the same
 list in a window.
 
+Since 2026-09-28 the same submenu also has **Recent Phrases...** (Shift+F11),
+the last twenty phrases of the session with Insert Again and Copy, and **My
+Words and Phrases...** (Alt+Shift+F10), a window with Add Word, Add Phrase, Add
+Correction, Edit and Remove that edits `dictation.md` for you. **Escape** throws
+away the phrase being heard; Ctrl+F11 in a second document moves dictation
+there; a lost microphone pauses dictation and it resumes when the device is
+back; the engine is restarted once, silently, before a failure is reported.
+
 - **You do not need to say punctuation.** The built-in engines add full stops,
   commas, question marks and capitals by themselves. Say a mark when you want a
   particular one ("comma", "new paragraph") and your word wins. When a pause

@@ -503,6 +503,7 @@ class HostedAiMixin:
         service.refresh_limits()
 
         from quill.ui.hosted_ai_pad import AiPadFrame
+        from quill.ui.windows_dictation_tools import bind_field_dictation
 
         start, end = self._ai_control().GetSelection()
         document = self._ai_control().GetValue()
@@ -520,6 +521,7 @@ class HostedAiMixin:
             ),
             initial_action=action,
         )
+        bind_field_dictation(pad, [getattr(pad, "_question", None)], self)
         # Built now, shown once the agreement (if one was just asked for) has
         # finished handing focus back: the pad reads the selection as it is at
         # the moment the command ran, not at the next idle cycle.

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import queue
 import threading
+import time
 from collections.abc import Callable
 from typing import Any, Protocol
 
@@ -60,6 +61,13 @@ _LEAD_PAD_SECONDS = 0.2
 #: Audio taken from before the moment speech was detected -- see _History.
 _LEAD_IN_SECONDS = 0.4
 _TAIL_PAD_SECONDS = 0.5
+#: The microphone watchdog (dict.md 2.3). Blocks are 512 samples at 16 kHz,
+#: about 31 a second: three seconds of exact zeros, or two seconds of no blocks
+#: at all, is a device that has gone, and the watcher tries it again every two.
+_SILENCE_BLOCKS = int(3.0 * RATE / _BLOCK)
+_POLL_SECONDS = 0.25
+_STALL_SECONDS = 2.0
+_RETRY_SECONDS = 2.0
 
 _cache_lock = threading.Lock()
 _recognizers: dict[str, Any] = {}
@@ -73,6 +81,12 @@ class _Listener(Protocol):
     def on_phrase(self, phrase: RecognizedPhrase) -> None: ...
 
     def on_failure(self, message: str) -> None: ...
+
+    # The microphone watchdog's two events. Optional: a listener without them
+    # (an older host, a test double) simply never hears about the device.
+    def on_microphone_lost(self) -> None: ...
+
+    def on_microphone_back(self) -> None: ...
 
 
 # --------------------------------------------------------------------------- #
@@ -320,7 +334,23 @@ def record_and_hear(microphone: str, engine_id: str, seconds: float = 4.0) -> tu
 
 
 class LocalDictationRecognizer:
-    """One listening session on one microphone, with a built-in engine."""
+    """One listening session on one microphone, with a built-in engine.
+
+    Three things from the 2026-09-28 reliability pass live here, beside the
+    audio they need (dict.md 2.2, 2.3, 2.7):
+
+    * :meth:`discard` throws away the phrase being heard: the queued audio,
+      the voice detector's half-finished segment, and any transcription that
+      was already under way when Escape was pressed (a generation counter,
+      checked after the engine answers).
+    * The **microphone watchdog**: a device that stops delivering blocks, or
+      delivers digital silence (every sample exactly zero) for a few seconds,
+      is reported lost; a watcher then tries the device every two seconds and
+      reports it back the moment a stream opens again. A quiet room is not
+      silence -- real microphones never produce exact zeros.
+    * The engine is **reloaded once** when a transcription raises, and the same
+      phrase is tried again, so one bad decode costs nothing anyone hears.
+    """
 
     def __init__(
         self,
@@ -339,12 +369,18 @@ class LocalDictationRecognizer:
         self._audio: queue.Queue[Any] = queue.Queue()
         self._stream: Any = None
         self._worker: threading.Thread | None = None
+        self._microphone = ""
+        self._generation = 0  # bumped by discard(); an older transcription is dropped
+        self._discard_requested = threading.Event()
+        self._silent_blocks = 0  # consecutive all-zero blocks from the device
+        self._device_lost = threading.Event()
+        self._watcher: threading.Thread | None = None
 
     def start(self, microphone: str) -> None:
         try:
             _import_sherpa()
             import numpy  # noqa: F401
-            import sounddevice as sd
+            import sounddevice as sd  # noqa: F401
         except Exception as error:  # noqa: BLE001 - any import failure is "not here"
             raise DictationStartError(
                 "The built-in speech engines are not included in this copy of QUILL. "
@@ -352,17 +388,10 @@ class LocalDictationRecognizer:
             ) from error
         _load(self._engine)  # before the microphone opens: fail cleanly, not mid-sentence
         vad = _vad(self._pause)
-        device = input_device_for(microphone)
+        self._microphone = microphone
         try:
-            self._stream = sd.InputStream(
-                samplerate=RATE,
-                channels=1,
-                dtype="float32",
-                blocksize=_BLOCK,
-                device=device,
-                callback=self._on_audio,
-            )
             self._running.set()
+            self._stream = self._open_stream()
             self._worker = threading.Thread(
                 target=self._work, args=(vad,), name="dictation-recognizer", daemon=True
             )
@@ -379,6 +408,35 @@ class LocalDictationRecognizer:
     def stop(self) -> None:
         """Close the microphone and let the worker finish. Never raises."""
         self._running.clear()
+        self._close_stream()
+        worker, self._worker = self._worker, None
+        if worker is not None and worker is not threading.current_thread():
+            self._audio.put(None)
+            worker.join(timeout=2.0)
+        watcher, self._watcher = self._watcher, None
+        if watcher is not None and watcher is not threading.current_thread():
+            watcher.join(timeout=0.5)
+
+    def discard(self) -> None:
+        """Throw away the phrase being heard (Escape). Nothing already written moves."""
+        self._generation += 1
+        self._discard_requested.set()
+
+    # -- the device --------------------------------------------------------- #
+
+    def _open_stream(self) -> Any:
+        import sounddevice as sd
+
+        return sd.InputStream(
+            samplerate=RATE,
+            channels=1,
+            dtype="float32",
+            blocksize=_BLOCK,
+            device=input_device_for(self._microphone),
+            callback=self._on_audio,
+        )
+
+    def _close_stream(self) -> None:
         stream, self._stream = self._stream, None
         if stream is not None:
             for step in (stream.stop, stream.close):
@@ -386,29 +444,81 @@ class LocalDictationRecognizer:
                     step()
                 except Exception:  # noqa: BLE001 - it is being released either way
                     pass
-        worker, self._worker = self._worker, None
-        if worker is not None and worker is not threading.current_thread():
-            self._audio.put(None)
-            worker.join(timeout=2.0)
 
-    # -- threads ---------------------------------------------------------- #
+    def _lose_microphone(self) -> None:
+        """The worker's verdict: the device is gone. Say so once, then watch for it."""
+        if self._device_lost.is_set() or not self._running.is_set():
+            return
+        self._device_lost.set()
+        self._silent_blocks = 0
+        self._close_stream()
+        self._post(self._microphone_event, "on_microphone_lost")
+        self._watcher = threading.Thread(
+            target=self._watch_for_device, name="dictation-microphone-watch", daemon=True
+        )
+        self._watcher.start()
+
+    def _watch_for_device(self) -> None:
+        """Try the microphone every couple of seconds until a stream opens."""
+        while self._running.is_set() and self._device_lost.is_set():
+            time.sleep(_RETRY_SECONDS)
+            if not self._running.is_set():
+                return
+            try:
+                stream = self._open_stream()
+                stream.start()
+            except Exception:  # noqa: BLE001 - not back yet
+                continue
+            self._stream = stream
+            self._silent_blocks = 0
+            self._device_lost.clear()
+            self._post(self._microphone_event, "on_microphone_back")
+            return
+
+    def _microphone_event(self, name: str) -> None:
+        """Deliver a watchdog event to a listener that has it; the controller does."""
+        handler = getattr(self._listener, name, None)
+        if callable(handler):
+            handler()
+
+    # -- threads ------------------------------------------------------------ #
 
     def _on_audio(self, data: Any, _frames: int, _time: Any, _status: Any) -> None:
-        """PortAudio's thread: copy and hand over, nothing else."""
-        if self._running.is_set():
-            self._audio.put(data[:, 0].copy())
+        """PortAudio's thread: copy and hand over, nothing else -- plus one
+        comparison, for the silence floor."""
+        if not self._running.is_set():
+            return
+        chunk = data[:, 0].copy()
+        # Exact zeros only. A muted or unplugged input on some drivers keeps
+        # delivering blocks of nothing; a quiet room never produces them.
+        self._silent_blocks = self._silent_blocks + 1 if not chunk.any() else 0
+        self._audio.put(chunk)
 
     def _work(self, vad: Any) -> None:
         was_speaking = False
         history = _History()
+        stalled = 0
         try:
             while self._running.is_set():
+                if self._discard_requested.is_set():
+                    self._discard_requested.clear()
+                    self._drain()
+                    _reset(vad)
+                    history = _History()
+                    was_speaking = False
                 try:
-                    chunk = self._audio.get(timeout=0.25)
+                    chunk = self._audio.get(timeout=_POLL_SECONDS)
                 except queue.Empty:
+                    stalled += 1
+                    if stalled * _POLL_SECONDS >= _STALL_SECONDS:
+                        self._lose_microphone()
                     continue
                 if chunk is None:
                     break
+                stalled = 0
+                if self._silent_blocks >= _SILENCE_BLOCKS:
+                    self._lose_microphone()
+                    continue
                 history.add(chunk)
                 vad.accept_waveform(chunk)
                 speaking = bool(vad.is_speech_detected())
@@ -419,7 +529,10 @@ class LocalDictationRecognizer:
                     segment = vad.front
                     samples = history.with_lead_in(segment)
                     vad.pop()
-                    text = transcribe(self._engine, samples)
+                    generation = self._generation
+                    text = self._transcribe_healing(samples)
+                    if generation != self._generation:
+                        continue  # Escape was pressed while this was being decoded
                     if text and self._running.is_set():
                         self._post(
                             self._listener.on_phrase,
@@ -433,3 +546,32 @@ class LocalDictationRecognizer:
                     "Dictation stopped: the speech engine could not go on. Start "
                     "dictation again, or choose another engine in Dictation Settings.",
                 )
+
+    def _transcribe_healing(self, samples: Any) -> str:
+        """One phrase, with the engine reloaded and the phrase retried once if the
+        first decode raises. A second failure propagates to the worker's handler."""
+        try:
+            return transcribe(self._engine, samples)
+        except Exception:  # noqa: BLE001 - one retry, then it is reported
+            with _cache_lock:
+                _recognizers.pop(self._engine, None)
+            return transcribe(self._engine, samples)
+
+    def _drain(self) -> None:
+        while True:
+            try:
+                self._audio.get_nowait()
+            except queue.Empty:
+                return
+
+
+def _reset(vad: Any) -> None:
+    """Forget the segment the voice detector is in the middle of, if it can."""
+    reset = getattr(vad, "reset", None)
+    if callable(reset):
+        try:
+            reset()
+        except Exception:  # noqa: BLE001 - a detector that cannot reset just carries on
+            pass
+    while not vad.empty():
+        vad.pop()

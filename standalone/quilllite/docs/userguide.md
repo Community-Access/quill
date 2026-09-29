@@ -3081,17 +3081,28 @@ working either way.
 
 ### Your own words and phrases
 
-Press **Edit My Words and Phrases...** in Dictation Settings. QUILL Lite opens a
-small file of your own in a new window; change it, save it with Ctrl+S, and the
-next phrase you dictate uses it. It has two parts:
+Press **Alt+Shift+F10** (**Tools > Dictation > My Words and Phrases...**), or the
+**My Words and Phrases...** button in Dictation Settings. A window lists
+everything dictation has been taught, one line each, and the next phrase you
+dictate uses whatever you change. There are three kinds:
 
-- **Vocabulary** -- names, jargon and acronyms, one per line, spelled the way you
-  want them. When the engine writes something that sounds or looks close to one
-  of these, it is corrected to your spelling: add *Tucson* and "tuxon" becomes
-  *Tucson*.
-- **Replacements** -- your own spoken phrases. `my email address =>
-  someone@example.com` writes the address whenever you say *my email address*.
-  Use `\n` for a new line and `\t` for a tab, so a signature can be two lines.
+- **Words** -- names, jargon and acronyms, spelled the way you want them. When
+  the engine writes something that sounds or looks close, it is corrected to
+  your spelling: add *Tucson* and "tuxon" becomes *Tucson*. **Add Word...**
+  asks for the word.
+- **Phrases** -- words you say that write something longer. **Add Phrase...**
+  asks what you will say (*my email address*) and what it writes (your
+  address). Press Enter in the second box for a new line, so a signature can be
+  two lines.
+- **Corrections** -- what the engine keeps hearing wrong, and what to write
+  instead. **Add Correction...** asks what it writes now (*quill light*) and
+  what it should write (*QUILL Lite*). Applied to every phrase, whatever the
+  capitals, on every engine.
+
+**Edit...** (or Enter on a line) changes the one you are on and **Remove** takes
+it out; each change is saved at once and said back to you. **Open the File...**
+opens the same list as a plain text file, `dictation.md`, for anyone who
+prefers a file; it has always been one, and still is.
 
 Your own phrases appear in the "what can I say" list with everything else.
 
@@ -3170,7 +3181,8 @@ stopping on the right.
 | Stop dictation after silence | Never, or after 1, 5 or 10 minutes | Never |
 
 Two buttons sit below them: **Dictation Commands...** opens the full list, and
-**Edit My Words and Phrases...** saves these settings and opens your own file.
+**My Words and Phrases...** saves these settings and opens the window described
+under "Your own words and phrases".
 
 ### Knowing what dictation is doing
 
@@ -3182,16 +3194,58 @@ Two buttons sit below them: **Dictation Commands...** opens the full list, and
 
 ### Where the words go
 
-Into the document you started dictation in, at the cursor, each phrase one step
-for **Ctrl+Z**. With the wake phrase, into whichever document is in front when
-you say it.
+Into the document you started dictation in, at the cursor. Each phrase is one
+step for **Ctrl+Z**, with its punctuation and capitals, so "scratch that" and
+Ctrl+Z always agree, even when the phrase replaced a selection. With the wake
+phrase, into whichever document is in front when you say it.
 
 Dictation stops by itself when that document closes, when you switch it between
-plain and rich text, or when you move somewhere else -- another window, another
-program, or a dialog -- and speak. What you said then is not written anywhere,
-and QUILL Lite tells you why it stopped. There is one microphone, so pressing
-Ctrl+F11 in a second document while dictation runs in the first stops it; press
-it again to start in the second.
+plain and rich text, or when you move to another program or a dialog and speak.
+What you said then is not written anywhere, and QUILL Lite tells you why it
+stopped. There is one microphone, so pressing **Ctrl+F11 in a second document**
+while dictation runs in the first moves dictation there and says so:
+"Dictation moved to Letter.txt".
+
+Dictation will not start in a document that is read-only, such as the read-only
+copy Compare opens: "This document is read-only, so dictation cannot write
+here." No microphone is opened.
+
+### Cancelling a phrase: Escape
+
+While a phrase is being heard -- the status cell says "hearing you" -- press
+**Escape** and it is thrown away: nothing is written, and you hear "Cancelled".
+Ctrl+F11 still stops dictation and keeps what you said. When nothing is being
+heard, Escape does whatever it always did.
+
+### If the microphone drops
+
+If the microphone is unplugged, a Bluetooth headset drops, or the input goes
+completely silent for a few seconds, dictation says "The microphone stopped.
+Dictation is paused and will resume when it comes back." It stays on, writes
+nothing, and watches for the device; when it is back you hear "Microphone back.
+Listening." and carry on. The status cell says "paused, microphone lost"
+meanwhile.
+
+If the speech engine itself stops answering, it is restarted once, silently,
+and you notice nothing. If it fails again, dictation stops and names it:
+"Moonshine stopped working. Try Whisper in Dictation Settings."
+
+### Dictating into Find, Replace and the AI question box
+
+**Ctrl+F11** in the Find box, either Replace box, or the question box of the AI
+pad dictates into that box: the same engine, the same words, and Escape still
+cancels a phrase. "New line" and "new paragraph" become a space in a one-line
+box, and the commands that move around a document do nothing there. Press
+Ctrl+F11 again to stop.
+
+### Recent phrases
+
+Press **Shift+F11** (**Tools > Dictation > Recent Phrases...**) for the last
+twenty phrases you dictated this session, newest first. Arrow to one and press
+**Enter** (Insert Again) to write it at the cursor, as one undo step, or press
+**Copy** to put it on the clipboard. It is the rescue for a "scratch that" that
+went one too far. The list is kept in memory only and is gone when QUILL Lite
+closes.
 
 ### If something goes wrong
 
@@ -3206,6 +3260,11 @@ Dictation always says what happened and what to do. The usual reasons:
   Dictation Settings; reinstalling QUILL Lite puts the missing one back.
 - **With Windows speech recognition: no speech recogniser is installed.** Add a
   speech language in Windows Settings, Time and language, Speech.
+- **"This document is read-only, so dictation cannot write here."** Dictate
+  into a document you can type in.
+- **"Moonshine stopped working. Try Whisper in Dictation Settings."** The engine
+  failed twice in one session; the first time it was restarted for you without
+  a word. Choose the other engine, and if it keeps happening, write to support.
 
 **If it keeps mishearing you:** try Whisper instead of Moonshine, or the other
 way round; use a headset microphone rather than a laptop's built-in one; turn
@@ -3932,6 +3991,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Ctrl+F11** | Dictation On |
 | **Alt+Shift+F6** | Dictation Settings... |
+| **Shift+F11** | Recent Phrases... |
+| **Alt+Shift+F10** | My Words and Phrases... |
 
 ### Tools ▸ Change Case
 

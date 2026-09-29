@@ -11,7 +11,7 @@ Quill Converter is the product wrapper; the application code lives in the
 `quill/ui/converter_dialogs.py`, the shared conversion engine under
 `quill/core/audio/`, the shared Convert Audio dialog, and this folder.
 
-## 1.0.0 - 2026-09-27
+## 1.0.0 - 2026-09-28
 
 The first public release. The app was first built in July 2026 as an audio
 converter (an entry here once dated it 2026-07-31); that build was never

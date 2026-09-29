@@ -198,6 +198,58 @@
 <main id="main-content">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="110--unreleased">1.1.0 – unreleased</h2>
+<h3
+id="dictation-made-reliable-and-taught-your-words-in-a-window-2026-09-28">Dictation,
+made reliable, and taught your words in a window (2026-09-28)</h3>
+<p>Nine items from the dictation plan, all shared with QUILL’s Live
+Dictation.</p>
+<ul>
+<li><strong>Escape cancels the phrase being heard.</strong> While the
+status cell says “hearing you”, Escape throws the phrase away, nothing
+is written, and you hear “Cancelled”. Ctrl+F11 still stops and keeps
+what you said; when nothing is being heard, Escape is untouched. The
+engine’s half-finished audio is discarded too, so a phrase it finalises
+afterwards is not written late.</li>
+<li><strong>The microphone watchdog.</strong> A device that stops
+delivering sound, or delivers digital silence for three seconds, pauses
+dictation: “The microphone stopped. Dictation is paused and will resume
+when it comes back.” Dictation stays on, the status cell says “paused,
+microphone lost”, and the device is tried every two seconds; “Microphone
+back. Listening.” resumes it. A quiet room never counts as silence.</li>
+<li><strong>One Ctrl+Z per phrase.</strong> A phrase that replaced a
+selection was two undo steps (remove, then write). Every phrase now goes
+in through the same single-undo path the AI inserts and paste use, so
+“scratch that” and Ctrl+Z always agree.</li>
+<li><strong>Read-only documents refuse before the microphone
+opens</strong>, in the plan’s words: “This document is read-only, so
+dictation cannot write here.”</li>
+<li><strong>The engine heals itself.</strong> The first time the speech
+engine stops answering, it is restarted silently; a decode that raises
+is retried once on a freshly loaded engine. The second failure is
+reported by name with a next step: “Moonshine stopped working. Try
+Whisper in Dictation Settings.”</li>
+<li><strong>One dictation session at a time.</strong> Ctrl+F11 in a
+second document while dictation runs in the first moves it there –
+“Dictation moved to Letter.txt” – instead of two sessions fighting for
+one microphone.</li>
+<li><strong>Dictate into any text box.</strong> Ctrl+F11 in Find, either
+Replace box, or the AI pad’s question dictates there; a paragraph break
+is a space in a one-line box, and nothing there gets a closing full
+stop.</li>
+<li><strong>Recent Phrases…</strong> (Shift+F11): the last twenty
+phrases this session, newest first, with Insert Again (one undo step)
+and Copy. Memory only.</li>
+<li><strong>My Words and Phrases…</strong> (Alt+Shift+F10, and the
+button in Dictation Settings that used to open the file): a window with
+Add Word, Add Phrase, Add Correction, Edit and Remove.
+<strong>Corrections</strong> are new: what the engine keeps hearing
+wrong and what to write instead, applied after recognition on every
+engine. Each change is saved at once and said back. Open the File is
+still there for anyone who prefers <code>dictation.md</code>, which is
+unchanged in shape apart from its new Corrections heading.</li>
+<li>Also fixed on the way: the explanatory sentences in the starter
+<code>dictation.md</code> were being read as vocabulary words.</li>
+</ul>
 <h3 id="launcher-2026-09-28">Launcher (2026-09-28)</h3>
 <ul>
 <li><strong>When QUILL Lite cannot start, it says so.</strong>

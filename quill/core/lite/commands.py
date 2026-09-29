@@ -934,6 +934,11 @@ COMMANDS: list[CommandRow] = [
     # is Locked Dictation, another engine (rule 2). Checkable: "am I heard?"
     ("&Tools|&Dictation", "Dictation &On", "Ctrl+F11", "cmd_toggle_dictation", "check"),
     ("&Tools|&Dictation", "Dictation &Settings...", "Alt+Shift+F6", "cmd_dictation_settings", ""),
+    # 2026-09-28 (dict.md 3.3, 5): the last phrases said, and the window that
+    # teaches dictation your words. Alt+Shift+F10 sits beside Settings' Alt+Shift+F6;
+    # Shift+F11 keeps the recent phrases on the key dictation runs on (Ctrl+F11).
+    ("&Tools|&Dictation", "Recent &Phrases...", "Shift+F11", "cmd_dictation_recent", ""),
+    ("&Tools|&Dictation", "My &Words and Phrases...", "Alt+Shift+F10", "cmd_dictation_words", ""),
     ("&Tools|&Change Case", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools|&Change Case", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     # Ctrl+Shift+T since 2026-09-16: Ctrl+Shift+G is Word Count in Word, and

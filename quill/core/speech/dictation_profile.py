@@ -41,6 +41,7 @@ __all__ = [
     "default_profile_path",
     "ensure_profile_file",
     "load_profile",
+    "looks_like_prose",
     "parse_profile",
 ]
 
@@ -138,6 +139,19 @@ def _unescape(value: str) -> str:
     return value
 
 
+def looks_like_prose(line: str) -> bool:
+    """Whether a line under Vocabulary is explanation, not a word.
+
+    The starter files explain each section in a sentence or two under its
+    heading, and until 2026-09-28 those sentences were read as vocabulary
+    ("Names, jargon and acronyms you use, spelled the way you want them." was
+    a "word"). A name or a term is a few words at most and never ends a
+    sentence; a sentence is longer, or ends with a full stop or a colon.
+    """
+    words = line.split()
+    return len(words) > 4 or line.rstrip().endswith((".", ":", "!", "?"))
+
+
 def _section_of(heading: str) -> str | None:
     key = heading.strip().lower()
     if key in _VOCAB_HEADINGS:
@@ -170,6 +184,8 @@ def parse_profile(text: str) -> DictationProfile:
         if not line:
             continue
         if section == "vocabulary":
+            if looks_like_prose(line):
+                continue
             if line.lower() not in seen_vocab:
                 seen_vocab.add(line.lower())
                 vocabulary.append(line)

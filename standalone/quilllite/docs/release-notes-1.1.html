@@ -275,10 +275,40 @@ or long), <strong>remove filler words</strong> like um and uh,
 <strong>Test Microphone</strong>, which listens for four seconds and
 tells you how loud you were and what it heard.</p>
 <h3 id="your-own-words-and-phrases">Your own words and phrases</h3>
-<p><strong>Edit My Words and Phrases</strong> in Dictation Settings
-opens a small file where you list names dictation should spell your way,
-and phrases of your own: say <em>my email address</em> and it writes
-your address.</p>
+<p><strong>My Words and Phrases</strong> (Alt+Shift+F10, or the button
+in Dictation Settings) is a window, not a file to edit. It lists
+everything dictation has been taught, one line each, with Add Word, Add
+Phrase, Add Correction, Edit and Remove. A <strong>word</strong> is a
+name spelled your way; a <strong>phrase</strong> is something you say
+that writes something longer (<em>my email address</em>); a
+<strong>correction</strong> is what the engine keeps hearing wrong and
+what to write instead (<em>quill light</em> becomes <em>QUILL
+Lite</em>). Each change is saved the moment you make it and used by the
+next phrase. The file behind it, <code>dictation.md</code>, is still
+plain text, and Open the File opens it for anyone who prefers that.</p>
+<h3 id="escape-cancels-and-the-microphone-can-drop">Escape cancels, and
+the microphone can drop</h3>
+<p>While a phrase is being heard, <strong>Escape</strong> throws it away
+and says “Cancelled”; nothing is written. If the microphone is unplugged
+or goes silent, dictation pauses, says so, and resumes by itself when it
+is back. If the speech engine stops answering it is restarted once
+without a word, and only a second failure is reported, by name, with the
+engine to try instead.</p>
+<h3 id="one-ctrlz-per-phrase-one-session-at-a-time">One Ctrl+Z per
+phrase, one session at a time</h3>
+<p>Every phrase is one undo step, even one that replaced a selection.
+Ctrl+F11 in a second document while dictation runs in the first moves it
+there and says “Dictation moved to” the document’s name. A read-only
+document refuses before the microphone opens.</p>
+<h3 id="dictate-into-any-box">Dictate into any box</h3>
+<p><strong>Ctrl+F11</strong> in the Find box, either Replace box, or the
+AI pad’s question dictates into that box, with the same engine and your
+own words. “New paragraph” is a space there.</p>
+<h3 id="recent-phrases">Recent phrases</h3>
+<p><strong>Recent Phrases</strong> (Shift+F11) lists the last twenty
+phrases of the session, newest first; Enter writes one again at the
+cursor, Copy puts it on the clipboard. The rescue for a “scratch that”
+that went one too far.</p>
 <h3 id="every-command-in-one-place">Every command, in one place</h3>
 <p>Say <strong>“what can I say”</strong> while dictating, and a window
 lists everything dictation understands, your own phrases included. The
@@ -359,11 +389,24 @@ does it for both.</p>
 <tbody>
 <tr>
 <td><strong>Ctrl+F11</strong></td>
-<td>Dictation On (start or stop)</td>
+<td>Dictation On (start or stop); in Find, Replace or the AI question
+box, dictate there</td>
+</tr>
+<tr>
+<td><strong>Escape</strong></td>
+<td>Throw away the phrase being heard</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+F6</strong></td>
 <td>Dictation Settings</td>
+</tr>
+<tr>
+<td><strong>Shift+F11</strong></td>
+<td>Recent Phrases</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F10</strong></td>
+<td>My Words and Phrases</td>
 </tr>
 <tr>
 <td><strong>Alt+F2</strong></td>

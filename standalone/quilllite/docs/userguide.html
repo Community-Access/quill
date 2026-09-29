@@ -4176,21 +4176,32 @@ wake phrase, so you can start and stop without touching the keyboard at
 all.</li>
 </ul>
 <h3 id="your-own-words-and-phrases">Your own words and phrases</h3>
-<p>Press <strong>Edit My Words and Phrases…</strong> in Dictation
-Settings. QUILL Lite opens a small file of your own in a new window;
-change it, save it with Ctrl+S, and the next phrase you dictate uses it.
-It has two parts:</p>
+<p>Press <strong>Alt+Shift+F10</strong> (<strong>Tools &gt; Dictation
+&gt; My Words and Phrases…</strong>), or the <strong>My Words and
+Phrases…</strong> button in Dictation Settings. A window lists
+everything dictation has been taught, one line each, and the next phrase
+you dictate uses whatever you change. There are three kinds:</p>
 <ul>
-<li><strong>Vocabulary</strong> – names, jargon and acronyms, one per
-line, spelled the way you want them. When the engine writes something
-that sounds or looks close to one of these, it is corrected to your
-spelling: add <em>Tucson</em> and “tuxon” becomes <em>Tucson</em>.</li>
-<li><strong>Replacements</strong> – your own spoken phrases.
-<code>my email address =&gt; someone@example.com</code> writes the
-address whenever you say <em>my email address</em>. Use <code>\n</code>
-for a new line and <code>\t</code> for a tab, so a signature can be two
-lines.</li>
+<li><strong>Words</strong> – names, jargon and acronyms, spelled the way
+you want them. When the engine writes something that sounds or looks
+close, it is corrected to your spelling: add <em>Tucson</em> and “tuxon”
+becomes <em>Tucson</em>. <strong>Add Word…</strong> asks for the
+word.</li>
+<li><strong>Phrases</strong> – words you say that write something
+longer. <strong>Add Phrase…</strong> asks what you will say (<em>my
+email address</em>) and what it writes (your address). Press Enter in
+the second box for a new line, so a signature can be two lines.</li>
+<li><strong>Corrections</strong> – what the engine keeps hearing wrong,
+and what to write instead. <strong>Add Correction…</strong> asks what it
+writes now (<em>quill light</em>) and what it should write (<em>QUILL
+Lite</em>). Applied to every phrase, whatever the capitals, on every
+engine.</li>
 </ul>
+<p><strong>Edit…</strong> (or Enter on a line) changes the one you are
+on and <strong>Remove</strong> takes it out; each change is saved at
+once and said back to you. <strong>Open the File…</strong> opens the
+same list as a plain text file, <code>dictation.md</code>, for anyone
+who prefers a file; it has always been one, and still is.</p>
 <p>Your own phrases appear in the “what can I say” list with everything
 else.</p>
 <h3 id="choosing-the-microphone">Choosing the microphone</h3>
@@ -4347,8 +4358,9 @@ understand English</td>
 </tbody>
 </table>
 <p>Two buttons sit below them: <strong>Dictation Commands…</strong>
-opens the full list, and <strong>Edit My Words and Phrases…</strong>
-saves these settings and opens your own file.</p>
+opens the full list, and <strong>My Words and Phrases…</strong> saves
+these settings and opens the window described under “Your own words and
+phrases”.</p>
 <h3 id="knowing-what-dictation-is-doing">Knowing what dictation is
 doing</h3>
 <ul>
@@ -4362,16 +4374,53 @@ dictation is writing.</li>
 stops.</li>
 </ul>
 <h3 id="where-the-words-go">Where the words go</h3>
-<p>Into the document you started dictation in, at the cursor, each
-phrase one step for <strong>Ctrl+Z</strong>. With the wake phrase, into
-whichever document is in front when you say it.</p>
+<p>Into the document you started dictation in, at the cursor. Each
+phrase is one step for <strong>Ctrl+Z</strong>, with its punctuation and
+capitals, so “scratch that” and Ctrl+Z always agree, even when the
+phrase replaced a selection. With the wake phrase, into whichever
+document is in front when you say it.</p>
 <p>Dictation stops by itself when that document closes, when you switch
-it between plain and rich text, or when you move somewhere else –
-another window, another program, or a dialog – and speak. What you said
-then is not written anywhere, and QUILL Lite tells you why it stopped.
-There is one microphone, so pressing Ctrl+F11 in a second document while
-dictation runs in the first stops it; press it again to start in the
-second.</p>
+it between plain and rich text, or when you move to another program or a
+dialog and speak. What you said then is not written anywhere, and QUILL
+Lite tells you why it stopped. There is one microphone, so pressing
+<strong>Ctrl+F11 in a second document</strong> while dictation runs in
+the first moves dictation there and says so: “Dictation moved to
+Letter.txt”.</p>
+<p>Dictation will not start in a document that is read-only, such as the
+read-only copy Compare opens: “This document is read-only, so dictation
+cannot write here.” No microphone is opened.</p>
+<h3 id="cancelling-a-phrase-escape">Cancelling a phrase: Escape</h3>
+<p>While a phrase is being heard – the status cell says “hearing you” –
+press <strong>Escape</strong> and it is thrown away: nothing is written,
+and you hear “Cancelled”. Ctrl+F11 still stops dictation and keeps what
+you said. When nothing is being heard, Escape does whatever it always
+did.</p>
+<h3 id="if-the-microphone-drops">If the microphone drops</h3>
+<p>If the microphone is unplugged, a Bluetooth headset drops, or the
+input goes completely silent for a few seconds, dictation says “The
+microphone stopped. Dictation is paused and will resume when it comes
+back.” It stays on, writes nothing, and watches for the device; when it
+is back you hear “Microphone back. Listening.” and carry on. The status
+cell says “paused, microphone lost” meanwhile.</p>
+<p>If the speech engine itself stops answering, it is restarted once,
+silently, and you notice nothing. If it fails again, dictation stops and
+names it: “Moonshine stopped working. Try Whisper in Dictation
+Settings.”</p>
+<h3 id="dictating-into-find-replace-and-the-ai-question-box">Dictating
+into Find, Replace and the AI question box</h3>
+<p><strong>Ctrl+F11</strong> in the Find box, either Replace box, or the
+question box of the AI pad dictates into that box: the same engine, the
+same words, and Escape still cancels a phrase. “New line” and “new
+paragraph” become a space in a one-line box, and the commands that move
+around a document do nothing there. Press Ctrl+F11 again to stop.</p>
+<h3 id="recent-phrases">Recent phrases</h3>
+<p>Press <strong>Shift+F11</strong> (<strong>Tools &gt; Dictation &gt;
+Recent Phrases…</strong>) for the last twenty phrases you dictated this
+session, newest first. Arrow to one and press <strong>Enter</strong>
+(Insert Again) to write it at the cursor, as one undo step, or press
+<strong>Copy</strong> to put it on the clipboard. It is the rescue for a
+“scratch that” that went one too far. The list is kept in memory only
+and is gone when QUILL Lite closes.</p>
 <h3 id="if-something-goes-wrong-1">If something goes wrong</h3>
 <p>Dictation always says what happened and what to do. The usual
 reasons:</p>
@@ -4389,6 +4438,12 @@ puts the missing one back.</li>
 <li><strong>With Windows speech recognition: no speech recogniser is
 installed.</strong> Add a speech language in Windows Settings, Time and
 language, Speech.</li>
+<li><strong>“This document is read-only, so dictation cannot write
+here.”</strong> Dictate into a document you can type in.</li>
+<li><strong>“Moonshine stopped working. Try Whisper in Dictation
+Settings.”</strong> The engine failed twice in one session; the first
+time it was restarted for you without a word. Choose the other engine,
+and if it keeps happening, write to support.</li>
 </ul>
 <p><strong>If it keeps mishearing you:</strong> try Whisper instead of
 Moonshine, or the other way round; use a headset microphone rather than
@@ -5853,6 +5908,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+Shift+F6</strong></td>
 <td>Dictation Settings…</td>
+</tr>
+<tr>
+<td><strong>Shift+F11</strong></td>
+<td>Recent Phrases…</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F10</strong></td>
+<td>My Words and Phrases…</td>
 </tr>
 </tbody>
 </table>

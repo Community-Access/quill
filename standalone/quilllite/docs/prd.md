@@ -722,6 +722,67 @@ QUILL's Settings does not have would put the small product ahead of the large
 one (§2.2) over a control that belongs in the shared window anyway. Both editors
 gained it in the same change, which is what rule 10 requires.
 
+### 5.8 Dictation: the reliability pass, and words taught in a window (2026-09-28)
+
+Nine sections of the dictation plan (`dict.md` 2.2, 2.3, 2.5, 2.6, 2.7, 2.8,
+3.1, 3.3 and 5), implemented in the shared Live Dictation stack so QUILL has
+every one of them on the same keys (rule 10). The design constraint from that
+plan holds throughout: nothing here costs the baseline machine anything while
+dictation is idle, and the watchdog's only running cost is one comparison per
+audio block.
+
+**Requirements, and where each lives.**
+
+- **Escape cancels the phrase being heard** (2.2). `controller.cancel_phrase`
+  answers only in the *recognising* state, asks the recogniser to `discard()`
+  what it has (the local engine drains its queue, resets the voice detector and
+  drops any transcription already under way by a generation counter; Windows
+  speech purges and re-arms), ignores a phrase the engine finalises afterwards
+  until the next utterance starts, and says "Cancelled". Routed by a char hook
+  on the document window, so it runs before the control sees the key and
+  consumes it only when there was something to cancel
+  (`core/windows_dictation/resilience.py`, `ui/windows_dictation_tools.py`).
+- **The microphone watchdog** (2.3). The local recogniser's worker declares the
+  device lost after two seconds with no audio blocks or three seconds of exact
+  zeros (a quiet room never produces exact zeros), closes the stream, and tries
+  to reopen it every two seconds. The controller gains a *paused* state that is
+  still "on" -- the menu mark stays, no phrase is written, the status cell says
+  "paused, microphone lost" -- and resumes on the device's return, both said in
+  the plan's words (`local_recognizer.py`, `resilience.py`).
+- **One Ctrl+Z per phrase** (2.5). The document port writes every phrase
+  through `replace_as_one_undo`, the path the AI inserts and paste already
+  used; remove-then-write over a selection had been two steps.
+- **Read-only refusal** (2.6), before the microphone opens, in the plan's
+  wording.
+- **The self-healing engine** (2.7), in two layers: a decode that raises is
+  retried once on a freshly loaded engine inside the worker; a recogniser that
+  fails outright is reopened once, silently, by the controller. The second
+  failure names the engine and the one to try instead
+  (`resilience.engine_failure_message`). A fresh session earns a fresh restart.
+- **One session at a time** (2.8). Ctrl+F11 in another document while dictation
+  runs retargets the one controller and says "Dictation moved to <name>".
+- **Dictate into any text field** (3.1). `bind_field_dictation` gives Find,
+  Replace and the AI pad's question box the toggle chord and the Escape; the
+  document port answers `single_line()`, so a paragraph break becomes a space
+  and no closing full stop is added.
+- **Recent phrases** (3.3). The controller keeps the last twenty phrases of the
+  app session, separate from the scratch-that history that a stop clears;
+  `RecentPhrasesDialog` offers Insert Again (one undo step) and Copy.
+- **Teaching dictation your words** (5, as the plan's option A plus a window
+  instead of a file). `words_file.py` models `dictation.md` as words, phrases
+  and corrections; the writer regenerates the file in the parser's own shape,
+  with a `## Corrections` heading the profile parser already folds into
+  replacements, so a correction is applied after recognition on every engine
+  with no new runtime code. `DictationWordsDialog` is the window; the Dictation
+  Settings button opens it. Found on the way: the starter file's explanatory
+  sentences were being parsed as vocabulary, now excluded (`looks_like_prose`).
+
+**Tests.** The core behaviours against a fake recogniser and a fake document
+(`tests/unit/core/test_windows_dictation.py`), the words model round-trip and
+its edits (`test_dictation_words_file.py`), and each Lite handler through the
+window it runs in (`tests/unit/apps/test_lite_dictation.py`); the command
+coverage gate stays at zero `shape_only`.
+
 ## 6. Release packaging
 
 **Two** artifacts, where the family contract is four -- the reason is the
