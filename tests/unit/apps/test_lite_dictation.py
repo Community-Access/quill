@@ -512,12 +512,10 @@ def test_ctrl_f11_in_a_second_document_moves_dictation_there(lite_window, recogn
 
 
 def test_ctrl_f11_in_a_one_line_field_dictates_there(lite_window, recognizers, focused):
-    from conftest import FakeControl
-
     made, _ = recognizers
     win = _window(lite_window, focused)
 
-    class _OneLine(FakeControl):
+    class _OneLine(type(win.control)):  # the fixture's own control, made one-line
         def IsMultiLine(self) -> bool:  # noqa: N802
             return False
 
