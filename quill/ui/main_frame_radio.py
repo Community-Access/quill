@@ -1053,6 +1053,13 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             from quill.ui.radio import song_history_commands
 
             song_history_commands.record_song(self, title)
+            # And Windows' own now-playing card, from the same choke point
+            # for the same reason: the card and the announcement must never
+            # be describing different songs. It says nothing out loud --
+            # the reader reads the volume flyout itself (GATE-13).
+            from quill.ui.media.now_playing_apps import refresh_radio_card
+
+            refresh_radio_card(self)
         if on_resolved is not None:
             # A waiting command (copy / review window) speaks for itself, so the
             # generic announcement is skipped -- two messages for one keystroke is

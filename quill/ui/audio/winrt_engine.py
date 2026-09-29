@@ -412,6 +412,67 @@ class WinRtMediaEngine:
         except Exception:  # noqa: BLE001
             pass
 
+    # -- what this engine can actually do ---------------------------------
+    #
+    # The classic wx.media control could answer none of these, so callers
+    # guessed. A transport button that is enabled and does nothing is the
+    # silent failure: a listener presses it, hears nothing, and has no way to
+    # tell "not supported here" from "broken". Asked of the source, a button
+    # can be correctly disabled instead, which the screen reader announces.
+
+    def can_seek(self) -> bool:
+        """Whether the thing playing can be moved through at all.
+
+        False for live radio, which has no position to seek to.
+        """
+        try:
+            return bool(self._session.can_seek)
+        except Exception:  # noqa: BLE001 - unknown means do not promise
+            return False
+
+    def can_pause(self) -> bool:
+        """Whether pause is real here, rather than a stop wearing its name."""
+        try:
+            return bool(self._session.can_pause)
+        except Exception:  # noqa: BLE001 - unknown means do not promise
+            return False
+
+    def buffering_progress(self) -> float:
+        """How full the buffer is, 0.0-1.0; 1.0 when it is not buffering.
+
+        The buffering callback is a boolean -- started, ended -- which can say
+        "buffering" for twenty seconds without saying whether anything is
+        happening. This is the number behind it.
+        """
+        try:
+            return max(0.0, min(1.0, float(self._session.buffering_progress)))
+        except Exception:  # noqa: BLE001 - unknown reads as ready
+            return 1.0
+
+    def set_real_time(self, enabled: bool) -> None:
+        """Ask Media Foundation to favour latency over buffering.
+
+        For live radio, where being thirty seconds behind is worse than an
+        occasional rebuffer, and where there is nothing to seek back to anyway.
+        Ignored by builds that do not offer it.
+        """
+        try:
+            self._player.real_time_playback = bool(enabled)
+        except Exception:  # noqa: BLE001 - a hint, never a requirement
+            pass
+
+    def media_transport_controls(self) -> Any:
+        """Windows' own now-playing card for this player, or None.
+
+        Display only -- :mod:`quill.ui.audio.now_playing` claims no buttons,
+        because the apps own the media keys themselves through RegisterHotKey
+        and the command manager is disabled above for exactly that reason.
+        """
+        try:
+            return self._player.system_media_transport_controls
+        except Exception:  # noqa: BLE001 - no card is not a failure
+            return None
+
     # -- events (WinRT threads -> UI thread) ------------------------------------
 
     def _media_opened(self, _sender: Any, _args: Any) -> None:

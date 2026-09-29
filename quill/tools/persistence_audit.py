@@ -131,6 +131,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # default is that a build which changes its mind about it reaches everybody
     # who never chose otherwise, which a migration contract would freeze.
     "core/window_geometry.py::save_geometry": "marker",
+    # The sound card a player app was last sent to: one machine-local string
+    # per app ("" = whatever Windows gives it). Trivially defaulted, and a
+    # lost file means the system default, which is where every app starts
+    # anyway. Deliberately NOT carried in a portable backup either -- a
+    # device id names hardware on one computer and nothing on the next.
+    "ui/media/output_device_apps.py::save_device_pref": "marker",
     "core/radio/download_prefs.py::save": "content",
     "core/library/catalogs.py::save": "content",
     "core/publish/destinations.py::save_destinations": "content",

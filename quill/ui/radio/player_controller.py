@@ -34,14 +34,13 @@ from __future__ import annotations
 import logging
 import threading
 from collections.abc import Callable
-from dataclasses import replace
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 import wx
 
 from quill.core.audio import exact_optilab
 from quill.core.audio.exact_optilab import ExactOptilab
-from quill.core.audio_enhance import EnhanceError, EnhanceRelay
+from quill.core.audio_enhance import EnhanceRelay
 from quill.core.optilab import optilab_active
 from quill.core.radio.models import RadioStation
 from quill.core.sound_events import SoundEvent
@@ -56,6 +55,7 @@ from quill.ui.radio.playback_state import (
     RadioPlaybackState,
     RadioPlayerState,
 )
+from quill.ui.radio.playback_url import PlaybackUrlMixin
 from quill.ui.radio.player_tracks import PlayerTracksMixin
 from quill.ui.radio.youtube_playback import begin_youtube_play, consent_granted, is_youtube_station
 
@@ -117,7 +117,7 @@ _STATE_SOUNDS: dict[RadioPlayerState, str] = {
 }
 
 
-class RadioPlayerController(PlayerTracksMixin):
+class RadioPlayerController(PlaybackUrlMixin, PlayerTracksMixin):
     """Play/pause/stop/mute one internet-radio stream at a time.
 
     Audio renditions and captions come from :class:`PlayerTracksMixin`, split
@@ -423,6 +423,12 @@ class RadioPlayerController(PlayerTracksMixin):
         bounded = bool(stream is not None and getattr(stream, "duration_ms", 0) > 0)
         bounded = bounded or bool(station is not None and getattr(station, "is_recording", False))
         declare(bounded)
+        # Live radio would rather be current than smooth: thirty seconds
+        # behind is worse than an occasional rebuffer, and there is nothing
+        # to seek back to anyway. A recording wants the opposite.
+        real_time = getattr(self._engine, "set_real_time", None)
+        if callable(real_time):
+            real_time(not bounded)
         if bounded and self._playback_rate != 1.0:
             # Re-apply the chosen speed: load() resets mpv's speed so a video
             # left at 2x cannot carry that into the next live station.
@@ -477,8 +483,17 @@ class RadioPlayerController(PlayerTracksMixin):
         False, which is what keeps the transport honest rather than offering a
         slider that cannot move.
         """
+        from quill.ui.audio.audio_engine import engine_can_seek
+
         probe = getattr(self._engine, "is_bounded", None)
-        return bool(probe()) if probe is not None else False
+        if probe is None or not bool(probe()):
+            return False
+        # And the engine's own answer, where there is one. A source the
+        # engine says cannot be moved through must not be offered a slider:
+        # a control that is enabled and does nothing is the silent failure,
+        # while a disabled one announces itself as disabled. Unknown counts
+        # as yes, so this only ever takes a control away on a real refusal.
+        return engine_can_seek(self._engine)
 
     def duration_ms(self) -> int:
         """Length of what is playing, or 0 when it has none (live)."""
@@ -628,6 +643,12 @@ class RadioPlayerController(PlayerTracksMixin):
 
         engine_selection.select(self)
 
+    def current_engine(self) -> object:
+        """The engine actually playing: Radio swaps them at runtime, so what
+        this playback can do must be asked of the one in use, never of the
+        preference."""
+        return self._engine
+
     def set_output_device(self, device: str) -> None:
         """Change the output device ("" = system default): live on mpv, by a
         reconnect on Windows Media (output_device_guard has the rules)."""
@@ -685,77 +706,6 @@ class RadioPlayerController(PlayerTracksMixin):
             input_db=self._optilab_input_db,
             auto_adapt=self._optilab_auto_adapt,
         )
-
-    def _resolve_playback_url(self, station: RadioStation) -> str:
-        """The URL the engine should load: the station's own URL, or a local
-        relay URL when Sound Enhancements is active on the wx engine.
-
-        On the mpv engine the graph applies natively (``af``) and the
-        station URL is loaded directly -- no relay, no second ffmpeg
-        process, no re-encode.
-
-        The one exception is exact OptiLab playback, which **must** relay on
-        every engine: the real engine is a separate process, so the audio has to
-        physically pass through it, and there is no filter string that can
-        express "someone else's DSP" to mpv. That is the whole cost of the
-        option, and it is why it is opt-in and off by default."""
-        self._enhance_relay.stop()
-        graph = self._current_filter_graph()
-        station = (
-            station
-            if not self._playback_url_override
-            else replace(station, stream_url=self._playback_url_override)
-        )
-        exact = self._exact_live_spec()
-        if exact is not None:
-            if self._is_mpv_active():
-                # The engine below is the polish; mpv must not also apply the
-                # adaptation of it, or the stream is processed twice.
-                try:
-                    self._mpv_engine.set_filter_graph("")  # type: ignore[union-attr]
-                except Exception:  # noqa: BLE001 - clearing must never block playback
-                    _log.exception("mpv filter graph clear failed")
-            try:
-                return self._enhance_relay.start(
-                    station.stream_url,
-                    bass_db=self._eq_bass_db,
-                    mid_db=self._eq_mid_db,
-                    treble_db=self._eq_treble_db,
-                    compressor_enabled=self._compressor_enabled,
-                    channel_mode=self._channel_mode,
-                    night_mode_enabled=self._night_mode_enabled,
-                    exact_optilab=exact,
-                )
-            except EnhanceError as error:
-                if self._on_enhance_error is not None:
-                    self._on_enhance_error(str(error))
-                return station.stream_url
-        if self._is_mpv_active():
-            try:
-                self._mpv_engine.set_filter_graph(graph)  # type: ignore[union-attr]
-            except Exception:  # noqa: BLE001 - filtering must never block playback
-                _log.exception("mpv filter graph apply failed")
-            return station.stream_url
-        if not graph:
-            return station.stream_url
-        try:
-            return self._enhance_relay.start(
-                station.stream_url,
-                bass_db=self._eq_bass_db,
-                mid_db=self._eq_mid_db,
-                treble_db=self._eq_treble_db,
-                compressor_enabled=self._compressor_enabled,
-                channel_mode=self._channel_mode,
-                night_mode_enabled=self._night_mode_enabled,
-                optilab_enabled=self._optilab_enabled,
-                optilab_mode=self._optilab_mode,
-                optilab_input_db=self._optilab_input_db,
-                optilab_auto_adapt=self._optilab_auto_adapt,
-            )
-        except EnhanceError as error:
-            if self._on_enhance_error is not None:
-                self._on_enhance_error(str(error))
-            return station.stream_url
 
     def _is_mpv_active(self) -> bool:
         return self._mpv_engine is not None and self._engine is self._mpv_engine

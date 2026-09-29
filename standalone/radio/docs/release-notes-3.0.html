@@ -199,7 +199,7 @@
 <h1 id="quill-radio-30-release-notes">Quill Radio 3.0 Release Notes</h1>
 <p>Version 3.0.5, released 2026-09-29.</p>
 <h2 id="whats-new-in-305">What’s new in 3.0.5</h2>
-<p>Eleven fixes. Three are about the sound card, two are about speed,
+<p>Twelve fixes. Three are about the sound card, two are about speed,
 and the rest came in the same week.</p>
 <h3
 id="choosing-a-sound-card-switches-to-it-or-says-why-it-cannot">Choosing
@@ -320,6 +320,24 @@ install still succeeds.</p>
 <p>If a login still opens the wrong thing, turn the setting off and on
 again with <strong>Station &gt; Start Quill Radio with Windows</strong>,
 which rewrites the entry from scratch.</p>
+<h3 id="windows-knows-what-you-are-listening-to">Windows knows what you
+are listening to</h3>
+<p>Press a volume key and Windows shows a small “now playing” panel; the
+same information is on the lock screen. Every media app fills that in.
+Quill Radio’s was blank.</p>
+<p>It now carries the station you are listening to, with the song
+underneath when the stream sends one. Your screen reader reads that
+panel when it appears, so you can ask the computer what is playing
+rather than having to come back to Quill Radio to find out.</p>
+<p>Two things it deliberately does not do. It does not take over your
+keyboard’s media keys – Quill Radio already answers those itself,
+including from the tray and when another window has focus, and that is
+unchanged. And it does not say anything out loud: the panel is there to
+be read when you open it, not announced at you every time a song
+changes.</p>
+<p>Live stations also now ask Windows to keep them current rather than
+smooth: being half a minute behind is worse than an occasional rebuffer
+on live radio, and there is nothing to rewind to anyway.</p>
 <h3 id="preferences-opens-at-once">Preferences opens at once</h3>
 <p>Opening <strong>Preferences</strong> took two seconds or more, every
 time.</p>

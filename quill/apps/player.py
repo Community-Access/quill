@@ -34,6 +34,7 @@ from quill.ui.dialog_contract import apply_listbox_activation
 from quill.ui.media.go_to_position_dialog import GoToPositionDialog
 from quill.ui.media.listen_mixin import MediaListenMixin
 from quill.ui.media.note_cue_actions import NoteCuesMixin
+from quill.ui.media.now_playing_apps import refresh_player_card
 from quill.ui.media.winamp_mixin import MediaWinampKeysMixin
 
 _TITLE = "Quill Media Player"
@@ -429,6 +430,7 @@ class QuillMediaPlayerFrame(
         self._chapter_nodes = nodes
         self._set_playlist_from_nodes()
         self._now_playing.SetValue(ncx.stem)
+        refresh_player_card(self, title=ncx.stem)
         self._refresh_chapters()
         self._refresh_bookmarks()
         self._set_status(f"DAISY book: {ncx.stem}")
@@ -492,6 +494,8 @@ class QuillMediaPlayerFrame(
         self._chapter_nodes = [(c.title, ("seek", int(c.start_ms)), 1) for c in chapters]
         self._set_playlist_from_nodes()
         self._now_playing.SetValue(path.stem)
+        # Windows' own now-playing card; silent by design (GATE-13).
+        refresh_player_card(self, title=path.stem)
         self._refresh_chapters()
         self._refresh_bookmarks()
         self._set_status(f"Loaded {path.name}")
@@ -898,15 +902,6 @@ class QuillMediaPlayerFrame(
             self._bookmarks_list.Append(f"{note} ({when})" if note else when)
 
     # -- misc ------------------------------------------------------------------
-
-    def _show_about(self) -> None:
-        self._show_message_box(
-            f"{_TITLE} {_VERSION}\n\n"
-            "The accessible QUILL media player: audiobooks and audio with chapter "
-            "navigation, resume, bookmarks, and precise Go to Position -- offline, "
-            "keyboard- and screen-reader-first.\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
-        )
 
 
 def main() -> int:

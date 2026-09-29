@@ -204,3 +204,19 @@ class MediaPlayerMenuMixin:
             updates_id,
             about_id,
         )
+
+    # -- About ------------------------------------------------------------
+    #
+    # Moved here with the bar it hangs off, under GATE-11: the Help menu's
+    # own row, and nothing else in the app reads it.
+
+    def _show_about(self) -> None:
+        from quill.apps.player import _TITLE, _VERSION
+
+        self._show_message_box(
+            f"{_TITLE} {_VERSION}\n\n"
+            "The accessible QUILL media player: audiobooks and audio with chapter "
+            "navigation, resume, bookmarks, and precise Go to Position -- offline, "
+            "keyboard- and screen-reader-first.\n\nSupport: support@community-access.org",
+            f"About {_TITLE}",
+        )

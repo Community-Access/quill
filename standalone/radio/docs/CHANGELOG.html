@@ -206,7 +206,7 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="305---2026-09-29">[3.0.5] - 2026-09-29</h2>
-<p>Eleven fixes. The sound card switches, or says why it cannot and puts
+<p>Twelve fixes. The sound card switches, or says why it cannot and puts
 the setting back; Windows Media gets a route to a device of its own;
 Preferences names only the engines this copy has; a minimized window
 comes back when its menu item or key asks for it; a stale “start with
@@ -285,6 +285,20 @@ although in earlier versions the key itself hid the source. It does
 again, through the same function the menu uses, so the two cannot
 disagree; Reset Sources to Default is the way back and the announcement
 names it (<code>quill/ui/radio/browse_delete.py</code>).</li>
+<li><strong>Windows can say what Quill Radio is playing.</strong> The
+now-playing card on the volume flyout and the lock screen – one per app,
+and Quill Radio’s was blank – now carries the station with the song
+underneath. The screen reader reads that flyout when it opens, so the
+machine can answer “what is playing?” rather than only the app knowing.
+It claims none of the media keys: those are already the app’s through
+<code>RegisterHotKey</code>, which works from the tray and without
+focus, so every SMTC button flag is switched off deliberately and a test
+asserts they stay off. It also says nothing out loud – the reader reads
+the card, and saying it again is the over-announcing GATE-13 exists to
+stop. Live radio additionally asks Media Foundation for latency over
+smoothness (<code>real_time_playback</code>), and a transport control
+the engine says cannot work is now disabled rather than
+enabled-and-silent (<code>quill/ui/audio/now_playing.py</code>).</li>
 <li><strong>Preferences opens at once instead of after two
 seconds.</strong> Reported: “why is it taking two seconds or longer to
 bring up preferences?” The output-device list behind that window asked

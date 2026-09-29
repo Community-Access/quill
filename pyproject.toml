@@ -222,6 +222,11 @@ windows-media = [
     "winrt-Windows.Media.Playback>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Media.Core>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Media.Devices>=3.2.1; sys_platform == 'win32'",
+    # Windows.Media itself, for SystemMediaTransportControls: the "now
+    # playing" card on the volume flyout and the lock screen, and the
+    # hardware media keys (and a Bluetooth headset's button) that come with
+    # it. quill/ui/audio/now_playing.py.
+    "winrt-Windows.Media>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Devices.Enumeration>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Foundation>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Foundation.Collections>=3.2.1; sys_platform == 'win32'",

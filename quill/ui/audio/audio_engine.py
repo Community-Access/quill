@@ -174,6 +174,58 @@ class WxMediaEngine:
         self._on_finished()
 
 
+# -- what an engine can do, asked uniformly ---------------------------------
+#
+# Only the modern Windows Media engine can answer these; libmpv and the classic
+# control cannot be asked. So the default when an engine does not know is
+# **yes**, and it matters which way round that goes: disabling a control that
+# would have worked takes a capability away from a listener and tells them it
+# does not exist, which is worse than leaving a rarely-unavailable one enabled.
+# A hard "no" is only ever acted on when the engine actually said no.
+
+
+def engine_can_seek(engine: object) -> bool:
+    """Whether *engine* says the thing playing can be moved through.
+
+    False only when the engine says so -- live radio, typically, which has no
+    position to seek to.
+    """
+    ask = getattr(engine, "can_seek", None)
+    if not callable(ask):
+        return True
+    try:
+        return bool(ask())
+    except Exception:  # noqa: BLE001 - unknown never removes a control
+        return True
+
+
+def engine_can_pause(engine: object) -> bool:
+    """Whether pause is real here rather than a stop wearing its name."""
+    ask = getattr(engine, "can_pause", None)
+    if not callable(ask):
+        return True
+    try:
+        return bool(ask())
+    except Exception:  # noqa: BLE001 - unknown never removes a control
+        return True
+
+
+def engine_buffering_progress(engine: object) -> float:
+    """How full the buffer is, 0.0-1.0. 1.0 when the engine cannot say.
+
+    The buffering callbacks are a boolean pair -- started, ended -- which can
+    say "buffering" for twenty seconds without saying whether anything is
+    happening. This is the number behind it, for the engines that have one.
+    """
+    ask = getattr(engine, "buffering_progress", None)
+    if not callable(ask):
+        return 1.0
+    try:
+        return max(0.0, min(1.0, float(ask())))
+    except Exception:  # noqa: BLE001 - unknown reads as ready
+        return 1.0
+
+
 def windows_engine_routes_devices() -> bool:
     """Whether the Windows Media engine on this machine can choose a sound card
     (the modern engine can; the classic wx.media one cannot)."""

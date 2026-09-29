@@ -4,7 +4,7 @@ Version 3.0.5, released 2026-09-29.
 
 ## What's new in 3.0.5
 
-Eleven fixes. Three are about the sound card, two are about speed, and the rest came in the same week.
+Twelve fixes. Three are about the sound card, two are about speed, and the rest came in the same week.
 
 ### Choosing a sound card switches to it, or says why it cannot
 
@@ -128,6 +128,27 @@ the registry, the install still succeeds.
 If a login still opens the wrong thing, turn the setting off and on again with
 **Station > Start Quill Radio with Windows**, which rewrites the entry from
 scratch.
+
+### Windows knows what you are listening to
+
+Press a volume key and Windows shows a small "now playing" panel; the same
+information is on the lock screen. Every media app fills that in. Quill Radio's
+was blank.
+
+It now carries the station you are listening to, with the song underneath when
+the stream sends one. Your screen reader reads that panel when it appears, so
+you can ask the computer what is playing rather than having to come back to
+Quill Radio to find out.
+
+Two things it deliberately does not do. It does not take over your keyboard's
+media keys -- Quill Radio already answers those itself, including from the tray
+and when another window has focus, and that is unchanged. And it does not say
+anything out loud: the panel is there to be read when you open it, not
+announced at you every time a song changes.
+
+Live stations also now ask Windows to keep them current rather than smooth:
+being half a minute behind is worse than an occasional rebuffer on live radio,
+and there is nothing to rewind to anyway.
 
 ### Preferences opens at once
 

@@ -37,6 +37,13 @@ def test_find_libmpv_absent(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.delenv("QUILL_LIBMPV", raising=False)
     monkeypatch.setattr(me, "mpv_pack_dir", lambda: tmp_path / "empty")
     monkeypatch.setattr(me.sys, "executable", str(tmp_path / "nowhere" / "quill.exe"))
+    # And the repo's own build staging, which a SOURCE run is allowed to find
+    # since 2026-09-29. Pointing the module's __file__ at an empty tree is
+    # how "no libmpv anywhere" is still expressible from inside a checkout
+    # that has one.
+    monkeypatch.setattr(
+        me, "__file__", str(tmp_path / "tree" / "quill" / "ui" / "audio" / "mpv_engine.py")
+    )
     assert find_libmpv() is None
 
 
@@ -47,6 +54,13 @@ def test_preferred_backend_tracks_dll_presence(monkeypatch, tmp_path: Path) -> N
     monkeypatch.delenv("QUILL_LIBMPV", raising=False)
     monkeypatch.setattr(me, "mpv_pack_dir", lambda: tmp_path / "empty")
     monkeypatch.setattr(me.sys, "executable", str(tmp_path / "nowhere" / "quill.exe"))
+    # And the repo's own build staging, which a SOURCE run is allowed to find
+    # since 2026-09-29. Pointing the module's __file__ at an empty tree is
+    # how "no libmpv anywhere" is still expressible from inside a checkout
+    # that has one.
+    monkeypatch.setattr(
+        me, "__file__", str(tmp_path / "tree" / "quill" / "ui" / "audio" / "mpv_engine.py")
+    )
     assert preferred_backend() == "wx"
     dll = tmp_path / "libmpv-2.dll"
     dll.write_bytes(b"MZ")

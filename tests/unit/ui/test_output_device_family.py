@@ -279,3 +279,71 @@ def test_the_caller_cannot_mutate_the_cache(monkeypatch) -> None:
     first = routing.list_output_devices()
     first.clear()
     assert routing.list_output_devices() == [("wasapi/{aaa}", "Speakers")]
+
+
+# -- what an engine can do, and why unknown means yes ------------------------
+
+
+def test_an_engine_that_cannot_answer_keeps_its_controls() -> None:
+    """The direction that matters.
+
+    libmpv and the classic control cannot be asked whether a source can be
+    seeked or paused. Defaulting to "no" would disable working controls and
+    tell a listener the capability does not exist -- worse than leaving a
+    rarely-unavailable one enabled. Only a real refusal ever takes one away.
+    """
+    from quill.ui.audio.audio_engine import engine_can_pause, engine_can_seek
+
+    class _CannotSay:
+        pass
+
+    assert engine_can_seek(_CannotSay()) is True
+    assert engine_can_pause(_CannotSay()) is True
+
+
+def test_an_engine_that_says_no_is_believed() -> None:
+    from quill.ui.audio.audio_engine import engine_can_pause, engine_can_seek
+
+    class _LiveStream:
+        def can_seek(self) -> bool:
+            return False
+
+        def can_pause(self) -> bool:
+            return False
+
+    assert engine_can_seek(_LiveStream()) is False
+    assert engine_can_pause(_LiveStream()) is False
+
+
+def test_an_engine_that_raises_keeps_its_controls() -> None:
+    from quill.ui.audio.audio_engine import engine_can_seek
+
+    class _Dying:
+        def can_seek(self) -> bool:
+            raise RuntimeError("engine is gone")
+
+    assert engine_can_seek(_Dying()) is True
+
+
+def test_buffering_progress_reads_as_ready_when_unknown() -> None:
+    from quill.ui.audio.audio_engine import engine_buffering_progress
+
+    class _CannotSay:
+        pass
+
+    class _HalfFull:
+        def buffering_progress(self) -> float:
+            return 0.5
+
+    assert engine_buffering_progress(_CannotSay()) == 1.0
+    assert engine_buffering_progress(_HalfFull()) == 0.5
+
+
+def test_buffering_progress_is_clamped() -> None:
+    from quill.ui.audio.audio_engine import engine_buffering_progress
+
+    class _Nonsense:
+        def buffering_progress(self) -> float:
+            return 7.5
+
+    assert engine_buffering_progress(_Nonsense()) == 1.0

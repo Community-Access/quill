@@ -30,7 +30,11 @@ from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
-from quill.ui.podcasts.player_controller import PodcastPlaybackState, PodcastPlayerController
+from quill.ui.podcasts.player_controller import (
+    PodcastPlaybackState,
+    PodcastPlayerController,
+    PodcastPlayerState,
+)
 
 if TYPE_CHECKING:  # Dialog classes are imported lazily at open time (they pull
     # feedparser via feed_reader); keep them out of the cold-start path.
@@ -144,6 +148,10 @@ class PodcastsMixin(
         self._refresh_statusbar()
         self._refresh_podcast_tray_tooltip()
         self._maybe_reload_podcast_chapters(state)
+        # Windows' now-playing card; silent by design (GATE-13).
+        from quill.ui.media.now_playing_apps import refresh_cast_card
+
+        refresh_cast_card(self, state)
 
     def _podcast_track_history(self, state: PodcastPlaybackState) -> None:
         """Recently-played log, updated whenever a different episode starts
@@ -439,7 +447,6 @@ class PodcastsMixin(
         )
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
-        from quill.ui.podcasts.player_controller import PodcastPlayerState
 
         wx = self._wx
         play_id, stop_id = wx.NewIdRef(), wx.NewIdRef()
@@ -535,113 +542,6 @@ class PodcastsMixin(
         PodcastManagerDialog._sort_context_show."""
         show_id = self._podcast_controller.state.show_id
         return self._podcast_library.find_show(show_id) if show_id else None
-
-    def open_podcast_sound_enhancements(self) -> None:
-        """Playback > Sound Enhancements...: three EQ bands + a compressor +
-        Smart Speed. Edits the currently-playing show's own override if one
-        is loaded, otherwise the shared default -- see
-        PodcastLibrary.apply_show_override."""
-        from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
-
-        show = self._podcast_enhance_context_show()
-        settings = (
-            self._podcast_library.effective_settings(show)
-            if show
-            else self._podcast_library.settings
-        )
-        dialog = SoundEnhanceDialog(
-            self.frame,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            subject=show.title if show else "episode",
-            show_smart_speed=True,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            announce_cb=self._announce,
-        )
-        result = dialog.show()
-        if result is None:
-            return
-        bass_db, mid_db, treble_db, compressor_enabled, smart_speed_enabled = result
-        if show is not None:
-            self._podcast_library.apply_show_override(
-                show,
-                eq_bass_db=bass_db,
-                eq_mid_db=mid_db,
-                eq_treble_db=treble_db,
-                compressor_enabled=compressor_enabled,
-                smart_speed_enabled=smart_speed_enabled,
-            )
-            self._save_podcast_library()
-            target = show.title
-        else:
-            self._podcast_library.settings.eq_bass_db = bass_db
-            self._podcast_library.settings.eq_mid_db = mid_db
-            self._podcast_library.settings.eq_treble_db = treble_db
-            self._podcast_library.settings.compressor_enabled = compressor_enabled
-            self._podcast_library.settings.smart_speed_enabled = smart_speed_enabled
-            self._save_podcast_library()
-            target = "the shared default"
-        self._podcast_controller.set_enhancement(
-            bass_db=bass_db,
-            mid_db=mid_db,
-            treble_db=treble_db,
-            compressor_enabled=compressor_enabled,
-            smart_speed_enabled=smart_speed_enabled,
-        )
-        self._announce(
-            f"Sound Enhancements for {target}: Bass {bass_db:+.0f}, Mid {mid_db:+.0f}, "
-            f"Treble {treble_db:+.0f}"
-            + (", Even Out Volume on" if compressor_enabled else "")
-            + (", Smart Speed on" if smart_speed_enabled else "")
-        )
-
-    def open_podcast_skip_settings(self) -> None:
-        """Episode > Skip Settings...: Skip Forward/Back seconds, plus (only
-        when a show is loaded) auto-skip intro/outro. Edits the currently
-        loaded show's own override if one is loaded, otherwise the shared
-        default -- see PodcastLibrary.apply_show_override. Mirrors
-        open_podcast_sound_enhancements exactly."""
-        from quill.ui.podcasts.skip_settings_dialog import SkipSettingsDialog
-
-        show = self._podcast_enhance_context_show()
-        settings = (
-            self._podcast_library.effective_settings(show)
-            if show
-            else self._podcast_library.settings
-        )
-        dialog = SkipSettingsDialog(
-            self.frame,
-            skip_forward_seconds=settings.skip_forward_seconds,
-            skip_back_seconds=settings.skip_back_seconds,
-            auto_skip_intro_seconds=settings.auto_skip_intro_seconds,
-            auto_skip_outro_seconds=settings.auto_skip_outro_seconds,
-            show_title=show.title if show is not None else None,
-            announce_cb=self._announce,
-        )
-        result = dialog.show()
-        if result is None:
-            return
-        forward_seconds, back_seconds, intro_seconds, outro_seconds = result
-        if show is not None:
-            self._podcast_library.apply_show_override(
-                show,
-                skip_forward_seconds=forward_seconds,
-                skip_back_seconds=back_seconds,
-                auto_skip_intro_seconds=intro_seconds,
-                auto_skip_outro_seconds=outro_seconds,
-            )
-            self._save_podcast_library()
-            target = show.title
-        else:
-            self._podcast_library.settings.skip_forward_seconds = forward_seconds
-            self._podcast_library.settings.skip_back_seconds = back_seconds
-            self._save_podcast_library()
-            target = "the shared default"
-        self._announce(
-            f"Skip Settings for {target}: forward {forward_seconds}s, back {back_seconds}s"
-        )
 
     def find_podcast_chapters(self) -> None:
         """Work chapters out from the transcript or the audio (explicit)."""

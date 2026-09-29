@@ -33,7 +33,7 @@ _HELP_MENU: dict[str, str] = {
     "cast": "quill/apps/podcasts_menu.py",
     "studio": "quill/apps/studio.py",
     "converter": "quill/apps/converter_menu.py",  # its own module since 1.0.0
-    "player": "quill/apps/player.py",
+    "player": "quill/apps/player_menus.py",  # menu bar + About moved there (GATE-11)
     "inkwell": "quill/apps/inkwell.py",
 }
 
@@ -47,7 +47,7 @@ _ABOUT: dict[str, str] = {
     "cast": "quill/apps/podcasts.py",
     "studio": "quill/apps/studio.py",
     "converter": "quill/apps/converter_actions.py",  # About moved there in 1.0.0
-    "player": "quill/apps/player.py",
+    "player": "quill/apps/player_menus.py",  # menu bar + About moved there (GATE-11)
     "inkwell": "quill/apps/inkwell.py",
     "beacon": "quill/apps/beacon/app.py",
     "lite": "quill/apps/lite_window_commands.py",

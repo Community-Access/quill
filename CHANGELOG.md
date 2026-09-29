@@ -2,6 +2,45 @@
 
 ## 1.0.0
 
+### Windows itself can say what is playing (2026-09-29)
+
+- **The now-playing card is filled in.** Windows keeps one card per app --
+  the panel on the volume flyout and the lock screen -- and Quill's was
+  blank while every other media app on the machine had a title in it. Quill
+  Radio puts the station on it with the song underneath, QUILL Cast the
+  episode and its show, Quill Media Player the book and its chapter. It is
+  an accessibility surface, not decoration: the screen reader reads that
+  flyout when it opens, so the machine can now answer "what is playing?"
+  rather than only the app knowing (`quill/ui/audio/now_playing.py`,
+  `quill/ui/media/now_playing_apps.py`).
+- **It claims none of the media keys.** The card and the keyboard's media
+  keys are two halves of the same Windows object, and the apps already own
+  those keys through `RegisterHotKey` -- which works from the tray and
+  without focus. Every button flag is switched off deliberately, and a test
+  asserts they stay off: two claimants would make which one answers a matter
+  of timing.
+- **And it says nothing out loud.** The reader reads the flyout; announcing
+  the same words again is the over-announcing GATE-13 exists to stop.
+- **The card stays honest.** A pause marks it paused and a stop takes it
+  down, rather than leaving it claiming to play -- the small kind of lie
+  that makes people stop trusting a surface.
+- **A control that cannot work is now disabled rather than silent.** The
+  modern engine can be asked whether what is playing can be seeked or
+  paused, which the classic control never could, so callers guessed. A
+  transport button that is enabled and does nothing is the silent failure: a
+  listener presses it, hears nothing, and cannot tell "not supported here"
+  from "broken", while a disabled one announces itself as disabled. Unknown
+  still counts as yes, so this only ever removes a control on a real
+  refusal, never on a guess (`engine_can_seek` / `engine_can_pause`).
+- **Live radio asks for latency over smoothness** (`real_time_playback`):
+  thirty seconds behind is worse than an occasional rebuffer on a live
+  stream, and there is nothing to seek back to anyway. A recording is left
+  alone.
+- GATE-11 paid by extracting again: Quill Radio's URL resolution became
+  `quill/ui/radio/playback_url.py`, Cast's two settings dialogs joined the
+  dialogs module they were always described by, and the Media Player's About
+  box followed its menu bar.
+
 ### Choosing a sound card is a family capability now (2026-09-29)
 
 - **Every app's "Windows Media" is the modern engine, and it can be pointed
