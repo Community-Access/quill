@@ -1,6 +1,6 @@
 # Quill Radio User Guide
 
-Version 3.0.4, released 2026-09-28.
+Version 3.0.5, released 2026-09-29.
 
 Quill Radio is internet radio built for screen reader users. It is a small window. The favorites tree has focus the moment it opens. The menus say everything they do, every action speaks, and a tray icon keeps the music playing while you work. It runs the same radio code as QUILL itself and, when installed, shares its data, so nothing you set up here is stranded.
 
@@ -37,16 +37,16 @@ The chapters, in order, grouped by what you want to do. Each one is a level 2 he
 
 ### The two downloads
 
-Quill Radio 3.0.4 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.4.
+Quill Radio 3.0.5 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.5.
 
 1. **The installer**, `Quill-Radio-Setup-Shared-<version>.exe`. This is the right choice for most people. It gives Quill Radio a Start Menu entry and an uninstaller. It installs the shared QuillVille Runtime if it is not already on the computer, then the app. Your favorites, history and settings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
 2. **The portable copy**, `Quill-Radio-Portable-<version>.zip`. It is fully self-contained. It carries its own genuine, unmodified Python and the bundled ffmpeg (for recording) and mpv (for playback). Unpack it anywhere, a USB stick included. Nothing downloads when it runs. Use it when you want the whole radio to travel with you, or when you cannot install software.
 
-Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.4`.
+Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.5`.
 
 ### Install with the installer, step by step
 
-1. Download `Quill-Radio-Setup-Shared-3.0.4.exe` and open it from your Downloads folder.
+1. Download `Quill-Radio-Setup-Shared-3.0.5.exe` and open it from your Downloads folder.
 2. If Windows SmartScreen shows a warning, see "About security software" below.
 3. Setup may first ask whether to install for you only or for all users. Choose **Install for me only**. That needs no administrator rights. Installing for all users asks Windows for permission.
 4. The setup wizard opens. Press Enter on each page to accept the defaults. The full installation includes this guide and the release notes. Then choose **Install**.
@@ -58,7 +58,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 ### Use the portable copy, step by step
 
-1. Download `Quill-Radio-Portable-3.0.4.zip`.
+1. Download `Quill-Radio-Portable-3.0.5.zip`.
 2. In File Explorer, select the zip, press the Applications key, and choose **Extract All...**. Choose a folder, for example on a USB stick, and choose **Extract**.
 3. Open the extracted folder, then the `QuillRadio` folder inside it.
 4. Select `QuillRadio.exe` and press Enter. Quill Radio opens with focus in the Favorite stations tree.
@@ -78,7 +78,7 @@ Pressing Enter on `QuillRadio.exe` while you are still inside the zip, before ex
 
 Quill Radio 2.x kept its favorites in this computer's profile, even when it ran from the portable zip. A 3.0 portable copy keeps its own, so the first time it starts, it looks for them.
 
-1. Unzip `Quill-Radio-Portable-3.0.4.zip` and start `QuillRadio.exe`, as above.
+1. Unzip `Quill-Radio-Portable-3.0.5.zip` and start `QuillRadio.exe`, as above.
 2. If an earlier Quill Radio on this computer has favorites, and this copy has none yet, a question opens: "Favorites from an earlier Quill Radio". It says how many favorite stations it found.
 3. Press **Enter** (Yes) to copy them, with your settings, recording schedule and reminders, into this portable copy. Quill Radio then opens with your favorites in the tree.
 4. Or choose **No** to start empty.
@@ -93,7 +93,7 @@ Good to know:
 
 Test builds of 3.0 also offered a thin "Lite" installer and a small Companion zip. Both are retired. Nothing is lost:
 
-- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.4.exe`. It upgrades your installation in place and keeps your data.
+- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.5.exe`. It upgrades your installation in place and keeps your data.
 - If you used the Companion zip, run the installer, or unpack the portable zip instead. Check for Updates on a Companion copy offers the installer.
 
 ### The QuillVille Runtime
@@ -782,7 +782,7 @@ On a **folder**:
 
 A dimmed item says why it is dimmed. See "Why a menu item is dimmed".
 
-**Delete** removes the row you are on, when it is yours to remove: a saved YouTube video, playlist or channel, a server you added, or a favorite. It asks first, names the row, and **No** is the default. The question has a **Don't ask me again** box. On one of Quill Radio's own branches, Delete explains that there is nothing to delete and points you at Hide This Source.
+**Delete** removes the row you are on, when it is yours to remove: a saved YouTube video, playlist or channel, a server you added, or a favorite. It asks first, names the row, and **No** is the default. The question has a **Don't ask me again** box. On a top-level source such as Podcasts, Delete hides the source, the same as **Hide This Source** on the context menu; **Reset Sources to Default** brings it back. On a folder inside one of Quill Radio's own sources, Delete explains that there is nothing to delete.
 
 ### Find in this folder, step by step
 
@@ -941,7 +941,7 @@ Two sources have options: Radio Paradise and the SHOUTcast Directory.
 
 A branch that is off is not in the tree at all and is never contacted while you browse. A source added in a later version appears unless you hide it.
 
-You can also prune from the tree itself: press **Shift+F10** on a top-level branch and choose **Hide This Source**. **Reset Sources to Default** is on the same menu.
+You can also prune from the tree itself: press **Delete** on a top-level branch, or press **Shift+F10** on it and choose **Hide This Source**. **Reset Sources to Default** is on the same menu.
 
 ## Search Stations
 
@@ -1180,8 +1180,8 @@ The drop-down lists come first:
 
 - **Main window shows** -- Favorite stations (the default), Browse Stations, Search Stations, Radio Recordings or Player. See "What the main window shows".
 - **When closing the window** -- Ask every time (the default), Exit, or Minimize to Tray. This governs the title bar's close button and Alt+F4. See "Closing Quill Radio".
-- **Playback engine** -- Automatic (recommended), Windows Media (classic), or mpv. Automatic uses the bundled mpv engine, which powers the output device choice, rewinding live radio, Volume Boost and more stream formats. Windows Media (classic) is the pre-1.1 behaviour.
-- **Radio output device** -- System default, or a sound card or headset. Only the radio moves. Your screen reader and Quill Radio's own sounds stay on the system default. An unplugged device is remembered, not reset; if it cannot be used, the radio plays through the default and says so. The same setting as **Audio > Output Device...**.
+- **Playback engine** -- the rows are what this copy has. With the mpv engine present: Automatic (recommended, uses mpv), Windows Media (classic), or mpv. Without it, there is no mpv row and Automatic reads "Automatic (uses Windows Media; mpv is not installed)", so what you hear is what you get. Automatic with mpv powers the output device choice, rewinding live radio, Volume Boost and more stream formats. Windows Media (classic) is the pre-1.1 behaviour.
+- **Radio output device** -- System default, or a sound card or headset. Only the radio moves. Your screen reader and Quill Radio's own sounds stay on the system default. A device that cannot be opened is given back: the setting returns to what it was and Quill Radio says so. The same setting as **Audio > Output Device...**. It applies to the mpv engine; under Windows Media (classic), the device is the one Windows gives Quill Radio in Sound settings (see Output Device, step by step).
 - **Favorites sort order** -- Ascending (A to Z, the default), Descending (Z to A), or Unsorted (manual order).
 - **Station catalog update frequency** -- Every 6 hours, Every 12 hours, Every 24 hours (the default), Every 2 days, or Manually only.
 - **Episodes listed per subscribed podcast** -- 10, 25 (the default), 50, 100 newest, or All episodes.
@@ -1300,7 +1300,7 @@ Both Quill Radio and Quill Cast keep your place in a subscribed episode in the s
 
 ### What's Playing, step by step
 
-1. Press **Ctrl+T** (**Playback > What's Playing?**). The Now Playing window opens, titled "Now Playing:" and the station's name.
+1. Press **Ctrl+T** (**Playback > What's Playing?**). The Now Playing window opens, titled "Now Playing:" and the station's name. Press it again while the window is open and the window is refreshed, brought forward, and the title and artist are spoken.
 2. Focus is in a read-only box with the title and artist. Arrow through it, a character at a time if you want the exact spelling.
 3. Tab to **Copy** and press **Space** to copy it. You should hear "Copied."
 4. Press **Escape** to close.
@@ -1371,9 +1371,15 @@ If it does not work: Volume Boost needs the mpv playback engine. If it says so, 
 
 1. Press **Ctrl+Shift+D** (**Audio > Output Device...**). A list opens: "Send Quill Radio's audio to which device?"
 2. The first row is **System default**. Arrow to a sound card or headset. A saved device that is unplugged reads "(not currently available)".
-3. Press **Enter**. The station moves to that device at once. You should hear "Output device" and its name.
+3. Press **Enter**. The station moves to that device at once, without a break in the sound. You should hear "Output device" and its name.
 
 Your screen reader and Quill Radio's own sounds stay on the system default. The choice is the same setting as **Radio output device** in Preferences. It needs the mpv playback engine.
+
+**On the Windows Media (classic) engine**, or in a copy without the mpv engine, the list cannot move the sound: that engine plays on the device Windows gives Quill Radio, and nothing in it takes a device name. Quill Radio does not change your engine choice to get around this. Instead, choosing a device says so in one sentence and opens Windows' Sound settings at once, where under **Volume mixer** every app has its own output device. Find Quill Radio in that list and pick the device. Windows remembers it across restarts. A copy without the mpv engine opens the same page as soon as you press Ctrl+Shift+D. If a device is in the setting while the engine is Windows Media, Quill Radio gives it back and says the same thing.
+
+**If the device cannot be opened** -- a Bluetooth or USB headset that has gone to sleep, a device another program is holding, one whose Windows id changed -- Quill Radio says so, names it, and puts the setting back to what it was: "Speakers (Logi USB Headset) could not be opened, so the output device is back to System default." The sound stays on the mpv engine, on the device that was in use before, and Preferences shows the same. Wake the device or plug it in, then choose it again. A saved device that cannot be opened when Quill Radio starts is given back the same way, so a copy is never stuck with a setting it cannot honour. Until 3.0.5 this case was silent: the station quietly moved to Windows Media, which can only use the system default, the setting kept naming a device that was not in use, and the sound card seemed not to switch at all.
+
+Both sound cards on a laptop are often called "Speakers" by Windows -- "Speakers (Realtek High Definition Audio)" for the built-in ones, "Speakers (Logi USB Headset)" for a headset -- so listen past the first word for the make.
 
 ### Sound Enhancements, step by step
 
@@ -2218,7 +2224,7 @@ The same lessons are in `tutorials.md` beside this guide, with the shipped keys.
 
 Quill Radio offers the download that matches your copy: the portable zip to a portable copy, and the installer otherwise. **A portable copy updates itself in place**: the new files replace the old ones in its folder, and the `data` folder -- your favorites, settings, history and recordings -- is never touched.
 
-**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.0.4.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
+**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.0.5.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
 
 Quill Radio also checks quietly once a day at launch. It speaks only when it finds something. Turn it off with **Check for updates automatically on launch** in Preferences.
 
@@ -2676,6 +2682,10 @@ Writing to support@community-access.org yourself, from any email account, works 
 
 ## Troubleshooting
 
+### The sound card does not switch
+
+Choose the device in **Audio > Output Device...** (Ctrl+Shift+D) and listen for the announcement. "Output device" and its name means the station moved. "... could not be opened, so the output device is back to ..." means Windows would not open that device for Quill Radio just now: wake the headset, close whatever else is using the card, or plug it back in, then choose it again. "The playback engine is Windows Media (classic)" means the list cannot move the sound on that engine; Windows' Sound settings open in the same breath, so give Quill Radio its device there under Volume mixer, or set **Playback engine** to Automatic in Preferences to choose it here. "Windows Media is playing this station, and it cannot use the chosen output device" means the station itself would not play on the mpv engine, so it is on Windows Media for now; try the station again, or another stream of it. Before 3.0.5 none of this was said, which is why a card that would not open looked like a switch that did nothing. Check the row you chose, too: Windows calls both a laptop's built-in card and a USB headset "Speakers", and only the make in brackets tells them apart.
+
 ### If Quill Radio does not start
 
 From 3.0.4, `QuillRadio.exe` never fails silently. If the app's engine cannot start, or stops with an error, a plain message opens that your screen reader reads on its own. It says "Quill Radio did not start" (or "stopped unexpectedly", if it had been running a while), gives the reason in words, names the file where the details are, and gives the support address.
@@ -2706,7 +2716,7 @@ The launch log holds what the engine reported the last time it was started. A po
 - **A scheduled recording did not start.** Quill Radio must be running, in the tray at least. Check that the entry is not "(disabled)" in Schedule Recording, and that **Wake the computer for a scheduled recording** is on in Preferences if the computer sleeps.
 - **The wake-up timer did not fire.** Quill Radio must be running at the set time. The tray counts; a closed app does not. It never fires late: opening the app hours after the set time stays silent until the next occurrence.
 - **The tray icon is gone.** Check the "Show hidden icons" area, or set Quill Radio to always show in the Windows taskbar settings.
-- **Rewind, Volume Boost or the output device "needs the mpv playback engine".** In Preferences, **Playback engine** is set to Windows Media (classic), or the bundled engine is missing. Set it to Automatic, or use **Help > Repair mpv Playback Engine...**.
+- **Rewind, Volume Boost or the output device "needs the mpv playback engine".** In Preferences, **Playback engine** is set to Windows Media (classic), or the bundled engine is missing. Set it to Automatic, or use **Help > Repair mpv Playback Engine...**. For the output device alone, Windows' Sound settings can give Quill Radio a device under Volume mixer on any engine; Ctrl+Shift+D opens that page.
 - **Playback sounds different since 1.1.0.** In Preferences, **Playback engine** set to Windows Media (classic) is exactly the old behaviour. Please tell us what you heard (Ctrl+Alt+F2).
 - **Quill Radio is too chatty, or too quiet.** Quiet Hours (Ctrl+Alt+Shift+Z) holds back speech nobody asked for. Recent Problems (Ctrl+Alt+Shift+P) keeps any failure you missed.
 - **A feature says it is "off in Safe Mode".** Safe Mode is a troubleshooting start that turns off network features, the station catalog refresh, YouTube, Spotify and Quillins, so a problem can be narrowed down. Quill Radio starts in Safe Mode only when it is asked to. If support asks you to use it, they will tell you how, and an ordinary launch afterwards brings everything back.

@@ -251,10 +251,32 @@ class PreferencesDialog:
         self._capture_result()
         self.dialog.EndModal(self._wx.ID_OK)
 
+    def _on_char_hook(self, event: object) -> None:
+        """Enter is OK wherever it is pressed, except on a button (which is its
+        own answer) and in a multi-line box (where it is a new line).
+
+        Jeff (2026-09-29): after changing a dropdown in Quill Radio's
+        Preferences, Enter did nothing -- the wx.Choice keeps the key on
+        wxMSW instead of handing it to the default button.
+        """
+        wx = self._wx
+        code = event.GetKeyCode()
+        if code not in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) or event.HasAnyModifiers():
+            event.Skip()
+            return
+        focused = wx.Window.FindFocus()
+        if isinstance(focused, wx.Button) or (
+            isinstance(focused, wx.TextCtrl) and focused.IsMultiLine()
+        ):
+            event.Skip()
+            return
+        self._on_save(None)
+
     def show(self) -> tuple[list[bool], list[int], list[str]] | None:
         from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
         self.dialog.CentreOnParent()
+        self.dialog.Bind(self._wx.EVT_CHAR_HOOK, self._on_char_hook)
         apply_modal_ids(
             self.dialog,
             affirmative_id=self._wx.ID_OK,

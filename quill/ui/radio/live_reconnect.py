@@ -194,6 +194,12 @@ def announce_recovery(host: Any) -> str:
     Kept here so ``_on_loaded`` does not have to know how reconnects are
     counted -- it asks for the words and clears the state in one call.
     """
+    from quill.ui.radio import output_device_guard
+
+    # A load that answers an output-device rescue settles it first: this is
+    # the one place every successful load passes through outside the
+    # controller, which is at its GATE-11 ceiling.
+    output_device_guard.rescue_settled(host, loaded=True)
     if _attempts(host) <= 0:
         return ""
     reset(host)

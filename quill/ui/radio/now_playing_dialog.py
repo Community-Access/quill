@@ -21,6 +21,11 @@ from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids
 _OPEN: NowPlayingDialog | None = None
 
 
+def open_window() -> NowPlayingDialog | None:
+    """The Now Playing peer window that is open now, if one is (see :meth:`refresh`)."""
+    return _OPEN
+
+
 class NowPlayingDialog:
     """Read-only, copyable view of the current now-playing text.
 
@@ -195,6 +200,33 @@ class NowPlayingDialog:
             self._win.SetSizer(outer)
         self._copy_btn.Bind(wx.EVT_BUTTON, self._on_copy)
         wx.CallAfter(self._field.SetFocus)
+
+    def refresh(self, text: str, title: str) -> None:
+        """New facts into the window that is already open, then bring it forward.
+
+        John (2026-09-29): Ctrl+T said station, title and artist the first
+        time and only the station after that, though Copy still copied all
+        three. Each press was tearing the window down and opening a fresh one,
+        and a screen reader reads a brand-new window once; a replacement with
+        the same title and the same focused field got the title bar and nothing
+        else. Now the open window is refreshed and raised instead, and the
+        caller speaks the text, because a value that changes in a field is
+        exactly what the reader does not say (GATE-13).
+        """
+        self._text = text
+        self._title = title
+        self._field.SetValue(text)
+        self._field.SetInsertionPoint(0)
+        self._copy_btn.Enable(bool(text))
+        self._win.SetTitle(title)
+        if self._modeless and self._windows is not None:
+            try:
+                self._windows.activate(self._win)
+            except Exception:  # noqa: BLE001 - raising is a courtesy
+                self._win.Raise()
+        else:
+            self._win.Raise()
+        self._field.SetFocus()
 
     def _on_copy(self, _event: object) -> None:
         if self._copy(self._text) and self._announce:

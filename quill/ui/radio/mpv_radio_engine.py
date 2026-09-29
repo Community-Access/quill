@@ -309,7 +309,9 @@ class MpvRadioEngine(VideoOutputMixin):
         Runtime-settable: mpv switches a playing stream to the new device
         without a reload.
         """
-        self._mpv.set_str("audio-device", name.strip() or "auto")
+        status = self._mpv.set_str("audio-device", name.strip() or "auto")
+        if status < 0:  # a refused name; mpv keeps the previous device
+            _log.warning("mpv refused audio-device %r (status %s)", name, status)
 
     # -- sound ------------------------------------------------------------------
 

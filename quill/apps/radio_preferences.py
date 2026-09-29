@@ -94,8 +94,6 @@ def open_preferences(app: Any) -> None:
         _CLOSE_ACTION_VALUES,
         _DEFAULT_NOW_PLAYING_TEMPLATE,
         _ENGINE_HELP,
-        _ENGINE_LABELS,
-        _ENGINE_VALUES,
         _FAVORITES_SORT_LABELS,
         _FAVORITES_SORT_VALUES,
         _NOW_PLAYING_HELP,
@@ -105,6 +103,7 @@ def open_preferences(app: Any) -> None:
     from quill.core.paths import app_data_dir
     from quill.core.podcasts import refresh_policy
     from quill.core.radio import history as radio_history
+    from quill.core.radio.playback_engine_choices import engine_choices
     from quill.ui.app_preferences_dialog import (
         PreferenceAction,
         PreferenceCheckbox,
@@ -112,12 +111,22 @@ def open_preferences(app: Any) -> None:
         PreferencesDialog,
         PreferenceText,
     )
-    from quill.ui.radio.mpv_radio_engine import list_audio_devices, output_device_choices
+    from quill.ui.audio.audio_engine import windows_engine_routes_devices
+    from quill.ui.audio.output_routing import list_output_devices
+    from quill.ui.radio.mpv_radio_engine import (
+        mpv_output_device_available,
+        output_device_choices,
+    )
 
     history = app._radio_history
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     device_labels, device_names, device_index = output_device_choices(
-        list_audio_devices(), history.output_device
+        list_output_devices(), history.output_device
+    )
+    engine_labels, engine_values, engine_index = engine_choices(
+        history.playback_engine,
+        mpv_present=mpv_output_device_available(),
+        modern_windows_media=windows_engine_routes_devices(),
     )
     catalog_interval_labels = [
         "Every 6 hours",
@@ -276,8 +285,8 @@ def open_preferences(app: Any) -> None:
             PreferenceChoice(
                 "Playback &engine:",
                 _ENGINE_HELP,
-                list(_ENGINE_LABELS),
-                _ENGINE_VALUES.index(history.playback_engine),
+                engine_labels,
+                engine_index,
             ),
             PreferenceChoice(
                 "Radio &output device:",
@@ -419,7 +428,7 @@ def open_preferences(app: Any) -> None:
     history.startup_window = "" if chosen_view == main_view.FAVORITES else chosen_view
     history.open_browse_at_startup = history.startup_window == "browse"
     history.close_action = _CLOSE_ACTION_VALUES[choice_indices[1]]
-    chosen_engine = _ENGINE_VALUES[choice_indices[2]]
+    chosen_engine = engine_values[choice_indices[2]]
     if chosen_engine != history.playback_engine:
         history.playback_engine = chosen_engine
         # A playing station reconnects through the newly chosen backend.

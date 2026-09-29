@@ -34,7 +34,7 @@ from quill.ui.radio.volume_keys import volume_chord_handled
 from quill.ui.slider_keys import bind_up_means_more
 
 _TITLE = "Quill Radio"
-_VERSION = "3.0.4"
+_VERSION = "3.0.5"
 _REPO = "Community-Access/quill"
 #: Radio publishes two downloads since 3.0.0 -- the installer and the portable
 #: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly

@@ -205,6 +205,90 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
+<h2 id="305---2026-09-29">[3.0.5] - 2026-09-29</h2>
+<p>Seven fixes. The sound card switches, or says why it cannot and puts
+the setting back; Windows Media gets a route to a device of its own;
+Preferences names only the engines this copy has; and four smaller
+things that came in the same week.</p>
+<ul>
+<li><strong>The sound card switches, live, or says why it cannot and
+gives the setting back.</strong> A listener reported that choosing a
+device in Audio &gt; Output Device did not move the sound. libmpv
+switches devices at runtime and on reload (probed on a real machine with
+two cards, watching mpv’s own audio-output log), and Quill Radio handed
+it the device before every load – so the sound stayed put in exactly one
+case: the mpv engine could not <em>open</em> the chosen device (a
+Bluetooth or USB headset asleep, a device another program holds, an id
+Windows changed), the load failed, and the station was quietly rescued
+on Windows Media, which plays on the device Windows gives the app.
+Nothing was said, nothing was logged, and the setting kept naming a
+device that was not in use. Now: a playing mpv station switches device
+live, with no reconnect and no gap; a load that fails with a device
+chosen is retried once, still on mpv, on the device in use before the
+choice, the listener hears which device could not be opened and what the
+setting is now, and the setting itself goes back (“… could not be
+opened, so the output device is back to System default”); a saved device
+that will not open at start-up is given back the same way; and a rescue
+that lands on Windows Media with a device chosen is said out loud
+instead of hidden. Every decision is logged
+(<code>quill/ui/radio/output_device_guard.py</code>; the mpv client now
+reports a refused property instead of swallowing it).</li>
+<li><strong>Windows Media (classic) gets its own route to a device, and
+the engine choice is left alone.</strong> Nothing in the Windows Media
+control takes a device name, so under that engine the output device list
+could never move the sound, and an earlier draft of this release
+answered by switching the engine to Automatic. It does not: the engine
+is yours. Under Windows Media, choosing a device in Audio &gt; Output
+Device now says so in one sentence and opens Windows’ own Sound
+settings, where under Volume mixer every app has its own output device
+and the choice sticks across restarts – no question first. A copy
+without the mpv engine at all, where there is no device list to show,
+goes straight to the same page. A device that is in the setting while
+the engine is Windows Media (a preference switched after a device was
+chosen, or a copied settings file) is given back with the same sentence,
+because a setting that names a device the engine does not use is the
+confusion this release exists to end. This is the answer QUILL Cast
+already gives (<code>quill/ui/media/output_device.py</code>), now shared
+with the radio.</li>
+<li><strong>Preferences offers only the playback engines this copy
+has.</strong> With mpv present the rows are Automatic (recommended, uses
+mpv), Windows Media (classic) and mpv; without it there is no mpv row
+and Automatic reads “Automatic (uses Windows Media; mpv is not
+installed)”, and a saved mpv preference lands on Automatic, which is
+what it resolves to. A row for an engine that is not installed was a
+choice that did nothing
+(<code>quill/core/radio/playback_engine_choices.py</code>).</li>
+<li><strong>Ctrl+T says the title every time.</strong> What’s Playing
+said station, title and artist the first time and only the station after
+that, though Copy still copied all three (reported by John). Each press
+was closing the Now Playing window and opening a fresh one, and a screen
+reader reads a brand-new window once; a replacement with the same title
+and the same focused field got the title bar and nothing else. A second
+press now refreshes the window that is open, brings it forward and
+speaks the text (<code>quill/ui/radio/now_playing_dialog.py</code>,
+<code>now_playing_commands.py</code>).</li>
+<li><strong>Enter in Preferences presses OK.</strong> After changing a
+dropdown, such as the playback engine, Enter did nothing: the dropdown
+kept the key instead of handing it to the default button. Enter now
+presses OK from anywhere in the dialog except a button, which is its own
+answer, and a multi-line box, where it is a new line
+(<code>quill/ui/app_preferences_dialog.py</code>, shared by every app’s
+Preferences).</li>
+<li><strong>Delete on a source branch hides the source.</strong> On a
+top-level branch such as Podcasts, Delete used to explain that there was
+nothing to delete and point at Hide This Source on the context menu,
+although in earlier versions the key itself hid the source. It does
+again, through the same function the menu uses, so the two cannot
+disagree; Reset Sources to Default is the way back and the announcement
+names it (<code>quill/ui/radio/browse_delete.py</code>).</li>
+<li><strong>A portable copy’s Yes to “copy my favorites” now copies
+them.</strong> A 3.0.0 portable that had been opened once had a
+favorites file with nothing in it, and the import skipped every file the
+bundle already had – so the question was asked, answered Yes, remembered
+as done, and nothing arrived. A favorites file with no favorites is
+replaced; everything else the bundle has is still left alone
+(<code>quill/core/radio/portable_migration.py</code>).</li>
+</ul>
 <h2 id="304---2026-09-28">[3.0.4] - 2026-09-28</h2>
 <p>One fix, for the worst thing an app can do: nothing. A listener’s
 portable copy did not open, did not say why, and left no trace. From

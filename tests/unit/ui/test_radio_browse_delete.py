@@ -239,7 +239,7 @@ def test_a_favorite_row_is_unfavorited() -> None:
 
 
 def test_a_row_with_nothing_to_remove_says_so_rather_than_swallowing_the_key() -> None:
-    dialog = _Dialog({"node_id": "popular", "label": "Popular Stations"})
+    dialog = _Dialog({"node_id": make_id("popular", "jazz"), "label": "Jazz"})
 
     assert browse_delete.delete_selected(dialog) is False
     assert browse_delete.NOTHING_TO_DELETE in dialog.said
@@ -378,18 +378,18 @@ def test_once_it_is_off_delete_removes_without_asking(monkeypatch: pytest.Monkey
 
 def test_a_standard_folder_explains_itself_in_a_dialog() -> None:
     """Spoken only, this was easy to miss on the key people press first."""
-    dialog = _Dialog({"node_id": "popular", "label": "Popular Stations"}, label="Popular Stations")
+    dialog = _Dialog({"node_id": make_id("popular", "jazz"), "label": "Jazz"}, label="Jazz")
 
     assert browse_delete.delete_selected(dialog) is False
 
     assert browse_delete.NOTHING_TO_DELETE in dialog.said
     assert len(dialog._wx.boxes) == 1
-    assert "Popular Stations" in dialog._wx.boxes[0].message
+    assert "Jazz" in dialog._wx.boxes[0].message
     assert "Hide This Source" in dialog._wx.boxes[0].message
 
 
 def test_the_explanation_can_be_switched_off_too() -> None:
-    dialog = _Dialog({"node_id": "popular", "label": "Popular Stations"})
+    dialog = _Dialog({"node_id": make_id("popular", "jazz"), "label": "Jazz"})
     dialog._wx.tick = True
     browse_delete.delete_selected(dialog)
     assert dialog._download_host._radio_history.explain_browse_delete is False
@@ -409,3 +409,35 @@ def test_a_window_with_no_frame_behind_it_always_asks() -> None:
 
     assert browse_delete.delete_selected(dialog) is False
     assert len(dialog._wx.boxes) == 1
+
+
+def test_delete_on_a_source_branch_hides_the_source(monkeypatch) -> None:
+    """Jeff (2026-09-29): Delete on the Podcasts branch used to hide it; it had
+    started explaining that there was nothing to delete while the menu's Hide
+    This Source still worked. Same function now."""
+    from quill.core.radio.browse_sources import ROOT_SOURCES
+    from quill.ui.radio import browse_tree_menu
+
+    kind = ROOT_SOURCES[0][0]
+    dialog = _Dialog({"node_id": make_id(kind)}, label="Podcasts")
+    hidden: list[str] = []
+    monkeypatch.setattr(browse_tree_menu, "_hide_source", lambda d, k: hidden.append(k))
+    dialog._visible_sources = tuple(nid for nid, _label in ROOT_SOURCES)
+
+    assert browse_delete.delete_selected(dialog) is True
+    assert hidden == [kind]
+    assert dialog._wx.asked == []  # no confirmation: Reset Sources is the way back
+
+
+def test_delete_on_a_source_that_is_already_hidden_does_nothing(monkeypatch) -> None:
+    from quill.core.radio.browse_sources import ROOT_SOURCES
+    from quill.ui.radio import browse_tree_menu
+
+    kind = ROOT_SOURCES[0][0]
+    dialog = _Dialog({"node_id": make_id(kind)}, label="Podcasts")
+    hidden: list[str] = []
+    monkeypatch.setattr(browse_tree_menu, "_hide_source", lambda d, k: hidden.append(k))
+    dialog._visible_sources = tuple(nid for nid, _label in ROOT_SOURCES if nid != kind)
+
+    assert browse_delete.delete_selected(dialog) is False
+    assert hidden == []

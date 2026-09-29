@@ -32,6 +32,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.radio.browse_nodes import split_id
+from quill.core.radio.browse_sources import ROOT_SOURCES
 
 #: Node kind -> (what it is called, which root branch to reload after).
 #: A kind that is not here has no removal, and Delete says so out loud.
@@ -194,8 +195,27 @@ def delete_selected(dialog: Any) -> bool:
         return _remove_favorite(dialog, station)
     if kind in ("mypodcastshow", "mypodcastfolder"):
         return _remove_podcast(dialog, node, kind, args)
+    if not args and any(kind == nid for nid, _ in ROOT_SOURCES) and _hide_source(dialog, kind):
+        return True
     explain_not_deletable(dialog, _label(dialog, node))
     return False
+
+
+def _hide_source(dialog: Any, kind: str) -> bool:
+    """Delete on a source branch hides the source, as the context menu's Hide
+    This Source does. Jeff (2026-09-29): "the delete key doesn't hide a specific
+    source if highlighting the source branch, like podcasts ... that used to
+    work in earlier versions" -- the key had been routed to the not-deletable
+    explanation while the menu verb kept working. Same function, so the two
+    cannot disagree, and no confirmation: Reset Sources to Default is the way
+    back, and the announcement names it."""
+    from quill.core.radio import browse_visibility
+    from quill.ui.radio import browse_tree_menu
+
+    if not browse_visibility.is_enabled(getattr(dialog, "_visible_sources", ()), kind):
+        return False
+    browse_tree_menu._hide_source(dialog, kind)
+    return True
 
 
 def _close_search_results(dialog: Any) -> bool:

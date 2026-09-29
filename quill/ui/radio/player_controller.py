@@ -46,7 +46,7 @@ from quill.core.optilab import optilab_active
 from quill.core.radio.models import RadioStation
 from quill.core.sound_events import SoundEvent
 from quill.core.spotify.models import is_spotify_uri
-from quill.ui.audio.audio_engine import WxMediaEngine
+from quill.ui.audio.audio_engine import create_windows_engine
 from quill.ui.companion_cues import post_cue
 from quill.ui.radio import media_preflight, stream_stall
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine
@@ -173,6 +173,11 @@ class RadioPlayerController(PlayerTracksMixin):
         #: proceeds on wx.media.
         self._output_device = output_device.strip()
         self._on_output_device_error = on_output_device_error
+        # output_device_guard: the one retry per load, the device the setting
+        # goes back to, and the host's hook for persisting that revert.
+        self._device_rescued = False
+        self._previous_output_device = ""
+        self.on_output_device_reverted: Callable[[str], None] | None = None
         #: "auto" (mpv when installed, else wx.media), "wx", or "mpv" --
         #: see RadioHistory.playback_engine. Auto is what lights up device
         #: routing, live pause/rewind, Volume Boost, and Ogg/Opus/HLS
@@ -232,11 +237,13 @@ class RadioPlayerController(PlayerTracksMixin):
         #: ignored for live radio, which has no pauses left to skip.
         self._skip_silence = False
         self._parent = parent
-        self._wx_engine = WxMediaEngine(
+        self._wx_engine = create_windows_engine(  # modern routes; classic cannot
             parent,
             on_loaded=self._on_loaded,
             on_finished=self._on_finished,
             on_error=self._on_error,
+            audio_device=self._output_device,
+            on_buffering=self._handle_buffering,
         )
         #: Created lazily on the first play that opts into a device; kept
         #: for the process's lifetime like the wx engine.
@@ -345,6 +352,7 @@ class RadioPlayerController(PlayerTracksMixin):
                 self._state.volume_percent = max(0, min(100, int(memorized)))
                 self._state.muted = self._state.volume_percent == 0
         self._fallback_attempted = False
+        self._device_rescued = False
         self._selected_audio_track = None
         # A deliberate play is a fresh start: any reconnect count left over
         # from a station the listener has moved on from must not make the next
@@ -621,17 +629,16 @@ class RadioPlayerController(PlayerTracksMixin):
         engine_selection.select(self)
 
     def set_output_device(self, device: str) -> None:
-        """Change the output device ("" = system default) and, if something
-        is on, reconnect through the right engine -- live radio has no
-        position to lose, so a reconnect is the whole cost (the same shape
-        as ``set_enhancement``)."""
-        device = device.strip()
-        if device == self._output_device:
-            return
-        self._output_device = device
-        station = self._state.station
-        if station is not None and self._state.state in RESTARTABLE_STATES:
-            self.play_station(station)
+        """Change the output device ("" = system default): live on mpv, by a
+        reconnect on Windows Media (output_device_guard has the rules)."""
+        from quill.ui.radio import output_device_guard
+
+        output_device_guard.change_device(self, device)
+
+    @property
+    def output_device(self) -> str:
+        """The chosen device id ("" = system default), whatever is in use now."""
+        return self._output_device
 
     def _current_filter_graph(self) -> str:
         """The Sound Enhancements ffmpeg graph for the current settings
@@ -985,6 +992,9 @@ class RadioPlayerController(PlayerTracksMixin):
         if mode == self._playback_engine:
             return
         self._playback_engine = mode
+        from quill.ui.radio import output_device_guard
+
+        output_device_guard.revert_for_windows_media(self)  # WMP cannot route
         station = self._state.station
         if station is not None and self._state.state in RESTARTABLE_STATES:
             self.play_station(station)

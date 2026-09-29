@@ -2636,3 +2636,94 @@ written; a write failure reported. The library verbs moved out of
 `row_actions.py`, at its GATE-11 ceiling, into `row_actions_podcasts.py`
 (`ui/radio/browse_podcast_actions.export_opml`;
 `tests/unit/ui/test_radio_export_opml.py`).
+
+## 21. The output device is a promise the radio keeps, or says out loud that it cannot (3.0.5, 2026-09-29)
+
+**The report.** "Changing the sound card in Audio's menu is not switching to a
+different card." Investigated in order: libmpv was probed on a machine with
+two WASAPI devices, requesting mpv's own log, and it selected the named device
+at runtime *and* on reload ("Selecting device ... (Speakers (Realtek High
+Definition Audio))"); the real controller was then driven through
+`set_output_device` with a real engine and the property and the reload both
+reached mpv. So the path was sound, and the only way the sound stays on the old
+card is the one `testkspn.md` had already named as the top suspect for a
+reconnect loop: the engine cannot *open* the chosen device, the load fails, and
+`attempt_fallback` rescues the station on Windows Media, which cannot route --
+silently, and with nothing in `quill.log` to say so.
+
+**Requirements** (`ui/radio/output_device_guard.py`, delegated to from the
+controller, which is at its GATE-11 ceiling):
+
+- R-1. A playing mpv station switches device live on the property change; no
+  reconnect, no gap. Windows Media, which cannot take a device from us,
+  reconnects through engine selection as before.
+- R-2. A load that fails with a device chosen is retried once, on mpv, with
+  the system default, and the listener is told which device would not open.
+  Only a second failure is a stream problem and reaches the cross-engine
+  rescue. The preference is never changed by a failure: the choice stands.
+- R-3. The setting is given back. A device that will not open goes back to
+  the device in use before the choice (the system default when there was
+  none), the host persists that, and the listener hears both halves: "... could
+  not be opened, so the output device is back to ...". A saved device that will
+  not open at start-up is reverted the same way. Jeff's rule (2026-09-29): "if
+  it can't work the sound card option should revert back to its original
+  setting" -- a setting that names a device not in use is the confusion this
+  section exists to end. (An earlier draft kept the choice and watched for the
+  device's return; it was replaced by this before shipping.)
+- R-4. Falling back to Windows Media with a device chosen is said, not hidden.
+- R-4a. **Windows Media routes through Windows, and the engine choice is the
+  listener's.** Nothing in `wx.media` takes a device name, and there is no
+  documented way to point a running Windows Media stream at an endpoint from
+  outside it. So under the Windows Media (classic) preference, and in a copy
+  with no libmpv at all, choosing a device says in one sentence that the
+  engine is Windows Media and opens Windows' own per-app output device page
+  at once (Sound settings, Volume mixer; `ms-settings:apps-volume`), which is
+  persistent and accessible -- the answer `ui/media/output_device.py` already
+  gives for QUILL Cast, minus its Yes/No ("drop the yes/no directly, no need
+  to ask"). A device found in the setting under that engine is given back
+  with the same sentence (`revert_for_windows_media`). An earlier draft of
+  this release switched the engine to Automatic instead; it was withdrawn
+  before shipping. "Why is it forcing automatic mode and mpv when switching if
+  windows media is selected, that should not be necessary at all. What if mpv
+  is not enabled?" (Jeff, 2026-09-29.)
+- R-5. Every decision is logged at INFO or WARNING; the mpv client returns the
+  status of a property set instead of discarding it, and a refused
+  `audio-device` is logged.
+- R-6. Preferences' Playback engine rows are built from what is installed
+  (`core/radio/playback_engine_choices.py`): no mpv row without libmpv, and
+  Automatic says which engine it resolves to today. "If mpv is not available
+  then Windows Media should be selected or automatic, that is confusing in
+  preferences" (Jeff, 2026-09-29).
+- R-7. The portable favorites import replaces a favorites file that holds no
+  favorites (`core/radio/portable_migration._replaceable`). Found on the C:\qr
+  portable the same day: a 3.0.0 bundle opened once had an empty favorites
+  file, "never overwrite what the bundle has" skipped it, and Yes copied
+  nothing while being remembered as done.
+- R-8. A second Ctrl+T refreshes the open Now Playing window and speaks its
+  text (`now_playing_dialog.open_window` / `NowPlayingDialog.refresh`). John's
+  report: the first press said station, title and artist, later presses only
+  the station, while Copy still copied all three. A screen reader reads a new
+  window once; a replacement with the same title and the same focused field
+  got the title bar and nothing else. Speaking the refreshed text is GATE-13's
+  cure, not a violation: a changed value in a field is what the reader does
+  not say.
+- R-9. Enter in an app Preferences dialog presses OK unless focus is on a
+  button (its own answer) or in a multi-line box (a new line)
+  (`app_preferences_dialog._on_char_hook`, bound with `EVT_CHAR_HOOK`).
+  `wx.Choice` on wxMSW keeps Enter instead of handing it to the default
+  button. Family-wide, since the dialog is shared.
+- R-10. Delete on a top-level source hides it through the same function as the
+  context menu's Hide This Source (`browse_delete._hide_source` calls
+  `browse_tree_menu._hide_source`), so the key and the verb cannot disagree; a
+  source that is already hidden falls through to the not-deletable
+  explanation. "That used to work in earlier versions."
+
+**Tests.** `tests/unit/ui/test_radio_output_device_guard.py`: the live switch,
+the rescue, the revert to the previous device and to the default, the start-up
+revert, the two-failure path to Windows Media and its wording, the Windows
+Media revert and its sentence, the log line, and the label lookup;
+`tests/unit/core/radio/test_playback_engine_choices.py`; the new case in
+`test_portable_migration.py`; the refresh case in
+`test_radio_whats_playing_commands.py`; the Enter cases in
+`test_preferences_dialog_actions.py`; and the source-branch cases in
+`test_radio_browse_delete.py`.

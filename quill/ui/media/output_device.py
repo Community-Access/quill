@@ -49,9 +49,9 @@ def explain_no_engine_support() -> str:
 def _engine_can_choose() -> bool:
     """Whether a device picker would actually do anything on this machine."""
     try:
-        from quill.ui.radio.mpv_radio_engine import mpv_output_device_available
+        from quill.ui.audio.output_routing import output_device_routing_available
 
-        return bool(mpv_output_device_available())
+        return bool(output_device_routing_available())
     except Exception:  # noqa: BLE001 - no engine is simply "cannot"
         return False
 

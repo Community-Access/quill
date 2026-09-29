@@ -134,3 +134,59 @@ def test_result_is_a_three_tuple_even_without_text_fields(wx_app) -> None:
     checkbox_values, choice_indices, text_values = dialog._result
     assert text_values == []
     dialog.dialog.Destroy()
+
+
+class _Key:
+    def __init__(self, code: int, modifiers: bool = False) -> None:
+        self.code = code
+        self.modifiers = modifiers
+        self.skipped = False
+
+    def GetKeyCode(self) -> int:  # noqa: N802
+        return self.code
+
+    def HasAnyModifiers(self) -> bool:  # noqa: N802
+        return self.modifiers
+
+    def Skip(self, skip: bool = True) -> None:  # noqa: N802
+        self.skipped = skip
+
+
+def test_enter_on_a_dropdown_is_ok(wx_app, monkeypatch) -> None:
+    """Jeff (2026-09-29): Enter after changing a Preferences dropdown did nothing."""
+    from quill.ui.app_preferences_dialog import PreferenceChoice
+
+    dialog = _dialog(
+        wx_app, choices=[PreferenceChoice("Playback &engine:", "engine", ["Auto", "wx"], 0)]
+    )
+    ended: list[int] = []
+    monkeypatch.setattr(dialog.dialog, "EndModal", ended.append)
+    choice = dialog._choice_controls[0]
+    choice.SetSelection(1)
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: choice))
+    key = _Key(wx.WXK_RETURN)
+    dialog._on_char_hook(key)
+    assert ended == [wx.ID_OK]
+    assert key.skipped is False
+    assert dialog._result[1] == [1]  # the changed dropdown was captured
+    dialog.dialog.Destroy()
+
+
+def test_enter_on_a_button_or_a_multiline_box_is_left_alone(wx_app, monkeypatch) -> None:
+    dialog = _dialog(wx_app)
+    ended: list[int] = []
+    monkeypatch.setattr(dialog.dialog, "EndModal", ended.append)
+    button = wx.Button(dialog.dialog, label="Cancel")
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: button))
+    key = _Key(wx.WXK_RETURN)
+    dialog._on_char_hook(key)
+    assert ended == [] and key.skipped is True
+    box = wx.TextCtrl(dialog.dialog, style=wx.TE_MULTILINE)
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: box))
+    key = _Key(wx.WXK_NUMPAD_ENTER)
+    dialog._on_char_hook(key)
+    assert ended == [] and key.skipped is True
+    key = _Key(wx.WXK_RETURN, modifiers=True)
+    dialog._on_char_hook(key)
+    assert ended == [] and key.skipped is True
+    dialog.dialog.Destroy()

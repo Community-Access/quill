@@ -99,6 +99,15 @@ def show_whats_playing_details(host: Any) -> None:
                 return
             text = f"{station.display_name}\n\n{NO_TITLE_MESSAGE}"
         title = f"Now Playing: {station.display_name}" if station is not None else "Now Playing"
+        from quill.ui.radio import now_playing_dialog
+
+        already_open = now_playing_dialog.open_window()
+        if already_open is not None:
+            # A second Ctrl+T: refresh the window that is up and say what it now
+            # holds -- the reader announces a new window, not a changed one.
+            already_open.refresh(text, title)
+            host._announce(text)
+            return
         NowPlayingDialog(
             host.frame,
             text,

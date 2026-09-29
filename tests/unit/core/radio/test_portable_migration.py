@@ -92,6 +92,21 @@ def test_copy_never_overwrites_what_the_bundle_has(dirs) -> None:
     assert (bundle / "radio_history.json").read_text(encoding="utf-8") == '{"volume": 90}'
 
 
+def test_copy_replaces_a_favorites_file_that_has_no_favorites(dirs) -> None:
+    """The offer exists because the bundle has none; a file with none in it is
+    not "something the bundle has" (C:\qr, 2026-09-28: Yes did nothing)."""
+    profile, bundle = dirs
+    _favorites(profile, "WQXR")
+    _favorites(bundle)  # a 3.0.0 bundle opened once: a favorites file, empty
+    earlier = pm.find_earlier_data(bundle, profile)
+    assert earlier is not None  # still offered
+
+    copied = pm.copy_earlier_data(earlier, bundle)
+
+    assert "radio_favorites.json" in copied
+    assert [f.station.name for f in load_favorites(bundle).favorites] == ["WQXR"]
+
+
 @pytest.mark.parametrize("copied", [True, False])
 def test_the_question_is_asked_once(dirs, copied) -> None:
     profile, bundle = dirs
