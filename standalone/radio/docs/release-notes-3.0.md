@@ -4,7 +4,7 @@ Version 3.0.5, released 2026-09-29.
 
 ## What's new in 3.0.5
 
-Eight fixes. Three are about the sound card; five came in the same week.
+Nine fixes. Three are about the sound card; six came in the same week.
 
 ### Choosing a sound card switches to it, or says why it cannot
 
@@ -94,6 +94,35 @@ the control you left it on. If Recordings... still does nothing for you,
 send `%APPDATA%\Quill\logs\QuillRadio-launch.log` (or `data\logs\launch.log`
 beside a portable copy) to support: since 3.0.4 anything the app could not do
 is written there.
+
+### Starting with Windows works again, and the installer repairs it
+
+A listener who had set Quill Radio to start with Windows was met at every login
+by a box reading "Unhandled exception in script" and "Failed to execute script
+'runtime_launcher'", instead of the radio.
+
+Quill Radio runs on a shared engine that the apps in the family use together.
+Builds from last summer up to 3.0.1 wrote the "start with Windows" entry as that
+engine on its own, with nothing to say which app to open. Run that way the
+engine tried to explain itself in writing -- and an app started at login has
+nowhere to write to, so the attempt to explain was itself the error.
+
+3.0.2 fixed both halves: the engine can always write, and started on its own it
+opens the app you have installed. Quill Radio has also repaired the entry every
+time it opened since. But that repair needed you to open Quill Radio, and the
+broken entry is the one thing stopping it from opening -- and nothing told you
+that opening the radio by hand would cure your login.
+
+From 3.0.5 the installer repairs the entry while it installs, so the next login
+is right whether or not you open the radio first. It writes this copy's own
+`QuillRadio.exe`, so the entry keeps working through future engine updates. If
+you never asked for Quill Radio to start with Windows, nothing is added; a
+portable copy never touches the computer it visits; and if your workplace locks
+the registry, the install still succeeds.
+
+If a login still opens the wrong thing, turn the setting off and on again with
+**Station > Start Quill Radio with Windows**, which rewrites the entry from
+scratch.
 
 ### A portable copy's favorites import now imports
 

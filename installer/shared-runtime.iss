@@ -107,6 +107,16 @@ Source: "{#RuntimeSourceDir}\OptiLabCore-NOTICE.txt"; DestDir: "{code:RuntimeDir
 ; runtime's own Python so the tested refcount logic (runtime_cli) does the work.
 Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli register {#AppRefId} {#RuntimeVersion}"; \
   StatusMsg: "Registering the shared runtime..."; Flags: runhidden waituntilterminated
+; Repair a "start with Windows" entry an older build wrote as the bare runtime
+; exe. The app repairs its own entry at launch, but that needs a launch -- and
+; this is the entry that PREVENTS one: before 3.0.2 the bare runtime met the
+; listener with PyInstaller's "Unhandled exception in script" box at every
+; login, and nothing suggested that opening the app by hand would cure it
+; (reported 2026-09-29). {app} is passed so the repaired entry names this app's
+; native launcher, whose path survives a runtime upgrade. Always exits 0, so a
+; locked-down registry costs the repair and not the install.
+Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli heal-launch-entries ""{app}"""; \
+  StatusMsg: "Checking the startup entry..."; Flags: runhidden waituntilterminated
 
 [Code]
 function RuntimeMajor(): string;

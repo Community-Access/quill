@@ -183,7 +183,7 @@ def test_wx_mode_never_touches_mpv(monkeypatch: pytest.MonkeyPatch) -> None:
     import quill.ui.radio.player_controller as pc
 
     fake = _FakeEngine()
-    monkeypatch.setattr(pc, "WxMediaEngine", lambda *a, **k: fake)
+    monkeypatch.setattr(pc, "create_windows_engine", lambda *a, **k: fake)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame, playback_engine="wx")
     controller.play_station(_station())
@@ -220,43 +220,19 @@ def test_auto_mode_uses_wx_when_libmpv_absent(monkeypatch: pytest.MonkeyPatch) -
     assert controller._mpv_engine is None
 
 
-def test_device_with_no_libmpv_falls_back_with_announcement(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    import quill.ui.radio.engine_selection as es
-
-    monkeypatch.setattr(es, "mpv_output_device_available", lambda: False)
-    announced: list[str] = []
-    frame = wx.Frame(None)
-    controller = RadioPlayerController(
-        frame,
-        output_device="wasapi/{aaa}",
-        on_output_device_error=announced.append,
-    )
-    fake = _FakeEngine()
-    controller._wx_engine = fake
-    controller._engine = fake
-    controller.play_station(_station())
-    assert fake.loads  # playback proceeded on the default engine
-    assert announced and "system default" in announced[0]
-
-
-def test_device_switch_reconnects_the_playing_station(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    import quill.ui.radio.engine_selection as es
-
-    monkeypatch.setattr(es, "mpv_output_device_available", lambda: False)
-    frame = wx.Frame(None)
-    controller = RadioPlayerController(frame)
-    fake = _FakeEngine()
-    controller._wx_engine = fake
-    controller._engine = fake
-    controller.play_station(_station())
-    controller._on_loaded(0)
-    assert controller.state.state is RadioPlayerState.PLAYING
-    controller.set_output_device("wasapi/{aaa}")
-    assert len(fake.loads) == 2  # reconnected through the new choice
+# Two tests stood here until 3.0.5 and assert behaviour that release replaced:
+#
+# * "no libmpv falls back to the system default with an announcement" -- the
+#   Windows Media engine can route to a chosen device now
+#   (quill/ui/audio/winrt_engine.py), so the absence of libmpv no longer costs
+#   the device. The revert-and-say path it was really testing is covered in
+#   detail by tests/unit/ui/test_radio_output_device_guard.py
+#   (test_a_device_that_will_not_open_is_given_back_and_said, and the start-up
+#   variant beside it).
+# * "a device switch reconnects the playing station" -- a switch is live now, on
+#   both engines, which was the point of the release; a reconnect is what it
+#   stopped doing. See test_a_playing_mpv_station_switches_device_live_without_a
+#   _reconnect and test_the_windows_engine_switches_device_live in that file.
 
 
 def test_device_switch_while_stopped_does_not_start_playback() -> None:

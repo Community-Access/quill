@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -206,10 +206,12 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="305---2026-09-29">[3.0.5] - 2026-09-29</h2>
-<p>Seven fixes. The sound card switches, or says why it cannot and puts
+<p>Nine fixes. The sound card switches, or says why it cannot and puts
 the setting back; Windows Media gets a route to a device of its own;
-Preferences names only the engines this copy has; and four smaller
-things that came in the same week.</p>
+Preferences names only the engines this copy has; a minimized window
+comes back when its menu item or key asks for it; a stale “start with
+Windows” entry is repaired by the installer rather than waiting for a
+launch; and four smaller things that came in the same week.</p>
 <ul>
 <li><strong>The sound card switches, live, or says why it cannot and
 gives the setting back.</strong> A listener reported that choosing a
@@ -281,6 +283,42 @@ although in earlier versions the key itself hid the source. It does
 again, through the same function the menu uses, so the two cannot
 disagree; Reset Sources to Default is the way back and the announcement
 names it (<code>quill/ui/radio/browse_delete.py</code>).</li>
+<li><strong>A “start with Windows” entry an older build wrote is
+repaired by the installer.</strong> A listener who had set Quill Radio
+to start with Windows met PyInstaller’s “Unhandled exception in script”
+box at every login instead of the radio – “Failed to execute script
+‘runtime_launcher’… ‘NoneType’ object has no attribute ‘write’”
+(reported 2026-09-29). Builds between the shared-runtime move and 3.0.1
+wrote the entry as the bare <code>QuillVilleRuntime.exe</code>, which is
+the engine rather than an app; run with no module it printed an
+explanation, and a windowed process has no console to print to, so
+writing it was the crash. 3.0.2 fixed both halves – the runtime’s
+streams, and a bare launch starting the installed app – and Quill Radio
+has repaired the entry at every launch since. That repair needed a
+launch, which is the one thing the broken entry prevented: nothing told
+the listener that opening the radio by hand would cure their login. The
+installer now repairs the entry as it stages the new build, before the
+next login, and names this copy’s own <code>QuillRadio.exe</code> so the
+entry survives the next runtime upgrade. An app you never asked to start
+with Windows stays absent, a portable copy is left alone, and a
+locked-down registry costs the repair and not the install
+(<code>quill/core/runtime_cli.py</code>,
+<code>installer/shared-runtime.iss</code>).</li>
+<li><strong>A minimized window comes back when its menu item or key asks
+for it.</strong> A listener reported that the recordings list was out of
+reach: Record &gt; Recordings… and Ctrl+Shift+R did nothing, though the
+folder itself was fine. Since 3.0 every big surface – Recordings, Browse
+Stations, Search Stations, Favorites, the player – is a window of its
+own, and every opener asks the WindowManager to raise one that is
+already open rather than build a second copy. <code>activate()</code>
+called <code>Show()</code> then <code>Raise()</code>, and on Windows
+neither restores an iconized frame: a window minimized from the taskbar,
+Windows+M or Windows+D counted as open and stayed minimized, the opener
+returned None, and the command went silent with nothing said.
+<code>activate()</code> now restores an iconized frame first, for every
+peer window, then brings it forward with focus on the control it was
+left on (<code>WindowManager.activate</code> in
+<code>quill/ui/window_menu.py</code>).</li>
 <li><strong>A portable copy’s Yes to “copy my favorites” now copies
 them.</strong> A 3.0.0 portable that had been opened once had a
 favorites file with nothing in it, and the import skipped every file the
