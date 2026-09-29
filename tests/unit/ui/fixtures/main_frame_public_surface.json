@@ -39,6 +39,7 @@
   "apply_persona_by_name",
   "apply_profile_settings",
   "apply_status_bar_visibility",
+  "audio_output_binding",
   "back_translate_auto",
   "back_translate_ueb",
   "bind_clipboard_cues",

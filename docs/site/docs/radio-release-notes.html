@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio 3.0 Release Notes</title>
   <style>
@@ -199,8 +199,8 @@
 <h1 id="quill-radio-30-release-notes">Quill Radio 3.0 Release Notes</h1>
 <p>Version 3.0.5, released 2026-09-29.</p>
 <h2 id="whats-new-in-305">What’s new in 3.0.5</h2>
-<p>Seven fixes. Three are about the sound card; four came in the same
-week.</p>
+<p>Eleven fixes. Three are about the sound card, two are about speed,
+and the rest came in the same week.</p>
 <h3
 id="choosing-a-sound-card-switches-to-it-or-says-why-it-cannot">Choosing
 a sound card switches to it, or says why it cannot</h3>
@@ -233,27 +233,32 @@ to Windows Media, that is said too.</li>
 card and a USB headset “Speakers”, so the list reads “Speakers (Realtek
 High Definition Audio)” and “Speakers (Logi USB Headset)”. The make in
 brackets is the part that tells them apart.</p>
-<h3 id="windows-media-gets-its-own-route-to-a-device">Windows Media gets
-its own route to a device</h3>
-<p>The Windows Media (classic) engine plays on the device Windows gives
-Quill Radio, and nothing in it takes a device name, so the Output Device
-list could never move it. Quill Radio no longer pretends otherwise, and
-it does not change your engine choice to get around it. Under Windows
-Media, choosing a device in <strong>Audio &gt; Output Device…</strong>
-says so in one sentence and opens the route that works for it: Windows’
-own Sound settings, where under <strong>Volume mixer</strong> every app
-has its own output device, and the choice sticks across restarts. No
-question first; find Quill Radio in the list and pick its device. A copy
-without the mpv engine goes straight to the same page. If a device is in
-the setting while the engine is Windows Media, it is given back with the
-same sentence.</p>
+<h3 id="windows-media-plays-to-the-sound-card-you-choose">Windows Media
+plays to the sound card you choose</h3>
+<p>Quill Radio’s Windows Media engine is Windows’ modern media player
+now, and it can be pointed at a device. So <strong>Audio &gt; Output
+Device…</strong> moves the sound whichever engine you are on: choose a
+card and the station moves to it at once, with no break and no
+reconnect.</p>
+<p>If the device cannot be opened – a headset asleep, a card another
+program is holding – you hear which one, and the setting goes back to
+what it was rather than naming a device you cannot hear.</p>
+<p>On an older copy of Windows that does not offer the modern player,
+Quill Radio falls back to the classic control, which has no way to
+choose a device at all. There, and only there, choosing a device says so
+in one sentence and opens the route that does work: Windows’ own Sound
+settings, where under <strong>Volume mixer</strong> every app has its
+own output device and the choice sticks across restarts. No question
+first.</p>
 <h3 id="preferences-names-the-engines-this-copy-has">Preferences names
 the engines this copy has</h3>
 <p>The Playback engine rows are built from what is installed. With the
-mpv engine present: Automatic (recommended, uses mpv), Windows Media
-(classic), mpv. Without it, there is no mpv row, and Automatic reads
-“Automatic (uses Windows Media; mpv is not installed)”. A row for an
-engine that is not there was a choice that did nothing.</p>
+mpv engine present: Automatic (recommended, uses mpv), Windows Media,
+mpv. Without it, there is no mpv row, and Automatic reads “Automatic
+(uses Windows Media; mpv is not installed)”. A row for an engine that is
+not there was a choice that did nothing. The Windows Media row reads
+“Windows Media (classic)” only on a machine without the modern player,
+so the name tells you which one you have.</p>
 <h3 id="ctrlt-says-the-title-every-time">Ctrl+T says the title every
 time</h3>
 <p>What’s Playing said station, title and artist the first time and only
@@ -271,6 +276,72 @@ branch hides the source</h3>
 <p>On a top-level branch such as Podcasts, Delete now hides the source,
 as it did in earlier versions and as Hide This Source on the context
 menu does. Reset Sources to Default brings it back.</p>
+<h3 id="a-minimized-window-comes-back-when-you-ask-for-it">A minimized
+window comes back when you ask for it</h3>
+<p>A listener wrote that the recordings list was out of reach:
+<strong>Record &gt; Recordings…</strong> and Ctrl+Shift+R did nothing,
+though the folder itself was fine. Since 3.0 every big surface –
+Recordings, Browse Stations, Search Stations, Favorites, the player – is
+a window of its own, and asking for one that is already open brings it
+forward instead of opening a second copy. A window that had been
+minimized, from the taskbar, Windows+M or Windows+D, counted as already
+open and stayed minimized: showing it did nothing and raising it did not
+restore it, so the command went silent.</p>
+<p>From 3.0.5 the window is restored first, then brought forward with
+focus on the control you left it on. If Recordings… still does nothing
+for you, send <code>%APPDATA%\Quill\logs\QuillRadio-launch.log</code>
+(or <code>data\logs\launch.log</code> beside a portable copy) to
+support: since 3.0.4 anything the app could not do is written there.</p>
+<h3
+id="starting-with-windows-works-again-and-the-installer-repairs-it">Starting
+with Windows works again, and the installer repairs it</h3>
+<p>A listener who had set Quill Radio to start with Windows was met at
+every login by a box reading “Unhandled exception in script” and “Failed
+to execute script ‘runtime_launcher’”, instead of the radio.</p>
+<p>Quill Radio runs on a shared engine that the apps in the family use
+together. Builds from last summer up to 3.0.1 wrote the “start with
+Windows” entry as that engine on its own, with nothing to say which app
+to open. Run that way the engine tried to explain itself in writing –
+and an app started at login has nowhere to write to, so the attempt to
+explain was itself the error.</p>
+<p>3.0.2 fixed both halves: the engine can always write, and started on
+its own it opens the app you have installed. Quill Radio has also
+repaired the entry every time it opened since. But that repair needed
+you to open Quill Radio, and the broken entry is the one thing stopping
+it from opening – and nothing told you that opening the radio by hand
+would cure your login.</p>
+<p>From 3.0.5 the installer repairs the entry while it installs, so the
+next login is right whether or not you open the radio first. It writes
+this copy’s own <code>QuillRadio.exe</code>, so the entry keeps working
+through future engine updates. If you never asked for Quill Radio to
+start with Windows, nothing is added; a portable copy never touches the
+computer it visits; and if your workplace locks the registry, the
+install still succeeds.</p>
+<p>If a login still opens the wrong thing, turn the setting off and on
+again with <strong>Station &gt; Start Quill Radio with Windows</strong>,
+which rewrites the entry from scratch.</p>
+<h3 id="preferences-opens-at-once">Preferences opens at once</h3>
+<p>Opening <strong>Preferences</strong> took two seconds or more, every
+time.</p>
+<p>The output-device list behind that window asked Windows for every
+device on the computer and then picked the sound cards out afterwards.
+On a developer’s machine that was 4,048 devices, and 2.4 seconds, to
+find 2. Quill Radio now asks Windows for audio devices instead of for
+everything, which takes about 8 milliseconds, and it remembers the
+answer for a few seconds so opening Preferences twice does not ask
+twice.</p>
+<p>Two things came with it. The old query could also time out and hand
+back an empty list, so the device list sometimes appeared with nothing
+in it – that is gone. And an empty answer is never remembered, so a bad
+moment cannot turn into a stretch of “no devices”.</p>
+<h3 id="running-from-a-source-checkout-finds-mpv">Running from a source
+checkout finds mpv</h3>
+<p>For anyone building Quill Radio from the source tree: the playback
+engine list showed only Automatic and Windows Media, because the search
+for the mpv engine looked at every place a <em>released</em> copy keeps
+it and never at the one a checkout actually uses. It looks there too
+now. An installed or portable copy is unchanged, and a released build
+still never reads a build folder.</p>
 <h3 id="a-portable-copys-favorites-import-now-imports">A portable copy’s
 favorites import now imports</h3>
 <p>A portable copy that had been opened once had an empty favorites

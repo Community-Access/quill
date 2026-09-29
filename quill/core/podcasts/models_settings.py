@@ -98,6 +98,12 @@ class PodcastSettings:
     reconnect_enabled: bool = True
     reconnect_max_attempts: int = 5
     reconnect_wait_seconds: int = 10
+    #: Which sound card Cast plays through ("" = whatever Windows gives the
+    #: app). An mpv/Windows Media device name from
+    #: :mod:`quill.ui.audio.output_routing`, the same naming Quill Radio
+    #: saves, so the two apps mean the same thing by the same string. Local:
+    #: a device id names hardware on THIS computer.
+    output_device: str = ""
     #: How a cross-show episode list (Inbox, New Episodes, Continue
     #: Listening, Favorites) presents multiple shows at once. "flat": one
     #: stream sorted by episode_sort_mode across every show (per-show sort
@@ -334,6 +340,7 @@ class PodcastSettings:
             "retention_count": self.retention_count,
             "speed": self.speed,
             "download_root": self.download_root,
+            "output_device": self.output_device,
             "delete_files_on_remove": self.delete_files_on_remove,
             "always_sync_full_catalog": self.always_sync_full_catalog,
             "auto_trim_silence": self.auto_trim_silence,
@@ -413,6 +420,7 @@ class PodcastSettings:
             retention_count=_coerce_int(data.get("retention_count"), 5),
             speed=clamp_speed(_coerce_float(data.get("speed"), 1.0)),
             download_root=str(data.get("download_root", "")),
+            output_device=str(data.get("output_device", "")),
             delete_files_on_remove=delete_policy
             if delete_policy in ("ask", "always", "never")
             else "ask",
@@ -521,10 +529,13 @@ class PodcastSettings:
 
 #: Settings that describe *this machine* rather than how the app behaves, and so
 #: are left out of a portable backup. Where episodes are downloaded is a folder
-#: on this computer. Everything else -- playback, the queue, folders, the
+#: on this computer, and the output device is a sound card on it -- a device
+#: id carried to another machine names nothing there, or worse, names
+#: something else. Everything else -- playback, the queue, folders, the
 #: directory source -- is a preference that travels (#1501).
 LOCAL_SETTINGS: frozenset[str] = frozenset({
     "download_root",
+    "output_device",
 })
 
 

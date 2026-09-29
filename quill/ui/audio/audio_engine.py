@@ -227,6 +227,7 @@ def create_engine(
     on_loaded: Callable[[int], None],
     on_finished: Callable[[], None],
     on_error: Callable[[str], None],
+    audio_device: str = "",
 ) -> AudioEngine | None:
     """The best available engine for this machine, or None with the error spoken.
 
@@ -235,19 +236,36 @@ def create_engine(
     a copy beside the executable. Any mpv failure falls back to the Windows
     Media engine (:func:`create_windows_engine`: modern where Windows offers
     it, classic otherwise) so a broken DLL can never take playback away.
+
+    *audio_device* is an output device from
+    :mod:`quill.ui.audio.output_routing` (``""`` = system default). Both
+    engines that can honour it do: libmpv through ``audio-device``, the
+    modern Windows Media engine through its own device property, on the same
+    ``wasapi/{guid}`` names -- so a device chosen in one QuillVille app means
+    the same thing in every other. Only the classic wx.media control ignores
+    it, because it has no device API at all; there the app's route to a
+    device is Windows' own per-app setting (:mod:`quill.ui.media.output_device`).
     """
     if preferred_backend() == "mpv":
         try:
             from quill.ui.audio.mpv_engine import MpvAudioEngine
 
             return MpvAudioEngine(
-                parent, on_loaded=on_loaded, on_finished=on_finished, on_error=on_error
+                parent,
+                on_loaded=on_loaded,
+                on_finished=on_finished,
+                on_error=on_error,
+                audio_device=audio_device,
             )
         except Exception:  # noqa: BLE001 - fall back to the zero-dependency backend
             _log.exception("libmpv found but unusable; falling back to wx.media")
     try:
         return create_windows_engine(
-            parent, on_loaded=on_loaded, on_finished=on_finished, on_error=on_error
+            parent,
+            on_loaded=on_loaded,
+            on_finished=on_finished,
+            on_error=on_error,
+            audio_device=audio_device,
         )
     except Exception:  # noqa: BLE001 - no media backend on this machine
         _log.exception("No audio playback backend available")

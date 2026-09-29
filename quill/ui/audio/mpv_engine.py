@@ -78,6 +78,17 @@ def find_libmpv() -> Path | None:
     except Exception:  # noqa: BLE001 - no app data dir in odd harnesses
         pass
     candidates += [exe_dir / name for name in _DLL_NAMES]
+    # Running from a source checkout: the repo's own build staging
+    # (build/deps/mpv), which is where scripts/ put libmpv for the
+    # installers. Without this a developer running `python -m quill.apps.radio`
+    # from the tree had no mpv at all -- Preferences offered only Automatic
+    # and Windows Media, and no output-device routing -- while the DLL sat
+    # in the checkout the whole time (reported 2026-09-29). Never in a
+    # frozen build: a shipped app must not read a build directory.
+    if not getattr(sys, "frozen", False):
+        repo_root = Path(__file__).resolve().parents[3]
+        staged = repo_root / "build" / "deps" / "mpv"
+        candidates += [staged / name for name in _DLL_NAMES]
     for candidate in candidates:
         if candidate.is_file():
             return candidate
@@ -206,11 +217,15 @@ class MpvAudioEngine:
         on_finished: Callable[[], None],
         on_error: Callable[[str], None],
         dll_path: Path | None = None,
+        audio_device: str = "",
     ) -> None:
         path = dll_path or find_libmpv()
         if path is None:
             raise OSError("libmpv is not installed")
         self._mpv = _MpvClient(path)
+        self._audio_device = ""
+        if audio_device:
+            self.set_audio_device(audio_device)
         self._on_loaded = on_loaded
         self._on_finished = on_finished
         self._on_error = on_error
@@ -288,6 +303,29 @@ class MpvAudioEngine:
     def set_rate(self, rate: float) -> None:
         """Playback speed (1.0 = normal); mpv's scaletempo keeps the pitch."""
         self._mpv.set_str("speed", f"{max(0.25, min(4.0, float(rate))):.2f}")
+
+    def set_audio_device(self, name: str) -> None:
+        """Route output to mpv device *name* ("" = system default).
+
+        Runtime-settable: mpv switches a playing file to the new device with
+        no reload. The same call Quill Radio's own mpv engine makes, on the
+        same ``wasapi/{guid}`` names the family shares
+        (:mod:`quill.ui.audio.output_routing`), so a device chosen in one app
+        is understood by every other and by the Windows Media engine too.
+
+        A name mpv refuses leaves the previous device playing rather than
+        silence: the caller is told by :meth:`audio_device` still reporting
+        the old one.
+        """
+        status = self._mpv.set_str("audio-device", name.strip() or "auto")
+        if status < 0:  # a refused name; mpv keeps the previous device
+            _log.warning("mpv refused audio-device %r (status %s)", name, status)
+            return
+        self._audio_device = name.strip()
+
+    def audio_device(self) -> str:
+        """The device this engine is routed to ("" = system default)."""
+        return self._audio_device
 
     def set_audio_filters(self, chain: str) -> None:
         """Apply an ffmpeg audio-filter chain (mpv ``af``): EQ, boost, silence.

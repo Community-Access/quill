@@ -4,7 +4,7 @@ Version 3.0.5, released 2026-09-29.
 
 ## What's new in 3.0.5
 
-Nine fixes. Three are about the sound card; six came in the same week.
+Eleven fixes. Three are about the sound card, two are about speed, and the rest came in the same week.
 
 ### Choosing a sound card switches to it, or says why it cannot
 
@@ -37,27 +37,32 @@ USB headset "Speakers", so the list reads "Speakers (Realtek High Definition
 Audio)" and "Speakers (Logi USB Headset)". The make in brackets is the part
 that tells them apart.
 
-### Windows Media gets its own route to a device
+### Windows Media plays to the sound card you choose
 
-The Windows Media (classic) engine plays on the device Windows gives Quill
-Radio, and nothing in it takes a device name, so the Output Device list could
-never move it. Quill Radio no longer pretends otherwise, and it does not change
-your engine choice to get around it. Under Windows Media, choosing a device in
-**Audio > Output Device...** says so in one sentence and opens the route that
-works for it: Windows' own Sound settings, where under **Volume mixer** every
-app has its own output device, and the choice sticks across restarts. No
-question first; find Quill Radio in the list and pick its device. A copy
-without the mpv engine goes straight to the same page. If a device is in the
-setting while the engine is Windows Media, it is given back with the same
-sentence.
+Quill Radio's Windows Media engine is Windows' modern media player now, and it
+can be pointed at a device. So **Audio > Output Device...** moves the sound
+whichever engine you are on: choose a card and the station moves to it at once,
+with no break and no reconnect.
+
+If the device cannot be opened -- a headset asleep, a card another program is
+holding -- you hear which one, and the setting goes back to what it was rather
+than naming a device you cannot hear.
+
+On an older copy of Windows that does not offer the modern player, Quill Radio
+falls back to the classic control, which has no way to choose a device at all.
+There, and only there, choosing a device says so in one sentence and opens the
+route that does work: Windows' own Sound settings, where under **Volume mixer**
+every app has its own output device and the choice sticks across restarts. No
+question first.
 
 ### Preferences names the engines this copy has
 
-The Playback engine rows are built from what is installed. With the mpv
-engine present: Automatic (recommended, uses mpv), Windows Media (classic),
-mpv. Without it, there is no mpv row, and Automatic reads "Automatic (uses
-Windows Media; mpv is not installed)". A row for an engine that is not there
-was a choice that did nothing.
+The Playback engine rows are built from what is installed. With the mpv engine
+present: Automatic (recommended, uses mpv), Windows Media, mpv. Without it,
+there is no mpv row, and Automatic reads "Automatic (uses Windows Media; mpv is
+not installed)". A row for an engine that is not there was a choice that did
+nothing. The Windows Media row reads "Windows Media (classic)" only on a
+machine without the modern player, so the name tells you which one you have.
 
 ### Ctrl+T says the title every time
 
@@ -123,6 +128,30 @@ the registry, the install still succeeds.
 If a login still opens the wrong thing, turn the setting off and on again with
 **Station > Start Quill Radio with Windows**, which rewrites the entry from
 scratch.
+
+### Preferences opens at once
+
+Opening **Preferences** took two seconds or more, every time.
+
+The output-device list behind that window asked Windows for every device on the
+computer and then picked the sound cards out afterwards. On a developer's
+machine that was 4,048 devices, and 2.4 seconds, to find 2. Quill Radio now asks
+Windows for audio devices instead of for everything, which takes about 8
+milliseconds, and it remembers the answer for a few seconds so opening
+Preferences twice does not ask twice.
+
+Two things came with it. The old query could also time out and hand back an
+empty list, so the device list sometimes appeared with nothing in it -- that is
+gone. And an empty answer is never remembered, so a bad moment cannot turn into
+a stretch of "no devices".
+
+### Running from a source checkout finds mpv
+
+For anyone building Quill Radio from the source tree: the playback engine list
+showed only Automatic and Windows Media, because the search for the mpv engine
+looked at every place a *released* copy keeps it and never at the one a
+checkout actually uses. It looks there too now. An installed or portable copy
+is unchanged, and a released build still never reads a build folder.
 
 ### A portable copy's favorites import now imports
 

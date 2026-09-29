@@ -25,9 +25,38 @@ The one thing this must never do is imply it did something it did not.
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Callable
+from typing import Any, NamedTuple
 
-__all__ = ["WINDOWS_APP_VOLUME_URI", "choose_output_device", "explain_no_engine_support"]
+__all__ = [
+    "WINDOWS_APP_VOLUME_URI",
+    "OutputDeviceBinding",
+    "choose_output_device",
+    "explain_no_engine_support",
+    "pick_output_device",
+]
+
+
+class OutputDeviceBinding(NamedTuple):
+    """What an app has to say to get the family's output-device picker.
+
+    Four things, because four are all it takes and asking for a frame type
+    would tie the picker to one app's shape -- which is how Cast ended up
+    with a menu item that could only ever say no.
+
+    * *app_name* -- what the prompt and the announcements call this app.
+    * *engine* -- the engine ACTUALLY playing, not a guess from what the
+      machine has installed: a computer with libmpv can still be on the
+      classic control, and only the live engine knows.
+    * *current* -- the device saved for this app ("" = system default).
+    * *save* -- persist the new choice for the next launch.
+    """
+
+    app_name: str
+    engine: Any
+    current: str
+    save: Callable[[str], None]
+
 
 #: Windows' per-app volume and device page. Every app on the machine is listed
 #: with its own output picker, and the setting persists across restarts.
@@ -56,6 +85,23 @@ def _engine_can_choose() -> bool:
         return False
 
 
+def _binding(host: Any) -> OutputDeviceBinding | None:
+    """The app's own answer, or None when it has not opted in.
+
+    Never raises: an app whose engine is still starting (or already gone)
+    falls through to the routes below rather than costing the listener the
+    command.
+    """
+    ask = getattr(host, "audio_output_binding", None)
+    if not callable(ask):
+        return None
+    try:
+        binding = ask()
+    except Exception:  # noqa: BLE001 - no answer is "not opted in"
+        return None
+    return binding if isinstance(binding, OutputDeviceBinding) else None
+
+
 def open_windows_app_volume() -> bool:
     """Open Windows' per-app volume page. Returns whether it opened."""
     try:
@@ -77,6 +123,26 @@ def choose_output_device(host: Any) -> None:
 
     announce = getattr(host, "_announce", None) or (lambda _m: None)
 
+    # An app that can say what it plays through gets the real list. This is the
+    # opt-in every app but Radio lacked: the engines could not be pointed at a
+    # device when this module was written, and once the modern Windows Media
+    # engine could (2026-09-29) the only thing still missing was each app
+    # saying which engine and which setting are its own.
+    binding = _binding(host)
+    if binding is not None:
+        pick_output_device(
+            getattr(host, "frame", None) or host,
+            app_name=binding.app_name,
+            current=binding.current,
+            engine=binding.engine,
+            announce=announce,
+            save=binding.save,
+        )
+        return
+
+    # Radio keeps its own path: it has an engine PREFERENCE as well as an
+    # engine, and the interplay between the two (a device chosen while the
+    # classic control is pinned) is Radio's to explain.
     if _engine_can_choose() and getattr(host, "_radio_history", None) is not None:
         from quill.ui.radio.output_device_ui import choose_output_device as pick
 
@@ -101,3 +167,96 @@ def choose_output_device(host: Any) -> None:
         )
     else:
         announce("Windows Sound settings could not be opened on this machine.")
+
+
+def pick_output_device(
+    parent: Any,
+    *,
+    app_name: str,
+    current: str,
+    engine: Any,
+    announce: Any,
+    save: Any,
+) -> None:
+    """Choose the sound card *app_name* plays through. The family's one picker.
+
+    Quill Radio has had a picker since #1253 and every other app had the
+    "Windows can do it for you" sentence, because the engines those apps play
+    through had no device API. That stopped being true when the modern Windows
+    Media engine arrived (2026-09-29): it can be pointed at a device, and so
+    can libmpv, so the honest answer for the rest of the family is now a real
+    list rather than a redirect.
+
+    The redirect survives for the one case where it is still the truth: the
+    classic ``wx.media`` control, which has no device API at all. There the
+    route that works is Windows' own per-app setting, and saying so beats a
+    list that would do nothing.
+
+    *engine* is the engine actually playing -- not a guess from what the
+    machine has installed, because a machine with libmpv can still be on the
+    classic control. *save* persists the choice for the next launch; *announce*
+    is the app's own speech. Says only what the screen reader does not: the
+    dialog names itself, so only the outcome is spoken (GATE-13).
+    """
+    import wx
+
+    from quill.ui import modal_stack
+    from quill.ui.audio.output_routing import (
+        engine_routes_devices,
+        list_output_devices,
+        set_engine_output_device,
+    )
+    from quill.ui.radio.mpv_radio_engine import output_device_choices
+
+    if not engine_routes_devices(engine):
+        _open_windows_route(
+            parent,
+            announce,
+            app_name,
+            f"{app_name} is playing through the classic Windows Media engine, which "
+            "cannot be pointed at a device from here.",
+        )
+        return
+
+    labels, names, index = output_device_choices(list_output_devices(), current)
+    with wx.SingleChoiceDialog(
+        modal_stack.parent_window(parent),
+        f"Send {app_name}'s audio to which device?",
+        "Output Device",
+        labels,
+    ) as dialog:
+        if index >= 0:
+            dialog.SetSelection(index)
+        if dialog.ShowModal() != wx.ID_OK:
+            return
+        chosen = names[dialog.GetSelection()]
+        chosen_label = labels[dialog.GetSelection()]
+
+    if chosen == current:
+        announce(f"Output device unchanged: {chosen_label}.")
+        return
+    if not set_engine_output_device(engine, chosen):
+        # The device is in the list and the engine still would not take it: a
+        # headset asleep, a card another program holds, an id Windows changed.
+        # The setting is NOT saved -- a saved device the engine cannot open is
+        # exactly the split between what the app says and what you hear that
+        # this whole area exists to end.
+        announce(f"{chosen_label} could not be opened, so the output device is unchanged.")
+        return
+    save(chosen)
+    announce(f"Output device: {chosen_label}.")
+
+
+def _open_windows_route(parent: Any, announce: Any, app_name: str, reason: str) -> None:
+    """Windows' own per-app device page, opened at once and explained in one
+    sentence. No question first: the list cannot help and this can."""
+    if open_windows_app_volume():
+        announce(
+            f"{reason} Windows' Sound settings opened: find {app_name} under Volume "
+            "mixer and choose its output device there."
+        )
+    else:
+        announce(
+            f"{reason} Give {app_name} its device in Windows' Sound settings, under "
+            "Volume mixer; that page could not be opened from here."
+        )

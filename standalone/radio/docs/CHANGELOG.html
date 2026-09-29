@@ -206,12 +206,13 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="305---2026-09-29">[3.0.5] - 2026-09-29</h2>
-<p>Nine fixes. The sound card switches, or says why it cannot and puts
+<p>Eleven fixes. The sound card switches, or says why it cannot and puts
 the setting back; Windows Media gets a route to a device of its own;
 Preferences names only the engines this copy has; a minimized window
 comes back when its menu item or key asks for it; a stale “start with
 Windows” entry is repaired by the installer rather than waiting for a
-launch; and four smaller things that came in the same week.</p>
+launch; Preferences opens in a blink instead of two seconds; and four
+smaller things that came in the same week.</p>
 <ul>
 <li><strong>The sound card switches, live, or says why it cannot and
 gives the setting back.</strong> A listener reported that choosing a
@@ -235,31 +236,32 @@ that lands on Windows Media with a device chosen is said out loud
 instead of hidden. Every decision is logged
 (<code>quill/ui/radio/output_device_guard.py</code>; the mpv client now
 reports a refused property instead of swallowing it).</li>
-<li><strong>Windows Media (classic) gets its own route to a device, and
-the engine choice is left alone.</strong> Nothing in the Windows Media
-control takes a device name, so under that engine the output device list
-could never move the sound, and an earlier draft of this release
-answered by switching the engine to Automatic. It does not: the engine
-is yours. Under Windows Media, choosing a device in Audio &gt; Output
-Device now says so in one sentence and opens Windows’ own Sound
-settings, where under Volume mixer every app has its own output device
-and the choice sticks across restarts – no question first. A copy
-without the mpv engine at all, where there is no device list to show,
-goes straight to the same page. A device that is in the setting while
-the engine is Windows Media (a preference switched after a device was
-chosen, or a copied settings file) is given back with the same sentence,
-because a setting that names a device the engine does not use is the
-confusion this release exists to end. This is the answer QUILL Cast
-already gives (<code>quill/ui/media/output_device.py</code>), now shared
-with the radio.</li>
+<li><strong>Windows Media plays to the sound card you choose.</strong>
+Quill Radio’s Windows Media engine is Windows’ modern media player
+(<code>Windows.Media.Playback.MediaPlayer</code>,
+<code>quill/ui/audio/winrt_engine.py</code>), and it takes a device, so
+Audio &gt; Output Device moves the sound whichever engine you are on –
+live, with no reconnect. A device that will not open is named and the
+setting goes back rather than pointing at something you cannot hear. The
+engine choice itself is left alone: an earlier draft of this release
+switched the engine to Automatic to get around the old limitation, and
+it does not – the engine is yours. On a machine without the modern
+player Quill Radio falls back to the classic <code>wx.media</code>
+control, which has no device API at all; there, and only there, choosing
+a device says so in one sentence and opens Windows’ own Sound settings,
+where under Volume mixer every app has its own output device and the
+choice sticks across restarts – no question first. This is the answer
+QUILL Cast already gives (<code>quill/ui/media/output_device.py</code>),
+now shared with the radio.</li>
 <li><strong>Preferences offers only the playback engines this copy
 has.</strong> With mpv present the rows are Automatic (recommended, uses
-mpv), Windows Media (classic) and mpv; without it there is no mpv row
-and Automatic reads “Automatic (uses Windows Media; mpv is not
-installed)”, and a saved mpv preference lands on Automatic, which is
-what it resolves to. A row for an engine that is not installed was a
-choice that did nothing
-(<code>quill/core/radio/playback_engine_choices.py</code>).</li>
+mpv), Windows Media and mpv; without it there is no mpv row and
+Automatic reads “Automatic (uses Windows Media; mpv is not installed)”,
+and a saved mpv preference lands on Automatic, which is what it resolves
+to. The Windows Media row reads “Windows Media (classic)” only on a
+machine without the modern player, so the name says which one this copy
+has. A row for an engine that is not installed was a choice that did
+nothing (<code>quill/core/radio/playback_engine_choices.py</code>).</li>
 <li><strong>Ctrl+T says the title every time.</strong> What’s Playing
 said station, title and artist the first time and only the station after
 that, though Copy still copied all three (reported by John). Each press
@@ -283,6 +285,33 @@ although in earlier versions the key itself hid the source. It does
 again, through the same function the menu uses, so the two cannot
 disagree; Reset Sources to Default is the way back and the announcement
 names it (<code>quill/ui/radio/browse_delete.py</code>).</li>
+<li><strong>Preferences opens at once instead of after two
+seconds.</strong> Reported: “why is it taking two seconds or longer to
+bring up preferences?” The output-device list behind that window asked
+Windows for every device on the computer and then picked the sound cards
+out in Python – on the reporter’s machine, 4,048 devices in 2.4 seconds,
+to find 2. pywinrt will not take
+<code>DeviceInformation.find_all_async</code>’s overloads positionally
+(both spellings raise “Invalid parameter count”), which is why the first
+version swept everything; it names its overloads instead, and
+<code>find_all_async_device_class</code> returns the real sound cards in
+8 milliseconds. The family list ran that sweep twice and hit its own
+five-second timeout, so the device list could also come back empty. The
+machine-wide sweep is kept as the fallback for a runtime without the
+named overload – slow, never broken
+(<code>quill/ui/audio/winrt_engine.py</code>).</li>
+<li><strong>Running from a source checkout finds the mpv it already
+has.</strong> Reported: “why is mpv not working when running the
+run-quill-radio script from the d:\quill folder? I only see automatic
+and windows media.” The engine list was right – 3.0.5 offers no row for
+an engine this copy does not have – but the search for libmpv looked at
+every shipped location (the <code>QUILL_LIBMPV</code> override, an
+Offline Edition’s <code>tools\mpv</code>, the runtime folder, the
+downloaded engine pack) and never at the repository’s own
+<code>build\deps\mpv</code>, which is exactly where the installer
+scripts stage it. A source run now looks there too, and a frozen build
+never does – a shipped app must load only what was shipped with it
+(<code>quill/ui/audio/mpv_engine.py</code>).</li>
 <li><strong>A “start with Windows” entry an older build wrote is
 repaired by the installer.</strong> A listener who had set Quill Radio
 to start with Windows met PyInstaller’s “Unhandled exception in script”

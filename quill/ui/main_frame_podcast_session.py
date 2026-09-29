@@ -78,6 +78,14 @@ class PodcastSessionMixin:
 
         open_directory_credentials(self)
 
+    def audio_output_binding(self) -> object | None:
+        """Which engine and which saved device are Cast's -- see
+        :mod:`quill.ui.media.output_device_apps`, where every app's answer
+        lives beside the picker that asks for it."""
+        from quill.ui.media.output_device_apps import cast_binding
+
+        return cast_binding(self)
+
     def podcast_choose_output_device(self) -> None:
         """Audio Output Device...: route this app's sound. See ui/media/output_device."""
         from quill.ui.media.output_device import choose_output_device

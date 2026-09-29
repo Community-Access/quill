@@ -2,6 +2,41 @@
 
 ## 1.0.0
 
+### Choosing a sound card is a family capability now (2026-09-29)
+
+- **Every app's "Windows Media" is the modern engine, and it can be pointed
+  at a sound card.** `Windows.Media.Playback.MediaPlayer` replaces the
+  classic `wx.media` control wherever Windows offers it
+  (`create_windows_engine`), so every app that plays through the shared
+  factory gets it: Quill Radio, QUILL Cast, Quill Media Player, Audio Studio
+  and Beacon. **libmpv is untouched and still preferred** -- this replaces
+  Windows Media classic with the modern components, nothing else -- and it
+  gained the same device call, so both engines route on the same
+  `wasapi/{guid}` names and a device chosen in one app means the same thing
+  in the next (`quill/ui/audio/output_routing.py`).
+- **QUILL Cast's Audio Output Device... does what it says.** Cast shipped the
+  menu item with no way to answer it: the engines it played through had no
+  device API, so the command could only explain that Windows' own Sound
+  settings were the route. It now lists the real devices, switches live with
+  no reload (forty minutes into an episode you keep your place), and
+  remembers the choice per machine. A device the engine will not open is
+  named and *not* saved -- a setting pointing at a device you cannot hear is
+  the split this whole area exists to close.
+- **Quill Media Player gains the same row** (Playback > Audio Output
+  Device..., Ctrl+Shift+K, the chord Cast already uses).
+- **One picker, not five.** `OutputDeviceBinding` is the four things an app
+  supplies -- its name, the engine actually *playing*, the device it saved,
+  and how to save a new one -- and `quill/ui/media/output_device_apps.py`
+  holds each app's answer beside the picker that asks. The engine is asked
+  of the app rather than guessed from the machine: a computer with libmpv
+  installed can still be playing on the classic control. The
+  Windows-settings redirect survives for that one case, where it is still
+  the truth.
+- GATE-11 was paid by extracting, not rebaselining: the Media Player's menu
+  bar moved to `quill/apps/player_menus.py` (-172 lines), Cast's channel-mode
+  pair joined its volume mixin, and the three duplicated device methods
+  became one `OutputDeviceMixin`. Two budgets ratcheted *down*.
+
 ### Live Dictation: the reliability pass, and words taught in a window (2026-09-28)
 
 - **Nine items from QUILL Lite's dictation plan, in the shared Live Dictation

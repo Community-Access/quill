@@ -15,6 +15,8 @@ so the two players cannot drift into behaving differently.
 
 from __future__ import annotations
 
+from quill.core.audio.channel_mode import normalize as normalize_channel_mode
+
 
 class PodcastPlayerVolumeMixin:
     """Volume, mute and playback gain for :class:`PodcastPlayerController`."""
@@ -71,3 +73,38 @@ class PodcastPlayerVolumeMixin:
     @property
     def volume_percent(self) -> int:
         return self._volume_percent
+
+    # -- where the sound comes out ----------------------------------------
+    #
+    # Moved here from player_controller.py under GATE-11 (extract, never
+    # rebaseline) when the family's output-device work pushed that module
+    # past its ceiling. It belongs beside the volume controls: both answer
+    # "what does this sound like", and channel mode is an accessibility
+    # setting before a sound one -- mono keeps hard-panned content audible
+    # to someone listening with one ear, and the single-ear modes leave the
+    # other ear free for a screen reader.
+
+    def channel_mode(self) -> str:
+        """Where the audio is currently coming out (stereo/mono/left/right)."""
+        return self._channel_mode
+
+    def set_channel_mode(self, mode: str) -> str:
+        """Change only the channel mode, keeping your place. Returns it.
+
+        Changing it means restarting the ffmpeg relay -- there is no way to
+        alter a running one -- so this reloads at the current position rather
+        than from the top. Someone forty minutes into an episode who switches
+        to mono must not be sent back to the beginning to get there.
+        """
+        resolved = normalize_channel_mode(mode)
+        if resolved == self._channel_mode:
+            return resolved
+        self.set_enhancement(
+            bass_db=self._eq_bass_db,
+            mid_db=self._eq_mid_db,
+            treble_db=self._eq_treble_db,
+            compressor_enabled=self._compressor_enabled,
+            smart_speed_enabled=self._smart_speed_enabled,
+            channel_mode=resolved,
+        )
+        return resolved

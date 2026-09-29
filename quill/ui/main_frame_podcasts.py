@@ -87,6 +87,9 @@ class PodcastsMixin(
             spotify_token_provider=self._spotify_session.access_token,
             on_second_tick=self._podcast_second_tick,
             local_fallback=self._podcast_local_fallback,
+            # The sound card this listener chose last time, so the first
+            # episode of the session already plays where the last one did.
+            output_device=self._podcast_library.settings.output_device,
         )
         settings = self._podcast_library.settings
         self._podcast_controller.set_enhancement(

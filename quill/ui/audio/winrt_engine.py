@@ -116,15 +116,39 @@ def _wait(operation: Any, timeout: float = _ASYNC_TIMEOUT_SECONDS) -> Any:
 _known_devices: dict[str, Any] = {}
 
 
+def _find_audio_endpoints() -> Any:
+    """Windows' audio render endpoints, asking for only those where we can.
+
+    pywinrt does not take the overloads positionally -- ``find_all_async(x)``
+    raises "Invalid parameter count" whether *x* is a ``DeviceClass`` or an AQS
+    string -- which is why this used to sweep every device on the machine and
+    filter in Python. It names its overloads instead, and the named one is not
+    a small win: on a developer's machine the unfiltered sweep returned 4,048
+    devices in 2.4 seconds, and ``find_all_async_device_class`` returns the 2
+    real sound cards in 8 milliseconds. That sweep ran every time a Preferences
+    window was opened, and it is what made opening one take two seconds.
+
+    The unfiltered sweep stays as the fallback, because the named overload is a
+    pywinrt spelling rather than a WinRT guarantee: a build that does not have
+    it gets a slow answer instead of no answer.
+    """
+    from winrt.windows.devices.enumeration import DeviceClass, DeviceInformation
+
+    by_class = getattr(DeviceInformation, "find_all_async_device_class", None)
+    if callable(by_class):
+        try:
+            return _wait(by_class(DeviceClass.AUDIO_RENDER))
+        except TimeoutError:
+            raise
+        except Exception:  # noqa: BLE001 - an unusable overload is not a failure
+            _log.debug("find_all_async_device_class unavailable; sweeping", exc_info=True)
+    return _wait(DeviceInformation.find_all_async())
+
+
 def _enumerate() -> list[Any]:
     """Every enabled audio render endpoint, freshest first in ``_known_devices``."""
-    from winrt.windows.devices.enumeration import DeviceInformation
-
-    # The one-argument overloads (a DeviceClass or an AQS filter) fail with
-    # "Invalid parameter count" in pywinrt 3.2.1, so this enumerates every
-    # device and keeps the audio-render endpoints by their class GUID.
     found = []
-    for device in _wait(DeviceInformation.find_all_async()):
+    for device in _find_audio_endpoints():
         try:
             if _RENDER_CLASS not in device.id.lower() or not device.is_enabled:
                 continue

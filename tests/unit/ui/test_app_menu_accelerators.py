@@ -40,7 +40,9 @@ _APPS_DIR = Path(__file__).resolve().parents[3] / "quill" / "apps"
 APP_MENU_FILES = (
     "radio.py",
     "podcasts_menu.py",
-    "player.py",
+    # The Media Player's bar moved to its own mixin under GATE-11 when the
+    # output-device row arrived (2026-09-29); player.py no longer builds one.
+    "player_menus.py",
     "studio.py",
     "inkwell.py",
     "weather.py",

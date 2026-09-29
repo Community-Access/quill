@@ -179,6 +179,7 @@
   "quill.ui.media.list_columns_dialog": "reachable",
   "quill.ui.media.listen_mixin": "reachable",
   "quill.ui.media.mini_player": "reachable",
+  "quill.ui.media.output_device": "reachable",
   "quill.ui.media.player_info_dialog": "reachable",
   "quill.ui.media.quick_actions_dialog": "reachable",
   "quill.ui.menu_routes": "reachable",

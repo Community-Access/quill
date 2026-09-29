@@ -44,6 +44,7 @@ from quill.core.audio_enhance import (
 )
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
+from quill.ui.media.output_device_mixin import OutputDeviceMixin
 from quill.ui.podcasts.player_spotify import PodcastSpotifyEngineMixin
 from quill.ui.podcasts.player_volume import PodcastPlayerVolumeMixin
 
@@ -88,7 +89,9 @@ class PodcastPlaybackState:
         return "Podcasts"
 
 
-class PodcastPlayerController(PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixin):
+class PodcastPlayerController(
+    OutputDeviceMixin, PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixin
+):
     """Play/pause/stop one podcast episode at a time."""
 
     def __init__(
@@ -103,6 +106,7 @@ class PodcastPlayerController(PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixi
         spotify_token_provider: Callable[[], str] | None = None,
         on_second_tick: Callable[[], None] | None = None,
         local_fallback: Callable[[int], str] | None = None,
+        output_device: str = "",
     ) -> None:
         #: A dropped stream stops being an interruption. Asked, when playback
         #: errors out, whether a local file covers the position we were at
@@ -167,11 +171,17 @@ class PodcastPlayerController(PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixi
         #: Probed independently via ffprobe -- the relay's own MP3 output
         #: never declares a duration for the engine to compute one from.
         self._enhanced_duration_ms = 0
+        #: The sound card Cast plays through ("" = whatever Windows gives
+        #: the app), saved in PodcastSettings and handed to the engine at
+        #: construction so the first episode of a session already plays
+        #: where the last one did.
+        self._output_device = (output_device or "").strip()
         self._engine: AudioEngine | None = create_engine(
             parent,
             on_loaded=self._on_loaded,
             on_finished=self._on_finished,
             on_error=self._on_error,
+            audio_device=self._output_device,
         )
         #: The mpv/wx stream engine stays the default; a spotify:episode: URI
         #: swaps ``self._engine`` to the Spotify Web Playback engine for the
@@ -379,30 +389,11 @@ class PodcastPlayerController(PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixi
         )
         return wanted
 
-    def channel_mode(self) -> str:
-        """Where the audio is currently coming out (stereo/mono/left/right)."""
-        return self._channel_mode
-
-    def set_channel_mode(self, mode: str) -> str:
-        """Change only the channel mode, keeping your place. Returns it.
-
-        Changing it means restarting the ffmpeg relay -- there is no way to
-        alter a running one -- so this reloads at the current position rather
-        than from the top. Someone forty minutes into an episode who switches
-        to mono must not be sent back to the beginning to get there.
-        """
-        resolved = normalize_channel_mode(mode)
-        if resolved == self._channel_mode:
-            return resolved
-        self.set_enhancement(
-            bass_db=self._eq_bass_db,
-            mid_db=self._eq_mid_db,
-            treble_db=self._eq_treble_db,
-            compressor_enabled=self._compressor_enabled,
-            smart_speed_enabled=self._smart_speed_enabled,
-            channel_mode=resolved,
-        )
-        return resolved
+    def output_engine(self) -> object:
+        """The engine playing (OutputDeviceMixin): the STREAM engine, not
+        ``self._engine`` -- a Spotify episode swaps that for the Web Playback
+        engine, which has no sound card of ours to choose."""
+        return self._stream_engine
 
     def toggle_play_pause(self) -> None:
         if self._engine is None:

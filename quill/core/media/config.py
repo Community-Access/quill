@@ -23,6 +23,12 @@ MEDIA_DEFAULTS: dict[str, Any] = {
     "media_resume_last_on_launch": False,
     "media_stop_at_end_of_chapter": False,
     "media_bookmark_on_pause": False,
+    # Which sound card the player plays through ("" = whatever Windows gives
+    # the app). An mpv/Windows Media device name from
+    # quill.ui.audio.output_routing -- the same naming Quill Radio and QUILL
+    # Cast save, so one device means the same thing in every app. Describes
+    # THIS machine's hardware, so it is not something to carry to another.
+    "media_output_device": "",
     "media_gapless": True,
     "media_crossfade_seconds": 0,
     # Audio & DSP

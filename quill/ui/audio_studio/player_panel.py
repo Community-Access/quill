@@ -24,6 +24,7 @@ from quill.core.speech.chapters import Chapter
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
 from quill.ui.audio_studio.pages_base import set_accessible_name
 from quill.ui.audio_studio.player_volume import PlayerVolumeMixin
+from quill.ui.media.output_device_mixin import OutputDeviceMixin
 from quill.ui.slider_keys import bind_up_means_more
 
 _log = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ def _rate_label(rate: float) -> str:
     return f"{float(rate):g}x"
 
 
-class PlayerPanel(PlayerVolumeMixin, wx.Panel):
+class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
     """Chapter-aware transport controls over one loaded audio file."""
 
     def __init__(
@@ -55,6 +56,7 @@ class PlayerPanel(PlayerVolumeMixin, wx.Panel):
         on_mute: Callable[[bool], None] | None = None,
         on_finished: Callable[[], None] | None = None,
         on_tick: Callable[[], None] | None = None,
+        output_device: str = "",
     ) -> None:
         super().__init__(parent)
         self.SetName(_("Player"))
@@ -73,11 +75,16 @@ class PlayerPanel(PlayerVolumeMixin, wx.Panel):
         self._announced_chapter = -1
         self._muted = False
         self._pre_mute_volume = 100
+        #: The sound card this panel plays through ("" = whatever Windows
+        #: gives the app). Handed to the engine at construction so the
+        #: first book of a session already plays where the last one did.
+        self._output_device = (output_device or "").strip()
         self._engine: AudioEngine | None = create_engine(
             self,
             on_loaded=self._on_engine_loaded,
             on_finished=self._on_engine_finished,
             on_error=self._on_engine_error,
+            audio_device=self._output_device,
         )
 
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -393,6 +400,10 @@ class PlayerPanel(PlayerVolumeMixin, wx.Panel):
         )
 
     # -- engine callbacks ---------------------------------------------------------
+
+    def output_engine(self) -> object:
+        """The engine playing (OutputDeviceMixin)."""
+        return self._engine
 
     def _on_engine_loaded(self, length_ms: int) -> None:
         self._loaded = True
