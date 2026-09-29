@@ -571,6 +571,27 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _fresh_output_device_list() -> None:
+    """Forget the cached sound-card list between tests.
+
+    ``quill.ui.audio.output_routing`` caches the device list for a few seconds,
+    because enumerating through libmpv builds and tears down a handle on a
+    115 MB DLL and every Preferences window was paying for it again. That cache
+    is module-level state, and module-level state leaks across tests: the
+    routing tests monkeypatch the engines and then ask twice, expecting two
+    different answers, and got one stale one.
+
+    Cleared here rather than in each test, for the reason the environment guard
+    above exists -- a future test should not have to know this cache is there.
+    """
+    from quill.ui.audio import output_routing
+
+    output_routing.forget_output_devices()
+    yield
+    output_routing.forget_output_devices()
+
+
+@pytest.fixture(autouse=True)
 def _reclaim_leaked_wx_windows():
     """Destroy wx top-level windows a test created but never destroyed.
 

@@ -21,6 +21,7 @@ and runs in the same process as the desktop app.
 
 from __future__ import annotations
 
+import encodings.idna  # noqa: F401 - see below
 import json
 import os
 import secrets
@@ -29,6 +30,14 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 from quill.apps.beacon import capture, routing
+
+# ``encodings.idna`` is imported for its side effect: registering the codec.
+# http.server resolves the bind address through it, and CPython loads codecs
+# lazily -- so on a worker that has never touched a hostname the first bind
+# dies with ``LookupError: unknown encoding: idna``. It is import order, not
+# the network: the bridge binds 127.0.0.1 and reaches nothing. It showed up
+# only under the parallel test run, where a worker can start here, and cost
+# eight red tests in CI that passed on every developer's machine.
 
 DEFAULT_PORT = 8752
 TOKEN_FILE = "bridge_token.txt"

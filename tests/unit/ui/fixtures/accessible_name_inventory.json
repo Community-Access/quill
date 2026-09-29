@@ -584,6 +584,7 @@
   "quill/ui/media/quick_actions_dialog.py::QuickActionsDialog.__init__::wx.ListBox": "named",
   "quill/ui/notebook_panel.py::NotebookEntriesPanel.__init__::wx.ListBox": "named",
   "quill/ui/notebook_panel.py::NotebookEntriesPanel.__init__::wx.TextCtrl": "named",
+  "quill/ui/notification_center.py::open_notification_center::wx.ListBox": "named",
   "quill/ui/nstextview_rtf_surface.py::create_nstextview_rtf::wx.TextCtrl": "named-elsewhere",
   "quill/ui/nstextview_rtf_surface.py::create_nstextview_rtf::wx.TextCtrl#2": "named-elsewhere",
   "quill/ui/ocr_review_dialog.py::OcrReviewDialog.__init__::wx.TextCtrl": "named",
