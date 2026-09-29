@@ -66,6 +66,13 @@ def _coerce_float(value: object, default: float) -> float:
     return default
 
 
+def _normalize_alert(value: object) -> str:
+    """A stored new-episode alert mode, through the one shared normalisation."""
+    from quill.core.podcasts.episode_alerts import normalize_alert
+
+    return normalize_alert(value)
+
+
 def _normalize_boost(value: object) -> str:
     """A stored Volume Boost level, through the one shared normalisation."""
     from quill.core.podcasts.volume_boost import normalize
@@ -104,6 +111,22 @@ class PodcastSettings:
     #: saves, so the two apps mean the same thing by the same string. Local:
     #: a device id names hardware on THIS computer.
     output_device: str = ""
+    #: How often an automatic check asks this feed for new episodes, in
+    #: minutes. **0 means never on its own** -- a real answer rather than the
+    #: absence of one, for a metered connection or somebody who wants the app
+    #: quiet. It lives here rather than in either app's own history file so
+    #: Quill Radio and QUILL Cast read one value (they used to read two, and
+    #: turning the check on in one did nothing in the other), and so the
+    #: folder and per-podcast levels of the settings chain apply to it for
+    #: free: "hourly, except this show, never" needs no new mechanism.
+    check_interval_minutes: int = 0
+    #: What happens when a check finds something: "on" (a desktop
+    #: notification, the sound and a list entry), "quiet" (the list entry
+    #: alone) or "off" (nothing). Quiet by default: an app that starts
+    #: putting toasts over somebody's document because they subscribed to
+    #: something has made a decision that was theirs to make.
+    #: :mod:`quill.core.podcasts.episode_alerts` owns the vocabulary.
+    new_episode_alert: str = "quiet"
     #: How a cross-show episode list (Inbox, New Episodes, Continue
     #: Listening, Favorites) presents multiple shows at once. "flat": one
     #: stream sorted by episode_sort_mode across every show (per-show sort
@@ -341,6 +364,8 @@ class PodcastSettings:
             "speed": self.speed,
             "download_root": self.download_root,
             "output_device": self.output_device,
+            "check_interval_minutes": self.check_interval_minutes,
+            "new_episode_alert": self.new_episode_alert,
             "delete_files_on_remove": self.delete_files_on_remove,
             "always_sync_full_catalog": self.always_sync_full_catalog,
             "auto_trim_silence": self.auto_trim_silence,
@@ -421,6 +446,8 @@ class PodcastSettings:
             speed=clamp_speed(_coerce_float(data.get("speed"), 1.0)),
             download_root=str(data.get("download_root", "")),
             output_device=str(data.get("output_device", "")),
+            check_interval_minutes=_coerce_int(data.get("check_interval_minutes"), 0),
+            new_episode_alert=_normalize_alert(data.get("new_episode_alert")),
             delete_files_on_remove=delete_policy
             if delete_policy in ("ask", "always", "never")
             else "ask",

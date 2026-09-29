@@ -65,6 +65,11 @@ REFRESH = "folder.refresh"
 REFRESH_ALL_PODCASTS = "podcast.refresh_all"
 #: Be told about this row at a time you choose (7.1); the pair lives in
 #: row_reminders so QUILL Cast's rows can offer the identical verb.
+#: A line you leave yourself about this row, read back in the details pane
+#: whenever you arrow onto it (3.1.0). One verb, not a pair: the dialog it
+#: opens shows whatever is already there, so writing and clearing are the
+#: same action rather than two menu rows that have to agree with each other.
+EDIT_NOTE = "item.note"
 SET_REMINDER = row_reminders.SET_REMINDER
 REMOVE_REMINDER = row_reminders.REMOVE_REMINDER
 SUBSCRIBE_PODCAST = "podcast.subscribe"
@@ -604,6 +609,10 @@ def actions_for(
             actions.extend(youtube_add_actions())
         # Any row worth playing is worth being reminded about (7.1).
         actions.append(row_reminders.reminder_action(RowAction, has_reminder=has_reminder))
+        # ...and worth writing a line to yourself about (3.1.0). Beside the
+        # reminder because they are the same instinct -- one is for a moment,
+        # the other is for whenever you next come back to this row.
+        actions.append(RowAction(EDIT_NOTE, "&Note to Self..."))
         return actions
     if resolve_lazily:
         return lazy_leaf_actions(saved=saved)

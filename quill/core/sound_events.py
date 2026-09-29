@@ -127,6 +127,14 @@ class SoundEvent(StrEnum):
     RADIO_FAVORITE_ADDED = "radio_favorite_added"
     CAST_DOWNLOAD_STARTED = "cast_download_started"
     CAST_DOWNLOAD_COMPLETE = "cast_download_complete"
+    #: A subscribed podcast has new episodes, found by the background check
+    #: (3.1.0). Its own sound rather than a borrowed one, because it is the
+    #: one thing here that arrives *unprompted*: nobody pressed anything, so
+    #: it has to be recognisable before the words that follow it. Soft and
+    #: short on purpose -- it lands while somebody is reading -- and it plays
+    #: only in the "Notify me" alert mode; "Quietly" is silent by definition
+    #: (quill/core/podcasts/episode_alerts.py).
+    CAST_NEW_EPISODES = "cast_new_episodes"
     #: A reminder coming due (list.md 7.4). Its own sound rather than a
     #: borrowed one: a reminder is the only thing in these apps that arrives
     #: because the listener asked to be interrupted at a moment they chose,

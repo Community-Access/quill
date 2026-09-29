@@ -28,7 +28,7 @@ def describe_selection(dialog: Any, data: dict | None) -> None:
 
     station = data.get("station") if data else None
     if station is not None:
-        dialog._details.ChangeValue(station.details_text)
+        dialog._details.ChangeValue(_with_note(station, station.details_text))
         dialog._favorite_btn.Enable(True)
         dialog._update_favorite_label(station)
     elif dialog._is_playable(data) and data is not None:
@@ -62,3 +62,29 @@ def describe_selection(dialog: Any, data: dict | None) -> None:
     else:
         dialog._details.ChangeValue("")
         dialog._favorite_btn.Enable(False)
+
+
+def _with_note(item: object, details: str) -> str:
+    """*details*, with the listener's own note about this row under it.
+
+    The note goes **last** on purpose. The details are what the app knows and
+    the note is what you told yourself, so somebody arrowing the tree hears the
+    station identified first and their own words after -- rather than being read
+    their own note before being told what it is about.
+
+    Labelled ("Your note:") because an unlabelled paragraph appended to a
+    description reads, to a screen reader, as more description. Never raises: a
+    note that cannot be loaded costs the note, never the details.
+    """
+    try:
+        from quill.core.paths import app_data_dir
+        from quill.core.radio.item_notes import note_for
+
+        note = note_for(app_data_dir(), item)
+    except Exception:  # noqa: BLE001 - the row still describes itself
+        return details
+    if not note:
+        return details
+    body = details.rstrip()
+    joined = f"{body}\n\nYour note: {note}"
+    return joined if body else f"Your note: {note}"

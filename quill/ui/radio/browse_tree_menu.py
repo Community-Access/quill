@@ -204,7 +204,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     handlers[row_actions.IMPORT_OPML] = lambda: podcast_acts.import_opml(dialog)
     handlers[row_actions.EXPORT_OPML] = lambda: podcast_acts.export_opml(dialog)
     handlers[row_actions.REFRESH_ALL_PODCASTS] = lambda: podcast_acts.refresh_all_feeds(dialog)
-    from quill.ui.radio import row_reminders_wiring
+    from quill.ui.radio import item_note_dialog, row_reminders_wiring
 
     handlers[row_actions.SET_REMINDER] = lambda: row_reminders_wiring.set_reminder(
         dialog, host, station
@@ -212,6 +212,8 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     handlers[row_actions.REMOVE_REMINDER] = lambda: row_reminders_wiring.remove_reminder(
         dialog, station
     )
+    # Why it takes the row rather than the station: see edit_row_note.
+    handlers[row_actions.EDIT_NOTE] = lambda: item_note_dialog.edit_row_note(dialog, data, station)
     handlers[row_actions.ADD_PODCAST_URL] = lambda: podcast_acts.add_podcast_by_url_prompt(dialog)
     handlers[row_actions.DOWNLOAD_ALL_EPISODES] = lambda: podcast_acts.download_all_episodes(
         dialog, args

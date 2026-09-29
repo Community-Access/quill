@@ -31,6 +31,7 @@
     "cast_download_complete": "cast_download_complete.wav",
     "cast_download_started": "cast_download_started.wav",
     "cast_episode_finished": "cast_episode_finished.wav",
+    "cast_new_episodes": "cast_new_episodes.wav",
     "compare_enter_mode": "compare_enter.wav",
     "compare_exit_mode": "compare_exit.wav",
     "compare_next_difference": "compare_next.wav",
