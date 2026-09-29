@@ -203,3 +203,25 @@ def test_review_with_nothing_playing_says_nothing_is_playing(monkeypatch) -> Non
 
     assert host.dialogs == []
     assert host.announcements == [NOTHING_PLAYING_MESSAGE]
+
+
+def test_a_second_review_refreshes_the_open_window_and_says_the_text(monkeypatch) -> None:
+    """John (2026-09-29): Ctrl+T said station, title and artist once, then only the
+    station. A second press now refreshes the open window and speaks its text."""
+    from quill.ui.radio import now_playing_dialog
+
+    host = _Host(station=_station(), cached_title="A Song by A Band")
+    _install_fake_dialog(monkeypatch, host)
+    refreshed: list[tuple[str, str]] = []
+
+    class _Open:
+        def refresh(self, text: str, title: str) -> None:
+            refreshed.append((text, title))
+
+    monkeypatch.setattr(now_playing_dialog, "open_window", lambda: _Open())
+
+    show_whats_playing_details(host)
+
+    assert host.dialogs == []  # no second window
+    assert refreshed == [("A Song by A Band", "Now Playing: WQXR")]
+    assert host.announcements[-1] == "A Song by A Band"

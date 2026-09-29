@@ -90,8 +90,12 @@ def select(host: Any) -> None:
             host._engine = host._mpv_engine
         return
 
-    if host._on_output_device_error is not None:
-        if bool(host._output_device) and host._playback_engine != "wx":
+    from quill.ui.radio import output_device_guard
+
+    if output_device_guard.revert_for_windows_media(host):
+        pass  # said, saved, and the device is gone from the setting
+    elif host._on_output_device_error is not None:
+        if bool(host._output_device):
             host._on_output_device_error(
                 "The chosen radio output device could not be used; playing "
                 "through the system default instead."

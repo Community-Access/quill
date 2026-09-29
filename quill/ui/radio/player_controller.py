@@ -173,11 +173,11 @@ class RadioPlayerController(PlayerTracksMixin):
         #: proceeds on wx.media.
         self._output_device = output_device.strip()
         self._on_output_device_error = on_output_device_error
-        # output_device_guard: the one retry on the default, the watch for the
-        # device's return, and the token that ends an old watch.
+        # output_device_guard: the one retry per load, the device the setting
+        # goes back to, and the host's hook for persisting that revert.
         self._device_rescued = False
-        self._device_fallback_active = False
-        self._device_watch_token = 0
+        self._previous_output_device = ""
+        self.on_output_device_reverted: Callable[[str], None] | None = None
         #: "auto" (mpv when installed, else wx.media), "wx", or "mpv" --
         #: see RadioHistory.playback_engine. Auto is what lights up device
         #: routing, live pause/rewind, Volume Boost, and Ogg/Opus/HLS
@@ -638,11 +638,6 @@ class RadioPlayerController(PlayerTracksMixin):
         """The chosen device id ("" = system default), whatever is in use now."""
         return self._output_device
 
-    @property
-    def output_device_fallback_active(self) -> bool:
-        """Playing on the system default because the chosen device would not open."""
-        return self._device_fallback_active
-
     def _current_filter_graph(self) -> str:
         """The Sound Enhancements ffmpeg graph for the current settings
         ("" = nothing engaged) -- the single source both delivery paths
@@ -995,6 +990,9 @@ class RadioPlayerController(PlayerTracksMixin):
         if mode == self._playback_engine:
             return
         self._playback_engine = mode
+        from quill.ui.radio import output_device_guard
+
+        output_device_guard.revert_for_windows_media(self)  # WMP cannot route
         station = self._state.station
         if station is not None and self._state.state in RESTARTABLE_STATES:
             self.play_station(station)

@@ -120,9 +120,9 @@ def _gather(host: Any) -> AudioHealthFacts:
     """
     from quill.ui.radio import media_preflight
 
+    controller = getattr(host, "_radio_controller", None)
     health = media_preflight.current_health()
 
-    controller = getattr(host, "_radio_controller", None)
     engine = getattr(controller, "_engine", None) if controller is not None else None
     active = ""
     if engine is not None:
@@ -206,11 +206,6 @@ def _gather(host: Any) -> AudioHealthFacts:
         mpv_present=health.mpv,
         output_device=device,
         output_device_available=device_available,
-        output_device_fallback=bool(
-            getattr(
-                getattr(host, "_radio_controller", None), "output_device_fallback_active", False
-            )
-        ),
         enhancements_active=active_enhancements,
         enhancements_summary=summary,
         enhancements_per_station=per_station,

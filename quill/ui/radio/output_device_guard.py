@@ -16,18 +16,32 @@ Four rules, all here so the controller (at its GATE-11 ceiling) delegates:
 
 1. **A playing mpv station switches device live.** mpv re-opens its audio
    output on the property change; there is nothing to reconnect and no gap.
-2. **A load that fails with a device chosen is retried once on the system
-   default, still on mpv**, and the listener is told which device could not
-   be opened. Only if that fails too is it a stream problem, and the old
-   cross-engine rescue takes over.
-3. **The device is watched for.** While playing on the default in its place,
-   the device list is checked every few seconds; the moment the chosen device
-   is offered again, playback moves back to it, live, and says so.
-4. **Windows Media with a device chosen is said.** WMP cannot route, so the
-   fallback that used to be silent now tells the listener where the audio is.
+2. **A device that will not open is given back.** The load is retried once,
+   still on mpv, on the device that was in use before the choice (the system
+   default when there was none); the listener is told which device could not
+   be opened and what the setting is now; and the setting itself goes back
+   (Jeff, 2026-09-29: "if it can't work the sound card option should revert
+   back to its original setting"). A choice that silently stayed while the
+   sound went elsewhere is what made the switch look broken.
+3. **The same on the way in.** A saved device that will not open when the app
+   starts is handled the same way, so a copy is never stuck with a setting it
+   cannot honour.
+4. **Windows Media cannot take a device from us, and says so.** The wx.media
+   control plays on the device Windows gives this app; nothing in it takes a
+   device name. So a device chosen while the engine preference is Windows Media
+   (classic) is given back with a sentence that names the route that works
+   under that engine -- Windows' own per-app output device, in Sound settings
+   under Volume mixer, the same answer QUILL Cast gives (``ui/media/
+   output_device``) -- and the cross-engine rescue that lands on Windows Media
+   with a device chosen says where the audio is. The engine preference itself
+   is never changed for the listener (Jeff, 2026-09-29: "why is it forcing
+   automatic mode and mpv when switching if windows media is selected, that
+   should not be necessary at all"). Jeff's test on the C:/qr portable the same
+   day: "the fix works for mpv but not for windows media" -- the sound sat on
+   the default while the setting said speakers.
 
-Every decision is logged at INFO, because "nothing in quill.log records
-which of these happened" was the other half of the report.
+Every decision is logged at INFO or WARNING, because "nothing in quill.log
+records which of these happened" was the other half of the report.
 """
 
 from __future__ import annotations
@@ -39,24 +53,20 @@ from quill.ui.radio.mpv_radio_engine import list_audio_devices
 from quill.ui.radio.playback_state import RESTARTABLE_STATES, RadioPlayerState
 
 __all__ = [
-    "WATCH_MS",
     "change_device",
     "device_label",
     "note_windows_media_fallback",
     "rescue_on_load_error",
+    "revert_for_windows_media",
 ]
 
 _log = logging.getLogger(__name__)
-
-#: How often a lost device is looked for. Each look opens a short-lived libmpv
-#: handle to enumerate devices, so every few seconds, not every poll tick.
-WATCH_MS = 10_000
 
 
 def device_label(device: str) -> str:
     """What the listener calls *device*: its description, or the id itself."""
     if not device:
-        return "the system default"
+        return "System default"
     for name, description in list_audio_devices():
         if name == device:
             return description
@@ -74,9 +84,8 @@ def change_device(host: Any, device: str) -> None:
     device = device.strip()
     if device == host._output_device:
         return
+    host._previous_output_device = host._output_device
     host._output_device = device
-    host._device_fallback_active = False
-    host._device_watch_token += 1
     label = device_label(device)
     _log.info("Output device chosen: %s (%s)", label, device or "auto")
     station = host._state.station
@@ -93,7 +102,7 @@ def change_device(host: Any, device: str) -> None:
 
 
 def rescue_on_load_error(host: Any) -> bool:
-    """A load failed with a device chosen: try the system default on mpv, once.
+    """A load failed with a device chosen: give the device back, retry on mpv.
 
     ``True`` when a retry began. ``False`` hands the failure on to the
     cross-engine rescue, which is right for a stream mpv cannot play at all.
@@ -104,35 +113,70 @@ def rescue_on_load_error(host: Any) -> bool:
         not device
         or station is None
         or host._device_rescued
-        or host._device_fallback_active
         or not host._is_mpv_active()
         or host._mpv_engine is None
     ):
         return False
     host._device_rescued = True
-    host._device_fallback_active = True
-    host._mpv_engine.set_audio_device("")
+    previous = getattr(host, "_previous_output_device", "")
+    if previous == device:
+        previous = ""
     label = device_label(device)
+    back_to = device_label(previous)
     _log.warning(
-        "Output device %s (%s) could not be opened; retrying on the default", label, device
+        "Output device %s (%s) would not open; the setting is back to %s (%s)",
+        label,
+        device,
+        back_to,
+        previous or "auto",
     )
-    _say(
-        host,
-        f"{label} could not be opened. Playing on the system default until it is available again.",
-    )
+    host._output_device = previous
+    host._previous_output_device = previous
+    host._mpv_engine.set_audio_device(previous)
+    reverted = getattr(host, "on_output_device_reverted", None)
+    if reverted is not None:
+        try:
+            reverted(previous)  # the host persists the setting
+        except Exception:  # noqa: BLE001 - a save that fails must not stop playback
+            _log.exception("output device revert could not be saved")
+    _say(host, f"{label} could not be opened, so the output device is back to {back_to}.")
     host._set_state(RadioPlayerState.CONNECTING, message="")
     url = host._resolve_playback_url(station)
-    began = bool(host._engine.load(url))
-    _watch(host, device)
-    return began
+    return bool(host._engine.load(url))
+
+
+def revert_for_windows_media(host: Any) -> bool:
+    """A device is chosen but the engine preference is Windows Media (classic),
+    which cannot route: give the device back, persist that, and say why.
+    ``True`` when there was something to give back."""
+    device = host._output_device
+    if not device or host._playback_engine != "wx":
+        return False
+    label = device_label(device)
+    _log.warning(
+        "Windows Media (classic) cannot use %s (%s); the setting is back to default", label, device
+    )
+    host._output_device = ""
+    host._previous_output_device = ""
+    reverted = getattr(host, "on_output_device_reverted", None)
+    if reverted is not None:
+        try:
+            reverted("")
+        except Exception:  # noqa: BLE001 - a save that fails must not stop playback
+            _log.exception("output device revert could not be saved")
+    _say(
+        host,
+        f"Windows Media (classic) plays on the device Windows gives Quill Radio, so the output "
+        f"device is back to System default. To send it to {label}, choose Quill Radio's output "
+        "device in Windows' Sound settings, under Volume mixer.",
+    )
+    return True
 
 
 def note_windows_media_fallback(host: Any) -> None:
     """The cross-engine rescue is moving to Windows Media with a device chosen."""
     if not host._output_device:
         return
-    host._device_fallback_active = False
-    host._device_watch_token += 1  # the watch belongs to the mpv engine
     _log.warning(
         "Windows Media is playing; the chosen output device %s is not in use",
         host._output_device,
@@ -140,25 +184,5 @@ def note_windows_media_fallback(host: Any) -> None:
     _say(
         host,
         "Windows Media is playing this station, and it cannot use the chosen "
-        "output device; the audio is on the system default.",
+        "output device; the audio is on the device Windows gives Quill Radio.",
     )
-
-
-def _watch(host: Any, device: str) -> None:
-    token = host._device_watch_token
-
-    def check() -> None:
-        if token != host._device_watch_token or not host._device_fallback_active:
-            return  # the listener chose again, or playback moved on
-        if not host._is_mpv_active() or host._mpv_engine is None:
-            return
-        if device not in {name for name, _description in list_audio_devices()}:
-            host._schedule_later(WATCH_MS, check)
-            return
-        host._mpv_engine.set_audio_device(device)
-        host._device_fallback_active = False
-        name = device_label(device)  # it is listed again, so it has its name back
-        _log.info("Output device %s is back; playing on it again", name)
-        _say(host, f"{name} is available again. Playing on it.")
-
-    host._schedule_later(WATCH_MS, check)

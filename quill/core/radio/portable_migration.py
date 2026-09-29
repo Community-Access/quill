@@ -100,13 +100,31 @@ def copy_earlier_data(earlier: EarlierData, bundle_data: Path) -> tuple[str, ...
     for name in COPIED_FILES:
         source = earlier.source / name
         target = bundle_data / name
-        if not source.is_file() or target.exists():
+        if not source.is_file() or (target.exists() and not _replaceable(target)):
             continue
         partial = target.with_name(target.name + ".copying")
         shutil.copyfile(source, partial)
         os.replace(partial, target)
         copied.append(name)
     return tuple(copied)
+
+
+def _replaceable(target: Path) -> bool:
+    """A favorites file with no favorites in it may be replaced.
+
+    The offer is made *because* the bundle has no favorites, and a 3.0.0 bundle
+    that had been opened once had a favorites file with none in it -- so
+    "never overwrite what the bundle has" skipped the one file the listener
+    said Yes to, and the answer was remembered as done (Jeff, C:\qr,
+    2026-09-28: "it prompted me to copy favorites over but it never did").
+    Anything else the bundle has is still left alone.
+    """
+    if target.name != "radio_favorites.json":
+        return False
+    try:
+        return not load_favorites(target.parent).favorites
+    except Exception:  # noqa: BLE001 - an unreadable file is not something to keep
+        return True
 
 
 def remember_answer(bundle_data: Path, *, copied: bool) -> None:

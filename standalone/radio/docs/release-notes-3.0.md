@@ -4,7 +4,7 @@ Version 3.0.5, released 2026-09-29.
 
 ## What's new in 3.0.5
 
-One fix, for the sound card.
+Seven fixes. Three are about the sound card; four came in the same week.
 
 ### Choosing a sound card switches to it, or says why it cannot
 
@@ -14,23 +14,75 @@ switches devices at runtime and on reload, and we watched it do so on a
 machine with two sound cards. What went wrong is that when the engine could
 not *open* the chosen device -- a Bluetooth headset asleep, a card another
 program was holding, a device whose Windows id had changed -- the station
-was quietly rescued on Windows Media, which can only play on the system
-default, and nobody was told.
+was quietly rescued on Windows Media, which plays on the device Windows gives
+the app, and nobody was told.
 
 From 3.0.5:
 
 - A playing station switches device the moment you choose one, live, with no
   break in the sound.
-- If the device cannot be opened, you hear which one and why it matters:
-  "Speakers (Logi USB Headset) could not be opened. Playing on the system
-  default until it is available again." Your choice stands.
-- Quill Radio looks for the device every few seconds and moves back to it by
-  itself, saying "... is available again. Playing on it."
+- If the device cannot be opened, you hear which one, and the setting goes
+  back to what it was: "Speakers (Logi USB Headset) could not be opened, so
+  the output device is back to System default." The sound stays on the mpv
+  engine, on the device that was in use before, and Preferences agrees. Wake
+  or plug in the device and choose it again.
+- A saved device that will not open when Quill Radio starts is given back the
+  same way, so no copy is stuck with a setting it cannot honour.
 - If a station will not play on the mpv engine at all and falls back to
-  Windows Media, that is said too, because Windows Media cannot route to a
-  chosen device.
-- **View > Audio Health** shows the device chosen and whether it is the one in
-  use, and every one of these decisions is written to the log.
+  Windows Media, that is said too.
+- Every one of these decisions is written to the log.
+
+One more thing worth knowing: Windows calls both a laptop's built-in card and a
+USB headset "Speakers", so the list reads "Speakers (Realtek High Definition
+Audio)" and "Speakers (Logi USB Headset)". The make in brackets is the part
+that tells them apart.
+
+### Windows Media gets its own route to a device
+
+The Windows Media (classic) engine plays on the device Windows gives Quill
+Radio, and nothing in it takes a device name, so the Output Device list could
+never move it. Quill Radio no longer pretends otherwise, and it does not change
+your engine choice to get around it. Under Windows Media, **Audio > Output
+Device...** says which engine is playing and offers the route that works for
+it: Windows' own Sound settings, where under **Volume mixer** every app has its
+own output device, and the choice sticks across restarts. Say Yes and the page
+opens; find Quill Radio in the list and pick its device. A copy without the mpv
+engine gets the same offer. If a device is in the setting while the engine is
+Windows Media, it is given back with the same sentence.
+
+### Preferences names the engines this copy has
+
+The Playback engine rows are built from what is installed. With the mpv
+engine present: Automatic (recommended, uses mpv), Windows Media (classic),
+mpv. Without it, there is no mpv row, and Automatic reads "Automatic (uses
+Windows Media; mpv is not installed)". A row for an engine that is not there
+was a choice that did nothing.
+
+### Ctrl+T says the title every time
+
+What's Playing said station, title and artist the first time and only the
+station after that, though Copy still copied all three. Each press was opening
+a fresh window, and a screen reader reads a brand-new window once. A second
+press now refreshes the window that is already open and speaks the text.
+
+### Enter in Preferences presses OK
+
+After changing a dropdown, Enter did nothing. It now presses OK from anywhere
+in the dialog except a button or a multi-line box. This is shared with every
+QuillVille app's Preferences.
+
+### Delete on a source branch hides the source
+
+On a top-level branch such as Podcasts, Delete now hides the source, as it did
+in earlier versions and as Hide This Source on the context menu does. Reset
+Sources to Default brings it back.
+
+### A portable copy's favorites import now imports
+
+A portable copy that had been opened once had an empty favorites file, and
+the "copy my favorites" question, answered Yes, copied nothing and was
+remembered as done. An empty favorites file is now replaced; anything the
+copy already has is still left alone.
 
 ## What's new in 3.0.4
 

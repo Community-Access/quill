@@ -11,11 +11,11 @@ logged (testkspn.md). These tests pin the new behaviour
 (``quill/ui/radio/output_device_guard.py``):
 
 * a playing mpv station switches device *live*, without a reconnect;
-* a load that fails with a device chosen is retried once on the system
-  default, still on mpv, and the listener is told which device could not be
-  opened;
-* the device is watched for, and playback returns to it, with a word, the
-  moment it is offered again;
+* a load that fails with a device chosen is retried once, still on mpv, on the
+  device in use before the choice, the listener is told, and the setting goes
+  back to that device (Jeff, 2026-09-29: revert, do not keep a choice that
+  cannot be honoured);
+* a saved device that will not open at start-up is reverted the same way;
 * falling back to Windows Media with a device chosen is said, not hidden.
 """
 
@@ -102,27 +102,24 @@ def wx_app():
     app.Destroy()
 
 
-@pytest.fixture
-def radio(wx_app, monkeypatch: pytest.MonkeyPatch):
-    """A controller on mpv, with the device list under the test's control."""
+def _make(monkeypatch: pytest.MonkeyPatch, *, output_device: str) -> dict[str, Any]:
     monkeypatch.setattr(engine_selection, "mpv_output_device_available", lambda: True)
-    offered = {"devices": list(DEVICES)}
-    monkeypatch.setattr(guard, "list_audio_devices", lambda: list(offered["devices"]))
+    monkeypatch.setattr(guard, "list_audio_devices", lambda: list(DEVICES))
     said: list[str] = []
-    later: list[tuple[int, Any]] = []
+    saved: list[str] = []
     frame = wx.Frame(None)
     controller = RadioPlayerController(
         frame,
-        output_device=HEADSET,
+        output_device=output_device,
         playback_engine="mpv",
         on_output_device_error=said.append,
     )
+    controller.on_output_device_reverted = saved.append
     mpv = _FakeMpv()
     wxe = _FakeWx()
     controller._wx_engine = wxe
     controller._engine = wxe
     controller._mpv_engine = mpv
-    monkeypatch.setattr(controller, "_schedule_later", lambda ms, work: later.append((ms, work)))
 
     def finish_load() -> None:
         """Deliver mpv's verdict on the last load, the way the poll would."""
@@ -137,11 +134,15 @@ def radio(wx_app, monkeypatch: pytest.MonkeyPatch):
         "mpv": mpv,
         "wx": wxe,
         "said": said,
-        "later": later,
-        "offered": offered,
+        "saved": saved,
         "finish": finish_load,
-        "frame": frame,
     }
+
+
+@pytest.fixture
+def radio(wx_app, monkeypatch: pytest.MonkeyPatch):
+    """A controller on mpv playing on the system default, the device list fixed."""
+    return _make(monkeypatch, output_device="")
 
 
 def _station() -> RadioStation:
@@ -158,78 +159,81 @@ def test_a_playing_mpv_station_switches_device_live_without_a_reconnect(radio) -
     assert mpv.devices[-1] == SPEAKERS
     assert len(mpv.loads) == loads_before  # no reconnect: mpv re-opens the AO itself
     assert c.state.state is RadioPlayerState.PLAYING
+    assert c.output_device == SPEAKERS
 
 
-def test_a_device_that_will_not_open_falls_to_the_default_on_mpv_and_says_so(radio) -> None:
-    c, mpv, said = radio["controller"], radio["mpv"], radio["said"]
-    mpv.fail_devices = {HEADSET}
+def test_a_device_that_will_not_open_is_given_back_and_said(radio) -> None:
+    """Playing on the default, the headset is chosen and fails to open: the sound
+    stays on mpv, the setting goes back to the default, and the listener hears both."""
+    c, mpv, said, saved = radio["controller"], radio["mpv"], radio["said"], radio["saved"]
     c.play_station(_station())
-    radio["finish"]()  # the load with the headset fails
-    # Retried at once on mpv with the system default, not on Windows Media.
-    assert mpv.loads[-1][1] == ""
+    radio["finish"]()
+    mpv.fail_devices = {HEADSET}
+    # A live switch does not reload; the failure shows up as the next load
+    # failing (the engine reports the dead audio output as end of stream, and
+    # the reconnect reloads with the device still set).
+    c.set_output_device(HEADSET)
+    c.play_station(_station())  # the reconnect the engine's EOF triggers
+    radio["finish"]()  # ...fails on the headset
+    assert mpv.loads[-1][1] == ""  # retried at once on mpv, on the default
     assert radio["wx"].loads == []
     radio["finish"]()
     assert c.state.state is RadioPlayerState.PLAYING
-    assert said == [
-        "Speakers (Logi USB Headset) could not be opened. Playing on the system "
-        "default until it is available again."
-    ]
-    assert c.output_device_fallback_active is True
-    # The preference itself is untouched: the choice stands.
-    assert c.output_device == HEADSET
+    assert said[-1] == (
+        "Speakers (Logi USB Headset) could not be opened, so the output device is back to "
+        "System default."
+    )
+    assert c.output_device == ""  # the setting itself reverted...
+    assert saved == [""]  # ...and the host was asked to persist it
 
 
-def test_the_device_is_watched_for_and_playback_returns_to_it(radio) -> None:
-    c, mpv, said, later = radio["controller"], radio["mpv"], radio["said"], radio["later"]
-    mpv.fail_devices = {HEADSET}
-    radio["offered"]["devices"] = [(SPEAKERS, "Speakers (Realtek)")]  # headset gone
+def test_the_revert_goes_to_the_device_in_use_before_not_the_default(radio) -> None:
+    c, mpv, said = radio["controller"], radio["mpv"], radio["said"]
     c.play_station(_station())
     radio["finish"]()
-    radio["finish"]()
-    assert later, "a watcher was scheduled"
-    delay, check = later[-1]
-    assert delay >= 5000
-    check()  # still gone: keep watching, say nothing more
-    assert len(said) == 1
-    assert len(later) == 2
-    radio["offered"]["devices"] = list(DEVICES)  # plugged back in
-    mpv.fail_devices = set()
-    _delay, check = later[-1]
-    check()
-    assert mpv.devices[-1] == HEADSET  # switched back live, no reconnect
-    assert c.output_device_fallback_active is False
-    assert said[-1] == "Speakers (Logi USB Headset) is available again. Playing on it."
-    assert len(later) == 2  # the watch is over
-
-
-def test_choosing_another_device_ends_the_watch(radio) -> None:
-    c, mpv, later = radio["controller"], radio["mpv"], radio["later"]
+    c.set_output_device(SPEAKERS)  # fine
     mpv.fail_devices = {HEADSET}
+    c.set_output_device(HEADSET)  # fails
     c.play_station(_station())
     radio["finish"]()
+    assert mpv.loads[-1][1] == SPEAKERS
+    assert c.output_device == SPEAKERS
+    assert said[-1].endswith("is back to Speakers (Realtek).")
+
+
+def test_a_saved_device_that_will_not_open_at_startup_reverts_to_the_default(
+    wx_app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    radio = _make(monkeypatch, output_device=HEADSET)
+    c, mpv, said, saved = radio["controller"], radio["mpv"], radio["said"], radio["saved"]
+    mpv.fail_devices = {HEADSET}
+    c.play_station(_station())
+    radio["finish"]()  # the headset fails
+    assert mpv.loads[-1][1] == ""
     radio["finish"]()
-    assert c.output_device_fallback_active
-    c.set_output_device(SPEAKERS)
-    assert c.output_device_fallback_active is False
-    _delay, check = later[-1]
-    check()  # the old watch wakes up and does nothing
-    assert mpv.devices[-1] == SPEAKERS
+    assert c.state.state is RadioPlayerState.PLAYING
+    assert c.output_device == ""
+    assert saved == [""]
+    assert "back to System default" in said[-1]
 
 
 def test_a_stream_that_fails_on_both_devices_is_a_stream_problem(radio) -> None:
     """The rescue is one retry: a URL mpv cannot play at all still reaches the
     Windows Media fallback -- and with a device chosen, that is said too."""
     c, mpv, said = radio["controller"], radio["mpv"], radio["said"]
-    mpv.fail_devices = {HEADSET, ""}
     c.play_station(_station())
-    radio["finish"]()  # headset fails -> retry on default
-    radio["finish"]()  # default fails too -> Windows Media
+    radio["finish"]()
+    c.set_output_device(SPEAKERS)
+    mpv.fail_devices = {HEADSET, SPEAKERS, ""}
+    c.set_output_device(HEADSET)
+    c.play_station(_station())
+    radio["finish"]()  # headset fails -> back to the speakers
+    radio["finish"]()  # speakers fail too -> Windows Media
     assert radio["wx"].loads == ["http://example.test/kspn"]
     assert said[-1] == (
         "Windows Media is playing this station, and it cannot use the chosen "
-        "output device; the audio is on the system default."
+        "output device; the audio is on the device Windows gives Quill Radio."
     )
-    assert c.output_device_fallback_active is False
 
 
 def test_the_device_switch_is_logged(radio, caplog: pytest.LogCaptureFixture) -> None:
@@ -248,4 +252,42 @@ def test_device_label_falls_back_to_the_id(monkeypatch: pytest.MonkeyPatch) -> N
     assert guard.device_label("wasapi/{zzzz}") == "wasapi/{zzzz}"
     monkeypatch.setattr(guard, "list_audio_devices", lambda: list(DEVICES))
     assert guard.device_label(HEADSET) == "Speakers (Logi USB Headset)"
-    assert guard.device_label("") == "the system default"
+    assert guard.device_label("") == "System default"
+
+
+def test_switching_the_engine_to_windows_media_gives_a_chosen_device_back(radio) -> None:
+    """Windows Media cannot route (no documented device selection), so a device
+    chosen under it is given back with the way to use one named."""
+    c, said, saved = radio["controller"], radio["said"], radio["saved"]
+    c.play_station(_station())
+    radio["finish"]()
+    c.set_output_device(SPEAKERS)
+    c.set_playback_engine("wx")
+    assert c.output_device == ""
+    assert saved == [""]
+    assert said[-1] == (
+        "Windows Media (classic) plays on the device Windows gives Quill Radio, so the output "
+        "device is back to System default. To send it to Speakers (Realtek), choose Quill "
+        "Radio's output device in Windows' Sound settings, under Volume mixer."
+    )
+
+
+def test_a_saved_device_under_windows_media_is_given_back_at_the_first_play(
+    wx_app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(engine_selection, "mpv_output_device_available", lambda: True)
+    monkeypatch.setattr(guard, "list_audio_devices", lambda: list(DEVICES))
+    said: list[str] = []
+    saved: list[str] = []
+    frame = wx.Frame(None)
+    c = RadioPlayerController(
+        frame, output_device=SPEAKERS, playback_engine="wx", on_output_device_error=said.append
+    )
+    c.on_output_device_reverted = saved.append
+    wxe = _FakeWx()
+    c._wx_engine = wxe
+    c._engine = wxe
+    c.play_station(_station())
+    assert wxe.loads == ["http://example.test/kspn"]
+    assert c.output_device == "" and saved == [""]
+    assert said and said[-1].startswith("Windows Media (classic) plays on the device Windows")

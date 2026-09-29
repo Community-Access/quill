@@ -34,13 +34,15 @@ def choose_output_device(frame: Any) -> None:
         list_audio_devices(), history.output_device
     )
     if not mpv_output_device_available():
-        frame._show_message_box(
-            "Choosing a specific output device needs the libmpv playback engine. "
-            'Switch to it in Preferences (under "Radio playback engine"), then '
-            "pick your device here. Until then, Quill Radio uses your system's "
-            "default playback device.",
-            "Output Device",
-            wx.OK | wx.ICON_INFORMATION,
+        # No mpv, so no device list of our own: Windows Media is playing, and
+        # the device it plays on is the one Windows gives this app.
+        _offer_windows_route(
+            frame,
+            "Quill Radio is playing through Windows Media, because the mpv engine "
+            "is not installed in this copy. Windows Media plays on the device "
+            "Windows gives Quill Radio, and Windows can set that so it sticks: in "
+            "Sound settings, under Volume mixer, every app has its own output "
+            "device. Open that now?",
         )
         return
 
@@ -60,8 +62,48 @@ def choose_output_device(frame: Any) -> None:
     if chosen == history.output_device:
         frame._announce(f"Output device unchanged: {chosen_label}.")
         return
+    if chosen and history.playback_engine == "wx":
+        # Windows Media (classic) plays on the device Windows gives this app,
+        # and nothing in wx.media takes a device name (2026-09-29). The engine
+        # preference is the listener's and stays; the route that works under
+        # it is Windows' own per-app device, the same answer QUILL Cast gives
+        # (ui/media/output_device). Jeff: "why is it forcing automatic mode
+        # and mpv when switching if windows media is selected, that should
+        # not be necessary at all. What if mpv is not enabled?"
+        _offer_windows_route(
+            frame,
+            f"The playback engine is Windows Media (classic), which plays on the "
+            f"device Windows gives Quill Radio, so this list cannot send it to "
+            f"{chosen_label}. Windows can, and it sticks: in Sound settings, under "
+            "Volume mixer, every app has its own output device. Open that now?",
+        )
+        return
     history.output_device = chosen
     radio_history.save_history(app_data_dir(), history)
     # A station already on air moves to the new device immediately.
     frame._radio_controller.set_output_device(chosen)
     frame._announce(f"Output device: {chosen_label}.")
+
+
+def _offer_windows_route(frame: Any, question: str) -> None:
+    """Windows Media cannot take a device from us; Windows' Sound settings can
+    give Quill Radio one. Ask, open, and say what happened -- the setting here
+    is left alone, because it would be naming a device this engine does not
+    use."""
+    import wx
+
+    from quill.ui.media.output_device import open_windows_app_volume
+
+    answer = frame._show_message_box(
+        question, "Output Device", wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION
+    )
+    if answer != wx.YES:
+        frame._announce("Output device unchanged.")
+        return
+    if open_windows_app_volume():
+        frame._announce(
+            "Sound settings opened. Find Quill Radio under Volume mixer and choose its "
+            "output device."
+        )
+    else:
+        frame._announce("Windows Sound settings could not be opened on this machine.")

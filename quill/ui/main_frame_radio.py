@@ -33,6 +33,7 @@ from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.main_frame_radio_callbacks import RadioCallbacksMixin
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
 from quill.ui.radio import browse_door, playback_status, quick_play, stats_session, youtube_ui
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
@@ -58,7 +59,7 @@ _NO_FFMPEG_MESSAGE = (
 )
 
 
-class RadioMixin(RadioStatusWindowsMixin):
+class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     """Adds Internet Radio to ``MainFrame``."""
 
     # -- setup --------------------------------------------------------------
@@ -110,6 +111,7 @@ class RadioMixin(RadioStatusWindowsMixin):
             resolve_youtube=self._radio_resolve_youtube,
             youtube_consent=self._radio_youtube_consent,
         )
+        self._radio_controller.on_output_device_reverted = self._on_radio_output_device_reverted
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
             mid_db=self._radio_history.eq_mid_db,
@@ -1694,18 +1696,6 @@ class RadioMixin(RadioStatusWindowsMixin):
             return
         controller.volume_down()
         self._announce(describe_volume(controller))
-
-    def _on_radio_enhance_error(self, message: str) -> None:
-        """Sound Enhancements couldn't start (ffmpeg missing, relay failed);
-        playback still proceeds unenhanced, so this is an announcement, not a
-        blocking dialog."""
-        self._announce(f"Sound Enhancements: {message} Playing without it.")
-
-    def _on_radio_output_device_error(self, message: str) -> None:
-        """The chosen output device couldn't be used (libmpv missing or the
-        engine failed); playback still proceeds on the system default, so
-        this is an announcement, not a blocking dialog (#1076)."""
-        self._announce(message)
 
     def _radio_resolve_enhancement(self, station: RadioStation) -> ResolvedEnhancement:
         """Every Sound Enhancements setting for *station*: its own remembered

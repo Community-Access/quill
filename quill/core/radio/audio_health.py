@@ -90,9 +90,6 @@ class AudioHealthFacts:
     output_device: str = ""
     #: False when a device was chosen and is no longer offered by the system.
     output_device_available: bool = True
-    #: True while the radio plays on the system default because the chosen
-    #: device would not open (output_device_guard); it is being watched for.
-    output_device_fallback: bool = False
     #: Whether Sound Enhancements are doing anything at all right now.
     enhancements_active: bool = False
     #: A short description of what they are set to, e.g. "Voice Clarity".
@@ -186,14 +183,6 @@ def _ffmpeg_row(present: bool) -> HealthRow:
 def _output_device_row(facts: AudioHealthFacts) -> HealthRow:
     if not facts.output_device:
         return HealthRow("Output device", "the system default.")
-    if facts.output_device_fallback:
-        return HealthRow(
-            "Output device",
-            f"{facts.output_device} -- chosen, but it could not be opened, so audio "
-            "is on the system default for now. Quill Radio checks for it every few "
-            "seconds and moves back the moment it is offered again.",
-            DEGRADED,
-        )
     if not facts.output_device_available:
         return HealthRow(
             "Output device",
