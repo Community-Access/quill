@@ -18,6 +18,42 @@ from typing import Any
 from quill.core.radio import main_view, reminders
 
 
+def _shared_check_minutes(history: Any) -> int:
+    """How often feeds are checked -- the value both apps read since 3.1.0.
+
+    The shared library settings are the answer. Radio's own field is the
+    fallback for an install that has not been migrated yet (the monitor does
+    that once, at apply), so Preferences shows the cadence somebody actually
+    chose rather than a zero that would read as "off".
+    """
+    from quill.core.podcasts import episode_alerts
+
+    try:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts.subscriptions import load_library
+
+        shared = episode_alerts.interval_for_show(load_library(app_data_dir()).settings)
+    except Exception:  # noqa: BLE001 - unreadable library: fall back
+        shared = 0
+    if shared > 0:
+        return shared
+    return int(getattr(history, "podcast_refresh_minutes", 0) or 0)
+
+
+def _save_shared_check_minutes(minutes: int) -> None:
+    """Write the cadence where QUILL Cast will see it. Best effort."""
+    try:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts.subscriptions import load_library, save_library
+
+        data_dir = app_data_dir()
+        library = load_library(data_dir)
+        library.settings.check_interval_minutes = int(minutes)
+        save_library(data_dir, library)
+    except Exception:  # noqa: BLE001 - losing the share beats losing the save
+        return
+
+
 def _open_data_folder(app: Any) -> None:
     from quill.apps.radio import _TITLE
     from quill.ui.data_folder_dialog import open_data_folder_dialog
@@ -326,14 +362,16 @@ def open_preferences(app: Any) -> None:
                 # The rule from section 3: what it does, then the misreading it
                 # prevents. Every misread here has been about the second half.
                 refresh_policy.describe_schedule(
-                    history.podcast_refresh_minutes,
+                    _shared_check_minutes(history),
                     on_launch=history.podcast_refresh_on_launch,
                 )
-                + " QUILL Cast has its own separate setting; whichever app "
-                "checks first, the other skips that round rather than asking "
-                "the same feeds twice.",
+                + " QUILL Cast reads this same setting since 3.1.0, so "
+                "turning it on here turns it on there; whichever app checks "
+                "first, the other skips that round rather than asking the "
+                "same feeds twice. A single podcast can say Manually only in "
+                "its own settings while the rest keep this cadence.",
                 [label for _minutes, label in refresh_policy.INTERVAL_CHOICES],
-                refresh_policy.interval_index(history.podcast_refresh_minutes),
+                refresh_policy.interval_index(_shared_check_minutes(history)),
                 group=_PODCASTS,
             ),
             PreferenceChoice(
@@ -442,7 +480,12 @@ def open_preferences(app: Any) -> None:
     chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[4]]
     history.catalog_refresh_hours = catalog_interval_values[choice_indices[5]]
     history.subscription_episode_limit = episode_limit_values[choice_indices[6]]
-    history.podcast_refresh_minutes = refresh_policy.interval_from_index(choice_indices[7])
+    # Into the shared library, which is where both apps read it from since
+    # 3.1.0. Radio's own field is kept in step so a downgrade still finds a
+    # cadence rather than silently losing one.
+    chosen_minutes = refresh_policy.interval_from_index(choice_indices[7])
+    history.podcast_refresh_minutes = chosen_minutes
+    _save_shared_check_minutes(chosen_minutes)
     history.reminder_default_lead_seconds = reminders.LEAD_CHOICES[
         min(max(0, choice_indices[8]), len(reminders.LEAD_CHOICES) - 1)
     ][0]

@@ -88,12 +88,15 @@ def row_label(notice: Any) -> str:
     if app:
         parts.append(app)
     title = str(getattr(notice, "title", "") or "").strip()
+    if not title:
+        # An entry written by the older, message-only route.
+        title = str(getattr(notice, "message", "") or "").strip()
     if title:
         parts.append(title)
     body = str(getattr(notice, "body", "") or "").strip()
     if body:
         parts.append(body)
-    when = _ago(str(getattr(notice, "created_at", "") or ""))
+    when = _ago(str(getattr(notice, "timestamp", "") or ""))
     if when:
         parts.append(when)
     return " -- ".join(parts)
@@ -108,18 +111,18 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
     import wx
 
     from quill.core.notifications import (
-        clear_notices,
-        load_notices,
+        clear_notifications,
+        load_notifications,
         mark_all_read,
         mark_read,
+        newest_first,
     )
-    from quill.core.paths import app_data_dir
     from quill.ui.accessible_names import set_accessible_name
     from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
     say = getattr(host, "_announce", None) or (lambda _m: None)
-    data_dir = app_data_dir()
-    notices = load_notices(data_dir)
+    # Stored oldest-first, read newest-first: the order it is asked about.
+    notices = newest_first(load_notifications())
 
     parent = getattr(host, "frame", None) or host
     dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
@@ -154,7 +157,7 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
         # Reading it IS opening it: a row you have just acted on is not still
         # new, and making somebody mark it separately is busywork.
         if not notice.read:
-            notices[:] = mark_read(data_dir, notice.id)
+            notices[:] = newest_first(mark_read(notice.id))
         index = listbox.GetSelection()
         target = str(getattr(notice, "target", "") or "")
         _refresh(index)
@@ -198,7 +201,7 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
 
     def _mark_all(_event: Any) -> None:
         unread = sum(1 for n in notices if not n.read)
-        notices[:] = mark_all_read(data_dir)
+        notices[:] = newest_first(mark_all_read())
         _refresh(listbox.GetSelection())
         # A count, which no tone carries and the reader cannot infer.
         say("Nothing was unread." if not unread else f"Marked {unread} as read.")
@@ -208,7 +211,8 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
             say("The list is already empty.")
             return
         removed = len(notices)
-        notices[:] = clear_notices(data_dir)
+        clear_notifications()
+        notices.clear()
         _refresh()
         say(f"Cleared {removed} notification{'s' if removed != 1 else ''}.")
 

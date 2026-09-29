@@ -358,11 +358,9 @@ def _raise_alerts(found: list[FeedCheck]) -> None:
     check is an alarm, not information. Never raises -- a check that found
     episodes has already done the useful part.
     """
-    from quill.core.notifications import Notice, add_notice
-    from quill.core.paths import app_data_dir
+    from quill.core.notifications import add_notice
     from quill.core.podcasts import episode_alerts
 
-    data_dir = app_data_dir()
     loud: list[tuple[str, int, str]] = []
     for title, count, alert, show_id in found:
         if count <= 0 or not episode_alerts.wants_list_entry(alert):
@@ -370,13 +368,10 @@ def _raise_alerts(found: list[FeedCheck]) -> None:
         plural = "episodes" if count != 1 else "episode"
         try:
             add_notice(
-                data_dir,
-                Notice.create(
-                    app="Quill Radio",
-                    title=f"{count} new {plural}",
-                    body=title,
-                    target=show_id,
-                ),
+                app="Quill Radio",
+                title=f"{count} new {plural}",
+                body=title,
+                target=show_id,
             )
         except Exception:  # noqa: BLE001 - the episodes still arrived
             logger.debug("Could not record a new-episode notice", exc_info=True)
