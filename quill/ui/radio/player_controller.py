@@ -46,7 +46,7 @@ from quill.core.optilab import optilab_active
 from quill.core.radio.models import RadioStation
 from quill.core.sound_events import SoundEvent
 from quill.core.spotify.models import is_spotify_uri
-from quill.ui.audio.audio_engine import WxMediaEngine
+from quill.ui.audio.audio_engine import create_windows_engine
 from quill.ui.companion_cues import post_cue
 from quill.ui.radio import media_preflight, stream_stall
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine
@@ -237,11 +237,13 @@ class RadioPlayerController(PlayerTracksMixin):
         #: ignored for live radio, which has no pauses left to skip.
         self._skip_silence = False
         self._parent = parent
-        self._wx_engine = WxMediaEngine(
+        self._wx_engine = create_windows_engine(  # modern routes; classic cannot
             parent,
             on_loaded=self._on_loaded,
             on_finished=self._on_finished,
             on_error=self._on_error,
+            audio_device=self._output_device,
+            on_buffering=self._handle_buffering,
         )
         #: Created lazily on the first play that opts into a device; kept
         #: for the process's lifetime like the wx engine.

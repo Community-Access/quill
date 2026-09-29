@@ -1,9 +1,15 @@
-"""Audio playback engines for the Audio Studio player.
+"""Audio playback engines for the QuillVille family.
 
-A tiny engine protocol with the default Windows implementation on
-``wx.media.MediaCtrl`` (the WMP backend — no new native dependency). The
-protocol mirrors ChapterForge's libmpv engine so an mpv backend can slot in
-later (delivered on demand like ffmpeg) without touching the player panel:
+A tiny engine protocol with three Windows implementations: libmpv
+(:mod:`quill.ui.audio.mpv_engine`, preferred when its DLL is present), the
+modern Windows Media engine (:mod:`quill.ui.audio.winrt_engine`,
+``Windows.Media.Playback.MediaPlayer``, which can be pointed at an output
+device), and the classic ``wx.media.MediaCtrl`` on the Windows Media Player
+backend, which cannot. :func:`create_windows_engine` picks between the two
+Windows ones, so "Windows Media" means the modern engine wherever Windows
+offers it and the classic one only where it does not (2026-09-29). The
+protocol mirrors ChapterForge's libmpv engine so any backend slots in without
+touching the player panel:
 
 - ``load`` begins async loading; ``on_loaded(length_ms)`` fires when ready.
 - ``seek`` is absolute milliseconds and never changes the pause state unless
@@ -168,6 +174,43 @@ class WxMediaEngine:
         self._on_finished()
 
 
+def windows_engine_routes_devices() -> bool:
+    """Whether the Windows Media engine on this machine can choose a sound card
+    (the modern engine can; the classic wx.media one cannot)."""
+    from quill.ui.audio.winrt_engine import winrt_media_available
+
+    return winrt_media_available()
+
+
+def create_windows_engine(
+    parent: wx.Window,
+    *,
+    on_loaded: Callable[[int], None],
+    on_finished: Callable[[], None],
+    on_error: Callable[[str], None],
+    audio_device: str = "",
+    on_buffering: Callable[[bool], None] | None = None,
+) -> AudioEngine:
+    """The Windows Media engine: modern (routes to *audio_device*, reports
+    buffering) when Windows offers it, else the classic wx.media control, which
+    ignores both. Never raises: the classic control is the floor."""
+    if windows_engine_routes_devices():
+        try:
+            from quill.ui.audio.winrt_engine import WinRtMediaEngine
+
+            return WinRtMediaEngine(
+                parent,
+                on_loaded=on_loaded,
+                on_finished=on_finished,
+                on_error=on_error,
+                audio_device=audio_device,
+                on_buffering=on_buffering,
+            )
+        except Exception:  # noqa: BLE001 - the classic control is the floor
+            _log.exception("Windows Media engine unavailable; using wx.media")
+    return WxMediaEngine(parent, on_loaded=on_loaded, on_finished=on_finished, on_error=on_error)
+
+
 def preferred_backend() -> str:
     """``"mpv"`` when a libmpv DLL is present, else ``"wx"`` (the default)."""
     from quill.ui.audio.mpv_engine import find_libmpv
@@ -189,8 +232,9 @@ def create_engine(
 
     libmpv (gapless, exact seeking, wide format coverage) is preferred when its
     DLL is installed — the on-demand download, a ``QUILL_LIBMPV`` override, or
-    a copy beside the executable. Any mpv failure falls back to wx.media so a
-    broken DLL can never take playback away.
+    a copy beside the executable. Any mpv failure falls back to the Windows
+    Media engine (:func:`create_windows_engine`: modern where Windows offers
+    it, classic otherwise) so a broken DLL can never take playback away.
     """
     if preferred_backend() == "mpv":
         try:
@@ -202,7 +246,7 @@ def create_engine(
         except Exception:  # noqa: BLE001 - fall back to the zero-dependency backend
             _log.exception("libmpv found but unusable; falling back to wx.media")
     try:
-        return WxMediaEngine(
+        return create_windows_engine(
             parent, on_loaded=on_loaded, on_finished=on_finished, on_error=on_error
         )
     except Exception:  # noqa: BLE001 - no media backend on this machine

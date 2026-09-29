@@ -198,6 +198,8 @@ def test_the_revert_goes_to_the_device_in_use_before_not_the_default(radio) -> N
     radio["finish"]()
     assert mpv.loads[-1][1] == SPEAKERS
     assert c.output_device == SPEAKERS
+    assert said == []  # not yet: the retry has not answered
+    radio["finish"]()  # the speakers play, so the headset was the problem
     assert said[-1].endswith("is back to Speakers (Realtek).")
 
 
@@ -234,6 +236,9 @@ def test_a_stream_that_fails_on_both_devices_is_a_stream_problem(radio) -> None:
         "Windows Media is playing this station, and it cannot use the chosen "
         "output device; the audio is on the device Windows gives Quill Radio."
     )
+    # The stream was the problem, not the headset: the choice stands, unsaid.
+    assert c.output_device == HEADSET
+    assert not any("could not be opened" in s for s in said)
 
 
 def test_the_device_switch_is_logged(radio, caplog: pytest.LogCaptureFixture) -> None:
@@ -291,3 +296,140 @@ def test_a_saved_device_under_windows_media_is_given_back_at_the_first_play(
     assert wxe.loads == ["http://example.test/kspn"]
     assert c.output_device == "" and saved == [""]
     assert said and said[-1].startswith("Windows Media (classic) plays on the device Windows")
+
+
+# -- the modern Windows Media engine routes too (2026-09-29) --------------------------
+
+
+class _FakeRoutingWx(_FakeWx):
+    """The modern Windows Media engine: the classic fake plus set_audio_device."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.devices: list[str] = []
+
+    def set_audio_device(self, name: str) -> None:
+        self.devices.append(name)
+
+
+def _make_windows(monkeypatch: pytest.MonkeyPatch, *, output_device: str) -> dict[str, Any]:
+    """A controller with no libmpv and the modern Windows engine."""
+    monkeypatch.setattr(engine_selection, "mpv_output_device_available", lambda: False)
+    monkeypatch.setattr(guard, "list_audio_devices", lambda: list(DEVICES))
+    said: list[str] = []
+    saved: list[str] = []
+    frame = wx.Frame(None)
+    controller = RadioPlayerController(
+        frame,
+        output_device=output_device,
+        playback_engine="wx",
+        on_output_device_error=said.append,
+    )
+    controller.on_output_device_reverted = saved.append
+    wxe = _FakeRoutingWx()
+    controller._wx_engine = wxe
+    controller._engine = wxe
+    return {"controller": controller, "wx": wxe, "said": said, "saved": saved}
+
+
+def test_the_windows_engine_takes_a_chosen_device_and_nothing_is_reverted(
+    wx_app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    r = _make_windows(monkeypatch, output_device=SPEAKERS)
+    c, wxe = r["controller"], r["wx"]
+    c.play_station(_station())
+    assert wxe.loads == ["http://example.test/kspn"]
+    assert wxe.devices[-1] == SPEAKERS
+    assert c.output_device == SPEAKERS
+    assert r["saved"] == [] and r["said"] == []
+
+
+def test_the_windows_engine_switches_device_live(wx_app, monkeypatch: pytest.MonkeyPatch) -> None:
+    r = _make_windows(monkeypatch, output_device="")
+    c, wxe = r["controller"], r["wx"]
+    c.play_station(_station())
+    c._on_loaded(0)
+    assert c.state.state is RadioPlayerState.PLAYING
+    c.set_output_device(HEADSET)
+    assert wxe.devices[-1] == HEADSET
+    assert wxe.loads == ["http://example.test/kspn"]  # no reconnect
+    assert c.state.state is RadioPlayerState.PLAYING
+    assert r["said"] == []
+
+
+def test_a_device_the_windows_engine_cannot_open_is_given_back_on_the_same_engine(
+    wx_app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    r = _make_windows(monkeypatch, output_device=HEADSET)
+    c, wxe, said, saved = r["controller"], r["wx"], r["said"], r["saved"]
+    c.play_station(_station())
+    assert wxe.devices[-1] == HEADSET
+    c._on_error("The device would not open.")  # the engine's verdict on the load
+    assert wxe.loads == ["http://example.test/kspn"] * 2  # retried, still on Windows Media
+    assert wxe.devices[-1] == ""
+    assert said == [] and saved == []  # the verdict waits for the retry
+    c._on_loaded(0)  # the default plays: the headset was the problem
+    assert c.output_device == ""
+    assert saved == [""]
+    assert said[-1] == (
+        "Speakers (Logi USB Headset) could not be opened, so the output device is back to "
+        "System default."
+    )
+
+
+def test_switching_to_windows_media_keeps_the_device_when_the_engine_routes(
+    wx_app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(engine_selection, "mpv_output_device_available", lambda: True)
+    monkeypatch.setattr(guard, "list_audio_devices", lambda: list(DEVICES))
+    said: list[str] = []
+    saved: list[str] = []
+    frame = wx.Frame(None)
+    c = RadioPlayerController(
+        frame, output_device=SPEAKERS, playback_engine="auto", on_output_device_error=said.append
+    )
+    c.on_output_device_reverted = saved.append
+    mpv, wxe = _FakeMpv(), _FakeRoutingWx()
+    c._mpv_engine, c._wx_engine, c._engine = mpv, wxe, mpv
+    c.play_station(_station())
+    c._on_loaded(0)
+    c.set_playback_engine("wx")
+    assert c.output_device == SPEAKERS and saved == [] and said == []
+    assert wxe.devices[-1] == SPEAKERS
+    assert wxe.loads == ["http://example.test/kspn"]
+
+
+def test_the_rescue_onto_the_windows_engine_carries_the_device(
+    wx_app, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """mpv cannot play the stream at all: Windows Media takes it, on the same
+    device, and nobody is told the device was lost -- because it was not."""
+    monkeypatch.setattr(engine_selection, "mpv_output_device_available", lambda: True)
+    monkeypatch.setattr(guard, "list_audio_devices", lambda: list(DEVICES))
+    said: list[str] = []
+    frame = wx.Frame(None)
+    c = RadioPlayerController(
+        frame, output_device=SPEAKERS, playback_engine="mpv", on_output_device_error=said.append
+    )
+    mpv, wxe = _FakeMpv(), _FakeRoutingWx()
+    c._mpv_engine, c._wx_engine, c._engine = mpv, wxe, mpv
+    c.play_station(_station())
+    c._on_error("no")  # the stream fails on the speakers: retried on the default, still mpv
+    assert mpv.loads[-1][1] == ""
+    c._on_error("no")  # and on the default: the stream is the problem -> Windows Media
+    assert wxe.loads == ["http://example.test/kspn"]
+    assert c.output_device == SPEAKERS  # restored: the speakers were never at fault
+    assert wxe.devices[-1] == SPEAKERS  # and Windows Media plays on them
+    assert said == []
+
+
+def test_windows_engine_routes_reads_the_engine_not_the_preference() -> None:
+    class _Host:
+        _wx_engine = _FakeRoutingWx()
+
+    class _Classic:
+        _wx_engine = _FakeWx()
+
+    assert guard.windows_engine_routes(_Host()) is True
+    assert guard.windows_engine_routes(_Classic()) is False
+    assert guard.windows_engine_routes(object()) is False

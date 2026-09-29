@@ -227,6 +227,20 @@ ocr = [
     "winrt-Windows.Globalization>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Storage>=3.2.1; sys_platform == 'win32'",
 ]
+# The modern Windows Media engine (quill/ui/audio/winrt_engine.py, 2026-09-29):
+# Windows.Media.Playback.MediaPlayer, which can be pointed at an output device,
+# plus the device enumeration it needs. Same pywinrt family as [ocr]; every
+# namespace the engine imports is listed, because pywinrt resolves them lazily
+# and PyInstaller only freezes what an import statement names.
+windows-media = [
+    "winrt-runtime>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Playback>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Core>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Devices>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Devices.Enumeration>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Foundation>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Foundation.Collections>=3.2.1; sys_platform == 'win32'",
+]
 # Kokoro neural TTS (offline, no GPU/torch required). kokoro-onnx runs the Kokoro
 # voice model through onnxruntime (CPU). Voice model files (~114 MB) are downloaded
 # on first use via Voice Picker > Download Kokoro and stored in the app data dir.
@@ -400,6 +414,9 @@ runtime = [
   # machine happened not to have it -- the drift class the fingerprint tool
   # exists for -- so it is declared rather than left to chance.
   "quill[ocr]",
+  # The Windows Media engine every family app plays through when libmpv is
+  # absent, and the one that routes Windows Media to a chosen sound card.
+  "quill[windows-media]",
   # GLOW (large-print document accessibility) likewise ships working today:
   # quill.core.glow, quill_glow_core and acb_large_print all import inside the
   # frozen runtime. This pulls the documents stack (pymupdf, markitdown[all])

@@ -112,6 +112,7 @@ class AudioHealthFacts:
 
 _ENGINE_NAMES = {
     "mpv": "the mpv engine",
+    "windows": "the Windows Media engine",
     "wx": "the classic Windows Media engine",
     "spotify": "Spotify's own player",
 }
@@ -144,16 +145,13 @@ def _engine_row(facts: AudioHealthFacts) -> HealthRow:
     if not facts.mpv_present:
         return HealthRow(
             "Playback engine",
-            "the classic Windows Media engine, because mpv is missing from this "
-            "installation. This is the setting working as designed, not a fault "
-            "you caused -- but it is why some stations will not play.",
+            f"{name}, because mpv is missing from this installation. This is the "
+            "setting working as designed, not a fault you caused -- but it is why "
+            "some stations will not play.",
             DEGRADED,
         )
     if facts.engine_preference == "wx":
-        return HealthRow(
-            "Playback engine",
-            "the classic Windows Media engine, because you chose it in Preferences.",
-        )
+        return HealthRow("Playback engine", f"{name}, because you chose it in Preferences.")
     return HealthRow("Playback engine", f"{name}.")
 
 

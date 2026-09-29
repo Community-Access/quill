@@ -32,3 +32,12 @@ def test_windows_media_stays_selected_either_way() -> None:
     assert engine_choices("wx", mpv_present=True)[2] == 1
     assert engine_choices("wx", mpv_present=False)[2] == 1
     assert engine_choices("", mpv_present=False)[2] == 0
+
+
+def test_the_windows_media_row_says_classic_only_where_the_modern_engine_is_absent() -> None:
+    labels, _values, _index = engine_choices("auto", mpv_present=True, modern_windows_media=True)
+    assert labels[1] == "Windows Media"
+    labels, _values, _index = engine_choices("auto", mpv_present=False, modern_windows_media=True)
+    assert labels == ["Automatic (uses Windows Media; mpv is not installed)", "Windows Media"]
+    labels, _values, _index = engine_choices("auto", mpv_present=False, modern_windows_media=False)
+    assert labels[1] == "Windows Media (classic)"

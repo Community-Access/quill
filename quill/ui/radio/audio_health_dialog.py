@@ -131,6 +131,8 @@ def _gather(host: Any) -> AudioHealthFacts:
             active = "mpv"
         elif "spotify" in name:
             active = "spotify"
+        elif "winrt" in name:
+            active = "windows"  # the modern Windows Media engine
         else:
             active = "wx"
 
@@ -141,9 +143,9 @@ def _gather(host: Any) -> AudioHealthFacts:
     device_available = True
     if device:
         try:
-            from quill.ui.radio.mpv_radio_engine import list_audio_devices
+            from quill.ui.audio.output_routing import list_output_devices
 
-            names = [str(name) for name, _description in list_audio_devices()]
+            names = [str(name) for name, _description in list_output_devices()]
             # Only contradict the setting when we got a real list back: an empty
             # answer means the question could not be asked, not that the device
             # is gone, and reporting "your headset is missing" on the strength of

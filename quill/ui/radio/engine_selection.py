@@ -73,7 +73,7 @@ def select(host: Any) -> None:
         "Radio engine selection: preference=%s, mpv_present=%s -> %s",
         host._playback_engine,
         mpv_present,
-        "mpv" if wanted_mpv else "wx.media",
+        "mpv" if wanted_mpv else "Windows Media",
     )
 
     if wanted_mpv:
@@ -92,7 +92,10 @@ def select(host: Any) -> None:
 
     from quill.ui.radio import output_device_guard
 
-    if output_device_guard.revert_for_windows_media(host):
+    if output_device_guard.windows_engine_routes(host):
+        # The modern Windows Media engine takes the device itself (2026-09-29).
+        output_device_guard.apply_to_windows_engine(host)
+    elif output_device_guard.revert_for_windows_media(host):
         pass  # said, saved, and the device is gone from the setting
     elif host._on_output_device_error is not None:
         if bool(host._output_device):
@@ -196,6 +199,9 @@ def on_load_error(host: Any, message: str) -> None:
         # default, and a word about it -- before Windows Media, which cannot
         # route at all and used to take the station without saying so.
         return
+    # The device retry failed as well: the stream is the problem, and the
+    # device goes back into the setting for the other engine to carry.
+    output_device_guard.rescue_settled(host, loaded=False)
     if host._state.state in connecting and host._attempt_engine_fallback():
         # A stream WMP cannot decode (Ogg/Opus/HLS) often plays fine on mpv,
         # and a misbehaving mpv falls back to WMP. One rescue per attempt.

@@ -156,3 +156,14 @@ def test_the_two_tool_view_of_the_same_facts_agrees_with_it() -> None:
     assert health.ffmpeg is False
     assert health.mpv is True
     assert not health.healthy
+
+
+def test_the_modern_windows_engine_is_named_as_itself() -> None:
+    """2026-09-29: "windows" is the modern engine, which routes; "wx" the classic."""
+    rows = build_report(_healthy(active_engine="windows", engine_preference="wx"))
+    engine = next(r for r in rows if r.label == "Playback engine")
+    assert engine.detail == "the Windows Media engine, because you chose it in Preferences."
+    rows = build_report(_healthy(active_engine="windows", mpv_present=False))
+    engine = next(r for r in rows if r.label == "Playback engine")
+    assert engine.detail.startswith("the Windows Media engine, because mpv is missing")
+    assert "classic" not in engine.detail

@@ -23,25 +23,26 @@ def choose_output_device(frame: Any) -> None:
 
     from quill.core.paths import app_data_dir
     from quill.core.radio import history as radio_history
-    from quill.ui.radio.mpv_radio_engine import (
-        list_audio_devices,
-        mpv_output_device_available,
-        output_device_choices,
+    from quill.ui.audio.output_routing import (
+        list_output_devices,
+        output_device_routing_available,
     )
+    from quill.ui.radio import output_device_guard
+    from quill.ui.radio.mpv_radio_engine import output_device_choices
 
     history = frame._radio_history
-    device_labels, device_names, device_index = output_device_choices(
-        list_audio_devices(), history.output_device
-    )
-    if not mpv_output_device_available():
-        # No mpv, so no device list of our own: Windows Media is playing, and
-        # the device it plays on is the one Windows gives this app.
+    if not output_device_routing_available():
+        # Neither mpv nor the modern Windows Media engine: the classic control
+        # is playing, on the device Windows gives this app.
         _open_windows_route(
             frame,
-            "Quill Radio is playing through Windows Media, because the mpv engine "
-            "is not installed in this copy.",
+            "Quill Radio is playing through the classic Windows Media engine, which "
+            "cannot be pointed at a device from here.",
         )
         return
+    device_labels, device_names, device_index = output_device_choices(
+        list_output_devices(), history.output_device
+    )
 
     with wx.SingleChoiceDialog(
         modal_stack.parent_window(frame),
@@ -59,19 +60,25 @@ def choose_output_device(frame: Any) -> None:
     if chosen == history.output_device:
         frame._announce(f"Output device unchanged: {chosen_label}.")
         return
-    if chosen and history.playback_engine == "wx":
-        # Windows Media (classic) plays on the device Windows gives this app,
-        # and nothing in wx.media takes a device name (2026-09-29). The engine
+    if (
+        chosen
+        and history.playback_engine == "wx"
+        and not output_device_guard.windows_engine_routes(frame._radio_controller)
+    ):
+        # Only the classic wx.media control is left on this machine, and it
+        # plays on the device Windows gives this app (2026-09-29). The engine
         # preference is the listener's and stays; the route that works under
         # it is Windows' own per-app device, the same answer QUILL Cast gives
         # (ui/media/output_device). Jeff: "why is it forcing automatic mode
         # and mpv when switching if windows media is selected, that should
         # not be necessary at all. What if mpv is not enabled?" And no
-        # question first: "drop the yes/no directly, no need to ask."
+        # question first: "drop the yes/no directly, no need to ask." Where
+        # Windows offers the modern engine, this branch is never reached: the
+        # Windows Media engine takes the device itself.
         _open_windows_route(
             frame,
-            f"The playback engine is Windows Media (classic), so this list cannot "
-            f"send the radio to {chosen_label}.",
+            f"The playback engine is the classic Windows Media control, so this "
+            f"list cannot send the radio to {chosen_label}.",
         )
         return
     history.output_device = chosen

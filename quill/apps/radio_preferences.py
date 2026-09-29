@@ -111,8 +111,9 @@ def open_preferences(app: Any) -> None:
         PreferencesDialog,
         PreferenceText,
     )
+    from quill.ui.audio.audio_engine import windows_engine_routes_devices
+    from quill.ui.audio.output_routing import list_output_devices
     from quill.ui.radio.mpv_radio_engine import (
-        list_audio_devices,
         mpv_output_device_available,
         output_device_choices,
     )
@@ -120,10 +121,12 @@ def open_preferences(app: Any) -> None:
     history = app._radio_history
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     device_labels, device_names, device_index = output_device_choices(
-        list_audio_devices(), history.output_device
+        list_output_devices(), history.output_device
     )
     engine_labels, engine_values, engine_index = engine_choices(
-        history.playback_engine, mpv_present=mpv_output_device_available()
+        history.playback_engine,
+        mpv_present=mpv_output_device_available(),
+        modern_windows_media=windows_engine_routes_devices(),
     )
     catalog_interval_labels = [
         "Every 6 hours",
