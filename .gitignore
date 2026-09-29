@@ -148,6 +148,7 @@ radio2.md
 # gitignored root file, so this both keeps them out and keeps the gate
 # quiet while they sit in the working copy.
 add.md
+add2.md
 dict.md
 testkspn.md
 # The suggest1-7 strategy/plan papers lived here until 2026-08-28, when their
