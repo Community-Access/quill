@@ -47,7 +47,9 @@ def test_release_files_exist() -> None:
 
 def test_portable_bundles_everything_and_no_token() -> None:
     product = _load_build_portable().PRODUCTS["converter"]
-    assert product.feedback_token is False
+    # No product carries a feedback token any more -- the switch itself is gone
+    # (2026-09-26), so there is no per-product opt-in to assert against.
+    assert not hasattr(product, "feedback_token")
     assert "feedback" not in product.dep_groups
     # yt-dlp (Convert from URL) and mutagen (cover art) ship inside: no download.
     assert "youtube" in product.dep_groups and "mp3" in product.dep_groups

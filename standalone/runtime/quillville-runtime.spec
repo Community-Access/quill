@@ -14,6 +14,8 @@
 # of every app's needs, and QUILL itself uses transcription/neural TTS -- those
 # still resolve their models from the shared component store at runtime.
 
+import os
+
 from PyInstaller.utils.hooks import collect_all
 
 # collect_all sweeps whatever is sitting in the package tree, and mypy, pytest
@@ -51,6 +53,12 @@ if sys.path[:1] != [_CHECKOUT_ROOT]:
     sys.path.insert(0, _CHECKOUT_ROOT)
 
 quill_datas, quill_binaries, quill_hidden = collect_all("quill")
+# No bug-report credential ships in any QuillVille build (2026-09-26; feedback
+# is email-only). collect_all("quill") would sweep a stale, gitignored
+# quill/_feedback_token.py left in the checkout, so drop it here, exclude it
+# below, and let scripts/check_no_credentials.py refuse the build if it or
+# feedback_hub reaches the archive anyway.
+quill_hidden = [m for m in quill_hidden if m != "quill._feedback_token"]
 social_datas, social_binaries, social_hidden = collect_all("quill_social")
 nacl_datas, nacl_binaries, nacl_hidden = collect_all("nacl")
 # yt-dlp: part of the [runtime] dependency set, so the shared runtime
@@ -86,6 +94,9 @@ a = Analysis(
     hookspath=[],
     runtime_hooks=[],
     excludes=[
+        # The retired bug-report credential and its client (see above).
+        "quill._feedback_token",
+        "feedback_hub",
         # The shared runtime backs QUILL (the full editor) too, so it KEEPS PIL
         # (AI vision), the PDF stack, and the speech engines QUILL uses. These are
         # only the libraries NO QuillVille app -- QUILL included -- imports at
@@ -247,6 +258,13 @@ a = Analysis(
     ],
     noarchive=False,
 )
+
+import sys as _sys  # noqa: E402
+
+_sys.path.insert(0, os.path.join(SPECPATH, "..", "..", "scripts"))
+from check_no_credentials import assert_toc_clean  # noqa: E402
+
+assert_toc_clean(a.pure)
 
 pyz = PYZ(a.pure)
 

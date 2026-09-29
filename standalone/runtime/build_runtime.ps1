@@ -132,6 +132,15 @@ if ($LASTEXITCODE -ne 0) {
     throw "Runtime inventory drift -- see above. Rebaseline (--write) only for intentional changes."
 }
 
+# -- no retired bug-report credential ------------------------------------------
+# Feedback is email-only since 2026-09-26 and no build may ship the old GitHub
+# token (quill/_feedback_token.py) or feedback_hub. The spec excludes both and
+# refuses a TOC that carries them; this re-checks the finished onedir on disk.
+& $Python (Join-Path $quillRepo "scripts\check_no_credentials.py") $dist
+if ($LASTEXITCODE -ne 0) {
+    throw "Retired bug-report credential in the runtime -- see above."
+}
+
 # -- the frozen modules must actually import ----------------------------------
 # The inventory gate above compares NAMES. It cannot see a package that is
 # present, resolves through find_spec, and raises the moment anything imports

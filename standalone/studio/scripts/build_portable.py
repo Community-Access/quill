@@ -41,7 +41,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -100,11 +99,11 @@ class Product:
     stage_engines: bool
     stage_ffmpeg: bool
     stage_mpv: bool
-    # Whether the bundle carries QUILL's GitHub feedback token. Quill Radio and
-    # QUILL Lite send all feedback to support@community-access.org by email
-    # (2026-09-26), so they carry neither the token nor feedback-hub: a
-    # credential an app never uses is only a credential somebody can extract.
-    feedback_token: bool = True
+    # No product carries QUILL's old GitHub feedback token or feedback-hub:
+    # every QuillVille app sends feedback to support@community-access.org by
+    # email (2026-09-26), and a credential an app never uses is only a
+    # credential somebody can extract. _copy_quill_source drops the file and
+    # scripts/check_no_credentials.py fails the build if either reappears.
     # tools/deno: the JavaScript runtime the bundled yt-dlp solves YouTube's
     # challenges with. Required (the build fails without --deno-dir) for the
     # apps that play YouTube.
@@ -124,7 +123,7 @@ PRODUCTS: dict[str, Product] = {
         exe="QuillAudioStudio",
         display="QUILL Audio Studio",
         zip_name="QUILL-Audio-Studio-Portable-Lean-{ver}.zip",
-        dep_groups=("ui", "speech", "feedback"),
+        dep_groups=("ui", "speech"),
         stage_engines=True,
         stage_ffmpeg=True,
         stage_mpv=True,
@@ -142,7 +141,6 @@ PRODUCTS: dict[str, Product] = {
         stage_engines=False,   # radio streams/records; no bundled speech engines
         stage_ffmpeg=True,     # podcast/stream recording
         stage_mpv=True,        # playback engine
-        feedback_token=False,  # feedback is email to support@ (2026-09-26)
         stage_deno=True,       # YouTube's JS challenges
         offline_portable_launcher=True,
     ),
@@ -152,7 +150,7 @@ PRODUCTS: dict[str, Product] = {
         exe="QuillWeather",
         display="Quill Weather",
         zip_name="Quill-Weather-Portable-{ver}.zip",
-        dep_groups=("ui", "feedback"),  # small app: no media stack
+        dep_groups=("ui",),  # small app: no media stack
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
@@ -165,7 +163,7 @@ PRODUCTS: dict[str, Product] = {
         zip_name="Quill-Inkwell-Portable-{ver}.zip",
         # The smallest app in the family: a keyboard hook, a matcher, and two
         # dialogs. No media stack, no engines, nothing to download.
-        dep_groups=("ui", "feedback"),
+        dep_groups=("ui",),
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
@@ -187,7 +185,6 @@ PRODUCTS: dict[str, Product] = {
         stage_engines=False,
         stage_ffmpeg=True,
         stage_mpv=True,
-        feedback_token=False,  # feedback is email to support@ (2026-09-26)
         # Convert from URL (videos, playlists, channels): yt-dlp needs a
         # JavaScript runtime for YouTube's challenges; bundled, never PATH.
         stage_deno=True,
@@ -207,7 +204,6 @@ PRODUCTS: dict[str, Product] = {
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
-        feedback_token=False,  # feedback is email to support@ (2026-09-26)
         offline_portable_launcher=True,
     ),
     "quill": Product(
@@ -217,7 +213,7 @@ PRODUCTS: dict[str, Product] = {
         display="QUILL for All",
         zip_name="QUILL-for-All-Portable-{ver}.zip",
         # The full editor: the complete bundled dependency set QUILL ships.
-        dep_groups=("ui", "spellcheck", "ocr", "speech", "feedback", "github"),
+        dep_groups=("ui", "spellcheck", "ocr", "speech", "github"),
         # Engines download on demand (QUILL's standard portable); the fully
         # offline variant is the separate --bundle-offline Offline Edition.
         stage_engines=False,
@@ -312,7 +308,7 @@ def _keep_makepy_cache_in_bundle(out_dir: Path) -> None:
     (gen_py / "__init__.py").touch()
 
 
-def _copy_quill_source(out_dir: Path, source_root: Path, *, feedback_token: bool = True) -> None:
+def _copy_quill_source(out_dir: Path, source_root: Path) -> None:
     site_packages = out_dir / "Lib" / "site-packages"
     site_packages.mkdir(parents=True, exist_ok=True)
     if (site_packages / "quill").exists():
@@ -322,24 +318,9 @@ def _copy_quill_source(out_dir: Path, source_root: Path, *, feedback_token: bool
         raise RuntimeError(f"quill/ package source not found under {source_root}")
     print("  copying quill source -> Lib/site-packages/quill")
     shutil.copytree(quill_source, site_packages / "quill", ignore=_DEV_CACHE_IGNORE)
-    token = site_packages / "quill" / "_feedback_token.py"
-    if not feedback_token:
-        # Whatever another app's build left in the checkout, this bundle ships
-        # without it (see Product.feedback_token).
-        token.unlink(missing_ok=True)
-        return
-    if not token.is_file():
-        raise RuntimeError(
-            "quill/_feedback_token.py missing -- generate the feedback token first "
-            "(build_release.ps1 does this via tools/generate_feedback_token.py)."
-        )
-    match = re.search(
-        r"""^BUNDLED_TOKEN\s*=\s*['"]([^'"]*)['"]""",
-        token.read_text(encoding="utf-8"),
-        re.MULTILINE,
-    )
-    if not match or not match.group(1):
-        raise RuntimeError("Bundled feedback token is empty -- refusing to ship.")
+    # The retired GitHub feedback token (gitignored, so an older build's copy
+    # can sit unseen in the checkout) never ships in any bundle (2026-09-26).
+    (site_packages / "quill" / "_feedback_token.py").unlink(missing_ok=True)
 
 
 def _prune_build_only(out_dir: Path) -> None:
@@ -552,7 +533,7 @@ def main() -> int:
         _bootstrap_pip_and_deps(python_exe, source_root / "pyproject.toml", product.dep_groups)
 
         print("[3/8] quill package source")
-        _copy_quill_source(out_dir, source_root, feedback_token=product.feedback_token)
+        _copy_quill_source(out_dir, source_root)
         _prune_build_only(out_dir)
 
     print(f"[{'2/6' if args.no_runtime else '4/8'}] native launcher")
@@ -642,6 +623,17 @@ def main() -> int:
     else:
         print(f"      inventory gate: no baseline at {manifest.name}; adopt with "
               f"check_runtime_inventory.py {out_dir} --layout portable --manifest ... --write")
+
+    # No bug-report credential may ship (2026-09-26): fail if a stale
+    # _feedback_token.py or a feedback_hub install reached the bundle.
+    creds = subprocess.run(
+        [sys.executable, str(source_root / "scripts" / "check_no_credentials.py"), str(out_dir)],
+        capture_output=True, text=True,
+    )
+    if creds.returncode != 0:
+        print(creds.stdout, creds.stderr)
+        raise RuntimeError("Retired bug-report credential in the bundle -- see above.")
+    print("      credential gate: clean")
 
     print(f"\nPortable bundle ready: {out_dir}")
     print(f"(zip as: {product.zip_name.format(ver=args.version)})")

@@ -3313,7 +3313,7 @@ class MenuBuilderMixin:
             self._menu_label(_("Reset to &Essential Profile"), "help.reset_feature_profile"),
         )
         help_menu.AppendSubMenu(profiles_menu, _("&Feature Profiles"))
-        help_menu.Append(
+        help_menu.Append(  # L, not Lite's G: Open User &Guide owns G here (GATE-14)
             self._id_report_bug,
             self._menu_label(_("Get He&lp from Support..."), "help.report_bug"),
         )

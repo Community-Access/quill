@@ -32,7 +32,7 @@ class RecoveryOffer:
     dismissal_count: int = 0
     # #1045/#1046: the log excerpt that justified this offer, captured once
     # here (while it is guaranteed still within the scan window) rather than
-    # re-scanned later when a "Send Bug Report" click is finally made -- by
+    # re-scanned later when an "Email Support" click is finally made -- by
     # then the current session's own routine logging may have grown
     # quill.log enough to push the original evidence out of that window,
     # making a correctly-justified offer look like an unexplained false
@@ -170,11 +170,11 @@ def find_error_evidence(logs_dir: Path, *, context_lines: int = 3) -> str | None
     #1013: a filed crash-recovery report showed only a routine log tail
     with no visible justification for the offer -- because the *filed
     report* only bundles the last few thousand characters of the log
-    (``issue_submit.build_log_summary``), while the offer decision above
+    (``stability.crash_submit.build_log_summary``), while the offer decision above
     scans a much larger window (``_LOG_TAIL_SCAN_BYTES``). Real error
     evidence earlier in that window never made it into the report, making
     a correctly-justified offer look like a false positive. Callers that
-    file a crash-recovery report should include this excerpt explicitly so
+    write a crash-recovery report should include this excerpt explicitly so
     the report is self-explanatory regardless of where the evidence falls.
     """
     tail = _read_log_tail(logs_dir)

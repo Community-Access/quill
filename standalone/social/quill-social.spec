@@ -15,6 +15,8 @@
 # they are picked up automatically; when absent the app still runs on the mock
 # adapter, so they are not hard requirements here.
 
+import os
+
 from PyInstaller.utils.hooks import collect_all
 
 # collect_all sweeps whatever is sitting in the package tree, and mypy, pytest
@@ -38,6 +40,12 @@ def drop_dev_caches(entries):
 
 
 quill_datas, quill_binaries, quill_hiddenimports = collect_all("quill")
+# No bug-report credential ships in any QuillVille build (2026-09-26; feedback
+# is email-only). collect_all("quill") would sweep a stale, gitignored
+# quill/_feedback_token.py left in the checkout, so drop it here, exclude it
+# below, and let scripts/check_no_credentials.py refuse the build if it or
+# feedback_hub reaches the archive anyway.
+quill_hiddenimports = [m for m in quill_hiddenimports if m != "quill._feedback_token"]
 social_datas, social_binaries, social_hiddenimports = collect_all("quill_social")
 nacl_datas, nacl_binaries, nacl_hiddenimports = collect_all("nacl")
 
@@ -50,6 +58,9 @@ a = Analysis(
     hookspath=[],
     runtime_hooks=[],
     excludes=[
+        # The retired bug-report credential and its client (see above).
+        "quill._feedback_token",
+        "feedback_hub",
         # yt-dlp (~3 MB) is bundled only in the apps with a YouTube or
         # URL-import path (Radio, Studio, Converter). collect_all("quill")
         # force-includes quill.core.radio.youtube here too, so without this
@@ -83,6 +94,13 @@ a = Analysis(
     ],
     noarchive=False,
 )
+
+import sys as _sys  # noqa: E402
+
+_sys.path.insert(0, os.path.join(SPECPATH, "..", "..", "scripts"))
+from check_no_credentials import assert_toc_clean  # noqa: E402
+
+assert_toc_clean(a.pure)
 
 pyz = PYZ(a.pure)
 

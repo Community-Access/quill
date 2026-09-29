@@ -7,6 +7,7 @@ import types
 from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from quill import __version__
 from quill.core.ai.key_migration import consolidate_provider_keys_quietly
@@ -48,7 +49,7 @@ def _propagate_portable_environment() -> None:
 
 
 def _install_excepthook() -> None:
-    """Install sys.excepthook so unhandled crashes offer a submit dialog (#622).
+    """Install sys.excepthook so unhandled crashes offer a report dialog (#622).
 
     Without this, a crash in the windowed build just silently closes QUILL —
     a blank screen with no feedback for blind users (finding #51). The
@@ -59,13 +60,13 @@ def _install_excepthook() -> None:
     enabled (default True during the beta phase), the handler instead
     schedules :class:`quill.ui.crash_report_dialog.CrashReportDialog` on
     the UI thread via :func:`wx.CallAfter`. The dialog shows a redacted
-    preview of the report the user is about to send and returns the
-    user's choice; this handler then either submits via
-    :func:`quill.core.issue_submit.submit_crash_issue`, copies the
-    report to the clipboard, or leaves the local crash file untouched.
+    preview of the report and returns the user's choice; this handler
+    then opens the user's mail program with the report addressed to
+    support (:func:`_act_on_crash_choice`), copies it to the clipboard,
+    or leaves the local crash file untouched. Nothing goes to GitHub.
 
     Every step is wrapped in ``try/except``: a misbehaving dialog or
-    network failure must never prevent the local traceback file from
+    mail handoff must never prevent the local traceback file from
     being saved and the standard interpreter traceback from firing.
     """
     import datetime
@@ -194,67 +195,16 @@ def _try_offer_crash_submit(
     # QUILL has had a moment to settle.
     def _run_on_ui() -> None:
         try:
-            from quill.core.feedback_token import effective_github_token
-            from quill.core.issue_submit import submit_crash_issue
-            from quill.ui.crash_report_dialog import (
-                CrashReportDialog,
-                merge_user_context_into_body,
-            )
+            from quill.ui.crash_report_dialog import CrashReportDialog
 
-            parent = _find_main_frame_window()
-            dialog = CrashReportDialog(parent, payload=payload)
+            dialog = CrashReportDialog(_find_main_frame_window(), payload=payload)
             try:
                 result = dialog.show()
             except Exception:  # noqa: BLE001
                 # Dialog construction or modal loop blew up; leave
-                # the local crash file in place and do not submit.
+                # the local crash file in place and do not send.
                 return
-
-            if result.act == "cancel":
-                return
-            merged = merge_user_context_into_body(payload.body, result)
-            if result.act == "copy":
-                _copy_to_clipboard(merged)
-                _notify_crash_action(
-                    "The crash report was copied to your clipboard. "
-                    "Paste it into a new issue to send it."
-                )
-                return
-            # act == "send"
-            token = effective_github_token()
-            if not token:
-                # No token to submit with: fall back to the clipboard and TELL the
-                # user, so pressing Send never looks like it silently did nothing.
-                _copy_to_clipboard(merged)
-                _notify_crash_action(
-                    "No GitHub sign-in is configured, so the report was copied to "
-                    "your clipboard instead. Paste it into a new issue to send it."
-                )
-                return
-            # The submit is the only step whose success/failure the user needs to
-            # hear: they explicitly chose Send. A silent swallow here is
-            # indistinguishable from success for a screen-reader user.
-            try:
-                submit_crash_issue(
-                    summary=payload.summary,
-                    message=merged,
-                    app_version=__version__,
-                    github_token=token,
-                    metadata=payload.metadata,
-                    # Computed by build_crash_report_payload from the live
-                    # traceback; lets feedback_hub comment on the open issue
-                    # for this crash rather than filing another one.
-                    fingerprint=str(payload.metadata.get("fingerprint", "")),
-                )
-            except Exception:  # noqa: BLE001 - report the failure, then fall back
-                _copy_to_clipboard(merged)
-                _notify_crash_action(
-                    "Sending the crash report failed (for example, no network). "
-                    "It was copied to your clipboard instead — paste it into a new "
-                    "issue to send it."
-                )
-                return
-            _notify_crash_action("Your crash report was sent. Thank you.")
+            _act_on_crash_choice(payload, result)
         except Exception:  # noqa: BLE001
             pass
 
@@ -263,6 +213,24 @@ def _try_offer_crash_submit(
         return True
     except Exception:  # noqa: BLE001
         return False
+
+
+def _act_on_crash_choice(payload: Any, result: Any, host: Any = None) -> str:
+    """Carry out the crash dialog's choice: email support, copy, or nothing.
+
+    The work is :func:`quill.ui.crash_report_mail.act_on_crash_choice`; this
+    passes it this module's best-effort clipboard, notice and window lookup.
+    """
+    from quill.ui.crash_report_mail import act_on_crash_choice
+
+    return act_on_crash_choice(
+        payload,
+        result,
+        host,
+        copy=_copy_to_clipboard,
+        notify=_notify_crash_action,
+        find_window=_find_main_frame_window,
+    )
 
 
 def _show_native_fallback(
@@ -360,7 +328,7 @@ def _notify_crash_action(message: str) -> None:
     Runs in the excepthook path where wx may be unstable, so it uses the native
     ``MessageBoxW`` (same floor as :func:`_show_native_fallback`) rather than a wx
     dialog. Non-fatal: any failure is swallowed. Its purpose is that pressing
-    Send / Copy is never silent for a screen-reader user.
+    Copy is never silent for a screen-reader user.
     """
     if sys.platform == "win32":
         try:
@@ -376,20 +344,21 @@ def _notify_crash_action(message: str) -> None:
         pass
 
 
-def _copy_to_clipboard(text: str) -> None:
-    """Copy ``text`` to the clipboard via wx (best-effort)."""
+def _copy_to_clipboard(text: str) -> bool:
+    """Copy ``text`` to the clipboard via wx (best-effort). True when it landed."""
     try:
         import wx  # type: ignore[import-not-found]
 
         clipboard = wx.TheClipboard  # type: ignore[attr-defined]
         if not clipboard.Open():
-            return
+            return False
         try:
             clipboard.SetData(wx.TextDataObject(text))  # type: ignore[attr-defined]
         finally:
             clipboard.Close()
+        return True
     except Exception:  # noqa: BLE001
-        pass
+        return False
 
 
 @dataclass(frozen=True, slots=True)

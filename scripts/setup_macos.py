@@ -95,12 +95,6 @@ OPTIONS = {
     # install (and so the VoiceOver role pin actually ships; a missed AppKit
     # made it a silent no-op in the .app). The pyobjc wheel is installed by
     # macos-release.yml via the [macos] extra.
-    # feedback_hub is imported lazily/function-locally by
-    # quill.core.issue_submit / quill.core.feedback_token / main_frame.report_bug,
-    # so the tracer misses it too -- list it explicitly so the macOS build
-    # bundles the Report-a-Bug direct-submission dialog (#11; the [feedback]
-    # extra is installed in macos-release.yml). Without this, a Mac .app falls
-    # back to the bare web-link path even though the bundled token is present.
     # PyGithub (top-level module `github`) is imported function-locally by
     # quill.core.github.github_provider, guarded by require_pygithub(). The
     # File > Open > GitHub Repository... menu item is always shown, so without
@@ -122,7 +116,6 @@ OPTIONS = {
         "wx",
         "nacl",
         "github",
-        "feedback_hub",
         "objc",
         "AppKit",
         "Foundation",
@@ -132,6 +125,10 @@ OPTIONS = {
         "pypdf",
         "openpyxl",
     ],
+    # No bug-report credential ships (2026-09-26: feedback is email-only). The
+    # old build-time GitHub token module and its client must never be traced in;
+    # build_macos.sh also refuses a stale token file in the tree and in the .app.
+    "excludes": ["quill._feedback_token", "feedback_hub"],
     "plist": {
         "CFBundleName": APP_DISPLAY_NAME,
         "CFBundleDisplayName": APP_DISPLAY_NAME,

@@ -41,9 +41,10 @@ python -m quill.apps.podcasts
 
 ```powershell
 # Every release artifact from one onedir build -- the staged app folder,
-# a portable zip, and the installer (needs Inno Setup 6.3+, an ffmpeg.exe
-# to bundle, and the feedback token file; everything ships bundled, nothing
-# is downloaded at install or runtime):
+# a portable zip, and the installer (needs Inno Setup 6.3+ and an ffmpeg.exe
+# to bundle; everything ships bundled, nothing is downloaded at install or
+# runtime, and no GitHub token is embedded -- feedback goes by email to
+# support@community-access.org since 2026-09-26):
 .\scripts\build_release.ps1 -FfmpegDir C:\path\to\ffmpeg\bin
 ```
 

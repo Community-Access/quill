@@ -88,7 +88,7 @@ def test_a_frozen_module_whose_source_is_gone_is_an_orphan(tmp_path: Path) -> No
     assert [(f.kind, f.relative) for f in findings] == [("orphan", "apps/removed.py")]
 
 
-def test_caches_and_the_generated_token_are_not_staleness(tmp_path: Path) -> None:
+def test_caches_and_build_output_are_not_staleness(tmp_path: Path) -> None:
     """Each of these differs for a reason that is not "the runtime is old"."""
     source_root, dist = _build(
         tmp_path,
@@ -96,10 +96,9 @@ def test_caches_and_the_generated_token_are_not_staleness(tmp_path: Path) -> Non
             "apps/lite.py": "A = 1\n",
             "apps/__pycache__/lite.cpython-313.pyc": "compiled\n",
             "tools/.mypy_cache/x.py": "cached\n",
-            "_feedback_token.py": "TOKEN = 'new'\n",
             "native/launcher/build/gen.py": "generated\n",
         },
-        frozen={"apps/lite.py": "A = 1\n", "_feedback_token.py": "TOKEN = 'old'\n"},
+        frozen={"apps/lite.py": "A = 1\n"},
     )
     assert freshness.compare(dist, source_root) == []
 

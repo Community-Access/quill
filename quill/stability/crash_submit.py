@@ -1,27 +1,25 @@
-"""Crash-time report payload assembly (#622).
+"""Crash-time report assembly (#622), sent to support by email since 2026-09-26.
 
 When QUILL hits an unhandled exception, the excepthook in
-:mod:`quill.__main__` writes a local traceback file and then offers
-the user a dialog to send a report to the developers. This module is
-the wx-free half of that flow: it builds the redacted, length-bounded
-report body that the dialog shows in its "What we will send" preview
-and that :func:`quill.core.issue_submit.submit_crash_issue` ships to
-GitHub.
+:mod:`quill.__main__` writes a local traceback file and then offers the user a
+dialog to email a report to ``support@community-access.org``. This module is
+the wx-free half of that flow: it builds the redacted, length-bounded report
+body that the dialog shows in its "What we will send" preview, and turns it
+into a :class:`~quill.core.support_message.SupportMessage` for the user's own
+mail program (:mod:`quill.stability.crash_email`). The Crash Recovery
+dialog's "Email Support" button uses :func:`build_session_context` too, so an
+unclean exit and a traceback describe one session the same way.
 
-The module is intentionally dependency-light so the excepthook can
-import it before ``wx`` is necessarily available. It reuses
-:mod:`quill.stability.redaction` for the secret-scrubbing contract,
-:mod:`quill.core.diagnostics` for the recent-actions log and the
-document-snapshot / environment / redacted-settings helpers, and the
-last 10 command ids the run-listener has been writing since the
-editor started.
+Until 2026-09-26 the body was filed as a GitHub issue with a token bundled in
+the installer. Nothing here talks to GitHub any more, and nothing sends: the
+mail program opens with the message written and the user presses Send there.
 
-The local traceback file is the *input* to this module (it is saved
-by the excepthook before the dialog appears), but the body it returns
-is a *separate* document: a redacted, formatted summary that the
-dialog lets the user review and that the submit path attaches to the
-GitHub issue. The local file is preserved either way; nothing here
-deletes it.
+The module is intentionally dependency-light so the excepthook can import it
+before ``wx`` is necessarily available. It reuses
+:mod:`quill.stability.redaction` for the secret-scrubbing contract and
+:mod:`quill.core.diagnostics` for the document-snapshot helper. The local
+traceback file is the *input* to this module; the body it returns is a
+separate, redacted summary. The local file is preserved either way.
 """
 
 from __future__ import annotations
@@ -33,7 +31,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from quill.core.crash_fingerprint import from_exception as crash_fingerprint
 from quill.stability.redaction import redact_command_arg, redact_text_for_bundle
 
 #: Spelled once so a scripted edit cannot turn it into a real line break.
@@ -45,7 +42,7 @@ NEWLINE = chr(10)
 
 # Maximum number of traceback frames to include. A runaway error in a
 # recursive descent can easily produce hundreds of frames; bounding the
-# report keeps the body readable and the GitHub issue small.
+# report keeps the body readable and the email short.
 _MAX_TB_FRAMES = 12
 
 # Maximum number of recent command ids to include.
@@ -72,16 +69,14 @@ class CrashReportPayload:
     """A complete, redacted crash report ready for the submit path.
 
     Attributes:
-        summary: Short title for the GitHub issue. Synthesized from
-            the exception class name and a one-line summary of the
-            value.
-        body: Multi-line, redacted, length-bounded report body. Safe
-            to attach to a public GitHub issue; every line has been
-            passed through the bundle redaction contract.
-        metadata: Side-channel dict for
-            :func:`quill.core.issue_submit.submit_crash_issue` (e.g.
-            ``quill_version``, ``portable``, ``screen_reader``,
-            ``recent_commands``).
+        summary: Short subject line. Synthesized from the exception
+            class name and a one-line summary of the value.
+        body: Multi-line, redacted, length-bounded report body; every
+            line has been passed through the bundle redaction contract.
+        metadata: Structured facts about the crash (``quill_version``,
+            ``portable``, ``exception_class``, ``error_code``,
+            ``screen_reader``, ``recent_commands``) for callers and
+            tests; the email carries the body, not this dict.
         local_crash_file: The on-disk traceback file the excepthook
             saved before calling this builder. The dialog mentions
             this path so the user can find the raw dump after the
@@ -154,8 +149,9 @@ def build_crash_report_payload(
     The builder does no I/O: the local crash file is the caller's
     responsibility and is referenced by path only. The body is the
     redacted, formatted, length-bounded string the user reviews in
-    the dialog and that :func:`quill.core.issue_submit.submit_crash_issue`
-    sends to GitHub.
+    the dialog and that
+    :func:`quill.stability.crash_email.build_crash_support_message`
+    addresses to support.
     """
     summary = _synthesise_summary(exc_type, exc_value)
     body_sections: list[str] = [_PREVIEW_HEADER, ""]
@@ -203,13 +199,6 @@ def build_crash_report_payload(
         "exception_class": exc_type.__name__,
         "exception_value": str(exc_value)[:_MAX_VALUE_CHARS],
     }
-    # The fingerprint is what lets the submit path recognise this crash as one
-    # somebody has already reported and comment on that issue instead of
-    # opening a new one. Included in the metadata so it is visible in the
-    # filed report too -- a maintainer can search the tracker for it.
-    fingerprint = crash_fingerprint(exc_type, exc_value, exc_tb)
-    if fingerprint:
-        metadata["fingerprint"] = fingerprint
     error_code = getattr(exc_value, "code", None)
     if error_code:
         metadata["error_code"] = error_code
@@ -233,10 +222,8 @@ def build_crash_report_payload(
         except Exception:  # noqa: BLE001 - document snapshot is best-effort
             metadata["active_document"] = {"error": "snapshot failed"}
     if local_crash_file is not None:
-        # Redact the same way the body's "Local crash report" line is:
-        # this metadata dict is serialized verbatim into the public GitHub
-        # issue by feedback_hub, bypassing the body's redaction pass, and
-        # an un-redacted path here leaks the reporter's OS username (#886).
+        # Redact the same way the body's "Local crash report" line is: an
+        # un-redacted path here leaks the reporter's OS username (#886).
         metadata["local_crash_file"] = redact_command_arg(str(local_crash_file))
 
     return CrashReportPayload(
@@ -270,7 +257,7 @@ def redact_user_description(text: str) -> str:
     Used by the dialog to scrub the "What were you doing" / "Triggering
     command" / "Expected behaviour" fields before merging them into
     the final body. Caps the length so a paste of a multi-page log
-    cannot blow up the GitHub issue.
+    cannot blow up the report.
     """
     if not text:
         return ""
@@ -288,7 +275,7 @@ def redact_user_description(text: str) -> str:
 
 
 def _synthesise_summary(exc_type: type[BaseException], exc_value: BaseException) -> str:
-    """Build the GitHub issue title: ``ClassName: short value``.
+    """Build the report's subject: ``ClassName: short value``.
 
     The value is bounded and the trailing colon-collapse strips the
     empty case (``Exception: ''`` becomes just ``Exception``).

@@ -1,14 +1,16 @@
-"""Quill Radio, QUILL Lite and Quill Converter portable bundles carry no GitHub
-credential.
+"""No QuillVille portable bundle carries a GitHub credential or feedback-hub.
 
-All three send all feedback to support@community-access.org by email
-(2026-09-26), so none needs feedback-hub or QUILL's bundled GitHub feedback
-token. A gitignored ``quill/_feedback_token.py`` left in the checkout by
-another app's build used to ride along in the copied ``quill`` source anyway.
+Every app sends all feedback to support@community-access.org by email
+(owner decision, 2026-09-26), so no bundle needs feedback-hub or QUILL's old
+bundled GitHub feedback token. A gitignored ``quill/_feedback_token.py`` left in
+the checkout by an older build used to ride along in the copied ``quill``
+source; the copy drops it for every product, and the credential gate
+(``scripts/check_no_credentials.py``) fails the build if it comes back.
 """
 
 from __future__ import annotations
 
+import dataclasses
 import importlib.util
 import sys
 from pathlib import Path
@@ -33,15 +35,17 @@ def _load_build_portable():
 bp = _load_build_portable()
 
 
-@pytest.mark.parametrize("key", ["radio", "quilllite", "converter"])
-def test_email_only_apps_carry_no_token_and_no_feedback_hub(key: str) -> None:
+@pytest.mark.parametrize("key", sorted(bp.PRODUCTS))
+def test_no_product_pulls_feedback_hub(key: str) -> None:
     product = bp.PRODUCTS[key]
-    assert product.feedback_token is False
+    assert isinstance(product.dep_groups, tuple)
     assert "feedback" not in product.dep_groups
 
 
-def test_other_apps_keep_their_token_until_they_move() -> None:
-    assert bp.PRODUCTS["studio"].feedback_token is True
+def test_the_product_model_has_no_token_switch() -> None:
+    """A per-product opt-in is how a token could come back for one app."""
+    fields = {f.name for f in dataclasses.fields(bp.Product)}
+    assert "feedback_token" not in fields
 
 
 def _checkout(tmp_path: Path) -> Path:
@@ -54,11 +58,11 @@ def _checkout(tmp_path: Path) -> Path:
     return source
 
 
-def test_the_token_file_is_left_out_of_the_bundle(tmp_path: Path) -> None:
+def test_the_token_file_is_left_out_of_every_bundle(tmp_path: Path) -> None:
     source = _checkout(tmp_path)
     out = tmp_path / "bundle"
 
-    bp._copy_quill_source(out, source, feedback_token=False)
+    bp._copy_quill_source(out, source)
 
     staged = out / "Lib" / "site-packages" / "quill"
     assert (staged / "__init__.py").is_file()
@@ -66,9 +70,17 @@ def test_the_token_file_is_left_out_of_the_bundle(tmp_path: Path) -> None:
     assert (source / "quill" / "_feedback_token.py").is_file()  # the checkout is untouched
 
 
-def test_a_bundle_that_wants_it_still_requires_it(tmp_path: Path) -> None:
+def test_a_checkout_without_the_token_still_builds(tmp_path: Path) -> None:
     source = _checkout(tmp_path)
     (source / "quill" / "_feedback_token.py").unlink()
 
-    with pytest.raises(RuntimeError, match="missing"):
-        bp._copy_quill_source(tmp_path / "bundle", source, feedback_token=True)
+    bp._copy_quill_source(tmp_path / "bundle", source)  # must not raise
+
+    assert (tmp_path / "bundle" / "Lib" / "site-packages" / "quill" / "__init__.py").is_file()
+
+
+def test_the_portable_build_runs_the_credential_gate() -> None:
+    source = (_ROOT / "standalone" / "studio" / "scripts" / "build_portable.py").read_text(
+        encoding="utf-8"
+    )
+    assert "check_no_credentials.py" in source

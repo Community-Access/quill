@@ -1,11 +1,12 @@
-"""Crash Report submit dialog (#622).
+"""Crash Report dialog (#622): email a redacted report to support.
 
 When QUILL hits an unhandled exception, the excepthook in
 :mod:`quill.__main__` saves a local traceback file and then offers
-the user a chance to send a redacted report to the developers. This
-dialog is the wx half of that flow: it shows the user the report
-that :func:`quill.stability.crash_submit.build_crash_report_payload`
-built, lets them add free-text context, and returns a
+the user a chance to email a redacted report to
+``support@community-access.org``. This dialog is the wx half of that
+flow: it shows the user the report that
+:func:`quill.stability.crash_submit.build_crash_report_payload` built,
+lets them add free-text context, and returns a
 :class:`CrashReportDialogResult` so the excepthook can decide what
 to do next.
 
@@ -14,16 +15,20 @@ the user can type into the three description fields, but the
 preview panel is a static rendering of the redacted body. Three
 buttons cover the three outcomes:
 
-- **Send report** -- submit the report to the developers via
-  :func:`quill.core.issue_submit.submit_crash_issue` (the excepthook
-  hands the dialog's result to that function).
+- **Email support** -- the excepthook opens the user's own mail
+  program with the report addressed to support (through
+  :func:`quill.ui.support_dialog.send_by_mail`). Nothing is sent
+  until the user sends it there; with no mail program the report
+  goes to the clipboard and the dialog says where to write.
 - **Copy to clipboard** -- leave the local crash file in place but
-  put the redacted report on the system clipboard so the user can
-  paste it into a manual report-bug form.
+  put the redacted report on the system clipboard.
 - **Don't send** -- cancel; the local crash file is preserved.
 
+Until 2026-09-26 "Send report" filed a public GitHub issue with a
+token bundled in the installer. No build carries that token now.
+
 The default button is **Don't send** so a user who opens the dialog
-by accident does not accidentally send anything. Escape is wired to
+by accident does not accidentally open anything. Escape is wired to
 the same button via :func:`apply_modal_ids`.
 
 The parent is the real ``wx.Frame`` (``MainFrame.frame``), not the
@@ -60,9 +65,9 @@ class CrashReportDialogResult:
 
     Exactly one of ``act`` is set:
 
-    - ``"send"`` -- the user clicked **Send report**. The excepthook
-      passes the merged body and metadata to
-      :func:`quill.core.issue_submit.submit_crash_issue`.
+    - ``"send"`` -- the user clicked **Email support**. The excepthook
+      opens the mail program with the merged body addressed to
+      support.
     - ``"copy"`` -- the user clicked **Copy to clipboard**. The
       excepthook copies the body to the system clipboard.
     - ``"cancel"`` -- the user clicked **Don't send** or pressed
@@ -130,10 +135,11 @@ class CrashReportDialog:
         intro = wx.StaticText(
             self.dialog,
             label=_(
-                "QUILL encountered an unexpected error and closed. "
-                "You can review a redacted summary below and choose "
-                "whether to send it to the developers. Nothing is sent "
-                "unless you click 'Send report'."
+                "QUILL encountered an unexpected error. You can review a "
+                "redacted summary below and email it to "
+                "support@community-access.org. 'Email support' opens your "
+                "own mail program with the report written; nothing is sent "
+                "until you send it there."
             ),
         )
         intro.SetName("Introduction")
@@ -189,8 +195,8 @@ class CrashReportDialog:
         # Don't send is the default (Enter cancels) so a user who
         # opens the dialog by accident does not accidentally send
         # anything. See plan: "default = Don't send (recommended)".
-        self._btn_send = wx.Button(self.dialog, wx.ID_OK, label=_("&Send report"))
-        self._btn_send.SetName("Send report")
+        self._btn_send = wx.Button(self.dialog, wx.ID_OK, label=_("&Email support"))
+        self._btn_send.SetName("Email support")
 
         self._btn_copy = wx.Button(self.dialog, self._ID_COPY, label=_("&Copy to clipboard"))
         self._btn_copy.SetName("Copy to clipboard")
@@ -217,11 +223,9 @@ class CrashReportDialog:
 
         self.dialog.SetSizer(root)
 
-        # Wire modal ids so Enter triggers Send, Escape triggers Cancel.
-        # Note: we want Escape -> Don't send (not Send), so the
-        # escape_id is wx.ID_CANCEL. The Send button is the
-        # affirmative (Enter) so the user can confirm a Send
-        # explicitly.
+        # Wire modal ids: Escape -> Don't send, so the escape_id is
+        # wx.ID_CANCEL. Email support is the affirmative id so the
+        # user can confirm it explicitly.
         apply_modal_ids(
             self.dialog,
             affirmative_id=wx.ID_OK,

@@ -3,7 +3,9 @@
 These tests pin the wx-free half of the crash-submit flow: the
 builder that turns a (type, value, tb) triple plus environment and
 recent-command context into a redacted, length-bounded report body
-the dialog can show and the submit path can ship to GitHub.
+the dialog can show, and the support email it becomes (2026-09-26:
+crash reports go to support@community-access.org through the user's
+own mail program, never to GitHub).
 
 The dialog itself is covered by ``tests/unit/ui/test_crash_report_dialog.py``.
 The excepthook integration is covered by
@@ -17,6 +19,8 @@ from pathlib import Path, PureWindowsPath
 import pytest
 
 from quill.core.document import Document
+from quill.core.support_message import SUPPORT_EMAIL, build_body, build_mailto_url
+from quill.stability.crash_email import build_crash_support_message, build_log_summary
 from quill.stability.crash_submit import (
     CrashReportPayload,
     build_crash_report_payload,
@@ -339,8 +343,8 @@ def test_payload_metadata_has_platform_and_portable_flag() -> None:
 
 
 def test_payload_metadata_local_crash_file_does_not_leak_username() -> None:
-    # #886: metadata is serialized verbatim into the public GitHub issue by
-    # feedback_hub, bypassing the body's redaction pass. A portable install
+    # #886: metadata used to be serialized verbatim into a public GitHub
+    # issue, bypassing the body's redaction pass. A portable install
     # living under the user's home directory must not leak their OS username
     # via this field, even though the body already redacts the same path.
     exc_type, exc_value, exc_tb = _raise_and_capture()
@@ -567,3 +571,79 @@ def test_local_crash_file_is_optional() -> None:
     payload = CrashReportPayload(summary="x", body="y")
     assert payload.local_crash_file is None
     assert payload.metadata == {}
+
+
+# ---------------------------------------------------------------------------
+# The support email (2026-09-26)
+# ---------------------------------------------------------------------------
+
+
+def test_crash_support_message_is_addressed_to_support_not_github() -> None:
+    exc_type, exc_value, exc_tb = _raise_and_capture()
+    payload = build_crash_report_payload(
+        exc_type=exc_type,
+        exc_value=exc_value,
+        exc_tb=exc_tb,
+        local_crash_file=None,
+        app_version="1.2.3",
+        portable=False,
+        screen_reader_name="NVDA",
+        recent_commands=["file.save"],
+        active_document=None,
+    )
+    message = build_crash_support_message(
+        summary=payload.summary,
+        body=payload.body,
+        app_version="1.2.3",
+        platform_name="Windows-11",
+        screen_reader_name="NVDA",
+        extra={"QUILL AI support ID": "ABC-123", "empty": ""},
+    )
+    url, _shortened = build_mailto_url(message)
+    assert url.startswith("mailto:" + SUPPORT_EMAIL + "?")
+    assert "github" not in url.lower()
+    assert message.product == "QUILL 1.2.3"
+    assert message.summary.startswith("Crash report: ")
+    body = build_body(message)
+    assert "Traceback (last frames)" in body
+    assert "Screen reader: NVDA" in body
+    assert "QUILL AI support ID: ABC-123" in body
+    assert "empty:" not in body
+
+
+def test_crash_support_message_redacts_the_body_again() -> None:
+    # The last step before the text reaches the mail program scrubs once more,
+    # so a caller that forgot to redact cannot leak a credential.
+    message = build_crash_support_message(
+        summary="Boom",
+        body="context: password=hunter2 in the log\n",
+        app_version="1.0",
+    )
+    assert "hunter2" not in message.message
+
+
+def test_crash_support_message_without_summary_still_has_a_subject() -> None:
+    message = build_crash_support_message(summary="", body="x", app_version="")
+    assert message.summary == "Crash report"
+    assert message.product == "QUILL"
+
+
+def test_build_log_summary_redacts_and_bounds(tmp_path: Path) -> None:
+    logs = tmp_path / "logs"
+    logs.mkdir()
+    (logs / "quill.log").write_text(
+        "INFO startup ok\npassword=hunter2 should be scrubbed\n" + ("x" * 20000),
+        encoding="utf-8",
+    )
+    summary = build_log_summary(logs, max_chars=500)
+    assert summary.startswith("Newest log: quill.log")
+    assert len(summary) < 1000
+
+
+def test_build_log_summary_redacts_a_credential_inside_the_tail(tmp_path: Path) -> None:
+    (tmp_path / "quill.log").write_text("token: password=hunter2\n", encoding="utf-8")
+    assert "hunter2" not in build_log_summary(tmp_path)
+
+
+def test_build_log_summary_empty_when_no_logs(tmp_path: Path) -> None:
+    assert build_log_summary(tmp_path) == ""

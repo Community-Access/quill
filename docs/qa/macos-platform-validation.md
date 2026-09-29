@@ -73,7 +73,7 @@ tester reference.
 | #60 / #73 | Redaction covers the `security` CLI `-w` short-secret form. | `quill/stability/redaction.py:131-141` |
 | #7 (dispatch) | Platform dispatch delegates via module-level `sys.platform` gates. | `quill/platform/dispatch.py:28-49` |
 | #50 | macOS `shell_integration` has direct unit tests. | `tests/unit/platform/macos/test_shell_integration.py` |
-| #36 | feedback-hub in py2app includes, `.[feedback]` installed, mandatory token generated. | `scripts/setup_macos.py:95`, `macos-release.yml`, `build_macos.sh` — needs Mac bundle validation that the package lands in the `.app` |
+| #36 | Superseded 2026-09-26: feedback is email-only. feedback-hub is no longer installed or included, no token is generated, and `setup_macos.py` excludes `quill._feedback_token` and `feedback_hub`. | `scripts/setup_macos.py` (`excludes`), `build_macos.sh` runs `scripts/check_no_credentials.py` on the source tree and the `.app` — needs Mac bundle validation that neither lands in the `.app` |
 
 ### Needs Mac hardware (validation only — no code change expected)
 

@@ -233,43 +233,43 @@ def _macos_bundle_includes() -> list[str]:
     return []
 
 
-def test_macos_bundle_includes_feedback_hub_for_report_a_bug() -> None:
-    """#11: ``feedback_hub`` is imported lazily (function-local) by
-    ``quill.core.issue_submit`` / ``quill.core.feedback_token`` /
-    ``main_frame.report_bug``, so py2app's import tracer cannot discover it. It
-    must be listed explicitly in ``setup_macos.py OPTIONS["includes"]`` or the
-    macOS ``.app`` ships without the Report-a-Bug direct-submission dialog -- the
-    bundled issues-only token is present, but the library that consumes it is
-    absent, so Report a Bug silently falls back to the bare web-link path."""
+def test_macos_bundle_never_carries_feedback_hub_or_the_token() -> None:
+    """Feedback is email-only since 2026-09-26: the macOS ``.app`` must not
+    include ``feedback_hub`` and must explicitly exclude the retired
+    ``quill._feedback_token`` module (py2app copies the whole quill package)."""
     includes = _macos_bundle_includes()
-    assert "feedback_hub" in includes, (
-        "feedback_hub must be in setup_macos.py OPTIONS['includes'] so the macOS "
-        ".app bundles the Report-a-Bug dialog (#11); it is imported lazily so "
-        "py2app's import tracer cannot find it."
-    )
-    # nacl is the precedent (same lazy-import reason); keep it as a regression
-    # anchor so a future edit doesn't drop either explicit include.
+    assert "feedback_hub" not in includes
+    # nacl keeps its explicit include (same lazy-import reason as before).
     assert "nacl" in includes
+    setup = (pathlib.Path(__file__).resolve().parents[2] / "scripts" / "setup_macos.py").read_text(
+        "utf-8"
+    )
+    assert '"excludes": ["quill._feedback_token", "feedback_hub"]' in setup
 
 
-def test_macos_release_workflow_installs_the_feedback_extra() -> None:
-    """#11: the ``[feedback]`` extra (``feedback-hub``) must be installed in the
-    macOS build and test jobs, or there is nothing for py2app to trace/include."""
-    yml = (
-        pathlib.Path(__file__).resolve().parents[2] / ".github" / "workflows" / "macos-release.yml"
-    ).read_text("utf-8")
-    assert ".[ui,spellcheck,macos,feedback,github,office-text]" in yml, (
-        "macos-release.yml build job must install the [feedback] extra (#11)"
-    )
-    assert ".[ui,spellcheck,macos,dev,feedback,github,office-text]" in yml, (
-        "macos-release.yml test job must install the [feedback] extra (#11)"
-    )
+def test_no_workflow_or_extra_installs_feedback_hub() -> None:
+    """No build installs feedback-hub any more: no ``[feedback]`` extra exists,
+    and no workflow asks for one or passes the old token secret."""
+    root = pathlib.Path(__file__).resolve().parents[2]
+    pyproject = tomllib.loads((root / "pyproject.toml").read_text("utf-8"))
+    extras = pyproject["project"]["optional-dependencies"]
+    assert "feedback" not in extras
+    for name, deps in extras.items():
+        joined = " ".join(deps)
+        assert "feedback-hub" not in joined, name
+        assert "quill[feedback]" not in joined, name
+    assert "feedback-hub" not in (root / "requirements.txt").read_text("utf-8")
+    for workflow in sorted((root / ".github" / "workflows").glob("*.yml")):
+        text = workflow.read_text("utf-8")
+        assert ",feedback," not in text and ",feedback]" not in text, workflow.name
+        assert "QUILL_FEEDBACK_GITHUB_TOKEN" not in text, workflow.name
+        assert "generate_feedback_token" not in text, workflow.name
 
 
 def test_macos_bundle_includes_github_for_open_from_github() -> None:
     """PyGithub (top-level module ``github``) is imported function-locally by
     ``quill.core.github.github_provider`` (guarded by ``require_pygithub``), so
-    py2app's import tracer cannot discover it -- exactly like ``feedback_hub``.
+    py2app's import tracer cannot discover it -- exactly like ``nacl``.
     The File > Open > GitHub Repository... / GitHub File URL... menu items are
     added unconditionally, so without ``github`` in ``OPTIONS["includes"]`` the
     shipped ``.app`` raises ``GitHubDependencyError`` ("pip install

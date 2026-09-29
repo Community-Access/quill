@@ -5,8 +5,8 @@
 #   dist\QUILL-Social-Setup-<ver>.exe        system installer
 #
 # Usage:
-#   .\scripts\build_release.ps1 [-Python <python.exe>] [-TokenFile <path>]
-#                               [-Iscc <path>] [-QuillRepo <path>]
+#   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
+#                               [-QuillRepo <path>]
 #
 # Every path defaults to "" and is resolved from the checkout itself (see
 # scripts\BuildEnv.ps1), so a clone builds on any machine and any drive. These
@@ -19,7 +19,6 @@
 
 param(
     [string]$Python = "",
-    [string]$TokenFile = "",
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$Sign
@@ -48,18 +47,13 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
-# -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
-# Best-effort for Social: embed the issues-only token when it is available so
-# the shared bug reporter works, but do not fail the build without it (unlike a
-# QUILL/Radio release, where it is a hard requirement).
-$TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
-if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
-# A token file is only one of four sources the generator accepts, so run it
-# regardless and treat failure as the warning it always was for Social.
-& $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-if ($LASTEXITCODE -ne 0) {
-    Write-Warning "No feedback token available -- building without the bundled bug-report token."
-}
+# -- no feedback token (2026-09-26) ------------------------------------------
+# Builds used to generate and embed a bundled GitHub "feedback token" here. No
+# QuillVille build does any more: all feedback goes to support@community-access.org
+# by email, so there is no credential to ship. -TokenFile and -SkipToken went with
+# it. The spec excludes quill._feedback_token and refuses to freeze it or
+# feedback_hub (scripts\check_no_credentials.py), so a stale gitignored copy in
+# the checkout can no longer ride along.
 
 # -- onedir build -------------------------------------------------------------
 Push-Location $repoRoot

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>macOS platform review — status</title>
   <style>
@@ -552,11 +552,15 @@ short-secret form.</td>
 </tr>
 <tr>
 <td>#36</td>
-<td>feedback-hub in py2app includes, <code>.[feedback]</code> installed,
-mandatory token generated.</td>
-<td><code>scripts/setup_macos.py:95</code>,
-<code>macos-release.yml</code>, <code>build_macos.sh</code> — needs Mac
-bundle validation that the package lands in the <code>.app</code></td>
+<td>Superseded 2026-09-26: feedback is email-only. feedback-hub is no
+longer installed or included, no token is generated, and
+<code>setup_macos.py</code> excludes <code>quill._feedback_token</code>
+and <code>feedback_hub</code>.</td>
+<td><code>scripts/setup_macos.py</code> (<code>excludes</code>),
+<code>build_macos.sh</code> runs
+<code>scripts/check_no_credentials.py</code> on the source tree and the
+<code>.app</code> — needs Mac bundle validation that neither lands in
+the <code>.app</code></td>
 </tr>
 </tbody>
 </table>

@@ -21,7 +21,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -57,45 +56,40 @@ _DEV_CACHE_IGNORE = shutil.ignore_patterns(
 )
 
 
-def _bundled_token_value(path: Path) -> str:
-    """Read ``quill/_feedback_token.py``'s ``BUNDLED_TOKEN`` without importing quill.
+#: The retired bug-report credential (feedback is email-only since 2026-09-26).
+#: It is gitignored, so a copy left by an older build can sit unseen in a
+#: checkout; the quill/ copy below must never carry it into a distributable.
+_RETIRED_CREDENTIAL_IGNORE = shutil.ignore_patterns("_feedback_token.py", "_feedback_token.*.pyc")
 
-    The build runs under a bare embedded interpreter with the QUILL source not
-    yet on ``sys.path``, so it must not import the app it is packaging. Parse the
-    module text instead. Returns the token string, or "" when the file is absent
-    or has no ``BUNDLED_TOKEN = "..."`` assignment (the empty-token case the
-    build refuses to ship).
-    """
-    if not path.is_file():
-        return ""
-    match = re.search(
-        r"""^BUNDLED_TOKEN\s*=\s*['"]([^'"]*)['"]""", path.read_text("utf-8"), re.MULTILINE
+
+def _quill_copy_ignore(directory: str, names: list[str]) -> set[str]:
+    """copytree ignore for the quill/ package: dev caches plus the retired token."""
+    return set(_DEV_CACHE_IGNORE(directory, names)) | set(
+        _RETIRED_CREDENTIAL_IGNORE(directory, names)
     )
-    return match.group(1) if match else ""
 
 
-def _assert_bundled_token_nonempty(site_packages: Path) -> None:
-    """Refuse to ship a tokenless distributable, unconditionally.
+def _assert_no_retired_credential(target_dir: Path) -> None:
+    """Refuse to ship a distributable carrying ``_feedback_token.py`` or feedback_hub.
 
-    Guards the true end-user invariant -- the ``_feedback_token.py`` inside the
-    bundled ``quill/`` package that Report a Bug reads at runtime (via
-    ``quill.core.feedback_token._bundled_token``) -- against any path that bakes
-    an empty token or fails to copy it into the bundle. This is the exact
-    "upgrade beta 2 and get No token" symptom (#919), locked out. There is no
-    opt-out: every build must bake a real token.
+    No QuillVille build may bundle the old GitHub bug-report token or the
+    package that used it (owner decision, 2026-09-26). The copy above already
+    skips a stale token file; this walks the finished runtime so a
+    ``feedback_hub`` left installed in the build interpreter fails the build
+    too, instead of shipping silently.
     """
-    bundled_token_file = site_packages / "quill" / "_feedback_token.py"
-    if not bundled_token_file.is_file():
+    try:
+        from scripts.check_no_credentials import find_forbidden
+    except ImportError:  # run as a script: scripts/ itself is on sys.path
+        from check_no_credentials import find_forbidden  # type: ignore[no-redef]
+
+    offenders = find_forbidden(target_dir)
+    if offenders:
         raise RuntimeError(
-            "Bundled quill/_feedback_token.py is missing from the runtime -- the "
-            "feedback-hub token never made it into the distributable. A build must "
-            "always bake the QUILL_FEEDBACK_GITHUB_TOKEN; there is no opt-out (#919)."
-        )
-    if not _bundled_token_value(bundled_token_file):
-        raise RuntimeError(
-            "Bundled quill/_feedback_token.py has an empty BUNDLED_TOKEN -- the "
-            "distributable would ship a broken Report a Bug (no GitHub token). Set "
-            "QUILL_FEEDBACK_GITHUB_TOKEN before building; there is no opt-out (#919)."
+            "The distributable carries the retired bug-report credential: "
+            + ", ".join(offenders)
+            + ". Delete quill/_feedback_token.py from the checkout and uninstall "
+            "feedback-hub from the build interpreter, then rebuild."
         )
 
 
@@ -201,8 +195,6 @@ MP3_WHEELHOUSE_REQUIREMENTS = ("mutagen>=1.48.1",)
 # installer in quill.iss and fetched via release_assets / the dictation pre-flight), so no
 # offline engine is bundled -- the installer stays small and the first offline use fetches
 # the tiny default in-flow.
-# "feedback" bundles feedback_hub (direct GitHub issue submission) so Report a
-# Bug offers the accessible Submit flow instead of the browser support form.
 # "kokoro" is intentionally NOT bundled: kokoro-onnx pulls in onnxruntime (large),
 # phonemizer, espeakng-loader and babel. Kokoro is an on-demand feature -- its
 # models already download on first use, and install_kokoro_onnx() pip-installs the
@@ -238,7 +230,6 @@ DEFAULT_BUNDLED_DEPENDENCY_GROUPS = (
     "ocr",
     "speech",
     "vosk",
-    "feedback",
     "github",
     "office-text",
 )
@@ -373,17 +364,6 @@ def main() -> int:
         "--compile-installer",
         action="store_true",
         help="Compile the generated Inno Setup script into an installer executable.",
-    )
-    parser.add_argument(
-        "--require-feedback-token",
-        action="store_true",
-        help=(
-            "Accepted for backward compatibility (the CI release workflow passes "
-            "it) but now a NO-OP: the feedback-hub token is ALWAYS required. A "
-            "distributable must never ship a broken Report a Bug, so a build with "
-            "an unset QUILL_FEEDBACK_GITHUB_TOKEN always fails. There is no opt-out "
-            "(#919: beta-2 upgrades shipped a tokenless bug reporter)."
-        ),
     )
     parser.add_argument(
         "--iscc-path",
@@ -733,6 +713,11 @@ def build_windows_distribution(
             "Kokoro, Faster Whisper, Vosk, or MP3 support will still require "
             "PyPI on first use."
         )
+
+    # No bug-report credential may ship (2026-09-26): fail before signing or
+    # packaging if a stale _feedback_token.py or a feedback_hub install reached
+    # the assembled payload.
+    _assert_no_retired_credential(portable_dir)
 
     # Authenticode code signing (opt-in via QUILL_SIGN; docs/code-signing.md).
     # Sign the fully-assembled payload BEFORE the installer compiles so the
@@ -1981,25 +1966,9 @@ def bundle_embedded_python(
             check=True,
         )
 
-    # A distributable must ALWAYS ship a working Report a Bug. The bundled
-    # GitHub token is what makes the rich bug-reporter fire instead of falling
-    # back to a bare web link. An unset QUILL_FEEDBACK_GITHUB_TOKEN HARD-FAILS
-    # the build, unconditionally -- there is no opt-out. This guard was once
-    # opt-in (--require-feedback-token) and then fail-by-default with an
-    # --allow-missing-feedback-token escape hatch; both still silently let an
-    # ad-hoc build ship a tokenless bundle, so every beta-2 upgrade user got
-    # "No token" (#919). It is now mandatory for every build, period.
-    print("Generating bundled feedback-hub token (quill/_feedback_token.py)...")
-    token_cmd = [
-        str(python_exe),
-        str(source_root / "tools" / "generate_feedback_token.py"),
-        "--require-token",
-    ]
-    subprocess.run(token_cmd, check=True)
-
     # Bundle the ADP client bearer key (quill/_adp_client_key.py) so a shipped
-    # build reaches the hosted ADP service with no user setup. Unlike the feedback
-    # token this is deliberately LENIENT (no --require-token): an unset
+    # build reaches the hosted ADP service with no user setup. This is
+    # deliberately LENIENT (no --require-token): an unset
     # QUILL_ADP_CLIENT_KEY bakes an empty key, and Ask ADP degrades gracefully to
     # a key pasted in ADP Settings (see tools/generate_adp_client_key.py and
     # quill/core/adp/client.py). Set QUILL_ADP_CLIENT_KEY in the build env to ship
@@ -2028,10 +1997,10 @@ def bundle_embedded_python(
     # quill.build_info.is_offline_edition() so the running app knows it is the
     # self-contained Offline Edition and suppresses Download Optional Components
     # (the extras are bundled, not downloadable). Written here -- next to the
-    # feedback token and before the quill package copytree below bakes it into the
+    # other generated modules and before the quill package copytree below bakes it into the
     # bundle -- and ALWAYS written (True for the offline build, False otherwise) so a
     # slim build following an offline build can never accidentally ship a stale True
-    # marker. Like _feedback_token.py / _build_info.py it is gitignored, never in src.
+    # marker. Like _build_info.py it is gitignored, never in src.
     offline_marker = source_root / "quill" / "_offline_edition.py"
     offline_marker.write_text(
         '"""Build-time marker: is this the Offline Edition? (generated, do not edit).\n\n'
@@ -2053,17 +2022,8 @@ def bundle_embedded_python(
         raise RuntimeError(f"Could not find quill/ package source under {source_root.resolve()}.")
     print(f"Copying Quill package source from {quill_source} into runtime...")
     shutil.copytree(
-        quill_source, site_packages / "quill", dirs_exist_ok=True, ignore=_DEV_CACHE_IGNORE
+        quill_source, site_packages / "quill", dirs_exist_ok=True, ignore=_quill_copy_ignore
     )
-
-    # Belt-and-suspenders: assert the token that ACTUALLY ships is non-empty.
-    # The generation step above already fails on an unset secret, but this
-    # guards the true end-user invariant -- the file inside the bundled quill/
-    # package that Report a Bug reads at runtime (via
-    # quill.core.feedback_token._bundled_token) -- against any future path that
-    # bakes an empty token or fails to copy it into the bundle. This is the
-    # exact "Michael upgrades beta 2 and gets no token" symptom, locked out.
-    _assert_bundled_token_nonempty(site_packages)
 
     # The offline-edition marker is copied into the bundled quill/ package by the
     # copytree above (so the running app reads is_offline_edition() correctly), but
@@ -2071,8 +2031,8 @@ def bundle_embedded_python(
     # so a developer who runs the offline build and then launches QUILL from source
     # (python -m quill) does not see a stale OFFLINE_EDITION = True leak into dev
     # runs and tests -- the marker is a build artifact that belongs only in the
-    # bundle, never in the source tree. (Mirrors how _build_info.py / _feedback_token
-    # are regenerated per-build and gitignored, but those don't affect runtime
+    # bundle, never in the source tree. (Mirrors how _build_info.py is
+    # regenerated per-build and gitignored, but that doesn't affect runtime
     # behavior in a dev checkout the way a stale True marker does.)
     if offline_edition:
         shipped_marker = site_packages / "quill" / "_offline_edition.py"

@@ -70,12 +70,6 @@ SpeechRecognition>=3.17.0
 # non-Windows interpreters. Install them explicitly with `pip install .[ocr]`
 # on a supported Windows Python.
 
-# Direct GitHub issue submission for Report a Bug (feedback_hub's accessible
-# FeedbackDialog + shared schema). This is the only Report a Bug form; on
-# failure QUILL copies the online support-form URL to the clipboard.
-# 1.0.1 fixes the wx sizer-parenting crash that broke the dialog on wx 4.2.5+.
-feedback-hub>=1.0.1
-
 # Quillin signature verification (Ed25519 / minisign-shaped). Bundled at runtime
 # so every shipping build can verify publisher-signed Quillins in the Quillins
 # Manager; previously this was dev/CI-only ([signing]/[dev] extras), so real

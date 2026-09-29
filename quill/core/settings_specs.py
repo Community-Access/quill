@@ -1845,25 +1845,25 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("vision", "image", "description", "custom", "prompt"),
     ),
     # #622: when an unhandled exception crashes QUILL, offer a dialog
-    # that lets the user review a redacted preview and choose whether
-    # to send the report to the developers. When disabled the local
-    # crash file is still saved to app_data_dir()/crash-reports; the
-    # dialog is the only opt-in here.
+    # that lets the user review a redacted preview and choose whether to
+    # email it to support. When disabled the local crash file is still
+    # saved to app_data_dir()/crash-reports. The field name predates the
+    # 2026-09-26 move from GitHub issues to email and is kept so existing
+    # settings files keep their choice.
     SettingSpec(
         "auto_ask_crash_submit",
-        "Offer to send crash reports automatically",
+        "Offer to email crash reports to support",
         "general",
         "bool",
-        "When an unhandled exception closes Quill, show a dialog that "
+        "When an unhandled exception closes QUILL, show a dialog that "
         "lets you review a redacted summary (recent commands, "
         "environment, last frames of the traceback) and choose whether "
-        "to send it to the developers. Your personal data is scrubbed "
-        "before it leaves the machine, and nothing is sent unless you "
-        "explicitly choose Send. The local crash file is always saved "
-        "even when this option is off. Enabled by default during the "
-        "beta phase so the team can hear about crashes without you "
-        "having to opt in every time.",
-        keywords=("crash", "report", "submit", "send", "diagnostics", "beta"),
+        "to email it to support@community-access.org. Email support "
+        "opens your own mail program with the report written; nothing "
+        "is sent until you send it there, and personal data is scrubbed "
+        "first. The local crash file is always saved even when this "
+        "option is off.",
+        keywords=("crash", "report", "support", "email", "send", "diagnostics"),
     ),
     # --- Transcription -----------------------------------------------------
     SettingSpec(

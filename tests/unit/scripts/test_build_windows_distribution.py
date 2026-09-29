@@ -13,8 +13,7 @@ from scripts.build_windows_distribution import (
     KOKORO_WHEELHOUSE_REQUIREMENTS,
     MP3_WHEELHOUSE_REQUIREMENTS,
     VOSK_WHEELHOUSE_REQUIREMENTS,
-    _assert_bundled_token_nonempty,
-    _bundled_token_value,
+    _assert_no_retired_credential,
     _prune_embedded_runtime,
     _speech_asset_manifest,
     _stage_pip_wheelhouse,
@@ -1319,50 +1318,42 @@ def test_dev_cache_ignore_excludes_local_tool_caches_but_keeps_real_source(
 
 
 # ---------------------------------------------------------------------------
-# Feedback-token build guard (#919: beta-2 upgrades shipped a tokenless
-# Report a Bug). The token is now ALWAYS required -- a distributable must bake
-# a non-empty BUNDLED_TOKEN on every build, with no opt-out. These lock the
-# helper that enforces it at the point that matters -- the file that actually
-# ships inside the bundled quill/ package.
+# Retired bug-report credential (owner decision 2026-09-26: feedback is
+# email-only, and no build may ship the old GitHub token or feedback_hub).
 # ---------------------------------------------------------------------------
 
 
-def test_bundled_token_value_reads_a_real_token(tmp_path: Path) -> None:
-    token_file = tmp_path / "_feedback_token.py"
-    token_file.write_text('BUNDLED_TOKEN = "ghp_secretvalue"\n', encoding="utf-8")
-    assert _bundled_token_value(token_file) == "ghp_secretvalue"
+def test_quill_copy_never_carries_a_stale_feedback_token(tmp_path: Path) -> None:
+    """The file is gitignored, so an older build's copy can sit unseen in a
+    checkout; the quill/ copy into the runtime must drop it."""
+    import shutil
+
+    from scripts.build_windows_distribution import _quill_copy_ignore
+
+    source = tmp_path / "quill"
+    source.mkdir()
+    (source / "__init__.py").write_text("", encoding="utf-8")
+    (source / "_feedback_token.py").write_text('BUNDLED_TOKEN = "x"\n', encoding="utf-8")
+    dest = tmp_path / "copied"
+    shutil.copytree(source, dest, ignore=_quill_copy_ignore)
+    assert (dest / "__init__.py").exists()
+    assert not (dest / "_feedback_token.py").exists()
 
 
-def test_bundled_token_value_treats_empty_and_missing_as_empty(tmp_path: Path) -> None:
-    empty = tmp_path / "_feedback_token.py"
-    empty.write_text('BUNDLED_TOKEN = ""\n', encoding="utf-8")
-    assert _bundled_token_value(empty) == ""
-    # The committed repo default IS the empty token (the file is gitignored-but-
-    # tracked empty); this is exactly the tokenless state the build must refuse
-    # to ship, so a missing file must also read as empty, never as "present".
-    assert _bundled_token_value(tmp_path / "does_not_exist.py") == ""
+def test_build_refuses_a_payload_with_the_retired_credential(tmp_path: Path) -> None:
+    site = tmp_path / "python" / "Lib" / "site-packages"
+    (site / "feedback_hub").mkdir(parents=True)
+    (site / "feedback_hub" / "__init__.py").write_text("", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="feedback_hub"):
+        _assert_no_retired_credential(tmp_path)
 
 
-def test_build_guard_refuses_an_empty_token(tmp_path: Path) -> None:
-    # The guard must fail when the bundled token file is empty -- the exact
-    # "No token" upgrade symptom. There is no opt-out.
-    (tmp_path / "quill").mkdir()
-    (tmp_path / "quill" / "_feedback_token.py").write_text('BUNDLED_TOKEN = ""\n', encoding="utf-8")
-    with pytest.raises(RuntimeError, match="empty BUNDLED_TOKEN"):
-        _assert_bundled_token_nonempty(tmp_path)
+def test_build_accepts_a_clean_payload(tmp_path: Path) -> None:
+    (tmp_path / "python" / "Lib" / "site-packages" / "quill").mkdir(parents=True)
+    _assert_no_retired_credential(tmp_path)  # must not raise
 
 
-def test_build_guard_refuses_a_missing_token_file(tmp_path: Path) -> None:
-    # A build that never copied the token into the bundle is just as broken as
-    # an empty one; the guard must catch it (not silently ship tokenless).
-    with pytest.raises(RuntimeError, match="missing from the runtime"):
-        _assert_bundled_token_nonempty(tmp_path)
+def test_default_bundle_groups_no_longer_pull_feedback_hub() -> None:
+    from scripts.build_windows_distribution import DEFAULT_BUNDLED_DEPENDENCY_GROUPS
 
-
-def test_build_guard_accepts_a_real_token(tmp_path: Path) -> None:
-    (tmp_path / "quill").mkdir()
-    (tmp_path / "quill" / "_feedback_token.py").write_text(
-        'BUNDLED_TOKEN = "ghp_realtoken"\n', encoding="utf-8"
-    )
-    # Must not raise -- a real token ships fine.
-    _assert_bundled_token_nonempty(tmp_path)
+    assert "feedback" not in DEFAULT_BUNDLED_DEPENDENCY_GROUPS

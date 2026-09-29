@@ -135,6 +135,34 @@ Studio share:
   apps' QuillVille menus list it and QUILL's "Convert with Quill" Explorer verb
   works in public builds.
 
+### Help and crash reports go to support by email; no GitHub token in any build (2026-09-26)
+
+- **Get Help from Support is QUILL's one door to a person.** Help > Get Help
+  from Support... (Ctrl+Alt+F2) is the same form QUILL Lite and Quill Radio
+  use: your own mail program opens with the message written and addressed to
+  support@community-access.org, with QUILL's version, your Windows version,
+  your screen reader and -- when connected -- your QUILL AI support ID filled
+  in. Nothing is sent until you send it there. The menu keeps its **L** access
+  key because **G** is Open User Guide in QUILL's Help menu; the keymap id
+  `help.report_bug` is unchanged, so rebinds survive.
+- **Crash reports are emailed, not filed.** The Report Crash dialog's **Send
+  report** is now **Email support**: the same redacted report, scrubbed once
+  more, goes to your mail program addressed to support. Crash Recovery's
+  **Send Bug Report** is now **Email Support** and does the same for an
+  unclean exit. With no mail program the report is on your clipboard. The
+  setting is renamed on screen to *Offer to email crash reports to support*
+  (`auto_ask_crash_submit` is unchanged).
+- **No bundled GitHub token, and nothing files GitHub issues for you.**
+  `quill/core/feedback_token.py`, `quill/core/issue_submit.py`,
+  `quill/core/crash_fingerprint.py` and `quill/core/schemas/feedback.json` are
+  deleted with their tests, and feedback-hub is no longer used by QUILL. Check
+  for Updates no longer offers to reinstall the same version to "restore the
+  crash-report token". Your own GitHub sign-in for QUILL's GitHub features is
+  unaffected.
+- New: `quill/stability/crash_email.py` (the crash report as a support
+  message, plus the log readers the unclean-exit report quotes) and
+  `quill/ui/crash_report_mail.py` (acting on the crash dialog's choice).
+
 ### Connecting to QUILL's free AI works, and takes one keystroke (2026-09-25)
 
 Four faults between accepting the agreement and being connected, all shared by
