@@ -155,8 +155,9 @@ class _MpvClient:
         array = (ctypes.c_char_p * (len(encoded) + 1))(*encoded, None)
         self._lib.mpv_command(self._handle, array)
 
-    def set_str(self, name: str, value: str) -> None:
-        self._lib.mpv_set_property_string(self._handle, name.encode(), value.encode())
+    def set_str(self, name: str, value: str) -> int:
+        """Set a property; the mpv status (0 on success, negative on refusal)."""
+        return int(self._lib.mpv_set_property_string(self._handle, name.encode(), value.encode()))
 
     def get_double(self, name: str) -> float | None:
         out = ctypes.c_double(0.0)

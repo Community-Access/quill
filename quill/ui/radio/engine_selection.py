@@ -155,6 +155,10 @@ def attempt_fallback(host: Any) -> bool:
         return False
 
     _log.info("Retrying stream on the %s engine", "wx" if target is host._wx_engine else "mpv")
+    if target is host._wx_engine:
+        from quill.ui.radio import output_device_guard
+
+        output_device_guard.note_windows_media_fallback(host)
     host._engine.close()
     host._engine = target
     host._engine.set_volume(host._effective_volume())
@@ -178,13 +182,17 @@ def on_load_error(host: Any, message: str) -> None:
     have quietly taken that rescue away from exactly the case that needs it
     most -- a stream that has already dropped once.
     """
+    from quill.ui.radio import output_device_guard
     from quill.ui.radio.playback_state import RadioPlayerState
     from quill.ui.radio.youtube_playback import playback_failure_message
 
-    if (
-        host._state.state in (RadioPlayerState.CONNECTING, RadioPlayerState.RECONNECTING)
-        and host._attempt_engine_fallback()
-    ):
+    connecting = (RadioPlayerState.CONNECTING, RadioPlayerState.RECONNECTING)
+    if host._state.state in connecting and output_device_guard.rescue_on_load_error(host):
+        # A chosen device that would not open: the same engine, the system
+        # default, and a word about it -- before Windows Media, which cannot
+        # route at all and used to take the station without saying so.
+        return
+    if host._state.state in connecting and host._attempt_engine_fallback():
         # A stream WMP cannot decode (Ogg/Opus/HLS) often plays fine on mpv,
         # and a misbehaving mpv falls back to WMP. One rescue per attempt.
         return

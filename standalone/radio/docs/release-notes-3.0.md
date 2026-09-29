@@ -1,6 +1,36 @@
 # Quill Radio 3.0 Release Notes
 
-Version 3.0.4, released 2026-09-28.
+Version 3.0.5, released 2026-09-29.
+
+## What's new in 3.0.5
+
+One fix, for the sound card.
+
+### Choosing a sound card switches to it, or says why it cannot
+
+A listener chose a different device in **Audio > Output Device...** and the
+sound stayed where it was. The playback engine itself was not at fault: mpv
+switches devices at runtime and on reload, and we watched it do so on a
+machine with two sound cards. What went wrong is that when the engine could
+not *open* the chosen device -- a Bluetooth headset asleep, a card another
+program was holding, a device whose Windows id had changed -- the station
+was quietly rescued on Windows Media, which can only play on the system
+default, and nobody was told.
+
+From 3.0.5:
+
+- A playing station switches device the moment you choose one, live, with no
+  break in the sound.
+- If the device cannot be opened, you hear which one and why it matters:
+  "Speakers (Logi USB Headset) could not be opened. Playing on the system
+  default until it is available again." Your choice stands.
+- Quill Radio looks for the device every few seconds and moves back to it by
+  itself, saying "... is available again. Playing on it."
+- If a station will not play on the mpv engine at all and falls back to
+  Windows Media, that is said too, because Windows Media cannot route to a
+  chosen device.
+- **View > Audio Health** shows the device chosen and whether it is the one in
+  use, and every one of these decisions is written to the log.
 
 ## What's new in 3.0.4
 

@@ -2,6 +2,12 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.0.md` (Help > Release Notes, Shift+F1) for the fuller narrative version of the latest release.
 
+## [3.0.5] - 2026-09-29
+
+One fix: choosing a sound card now either switches to it, or says why it cannot, and comes back to it by itself.
+
+- **The sound card switches, live, or says why it cannot.** A listener reported that choosing a device in Audio > Output Device did not move the sound. libmpv switches devices at runtime and on reload (probed on a real machine with two cards, watching mpv's own audio-output log), and Quill Radio handed it the device before every load -- so the sound stayed put in exactly one case: the mpv engine could not *open* the chosen device (a Bluetooth or USB headset asleep, a device another program holds, an id Windows changed), the load failed, and the station was quietly rescued on Windows Media, which can only play on the system default. Nothing was said and nothing was logged. Now: a playing mpv station switches device live, with no reconnect and no gap; a load that fails with a device chosen is retried once on the system default, still on mpv, and the listener is told which device could not be opened; the device is looked for every ten seconds and playback moves back to it, with a word, the moment Windows offers it again; and the Windows Media fallback with a device chosen is said out loud instead of hidden. Every decision is logged, and Audio Health shows whether the chosen device is the one in use (`quill/ui/radio/output_device_guard.py`; the mpv client now reports a refused property instead of swallowing it).
+
 ## [3.0.4] - 2026-09-28
 
 One fix, for the worst thing an app can do: nothing. A listener's portable copy did not open, did not say why, and left no trace. From 3.0.4 the launcher says what happened.

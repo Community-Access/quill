@@ -1,6 +1,6 @@
 # Quill Radio User Guide
 
-Version 3.0.4, released 2026-09-28.
+Version 3.0.5, released 2026-09-29.
 
 Quill Radio is internet radio built for screen reader users. It is a small window. The favorites tree has focus the moment it opens. The menus say everything they do, every action speaks, and a tray icon keeps the music playing while you work. It runs the same radio code as QUILL itself and, when installed, shares its data, so nothing you set up here is stranded.
 
@@ -37,16 +37,16 @@ The chapters, in order, grouped by what you want to do. Each one is a level 2 he
 
 ### The two downloads
 
-Quill Radio 3.0.4 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.4.
+Quill Radio 3.0.5 comes in two downloads. In each file name, `<version>` is the release, such as 3.0.5.
 
 1. **The installer**, `Quill-Radio-Setup-Shared-<version>.exe`. This is the right choice for most people. It gives Quill Radio a Start Menu entry and an uninstaller. It installs the shared QuillVille Runtime if it is not already on the computer, then the app. Your favorites, history and settings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
 2. **The portable copy**, `Quill-Radio-Portable-<version>.zip`. It is fully self-contained. It carries its own genuine, unmodified Python and the bundled ffmpeg (for recording) and mpv (for playback). Unpack it anywhere, a USB stick included. Nothing downloads when it runs. Use it when you want the whole radio to travel with you, or when you cannot install software.
 
-Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.4`.
+Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.0.5`.
 
 ### Install with the installer, step by step
 
-1. Download `Quill-Radio-Setup-Shared-3.0.4.exe` and open it from your Downloads folder.
+1. Download `Quill-Radio-Setup-Shared-3.0.5.exe` and open it from your Downloads folder.
 2. If Windows SmartScreen shows a warning, see "About security software" below.
 3. Setup may first ask whether to install for you only or for all users. Choose **Install for me only**. That needs no administrator rights. Installing for all users asks Windows for permission.
 4. The setup wizard opens. Press Enter on each page to accept the defaults. The full installation includes this guide and the release notes. Then choose **Install**.
@@ -58,7 +58,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 ### Use the portable copy, step by step
 
-1. Download `Quill-Radio-Portable-3.0.4.zip`.
+1. Download `Quill-Radio-Portable-3.0.5.zip`.
 2. In File Explorer, select the zip, press the Applications key, and choose **Extract All...**. Choose a folder, for example on a USB stick, and choose **Extract**.
 3. Open the extracted folder, then the `QuillRadio` folder inside it.
 4. Select `QuillRadio.exe` and press Enter. Quill Radio opens with focus in the Favorite stations tree.
@@ -78,7 +78,7 @@ Pressing Enter on `QuillRadio.exe` while you are still inside the zip, before ex
 
 Quill Radio 2.x kept its favorites in this computer's profile, even when it ran from the portable zip. A 3.0 portable copy keeps its own, so the first time it starts, it looks for them.
 
-1. Unzip `Quill-Radio-Portable-3.0.4.zip` and start `QuillRadio.exe`, as above.
+1. Unzip `Quill-Radio-Portable-3.0.5.zip` and start `QuillRadio.exe`, as above.
 2. If an earlier Quill Radio on this computer has favorites, and this copy has none yet, a question opens: "Favorites from an earlier Quill Radio". It says how many favorite stations it found.
 3. Press **Enter** (Yes) to copy them, with your settings, recording schedule and reminders, into this portable copy. Quill Radio then opens with your favorites in the tree.
 4. Or choose **No** to start empty.
@@ -93,7 +93,7 @@ Good to know:
 
 Test builds of 3.0 also offered a thin "Lite" installer and a small Companion zip. Both are retired. Nothing is lost:
 
-- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.4.exe`. It upgrades your installation in place and keeps your data.
+- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.0.5.exe`. It upgrades your installation in place and keeps your data.
 - If you used the Companion zip, run the installer, or unpack the portable zip instead. Check for Updates on a Companion copy offers the installer.
 
 ### The QuillVille Runtime
@@ -1371,9 +1371,13 @@ If it does not work: Volume Boost needs the mpv playback engine. If it says so, 
 
 1. Press **Ctrl+Shift+D** (**Audio > Output Device...**). A list opens: "Send Quill Radio's audio to which device?"
 2. The first row is **System default**. Arrow to a sound card or headset. A saved device that is unplugged reads "(not currently available)".
-3. Press **Enter**. The station moves to that device at once. You should hear "Output device" and its name.
+3. Press **Enter**. The station moves to that device at once, without a break in the sound. You should hear "Output device" and its name.
 
 Your screen reader and Quill Radio's own sounds stay on the system default. The choice is the same setting as **Radio output device** in Preferences. It needs the mpv playback engine.
+
+**If the device cannot be opened** -- a Bluetooth or USB headset that has gone to sleep, a device another program is holding, one whose Windows id changed -- Quill Radio says so, names it, and plays on the system default in its place: "Speakers (Logi USB Headset) could not be opened. Playing on the system default until it is available again." Your choice stands. Every few seconds it looks for the device, and the moment Windows offers it again the sound moves back and you hear "... is available again. Playing on it." Until 3.0.5 this case was silent: the station quietly moved to Windows Media, which can only use the system default, and the sound card seemed not to switch at all.
+
+**View > Audio Health** (Ctrl+Alt+Shift+M) shows the device that is chosen and whether it is the one in use right now.
 
 ### Sound Enhancements, step by step
 
@@ -2218,7 +2222,7 @@ The same lessons are in `tutorials.md` beside this guide, with the shipped keys.
 
 Quill Radio offers the download that matches your copy: the portable zip to a portable copy, and the installer otherwise. **A portable copy updates itself in place**: the new files replace the old ones in its folder, and the `data` folder -- your favorites, settings, history and recordings -- is never touched.
 
-**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.0.4.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
+**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.0.5.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
 
 Quill Radio also checks quietly once a day at launch. It speaks only when it finds something. Turn it off with **Check for updates automatically on launch** in Preferences.
 
@@ -2675,6 +2679,10 @@ A person at Community Access reads it and replies by email, usually to the addre
 Writing to support@community-access.org yourself, from any email account, works just as well.
 
 ## Troubleshooting
+
+### The sound card does not switch
+
+Choose the device in **Audio > Output Device...** (Ctrl+Shift+D) and listen for the announcement. "Output device" and its name means the station moved. "... could not be opened. Playing on the system default until it is available again" means Windows would not open that device for Quill Radio just now: wake the headset, close whatever else is using the card, or plug it back in; Quill Radio moves back by itself when the device is offered again. "Windows Media is playing this station, and it cannot use the chosen output device" means the station itself would not play on the mpv engine, so it is on Windows Media, which cannot route; try the station again, or another stream of it. Before 3.0.5 none of this was said, which is why a card that would not open looked like a switch that did nothing.
 
 ### If Quill Radio does not start
 

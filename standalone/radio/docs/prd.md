@@ -2636,3 +2636,43 @@ written; a write failure reported. The library verbs moved out of
 `row_actions.py`, at its GATE-11 ceiling, into `row_actions_podcasts.py`
 (`ui/radio/browse_podcast_actions.export_opml`;
 `tests/unit/ui/test_radio_export_opml.py`).
+
+## 21. The output device is a promise the radio keeps, or says out loud that it cannot (3.0.5, 2026-09-29)
+
+**The report.** "Changing the sound card in Audio's menu is not switching to a
+different card." Investigated in order: libmpv was probed on a machine with
+two WASAPI devices, requesting mpv's own log, and it selected the named device
+at runtime *and* on reload ("Selecting device ... (Speakers (Realtek High
+Definition Audio))"); the real controller was then driven through
+`set_output_device` with a real engine and the property and the reload both
+reached mpv. So the path was sound, and the only way the sound stays on the old
+card is the one `testkspn.md` had already named as the top suspect for a
+reconnect loop: the engine cannot *open* the chosen device, the load fails, and
+`attempt_fallback` rescues the station on Windows Media, which cannot route --
+silently, and with nothing in `quill.log` to say so.
+
+**Requirements** (`ui/radio/output_device_guard.py`, delegated to from the
+controller, which is at its GATE-11 ceiling):
+
+- R-1. A playing mpv station switches device live on the property change; no
+  reconnect, no gap. Windows Media, which cannot route, reconnects through
+  engine selection as before.
+- R-2. A load that fails with a device chosen is retried once, on mpv, with
+  the system default, and the listener is told which device would not open.
+  Only a second failure is a stream problem and reaches the cross-engine
+  rescue. The preference is never changed by a failure: the choice stands.
+- R-3. While playing on the default in its place, the device is looked for
+  every ten seconds (a short-lived libmpv enumeration, so not every poll
+  tick), and playback moves back to it live, with a word, the moment it is
+  offered again. Choosing another device ends the watch.
+- R-4. Falling back to Windows Media with a device chosen is said, not hidden.
+- R-5. Every decision is logged at INFO or WARNING; the mpv client returns the
+  status of a property set instead of discarding it, and a refused
+  `audio-device` is logged.
+- R-6. Audio Health's Output device row says when the chosen device is not
+  the one in use and that it is being watched for.
+
+**Tests.** `tests/unit/ui/test_radio_output_device_guard.py`: the live switch,
+the rescue and its wording, the watch and the return, the end of a watch when
+another device is chosen, the two-failure path to Windows Media and its
+wording, the log line, and the label lookup.
