@@ -79,10 +79,57 @@ class _History:
         self.podcast_refresh_on_launch = on_launch
 
 
-def _monitor(frame, history: _History, tasks: _Tasks, *, safe_mode: bool = False):
+def _row(title: str, count: int, alert: str = "quiet"):
+    """One checked feed, as the worker now reports it.
+
+    ``refresh_subscribed_feeds`` grew from (title, count) to a named FeedCheck
+    in 3.1.0, carrying the alert mode and the show id so the UI thread never
+    re-walks the settings chain per show.
+    """
+    return podcast_refresh.FeedCheck(
+        title=title, new_count=count, alert=alert, show_id=title.lower().replace(" ", "-")
+    )
+
+
+class _SharedLibrary:
+    """The shared podcast library, as far as the monitor is concerned.
+
+    3.1.0 moved the cadence and the alert modes into the library so Quill
+    Radio and QUILL Cast read one value. The monitor takes a provider for it
+    (the same shape as history_provider) so these tests can pin the shared
+    setting instead of whatever is in the real data dir.
+    """
+
+    def __init__(self, check_interval_minutes: int = 0, *, subscribed: bool = True) -> None:
+        from quill.core.podcasts.models import PodcastShow
+        from quill.core.podcasts.models_settings import PodcastSettings
+
+        self.settings = PodcastSettings(check_interval_minutes=check_interval_minutes)
+        # One subscription by default. 3.1.0 skips the check entirely when there
+        # is nothing to ask -- no thread, no request -- so a monitor test about
+        # anything else needs a show for the check to get past that guard.
+        self.shows: list = (
+            [PodcastShow(id="s1", title="The Daily", feed_url="https://example.com/a.xml")]
+            if subscribed
+            else []
+        )
+
+    def effective_settings(self, _show):
+        return self.settings
+
+
+def _monitor(
+    frame,
+    history: _History,
+    tasks: _Tasks,
+    *,
+    safe_mode: bool = False,
+    shared: int = 0,
+):
     return podcast_refresh.PodcastRefreshMonitor(
         frame,
         history_provider=lambda: history,
+        library_provider=lambda: _SharedLibrary(shared),
         announce=said.append,
         task_manager=tasks,
         safe_mode=safe_mode,
@@ -97,14 +144,15 @@ def test_a_quiet_automatic_check_says_nothing_at_all(frame, monkeypatch) -> None
     """Reported 2026-08-24: it announced the autorefresh every fifteen minutes.
 
     Two subscriptions, neither with a new episode. The worker returns a row for
-    each -- ``[("The Daily", 0), ("Main Menu", 0)]`` -- which is emphatically
+    each -- ``[FeedCheck("The Daily", 0, ...), FeedCheck("Main Menu", 0, ...)]``
+    -- which is emphatically
     not an empty list, and so the check said "No new episodes." into somebody's
     afternoon four times an hour.
     """
     monkeypatch.setattr(
         podcast_refresh,
         "refresh_subscribed_feeds",
-        lambda **_kwargs: [("The Daily", 0), ("Main Menu", 0)],
+        lambda **_kwargs: [_row("The Daily", 0), _row("Main Menu", 0)],
     )
     tasks = _Tasks()
     monitor = _monitor(frame, _History(minutes=15), tasks)
@@ -119,7 +167,7 @@ def test_a_check_that_found_something_still_speaks(frame, monkeypatch) -> None:
     monkeypatch.setattr(
         podcast_refresh,
         "refresh_subscribed_feeds",
-        lambda **_kwargs: [("The Daily", 2), ("Main Menu", 0)],
+        lambda **_kwargs: [_row("The Daily", 2), _row("Main Menu", 0)],
     )
     monitor = _monitor(frame, _History(minutes=15), _Tasks())
 
@@ -131,7 +179,7 @@ def test_a_check_that_found_something_still_speaks(frame, monkeypatch) -> None:
 def test_a_check_somebody_asked_for_answers_even_when_it_found_nothing(frame, monkeypatch) -> None:
     """Silence is an answer to a timer. It is not an answer to a keystroke."""
     monkeypatch.setattr(
-        podcast_refresh, "refresh_subscribed_feeds", lambda **_kwargs: [("The Daily", 0)]
+        podcast_refresh, "refresh_subscribed_feeds", lambda **_kwargs: [_row("The Daily", 0)]
     )
     monitor = _monitor(frame, _History(minutes=15), _Tasks())
 
@@ -221,7 +269,7 @@ def test_nothing_runs_at_launch_unless_asked(frame) -> None:
 def test_the_launch_check_is_quiet_when_it_finds_nothing(frame, monkeypatch) -> None:
     """A launch is not the moment to be told that nothing happened."""
     monkeypatch.setattr(
-        podcast_refresh, "refresh_subscribed_feeds", lambda **_kwargs: [("The Daily", 0)]
+        podcast_refresh, "refresh_subscribed_feeds", lambda **_kwargs: [_row("The Daily", 0)]
     )
     monitor = _monitor(frame, _History(minutes=15, on_launch=True), _Tasks())
 

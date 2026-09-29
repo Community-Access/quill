@@ -13,6 +13,12 @@ naming rather than inlining:
   launch a screen-reader user spends waiting, and the at-launch check is quiet
   when it finds nothing because a launch is not the moment to be told that
   nothing happened.
+* **The shared cadence is loaded, not held.** 3.1.0 moved the interval and
+  the alert modes into the podcast library, so Quill Radio and QUILL Cast
+  read one value. Radio does not keep that library in memory, and loading it
+  per question is also what lets a change QUILL Cast made in another process
+  take effect here without a restart -- so the monitor's own default provider
+  is the right one, and nothing is passed.
 * **Stopped on shutdown** -- a ``wx.Timer`` still running when its frame goes
   is a timer that can fire into a destroyed window.
 """

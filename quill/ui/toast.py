@@ -83,7 +83,7 @@ def show_toast(
             _add_action(note, wx, action_label, on_action)
         note.Show(timeout=wx.adv.NotificationMessage.Timeout_Auto)
     except Exception:  # noqa: BLE001 - news that cannot be shown is not a crash
-        return None
+        return _macos_notify(title, body)
     if keep:
         _LIVE.append(note)
         del _LIVE[:-_KEEP_AT_MOST]
@@ -125,3 +125,44 @@ def _add_action(note: Any, wx: Any, label: str, handler: Callable[[], None]) -> 
 
 
 __all__ = ["show_toast"]
+
+
+def _macos_notify(title: str, body: str) -> Any:
+    """macOS' own notification, when wx could not raise one.
+
+    ``wx.adv.NotificationMessage`` is unreliable on macOS -- Apple deprecated
+    the API underneath it, and a modern build often reports success while
+    nothing appears -- so the fallback is the route the OS still honours:
+    Notification Center through ``osascript``. VoiceOver announces those the
+    same way it announces any other app's.
+
+    Returns a truthy marker on success so the caller's ``if show_toast(...)``
+    keeps meaning "it was shown". Never raises, and never runs anywhere but
+    macOS: on Windows a wx failure is a real failure and inventing a second
+    transport would only hide it.
+    """
+    import sys
+
+    if not sys.platform.startswith("darwin"):
+        return None
+    text = str(body or "").strip()
+    heading = str(title or "").strip()
+    if not text and not heading:
+        return None
+
+    # osascript takes one script string; quotes inside it are escaped rather
+    # than stripped, because a show called "Radio 4's Today" is a normal title
+    # and losing the apostrophe would be a worse bug than no notification.
+    def _quoted(value: str) -> str:
+        return value.replace("\\", "\\\\").replace('"', '\\"')
+
+    script = f'display notification "{_quoted(text or heading)}"'
+    if heading and text:
+        script += f' with title "{_quoted(heading)}"'
+    try:
+        from quill.stability.safe_subprocess import run_subprocess_safely
+
+        result = run_subprocess_safely(["osascript", "-e", script], timeout_seconds=10.0)
+    except Exception:  # noqa: BLE001 - a notification is never worth a crash
+        return None
+    return "macos-notification" if getattr(result, "returncode", 1) == 0 else None

@@ -79,6 +79,13 @@ def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     help_menu.Append(problems_id, host._menu_label("Recent &Problems...", "app.recent_problems"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_recent_problems(), id=problems_id)
 
+    # Beside Recent Problems because they answer the same shape of question:
+    # that one is what went wrong, this is what you were told. Both are lists
+    # over a shared file, so either app can show you the other's news.
+    notices_id = wx.NewIdRef()
+    help_menu.Append(notices_id, host._menu_label("&Notifications...", "app.notifications"))
+    host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_notifications(), id=notices_id)
+
     quiet_id = wx.NewIdRef()
     help_menu.Append(quiet_id, host._menu_label("&Quiet Hours...", "app.quiet_hours"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_quiet_hours(), id=quiet_id)

@@ -139,6 +139,14 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Recent Problems: the list a transient announcement goes into. On
         # Help, beside the other "what is going on here" surfaces.
         "app.recent_problems": "Ctrl+Alt+Shift+P",
+        # Notifications: what the apps have told you, kept so a toast you
+        # missed is still recoverable. A function key rather than a letter
+        # because every Ctrl+Alt+Shift letter is already claimed somewhere in
+        # the family -- U (unread) is Search Sources and W is Restore from
+        # Backup, both of which the accelerator gate named rather than
+        # letting one of the pair silently never fire. Rule 9: a window you
+        # visit occasionally gets *a* key, not a short one.
+        "app.notifications": "Ctrl+Alt+Shift+F3",
         # Quiet Hours: the window in which the app stops speaking on its own.
         "app.quiet_hours": "Ctrl+Alt+Shift+Z",
         # Move my setup to another machine: one file out, one file in.
@@ -207,6 +215,14 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # forty minutes in" is one keystroke in both players (11.8).
         "podcasts.go_to_position": "Ctrl+Alt+J",
         "app.recent_problems": "Ctrl+Alt+Shift+P",
+        # Notifications: what the apps have told you, kept so a toast you
+        # missed is still recoverable. A function key rather than a letter
+        # because every Ctrl+Alt+Shift letter is already claimed somewhere in
+        # the family -- U (unread) is Search Sources and W is Restore from
+        # Backup, both of which the accelerator gate named rather than
+        # letting one of the pair silently never fire. Rule 9: a window you
+        # visit occasionally gets *a* key, not a short one.
+        "app.notifications": "Ctrl+Alt+Shift+F3",
         "app.quiet_hours": "Ctrl+Alt+Shift+Z",
         # Move my setup to another machine: one file out, one file in.
         "app.export_setup": "Ctrl+Alt+Shift+X",

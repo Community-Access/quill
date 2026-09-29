@@ -557,6 +557,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+A | ADP: Settings... | `adp.settings` |
 | Ctrl+Alt+Shift+D | Internet Radio: Download Preferences... | `radio.download_preferences` |
 | Ctrl+Alt+Shift+F | Upcoming... | `radio.upcoming` |
+| Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
 | Ctrl+Alt+Shift+G | Internet Radio: Update Station Catalog | `radio.update_catalog` |
 | Ctrl+Alt+Shift+I | Recording Settings... | `radio.recording_settings` |
 | Ctrl+Alt+Shift+J | Bookmarks... | `app.bookmarks` |
@@ -619,6 +620,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
+| Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
 | Ctrl+Alt+Shift+J | Bookmarks... | `app.bookmarks` |
 | Ctrl+Alt+Shift+K | Shortcut sheet | `app.shortcut_sheet` |
 | Ctrl+Alt+Shift+M | Media tools | `app.media_tools` |

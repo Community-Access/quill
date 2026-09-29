@@ -70,7 +70,7 @@ def test_the_automatic_check_leaves_the_paused_show_alone(library, monkeypatch) 
     found = podcast_refresh.refresh_subscribed_feeds()
 
     assert asked == ["https://example.com/a.xml"]
-    assert [title for title, _count in (found or [])] == ["The Daily"]
+    assert [row.title for row in (found or [])] == ["The Daily"]
 
 
 def test_a_forced_check_asks_the_paused_show_too(library, monkeypatch) -> None:
@@ -80,7 +80,7 @@ def test_a_forced_check_asks_the_paused_show_too(library, monkeypatch) -> None:
     found = podcast_refresh.refresh_subscribed_feeds(force=True)
 
     assert asked == ["https://example.com/a.xml", "https://example.com/b.xml"]
-    assert [title for title, _count in (found or [])] == ["The Daily", "Main Menu"]
+    assert [row.title for row in (found or [])] == ["The Daily", "Main Menu"]
 
 
 def test_a_show_with_no_feed_is_never_asked_however_hard_you_press(tmp_path, monkeypatch) -> None:
@@ -106,7 +106,7 @@ def test_one_bad_feed_never_stops_the_rest(library, monkeypatch) -> None:
 
     found = podcast_refresh.refresh_subscribed_feeds(force=True)
 
-    assert [title for title, _count in (found or [])] == ["Main Menu"]
+    assert [row.title for row in (found or [])] == ["Main Menu"]
 
 
 # -- the shared stamp -----------------------------------------------------------

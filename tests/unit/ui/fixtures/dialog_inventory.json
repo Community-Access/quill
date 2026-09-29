@@ -545,6 +545,7 @@
   "quill/ui/media/player_info_dialog.py::PlayerInfoDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/media/quick_actions_dialog.py::QuickActionsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/media/winamp_mixin.py::MediaWinampKeysMixin._winamp_jump_to_file::wx.TextEntryDialog": "native",
+  "quill/ui/notification_center.py::open_notification_center::wx.Dialog": "hardened_custom",
   "quill/ui/ocr_review_dialog.py::OcrReviewDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/optional_components_dialog.py::show_optional_components_picker::wx.Dialog": "hardened_custom",
   "quill/ui/palette.py::CommandPaletteDialog.__init__::wx.Dialog": "hardened_custom",

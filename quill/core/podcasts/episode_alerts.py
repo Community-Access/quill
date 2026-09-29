@@ -155,15 +155,25 @@ def shows_worth_checking(
     resolve: Any,
     *,
     force: bool = False,
+    global_minutes: int | None = None,
 ) -> list[Any]:
     """The shows an automatic check should actually ask about.
 
     *resolve* is called with a show and returns its effective settings (the
     library's ``effective_settings``), so this stays free of the library type.
 
-    A show is skipped when it is paused (the existing "leave this show alone"
-    switch), when it has no feed to ask, or when its own resolved interval is 0
-    -- which is how "check everything hourly except this one" is said.
+    **This answers "which shows", never "is it time yet".** The cadence belongs
+    to the caller's timer; mixing the two here was a real bug on the way to
+    this release -- the worker re-read the same interval field and refused every
+    show whenever the *global* value was 0, which is the shipped default.
+
+    So a per-show interval of 0 means **this show is opted out**, and it is only
+    read that way when there is a global cadence for it to be an exception to.
+    Pass *global_minutes* to say what that is; without it, only the pause and
+    the missing-feed checks apply.
+
+    A show is skipped when it has no feed to ask, when it is paused (the
+    existing "leave this show alone" switch), or when it is opted out as above.
 
     ``force=True`` is the Refresh key on a row: it ignores every one of those,
     because a switch that could strand a show would be a trap rather than a
@@ -178,17 +188,20 @@ def shows_worth_checking(
             continue
         if bool(getattr(show, "paused", False)):
             continue
-        try:
-            resolved = resolve(show)
-        except Exception:  # noqa: BLE001 - unresolvable settings means leave it alone
-            continue
-        if interval_for_show(resolved) <= 0:
-            continue
+        if global_minutes is not None and global_minutes > 0:
+            try:
+                resolved = resolve(show)
+            except Exception:  # noqa: BLE001 - unresolvable settings: leave it alone
+                continue
+            if interval_for_show(resolved) <= 0:
+                continue  # an explicit "never" for this show, against a global yes
         wanted.append(show)
     return wanted
 
 
-def anything_to_check(shows: Sequence[Any], resolve: Any) -> bool:
+def anything_to_check(
+    shows: Sequence[Any], resolve: Any, *, global_minutes: int | None = None
+) -> bool:
     """Whether an automatic check has anything at all to do.
 
     The timer asks this before it reaches the network, so a listener who is
@@ -196,4 +209,4 @@ def anything_to_check(shows: Sequence[Any], resolve: Any) -> bool:
     request, no thread and no battery. An app that wakes up to do nothing is
     still an app that woke up.
     """
-    return bool(shows_worth_checking(shows, resolve))
+    return bool(shows_worth_checking(shows, resolve, global_minutes=global_minutes))
