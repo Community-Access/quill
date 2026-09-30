@@ -1,6 +1,10 @@
 # QUILL Lite 1.1 — What's New
 
-*Version 1.1.1, released September 30, 2026. It is 1.1.0 with one thing
+*Version 1.1.2, released September 30, 2026. **1.1.2** makes *Install and
+restart now* actually run the installer and restart: before, the update helper
+was ended the moment QUILL Lite closed. Updating to 1.1.2 from an earlier
+version is by hand once (choose *Open folder* in the update window and run the
+installer); after that the button works. **1.1.1** was 1.1.0 with one thing
 changed: the version number. If Help ▸ About said 1.1.0 but Tools ▸ AI had no
 ChatGPT rows, that was a runtime from Quill Radio 3.0.3 or 3.0.4 announcing a
 number ahead of the code, and Check for Updates believed it. 1.1.1 is newer

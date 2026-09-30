@@ -197,6 +197,34 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
+<h2 id="112--2026-09-30">1.1.2 – 2026-09-30</h2>
+<h3 id="install-and-restart-now-installs-and-restarts">Install and
+restart now installs, and restarts</h3>
+<ul>
+<li><strong>The one-click update ran nothing.</strong> Choosing
+<em>Install and restart now</em> closed QUILL Lite and then nothing
+happened: no installer, no restart, and no log to say why. The app’s
+launcher runs it inside a Windows job that ends every process the app
+started when the app closes – a safety net so a crashed launcher never
+leaves a hidden process behind – and the small helper that waits for the
+app to close and then runs setup was one of those processes. It was
+ended while it waited. The helper now leaves that job before it starts:
+launchers from this release allow exactly that, and under a launcher
+already installed it is started by Windows’ own management service
+instead, outside any job. Tested against real Windows job objects of
+both kinds, and against the old code, which loses its helper every time
+(<code>quill/core/self_update.py</code>,
+<code>quill/native/launcher/launcher.c</code>).</li>
+<li><strong>A failed update leaves a log.</strong> The helper writes to
+an <code>updates</code> folder that did not always exist, so a failure
+left no trace; the folder is now made first.</li>
+<li><strong>Updating from 1.1.1 or earlier:</strong> those versions
+still carry the old helper, so this one update is by hand once. Choose
+<em>Open folder</em> in the update window and run
+<code>QuillLite-Setup-Shared-1.1.2.exe</code>, or download it from
+quillforall.org. From 1.1.2 on, <em>Install and restart now</em>
+works.</li>
+</ul>
 <h2 id="111--2026-09-30">1.1.1 – 2026-09-30</h2>
 <h3 id="the-version-number-that-ran-ahead-of-the-release">The version
 number that ran ahead of the release</h3>
