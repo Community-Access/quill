@@ -83,11 +83,25 @@ EPISODES = SurfaceDef(
             width=100,
             default_visible=False,
         ),
+        # R25. The Off / Brief / Full setting had existed for a release with
+        # nothing reading it, because there was nowhere for a description to go:
+        # the list is columns, and it had no description column. Off by default,
+        # since a show-notes paragraph on every row is a great deal to arrow past
+        # for somebody who wanted the titles.
+        ColumnDef(
+            "description",
+            "Description",
+            "The episode's show notes, as much of them as Row Description asks "
+            "for: nothing, the first sentence, or the lot.",
+            width=320,
+            default_visible=False,
+        ),
     ),
     sample={
         "title": "The One About Chapters",
         "published": "2026-08-14",
         "duration": "58 min",
+        "description": "Why chapters are hard, and what we did about it.",
         "status": "Played",
         "podcast": "The Earshot Show",
         "remaining": "12 min left",

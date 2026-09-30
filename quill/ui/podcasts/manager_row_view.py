@@ -66,6 +66,53 @@ class ManagerRowViewMixin:
             "podcast": show.title if show is not None else "",
             "remaining": remaining,
             "downloaded": "Downloaded" if episode.downloaded_path else "Streams",
+            # R25: the Row Description setting, finally read by something. It
+            # decides how much of the show notes a row carries -- nothing, the
+            # first sentence, or all of it -- and the column decides whether the
+            # row carries them at all.
+            "description": self._episode_description(episode),
+        }
+
+    def _episode_description(self, episode: PodcastEpisode) -> str:
+        """As much of the show notes as Row Description asks for.
+
+        The setting lived for a release with nothing reading it. It is asked here,
+        per row, rather than stamped onto the episode, so changing it takes effect
+        on the next redraw instead of on the next refresh.
+        """
+        from quill.core.podcasts.row_speech import RowSpeech, format_description
+
+        speech = RowSpeech.from_values(self._row_speech_values())
+        return format_description(episode.description, speech.description)
+
+    #: The stored names ``RowSpeech.from_values`` reads. Listed rather than
+    #: derived, because the dataclass field names and the setting names are
+    #: deliberately different (``description`` is stored as ``row_description``).
+    _ROW_SPEECH_SETTINGS = (
+        "row_order",
+        "row_say_podcast",
+        "row_say_date",
+        "row_duration",
+        "row_say_download",
+        "row_say_extras",
+        "row_description",
+        "row_episode_numbers",
+    )
+
+    def _row_speech_values(self) -> dict[str, object]:
+        """The stored row-reading preferences, from wherever this host keeps them.
+
+        Cast holds them on the library settings; a host that has none answers with
+        an empty mapping, and ``RowSpeech.from_values`` then gives its defaults --
+        the same defaults the settings page shows.
+        """
+        settings = getattr(self._library, "settings", None)
+        if settings is None:
+            return {}
+        return {
+            name: getattr(settings, name)
+            for name in self._ROW_SPEECH_SETTINGS
+            if hasattr(settings, name)
         }
 
     def _display_title(self, episode: PodcastEpisode, show: PodcastShow | None) -> str:
