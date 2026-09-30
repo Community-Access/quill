@@ -67,6 +67,39 @@ def find_audio_files(paths: list[Path]) -> list[Path]:
     return files
 
 
+def _staged_copy(source: Path, dest_dir: Path) -> Path | None:
+    """Copy *source* into *dest_dir*, verified, or ``None`` having cleaned up (R9).
+
+    Copy, verify, *then* let the caller make a record -- the order Earshot's PRD
+    insists on, and for the reason it gives: a record created first and a copy that
+    failed second leaves a visible row pointing at nothing, which is worse than no
+    import at all because the listener then has to work out what it is.
+
+    Returns ``None`` on any failure, having removed whatever it staged, so the next
+    launch finds no orphan. Silent about *why* here because the caller is a pure
+    function returning a show; the UI path checks room up front, which is where the
+    sentence a listener needs actually belongs.
+    """
+    from quill.core.podcasts.local_import_guard import discard, verify_copy
+
+    dest = dest_dir / source.name
+    try:
+        already_there = dest.resolve() == source.resolve()
+    except OSError:
+        already_there = False
+    if already_there:
+        return dest
+    try:
+        shutil.copy2(source, dest)
+    except OSError:
+        discard(dest)
+        return None
+    if not verify_copy(source, dest):
+        discard(dest)
+        return None
+    return dest
+
+
 def _episode_for(source: Path, dest: Path) -> PodcastEpisode:
     """One episode from one imported file, named by what the file says (R11).
 
@@ -115,9 +148,9 @@ def create_local_show(show_title: str, audio_files: list[Path]) -> PodcastShow:
 
     episodes: list[PodcastEpisode] = []
     for source in audio_files:
-        dest = dest_dir / source.name
-        if dest.resolve() != source.resolve():
-            shutil.copy2(source, dest)
+        dest = _staged_copy(source, dest_dir)
+        if dest is None:
+            continue
         episodes.append(_episode_for(source, dest))
     return PodcastShow(
         id=uuid.uuid4().hex,
@@ -147,9 +180,11 @@ def scan_watched_folder(show: PodcastShow) -> int:
 
     dest_dir = local_podcasts_root() / _slug(show.title)
     dest_dir.mkdir(parents=True, exist_ok=True)
+    added = 0
     for source in new_files:
-        dest = dest_dir / source.name
-        if dest.resolve() != source.resolve():
-            shutil.copy2(source, dest)
+        dest = _staged_copy(source, dest_dir)
+        if dest is None:
+            continue
         show.episodes.append(_episode_for(source, dest))
-    return len(new_files)
+        added += 1
+    return added
