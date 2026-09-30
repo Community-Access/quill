@@ -43,6 +43,25 @@ def gather(host: Any) -> Any:
         extras.append(
             f"Chapter: {max(1, current)} of {len(chapters)}" + (f" ({source})" if source else "")
         )
+    # Where "next" is coming from (R6). A line in the report and never an
+    # announcement: the source does not change between episode four and episode
+    # five of the same run, so speaking it again would cost a sentence and say
+    # nothing new.
+    from quill.core.podcasts.playing_from import playing_from
+
+    source = playing_from(
+        host._podcast_library,
+        show,
+        from_queue=bool(
+            state.show_id
+            and any(
+                item.show_id == state.show_id and item.episode_guid == state.episode_guid
+                for item in host._podcast_library.queue
+            )
+        ),
+    )
+    if source:
+        extras.append(f"Playing from: {source}")
     try:
         # notes_for_episode filters an already-loaded list; it does not load
         # one. Passing it two arguments raised TypeError on every run.

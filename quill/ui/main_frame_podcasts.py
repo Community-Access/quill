@@ -296,14 +296,24 @@ class PodcastsMixin(
         finished_show: PodcastShow | None = None,
         finished_guid: str = "",
     ) -> None:
-        """Auto-advance, under the two continue settings.
+        """Auto-advance, under the one run-end choice (R7).
 
-        ``continue_after_queue`` (on) plays the Play Queue's next playable
-        slot; stale slots self-heal away as they are encountered. When the
-        queue is empty, ``continue_after_group`` (off) carries on with the
-        same show's next unplayed episode. With both off, an episode ending is
-        simply the end -- which is the whole point of having the pair.
+        Three answers, not four combinations of two booleans: carry on with the
+        **queue** (the default, and what auto-advance has always done), carry on
+        with the **folder** the episode came from, or **stop**.
+        :mod:`quill.core.podcasts.run_end` reads the choice from the two stored
+        booleans when a settings file predates it, so nothing had to migrate.
+
+        The three are exclusive, which is the one behaviour change: somebody who
+        had *both* old booleans on reads as "queue" and no longer falls through to
+        the folder when the queue empties. That combination was two thirds of why
+        the pair was impossible to explain -- two of its four states meant the
+        same thing.
+
+        The finished episode's slot leaves the queue whichever answer is in
+        force, because it finished; only what plays *next* is in question.
         """
+        from quill.core.podcasts import run_end
         from quill.core.podcasts.queue_steps import step_after_finishing
         from quill.core.podcasts.sorting import sort_episodes
         from quill.ui.podcasts.show_actions import start_episode_playback
@@ -313,7 +323,8 @@ class PodcastsMixin(
             if finished_show is not None
             else self._podcast_library.settings
         )
-        if settings.continue_after_queue:
+        choice = run_end.from_settings(settings)
+        if choice == "queue":
             # True order, not the queue head: finishing episode nine must not
             # throw you back to episode one.
             #
@@ -338,7 +349,7 @@ class PodcastsMixin(
                 return
             # The slot still went, even at the end of the run, so save it.
             self._save_podcast_library()
-        if settings.continue_after_group and finished_show is not None:
+        if choice == "folder" and finished_show is not None:
             following = next(
                 (
                     e

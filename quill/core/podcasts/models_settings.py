@@ -320,6 +320,13 @@ class PodcastSettings:
     #: bytes, and somebody on a metered connection pays for them by the megabyte.
     prebuffer_next: bool = False
     continue_after_group: bool = False
+    #: What happens when a run ends, as **one** choice: "queue" (the default,
+    #: what auto-advance has always done), "folder", or "stop". The two booleans
+    #: above are how it is stored for an older build to read; this is what the
+    #: app asks and answers. :mod:`quill.core.podcasts.run_end` owns the
+    #: translation both ways, so a settings file written either side of this
+    #: change keeps its answer. "" means "read the booleans".
+    run_end_action: str = ""
     #: How a cross-show row reads (1.1.0). Off: "Episode title -- Podcast".
     #: On: "Podcast -- Episode title". An accessibility preference, not a
     #: cosmetic one: in a list of two hundred rows from forty shows, whichever
@@ -424,6 +431,7 @@ class PodcastSettings:
             "continue_after_queue": self.continue_after_queue,
             "prebuffer_next": self.prebuffer_next,
             "continue_after_group": self.continue_after_group,
+            "run_end_action": self.run_end_action,
             "announce_show_name_first": self.announce_show_name_first,
             "default_launch_view": self.default_launch_view,
             "show_sort_mode": self.show_sort_mode,
@@ -533,6 +541,7 @@ class PodcastSettings:
             continue_after_queue=bool(data.get("continue_after_queue", True)),
             prebuffer_next=bool(data.get("prebuffer_next", False)),
             continue_after_group=bool(data.get("continue_after_group", False)),
+            run_end_action=_one_of(data.get("run_end_action"), {"queue", "folder", "stop"}, ""),
             announce_show_name_first=bool(data.get("announce_show_name_first", False)),
             default_launch_view=str(data.get("default_launch_view", "")),
             show_sort_mode=_one_of(
