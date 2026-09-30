@@ -73,6 +73,13 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         group="Accessibility",
     ),
     BrowseSourceInfo(
+        "doubletap",
+        "Double Tap Live",
+        "Double Tap's 24-hour channel: talk, tech, music and the best of the podcast.",
+        network=False,
+        group="Accessibility",
+    ),
+    BrowseSourceInfo(
         "nfb",
         "NFB Radio",
         "The National Federation of the Blind's stream.",
