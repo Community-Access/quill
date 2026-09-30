@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 234 audited sites (120 helped, 114 named-help).
+Control coverage: 235 audited sites (121 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -36,7 +36,7 @@ Control coverage: 234 audited sites (120 helped, 114 named-help).
 
 **Add from YouTube Playlist.** Bring the entries of a YouTube playlist in as playable items. Pick the ones you want; each arrives as its own row in your favorites.
 
-**Ask QUILL Radio.** A conversation with ChatGPT, on your own plan, that already knows what is playing: the station and the title the stream is announcing go with every message, so 'what is this song' and 'tell me about this station' need no names typed. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Ask About What's Playing asks for you, and the Quick questions list holds nine more, three of which say what they send about you before you press Enter. Nothing here changes what is playing.
+**Ask QUILL Radio.** A conversation with ChatGPT, on your own plan, that already knows what is playing: the station and the title the stream is announcing go with every message, so 'what is this song' and 'tell me about this station' need no names typed. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Ask About What's Playing asks for you, and the Quick questions list holds nine more: arrow freely, press Enter on one to put it in the message box, and three of them say what they send about you before anything goes. Nothing here changes what is playing.
 
 **Audio Health.** Can this installation play and record? Each row names one piece of the media machinery -- the playback engine, the recorder, the converters -- and says plainly whether it is present, with a button to fetch anything missing.
 
@@ -146,7 +146,8 @@ Control coverage: 234 audited sites (120 helped, 114 named-help).
 
 #### AskRadioFrame (`quill/ui/radio/ask_radio_window.py`)
 
-- `self._quick`: Questions worth one keystroke. Choose one and it is put in the message box for you to send or change. Six ask about what is playing; three also send something you keep -- your favorites, or the songs logged -- and say so before anything goes.
+- `self._quick`: Questions worth one keystroke. Arrow through them freely; press Enter, or Use This Question, to put the one you are on into the message box, where you can send it or change it. Six ask about what is playing; three also send something you keep -- your favorites, or the songs logged -- and say so before anything goes.
+- `use`: Puts the highlighted quick question into the message box and says what else, if anything, will go with it. Nothing is sent yet.
 - `self._message`: Type a question and press Enter. What is playing goes with it, so 'what is this song' and 'tell me about this station' just work.
 - `self._send_button`: Sends your message with what is playing right now.
 - `playing`: Asks about the song and station playing right now, without typing. Press it again for the next suggested question.

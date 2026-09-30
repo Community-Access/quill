@@ -382,6 +382,11 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # GatewaySession reads as "not connected", which is exactly what a lost or
     # unreadable file should mean, and the next sign-in rewrites it.
     "core/ai/gateway_session.py::save_session": "marker",
+    # The ChatGPT sign-in's non-secret state (<data>/ai/chatgpt.json): the
+    # issued client id, the host id, the account label, the chosen model and
+    # the web-search switch. Same shape and same reasons as the gateway
+    # session beside it; the refresh token itself goes to the OS store.
+    "core/ai/chatgpt_account.py::save_state": "marker",
     "core/ai/style.py::save_style": "content",
     "core/bookmarks.py::save": "content",
     # Per-book media time-point bookmarks (position_ms + optional label/note),
