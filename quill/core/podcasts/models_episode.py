@@ -46,6 +46,12 @@ class PodcastEpisode:
     downloaded_path: str = ""
     mode_override: str = ""  # "" | "stream" | "download"
     played: bool = False
+    #: Whether this episode's intro has already been skipped once (R20). A
+    #: separate fact from ``played``: an episode can be unplayed and already
+    #: intro-skipped, which is exactly the "started it, went back, started again"
+    #: case the flag exists for. Stored, because an intro skipped last night must
+    #: not be skipped again this morning.
+    intro_skipped: bool = False
     position_ms: int = 0  # resume position; syncs via QUILL Sync (guid-keyed)
     #: When the place above was last decided. RFC 3339 UTC ending ``Z``, so
     #: plain string comparison sorts it and the merge needs no date parsing.
@@ -90,6 +96,7 @@ class PodcastEpisode:
             "downloaded_path": self.downloaded_path,
             "mode_override": self.mode_override,
             "played": self.played,
+            "intro_skipped": self.intro_skipped,
             "position_ms": self.position_ms,
             # The three below are written only when the feed said something,
             # so a library of four thousand episodes from feeds that publish
@@ -125,6 +132,7 @@ class PodcastEpisode:
             downloaded_path=str(data.get("downloaded_path", "")),
             mode_override=str(data.get("mode_override", "")),
             played=bool(data.get("played", False)),
+            intro_skipped=bool(data.get("intro_skipped", False)),
             position_ms=_coerce_int(data.get("position_ms"), 0),
             position_updated_at=str(data.get("position_updated_at", "")),
             season=max(0, _coerce_int(data.get("season"), 0)),

@@ -57,6 +57,9 @@ class SleepTimerController:
         #: "End of episode" mode: the deadline is re-derived from the playing
         #: episode on every tick instead of being fixed at start time.
         self._end_of_episode = False
+        #: The length the listener chose, kept so restart() (R22) has something
+        #: to restart *to*. 0.0 when no timer is running.
+        self._minutes = 0.0
 
     @property
     def is_active(self) -> bool:
@@ -76,7 +79,8 @@ class SleepTimerController:
     def start(self, minutes: float) -> None:
         """Start (or restart) the countdown for *minutes* from now."""
         self.cancel()
-        self._end_time = time.monotonic() + max(0.1, minutes) * 60
+        self._minutes = max(0.1, minutes)
+        self._end_time = time.monotonic() + self._minutes * 60
         self._timer.Start(_TICK_MS)
 
     def start_end_of_episode(self) -> bool:
@@ -106,6 +110,23 @@ class SleepTimerController:
         self._end_time = max(time.monotonic(), self._end_time) + max(0.0, minutes) * 60
         return True
 
+    def restart(self) -> bool:
+        """Set a running timer back to its full length (R22). False when none runs.
+
+        "Reset the timer when I use a playback key" means somebody is still awake
+        and still listening, so the countdown starts again from the length they
+        chose -- not from wherever it had got to, which is what ``extend`` does.
+        The original length is remembered at :meth:`start` for exactly this.
+
+        An end-of-episode timer is left alone: its end is the episode's end, and
+        there is nothing to restart it to.
+        """
+        if self._end_time is None or self._end_of_episode or self._minutes <= 0:
+            return False
+        self._restore_volumes()
+        self._end_time = time.monotonic() + self._minutes * 60
+        return True
+
     def cancel(self) -> None:
         """Stop the countdown early and restore any faded volume."""
         if self._end_time is None:
@@ -113,6 +134,7 @@ class SleepTimerController:
         self._timer.Stop()
         self._restore_volumes()
         self._end_time = None
+        self._minutes = 0.0
         self._end_of_episode = False
 
     def shutdown(self) -> None:

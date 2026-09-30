@@ -29,6 +29,15 @@ from quill.core.audio.channel_mode import normalize as normalize_channel_mode
 from quill.core.audio_enhance import clamp_eq_gain
 from quill.core.podcasts.models_queue import coerce_int as _coerce_int
 
+# The coercions moved to settings_coerce.py under GATE-11: this module is the
+# settings record, which gains a field every few days, and those are the handful
+# of readers, which change almost never. Aliased to their old private names so
+# the hundred call sites below did not have to change.
+from quill.core.podcasts.settings_coerce import coerce_float as _coerce_float
+from quill.core.podcasts.settings_coerce import normalize_alert_mode as _normalize_alert
+from quill.core.podcasts.settings_coerce import normalize_boost_level as _normalize_boost
+from quill.core.podcasts.settings_coerce import one_of as _one_of
+
 # The speed scale -- bounds, step and clamp -- is decided in speed_scale.py and
 # re-exported here, because that is where every existing caller imports it from.
 # It moved because the step was defined in a UI module while the bounds were
@@ -50,43 +59,6 @@ from quill.core.settings_portable import (
     portable_export,
     portable_import,
 )
-
-
-def _one_of(value: object, allowed: set[str], default: str) -> str:
-    """*value* when it is one of *allowed*, else *default*.
-
-    A settings file is somebody else's input, and the default is always the
-    safe direction: never a mode that does more work than the listener chose.
-    """
-    wanted = str(value or "").strip().lower()
-    return wanted if wanted in allowed else default
-
-
-def _coerce_float(value: object, default: float) -> float:
-    if isinstance(value, bool):
-        return default
-    if isinstance(value, (int, float)):
-        return float(value)
-    if isinstance(value, str):
-        try:
-            return float(value) if value.strip() else default
-        except ValueError:
-            return default
-    return default
-
-
-def _normalize_alert(value: object) -> str:
-    """A stored new-episode alert mode, through the one shared normalisation."""
-    from quill.core.podcasts.episode_alerts import normalize_alert
-
-    return normalize_alert(value)
-
-
-def _normalize_boost(value: object) -> str:
-    """A stored Volume Boost level, through the one shared normalisation."""
-    from quill.core.podcasts.volume_boost import normalize
-
-    return normalize(value)
 
 
 @dataclass(slots=True)
@@ -320,13 +292,15 @@ class PodcastSettings:
     #: bytes, and somebody on a metered connection pays for them by the megabyte.
     prebuffer_next: bool = False
     continue_after_group: bool = False
-    #: What happens when a run ends, as **one** choice: "queue" (the default,
-    #: what auto-advance has always done), "folder", or "stop". The two booleans
-    #: above are how it is stored for an older build to read; this is what the
-    #: app asks and answers. :mod:`quill.core.podcasts.run_end` owns the
-    #: translation both ways, so a settings file written either side of this
-    #: change keeps its answer. "" means "read the booleans".
+    #: What happens when a run ends, as one choice: "queue" (the default),
+    #: "folder" or "stop". The two booleans above are how it is *stored* for an
+    #: older build; "" means read them. See :mod:`quill.core.podcasts.run_end`.
     run_end_action: str = ""
+    #: Sleep timer (R22), both off: a playback key restarts the countdown
+    #: (using a key means you are awake), and choosing another episode clears it
+    #: (picking something new is not what somebody falling asleep does).
+    sleep_timer_reset_on_use: bool = False
+    sleep_timer_cancel_on_switch: bool = False
     #: How a cross-show row reads (1.1.0). Off: "Episode title -- Podcast".
     #: On: "Podcast -- Episode title". An accessibility preference, not a
     #: cosmetic one: in a list of two hundred rows from forty shows, whichever
@@ -432,6 +406,8 @@ class PodcastSettings:
             "prebuffer_next": self.prebuffer_next,
             "continue_after_group": self.continue_after_group,
             "run_end_action": self.run_end_action,
+            "sleep_timer_reset_on_use": self.sleep_timer_reset_on_use,
+            "sleep_timer_cancel_on_switch": self.sleep_timer_cancel_on_switch,
             "announce_show_name_first": self.announce_show_name_first,
             "default_launch_view": self.default_launch_view,
             "show_sort_mode": self.show_sort_mode,
@@ -542,6 +518,8 @@ class PodcastSettings:
             prebuffer_next=bool(data.get("prebuffer_next", False)),
             continue_after_group=bool(data.get("continue_after_group", False)),
             run_end_action=_one_of(data.get("run_end_action"), {"queue", "folder", "stop"}, ""),
+            sleep_timer_reset_on_use=bool(data.get("sleep_timer_reset_on_use", False)),
+            sleep_timer_cancel_on_switch=bool(data.get("sleep_timer_cancel_on_switch", False)),
             announce_show_name_first=bool(data.get("announce_show_name_first", False)),
             default_launch_view=str(data.get("default_launch_view", "")),
             show_sort_mode=_one_of(

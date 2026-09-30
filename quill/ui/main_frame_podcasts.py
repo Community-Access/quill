@@ -630,6 +630,7 @@ class PodcastsMixin(
         if controller.state.show_id is None:
             self._announce("Nothing is playing.")
             return
+        self.podcast_sleep_timer_keep_awake()  # R22: a key means you are awake
         seconds = self._podcast_skip_settings().skip_forward_seconds
         target_ms = min(controller.length_ms(), controller.position_ms() + seconds * 1000)
         controller.seek(target_ms)
@@ -640,6 +641,7 @@ class PodcastsMixin(
         if controller.state.show_id is None:
             self._announce("Nothing is playing.")
             return
+        self.podcast_sleep_timer_keep_awake()  # R22: a key means you are awake
         seconds = self._podcast_skip_settings().skip_back_seconds
         target_ms = max(0, controller.position_ms() - seconds * 1000)
         controller.seek(target_ms)

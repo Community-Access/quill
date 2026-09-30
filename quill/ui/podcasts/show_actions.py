@@ -119,7 +119,7 @@ def start_episode_playback(
     A streamed episode whose audio is already sitting in the playback cache is
     played from that file rather than fetched again -- the same bytes, minus
     the network. See ``core/podcasts/playback_cache.py``."""
-    from quill.core.podcasts import feed_auth, playback_cache
+    from quill.core.podcasts import feed_auth, intro_skip, playback_cache
 
     settings = library.effective_settings(show)
     source = ""
@@ -139,6 +139,10 @@ def start_episode_playback(
         start_ms, crossed = cross_app_start(show, episode, start_ms)
         if crossed and announce is not None:
             announce(crossed)
+    # The intro skip fires on a genuine first play only (R20): not on a resume,
+    # and not again on a replay. Going back to hear the beginning and being
+    # helpfully skipped past it is the one case a listener notices.
+    intro_ms = intro_skip.skip_ms_for(settings, episode, start_ms)
     controller.play_episode(
         show_id=show.id,
         episode_guid=episode.guid,
@@ -151,9 +155,14 @@ def start_episode_playback(
         treble_db=settings.eq_treble_db,
         compressor_enabled=settings.compressor_enabled,
         smart_speed_enabled=settings.smart_speed_enabled,
-        auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+        auto_skip_intro_ms=intro_ms,
         auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
     )
+    if intro_ms:
+        # Recorded only when the skip really happened, so an episode that was
+        # resumed (and therefore not skipped) still gets its skip the first time
+        # it starts from zero.
+        intro_skip.mark_skipped(episode)
     # Volume Boost is per podcast (2.8), so it is applied *after* the episode
     # is loaded rather than passed with it: the engine has to exist to be told,
     # and the level belongs to the show rather than to the episode.

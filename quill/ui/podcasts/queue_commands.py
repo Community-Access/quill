@@ -35,6 +35,8 @@ from quill.core.sound_events import SoundEvent
 
 __all__ = [
     "QueueRunCommandsMixin",
+    "sleep_timer_episode_changed",
+    "sleep_timer_keep_awake",
     "mark_played_and_next",
     "next_in_queue",
     "previous_in_queue",
@@ -152,3 +154,46 @@ class QueueRunCommandsMixin:
 
     def podcast_mark_played_and_next(self) -> None:
         mark_played_and_next(self)
+
+    def podcast_sleep_timer_keep_awake(self) -> None:
+        sleep_timer_keep_awake(self)
+
+    def podcast_sleep_timer_episode_changed(self) -> None:
+        sleep_timer_episode_changed(self)
+
+
+def sleep_timer_keep_awake(host: Any) -> None:
+    """A playback key was used: restart the sleep countdown if asked to (R22).
+
+    Called from the transport commands rather than from the player, because the
+    question is "did the listener do something", not "did audio happen": a
+    chapter boundary passing is not evidence anybody is awake.
+
+    Silent. Restarting the countdown is what the listener asked for by turning the
+    setting on, and announcing it on every skip-forward would be a sentence over
+    the top of the episode every fifteen seconds.
+    """
+    controller = getattr(host, "_sleep_timer_controller", None)
+    if controller is None or not getattr(controller, "is_active", False):
+        return
+    settings = getattr(getattr(host, "_podcast_library", None), "settings", None)
+    if not bool(getattr(settings, "sleep_timer_reset_on_use", False)):
+        return
+    controller.restart()
+
+
+def sleep_timer_episode_changed(host: Any) -> None:
+    """A different episode was chosen: clear the sleep timer if asked to (R22).
+
+    Unlike the reset above this one *does* speak, and the difference is the point:
+    cancelling is the end of something the listener set up, and a timer that
+    disappeared without a word is a timer they will assume is still running.
+    """
+    controller = getattr(host, "_sleep_timer_controller", None)
+    if controller is None or not getattr(controller, "is_active", False):
+        return
+    settings = getattr(getattr(host, "_podcast_library", None), "settings", None)
+    if not bool(getattr(settings, "sleep_timer_cancel_on_switch", False)):
+        return
+    controller.cancel()
+    host._announce("Sleep timer cancelled, because you chose another episode.")
