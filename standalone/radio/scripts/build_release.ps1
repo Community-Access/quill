@@ -47,7 +47,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "3.0.4"
+$version = "3.1.1"
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run by setting QUILL_SIGN=1, which the shared signer

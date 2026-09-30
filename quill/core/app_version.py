@@ -13,6 +13,20 @@ reads it back. The installed version is what Check for Updates compares and what
 About reports; the runtime's code version is shown beside it only when the two
 differ, which is exactly what support needs to see.
 
+**Where the marker actually is** is the whole trick, and the first version of
+this module got it wrong (fixed 2026-09-30, before Quill Radio 3.1.1 shipped it).
+The installer writes it into ``{app}`` -- ``C:\\Program Files\\Quill Radio``,
+beside ``QuillRadio.exe`` -- but ``install_edition.app_root()`` answers
+``QUILL_APP_ROOT``, which on a shared-runtime install is the *runtime's* folder
+in ``%LOCALAPPDATA%\\QuillVille\\Runtime``. Looking only there found no marker on
+any installed copy, so every one of them fell back to the runtime's constant:
+precisely the bug this module exists to prevent, shipped inside the fix for it.
+So the search is :func:`quill.core.app_folders.app_folders` -- the launcher's own
+folder (``QUILL_LAUNCHER_DIR``) first, then the running interpreter's -- and
+``app_root()`` last. That is the same lookup ``app_folders`` was written for when
+Help > User Guide could not find the documents its installer had put beside the
+program.
+
 A portable copy and a source checkout have no marker: they carry their own code,
 so the code's constant is the truth there and is what this returns.
 
@@ -25,9 +39,16 @@ import configparser
 import re
 from pathlib import Path
 
+from quill.core.app_folders import app_folders
 from quill.core.install_edition import app_root
 
-__all__ = ["MARKER_NAME", "describe_version", "installed_version", "read_marker"]
+__all__ = [
+    "MARKER_NAME",
+    "describe_version",
+    "installed_version",
+    "marker_roots",
+    "read_marker",
+]
 
 MARKER_NAME = "quill-app-version.ini"
 _VERSION_RE = re.compile(r"^\d+(?:\.\d+){1,3}(?:[-.][0-9A-Za-z.]+)?$")
@@ -48,10 +69,35 @@ def read_marker(root: Path | None) -> str:
     return value if _VERSION_RE.match(value) else ""
 
 
+def marker_roots() -> list[Path]:
+    """Every folder the installer's marker could be in, most specific first.
+
+    The launcher's own folder is where an installer puts it; the running
+    interpreter's folder covers a portable bundle and a single-app frozen
+    build; ``app_root()`` is last, and on a shared-runtime install is the
+    runtime's folder, which is exactly the folder the marker is *not* in.
+    """
+    roots = list(app_folders())
+    root = app_root()
+    if root is not None and root not in roots:
+        roots.append(root)
+    return roots
+
+
 def installed_version(code_version: str, root: Path | None = None) -> str:
-    """The installed app's version: the installer's marker, else *code_version*."""
-    marker = read_marker(root if root is not None else app_root())
-    return marker or code_version
+    """The installed app's version: the installer's marker, else *code_version*.
+
+    *root* searches that one folder and nothing else (tests, and any caller that
+    already knows where to look). Left out, every folder
+    :func:`marker_roots` names is tried in order.
+    """
+    if root is not None:
+        return read_marker(root) or code_version
+    for candidate in marker_roots():
+        marker = read_marker(candidate)
+        if marker:
+            return marker
+    return code_version
 
 
 def describe_version(code_version: str, root: Path | None = None) -> str:

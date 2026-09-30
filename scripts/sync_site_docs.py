@@ -60,7 +60,10 @@ SYNC_MAP: dict[str, dict[str, str]] = {
     "radio": {
         "userguide": "userguide.html",
         "prd": "prd.html",
-        "release-notes": "release-notes-3.0.html",
+        # The 3.1 notes, published with Quill Radio 3.1.1 (2026-09-30); the 3.0
+        # notes stay rendered and reachable, they are just no longer the page
+        # Help > Release Notes and the site point at.
+        "release-notes": "release-notes-3.1.html",
         # The 3.0 announcement. Unlike ``radio-pr.html`` (the 1.0 press release,
         # deliberately left as a historical page) this one is generated from the
         # repo, so it cannot drift from the release it announces.

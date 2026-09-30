@@ -1,6 +1,6 @@
 # Quill Radio User Guide
 
-Version 3.1.0, released 2026-09-29.
+Version 3.1.1, released 2026-09-30.
 
 Quill Radio is internet radio built for screen reader users. It is a small window. The favorites tree has focus the moment it opens. The menus say everything they do, every action speaks, and a tray icon keeps the music playing while you work. It runs the same radio code as QUILL itself and, when installed, shares its data, so nothing you set up here is stranded.
 
@@ -37,16 +37,16 @@ The chapters, in order, grouped by what you want to do. Each one is a level 2 he
 
 ### The two downloads
 
-Quill Radio 3.1.0 comes in two downloads. In each file name, `<version>` is the release, such as 3.1.0.
+Quill Radio 3.1.1 comes in two downloads. In each file name, `<version>` is the release, such as 3.1.1.
 
 1. **The installer**, `Quill-Radio-Setup-Shared-<version>.exe`. This is the right choice for most people. It gives Quill Radio a Start Menu entry and an uninstaller. It installs the shared QuillVille Runtime if it is not already on the computer, then the app. Your favorites, history and settings live in the shared Quill data folder in your Windows profile, so QUILL and QUILL Cast see them too.
 2. **The portable copy**, `Quill-Radio-Portable-<version>.zip`. It is fully self-contained. It carries its own genuine, unmodified Python and the bundled ffmpeg (for recording) and mpv (for playback). Unpack it anywhere, a USB stick included. Nothing downloads when it runs. Use it when you want the whole radio to travel with you, or when you cannot install software.
 
-Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.1.0`.
+Both downloads are on the QUILL Releases page on GitHub, under the tag `quill-radio-v3.1.1`.
 
 ### Install with the installer, step by step
 
-1. Download `Quill-Radio-Setup-Shared-3.1.0.exe` and open it from your Downloads folder.
+1. Download `Quill-Radio-Setup-Shared-3.1.1.exe` and open it from your Downloads folder.
 2. If Windows SmartScreen shows a warning, see "About security software" below.
 3. Setup may first ask whether to install for you only or for all users. Choose **Install for me only**. That needs no administrator rights. Installing for all users asks Windows for permission.
 4. The setup wizard opens. Press Enter on each page to accept the defaults. The full installation includes this guide and the release notes. Then choose **Install**.
@@ -58,7 +58,7 @@ Next time, open Quill Radio from the Start Menu: press the Windows key, type `Qu
 
 ### Use the portable copy, step by step
 
-1. Download `Quill-Radio-Portable-3.1.0.zip`.
+1. Download `Quill-Radio-Portable-3.1.1.zip`.
 2. In File Explorer, select the zip, press the Applications key, and choose **Extract All...**. Choose a folder, for example on a USB stick, and choose **Extract**.
 3. Open the extracted folder, then the `QuillRadio` folder inside it.
 4. Select `QuillRadio.exe` and press Enter. Quill Radio opens with focus in the Favorite stations tree.
@@ -78,7 +78,7 @@ Pressing Enter on `QuillRadio.exe` while you are still inside the zip, before ex
 
 Quill Radio 2.x kept its favorites in this computer's profile, even when it ran from the portable zip. A 3.0 portable copy keeps its own, so the first time it starts, it looks for them.
 
-1. Unzip `Quill-Radio-Portable-3.1.0.zip` and start `QuillRadio.exe`, as above.
+1. Unzip `Quill-Radio-Portable-3.1.1.zip` and start `QuillRadio.exe`, as above.
 2. If an earlier Quill Radio on this computer has favorites, and this copy has none yet, a question opens: "Favorites from an earlier Quill Radio". It says how many favorite stations it found.
 3. Press **Enter** (Yes) to copy them, with your settings, recording schedule and reminders, into this portable copy. Quill Radio then opens with your favorites in the tree.
 4. Or choose **No** to start empty.
@@ -93,7 +93,7 @@ Good to know:
 
 Test builds of 3.0 also offered a thin "Lite" installer and a small Companion zip. Both are retired. Nothing is lost:
 
-- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.1.0.exe`. It upgrades your installation in place and keeps your data.
+- If you used the Lite installer, run `Quill-Radio-Setup-Shared-3.1.1.exe`. It upgrades your installation in place and keeps your data.
 - If you used the Companion zip, run the installer, or unpack the portable zip instead. Check for Updates on a Companion copy offers the installer.
 
 ### The QuillVille Runtime
@@ -595,6 +595,7 @@ The Record menu disappears if you turn Recording off in Customize Features. See 
 ### Community menu (Alt+C)
 
 - **Ask the Audio Description Project...** (Ctrl+Alt+8) and **Audio Description Project Settings...** (Ctrl+Alt+Shift+A).
+- **Ask QUILL Radio...** (Ctrl+Shift+8) and **Use My ChatGPT Subscription...** (Alt+F5) -- a conversation that already knows what is playing, on the ChatGPT plan you pay for.
 - **ACB Media Schedule...** (Ctrl+Shift+N), **What Is On Now** (Ctrl+Alt+H), **Upcoming...** (Ctrl+Alt+Shift+F) and **Refresh the Schedule** (F5).
 - **ACB Media Podcasts...** (Ctrl+Alt+I).
 - **Community Picks...** (Ctrl+Alt+0) and **Suggest a Station or Podcast...** (Ctrl+Alt+9).
@@ -692,32 +693,33 @@ After **Search All Sources...**, the branches are:
 8. **By Quality** -- by audio format.
 9. **Weather / NOAA** -- the NOAA Weather Radio directory, state by state.
 10. **ACB Media** -- ACB Media 1 to 10.
-11. **NFB Radio** -- the NFB Radio Network.
-12. **Radio Reading Services** -- services that read print aloud for blind and print-disabled listeners.
-13. **Westwood One Sports** -- Westwood One's ten live event channels: during the NCAA tournaments, the NFL and other big events, each carries a different game.
-14. **SomaFM**.
-15. **TuneIn** -- TuneIn's own folder tree, from continent down to city.
-16. **iHeart** -- **By City** first, then genres.
-17. **Networks** -- well-known broadcasters, grouped by type.
-18. **Community M3U (Music Genres)**.
-19. **Xiph / Icecast Directory** -- off by default.
-20. **SHOUTcast Directory** -- the live Top 500, then 313 genres.
-21. **Live365** -- about 5,500 independent stations, A to Z.
-22. **Quillin Sources** -- only when an installed Quillin contributes a source.
-23. **Radio Paradise** -- including lossless FLAC.
-24. **Podcasts (Apple)** -- your Subscriptions, then 16 national storefronts.
-25. **Podcast Index**.
-26. **Internet Archive**.
-27. **LibriVox Audiobooks**.
-28. **Project Gutenberg Audiobooks**.
-29. **AudioPub (Community Audio)**.
-30. **Audius (Independent Music)**.
-31. **Mixcloud (Shows & DJ Sets)**.
-32. **ccMixter (Creative Commons)**.
-33. **My Servers** -- Icecast or SHOUTcast servers you add yourself.
-34. **Television (iptv.org)**.
-35. **YouTube** -- channels, playlists and videos you save.
-36. **Explore (Wikidata)** -- off by default.
+11. **Double Tap Live** -- the blind tech show's own 24-hour channel: talk, tech, music and the best of the Double Tap podcast, on air around the clock.
+12. **NFB Radio** -- the NFB Radio Network.
+13. **Radio Reading Services** -- services that read print aloud for blind and print-disabled listeners.
+14. **Westwood One Sports** -- Westwood One's ten live event channels: during the NCAA tournaments, the NFL and other big events, each carries a different game.
+15. **SomaFM**.
+16. **TuneIn** -- TuneIn's own folder tree, from continent down to city.
+17. **iHeart** -- **By City** first, then genres.
+18. **Networks** -- well-known broadcasters, grouped by type.
+19. **Community M3U (Music Genres)**.
+20. **Xiph / Icecast Directory** -- off by default.
+21. **SHOUTcast Directory** -- the live Top 500, then 313 genres.
+22. **Live365** -- about 5,500 independent stations, A to Z.
+23. **Quillin Sources** -- only when an installed Quillin contributes a source.
+24. **Radio Paradise** -- including lossless FLAC.
+25. **Podcasts (Apple)** -- your Subscriptions, then 16 national storefronts.
+26. **Podcast Index**.
+27. **Internet Archive**.
+28. **LibriVox Audiobooks**.
+29. **Project Gutenberg Audiobooks**.
+30. **AudioPub (Community Audio)**.
+31. **Audius (Independent Music)**.
+32. **Mixcloud (Shows & DJ Sets)**.
+33. **ccMixter (Creative Commons)**.
+34. **My Servers** -- Icecast or SHOUTcast servers you add yourself.
+35. **Television (iptv.org)**.
+36. **YouTube** -- channels, playlists and videos you save.
+37. **Explore (Wikidata)** -- off by default.
 
 That is 35 sources. A new installation shows 33 of them, because Xiph and Wikidata start switched off. Quillin Sources appears only when something contributes to it. Turn branches on and off with **Choose Browse Sources** (see below).
 
@@ -727,6 +729,7 @@ More about some of them:
 - **Radio Reading Services** has twenty vetted services bundled, including WRBH 88.3 Reading Radio, Sun Sounds of Arizona, CRIS Radio, the KPBS and WKAR reading services, ACB Media 1 to 5 and the NFB Radio Network. Play, favorite, record and schedule them like any other station.
 - **iHeart** opens into **By City** (317 markets) and then genres. Each genre opens into A to Z letter folders of stations.
 - **By Country, By Language, Trending Now** and **Recently Added or Changed** are views of the same community directory. Trending and Popular often disagree, on purpose.
+- **Double Tap Live** is Double Tap's own round-the-clock channel -- the daily show where blind people talk tech, from Steven Scott and Shaun Preece at Accessible Media Inc., with talk, tech, music and the best of the podcast on air around the clock since 30 September 2026. One station, directly under ACB Media because it is made for exactly the listeners this radio is. What's Playing reads the segment or song the stream announces; favorite, record and schedule it like any station.
 - **Westwood One Sports** lists the network's own ten live event channels, Westwood One Sports channel 1 to channel 10 -- every stream Westwood One publishes. During a big event such as the NCAA basketball tournament, each channel carries a different game at the same time; the schedule at westwoodonesports.com says which game is on which channel. Between events a channel may be silent. Favorite, record and schedule them like any station: a recording scheduled on channel 3 records whatever game channel 3 carries at that time. Rights can keep a game off the internet, and the channel then says so.
 - **Networks** groups well-known broadcasters: public broadcasters such as the BBC, NPR, CBC, ABC Australia, Radio France and Deutschlandfunk, plus US news and talk, sports, music, and syndicators. A syndicator such as Westwood One has no single stream, so it opens a search across its affiliate stations, and the label says so.
 - **SHOUTcast Directory** starts with **Top 500 (most listeners right now)**, then 313 genres. Each genre is sorted by live listeners, most first. SHOUTcast returns at most 500 stations per genre. A SHOUTcast station takes a moment to start, because its address is looked up when you press Enter. If it cannot be resolved, it says so.
@@ -1377,7 +1380,7 @@ Your screen reader and Quill Radio's own sounds stay on the system default. The 
 
 **On an older copy of Windows** that does not offer the modern media player, Quill Radio falls back to the classic control, and there the list cannot move the sound: that control plays on the device Windows gives Quill Radio, and nothing in it takes a device name. Quill Radio does not change your engine choice to get around this. Instead, choosing a device says so in one sentence and opens Windows' Sound settings at once, where under **Volume mixer** every app has its own output device. Find Quill Radio in that list and pick the device. Windows remembers it across restarts. A copy without the mpv engine opens the same page as soon as you press Ctrl+Shift+D. If a device is in the setting while the engine is Windows Media, Quill Radio gives it back and says the same thing.
 
-**If the device cannot be opened** -- a Bluetooth or USB headset that has gone to sleep, a device another program is holding, one whose Windows id changed -- Quill Radio says so, names it, and puts the setting back to what it was: "Speakers (Logi USB Headset) could not be opened, so the output device is back to System default." The sound stays on the mpv engine, on the device that was in use before, and Preferences shows the same. Wake the device or plug it in, then choose it again. A saved device that cannot be opened when Quill Radio starts is given back the same way, so a copy is never stuck with a setting it cannot honour. Until 3.1.0 this case was silent: the station quietly moved to Windows Media, which can only use the system default, the setting kept naming a device that was not in use, and the sound card seemed not to switch at all.
+**If the device cannot be opened** -- a Bluetooth or USB headset that has gone to sleep, a device another program is holding, one whose Windows id changed -- Quill Radio says so, names it, and puts the setting back to what it was: "Speakers (Logi USB Headset) could not be opened, so the output device is back to System default." The sound stays on the mpv engine, on the device that was in use before, and Preferences shows the same. Wake the device or plug it in, then choose it again. A saved device that cannot be opened when Quill Radio starts is given back the same way, so a copy is never stuck with a setting it cannot honour. Until 3.1.1 this case was silent: the station quietly moved to Windows Media, which can only use the system default, the setting kept naming a device that was not in use, and the sound card seemed not to switch at all.
 
 Both sound cards on a laptop are often called "Speakers" by Windows -- "Speakers (Realtek High Definition Audio)" for the built-in ones, "Speakers (Logi USB Headset)" for a headset -- so listen past the first word for the make.
 
@@ -1895,6 +1898,133 @@ Snooze and Dismiss work on reminders only. A scheduled recording is changed or c
 
 ## The Community menu
 
+### Ask QUILL Radio: a conversation that knows what is playing
+
+Ask QUILL Radio is the radio's own assistant. It runs on the ChatGPT plan you
+already pay for -- there is no key to paste and no bill per question -- and it
+knows one thing ChatGPT on the web does not: **what you are listening to**. The
+station and the title the stream is announcing go with every message, so the
+questions that matter on a radio need no names typed:
+
+- "What is this song, and who made it?"
+- "Tell me more about the artist playing now."
+- "Tell me about this station: who runs it, where, and what it plays."
+- "What kind of programmes does this station broadcast, and when?"
+- "Is there a podcast like this one?"
+- "This presenter mentioned a book. What was it?"
+- "What was the news story they just referred to?" (with web search allowed)
+- "Explain the rules of the sport they are commentating on."
+- "This is in Spanish. What are they talking about?"
+
+It is a conversation, so "and where can I hear more of them?" follows on from
+the answer before. Nothing you ask changes what is playing.
+
+**It works from text, not from sound.** Ask QUILL Radio never listens to the
+stream, records anything or transcribes speech. What it knows is what the app
+already knows in words: the station's name, and the title the stream announces
+in its metadata when it announces one. If a station sends no titles, the
+assistant knows the station and not the song, and says so. A question about
+what a presenter just said is answered from what the model knows about the
+programme, not from hearing it.
+
+**Before the first question: sign in.** Ask QUILL Radio works one way, on your
+ChatGPT subscription -- Plus, Pro, Team or Enterprise. See "Use My ChatGPT
+Subscription, step by step" below. With no sign-in, Ctrl+Shift+8 says so and
+opens that window instead.
+
+### Ask QUILL Radio, step by step
+
+1. Play something, or don't -- it answers either way, it simply knows more
+   with a station on.
+2. Press **Ctrl+Shift+8** (**Community > Ask QUILL Radio...**). The Ask QUILL
+   Radio window opens with focus in **Your message**. It is a window of its
+   own, on the Window menu and one Ctrl+Tab away, and the transport keys still
+   work in it, so the player is never further away than usual.
+3. **What it knows**, one Shift+Tab back, says what is on right now, which
+   model answers, and whether web search is allowed. Arrow through it once.
+4. Type a question and press **Enter**. You hear "Working.", then the reply is
+   read aloud as it arrives, and it is added to **Conversation**, the read-only
+   box above, where you can read it again word by word.
+5. Or press **Ask About What's Playing** (Alt+P) and type nothing: it asks
+   about the song and the station for you, and each press asks the next
+   suggested question.
+6. **New Conversation** (Alt+N) starts again. **Copy Last Reply** (Alt+L) puts
+   the most recent answer on the clipboard. **ChatGPT Account** (Alt+G) opens
+   the sign-in window. **Escape**, **Ctrl+W** or **Close** closes the window.
+
+**Quick questions: the ones worth one keystroke.** Above Your message is a
+**Quick questions** list (Alt+Q). Arrow through it freely; nothing happens
+until you press **Enter** on the one you want, or **Use This Question**
+(Alt+T). Then the question is put in the message box for you to send as it is
+or change, focus moves there, and the Status line says what else, if anything,
+will go with it. Six of them ask about what is playing and send nothing more:
+
+- What is this song?
+- Tell me about the artist playing now
+- Tell me about this station
+- What does this station broadcast, and when?
+- Is there a podcast like this station?
+- What is the title now playing about? (it translates a title in another language)
+
+Three of them ask about *you*, and each says, before you send, exactly what it
+attaches -- and how many:
+
+- **Recommend stations like my favorites** sends the names of your favorite
+  stations and their folders, up to sixty, and asks for five you do not have.
+- **What have I been hearing on this station lately?** sends the songs Quill
+  Radio has logged on the station playing, up to twenty-five, and asks what
+  they add up to.
+- **Suggest something new from everything I have played** sends the names of
+  the stations you have played recently with a few songs from each, and asks
+  for three stations or podcasts that would be new to you.
+
+Nothing about you is sent unless you choose one of those three, and nothing is
+sent at all until you press Enter. Every question is one request on your plan,
+made when you ask and never on a timer.
+
+Good to know: Ask QUILL Radio needs the internet, and it is off in Safe Mode.
+What you ask counts toward your ChatGPT plan's own usage, which OpenAI enforces;
+when a limit is reached, the window says so in words and **Open ChatGPT Usage**
+in the account window shows when it resets.
+
+### Use My ChatGPT Subscription, step by step
+
+1. Press **Alt+F5** (**Community > Use My ChatGPT Subscription...**). The
+   window opens on **About this**, which says where your questions go and what
+   it costs. Arrow through it once.
+2. Tab to **Continue with ChatGPT** and press it. Your browser opens on
+   OpenAI's own sign-in page.
+3. Sign in to ChatGPT there. On the page that asks whether **QUILL Radio** may
+   use your plan, allow it. That is the name you will see under Apps in
+   ChatGPT's settings from now on.
+4. Come back to Quill Radio. The window says "Signed in with ChatGPT as" your
+   email address, and focus lands on **Model**, a list of every model your plan
+   offers, read from your account. The first is chosen for you; arrow to
+   another and it is saved as you land on it. **Refresh Models** reads the
+   list again.
+5. **Allow web search** (Alt+W) is off until you check it. Press **Alt+W**
+   then **Space**, and hear "Web search is allowed." On, the assistant may look
+   things up on the web through OpenAI -- a station's schedule, a news story a
+   presenter mentioned, a new release -- and tell you what it found. Saved as
+   soon as you change it; Space again turns it off.
+6. **Open ChatGPT Usage** (Alt+U) opens the plan's own usage page in your
+   browser. **Sign Out** (Alt+O, press twice) asks OpenAI to revoke Quill
+   Radio's sign-in and forgets it here. **Forget on This Computer** (Alt+F)
+   forgets it here only, for a machine that is offline or a sign-in you already
+   removed in ChatGPT's settings. Both appear only while you are signed in.
+7. Press **Escape** to close.
+
+If the browser did not open, the window says so and offers **Copy the Sign-In
+Address**; paste it into any browser on this computer and finish there. **Stop
+Waiting** gives up without changing anything.
+
+Good to know: only a refresh token is kept, in Windows' credential store, under
+Quill Radio's own name; your ChatGPT password is never seen by Quill Radio.
+Each QUILL app signs in as itself -- Quill Radio, QUILL Lite and QUILL each
+appear under Apps in ChatGPT's settings -- so signing one out leaves the others
+as they were. There is no free QUILL AI service behind Ask QUILL Radio and no
+API key to paste: it is your plan, or nothing, and the window says so.
+
 ### Ask the Audio Description Project, step by step
 
 The Audio Description Project (ADP) keeps a directory of movies and TV shows with described audio.
@@ -2224,7 +2354,25 @@ The same lessons are in `tutorials.md` beside this guide, with the shipped keys.
 
 Quill Radio offers the download that matches your copy: the portable zip to a portable copy, and the installer otherwise. **A portable copy updates itself in place**: the new files replace the old ones in its folder, and the `data` folder -- your favorites, settings, history and recordings -- is never touched.
 
-**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.1.0.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone. From 3.0.3 on, updates install themselves.
+**Updating a portable copy from 3.0.0, 3.0.1 or 3.0.2.** Those three could not install their own portable update: they said "Could not install the update automatically" and left the zip in `data\updates`. Update them once by hand: close Quill Radio, unzip `Quill-Radio-Portable-3.1.1.zip`, and copy everything in its `QuillRadio` folder over your copy's folder, replacing files when asked. Your `data` folder is not in the zip, so it is left alone.
+
+**Updating to 3.1.1 from 3.0.4 or earlier: once, by hand.** Up to 3.0.4 the small
+helper program that installs an update was being shut down by Windows before it
+could run, so **Install and restart now** closed Quill Radio and nothing else
+happened. That helper is part of what 3.1.1 replaces, which means 3.0.4 cannot
+install 3.1.1 for you. Do this one update yourself: download
+`Quill-Radio-Setup-Shared-3.1.1.exe` from the releases page and run it, or, for a
+portable copy, unpack `Quill-Radio-Portable-3.1.1.zip` over your folder as above.
+Your favorites, settings, recordings and history are untouched. Every update
+after this one installs itself.
+
+**If Check for Updates keeps offering an update you have already installed.**
+Up to 3.0.4 Quill Radio read its version number from the shared QuillVille
+Runtime rather than from its own installer, and the runtime carries a copy of
+every QuillVille app's version -- so on a computer with several of these apps the
+number could be wrong, and Check for Updates then compared the wrong number.
+From 3.1.1 the number comes from the installer that put Quill Radio there.
+Install 3.1.1 by hand as above and the answer is right from then on.
 
 Quill Radio also checks quietly once a day at launch. It speaks only when it finds something. Turn it off with **Check for updates automatically on launch** in Preferences.
 
@@ -2573,6 +2721,8 @@ In every other window, Alt+S is the Station menu and Alt+W the Window menu. See 
 | Action | Key |
 | --- | --- |
 | Ask the Audio Description Project | Ctrl+Alt+8 |
+| Ask QUILL Radio | Ctrl+Shift+8 |
+| Use My ChatGPT Subscription | Alt+F5 |
 | Audio Description Project Settings | Ctrl+Alt+Shift+A |
 | ACB Media Schedule | Ctrl+Shift+N |
 | What Is On Now | Ctrl+Alt+H |
@@ -2684,7 +2834,7 @@ Writing to support@community-access.org yourself, from any email account, works 
 
 ### The sound card does not switch
 
-Choose the device in **Audio > Output Device...** (Ctrl+Shift+D) and listen for the announcement. "Output device" and its name means the station moved. "... could not be opened, so the output device is back to ..." means Windows would not open that device for Quill Radio just now: wake the headset, close whatever else is using the card, or plug it back in, then choose it again. "The playback engine is the classic Windows Media control" means this machine has no modern media player, so the list cannot move the sound on that engine; Windows' Sound settings open in the same breath, so give Quill Radio its device there under Volume mixer, or set **Playback engine** to Automatic in Preferences to choose it here. "Windows Media is playing this station, and it cannot use the chosen output device" means the station itself would not play on the mpv engine, so it is on Windows Media for now; try the station again, or another stream of it. Before 3.1.0 none of this was said, which is why a card that would not open looked like a switch that did nothing. Check the row you chose, too: Windows calls both a laptop's built-in card and a USB headset "Speakers", and only the make in brackets tells them apart.
+Choose the device in **Audio > Output Device...** (Ctrl+Shift+D) and listen for the announcement. "Output device" and its name means the station moved. "... could not be opened, so the output device is back to ..." means Windows would not open that device for Quill Radio just now: wake the headset, close whatever else is using the card, or plug it back in, then choose it again. "The playback engine is the classic Windows Media control" means this machine has no modern media player, so the list cannot move the sound on that engine; Windows' Sound settings open in the same breath, so give Quill Radio its device there under Volume mixer, or set **Playback engine** to Automatic in Preferences to choose it here. "Windows Media is playing this station, and it cannot use the chosen output device" means the station itself would not play on the mpv engine, so it is on Windows Media for now; try the station again, or another stream of it. Before 3.1.1 none of this was said, which is why a card that would not open looked like a switch that did nothing. Check the row you chose, too: Windows calls both a laptop's built-in card and a USB headset "Speakers", and only the make in brackets tells them apart.
 
 ### If Quill Radio does not start
 

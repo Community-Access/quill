@@ -36,7 +36,7 @@ from quill.ui.slider_keys import bind_up_means_more
 _TITLE = "Quill Radio"
 from quill.core.app_version import describe_version, installed_version  # noqa: E402
 
-_VERSION = "3.0.4"
+_VERSION = "3.1.1"
 _REPO = "Community-Access/quill"
 #: Radio publishes two downloads since 3.0.0 -- the installer and the portable
 #: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly

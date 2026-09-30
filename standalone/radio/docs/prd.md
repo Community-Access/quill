@@ -2637,7 +2637,7 @@ written; a write failure reported. The library verbs moved out of
 (`ui/radio/browse_podcast_actions.export_opml`;
 `tests/unit/ui/test_radio_export_opml.py`).
 
-## 21. The output device is a promise the radio keeps, or says out loud that it cannot (3.1.0, 2026-09-29)
+## 21. The output device is a promise the radio keeps, or says out loud that it cannot (3.1.1, 2026-09-30)
 
 **The report.** "Changing the sound card in Audio's menu is not switching to a
 different card." Investigated in order: libmpv was probed on a machine with
@@ -2727,3 +2727,81 @@ Media revert and its sentence, the log line, and the label lookup;
 `test_radio_whats_playing_commands.py`; the Enter cases in
 `test_preferences_dialog_actions.py`; and the source-branch cases in
 `test_radio_browse_delete.py`.
+## 22. The version an app reports is the version its installer put there, and the update helper outlives the launcher (3.1.1, 2026-09-30)
+
+**The report.** "When I press check for update, it shows there's an update
+available even after I have installed the new update" (Jeff, relaying a
+listener, 2026-09-30) -- the same shape as the QUILL Lite failure the day
+before, and two independent faults sitting on top of each other.
+
+**Fault one: the version came from the runtime, not the installer.** Every
+QuillVille installer ships the shared QuillVille Runtime, and the runtime
+carries one frozen copy of the whole `quill` package -- every app's code and
+every app's version constant. So `quill.apps.radio._VERSION` reports which
+runtime is newest on the machine, not which Quill Radio installer ran. Quill
+Radio's constant read 3.0.3, then 3.0.4, 3.0.5 and 3.1.0 in source across five
+days while other apps were released, so runtimes in the wild claim all four.
+Check for Updates compared that number against the newest published release,
+and it is wrong in both directions: a runtime behind the installed app offers
+an update the listener already has, over and over; a runtime ahead of it says
+"you are up to date" and never offers the real release.
+
+**Fault two: the one-click helper was inside the launcher's job.** Every
+QuillVille launcher runs the app in a Job Object with
+`KILL_ON_JOB_CLOSE`, and the update helper the app writes and starts was in
+that job. The helper waits for the app *and* the launcher to exit before
+running the installer; the launcher closes the job as it exits; Windows kills
+the helper mid-wait. Install and restart therefore closed Quill Radio and did
+nothing else, with no error and no log -- the log folder did not exist either.
+
+**Requirements** (all shared code; Quill Radio is the second app to ship
+them, after QUILL Lite 1.1.1 and 1.1.2):
+
+- R-1. The installed version is the installer's. `quill-radio.iss` writes
+  `quill-app-version.ini` (`[app]`, `version={#AppVersion}`) into the app
+  folder, and `core/app_version.installed_version` reads it back. Check for
+  Updates and Help > About use it (`apps/radio.py`).
+- R-1a. **It is read from the folder the installer wrote it to.** `{app}` is
+  `C:\Program Files\Quill Radio`, beside `QuillRadio.exe`, and
+  `install_edition.app_root()` answers `QUILL_APP_ROOT`, which on a
+  shared-runtime install is the *runtime's* folder. The first cut of this
+  module looked only there, found nothing on any installed copy, and fell back
+  to the runtime's constant -- the very bug, shipped inside its own fix, and
+  invisible to every test because each one passed an explicit folder. So
+  `app_version.marker_roots()` searches `core/app_folders.app_folders()` --
+  `QUILL_LAUNCHER_DIR` first, then the running interpreter's folder -- before
+  `app_root()`, and `test_app_version.py` exercises the real lookup with the
+  two folders apart, as an installed copy has them.
+- R-2. A portable copy and a source checkout have no marker and keep their own
+  constant: they carry their own code, so the code is the truth there.
+- R-3. About names the runtime's code version beside the installed one only
+  when the two differ (`core/app_version.describe_version`) -- the one thing
+  support needs to see, and silent noise the rest of the time.
+- R-4. The update helper starts outside the launcher's job:
+  `CREATE_BREAKAWAY_FROM_JOB` first, and through WMI `Win32_Process.Create`
+  (hidden) when an already-installed launcher's job forbids breakaway. A WMI
+  refusal raises `SelfUpdateError`, so the app stays open and Open folder still
+  reaches the downloaded installer (`core/self_update.py`).
+- R-5. `launcher.c` sets `JOB_OBJECT_LIMIT_BREAKAWAY_OK` alongside
+  `KILL_ON_JOB_CLOSE`: the helper that asks may leave, an ordinary grandchild is
+  still reaped with the launcher.
+- R-6. `begin_self_update` creates the updates folder before the helper logs
+  into it.
+- R-7. This release is 3.1.1, not 3.1.0, because a QUILL Lite 1.1 runtime
+  already on listeners' machines carries a Quill Radio that claims 3.1.0; a
+  3.1.0 release would have been invisible to exactly those copies. GATE-SIBVER
+  (`scripts/check_sibling_versions.py`, wired through
+  `Assert-QuillSiblingVersions` in both release scripts) now fails a build whose
+  source version is ahead of its newest published tag without that app being the
+  one being released.
+- R-8. A copy of 3.0.4 or earlier runs the old helper, which is the code this
+  release replaces, so this one update is by hand. The changelog, the release
+  notes and the release text all say so in a sentence a listener can act on.
+
+**Tests.** `tests/unit/core/test_app_version.py` (marker read, fallback,
+`describe_version` both ways); `tests/unit/core/test_self_update.py` (the
+breakaway flag, the WMI fall-back, the refusal path, the folder created);
+`tests/integration/test_self_update_outlives_job.py` (both job shapes against
+real OS objects, no fakes); `tests/unit/scripts/test_check_sibling_versions.py`;
+and `tests/unit/scripts/test_app_versions_agree.py`, which is what keeps the
+five places Quill Radio writes its version from disagreeing again.

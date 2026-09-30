@@ -2,7 +2,7 @@
 
 **A radio that answers the questions people actually arrive with.**
 
-Version 3.1.0, released 2026-09-29.
+Version 3.1.1, released 2026-09-30.
 
 Community Access has released **Quill Radio 3.0** for Windows. It
 is free, it is part of the QuillVille family, and it is built for people who
@@ -125,14 +125,14 @@ practice:
 
 Quill Radio 3.0 is a free download for Windows 10 and 11, released on
 2026-09-27 as version 3.0.1, which replaced the withdrawn 3.0.0; the current
-version is 3.1.0, released 2026-09-29. Both
+version is 3.1.1, released 2026-09-30. Both
 downloads are on the QUILL Releases page on GitHub
-(github.com/Community-Access/quill), under the tag `quill-radio-v3.1.0`:
+(github.com/Community-Access/quill), under the tag `quill-radio-v3.1.1`:
 
-- **`Quill-Radio-Setup-Shared-3.1.0.exe`**, the installer, is the one most
+- **`Quill-Radio-Setup-Shared-3.1.1.exe`**, the installer, is the one most
   people want. It sets up the shared QuillVille Runtime if it is not already
   there, then the app, with a Start Menu entry and an uninstaller.
-- **`Quill-Radio-Portable-3.1.0.zip`**, the portable copy, unpacks anywhere, a
+- **`Quill-Radio-Portable-3.1.1.zip`**, the portable copy, unpacks anywhere, a
   USB stick included, and writes nothing to the computer it runs on. Settings,
   favorites and history live in a `data` folder beside the app, from the very
   first launch.
