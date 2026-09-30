@@ -75,9 +75,14 @@ def virtual_view_pairs(
         # Delegated so the Inbox has exactly one definition: notably, an
         # episode an Inbox cap trimmed out is not in the Inbox any more, and
         # a second copy of the rule here would have missed that.
-        from quill.core.podcasts.inbox import inbox_pairs
+        # ...and through the folder scope (R4), so the tree count, the
+        # Manager's list and the window title narrow together. A second
+        # place that applied the filter is a place that could forget to.
+        from quill.core.podcasts.inbox_scope import inbox_pairs_in_library_folder
 
-        return inbox_pairs(library)
+        return inbox_pairs_in_library_folder(
+            library, getattr(library.settings, "inbox_folder_scope", None)
+        )
     if view_id == "recently_expired":
         from quill.core.podcasts.expiration import expired_pairs
 

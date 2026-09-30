@@ -50,10 +50,17 @@ def preview_search_result(dialog: Any, result: Any, result_index: int) -> None:
     dialog._preview_btn.Enable(False)
     feed_url = result.feed_url
 
+    safe_mode = bool(getattr(dialog, "_safe_mode", False))
+
     def _work(**_kwargs: object) -> Any:
         from quill.core.podcasts import feed_reader
 
-        return feed_reader.load_feed(feed_url)
+        # fetch_and_parse_feed, not load_feed: there has never been a
+        # load_feed, so every Preview raised AttributeError inside the
+        # background task, landed in _failed, and set a status label. The
+        # button was not doing nothing -- it was failing quietly, which
+        # looks identical from outside (reported 2026-09-30).
+        return feed_reader.fetch_and_parse_feed(feed_url, safe_mode=safe_mode)
 
     def _done(_op: str, feed: Any) -> None:
         dialog._preview_btn.Enable(True)

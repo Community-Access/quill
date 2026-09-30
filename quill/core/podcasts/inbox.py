@@ -199,7 +199,10 @@ def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpiso
         for episode in show.episodes:
             if episode.played:
                 continue
-            if library.inbox_assignments.get(inbox_key(show.id, episode.guid)) == TRIMMED_MARKER:
+            if library.inbox_assignments.get(inbox_key(show.id, episode.guid)) in (
+                TRIMMED_MARKER,
+                REMOVED_MARKER,
+            ):
                 continue
             if hidden is not None and hidden(episode):
                 continue
@@ -242,6 +245,15 @@ def inbox_pairs_in_folder(
 #: Marks an episode the cap removed, so trims can be counted and undone
 #: without touching a manual filing.
 TRIMMED_MARKER = "\x00trimmed"
+
+#: Marks an episode the **listener** removed by hand (Remove from Inbox, R3).
+#: A second marker rather than a reuse of the one above, and the difference is
+#: not bookkeeping: :func:`resurface_republished` deliberately clears the cap's
+#: marker when a publisher re-issues an episode, because a capped-out episode
+#: that has been re-cut is new again as far as the listener is concerned. An
+#: episode somebody dismissed by hand is not, and bringing it back would read
+#: as Cast forgetting the decision. See ``core/podcasts/inbox_removal.py``.
+REMOVED_MARKER = "\x00removed"
 
 
 def _episode_moment(episode: PodcastEpisode) -> datetime | None:

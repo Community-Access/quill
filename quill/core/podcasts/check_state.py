@@ -46,7 +46,20 @@ _NOTIFIED_FAILED = "failed_notified"
 
 
 def _state(library: PodcastLibrary, show: PodcastShow) -> dict[str, object]:
+    """This podcast's bookkeeping, creating it. For writers only."""
     return library.show_check_state.setdefault(show.id, {})
+
+
+def _read(library: PodcastLibrary, show: PodcastShow) -> dict[str, object]:
+    """This podcast's bookkeeping without creating it. For readers.
+
+    The distinction is not tidiness. Every reader used to go through the
+    ``setdefault`` above, so merely *asking* about a podcast added an empty
+    entry -- and the Feed Check window asks about every podcast at once,
+    which on a large library meant opening a report grew the saved file by
+    a thousand empty dicts. A read should leave no trace.
+    """
+    return library.show_check_state.get(show.id) or {}
 
 
 def _stamp(value: object) -> datetime | None:
@@ -58,7 +71,7 @@ def _stamp(value: object) -> datetime | None:
 
 
 def last_checked(library: PodcastLibrary, show: PodcastShow) -> datetime | None:
-    return _stamp(_state(library, show).get(_CHECKED))
+    return _stamp(_read(library, show).get(_CHECKED))
 
 
 def is_due(library: PodcastLibrary, show: PodcastShow, *, now: datetime | None = None) -> bool:
@@ -116,7 +129,7 @@ def record_failure(
 
 
 def failure_run(library: PodcastLibrary, show: PodcastShow) -> int:
-    return max(0, coerce_int(_state(library, show).get(_FAILURES, 0), 0))
+    return max(0, coerce_int(_read(library, show).get(_FAILURES, 0), 0))
 
 
 def last_published(library: PodcastLibrary, show: PodcastShow) -> datetime | None:
@@ -126,7 +139,7 @@ def last_published(library: PodcastLibrary, show: PodcastShow) -> datetime | Non
     subscribed for a year without this bookkeeping does not read as having
     gone quiet the moment the feature ships.
     """
-    stored = _stamp(_state(library, show).get(_PUBLISHED))
+    stored = _stamp(_read(library, show).get(_PUBLISHED))
     if stored is not None:
         return stored
     from quill.core.podcasts.row_speech import _parse  # noqa: PLC2701 - one parser, not two

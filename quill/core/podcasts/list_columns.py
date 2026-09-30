@@ -156,11 +156,24 @@ DIRECTORY_RESULTS = SurfaceDef(
             width=260,
             default_visible=False,
         ),
+        # Visible by default, and the reason is not symmetry with the
+        # action button: a relabelled button tells you about the row you
+        # are on, and somebody arrowing through forty results wants to
+        # know while going past. Says nothing on a row you do not
+        # follow, because the interesting state is the rare one and a
+        # column that speaks on every row costs forty words.
+        ColumnDef(
+            "following",
+            "Following",
+            "Whether this podcast is already in your library.",
+            width=90,
+        ),
     ),
     sample={
         "title": "The Earshot Show",
         "artist": "Earshot Media",
         "feed": "https://example.com/earshot.xml",
+        "following": "Following",
     },
 )
 

@@ -99,8 +99,26 @@ class AddPodcastDialog:
         source_row.Add(self._source_choice, 1, wx.ALL | wx.EXPAND, 6)
         search_box.Add(source_row, 0, wx.EXPAND)
         query_row = wx.BoxSizer(wx.HORIZONTAL)
+        # A real StaticText, not only SetName. On wxMSW the accessible name of
+        # a plain text field comes from the static text preceding it in
+        # z-order; SetName sets wxWindow's own name and the reader never sees
+        # it. This field announced as bare "edit" for that reason (reported
+        # 2026-09-30), while the Directory combo box above -- which has a
+        # label -- announced correctly. Created before the field, because the
+        # association is by creation order and not by sizer position.
+        query_row.Add(
+            wx.StaticText(self.dialog, label="Podcast &name:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.ALL,
+            6,
+        )
         self._query_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
         self._query_ctrl.SetName("Podcast name to search for")
+        self._query_ctrl.SetHelpText(
+            "Type part of a podcast's name and press Enter, or choose Search. "
+            "The chosen directory is searched, and nothing is subscribed to "
+            "until you say so."
+        )
         query_row.Add(self._query_ctrl, 1, wx.ALL | wx.EXPAND, 6)
         self._search_btn = wx.Button(self.dialog, label="&Search")
         self._search_btn.SetName("Search the chosen directory for podcasts matching this name")
@@ -123,15 +141,41 @@ class AddPodcastDialog:
         self._preview_btn = wx.Button(self.dialog, label="&Preview...")
         self._preview_btn.SetName("Look at this podcast before subscribing to it")
         self._preview_btn.Enable(False)
-        self._subscribe_btn = wx.Button(self.dialog, label="Su&bscribe to Selected")
+        # Follow, not Subscribe. Every podcast app a listener has used in
+        # the last five years says Follow, and "subscribe" now reads as
+        # something with a price attached -- the wrong thing to suggest
+        # about a free app adding a free feed. The label alternates with
+        # the selected row (see _refresh_follow_button).
+        from quill.ui.podcasts.add_podcast_actions import FOLLOW_LABEL
+
+        self._subscribe_btn = wx.Button(self.dialog, label=FOLLOW_LABEL)
+        self._subscribe_btn.SetName(
+            "Follow the selected podcast, or stop following it if you already do"
+        )
+        self._subscribe_btn.SetHelpText(
+            "Adds the selected podcast to your library. If you already follow "
+            "it, this button says Unfollow instead and asks before removing "
+            "anything."
+        )
         self._subscribe_btn.Enable(False)
         result_row.Add(self._preview_btn, 0, wx.RIGHT, 6)
         result_row.Add(self._subscribe_btn, 0)
         root.Add(result_row, 0, wx.ALL, 10)
 
         url_box = wx.StaticBoxSizer(wx.HORIZONTAL, self.dialog, "Add by Feed URL")
+        # Labelled for the same reason as the search field above it.
+        url_box.Add(
+            wx.StaticText(self.dialog, label="&Feed address:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.ALL,
+            6,
+        )
         self._url_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
         self._url_ctrl.SetName("The podcast's RSS feed URL")
+        self._url_ctrl.SetHelpText(
+            "Paste a podcast's feed address here when you already have it, then "
+            "press Enter or choose Add. Both http and https addresses work."
+        )
         url_box.Add(self._url_ctrl, 1, wx.ALL | wx.EXPAND, 6)
         self._add_url_btn = wx.Button(self.dialog, label="&Add")
         self._add_url_btn.SetName("Subscribe using this feed URL")
@@ -161,6 +205,10 @@ class AddPodcastDialog:
         self._preview_btn.Bind(wx.EVT_BUTTON, self._on_preview_selected)
         # Enter on a result previews rather than subscribing.
         self._results.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_preview_selected)
+        # Both routes to the row menu. EVT_CONTEXT_MENU is the keyboard one
+        # (Applications key, Shift+F10) and is the one that matters here.
+        self._results.Bind(wx.EVT_CONTEXT_MENU, self._on_results_context_menu)
+        self._results.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self._on_results_context_menu)
         self._url_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_add_url)
         self._add_url_btn.Bind(wx.EVT_BUTTON, self._on_add_url)
         import_btn.Bind(wx.EVT_BUTTON, self._on_import_opml)
@@ -175,6 +223,7 @@ class AddPodcastDialog:
         self._search_results = []
         self._results.DeleteAllItems()
         self._subscribe_btn.Enable(False)
+        self._refresh_follow_button()
         self._status.SetLabel("")
         self._announce("Search cleared.")
 
@@ -231,6 +280,8 @@ class AddPodcastDialog:
         if error is not None or found is None:
             self._status.SetLabel(f"Search failed: {error}")
             return
+        from quill.ui.podcasts.add_podcast_actions import following_cell
+
         results = found.results
         self._search_results = results
         self._results.DeleteAllItems()
@@ -243,6 +294,7 @@ class AddPodcastDialog:
                     "title": result.title,
                     "artist": result.artist,
                     "feed": result.feed_url,
+                    "following": following_cell(self._library, result.feed_url),
                 },
             )
         # One sentence that names the directories and any that did not answer:
@@ -258,10 +310,33 @@ class AddPodcastDialog:
     def _on_result_selected(self, _event: object) -> None:
         self._subscribe_btn.Enable(True)
         self._preview_btn.Enable(True)
+        self._refresh_follow_button()
 
     def _on_result_deselected(self, _event: object) -> None:
         self._subscribe_btn.Enable(False)
         self._preview_btn.Enable(False)
+
+    def _selected_result(self) -> object | None:
+        """The result row the cursor is on, or None."""
+        index = self._results.GetFirstSelected()
+        if not (0 <= index < len(self._search_results)):
+            return None
+        return self._search_results[index]
+
+    def _refresh_follow_button(self) -> None:
+        from quill.ui.podcasts.add_podcast_actions import refresh_follow_button
+
+        refresh_follow_button(self)
+
+    def _on_results_context_menu(self, event: object) -> None:
+        """The row's own menu. Bound to EVT_CONTEXT_MENU as well as the
+        right-click, so the Applications key and Shift+F10 reach it -- which
+        is how it will usually be opened here."""
+        from quill.ui.podcasts.add_podcast_actions import open_context_menu
+
+        open_context_menu(self, self._results.GetFirstSelected())
+        if hasattr(event, "Skip"):
+            event.Skip(False)
 
     def _on_preview_selected(self, _event: object = None) -> None:
         """Look at the selected show before committing to it (C2)."""
@@ -272,12 +347,19 @@ class AddPodcastDialog:
 
         preview_search_result(self, self._search_results[index], index)
 
-    def _on_subscribe_selected(self, _event: object) -> None:
-        index = self._results.GetFirstSelected()
-        if not (0 <= index < len(self._search_results)):
-            return
-        result = self._search_results[index]
-        self._subscribe_to_feed(result.feed_url, title_hint=result.title, result_index=index)
+    def _on_subscribe_selected(self, _event: object = None) -> None:
+        """Kept as the button's bound name; the verb is decided below."""
+        self._on_follow_action()
+
+    def _on_follow_action(self) -> None:
+        from quill.ui.podcasts.add_podcast_actions import follow_action
+
+        follow_action(self)
+
+    def _refresh_row_following(self, index: int, feed_url: str) -> None:
+        from quill.ui.podcasts.add_podcast_actions import refresh_row_following
+
+        refresh_row_following(self, index, feed_url)
 
     # ------------------------------------------------------------------
     # Add by URL

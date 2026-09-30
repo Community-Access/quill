@@ -188,6 +188,16 @@ class PodcastSettings:
     #: are what make it survivable.
     inbox_mode: str = "include"
 
+    #: Which library folder the Inbox is showing (R4). The sentinel
+    #: ``inbox_scope.ALL`` -- the default -- filters nothing, so an upgrade
+    #: changes nobody's Inbox. Stored rather than per-session because triage
+    #: has a mood: somebody who clears news at breakfast wants the news Inbox
+    #: tomorrow morning too, and a filter that forgot itself overnight would
+    #: be re-chosen every day. Not offered in Podcast Settings -- it is view
+    #: state, set from the Inbox itself, and a preferences page is the wrong
+    #: place to discover that a list is being filtered.
+    inbox_folder_scope: str = "\x00all"
+
     #: Chapter inference (see core/podcasts/chapter_cascade.py and
     #: inference_budget.py). Global here, per-show overridable like every other
     #: Cast setting, and **switchable off entirely in one place** -- somebody who
@@ -379,6 +389,7 @@ class PodcastSettings:
             "auto_download_queued": self.auto_download_queued,
             "auto_download_inbox": self.auto_download_inbox,
             "inbox_mode": self.inbox_mode,
+            "inbox_folder_scope": self.inbox_folder_scope,
             "chapters_auto": self.chapters_auto,
             "chapters_effort": self.chapters_effort,
             "chapters_use_show_notes": self.chapters_use_show_notes,
@@ -508,6 +519,7 @@ class PodcastSettings:
                 3, min(60, _coerce_int(data.get("chapters_preview_seconds"), 10))
             ),
             queue_age_limit_days=max(0, _coerce_int(data.get("queue_age_limit_days"), 0)),
+            inbox_folder_scope=str(data.get("inbox_folder_scope", "") or "") or "\x00all",
             inbox_max_episodes=max(0, _coerce_int(data.get("inbox_max_episodes"), 0)),
             inbox_age_limit_hours=max(0, _coerce_int(data.get("inbox_age_limit_hours"), 0)),
             download_retention_days=max(0, _coerce_int(data.get("download_retention_days"), 0)),
