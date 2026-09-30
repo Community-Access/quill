@@ -205,10 +205,12 @@ def test_a_refused_sign_in_is_said_and_offers_to_try_again(wx_app, run_now) -> N
 
 def test_the_about_text_names_the_agent_and_the_model() -> None:
     account = _Account(signed_in=True, model="gpt-6")
+    from quill.core.ai.chatgpt_account import USAGE_URL
+
     text = module.chatgpt_about_text(account)
     assert "jeff@example.com" in text
     assert "gpt-6" in text
-    assert "chatgpt.com" in text
+    assert USAGE_URL in text
 
 
 def test_escape_closes_the_window(wx_app, run_now) -> None:
