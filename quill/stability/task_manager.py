@@ -56,6 +56,24 @@ class CancellationToken:
 
 
 @dataclass(slots=True)
+class UiLifetimeToken:
+    """Invalidate on the UI thread before destroying the owning surface.
+
+    This suppresses UI delivery, not worker execution or result retention.
+    A replacement surface must use a new token, never revive the old one.
+    """
+
+    _invalidated: threading.Event = field(default_factory=threading.Event)
+
+    def invalidate(self) -> None:
+        self._invalidated.set()
+
+    @property
+    def is_alive(self) -> bool:
+        return not self._invalidated.is_set()
+
+
+@dataclass(slots=True)
 class QuillTask:
     operation_id: str
     name: str
@@ -80,6 +98,7 @@ class TaskManager:
         )
         self._tasks: dict[str, QuillTask] = {}
         self._lock = threading.Lock()
+        self._ui_lifetime = UiLifetimeToken()
 
     def submit(
         self,
@@ -92,15 +111,23 @@ class TaskManager:
         on_progress: Callable[[str, Any], None] | None = None,
         safe_to_cancel: bool = True,
         safe_to_kill: bool = False,
+        ui_lifetime: UiLifetimeToken | None = None,
         **kwargs: Any,
     ) -> QuillTask:
         operation_id = str(uuid.uuid4())
         token = CancellationToken()
 
+        def deliver(callback: Callable[..., Any], payload: Any) -> None:
+            def guarded() -> None:
+                if self._ui_lifetime.is_alive and (ui_lifetime is None or ui_lifetime.is_alive):
+                    callback(operation_id, payload)
+
+            call_ui_safely(guarded)
+
         def report_progress(payload: Any) -> None:
             if on_progress is None:
                 return
-            call_ui_safely(on_progress, operation_id, payload)
+            deliver(on_progress, payload)
 
         def wrapped() -> Any:
             started = time.monotonic()
@@ -120,7 +147,7 @@ class TaskManager:
                     duration_ms,
                 )
                 if on_success is not None:
-                    call_ui_safely(on_success, operation_id, result)
+                    deliver(on_success, result)
                 return result
             except BaseException as exc:
                 duration_ms = (time.monotonic() - started) * 1000
@@ -139,7 +166,7 @@ class TaskManager:
                         duration_ms,
                     )
                 if on_failure is not None:
-                    call_ui_safely(on_failure, operation_id, exc)
+                    deliver(on_failure, exc)
                 # L-13: pre-tag the in-flight task with its terminal state so
                 # the done-callback does not have to re-derive it from the
                 # future (which can race with ``future.cancelled()`` and
@@ -211,6 +238,7 @@ class TaskManager:
             return list(self._tasks.values())
 
     def shutdown(self, wait: bool = True, cancel_pending: bool = False) -> None:
+        self._ui_lifetime.invalidate()
         self._executor.shutdown(wait=wait, cancel_futures=cancel_pending)
 
     def _remove_task(self, operation_id: str) -> None:

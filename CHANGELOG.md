@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### QC reliability pass (2026-09-30)
+
+- Shared background tasks suppress success, failure, and progress callbacks
+  after their manager shuts down, including callbacks already queued for UI
+  delivery. Individual windows can invalidate a `UiLifetimeToken` before
+  destruction. Workers may finish without holding close open, and their futures
+  retain results. A persistent Activity/Problems history remains future work.
+
 ### Your ChatGPT subscription, in every QUILL app that has AI (2026-09-29)
 
 - **Use My ChatGPT Subscription** (AI menu in QUILL, Tools > AI in QUILL Lite,

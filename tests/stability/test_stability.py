@@ -26,7 +26,7 @@ from quill.stability.redaction import (
 from quill.stability.safe_mode import build_safe_mode_config, should_enable_safe_mode
 from quill.stability.safe_regex import RegexTimeoutError, safe_finditer
 from quill.stability.safe_subprocess import run_subprocess_safely
-from quill.stability.task_manager import CancelledError, TaskManager
+from quill.stability.task_manager import CancelledError, TaskManager, UiLifetimeToken
 from quill.stability.ui_responsiveness import wx_event_handler
 from quill.stability.wx_dispatch import CoalescedUiReporter, call_ui_safely
 
@@ -249,6 +249,97 @@ def test_task_manager_result_summary_cancelled() -> None:
             time.sleep(0.01)
         assert task.result_summary == "cancelled"
     finally:
+        manager.shutdown()
+
+
+@pytest.mark.parametrize("fails", [False, True])
+@pytest.mark.parametrize("shutdown", [False, True])
+def test_task_callbacks_respect_lifetime_at_delivery(monkeypatch, fails, shutdown) -> None:
+    scheduled = []
+    delivered = []
+    monkeypatch.setattr(
+        wx_dispatch_module,
+        "wx",
+        SimpleNamespace(CallAfter=scheduled.append),
+    )
+    manager = TaskManager(max_workers=1)
+    lifetime = UiLifetimeToken()
+
+    def worker(*, progress_callback, **_kwargs):
+        progress_callback("reading")
+        if fails:
+            raise ValueError("failed")
+        return "ready"
+
+    try:
+        task = manager.submit(
+            "read",
+            worker,
+            ui_lifetime=lifetime,
+            on_progress=lambda *args: delivered.append(args),
+            on_success=lambda *args: delivered.append(args),
+            on_failure=lambda *args: delivered.append(args),
+        )
+        if fails:
+            with pytest.raises(ValueError, match="failed"):
+                task.future.result(timeout=2)
+        else:
+            assert task.future.result(timeout=2) == "ready"
+        assert len(scheduled) == 2
+        if shutdown:
+            manager.shutdown(wait=False)
+        else:
+            lifetime.invalidate()
+            lifetime.invalidate()
+        for callback in scheduled:
+            callback()
+        assert delivered == []
+        if not shutdown:
+            scheduled.clear()
+            replacement = manager.submit(
+                "replacement",
+                lambda **_kwargs: "new",
+                ui_lifetime=UiLifetimeToken(),
+                on_success=lambda *args: delivered.append(args),
+            )
+            assert replacement.future.result(timeout=2) == "new"
+            for callback in scheduled:
+                callback()
+            assert delivered == [(replacement.operation_id, "new")]
+    finally:
+        manager.shutdown()
+
+
+def test_task_running_at_shutdown_retains_result_without_ui_delivery(monkeypatch) -> None:
+    scheduled = []
+    delivered = []
+    started = threading.Event()
+    finish = threading.Event()
+    monkeypatch.setattr(wx_dispatch_module, "wx", SimpleNamespace(CallAfter=scheduled.append))
+    manager = TaskManager(max_workers=1)
+
+    def worker(*, progress_callback, **_kwargs):
+        started.set()
+        assert finish.wait(timeout=2)
+        progress_callback("finished")
+        return 42
+
+    try:
+        task = manager.submit(
+            "running",
+            worker,
+            on_progress=lambda *args: delivered.append(args),
+            on_success=lambda *args: delivered.append(args),
+        )
+        assert started.wait(timeout=2)
+        manager.shutdown(wait=False)
+        finish.set()
+        assert task.future.result(timeout=2) == 42
+        for callback in scheduled:
+            callback()
+        assert delivered == []
+    finally:
+        finish.set()
         manager.shutdown()
 
 

@@ -11,6 +11,18 @@ Target screen readers: NVDA (primary), JAWS, Narrator
 UI framework: wxPython (wxWidgets 3.2 or newer)
 Language: Python 3.12 or newer
 
+### Shared task lifetime contract (2026-09-30)
+
+`TaskManager.shutdown()` invalidates UI delivery before shutting down the
+executor, even with `wait=False`. Success, failure, and progress callbacks check
+the lifetime when delivered, not merely when queued. A surface using a shared
+manager supplies `ui_lifetime=UiLifetimeToken()` and invalidates it on the UI
+thread before destroying controls. Reopening creates a fresh token.
+Invalidation does not cancel work or erase its future result; cancellation
+remains a separate request. This protects task-manager delivery, not arbitrary
+timers or direct `wx.CallAfter` calls. Persistent activity history and adoption
+by all short-lived surfaces remain tracked work.
+
 ---
 
 ## 1. Vision
