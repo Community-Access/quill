@@ -30,6 +30,21 @@ from quill.core.podcasts.models_queue import coerce_int as _coerce_int
 from quill.core.podcasts.namespace_tags import NamespaceTags
 
 
+def _episode_speed(value: object) -> float:
+    """A stored per-file speed, or 0.0 for "inherit the show's".
+
+    Through the shared scale, so a hand-edited 99 becomes the fastest speed the
+    app has rather than something the engine will refuse.
+    """
+    from quill.core.podcasts.speed_scale import clamp_speed
+
+    try:
+        speed = float(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return 0.0
+    return 0.0 if speed <= 0 else clamp_speed(speed)
+
+
 @dataclass(slots=True)
 class PodcastEpisode:
     """One episode of a subscribed (or local) show."""
@@ -52,6 +67,18 @@ class PodcastEpisode:
     #: case the flag exists for. Stored, because an intro skipped last night must
     #: not be skipped again this morning.
     intro_skipped: bool = False
+    #: SHA-256 of the imported file's contents, for Personal Audio duplicate
+    #: detection (R10). Only ever set on an imported item; "" everywhere else. A
+    #: filename is never a duplicate, so the bytes are the test.
+    content_hash: str = ""
+    #: The filename the listener's own file had when it was imported, kept as a
+    #: secondary detail for support and for a future rename action. The managed
+    #: copy's name is Cast's business; this is what the listener will call it.
+    source_filename: str = ""
+    #: This file's own playback speed (R12). 0.0 means inherit the show's, which
+    #: is what every subscribed episode does; an imported file can want its own --
+    #: a lecture at 1.5x and an audiobook at 1.0x, in the same "show".
+    speed_override: float = 0.0
     position_ms: int = 0  # resume position; syncs via QUILL Sync (guid-keyed)
     #: When the place above was last decided. RFC 3339 UTC ending ``Z``, so
     #: plain string comparison sorts it and the merge needs no date parsing.
@@ -97,6 +124,9 @@ class PodcastEpisode:
             "mode_override": self.mode_override,
             "played": self.played,
             "intro_skipped": self.intro_skipped,
+            "content_hash": self.content_hash,
+            "source_filename": self.source_filename,
+            "speed_override": self.speed_override,
             "position_ms": self.position_ms,
             # The three below are written only when the feed said something,
             # so a library of four thousand episodes from feeds that publish
@@ -117,7 +147,16 @@ class PodcastEpisode:
         guid = str(data.get("guid", "")).strip()
         title = str(data.get("title", "")).strip()
         audio_url = str(data.get("audio_url", "")).strip()
-        if not guid or not title or not audio_url:
+        downloaded_path = str(data.get("downloaded_path", "")).strip()
+        # An episode needs *somewhere its audio is*, and for an imported file that
+        # is a path, not a URL. Requiring audio_url silently dropped every Personal
+        # Audio item on load: Add Local Podcast sets audio_url="" and
+        # downloaded_path to the managed copy, so a listener imported a lecture,
+        # played it, restarted Cast, and found an empty show and an orphaned file on
+        # disk. The show survived because PodcastShow.from_dict has no such rule;
+        # only its episodes vanished, which is why it read as "my recording
+        # disappeared" rather than as a load failure.
+        if not guid or not title or not (audio_url or downloaded_path):
             return None
         return cls(
             guid=guid,
@@ -133,6 +172,9 @@ class PodcastEpisode:
             mode_override=str(data.get("mode_override", "")),
             played=bool(data.get("played", False)),
             intro_skipped=bool(data.get("intro_skipped", False)),
+            content_hash=str(data.get("content_hash", "") or ""),
+            source_filename=str(data.get("source_filename", "") or ""),
+            speed_override=_episode_speed(data.get("speed_override")),
             position_ms=_coerce_int(data.get("position_ms"), 0),
             position_updated_at=str(data.get("position_updated_at", "")),
             season=max(0, _coerce_int(data.get("season"), 0)),

@@ -23,6 +23,7 @@ from __future__ import annotations
 import re
 import shutil
 import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
@@ -77,6 +78,7 @@ def _episode_for(source: Path, dest: Path) -> PodcastEpisode:
     tags are corrupt, so a copy of Cast without the extra imports exactly as it
     always did and nothing here has to know why.
     """
+    from quill.core.podcasts.local_duplicates import content_hash
     from quill.core.podcasts.local_tags import read_tags
 
     tags = read_tags(dest)
@@ -90,6 +92,17 @@ def _episode_for(source: Path, dest: Path) -> PodcastEpisode:
         # The artist is the nearest thing a loose file has to a show, and it is
         # what a cross-show row reads as the second half of "title -- podcast".
         description=tags.artist,
+        # Import order, so Personal Audio can list newest-added first. An imported
+        # file has no publication date of its own, and taking one from the file's
+        # timestamp would sort a 2009 recording below something added today.
+        published=datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S"),
+        # The bytes, for duplicate detection (R10): a filename is never a
+        # duplicate. Hashed from the copy, which is identical to the original and
+        # is the file Cast will still have if the original moves.
+        content_hash=content_hash(dest),
+        # What the listener calls it, kept for support and a future rename. The
+        # managed copy's name is Cast's business; this is theirs.
+        source_filename=source.name,
     )
 
 
