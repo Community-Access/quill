@@ -2176,6 +2176,10 @@ Weather, Audio Studio, Inkwell, the Converter, the Media Player and Beacon.
 
 ## Closing a lot of windows at once
 
+When you exit the whole app, incoming requests to open documents stop before
+the windows close. Requests still waiting in the inbox are handled on the next
+launch. Cancelling a save prompt cancels exit and leaves the app working normally.
+
 **Window > Close Other Documents (Ctrl+Shift+F4)** keeps the document you are in
 and closes every other one. QUILL has had it since 2026-06; QUILL Lite has it now
 too, on the same key, because a key you learn in one editor should work in the

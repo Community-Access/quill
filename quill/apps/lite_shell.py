@@ -219,7 +219,7 @@ class QuillLiteShell(wx.MDIParentFrame):
         # ask which files were open, and Alt+F4 on the shell has to remember the
         # session exactly as Exit does.
         self.app.remember_session()
-        self.app.shutting_down = True
+        self.app.stop_background_sources()
         # Stop the children's timers before the parent takes them down. A
         # wx.Timer outlives the window that owns it just long enough to fire
         # into a destroyed control, and the resulting error surfaces as a

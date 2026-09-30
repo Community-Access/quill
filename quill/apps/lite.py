@@ -415,10 +415,10 @@ class QuillLiteApp(
             if not frame.confirm_discard():
                 return
         self.remember_session()
+        self.stop_background_sources()
         for frame in list(self.frames):
             frame.modified = False  # already answered for, above
             frame.Close()
-        self.shutting_down = True
         if self.shell is not None:
             self.shell.Close()
 
@@ -459,8 +459,29 @@ class QuillLiteApp(
 
     # -- the single-instance inbox --------------------------------------- #
 
+    def stop_background_sources(self) -> None:
+        """Stop app-owned polling before closing children; safe on repeated exit."""
+        self.shutting_down = True
+        timer = getattr(self, "_inbox_timer", None)
+        self._inbox_timer = None
+        if timer is not None:
+            timer.Stop()
+
+    def OnExit(self) -> int:  # noqa: N802 - wx API shape
+        self.stop_background_sources()
+        return 0
+
     def _poll_inbox(self, _event: wx.TimerEvent) -> None:
+        if self.shutting_down:
+            return
         for line in inbox_mod.read_requests():
+            if self.shutting_down:
+                if line in {inbox_mod.NEW_DEFAULT, inbox_mod.NEW_RICH, inbox_mod.NEW_PLAIN}:
+                    mode = line.partition(":")[2] or None
+                    inbox_mod.post_request([], mode)
+                else:
+                    inbox_mod.post_request([Path(line)], None)
+                continue
             if line == inbox_mod.NEW_DEFAULT:
                 self.new_window(self.settings.default_mode)
             elif line == inbox_mod.NEW_RICH:

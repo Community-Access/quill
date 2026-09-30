@@ -72,7 +72,6 @@ family grows.
 |---|---:|---|---|---|
 | F-01 | P1 | Confirmed | Lite settings | `QuillLiteApp.save_settings()` swallows `OSError`; a settings change can fail with no user-visible outcome. |
 | F-02 | P1 | Remaining adoption | Background work | Adopt the implemented lifetime token in short-lived surfaces using shared managers; add reviewable activity retention. Manager shutdown already suppresses queued and late delivery. |
-| F-03 | P1 | Conditional risk | Lite timers | Lite owns an application-level inbox timer, while the shell close path explicitly stops document timers. The app-level timer needs one named, idempotent shutdown owner. |
 | F-04 | P1 | Confirmed user report | Lite focus | The source documents an intermittent Alt+Tab focus race. The one-shot deferred focus repair can still lose the native activation race. |
 | F-05 | P1 | Confirmed | Lite performance | `DocumentFrame.load()` reads and decodes plain and rich files synchronously on the UI path. A size warning does not make the actual read non-blocking. |
 | F-06 | P1 | Confirmed | Shutdown | Radio and Cast intentionally swallow most teardown and final-save exceptions. This protects exit, but it also hides cleanup failures and can make the next session inherit stale or incomplete state. |
@@ -239,33 +238,6 @@ The shared guard and shutdown suppression are implemented and tested; see
 - Exercise actual window close/reopen paths and verify no stale announcements
   or updates. Direct timers and `wx.CallAfter` outside TaskManager still need
   their own lifetime checks.
-
-### F-03. Lite's application timer needs one shutdown owner
-
-**Evidence:** `QuillLiteApp.OnInit()` creates and starts `_inbox_timer`, while
-`QuillLiteShell._on_close()` explicitly stops each document's timers through
-`frame.stop_timers()`. The app-level inbox poll is a separate lifetime.
-
-**Impact:** the source does not make it obvious that the timer is stopped before
-application teardown. wx may clean up enough of this in ordinary runs, but the
-ownership contract is implicit. During shutdown, a poll can race a child close,
-open a document while the shell is closing, or make a clean close harder to
-reason about.
-
-**Fix shape:** give Lite one idempotent `stop_background_sources()` method that
-stops the inbox timer, marks shutdown before stopping it, and is called from the
-shell close path and the app's final exit path. Keep child autosave teardown in
-its existing owner, but make the two levels explicit:
-
-- app lifetime: inbox, single-instance handoff, update checks;
-- shell lifetime: child frames, menu routing, activation;
-- document lifetime: autosave, file watchers, editor callbacks.
-
-The method should be safe to call twice and should not depend on a timer event
-being delivered after close.
-
-**Tests:** close with a pending inbox request, close while a poll callback is
-queued, call the finalizer twice, and start a second instance during shutdown.
 
 ### F-04. Lite activation can still lose focus
 
@@ -907,11 +879,10 @@ release guarantee exists.
 ### Stage 1: remove silent and stale outcomes
 
 1. Replace Lite's silent settings-save failure with a visible, reviewable result.
-2. Define `stop_background_sources()` for Lite and test its idempotence.
-3. Adopt the shared UI lifetime token in short-lived surfaces and activity history.
-4. Add shutdown failure capture for required writes and stale markers.
-5. Add the Lite activation/focus regression matrix.
-6. Add a focused large-file opening test and choose the asynchronous design.
+2. Adopt the shared UI lifetime token in short-lived surfaces and activity history.
+3. Add shutdown failure capture for required writes and stale markers.
+4. Add the Lite activation/focus regression matrix.
+5. Add a focused large-file opening test and choose the asynchronous design.
 
 ### Stage 2: make the shared contracts reusable
 

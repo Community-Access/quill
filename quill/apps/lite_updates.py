@@ -216,6 +216,8 @@ def check_at_launch(app: Any) -> None:
     app.save_settings()
 
     def _run() -> None:
+        if getattr(app, "shutting_down", False):
+            return
         shell = getattr(app, "shell", None)
         window = shell.GetActiveChild() if shell is not None else None
         check_for_updates(window or shell, silent_no_update=True)

@@ -13,6 +13,12 @@ wondering what just happened.
 
 It is free, it is open source, and it installs in about a minute.
 
+## Next Maintenance Update (Not Yet Released)
+
+Closing QUILL Lite now stops incoming document polling before closing the
+windows. Waiting requests are kept for the next launch. Cancelling exit leaves
+the app ready to receive them as usual.
+
 ---
 
 ## The short version

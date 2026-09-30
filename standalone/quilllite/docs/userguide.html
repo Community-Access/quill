@@ -3047,6 +3047,10 @@ and Beacon.</p>
 <hr />
 <h2 id="closing-a-lot-of-windows-at-once">Closing a lot of windows at
 once</h2>
+<p>When you exit the whole app, incoming requests to open documents stop
+before the windows close. Requests still waiting in the inbox are
+handled on the next launch. Cancelling a save prompt cancels exit and
+leaves the app working normally.</p>
 <p><strong>Window &gt; Close Other Documents (Ctrl+Shift+F4)</strong>
 keeps the document you are in and closes every other one. QUILL has had
 it since 2026-06; QUILL Lite has it now too, on the same key, because a

@@ -266,6 +266,15 @@ that adding an app and changing the editor stayed separate decisions.
 Both decisions were taken; the fix ships with this release and reaches
 every QUILL user, not only QUILL Lite’s.</p>
 <h2 id="2-architecture">2. Architecture</h2>
+<p>Application shutdown owns the inbox timer through
+<code>QuillLiteApp.stop_background_sources()</code>. Confirmed Exit and
+shell close stop polling before document destruction;
+<code>OnExit</code> repeats that cleanup safely. Cancelling a close
+keeps polling active. A queued inbox tick must not consume requests
+after shutdown starts, and requests left after a reentrant close are
+reposted for the next launch. A deferred launch-update check must not
+start after shutdown. Document timers remain each document’s
+responsibility.</p>
 <p><strong>QUILL Lite is not a fork.</strong> That is the single most
 important architectural statement in this document, and it is the
 difference between a sibling and a copy that rots.</p>

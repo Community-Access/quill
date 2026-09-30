@@ -17,6 +17,9 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
 
 LITE = Path(__file__).resolve().parents[3] / "quill" / "apps" / "lite.py"
 
@@ -64,3 +67,63 @@ def test_settings_is_one_of_the_attributes_oninit_owns() -> None:
     would pass for the wrong reason, having nothing left to compare."""
     oninit_assigned, _ = _assigned_and_read("OnInit")
     assert "settings" in oninit_assigned
+
+
+def test_stop_background_sources_is_idempotent() -> None:
+    from quill.apps.lite import QuillLiteApp
+
+    stopped = []
+    app = SimpleNamespace(shutting_down=False)
+    app._inbox_timer = SimpleNamespace(Stop=lambda: stopped.append(app.shutting_down))
+    app.stop_background_sources = lambda: QuillLiteApp.stop_background_sources(app)
+    app.stop_background_sources()
+    assert QuillLiteApp.OnExit(app) == 0
+    assert stopped == [True]
+    assert app._inbox_timer is None
+
+
+def test_shutdown_leaves_pending_inbox_request_on_disk(monkeypatch, tmp_path) -> None:
+    from quill.apps.lite import QuillLiteApp
+    from quill.core.lite import inbox
+
+    assert inbox.post_request([tmp_path / "requested.txt"], None, directory=tmp_path)
+    read_requests = inbox.read_requests
+    monkeypatch.setattr(inbox, "read_requests", lambda: read_requests(tmp_path))
+    QuillLiteApp._poll_inbox(SimpleNamespace(shutting_down=True), None)
+    assert len(list(tmp_path.glob("*.req"))) == 1
+
+
+def test_shutdown_during_inbox_processing_preserves_later_requests(monkeypatch) -> None:
+    from quill.apps.lite import QuillLiteApp
+    from quill.core.lite import inbox
+
+    app = SimpleNamespace(shutting_down=False, settings=SimpleNamespace(default_mode="plain"))
+    app.new_window = lambda _mode: setattr(app, "shutting_down", True)
+    reposted = []
+    monkeypatch.setattr(inbox, "read_requests", lambda: ["NEW", "later.txt", "NEW:rich"])
+    monkeypatch.setattr(inbox, "post_request", lambda *args: reposted.append(args))
+    QuillLiteApp._poll_inbox(app, None)
+    assert reposted == [([Path("later.txt")], None), ([], "rich")]
+
+
+@pytest.mark.parametrize("can_veto,consent", [(True, False), (True, True), (False, False)])
+def test_shell_close_stops_app_sources_only_after_consent(monkeypatch, can_veto, consent) -> None:
+    from quill.apps.lite_shell import QuillLiteShell
+
+    calls = []
+    child = SimpleNamespace(
+        modified=True,
+        confirm_discard=lambda: consent,
+        stop_timers=lambda: calls.append("child"),
+    )
+    app = SimpleNamespace(
+        frames=[child],
+        remember_session=lambda: calls.append("session"),
+        stop_background_sources=lambda: calls.append("app"),
+    )
+    shell = SimpleNamespace(app=app, Destroy=lambda: calls.append("destroy"))
+    event = SimpleNamespace(CanVeto=lambda: can_veto, Veto=lambda: calls.append("veto"))
+    monkeypatch.setattr("quill.ui.sound_manager.post_sound_and_wait", lambda *_args: None)
+    QuillLiteShell._on_close(shell, event)
+    expected = ["veto"] if can_veto and not consent else ["session", "app", "child", "destroy"]
+    assert calls == expected

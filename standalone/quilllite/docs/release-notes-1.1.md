@@ -12,6 +12,15 @@ than any number a runtime could have claimed, so Check for Updates offers it
 everywhere. The changelog has the full story and the gate that stops it
 recurring.*
 
+## Unreleased Quality Fixes
+
+- Closing the app stops incoming document polling before the windows are
+  destroyed. Waiting open requests remain for the next launch, and a cancelled
+  close leaves polling active. A queued launch-update check no longer starts
+  after exit begins.
+
+## Released in 1.1
+
 Five things are new in 1.1, and the first is the one to read: AI help now runs
 on the ChatGPT plan you already pay for, and with it comes the first time QUILL
 Lite can describe a picture or look something up on the web.

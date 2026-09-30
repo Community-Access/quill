@@ -4,6 +4,10 @@
 
 ### QC reliability pass (2026-09-30)
 
+- QUILL Lite now stops its application-owned inbox timer before destroying
+  documents and repeats cleanup safely on final exit. A cancelled close keeps
+  polling active; queued requests are preserved for the next launch. Deferred
+  launch-update checks do not start once shutdown begins.
 - Shared background tasks suppress success, failure, and progress callbacks
   after their manager shuts down, including callbacks already queued for UI
   delivery. Individual windows can invalidate a `UiLifetimeToken` before

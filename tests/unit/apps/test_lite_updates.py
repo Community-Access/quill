@@ -191,6 +191,25 @@ def test_the_launch_check_still_offers_a_real_update(updates):
 # -- the menu item --------------------------------------------------------
 
 
+def test_queued_launch_check_does_not_start_during_shutdown(monkeypatch):
+    scheduled = []
+    checked = []
+    app = SimpleNamespace(
+        shutting_down=False,
+        settings=SimpleNamespace(check_updates_on_launch=True, last_update_check=""),
+        save_settings=lambda: None,
+    )
+    monkeypatch.setattr(lite_updates.wx, "CallAfter", scheduled.append)
+    monkeypatch.setattr(
+        lite_updates, "check_for_updates", lambda *args, **kwargs: checked.append(args)
+    )
+    lite_updates.check_at_launch(app)
+    app.shutting_down = True
+    assert len(scheduled) == 1
+    scheduled[0]()
+    assert checked == []
+
+
 def test_the_help_menu_command_runs_the_check_and_stamps_the_clock(lite_window, updates):
     win = lite_window("text")
     win.app.settings.last_update_check = ""

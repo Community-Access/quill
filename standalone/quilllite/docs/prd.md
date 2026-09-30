@@ -32,6 +32,14 @@ and reaches every QUILL user, not only QUILL Lite's.
 
 ## 2. Architecture
 
+Application shutdown owns the inbox timer through
+`QuillLiteApp.stop_background_sources()`. Confirmed Exit and shell close stop
+polling before document destruction; `OnExit` repeats that cleanup safely.
+Cancelling a close keeps polling active. A queued inbox tick must not consume
+requests after shutdown starts, and requests left after a reentrant close are
+reposted for the next launch. A deferred launch-update check must not start
+after shutdown. Document timers remain each document's responsibility.
+
 **QUILL Lite is not a fork.** That is the single most important architectural
 statement in this document, and it is the difference between a sibling and a
 copy that rots.
