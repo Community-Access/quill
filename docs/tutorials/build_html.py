@@ -66,7 +66,16 @@ def main() -> int:
         ).stdout
         # Site chrome: a small landmark nav so every tutorial links home, to
         # the tutorial index, and to the podcast that teaches the same ground.
+        #
+        # And a skip link with something to skip to. Pandoc's standalone output
+        # puts the document straight into <body> with no <main>, so these pages
+        # had no main landmark at all and no way past the nav (2.4.1) -- the one
+        # page family on the site with neither. tabindex="-1" is the load-bearing
+        # half: <main> is not focusable without it, so a skip link pointing at it
+        # moves focus nowhere and the next Tab lands back in the nav the reader
+        # just asked to skip. style.css styles the ring (main[tabindex="-1"]).
         nav = (
+            '<a class="skip-link" href="#main">Skip to main content</a>'
             '<header class="site"><div class="wrap">'
             '<nav class="site" aria-label="Primary"><ul>'
             '<li><a href="/index.html">QUILL home</a></li>'
@@ -74,8 +83,10 @@ def main() -> int:
             '<li><a href="/podcast/index.html">The QUILL Cast</a></li>'
             '<li><a href="/docs/userguide.html">User guide</a></li>'
             "</ul></nav></div></header>"
+            '\n<main id="main" tabindex="-1"><div class="wrap">'
         )
         html = html.replace("<body>", "<body>\n" + nav, 1)
+        html = html.replace("</body>", "</div></main>\n</body>", 1)
         # Inter-tutorial links: point at the sibling HTML pages.
         html = re.sub(r'href="(\d\d-[^"]+)\.md"', r'href="\1.html"', html)
         html = html.replace('href="README.md"', 'href="index.html"')

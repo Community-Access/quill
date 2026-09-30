@@ -174,8 +174,41 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Retrofitted to match docs/pandoc/quill-accessible.html5, which this page
+       was not rendered through. See that template for the reasoning: a skip link
+       needs a focusable target, and Pandoc's own styles.html ships
+       `table { display: block }`, which takes the table role -- and the row and
+       cell roles with it -- out of the accessibility tree in Blink and Gecko. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <header id="title-block-header">
 <h1 class="title">Quill Radio 1.0 Press Release</h1>
 </header>
@@ -332,5 +365,6 @@ that depends on it. Learn more at <a
 href="http://www.quillforall.org">http://www.quillforall.org</a>.</p>
 <p><em>Media contact: <a
 href="http://www.quillforall.org">http://www.quillforall.org</a></em></p>
+</main>
 </body>
 </html>

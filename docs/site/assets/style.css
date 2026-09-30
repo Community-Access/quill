@@ -29,8 +29,17 @@
   --ok-bg: #e7f4ec;
   --ok-border: #0f6b3f;
   /* The sticky header's height, so scripted focus does not scroll its target
-     underneath it. See scroll-padding-top below. */
-  --header-h: 7rem;
+     underneath it. See scroll-padding-top below.
+
+     A ceiling, not a measurement. header.site .wrap is flex-wrap: wrap and
+     nav.site ul carries thirteen items on the front page, while .wrap caps at
+     72rem -- so the nav is two or three rows at every desktop width and never
+     one. That is around 190px of real header against the 112px that 7rem used
+     to declare, and every in-page jump landed underneath it: a 2.4.11 failure
+     that reports nothing, because the page looks fine and the focus ring is
+     simply not where the user is looking. Overshooting costs some blank space
+     above a jump target on a wide screen, which is the right way round. */
+  --header-h: 12rem;
   --maxw: 72rem;
   --measure: 42rem;
   --radius: 12px;
@@ -74,9 +83,22 @@ html {
   scroll-padding-top: var(--header-h);
 }
 
-/* At high zoom the sticky header eats most of a short viewport. Let it scroll
-   away, and reclaim the padding with it. */
-@media (max-height: 26rem), (max-width: 26rem) {
+/* The sticky header is only worth its cost while it is one or two rows tall.
+   Two cases where it is not, and in both it stops being sticky and takes its
+   scroll padding with it:
+
+   - A short viewport, which is what high zoom on a laptop produces: the header
+     eats most of the window.
+   - Below 64rem, where header.site .wrap starts wrapping in earnest -- the brand
+     drops to its own line and the thirteen-item nav goes to four or five rows,
+     something like 280px of sticky furniture on a 500px-wide window. No
+     --header-h value rescues that, and at 400% zoom the nav is a dozen rows and
+     taller than the viewport, where the token stops meaning anything at all. A
+     static header is the honest answer: there is nothing left to scroll a focus
+     target underneath, so the number above stops having to be right.
+
+   This replaces an earlier `max-width: 26rem` clause, which it subsumes. */
+@media (max-height: 26rem), (max-width: 64rem) {
   header.site { position: static; }
   :root { --header-h: 1rem; }
 }
@@ -127,10 +149,29 @@ a:hover { color: var(--accent-strong); }
    matches only if the previously focused element did, so pressing Enter on a
    button shows a ring and clicking the same button shows nothing at all. */
 .focus-target:focus,
-#errors:focus,
-main:focus {
+#errors:focus {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
+}
+
+/* main is the one exception to the rule above, and it has to be.
+
+   This selector used to be `main:focus` and could never match: no page gave
+   <main> a tabindex, so the skip link every page ships left focus on itself and
+   the next Tab went back into the nav the user had just asked to skip. Adding
+   tabindex="-1" fixes that and brings a second effect with it -- in Chromium and
+   WebKit, clicking a non-focusable element focuses the nearest focusable
+   ancestor, so clicking any paragraph now focuses <main>. An unconditional
+   main:focus would therefore draw a 3px box round the whole page on an ordinary
+   click. :focus-visible is right here for the reason it is wrong above: the skip
+   link is reached and activated from the keyboard, so the ring shows for the
+   jump and stays away for the click.
+
+   The offset is inset. main is full-bleed, so an outset ring is clipped left
+   and right by the viewport and reads as two vertical lines rather than a box. */
+main[tabindex="-1"]:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
 }
 
 /* Layout */
@@ -717,6 +758,69 @@ input[type="radio"]:focus-visible { outline-offset: 3px; }
   button[type="submit"] { border: 2px solid ButtonText; background: ButtonFace; color: ButtonText; }
   button[type="submit"][aria-disabled="true"] { color: GrayText; border-color: GrayText; }
   :focus-visible, .focus-target:focus { outline: 3px solid Highlight; outline-offset: 2px; }
+  /* The generic rule above would give full-bleed <main> an outset ring that the
+     viewport clips into two vertical lines. Inset it, as in the light theme. */
+  main[tabindex="-1"]:focus-visible { outline-offset: -3px; }
+}
+
+
+/* -- prefers-contrast: more --------------------------------------------------
+   This stylesheet had no such block anywhere, so a macOS "Increase contrast"
+   user got byte-for-byte the same page as everybody else. compare.html carried
+   a scoped version of this because 59 table hairlines were the worst place for
+   the gap; this is that block generalised, and the scoped one is gone.
+
+   Tokens rather than components, deliberately. Every border, tint and muted grey
+   on this site resolves through the handful below, so raising them here reaches
+   surfaces nobody thought about -- and, more to the point, the next component
+   added cannot forget to opt in.
+
+   Not the same thing as the forced-colors block above. That is a different user
+   with a different bargain: the system replaces the palette and we cooperate
+   with it. This is a user who keeps our colours and wants them further apart.
+
+   One consequence worth knowing: --surface going white makes the header, footer
+   and cards the same fill as the page, so their boundaries are carried entirely
+   by --border. That is why --border rises to the 4.04:1 rule here -- crisper
+   edges in exchange for tonal separation, which is the right trade for this
+   user. */
+@media (prefers-contrast: more) {
+  :root {
+    --border: #767f8f;        /* the 1.42:1 hairline becomes the 4.04:1 rule */
+    --border-strong: #4a5568;
+    --muted: #35404f;         /* 9.6:1 on white, up from 7.4:1 */
+    --accent: #16448c;        /* 9.3:1, up from 6.2:1 */
+    --surface: #ffffff;
+    --surface-2: #eceff5;
+  }
+  /* A wider ring, never a different colour: --focus is already proved against
+     both themes and against the red error fill, and re-hueing it here would
+     have to be proved twice more for no gain. */
+  :focus-visible,
+  .focus-target:focus,
+  #errors:focus,
+  main[tabindex="-1"]:focus-visible {
+    outline-width: 4px;
+  }
+  /* In the header and on cards the underline is hover-only, so link text is
+     distinguished from its surroundings by colour alone -- which is exactly what
+     this user has asked us not to rely on. */
+  nav.site a,
+  .card h3 a,
+  .nav-dropdown > summary { text-decoration: underline; }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --bg: #05070a;
+    --surface: #0e1117;
+    --surface-2: #161b22;
+    --border: #68758a;
+    --border-strong: #9aa6b8;
+    --text: #ffffff;
+    --muted: #d3dae4;
+    --accent: #9ccaff;
+  }
 }
 
 

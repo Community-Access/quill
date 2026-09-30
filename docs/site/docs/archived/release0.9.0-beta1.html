@@ -174,8 +174,41 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Retrofitted to match docs/pandoc/quill-accessible.html5, which this page
+       was not rendered through. See that template for the reasoning: a skip link
+       needs a focusable target, and Pandoc's own styles.html ships
+       `table { display: block }`, which takes the table role -- and the row and
+       cell roles with it -- out of the accessibility tree in Blink and Gecko. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1
 id="quill-090---the-last-feature-beta-everything-we-promised-by-ear">QUILL
 0.9.0 - The Last Feature Beta: Everything We Promised, By Ear</h1>
@@ -1838,5 +1871,6 @@ complete and heading to 1.0. Install the beta. Write something real with
 it. Tell us what creaks.</p>
 <p>We will fix it. That is the whole job now.</p>
 <p><em>- The QUILL team at Community Access</em></p>
+</main>
 </body>
 </html>

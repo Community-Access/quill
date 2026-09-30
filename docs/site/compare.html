@@ -1,0 +1,1032 @@
+<!doctype html>
+<!-- class="page-compare" carries this page's three table colour tokens. See the
+     note above them in the style block for why they are not the shared ones. -->
+<html lang="en" class="page-compare">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QUILL or QUILL Lite - which editor should you install?</title>
+  <meta name="description" content="QUILL is a screen-reader-first writing environment for Windows and macOS. QUILL Lite is the same editor with the environment removed: Notepad and WordPad, rebuilt so they answer. One codebase, two front doors - and a complete, category-by-category comparison of every difference between the two products.">
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    /* ── This page's scoped tokens and comparison tables ─────────────────────
+
+       Four tokens, defined here rather than in style.css because nothing else
+       on the site uses them. Why not the existing ones: --border is 1.42:1 and
+       its own comment says hairline-only, and --border-strong is 3.02:1 in dark
+       against the header tint -- it clears 3:1 by a rounding artefact, which is
+       not a margin to put 59 row separators on.
+
+       Three rules govern every cell below, all of them from this site's own
+       CSS:
+
+       1. State is never colour. Every value cell contains the WORD. The only
+          extra cue is a border's WIDTH and STYLE -- the one channel Windows
+          High Contrast recolours rather than discards (it takes away
+          background-color, background-image and box-shadow). Solid for present,
+          dashed for absent, which is how #result.ok and #result.bad already
+          read.
+
+       2. A cue is always a real element, never a ::before. NVDA and JAWS
+          announce generated content, so a CSS tick would be spoken on top of
+          the word beside it, on all 180 of them. See the note at
+          style.css:552.
+
+       3. Unavailable rows are not greyed and never use --error*. --muted on the
+          stripe is 6.65:1, so greying passes contrast and still fails: grey
+          means DISABLED on Windows, and "QUILL Lite does not have this" is a
+          fact about a product, not a control you cannot operate. Equally,
+          --error-bg on this site means "what you just did failed", and absence
+          is not a failure. Every row stays at full --text.
+
+       `display` is never changed on the table or any of its parts. display:
+       block strips the table role in Chrome, Edge and Firefox and takes cell
+       navigation, header announcement and row counts with it -- and the
+       generated pages under /docs/ carry exactly that rule from Pandoc's
+       default template, which is why their key tables read as a flat run of
+       words. Do not copy it here.
+
+       Deliberately not written: position: sticky on .cmp thead th. It needs
+       top: var(--header-h) against a header that wraps, scroll-padding-top
+       accounts for one sticky band so a second can fully obscure a focus ring
+       (2.4.11, silently), and at 400% zoom a three-line thead is most of the
+       viewport. scope="col" already announces the column on every cell, so it
+       would buy this audience nothing. */
+
+    .page-compare {
+      --table-rule: #5c6675;
+      --table-mark: #48505e;
+      --table-head-bg: #e4e9f2;
+    }
+    @media (prefers-color-scheme: dark) {
+      .page-compare {
+        --table-rule: #8e9aac;
+        --table-mark: #aab6c6;
+        --table-head-bg: #222c3a;
+      }
+    }
+    /* style.css raises the shared tokens for prefers-contrast: more, at token
+       level so nothing has to opt in. These three are this page's own, so the
+       shared block cannot reach them -- raised here for the same user, and the
+       same way. */
+    @media (prefers-contrast: more) {
+      .page-compare {
+        --table-rule: #3a4250;
+        --table-mark: #1a1f29;
+        --table-head-bg: #ffffff;
+      }
+    }
+
+    .cmp-jump ul {
+      list-style: none;
+      margin: 1rem 0 0;
+      padding: 0;
+      columns: 2;
+      column-gap: 2rem;
+    }
+    .cmp-jump li { margin: 0.4rem 0; break-inside: avoid; }
+    @media (max-width: 40rem) { .cmp-jump ul { columns: 1; } }
+
+    /* A one-line answer above each table, because a three-column grid heard
+       linearly is a two-dimensional memory task on a one-dimensional channel.
+       Someone who has drifted one column reads a dozen facts about the wrong
+       product and nothing tells them. These sentences are load-bearing. */
+    .group-verdict {
+      max-width: var(--measure);
+      margin: 0.35rem 0 0.9rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Insurance, not the plan. 1.4.10 Reflow names data tables as its own
+       exception -- a table scrolling inside its own box is conforming as long as
+       the PAGE does not scroll sideways, which is why overflow lives here and no
+       ancestor ever gets a min-width. The tables themselves wrap: table-layout
+       stays auto, nothing is nowrap, and overflow-wrap lets the longest token
+       break, so in practice this never scrolls. There is deliberately no
+       tabindex on it: a focus stop on a box that cannot scroll is a dead tab
+       stop, eleven times over. */
+    .cmp-scroll {
+      overflow-x: auto;
+      max-width: 100%;
+      margin: 0.5rem 0 2.25rem;
+      border: 1px solid var(--table-rule);
+      border-radius: var(--radius);
+    }
+
+    .cmp { width: 100%; border-collapse: collapse; }
+
+    .cmp caption {
+      text-align: left;
+      font-weight: 700;
+      font-size: 1.02rem;
+      color: var(--text);
+      padding: 0.85rem 0.75rem 0.7rem;
+    }
+
+    /* Padding is not decoration. 0.6rem is 9.6px; a 3px focus ring at 2px
+       offset reaches 5px past a link's box, and that amber ring is only 1.19:1
+       against --table-rule -- so this keeps 4.6px of cell background between
+       them at every zoom level, because the unit is rem. 0.55rem is the floor.
+       No height, no white-space, no text-overflow: truncating "Partial, reading
+       only" does not weaken an answer, it changes it, and the reader still gets
+       the whole string so nobody who ships it ever sees the failure. */
+    .cmp th, .cmp td {
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--table-rule);
+      overflow-wrap: break-word;
+    }
+
+    /* The 2px underline is what still reads as "this is the header row" once
+       forced colours have discarded the tint, so it clears 3:1 against both of
+       its neighbours. */
+    .cmp thead th {
+      background: var(--table-head-bg);
+      color: var(--text);
+      font-weight: 700;
+      border-bottom: 2px solid var(--table-rule);
+    }
+
+    .cmp tbody th[scope="row"] { font-weight: 600; color: var(--text); width: 40%; }
+    .cmp tbody td { width: 30%; }
+    .cmp tbody tr:last-child > * { border-bottom: 0; }
+
+    /* The qualifying phrase: its own block, with no punctuation joining it to
+       the answer. An em dash is spoken as "dash" at one NVDA symbol level and
+       dropped at another; a block element gives a reliable pause with no
+       character to mis-speak. */
+    .cmp .qual {
+      display: block;
+      color: var(--muted);
+      font-size: 0.95em;
+      margin-top: 0.15rem;
+    }
+
+    /* Zebra striping, safe here for exactly one reason: no cell state uses a
+       background. The stripe is 1.13:1 against the base -- perceptible as
+       banding, never as a colour that means something -- so 1.4.11 does not
+       apply to it. What it has to clear is the text on it, which it does
+       threefold. IF A LATER EDIT EVER GIVES A CELL A BACKGROUND, DELETE THIS
+       RULE IN THE SAME EDIT: a state tint composited over two different bases
+       renders one state as two colours. */
+    .cmp tbody tr:nth-child(even) > * { background: var(--surface-2); }
+
+    /* A row where one of the two does not have the capability. A real border,
+       so forced colours needs nothing extra for it, and --table-mark rather
+       than --error-border because absence is not an error. The words in the
+       cells say which side is missing it; this is only so the left edge can be
+       scanned at 400% zoom. */
+    .cmp tbody tr.gap > th[scope="row"] { border-left: 6px dashed var(--table-mark); }
+
+    .verdict h3 { font-size: 1.15rem; }
+
+    .fact-list { margin: 1.25rem 0 0; padding: 0; list-style: none; }
+    .fact-list > li {
+      border-left: 4px solid var(--table-rule);
+      padding: 0.15rem 0 0.15rem 0.95rem;
+      margin: 1rem 0;
+      max-width: var(--measure);
+    }
+    .fact-list > li > strong { display: block; }
+
+    .back-top { margin-top: 2.5rem; }
+
+    /* prefers-contrast: more is handled site-wide in style.css, at token level:
+       --table-rule and --table-mark below are the only colours this page owns
+       that are not tokens, and both are already above the ratios that block
+       raises the shared ones to. The zebra stripe resolves through --surface-2,
+       which that block lightens, so it thins out with everything else. */
+
+    @media (forced-colors: active) {
+      /* No forced-color-adjust, scoped or otherwise. Nothing here carries
+         meaning in a colour the system takes away: states are words and rules
+         are borders, so the tints and the stripe can go and nothing goes with
+         them. */
+      .cmp thead th { border-bottom-width: 3px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <span class="quill">QUILL</span>
+        <span class="tag">accessible software, built with you</span>
+      </a>
+      <nav class="site" aria-label="Primary">
+        <ul>
+          <li><a href="/compare.html" aria-current="page">Compare the two editors</a></li>
+          <li><a href="/index.html">QUILL home</a></li>
+          <li><a href="/quilllite.html">QUILL Lite</a></li>
+          <li><a href="/docs/userguide.html">QUILL user guide</a></li>
+          <li><a href="/docs/quilllite-userguide.html">QUILL Lite user guide</a></li>
+          <li><a href="/docs/release-notes.html">QUILL release notes</a></li>
+          <li><a href="/tutorials/index.html">Tutorials</a></li>
+          <li><a href="/faq.html">FAQ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1" class="prose">
+    <div class="wrap">
+      <h1>QUILL or QUILL Lite: which editor should you install?</h1>
+      <p class="lede">
+        This page compares the two <em>products</em>, not two documents — QUILL has a
+        document-comparison tool of its own, and this is not it. QUILL and QUILL Lite are
+        two free editors for Windows, built from one codebase to one accessibility
+        standard, and they are not the same thing. QUILL is a writing environment. QUILL
+        Lite is that environment's editor with the environment taken off it: Notepad and
+        WordPad, rebuilt so that they answer.
+      </p>
+
+      <nav class="cmp-jump" aria-labelledby="onpage-h">
+        <h2 id="onpage-h">On this page</h2>
+        <ul>
+          <li><a href="#short-answer">The short answer</a></li>
+          <li><a href="#one-codebase">One codebase, two front doors</a></li>
+          <li><a href="#subtraction">Why subtraction only runs one way</a></li>
+          <li><a href="#shared-floor">What is identical in both</a></li>
+          <li><a href="#differences">Where they genuinely differ</a></li>
+          <li><a href="#moving-up">Moving from QUILL Lite to QUILL</a></li>
+          <li><a href="#table">The full comparison, category by category</a></li>
+          <li><a href="#downloads">Download either one</a></li>
+          <li><a href="#read-more">Read more before you decide</a></li>
+        </ul>
+      </nav>
+
+      <h2 id="short-answer" tabindex="-1" class="focus-target">The short answer</h2>
+      <p>
+        Most people who write, read and file documents all day want QUILL. Most people
+        who open a text file to change one line want QUILL Lite. Both are free, both are
+        MIT-licensed, and installing one does not affect the other — they keep separate
+        settings, separate folders and separate updates — so if the answer is not
+        obvious, install both and let a week decide.
+      </p>
+
+      <div class="verdict">
+        <h3>Choose QUILL Lite if this sounds like you</h3>
+        <p>
+          You want a replacement for Notepad or WordPad that speaks properly. You edit
+          configuration files, logs, notes and letters. You want Ctrl+N to be instant and
+          never to meet a setup wizard. You want either no Format menu at all, or exactly
+          the formatting WordPad had. You have never needed to open a spreadsheet, a PDF
+          or a braille file in an editor, and you would rather a program did nine things
+          well than a hundred things at once.
+        </p>
+      </div>
+      <div class="verdict">
+        <h3>Choose QUILL if this sounds like you</h3>
+        <p>
+          Documents arrive and you have to deal with them, whatever format they are in:
+          Word, PowerPoint, Excel, PDF, EPUB, braille, DAISY, email archives. You write
+          long things and want an outline, bookmarks you can export and a way to compare
+          two drafts. You want a document read aloud in a voice that is not your screen
+          reader, or transcribed, or turned into an audiobook. You read braille. You use
+          AI with your own key or your own local model. You are on a Mac. Or you simply
+          want all of it, because turning features off is easier than finding them one at
+          a time.
+        </p>
+      </div>
+
+      <h2 id="one-codebase" tabindex="-1" class="focus-target">One codebase, two front doors</h2>
+      <p>
+        This is worth saying plainly, because a "Lite" edition in this industry is usually
+        a fork that quietly rots, and this one is not a fork. QUILL Lite's code lives
+        inside the QUILL package rather than beside it, and it does not copy QUILL's
+        editing surface — it uses it. The spell checker, the numbered bookmarks, the copy
+        tray, the clip library, the free hosted AI, the dictation engine, the file-encoding
+        logic and the F1 help engine are one implementation with two callers.
+      </p>
+      <p>Three things follow from that, and all three are things you can feel.</p>
+      <ul class="fact-list">
+        <li>
+          <strong>A fix in one is a fix in both.</strong>
+          The spell checker's suggestion ranking, and three separate bugs in how selection
+          worked, were all found while QUILL Lite was being built — and were fixed in the
+          shared code, so every QUILL user got them in the same release.
+        </li>
+        <li>
+          <strong>A key you learn in one works in the other.</strong>
+          Every QUILL Lite command is mapped to the QUILL command that means the same
+          thing, and a test fails the build if the two ever drift onto different keys
+          without a written reason. There are ten such reasons today, and each one is a
+          paragraph arguing its case rather than an accident nobody noticed.
+        </li>
+        <li>
+          <strong>QUILL Lite is never allowed to be ahead of QUILL.</strong>
+          That is a family rule — the tenth of eleven — and it is enforced rather than
+          hoped for: if QUILL Lite needs something QUILL cannot do, the capability goes
+          into the shared package and QUILL gets a way to reach it in the same change. It
+          is how QUILL ended up with numbered bookmarks, with six rich-text commands it
+          had the engine for and no keys to, and with the entire free hosted AI.
+        </li>
+      </ul>
+
+      <h2 id="subtraction" tabindex="-1" class="focus-target">Why subtraction only runs one way</h2>
+      <p>
+        QUILL Lite stays small by being switchable, not by being poor. Twenty whole
+        feature areas can be turned off in <strong>Tools, Customize Features</strong>, and
+        switching one off takes its menu <em>and</em> its keys with it — because a key that
+        still fires for a feature you turned off is the feature not being off. Four named
+        starting points do it in one move: <strong>Recommended</strong> (16 of the 20
+        areas), <strong>Everything</strong> (all 20), <strong>WordPad</strong> (5, and
+        Ctrl+N makes a rich text document) and <strong>Notepad</strong> (2, and Ctrl+N
+        makes a plain text one).
+      </p>
+      <p>
+        QUILL has the mirror image of that dial: eleven feature profiles, from
+        <strong>Essential</strong> and <strong>Writer</strong> through <strong>Braille and
+        Screen Reader Power User</strong> and <strong>Accessibility Professional</strong> to
+        <strong>Full Quill</strong>. One of the eleven is called <strong>QUILL
+        Lite</strong>, and it does what its name says: it reduces QUILL to nine menus — a
+        plain-text editor with rich text, spelling, the line tools and the clipboard — and
+        makes Ctrl+N produce a plain text document.
+      </p>
+      <p>
+        So the asymmetry is the whole design. <strong>You can make QUILL look like QUILL
+        Lite. You cannot make QUILL Lite become QUILL.</strong> If you are genuinely
+        unsure, that is an argument for starting with QUILL. The honest counter-argument is
+        that an editor with nine menus is faster to learn, and nobody has ever got lost in
+        it.
+      </p>
+
+      <h2 id="shared-floor" tabindex="-1" class="focus-target">What is identical in both</h2>
+      <p>
+        Everything in this list is the same in both products, to the same standard,
+        enforced by the same tests. If you are choosing between them, you are not choosing
+        between an accessible editor and a less accessible one.
+      </p>
+      <ul>
+        <li>
+          <strong>Every enabled menu item shows a keyboard route in its label</strong>, and
+          no two items in one menu bar claim the same key. Both are build gates rather than
+          intentions. Walking a menu to discover there is no shortcut is a cost you pay on
+          every visit, and a key claimed twice means one of the pair silently never fires.
+        </li>
+        <li>
+          <strong>The app says only what your screen reader does not already say.</strong>
+          Window titles, focus moves, control names, roles, states and list selections are
+          the reader's job; a background result, a change on a control you are not sitting
+          on, and the outcome of an action are the app's. Over-announcing is the failure
+          nobody ever reports and everybody suffers, so there is a gate for it.
+        </li>
+        <li><strong>F1 answers everywhere</strong>, in every window, with what the window is for and then what the control you are on does.</li>
+        <li><strong>F6 lands you in a status bar you can read cell by cell</strong> — line, word count, encoding, line endings — rather than a decoration you cannot reach.</li>
+        <li><strong>Headings and lists announce themselves</strong> ("Heading 2, Installing"; "Bulleted list, 5 items"), which no Windows edit control can tell your screen reader on its own.</li>
+        <li><strong>Spell check spells the word out</strong>, letter by letter or in the phonetic alphabet, because "receive" and "recieve" sound identical.</li>
+        <li><strong>Your file comes back byte for byte</strong>, with the encoding and line endings it arrived with, and a window that lets you change either on purpose.</li>
+        <li><strong>Unsaved work survives a crash</strong>, and the session comes back when you ask for it.</li>
+        <li><strong>Every key is yours to change</strong>, in a manager that names the current owner of a key before it hands it over.</li>
+        <li><strong>The same free AI, on the same five keys.</strong> Not a similar feature built twice — one implementation reached by both, so it cannot drift.</li>
+        <li><strong>Free, for good.</strong> MIT-licensed, no paid tier, no trial, no account needed to use the editor. Donations cover what the AI service costs to run.</li>
+      </ul>
+
+      <h2 id="differences" tabindex="-1" class="focus-target">Where they genuinely differ</h2>
+
+      <h3>What you can open</h3>
+      <p>
+        This is the largest single difference, and the one most likely to decide it for
+        you. QUILL Lite opens text and rich text: <code>.txt</code>, <code>.rtf</code>,
+        <code>.md</code>, <code>.log</code>, <code>.csv</code>, <code>.json</code>,
+        <code>.py</code> and <code>.html</code>. That is a deliberate boundary, not an
+        unfinished one.
+      </p>
+      <p>
+        QUILL reads Word, PowerPoint and Excel; OpenDocument and Apple iWork; PDF, with
+        local OCR for scans; EPUB and the proprietary e-book formats; braille in BRF, BRL,
+        PEF and UEB, with translation and back-translation; DAISY and NIMAS talking books,
+        which it also writes; email and mail archives, calendars and contacts; notebooks,
+        subtitles, feeds, chat exports and saved web pages; TeX, reStructuredText, AsciiDoc
+        and Org-mode; and files over FTP, SFTP, WebDAV, S3, HTTPS and GitHub. It writes
+        Word and rich text in place, exports through Pandoc, converts in batches, and
+        refuses at the file layer — not merely in the interface — to overwrite a PDF or a
+        spreadsheet with text.
+      </p>
+
+      <h3>How documents sit on the screen</h3>
+      <p>
+        QUILL puts documents in tabs, in one or more windows: Ctrl+T for a new tab, Ctrl+Tab
+        to move between them. QUILL Lite numbers them instead, as children of a single
+        window, from 1, and never reuses a number while its document is open — because
+        "Document 3" is a name you can hold in your head and say out loud, and "the other
+        Untitled" is not.
+      </p>
+      <p>
+        That choice has a cost, and QUILL Lite states it rather than hiding it: numbered
+        child windows do not appear in Alt+Tab, so the whole job of moving between documents
+        falls on the app. It carries that four ways — Ctrl+F6, Ctrl+Tab, Alt+1 to Alt+9,
+        and the Window menu — and every document's title leads with its number, because the
+        title is the one string your screen reader reads on arrival.
+      </p>
+
+      <h3>Speech, and the decision not to have a voice</h3>
+      <p>
+        QUILL Lite speaks through a running NVDA or JAWS and nowhere else. No SAPI, no
+        synthesised voice of its own — because a second voice talking over a screen reader
+        is worse than silence. For anyone with no reader running, every message is also in
+        the status bar, which is exactly why the status bar is focusable.
+      </p>
+      <p>
+        QUILL does have its own voice, on purpose and as a separate feature: Read Aloud in
+        a secondary voice, offline speech engines that never touch the network, batch
+        document-to-speech, audiobook building from a folder, offline transcription, and
+        voice commands. If you want a document read to you while you do something else,
+        that is QUILL.
+      </p>
+
+      <h3>Braille</h3>
+      <p>
+        QUILL has a Braille mode: it opens and writes BRF, BRL, PEF and UEB, translates and
+        back-translates through liblouis, validates and repairs files, detects page
+        structure, and drives braille-specific status cells on a display. QUILL Lite has
+        none of it, and that is the clearest single reason a braille reader should install
+        QUILL.
+      </p>
+
+      <h3>AI: the same five commands, and then everything around them</h3>
+      <p>
+        The free hosted AI is at parity, deliberately — summarising or explaining a passage
+        is disproportionately valuable to somebody who cannot skim, which is why it was the
+        one exception to QUILL Lite's no-AI rule. Both products have the same AI pad on
+        Ctrl+Alt+G, the same document question on Ctrl+Alt+Z, the same <strong>Use My
+        ChatGPT Subscription</strong> on Alt+F5, the same <strong>Ask About an
+        Image</strong> on Ctrl+F5, the same web-search checkbox, the same conversations and
+        the same ten writing tools — behind the same two gates: a privacy agreement you
+        have to read, and a connection you have to make.
+      </p>
+      <p>
+        What QUILL adds is everything around that: bring your own key, a provider list with
+        a default cascade, local on-device models, interchangeable agent harnesses, a prompt
+        library, shareable prompt and skill packs, grammar checking, alt text for images,
+        and a wizard to set it all up.
+      </p>
+
+      <h3>The environment itself</h3>
+      <p>
+        This is what the word "Lite" is really about. QUILL has Quillins — sandboxed
+        extensions, twenty-three of them bundled, plus a community hub — the eight
+        QuillVille companion apps on one launcher, Git and GitHub as first-class citizens,
+        remote sites, accessible library and NLS BARD search, document compare,
+        watch-folder automation, macros, timer events, sticky notes with global hotkeys,
+        equations, tables and a table studio, Reveal Codes, Story Studio, an accessible
+        notes vault with backlinks, an accessibility auditor that produces a conformance
+        report, internet radio and podcasts inside the editor, and a nine-page wizard to
+        introduce them. QUILL Lite has none of it, and opens instantly.
+      </p>
+
+      <h3>Five gaps in QUILL, found by building QUILL Lite</h3>
+      <p>
+        Five commands exist in QUILL Lite and not in QUILL: Print Preview, Unfold All,
+        Paste Collected, Clear Collected, and closing one numbered child window. Under
+        family rule 10 that is not a feature list, it is a bug list, and the codebase
+        tracks it as one — capped, so it cannot quietly grow. It is on this page because a
+        comparison that only flattered the larger product would not be worth reading. (A
+        sixth entry, Underline, is on the internal list only because QUILL's Ctrl+U is
+        wired straight into the editor instead of through the keymap. It works.)
+      </p>
+
+      <h2 id="moving-up" tabindex="-1" class="focus-target">Moving from QUILL Lite to QUILL</h2>
+      <p>
+        This is a supported path with a menu item behind it, not a migration you do by
+        hand. QUILL's <strong>Bring my QUILL Lite settings</strong> shows you a plan before
+        it does anything, and then treats two kinds of state differently, for a reason.
+      </p>
+      <ul class="fact-list">
+        <li>
+          <strong>Content is shared from then on.</strong>
+          Abbreviations, your personal dictionary, the copy tray, the clip library and
+          per-file bookmarks are things you build up over months, so they are merged into
+          QUILL's folder and QUILL Lite is pointed at it. After that, a change in either
+          editor is a change in both.
+        </li>
+        <li>
+          <strong>Preferences are copied once, and then allowed to drift.</strong>
+          Wrap, autosave, spell-check-while-typing and your rebound keys are about the
+          editor you are in — and a chord you rebound in a nine-menu editor should not
+          silently rebind something in a twelve-menu one.
+        </li>
+        <li>
+          <strong>Nothing you already have is lost.</strong>
+          QUILL's own entry wins every collision, in every store, because anyone running
+          the import has been using QUILL and what is already there is the more recent of
+          the two.
+        </li>
+      </ul>
+      <p>
+        The two products also store five settings under different names — QUILL Lite's
+        <code>autosave_seconds</code> is QUILL's <code>autosave_interval_seconds</code>, for
+        one — so the importer translates rather than copies. You never see any of that,
+        which is the point of it being written down in one place and tested.
+      </p>
+
+      <h2 id="table" tabindex="-1" class="focus-target">The full comparison, category by category</h2>
+      <p>
+        Eleven categories of capability, compared for QUILL 0.9.0 Beta 2 and QUILL Lite
+        1.1.2, as of 30 September 2026. In every table the first column names the
+        capability, the second column is QUILL, and the third column is QUILL Lite. A
+        dashed line down the left edge of a row means one of the two does not have that
+        capability; the words in the row say which.
+      </p>
+      <p>
+        It is eleven tables rather than one long one so that heading navigation reaches
+        every category, so that your screen reader's table list becomes a way to move
+        between them, and so that you hear "row 5 of 18" instead of "row 82 of 152". What
+        that costs is the ability to sweep the whole matrix in one pass, which is why each
+        table opens with a sentence that answers it in words first.
+      </p>
+
+      <nav class="cmp-jump" aria-labelledby="jump-h">
+        <h3 id="jump-h">Jump to a category</h3>
+        <ul>
+          <li><a href="#t-product">The product</a></li>
+          <li><a href="#t-windows">Documents and windows</a></li>
+          <li><a href="#t-files">Files it opens and saves</a></li>
+          <li><a href="#t-writing">Writing and formatting</a></li>
+          <li><a href="#t-nav">Moving around a document</a></li>
+          <li><a href="#t-speech">Speech, sound and braille</a></li>
+          <li><a href="#t-ai">AI</a></li>
+          <li><a href="#t-tools">Tools and the wider environment</a></li>
+          <li><a href="#t-safety">Safety and your data</a></li>
+          <li><a href="#t-custom">Customising it</a></li>
+          <li><a href="#t-gaps">Gaps QUILL Lite has closed first</a></li>
+        </ul>
+      </nav>
+
+      <h3 id="t-product" tabindex="-1" class="focus-target">The product</h3>
+      <p class="group-verdict">
+        Both are free and MIT-licensed. QUILL also runs on macOS, has eleven menus to
+        QUILL Lite's nine, and is the smaller download of the two.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>The product: what each one is, what it runs on, and what it costs to download.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">What it is</th><td>A writing and document environment</td><td>An editor, and nothing else</td></tr>
+            <tr><th scope="row">Current release</th><td>0.9.0 Beta 2<span class="qual">1.0 is next</span></td><td>1.1.2</td></tr>
+            <tr class="gap"><th scope="row">Operating systems</th><td>Windows 10 or later, 64-bit<span class="qual">and macOS 12 or later</span></td><td>Windows 10 or later, 64-bit</td></tr>
+            <tr><th scope="row">Licence and price</th><td>MIT, free, no paid tier</td><td>MIT, free, no paid tier</td></tr>
+            <tr><th scope="row">Top-level menus</th><td>Eleven<span class="qual">twelve with the Audio Description Project switched on</span></td><td>Nine</td></tr>
+            <tr><th scope="row">Commands with a key</th><td>463 by default</td><td>216 by default<span class="qual">every one of them shown in a menu beside its key</span></td></tr>
+            <tr><th scope="row">Download size</th><td>78 MB or 199 MB installer<span class="qual">128 MB or 233 MB portable ZIP; 136 MB macOS disk image</span></td><td>230 MB installer<span class="qual">300 MB portable ZIP</span></td></tr>
+            <tr><th scope="row">What is in the download</th><td>An online installer fetches speech engines, converters and language packs on first use; an offline installer bundles them</td><td>Everything in one file, including the offline dictation recogniser</td></tr>
+            <tr><th scope="row">Portable build</th><td>Yes<span class="qual">runs from a USB stick</span></td><td>Yes<span class="qual">runs from a USB stick</span></td></tr>
+            <tr><th scope="row">On first run</th><td>A nine-page setup wizard<span class="qual">skippable, and you can run it again later</span></td><td>No wizard<span class="qual">a profile chooser lives in Tools, Customize Features</span></td></tr>
+            <tr><th scope="row">Where settings live</th><td>Its own folder, and you can move it<span class="qual">including onto a synced drive</span></td><td>Its own folder<span class="qual">deliberately separate from QUILL's</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-windows" tabindex="-1" class="focus-target">Documents and windows</h3>
+      <p class="group-verdict">
+        Both hold many documents at once. QUILL uses tabs, which Alt+Tab can reach; QUILL
+        Lite uses numbered child windows, which it cannot, and binds four other ways
+        instead.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Documents and windows: how more than one document at a time is handled.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Documents open at once</th><td>Many, in tabs, across one or more windows</td><td>Many, as numbered children of a single window</td></tr>
+            <tr><th scope="row">Opening another document</th><td>Ctrl+T for a tab, Ctrl+N for a document</td><td>Ctrl+N<span class="qual">the new document takes the next free number, and a number is never reused while its document is open</span></td></tr>
+            <tr><th scope="row">Moving between documents</th><td>Ctrl+Tab, Ctrl+Shift+Tab, the tab control, the Window menu</td><td>Ctrl+F6, Ctrl+Tab, Alt+1 to Alt+9, the Window menu</td></tr>
+            <tr class="gap"><th scope="row">Reachable from Alt+Tab</th><td>Yes<span class="qual">one entry per window</span></td><td>No<span class="qual">numbered child windows do not appear in Alt+Tab, which is why four other ways are bound</span></td></tr>
+            <tr class="gap"><th scope="row">Document kinds</th><td>Plain text, Markdown, HTML, rich text<span class="qual">RTF and Word</span></td><td>Plain text, Markdown, HTML, rich text<span class="qual">RTF only</span></td></tr>
+            <tr><th scope="row">Switching kind in place</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">What Ctrl+N creates</th><td>Whatever you set<span class="qual">the QUILL Lite profile makes plain text</span></td><td>Whatever you set<span class="qual">the Notepad profile makes plain text, WordPad makes rich text</span></td></tr>
+            <tr><th scope="row">Reopening the last session</th><td>Yes</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-files" tabindex="-1" class="focus-target">Files it opens and saves</h3>
+      <p class="group-verdict">
+        This is the biggest difference on the page. QUILL Lite opens eight text-like
+        extensions and rich text. QUILL opens more or less anything a document can arrive
+        as.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Files it opens and saves: every format family, and whether it can be edited in place.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Format or capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Plain text and source code</th><td>Yes<span class="qual">a full polyglot list, with syntax-aware word movement and spell check</span></td><td>Yes<span class="qual"><code>.txt</code>, <code>.md</code>, <code>.log</code>, <code>.csv</code>, <code>.json</code>, <code>.py</code>, <code>.html</code>, <code>.htm</code></span></td></tr>
+            <tr><th scope="row">Rich text, <code>.rtf</code></th><td>Read and write</td><td>Read and write</td></tr>
+            <tr class="gap"><th scope="row">Word, <code>.docx</code></th><td>Read and write</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Word 97, <code>.doc</code></th><td>Read<span class="qual">Save As only, so the original is protected</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">PowerPoint</th><td>Read<span class="qual">Save As only</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Excel and spreadsheets</th><td>Read<span class="qual">each sheet becomes a section, with column navigation and totals</span></td><td>CSV as plain text only</td></tr>
+            <tr class="gap"><th scope="row">OpenDocument</th><td>Read<span class="qual">text, spreadsheet and presentation</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Apple iWork</th><td>Read<span class="qual">Pages, Keynote, Numbers</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">PDF</th><td>Read<span class="qual">with local OCR for scanned pages</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Images, by OCR</th><td>Yes<span class="qual">PNG, JPEG, multi-page TIFF, HEIC and more, using local Tesseract, with AI escalation for handwriting</span></td><td>No<span class="qual">it can describe a picture with AI, but not open one as a document</span></td></tr>
+            <tr class="gap"><th scope="row">EPUB and e-books</th><td>Read</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Braille</th><td>Read, write and translate<span class="qual">BRF, BRL, PEF, UEB, both directions</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">DAISY and NIMAS</th><td>Read, and export a DAISY 2.02 talking book</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Email, calendars, contacts</th><td>Read<span class="qual">including <code>.msg</code>, <code>.pst</code> and <code>mbox</code> archives</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Notebooks, subtitles, feeds</th><td>Read<span class="qual">also chat exports and saved web pages</span></td><td>No</td></tr>
+            <tr><th scope="row">TeX, AsciiDoc, Org-mode</th><td>Read and edit, with preview</td><td>As plain text</td></tr>
+            <tr class="gap"><th scope="row">Remote files</th><td>Yes<span class="qual">FTP, SFTP, WebDAV, S3, HTTPS</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Git and GitHub</th><td>Yes<span class="qual">repositories, issues, releases, workflows, branches and worktrees</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Export through Pandoc</th><td>Yes<span class="qual">eleven formats, plus PDF</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Batch conversion</th><td>Yes<span class="qual">a four-page wizard</span></td><td>No</td></tr>
+            <tr><th scope="row">Byte-for-byte round trip</th><td>Yes<span class="qual">encoding and line endings you can set</span></td><td>Yes<span class="qual">encoding and line endings you can set</span></td></tr>
+            <tr><th scope="row">Protecting a file it cannot write</th><td>Yes<span class="qual">enforced in the file layer, not by the interface</span></td><td>Not applicable<span class="qual">it only opens what it can write</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-writing" tabindex="-1" class="focus-target">Writing and formatting</h3>
+      <p class="group-verdict">
+        The everyday formatting is the same in both, headings 1 to 6 included. Tables,
+        equations, Reveal Codes and the list studio are QUILL's.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Writing and formatting: what you can do to the words once they are on the screen.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Bold, italic, underline</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Headings 1 to 6</th><td>Yes<span class="qual">and back to body text</span></td><td>Yes<span class="qual">and back to body text</span></td></tr>
+            <tr><th scope="row">Promote and demote a heading</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Alignment, spacing, lists</th><td>Yes<span class="qual">bullets and numbering</span></td><td>Yes<span class="qual">bullets and numbering</span></td></tr>
+            <tr><th scope="row">Editor and selection fonts</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Describe the formatting</th><td>Yes<span class="qual">at the cursor, on demand</span></td><td>Yes<span class="qual">at the cursor, on demand</span></td></tr>
+            <tr><th scope="row">Case conversions</th><td>Yes<span class="qual">five of them</span></td><td>Yes<span class="qual">five of them</span></td></tr>
+            <tr><th scope="row">Line tools</th><td>Yes<span class="qual">sort, de-duplicate, trim, number, reverse, quote, join, move</span></td><td>Yes<span class="qual">the same set</span></td></tr>
+            <tr><th scope="row">Markdown and HTML tags</th><td>Yes<span class="qual">with a picker and entity conversion</span></td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Tables</th><td>Yes<span class="qual">Insert Table, table mode for Markdown and HTML, and a table studio</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Equations</th><td>Yes<span class="qual">entered, spoken, explored structurally, and exported to Word</span></td><td>No</td></tr>
+            <tr><th scope="row">Abbreviation expansion</th><td>Yes<span class="qual">and system-wide through Quill Inkwell</span></td><td>Yes<span class="qual">inside the editor</span></td></tr>
+            <tr><th scope="row">Snippets</th><td>Yes<span class="qual">a gallery, trigger expansion, Emmet-style abbreviations, word prediction and tag completion</span></td><td>A gallery</td></tr>
+            <tr><th scope="row">Autocorrect</th><td>Yes</td><td>Yes<span class="qual">switched off by default, because it is wrong in a config file</span></td></tr>
+            <tr><th scope="row">Special characters and emoji</th><td>Yes</td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Structured List Studio</th><td>Yes<span class="qual">F2</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Reveal Codes</th><td>Yes</td><td>No</td></tr>
+            <tr><th scope="row">Word count and statistics</th><td>Yes<span class="qual">with reading metrics and a per-document word goal</span></td><td>Yes<span class="qual">word count and line statistics</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-nav" tabindex="-1" class="focus-target">Moving around a document</h3>
+      <p class="group-verdict">
+        Nearly all of this is shared, headings and the nine numbered bookmarks included.
+        Quick Nav, bookmark export and the timeline are QUILL's.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Moving around a document: getting where you want without a scrollbar.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Next and previous heading</th><td>Yes<span class="qual">and the heading is spoken on arrival</span></td><td>Yes<span class="qual">and the heading is spoken on arrival</span></td></tr>
+            <tr><th scope="row">Headings in plain text</th><td>Yes<span class="qual">Markdown headings are real headings, not only in rich text</span></td><td>Yes<span class="qual">Markdown headings are real headings, not only in rich text</span></td></tr>
+            <tr><th scope="row">Headings list and organizer</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Outline navigator</th><td>Yes<span class="qual">the full heading tree</span></td><td>A headings list</td></tr>
+            <tr class="gap"><th scope="row">Single-key structure jumps</th><td>Yes<span class="qual">QUILL Quick Nav</span></td><td>No</td></tr>
+            <tr><th scope="row">Nine numbered bookmarks</th><td>Yes<span class="qual">they move with the text</span></td><td>Yes<span class="qual">they move with the text</span></td></tr>
+            <tr><th scope="row">Temporary bookmark and mark ring</th><td>Yes</td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Exporting bookmarks</th><td>Yes<span class="qual">and importing them</span></td><td>No</td></tr>
+            <tr><th scope="row">Back and forward</th><td>Yes<span class="qual">through where you have been</span></td><td>Yes<span class="qual">through where you have been</span></td></tr>
+            <tr><th scope="row">Go to line</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Go To Anything</th><td>Yes</td><td>Yes<span class="qual">switched off by default</span></td></tr>
+            <tr><th scope="row">Command palette</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Section folding</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Sentence and paragraph moves</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Remembering your place</th><td>Yes<span class="qual">per document, and across machines with QUILL Sync</span></td><td>Session restore</td></tr>
+            <tr class="gap"><th scope="row">A document timeline</th><td>Yes</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-speech" tabindex="-1" class="focus-target">Speech, sound and braille</h3>
+      <p class="group-verdict">
+        Both talk to NVDA and JAWS to the same standard, and both dictate. A voice of its
+        own, and braille, are QUILL's — the first by QUILL Lite's deliberate choice.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Speech, sound and braille: what talks, what listens, and what reaches a display.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Announcements to NVDA and JAWS</th><td>Yes</td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">A voice of its own</th><td>Yes<span class="qual">Read Aloud, as a separate feature you switch on</span></td><td>No<span class="qual">by design: a second voice over a screen reader is worse than silence</span></td></tr>
+            <tr class="gap"><th scope="row">Offline speech engines</th><td>Yes<span class="qual">nothing sent anywhere</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Batch speech and audiobooks</th><td>Yes<span class="qual">whole documents, and a book from a folder</span></td><td>No</td></tr>
+            <tr><th scope="row">Offline dictation</th><td>Yes</td><td>Yes<span class="qual">the recogniser ships inside it and nothing you say leaves the computer</span></td></tr>
+            <tr><th scope="row">Windows dictation</th><td>Yes<span class="qual">including words you teach it</span></td><td>Yes<span class="qual">including words you teach it</span></td></tr>
+            <tr><th scope="row">Tidying misheard dictation</th><td>Yes<span class="qual">with AI, which is told to change nothing else</span></td><td>Yes<span class="qual">with AI, which is told to change nothing else</span></td></tr>
+            <tr class="gap"><th scope="row">Voice commands</th><td>Yes<span class="qual">and a voice conversation mode</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Braille mode</th><td>Yes<span class="qual">translation, back-translation, validation and repair</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Braille status cells</th><td>Yes<span class="qual">on a connected display</span></td><td>No</td></tr>
+            <tr><th scope="row">Sound schemes and quiet mode</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Sound or speech, your choice</th><td>Yes<span class="qual">per kind of feedback, and a count is always spoken</span></td><td>Yes<span class="qual">per kind of feedback, and a count is always spoken</span></td></tr>
+            <tr><th scope="row">A focusable status bar</th><td>Yes<span class="qual">F6, read cell by cell</span></td><td>Yes<span class="qual">F6, read cell by cell</span></td></tr>
+            <tr><th scope="row">F1 everywhere</th><td>Yes<span class="qual">every window and every control</span></td><td>Yes<span class="qual">every window and every control</span></td></tr>
+            <tr><th scope="row">Key Describer</th><td>Yes<span class="qual">it names what a chord does</span></td><td>Not applicable<span class="qual">QUILL Lite has no chords</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-ai" tabindex="-1" class="focus-target">AI</h3>
+      <p class="group-verdict">
+        The free hosted AI is identical in both, down to the keys. Everything around it —
+        other providers, local models, agents, packs — is QUILL's.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>AI: the free hosted service is the same in both; the surrounding machinery is not.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">The free hosted AI</th><td>Yes<span class="qual">no account, no password, no card</span></td><td>Yes<span class="qual">no account, no password, no card</span></td></tr>
+            <tr><th scope="row">The AI pad</th><td>Ctrl+Alt+G</td><td>Ctrl+Alt+G</td></tr>
+            <tr><th scope="row">Ask about the document</th><td>Ctrl+Alt+Z<span class="qual">it reads the file on your computer and sends only the passages that answer</span></td><td>Ctrl+Alt+Z<span class="qual">it reads the file on your computer and sends only the passages that answer</span></td></tr>
+            <tr><th scope="row">Seeing what will be sent</th><td>Yes<span class="qual">in a box you can read line by line, before anything leaves</span></td><td>Yes<span class="qual">in a box you can read line by line, before anything leaves</span></td></tr>
+            <tr><th scope="row">Use your ChatGPT plan</th><td>Alt+F5</td><td>Alt+F5</td></tr>
+            <tr><th scope="row">Ask about an image</th><td>Ctrl+F5</td><td>Ctrl+F5</td></tr>
+            <tr><th scope="row">Web search</th><td>Yes<span class="qual">off until you switch it on</span></td><td>Yes<span class="qual">off until you switch it on</span></td></tr>
+            <tr><th scope="row">Conversations and writing tools</th><td>Yes<span class="qual">ten of them</span></td><td>Yes<span class="qual">ten of them</span></td></tr>
+            <tr><th scope="row">A privacy agreement first</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">A usage window</th><td>Yes<span class="qual">where you stand, and when each count starts again</span></td><td>Yes<span class="qual">where you stand, and when each count starts again</span></td></tr>
+            <tr><th scope="row">Your own OpenAI key</th><td>Yes<span class="qual">Alt+F2</span></td><td>Yes<span class="qual">Alt+F2</span></td></tr>
+            <tr class="gap"><th scope="row">Other AI providers</th><td>Yes<span class="qual">a provider list, and a default cascade between them</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Local, on-device models</th><td>Yes</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Agent harnesses</th><td>Yes<span class="qual">interchangeable</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Prompt library and packs</th><td>Yes<span class="qual">shareable prompt and skill packs</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Grammar checking with AI</th><td>Yes</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Alt text for an image</th><td>Yes</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">An AI setup wizard</th><td>Yes</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-tools" tabindex="-1" class="focus-target">Tools and the wider environment</h3>
+      <p class="group-verdict">
+        This is what the word "Lite" is really about. Spelling, printing, tutorials and
+        getting help are shared; the rest of this list is QUILL's, and is why it is the
+        bigger program.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Tools and the wider environment: the part the word "Lite" is really about.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Spell check</th><td>Yes<span class="qual">guided review, letter-by-letter and phonetic spelling, a personal dictionary</span></td><td>Yes<span class="qual">the same checker, the same review, the same dictionary</span></td></tr>
+            <tr class="gap"><th scope="row">Comparing two documents</th><td>Yes<span class="qual">or one against the clipboard</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Extensions, called Quillins</th><td>Yes<span class="qual">twenty-three bundled, and a community hub for more</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Companion apps on one launcher</th><td>Yes<span class="qual">Radio, Cast, Weather, Audio Studio, Converter, Media Player, Inkwell</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Watch-folder automation</th><td>Yes</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Macros</th><td>Yes</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Timer events</th><td>Yes</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Sticky notes and global hotkeys</th><td>Yes<span class="qual">the hotkeys work outside the app</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Accessible library search</th><td>Yes<span class="qual">including the NLS BARD catalogue</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Radio and podcasts in the editor</th><td>Yes</td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Story Studio</th><td>Yes<span class="qual">manuscripts and long-form organisation</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Notes vault with backlinks</th><td>Yes<span class="qual">and a website export</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Accessibility auditor</th><td>Yes<span class="qual">and it can generate a conformance report</span></td><td>No</td></tr>
+            <tr class="gap"><th scope="row">Posting to Mastodon</th><td>Yes</td><td>No</td></tr>
+            <tr><th scope="row">Printing and page setup</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Spoken tutorials</th><td>Yes</td><td>Yes<span class="qual">nine lessons, each saying what to press and what you should hear</span></td></tr>
+            <tr><th scope="row">Getting help without an account</th><td>Yes<span class="qual">with a diagnostic bundle you can read before you send it</span></td><td>Yes<span class="qual">with your support ID filled in for you</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-safety" tabindex="-1" class="focus-target">Safety and your data</h3>
+      <p class="group-verdict">
+        Effectively identical. Neither one sends anything anywhere unless you ask, and
+        neither has any telemetry at all.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Safety and your data: what happens to your work when something goes wrong.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Unsaved work after a crash</th><td>Recovered</td><td>Recovered</td></tr>
+            <tr><th scope="row">Session restore</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Timestamped backups</th><td>Yes<span class="qual">a dated copy on every save</span></td><td>Yes<span class="qual">switched off by default: reassuring, and they fill a folder</span></td></tr>
+            <tr><th scope="row">Restore points</th><td>Yes<span class="qual">one per save, browsable</span></td><td>Yes<span class="qual">as Browse Backups</span></td></tr>
+            <tr><th scope="row">Atomic writes</th><td>Yes<span class="qual">a half-written settings file cannot exist</span></td><td>Yes<span class="qual">a half-written settings file cannot exist</span></td></tr>
+            <tr class="gap"><th scope="row">Safe Mode</th><td>Yes<span class="qual">starts with AI, watch folder and extensions off</span></td><td>Not applicable<span class="qual">nothing to switch off at this size; when it cannot start, it says why in a sentence</span></td></tr>
+            <tr><th scope="row">Crash reports</th><td>Only if you opt in, with secrets scrubbed</td><td>Only if you opt in, with secrets scrubbed</td></tr>
+            <tr><th scope="row">Sensitive settings encrypted</th><td>Yes<span class="qual">by Windows itself</span></td><td>Yes<span class="qual">by Windows itself</span></td></tr>
+            <tr><th scope="row">Signed installer and application</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Telemetry</th><td>None</td><td>None</td></tr>
+            <tr><th scope="row">Anything sent without asking</th><td>Nothing</td><td>Nothing</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-custom" tabindex="-1" class="focus-target">Customising it</h3>
+      <p class="group-verdict">
+        Both let you rebind every key and switch features off. QUILL adds chords, a
+        settings search, per-document keymaps and a translated interface.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Customising it: how far each one bends to the way you already work.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Rebinding a key</th><td>Yes<span class="qual">Keyboard Settings</span></td><td>Yes<span class="qual">the Keyboard Manager, which names a key's current owner first</span></td></tr>
+            <tr class="gap"><th scope="row">Chords on a leader key</th><td>Yes<span class="qual">the QUILL Key</span></td><td>No<span class="qual">a writing environment's grammar, deliberately left out</span></td></tr>
+            <tr class="gap"><th scope="row">Per-document keymap</th><td>Yes<span class="qual">with explicit consent</span></td><td>No</td></tr>
+            <tr><th scope="row">Named feature profiles</th><td>Eleven<span class="qual">one of them is called QUILL Lite</span></td><td>Four<span class="qual">Recommended, Everything, WordPad, Notepad</span></td></tr>
+            <tr><th scope="row">Individual feature switches</th><td>Yes</td><td>Yes<span class="qual">twenty areas, and switching one off takes its keys as well as its menu</span></td></tr>
+            <tr class="gap"><th scope="row">Settings search</th><td>Yes</td><td>No</td></tr>
+            <tr><th scope="row">Settings export and import</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Theme follows the system</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Text size and reset</th><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Importing a QUILL Lite setup</th><td>Yes<span class="qual">one menu item, and it shows its plan first</span></td><td>Not applicable</td></tr>
+            <tr class="gap"><th scope="row">Interface language</th><td>Translated<span class="qual">through a community pipeline</span></td><td>English</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="t-gaps" tabindex="-1" class="focus-target">Gaps QUILL Lite has closed first</h3>
+      <p class="group-verdict">
+        Five commands QUILL Lite has and QUILL does not. Family rule 10 says that is not
+        allowed to stand, so this is QUILL's backlog rather than QUILL Lite's advantage.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Gaps QUILL Lite has closed first: a tracked bug list, capped so it cannot grow.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Command</th>
+              <th scope="col">QUILL</th>
+              <th scope="col">QUILL Lite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="gap"><th scope="row">Print Preview</th><td>No<span class="qual">it prints, but has no preview window</span></td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Unfold All</th><td>No<span class="qual">it folds and lists folds, but cannot unfold everything at once</span></td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Paste Collected</th><td>No<span class="qual">its collector writes straight into the document, so there is no paste step</span></td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Clear Collected</th><td>No</td><td>Yes</td></tr>
+            <tr class="gap"><th scope="row">Closing one numbered window</th><td>Not applicable<span class="qual">QUILL has tabs</span></td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="downloads" tabindex="-1" class="focus-target">Download either one</h2>
+      <p>
+        Both are free. Every installer and portable build is digitally signed, so Windows
+        can confirm it has not been altered, and neither program takes over your file
+        associations without being asked.
+      </p>
+
+      <h3>QUILL</h3>
+      <p class="cta">
+        <a class="btn" href="https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-0.9.0.Beta.2.exe">QUILL 0.9.0 Beta 2 installer for Windows</a>
+        <a class="btn secondary" href="https://github.com/Community-Access/quill/releases/tag/v0.9.0-beta.2">All QUILL 0.9.0 Beta 2 downloads, including macOS and portable</a>
+      </p>
+      <p class="req-note">
+        Windows 10 or later, 64-bit, or macOS 12 or later. The installer above is the
+        online one: 78 MB, and it fetches speech engines, converters and language packs
+        the first time you use them. The release page also has a 199 MB offline installer
+        that needs no connection, two portable ZIPs, and the 136 MB macOS disk image.
+      </p>
+
+      <h3>QUILL Lite</h3>
+      <p class="cta">
+        <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Setup-Shared-1.1.2.exe">QUILL Lite 1.1.2 installer for Windows</a>
+        <a class="btn secondary" href="https://github.com/Community-Access/quill/releases/tag/quill-lite-v1.1.2">All QUILL Lite 1.1.2 downloads, including portable</a>
+      </p>
+      <p class="req-note">
+        Windows 10 or later, 64-bit. The installer is 230 MB because everything is inside
+        it, the offline dictation recogniser included; the portable ZIP is 300 MB and
+        carries its own data folder, so it runs from a USB stick. The installer can add
+        QUILL Lite to the Open With list for <code>.txt</code> and <code>.rtf</code>
+        without ever making itself the default.
+      </p>
+
+      <h2 id="read-more" tabindex="-1" class="focus-target">Read more before you decide</h2>
+
+      <h3>About QUILL Lite</h3>
+      <ul>
+        <li><a href="/quilllite.html">What QUILL Lite is, in its own words</a> — the product page, including the free AI.</li>
+        <li><a href="/docs/quilllite-userguide.html">The QUILL Lite user guide</a> — every menu, every key, and what each one says.</li>
+        <li><a href="/docs/quilllite-prd.html">Why QUILL Lite exists: the QUILL Lite product requirements</a> — what it keeps, what it drops, and the argument for each decision.</li>
+        <li><a href="/docs/quilllite-ai-guide.html">The QUILL Lite AI guide</a> — what is sent, what is kept, and what the free service costs to run.</li>
+      </ul>
+
+      <h3>About QUILL</h3>
+      <ul>
+        <li><a href="/docs/userguide.html">The QUILL user guide</a> — the whole writing environment.</li>
+        <li><a href="/docs/keyboard-reference.html">The QUILL keyboard reference</a> — all 463 default bindings, generated from the keymap the app actually loads.</li>
+      </ul>
+
+      <h3>About both</h3>
+      <ul>
+        <li><a href="/faq.html">QUILL frequently asked questions</a> — installing, updating, portable builds, privacy, and what the AI does with your text.</li>
+        <li><a href="/docs.html">All documentation for every app in the family</a>.</li>
+      </ul>
+
+      <p class="back-top"><a href="#main">Back to the top of this page</a></p>
+    </div>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <p class="note">
+        <strong class="quill" style="color:var(--accent)">QUILL</strong> —
+        Quality, Usable, Inclusive, Lightweight, Literate. A screen-reader-first
+        writing environment for Windows and macOS, built by the community that
+        depends on it.
+      </p>
+      <nav aria-label="Documentation">
+        <h4>Documentation</h4>
+        <ul>
+          <li><a href="/docs/userguide.html">QUILL user guide</a></li>
+          <li><a href="/docs/quilllite-userguide.html">QUILL Lite user guide</a></li>
+          <li><a href="/docs/quillins.html">Quillin tutorial</a></li>
+          <li><a href="/faq.html">QUILL frequently asked questions</a></li>
+          <li><a href="/docs.html">All documentation for every app in the family</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Project">
+        <h4>Project</h4>
+        <ul>
+          <li><a href="https://github.com/Community-Access/quill/releases/tag/v0.9.0-beta.2">All QUILL 0.9.0 Beta 2 downloads, including macOS and portable</a></li>
+          <li><a href="https://github.com/Community-Access/quill/releases/tag/quill-lite-v1.1.2">All QUILL Lite 1.1.2 downloads, including portable</a></li>
+          <li><a href="https://hub.quillforall.org">Quillin Hub</a></li>
+          <li><a href="/docs/contributing.html">Contributing to QUILL</a></li>
+          <li><a href="/docs/governance.html">How QUILL is governed</a></li>
+          <li><a href="mailto:support@community-access.org">Email QUILL support</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Privacy and security">
+        <h4>Privacy &amp; security</h4>
+        <ul>
+          <li><a href="/docs/privacy.html">QUILL's privacy policy</a></li>
+          <li><a href="/docs/security.html">Reporting a security problem</a></li>
+          <li><a href="/docs/responsible-ai-use.html">Responsible AI use</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

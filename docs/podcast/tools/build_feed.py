@@ -63,13 +63,23 @@ def _page_shell(title: str, body: str, *, depth: int = 0) -> str:
         '<link rel="alternate" type="application/rss+xml" title="The QUILL Cast" '
         f'href="{prefix}feed.xml">\n'
         "</head>\n<body>\n"
+        # A skip link, and a <main> the skip link can actually reach. These pages
+        # shipped with neither: a bare <main> with no id, so there was nothing to
+        # bypass the nav with (2.4.1) even though every hand-built page on the
+        # site has had one all along. tabindex="-1" is the load-bearing half --
+        # <main> is not focusable without it, so a skip link pointing at it moves
+        # focus nowhere and the next Tab returns to the nav the listener just
+        # asked to skip. style.css styles the ring (main[tabindex="-1"]).
+        '<a class="skip-link" href="#main">Skip to main content</a>\n'
         '<header class="site"><div class="wrap"><nav class="site" aria-label="Primary">'
         '<ul><li><a href="/index.html">QUILL home</a></li>'
         f'<li><a href="{prefix}index.html">All episodes</a></li>'
         '<li><a href="/tutorials/index.html">Tutorials</a></li>'
         '<li><a href="/docs/userguide.html">User guide</a></li></ul>'
         "</nav></div></header>\n"
-        '<main><div class="wrap">\n' + body + "\n</div></main>\n</body>\n</html>\n"
+        '<main id="main" tabindex="-1"><div class="wrap">\n'
+        + body
+        + "\n</div></main>\n</body>\n</html>\n"
     )
 
 
