@@ -37,7 +37,7 @@ from typing import Literal
 
 from quill import __version__
 from quill.core.error_codes import CodedError
-from quill.core.podcasts import feed_auth
+from quill.core.podcasts import feed_auth, transport
 
 _log = logging.getLogger(__name__)
 
@@ -105,8 +105,8 @@ def _fetch_chunked(
     Reads in bounded chunks so pause/cancel take effect within one chunk,
     not only between whole-file attempts.
     """
-    if not url.startswith("https://"):
-        raise DownloadError("Only https:// episode links can be downloaded.")
+    if not transport.is_allowed(url):
+        raise DownloadError("An episode link must start with https:// or http://.")
     destination.parent.mkdir(parents=True, exist_ok=True)
     resume_from = destination.stat().st_size if destination.exists() else 0
     headers = {"User-Agent": _USER_AGENT}

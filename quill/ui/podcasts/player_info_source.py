@@ -62,6 +62,14 @@ def gather(host: Any) -> Any:
     )
     if source:
         extras.append(f"Playing from: {source}")
+    # Plain http is allowed (R29) and therefore has to be *visible*. Only the
+    # insecure case is reported: "encrypted" on every other show would be a line
+    # that is always there and so never read, and the point is the exception.
+    from quill.core.podcasts.transport import scheme_note
+
+    note = scheme_note(str(getattr(show, "feed_url", "") or ""))
+    if note:
+        extras.append(note)
     try:
         # notes_for_episode filters an already-loaded list; it does not load
         # one. Passing it two arguments raised TypeError on every run.

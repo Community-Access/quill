@@ -33,7 +33,7 @@ import feedparser
 from quill import __version__
 from quill.core.error_codes import CodedError
 from quill.core.net_retry import retry_transient
-from quill.core.podcasts import feed_auth, namespace_tags
+from quill.core.podcasts import feed_auth, namespace_tags, transport
 from quill.core.podcasts.models import PodcastEpisode
 from quill.core.podcasts.namespace_tags import NamespaceTags
 
@@ -108,8 +108,8 @@ def _fetch_feed_bytes(
     times with the same rejected credentials only delays the prompt that
     would actually fix it.
     """
-    if not url.startswith("https://"):
-        raise FeedReaderError("Only https:// feeds can be subscribed to.")
+    if not transport.is_allowed(url):
+        raise FeedReaderError("A feed address must start with https:// or http://.")
     redirected_to = redirected_to if redirected_to is not None else []
     headers = {"User-Agent": _USER_AGENT, "Accept": "application/rss+xml, application/xml, */*"}
     if username:

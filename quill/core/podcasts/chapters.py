@@ -21,7 +21,7 @@ from dataclasses import dataclass
 
 from quill import __version__
 from quill.core.error_codes import CodedError
-from quill.core.podcasts import feed_auth
+from quill.core.podcasts import feed_auth, transport
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 10.0
@@ -90,8 +90,8 @@ class PodcastChapter:
 
 def _fetch_chapters_bytes(url: str, *, auth_header: str = "") -> bytes:
     """One HTTPS GET returning raw chapters JSON bytes -- the reviewed egress site."""
-    if not url.startswith("https://"):
-        raise ChaptersError("Only https:// chapters links can be fetched.")
+    if not transport.is_allowed(url):
+        raise ChaptersError("A chapters link must start with https:// or http://.")
     headers = {"User-Agent": _USER_AGENT, "Accept": "application/json"}
     if auth_header:
         headers["Authorization"] = auth_header

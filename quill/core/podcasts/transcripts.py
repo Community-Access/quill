@@ -25,7 +25,7 @@ from pathlib import Path
 
 from quill import __version__
 from quill.core.error_codes import CodedError
-from quill.core.podcasts import feed_auth
+from quill.core.podcasts import feed_auth, transport
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 15.0
@@ -63,8 +63,8 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
 
 def _fetch_transcript_bytes(url: str, *, auth_header: str = "") -> bytes:
     """One HTTPS GET returning raw transcript bytes -- the reviewed egress site."""
-    if not url.startswith("https://"):
-        raise TranscriptError("Only https:// transcript links can be fetched.")
+    if not transport.is_allowed(url):
+        raise TranscriptError("A transcript link must start with https:// or http://.")
     headers = {"User-Agent": _USER_AGENT}
     if auth_header:
         headers["Authorization"] = auth_header

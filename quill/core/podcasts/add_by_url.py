@@ -19,6 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.podcasts import transport
+
 
 @dataclass(frozen=True, slots=True)
 class AddByUrlOutcome:
@@ -48,10 +50,10 @@ def add_podcast_by_url(data_dir: Path, url: str, *, safe_mode: bool = False) -> 
         # Plain-http feeds are refused downstream; nearly every one answers
         # on https today, so try that rather than bouncing the listener.
         address = "https://" + address[7:]
-    if not address.lower().startswith("https://"):
+    if not transport.is_allowed(address):
         return _invalid(
             "That does not look like a web address. A podcast feed address starts "
-            "with https:// -- it is usually behind a link named RSS or Subscribe "
+            "with https:// or http:// -- it is usually behind a link named RSS or Subscribe "
             "on the show's website."
         )
     if safe_mode:
