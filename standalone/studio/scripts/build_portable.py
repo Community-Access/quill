@@ -61,19 +61,26 @@ EMBEDDED_PYTHON_URL = (
 EMBEDDED_PYTHON_SHA256 = "d1f04d990aee1253d8569e8e5104e30fa9f5fa830899f14843448872d936a2cf"
 GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
 
+# ``build`` is the CMake scratch tree left by compiling the native pieces in
+# place -- quill/native/optilab/build was 8.5 MB on disk and put 87 files
+# (CMakeFiles, *.tlog, Debug/, VCTargetsPath) into every portable zip. Nothing
+# under any build/ inside quill/ is tracked in git, so none of it is shippable,
+# and those files carried the five longest paths in the archive: dropping them
+# takes the deepest entry from 144 characters to 120, which is real headroom
+# against MAX_PATH when somebody unpacks into an already-deep folder (2026-09-30).
 _DEV_CACHE_IGNORE = shutil.ignore_patterns(
-    "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", "*.pyc"
+    "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", "*.pyc", "build"
 )
 
 # Offline speech/TTS engine trees copied from the local Quill app-data folder
 # into the portable data/ dir (studio only). Each is skipped when absent.
 ENGINE_SUBDIRS = (
-    "speech-engine",   # whisper.cpp (the DEFAULT offline transcription engine)
-    "speech",          # dectalk, espeak-ng, piper
-    "engine-packs",    # kokoro-onnx, mp3-support, mathcat, ... (heavy pruned below)
-    "kokoro-models",   # neural TTS model + voices
-    "piper-models",    # piper voices
-    "speech-models",   # downloaded GGML whisper models
+    "speech-engine",  # whisper.cpp (the DEFAULT offline transcription engine)
+    "speech",  # dectalk, espeak-ng, piper
+    "engine-packs",  # kokoro-onnx, mp3-support, mathcat, ... (heavy pruned below)
+    "kokoro-models",  # neural TTS model + voices
+    "piper-models",  # piper voices
+    "speech-models",  # downloaded GGML whisper models
 )
 # Redundant / very heavy on-demand trees dropped so the bundle stays lean:
 # faster-whisper is an alternative ASR to the bundled default (whisper.cpp) and
@@ -90,11 +97,11 @@ ENGINE_PRUNE = (
 
 @dataclass(frozen=True)
 class Product:
-    key: str            # build_native_launcher.py product key
-    module: str         # python -m <module>
-    exe: str            # on-disk launcher exe name (no .exe)
+    key: str  # build_native_launcher.py product key
+    module: str  # python -m <module>
+    exe: str  # on-disk launcher exe name (no .exe)
     display: str
-    zip_name: str       # {ver} placeholder
+    zip_name: str  # {ver} placeholder
     dep_groups: tuple[str, ...]
     stage_engines: bool
     stage_ffmpeg: bool
@@ -146,10 +153,10 @@ PRODUCTS: dict[str, Product] = {
         # sound card (Jeff, from a fresh 3.1.0 portable). Everything ships in
         # both downloads, or it is not shipped.
         dep_groups=("ui", "speech", "youtube", "windows-media"),
-        stage_engines=False,   # radio streams/records; no bundled speech engines
-        stage_ffmpeg=True,     # podcast/stream recording
-        stage_mpv=True,        # playback engine
-        stage_deno=True,       # YouTube's JS challenges
+        stage_engines=False,  # radio streams/records; no bundled speech engines
+        stage_ffmpeg=True,  # podcast/stream recording
+        stage_mpv=True,  # playback engine
+        stage_deno=True,  # YouTube's JS challenges
         offline_portable_launcher=True,
     ),
     "weather": Product(
@@ -227,8 +234,8 @@ PRODUCTS: dict[str, Product] = {
         # Engines download on demand (QUILL's standard portable); the fully
         # offline variant is the separate --bundle-offline Offline Edition.
         stage_engines=False,
-        stage_ffmpeg=True,   # transcription / media
-        stage_mpv=True,      # podcasts / cast playback
+        stage_ffmpeg=True,  # transcription / media
+        stage_mpv=True,  # podcasts / cast playback
     ),
 }
 
@@ -261,7 +268,10 @@ def _runtime_dependencies(root_pyproject: Path, groups: tuple[str, ...]) -> list
 
 def _extract_embeddable(out_dir: Path, cache_dir: Path) -> Path:
     archive = cache_dir / f"python-{EMBEDDED_PYTHON_VERSION}-embed-amd64.zip"
-    if not archive.is_file() or hashlib.sha256(archive.read_bytes()).hexdigest() != EMBEDDED_PYTHON_SHA256:
+    if (
+        not archive.is_file()
+        or hashlib.sha256(archive.read_bytes()).hexdigest() != EMBEDDED_PYTHON_SHA256
+    ):
         _download(EMBEDDED_PYTHON_URL, archive, EMBEDDED_PYTHON_SHA256)
     print(f"  extracting embeddable CPython -> {out_dir}")
     with zipfile.ZipFile(archive) as zf:
@@ -276,9 +286,7 @@ def _enable_site_packages(out_dir: Path) -> None:
     if not pth_files:
         raise RuntimeError("Embeddable Python missing its ._pth file")
     zip_name = next(out_dir.glob("python*.zip")).name
-    pth_files[0].write_text(
-        f"{zip_name}\n.\nLib\\site-packages\nimport site\n", encoding="utf-8"
-    )
+    pth_files[0].write_text(f"{zip_name}\n.\nLib\\site-packages\nimport site\n", encoding="utf-8")
 
 
 def _pip(python_exe: Path, *args: str) -> None:
@@ -439,7 +447,9 @@ def _stage_deno(out_dir: Path, deno_dir: Path | None) -> None:
     shutil.copy2(license_file, dest / "DENO-LICENSE.txt")
 
 
-def _stage_tools(out_dir: Path, product: Product, ffmpeg_dir: Path | None, mpv_dir: Path | None) -> None:
+def _stage_tools(
+    out_dir: Path, product: Product, ffmpeg_dir: Path | None, mpv_dir: Path | None
+) -> None:
     if product.stage_ffmpeg and ffmpeg_dir:
         dest = out_dir / "tools" / "ffmpeg"
         dest.mkdir(parents=True, exist_ok=True)
@@ -596,18 +606,25 @@ def main() -> int:
             "edition, which bundles everything.\n",
             encoding="utf-8",
         )
-        zip_name = product.zip_name.format(ver=args.version).replace(
-            "-Portable", "-Companion"
-        ).replace("-Lean", "")
+        zip_name = (
+            product.zip_name
+            .format(ver=args.version)
+            .replace("-Portable", "-Companion")
+            .replace("-Lean", "")
+        )
         print(f"\nCompanion bundle ready: {out_dir}")
         print(f"(zip as: {zip_name})")
         return 0
     if not (out_dir / "pythonw.exe").is_file():
         raise RuntimeError("Bundle missing genuine pythonw.exe")
     check = subprocess.run(
-        [str(out_dir / "python.exe"), "-c",
-         f"import quill, wx; import {product.module}; print('OK', quill.__version__)"],
-        capture_output=True, text=True,
+        [
+            str(out_dir / "python.exe"),
+            "-c",
+            f"import quill, wx; import {product.module}; print('OK', quill.__version__)",
+        ],
+        capture_output=True,
+        text=True,
     )
     print("      runtime import check:", (check.stdout or check.stderr).strip().splitlines()[-1:])
     if check.returncode != 0:
@@ -622,23 +639,34 @@ def main() -> int:
     manifest = source_root / "standalone" / product.key / "portable-inventory.json"
     if manifest.is_file():
         gate = subprocess.run(
-            [sys.executable, str(source_root / "scripts" / "check_runtime_inventory.py"),
-             str(out_dir), "--layout", "portable", "--manifest", str(manifest)],
-            capture_output=True, text=True,
+            [
+                sys.executable,
+                str(source_root / "scripts" / "check_runtime_inventory.py"),
+                str(out_dir),
+                "--layout",
+                "portable",
+                "--manifest",
+                str(manifest),
+            ],
+            capture_output=True,
+            text=True,
         )
         print("      inventory gate:", (gate.stdout or gate.stderr).strip().splitlines()[-1])
         if gate.returncode != 0:
             print(gate.stdout)
             raise RuntimeError("Portable inventory drift -- see above (rebaseline with --write).")
     else:
-        print(f"      inventory gate: no baseline at {manifest.name}; adopt with "
-              f"check_runtime_inventory.py {out_dir} --layout portable --manifest ... --write")
+        print(
+            f"      inventory gate: no baseline at {manifest.name}; adopt with "
+            f"check_runtime_inventory.py {out_dir} --layout portable --manifest ... --write"
+        )
 
     # No bug-report credential may ship (2026-09-26): fail if a stale
     # _feedback_token.py or a feedback_hub install reached the bundle.
     creds = subprocess.run(
         [sys.executable, str(source_root / "scripts" / "check_no_credentials.py"), str(out_dir)],
-        capture_output=True, text=True,
+        capture_output=True,
+        text=True,
     )
     if creds.returncode != 0:
         print(creds.stdout, creds.stderr)

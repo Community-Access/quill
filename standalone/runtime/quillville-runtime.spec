@@ -27,14 +27,27 @@ from PyInstaller.utils.hooks import collect_all
 # (_DEV_CACHE_IGNORE); this is the same rule for the frozen builds.
 _DEV_CACHE_PARTS = ("__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache")
 
+#: The same rule for compiled-in-place native code: quill/native/<x>/build is
+#: CMake scratch (CMakeFiles, *.tlog, Debug/, VCTargetsPath), gitignored and
+#: regenerable, and it was riding into every installer's runtime exactly as the
+#: mypy caches above once did (2026-09-30). Matched on the DEST path only --
+#: the in-archive path, always "quill/native/.../build/..." -- because a build
+#: machine whose checkout merely sits under some .../build/... directory would
+#: otherwise have its whole package filtered away.
+def _is_native_build_scratch(dest):
+    parts = dest.split("/")
+    return "native" in parts and "build" in parts[parts.index("native") :]
+
 
 def drop_dev_caches(entries):
-    """Filter (source, dest) data entries whose path sits in a dev cache."""
+    """Filter (source, dest) data entries that are regenerable build detritus."""
     kept = []
     for entry in entries:
         source = str(entry[0]).replace("\\", "/")
         dest = str(entry[1]).replace("\\", "/")
         if any(f"/{part}/" in f"/{source}/" or f"/{part}/" in f"/{dest}/" for part in _DEV_CACHE_PARTS):
+            continue
+        if _is_native_build_scratch(dest):
             continue
         kept.append(entry)
     return kept

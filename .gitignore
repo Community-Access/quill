@@ -125,6 +125,9 @@ fix.md
 # worklist for one release, not a document. The permanent regression sheet is
 # docs/qa/quilllite-signoff.md.
 /test.md
+# The draft reply to a user's bug report, written for copy-and-paste and
+# never part of the repository (2026-09-30).
+/reply.md
 # The running ledger of what is in the working tree and not yet committed
 # (2026-08-18). Untracked on purpose: it describes the uncommitted diff, so a
 # committed copy would be a description of nothing.
