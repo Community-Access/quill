@@ -382,3 +382,36 @@ untimeuild_runtime.ps1), or drop -SkipSharedRuntime.
     }
 }
 
+
+
+function Assert-QuillSiblingVersions {
+    <#
+    .SYNOPSIS
+    Fail the build if any app's version is ahead of its published release
+    without being released by this build (GATE-SIBVER).
+
+    .DESCRIPTION
+    The shared runtime carries every app's version constant, so a Radio build
+    froze a QUILL Lite that said 1.1.0 before 1.1.0 existed (2026-09-29): on
+    every machine that got it, Lite's About read 1.1.0 and Check for Updates
+    never offered the real release. scripts\check_sibling_versions.py compares
+    each app's source version with the newest published tag; -Releasing names
+    the app(s) this build ships. -SkipPublishedCheck is for dev builds only.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$QuillRepo,
+        [Parameter(Mandatory)][string]$Python,
+        [string[]]$Releasing = @(),
+        [switch]$Skip
+    )
+    if ($Skip) {
+        Write-Host "GATE-SIBVER skipped (-SkipPublishedCheck): a dev build, not a release."
+        return
+    }
+    $args = @((Join-Path $QuillRepo "scripts\check_sibling_versions.py"))
+    foreach ($app in $Releasing) { $args += @("--releasing", $app) }
+    & $Python @args
+    if ($LASTEXITCODE -ne 0) {
+        throw "GATE-SIBVER: an app's version is out of step with what is published (see above)."
+    }
+}

@@ -33,7 +33,7 @@ from quill.apps.lite_window_go_to import DocumentGoToMixin
 from quill.apps.lite_window_settings_backup import DocumentSettingsBackupMixin
 from quill.apps.lite_window_special_character import DocumentSpecialCharacterMixin
 from quill.core.datetime_insert import NOTEPAD_DATETIME_FORMAT
-from quill.core.lite import APP_NAME, APP_VERSION
+from quill.core.lite import APP_NAME, version_label
 from quill.core.lite.commands import shortcut_text
 from quill.core.lite.filetypes import (
     OPEN_WILDCARD,
@@ -460,11 +460,11 @@ class DocumentCommandsMixin(
         """Write to support, with QUILL Lite's own name on the message."""
         from quill.ui.support_dialog import open_support_message
 
-        open_support_message(self, source_app=APP_NAME, app_version=APP_VERSION)
+        open_support_message(self, source_app=APP_NAME, app_version=version_label())
 
     def cmd_about(self) -> None:
         body = (
-            f"{APP_NAME} {APP_VERSION}\n\n"
+            f"{APP_NAME} {version_label()}\n\n"
             "A small notepad and wordpad replacement for screen reader users.\n"
             "Numbered documents in one window. Plain text or rich text, and\n"
             "nothing else.\n\n"

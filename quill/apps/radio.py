@@ -34,7 +34,9 @@ from quill.ui.radio.volume_keys import volume_chord_handled
 from quill.ui.slider_keys import bind_up_means_more
 
 _TITLE = "Quill Radio"
-_VERSION = "3.1.0"
+from quill.core.app_version import describe_version, installed_version  # noqa: E402
+
+_VERSION = "3.0.4"
 _REPO = "Community-Access/quill"
 #: Radio publishes two downloads since 3.0.0 -- the installer and the portable
 #: zip -- so Check for Updates asks "portable, or not" and nothing else, exactly
@@ -1432,7 +1434,7 @@ class RadioAppFrame(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
                 repo_slug=_REPO,
-                current_version=_VERSION,
+                current_version=installed_version(_VERSION),
                 app_key="radio",
                 match_edition=_MATCH_EDITION,
             ),
@@ -2037,7 +2039,7 @@ class RadioAppFrame(
         radio_history.save_history(app_data_dir(), history)
         self.check_for_app_updates(
             repo_slug=_REPO,
-            current_version=_VERSION,
+            current_version=installed_version(_VERSION),
             app_key="radio",
             silent_no_update=True,
             match_edition=_MATCH_EDITION,
@@ -2045,7 +2047,7 @@ class RadioAppFrame(
 
     def _show_about(self) -> None:
         self._show_message_box(
-            f"{_TITLE} {_VERSION}\n"
+            f"{_TITLE} {describe_version(_VERSION)}\n"
             "Accessible internet radio, podcasts, and audio from Quill.\n\n"
             f"https://github.com/{_REPO}\n\n"
             "Credits and thanks:\n"

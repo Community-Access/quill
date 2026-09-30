@@ -45,12 +45,13 @@ param(
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
+    [switch]$SkipPublishedCheck,
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "1.1.0"
+$version = "1.1.1"
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -69,6 +70,10 @@ if (-not $QuillRepo) {
 $QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
 $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
+
+# GATE-SIBVER (2026-09-30): the runtime this build ships carries every app's
+# version constant, so no sibling may be ahead of its published release here.
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("quilllite") -Skip:$SkipPublishedCheck
 
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")

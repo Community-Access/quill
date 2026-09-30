@@ -37,6 +37,7 @@ from typing import Any
 
 import wx
 
+from quill.core.app_version import installed_version
 from quill.core.lite import APP_NAME, APP_VERSION, RELEASE_ASSET_PREFIX, RELEASE_REPO
 from quill.ui.dialog_contract import show_message_box, show_modal_dialog
 
@@ -113,13 +114,16 @@ def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
             return
         stable = [r for r in releases if not r.prerelease]
         newest = stable[0] if stable else None
-        if newest is None or not is_newer_version(APP_VERSION, newest.version):
+        # The installer's version, not the runtime's code constant: a
+        # sibling's newer runtime must never make this copy look up to date.
+        current = installed_version(APP_VERSION)
+        if newest is None or not is_newer_version(current, newest.version):
             if not silent_no_update:
                 # A manual check deserves a real dialog: an announcement alone
                 # is easy to miss, and "I pressed the key and nothing happened"
                 # is indistinguishable from a key that is not bound.
                 show_message_box(
-                    f"You are up to date ({APP_VERSION}).",
+                    f"You are up to date ({current}).",
                     "Check for Updates",
                     wx.ICON_INFORMATION | wx.OK,
                     window,
@@ -130,7 +134,7 @@ def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
         choice = show_update_available(
             window,
             app_name=APP_NAME,
-            current_version=APP_VERSION,
+            current_version=current,
             release=newest,
             show_modal_dialog=show_modal_dialog,
             announce=announce,

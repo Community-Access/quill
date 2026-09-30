@@ -36,7 +36,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "1.1.0"
+  #define AppVersion "1.1.1"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
@@ -67,7 +67,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=1.1.0.0
+VersionInfoVersion=1.1.1.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible plain text and rich text editor (shared runtime)
 ; The folder keeps the old name: an existing install upgrades in place.
@@ -116,6 +116,13 @@ Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed o
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
 Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
 Name: "assoc"; Description: "Open .txt and .rtf files with {#AppName}"; Types: custom
+
+[INI]
+; The version THIS installer installed, read by quill.core.app_version for
+; Check for Updates and About. The shared runtime carries every app's code, so
+; the code's own constant says which runtime is here, not which app installer
+; ran -- on 2026-09-29 a Radio runtime made QUILL Lite 1.0.0 call itself 1.1.0.
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
 
 [Files]
 Source: "..\assets\quill-lite.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion

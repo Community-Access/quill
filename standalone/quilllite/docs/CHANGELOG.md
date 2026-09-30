@@ -1,6 +1,39 @@
 # QUILL Lite changelog
 
-## 1.1.0 -- unreleased
+## 1.1.1 -- 2026-09-30
+
+### The version number that ran ahead of the release
+
+- **Why 1.1.1 exists.** It is 1.1.0 with one thing changed: the number. QUILL
+  Lite's version was set to 1.1.0 in the source on September 25, four days
+  before 1.1.0 shipped, and Quill Radio 3.0.3 and 3.0.4 were built from that
+  source in between. The shared QuillVille Runtime those Radio installers put
+  on a computer carries every app's code, QUILL Lite's included -- so on any
+  computer with Radio 3.0.3 or 3.0.4, Help > About in QUILL Lite already said
+  1.1.0, and Check for Updates, comparing 1.1.0 with 1.1.0, said "you are up to
+  date" and never offered the real release with the ChatGPT subscription,
+  pictures and dictation. 1.1.1 is newer than any number a runtime could have
+  claimed, so every copy is offered it.
+- **The version no longer comes from the shared runtime.** The installer now
+  writes the version it installed into QUILL Lite's own folder
+  (`quill-app-version.ini`), and Check for Updates and Help > About read that,
+  not the constant inside whatever runtime happens to be on the computer. A
+  sibling app's newer runtime can no longer make QUILL Lite look up to date.
+  When the runtime's code is from a different release, About says both, for
+  example "1.0.0 (running shared runtime code 1.1.0)", so support can see it
+  (`quill/core/app_version.py`; Quill Radio reads its version the same way).
+- **And the builds refuse to create the mismatch: GATE-SIBVER.** Every release
+  build checks each app's source version against its newest published release
+  before the runtime is built, and fails when an app is ahead of its release
+  without being the app that build is releasing (`scripts/check_sibling_versions.py`,
+  wired into every `build_release.ps1`). A version number changes in the
+  release commit, and never before. Its first run caught the next one waiting:
+  Quill Radio's source already said 3.1.0, unreleased, so it is held at 3.0.4
+  until Radio's own release.
+- If you are on 1.1.0 already, nothing else is different; 1.1.1 is the same
+  QUILL Lite.
+
+## 1.1.0 -- 2026-09-29
 
 ### Your ChatGPT subscription, pictures described, and web search (2026-09-29)
 
