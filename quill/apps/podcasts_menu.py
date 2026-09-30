@@ -195,6 +195,7 @@ class CastMenuBarMixin:
         episode_menu.Append(note_id, "Add Ep&isode Note...\tCtrl+Alt+N")
         queue_id = wx.NewIdRef()
         episode_menu.Append(queue_id, "Play &Queue...\tCtrl+Shift+Q")
+        self._append_queue_run_submenu(episode_menu)
         mark_all_id = wx.NewIdRef()
         episode_menu.Append(mark_all_id, "Mar&k All as Played...\tCtrl+Shift+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mark_all_played(), id=mark_all_id)
@@ -481,3 +482,36 @@ class CastMenuBarMixin:
         item_id = ids.get(self._podcast_library.settings.show_sort_mode)
         if item_id is not None:
             menu_bar.Check(int(item_id), True)
+
+    def _append_queue_run_submenu(self, episode_menu: object) -> None:
+        """The Play Queue read as a run you step through (ear.md R2, R3).
+
+        **A submenu, and not three more rows in the Episode menu**, for a reason
+        that is not tidiness: the Episode menu already claims 22 of the 26
+        available access-key letters, and not one of the four still free (G, J, Y,
+        Z) appears in "Next in Queue", "Previous in Queue" or "Mark as Played and
+        Next". Windows cycles focus between duplicate mnemonics instead of
+        pressing, so one of a colliding pair silently cannot be reached and
+        nothing announces the loss (GATE-14). A submenu is its own local, which is
+        its own namespace, which is also how Windows treats it -- so these three
+        get a fresh alphabet. The submenu's own label takes the Y.
+
+        The keys were chosen against what Cast has already bound, in the menu
+        literals *and* in ``APP_KEYMAPS["cast"]``: Ctrl+Alt+Up and Ctrl+Alt+Down
+        are free (Ctrl+Up/Down is volume, Ctrl+Shift+Up/Down is speed,
+        Ctrl+Alt+Left/Right is chapters), and Ctrl+Alt+Shift+Q is free and sits
+        beside Ctrl+Shift+Q, which opens the queue this steps through.
+        Ctrl+Alt+Shift+N would have read better for "and Next" and is already
+        ``app.import_setup``.
+        """
+        queue_run = wx.Menu()
+        next_id, prev_id, played_next_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        queue_run.Append(next_id, "&Next in Queue\tCtrl+Alt+Down")
+        queue_run.Append(prev_id, "P&revious in Queue\tCtrl+Alt+Up")
+        queue_run.Append(played_next_id, "Mark as Played and Ne&xt\tCtrl+Alt+Shift+Q")
+        episode_menu.AppendSubMenu(queue_run, "Pla&y Queue Run")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_in_queue(), id=next_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_in_queue(), id=prev_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.podcast_mark_played_and_next(), id=played_next_id
+        )

@@ -225,18 +225,31 @@ class CastWinampKeysMixin:
         self._winamp_play_pair(show, episode)
 
     def _winamp_play_from_queue(self) -> None:
-        from quill.core.podcasts.queue import pop_next_playable
+        """Play the queue's next slot, leaving it in the queue (R4).
+
+        The second of the two pop sites, and the easy one to miss: this key used
+        ``pop_next_playable`` while the menu commands used ``pop_next_after``, so
+        changing only one of them would have left the Winamp letter keys eating
+        the playing row while the menu rows did not -- the queue behaving
+        differently depending on which key you reached for.
+        """
+        from quill.core.podcasts.queue_steps import step_next
 
         library = getattr(self, "_library", None) or getattr(self, "_podcast_library", None)
         if library is None:
             self._announce("There is nothing queued.")
             return
-        resolved = pop_next_playable(library)
-        if resolved is None:
-            self._announce("The Play Queue is empty.")
+        controller = self._winamp_controller()
+        state = controller.state if controller is not None else None
+        step = step_next(
+            library,
+            getattr(state, "show_id", None) or "",
+            getattr(state, "episode_guid", None) or "",
+        )
+        if step.is_edge:
+            self._announce("The Play Queue is empty." if not library.queue else step.message)
             return
-        show, episode = resolved
-        self._winamp_play_pair(show, episode)
+        self._winamp_play_pair(step.show, step.episode)
 
     def _winamp_seek(self, delta_ms: int) -> None:
         controller = self._winamp_controller()

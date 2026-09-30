@@ -35,6 +35,7 @@ from quill.ui.podcasts.player_controller import (
     PodcastPlayerController,
     PodcastPlayerState,
 )
+from quill.ui.podcasts.queue_commands import QueueRunCommandsMixin
 
 if TYPE_CHECKING:  # Dialog classes are imported lazily at open time (they pull
     # feedparser via feed_reader); keep them out of the cold-start path.
@@ -45,6 +46,7 @@ _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally
 
 class PodcastsMixin(
     PodcastSessionMixin,
+    QueueRunCommandsMixin,
     PodcastAcquisitionMixin,
     PodcastLibrarySaveMixin,
     PodcastDialogsMixin,
@@ -302,7 +304,7 @@ class PodcastsMixin(
         same show's next unplayed episode. With both off, an episode ending is
         simply the end -- which is the whole point of having the pair.
         """
-        from quill.core.podcasts.queue import pop_next_after
+        from quill.core.podcasts.queue_steps import step_after_finishing
         from quill.core.podcasts.sorting import sort_episodes
         from quill.ui.podcasts.show_actions import start_episode_playback
 
@@ -313,20 +315,29 @@ class PodcastsMixin(
         )
         if settings.continue_after_queue:
             # True order, not the queue head: finishing episode nine must not
-            # throw you back to episode one. See queue.pop_next_after.
-            resolved = pop_next_after(
+            # throw you back to episode one.
+            #
+            # step_after_finishing rather than the old pop_next_after (R4): the
+            # finished episode's slot leaves, and the next one is *found* rather
+            # than consumed. The queue is a run somebody can look at to see where
+            # they are in it, so the episode that is playing has to still be in
+            # it -- which is also what gives Previous in Queue something to go
+            # back to.
+            step, _freed = step_after_finishing(
                 self._podcast_library,
                 finished_show.id if finished_show is not None else "",
                 finished_guid,
             )
-            if resolved is not None:
-                next_show, next_episode = resolved
+            if step.kind == "play":
+                next_show, next_episode = step.show, step.episode
                 self._save_podcast_library()
                 start_episode_playback(
                     self._podcast_controller, self._podcast_library, next_show, next_episode
                 )
                 self._announce(f"Up next from the queue: {next_episode.title}")
                 return
+            # The slot still went, even at the end of the run, so save it.
+            self._save_podcast_library()
         if settings.continue_after_group and finished_show is not None:
             following = next(
                 (
