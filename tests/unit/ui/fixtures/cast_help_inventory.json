@@ -137,7 +137,7 @@
   "quill/ui/podcasts/opml_import_report_dialog.py::OpmlImportReportDialog.__init__::wx.Button#2": "named-help",
   "quill/ui/podcasts/opml_import_report_dialog.py::OpmlImportReportDialog.__init__::wx.Button#3": "named-help",
   "quill/ui/podcasts/opml_import_report_dialog.py::OpmlImportReportDialog.__init__::wx.ListBox": "named-help",
-  "quill/ui/podcasts/play_queue_dialog.py::PlayQueueDialog.__init__::wx.Button": "named-help",
+  "quill/ui/podcasts/play_queue_dialog.py::PlayQueueDialog.__init__::wx.Button": "helped",
   "quill/ui/podcasts/play_queue_dialog.py::PlayQueueDialog.__init__::wx.Button#2": "named-help",
   "quill/ui/podcasts/play_queue_dialog.py::PlayQueueDialog.__init__::wx.Choice": "named-help",
   "quill/ui/podcasts/play_queue_dialog.py::PlayQueueDialog.__init__::wx.ListBox": "named-help",

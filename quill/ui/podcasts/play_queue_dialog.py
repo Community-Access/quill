@@ -75,21 +75,86 @@ class PlayQueueDialog:
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
+        # Three-tuples, so every button answers F1 with what it does rather than
+        # with the list's name. These ten are built in a loop and are therefore
+        # *one* help site to the audit: adding buttons to the table adds no key,
+        # so the gate would have stayed green while five new buttons said nothing
+        # useful. Passing helpText here makes the one site real help instead.
+        from quill.ui.podcasts import queue_group_commands as group
+
         specs = (
-            ("&Play Now", self._on_play_now),
-            ("Move &Up", lambda: self._nudge(-1)),
-            ("Move &Down", lambda: self._nudge(1)),
-            ("&Mark for Move", self._on_mark),
-            ("Move Marked &Above", lambda: self._move_marked(above=True)),
-            ("Move Marked &Below", lambda: self._move_marked(above=False)),
-            ("&Remove", self._on_remove),
-            ("&Clear Queue", self._on_clear),
+            (
+                "&Play Now",
+                "Play the highlighted episode. With several selected, they move to the "
+                "front of the queue and play in the order shown.",
+                lambda: group.play_selection(self),
+            ),
+            (
+                "Move &Up",
+                "Move the highlighted episode one place earlier.",
+                lambda: self._nudge(-1),
+            ),
+            ("Move &Down", "Move the highlighted episode one place later.", lambda: self._nudge(1)),
+            (
+                "Move to &Top",
+                "Move everything selected to the front of the queue, keeping the order it "
+                "is in now.",
+                lambda: group.move_to_top(self),
+            ),
+            (
+                "Move to Botto&m",
+                "Move everything selected to the end of the queue, keeping the order it is in now.",
+                lambda: group.move_to_bottom(self),
+            ),
+            (
+                "Sort &Oldest First",
+                "Reorder just the selected episodes by date, oldest first, in the places "
+                "they already occupy.",
+                lambda: group.sort_selected_by_date(self, newest_first=False),
+            ),
+            (
+                "Sort &Newest First",
+                "Reorder just the selected episodes by date, newest first, in the places "
+                "they already occupy.",
+                lambda: group.sort_selected_by_date(self, newest_first=True),
+            ),
+            (
+                "S&huffle Selected",
+                "Shuffle the selected episodes among their own places. Nothing else moves.",
+                lambda: group.shuffle_selected(self),
+            ),
+            (
+                "&Mark for Move",
+                "Mark this episode, then use Move Marked Above or Below.",
+                self._on_mark,
+            ),
+            (
+                "Move Marked &Above",
+                "Move the marked episode above the highlighted one.",
+                lambda: self._move_marked(above=True),
+            ),
+            (
+                "Move Marked &Below",
+                "Move the marked episode below the highlighted one.",
+                lambda: self._move_marked(above=False),
+            ),
+            ("&Remove", "Take the selected episodes out of the queue.", self._on_remove),
+            (
+                "&Clear Queue",
+                "Empty the whole queue. The episodes themselves are kept.",
+                self._on_clear,
+            ),
             # Lineups: the order you listen in, saved (list.md 2.3).
-            ("&Save Lineup...", self._on_save_lineup),
-            ("Appl&y Lineup...", self._on_apply_lineup),
+            ("&Save Lineup...", "Save this running order under a name.", self._on_save_lineup),
+            (
+                "Appl&y Lineup...",
+                "Replace the queue with a saved running order.",
+                self._on_apply_lineup,
+            ),
         )
-        for label, handler in specs:
+        for label, help_text, handler in specs:
             button = wx.Button(self.dialog, label=label)
+            button.SetHelpText(help_text)
             button.Bind(wx.EVT_BUTTON, lambda _e, h=handler: h())
             buttons.Add(button, 0, wx.RIGHT, 4)
         root.Add(buttons, 0, wx.ALL, 8)
@@ -137,7 +202,7 @@ class PlayQueueDialog:
         else:
             self._announce(f"{groups} group{'' if groups == 1 else 's'}.")
 
-    def _reload(self, select: int | None = None) -> None:
+    def _reload(self, select: int | None = None, *, select_many: list[int] | None = None) -> None:
         """Rebuild the visible list, which may now carry group headers.
 
         ``self._rows`` maps every visible line back to a queue index, or to
@@ -147,6 +212,12 @@ class PlayQueueDialog:
 
         *select* is a **queue index**, not a row: an episode that moved should
         be followed, and in a grouped list its row number is not its position.
+
+        *select_many* is a list of queue indexes, for a group action that moved a
+        block. Restoring the whole block matters more than it looks: without it a
+        reload lands on one row, so a second Move to Top moves one item while the
+        listener believes they are still moving three -- silently, because the
+        reader dutifully reads the one row that is selected.
         """
         current_row = self._first_selected_row()
         mode = queue_ops.GROUP_MODES[max(0, self._group_choice.GetSelection())]
@@ -162,6 +233,11 @@ class PlayQueueDialog:
                 self._rows.append((index, group_label))
         self._list.Set(labels)
         if not labels:
+            return
+        if select_many:
+            self._select_rows([
+                row for row, (index, _label) in enumerate(self._rows) if index in set(select_many)
+            ])
             return
         if select is None:
             self._select_only(max(0, min(current_row, len(labels) - 1)))
@@ -179,6 +255,20 @@ class PlayQueueDialog:
         # dutifully read row 1 as though that were where the listener had asked
         # to be. Silent, and it loses their place in the run.
         self._select_only(len(labels) - 1)
+
+    def _select_rows(self, rows: list[int]) -> None:
+        """Select every row in *rows*, landing the caret on the first.
+
+        The caret goes last and on the top of the block, so the reader reads the
+        row the listener will act on next rather than whichever happened to be
+        selected last.
+        """
+        for selected in list(self._list.GetSelections()):
+            self._list.Deselect(selected)
+        for row in rows:
+            self._list.SetSelection(row)
+        if rows:
+            self._list.SetSelection(rows[0])
 
     def _select_only(self, row: int) -> None:
         """Land on exactly one row.
@@ -376,13 +466,44 @@ class PlayQueueDialog:
         self._announce(counted.sentence("Applied", chosen, noun="episode"))
 
     def _on_list_key(self, event: object) -> None:
+        """Keys on the list, so a group action never needs the button row.
+
+        Tab to a button, Enter, Tab back, for every action, is the friction that
+        makes people stop using a multiple selection at all -- and the selection
+        lives in the list, which is where the hands already are. The buttons stay
+        for discovery; these are for use.
+
+        Shift+F10 opens the row menu, because the Podcast Manager already teaches
+        that key on any row and somebody who learned it there will try it here.
+        """
         wx = self._wx
         code = event.GetKeyCode()
+        ctrl, shift = event.ControlDown(), event.ShiftDown()
         if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            self._on_play_now()
+            from quill.ui.podcasts import queue_group_commands as group
+
+            group.play_selection(self)
             return
         if code == wx.WXK_DELETE:
             self._on_remove()
+            return
+        if ctrl and code in (wx.WXK_HOME, wx.WXK_END):
+            from quill.ui.podcasts import queue_group_commands as group
+
+            if code == wx.WXK_HOME:
+                group.move_to_top(self)
+            else:
+                group.move_to_bottom(self)
+            return
+        if ctrl and shift and code in (ord("O"), ord("N"), ord("H")):
+            from quill.ui.podcasts import queue_group_commands as group
+
+            if code == ord("O"):
+                group.sort_selected_by_date(self, newest_first=False)
+            elif code == ord("N"):
+                group.sort_selected_by_date(self, newest_first=True)
+            else:
+                group.shuffle_selected(self)
             return
         event.Skip()
 

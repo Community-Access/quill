@@ -253,3 +253,105 @@ def test_removing_from_the_middle_still_lands_where_the_rows_were(queue_dialog) 
 
     assert _order(library) == ["a", "d", "e"]
     assert dialog._selected_indexes() == [1]
+
+
+# -- group actions on a selection (ear.md R5) -------------------------------------
+
+
+def test_move_to_top_keeps_the_whole_block_selected(queue_dialog) -> None:
+    """The selection is restored at the new positions, and that is the point.
+
+    Without it the reload lands on one row, so a second Move to Top moves one
+    item while the listener believes they are still moving three -- silently,
+    because the reader dutifully reads the one row that is selected.
+    """
+    from quill.ui.podcasts import queue_group_commands as group
+
+    dialog, library, said = queue_dialog
+    _select(dialog, 2, 3)
+
+    group.move_to_top(dialog)
+
+    assert _order(library) == ["c", "d", "a", "b", "e"]
+    assert dialog._selected_indexes() == [0, 1]
+    assert said[-1] == "Moved 2 to top"
+
+
+def test_move_to_bottom_announces_the_count(queue_dialog) -> None:
+    from quill.ui.podcasts import queue_group_commands as group
+
+    dialog, library, said = queue_dialog
+    _select(dialog, 0, 1, 2)
+
+    group.move_to_bottom(dialog)
+
+    assert _order(library) == ["d", "e", "a", "b", "c"]
+    assert said[-1] == "Moved 3 to bottom"
+
+
+def test_a_single_row_move_says_nothing(queue_dialog) -> None:
+    """The reader reads the row and its position; a count of one adds nothing."""
+    from quill.ui.podcasts import queue_group_commands as group
+
+    dialog, library, said = queue_dialog
+    before = len(said)
+    _select(dialog, 3)
+
+    group.move_to_top(dialog)
+
+    assert _order(library)[0] == "d"
+    assert said[before:] == []
+
+
+def test_sort_selected_says_the_count_and_the_direction(queue_dialog) -> None:
+    """Neither is knowable from one row, and a direction you must infer from the
+    first row is a direction you have to go and check."""
+    from quill.ui.podcasts import queue_group_commands as group
+
+    dialog, _library, said = queue_dialog
+    _select(dialog, 0, 1, 2)
+
+    group.sort_selected_by_date(dialog, newest_first=True)
+
+    assert said[-1] == "Sorted 3, newest first"
+
+
+def test_shuffle_says_the_count(queue_dialog) -> None:
+    from quill.ui.podcasts import queue_group_commands as group
+
+    dialog, _library, said = queue_dialog
+    _select(dialog, 0, 1, 2, 3)
+
+    group.shuffle_selected(dialog)
+
+    assert said[-1] == "Shuffled 4"
+
+
+def test_a_group_action_on_nothing_says_nothing_is_selected(queue_dialog) -> None:
+    from quill.ui.podcasts import queue_group_commands as group
+
+    dialog, library, said = queue_dialog
+    for row in list(dialog._list.GetSelections()):
+        dialog._list.Deselect(row)
+
+    group.move_to_top(dialog)
+
+    assert said[-1] == "Nothing is selected."
+    assert _order(library) == ["a", "b", "c", "d", "e"]
+
+
+def test_playing_a_block_brings_it_to_the_front_in_order(queue_dialog) -> None:
+    """No extra machinery is needed for "the rest follow".
+
+    The queue IS the running order, and R4 means the playing episode keeps its
+    place in it, so moving the block to the front and playing its top plays the
+    block.
+    """
+    from quill.ui.podcasts import queue_group_commands as group
+
+    dialog, library, _said = queue_dialog
+    _select(dialog, 2, 4)
+
+    group.play_selection(dialog)
+
+    assert _order(library)[:2] == ["c", "e"]
