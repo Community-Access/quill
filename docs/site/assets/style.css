@@ -930,3 +930,292 @@ section.band.splash {
 .splash-try ol { margin: 0 0 0.8rem; padding-left: 1.4rem; }
 .splash-try li { margin: 0.45rem 0; }
 .splash-try p { margin: 0; }
+
+/* -- Accessible data tables (compare.html, dictation.html) ------------------
+   A shared component, promoted out of compare.html when a second page needed
+   it. Three rules govern every cell, all of them from this file:
+
+   1. State is never colour. Every value cell contains the WORD. The only extra
+      cue is a border's WIDTH and STYLE -- the one channel Windows High Contrast
+      recolours rather than discards (it takes away background-color,
+      background-image and box-shadow). Solid for present, dashed for absent,
+      which is how #result.ok and #result.bad already read.
+
+   2. A cue is always a real element, never a ::before. NVDA and JAWS announce
+      generated content, so a CSS tick would be spoken on top of the word beside
+      it. See the note further up this file. The same finding is why a cell never
+      holds a bare symbol: a lone "." is announced at one verbosity level and
+      skipped at another, so the dictation page prints the character AND names it.
+
+   3. Unavailable rows are not greyed and never use --error*. --muted on the
+      stripe is 6.65:1, so greying passes contrast and still fails: grey means
+      DISABLED on Windows, and "this product does not have it" is a fact, not a
+      control you cannot operate. --error-bg here means "what you just did
+      failed", and absence is not a failure. Every row stays at full --text.
+
+   Four tokens of its own rather than the shared borders: --border is 1.42:1 and
+   its own comment says hairline-only, and --border-strong is 3.02:1 in dark
+   against the header tint, clearing 3:1 by a rounding artefact -- not a margin
+   to put 59 row separators on.
+
+   `display` is never changed on the table or any of its parts. display: block
+   strips the table role in Chrome, Edge and Firefox and takes cell navigation,
+   header announcement and row counts with it -- the defect the pandoc template
+   had to override.
+
+   Deliberately not written: position: sticky on .cmp thead th. It needs
+   top: var(--header-h) against a header that wraps, scroll-padding-top accounts
+   for one sticky band so a second can fully obscure a focus ring (2.4.11,
+   silently), and at 400% zoom a three-line thead is most of the viewport.
+   scope="col" already announces the column on every cell. */
+
+:root {
+  --table-rule: #5c6675;
+  --table-mark: #48505e;
+  --table-head-bg: #e4e9f2;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --table-rule: #8e9aac;
+    --table-mark: #aab6c6;
+    --table-head-bg: #222c3a;
+  }
+}
+/* The table tokens under prefers-contrast: more, and there have to be TWO
+   blocks rather than one.
+
+   A single bare `prefers-contrast: more` block sits after the dark block at
+   equal specificity and therefore wins in dark mode too -- so a high-contrast
+   dark reader got --table-head-bg: #ffffff while the shared block sets
+   --text: #ffffff. Column headers at 1.00:1: white on white, across every
+   table on the site. It is the exact failure the light values were chosen to
+   prevent, arriving through the cascade rather than through the palette, and
+   no contrast checker run in light mode would ever see it.
+
+   Every preference combination that redefines --text needs its own answer. */
+@media (prefers-contrast: more) {
+  :root {
+    --table-rule: #3a4250;
+    --table-mark: #1a1f29;
+    --table-head-bg: #ffffff;
+  }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --table-rule: #b9c4d4;
+    --table-mark: #e8edf4;
+    --table-head-bg: #000000;
+  }
+}
+
+.cmp-jump ul {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  columns: 2;
+  column-gap: 2rem;
+}
+.cmp-jump li { margin: 0.4rem 0; break-inside: avoid; }
+@media (max-width: 40rem) { .cmp-jump ul { columns: 1; } }
+
+/* A one-line answer above each table, because a three-column grid heard
+   linearly is a two-dimensional memory task on a one-dimensional channel.
+   Someone who has drifted one column reads a dozen facts about the wrong
+   product and nothing tells them. These sentences are load-bearing. */
+.group-verdict {
+  max-width: var(--measure);
+  margin: 0.35rem 0 0.9rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Insurance, not the plan. 1.4.10 Reflow names data tables as its own
+   exception -- a table scrolling inside its own box is conforming as long as
+   the PAGE does not scroll sideways, which is why overflow lives here and no
+   ancestor ever gets a min-width. The tables themselves wrap: table-layout
+   stays auto, nothing is nowrap, and overflow-wrap lets the longest token
+   break, so in practice this never scrolls. There is deliberately no
+   tabindex on it: a focus stop on a box that cannot scroll is a dead tab
+   stop, eleven times over. */
+.cmp-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0.5rem 0 2.25rem;
+  border: 1px solid var(--table-rule);
+  border-radius: var(--radius);
+}
+
+.cmp { width: 100%; border-collapse: collapse; }
+
+.cmp caption {
+  text-align: left;
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--text);
+  padding: 0.85rem 0.75rem 0.7rem;
+}
+
+/* Padding is not decoration. 0.6rem is 9.6px; a 3px focus ring at 2px
+   offset reaches 5px past a link's box, and that amber ring is only 1.19:1
+   against --table-rule -- so this keeps 4.6px of cell background between
+   them at every zoom level, because the unit is rem. 0.55rem is the floor.
+   No height, no white-space, no text-overflow: truncating "Partial, reading
+   only" does not weaken an answer, it changes it, and the reader still gets
+   the whole string so nobody who ships it ever sees the failure. */
+.cmp th, .cmp td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--table-rule);
+  overflow-wrap: break-word;
+}
+
+/* The 2px underline is what still reads as "this is the header row" once
+   forced colours have discarded the tint, so it clears 3:1 against both of
+   its neighbours. */
+.cmp thead th {
+  background: var(--table-head-bg);
+  color: var(--text);
+  font-weight: 700;
+  border-bottom: 2px solid var(--table-rule);
+}
+
+.cmp tbody th[scope="row"] { font-weight: 600; color: var(--text); }
+.cmp tbody tr:last-child > * { border-bottom: 0; }
+
+/* The qualifying phrase: its own block, with no punctuation joining it to
+   the answer. An em dash is spoken as "dash" at one NVDA symbol level and
+   dropped at another; a block element gives a reliable pause with no
+   character to mis-speak. */
+.cmp .qual {
+  display: block;
+  color: var(--muted);
+  font-size: 0.95em;
+  margin-top: 0.15rem;
+}
+
+/* Zebra striping, safe here for exactly one reason: no cell state uses a
+   background. The stripe is 1.13:1 against the base -- perceptible as
+   banding, never as a colour that means something -- so 1.4.11 does not
+   apply to it. What it has to clear is the text on it, which it does
+   threefold. IF A LATER EDIT EVER GIVES A CELL A BACKGROUND, DELETE THIS
+   RULE IN THE SAME EDIT: a state tint composited over two different bases
+   renders one state as two colours. */
+.cmp tbody tr:nth-child(even) > * { background: var(--surface-2); }
+
+/* A row where one of the two does not have the capability. A real border,
+   so forced colours needs nothing extra for it, and --table-mark rather
+   than --error-border because absence is not an error. The words in the
+   cells say which side is missing it; this is only so the left edge can be
+   scanned at 400% zoom. */
+.cmp tbody tr.gap > th[scope="row"] { border-left: 6px dashed var(--table-mark); }
+
+.verdict h3 { font-size: 1.15rem; }
+
+.fact-list { margin: 1.25rem 0 0; padding: 0; list-style: none; }
+.fact-list > li {
+  border-left: 4px solid var(--table-rule);
+  padding: 0.15rem 0 0.15rem 0.95rem;
+  margin: 1rem 0;
+  max-width: var(--measure);
+}
+.fact-list > li > strong { display: block; }
+
+.back-top { margin-top: 2.5rem; }
+
+@media (forced-colors: active) {
+  /* No forced-color-adjust, scoped or otherwise. Nothing here carries
+     meaning in a colour the system takes away: states are words and rules
+     are borders, so the tints and the stripe can go and nothing goes with
+     them. */
+  .cmp thead th { border-bottom-width: 3px; }
+}
+/* Keyboard chords, for the dictation reference.
+
+   <kbd> and not <code>: the element means "what the user presses", and neither
+   NVDA nor JAWS announces a role for it, so the semantics cost nothing to
+   listen to. Deliberately NOT nested per key (<kbd><kbd>Ctrl</kbd>+...) -- the
+   nesting is defensible HTML and buys a listener nothing, while making the
+   chord three elements to move through instead of one string.
+
+   The "+" survives as text. At default punctuation verbosity a reader may drop
+   it, giving "Ctrl F11", which is still exactly right; every alternative
+   (an aria-label, a hidden "plus") either double-speaks or replaces a string
+   that was already correct.
+
+   Monospace and a border, so a chord is visibly not prose, and currentColor so
+   the border stays under forced colours. */
+/* Carried by its border and never by a fill, for two reasons that arrive from
+   opposite directions and agree.
+
+   Forced colours discards background-color outright, so any fill would have to
+   be replaced by the border in at least one mode anyway -- it buys nothing that
+   is not already proved, and costs a colour that has to be proved four times.
+
+   And the obvious fill is the one that cannot work. `.prose code` uses
+   --surface-2, which is also what the table pattern above stripes even rows
+   with, so a --surface-2 token on an even row is 1.00:1 against what is behind
+   it -- not faint, identical: a box the stylesheet says exists and the eye
+   cannot find. --border-strong rather than --border, because this border is the
+   token's only channel and --border's 1.42:1 renders the box as a rumour.
+   1.4.11 does not compel it -- the chord's meaning is entirely its text, and a
+   braille display reads Ctrl+F11 with the box or without it -- but a boundary
+   that is the only thing you drew is the last place to accept a ratio you would
+   refuse on a control.
+
+   font-family is spelled out rather than left to `monospace`, because a family
+   that resolves to the generic triggers the 13px default-fixed-size quirk in
+   Blink and Gecko and the token silently shrinks against the text around it.
+   No vertical padding, so nothing clips when a user raises line height. */
+kbd,
+code.glyph {
+  font-family: "Cascadia Code", "Fira Code", Consolas, ui-monospace, monospace;
+  font-size: 0.95em;
+  line-height: 1.5;
+  color: var(--text);
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 0 0.4rem;
+  margin-inline: 0.1rem;
+  /* A chord split across two lines reads as two chords. */
+  white-space: nowrap;
+}
+
+/* One character in a box is mostly border, so it needs a floor width. Nothing
+   here is interactive, so 2.5.8 does not apply -- this is legibility only, and
+   min-width rather than padding because padding sized for "." would swamp
+   "...". */
+code.glyph {
+  display: inline-block;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+/* .prose code sets a --surface-2 fill, which is the stripe colour: without this
+   a glyph box is invisible on every even row. */
+.prose code.glyph { background: none; }
+
+@media (forced-colors: active) {
+  /* Forced colours recolours a border rather than discarding it, so the token
+     survives with no fill to lose. */
+  kbd,
+  code.glyph { border-color: CanvasText; }
+}
+
+/* Table shapes. The component serves two- and three-column tables with
+   different fact shapes, so the widths are chosen per shape rather than once:
+   without this a two-column table inherits a three-column split and leaves a
+   third of itself unallocated. Classed rather than positional, so the cascade
+   is decided by specificity instead of paste order. */
+.cmp-keys tbody th[scope="row"] { width: 26%; }
+.cmp-keys tbody td.key { width: 22%; }
+.cmp-keys tbody td.what { width: 52%; }
+.cmp-2 tbody th[scope="row"] { width: 34%; }
+
+/* No zebra on a table whose cells carry a bordered token. The stripe is
+   --surface-2, so a token sitting on it would have to be proved against two
+   bases instead of one; a --border-strong row rule bands the table better
+   anyway, at 4.04:1 against the 1.13:1 the stripe manages. */
+.cmp-keys tbody tr:nth-child(even) > * { background: none; }
