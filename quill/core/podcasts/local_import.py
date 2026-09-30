@@ -66,6 +66,33 @@ def find_audio_files(paths: list[Path]) -> list[Path]:
     return files
 
 
+def _episode_for(source: Path, dest: Path) -> PodcastEpisode:
+    """One episode from one imported file, named by what the file says (R11).
+
+    Tags first, filename second. A folder of ``track07.mp3`` used to become a show
+    of episodes called "Track07" while the files carried a real title, artist and
+    duration all along -- the filename is the fallback, not the answer.
+
+    ``read_tags`` never raises and answers empty when ``mutagen`` is absent or the
+    tags are corrupt, so a copy of Cast without the extra imports exactly as it
+    always did and nothing here has to know why.
+    """
+    from quill.core.podcasts.local_tags import read_tags
+
+    tags = read_tags(dest)
+    return PodcastEpisode(
+        guid=uuid.uuid4().hex,
+        title=tags.title or _title_from_filename(source),
+        audio_url="",
+        downloaded_path=str(dest),
+        played=False,
+        duration_seconds=tags.duration_seconds,
+        # The artist is the nearest thing a loose file has to a show, and it is
+        # what a cross-show row reads as the second half of "title -- podcast".
+        description=tags.artist,
+    )
+
+
 def create_local_show(show_title: str, audio_files: list[Path]) -> PodcastShow:
     """Copy each file in *audio_files* into ``local_podcasts_root()``,
     creating one episode per file. Returns the new show (not yet added to
@@ -78,15 +105,7 @@ def create_local_show(show_title: str, audio_files: list[Path]) -> PodcastShow:
         dest = dest_dir / source.name
         if dest.resolve() != source.resolve():
             shutil.copy2(source, dest)
-        episodes.append(
-            PodcastEpisode(
-                guid=uuid.uuid4().hex,
-                title=_title_from_filename(source),
-                audio_url="",
-                downloaded_path=str(dest),
-                played=False,
-            )
-        )
+        episodes.append(_episode_for(source, dest))
     return PodcastShow(
         id=uuid.uuid4().hex,
         title=show_title,
@@ -119,13 +138,5 @@ def scan_watched_folder(show: PodcastShow) -> int:
         dest = dest_dir / source.name
         if dest.resolve() != source.resolve():
             shutil.copy2(source, dest)
-        show.episodes.append(
-            PodcastEpisode(
-                guid=uuid.uuid4().hex,
-                title=_title_from_filename(source),
-                audio_url="",
-                downloaded_path=str(dest),
-                played=False,
-            )
-        )
+        show.episodes.append(_episode_for(source, dest))
     return len(new_files)
