@@ -453,7 +453,14 @@ int wmain(int argc, wchar_t *wargv[])
     if (hJob) {
         JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli;
         ZeroMemory(&jeli, sizeof(jeli));
-        jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        /* BREAKAWAY_OK: the one-click update helper must outlive the app and
+         * this launcher -- it waits for both to exit, then runs setup. With
+         * kill-on-close alone Windows reaped it the moment the job closed,
+         * so "Install and restart now" did nothing (2026-09-30). Only a
+         * child that asks (CREATE_BREAKAWAY_FROM_JOB) leaves; an ordinary
+         * grandchild is still reaped with the launcher. */
+        jeli.BasicLimitInformation.LimitFlags =
+            JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_BREAKAWAY_OK;
         SetInformationJobObject(
             hJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
     }

@@ -1,5 +1,29 @@
 # QUILL Lite changelog
 
+## 1.1.2 -- 2026-09-30
+
+### Install and restart now installs, and restarts
+
+- **The one-click update ran nothing.** Choosing *Install and restart now*
+  closed QUILL Lite and then nothing happened: no installer, no restart, and no
+  log to say why. The app's launcher runs it inside a Windows job that ends
+  every process the app started when the app closes -- a safety net so a
+  crashed launcher never leaves a hidden process behind -- and the small
+  helper that waits for the app to close and then runs setup was one of those
+  processes. It was ended while it waited. The helper now leaves that job
+  before it starts: launchers from this release allow exactly that, and under
+  a launcher already installed it is started by Windows' own management
+  service instead, outside any job. Tested against real Windows job objects of
+  both kinds, and against the old code, which loses its helper every time
+  (`quill/core/self_update.py`, `quill/native/launcher/launcher.c`).
+- **A failed update leaves a log.** The helper writes to an `updates` folder
+  that did not always exist, so a failure left no trace; the folder is now made
+  first.
+- **Updating from 1.1.1 or earlier:** those versions still carry the old
+  helper, so this one update is by hand once. Choose *Open folder* in the
+  update window and run `QuillLite-Setup-Shared-1.1.2.exe`, or download it from
+  quillforall.org. From 1.1.2 on, *Install and restart now* works.
+
 ## 1.1.1 -- 2026-09-30
 
 ### The version number that ran ahead of the release

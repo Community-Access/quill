@@ -202,6 +202,57 @@ def test_helper_launches_in_hidden_console_not_detached(tmp_path, monkeypatch) -
     flags = captured["flags"]
     assert flags & _FakeSub.CREATE_NO_WINDOW  # hidden console
     assert not (flags & _FakeSub.DETACHED_PROCESS)  # never detached (the #1191 bug)
+    # Out of the launcher's kill-on-close job (the 2026-09-30 bug).
+    assert flags & su._CREATE_BREAKAWAY_FROM_JOB
+
+
+def test_a_job_that_forbids_breakaway_falls_back_to_wmi(monkeypatch, tmp_path: Path) -> None:
+    """An installed launcher from before the fix does not allow breakaway."""
+    calls: list = []
+
+    class _FakeSub:
+        CREATE_NO_WINDOW = 0x08000000
+
+        @staticmethod
+        def Popen(cmd, **kwargs):
+            raise PermissionError(5, "Access is denied")
+
+        @staticmethod
+        def list2cmdline(args):
+            return " ".join(args)
+
+        @staticmethod
+        def run(cmd, **kwargs):
+            calls.append(cmd)
+            return type("R", (), {"returncode": 0})()
+
+    monkeypatch.setattr(su, "subprocess", _FakeSub)
+    monkeypatch.setattr(su.os, "name", "nt")
+    su.write_and_launch_helper("@echo off\n", tmp_path)
+    assert calls and calls[0][0] == "powershell.exe"
+    assert "Win32_Process" in calls[0][-1] and "ShowWindow=[uint16]0" in calls[0][-1]
+
+
+def test_wmi_refusing_is_an_error_the_app_stays_open_for(monkeypatch, tmp_path: Path) -> None:
+    class _FakeSub:
+        CREATE_NO_WINDOW = 0x08000000
+
+        @staticmethod
+        def Popen(cmd, **kwargs):
+            raise PermissionError(5, "Access is denied")
+
+        @staticmethod
+        def list2cmdline(args):
+            return " ".join(args)
+
+        @staticmethod
+        def run(cmd, **kwargs):
+            return type("R", (), {"returncode": 9})()
+
+    monkeypatch.setattr(su, "subprocess", _FakeSub)
+    monkeypatch.setattr(su.os, "name", "nt")
+    with pytest.raises(su.SelfUpdateError):
+        su.write_and_launch_helper("@echo off\n", tmp_path)
 
 
 def test_portable_helper_batch_copies_and_preserves_data(tmp_path: Path) -> None:

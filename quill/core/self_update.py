@@ -293,13 +293,69 @@ def write_and_launch_helper(script_text: str, helper_dir: Path) -> Path:
         # terminal that left one-click updates hanging (#1191). The helper still
         # outlives us: it is an independent child, unaffected by our exit.
         creationflags = subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
-    subprocess.Popen(  # noqa: S603 - our own generated script at a fixed path
-        ["cmd.exe", "/c", str(helper)],
-        creationflags=creationflags,
-        close_fds=True,
-        cwd=str(helper_dir),
-    )
+    command = ["cmd.exe", "/c", str(helper)]
+    if os.name != "nt":
+        subprocess.Popen(command, close_fds=True, cwd=str(helper_dir))  # noqa: S603
+        return helper
+    # OUT OF THE LAUNCHER'S JOB (2026-09-30). Every QuillVille launcher runs the
+    # app inside a Job Object with KILL_ON_JOB_CLOSE, and a child of the app is
+    # in that job too -- so when the app exited and the launcher closed the job,
+    # Windows killed this helper in its wait loop, before it had written a line
+    # of its log or started setup. "Install and restart now" closed the app and
+    # nothing else ever happened (reported for QUILL Lite 1.1.1). Breakaway is
+    # the clean way out, and launchers built from now on allow it
+    # (JOB_OBJECT_LIMIT_BREAKAWAY_OK); a launcher already installed does not, so
+    # then the helper is started by the WMI service instead, which is outside
+    # every job.
+    try:
+        subprocess.Popen(  # noqa: S603 - our own generated script at a fixed path
+            command,
+            creationflags=creationflags | _CREATE_BREAKAWAY_FROM_JOB,
+            close_fds=True,
+            cwd=str(helper_dir),
+        )
+        return helper
+    except OSError:
+        pass
+    _launch_outside_job(command, helper_dir)
     return helper
+
+
+#: CREATE_BREAKAWAY_FROM_JOB. Spelled out: ``subprocess`` does not export it.
+_CREATE_BREAKAWAY_FROM_JOB = 0x01000000
+
+
+def _launch_outside_job(command: list[str], cwd: Path) -> None:
+    """Start *command* through WMI (``Win32_Process.Create``), hidden.
+
+    The process WMI creates is a child of the WMI provider host, not of this
+    app, so no job this app is in can reach it. ``ShowWindow = 0`` keeps the
+    helper's console hidden, and its console children share it (the #1191 rule
+    above). Raises :class:`SelfUpdateError` if WMI will not start it, so the
+    caller keeps the app open and the user can install by hand.
+    """
+    line = subprocess.list2cmdline(command).replace("'", "''")
+    folder = str(cwd).replace("'", "''")
+    script = (
+        "$s = New-CimInstance -ClassName Win32_ProcessStartup -ClientOnly "
+        "-Property @{ShowWindow=[uint16]0}; "
+        "$r = Invoke-CimMethod -ClassName Win32_Process -MethodName Create "
+        f"-Arguments @{{CommandLine='{line}'; CurrentDirectory='{folder}'; "
+        "ProcessStartupInformation=$s}; exit [int]$r.ReturnValue"
+    )
+    result = subprocess.run(  # noqa: S603 - fixed PowerShell, our own argv
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        check=False,
+    )
+    if result.returncode != 0:
+        raise SelfUpdateError(
+            "Windows would not start the update helper outside this app "
+            f"(WMI returned {result.returncode})."
+        )
 
 
 def begin_self_update(
@@ -328,6 +384,9 @@ def begin_self_update(
         raise SelfUpdateError("This is not a packaged build; nothing to update in place.")
     install_dir, exe_path = target
     updates_dir = app_data_dir / "updates"
+    # The helper appends to a log here; cmd cannot create the folder, and a
+    # missing folder meant a failed update left no trace at all (2026-09-30).
+    updates_dir.mkdir(parents=True, exist_ok=True)
     log_path = updates_dir / "apply-update.log"
     resolved_pid = os.getpid() if pid is None else pid
     relaunch_args = relaunch_command(exe_path)
