@@ -11,6 +11,7 @@ from collections.abc import Callable
 
 from quill.core.podcasts import settings_help, volume_boost
 from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, PodcastSettings
+from quill.core.podcasts.speed_scale import SPEED_STEP
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.podcasts.podcast_settings_choices import (
     _AUTO_DOWNLOAD_LABELS,
@@ -100,10 +101,14 @@ class PodcastSettingsDialog:
         # which is the range Earshot offers and the range the engines hold
         # pitch across. Speed Up / Speed Down on the Episode menu step the
         # same value, so the dialog and the keys cannot disagree.
+        # 0.05 and two digits, matching SPEED_STEP and the Speed Up / Speed Down
+        # keys (R21): a spinner that steps 0.1 cannot reach half the speeds the
+        # keys can set, so a show set to 1.15x by the keyboard showed as 1.2 here
+        # and was saved as 1.2 the moment anything else on the page changed.
         self._speed_ctrl = wx.SpinCtrlDouble(
-            self.dialog, min=SPEED_MIN, max=SPEED_MAX, inc=0.1, initial=settings.speed
+            self.dialog, min=SPEED_MIN, max=SPEED_MAX, inc=SPEED_STEP, initial=settings.speed
         )
-        self._speed_ctrl.SetDigits(1)
+        self._speed_ctrl.SetDigits(2)
         self._speed_ctrl.SetName(
             f"Default playback speed, {SPEED_MIN} to {SPEED_MAX} times normal, "
             "for podcasts without their own override"

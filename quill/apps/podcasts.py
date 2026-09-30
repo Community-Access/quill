@@ -33,6 +33,7 @@ from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
+from quill.ui.podcasts.window_title import CastWindowTitleMixin
 
 # Identity lives with the menu bar that displays it; see podcasts_menu.py.
 _TITLE = APP_TITLE
@@ -53,6 +54,7 @@ class PodcastsAppFrame(
     CastGoToMixin,
     CastHelpSurfacesMixin,
     CastMenuBarMixin,
+    CastWindowTitleMixin,
     CastWinampKeysMixin,
     MediaSleepTimerMixin,
     AdpMixin,
@@ -953,6 +955,7 @@ class PodcastsAppFrame(
     # -- status ---------------------------------------------------------------
 
     def _refresh_statusbar(self) -> None:
+        self._refresh_window_title()  # R15: the Inbox count, free for the reader
         text = self._podcast_status_text() or "Podcasts: stopped"
         self._set_status(text)
         menu_bar = self.frame.GetMenuBar()
