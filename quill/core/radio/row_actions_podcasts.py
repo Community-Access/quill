@@ -15,6 +15,7 @@ pins.
 
 from __future__ import annotations
 
+from quill.core.podcasts import alert_toggle
 from quill.core.radio.row_actions import (
     ADD_PODCAST_URL,
     DELETE_PODCAST_FOLDER,
@@ -23,6 +24,7 @@ from quill.core.radio.row_actions import (
     NEW_PODCAST_FOLDER,
     REFRESH_ALL_PODCASTS,
     RENAME_PODCAST_FOLDER,
+    TOGGLE_ALERT,
     FolderState,
     RowAction,
 )
@@ -55,6 +57,14 @@ def library_actions(kind: str, state: FolderState) -> list[RowAction]:
         actions.append(RowAction(IMPORT_OPML, "I&mport Podcasts from OPML..."))
         actions.append(RowAction(EXPORT_OPML, "E&xport Podcasts to OPML..."))
         actions.append(RowAction(ADD_PODCAST_URL, "Add a Podcast by &URL..."))
+
+    if kind == "mypodcastshow" and state.subscribed:
+        # The one alert decision somebody makes without opening settings: tell
+        # me about this show, or stop. Settings keeps the three-way choice (and
+        # the folder and shared levels behind it); this toggles between the two
+        # modes that cannot lose an episode either way, so it is safe to be one
+        # keystroke from the row. The label says what pressing it will do.
+        actions.append(RowAction(TOGGLE_ALERT, alert_toggle.menu_label(state.alerts_on)))
 
     if kind == "mypodcastfolder":
         # The same verbs Cast's manager offers on a folder, on the folder.

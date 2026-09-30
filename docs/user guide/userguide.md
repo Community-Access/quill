@@ -5576,6 +5576,10 @@ the `&AI` menu:
 | **Ctrl+Alt+Shift+F2** | Free AI Usage... | What you have used and what is left |
 | **Ctrl+Alt+Shift+F4** | Connect or Sign Out... | Connect this computer, or disconnect it |
 | **Ctrl+Alt+Shift+K** | Privacy Agreement... | Read what is sent, and accept or withdraw |
+| **Alt+F2** | Use My Own OpenAI Key... | Every limit lifted, billed to your OpenAI account |
+| **Alt+F5** | Use My ChatGPT Subscription... | Every AI command on the ChatGPT plan you already pay for |
+| **Ctrl+F5** | Ask About an Image... | A picture described, on your ChatGPT subscription |
+| **Ctrl+F3** | Tidy Dictated Text... | Dictation's misheard words and punctuation corrected, nothing else changed |
 
 These are the same five commands as QUILL Lite's — one feature, shared, so
 anything you learn in one editor you have learned in both. Three of the five keys
@@ -5814,6 +5818,51 @@ either removes it from both.
 `QUILL-AI-OWN-KEY-FAILED`. The usual causes are a mistyped key, a model your
 account cannot use, or an OpenAI account with no credit. **Test the Key** tells
 you which.
+
+### Using your ChatGPT subscription: no key, no bill
+
+If you already pay for ChatGPT, **AI ▸ Use My ChatGPT Subscription**
+(**Alt+F5**) runs every free-AI command on that plan instead. Press **Continue
+with ChatGPT**: your browser opens on OpenAI's own sign-in page, you allow
+"QUILL" to use your plan, and you come back signed in. From then on the pad,
+the seventeen writing tools, Ask About This Document and conversations go
+straight from this computer to OpenAI on your plan -- no monthly allowance, no
+size limit, no per-request bill, nothing through QUILL's servers.
+
+Once signed in the window offers the **Model** list (your plan's own, read from
+your account; the first is chosen for you and another is saved as you arrow to
+it), **Allow web search** (off until you check it; on, the model may search the
+web through OpenAI to answer a question), **Open ChatGPT Usage** (the plan's
+own page, where its limits and what is left are shown), **Sign Out** (two
+presses; asks OpenAI to revoke QUILL's sign-in and forgets it here) and
+**Forget on This Computer** (forgets it here only). Sign Out and Forget exist
+only while you are signed in.
+
+A sign-in is used ahead of a saved OpenAI key -- the plan is already paid for
+where a key is billed per request -- and it needs neither the free service's
+connection nor its agreement, which is about QUILL's servers. Only a refresh
+token is kept, in Windows' credential store, under QUILL's own name; each QUILL
+app (QUILL, QUILL Lite, Quill Radio) signs in as itself and appears as itself
+under Apps in ChatGPT's settings. **Usage** opens this window on a plan, and
+About names the account and the model. Failures carry a code:
+`QUILL-AI-CHATGPT-SIGNED-OUT` (sign in again), `-LIMIT` (the plan's usage for
+now), `-UNAVAILABLE`, `-SIGNIN` or `-FAILED`, each with its next step.
+
+**Ask About an Image** (**Ctrl+F5**) is the one AI command that takes a file:
+choose a JPEG, PNG, WebP or GIF, ask a question or none, and hear what the
+model sees -- a description written for a blind reader, with any text in the
+picture transcribed exactly. The answer opens in an Image Description window
+with Insert Below, Copy, and Ctrl+Z to take an insert back. It needs the
+ChatGPT subscription; with no sign-in it says so and opens the account window.
+
+**Tidy Dictated Text** (**Ctrl+F3**) is dictation's AI. The selection, else the
+paragraph at the cursor, goes to the model with an instruction to correct what
+speech recognition misheard -- sound-alike words, names, words run together,
+punctuation, capitalisation, fillers and false starts -- and change nothing
+else. The Tidied Dictation window offers Replace My Selection, and Ctrl+Z takes
+it back as one step. It runs on a ChatGPT subscription or your own OpenAI key,
+never on the free allowance; with neither it says so and opens the account
+window.
 
 ### Basic and Advanced — the short menu and the long one
 

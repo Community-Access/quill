@@ -199,6 +199,96 @@
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="110--unreleased">1.1.0 – unreleased</h2>
 <h3
+id="your-chatgpt-subscription-pictures-described-and-web-search-2026-09-29">Your
+ChatGPT subscription, pictures described, and web search
+(2026-09-29)</h3>
+<ul>
+<li><strong>Use My ChatGPT Subscription</strong> (Tools &gt; AI,
+<strong>Alt+F5</strong>). If you already pay for ChatGPT, QUILL Lite
+runs every AI command on that plan: <strong>Continue with
+ChatGPT</strong> opens your browser on OpenAI’s own sign-in page, you
+allow “QUILL Lite” to use your plan, and you come back signed in – no
+key, no monthly allowance, no size limit, no per-request bill, nothing
+through QUILL’s servers. QUILL Lite registers itself with OpenAI at
+sign-in (there is no secret in the build), signs in with PKCE, checks
+the ID token’s issuer, audience, nonce and expiry, and keeps only the
+refresh token in Windows’ credential store under its own name; the
+access token lives in memory and is renewed as needed. A sign-in is used
+ahead of a saved OpenAI key. <strong>Sign Out</strong> (two presses)
+asks OpenAI to revoke it and forgets it here; <strong>Forget on This
+Computer</strong> forgets it here only; neither button exists until you
+are signed in (<code>quill/core/ai/chatgpt_account.py</code>,
+<code>quill/ui/hosted_ai_chatgpt.py</code>).</li>
+<li><strong>The model is your plan’s list.</strong> Read from your
+account the moment you sign in, Luna 6 and GPT-6 first, the first one
+chosen for you, and saved as you arrow to another. <strong>Refresh
+Models</strong> reads it again.</li>
+<li><strong>Ask About an Image</strong> (Tools &gt; AI,
+<strong>Ctrl+F5</strong>). The first AI command that takes a file:
+choose a JPEG, PNG, WebP or GIF, type a question or none, and hear what
+the model sees – a description written for a blind reader, with any text
+in the picture transcribed exactly. The file is checked and re-encoded
+before it is sent, so a mislabelled or damaged file is a sentence rather
+than a failed request. The answer opens in an <strong>Image
+Description</strong> window with Insert Below, Copy, and Ctrl+Z to take
+an insert back. With no sign-in it says so and opens the account window
+(<code>quill/ui/hosted_ai_image.py</code>,
+<code>quill/core/ai/chatgpt_client.py</code>).</li>
+<li><strong>Allow web search.</strong> A checkbox in the account window,
+off by default. On, the model may search the web through OpenAI to
+answer a general question, a question about the document, or a
+conversation turn.</li>
+<li><strong>Tidy Dictated Text</strong> (Tools &gt; AI,
+<strong>Ctrl+F3</strong>). Dictation’s AI: the selection, else the
+paragraph at the cursor, goes to the model with an instruction to
+correct misheard words, punctuation, capitalisation, fillers and false
+starts and change nothing else; the Tidied Dictation window offers
+Replace My Selection, and Ctrl+Z takes it back as one step. Runs on a
+ChatGPT plan or an own key only (the free service has no such template);
+with neither it opens the account window and says why
+(<code>quill/ui/hosted_ai_chatgpt_commands.py</code>,
+<code>INSTRUCTIONS["tidy_dictation"]</code>).</li>
+<li><strong>The same seventeen tools, the same words.</strong> On the
+plan, requests carry the gateway’s own instructions through OpenAI’s
+Responses API (<code>store=false</code>, <code>stream=true</code>, as
+the plan requires), so a summary is the same summary whichever way it
+travels. Conversations go as real turns.</li>
+<li><strong>Usage and About follow the route.</strong> Usage
+(Ctrl+Alt+Shift+F9) opens the account window on a plan, with
+<strong>Open ChatGPT Usage</strong> for the plan’s own page; About names
+the account and the model.</li>
+<li><strong>Five error codes</strong> with a next step each:
+<code>QUILL-AI-CHATGPT-SIGNIN</code>, <code>-SIGNED-OUT</code> (OpenAI
+no longer accepts the sign-in; it is forgotten locally and Continue with
+ChatGPT starts clean), <code>-LIMIT</code> (the plan’s usage for now),
+<code>-UNAVAILABLE</code> and <code>-FAILED</code>.</li>
+<li><strong>QUILL has the same two rows on the same two keys</strong>,
+in its AI menu, from the same shared module; and <strong>Quill
+Radio</strong> gains Ask QUILL Radio on the same sign-in, as its own
+agent. Each app appears as itself under Apps in ChatGPT’s settings, and
+signing one out leaves the others connected.</li>
+</ul>
+<h3
+id="coming-back-to-quill-lite-puts-you-back-in-your-document-2026-09-29">Coming
+back to QUILL Lite puts you back in your document (2026-09-29)</h3>
+<ul>
+<li><strong>Alt+Tab back into QUILL Lite lands in the edit box.</strong>
+A reader wrote that after Alt+Tabbing to another program and back, focus
+did not always return to the document, and that it was hard to reproduce
+– pressing Ctrl+Tab once seemed to cure it. Both halves have the same
+cause. QUILL Lite keeps its documents inside one window, and Alt+Tab can
+only see that outer window; Windows then puts focus back wherever it was
+last inside it, which after an Alt+Tab can be the window frame itself
+rather than the edit box, and nothing moved it on. Ctrl+Tab and Ctrl+F6
+set focus on the document explicitly, so switching documents once
+corrected what Windows remembered and the problem stopped for the rest
+of the session. Coming back to QUILL Lite now puts focus in the
+document. A box you had moved to on purpose keeps it – Find, a field you
+tabbed to, a window that opened as QUILL Lite came forward – because
+taking focus away from those would be the worse bug
+(<code>quill/apps/lite_shell.py</code>).</li>
+</ul>
+<h3
 id="dictation-made-reliable-and-taught-your-words-in-a-window-2026-09-28">Dictation,
 made reliable, and taught your words in a window (2026-09-28)</h3>
 <p>Nine items from the dictation plan, all shared with QUILL’s Live
@@ -315,6 +405,30 @@ included.</li>
 </ul>
 <h3 id="ai-help">AI help</h3>
 <ul>
+<li><strong>Ten writing tools</strong> in the AI pad
+(<strong>Ctrl+Alt+G</strong>), which goes from seven choices to
+seventeen: <strong>Shorten</strong>, <strong>Simplify</strong>,
+<strong>Make more formal</strong>, <strong>Make friendlier</strong>,
+<strong>Turn into a list</strong>, <strong>Find action items</strong>,
+<strong>Suggest headings</strong>, <strong>Continue writing</strong>,
+<strong>Write an email reply</strong> and <strong>Translate</strong> (a
+<strong>Translate into</strong> list of twenty languages appears when it
+is chosen). Each works on the same passage Summarize does and is one
+request of the same size; each has a monthly share of 60 and can be
+switched off on the service. The table lives in
+<code>quill/core/ai/writing_tools.py</code>, shared with QUILL.</li>
+<li><strong>Have a conversation.</strong> A seventh choice in the AI pad
+(<strong>Ctrl+Alt+G</strong>) opens the <strong>AI Conversation</strong>
+window: talk back and forth, and each reply remembers what was said
+before. <strong>Follow Up</strong> in every answer window carries on
+from that answer (a follow-up to a question about the document keeps
+sending the same passages). Focus stays in the message box; each reply
+is read aloud as it arrives. On the free service every message is one
+request, conversations have a monthly share of 40, and the conversation
+so far is sent only as far as the ordinary size limit allows – so a turn
+never costs more than any other request, and the window says when a long
+conversation starts forgetting its beginning. With your own OpenAI key
+the whole conversation goes, with no limit.</li>
 <li><strong>Ask a general question.</strong> A sixth choice in the AI
 pad (<strong>Ctrl+Alt+G</strong>): type any question and get an answer,
 with nothing from your document sent. One question, one answer – not a

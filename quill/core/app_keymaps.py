@@ -206,6 +206,15 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # reaches for them, and a new listener reaches for a tutorial far more
         # often than anybody reaches for the PRD.
         "radio.tutorials": "Ctrl+Alt+F1",
+        # Ask QUILL Radio and Use My ChatGPT Subscription (2026-09-29): the
+        # assistant on the listener's own ChatGPT plan, with what is playing
+        # attached to every question. Ctrl+Shift+8 is one of the three gaps
+        # the 2026-08-25 note above left (Ctrl+Shift+6, 7, 8); the digit
+        # carries no mnemonic, and Alt+C then R is how most people will reach
+        # it. Alt+F5 is the account window, the same key the editors give the
+        # same window, so a person who set it up in QUILL Lite finds it here.
+        "radio.ask_quill_radio": "Ctrl+Shift+8",
+        "radio.chatgpt_account": "Alt+F5",
     },
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.

@@ -929,6 +929,17 @@ COMMANDS: list[CommandRow] = [
     # command that has to be reachable without agreeing to anything first.
     ("&Tools|&AI", "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),
     ("&Tools|&AI", "Use My &Own OpenAI Key...", "Alt+F2", "cmd_ai_own_key", ""),
+    # A ChatGPT subscription (2026-09-29): sign in once, no key, no per-request
+    # bill. Alt+F5 sits beside the own-key window on Alt+F2 -- both are
+    # once-a-year account windows (rule 9) and both chords were free in both
+    # editors. Ask About an Image is the one AI help command only the plan can
+    # answer; Ctrl+F5 was the last chord free in both editors that is neither a
+    # Word key for a function QUILL has (rule 1) nor an Alt+F4 neighbour (rule 4).
+    ("&Tools|&AI", "Use My Chat&GPT Subscription...", "Alt+F5", "cmd_ai_chatgpt", ""),
+    ("&Tools|&AI", "Ask About an &Image...", "Ctrl+F5", "cmd_ai_image", ""),
+    # Dictation's AI: fix what the recogniser misheard, on a plan or an own key.
+    # Ctrl+F3 was free in both editors and is nothing in Word QUILL has.
+    ("&Tools|&AI", "Tidy Dictated Te&xt...", "Ctrl+F3", "cmd_dictation_tidy", ""),
     # -- Tools > Dictation, shared with QUILL (quill/ui/windows_dictation_commands.py).
     # Ctrl+F11: Word's Alt+grave is a dead key on many layouts, and QUILL's Ctrl+F9
     # is Locked Dictation, another engine (rule 2). Checkable: "am I heard?"

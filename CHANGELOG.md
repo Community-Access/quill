@@ -2,6 +2,47 @@
 
 ## 1.0.0
 
+### Your ChatGPT subscription, in every QUILL app that has AI (2026-09-29)
+
+- **Use My ChatGPT Subscription** (AI menu in QUILL, Tools > AI in QUILL Lite,
+  Community in Quill Radio; **Alt+F5** in all three). If a person already pays
+  for ChatGPT, every AI command runs on that plan: **Continue with ChatGPT**
+  opens the browser on OpenAI's own sign-in page, the app is allowed to use the
+  plan under its own name, and the person comes back signed in -- no key, no
+  allowance, no size limit, no per-request bill, nothing through QUILL's
+  servers. Each app registers itself with OpenAI at sign-in (no secret in the
+  build), signs in with PKCE from `quill.core.auth`, checks the ID token's
+  issuer, audience, nonce and expiry, and keeps only the refresh token in the
+  OS store through the `SecretsManager`, one entry per app. The model is the
+  plan's own list; **Allow web search** is off until checked; **Sign Out** and
+  **Forget on This Computer** exist only while signed in. A sign-in is used
+  ahead of a saved OpenAI key (`quill/core/ai/chatgpt_account.py`,
+  `chatgpt_http.py`, `chatgpt_client.py`, `chatgpt_ai_help.py`,
+  `quill/ui/hosted_ai_chatgpt.py`; the two commands are a base of
+  `HostedAiMixin`, so neither editor wrote a line of them).
+- **Ask About an Image** (**Ctrl+F5**, both editors): the first AI command that
+  takes a file. A JPEG, PNG, WebP or GIF, checked and re-encoded before it
+  goes, and a question or none; the description is written for a blind
+  reader with any text transcribed exactly, and opens in an Image Description
+  window with Insert Below, Copy and Ctrl+Z (`quill/ui/hosted_ai_image.py`).
+- **Ask QUILL Radio** (Community, **Ctrl+Shift+8**): Quill Radio's first AI, a
+  conversation on the listener's plan that already knows the station and the
+  title playing. Nine quick questions; three attach favorites, the song log or
+  the listening history and say what and how many before Enter. No free
+  service and no key route in the radio, by design
+  (`quill/ui/radio/ask_radio_window.py`, `ask_radio_wiring.py`,
+  `quill/core/radio/assistant_prompt.py`).
+- **Tidy Dictated Text** (**Ctrl+F3**, both editors): the selection, else the
+  paragraph at the cursor, corrected for what speech recognition misheard and
+  nothing else, with Replace My Selection and one-step Ctrl+Z. Direct routes
+  only (a plan or an own key); the free service has no such template.
+- Five error codes, `QUILL-AI-CHATGPT-SIGNIN`, `-SIGNED-OUT`, `-LIMIT`,
+  `-UNAVAILABLE` and `-FAILED`; two reviewed egress sites; the plan-sharing
+  preview's `store=false` and `stream=true` on the Responses API. The pad and
+  the conversation window now take their route sentences from the service
+  (`AiService.route`, `size_note`, `conversation_note`) rather than composing
+  them per route.
+
 ### Windows itself can say what is playing (2026-09-29)
 
 - **The now-playing card is filled in.** Windows keeps one card per app --

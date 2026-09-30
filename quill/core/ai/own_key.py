@@ -168,6 +168,20 @@ INSTRUCTIONS: dict[str, str] = {
         "tone and any formatting such as line breaks and lists. Return only "
         "the translation, with no preamble or notes."
     ),
+    # Not a gateway feature: dictated text is only tidied on a direct route (a
+    # ChatGPT plan or an own key), where there is no allowance to spend it
+    # from, so the gateway has no template to match and the word-for-word test
+    # does not cover it (2026-09-29).
+    "tidy_dictation": (
+        "The following text was dictated by voice and written down by speech "
+        "recognition. Correct what the recogniser got wrong: words that sound "
+        "alike but are not the word meant, names and technical terms it "
+        "misheard, words run together or split apart, and missing or misplaced "
+        "punctuation and capitalisation. Remove filler words and false starts. "
+        "Keep the speaker's meaning, wording, tone and order otherwise, and add "
+        "nothing. Return only the corrected text, with no preamble, no "
+        "explanation and no list of what changed."
+    ),
 }
 
 #: Effectively no limit. The pad never refuses on size with a key; it warns

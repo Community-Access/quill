@@ -399,6 +399,16 @@ class RadioAppFrame(
         self._main_view_host.show(self._radio_history.main_view, announce=False, focus=False)
         self._main_view_host.focus_current()
 
+    def open_notification_target(self, target: str) -> None:
+        """Enter on a notification: go to the podcast it was about.
+
+        The notification centre calls this when there is something to open.
+        Browse Stations, cursor on the show -- see ui/notification_open.
+        """
+        from quill.ui import notification_open
+
+        notification_open.open_in_radio(self, target)
+
     def _focus_initial_control(self) -> None:
         """Land keyboard focus on the favorites tree after the window is shown so
         the menu bar is reachable straight away (#1193): a pre-show SetFocus does

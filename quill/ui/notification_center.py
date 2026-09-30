@@ -165,7 +165,13 @@ def open_notification_center(host: Any, *, on_open: Any = None) -> None:
             say("There is nothing to open for this one.")
             return
         dialog.EndModal(wx.ID_OK)
-        on_open(target)
+        # After the modal loop has actually ended, not during it. ``EndModal``
+        # only asks the loop to stop once this handler returns, so calling the
+        # app straight away builds its window underneath a dialog that is still
+        # closing -- and where focus lands then is whatever wx decides, which
+        # for a screen-reader user is the difference between arriving in the
+        # tree and arriving nowhere.
+        wx.CallAfter(on_open, target)
 
     apply_listbox_activation(listbox, _open)
 

@@ -314,8 +314,19 @@ class AiPadFrame(wx.Frame):
     def _asking(self) -> bool:
         return self._action_id in _QUESTION_ACTIONS
 
-    def _own_key(self) -> bool:
-        return bool(getattr(self._service, "own_key_active", False))
+    def _direct(self) -> bool:
+        """Whether requests skip QUILL's service: an own key, or a ChatGPT plan.
+
+        Either way there is no QUILL limit, no excerpt picking, and a warning
+        in place of a refusal; the sentences differ and come from the service.
+        """
+        direct = getattr(self._service, "direct", None)
+        if direct is None:  # a service that predates the ChatGPT route
+            return bool(getattr(self._service, "own_key_active", False))
+        return bool(direct)
+
+    def _route_label(self) -> str:
+        return str(getattr(self._service, "route_label", "") or "your own key")
 
     def _on_action_changed(self) -> None:
         """Show the question field only for the actions that use it.
@@ -347,8 +358,8 @@ class AiPadFrame(wx.Frame):
                 "conversation so far; nothing from this document. Type a first "
                 "message below if you like."
                 + (
-                    " With your own key the whole conversation goes each time."
-                    if self._own_key()
+                    f" With {self._route_label()} the whole conversation goes each time."
+                    if self._direct()
                     else " Each message uses one of your free requests."
                 )
             )
@@ -359,16 +370,16 @@ class AiPadFrame(wx.Frame):
             self._preview.SetValue("")
             self._summary.SetValue(
                 "About to send only your question, typed below. Nothing from "
-                f"this document is sent.{self._own_key_note('')}"
+                f"this document is sent.{self._direct_note('')}"
             )
             return
-        if self._asking() and self._own_key():
-            # With the user's own key there is no excerpt picking: the whole
-            # document goes, so no answer is missed for want of a fourth passage.
+        if self._asking() and self._direct():
+            # On a direct route there is no excerpt picking: the whole document
+            # goes, so no answer is missed for want of a fourth passage.
             self._preview.SetValue(self._document)
             self._summary.SetValue(
                 f"About to send the whole document ({ctx.words_in(self._document):,} "
-                f"words), and your question.{self._own_key_note(self._document)}"
+                f"words), and your question.{self._direct_note(self._document)}"
                 if self._document.strip()
                 else "There is nothing in this document to search."
             )
@@ -428,8 +439,8 @@ class AiPadFrame(wx.Frame):
         where the count is startling, and this is what makes it visible before
         the request rather than after.
         """
-        if self._own_key():
-            return self._own_key_note(text)
+        if self._direct():
+            return self._direct_note(text)
         oversized, words, allowed = ctx.too_large(text, self._service.limits.max_input_tokens)
         if not oversized:
             return ""
@@ -439,14 +450,18 @@ class AiPadFrame(wx.Frame):
             "Nothing is sent and nothing is used."
         )
 
-    def _own_key_note(self, text: str) -> str:
-        """With the user's own key: no limit, so a warning instead of a refusal.
+    def _direct_note(self, text: str) -> str:
+        """On a direct route: no limit, so a warning instead of a refusal.
 
-        Empty on the free service. The cost is of *text* (plus a question, which
-        is small); the sentence also says the answer is unlimited and extra.
+        Empty on the free service. The sentence is the service's, because what
+        is worth saying differs: an own key is priced per request and a plan is
+        not (``AiService.size_note``).
         """
-        if not self._own_key():
+        if not self._direct():
             return ""
+        note = getattr(self._service, "size_note", None)
+        if callable(note):
+            return " " + str(note(text))
         from quill.core.ai.own_key import size_warning
 
         free = getattr(self._service, "free_limits", None)
@@ -483,8 +498,8 @@ class AiPadFrame(wx.Frame):
                 return
             prompt = question
             if feature == "document_qna":
-                if self._own_key():
-                    # No excerpt limit with an own key: the whole document.
+                if self._direct():
+                    # No excerpt limit on a direct route: the whole document.
                     chunks = [self._document] if self._document.strip() else []
                 else:
                     chunks = [
@@ -505,9 +520,9 @@ class AiPadFrame(wx.Frame):
                 return
 
         combined = prompt + "".join(chunks or [])
-        # Never refused on size with an own key: the summary already warned.
+        # Never refused on size on a direct route: the summary already warned.
         oversized, words, allowed = ctx.too_large(combined, self._service.limits.max_input_tokens)
-        if oversized and not self._own_key():
+        if oversized and not self._direct():
             self._say(
                 f"That is about {words} words, and the free limit is about "
                 f"{allowed}. Select less, or choose a smaller part above. "

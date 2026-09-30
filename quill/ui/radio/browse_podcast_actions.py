@@ -148,6 +148,32 @@ def mark_all_played(dialog: Any, args: list[str]) -> None:
         dialog._announce(spoken + " Refresh Podcasts to update.")
 
 
+def toggle_alert(dialog: Any, args: list[str]) -> None:
+    """Notify Me / Stop Notifying About This Podcast, from the show's own row.
+
+    No confirmation, because there is nothing to confirm: both directions keep
+    recording every new episode in Notifications, and only the interrupting
+    half -- the desktop notice and the sound -- changes. It is also the whole
+    reason this verb can be one keystroke away rather than a trip through
+    settings.
+
+    The branch is **not** reloaded afterwards. Nothing on screen depends on the
+    alert mode (no badge, no label), so a reload would move the cursor and
+    rebuild rows to show exactly the list that is already there -- and the
+    spoken outcome is what the listener is waiting for. Compare Mark All as
+    Played, which reloads because the unheard badge has genuinely changed.
+    """
+    if not args:
+        return
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.podcast_follow import toggle_alert_for_feed
+
+    spoken = toggle_alert_for_feed(app_data_dir(), args[0])
+    # An empty answer means the subscription has gone since the menu opened --
+    # say that rather than nothing, which reads as a key that did not work.
+    dialog._announce(spoken or "That podcast is not in your subscriptions any more.")
+
+
 def mark_episode_played(dialog: Any, station: Any, *, played: bool) -> None:
     """Mark one episode played or unplayed, from the episode's own row."""
     from quill.core.paths import app_data_dir

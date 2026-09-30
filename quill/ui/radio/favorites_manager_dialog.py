@@ -25,6 +25,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     show_modal_dialog,
 )
+from quill.ui.radio import favorites_details
 
 _TOP_LEVEL_CHOICE = "(Top level -- no folder)"
 _NEW_FOLDER_CHOICE = "(New folder...)"
@@ -164,6 +165,11 @@ class FavoritesManagerDialog:
         self._status = wx.StaticText(self._surface, label="")
         self._status.SetName("Status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+
+        # What the highlighted row is, and the note you wrote about it. Built
+        # in favorites_details (GATE-11) -- see that module on why a note
+        # belongs in a pane rather than behind a dialog.
+        favorites_details.build(self, self._surface, root)
 
         row1 = wx.BoxSizer(wx.HORIZONTAL)
         self._play_btn = self._button(row1, "&Play", self._on_play, "Play the selected station")
@@ -417,6 +423,7 @@ class FavoritesManagerDialog:
         self._status.SetLabel(text)
 
     def _on_selection_changed(self) -> None:
+        favorites_details.refresh(self)
         selected = self._selected()
         is_station = selected is not None and selected[0] == "station"
         is_folder = selected is not None and selected[0] == "folder"

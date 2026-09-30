@@ -135,8 +135,12 @@ class AiChatFrame(wx.Frame):
 
     # -- what the window says ---------------------------------------------- #
 
-    def _own_key(self) -> bool:
-        return bool(getattr(self._service, "own_key_active", False))
+    def _direct(self) -> bool:
+        """Whether this conversation skips QUILL's service: an own key, or a ChatGPT plan."""
+        direct = getattr(self._service, "direct", None)
+        if direct is None:  # a service that predates the ChatGPT route
+            return bool(getattr(self._service, "own_key_active", False))
+        return bool(direct)
 
     def _about_text(self) -> str:
         excerpts = (
@@ -144,7 +148,10 @@ class AiChatFrame(wx.Frame):
             if self._conversation.excerpts
             else " Nothing from your document is sent."
         )
-        if self._own_key():
+        note = getattr(self._service, "conversation_note", None)
+        if callable(note):
+            return str(note()) + excerpts
+        if self._direct():
             return (
                 "This conversation uses your own OpenAI key: no limits, billed to "
                 "your OpenAI account. The whole conversation goes with each message, "
@@ -195,7 +202,7 @@ class AiChatFrame(wx.Frame):
         )
 
     def _ceiling(self) -> int:
-        if self._own_key():
+        if self._direct():
             from quill.core.ai.own_key import CONTEXT_WARNING_TOKENS
 
             return CONTEXT_WARNING_TOKENS
@@ -230,7 +237,7 @@ class AiChatFrame(wx.Frame):
         self._announce(spoken)
 
     def _set_aside_sentence(self) -> str:
-        if self._own_key():
+        if self._direct():
             return (
                 "This conversation is now longer than the model can read at once, "
                 "so its beginning is no longer sent."
@@ -298,7 +305,7 @@ def open_for(host: Any, *, first_message: str = "", seed: Conversation | None = 
     if not host._ai_ready():
         return
     service = host._ai_service()
-    if not service.own_key_active and not service.signed_in:
+    if not _direct_service(service) and not service.signed_in:
         host._announce(
             "This computer is not connected to QUILL's free AI. "
             "Choose Connect or Sign Out in the AI menu to connect it."
@@ -315,6 +322,14 @@ def open_for(host: Any, *, first_message: str = "", seed: Conversation | None = 
         first_message=first_message,
     )
     host._after_agreement(lambda: host._show_ai_window(frame))
+
+
+def _direct_service(service: Any) -> bool:
+    """Whether *service* skips QUILL's service, read either way it can say so."""
+    direct = getattr(service, "direct", None)
+    if direct is None:
+        return bool(getattr(service, "own_key_active", False))
+    return bool(direct)
 
 
 def follow_up_seed(request: tuple[str, str, list[str] | None], answer: str) -> Conversation:

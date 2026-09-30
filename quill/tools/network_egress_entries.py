@@ -313,6 +313,28 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "and the SDK talks only to api.elevenlabs.io. Optional 'elevenlabs' extra; "
         "Safe-Mode and consent are enforced by the AI Voice surface."
     ),
+    "core/ai/chatgpt_http.py::_real_opener": (
+        "Sign in with ChatGPT (2026-09-29): one JSON request to api.openai.com "
+        "or auth.openai.com on the person's own ChatGPT plan -- the model list "
+        "(GET /v1/models) after a sign-in or a Refresh Models press, and the "
+        "OpenID configuration read once when the person chooses Sign Out so the "
+        "refresh token can be revoked. Runs only after an explicit sign-in, "
+        "only on a user action, never on launch or idle. Verified TLS; bearer "
+        "token from the refresh token kept in the OS credential store; the "
+        "sign-in itself posts through the reviewed oauth_poster site. Inert in "
+        "Safe Mode because every AI command is."
+    ),
+    "core/ai/chatgpt_http.py::_real_stream_opener": (
+        "Sign in with ChatGPT (2026-09-29): the one request that carries the "
+        "person's text -- POST /v1/responses on api.openai.com with "
+        "store=false and stream=true, which the plan-sharing preview requires. "
+        "Sent only when the person presses Send in the AI pad, Enter in a "
+        "conversation, or Ask in Ask About an Image, and only while this app is "
+        "signed in with ChatGPT; the pad shows exactly what will be sent first. "
+        "A picture goes as a validated data URL; web search is offered to the "
+        "model only when the person has switched it on. Verified TLS, bearer "
+        "token, nothing kept on OpenAI's side. Inert in Safe Mode."
+    ),
     "core/ai/oauth_poster.py::_real_opener": (
         "OAuth 2.0 device-flow form POST (AI-19 accessible sign-in). Runs only "
         "when the user starts a provider/Copilot device login from the onboarding "

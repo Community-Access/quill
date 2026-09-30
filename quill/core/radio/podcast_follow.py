@@ -239,24 +239,64 @@ def unheard_for_feed(data_dir: Path, feed_url: str) -> int:
 def show_facts_for_feed(data_dir: Path, feed_url: str) -> tuple[int, int, str]:
     """``(unheard, episodes, title)`` for a followed feed, all from one read.
 
-    The context menu needs all three (Mark All's dimmed state, Download All
-    Episodes' count, and the downloads folder name); answering them from one
-    ``load_library`` keeps opening a menu at one file read. ``(0, 0, "")``
-    when unknown. Never raises.
+    The three facts the rest of the app asks for. Kept at three rather than
+    growing: :func:`show_menu_facts` is the wider answer, and every existing
+    caller of this one wants exactly these.
+    """
+    return show_menu_facts(data_dir, feed_url)[:3]
+
+
+def show_menu_facts(data_dir: Path, feed_url: str) -> tuple[int, int, str, str]:
+    """``(unheard, episodes, title, alert)`` for a followed feed, from one read.
+
+    Everything a subscribed show's context menu needs: Mark All's dimmed
+    state, Download All Episodes' count, the downloads-folder name, and which
+    way the alert toggle points. Answering them from a single ``load_library``
+    keeps opening a menu at one file read -- which matters because a menu
+    opens on the way to something else, and a listener cannot tell a slow one
+    from a stuck one.
+
+    ``(0, 0, "", "")`` when the feed is not followed or the library cannot be
+    read. Never raises: a menu that failed on a library read would take the
+    row's other verbs down with it.
     """
     try:
+        from quill.core.podcasts import episode_alerts
         from quill.core.podcasts.radio_listens import finished_audio_urls
         from quill.core.podcasts.sorting import unheard_count
         from quill.core.podcasts.subscriptions import load_library
 
-        show = load_library(data_dir).find_show_by_feed_url((feed_url or "").strip())
+        library = load_library(data_dir)
+        show = library.find_show_by_feed_url((feed_url or "").strip())
         if show is None:
-            return (0, 0, "")
+            return (0, 0, "", "")
         unheard = unheard_count(show, exclude_audio=finished_audio_urls(data_dir))
         episodes = sum(1 for e in show.episodes if e.audio_url)
-        return (unheard, episodes, show.title or "")
+        alert = episode_alerts.alert_for_show(library.effective_settings(show))
+        return (unheard, episodes, show.title or "", alert)
     except Exception:  # noqa: BLE001 - a menu must never fail on a library read
-        return (0, 0, "")
+        return (0, 0, "", "")
+
+
+def toggle_alert_for_feed(data_dir: Path, feed_url: str) -> str:
+    """Flip this show between notifying and quiet, and save. Returns what to say.
+
+    The row's half of the alert settings: the three-way choice (and every
+    folder and shared default behind it) lives in settings, and this is the
+    one decision somebody makes while standing on the podcast. ``""`` when the
+    feed is not followed, so the caller can say so rather than claim a change
+    that did not happen.
+    """
+    from quill.core.podcasts import alert_toggle
+    from quill.core.podcasts.subscriptions import load_library, save_library
+
+    library = load_library(data_dir)
+    show = library.find_show_by_feed_url((feed_url or "").strip())
+    if show is None:
+        return ""
+    alert = alert_toggle.toggle(library, show)
+    save_library(data_dir, library)
+    return alert_toggle.outcome_sentence(show.title, alert)
 
 
 def mark_episode_played(data_dir: Path, feed_url: str, audio_url: str, *, played: bool) -> str:

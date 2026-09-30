@@ -254,6 +254,13 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.hosted_ai_sign_in": "Ctrl+Alt+Shift+F4",
     "tools.hosted_ai_privacy": "Ctrl+Alt+Shift+K",
     "tools.hosted_ai_own_key": "Alt+F2",  # rule 9; free in both editors
+    # A ChatGPT subscription and Ask About an Image (2026-09-29): QUILL Lite's
+    # chords, both free here too. Alt+F5 sits beside the own-key window on
+    # Alt+F2; Ctrl+F5 is a Word key for nothing QUILL has (rule 1 does not
+    # claim it) and not an Alt+F4 neighbour (rule 4).
+    "tools.hosted_ai_chatgpt": "Alt+F5",  # rule 9; free in both editors
+    "tools.hosted_ai_image": "Ctrl+F5",  # free in both editors
+    "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # Thirteen commands that had no DEFAULT_KEYMAP entry at all and were bound
     # (or listed unbound) only in the shipped "QUILL Default" profile. That was
     # backwards: the profile is a delta over these defaults, so a command

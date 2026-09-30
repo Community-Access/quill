@@ -191,3 +191,27 @@ def reveal_favorite(dialog: Any, name: str) -> bool:
     except Exception:  # noqa: BLE001 - a reveal that fails must not eat the verb
         return False
     return False
+
+
+def open_to_show(dialog: Any, feed_url: str) -> bool:
+    """Land the cursor on a subscribed show from anywhere. True when it could.
+
+    The other door onto a reveal, and the rule is deliberately the opposite of
+    :func:`refetch_and_reveal`'s. That one only walks the cursor when the
+    listener was already inside Subscriptions, because yanking it across the
+    tree in the middle of browsing loses somebody's place. Here the move *is*
+    the request -- Enter on a notification asks to be taken to the show it
+    names -- so the cursor always goes, wherever it was.
+
+    False when the Subscriptions branch is not on screen at all: the source can
+    be hidden (Choose Browse Sources), and the caller then says so rather than
+    leaving somebody waiting for a window that is never going to move.
+    """
+    feed = str(feed_url or "").strip()
+    if not feed:
+        return False
+    dialog._pending_reveal = {"feed_url": feed, "folder_id": ""}
+    if refetch_subscriptions(dialog):
+        return True
+    dialog._pending_reveal = None  # nothing is going to arrive to consume it
+    return False

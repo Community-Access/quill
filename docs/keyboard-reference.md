@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 460.
+Editor commands with default bindings: 463.
 
 ## The QUILL editor
 
@@ -294,6 +294,7 @@ Editor commands with default bindings: 460.
 | (unbound by default) | Speak Voice Status | `tools.voice_status` |
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
 | Alt+F2 | Use My Own OpenAI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill... | `tools.ask_quill_chat` |
 | Alt+Shift+F10 | Windows dictation words | `tools.windows_dictation_words` |
@@ -322,6 +323,8 @@ Editor commands with default bindings: 460.
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
 | Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
 | Ctrl+F11 | Windows dictation toggle | `tools.windows_dictation_toggle` |
+| Ctrl+F3 | Tidy Dictated Text... | `tools.dictation_tidy` |
+| Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
@@ -542,6 +545,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+7 | Play favorite 7 | `radio.play_favorite_7` |
 | Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
+| Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
@@ -585,6 +589,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+, | Transport.previous chapter | `radio.transport.previous_chapter` |
 | Ctrl+Shift+. | Transport.next chapter | `radio.transport.next_chapter` |
 | Ctrl+Shift+0 | Transport.speed reset | `radio.transport.speed_reset` |
+| Ctrl+Shift+8 | Ask QUILL Radio... | `radio.ask_quill_radio` |
 | Ctrl+Shift+9 | Transport.skip silence | `radio.transport.skip_silence` |
 | Ctrl+Shift+B | Volume Boost | `radio.volume_boost` |
 | Ctrl+Shift+C | Transport.chapter list | `radio.transport.chapter_list` |

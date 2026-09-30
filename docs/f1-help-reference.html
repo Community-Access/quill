@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>The Quill family F1 help reference</title>
   <style>
@@ -220,7 +220,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 226 audited sites (112 helped, 114 named-help).</p>
+<p>Control coverage: 234 audited sites (120 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -248,6 +248,14 @@ any other.</p>
 <p><strong>Add from YouTube Playlist.</strong> Bring the entries of a
 YouTube playlist in as playable items. Pick the ones you want; each
 arrives as its own row in your favorites.</p>
+<p><strong>Ask QUILL Radio.</strong> A conversation with ChatGPT, on
+your own plan, that already knows what is playing: the station and the
+title the stream is announcing go with every message, so ‘what is this
+song’ and ‘tell me about this station’ need no names typed. Type in Your
+message and press Enter; the reply is read aloud and added to the
+conversation above. Ask About What’s Playing asks for you, and the Quick
+questions list holds nine more, three of which say what they send about
+you before you press Enter. Nothing here changes what is playing.</p>
 <p><strong>Audio Health.</strong> Can this installation play and record?
 Each row names one piece of the media machinery – the playback engine,
 the recorder, the converters – and says plainly whether it is present,
@@ -438,6 +446,12 @@ reminders and scheduled recordings together, soonest first, with the
 kind on every row. Snooze and Dismiss work on a reminder; a recording is
 cancelled in Schedule Recording, where it was made, because Dismiss on
 the wrong row would mean a very different morning.</p>
+<p><strong>Use My ChatGPT Subscription.</strong> Sign Quill Radio in
+with the ChatGPT plan you already pay for, so Ask QUILL Radio can answer
+on it. Continue with ChatGPT opens your browser; once signed in, choose
+the model from your plan’s own list and whether web search is allowed.
+Sign Out and Forget on This Computer appear only while you are signed
+in.</p>
 <p><strong>Wake-Up Timer.</strong> Start a station playing at a time you
 choose – an alarm clock that wakes you to radio. Quill Radio must be
 running (or in the tray) at the set time; the status readout here says
@@ -462,6 +476,27 @@ has played while you listened: every title the stream reported, newest
 first, with the time it was heard.</p>
 <h3 id="every-authored-control-help-sentence">Every authored control
 help sentence</h3>
+<h4 id="askradioframe-quilluiradioask_radio_windowpy">AskRadioFrame
+(<code>quill/ui/radio/ask_radio_window.py</code>)</h4>
+<ul>
+<li><code>self._quick</code>: Questions worth one keystroke. Choose one
+and it is put in the message box for you to send or change. Six ask
+about what is playing; three also send something you keep – your
+favorites, or the songs logged – and say so before anything goes.</li>
+<li><code>self._message</code>: Type a question and press Enter. What is
+playing goes with it, so ‘what is this song’ and ‘tell me about this
+station’ just work.</li>
+<li><code>self._send_button</code>: Sends your message with what is
+playing right now.</li>
+<li><code>playing</code>: Asks about the song and station playing right
+now, without typing. Press it again for the next suggested
+question.</li>
+<li><code>fresh</code>: Forgets this conversation and starts again.
+Nothing is sent.</li>
+<li><code>copy</code>: Puts the most recent reply on the clipboard.</li>
+<li><code>account_button</code>: Opens the window where you sign in or
+out of ChatGPT, choose the model, and allow web search.</li>
+</ul>
 <h4 id="module-level-quilluiradioaudio_health_dialogpy">(module level)
 (<code>quill/ui/radio/audio_health_dialog.py</code>)</h4>
 <ul>
@@ -2762,7 +2797,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 78 audited sites (78 helped).</p>
+<p>Control coverage: 92 audited sites (92 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -2787,6 +2822,10 @@ comparison, publishing and the rest of QUILL’s AI live in QUILL.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Ask About an Image.</strong> Choose a picture and, if you
+like, a question about it. The picture goes to OpenAI on your ChatGPT
+subscription and the description comes back in a window you can read,
+copy or insert into your document.</p>
 <p><strong>Bookmarks.</strong> The places you marked in this document,
 in the order they appear. Choose one and press Enter to go there; Remove
 takes one out of the list without touching the document. Bookmarks last
@@ -2844,6 +2883,9 @@ order they appear. Choose one and the cursor lands at the start of it.
 Headings exist in rich text only: they are the bold-plus-point-size
 ladder QUILL uses, so this list is also what Word will show in its
 navigation pane.</p>
+<p><strong>Image Description.</strong> What the model saw in the
+picture, read-only. Insert Below puts it under the paragraph you are in,
+Copy puts it on the clipboard, and Control Z takes an insert back.</p>
 <p><strong>Insert HTML Tag.</strong> Forty HTML tags, searchable by what
 they do as well as by what they are called – dropdown finds select,
 checkbox finds input, collapsible finds details. Choose the tag, then
@@ -2952,6 +2994,16 @@ your dictionary instead, if it was right all along.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Tidied Dictation.</strong> The dictated text with the
+recogniser’s mistakes corrected – misheard words, punctuation, fillers –
+and nothing else changed. Replace My Selection puts it where the
+dictated text was; Control Z takes it back.</p>
+<p><strong>Use My ChatGPT Subscription.</strong> Use the ChatGPT plan
+you already pay for instead of QUILL’s free AI or an API key. Continue
+with ChatGPT opens your browser to sign in and allow it; once signed in,
+choose the model from your plan’s own list and whether web search is
+allowed. Sign Out and Forget on This Computer appear only while you are
+signed in.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
@@ -3204,6 +3256,26 @@ Nothing is sent.</li>
 <li><code>insert</code>: Puts the most recent reply into your document
 underneath the current paragraph. Control Z takes it back.</li>
 </ul>
+<h4 id="chatgptframe-quilluihosted_ai_chatgptpy">ChatGptFrame
+(<code>quill/ui/hosted_ai_chatgpt.py</code>)</h4>
+<ul>
+<li><code>cont</code>: Opens OpenAI’s sign-in page in your browser. Sign
+in, allow this app to use your plan, and come back here; this window
+says when it is done.</li>
+<li><code>cancel</code>: Stops waiting for the browser. Nothing is
+changed; you can try again.</li>
+<li><code>self._copy_url</code>: Puts the sign-in address on the
+clipboard, for a browser that did not open on its own.</li>
+<li><code>self._model</code>: Which model answers, from the list your
+ChatGPT plan offers. The choice is saved as soon as you make it.</li>
+<li><code>self._web</code>: When checked, the model may search the web
+through OpenAI to answer a question. Off, only what you send is used.
+Saved as soon as you change it.</li>
+<li><code>usage</code>: Opens ChatGPT’s own usage page in your browser,
+where your plan’s limits and what is left are shown.</li>
+<li><code>refresh</code>: Asks your ChatGPT plan for its model list
+again.</li>
+</ul>
 <h4 id="module-level-quilluihosted_ai_dialogspy">(module level)
 (<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
 <ul>
@@ -3237,6 +3309,21 @@ again.</li>
 free AI. You can connect it again at any time.</li>
 <li><code>copy</code>: Puts this computer’s support ID on the
 clipboard.</li>
+</ul>
+<h4 id="askimagedialog-quilluihosted_ai_imagepy">AskImageDialog
+(<code>quill/ui/hosted_ai_image.py</code>)</h4>
+<ul>
+<li><code>about_text</code>: Where the picture goes and what comes back.
+Read with the arrows.</li>
+<li><code>self.path</code>: The full path of a JPEG, PNG, WebP or GIF
+file. Type it, paste it, or choose Browse to pick it.</li>
+<li><code>browse</code>: Opens the file picker on your Pictures
+folder.</li>
+<li><code>self.question</code>: What you want to know about the picture.
+Leave it empty for a plain description written for a blind reader.</li>
+<li><code>ask</code>: Sends the picture and your question. The answer
+opens in its own window.</li>
+<li><code>cancel</code>: Closes this window. Nothing is sent.</li>
 </ul>
 <h4 id="ownkeydialog-quilluihosted_ai_own_keypy">OwnKeyDialog
 (<code>quill/ui/hosted_ai_own_key.py</code>)</h4>

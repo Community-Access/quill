@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 226 audited sites (112 helped, 114 named-help).
+Control coverage: 234 audited sites (120 helped, 114 named-help).
 
 ### Every window, and what it is for
 
@@ -35,6 +35,8 @@ Control coverage: 226 audited sites (112 helped, 114 named-help).
 **Add Custom Station.** Add a station Quill Radio's directories do not know, by pasting its own stream address. Name it what you like; it lands in your favorites as a custom station and plays like any other.
 
 **Add from YouTube Playlist.** Bring the entries of a YouTube playlist in as playable items. Pick the ones you want; each arrives as its own row in your favorites.
+
+**Ask QUILL Radio.** A conversation with ChatGPT, on your own plan, that already knows what is playing: the station and the title the stream is announcing go with every message, so 'what is this song' and 'tell me about this station' need no names typed. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Ask About What's Playing asks for you, and the Quick questions list holds nine more, three of which say what they send about you before you press Enter. Nothing here changes what is playing.
 
 **Audio Health.** Can this installation play and record? Each row names one piece of the media machinery -- the playback engine, the recorder, the converters -- and says plainly whether it is present, with a button to fetch anything missing.
 
@@ -124,6 +126,8 @@ Control coverage: 226 audited sites (112 helped, 114 named-help).
 
 **Upcoming.** Everything Quill Radio has planned -- reminders and scheduled recordings together, soonest first, with the kind on every row. Snooze and Dismiss work on a reminder; a recording is cancelled in Schedule Recording, where it was made, because Dismiss on the wrong row would mean a very different morning.
 
+**Use My ChatGPT Subscription.** Sign Quill Radio in with the ChatGPT plan you already pay for, so Ask QUILL Radio can answer on it. Continue with ChatGPT opens your browser; once signed in, choose the model from your plan's own list and whether web search is allowed. Sign Out and Forget on This Computer appear only while you are signed in.
+
 **Wake-Up Timer.** Start a station playing at a time you choose -- an alarm clock that wakes you to radio. Quill Radio must be running (or in the tray) at the set time; the status readout here says what is scheduled.
 
 **Welcome to Quill Radio.** A three-screen tour for a first launch. Nothing here is a setting you can get wrong: read, press Next, and Skip leaves at any point.
@@ -140,6 +144,15 @@ Control coverage: 226 audited sites (112 helped, 114 named-help).
 
 ### Every authored control help sentence
 
+#### AskRadioFrame (`quill/ui/radio/ask_radio_window.py`)
+
+- `self._quick`: Questions worth one keystroke. Choose one and it is put in the message box for you to send or change. Six ask about what is playing; three also send something you keep -- your favorites, or the songs logged -- and say so before anything goes.
+- `self._message`: Type a question and press Enter. What is playing goes with it, so 'what is this song' and 'tell me about this station' just work.
+- `self._send_button`: Sends your message with what is playing right now.
+- `playing`: Asks about the song and station playing right now, without typing. Press it again for the next suggested question.
+- `fresh`: Forgets this conversation and starts again. Nothing is sent.
+- `copy`: Puts the most recent reply on the clipboard.
+- `account_button`: Opens the window where you sign in or out of ChatGPT, choose the model, and allow web search.
 #### (module level) (`quill/ui/radio/audio_health_dialog.py`)
 
 - `ffmpeg_btn`: Emergency repair: downloads FFmpeg, the converter recording needs, which normally ships inside Quill Radio. Offered only when this installation is missing it.
@@ -1104,7 +1117,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 78 audited sites (78 helped).
+Control coverage: 92 audited sites (92 helped).
 
 ### Every window, and what it is for
 
@@ -1117,6 +1130,8 @@ Control coverage: 78 audited sites (78 helped).
 **About QUILL Lite.** What this copy is, and where it keeps your settings and your recovered work. QUILL Lite is a small companion to QUILL for All, not a replacement for it: conversion, comparison, publishing and the rest of QUILL's AI live in QUILL.
 
 **Answer.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Ask About an Image.** Choose a picture and, if you like, a question about it. The picture goes to OpenAI on your ChatGPT subscription and the description comes back in a window you can read, copy or insert into your document.
 
 **Bookmarks.** The places you marked in this document, in the order they appear. Choose one and press Enter to go there; Remove takes one out of the list without touching the document. Bookmarks last for the session and move with the text as you edit around them.
 
@@ -1143,6 +1158,8 @@ Control coverage: 78 audited sites (78 helped).
 **Go to line.** Jump straight to a line by number. The prompt says how many lines the document has, and a number past the end takes you to the last line rather than refusing.
 
 **Headings.** Every heading in this document, in the order they appear. Choose one and the cursor lands at the start of it. Headings exist in rich text only: they are the bold-plus-point-size ladder QUILL uses, so this list is also what Word will show in its navigation pane.
+
+**Image Description.** What the model saw in the picture, read-only. Insert Below puts it under the paragraph you are in, Copy puts it on the clipboard, and Control Z takes an insert back.
 
 **Insert HTML Tag.** Forty HTML tags, searchable by what they do as well as by what they are called -- dropdown finds select, checkbox finds input, collapsible finds details. Choose the tag, then give it attributes if it needs any, or press Enter on the empty box to skip that. Anything selected in your document is wrapped by the tag.
 
@@ -1185,6 +1202,10 @@ Control coverage: 78 audited sites (78 helped).
 **Spelling Suggestions.** Better spellings for the word the cursor was in, closest first. Choose one and press Enter to replace the word; press Escape to leave it as you wrote it. Alt F7 adds it to your dictionary instead, if it was right all along.
 
 **Summary.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Tidied Dictation.** The dictated text with the recogniser's mistakes corrected -- misheard words, punctuation, fillers -- and nothing else changed. Replace My Selection puts it where the dictated text was; Control Z takes it back.
+
+**Use My ChatGPT Subscription.** Use the ChatGPT plan you already pay for instead of QUILL's free AI or an API key. Continue with ChatGPT opens your browser to sign in and allow it; once signed in, choose the model from your plan's own list and whether web search is allowed. Sign Out and Forget on This Computer appear only while you are signed in.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
@@ -1275,6 +1296,15 @@ Control coverage: 78 audited sites (78 helped).
 - `fresh`: Forgets this conversation and starts again. Nothing is sent.
 - `copy`: Puts the most recent reply on the clipboard.
 - `insert`: Puts the most recent reply into your document underneath the current paragraph. Control Z takes it back.
+#### ChatGptFrame (`quill/ui/hosted_ai_chatgpt.py`)
+
+- `cont`: Opens OpenAI's sign-in page in your browser. Sign in, allow this app to use your plan, and come back here; this window says when it is done.
+- `cancel`: Stops waiting for the browser. Nothing is changed; you can try again.
+- `self._copy_url`: Puts the sign-in address on the clipboard, for a browser that did not open on its own.
+- `self._model`: Which model answers, from the list your ChatGPT plan offers. The choice is saved as soon as you make it.
+- `self._web`: When checked, the model may search the web through OpenAI to answer a question. Off, only what you send is used. Saved as soon as you change it.
+- `usage`: Opens ChatGPT's own usage page in your browser, where your plan's limits and what is left are shown.
+- `refresh`: Asks your ChatGPT plan for its model list again.
 #### (module level) (`quill/ui/hosted_ai_dialogs.py`)
 
 - `close`: Closes this window. Nothing is sent, and nothing in your document changes.
@@ -1292,6 +1322,14 @@ Control coverage: 78 audited sites (78 helped).
 
 - `self._sign_out`: Disconnects this computer from QUILL's free AI. You can connect it again at any time.
 - `copy`: Puts this computer's support ID on the clipboard.
+#### AskImageDialog (`quill/ui/hosted_ai_image.py`)
+
+- `about_text`: Where the picture goes and what comes back. Read with the arrows.
+- `self.path`: The full path of a JPEG, PNG, WebP or GIF file. Type it, paste it, or choose Browse to pick it.
+- `browse`: Opens the file picker on your Pictures folder.
+- `self.question`: What you want to know about the picture. Leave it empty for a plain description written for a blind reader.
+- `ask`: Sends the picture and your question. The answer opens in its own window.
+- `cancel`: Closes this window. Nothing is sent.
 #### OwnKeyDialog (`quill/ui/hosted_ai_own_key.py`)
 
 - `about`: Where your text goes with your own key. Read with the arrow keys.

@@ -595,6 +595,7 @@ The Record menu disappears if you turn Recording off in Customize Features. See 
 ### Community menu (Alt+C)
 
 - **Ask the Audio Description Project...** (Ctrl+Alt+8) and **Audio Description Project Settings...** (Ctrl+Alt+Shift+A).
+- **Ask QUILL Radio...** (Ctrl+Shift+8) and **Use My ChatGPT Subscription...** (Alt+F5) -- a conversation that already knows what is playing, on the ChatGPT plan you pay for.
 - **ACB Media Schedule...** (Ctrl+Shift+N), **What Is On Now** (Ctrl+Alt+H), **Upcoming...** (Ctrl+Alt+Shift+F) and **Refresh the Schedule** (F5).
 - **ACB Media Podcasts...** (Ctrl+Alt+I).
 - **Community Picks...** (Ctrl+Alt+0) and **Suggest a Station or Podcast...** (Ctrl+Alt+9).
@@ -1895,6 +1896,133 @@ Snooze and Dismiss work on reminders only. A scheduled recording is changed or c
 
 ## The Community menu
 
+### Ask QUILL Radio: a conversation that knows what is playing
+
+Ask QUILL Radio is the radio's own assistant. It runs on the ChatGPT plan you
+already pay for -- there is no key to paste and no bill per question -- and it
+knows one thing ChatGPT on the web does not: **what you are listening to**. The
+station and the title the stream is announcing go with every message, so the
+questions that matter on a radio need no names typed:
+
+- "What is this song, and who made it?"
+- "Tell me more about the artist playing now."
+- "Tell me about this station: who runs it, where, and what it plays."
+- "What kind of programmes does this station broadcast, and when?"
+- "Is there a podcast like this one?"
+- "This presenter mentioned a book. What was it?"
+- "What was the news story they just referred to?" (with web search allowed)
+- "Explain the rules of the sport they are commentating on."
+- "This is in Spanish. What are they talking about?"
+
+It is a conversation, so "and where can I hear more of them?" follows on from
+the answer before. Nothing you ask changes what is playing.
+
+**It works from text, not from sound.** Ask QUILL Radio never listens to the
+stream, records anything or transcribes speech. What it knows is what the app
+already knows in words: the station's name, and the title the stream announces
+in its metadata when it announces one. If a station sends no titles, the
+assistant knows the station and not the song, and says so. A question about
+what a presenter just said is answered from what the model knows about the
+programme, not from hearing it.
+
+**Before the first question: sign in.** Ask QUILL Radio works one way, on your
+ChatGPT subscription -- Plus, Pro, Team or Enterprise. See "Use My ChatGPT
+Subscription, step by step" below. With no sign-in, Ctrl+Shift+8 says so and
+opens that window instead.
+
+### Ask QUILL Radio, step by step
+
+1. Play something, or don't -- it answers either way, it simply knows more
+   with a station on.
+2. Press **Ctrl+Shift+8** (**Community > Ask QUILL Radio...**). The Ask QUILL
+   Radio window opens with focus in **Your message**. It is a window of its
+   own, on the Window menu and one Ctrl+Tab away, and the transport keys still
+   work in it, so the player is never further away than usual.
+3. **What it knows**, one Shift+Tab back, says what is on right now, which
+   model answers, and whether web search is allowed. Arrow through it once.
+4. Type a question and press **Enter**. You hear "Working.", then the reply is
+   read aloud as it arrives, and it is added to **Conversation**, the read-only
+   box above, where you can read it again word by word.
+5. Or press **Ask About What's Playing** (Alt+P) and type nothing: it asks
+   about the song and the station for you, and each press asks the next
+   suggested question.
+6. **New Conversation** (Alt+N) starts again. **Copy Last Reply** (Alt+L) puts
+   the most recent answer on the clipboard. **ChatGPT Account** (Alt+G) opens
+   the sign-in window. **Escape**, **Ctrl+W** or **Close** closes the window.
+
+**Quick questions: the ones worth one keystroke.** Above Your message is a
+**Quick questions** list (Alt+Q). Arrow through it freely; nothing happens
+until you press **Enter** on the one you want, or **Use This Question**
+(Alt+T). Then the question is put in the message box for you to send as it is
+or change, focus moves there, and the Status line says what else, if anything,
+will go with it. Six of them ask about what is playing and send nothing more:
+
+- What is this song?
+- Tell me about the artist playing now
+- Tell me about this station
+- What does this station broadcast, and when?
+- Is there a podcast like this station?
+- What is the title now playing about? (it translates a title in another language)
+
+Three of them ask about *you*, and each says, before you send, exactly what it
+attaches -- and how many:
+
+- **Recommend stations like my favorites** sends the names of your favorite
+  stations and their folders, up to sixty, and asks for five you do not have.
+- **What have I been hearing on this station lately?** sends the songs Quill
+  Radio has logged on the station playing, up to twenty-five, and asks what
+  they add up to.
+- **Suggest something new from everything I have played** sends the names of
+  the stations you have played recently with a few songs from each, and asks
+  for three stations or podcasts that would be new to you.
+
+Nothing about you is sent unless you choose one of those three, and nothing is
+sent at all until you press Enter. Every question is one request on your plan,
+made when you ask and never on a timer.
+
+Good to know: Ask QUILL Radio needs the internet, and it is off in Safe Mode.
+What you ask counts toward your ChatGPT plan's own usage, which OpenAI enforces;
+when a limit is reached, the window says so in words and **Open ChatGPT Usage**
+in the account window shows when it resets.
+
+### Use My ChatGPT Subscription, step by step
+
+1. Press **Alt+F5** (**Community > Use My ChatGPT Subscription...**). The
+   window opens on **About this**, which says where your questions go and what
+   it costs. Arrow through it once.
+2. Tab to **Continue with ChatGPT** and press it. Your browser opens on
+   OpenAI's own sign-in page.
+3. Sign in to ChatGPT there. On the page that asks whether **QUILL Radio** may
+   use your plan, allow it. That is the name you will see under Apps in
+   ChatGPT's settings from now on.
+4. Come back to Quill Radio. The window says "Signed in with ChatGPT as" your
+   email address, and focus lands on **Model**, a list of every model your plan
+   offers, read from your account. The first is chosen for you; arrow to
+   another and it is saved as you land on it. **Refresh Models** reads the
+   list again.
+5. **Allow web search** (Alt+W) is off until you check it. Press **Alt+W**
+   then **Space**, and hear "Web search is allowed." On, the assistant may look
+   things up on the web through OpenAI -- a station's schedule, a news story a
+   presenter mentioned, a new release -- and tell you what it found. Saved as
+   soon as you change it; Space again turns it off.
+6. **Open ChatGPT Usage** (Alt+U) opens the plan's own usage page in your
+   browser. **Sign Out** (Alt+O, press twice) asks OpenAI to revoke Quill
+   Radio's sign-in and forgets it here. **Forget on This Computer** (Alt+F)
+   forgets it here only, for a machine that is offline or a sign-in you already
+   removed in ChatGPT's settings. Both appear only while you are signed in.
+7. Press **Escape** to close.
+
+If the browser did not open, the window says so and offers **Copy the Sign-In
+Address**; paste it into any browser on this computer and finish there. **Stop
+Waiting** gives up without changing anything.
+
+Good to know: only a refresh token is kept, in Windows' credential store, under
+Quill Radio's own name; your ChatGPT password is never seen by Quill Radio.
+Each QUILL app signs in as itself -- Quill Radio, QUILL Lite and QUILL each
+appear under Apps in ChatGPT's settings -- so signing one out leaves the others
+as they were. There is no free QUILL AI service behind Ask QUILL Radio and no
+API key to paste: it is your plan, or nothing, and the window says so.
+
 ### Ask the Audio Description Project, step by step
 
 The Audio Description Project (ADP) keeps a directory of movies and TV shows with described audio.
@@ -2573,6 +2701,8 @@ In every other window, Alt+S is the Station menu and Alt+W the Window menu. See 
 | Action | Key |
 | --- | --- |
 | Ask the Audio Description Project | Ctrl+Alt+8 |
+| Ask QUILL Radio | Ctrl+Shift+8 |
+| Use My ChatGPT Subscription | Alt+F5 |
 | Audio Description Project Settings | Ctrl+Alt+Shift+A |
 | ACB Media Schedule | Ctrl+Shift+N |
 | What Is On Now | Ctrl+Alt+H |

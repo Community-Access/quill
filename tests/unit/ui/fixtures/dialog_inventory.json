@@ -251,6 +251,8 @@
   "quill/ui/heading_organizer_dialog.py::_show_dialog.rename::wx.TextEntryDialog": "native",
   "quill/ui/heading_organizer_dialog.py::_show_dialog::wx.Dialog": "hardened_custom",
   "quill/ui/hosted_ai_dialogs.py::ask_ai_privacy_agreement::wx.Dialog": "hardened_custom",
+  "quill/ui/hosted_ai_image.py::AskImageDialog._browse::wx.FileDialog": "native",
+  "quill/ui/hosted_ai_image.py::AskImageDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/hosted_ai_own_key.py::OwnKeyDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/hygiene_dialog.py::HygieneReviewDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/info_pages.py::show_about_quill_native::wx.Dialog": "hardened_custom",

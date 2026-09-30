@@ -436,3 +436,85 @@ def test_own_key_is_the_shared_command_on_lites_chord_and_joins_the_accelerator_
     mapping = frame._command_to_menu_id_map()
     assert mapping["file.new"] == 1
     assert mapping["tools.hosted_ai_own_key"] == first
+
+
+# --------------------------------------------------------------------------- #
+# A ChatGPT subscription, and Ask About an Image (2026-09-29)
+# --------------------------------------------------------------------------- #
+
+
+def test_main_frame_answers_the_two_chatgpt_commands_from_the_shared_module() -> None:
+    from quill.ui.hosted_ai_chatgpt_commands import ChatGptAiMixin
+    from quill.ui.main_frame import MainFrame
+
+    for name in ("cmd_ai_chatgpt", "cmd_ai_image", "cmd_dictation_tidy"):
+        assert getattr(MainFrame, name) is getattr(ChatGptAiMixin, name)
+    assert issubclass(HostedAiMixin, ChatGptAiMixin)
+
+
+def test_quill_signs_in_as_quill() -> None:
+    assert QuillAiHost.ai_agent_name == "QUILL"
+
+
+@pytest.mark.parametrize(
+    ("command", "chord"),
+    [
+        ("tools.hosted_ai_chatgpt", "Alt+F5"),
+        ("tools.hosted_ai_image", "Ctrl+F5"),
+        ("tools.dictation_tidy", "Ctrl+F3"),
+    ],
+)
+def test_the_chatgpt_rows_keep_quilllites_chords(command: str, chord: str) -> None:
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+    from quill.core.lite.parity import COMMAND_EQUIVALENTS
+
+    assert DEFAULT_KEYMAP[command] == chord
+    handler = next(h for h, c in COMMAND_EQUIVALENTS.items() if c == command)
+    row = next(r for r in COMMANDS if r[3] == handler)
+    assert row[2] == chord
+
+
+def test_the_chatgpt_rows_are_appended_after_the_free_rows_with_free_mnemonics() -> None:
+    import re
+
+    body = _source(_AI_MENU)
+    assert body.index("self._append_own_key_row(ai_menu)") < body.index(
+        "self._append_chatgpt_rows(ai_menu)"
+    )
+    adapter = _source("quill/ui/main_frame_hosted_ai.py")
+    assert 'Use My ChatGPT S&ubscription..."' in adapter
+    assert 'As&k About an Image..."' in adapter
+    assert 'Tidy Dictated Te&xt..."' in adapter
+    # u, k and x are claimed by no other TOP-LEVEL row of the AI menu in either
+    # mode. Submenu rows (Transform's E&xpand, Read Aloud's E&xport) are their
+    # own namespace, which is the same rule the sibling test above applies.
+    top_level = re.compile(
+        r'ai_menu\.Append(?:CheckItem)?\(\s*[^,]+,\s*(?:self\._menu_label\()?_\("([^"]*)"',
+        re.S,
+    )
+    letters = set()
+    for label in top_level.findall(body):
+        found = re.search(r"&([A-Za-z])", label)
+        if found:
+            letters.add(found.group(1).lower())
+    assert letters >= {"e", "d", "g", "c", "y"}, sorted(letters)
+    assert not ({"u", "k", "x"} & letters), sorted({"u", "k", "x"} & letters)
+
+
+def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
+    class Base:
+        def _command_to_menu_id_map(self):
+            return {}
+
+    class Frame(HostedAiCommandsMixin, Base):
+        pass
+
+    mapping = Frame()._command_to_menu_id_map()
+    assert set(mapping) >= {
+        "tools.hosted_ai_own_key",
+        "tools.hosted_ai_chatgpt",
+        "tools.hosted_ai_image",
+        "tools.dictation_tidy",
+    }
+    assert len({int(v) for v in mapping.values()}) == 4

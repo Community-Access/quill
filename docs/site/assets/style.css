@@ -718,3 +718,111 @@ input[type="radio"]:focus-visible { outline-offset: 3px; }
   button[type="submit"][aria-disabled="true"] { color: GrayText; border-color: GrayText; }
   :focus-visible, .focus-target:focus { outline: 3px solid Highlight; outline-offset: 2px; }
 }
+
+
+/* -- QUILL Lite 1.1 splash (front page, 2026-09-29) --------------------------
+   Bright on purpose: a soft three-colour wash behind the whole band, five tiles
+   each with its own coloured top edge and a key badge, all on the ordinary
+   surface colours so text keeps its normal contrast in both themes. The colours
+   decorate; the numbers, keys and headings carry the meaning. No animation. */
+:root {
+  --splash-a: #fff4c2;
+  --splash-b: #dcefff;
+  --splash-c: #ffe0ee;
+  --tile-1: #ff8a3d;
+  --tile-2: #2f9e6c;
+  --tile-3: #1f5fbf;
+  --tile-4: #b04fd6;
+  --tile-5: #d8a400;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --splash-a: #2b2410;
+    --splash-b: #10233a;
+    --splash-c: #33182a;
+    --tile-1: #ffa466;
+    --tile-2: #5cd39c;
+    --tile-3: #7fb8ff;
+    --tile-4: #d48cf0;
+    --tile-5: #ffd54a;
+  }
+}
+section.band.splash {
+  border-top: 0;
+  padding: 3rem 0 2.5rem;
+  background: linear-gradient(120deg, var(--splash-a) 0%, var(--splash-b) 55%, var(--splash-c) 100%);
+}
+.splash .splash-kicker {
+  display: inline-block;
+  margin: 0 0 0.8rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+.splash h1 {
+  font-size: clamp(2.1rem, 5.4vw, 3.4rem);
+  line-height: 1.12;
+  margin: 0 0 0.9rem;
+  color: var(--text);
+}
+.splash .splash-lede {
+  font-size: 1.2rem;
+  max-width: var(--measure);
+  margin: 0 0 0.5rem;
+}
+.splash .req-note { margin-top: 0.9rem; }
+.splash-tiles {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+.splash-tiles .tile {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-top: 8px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+.splash-tiles .tile-1 { border-top-color: var(--tile-1); }
+.splash-tiles .tile-2 { border-top-color: var(--tile-2); }
+.splash-tiles .tile-3 { border-top-color: var(--tile-3); }
+.splash-tiles .tile-4 { border-top-color: var(--tile-4); }
+.splash-tiles .tile-5 { border-top-color: var(--tile-5); }
+.splash-tiles .tile h2 { font-size: 1.3rem; margin: 0.35rem 0 0.5rem; }
+.splash-tiles .tile p { margin: 0 0 0.6rem; }
+.splash-tiles .tile p:last-child { margin-bottom: 0; }
+.splash-tiles .tile-key { margin: 0; font-weight: 700; color: var(--muted); }
+.splash kbd {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--field-bg);
+  color: var(--text);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.95em;
+}
+.splash-try {
+  margin-top: 2rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 8px solid var(--tile-2);
+  border-radius: var(--radius);
+  max-width: var(--measure);
+}
+.splash-try h2 { margin: 0 0 0.6rem; font-size: 1.35rem; }
+.splash-try ol { margin: 0 0 0.8rem; padding-left: 1.4rem; }
+.splash-try li { margin: 0.45rem 0; }
+.splash-try p { margin: 0; }

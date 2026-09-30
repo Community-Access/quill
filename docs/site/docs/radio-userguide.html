@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -1383,6 +1383,9 @@ Features. See “Recording”.</p>
 <li><strong>Ask the Audio Description Project…</strong> (Ctrl+Alt+8) and
 <strong>Audio Description Project Settings…</strong>
 (Ctrl+Alt+Shift+A).</li>
+<li><strong>Ask QUILL Radio…</strong> (Ctrl+Shift+8) and <strong>Use My
+ChatGPT Subscription…</strong> (Alt+F5) – a conversation that already
+knows what is playing, on the ChatGPT plan you pay for.</li>
 <li><strong>ACB Media Schedule…</strong> (Ctrl+Shift+N), <strong>What Is
 On Now</strong> (Ctrl+Alt+H), <strong>Upcoming…</strong>
 (Ctrl+Alt+Shift+F) and <strong>Refresh the Schedule</strong> (F5).</li>
@@ -4007,6 +4010,148 @@ it.</li>
 changed or cancelled in Schedule Recording, where Delete removes it at
 once.</p>
 <h2 id="the-community-menu">The Community menu</h2>
+<h3 id="ask-quill-radio-a-conversation-that-knows-what-is-playing">Ask
+QUILL Radio: a conversation that knows what is playing</h3>
+<p>Ask QUILL Radio is the radio’s own assistant. It runs on the ChatGPT
+plan you already pay for – there is no key to paste and no bill per
+question – and it knows one thing ChatGPT on the web does not:
+<strong>what you are listening to</strong>. The station and the title
+the stream is announcing go with every message, so the questions that
+matter on a radio need no names typed:</p>
+<ul>
+<li>“What is this song, and who made it?”</li>
+<li>“Tell me more about the artist playing now.”</li>
+<li>“Tell me about this station: who runs it, where, and what it
+plays.”</li>
+<li>“What kind of programmes does this station broadcast, and
+when?”</li>
+<li>“Is there a podcast like this one?”</li>
+<li>“This presenter mentioned a book. What was it?”</li>
+<li>“What was the news story they just referred to?” (with web search
+allowed)</li>
+<li>“Explain the rules of the sport they are commentating on.”</li>
+<li>“This is in Spanish. What are they talking about?”</li>
+</ul>
+<p>It is a conversation, so “and where can I hear more of them?” follows
+on from the answer before. Nothing you ask changes what is playing.</p>
+<p><strong>It works from text, not from sound.</strong> Ask QUILL Radio
+never listens to the stream, records anything or transcribes speech.
+What it knows is what the app already knows in words: the station’s
+name, and the title the stream announces in its metadata when it
+announces one. If a station sends no titles, the assistant knows the
+station and not the song, and says so. A question about what a presenter
+just said is answered from what the model knows about the programme, not
+from hearing it.</p>
+<p><strong>Before the first question: sign in.</strong> Ask QUILL Radio
+works one way, on your ChatGPT subscription – Plus, Pro, Team or
+Enterprise. See “Use My ChatGPT Subscription, step by step” below. With
+no sign-in, Ctrl+Shift+8 says so and opens that window instead.</p>
+<h3 id="ask-quill-radio-step-by-step">Ask QUILL Radio, step by step</h3>
+<ol type="1">
+<li>Play something, or don’t – it answers either way, it simply knows
+more with a station on.</li>
+<li>Press <strong>Ctrl+Shift+8</strong> (<strong>Community &gt; Ask
+QUILL Radio…</strong>). The Ask QUILL Radio window opens with focus in
+<strong>Your message</strong>. It is a window of its own, on the Window
+menu and one Ctrl+Tab away, and the transport keys still work in it, so
+the player is never further away than usual.</li>
+<li><strong>What it knows</strong>, one Shift+Tab back, says what is on
+right now, which model answers, and whether web search is allowed. Arrow
+through it once.</li>
+<li>Type a question and press <strong>Enter</strong>. You hear
+“Working.”, then the reply is read aloud as it arrives, and it is added
+to <strong>Conversation</strong>, the read-only box above, where you can
+read it again word by word.</li>
+<li>Or press <strong>Ask About What’s Playing</strong> (Alt+P) and type
+nothing: it asks about the song and the station for you, and each press
+asks the next suggested question.</li>
+<li><strong>New Conversation</strong> (Alt+N) starts again. <strong>Copy
+Last Reply</strong> (Alt+L) puts the most recent answer on the
+clipboard. <strong>ChatGPT Account</strong> (Alt+G) opens the sign-in
+window. <strong>Escape</strong>, <strong>Ctrl+W</strong> or
+<strong>Close</strong> closes the window.</li>
+</ol>
+<p><strong>Quick questions: the ones worth one keystroke.</strong> Above
+Your message is a <strong>Quick questions</strong> list (Alt+Q). Arrow
+through it freely; nothing happens until you press
+<strong>Enter</strong> on the one you want, or <strong>Use This
+Question</strong> (Alt+T). Then the question is put in the message box
+for you to send as it is or change, focus moves there, and the Status
+line says what else, if anything, will go with it. Six of them ask about
+what is playing and send nothing more:</p>
+<ul>
+<li>What is this song?</li>
+<li>Tell me about the artist playing now</li>
+<li>Tell me about this station</li>
+<li>What does this station broadcast, and when?</li>
+<li>Is there a podcast like this station?</li>
+<li>What is the title now playing about? (it translates a title in
+another language)</li>
+</ul>
+<p>Three of them ask about <em>you</em>, and each says, before you send,
+exactly what it attaches – and how many:</p>
+<ul>
+<li><strong>Recommend stations like my favorites</strong> sends the
+names of your favorite stations and their folders, up to sixty, and asks
+for five you do not have.</li>
+<li><strong>What have I been hearing on this station lately?</strong>
+sends the songs Quill Radio has logged on the station playing, up to
+twenty-five, and asks what they add up to.</li>
+<li><strong>Suggest something new from everything I have played</strong>
+sends the names of the stations you have played recently with a few
+songs from each, and asks for three stations or podcasts that would be
+new to you.</li>
+</ul>
+<p>Nothing about you is sent unless you choose one of those three, and
+nothing is sent at all until you press Enter. Every question is one
+request on your plan, made when you ask and never on a timer.</p>
+<p>Good to know: Ask QUILL Radio needs the internet, and it is off in
+Safe Mode. What you ask counts toward your ChatGPT plan’s own usage,
+which OpenAI enforces; when a limit is reached, the window says so in
+words and <strong>Open ChatGPT Usage</strong> in the account window
+shows when it resets.</p>
+<h3 id="use-my-chatgpt-subscription-step-by-step">Use My ChatGPT
+Subscription, step by step</h3>
+<ol type="1">
+<li>Press <strong>Alt+F5</strong> (<strong>Community &gt; Use My ChatGPT
+Subscription…</strong>). The window opens on <strong>About
+this</strong>, which says where your questions go and what it costs.
+Arrow through it once.</li>
+<li>Tab to <strong>Continue with ChatGPT</strong> and press it. Your
+browser opens on OpenAI’s own sign-in page.</li>
+<li>Sign in to ChatGPT there. On the page that asks whether
+<strong>QUILL Radio</strong> may use your plan, allow it. That is the
+name you will see under Apps in ChatGPT’s settings from now on.</li>
+<li>Come back to Quill Radio. The window says “Signed in with ChatGPT
+as” your email address, and focus lands on <strong>Model</strong>, a
+list of every model your plan offers, read from your account. The first
+is chosen for you; arrow to another and it is saved as you land on it.
+<strong>Refresh Models</strong> reads the list again.</li>
+<li><strong>Allow web search</strong> (Alt+W) is off until you check it.
+Press <strong>Alt+W</strong> then <strong>Space</strong>, and hear “Web
+search is allowed.” On, the assistant may look things up on the web
+through OpenAI – a station’s schedule, a news story a presenter
+mentioned, a new release – and tell you what it found. Saved as soon as
+you change it; Space again turns it off.</li>
+<li><strong>Open ChatGPT Usage</strong> (Alt+U) opens the plan’s own
+usage page in your browser. <strong>Sign Out</strong> (Alt+O, press
+twice) asks OpenAI to revoke Quill Radio’s sign-in and forgets it here.
+<strong>Forget on This Computer</strong> (Alt+F) forgets it here only,
+for a machine that is offline or a sign-in you already removed in
+ChatGPT’s settings. Both appear only while you are signed in.</li>
+<li>Press <strong>Escape</strong> to close.</li>
+</ol>
+<p>If the browser did not open, the window says so and offers
+<strong>Copy the Sign-In Address</strong>; paste it into any browser on
+this computer and finish there. <strong>Stop Waiting</strong> gives up
+without changing anything.</p>
+<p>Good to know: only a refresh token is kept, in Windows’ credential
+store, under Quill Radio’s own name; your ChatGPT password is never seen
+by Quill Radio. Each QUILL app signs in as itself – Quill Radio, QUILL
+Lite and QUILL each appear under Apps in ChatGPT’s settings – so signing
+one out leaves the others as they were. There is no free QUILL AI
+service behind Ask QUILL Radio and no API key to paste: it is your plan,
+or nothing, and the window says so.</p>
 <h3 id="ask-the-audio-description-project-step-by-step">Ask the Audio
 Description Project, step by step</h3>
 <p>The Audio Description Project (ADP) keeps a directory of movies and
@@ -5438,6 +5583,14 @@ menu. See “The menus in other windows”.</p>
 <tr>
 <td>Ask the Audio Description Project</td>
 <td>Ctrl+Alt+8</td>
+</tr>
+<tr>
+<td>Ask QUILL Radio</td>
+<td>Ctrl+Shift+8</td>
+</tr>
+<tr>
+<td>Use My ChatGPT Subscription</td>
+<td>Alt+F5</td>
 </tr>
 <tr>
 <td>Audio Description Project Settings</td>

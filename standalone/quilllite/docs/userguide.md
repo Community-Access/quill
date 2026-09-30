@@ -3638,6 +3638,168 @@ either removes it from both.
 account cannot use, or an OpenAI account with no credit. **Test the Key** tells
 you which.
 
+### Using your ChatGPT subscription: no key, no bill, and two things the free service cannot do
+
+If you already pay for ChatGPT -- Plus, Pro, Team or Enterprise -- QUILL Lite can
+use that plan for every AI command, and you never touch a key. You sign in once,
+in your browser, the way you sign in to ChatGPT itself. From then on the pad,
+the seventeen writing tools, Ask About This Document and conversations all run
+on your plan: **no monthly allowance, no size limit, no per-request bill**, and
+nothing passing through QUILL's servers. Two things arrive with it that neither
+the free service nor an API key can offer: **descriptions of pictures**, and
+**web search** when you want an answer about something current.
+
+**Tools ▸ AI ▸ Use My ChatGPT Subscription** (**Alt+F5**) opens one window:
+
+1. **About this** -- a read-only box saying where your text goes and what it
+   costs. Arrow through it once.
+2. **Status** -- "QUILL Lite is not signed in with ChatGPT" the first time.
+3. **Continue with ChatGPT** -- press it. Your browser opens on OpenAI's own
+   sign-in page. Sign in as you would to ChatGPT, and on the page that asks
+   whether **QUILL Lite** may use your plan, allow it. Come back to QUILL Lite;
+   the window says "Signed in with ChatGPT as" your email address, and you are
+   done. If the browser did not open, **Copy the Sign-In Address** puts the
+   address on the clipboard for any browser on this computer, and **Stop
+   Waiting** gives up without changing anything.
+
+Once signed in, the same window has:
+
+1. **Account** -- who you are signed in as, and what that means.
+2. **Model** -- a list of every model your plan offers, read from your account
+   the moment you sign in. The first one is chosen for you, so your next AI
+   request works without another visit; arrow to another and it is saved as
+   you land on it. **Refresh Models** reads the list again.
+3. **Allow web search** -- off until you check it. When it is on, the model may
+   look things up on the web through OpenAI to answer a question; when it is
+   off, only what you send is used. Saved as soon as you change it.
+4. **Open ChatGPT Usage** -- opens ChatGPT's own usage page in your browser,
+   which is the one place your plan's limits and what is left are shown.
+5. **Sign Out** -- press twice. It asks OpenAI to revoke QUILL Lite's sign-in
+   and forgets it here; AI help goes back to QUILL's free service, or to a
+   saved OpenAI key if you have one.
+6. **Forget on This Computer** -- forgets the sign-in here without telling
+   OpenAI, for a computer that is offline or a sign-in you already removed in
+   ChatGPT's settings. QUILL Lite stays listed under Apps in ChatGPT's settings
+   until you remove it there.
+
+**Sign Out and Forget are only there while you are signed in.** Before that
+the window offers Continue with ChatGPT and nothing else, so there is never a
+button that could only tell you it has nothing to do.
+
+**There is no separate switch.** While QUILL Lite is signed in with ChatGPT,
+every AI command uses the plan; Sign Out is how you stop. A ChatGPT sign-in is
+used ahead of a saved OpenAI key, because the plan is already paid for where a
+key is billed per request. Remove one, and the other takes over at once.
+
+**What changes on your plan:**
+
+- Your text goes **straight from this computer to OpenAI**, on your account,
+  under OpenAI's terms and privacy policy. Nothing passes through QUILL's
+  servers and QUILL keeps no copy.
+- **What you use counts toward your plan's own usage**, which OpenAI enforces.
+  When a limit is reached QUILL Lite says so in plain words, with error code
+  `QUILL-AI-CHATGPT-LIMIT`, and Open ChatGPT Usage shows when it resets.
+- **Usage** (**Ctrl+Alt+Shift+F9**) opens this same window rather than the
+  free allowance: there is no QUILL count to show, and the plan's page is one
+  button away. **Help ▸ About** names the account and the model in place of the
+  free allowance.
+- You do not need to connect this computer to the free service, and the free
+  service's agreement is not asked for: it is about QUILL's servers, which this
+  route never touches. This window says where the text does go.
+- The pad, the seventeen things it can do, and what comes back are **exactly
+  the same**, down to the instructions sent with your text. There is no size
+  limit, so the *About to send* line says how many words are going and that
+  they count toward your plan, rather than refusing.
+- **Conversations send the whole conversation** with each message, so a long
+  one keeps its beginning for as long as the model can read it.
+
+**Where the sign-in is kept.** Only a refresh token, in Windows' credential
+store (an encrypted file in a portable copy), under QUILL Lite's own name. Your
+ChatGPT password is never seen by QUILL Lite, and the access token that does
+the work lives in memory only. **Each QUILL app signs in on its own**: QUILL
+Lite, QUILL and Quill Radio each appear as themselves under Apps in ChatGPT's
+settings, and signing one out leaves the others as they were.
+
+**If a request fails**, you hear why, followed by an error code:
+`QUILL-AI-CHATGPT-SIGNED-OUT` means OpenAI no longer accepts this computer's
+sign-in (choose Continue with ChatGPT again); `QUILL-AI-CHATGPT-LIMIT` means the
+plan's usage is used up for now; `QUILL-AI-CHATGPT-UNAVAILABLE` means OpenAI is
+not letting other apps use plans just now; anything else is
+`QUILL-AI-CHATGPT-FAILED`, and the sentence before the code says what to check.
+
+### Ask About an Image: a picture, described
+
+**Tools ▸ AI ▸ Ask About an Image** (**Ctrl+F5**) is the one AI command that
+takes a file rather than a passage, and the first time QUILL Lite has been able
+to tell you what is *in* a picture. A screenshot somebody sent you, a photo of
+a letter, a chart in a report, the menu from a restaurant's website -- choose
+the file, ask a question or ask nothing, and hear what the model sees. It needs
+your ChatGPT subscription; with no sign-in it says so and opens the account
+window instead of failing later.
+
+1. Press **Ctrl+F5**. The Ask About an Image window opens with focus in
+   **Image file**.
+2. Type or paste the file's full path, or press **Browse** (Alt+B) to pick it.
+   JPEG, PNG, WebP and GIF are accepted.
+3. **Your question** (Alt+Q) is optional. Leave it empty for a plain
+   description written for a blind reader: what the picture is, what matters
+   most in it, and every word of any text in it, transcribed exactly. Or ask
+   something -- "what does the sign say", "is anyone smiling", "what is the
+   total on this receipt" -- and the answer comes first, then only the
+   description that helps.
+4. Press **Enter** for **Ask**. You hear "Working."; the picture is checked
+   (a file that is not really an image, or one over 20 MB, is refused here
+   with a sentence rather than sent), then it goes to OpenAI on your plan.
+5. The answer opens in the **Image Description** window, read-only, with
+   focus on the text so your screen reader reads it. **Insert Below** puts it
+   into your document under the paragraph you are in -- the way to caption a
+   picture in a document you are writing -- **Copy** puts it on the clipboard,
+   and **Ctrl+Z** takes an insert back.
+
+Only the picture and your question are sent. Nothing from your document goes
+with them.
+
+### Tidy Dictated Text: dictation, corrected by AI
+
+Speech recognition writes what it heard, and what it heard is not always the
+word you meant: "their" for "there", a name it has never met, two words run
+together, a comma where a full stop belonged, and every "um" you did not know
+you said. **Tools ▸ AI ▸ Tidy Dictated Text** (**Ctrl+F3**) fixes exactly that
+and nothing else. It works on a ChatGPT subscription or your own OpenAI key
+-- the free service has no such tool, and a page of dictation should not spend
+an allowance -- and with neither it says so and opens the account window.
+
+1. Dictate as usual (**Ctrl+F11**, talk, pause). When the paragraph is done,
+   leave the cursor in it, or select exactly the stretch you want tidied.
+2. Press **Ctrl+F3**. You hear "Working." The selection, or else the whole
+   paragraph the cursor is in, goes to the model with an instruction to
+   correct misheard words, punctuation and capitalisation, remove fillers and
+   false starts, and keep your meaning, wording and order otherwise.
+3. The **Tidied Dictation** window opens with focus on the corrected text, so
+   you hear it first. **Replace My Selection** puts it where the dictated text
+   was; **Copy** puts it on the clipboard; **Escape** keeps what you had. If you
+   typed in that paragraph while the answer was on its way, Replace is not
+   offered and the window says so.
+4. **Ctrl+Z** takes a replacement back, as one step.
+
+Nothing is changed until you press Replace, and the model is told to add
+nothing: a tidied paragraph says what you said, spelled the way you meant it.
+
+### Web search: an answer about now
+
+Everything the AI pad does works from what you send it. Sometimes what you need
+is an answer about the world as it is today -- whether an event has been
+announced, what a word has come to mean this year, what a page says right now.
+With **Allow web search** checked in Use My ChatGPT Subscription, the model may
+search the web through OpenAI when a question calls for it, and say what it
+found. It applies to **Ask a general question**, to **Ask a question about the
+document** and to conversations, and it is off until you turn it on: a search
+is a second thing sent somewhere, and it is yours to allow.
+
+To turn it on: press **Alt+F5**, press **Alt+W** (or Tab to **Allow web
+search**), press **Space**, and hear "Web search is allowed." It is saved at
+once. Press Space on the same checkbox to turn it off again.
+
 ## Where your files are kept
 
 Your settings, recent files, copy tray and any recovered work are kept in a
@@ -4039,6 +4201,9 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+F10** | Connect or Sign Out... |
 | **Ctrl+Alt+Shift+K** | Privacy Agreement... |
 | **Alt+F2** | Use My Own OpenAI Key... |
+| **Alt+F5** | Use My ChatGPT Subscription... |
+| **Ctrl+F5** | Ask About an Image... |
+| **Ctrl+F3** | Tidy Dictated Text... |
 
 ### Tools ▸ Dictation
 
