@@ -28,19 +28,28 @@ from dataclasses import dataclass, field, fields
 from quill.core.audio.channel_mode import normalize as normalize_channel_mode
 from quill.core.audio_enhance import clamp_eq_gain
 from quill.core.podcasts.models_queue import coerce_int as _coerce_int
+
+# The speed scale -- bounds, step and clamp -- is decided in speed_scale.py and
+# re-exported here, because that is where every existing caller imports it from.
+# It moved because the step was defined in a UI module while the bounds were
+# here, so the one module that needed all three could not import them.
+from quill.core.podcasts.speed_scale import (  # noqa: E402
+    SPEED_MAX as SPEED_MAX,
+)
+from quill.core.podcasts.speed_scale import (
+    SPEED_MIN as SPEED_MIN,
+)
+from quill.core.podcasts.speed_scale import (
+    SPEED_STEP as SPEED_STEP,
+)
+from quill.core.podcasts.speed_scale import (
+    clamp_speed as clamp_speed,
+)
 from quill.core.settings_portable import (
     PortabilityReport,
     portable_export,
     portable_import,
 )
-
-SPEED_MIN = 0.5
-SPEED_MAX = 5.0
-
-
-def clamp_speed(value: float) -> float:
-    """Playback speed, held inside :data:`SPEED_MIN`..:data:`SPEED_MAX`."""
-    return max(SPEED_MIN, min(SPEED_MAX, float(value)))
 
 
 def _one_of(value: object, allowed: set[str], default: str) -> str:

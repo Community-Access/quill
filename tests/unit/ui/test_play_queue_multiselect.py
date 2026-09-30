@@ -221,3 +221,35 @@ def test_removing_the_marked_row_forgets_the_mark(queue_dialog) -> None:
     dialog._on_remove()
 
     assert dialog._marked_index is None
+
+
+# -- where focus lands when the rows under it are the ones removed ----------------
+
+
+def test_removing_the_tail_lands_on_the_new_last_row(queue_dialog) -> None:
+    """Not on row 0, which is where it used to go.
+
+    ``_reload(select=...)`` is given ``min(indexes)``, a queue index; after the
+    removal that index is past the end, so the lookup found nothing and the
+    fallback selected row 0. Remove the tail of a forty-item queue and focus
+    jumped to the top, where the reader read row 1 as though that were where the
+    listener had asked to be -- silent, and it loses their place in the run.
+    """
+    dialog, library, _said = queue_dialog
+    _select(dialog, 3, 4)
+
+    dialog._on_remove()
+
+    assert _order(library) == ["a", "b", "c"]
+    assert dialog._selected_indexes() == [2]  # the new last row, not 0
+
+
+def test_removing_from_the_middle_still_lands_where_the_rows_were(queue_dialog) -> None:
+    """The ordinary case keeps working: the row that took their place."""
+    dialog, library, _said = queue_dialog
+    _select(dialog, 1, 2)
+
+    dialog._on_remove()
+
+    assert _order(library) == ["a", "d", "e"]
+    assert dialog._selected_indexes() == [1]

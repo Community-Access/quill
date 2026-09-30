@@ -33,10 +33,6 @@ from quill.core.paths import app_data_dir
 from quill.core.podcasts import expiration, quick_actions, retention, stats
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
-#: Speed Up / Speed Down step. Matches Earshot, and is small enough that
-#: holding the key is a usable way to find the speed you want.
-SPEED_STEP = 0.1
-
 
 class PodcastSessionMixin:
     """1.1.0 session, statistics, storage, and maintenance commands."""

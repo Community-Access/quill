@@ -170,7 +170,15 @@ class PlayQueueDialog:
             if index == select:
                 self._select_only(row)
                 return
-        self._select_only(0)
+        # *select* resolved to nothing, and there is only one way that happens:
+        # the queue index it names is past the end, because the rows it pointed
+        # at were just removed. So land on the new last row, never on row 0.
+        #
+        # Row 0 was the old answer and it was a real defect: remove the tail of a
+        # forty-item queue and focus jumped to the top, where the screen reader
+        # dutifully read row 1 as though that were where the listener had asked
+        # to be. Silent, and it loses their place in the run.
+        self._select_only(len(labels) - 1)
 
     def _select_only(self, row: int) -> None:
         """Land on exactly one row.
