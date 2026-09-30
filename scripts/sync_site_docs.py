@@ -106,7 +106,7 @@ SYNC_MAP: dict[str, dict[str, str]] = {
     "quilllite": {
         "userguide": "userguide.html",
         "prd": "prd.html",
-        "release-notes": "release-notes-1.0.html",
+        "release-notes": "release-notes-1.1.html",
         # The 1.0 announcement and the free-AI guide, both linked from
         # quilllite.html. Generated from the repo like Radio's, so the page a
         # newsletter links to cannot drift from the release it announces.

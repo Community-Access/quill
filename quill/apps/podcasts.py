@@ -249,6 +249,16 @@ class PodcastsAppFrame(
 
     # -- Winamp keys + launch view -----------------------------------------
 
+    def open_notification_target(self, target: str) -> None:
+        """Enter on a notification: select the podcast it was about.
+
+        The other half of the pair Quill Radio implements: one notification
+        file, two apps, and each lands the cursor its own way.
+        """
+        from quill.ui import notification_open
+
+        notification_open.open_in_cast(self, target)
+
     def _on_main_char_hook(self, event: wx.KeyEvent) -> None:
         """Alt+F4-to-tray first, then the Winamp transport letters.
 

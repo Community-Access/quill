@@ -65,6 +65,28 @@ PURPOSES: dict[str, str] = {
         "what QUILL support will ask for. You can also sign this computer out "
         "from here, and connect it again whenever you like."
     ),
+    "Use My ChatGPT Subscription": (
+        "Use the ChatGPT plan you already pay for instead of QUILL's free AI or "
+        "an API key. Continue with ChatGPT opens your browser to sign in and "
+        "allow it; once signed in, choose the model from your plan's own list "
+        "and whether web search is allowed. Sign Out and Forget on This "
+        "Computer appear only while you are signed in."
+    ),
+    "Ask About an Image": (
+        "Choose a picture and, if you like, a question about it. The picture "
+        "goes to OpenAI on your ChatGPT subscription and the description comes "
+        "back in a window you can read, copy or insert into your document."
+    ),
+    "Tidied Dictation": (
+        "The dictated text with the recogniser's mistakes corrected -- misheard "
+        "words, punctuation, fillers -- and nothing else changed. Replace My "
+        "Selection puts it where the dictated text was; Control Z takes it back."
+    ),
+    "Image Description": (
+        "What the model saw in the picture, read-only. Insert Below puts it "
+        "under the paragraph you are in, Copy puts it on the clipboard, and "
+        "Control Z takes an insert back."
+    ),
     # Keyed by the value of quill.core.ai.gateway_privacy.AGREEMENT_TITLE. The
     # window sets its title from that constant rather than from a literal, so
     # the title and the agreement text cannot drift apart -- and so this key

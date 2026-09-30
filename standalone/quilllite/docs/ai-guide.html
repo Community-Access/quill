@@ -198,7 +198,7 @@
 <main id="main-content">
 <h1 id="quill-lites-free-ai-the-complete-guide">QUILL Lite’s free AI:
 the complete guide</h1>
-<p><em>QUILL Lite 1.0. Updated September 25, 2026.</em></p>
+<p><em>QUILL Lite 1.1. Updated September 29, 2026.</em></p>
 <p>QUILL’s free AI helps with the writing in front of you: summarize it,
 rewrite it, proofread it, explain it, or answer a question about the
 document you have open. It is built into QUILL Lite, it is free, and it
@@ -232,6 +232,11 @@ wrong</a></li>
 changing your mind</a></li>
 <li><a href="#using-your-own-openai-key-no-limits">Using your own OpenAI
 key: no limits</a></li>
+<li><a href="#using-your-chatgpt-subscription">Using your ChatGPT
+subscription</a></li>
+<li><a href="#ask-about-an-image">Ask About an Image</a></li>
+<li><a href="#web-search">Web search</a></li>
+<li><a href="#tidy-dictated-text">Tidy Dictated Text</a></li>
 <li><a href="#questions-people-ask">Questions people ask</a></li>
 </ul>
 <h2 id="starting-in-about-a-minute">Starting, in about a minute</h2>
@@ -775,13 +780,154 @@ both.</p>
 code <code>QUILL-AI-OWN-KEY-FAILED</code>. The usual causes are a
 mistyped key, a model your account cannot use, or an OpenAI account with
 no credit. <strong>Test the Key</strong> tells you which.</p>
+<h2 id="using-your-chatgpt-subscription">Using your ChatGPT
+subscription</h2>
+<p>If you already pay for ChatGPT, QUILL Lite can run every AI command
+on that plan – and you never see a key. Sign in once in your browser,
+the way you sign in to ChatGPT itself, and from then on the pad, the
+seventeen writing tools, Ask About This Document and conversations all
+go to OpenAI on your plan. <strong>No monthly allowance, no size limit,
+no per-request bill</strong>, nothing through QUILL’s servers – and two
+things that neither the free service nor an API key can do:
+<strong>pictures, described</strong>, and <strong>web search</strong>
+for an answer about today.</p>
+<h3 id="signing-in-step-by-step">Signing in, step by step</h3>
+<ol type="1">
+<li>Press <strong>Alt+F5</strong> (<strong>Tools ▸ AI ▸ Use My ChatGPT
+Subscription</strong>). The window opens on <strong>About this</strong>,
+which says where your text goes. Arrow through it once.</li>
+<li>Tab to <strong>Continue with ChatGPT</strong> and press it. Your
+browser opens on OpenAI’s own sign-in page.</li>
+<li>Sign in to ChatGPT there. On the page that asks whether
+<strong>QUILL Lite</strong> may use your plan, allow it. That name is
+the one you will see under Apps in ChatGPT’s settings from now on.</li>
+<li>Come back to QUILL Lite. The window says “Signed in with ChatGPT as”
+your email address, focus lands on the <strong>Model</strong> list, and
+the first model your plan offers is already chosen. You are done.</li>
+</ol>
+<p>If the browser did not open, the window says so and offers
+<strong>Copy the Sign-In Address</strong>: paste it into any browser on
+this computer and finish there. <strong>Stop Waiting</strong> gives up
+without changing anything.</p>
+<h3 id="choosing-the-model">Choosing the model</h3>
+<p>The <strong>Model</strong> list is read from your account the moment
+you sign in, so it holds exactly what your plan offers – Luna 6 and the
+GPT-6 models first, then the rest by name, with the models that cannot
+answer text left out. Arrow to one and it is saved as you land on it;
+there is no OK to press. <strong>Refresh Models</strong> reads the list
+again, for a plan that gained one.</p>
+<h3 id="what-changes">What changes</h3>
+<ul>
+<li><strong>Every limit goes away.</strong> Nothing is refused for size,
+the answer is not capped, and Ask a question about the document sends
+the whole document rather than three passages. Before you send, the
+<em>About to send</em> line says how many words are going and that they
+count toward your plan.</li>
+<li><strong>What you use counts toward your plan’s usage</strong>, which
+OpenAI enforces and shows on ChatGPT’s own usage page – <strong>Open
+ChatGPT Usage</strong> in the window takes you there. When a limit is
+reached QUILL Lite says so in words, with the code
+<code>QUILL-AI-CHATGPT-LIMIT</code>, and the page shows when it
+resets.</li>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens
+this same window, and <strong>Help ▸ About</strong> names the account
+and the model in place of the free allowance.</li>
+<li>The free service’s agreement is not asked for and this computer need
+not be connected to it: that agreement is about QUILL’s servers, which
+this route never touches.</li>
+<li><strong>A sign-in is used ahead of a saved OpenAI key.</strong> The
+plan is already paid for; a key is billed per request. Sign out, and the
+key takes over again.</li>
+</ul>
+<h3 id="signing-out-and-forgetting">Signing out, and forgetting</h3>
+<p><strong>Sign Out</strong> (press it twice) asks OpenAI to revoke
+QUILL Lite’s sign-in and forgets it on this computer. <strong>Forget on
+This Computer</strong> only forgets it here, for a machine that is
+offline or a sign-in you already removed in ChatGPT’s settings; QUILL
+Lite stays listed there until you remove it. Both buttons exist only
+while you are signed in.</p>
+<h3 id="where-the-sign-in-is-kept">Where the sign-in is kept</h3>
+<p>Only a refresh token, in Windows’ credential store (an encrypted file
+in a portable copy), under QUILL Lite’s own name. Your ChatGPT password
+is never seen by QUILL Lite. The access token that does the work lives
+in memory and is renewed as needed. <strong>Each QUILL app signs in as
+itself</strong> – QUILL Lite, QUILL and Quill Radio each appear under
+Apps in ChatGPT’s settings – so signing one out leaves the others as
+they were.</p>
+<h2 id="ask-about-an-image">Ask About an Image</h2>
+<p><strong>Tools ▸ AI ▸ Ask About an Image</strong>
+(<strong>Ctrl+F5</strong>) is the first time QUILL Lite can tell you
+what is in a picture. A screenshot a colleague sent, a photo of a
+letter, a chart pasted into a report, a menu from a restaurant’s
+website: choose the file, ask a question or ask nothing, and hear what
+the model sees.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+F5</strong>. Focus is in <strong>Image
+file</strong>.</li>
+<li>Type or paste the file’s path, or press <strong>Browse</strong>
+(Alt+B). JPEG, PNG, WebP and GIF are accepted.</li>
+<li><strong>Your question</strong> (Alt+Q) is optional. Empty, you get a
+description written for a blind reader: what the picture is, what
+matters most, and every word of any text in it, transcribed exactly. Ask
+something – “what does the sign say”, “what is the total on this
+receipt” – and the answer comes first.</li>
+<li>Press <strong>Enter</strong>. You hear “Working.” The picture is
+checked here first (a file that is not really an image, or one over 20
+MB, is refused in a sentence rather than sent), then it goes to OpenAI
+on your plan.</li>
+<li>The <strong>Image Description</strong> window opens with focus on
+the text. <strong>Insert Below</strong> puts it into your document under
+the paragraph you are in – the way to caption a picture –
+<strong>Copy</strong> puts it on the clipboard, and
+<strong>Ctrl+Z</strong> takes an insert back.</li>
+</ol>
+<p>It needs your ChatGPT subscription. With no sign-in, Ctrl+F5 says so
+and opens the account window rather than failing later. Only the picture
+and your question are sent; nothing from your document goes with
+them.</p>
+<h2 id="web-search">Web search</h2>
+<p>With <strong>Allow web search</strong> checked in Use My ChatGPT
+Subscription, the model may search the web through OpenAI when a
+question calls for it – an event, a price, what a page says today – and
+tell you what it found. It applies to Ask a general question, to Ask a
+question about the document and to conversations. It is <strong>off
+until you turn it on</strong>, because a search is a second thing sent
+somewhere, and that is yours to allow; the choice is saved as you make
+it.</p>
+<p>To turn it on: press <strong>Alt+F5</strong>, press
+<strong>Alt+W</strong> (or Tab to <strong>Allow web search</strong>),
+press <strong>Space</strong>, and hear “Web search is allowed.” It is
+saved at once. Press Space on the same checkbox to turn it off
+again.</p>
+<h2 id="tidy-dictated-text">Tidy Dictated Text</h2>
+<p>Dictation writes what the recogniser heard. <strong>Tools ▸ AI ▸ Tidy
+Dictated Text</strong> (<strong>Ctrl+F3</strong>) corrects what it
+misheard – sound-alike words, names, words run together or split,
+punctuation, capitalisation, fillers and false starts – and changes
+nothing else. Leave the cursor in the dictated paragraph, or select the
+stretch you want, press <strong>Ctrl+F3</strong>, hear “Working.”, and
+the <strong>Tidied Dictation</strong> window opens on the corrected
+text. <strong>Replace My Selection</strong> puts it back where the
+dictated text was, <strong>Ctrl+Z</strong> undoes it as one step, and
+<strong>Escape</strong> keeps what you had. It runs on a ChatGPT
+subscription or your own OpenAI key; with neither it says so and opens
+the account window.</p>
 <h2 id="questions-people-ask">Questions people ask</h2>
 <p><strong>Do I need an account?</strong> No. No name, no email, no
 password. The eight-character code connects this computer, and that is
 all.</p>
 <p><strong>Does it cost anything?</strong> No. It is paid for by
 Community Access. If you use your own OpenAI key instead, OpenAI bills
-your account and there are no limits.</p>
+your account and there are no limits. If you sign in with a ChatGPT
+subscription, what you use counts toward that plan and nothing else is
+billed.</p>
+<p><strong>I pay for ChatGPT. Do I still need a key?</strong> No. Press
+<strong>Alt+F5</strong>, choose Continue with ChatGPT, and sign in the
+way you do on the web. That is the whole setup, and it is the route that
+can describe pictures and search the web.</p>
+<p><strong>Can it describe a picture?</strong> Yes, on a ChatGPT
+subscription: <strong>Ctrl+F5</strong>, choose the file, and hear it.
+See <a href="#ask-about-an-image">Ask About an Image</a>.</p>
 <p><strong>Can it change my document without asking?</strong> No.
 Nothing goes into your document until you press <strong>Replace My
 Selection</strong> or <strong>Insert Below</strong>, and

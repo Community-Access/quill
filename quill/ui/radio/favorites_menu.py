@@ -18,6 +18,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.ui.radio import favorites_details
+
 __all__ = ["entries_for", "popup"]
 
 
@@ -76,6 +78,10 @@ def entries_for(dialog: Any) -> list[tuple[str, Callable[[], None]]]:
             ("Move &Down", lambda: dialog._on_move(1)),
             ("&Mark for Move", dialog._on_mark),
             ("Move to F&older...", dialog._on_move_to_folder),
+            # The note is read back in the details pane below the tree, so the
+            # only thing missing here was a way to write one without going
+            # back to the browse window to find the same station again.
+            ("&Note to Self...", lambda: favorites_details.edit_note(dialog)),
         ]
         if dialog._marked_key is not None:
             entries.insert(5, ("Move &Above", lambda: dialog._on_move_marked(True)))

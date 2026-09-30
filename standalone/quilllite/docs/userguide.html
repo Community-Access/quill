@@ -4928,6 +4928,194 @@ both.</p>
 code <code>QUILL-AI-OWN-KEY-FAILED</code>. The usual causes are a
 mistyped key, a model your account cannot use, or an OpenAI account with
 no credit. <strong>Test the Key</strong> tells you which.</p>
+<h3
+id="using-your-chatgpt-subscription-no-key-no-bill-and-two-things-the-free-service-cannot-do">Using
+your ChatGPT subscription: no key, no bill, and two things the free
+service cannot do</h3>
+<p>If you already pay for ChatGPT – Plus, Pro, Team or Enterprise –
+QUILL Lite can use that plan for every AI command, and you never touch a
+key. You sign in once, in your browser, the way you sign in to ChatGPT
+itself. From then on the pad, the seventeen writing tools, Ask About
+This Document and conversations all run on your plan: <strong>no monthly
+allowance, no size limit, no per-request bill</strong>, and nothing
+passing through QUILL’s servers. Two things arrive with it that neither
+the free service nor an API key can offer: <strong>descriptions of
+pictures</strong>, and <strong>web search</strong> when you want an
+answer about something current.</p>
+<p><strong>Tools ▸ AI ▸ Use My ChatGPT Subscription</strong>
+(<strong>Alt+F5</strong>) opens one window:</p>
+<ol type="1">
+<li><strong>About this</strong> – a read-only box saying where your text
+goes and what it costs. Arrow through it once.</li>
+<li><strong>Status</strong> – “QUILL Lite is not signed in with ChatGPT”
+the first time.</li>
+<li><strong>Continue with ChatGPT</strong> – press it. Your browser
+opens on OpenAI’s own sign-in page. Sign in as you would to ChatGPT, and
+on the page that asks whether <strong>QUILL Lite</strong> may use your
+plan, allow it. Come back to QUILL Lite; the window says “Signed in with
+ChatGPT as” your email address, and you are done. If the browser did not
+open, <strong>Copy the Sign-In Address</strong> puts the address on the
+clipboard for any browser on this computer, and <strong>Stop
+Waiting</strong> gives up without changing anything.</li>
+</ol>
+<p>Once signed in, the same window has:</p>
+<ol type="1">
+<li><strong>Account</strong> – who you are signed in as, and what that
+means.</li>
+<li><strong>Model</strong> – a list of every model your plan offers,
+read from your account the moment you sign in. The first one is chosen
+for you, so your next AI request works without another visit; arrow to
+another and it is saved as you land on it. <strong>Refresh
+Models</strong> reads the list again.</li>
+<li><strong>Allow web search</strong> – off until you check it. When it
+is on, the model may look things up on the web through OpenAI to answer
+a question; when it is off, only what you send is used. Saved as soon as
+you change it.</li>
+<li><strong>Open ChatGPT Usage</strong> – opens ChatGPT’s own usage page
+in your browser, which is the one place your plan’s limits and what is
+left are shown.</li>
+<li><strong>Sign Out</strong> – press twice. It asks OpenAI to revoke
+QUILL Lite’s sign-in and forgets it here; AI help goes back to QUILL’s
+free service, or to a saved OpenAI key if you have one.</li>
+<li><strong>Forget on This Computer</strong> – forgets the sign-in here
+without telling OpenAI, for a computer that is offline or a sign-in you
+already removed in ChatGPT’s settings. QUILL Lite stays listed under
+Apps in ChatGPT’s settings until you remove it there.</li>
+</ol>
+<p><strong>Sign Out and Forget are only there while you are signed
+in.</strong> Before that the window offers Continue with ChatGPT and
+nothing else, so there is never a button that could only tell you it has
+nothing to do.</p>
+<p><strong>There is no separate switch.</strong> While QUILL Lite is
+signed in with ChatGPT, every AI command uses the plan; Sign Out is how
+you stop. A ChatGPT sign-in is used ahead of a saved OpenAI key, because
+the plan is already paid for where a key is billed per request. Remove
+one, and the other takes over at once.</p>
+<p><strong>What changes on your plan:</strong></p>
+<ul>
+<li>Your text goes <strong>straight from this computer to
+OpenAI</strong>, on your account, under OpenAI’s terms and privacy
+policy. Nothing passes through QUILL’s servers and QUILL keeps no
+copy.</li>
+<li><strong>What you use counts toward your plan’s own usage</strong>,
+which OpenAI enforces. When a limit is reached QUILL Lite says so in
+plain words, with error code <code>QUILL-AI-CHATGPT-LIMIT</code>, and
+Open ChatGPT Usage shows when it resets.</li>
+<li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens
+this same window rather than the free allowance: there is no QUILL count
+to show, and the plan’s page is one button away. <strong>Help ▸
+About</strong> names the account and the model in place of the free
+allowance.</li>
+<li>You do not need to connect this computer to the free service, and
+the free service’s agreement is not asked for: it is about QUILL’s
+servers, which this route never touches. This window says where the text
+does go.</li>
+<li>The pad, the seventeen things it can do, and what comes back are
+<strong>exactly the same</strong>, down to the instructions sent with
+your text. There is no size limit, so the <em>About to send</em> line
+says how many words are going and that they count toward your plan,
+rather than refusing.</li>
+<li><strong>Conversations send the whole conversation</strong> with each
+message, so a long one keeps its beginning for as long as the model can
+read it.</li>
+</ul>
+<p><strong>Where the sign-in is kept.</strong> Only a refresh token, in
+Windows’ credential store (an encrypted file in a portable copy), under
+QUILL Lite’s own name. Your ChatGPT password is never seen by QUILL
+Lite, and the access token that does the work lives in memory only.
+<strong>Each QUILL app signs in on its own</strong>: QUILL Lite, QUILL
+and Quill Radio each appear as themselves under Apps in ChatGPT’s
+settings, and signing one out leaves the others as they were.</p>
+<p><strong>If a request fails</strong>, you hear why, followed by an
+error code: <code>QUILL-AI-CHATGPT-SIGNED-OUT</code> means OpenAI no
+longer accepts this computer’s sign-in (choose Continue with ChatGPT
+again); <code>QUILL-AI-CHATGPT-LIMIT</code> means the plan’s usage is
+used up for now; <code>QUILL-AI-CHATGPT-UNAVAILABLE</code> means OpenAI
+is not letting other apps use plans just now; anything else is
+<code>QUILL-AI-CHATGPT-FAILED</code>, and the sentence before the code
+says what to check.</p>
+<h3 id="ask-about-an-image-a-picture-described">Ask About an Image: a
+picture, described</h3>
+<p><strong>Tools ▸ AI ▸ Ask About an Image</strong>
+(<strong>Ctrl+F5</strong>) is the one AI command that takes a file
+rather than a passage, and the first time QUILL Lite has been able to
+tell you what is <em>in</em> a picture. A screenshot somebody sent you,
+a photo of a letter, a chart in a report, the menu from a restaurant’s
+website – choose the file, ask a question or ask nothing, and hear what
+the model sees. It needs your ChatGPT subscription; with no sign-in it
+says so and opens the account window instead of failing later.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+F5</strong>. The Ask About an Image window opens
+with focus in <strong>Image file</strong>.</li>
+<li>Type or paste the file’s full path, or press <strong>Browse</strong>
+(Alt+B) to pick it. JPEG, PNG, WebP and GIF are accepted.</li>
+<li><strong>Your question</strong> (Alt+Q) is optional. Leave it empty
+for a plain description written for a blind reader: what the picture is,
+what matters most in it, and every word of any text in it, transcribed
+exactly. Or ask something – “what does the sign say”, “is anyone
+smiling”, “what is the total on this receipt” – and the answer comes
+first, then only the description that helps.</li>
+<li>Press <strong>Enter</strong> for <strong>Ask</strong>. You hear
+“Working.”; the picture is checked (a file that is not really an image,
+or one over 20 MB, is refused here with a sentence rather than sent),
+then it goes to OpenAI on your plan.</li>
+<li>The answer opens in the <strong>Image Description</strong> window,
+read-only, with focus on the text so your screen reader reads it.
+<strong>Insert Below</strong> puts it into your document under the
+paragraph you are in – the way to caption a picture in a document you
+are writing – <strong>Copy</strong> puts it on the clipboard, and
+<strong>Ctrl+Z</strong> takes an insert back.</li>
+</ol>
+<p>Only the picture and your question are sent. Nothing from your
+document goes with them.</p>
+<h3 id="tidy-dictated-text-dictation-corrected-by-ai">Tidy Dictated
+Text: dictation, corrected by AI</h3>
+<p>Speech recognition writes what it heard, and what it heard is not
+always the word you meant: “their” for “there”, a name it has never met,
+two words run together, a comma where a full stop belonged, and every
+“um” you did not know you said. <strong>Tools ▸ AI ▸ Tidy Dictated
+Text</strong> (<strong>Ctrl+F3</strong>) fixes exactly that and nothing
+else. It works on a ChatGPT subscription or your own OpenAI key – the
+free service has no such tool, and a page of dictation should not spend
+an allowance – and with neither it says so and opens the account
+window.</p>
+<ol type="1">
+<li>Dictate as usual (<strong>Ctrl+F11</strong>, talk, pause). When the
+paragraph is done, leave the cursor in it, or select exactly the stretch
+you want tidied.</li>
+<li>Press <strong>Ctrl+F3</strong>. You hear “Working.” The selection,
+or else the whole paragraph the cursor is in, goes to the model with an
+instruction to correct misheard words, punctuation and capitalisation,
+remove fillers and false starts, and keep your meaning, wording and
+order otherwise.</li>
+<li>The <strong>Tidied Dictation</strong> window opens with focus on the
+corrected text, so you hear it first. <strong>Replace My
+Selection</strong> puts it where the dictated text was;
+<strong>Copy</strong> puts it on the clipboard; <strong>Escape</strong>
+keeps what you had. If you typed in that paragraph while the answer was
+on its way, Replace is not offered and the window says so.</li>
+<li><strong>Ctrl+Z</strong> takes a replacement back, as one step.</li>
+</ol>
+<p>Nothing is changed until you press Replace, and the model is told to
+add nothing: a tidied paragraph says what you said, spelled the way you
+meant it.</p>
+<h3 id="web-search-an-answer-about-now">Web search: an answer about
+now</h3>
+<p>Everything the AI pad does works from what you send it. Sometimes
+what you need is an answer about the world as it is today – whether an
+event has been announced, what a word has come to mean this year, what a
+page says right now. With <strong>Allow web search</strong> checked in
+Use My ChatGPT Subscription, the model may search the web through OpenAI
+when a question calls for it, and say what it found. It applies to
+<strong>Ask a general question</strong>, to <strong>Ask a question about
+the document</strong> and to conversations, and it is off until you turn
+it on: a search is a second thing sent somewhere, and it is yours to
+allow.</p>
+<p>To turn it on: press <strong>Alt+F5</strong>, press
+<strong>Alt+W</strong> (or Tab to <strong>Allow web search</strong>),
+press <strong>Space</strong>, and hear “Web search is allowed.” It is
+saved at once. Press Space on the same checkbox to turn it off
+again.</p>
 <h2 id="where-your-files-are-kept">Where your files are kept</h2>
 <p>Your settings, recent files, copy tray and any recovered work are
 kept in a QUILL Lite folder inside your own Windows user folder.
@@ -5992,6 +6180,18 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+F2</strong></td>
 <td>Use My Own OpenAI Key…</td>
+</tr>
+<tr>
+<td><strong>Alt+F5</strong></td>
+<td>Use My ChatGPT Subscription…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F5</strong></td>
+<td>Ask About an Image…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F3</strong></td>
+<td>Tidy Dictated Text…</td>
 </tr>
 </tbody>
 </table>

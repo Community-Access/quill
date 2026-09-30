@@ -70,6 +70,11 @@ REFRESH_ALL_PODCASTS = "podcast.refresh_all"
 #: opens shows whatever is already there, so writing and clearing are the
 #: same action rather than two menu rows that have to agree with each other.
 EDIT_NOTE = "item.note"
+#: Turn new-episode alerts on or off for one subscribed podcast, from its
+#: own row (3.1.0). Settings still owns the three-way choice; this is the
+#: decision somebody makes while standing on the show, and it toggles
+#: between the two modes that cannot lose news -- see alert_toggle.
+TOGGLE_ALERT = "podcast.alert"
 SET_REMINDER = row_reminders.SET_REMINDER
 REMOVE_REMINDER = row_reminders.REMOVE_REMINDER
 SUBSCRIBE_PODCAST = "podcast.subscribe"

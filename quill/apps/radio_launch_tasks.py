@@ -86,10 +86,12 @@ def register_surfaces(app: Any) -> None:
     import wx
 
     from quill.apps import radio_main_keys
-    from quill.ui.radio import bookmarks_wiring, calendar_wiring
+    from quill.ui.radio import ask_radio_wiring, bookmarks_wiring, calendar_wiring
 
     bookmarks_wiring.register(app)
     calendar_wiring.register(app)
+    # Ask QUILL Radio (2026-09-29): the assistant on the listener's ChatGPT plan.
+    ask_radio_wiring.register(app)
     # Alt+1..0, Stop and Ctrl+Shift+O: keys the main window answers that no
     # menu item carries, so no accelerator did either (2026-09-25).
     radio_main_keys.install(app, wx)
@@ -110,10 +112,20 @@ def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:
     so a profile with the ADP assistant turned off gets a Community menu that
     opens on the schedule rather than on a rule.
     """
-    from quill.ui.radio import acb_podcasts_wiring, calendar_wiring, community_picks_wiring
+    from quill.ui.radio import (
+        acb_podcasts_wiring,
+        ask_radio_wiring,
+        calendar_wiring,
+        community_picks_wiring,
+    )
 
+    # Ask QUILL Radio first (2026-09-29): beside Ask the Audio Description
+    # Project, because both are "ask a question and hear an answer" -- and this
+    # one already knows what is playing.
     if menu.GetMenuItemCount():
         menu.AppendSeparator()
+    ask_radio_wiring.append_menu_items(app, menu, wx)
+    menu.AppendSeparator()
     calendar_wiring.append_menu_items(app, menu, wx)
     # Beside the schedule, because they are the same question asked of the same
     # broadcaster: what is on live, and what can I keep. Both are "places this

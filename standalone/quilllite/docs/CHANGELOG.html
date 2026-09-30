@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Lite changelog</title>
   <style>
@@ -198,6 +198,76 @@
 <main id="main-content">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="110--unreleased">1.1.0 – unreleased</h2>
+<h3
+id="your-chatgpt-subscription-pictures-described-and-web-search-2026-09-29">Your
+ChatGPT subscription, pictures described, and web search
+(2026-09-29)</h3>
+<ul>
+<li><strong>Use My ChatGPT Subscription</strong> (Tools &gt; AI,
+<strong>Alt+F5</strong>). If you already pay for ChatGPT, QUILL Lite
+runs every AI command on that plan: <strong>Continue with
+ChatGPT</strong> opens your browser on OpenAI’s own sign-in page, you
+allow “QUILL Lite” to use your plan, and you come back signed in – no
+key, no monthly allowance, no size limit, no per-request bill, nothing
+through QUILL’s servers. QUILL Lite registers itself with OpenAI at
+sign-in (there is no secret in the build), signs in with PKCE, checks
+the ID token’s issuer, audience, nonce and expiry, and keeps only the
+refresh token in Windows’ credential store under its own name; the
+access token lives in memory and is renewed as needed. A sign-in is used
+ahead of a saved OpenAI key. <strong>Sign Out</strong> (two presses)
+asks OpenAI to revoke it and forgets it here; <strong>Forget on This
+Computer</strong> forgets it here only; neither button exists until you
+are signed in (<code>quill/core/ai/chatgpt_account.py</code>,
+<code>quill/ui/hosted_ai_chatgpt.py</code>).</li>
+<li><strong>The model is your plan’s list.</strong> Read from your
+account the moment you sign in, Luna 6 and GPT-6 first, the first one
+chosen for you, and saved as you arrow to another. <strong>Refresh
+Models</strong> reads it again.</li>
+<li><strong>Ask About an Image</strong> (Tools &gt; AI,
+<strong>Ctrl+F5</strong>). The first AI command that takes a file:
+choose a JPEG, PNG, WebP or GIF, type a question or none, and hear what
+the model sees – a description written for a blind reader, with any text
+in the picture transcribed exactly. The file is checked and re-encoded
+before it is sent, so a mislabelled or damaged file is a sentence rather
+than a failed request. The answer opens in an <strong>Image
+Description</strong> window with Insert Below, Copy, and Ctrl+Z to take
+an insert back. With no sign-in it says so and opens the account window
+(<code>quill/ui/hosted_ai_image.py</code>,
+<code>quill/core/ai/chatgpt_client.py</code>).</li>
+<li><strong>Allow web search.</strong> A checkbox in the account window,
+off by default. On, the model may search the web through OpenAI to
+answer a general question, a question about the document, or a
+conversation turn.</li>
+<li><strong>Tidy Dictated Text</strong> (Tools &gt; AI,
+<strong>Ctrl+F3</strong>). Dictation’s AI: the selection, else the
+paragraph at the cursor, goes to the model with an instruction to
+correct misheard words, punctuation, capitalisation, fillers and false
+starts and change nothing else; the Tidied Dictation window offers
+Replace My Selection, and Ctrl+Z takes it back as one step. Runs on a
+ChatGPT plan or an own key only (the free service has no such template);
+with neither it opens the account window and says why
+(<code>quill/ui/hosted_ai_chatgpt_commands.py</code>,
+<code>INSTRUCTIONS["tidy_dictation"]</code>).</li>
+<li><strong>The same seventeen tools, the same words.</strong> On the
+plan, requests carry the gateway’s own instructions through OpenAI’s
+Responses API (<code>store=false</code>, <code>stream=true</code>, as
+the plan requires), so a summary is the same summary whichever way it
+travels. Conversations go as real turns.</li>
+<li><strong>Usage and About follow the route.</strong> Usage
+(Ctrl+Alt+Shift+F9) opens the account window on a plan, with
+<strong>Open ChatGPT Usage</strong> for the plan’s own page; About names
+the account and the model.</li>
+<li><strong>Five error codes</strong> with a next step each:
+<code>QUILL-AI-CHATGPT-SIGNIN</code>, <code>-SIGNED-OUT</code> (OpenAI
+no longer accepts the sign-in; it is forgotten locally and Continue with
+ChatGPT starts clean), <code>-LIMIT</code> (the plan’s usage for now),
+<code>-UNAVAILABLE</code> and <code>-FAILED</code>.</li>
+<li><strong>QUILL has the same two rows on the same two keys</strong>,
+in its AI menu, from the same shared module; and <strong>Quill
+Radio</strong> gains Ask QUILL Radio on the same sign-in, as its own
+agent. Each app appears as itself under Apps in ChatGPT’s settings, and
+signing one out leaves the others connected.</li>
+</ul>
 <h3
 id="coming-back-to-quill-lite-puts-you-back-in-your-document-2026-09-29">Coming
 back to QUILL Lite puts you back in your document (2026-09-29)</h3>

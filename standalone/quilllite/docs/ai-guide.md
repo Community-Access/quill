@@ -1,6 +1,6 @@
 # QUILL Lite's free AI: the complete guide
 
-*QUILL Lite 1.0. Updated September 25, 2026.*
+*QUILL Lite 1.1. Updated September 29, 2026.*
 
 QUILL's free AI helps with the writing in front of you: summarize it, rewrite
 it, proofread it, explain it, or answer a question about the document you have
@@ -27,6 +27,10 @@ which text is sent, what happens to the answer, the limits, and your privacy.
 - [Your privacy](#your-privacy)
 - [Signing out and changing your mind](#signing-out-and-changing-your-mind)
 - [Using your own OpenAI key: no limits](#using-your-own-openai-key-no-limits)
+- [Using your ChatGPT subscription](#using-your-chatgpt-subscription)
+- [Ask About an Image](#ask-about-an-image)
+- [Web search](#web-search)
+- [Tidy Dictated Text](#tidy-dictated-text)
 - [Questions people ask](#questions-people-ask)
 
 ## Starting, in about a minute
@@ -463,12 +467,139 @@ either removes it from both.
 account cannot use, or an OpenAI account with no credit. **Test the Key** tells
 you which.
 
+## Using your ChatGPT subscription
+
+If you already pay for ChatGPT, QUILL Lite can run every AI command on that
+plan -- and you never see a key. Sign in once in your browser, the way you sign
+in to ChatGPT itself, and from then on the pad, the seventeen writing tools,
+Ask About This Document and conversations all go to OpenAI on your plan. **No
+monthly allowance, no size limit, no per-request bill**, nothing through QUILL's
+servers -- and two things that neither the free service nor an API key can do:
+**pictures, described**, and **web search** for an answer about today.
+
+### Signing in, step by step
+
+1. Press **Alt+F5** (**Tools ▸ AI ▸ Use My ChatGPT Subscription**). The window
+   opens on **About this**, which says where your text goes. Arrow through it
+   once.
+2. Tab to **Continue with ChatGPT** and press it. Your browser opens on
+   OpenAI's own sign-in page.
+3. Sign in to ChatGPT there. On the page that asks whether **QUILL Lite** may
+   use your plan, allow it. That name is the one you will see under Apps in
+   ChatGPT's settings from now on.
+4. Come back to QUILL Lite. The window says "Signed in with ChatGPT as" your
+   email address, focus lands on the **Model** list, and the first model your
+   plan offers is already chosen. You are done.
+
+If the browser did not open, the window says so and offers **Copy the Sign-In
+Address**: paste it into any browser on this computer and finish there. **Stop
+Waiting** gives up without changing anything.
+
+### Choosing the model
+
+The **Model** list is read from your account the moment you sign in, so it
+holds exactly what your plan offers -- Luna 6 and the GPT-6 models first, then
+the rest by name, with the models that cannot answer text left out. Arrow to
+one and it is saved as you land on it; there is no OK to press. **Refresh
+Models** reads the list again, for a plan that gained one.
+
+### What changes
+
+- **Every limit goes away.** Nothing is refused for size, the answer is not
+  capped, and Ask a question about the document sends the whole document rather
+  than three passages. Before you send, the *About to send* line says how many
+  words are going and that they count toward your plan.
+- **What you use counts toward your plan's usage**, which OpenAI enforces and
+  shows on ChatGPT's own usage page -- **Open ChatGPT Usage** in the window
+  takes you there. When a limit is reached QUILL Lite says so in words, with
+  the code `QUILL-AI-CHATGPT-LIMIT`, and the page shows when it resets.
+- **Usage** (**Ctrl+Alt+Shift+F9**) opens this same window, and **Help ▸
+  About** names the account and the model in place of the free allowance.
+- The free service's agreement is not asked for and this computer need not be
+  connected to it: that agreement is about QUILL's servers, which this route
+  never touches.
+- **A sign-in is used ahead of a saved OpenAI key.** The plan is already paid
+  for; a key is billed per request. Sign out, and the key takes over again.
+
+### Signing out, and forgetting
+
+**Sign Out** (press it twice) asks OpenAI to revoke QUILL Lite's sign-in and
+forgets it on this computer. **Forget on This Computer** only forgets it here,
+for a machine that is offline or a sign-in you already removed in ChatGPT's
+settings; QUILL Lite stays listed there until you remove it. Both buttons exist
+only while you are signed in.
+
+### Where the sign-in is kept
+
+Only a refresh token, in Windows' credential store (an encrypted file in a
+portable copy), under QUILL Lite's own name. Your ChatGPT password is never
+seen by QUILL Lite. The access token that does the work lives in memory and is
+renewed as needed. **Each QUILL app signs in as itself** -- QUILL Lite, QUILL
+and Quill Radio each appear under Apps in ChatGPT's settings -- so signing one
+out leaves the others as they were.
+
+## Ask About an Image
+
+**Tools ▸ AI ▸ Ask About an Image** (**Ctrl+F5**) is the first time QUILL Lite
+can tell you what is in a picture. A screenshot a colleague sent, a photo of a
+letter, a chart pasted into a report, a menu from a restaurant's website: choose
+the file, ask a question or ask nothing, and hear what the model sees.
+
+1. Press **Ctrl+F5**. Focus is in **Image file**.
+2. Type or paste the file's path, or press **Browse** (Alt+B). JPEG, PNG,
+   WebP and GIF are accepted.
+3. **Your question** (Alt+Q) is optional. Empty, you get a description
+   written for a blind reader: what the picture is, what matters most, and
+   every word of any text in it, transcribed exactly. Ask something -- "what
+   does the sign say", "what is the total on this receipt" -- and the answer
+   comes first.
+4. Press **Enter**. You hear "Working." The picture is checked here first (a
+   file that is not really an image, or one over 20 MB, is refused in a
+   sentence rather than sent), then it goes to OpenAI on your plan.
+5. The **Image Description** window opens with focus on the text. **Insert
+   Below** puts it into your document under the paragraph you are in -- the
+   way to caption a picture -- **Copy** puts it on the clipboard, and **Ctrl+Z**
+   takes an insert back.
+
+It needs your ChatGPT subscription. With no sign-in, Ctrl+F5 says so and opens
+the account window rather than failing later. Only the picture and your question
+are sent; nothing from your document goes with them.
+
+## Web search
+
+With **Allow web search** checked in Use My ChatGPT Subscription, the model may
+search the web through OpenAI when a question calls for it -- an event, a price,
+what a page says today -- and tell you what it found. It applies to Ask a
+general question, to Ask a question about the document and to conversations.
+It is **off until you turn it on**, because a search is a second thing sent
+somewhere, and that is yours to allow; the choice is saved as you make it.
+
+To turn it on: press **Alt+F5**, press **Alt+W** (or Tab to **Allow web
+search**), press **Space**, and hear "Web search is allowed." It is saved at
+once. Press Space on the same checkbox to turn it off again.
+
+## Tidy Dictated Text
+
+Dictation writes what the recogniser heard. **Tools ▸ AI ▸ Tidy Dictated Text**
+(**Ctrl+F3**) corrects what it misheard -- sound-alike words, names, words run
+together or split, punctuation, capitalisation, fillers and false starts -- and
+changes nothing else. Leave the cursor in the dictated paragraph, or select the
+stretch you want, press **Ctrl+F3**, hear "Working.", and the **Tidied
+Dictation** window opens on the corrected text. **Replace My Selection** puts it
+back where the dictated text was, **Ctrl+Z** undoes it as one step, and
+**Escape** keeps what you had. It runs on a ChatGPT subscription or your own
+OpenAI key; with neither it says so and opens the account window.
+
 ## Questions people ask
 
 **Do I need an account?** No. No name, no email, no password. The
 eight-character code connects this computer, and that is all.
 
-**Does it cost anything?** No. It is paid for by Community Access. If you use your own OpenAI key instead, OpenAI bills your account and there are no limits.
+**Does it cost anything?** No. It is paid for by Community Access. If you use your own OpenAI key instead, OpenAI bills your account and there are no limits. If you sign in with a ChatGPT subscription, what you use counts toward that plan and nothing else is billed.
+
+**I pay for ChatGPT. Do I still need a key?** No. Press **Alt+F5**, choose Continue with ChatGPT, and sign in the way you do on the web. That is the whole setup, and it is the route that can describe pictures and search the web.
+
+**Can it describe a picture?** Yes, on a ChatGPT subscription: **Ctrl+F5**, choose the file, and hear it. See [Ask About an Image](#ask-about-an-image).
 
 **Can it change my document without asking?** No. Nothing goes into your
 document until you press **Replace My Selection** or **Insert Below**, and

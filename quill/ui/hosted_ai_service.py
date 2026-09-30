@@ -120,6 +120,107 @@ class AiService:
         chosen = getattr(getattr(self._app, "settings", None), "ai_own_key_model", "")
         return str(chosen or "").strip() or default_model()
 
+    # -- the ChatGPT subscription -------------------------------------------- #
+
+    @property
+    def chatgpt(self) -> Any:
+        """This app's ChatGPT sign-in (:class:`quill.core.ai.chatgpt_account.ChatGptAccount`).
+
+        Made on first use and kept: constructing it reads nothing, and the first
+        question it is asked (``signed_in``) reads the credential store once.
+        The agent name is the app's own -- "QUILL Lite", "QUILL" -- because
+        OpenAI shows it on the consent page and in the person's ChatGPT settings,
+        and each app signs in, and is revoked, on its own.
+        """
+        account = getattr(self, "_chatgpt", None)
+        if account is None:
+            from quill.core.ai.chatgpt_account import ChatGptAccount
+
+            agent = str(getattr(self._app, "ai_agent_name", "") or "QUILL")
+            account = ChatGptAccount(self.data_dir, agent_name=agent)
+            self._chatgpt = account
+        return account
+
+    @property
+    def chatgpt_active(self) -> bool:
+        """Whether requests go to OpenAI on the person's ChatGPT plan.
+
+        Whenever this app is signed in with ChatGPT -- there is no separate
+        switch, for the same reason an own key has none: a sign-in somebody
+        made is the choice, and Sign Out or Forget in the ChatGPT window is
+        how it is unmade. A sign-in outranks a saved key: the plan is already
+        paid for, where a key is billed per request.
+        """
+        try:
+            return bool(self.chatgpt.signed_in)
+        except Exception:  # noqa: BLE001 - an unreadable store is "not signed in"
+            return False
+
+    @property
+    def route(self) -> str:
+        """Which way requests travel: ``"chatgpt"``, ``"own_key"`` or ``"free"``."""
+        if self.chatgpt_active:
+            return "chatgpt"
+        if self.own_key_active:
+            return "own_key"
+        return "free"
+
+    @property
+    def direct(self) -> bool:
+        """Whether requests skip QUILL's service, and with it every QUILL limit."""
+        return self.route != "free"
+
+    @property
+    def route_label(self) -> str:
+        """The route as a person hears it: "your ChatGPT subscription" or "your own OpenAI key"."""
+        return "your ChatGPT subscription" if self.chatgpt_active else "your own OpenAI key"
+
+    @property
+    def direct_model(self) -> str:
+        """The model a direct route answers with, or "" when none is chosen yet."""
+        if self.chatgpt_active:
+            return str(self.chatgpt.model or "")
+        return self.own_key_model
+
+    def size_note(self, text: str) -> str:
+        """What sending *text* on a direct route means, for the pad's summary.
+
+        Empty on the free service, where the size limit speaks for itself. An
+        own key is priced per request; a plan is not, so its note says usage
+        rather than dollars (:func:`quill.core.ai.chatgpt_ai_help.size_note`).
+        """
+        if not self.direct:
+            return ""
+        free_tokens = self.free_limits.max_input_tokens
+        if self.chatgpt_active:
+            from quill.core.ai.chatgpt_ai_help import size_note
+
+            return size_note(text, self.direct_model, free_limit_tokens=free_tokens)
+        from quill.core.ai.own_key import size_warning
+
+        return size_warning(text, self.own_key_model, free_limit_tokens=free_tokens)
+
+    def conversation_note(self) -> str:
+        """What a conversation costs on this route, said once at the top of the window."""
+        if self.chatgpt_active:
+            return (
+                "This conversation uses your ChatGPT subscription: no QUILL limit, and "
+                "each message counts toward your plan's own usage. The whole "
+                "conversation goes with each message."
+            )
+        if self.own_key_active:
+            return (
+                "This conversation uses your own OpenAI key: no limits, billed to "
+                "your OpenAI account. The whole conversation goes with each message, "
+                "so a long one costs more per reply."
+            )
+        return (
+            "Each message uses one of your free requests. The conversation so far "
+            "goes with it as far as the free size limit allows, so a long "
+            "conversation gradually forgets its beginning; this window says when "
+            "that starts."
+        )
+
     # -- what the service allows ----------------------------------------- #
 
     @property
@@ -131,6 +232,10 @@ class AiService:
         defaults are honest in the meantime -- they are the values the service
         actually ships with.
         """
+        if self.chatgpt_active:
+            from quill.core.ai.chatgpt_ai_help import CHATGPT_LIMITS
+
+            return CHATGPT_LIMITS
         if self.own_key_active:
             from quill.core.ai.own_key import OWN_KEY_LIMITS
 
@@ -155,7 +260,7 @@ class AiService:
         be reporting our housekeeping as their problem.
         """
 
-        if self.own_key_active:
+        if self.direct:
             return  # nothing to ask QUILL's service: the limits are OpenAI's
 
         def work(**_kwargs: Any) -> GatewayLimits:
@@ -178,7 +283,7 @@ class AiService:
         "you are not connected" without a network call, and so a menu never
         stalls.
         """
-        if self.own_key_active:
+        if self.direct:
             return ""
         if not self.signed_in:
             return (
@@ -213,7 +318,18 @@ class AiService:
         for a person to hear, so rendering one at a user is the whole job.
         *language* is Translate's target language.
         """
-        if self.own_key_active:
+        if self.chatgpt_active:
+            from quill.core.ai.chatgpt_ai_help import ask_with_chatgpt
+
+            account = self.chatgpt
+
+            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
+                answer = ask_with_chatgpt(
+                    account, feature, prompt, chunks, language=language or "English"
+                )
+                return answer, None
+
+        elif self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
 
             model = self.own_key_model
@@ -256,7 +372,15 @@ class AiService:
         counted; on QUILL's service the service may trim further and says by
         how many turns.
         """
-        if self.own_key_active:
+        if self.chatgpt_active:
+            from quill.core.ai.chatgpt_ai_help import converse_with_chatgpt
+
+            account = self.chatgpt
+
+            def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
+                return converse_with_chatgpt(account, prompt, chunks, history), None, 0
+
+        elif self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
 
             model = self.own_key_model
@@ -279,6 +403,38 @@ class AiService:
             _call_after(on_error, _sentence(error))
 
         _submit("quill-ai-converse", work, on_success=done, on_failure=failed)
+
+    def describe_image(
+        self,
+        path: Any,
+        question: str,
+        *,
+        on_done: Callable[[str], None],
+        on_error: Callable[[str], None],
+    ) -> None:
+        """Ask About an Image, on the ChatGPT plan. Returns at once; answers on the UI thread.
+
+        Only the plan carries images. A bad file is reported as the sentence
+        :func:`quill.core.ai.chatgpt_client.image_part` wrote for it, before
+        anything is sent.
+        """
+        from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
+
+        account = self.chatgpt
+
+        def work(**_kwargs: Any) -> str:
+            return describe_image_with_chatgpt(account, path, question)
+
+        def done(_name: str, text: Any) -> None:
+            _call_after(on_done, str(text))
+
+        def failed(_name: str, error: BaseException) -> None:
+            if isinstance(error, ValueError):
+                _call_after(on_error, str(error))
+                return
+            _call_after(on_error, _sentence(error))
+
+        _submit("quill-ai-image", work, on_success=done, on_failure=failed)
 
     def fetch_quota(
         self,
@@ -420,7 +576,7 @@ def _sentence(error: BaseException) -> str:
         code = getattr(error, "code", "")
         parts = [message, hint, f"Error code {code}." if code else ""]
         return " ".join(part.strip() for part in parts if part and part.strip())
-    return "QUILL's free AI is not answering right now. Try again in a moment. Nothing was used."
+    return "The AI service is not answering right now. Try again in a moment. Nothing was used."
 
 
 def _sign_in_failure(result: Any) -> str:

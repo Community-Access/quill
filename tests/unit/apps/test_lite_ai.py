@@ -874,3 +874,287 @@ def test_a_saved_key_lifts_the_limits_and_removing_it_restores_them(monkeypatch)
     monkeypatch.setattr(own_key, "has_own_key", lambda: False)
     assert not service.own_key_active
     assert service.limits is not own_key.OWN_KEY_LIMITS
+
+
+# --------------------------------------------------------------------------- #
+# A ChatGPT subscription, and Ask About an Image (2026-09-29)
+# --------------------------------------------------------------------------- #
+
+
+@pytest.fixture
+def chatgpt_window(monkeypatch):
+    """The account window, replaced by a recorder where the command looks it up."""
+    import quill.ui.hosted_ai_chatgpt as chatgpt_ui
+
+    Window = type("ChatGptFrame", (_FakeFrame,), {"last": None})
+    monkeypatch.setattr(chatgpt_ui, "ChatGptFrame", Window)
+    return Window
+
+
+class _PlanService:
+    """A service signed in with ChatGPT, whose image requests are recorded."""
+
+    signed_in = False
+    own_key_active = False
+    chatgpt_active = True
+    direct = True
+    route = "chatgpt"
+
+    def __init__(self):
+        self.chatgpt = object()
+        self.images = []
+
+    def refresh_limits(self, on_done=None):
+        pass
+
+    def unavailable_reason(self, feature=""):
+        return ""
+
+    def describe_image(self, path, question, *, on_done, on_error):
+        self.images.append((path, question))
+        on_done("A red door.")
+
+
+def test_the_chatgpt_window_refuses_when_the_area_is_off(lite_window, chatgpt_window, monkeypatch):
+    win = lite_window("text")
+    monkeypatch.setattr(win.app, "feature_enabled", lambda area: area != "hosted_ai")
+
+    (lambda w: w.cmd_ai_chatgpt())(win)
+
+    assert chatgpt_window.last is None
+    assert any("switched off" in said for said in win.announcements)
+
+
+def test_the_chatgpt_window_needs_no_agreement_and_gets_this_apps_account(
+    lite_window, chatgpt_window, monkeypatch
+):
+    """The free service's agreement is about QUILL's servers, which this route
+    never touches; the account handed over is the service's own."""
+    win = lite_window("text")
+    win.app.settings.ai_privacy_accepted_version = 0
+    service = _PlanService()
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_ai_chatgpt())(win)
+
+    assert chatgpt_window.last is not None
+    assert chatgpt_window.last["args"][1] is service.chatgpt
+    assert callable(chatgpt_window.last["kwargs"]["on_change"])
+
+
+def test_the_lite_app_signs_in_as_quill_lite(tmp_path):
+    """OpenAI shows the agent's name on the consent page; it must be this app's."""
+    from quill.apps.lite import QuillLiteApp
+    from quill.apps.lite_services import LiteServicesMixin
+    from quill.ui.hosted_ai_service import AiService
+
+    assert issubclass(QuillLiteApp, LiteServicesMixin)
+
+    class App(LiteServicesMixin):
+        data_dir = tmp_path
+        settings = None
+
+    service = AiService(App())
+    assert service.chatgpt.agent_name == "QUILL Lite"
+
+
+def test_usage_opens_the_account_window_on_a_plan(
+    lite_window, ai_frames, chatgpt_window, monkeypatch
+):
+    from quill.ui.hosted_ai_commands import HostedAiMixin
+
+    win = lite_window("text")
+    monkeypatch.setattr(HostedAiMixin, "_ai_privacy_accepted", lambda _self: True)
+    monkeypatch.setattr(win, "_ai_service", lambda: _PlanService())
+
+    (lambda w: w.cmd_ai_usage())(win)
+
+    assert chatgpt_window.last is not None
+    assert ai_frames["AiUsageFrame"].last is None
+
+
+def test_the_pad_opens_on_a_plan_with_no_connection_to_the_free_service(
+    lite_window, ai_frames, monkeypatch
+):
+    win = lite_window("text")
+    win.app.settings.ai_privacy_accepted_version = 0
+    monkeypatch.setattr(win, "_ai_service", lambda: _PlanService())
+
+    (lambda w: w.cmd_ai_assistant())(win)
+
+    assert ai_frames["AiPadFrame"].last is not None
+    assert ai_frames["AiSignInFrame"].last is None
+
+
+def test_ask_about_an_image_without_a_sign_in_opens_the_account_window(
+    lite_window, chatgpt_window, monkeypatch
+):
+    win = lite_window("text")
+    service = _PlanService()
+    service.chatgpt_active = False
+    service.direct = False
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_ai_image())(win)
+
+    assert chatgpt_window.last is not None
+    assert service.images == []
+    assert any("ChatGPT subscription" in said for said in win.announcements)
+
+
+@pytest.fixture
+def image_dialog(monkeypatch, tmp_path):
+    """Ask About an Image's dialog, answered without a window."""
+    import wx
+
+    import quill.ui.dialog_contract as contract
+    import quill.ui.hosted_ai_image as image_ui
+
+    picture = tmp_path / "door.png"
+    picture.write_bytes(b"png")
+    state = {"answer": wx.ID_OK, "shown": 0, "path": picture, "question": "What colour?"}
+
+    class Dialog:
+        def __init__(self, parent, *, announce=None):
+            state["shown"] += 1
+
+        def chosen(self):
+            return state["path"], state["question"]
+
+        def Destroy(self):
+            pass
+
+    monkeypatch.setattr(image_ui, "AskImageDialog", Dialog)
+    monkeypatch.setattr(contract, "show_modal_dialog", lambda _d, _t: state["answer"])
+    return state
+
+
+def test_ask_about_an_image_sends_the_picture_and_shows_the_answer(
+    lite_window, ai_frames, image_dialog, monkeypatch
+):
+    win = lite_window("text")
+    service = _PlanService()
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_ai_image())(win)
+
+    assert image_dialog["shown"] == 1
+    assert service.images == [(image_dialog["path"], "What colour?")]
+    shown = ai_frames["AiResultFrame"].last
+    assert shown is not None
+    assert shown["kwargs"]["action"] == "image"
+    assert shown["kwargs"]["text"] == "A red door."
+    assert shown["kwargs"]["on_replace"] is None
+    assert shown["kwargs"]["on_insert"] is not None
+
+
+def test_cancelling_ask_about_an_image_sends_nothing(
+    lite_window, ai_frames, image_dialog, monkeypatch
+):
+    import wx
+
+    image_dialog["answer"] = wx.ID_CANCEL
+    win = lite_window("text")
+    service = _PlanService()
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_ai_image())(win)
+
+    assert service.images == []
+    assert ai_frames["AiResultFrame"].last is None
+
+
+def test_an_image_answer_never_reaches_the_document_on_its_own(
+    lite_window, ai_frames, image_dialog, monkeypatch
+):
+    win = lite_window("text")
+    before = win.control.GetValue()
+    monkeypatch.setattr(win, "_ai_service", lambda: _PlanService())
+
+    (lambda w: w.cmd_ai_image())(win)
+
+    assert win.control.GetValue() == before
+
+
+# --------------------------------------------------------------------------- #
+# Tidy Dictated Text (2026-09-29)
+# --------------------------------------------------------------------------- #
+
+
+class _TidyService(_PlanService):
+    def __init__(self):
+        super().__init__()
+        self.asked = []
+
+    def ask(self, feature, prompt, chunks, *, on_done, on_error, **extra):
+        self.asked.append((feature, prompt, chunks))
+        on_done("Tidied text.", None)
+
+
+def test_tidy_dictation_needs_a_direct_route_and_opens_the_account_window(
+    lite_window, chatgpt_window, monkeypatch
+):
+    win = lite_window("some dictated words")
+    service = _TidyService()
+    service.chatgpt_active = False
+    service.direct = False
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_dictation_tidy())(win)
+
+    assert service.asked == []
+    assert chatgpt_window.last is not None
+    assert any("Tidy Dictated Text uses" in said for said in win.announcements)
+
+
+def test_tidy_dictation_sends_the_selection_and_offers_replace(lite_window, ai_frames, monkeypatch):
+    win = lite_window("first one\n\nsecond paragraph here\n\nthird")
+    win.control.SetSelection(11, 32)
+    service = _TidyService()
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_dictation_tidy())(win)
+
+    assert service.asked == [("tidy_dictation", "second paragraph here", None)]
+    shown = ai_frames["AiResultFrame"].last
+    assert shown["kwargs"]["action"] == "tidy_dictation"
+    assert shown["kwargs"]["text"] == "Tidied text."
+    assert shown["kwargs"]["on_replace"] is not None
+    shown["kwargs"]["on_replace"]("Tidied text.")
+    assert win.control.GetValue() == "first one\n\nTidied text.\n\nthird"
+
+
+def test_tidy_dictation_without_a_selection_takes_the_paragraph_at_the_caret(
+    lite_window, ai_frames, monkeypatch
+):
+    win = lite_window("first one\n\nsecond paragraph here\n\nthird", cursor=15)
+    win.control.SetSelection(15, 15)
+    service = _TidyService()
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_dictation_tidy())(win)
+
+    assert service.asked == [("tidy_dictation", "second paragraph here", None)]
+    shown = ai_frames["AiResultFrame"].last
+    assert shown["kwargs"]["on_replace"] is not None
+
+
+def test_tidy_dictation_on_an_empty_document_says_so(lite_window, ai_frames, monkeypatch):
+    win = lite_window("")
+    service = _TidyService()
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+
+    (lambda w: w.cmd_dictation_tidy())(win)
+
+    assert service.asked == []
+    assert any("nothing here to tidy" in said for said in win.announcements)
+
+
+def test_the_paragraph_span_finds_the_paragraph_and_its_offsets():
+    from quill.ui.hosted_ai_chatgpt_commands import _paragraph_span
+
+    text = "alpha\n\nbeta gamma\n\ndelta"
+    assert _paragraph_span(text, 0) == (0, 5, "alpha")
+    assert _paragraph_span(text, 9) == (7, 17, "beta gamma")
+    assert _paragraph_span(text, len(text)) == (19, 24, "delta")
+    assert _paragraph_span("", 3) == (0, 0, "")

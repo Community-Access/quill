@@ -2,6 +2,60 @@
 
 ## 1.1.0 -- unreleased
 
+### Your ChatGPT subscription, pictures described, and web search (2026-09-29)
+
+- **Use My ChatGPT Subscription** (Tools > AI, **Alt+F5**). If you already pay
+  for ChatGPT, QUILL Lite runs every AI command on that plan: **Continue with
+  ChatGPT** opens your browser on OpenAI's own sign-in page, you allow "QUILL
+  Lite" to use your plan, and you come back signed in -- no key, no monthly
+  allowance, no size limit, no per-request bill, nothing through QUILL's
+  servers. QUILL Lite registers itself with OpenAI at sign-in (there is no
+  secret in the build), signs in with PKCE, checks the ID token's issuer,
+  audience, nonce and expiry, and keeps only the refresh token in Windows'
+  credential store under its own name; the access token lives in memory and is
+  renewed as needed. A sign-in is used ahead of a saved OpenAI key. **Sign Out**
+  (two presses) asks OpenAI to revoke it and forgets it here; **Forget on This
+  Computer** forgets it here only; neither button exists until you are signed
+  in (`quill/core/ai/chatgpt_account.py`, `quill/ui/hosted_ai_chatgpt.py`).
+- **The model is your plan's list.** Read from your account the moment you
+  sign in, Luna 6 and GPT-6 first, the first one chosen for you, and saved as
+  you arrow to another. **Refresh Models** reads it again.
+- **Ask About an Image** (Tools > AI, **Ctrl+F5**). The first AI command that
+  takes a file: choose a JPEG, PNG, WebP or GIF, type a question or none, and
+  hear what the model sees -- a description written for a blind reader, with
+  any text in the picture transcribed exactly. The file is checked and
+  re-encoded before it is sent, so a mislabelled or damaged file is a sentence
+  rather than a failed request. The answer opens in an **Image Description**
+  window with Insert Below, Copy, and Ctrl+Z to take an insert back. With no
+  sign-in it says so and opens the account window
+  (`quill/ui/hosted_ai_image.py`, `quill/core/ai/chatgpt_client.py`).
+- **Allow web search.** A checkbox in the account window, off by default. On,
+  the model may search the web through OpenAI to answer a general question, a
+  question about the document, or a conversation turn.
+- **Tidy Dictated Text** (Tools > AI, **Ctrl+F3**). Dictation's AI: the
+  selection, else the paragraph at the cursor, goes to the model with an
+  instruction to correct misheard words, punctuation, capitalisation, fillers
+  and false starts and change nothing else; the Tidied Dictation window offers
+  Replace My Selection, and Ctrl+Z takes it back as one step. Runs on a ChatGPT
+  plan or an own key only (the free service has no such template); with
+  neither it opens the account window and says why
+  (`quill/ui/hosted_ai_chatgpt_commands.py`, `INSTRUCTIONS["tidy_dictation"]`).
+- **The same seventeen tools, the same words.** On the plan, requests carry the
+  gateway's own instructions through OpenAI's Responses API (`store=false`,
+  `stream=true`, as the plan requires), so a summary is the same summary
+  whichever way it travels. Conversations go as real turns.
+- **Usage and About follow the route.** Usage (Ctrl+Alt+Shift+F9) opens the
+  account window on a plan, with **Open ChatGPT Usage** for the plan's own
+  page; About names the account and the model.
+- **Five error codes** with a next step each: `QUILL-AI-CHATGPT-SIGNIN`,
+  `-SIGNED-OUT` (OpenAI no longer accepts the sign-in; it is forgotten locally
+  and Continue with ChatGPT starts clean), `-LIMIT` (the plan's usage for now),
+  `-UNAVAILABLE` and `-FAILED`.
+- **QUILL has the same two rows on the same two keys**, in its AI menu, from the
+  same shared module; and **Quill Radio** gains Ask QUILL Radio on the same
+  sign-in, as its own agent. Each app appears as itself under Apps in ChatGPT's
+  settings, and signing one out leaves the others connected.
+
 ### Coming back to QUILL Lite puts you back in your document (2026-09-29)
 
 - **Alt+Tab back into QUILL Lite lands in the edit box.** A reader wrote that after Alt+Tabbing to another program and back, focus did not always return to the document, and that it was hard to reproduce -- pressing Ctrl+Tab once seemed to cure it. Both halves have the same cause. QUILL Lite keeps its documents inside one window, and Alt+Tab can only see that outer window; Windows then puts focus back wherever it was last inside it, which after an Alt+Tab can be the window frame itself rather than the edit box, and nothing moved it on. Ctrl+Tab and Ctrl+F6 set focus on the document explicitly, so switching documents once corrected what Windows remembered and the problem stopped for the rest of the session. Coming back to QUILL Lite now puts focus in the document. A box you had moved to on purpose keeps it -- Find, a field you tabbed to, a window that opened as QUILL Lite came forward -- because taking focus away from those would be the worse bug (`quill/apps/lite_shell.py`).

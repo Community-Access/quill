@@ -114,8 +114,12 @@ ACTIONS: tuple[tuple[str, str, str], ...] = (
 #: The actions that take typing rather than a passage.
 QUESTION_ACTIONS: frozenset[str] = frozenset({"document_qna", "ask", CONVERSATION})
 
-#: What the result window is titled, per action.
+#: What the result window is titled, per action. ``image`` is not a pad
+#: action -- it is Ask About an Image, on a ChatGPT plan -- but its answer
+#: opens in the same result window, so its title lives with the rest.
 ACTION_TITLES: dict[str, str] = {
+    "image": "Image Description",
+    "tidy_dictation": "Tidied Dictation",
     "summarize": "Summary",
     "rewrite": "Rewrite",
     "proofread": "Proofread",

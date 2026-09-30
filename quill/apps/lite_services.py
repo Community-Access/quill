@@ -47,6 +47,11 @@ class LiteServicesMixin:
     ``data_dir``, ``settings`` and ``frames``.
     """
 
+    #: What OpenAI shows on the consent page and in ChatGPT's settings when
+    #: this app signs in with a ChatGPT subscription (Tools > AI > Use My
+    #: ChatGPT Subscription). Each QUILL app signs in as itself.
+    ai_agent_name = "QUILL Lite"
+
     # -- switchable areas, and the stores they need ---------------------- #
 
     def feature_enabled(self, area_id: str) -> bool:

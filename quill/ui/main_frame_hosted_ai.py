@@ -56,6 +56,10 @@ class QuillAiHost:
     with the settings it is reading -- every question goes to the live object.
     """
 
+    #: What OpenAI shows on the consent page and in ChatGPT's settings when
+    #: this app signs in with a ChatGPT subscription. Each app is its own agent.
+    ai_agent_name = "QUILL"
+
     def __init__(self, frame: Any) -> None:
         self._frame = frame
         #: The shared module stores the one :class:`AiService` here, on first
@@ -197,9 +201,72 @@ class HostedAiCommandsMixin(HostedAiMixin):
                 self._binding_for("tools.hosted_ai_own_key"),
             )
 
+    def _chatgpt_menu_ids(self) -> tuple[Any, Any, Any]:
+        """The ids of the three direct-route rows, made once like the own key's."""
+        ids = getattr(self, "_hosted_ai_chatgpt_ids", None)
+        if ids is None:
+            import wx
+
+            ids = (wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef())
+            self._hosted_ai_chatgpt_ids = ids
+        return ids
+
+    def _append_chatgpt_rows(self, ai_menu: Any) -> None:
+        """Use My ChatGPT Subscription and Ask About an Image: QUILL Lite's two
+        rows, on QUILL Lite's two chords, from the shared module
+        (:mod:`quill.ui.hosted_ai_chatgpt_commands`).
+
+        Registered and bound here like the own-key row, and for the same reason:
+        main_frame_commands.py and main_frame_menu_bindings.py are at their size
+        budgets. The mnemonics -- u and k -- are the two letters no other row in
+        this menu claims in either mode.
+        """
+        import wx
+
+        from quill.core.i18n import _
+
+        chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()
+        ai_menu.Append(
+            chatgpt_id,
+            self._menu_label(_("Use My ChatGPT S&ubscription..."), "tools.hosted_ai_chatgpt"),
+        )
+        ai_menu.Append(
+            image_id, self._menu_label(_("As&k About an Image..."), "tools.hosted_ai_image")
+        )
+        ai_menu.Append(
+            tidy_id, self._menu_label(_("Tidy Dictated Te&xt..."), "tools.dictation_tidy")
+        )
+        if not getattr(self, "_hosted_ai_chatgpt_wired", False):
+            self._hosted_ai_chatgpt_wired = True
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_chatgpt(), id=chatgpt_id)
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_image(), id=image_id)
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_dictation_tidy(), id=tidy_id)
+            self.commands.try_register(
+                "tools.dictation_tidy",
+                "Tidy Dictated Text",
+                self.cmd_dictation_tidy,
+                self._binding_for("tools.dictation_tidy"),
+            )
+            self.commands.try_register(
+                "tools.hosted_ai_chatgpt",
+                "Use My ChatGPT Subscription",
+                self.cmd_ai_chatgpt,
+                self._binding_for("tools.hosted_ai_chatgpt"),
+            )
+            self.commands.try_register(
+                "tools.hosted_ai_image",
+                "Ask About an Image",
+                self.cmd_ai_image,
+                self._binding_for("tools.hosted_ai_image"),
+            )
+
     def _command_to_menu_id_map(self) -> dict[str, int]:
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
         mapping["tools.hosted_ai_own_key"] = self._own_key_menu_id()
+        chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()
+        mapping["tools.hosted_ai_chatgpt"] = chatgpt_id
+        mapping["tools.hosted_ai_image"] = image_id
+        mapping["tools.dictation_tidy"] = tidy_id
         return mapping
 
     def _ai_host(self) -> QuillAiHost:

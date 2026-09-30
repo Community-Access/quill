@@ -57,6 +57,24 @@ PURPOSES: dict[str, str] = {
         "watches what the app is doing -- never which key you pressed -- and "
         "moves you on by itself."
     ),
+    "Ask QUILL Radio": (
+        "A conversation with ChatGPT, on your own plan, that already knows what "
+        "is playing: the station and the title the stream is announcing go with "
+        "every message, so 'what is this song' and 'tell me about this station' "
+        "need no names typed. Type in Your message and press Enter; the reply is "
+        "read aloud and added to the conversation above. Ask About What's Playing "
+        "asks for you, and the Quick questions list holds nine more: arrow freely, "
+        "press Enter on one to put it in the message box, and three of them say "
+        "what they send about you before anything goes. Nothing here changes "
+        "what is playing."
+    ),
+    "Use My ChatGPT Subscription": (
+        "Sign Quill Radio in with the ChatGPT plan you already pay for, so Ask "
+        "QUILL Radio can answer on it. Continue with ChatGPT opens your browser; "
+        "once signed in, choose the model from your plan's own list and whether "
+        "web search is allowed. Sign Out and Forget on This Computer appear only "
+        "while you are signed in."
+    ),
     "Browse Stations": (
         "A search-free tree for wandering: every source Quill Radio knows -- "
         "your favorites, world directories, podcasts, audiobooks, NOAA "

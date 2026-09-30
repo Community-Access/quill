@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>QUILL - Screen-reader-first software, built by the community that depends on it</title>
-  <meta name="description" content="QUILL is a growing family of free, screen-reader-first software for Windows and macOS: the QUILL writing studio, the Quill Radio internet radio app, and more on the way. Every command speaks. Everything works from the keyboard. Built by the community that depends on it.">
+  <meta name="description" content="QUILL Lite 1.1 is out: AI help on the ChatGPT plan you already pay for, pictures described, web search and dictation, in a free talking editor for Windows. QUILL is a growing family of free, screen-reader-first software for Windows and macOS: the QUILL writing studio, the Quill Radio internet radio app, and more on the way. Every command speaks. Everything works from the keyboard. Built by the community that depends on it.">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -33,8 +33,8 @@
             <details class="nav-dropdown">
               <summary>Download QUILL Lite</summary>
               <ul>
-                <li><a href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.0.1/QuillLite-Setup-Shared-1.0.1.exe">Windows: Installer</a></li>
-                <li><a href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.0.1/QuillLite-Portable-1.0.1.zip">Windows: Portable ZIP</a></li>
+                <li><a href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.0/QuillLite-Setup-Shared-1.1.0.exe">Windows: Installer</a></li>
+                <li><a href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.0/QuillLite-Portable-1.1.0.zip">Windows: Portable ZIP</a></li>
                 <li><a href="/quilllite.html">About QUILL Lite</a></li>
               </ul>
             </details>
@@ -65,10 +65,70 @@
 
   <main id="main">
 
+    <!-- QUILL Lite 1.1 splash, September 29, 2026 -->
+    <section class="band splash" aria-labelledby="lite11-h">
+      <div class="wrap">
+        <p class="splash-kicker">New today</p>
+        <h1 id="lite11-h">QUILL Lite 1.1 is here, and it brought your ChatGPT plan with it.</h1>
+        <p class="splash-lede">
+          Five keys, five new tricks. Sign in to the ChatGPT plan you already pay for and every AI
+          command in QUILL Lite runs on it, with no key, no allowance, no size limit and no bill.
+          Then do two things a talking editor has never done for you: hear a picture described,
+          and look something up on the web. Dictation lands in the same release, with an AI that
+          fixes what the recogniser misheard and touches nothing else.
+        </p>
+        <div class="cta">
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.0/QuillLite-Setup-Shared-1.1.0.exe">Download QUILL Lite 1.1.0 - Installer</a>
+          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.0/QuillLite-Portable-1.1.0.zip">Download QUILL Lite 1.1.0 - Portable</a>
+          <a class="btn secondary" href="/docs/quilllite-release-notes.html">Read what's new in 1.1</a>
+          <a class="btn secondary" href="/docs/quilllite-ai-guide.html">The complete AI guide</a>
+        </div>
+        <p class="req-note">Windows 10 or later, 64-bit. Both downloads are digitally signed. Install over 1.0 and everything you have is kept. No ChatGPT plan? QUILL's free AI is still there, with no account, no password and no card.</p>
+
+        <ul class="splash-tiles" aria-label="What is new in QUILL Lite 1.1">
+          <li class="tile tile-1">
+            <p class="tile-key"><kbd>Alt</kbd>+<kbd>F5</kbd></p>
+            <h2>Your ChatGPT plan, no key required</h2>
+            <p>Press it, choose <strong>Continue with ChatGPT</strong>, sign in the way you do on the web, allow QUILL Lite to use your plan, and come back. That is the whole setup. The model list is your plan's own, the first one is chosen for you, and Sign Out is two presses whenever you like.</p>
+          </li>
+          <li class="tile tile-2">
+            <p class="tile-key"><kbd>Ctrl</kbd>+<kbd>F5</kbd></p>
+            <h2>Pictures, described</h2>
+            <p>The screenshot a colleague sent with "see attached". The photo of a letter. The chart in a report. The menu on a website. Choose the file, ask a question or ask nothing, and hear what is in it, with every word of text transcribed exactly. <strong>Insert Below</strong> puts the description into your document.</p>
+          </li>
+          <li class="tile tile-3">
+            <p class="tile-key"><kbd>Alt</kbd>+<kbd>W</kbd> in the account window</p>
+            <h2>Web search, when you say so</h2>
+            <p>One checkbox, off until you check it. On, the model may look up an event, a price, or what a page says today, in a general question, a question about your document, or a conversation. A search is a second thing sent somewhere, so it is yours to allow.</p>
+          </li>
+          <li class="tile tile-4">
+            <p class="tile-key"><kbd>Ctrl</kbd>+<kbd>F11</kbd></p>
+            <h2>Dictation that ships in the box</h2>
+            <p>Talk, pause, and hear what was written, with the punctuation put in for you. The recogniser lives inside QUILL Lite, nothing you say leaves the computer, Escape throws a phrase away, and one Ctrl+Z undoes one phrase.</p>
+          </li>
+          <li class="tile tile-5">
+            <p class="tile-key"><kbd>Ctrl</kbd>+<kbd>F3</kbd></p>
+            <h2>Tidy Dictated Text</h2>
+            <p>"Their" for "there", a name the recogniser had never met, two words run together, a comma where a full stop belonged, and every "um". Ctrl+F3 sends the paragraph to the model with one instruction: fix what was misheard, change nothing else. Replace My Selection puts it back; Ctrl+Z takes it away.</p>
+          </li>
+        </ul>
+
+        <div class="splash-try">
+          <h2 id="lite11-try-h">Your first five minutes</h2>
+          <ol aria-labelledby="lite11-try-h">
+            <li>Press <kbd>Alt</kbd>+<kbd>F5</kbd>, then <strong>Continue with ChatGPT</strong>. Sign in in your browser, allow <strong>QUILL Lite</strong>, and come back. You hear "Signed in with ChatGPT as" your address.</li>
+            <li>Press <kbd>Ctrl</kbd>+<kbd>F5</kbd>, <strong>Browse</strong> to any screenshot on your computer, and press <kbd>Enter</kbd>. Listen.</li>
+            <li>Select a paragraph you are not proud of, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>G</kbd>, arrow to <strong>Proofread</strong>, and press <kbd>Enter</kbd>. Then press <strong>Replace My Selection</strong>.</li>
+          </ol>
+          <p>Also new in 1.1: ten more writing tools in the AI pad, conversations that remember what was said, and your own OpenAI key as a third route. <a href="/quilllite.html">Explore QUILL Lite</a>, or read the <a href="/docs/quilllite-userguide.html">user guide</a>.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Hero -->
     <div class="hero">
       <div class="wrap">
-        <h1>Accessible software built around your screen reader - not around an afterthought.</h1>
+        <h2>Accessible software built around your screen reader - not around an afterthought.</h2>
         <p class="lede">
           QUILL began as a writing studio and has grown into a small family of free,
           screen-reader-first software for Windows and macOS, built by the community that
@@ -99,36 +159,13 @@
       </div>
     </div>
 
-    <!-- QUILL Lite 1.0 announcement, September 25, 2026 -->
-    <section class="band callout" aria-labelledby="lite-announce-h">
+    <!-- Everything about QUILL Lite: the documentation cards -->
+    <section class="band" aria-labelledby="lite-docs-h">
       <div class="wrap">
-        <h2 id="lite-announce-h">New: QUILL Lite 1.0 - free AI help, in an editor that talks to you</h2>
-        <p class="intro">
-          Select a paragraph, press two keys, and hear it <strong>summarized, rewritten,
-          proofread or explained</strong> - or ask a plain question about the document you have
-          open. <strong>QUILL Lite</strong> is a small, free text editor for Windows, built for
-          people who use a screen reader, with AI help built in on QUILL's own free service:
-          <strong>no account, no password, no card</strong>. The pad shows you exactly what will
-          be sent before it goes, the answer lands where your screen reader already is, and
-          nothing goes into your document until you say so.
-        </p>
-        <p class="intro">
-          Setup is one yes and one code: press <strong>Ctrl+Alt+Shift+K</strong>, agree, and the
-          Connect window opens with your code, ready to confirm in your browser. Underneath the
-          AI is an editor that answers you - headings and lists that announce themselves, a
-          status bar you can read with F6, spelling spelled out letter by letter, plain text,
-          Markdown, HTML and rich text, and nine spoken lessons that teach it to you.
-        </p>
-        <div class="cta">
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.0.1/QuillLite-Setup-Shared-1.0.1.exe">Download QUILL Lite 1.0.1 - Installer</a>
-          <a class="btn" href="https://github.com/Community-Access/quill/releases/download/quill-lite-v1.0.1/QuillLite-Portable-1.0.1.zip">Download QUILL Lite 1.0.1 - Portable</a>
-          <a class="btn secondary" href="/quilllite.html">Explore QUILL Lite</a>
-          <a class="btn secondary" href="/docs/quilllite-announcement.html">Read the announcement</a>
-        </div>
-        <h3 id="lite-docs-h">Everything about QUILL Lite</h3>
+        <h2 id="lite-docs-h">Everything about QUILL Lite</h2>
         <div class="cards">
           <div class="card">
-            <h3><a href="/docs/quilllite-announcement.html">The announcement</a></h3>
+            <h3><a href="/docs/quilllite-announcement.html">The 1.0 announcement</a></h3>
             <p>Why AI belongs in the editor you already write in, your first answer in a minute, and everything the editor does.</p>
           </div>
           <div class="card">
@@ -145,7 +182,7 @@
           </div>
           <div class="card">
             <h3><a href="/docs/quilllite-release-notes.html">Release notes</a></h3>
-            <p>What is in QUILL Lite 1.0, in full detail.</p>
+            <p>What is new in QUILL Lite 1.1, step by step and key by key: your ChatGPT plan, pictures described, web search, dictation and Tidy Dictated Text.</p>
           </div>
           <div class="card">
             <h3><a href="/docs/quilllite-changelog.html">Changelog</a></h3>

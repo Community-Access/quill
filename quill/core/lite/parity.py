@@ -172,7 +172,10 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # different services under one prefix would be one prefix meaning two things.
     "cmd_ai_ask_document": "tools.hosted_ai_ask_document",
     "cmd_ai_assistant": "tools.hosted_ai_assistant",
+    "cmd_ai_chatgpt": "tools.hosted_ai_chatgpt",
+    "cmd_ai_image": "tools.hosted_ai_image",
     "cmd_ai_own_key": "tools.hosted_ai_own_key",
+    "cmd_dictation_tidy": "tools.dictation_tidy",
     "cmd_ai_privacy": "tools.hosted_ai_privacy",
     "cmd_ai_sign_in": "tools.hosted_ai_sign_in",
     "cmd_ai_usage": "tools.hosted_ai_usage",

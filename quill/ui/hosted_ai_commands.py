@@ -40,11 +40,12 @@ from typing import Any
 import wx
 
 from quill.ui.atomic_edit import replace_as_one_undo
+from quill.ui.hosted_ai_chatgpt_commands import ChatGptAiMixin
 
 __all__ = ["HostedAiMixin"]
 
 
-class HostedAiMixin:
+class HostedAiMixin(ChatGptAiMixin):
     """The hosted-AI commands. Mixed into both editors' document windows."""
 
     # ------------------------------------------------------------------ #
@@ -112,6 +113,9 @@ class HostedAiMixin:
             return
         from quill.ui.hosted_ai_dialogs import AiUsageFrame
 
+        if self._ai_chatgpt_active():  # the plan's usage is in the account window
+            self.cmd_ai_chatgpt()
+            return
         if self._ai_service().own_key_active:  # no allowance: the model and the bill
             from quill.ui.hosted_ai_own_key import OwnKeyUsageFrame as AiUsageFrame
         elif not self._ai_service().signed_in:
@@ -208,11 +212,18 @@ class HostedAiMixin:
         stays where it was: somebody may already be reading. With the user's own
         key there is no allowance to fetch, so the model and the bill go in instead.
         """
-        if self._ai_service().own_key_active:
+        if self._ai_direct():
+            from quill.ui.hosted_ai_chatgpt import chatgpt_about_text
             from quill.ui.hosted_ai_own_key import own_key_about_text
 
+            service = self._ai_service()
+            added = (
+                chatgpt_about_text(service.chatgpt)
+                if self._ai_chatgpt_active()
+                else own_key_about_text(service.own_key_model)
+            )
             where = field.GetInsertionPoint()
-            field.AppendText(own_key_about_text(self._ai_service().own_key_model))
+            field.AppendText(added)
             field.SetInsertionPoint(where)
             return
         support_id = self.ai_support_id()
@@ -391,10 +402,10 @@ class HostedAiMixin:
         if not self._ai_host().feature_enabled("hosted_ai"):
             self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
             return False
-        # With the user's own key, the agreement about QUILL's servers does not
-        # apply -- nothing goes to them. The own-key window says where the text
-        # does go, and switching it on there is the consent.
-        if self._ai_service().own_key_active:
+        # With the user's own key or ChatGPT plan, the agreement about QUILL's
+        # servers does not apply -- nothing goes to them. Each route's own window
+        # says where the text does go, and switching it on there is the consent.
+        if self._ai_direct():
             return True
         if not self._ai_privacy_accepted():
             return self._ask_ai_privacy()
@@ -489,7 +500,7 @@ class HostedAiMixin:
             return
 
         service = self._ai_service()
-        if not service.own_key_active and not service.signed_in:
+        if not self._ai_direct() and not service.signed_in:
             self._announce(
                 "This computer is not connected to QUILL's free AI. "
                 "Choose Connect or Sign Out in the AI menu to connect it."

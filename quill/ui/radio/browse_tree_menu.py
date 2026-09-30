@@ -25,91 +25,14 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import row_actions
-from quill.core.radio.browse_nodes import make_id, split_id
+from quill.core.radio.browse_nodes import split_id
 from quill.core.radio.spotify_search import open_link_label
 from quill.ui.radio import browse_download_actions as downloads
 from quill.ui.radio import browse_places as places
 from quill.ui.radio import browse_transcript, source_options_menu
 from quill.ui.radio import browse_youtube_menu as yt_menu
-
-
-def _has_reminder(station: Any) -> bool:
-    """Whether this row already carries a reminder. False for anything odd.
-
-    Read here rather than passed in because it is one cheap file read and the
-    alternative is threading a store through every caller of the menu builder
-    for the sake of one boolean.
-    """
-    from quill.ui.radio import row_reminders_wiring
-
-    return row_reminders_wiring.has_reminder(station)
-
-
-def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_actions.FolderState:
-    """What is known about this folder without fetching anything."""
-    from quill.ui.radio import download_command
-
-    loaded = dialog._loaded_stations_under(node)
-    savable = [row for row in loaded if download_command.can_download(row)]
-    subscribed = False
-    unheard = library_episodes = downloaded_files = 0
-    if row_actions.is_podcast_show(kind):
-        # Only from what is already stored -- resolving the feed is a network
-        # call and belongs to the action, never to opening a menu.
-        subscribed = _known_subscribed(dialog, kind, args)
-        if subscribed and kind == "mypodcastshow":
-            # One library read answers all three menu facts (Mark All's dimmed
-            # state, Download All Episodes' count, the downloads-folder name),
-            # plus one local directory listing for Remove All Downloads.
-            from quill.core.paths import app_data_dir
-            from quill.core.radio import download_cleanup
-            from quill.core.radio.podcast_follow import show_facts_for_feed
-
-            unheard, library_episodes, title = show_facts_for_feed(
-                app_data_dir(), args[0] if args else ""
-            )
-            downloaded_files = download_cleanup.downloaded_file_count(app_data_dir(), title)
-    try:
-        expanded = bool(dialog._tree.IsExpanded(node))
-    except Exception:  # noqa: BLE001 - a menu must never fail on a widget probe
-        expanded = False
-    from quill.core.radio import browse_sources, source_options
-    from quill.core.radio.favorites import place_station
-
-    node_id = make_id(kind, *args) if args else kind
-    saved_place = bool(dialog._favorites.find(place_station(node_id, "").station_uuid) is not None)
-    return row_actions.FolderState(
-        saved_place=saved_place,
-        loaded_stations=len(loaded),
-        savable=len(savable),
-        is_podcast_show=row_actions.is_podcast_show(kind),
-        subscribed=subscribed,
-        is_followed_channel=row_actions.is_followed_channel(kind),
-        expanded=expanded,
-        # A root branch's id IS its source id (no args); only those rows can
-        # be hidden in place.
-        root_source=not args and any(kind == nid for nid, _ in browse_sources.ROOT_SOURCES),
-        has_options=not args and bool(source_options.options_for(kind)),
-        unheard=unheard,
-        library_episodes=library_episodes,
-        downloaded_files=downloaded_files,
-    )
-
-
-def _known_subscribed(dialog: Any, kind: str, args: list[str]) -> bool:
-    """Whether this show's feed is already followed, if we know it offline."""
-    if kind == "mypodcastshow":
-        # The node id carries the feed itself -- no cache, no directory.
-        feed = args[0] if args else ""
-    else:
-        cache = getattr(dialog, "_apple_feed_cache", None)
-        feed = (cache or {}).get(args[0] if args else "")
-    if not feed:
-        return False
-    from quill.core.paths import app_data_dir
-    from quill.core.radio.podcast_follow import is_followed
-
-    return is_followed(app_data_dir(), feed)
+from quill.ui.radio.browse_row_state import folder_state as _folder_state
+from quill.ui.radio.browse_row_state import has_reminder as _has_reminder
 
 
 def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) -> dict:
@@ -201,6 +124,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         dialog, args
     )
     handlers[row_actions.MARK_ALL_PLAYED] = lambda: podcast_acts.mark_all_played(dialog, args)
+    handlers[row_actions.TOGGLE_ALERT] = lambda: podcast_acts.toggle_alert(dialog, args)
     handlers[row_actions.IMPORT_OPML] = lambda: podcast_acts.import_opml(dialog)
     handlers[row_actions.EXPORT_OPML] = lambda: podcast_acts.export_opml(dialog)
     handlers[row_actions.REFRESH_ALL_PODCASTS] = lambda: podcast_acts.refresh_all_feeds(dialog)

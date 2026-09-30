@@ -25900,6 +25900,27 @@ are in</td>
 <td>Privacy Agreement…</td>
 <td>Read what is sent, and accept or withdraw</td>
 </tr>
+<tr>
+<td><strong>Alt+F2</strong></td>
+<td>Use My Own OpenAI Key…</td>
+<td>Every limit lifted, billed to your OpenAI account</td>
+</tr>
+<tr>
+<td><strong>Alt+F5</strong></td>
+<td>Use My ChatGPT Subscription…</td>
+<td>Every AI command on the ChatGPT plan you already pay for</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F5</strong></td>
+<td>Ask About an Image…</td>
+<td>A picture described, on your ChatGPT subscription</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F3</strong></td>
+<td>Tidy Dictated Text…</td>
+<td>Dictation’s misheard words and punctuation corrected, nothing else
+changed</td>
+</tr>
 </tbody>
 </table>
 <p>These are the same five commands as QUILL Lite’s — one feature,
@@ -26182,6 +26203,55 @@ both.</p>
 code <code>QUILL-AI-OWN-KEY-FAILED</code>. The usual causes are a
 mistyped key, a model your account cannot use, or an OpenAI account with
 no credit. <strong>Test the Key</strong> tells you which.</p>
+<h3 id="using-your-chatgpt-subscription-no-key-no-bill">Using your
+ChatGPT subscription: no key, no bill</h3>
+<p>If you already pay for ChatGPT, <strong>AI ▸ Use My ChatGPT
+Subscription</strong> (<strong>Alt+F5</strong>) runs every free-AI
+command on that plan instead. Press <strong>Continue with
+ChatGPT</strong>: your browser opens on OpenAI’s own sign-in page, you
+allow “QUILL” to use your plan, and you come back signed in. From then
+on the pad, the seventeen writing tools, Ask About This Document and
+conversations go straight from this computer to OpenAI on your plan – no
+monthly allowance, no size limit, no per-request bill, nothing through
+QUILL’s servers.</p>
+<p>Once signed in the window offers the <strong>Model</strong> list
+(your plan’s own, read from your account; the first is chosen for you
+and another is saved as you arrow to it), <strong>Allow web
+search</strong> (off until you check it; on, the model may search the
+web through OpenAI to answer a question), <strong>Open ChatGPT
+Usage</strong> (the plan’s own page, where its limits and what is left
+are shown), <strong>Sign Out</strong> (two presses; asks OpenAI to
+revoke QUILL’s sign-in and forgets it here) and <strong>Forget on This
+Computer</strong> (forgets it here only). Sign Out and Forget exist only
+while you are signed in.</p>
+<p>A sign-in is used ahead of a saved OpenAI key – the plan is already
+paid for where a key is billed per request – and it needs neither the
+free service’s connection nor its agreement, which is about QUILL’s
+servers. Only a refresh token is kept, in Windows’ credential store,
+under QUILL’s own name; each QUILL app (QUILL, QUILL Lite, Quill Radio)
+signs in as itself and appears as itself under Apps in ChatGPT’s
+settings. <strong>Usage</strong> opens this window on a plan, and About
+names the account and the model. Failures carry a code:
+<code>QUILL-AI-CHATGPT-SIGNED-OUT</code> (sign in again),
+<code>-LIMIT</code> (the plan’s usage for now),
+<code>-UNAVAILABLE</code>, <code>-SIGNIN</code> or <code>-FAILED</code>,
+each with its next step.</p>
+<p><strong>Ask About an Image</strong> (<strong>Ctrl+F5</strong>) is the
+one AI command that takes a file: choose a JPEG, PNG, WebP or GIF, ask a
+question or none, and hear what the model sees – a description written
+for a blind reader, with any text in the picture transcribed exactly.
+The answer opens in an Image Description window with Insert Below, Copy,
+and Ctrl+Z to take an insert back. It needs the ChatGPT subscription;
+with no sign-in it says so and opens the account window.</p>
+<p><strong>Tidy Dictated Text</strong> (<strong>Ctrl+F3</strong>) is
+dictation’s AI. The selection, else the paragraph at the cursor, goes to
+the model with an instruction to correct what speech recognition
+misheard – sound-alike words, names, words run together, punctuation,
+capitalisation, fillers and false starts – and change nothing else. The
+Tidied Dictation window offers Replace My Selection, and Ctrl+Z takes it
+back as one step. It runs on a ChatGPT subscription or your own OpenAI
+key, never on the free allowance; with neither it says so and opens the
+account window.</p>
 <h3 id="basic-and-advanced--the-short-menu-and-the-long-one">Basic and
 Advanced — the short menu and the long one</h3>
 <p>The AI menu opens <strong>Basic</strong>: the five free-AI rows

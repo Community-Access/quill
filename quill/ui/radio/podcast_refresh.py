@@ -358,6 +358,7 @@ def _raise_alerts(found: list[FeedCheck]) -> None:
     check is an alarm, not information. Never raises -- a check that found
     episodes has already done the useful part.
     """
+    from quill.core import notification_targets
     from quill.core.notifications import add_notice
     from quill.core.podcasts import episode_alerts
 
@@ -371,7 +372,10 @@ def _raise_alerts(found: list[FeedCheck]) -> None:
                 app="Quill Radio",
                 title=f"{count} new {plural}",
                 body=title,
-                target=show_id,
+                # Prefixed, so Enter on the row knows it has a podcast and
+                # not a station. Bare ids written before 3.1.0 shipped still
+                # read as shows -- see notification_targets.parse.
+                target=notification_targets.for_show(show_id),
             )
         except Exception:  # noqa: BLE001 - the episodes still arrived
             logger.debug("Could not record a new-episode notice", exc_info=True)

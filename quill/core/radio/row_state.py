@@ -56,3 +56,8 @@ class FolderState:
     #: This branch is already saved in Favorites as a place (a show, a book, a
     #: channel), so the menu offers to remove it rather than to add it again.
     saved_place: bool = False
+    #: New episodes of this subscribed show currently interrupt -- a desktop
+    #: notification and the sound -- resolved through the whole settings chain
+    #: (a local read). Only decides which way the row's one alert toggle
+    #: points; the three-way choice stays in settings.
+    alerts_on: bool = False

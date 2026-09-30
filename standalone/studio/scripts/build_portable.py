@@ -137,7 +137,15 @@ PRODUCTS: dict[str, Product] = {
         # "youtube": the installer bundles yt-dlp (quill-radio.spec), so the
         # portable copy does too -- a first YouTube link must not need a pip
         # download, which also wrote pip's cache to the host computer.
-        dep_groups=("ui", "speech", "youtube"),
+        # "windows-media" (2026-09-29): the pywinrt wheels behind the modern
+        # Windows Media engine and the now-playing card. The shared runtime
+        # froze them in from the start, so an INSTALLED Radio had the engine
+        # and its Output Device routing; the portable never listed the group,
+        # so a stick copy silently fell back to the classic control, offered
+        # "Windows Media (classic)" in Preferences and could not change the
+        # sound card (Jeff, from a fresh 3.1.0 portable). Everything ships in
+        # both downloads, or it is not shipped.
+        dep_groups=("ui", "speech", "youtube", "windows-media"),
         stage_engines=False,   # radio streams/records; no bundled speech engines
         stage_ffmpeg=True,     # podcast/stream recording
         stage_mpv=True,        # playback engine
@@ -213,7 +221,9 @@ PRODUCTS: dict[str, Product] = {
         display="QUILL for All",
         zip_name="QUILL-for-All-Portable-{ver}.zip",
         # The full editor: the complete bundled dependency set QUILL ships.
-        dep_groups=("ui", "spellcheck", "ocr", "speech", "github"),
+        # "windows-media" for the same reason as Radio's: QUILL plays podcasts
+        # and casts through the same engines.
+        dep_groups=("ui", "spellcheck", "ocr", "speech", "github", "windows-media"),
         # Engines download on demand (QUILL's standard portable); the fully
         # offline variant is the separate --bundle-offline Offline Edition.
         stage_engines=False,
