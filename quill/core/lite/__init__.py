@@ -42,7 +42,16 @@ APP_ID = "QuillLite"
 #: QUILL Lite versions with the QUILL family rather than with QUILL itself
 #: (``quill.__version__``): it ships its own installers and its own release
 #: notes, exactly as Radio, Cast, Weather, Studio and Inkwell do.
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.1.1"
+
+
+def version_label() -> str:
+    """The version About and support messages show: the installer's, not the
+    shared runtime's (quill.core.app_version explains the 2026-09-29 mix-up)."""
+    from quill.core.app_version import describe_version
+
+    return describe_version(APP_VERSION)
+
 
 #: Where QUILL Lite's own releases live, and the basename every one of its
 #: release assets starts with (``QuillLite-Setup-Shared-1.0.0.exe``,
@@ -54,4 +63,11 @@ APP_VERSION = "1.1.0"
 RELEASE_REPO = "Community-Access/quill"
 RELEASE_ASSET_PREFIX = "QuillLite"
 
-__all__ = ["APP_ID", "APP_NAME", "APP_VERSION", "RELEASE_ASSET_PREFIX", "RELEASE_REPO"]
+__all__ = [
+    "APP_ID",
+    "APP_NAME",
+    "APP_VERSION",
+    "RELEASE_ASSET_PREFIX",
+    "RELEASE_REPO",
+    "version_label",
+]

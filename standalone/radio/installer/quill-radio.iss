@@ -34,7 +34,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "3.1.0"
+  #define AppVersion "3.0.4"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"
@@ -77,7 +77,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=3.1.0.0
+VersionInfoVersion=3.0.4.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible internet radio (shared runtime)
 DefaultDirName={autopf}\{#AppName}
@@ -133,6 +133,13 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 Name: "runtime"; Description: "Shared QuillVille runtime (Python) -- installed once, reused by every QuillVille app"; Types: full compact custom; Flags: fixed
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
 Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
+
+[INI]
+; The version THIS installer installed, read by quill.core.app_version for
+; Check for Updates and About. The shared runtime carries every app's code, so
+; the code's own constant says which runtime is here, not which app installer
+; ran -- on 2026-09-29 a Radio runtime made QUILL Lite 1.0.0 call itself 1.1.0.
+Filename: "{app}\quill-app-version.ini"; Section: "app"; Key: "version"; String: "{#AppVersion}"
 
 [Files]
 ; Radio's own payload is tiny: just its icon, the per-app C launcher

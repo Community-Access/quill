@@ -1,5 +1,13 @@
 # QUILL Lite 1.1 — What's New
 
+*Version 1.1.1, released September 30, 2026. It is 1.1.0 with one thing
+changed: the version number. If Help ▸ About said 1.1.0 but Tools ▸ AI had no
+ChatGPT rows, that was a runtime from Quill Radio 3.0.3 or 3.0.4 announcing a
+number ahead of the code, and Check for Updates believed it. 1.1.1 is newer
+than any number a runtime could have claimed, so Check for Updates offers it
+everywhere. The changelog has the full story and the gate that stops it
+recurring.*
+
 Five things are new in 1.1, and the first is the one to read: AI help now runs
 on the ChatGPT plan you already pay for, and with it comes the first time QUILL
 Lite can describe a picture or look something up on the web.

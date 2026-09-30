@@ -40,13 +40,14 @@ param(
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipSharedRuntime,
+    [switch]$SkipPublishedCheck,
     [switch]$SkipCatalog,
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "3.1.0"
+$version = "3.0.4"
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run by setting QUILL_SIGN=1, which the shared signer
@@ -66,6 +67,10 @@ if (-not $QuillRepo) {
 $QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
 $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
+
+# GATE-SIBVER (2026-09-30): the runtime this build ships carries every app's
+# version constant, so no sibling may be ahead of its published release here.
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("radio") -Skip:$SkipPublishedCheck
 
 # -- station catalog seed (the whole directory, shipped) ----------------------
 # Builds quill\data\radio-catalog\seed.db.xz from the live directories with a

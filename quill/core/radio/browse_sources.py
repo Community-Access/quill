@@ -119,7 +119,7 @@ from quill.core.radio.browse_failure import (
 from quill.core.radio.browse_failure import (
     remember_failure as _remember_failure,
 )
-from quill.core.radio.browse_flat import FLAT
+from quill.core.radio.browse_flat import FLAT, LOCAL_SOURCES
 
 # The free-music catalogs -- Audius, Mixcloud, ccMixter -- live in their own
 # module (GATE-11 extraction); registered in _HANDLERS like every other source.
@@ -229,6 +229,9 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("rbcodec", "By Quality"),
     ("wx", "Weather / NOAA"),
     ("acb", "ACB Media"),
+    # Directly under ACB Media, by Jeff's placement (2026-09-29): the blind
+    # tech show's own round-the-clock channel, for exactly this audience.
+    ("doubletap", "Double Tap Live"),
     ("nfb", "NFB Radio"),
     ("reading", "Radio Reading Services"),
     ("westwood", "Westwood One Sports"),
@@ -256,20 +259,6 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("youtube", "YouTube"),
     ("wikidata", "Explore (Wikidata)"),
 )
-
-#: Branches that work with no network at all, so Safe Mode leaves them alone.
-LOCAL_SOURCES = frozenset({
-    "favorites",
-    "acb",
-    "nfb",
-    "westwood",
-    "networks",
-    "networkgroup",
-    # The lists themselves are local; only opening one reaches the network.
-    "myservers",
-    "youtube",
-})
-
 
 # --- flat station sources -----------------------------------------------------
 
