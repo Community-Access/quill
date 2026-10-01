@@ -5757,7 +5757,7 @@ allowance, no 2,250-word ceiling, no smaller first 48 hours.
 3. **Model** — a list of every model your key can use for text, filled
    from your OpenAI account once the key is checked: **Luna 6 first, then the
    other GPT-6 models**, then the rest by name. Each row says roughly what it
-   costs (`ai_own_key_model` holds your choice), for example "gpt-6-luna, about $0.57 per 100 requests (estimate)", so
+   costs (`ai_own_key_model` holds your choice; `ai_own_key_provider` holds your provider), for example "gpt-6-luna, about $0.57 per 100 requests (estimate)", so
    arrowing down the list is enough to compare them. Models that cannot answer
    text — speech, transcription, images, embeddings — are left out.
 4. **Cost estimate** — the chosen model's estimate per request and per 100

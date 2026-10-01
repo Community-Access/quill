@@ -11,6 +11,7 @@
   "ai_chat_default_model": "documented",
   "ai_chat_default_provider": "documented",
   "ai_own_key_model": "documented",
+  "ai_own_key_provider": "documented",
   "ai_privacy_accepted_version": "documented",
   "ai_prompt_default_model": "documented",
   "ai_tts_model": "grandfathered",
