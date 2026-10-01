@@ -27,7 +27,9 @@ def test_menu_bar_present_with_named_menus(quill_app) -> None:
         bars = quill_app.main_window.descendants(control_type="MenuBar")
         if bars:
             all_names = [[item.window_text() for item in bar.items()] for bar in bars]
-            app_menus = next((names for names in all_names if any("File" in n for n in names)), None)
+            app_menus = next(
+                (names for names in all_names if any("File" in n for n in names)), None
+            )
             if app_menus:
                 break
         time.sleep(0.25)
