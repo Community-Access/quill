@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.9.0.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>The Quill family F1 help reference</title>
+  <title>QUILL F1 Help Reference</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,6 +41,7 @@
       body {
         background-color: transparent;
         color: black;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -155,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -889,7 +886,7 @@ station’s remembered level.</li>
 is playing has chapters, and runs the same command as its key.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 225 audited sites (63 helped, 162 named-help).</p>
+<p>Control coverage: 225 audited sites (64 helped, 161 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -2841,7 +2838,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 92 audited sites (92 helped).</p>
+<p>Control coverage: 93 audited sites (93 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -3374,30 +3371,22 @@ opens in its own window.</li>
 <ul>
 <li><code>about</code>: Where your text goes with your own key. Read
 with the arrow keys.</li>
-<li><code>self.key</code>: Paste your OpenAI API key. It starts with
-sk-. It is stored securely and never shown again; leave this empty to
-keep the key already saved.</li>
-<li><code>self.model</code>: Which OpenAI model answers, with an
-estimate of what each might cost. Every model your key can use for text
-is listed once the key is checked, Luna 6 and GPT-6 models first. You
-can change it here at any time.</li>
+<li><code>self.provider_choice</code>: Choose between Google Gemini and
+OpenAI.</li>
+<li><code>self.key</code>: Paste your API key. It is stored securely and
+never shown again; leave empty to keep the existing saved or environment
+key.</li>
+<li><code>self.model</code>: Which model answers, with an estimate of
+what each might cost. Every model your key can use for text is listed
+once checked.</li>
 <li><code>self.cost</code>: What the chosen model might cost for a
-typical request, and where OpenAI’s real prices are. An estimate, not
-OpenAI’s price.</li>
+typical request, and where real prices are.</li>
 <li><code>self.status</code>: What the last test said, or whether a key
-is saved.</li>
-<li><code>test</code>: Checks the key with OpenAI, lists every model it
-can use, then sends one tiny request to the chosen model and says
-whether it answered. The request costs a fraction of a cent on your
-account.</li>
-<li><code>self.remove</code>: Forgets the saved OpenAI key now, and puts
-AI help back on QUILL’s free service with its free allowance.</li>
-</ul>
-<h4 id="ownkeyusageframe-quilluihosted_ai_own_keypy">OwnKeyUsageFrame
-(<code>quill/ui/hosted_ai_own_key.py</code>)</h4>
-<ul>
-<li><code>usage</code>: Opens your OpenAI account’s usage page in your
-browser, where your requests and charges are.</li>
+is configured.</li>
+<li><code>test</code>: Checks the key with the provider, lists every
+usable model, then sends one tiny request to verify the connection.</li>
+<li><code>self.remove</code>: Forgets the saved key now, and puts AI
+help back on QUILL’s free service.</li>
 </ul>
 <h4 id="airesultframe-quilluihosted_ai_padpy">AiResultFrame
 (<code>quill/ui/hosted_ai_pad.py</code>)</h4>
