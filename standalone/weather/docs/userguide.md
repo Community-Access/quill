@@ -7,6 +7,12 @@ are the same ones documented in the Quill Radio User Guide's Weather section
 
 ## Starting the app
 
+The next maintenance update adds **Find a setting** to Weather Settings. Type
+a term from a setting's label or help, press Down for matches, and Enter to focus
+a setting. Control+F returns to search; Escape clears a search before closing.
+Search does not alter values or save the dialog. Its ordinary OK/Cancel behavior
+is unchanged.
+
 Launch **Quill Weather** from the Start Menu, or run `QuillWeather.exe` from the
 portable folder. On first run there is no saved location yet, so choose
 **Weather menu > Add Location...** (or the **Add Location...** button) and search

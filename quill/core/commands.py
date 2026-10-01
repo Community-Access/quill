@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -18,11 +19,19 @@ class Command:
 
 
 class CommandRegistry:
+    """A registry confined to its creating thread (the UI thread in apps).
+
+    Workers prepare extension metadata without accessing this object. Marshal
+    registration, palette/menu reads, and dispatch back to the owning thread.
+    List results contain immutable Command values and can be passed to workers.
+    """
+
     #: Upper bound on a single armed repeat count, so a typo (or a runaway
     #: macro) can never spin the editor for an unbounded number of iterations.
     MAX_REPEAT = 1000
 
     def __init__(self) -> None:
+        self._owner_thread = threading.current_thread()
         self._commands: dict[str, Command] = {}
         self._on_run: Callable[[str], None] | None = None
         self._pending_repeat = 1
@@ -40,6 +49,10 @@ class CommandRegistry:
         #: before the user ever tries to run the command.
         self._availability_probe: Callable[[str], str] | None = None
 
+    def _require_owner_thread(self) -> None:
+        if threading.current_thread() is not self._owner_thread:
+            raise RuntimeError("CommandRegistry must be accessed on its creating thread")
+
     def register(
         self,
         command_id: str,
@@ -48,6 +61,7 @@ class CommandRegistry:
         keybinding: str | None = None,
         feature_id: str | None = None,
     ) -> None:
+        self._require_owner_thread()
         if command_id in self._commands:
             raise ValueError(f"Duplicate command: {command_id}")
         self._commands[command_id] = Command(
@@ -72,6 +86,7 @@ class CommandRegistry:
         extension on startup) can use this to detect collisions without
         having to catch ValueError.
         """
+        self._require_owner_thread()
         if command_id in self._commands:
             return False
         self.register(
@@ -96,6 +111,7 @@ class CommandRegistry:
         Use sparingly: callers replacing built-in commands are responsible
         for the resulting keyboard-binding and feature-catalog visibility.
         """
+        self._require_owner_thread()
         self._commands[command_id] = Command(
             id=command_id,
             title=title,
@@ -119,6 +135,7 @@ class CommandRegistry:
         """
         import dataclasses
 
+        self._require_owner_thread()
         existing = self._commands.get(command_id)
         if existing is None:
             return False
@@ -133,31 +150,37 @@ class CommandRegistry:
         consumed by the next eligible :meth:`run` (commands marked
         non-repeatable, such as the arming command itself, reset it to 1).
         """
+        self._require_owner_thread()
         self._pending_repeat = max(1, min(int(count), self.MAX_REPEAT))
 
     @property
     def pending_repeat(self) -> int:
+        self._require_owner_thread()
         return self._pending_repeat
 
     def register_non_repeatable(self, command_id: str) -> None:
         """Mark *command_id* so an armed repeat count never multiplies it."""
+        self._require_owner_thread()
         self._non_repeatable.add(command_id)
 
     def set_run_gate(self, gate: Callable[[str], bool] | None) -> None:
         """Install (or clear) the dispatch gate consulted by :meth:`run`."""
+        self._require_owner_thread()
         self._run_gate = gate
 
     def set_availability_probe(self, probe: Callable[[str], str] | None) -> None:
         """Install (or clear) the side-effect-free unavailability-reason probe."""
+        self._require_owner_thread()
         self._availability_probe = probe
 
     def unavailable_reason(self, command_id: str) -> str:
         """Why *command_id* cannot run right now, as a user-facing sentence.
 
         Returns "" when the command is runnable, unknown, or no probe is
-        installed. Never raises: an availability question must not itself
-        become an error.
+        installed. Probe failures are suppressed. Like every registry method,
+        this must be called on the creating thread.
         """
+        self._require_owner_thread()
         if self._availability_probe is None or command_id not in self._commands:
             return ""
         try:
@@ -166,6 +189,7 @@ class CommandRegistry:
             return ""
 
     def run(self, command_id: str) -> None:
+        self._require_owner_thread()
         command = self._commands.get(command_id)
         if command is None:
             raise KeyError(f"Unknown command: {command_id}")
@@ -184,12 +208,15 @@ class CommandRegistry:
             command.handler()
 
     def get(self, command_id: str) -> Command | None:
+        self._require_owner_thread()
         return self._commands.get(command_id)
 
     def set_run_listener(self, listener: Callable[[str], None] | None) -> None:
+        self._require_owner_thread()
         self._on_run = listener
 
     def list(self, feature_manager: object | None = None) -> list[Command]:
+        self._require_owner_thread()
         commands = list(self._commands.values())
         if feature_manager is not None:
             is_visible = getattr(feature_manager, "is_visible", None)
@@ -198,6 +225,7 @@ class CommandRegistry:
         return sorted(commands, key=lambda item: item.title.lower())
 
     def keybinding_for(self, command_id: str) -> str | None:
+        self._require_owner_thread()
         command = self._commands.get(command_id)
         if command is None:
             return None

@@ -11,6 +11,24 @@ Target screen readers: NVDA (primary), JAWS, Narrator
 UI framework: wxPython (wxWidgets 3.2 or newer)
 Language: Python 3.12 or newer
 
+### Command ownership and Preferences search (2026-09-30)
+
+`CommandRegistry` is confined to its creating thread, which is the UI thread in
+the apps. Registration, mutation, state reads, and dispatch check ownership
+before side effects. Workers prepare metadata and marshal registry operations
+back to the owner; immutable `Command` snapshots may travel to workers. The
+registry remains wx-free and does not add locks around UI handlers.
+
+Native Preferences and Settings surfaces use the shared `preferences_search`
+navigator through the modal/modeless show contracts. Search indexes labels,
+accessible names, and help text, not field values. Enter focuses a matching
+control without changing or saving it; Control+F returns to search; Escape
+clears a query before closing. Hidden book pages are revealed. Beacon's local
+dialog setup installs the same navigator for its custom section panels.
+The hub indexes its category controls, not unopened nested dialogs or web forms.
+Converter, Player, and Inkwell still need unified Preferences entry points;
+family-wide completion and manual screen-reader acceptance are not claimed.
+
 ### Shared task lifetime contract (2026-09-30)
 
 `TaskManager.shutdown()` invalidates UI delivery before shutting down the

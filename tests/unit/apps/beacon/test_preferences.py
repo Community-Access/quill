@@ -45,6 +45,32 @@ def test_preferences_dialog_has_sections(frame):
         dlg.Destroy()
 
 
+def test_preferences_search_reveals_sync_without_applying(frame):
+    from quill.apps.beacon.dialogs import PreferencesDialog
+
+    dialog = PreferencesDialog(frame, frame)
+    try:
+        search = dialog._quill_preferences_search
+        dialog.Show()
+        wx.GetApp().Yield()
+        search.search.SetValue("auto sync")
+        wx.GetApp().Yield()
+        assert any(target.control is dialog.auto_sync for target in search.matches)
+        index = next(
+            index
+            for index, target in enumerate(search.matches)
+            if target.control is dialog.auto_sync
+        )
+        search.results.SetSelection(index)
+        search._on_choose(None)
+        wx.GetApp().Yield()
+        assert dialog.sections.GetStringSelection() == "Sync"
+        assert wx.Window.FindFocus() is dialog.auto_sync
+        assert dialog.result() is None
+    finally:
+        dialog.Destroy()
+
+
 def test_preferences_apply_changes_a11y_and_autosync(frame):
     from quill.apps.beacon.dialogs import PreferencesDialog
 

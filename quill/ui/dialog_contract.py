@@ -367,6 +367,9 @@ def show_modal_dialog(
     exit_region: Callable[[str], None] | None = None,
 ) -> int:
     """Show a modal dialog with optional region and announcement hooks."""
+    from quill.ui.preferences_search import install_preferences_search
+
+    settings_search = install_preferences_search(dialog, announce=announce)
     _install_context_help(dialog)
     # macOS VoiceOver announces a control only by its own accessible name;
     # the neighbouring StaticText that Windows screen readers use is not
@@ -385,6 +388,8 @@ def show_modal_dialog(
     try:
         result = dialog.ShowModal()
     finally:
+        if settings_search is not None:
+            settings_search.close()
         if speak_transitions:
             announce(f"Exited {label} dialog")
         if exit_region is not None:
@@ -411,6 +416,9 @@ def show_modeless_surface(
     unregister + raising the previous window) belongs in the frame's own
     ``EVT_CLOSE`` handler, since teardown is event-driven, not inline.
     """
+    from quill.ui.preferences_search import install_preferences_search
+
+    install_preferences_search(frame, announce=announce)
     try:
         ensure_accessible_names(frame)
     except Exception:  # noqa: BLE001 - a naming failure must never block the window

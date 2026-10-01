@@ -2,6 +2,14 @@
 
 Version 1.0
 
+## Upcoming Preferences Search
+
+Preferences gains **Find a setting** in the next maintenance update. Type a
+term from a setting's label or help, press Down for matching settings, then Enter
+to focus one. Control+F returns to search; Escape clears a search before closing.
+Search navigates only: OK still saves, Cancel still cancels, and values are not
+indexed. Disabled settings stay disabled.
+
 QUILL Cast is podcasts the way a screen reader user would design them: a small window whose library tree has focus the instant it opens, a Podcast Manager built entirely for the keyboard, spoken feedback for every action, and a tray icon so playback continues while you work.
 
 ## Getting started

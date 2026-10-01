@@ -266,6 +266,13 @@ that adding an app and changing the editor stayed separate decisions.
 Both decisions were taken; the fix ships with this release and reaches
 every QUILL user, not only QUILL Lite’s.</p>
 <h2 id="2-architecture">2. Architecture</h2>
+<p>Native Preferences search uses the shared
+<code>preferences_search</code> navigator, installed by the dialog
+contract. It indexes labels, accessible names, and help text, never
+field values; results focus existing controls without accepting the
+dialog or mutating settings. Control+F returns to search, Enter
+navigates, and Escape clears a query before closing. Disabled controls
+retain their state.</p>
 <p>Activation repair is bounded to an event-loop check and one 75 ms
 settling check. Every activation/deactivation changes a generation, so
 old callbacks cannot affect a new activation. Repair acts only on

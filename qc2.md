@@ -75,7 +75,6 @@ family grows.
 | F-04 | P1 | Acceptance remaining | Lite focus | Bounded generation-guarded activation repair and live wx control tests are implemented. Manual Alt+Tab/screen-reader acceptance and reuse as a family helper remain. |
 | F-05 | P1 | Confirmed | Lite performance | `DocumentFrame.load()` reads and decodes plain and rich files synchronously on the UI path. A size warning does not make the actual read non-blocking. |
 | F-06 | P1 | Confirmed | Shutdown | Radio and Cast intentionally swallow most teardown and final-save exceptions. This protects exit, but it also hides cleanup failures and can make the next session inherit stale or incomplete state. |
-| F-07 | P2 | Confirmed | Core dispatch | `CommandRegistry` uses plain mutable dictionaries and sets without a declared UI-thread-only registration rule or synchronization. |
 | F-08 | P2 | Confirmed | Maintainability | `quill/ui/main_frame.py` is still about 19,254 lines, with Radio at about 2,295 lines and Cast at about 939 lines. The extraction direction is right, but the remaining ownership surface is too large for safe change. |
 | F-09 | P2 | Recommendation | Cast performance | The planned whole-library search, transcript search, feed refresh, and download state need an incremental index and bounded background work before they become a UI scan. |
 | F-10 | P2 | Recommendation | Cross-app UX | QUILL has shared mechanisms for announcements, help, dialogs, menus, and trays, but not one shared operation/result/activity model. Similar actions can still explain success, failure, and progress differently. |
@@ -301,32 +300,6 @@ credentials in that diagnostic record.
 **Tests:** inject failures into each class, assert that close still completes,
 assert that required failure state is retained, and verify the next-launch
 message is spoken once and is reviewable later.
-
-### F-07. Command registration needs an explicit thread contract
-
-**Evidence:** `quill/core/commands.py::CommandRegistry` stores commands in plain
-mutable dictionaries and sets. `register`, `replace`, `list`, and `run` do not
-synchronize or assert an owning thread.
-
-**Impact:** this is safe if registration and dispatch are UI-thread-only. It is
-not safe as a future-facing contract if Quillins, plugin discovery, or a worker
-can register while the palette, menu builder, or key handler is reading. A
-registry race can produce missing commands, duplicate checks that pass twice,
-or a menu snapshot that disagrees with dispatch.
-
-**Fix shape:** choose and document one model:
-
-- preferred for the current app: registration is complete on the UI thread and
-  all later mutations are marshalled there; assert this in development/tests;
-- or, if background registration is a requirement: use a lock and immutable
-  snapshots for reads, then notify surfaces to rebuild on the UI thread.
-
-Do not add a lock without deciding how menu and palette snapshots become
-consistent. The user-visible contract is more important than the primitive.
-
-**Tests:** concurrent registration/listing if background registration is
-supported, otherwise a thread-affinity assertion and a Quillin registration
-smoke test.
 
 ### F-08. The largest modules still hide ownership boundaries
 
@@ -864,7 +837,6 @@ release guarantee exists.
 3. Introduce the progress model with cancellation and owner invalidation.
 4. Introduce the focus-memory helper.
 5. Standardize repeat-last-important-announcement and details-on-demand.
-6. Decide and enforce the CommandRegistry thread-affinity model.
 
 ### Stage 3: apply the contracts to each app
 
@@ -888,7 +860,10 @@ release guarantee exists.
 
 ### Stage 5: product delight after reliability
 
-1. Searchable settings and task recipes.
+1. Finish searchable settings coverage: unified Preferences entry points for
+  Converter, Player, and Inkwell; accessible web forms; manual screen-reader
+  acceptance. Native existing Preferences search is implemented. Task recipes
+  remain unimplemented.
 2. Focus, review, and session profiles built from existing settings.
 3. Richer queue and activity views.
 4. Better first-run guidance with skippable task paths.

@@ -2610,6 +2610,13 @@ waiting for a restart. QUILL has the same window on the same key.
 
 ## Settings
 
+In the next maintenance update, **Find a setting** searches the Preferences
+labels, accessible names, and help text. Type a term, press Down to reach
+Matching settings, then Enter on a result to focus its control. **Ctrl+F**
+returns to search. Enter here navigates rather than saving; Escape clears a
+nonempty search before closing. Search never reads field values or changes a
+setting for you. The existing OK and Cancel actions still apply.
+
 **Tools ▸ Preferences** (**Ctrl+,**) is one window, one long column of
 controls, and an **OK** and a **Cancel** at the bottom. Tab moves down it,
 Shift+Tab moves back up, **F1** on anything reads what that one control does,

@@ -12,23 +12,12 @@ import wx
 
 from quill.apps.beacon.model import ALL_TYPES
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.preferences_search import install_preferences_context_help as _context_help
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
     """Set the accessible name wx exposes to platform accessibility APIs."""
     ctrl.SetName(name)
-
-
-def _context_help(dlg: wx.Dialog) -> None:
-    """Bind F1 on *dlg* to the family context-help engine (GATE-BEACON-HELP).
-
-    Beacon shows its dialogs with a bare ``ShowModal()`` rather than the
-    dialog contract's show paths (which bind F1 themselves), so each dialog
-    binds the hook here, right after ``apply_modal_ids``.
-    """
-    from quill.ui.app_context_help import install
-
-    install(dlg)
 
 
 class QuickCaptureDialog(wx.Dialog):

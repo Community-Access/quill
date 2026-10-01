@@ -32,6 +32,12 @@ and reaches every QUILL user, not only QUILL Lite's.
 
 ## 2. Architecture
 
+Native Preferences search uses the shared `preferences_search` navigator,
+installed by the dialog contract. It indexes labels, accessible names, and help
+text, never field values; results focus existing controls without accepting the
+dialog or mutating settings. Control+F returns to search, Enter navigates, and
+Escape clears a query before closing. Disabled controls retain their state.
+
 Activation repair is bounded to an event-loop check and one 75 ms settling
 check. Every activation/deactivation changes a generation, so old callbacks
 cannot affect a new activation. Repair acts only on shell/MDI containers or

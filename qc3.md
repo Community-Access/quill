@@ -2,6 +2,36 @@
 
 ## 2026-09-30
 
+- Beacon's existing context-help onboarding was extracted into the shared
+  Preferences search module to preserve the dialog module's 3166-line budget.
+  The budget was not raised. The 12 focused search/Beacon tests passed again.
+  Radio's pre-existing mixed-ownership user-guide changes and regenerated
+  copies remain outside the isolated search/registry commit.
+- Full-worktree banned-pattern gate passed after native search integration.
+  Final scoped Ruff checks passed. The first dialog inventory/hardening run
+  timed out during repository source scanning, without a mismatch result.
+  The rerun with a 300-second per-test limit passed all 7 registry/hardening
+  tests; the source scan took 37 seconds, exceeding the default timeout.
+  Only the existing unrelated invalid-escape warning was reported.
+- Completed QC2 F-07: CommandRegistry checks its creating-thread ownership at
+  every public state/dispatch boundary. Worker calls fail before side effects;
+  immutable snapshots can travel to workers. The core remains wx-free.
+- Validation: 77 registry and Quillin unit/integration tests passed; strict mypy
+  on `quill/core/commands.py` reported success. Removed F-07 from remaining work.
+- Implemented shared native Preferences/Settings search using existing dialog
+  controls and the modal/modeless show contracts; Beacon's local setup installs
+  the same helper. Labels, accessible names, and help are indexed, not values.
+  Enter navigates without saving; Ctrl+F returns to search; Escape clears first;
+  hidden book/Beacon pages are revealed; disabled controls remain disabled.
+- Validation: 67 broader Preferences/dialog/Beacon tests passed, followed by
+  29 search/dialog tests after modeless onboarding. Live tests cover Lite's real
+  constructed dialog, companion controls, and Beacon's hidden Sync panel.
+- Full all-app search is NOT complete: Converter, Player, and Inkwell lack a
+  unified Preferences entry point; web forms and unopened nested dialogs are not
+  indexed. Those gaps and manual screen-reader acceptance remain in QC2 and
+  `docs/preferences-search.md`. No release or all-app completion claim is made.
+- Focus repair committed as `53406c3`. Settings and focus manual screen-reader
+  listening remain outstanding. QC2 now has 10 major findings, several partial.
 - Added bounded Lite activation settling (QC2 F-04 implementation): two checks
   at most, invalidated by later activation/deactivation, with menu, visibility,
   shutdown, and intentional-control guards. Focus changes are not announced.

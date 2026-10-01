@@ -1,3 +1,5 @@
+from concurrent.futures import ThreadPoolExecutor
+
 import pytest
 
 from quill.core.commands import CommandRegistry
@@ -13,6 +15,57 @@ def test_command_registry_runs_registered_command() -> None:
     registry.register("test.run", "Run test", handler, "Ctrl+T")
     registry.run("test.run")
     assert called["value"] is True
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        lambda registry: registry.register("new", "New", lambda: None),
+        lambda registry: registry.try_register("test.run", "Replacement", lambda: None),
+        lambda registry: registry.replace("test.run", "Replacement", lambda: None),
+        lambda registry: registry.set_title("test.run", "Replacement"),
+        lambda registry: registry.arm_repeat(10),
+        lambda registry: registry.pending_repeat,
+        lambda registry: registry.register_non_repeatable("test.run"),
+        lambda registry: registry.set_run_gate(lambda _command: False),
+        lambda registry: registry.set_availability_probe(lambda _command: "blocked"),
+        lambda registry: registry.unavailable_reason("test.run"),
+        lambda registry: registry.run("test.run"),
+        lambda registry: registry.get("test.run"),
+        lambda registry: registry.set_run_listener(lambda _command: None),
+        lambda registry: registry.list(),
+        lambda registry: registry.keybinding_for("test.run"),
+    ],
+)
+def test_registry_rejects_worker_access_without_changing_state(operation) -> None:
+    calls = []
+    registry = CommandRegistry()
+    registry.register("test.run", "Original", lambda: calls.append("ran"), "Ctrl+T")
+    registry.arm_repeat(2)
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        with pytest.raises(RuntimeError, match="creating thread"):
+            executor.submit(operation, registry).result(timeout=2)
+    assert registry.pending_repeat == 2
+    assert registry.keybinding_for("test.run") == "Ctrl+T"
+    assert len(registry.list()) == 1
+    assert registry.list()[0].title == "Original"
+    assert calls == []
+    registry.run("test.run")
+    assert calls == ["ran", "ran"]
+
+
+def test_registry_created_in_worker_belongs_to_that_worker() -> None:
+    def use_registry():
+        calls = []
+        registry = CommandRegistry()
+        registry.register("extension", "Extension", lambda: calls.append(True))
+        registry.run("extension")
+        return registry.list(), calls
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        snapshot, calls = executor.submit(use_registry).result(timeout=2)
+    assert snapshot[0].title == "Extension"
+    assert calls == [True]
 
 
 def test_command_registry_rejects_duplicate_ids() -> None:

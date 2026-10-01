@@ -2,6 +2,14 @@
 
 Version 2.2.0
 
+## Upcoming Preferences Search
+
+Preferences gains **Find a setting** in the next maintenance update. Type a
+term from a setting's label or help, press Down for matching settings, then Enter
+to focus one. Control+F returns to search; Escape clears a search before closing.
+Search navigates only: OK still saves, Cancel still cancels, and values are not
+indexed. Disabled settings stay disabled.
+
 (There is no Audio Studio 2.0 or 2.1: the Studio adopted the shared Quill family version number when it moved onto the shared runtime, so it went straight from 1.0.0 to 2.2.0. See the release notes for the full story.)
 
 QUILL Audio Studio is audiobook and audio production the way a screen reader user would design it: a small home window whose book list has focus the instant it opens, a wizard that asks one question at a time and announces every step, a chapter editor you drive entirely by ear, and spoken progress for every long run. It runs the exact same Audio Studio code that ships inside the QUILL editor and shares QUILL's data store, so a voice you configure here reads aloud in QUILL too, and nothing you set up is ever stranded.

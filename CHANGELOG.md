@@ -4,6 +4,14 @@
 
 ### QC reliability pass (2026-09-30)
 
+- Native Preferences/Settings surfaces gain a shared label/help search field,
+  keyboard result navigation, hidden-page reveal, and cleanup on close. Search
+  does not read values or apply changes. Beacon uses the same helper through its
+  local dialog setup. Unified entry points for Converter, Player, and Inkwell
+  and web-form indexing remain outstanding; all-app support is not claimed.
+- CommandRegistry is confined to its creating thread. Worker access fails
+  before state changes or dispatch; callers must marshal registry operations
+  back to the owner. Immutable command snapshots may be passed to workers.
 - Lite activation repairs container focus with one bounded follow-up check.
   Activation generations suppress stale callbacks; menus, real fields, hidden
   windows, deactivation, and shutdown suppress unwanted moves. Regression tests

@@ -6,6 +6,13 @@ below is a heading.
 
 ## The short version
 
+The next maintenance update adds **Find a setting** to native Preferences and
+Settings windows. Type a term from a label or its help, press Down for matches,
+then Enter to focus a setting. A result in another section opens that section
+without applying changes. Control+F returns to search, and Escape clears a
+nonempty search before closing. Field values are not searched; Apply and Cancel
+keep their existing behavior.
+
 QuillBeacon is the hub of the QUILL family's sync: a way to save your place in
 *anything* -- a web page, a
 heading inside a document, a moment in a podcast, a radio station, a file,

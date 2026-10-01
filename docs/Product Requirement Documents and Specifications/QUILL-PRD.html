@@ -318,6 +318,25 @@ and certification purposes only; they remain the property of their
 respective owners. Target platform: Windows 10 and Windows 11 Target
 screen readers: NVDA (primary), JAWS, Narrator UI framework: wxPython
 (wxWidgets 3.2 or newer) Language: Python 3.12 or newer</p>
+<h3 id="command-ownership-and-preferences-search-2026-09-30">Command
+ownership and Preferences search (2026-09-30)</h3>
+<p><code>CommandRegistry</code> is confined to its creating thread,
+which is the UI thread in the apps. Registration, mutation, state reads,
+and dispatch check ownership before side effects. Workers prepare
+metadata and marshal registry operations back to the owner; immutable
+<code>Command</code> snapshots may travel to workers. The registry
+remains wx-free and does not add locks around UI handlers.</p>
+<p>Native Preferences and Settings surfaces use the shared
+<code>preferences_search</code> navigator through the modal/modeless
+show contracts. Search indexes labels, accessible names, and help text,
+not field values. Enter focuses a matching control without changing or
+saving it; Control+F returns to search; Escape clears a query before
+closing. Hidden book pages are revealed. Beacon’s local dialog setup
+installs the same navigator for its custom section panels. The hub
+indexes its category controls, not unopened nested dialogs or web forms.
+Converter, Player, and Inkwell still need unified Preferences entry
+points; family-wide completion and manual screen-reader acceptance are
+not claimed.</p>
 <h3 id="shared-task-lifetime-contract-2026-09-30">Shared task lifetime
 contract (2026-09-30)</h3>
 <p><code>TaskManager.shutdown()</code> invalidates UI delivery before

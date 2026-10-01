@@ -119,7 +119,10 @@ or the command palette (`Ctrl+Shift+P`).
 
 ## B. Application settings
 
-- [ ] Preferences hub (multi-page book control): `Ctrl+,`
+- [ ] Preferences hub (multi-page book control): `Ctrl+,`; verify Find a setting,
+  Control+F return, matching categories, Enter navigation without acceptance,
+  and Escape clear-then-close. Search indexes existing native controls only;
+  unopened nested dialogs and web forms are not a global index.
   - [ ] Category selector navigable by arrow keys with first-letter type-ahead, first category selected on open
   - [ ] Each category page opens its area with its `Open ...` button
 - [ ] Settings (tabbed, registry-driven): `Ctrl+,` then `Open General`
