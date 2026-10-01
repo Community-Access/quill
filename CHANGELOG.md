@@ -4,6 +4,10 @@
 
 ### QC reliability pass (2026-09-30)
 
+- Lite activation repairs container focus with one bounded follow-up check.
+  Activation generations suppress stale callbacks; menus, real fields, hidden
+  windows, deactivation, and shutdown suppress unwanted moves. Regression tests
+  include actual wx MDI and text controls. Manual screen-reader acceptance remains.
 - QUILL Lite reports settings-save failures instead of discarding them. Session
   choices stay active, a dirty-state warning remains reviewable in the status
   message, and reopening Preferences retries the save. Preferences no longer

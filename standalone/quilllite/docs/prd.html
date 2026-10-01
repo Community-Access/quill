@@ -266,6 +266,13 @@ that adding an app and changing the editor stayed separate decisions.
 Both decisions were taken; the fix ships with this release and reaches
 every QUILL user, not only QUILL Lite’s.</p>
 <h2 id="2-architecture">2. Architecture</h2>
+<p>Activation repair is bounded to an event-loop check and one 75 ms
+settling check. Every activation/deactivation changes a generation, so
+old callbacks cannot affect a new activation. Repair acts only on
+shell/MDI containers or missing focus, never another interactive
+control. Inactive or hidden shells, hidden documents, menus, and
+shutdown suppress repair. It makes no app speech announcement; native
+focus changes remain the screen reader’s responsibility.</p>
 <p>Settings writes return success or failure through
 <code>LiteSettingsPersistenceMixin</code>. Failed writes keep session
 values active and set <code>settings_dirty</code>; a coalesced,

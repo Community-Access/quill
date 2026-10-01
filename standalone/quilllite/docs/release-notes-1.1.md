@@ -14,6 +14,9 @@ recurring.*
 
 ## Unreleased Quality Fixes
 
+- Returning with Alt+Tab now makes one bounded follow-up focus check to handle
+  late Windows activation. It preserves Find fields and menus and never repairs
+  focus after you leave the app or start exit.
 - Settings-save failures are no longer silent. Your choices remain active for
   the session, with a spoken warning and a persistent status message. Reopen
   Preferences to retry after fixing the storage problem. Preferences no longer

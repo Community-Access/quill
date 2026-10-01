@@ -94,6 +94,7 @@ class QuillLiteShell(wx.MDIParentFrame):
         # harmlessly, but this is the binding that actually fires -- without it
         # a document's Format rows were only ever right at build time.
         self.Bind(wx.EVT_MENU_OPEN, self._on_menu_open)
+        self.Bind(wx.EVT_MENU_CLOSE, self._on_menu_close)
         # Alt+Tab back into QUILL Lite must land in the document. THIS window is
         # what Alt+Tab targets -- an MDI child is not a top-level window -- and
         # Windows restores focus to whatever HWND this window last had, which
@@ -118,8 +119,29 @@ class QuillLiteShell(wx.MDIParentFrame):
         convenience that is never worth the app.
         """
         try:
-            if event.GetActive():
-                wx.CallAfter(self.return_focus_to_document)
+            self._activation_generation = getattr(self, "_activation_generation", 0) + 1
+            self._activation_active = event.GetActive()
+            if self._activation_active:
+                generation = self._activation_generation
+
+                def repair() -> None:
+                    if generation != self._activation_generation or not self._activation_active:
+                        return
+                    self.return_focus_to_document()
+
+                def settle() -> None:
+                    repair()
+                    if generation != self._activation_generation or not self._activation_active:
+                        return
+                    call_later = getattr(wx, "CallLater", None)
+                    if callable(call_later):
+                        call_later(75, repair)
+
+                call_after = getattr(wx, "CallAfter", None)
+                if callable(call_after):
+                    call_after(settle)
+                else:
+                    repair()
         except Exception:  # noqa: BLE001 - activation must never crash the app
             pass
         event.Skip()
@@ -138,6 +160,16 @@ class QuillLiteShell(wx.MDIParentFrame):
         announcing it here would be GATE-13 over-announcing.
         """
         try:
+            if (
+                getattr(self.app, "shutting_down", False)
+                or not getattr(self, "_activation_active", True)
+                or getattr(self, "_menu_open", False)
+            ):
+                return
+            for predicate in ("IsActive", "IsShownOnScreen"):
+                check = getattr(self, predicate, None)
+                if callable(check) and not check():
+                    return
             child = self.GetActiveChild()
         except RuntimeError:
             return  # the shell is on its way out
@@ -150,6 +182,13 @@ class QuillLiteShell(wx.MDIParentFrame):
         control = getattr(child, "control", None)
         if control is None:
             return
+        for window in (child, control):
+            check = getattr(window, "IsShownOnScreen", None)
+            try:
+                if callable(check) and not check():
+                    return
+            except RuntimeError:
+                return
         containers: set[object] = {None, self, child}
         client = getattr(self, "GetClientWindow", None)
         if callable(client):
@@ -170,6 +209,7 @@ class QuillLiteShell(wx.MDIParentFrame):
 
     def _on_menu_open(self, event: wx.MenuEvent) -> None:
         """Hand the opening menu to the document whose rows it holds."""
+        self._menu_open = True
         child = self.GetActiveChild()
         sync = getattr(child, "sync_menu_state", None)
         if callable(sync):
@@ -177,6 +217,10 @@ class QuillLiteShell(wx.MDIParentFrame):
                 sync()
             except RuntimeError:
                 pass  # a child mid-destruction; its bar is about to go
+        event.Skip()
+
+    def _on_menu_close(self, event: wx.MenuEvent) -> None:
+        self._menu_open = False
         event.Skip()
 
     def _build_placeholder_menu(self) -> None:

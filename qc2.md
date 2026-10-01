@@ -72,7 +72,7 @@ family grows.
 |---|---:|---|---|---|
 | F-01 | P2 | Remaining UX integration | Lite settings | Failure feedback, dirty state, truthful Preferences results, and retry are implemented. Direct Retry/Open Settings Folder activity controls and broader writer adoption remain. |
 | F-02 | P1 | Remaining adoption | Background work | Adopt the implemented lifetime token in short-lived surfaces using shared managers; add reviewable activity retention. Manager shutdown already suppresses queued and late delivery. |
-| F-04 | P1 | Confirmed user report | Lite focus | The source documents an intermittent Alt+Tab focus race. The one-shot deferred focus repair can still lose the native activation race. |
+| F-04 | P1 | Acceptance remaining | Lite focus | Bounded generation-guarded activation repair and live wx control tests are implemented. Manual Alt+Tab/screen-reader acceptance and reuse as a family helper remain. |
 | F-05 | P1 | Confirmed | Lite performance | `DocumentFrame.load()` reads and decodes plain and rich files synchronously on the UI path. A size warning does not make the actual read non-blocking. |
 | F-06 | P1 | Confirmed | Shutdown | Radio and Cast intentionally swallow most teardown and final-save exceptions. This protects exit, but it also hides cleanup failures and can make the next session inherit stale or incomplete state. |
 | F-07 | P2 | Confirmed | Core dispatch | `CommandRegistry` uses plain mutable dictionaries and sets without a declared UI-thread-only registration rule or synchronization. |
@@ -229,32 +229,17 @@ The shared guard and shutdown suppression are implemented and tested; see
 
 ### F-04. Lite activation can still lose focus
 
-**Evidence:** `quill/apps/lite_shell.py` documents a real intermittent Alt+Tab
-report and uses one `wx.CallAfter(self.return_focus_to_document)` to repair
-focus after activation. The guard correctly preserves a real text field or
-dialog focus.
+Implemented: one event-loop check and one 75 ms settling check, activation
+generations, menu/visibility/shutdown guards, and intentional-focus preservation.
+Deterministic event-order regressions and live wx MDI/text-control checks pass.
 
-**Impact:** the mitigation is thoughtful, but native activation ordering can
-still replace the focus after that one deferred callback. The result is a
-window that looks active while typing goes nowhere useful. This is a primary
-accessibility failure, not cosmetic polish.
+Remaining:
 
-**Fix shape:** centralize activation settling in a reusable focus helper:
-
-- track the active child and intended editor control;
-- defer until the shell, MDI client, and child report stable visibility;
-- use a bounded second check only when focus is still on a container;
-- abort if a dialog, menu, find box, or other interactive control has taken
-  focus;
-- do not announce the focus move because the screen reader already reports it;
-- record a diagnostic counter for repeated failed repairs.
-
-The same helper can serve companion apps that restore focus after a peer window
-or modal closes.
-
-**Tests:** repeated Alt+Tab cycles, Alt+Tab during Find, Alt+Tab while a menu is
-open, activation during child creation, activation after closing a child, and
-NVDA keyboard smoke tests for typing immediately after return.
+- Manual Alt+Tab cycles with NVDA, JAWS, and Narrator, including Find, menus,
+  child creation and child close; confirm immediate typing and no duplicate speech.
+- Extract a reusable family focus helper when a second actual caller adopts it.
+- Add a diagnostic count of unsuccessful container-focus repairs without
+  logging control contents or introducing announcements.
 
 ### F-05. Lite file opening is synchronous on the UI path
 

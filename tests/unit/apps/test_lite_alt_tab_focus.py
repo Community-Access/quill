@@ -223,7 +223,7 @@ def test_activation_defers_the_focus_return(monkeypatch) -> None:
     shell = _Shell(_Child(_Control()))
     event = _Event(active=True)
     deferred = _activate(shell, event, monkeypatch)
-    assert deferred == [shell.return_focus_to_document]
+    assert len(deferred) == 1
     assert event.skipped == 1
 
 
@@ -232,6 +232,102 @@ def test_leaving_the_app_focuses_nothing(monkeypatch) -> None:
     deferred = _activate(_Shell(_Child(_Control())), event, monkeypatch)
     assert deferred == []
     assert event.skipped == 1
+
+
+@pytest.mark.parametrize("interruption", ["none", "find", "menu", "deactivate", "close"])
+def test_bounded_second_check_preserves_new_interaction(monkeypatch, interruption) -> None:
+    import quill.apps.lite_shell as shell_module
+
+    class Control(_Control):
+        def SetFocus(self):  # noqa: N802
+            super().SetFocus()
+            current[0] = self
+
+    control = Control()
+    shell = _Shell(_Child(control))
+    current = [shell]
+    delayed = []
+    monkeypatch.setattr(
+        shell_module.wx,
+        "Window",
+        type("Window", (), {"FindFocus": staticmethod(lambda: current[0])}),
+    )
+    monkeypatch.setattr(shell_module.wx, "CallLater", lambda delay, fn: delayed.append((delay, fn)))
+    queued = _activate(shell, _Event(True), monkeypatch)
+    queued[0]()
+    assert control.focused == 1
+    assert len(delayed) == 1
+    current[0] = shell
+    if interruption == "find":
+        current[0] = object()
+    elif interruption == "menu":
+        shell._menu_open = True
+    elif interruption == "deactivate":
+        _activate(shell, _Event(False), monkeypatch)
+    elif interruption == "close":
+        shell.app.shutting_down = True
+    assert delayed[0][0] == 75
+    delayed[0][1]()
+    assert control.focused == (2 if interruption == "none" else 1)
+    assert len(delayed) == 1
+
+
+def test_old_activation_cannot_repair_new_activation(monkeypatch) -> None:
+    control = _Control()
+    shell = _Shell(_Child(control))
+    first = _activate(shell, _Event(True), monkeypatch)
+    _activate(shell, _Event(False), monkeypatch)
+    _activate(shell, _Event(True), monkeypatch)
+    first[0]()
+    assert control.focused == 0
+
+
+@pytest.mark.parametrize("predicate", ["IsActive", "IsShownOnScreen"])
+def test_inactive_or_hidden_shell_never_repairs_focus(monkeypatch, predicate) -> None:
+    control = _Control()
+    shell = _Shell(_Child(control))
+    setattr(shell, predicate, lambda: False)
+    _return_focus(shell, shell, monkeypatch)
+    assert control.focused == 0
+
+
+@pytest.mark.machine_global
+def test_live_mdi_container_repair_preserves_text_field_focus() -> None:
+    from types import SimpleNamespace
+
+    import wx
+
+    application = wx.GetApp() or wx.App(False)
+    owner = SimpleNamespace(shutting_down=False, active_frame=None)
+    shell = QuillLiteShell(owner, (500, 300))
+    child = wx.MDIChildFrame(shell, title="Focus regression document")
+    child.control = wx.TextCtrl(child, value="Document", style=wx.TE_MULTILINE)
+    find = wx.TextCtrl(child, value="Find")
+    layout = wx.BoxSizer(wx.VERTICAL)
+    layout.Add(child.control, 1, wx.EXPAND)
+    layout.Add(find, 0, wx.EXPAND)
+    child.SetSizer(layout)
+    owner.active_frame = child
+    try:
+        shell.Show()
+        child.Show()
+        child.Activate()
+        shell.Raise()
+        application.Yield()
+        shell._activation_active = True
+        for _cycle in range(5):
+            shell.GetClientWindow().SetFocus()
+            application.Yield()
+            shell.return_focus_to_document()
+            application.Yield()
+            assert wx.Window.FindFocus() is child.control
+            find.SetFocus()
+            application.Yield()
+            shell.return_focus_to_document()
+            assert wx.Window.FindFocus() is find
+    finally:
+        shell.Destroy()
+        application.Yield()
 
 
 def test_activation_never_takes_the_process_down(monkeypatch) -> None:

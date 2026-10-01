@@ -32,6 +32,13 @@ and reaches every QUILL user, not only QUILL Lite's.
 
 ## 2. Architecture
 
+Activation repair is bounded to an event-loop check and one 75 ms settling
+check. Every activation/deactivation changes a generation, so old callbacks
+cannot affect a new activation. Repair acts only on shell/MDI containers or
+missing focus, never another interactive control. Inactive or hidden shells,
+hidden documents, menus, and shutdown suppress repair. It makes no app speech
+announcement; native focus changes remain the screen reader's responsibility.
+
 Settings writes return success or failure through
 `LiteSettingsPersistenceMixin`. Failed writes keep session values active and
 set `settings_dirty`; a coalesced, user-safe warning is spoken and remains in

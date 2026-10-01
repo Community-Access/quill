@@ -2,6 +2,15 @@
 
 ## 2026-09-30
 
+- Added bounded Lite activation settling (QC2 F-04 implementation): two checks
+  at most, invalidated by later activation/deactivation, with menu, visibility,
+  shutdown, and intentional-control guards. Focus changes are not announced.
+- Validation: 21 focus tests passed, including an actual wx MDI shell, child,
+  editor, and Find-like field exercised over five repair/preserve cycles. The
+  preceding combined activation/lifecycle run passed 28 tests. Physical Alt+Tab
+  and screen-reader listening were not performed and remain tracked acceptance.
+- Settings recovery committed as `6eaab53`; inbox shutdown as `fb9f32d`;
+  shared callback lifetime as `84de01d`. No changes pushed or released.
 - Fixed the silent Lite settings-write failure (QC2 F-01 implementation).
   Failures retain session values, expose a dirty-state warning in the status
   message, and report a safe diagnostic without exception text or user paths.

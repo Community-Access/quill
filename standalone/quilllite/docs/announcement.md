@@ -15,6 +15,9 @@ It is free, it is open source, and it installs in about a minute.
 
 ## Next Maintenance Update (Not Yet Released)
 
+Returning with Alt+Tab now gives Windows one bounded follow-up focus check,
+keeping the document ready for typing without taking focus from Find or a menu.
+
 If a full disk or read-only settings folder prevents preferences from being
 saved, QUILL Lite now tells you. Your choices still work for the current session,
 the status message keeps the warning available, and reopening Preferences retries

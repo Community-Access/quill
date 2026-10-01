@@ -2176,6 +2176,10 @@ Weather, Audio Studio, Inkwell, the Converter, the Media Player and Beacon.
 
 ## Closing a lot of windows at once
 
+When you switch back with Alt+Tab, QUILL Lite repairs focus left on a window
+container so you can type in the active document. A Find field, other control,
+or open menu keeps focus; the app does not pull you away from it.
+
 When you exit the whole app, incoming requests to open documents stop before
 the windows close. Requests still waiting in the inbox are handled on the next
 launch. Cancelling a save prompt cancels exit and leaves the app working normally.
