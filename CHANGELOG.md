@@ -30,6 +30,10 @@
   delivery. Individual windows can invalidate a `UiLifetimeToken` before
   destruction. Workers may finish without holding close open, and their futures
   retain results. A persistent Activity/Problems history remains future work.
+- QUILL Lite no longer raises from the status bar's refresh timer on exit.
+  Stopping the bar's timers is one-way: a late `_touch_status` from the
+  closing window's own events arms nothing, and a refresh that reaches a
+  destroyed panel returns (reported 2026-10-01).
 
 ### Your ChatGPT subscription, in every QUILL app that has AI (2026-09-29)
 

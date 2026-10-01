@@ -1,5 +1,20 @@
 # QUILL Lite changelog
 
+## Unreleased
+
+### Exit without a traceback
+
+- **A crash on the way out.** Closing QUILL Lite could end with
+  `RuntimeError: wrapped C/C++ object of type Panel has been deleted` from
+  the status bar's refresh. The close path stopped the bar's coalescing
+  timer and then destroyed the window, and the teardown in between -- the
+  editor's own last text and focus events, the settings flush -- marked the
+  bar stale again, which re-armed the timer on a window about to be gone.
+  The stop is now one-way: once the window is closing, marking the bar
+  stale arms nothing, and a refresh that somehow reaches a destroyed panel
+  returns instead of raising (`quill/apps/lite_window_status.py`,
+  `tests/unit/apps/test_lite_status_lifetime.py`).
+
 ## 1.1.2 -- 2026-09-30
 
 ### Install and restart now installs, and restarts

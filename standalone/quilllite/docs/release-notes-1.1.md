@@ -25,6 +25,11 @@ recurring.*
   destroyed. Waiting open requests remain for the next launch, and a cancelled
   close leaves polling active. A queued launch-update check no longer starts
   after exit begins.
+- Exiting no longer fails with "wrapped C/C++ object of type Panel has been
+  deleted". The status bar's refresh timer could be re-armed by the closing
+  window's own last events after the timers had been stopped, and then fire
+  on a panel that was already gone. The stop is now one-way, and a refresh
+  that reaches a destroyed panel does nothing.
 
 ## Released in 1.1
 

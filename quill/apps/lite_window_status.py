@@ -155,6 +155,10 @@ class DocumentStatusMixin:
         self._status_expiry_timer: Any = None
         self._status_dirty = True
         self._status_refresh_timer: Any = None
+        #: One-way, set by :meth:`_stop_status_timer`: after it, :meth:`_touch_status`
+        #: arms nothing. Teardown events re-armed a timer that fired on a deleted
+        #: panel (Jeff, 2026-10-01, on exit).
+        self._status_stopped = False
         self._active_cell_index = 0
         self._status_entry_pending = False
 
@@ -265,6 +269,8 @@ class DocumentStatusMixin:
         """Mark the bar stale and schedule one refresh once activity stops."""
         self._status_dirty = True
         self._cancel_status_refresh()
+        if getattr(self, "_status_stopped", False):
+            return  # closing: a refresh armed now fires on a deleted panel
         self._status_refresh_timer = wx.CallLater(_COALESCE_MS, self._refresh_status)
 
     def _refresh_status(self) -> None:
@@ -286,7 +292,11 @@ class DocumentStatusMixin:
         self._status_refresh_timer = None
         if not self._status_dirty:
             return
-        if not self.status_panel.IsShown():
+        panel = getattr(self, "status_panel", None)
+        # A deleted wx object is falsy; every method on it raises.
+        if panel is None or not panel or getattr(self, "_status_stopped", False):
+            return
+        if not panel.IsShown():
             # Counting words for a bar nobody can see is a full document scan
             # per keystroke spent on nothing. The cells are marked stale again
             # when the bar comes back.
@@ -570,7 +580,13 @@ class DocumentStatusMixin:
                 pass
 
     def _stop_status_timer(self) -> None:
-        """Cancel a pending refresh as the window closes."""
+        """Cancel a pending refresh as the window closes, and refuse any more.
+
+        One-way: ``_on_close`` calls this before ``Destroy``, and the teardown
+        between them fires events that mark the bar stale. A stop the next
+        keystroke can undo is not a stop.
+        """
+        self._status_stopped = True
         self._cancel_status_refresh()
         timer = self._status_expiry_timer
         self._status_expiry_timer = None
