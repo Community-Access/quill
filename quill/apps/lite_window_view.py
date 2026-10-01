@@ -108,6 +108,9 @@ class DocumentViewCommandsMixin:
         """
         from quill.core.lite.features import AREAS, PROFILES
 
+        if getattr(self.app, "settings_dirty", False):
+            if self.app.save_settings() is not False:
+                self._announce("Settings are now saved")
         result = edit_preferences(
             self,
             self.app.settings,
@@ -119,14 +122,16 @@ class DocumentViewCommandsMixin:
         self.control.SetFocus()
         if not result.changed:
             return
-        self.app.save_settings()
+        settings_saved = self.app.save_settings() is not False
         self.app.reapply_settings()
         if not result.features_changed:
-            self._announce("Preferences saved")
+            if settings_saved:
+                self._announce("Preferences saved")
             return
         self.app.save_features()
         self.app.rebuild_all_menus()
-        self._announce("Preferences saved. The menus have been rebuilt.")
+        if settings_saved:
+            self._announce("Preferences saved. The menus have been rebuilt.")
 
     def cmd_statistics(self) -> None:
         """Speak the document's size. The same numbers the status bar carries,

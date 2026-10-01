@@ -3619,8 +3619,17 @@ waiting for a restart. QUILL has the same window on the same key.</p>
 window, one long column of controls, and an <strong>OK</strong> and a
 <strong>Cancel</strong> at the bottom. Tab moves down it, Shift+Tab
 moves back up, <strong>F1</strong> on anything reads what that one
-control does, and <strong>nothing is written until you press OK</strong>
-— so Escape is always safe.</p>
+control does, and <strong>new changes are not written until you press
+OK</strong> — so Escape is always safe.</p>
+<p>If settings could not be saved, they remain active for this session.
+QUILL Lite says so, and the status bar’s Message cell keeps the warning
+available to read with <strong>F6</strong>. Free space or restore access
+to the settings folder, then reopen Preferences to retry the settings
+you already accepted. That retry does not require another edit or
+pressing OK. A successful retry clears the warning; Cancel still
+discards new changes made inside the dialog. Settings changes and normal
+exit also attempt a save. This warning is about preferences, not whether
+your document itself has been saved.</p>
 <p>Here is every control in it, in the order you meet them.</p>
 <p><strong>Profile</strong> is the same four-answer chooser Customize
 Features has, with the same read-only description under it. It is here

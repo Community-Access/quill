@@ -2,6 +2,18 @@
 
 ## 2026-09-30
 
+- Fixed the silent Lite settings-write failure (QC2 F-01 implementation).
+  Failures retain session values, expose a dirty-state warning in the status
+  message, and report a safe diagnostic without exception text or user paths.
+  Preferences no longer falsely claims success; reopening it retries already
+  accepted settings. Pending warnings coalesce and flush before shutdown.
+- Validation: 50 settings, status, Preferences, and lifecycle tests passed,
+  including a real failed filesystem write followed by a successful atomic
+  save, stale warning suppression after retry, and close with a pending warning.
+- Updated Lite's PRD, user guide, unreleased release notes, announcement, and
+  the family changelog. Their HTML/EPUB copies are regenerated with each commit.
+- F-01 remains only for direct Activity/Problems actions, other persistence
+  writers, and manual screen-reader acceptance; no claim that these are built.
 - Added shared task callback lifetime guards. Shutdown suppresses success,
   failure, and progress delivery, including callbacks queued before shutdown
   and work finishing afterward. Optional per-surface tokens are one-way and

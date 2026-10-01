@@ -9,6 +9,7 @@ is exactly what the reporter was trying to avoid.
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 import pytest
 
@@ -129,3 +130,137 @@ def test_cancelling_a_restore_changes_nothing(lite_window, monkeypatch) -> None:
     win.cmd_backup_settings()
     assert win.app.settings.font_size == 21
     assert win.announcements == []
+
+
+@pytest.mark.parametrize("closing", [False, True])
+def test_failed_settings_save_is_reported_and_retry_clears_state(monkeypatch, caplog, closing):
+    from quill.apps import lite_settings_persistence as persistence
+
+    class App(persistence.LiteSettingsPersistenceMixin):
+        pass
+
+    app = App()
+    spoken = []
+    queued = []
+    touched = []
+    app.settings = SimpleNamespace(word_wrap=False)
+    app.shutting_down = closing
+    app.frames = [SimpleNamespace(_touch_status=lambda: touched.append(True))]
+    app.voice = SimpleNamespace(speak=spoken.append)
+    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+
+    def fail(_settings):
+        raise OSError("private document name must not be logged")
+
+    monkeypatch.setattr(persistence.settings_mod, "save", fail)
+    assert app.save_settings() is False
+    assert app.settings_dirty
+    assert app.settings.word_wrap is False
+    for callback in queued:
+        callback()
+    assert spoken == [persistence.SETTINGS_NOT_SAVED]
+    assert touched == ([] if closing else [True])
+    assert "private document name" not in caplog.text
+    monkeypatch.setattr(persistence.settings_mod, "save", lambda _settings: None)
+    assert app.save_settings() is True
+    assert not app.settings_dirty
+
+
+def test_settings_warning_survives_status_expiry_and_other_messages(lite_window):
+    from quill.apps.lite_settings_persistence import SETTINGS_NOT_SAVED
+    from quill.apps.lite_window_status import DocumentStatusMixin
+
+    win = lite_window("text")
+    win.app.settings_dirty = True
+    assert DocumentStatusMixin._live_status_message(win) == SETTINGS_NOT_SAVED
+
+
+def test_preferences_does_not_claim_failed_settings_were_saved(lite_window, monkeypatch):
+    from quill.apps import lite_window_view
+    from quill.apps.lite_preferences import PreferencesResult
+
+    win = lite_window("text")
+    monkeypatch.setattr(win.app, "save_settings", lambda: False)
+    monkeypatch.setattr(
+        lite_window_view, "edit_preferences", lambda *args, **kwargs: PreferencesResult(True, False)
+    )
+    win.cmd_preferences()
+    assert "Preferences saved" not in win.announcements
+    assert win.app.reapplied == 1
+
+
+def test_reopening_preferences_retries_dirty_settings(lite_window, monkeypatch):
+    from quill.apps import lite_window_view
+    from quill.apps.lite_preferences import PreferencesResult
+
+    win = lite_window("text")
+    win.app.settings_dirty = True
+    monkeypatch.setattr(
+        lite_window_view,
+        "edit_preferences",
+        lambda *args, **kwargs: PreferencesResult(False, False),
+    )
+    win.cmd_preferences()
+    assert win.app.saved_settings == 1
+    assert "Settings are now saved" in win.announcements
+
+
+def test_real_settings_write_recovers_after_storage_failure(monkeypatch, tmp_path):
+    from quill.apps import lite_settings_persistence as persistence
+
+    class App(persistence.LiteSettingsPersistenceMixin):
+        pass
+
+    app = App()
+    app.settings = persistence.settings_mod.Settings(word_wrap=False)
+    app.shutting_down = False
+    app.frames = []
+    spoken = []
+    queued = []
+    app.voice = SimpleNamespace(speak=spoken.append)
+    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+    unavailable = tmp_path / "not-a-directory"
+    unavailable.write_text("occupied", encoding="utf-8")
+    monkeypatch.setattr(
+        persistence.settings_mod, "settings_path", lambda: unavailable / "settings.json"
+    )
+    assert app.save_settings() is False
+    assert app.settings_dirty
+    target = tmp_path / "restored" / "settings.json"
+    monkeypatch.setattr(persistence.settings_mod, "settings_path", lambda: target)
+    assert app.save_settings() is True
+    assert persistence.settings_mod.load(target).word_wrap is False
+    for callback in queued:
+        callback()
+    assert spoken == []
+    assert not app.settings_dirty
+
+
+def test_shutdown_flushes_pending_settings_warning_once(monkeypatch):
+    from quill.apps import lite_settings_persistence as persistence
+    from quill.apps.lite import QuillLiteApp
+
+    class App(persistence.LiteSettingsPersistenceMixin):
+        pass
+
+    app = App()
+    app.settings = SimpleNamespace(word_wrap=False)
+    app.shutting_down = False
+    app.frames = []
+    spoken = []
+    queued = []
+    app.voice = SimpleNamespace(speak=spoken.append)
+    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+
+    def fail(_settings):
+        raise PermissionError("read only")
+
+    monkeypatch.setattr(persistence.settings_mod, "save", fail)
+    assert app.save_settings() is False
+    assert app.save_settings() is False
+    assert len(queued) == 1
+    QuillLiteApp.stop_background_sources(app)
+    QuillLiteApp.stop_background_sources(app)
+    for callback in queued:
+        callback()
+    assert spoken == [persistence.SETTINGS_NOT_SAVED]

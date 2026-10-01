@@ -70,12 +70,7 @@ from quill.apps.lite_window_typing import overwrite_now
 from quill.core.heading_levels import heading_level_at
 from quill.core.list_structure import list_context_at
 from quill.core.metrics import compute_document_stats
-from quill.core.status_message import (
-    IDLE_MESSAGE,
-    MESSAGE_TTL_SECONDS,
-    StatusMessage,
-    current_message,
-)
+from quill.core.status_message import MESSAGE_TTL_SECONDS
 from quill.ui.native_status_bar import (
     native_status_text,
     show_native_status_bar,
@@ -108,6 +103,7 @@ from quill.apps.lite_status_cells import (
     _clip_message,
     _widen_to_label,
     encoding_name,
+    live_status_message,
     native_cell_labels,
     newline_name,
 )
@@ -437,23 +433,8 @@ class DocumentStatusMixin:
             return 0
 
     def _live_status_message(self) -> str:
-        """The message cell's text *now*, which is not always what was set.
-
-        A message describes a moment, and the moment passes: the next edit
-        clears it and so does a minute going by. See
-        :mod:`quill.core.status_message` for why, and for the report -- a
-        "String not found" that sat in the bar through a page of editing.
-
-        A message set without a timestamp never expires. Nothing in the app
-        does that; a test assigning ``_status_message`` directly does, and it
-        should get the message it assigned rather than a clock it never set.
-        """
-        if self._status_message_at is None:
-            return self._status_message or IDLE_MESSAGE
-        stamped = StatusMessage(
-            self._status_message, self._status_message_at, self._status_message_revision
-        )
-        return current_message(stamped, now=time.monotonic(), revision=self._document_revision())
+        """The current, reviewable message, rendered by the shared cell helper."""
+        return live_status_message(self)
 
     def _set_status_message(self, message: str) -> None:
         """Put a spoken message in the message cell so it can be read back.

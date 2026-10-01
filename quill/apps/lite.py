@@ -44,6 +44,7 @@ from quill.apps.lite_printing import PrintSettings
 from quill.apps.lite_recovery import LiteRecoveryMixin
 from quill.apps.lite_services import LiteServicesMixin
 from quill.apps.lite_session import LiteSessionMixin
+from quill.apps.lite_settings_persistence import LiteSettingsPersistenceMixin
 from quill.apps.lite_shell import QuillLiteShell
 from quill.apps.lite_updates import check_at_launch
 from quill.apps.lite_voice import ScreenReaderVoice
@@ -79,7 +80,12 @@ _INBOX_POLL_MS = 500
 
 
 class QuillLiteApp(
-    LiteWindowsMixin, LiteRecoveryMixin, LiteSessionMixin, LiteServicesMixin, wx.App
+    LiteWindowsMixin,
+    LiteRecoveryMixin,
+    LiteSessionMixin,
+    LiteServicesMixin,
+    LiteSettingsPersistenceMixin,
+    wx.App,
 ):
     """The window registry, the settings owner, and the single-instance inbox."""
 
@@ -451,17 +457,13 @@ class QuillLiteApp(
             frame.apply_status_bar_visibility()
             frame._sync_check_items()
 
-    def save_settings(self) -> None:
-        try:
-            settings_mod.save(self.settings)
-        except OSError:
-            pass  # a read-only profile must not make the editor unusable
-
     # -- the single-instance inbox --------------------------------------- #
 
     def stop_background_sources(self) -> None:
         """Stop app-owned polling before closing children; safe on repeated exit."""
         self.shutting_down = True
+        if getattr(self, "_settings_notice_pending", False):
+            self._report_settings_failure()
         timer = getattr(self, "_inbox_timer", None)
         self._inbox_timer = None
         if timer is not None:

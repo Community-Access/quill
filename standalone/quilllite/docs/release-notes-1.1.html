@@ -250,6 +250,10 @@ have claimed, so Check for Updates offers it everywhere. The changelog
 has the full story and the gate that stops it recurring.</em></p>
 <h2 id="unreleased-quality-fixes">Unreleased Quality Fixes</h2>
 <ul>
+<li>Settings-save failures are no longer silent. Your choices remain
+active for the session, with a spoken warning and a persistent status
+message. Reopen Preferences to retry after fixing the storage problem.
+Preferences no longer says “saved” when the write failed.</li>
 <li>Closing the app stops incoming document polling before the windows
 are destroyed. Waiting open requests remain for the next launch, and a
 cancelled close leaves polling active. A queued launch-update check no

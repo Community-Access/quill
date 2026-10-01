@@ -266,6 +266,17 @@ that adding an app and changing the editor stayed separate decisions.
 Both decisions were taken; the fix ships with this release and reaches
 every QUILL user, not only QUILL Lite’s.</p>
 <h2 id="2-architecture">2. Architecture</h2>
+<p>Settings writes return success or failure through
+<code>LiteSettingsPersistenceMixin</code>. Failed writes keep session
+values active and set <code>settings_dirty</code>; a coalesced,
+user-safe warning is spoken and remains in the status message until a
+later write succeeds. Preferences never claims a failed write was saved.
+Reopening Preferences retries already accepted settings; new edits still
+require OK. Existing settings changes and session-close saves also retry
+without a loop. Shutdown flushes a pending warning before teardown. Logs
+contain only the stable <code>QUILL-LITE-SETTINGS-WRITE</code>
+diagnostic and storage category, not raw exception text or user
+paths.</p>
 <p>Application shutdown owns the inbox timer through
 <code>QuillLiteApp.stop_background_sources()</code>. Confirmed Exit and
 shell close stop polling before document destruction;

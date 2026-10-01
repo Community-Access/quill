@@ -14,6 +14,10 @@ recurring.*
 
 ## Unreleased Quality Fixes
 
+- Settings-save failures are no longer silent. Your choices remain active for
+  the session, with a spoken warning and a persistent status message. Reopen
+  Preferences to retry after fixing the storage problem. Preferences no longer
+  says "saved" when the write failed.
 - Closing the app stops incoming document polling before the windows are
   destroyed. Waiting open requests remain for the next launch, and a cancelled
   close leaves polling active. A queued launch-update check no longer starts

@@ -10,14 +10,16 @@ rates, and the controller is the one that has to stay readable.
 
 from __future__ import annotations
 
+import time
 from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import Any
 
 import wx
 
 from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
 from quill.core.status_cell_width import ratchet_width
-from quill.core.status_message import IDLE_MESSAGE
+from quill.core.status_message import IDLE_MESSAGE, StatusMessage, current_message
 
 __all__ = [
     "CELLS",
@@ -25,6 +27,7 @@ __all__ = [
     "RICH_LINE_ENDINGS_CELL",
     "StatusCell",
     "encoding_name",
+    "live_status_message",
     "native_cell_labels",
     "newline_name",
 ]
@@ -86,6 +89,25 @@ def _widen_to_label(button: wx.Button) -> bool:
     except RuntimeError:
         return False
     return True
+
+
+def live_status_message(window: Any) -> str:
+    """Render an outstanding settings failure or the unexpired action message.
+
+    Ordinary messages expire after edits or elapsed time. A message without
+    a timestamp is a legacy/test value and does not expire. Settings failures
+    remain current until persistence succeeds.
+    """
+    if getattr(getattr(window, "app", None), "settings_dirty", False):
+        from quill.apps.lite_settings_persistence import SETTINGS_NOT_SAVED
+
+        return SETTINGS_NOT_SAVED
+    if window._status_message_at is None:
+        return str(window._status_message or IDLE_MESSAGE)
+    stamped = StatusMessage(
+        window._status_message, window._status_message_at, window._status_message_revision
+    )
+    return current_message(stamped, now=time.monotonic(), revision=window._document_revision())
 
 
 def _clip_message(message: str) -> str:

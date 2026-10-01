@@ -15,6 +15,11 @@ It is free, it is open source, and it installs in about a minute.
 
 ## Next Maintenance Update (Not Yet Released)
 
+If a full disk or read-only settings folder prevents preferences from being
+saved, QUILL Lite now tells you. Your choices still work for the current session,
+the status message keeps the warning available, and reopening Preferences retries
+the save after storage is available again.
+
 Closing QUILL Lite now stops incoming document polling before closing the
 windows. Waiting requests are kept for the next launch. Cancelling exit leaves
 the app ready to receive them as usual.

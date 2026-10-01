@@ -70,7 +70,7 @@ family grows.
 
 | ID | Priority | Confidence | Area | Finding |
 |---|---:|---|---|---|
-| F-01 | P1 | Confirmed | Lite settings | `QuillLiteApp.save_settings()` swallows `OSError`; a settings change can fail with no user-visible outcome. |
+| F-01 | P2 | Remaining UX integration | Lite settings | Failure feedback, dirty state, truthful Preferences results, and retry are implemented. Direct Retry/Open Settings Folder activity controls and broader writer adoption remain. |
 | F-02 | P1 | Remaining adoption | Background work | Adopt the implemented lifetime token in short-lived surfaces using shared managers; add reviewable activity retention. Manager shutdown already suppresses queued and late delivery. |
 | F-04 | P1 | Confirmed user report | Lite focus | The source documents an intermittent Alt+Tab focus race. The one-shot deferred focus repair can still lose the native activation race. |
 | F-05 | P1 | Confirmed | Lite performance | `DocumentFrame.load()` reads and decodes plain and rich files synchronously on the UI path. A size warning does not make the actual read non-blocking. |
@@ -198,33 +198,21 @@ minimized to the tray, or completed.
 
 ## 5. Detailed findings and fixes
 
-### F-01. Lite settings can fail silently
+### F-01. Integrate settings failures with Activity/Problems
 
-**Evidence:** `quill/apps/lite.py::QuillLiteApp.save_settings()` catches
-`OSError` and returns. `quill/core/lite/settings.py` intentionally lets the
-write error reach the caller, so the silent behavior is at the app boundary.
+The silent-failure bug is fixed. Session values remain active, the status
+message retains a dirty-state warning, Preferences reports truthfully, reopening
+Preferences retries, and queued warnings are flushed before shutdown. Tested
+changes are recorded in [QC3](qc3.md).
 
-**Impact:** a read-only profile, full disk, permission change, or transient
-filesystem failure can make a preference appear to work for the session while
-it disappears on the next launch. This is especially confusing for autosave,
-word wrap, theme, keymap, window layout, and update preferences. A screen reader
-user receives no result and has no reason to suspect persistence failed.
+Remaining work:
 
-**Fix shape:** keep the editor usable, but replace the silent return with a
-structured save outcome:
-
-1. attempt the atomic write;
-2. on failure, retain the in-memory value and mark settings dirty;
-3. announce a concise result such as `Settings could not be saved. They remain
-   active for this session. Retry from Preferences.`;
-4. expose Retry and Open Settings Folder from a reviewable status/activity item;
-5. retry on the next deliberate settings change and at a controlled shutdown
-   point, without retry loops;
-6. record only a redacted error code and path category, never document content.
-
-**Tests:** read-only target, missing parent, simulated `OSError`, successful
-retry, close after a failed save, and the announcement/status result. The same
-contract should be considered for shared settings and app history writers.
+- Add direct Retry and Open Settings Folder actions to the proposed shared
+  Activity/Problems surface. The current retry route is reopening Preferences.
+- Apply the persistence outcome contract to shared settings and app history
+  writers, with their own failure-injection tests.
+- Verify the spoken result with NVDA, JAWS, and Narrator, including configured
+  announcement throttling and a hidden status bar.
 
 ### F-02. Adopt lifetime guards in short-lived surfaces
 
@@ -878,7 +866,7 @@ release guarantee exists.
 
 ### Stage 1: remove silent and stale outcomes
 
-1. Replace Lite's silent settings-save failure with a visible, reviewable result.
+1. Integrate settings failure actions with Activity/Problems and verify screen readers.
 2. Adopt the shared UI lifetime token in short-lived surfaces and activity history.
 3. Add shutdown failure capture for required writes and stale markers.
 4. Add the Lite activation/focus regression matrix.

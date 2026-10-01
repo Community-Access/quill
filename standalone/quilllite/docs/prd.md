@@ -32,6 +32,16 @@ and reaches every QUILL user, not only QUILL Lite's.
 
 ## 2. Architecture
 
+Settings writes return success or failure through
+`LiteSettingsPersistenceMixin`. Failed writes keep session values active and
+set `settings_dirty`; a coalesced, user-safe warning is spoken and remains in
+the status message until a later write succeeds. Preferences never claims a
+failed write was saved. Reopening Preferences retries already accepted settings;
+new edits still require OK. Existing settings changes and session-close saves
+also retry without a loop. Shutdown flushes a pending warning before teardown.
+Logs contain only the stable `QUILL-LITE-SETTINGS-WRITE` diagnostic and storage
+category, not raw exception text or user paths.
+
 Application shutdown owns the inbox timer through
 `QuillLiteApp.stop_background_sources()`. Confirmed Exit and shell close stop
 polling before document destruction; `OnExit` repeats that cleanup safely.

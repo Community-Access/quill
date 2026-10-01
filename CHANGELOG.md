@@ -4,6 +4,11 @@
 
 ### QC reliability pass (2026-09-30)
 
+- QUILL Lite reports settings-save failures instead of discarding them. Session
+  choices stay active, a dirty-state warning remains reviewable in the status
+  message, and reopening Preferences retries the save. Preferences no longer
+  claims failed writes succeeded. Pending warnings are coalesced and flushed
+  before teardown; diagnostics do not include raw filesystem errors or paths.
 - QUILL Lite now stops its application-owned inbox timer before destroying
   documents and repeats cleanup safely on final exit. A cancelled close keeps
   polling active; queued requests are preserved for the next launch. Deferred
