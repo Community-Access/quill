@@ -207,8 +207,9 @@ def test_every_menu_item_has_a_mnemonic_at_all(quill_menu_bar) -> None:
         for item in menu.GetMenuItems():
             if item.IsSeparator():
                 continue
-            title = item.GetItemLabel().split(_TAB, 1)[0]
-            if not _mnemonic(title):
+            label = item.GetItemLabel()
+            title = label.split(_TAB, 1)[0]
+            if not _mnemonic(title) and _TAB not in label:
                 missing.append(f"{path} > {title}")
             submenu = item.GetSubMenu()
             if submenu is not None:

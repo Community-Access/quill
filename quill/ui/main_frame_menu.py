@@ -212,7 +212,7 @@ class MenuBuilderMixin:
             self._menu_label(_("&File Format..."), "file.file_format"),
         )
         self._recent_menu = wx.Menu()
-        file_menu.AppendSubMenu(self._recent_menu, _("O&pen Recent"))
+        file_menu.AppendSubMenu(self._recent_menu, _("Open Recent"))
         self._refresh_recent_menu()
         self._id_open_from_favorite_folder = wx.NewIdRef()
         self._id_add_favorite_folder = wx.NewIdRef()
@@ -463,7 +463,7 @@ class MenuBuilderMixin:
             self._id_export_other,
             self._menu_label(_("Other Pandoc Format..."), "file.export_other_pandoc"),
         )
-        file_menu.AppendSubMenu(export_menu, _("E&xport"))
+        file_menu.AppendSubMenu(export_menu, _("Export"))
 
         file_menu.Append(
             self._id_convert_file,
@@ -529,7 +529,7 @@ class MenuBuilderMixin:
         file_menu.AppendSeparator()
         # --- Print ---
         file_menu.Append(self._id_page_setup, _("Page Setup..."))
-        file_menu.Append(self._id_print, self._menu_label(_("Print..."), "file.print"))
+        file_menu.Append(self._id_print, self._menu_label(_("&Print..."), "file.print"))
         file_menu.Append(
             self._id_print_studio,
             self._menu_label(_("Print Studio..."), "file.print_studio"),
@@ -544,7 +544,7 @@ class MenuBuilderMixin:
             self._id_close_document,
             self._menu_label(_("Close Docu&ment"), "file.close_document"),
         )
-        file_menu.Append(self._id_exit, self._menu_label(_("Exit"), "app.exit"))
+        file_menu.Append(self._id_exit, self._menu_label(_("E&xit"), "app.exit"))
 
         self._id_find = wx.NewIdRef()
         self._id_undo = wx.NewIdRef()

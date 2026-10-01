@@ -244,19 +244,125 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
-<h2 id="310---2026-09-29">[3.1.0] - 2026-09-29</h2>
-<p><strong>Three new things, and twelve fixes.</strong> Quill Radio
-checks your subscribed podcasts on its own and tells you what arrived,
-in the way each podcast asks for; there is a list of everything you have
-been told; and you can leave yourself a note on any station or podcast.
-Then: the sound card switches, or says why it cannot and puts the
-setting back; Windows Media gets a route to a device of its own;
-Preferences names only the engines this copy has; a minimized window
-comes back when its menu item or key asks for it; a stale “start with
-Windows” entry is repaired by the installer rather than waiting for a
-launch; Preferences opens in a blink instead of two seconds; and four
-smaller things that came in the same week.</p>
+<h2 id="311---2026-09-30">[3.1.1] - 2026-09-30</h2>
+<p><strong>Everything 3.1 was going to be, and the two things that
+stopped an update from arriving.</strong> Check for Updates now reads
+the version this computer actually installed instead of the version the
+shared runtime happens to carry, so it stops offering an update you
+already have; and Install and restart survives the launcher closing, so
+a one-click update installs instead of quietly doing nothing. 3.1.0 was
+never published – its number was already spoken for on some computers
+(see below), so this is 3.1.1. <strong>Four new things, and fourteen
+fixes.</strong> Quill Radio checks your subscribed podcasts on its own
+and tells you what arrived, in the way each podcast asks for; there is a
+list of everything you have been told; you can leave yourself a note on
+any station or podcast; and Ask QUILL Radio answers questions about what
+is playing, on the ChatGPT plan you already pay for. Then: the sound
+card switches, or says why it cannot and puts the setting back; Windows
+Media gets a route to a device of its own; Preferences names only the
+engines this copy has; a minimized window comes back when its menu item
+or key asks for it; a stale “start with Windows” entry is repaired by
+the installer rather than waiting for a launch; Preferences opens in a
+blink instead of two seconds; and four smaller things that came in the
+same week.</p>
 <ul>
+<li><strong>Check for Updates knows which version you
+installed.</strong> A listener reported that Check for Updates kept
+offering an update after that update was installed. Every QuillVille
+installer ships the shared QuillVille Runtime, and the runtime carries
+one frozen copy of every app’s code and every app’s version number – so
+the version Quill Radio reported was whichever runtime was newest on the
+computer rather than the Quill Radio the installer put there, and the
+comparison against the published release was against the wrong number.
+It can be wrong in both directions: an update offered again and again
+when you already have it, or “you are up to date” when you are not. Now
+the installer writes the version it installed into the app’s own folder
+(<code>quill-app-version.ini</code>, beside
+<code>QuillRadio.exe</code>), Quill Radio looks for it there rather than
+in the shared runtime’s folder, and Check for Updates and Help &gt;
+About read it; About names the runtime’s code version beside it only
+when the two differ, which is exactly what support needs to see. A
+portable copy carries its own code, so there its own number is the truth
+(<code>quill/core/app_version.py</code>,
+<code>standalone/radio/installer/quill-radio.iss</code>).</li>
+<li><strong>Install and restart installs.</strong> Choosing Install and
+restart closed Quill Radio and then nothing happened at all – no
+installer, no error, and no log to look in. The QuillVille launcher runs
+the app inside a Windows Job Object that kills everything left in it
+when the launcher exits, and the small update helper the app starts was
+inside that job: the helper waits for the app <em>and</em> the launcher
+to close before it runs the installer, and Windows killed it mid-wait.
+The helper is now started outside the job
+(<code>CREATE_BREAKAWAY_FROM_JOB</code>, and through Windows’ own
+process service when a launcher already installed forbids breakaway),
+the new launcher permits breakaway, and the folder the helper logs to is
+created before it writes there. A refusal is reported instead of
+swallowed, so the app stays open and Open folder still works
+(<code>quill/core/self_update.py</code>,
+<code>quill/native/launcher/launcher.c</code>).</li>
+<li><strong>This one update is by hand, once.</strong> A copy of 3.0.4
+or earlier still runs the old helper, and that helper is what this
+release replaces – so Install and restart cannot install 3.1.1
+<em>from</em> 3.0.4. Download
+<code>Quill-Radio-Setup-Shared-3.1.1.exe</code> and run it, or unpack
+the portable zip over your copy, this once. Every update after this one
+installs itself.</li>
+<li><strong>Why 3.1.1 and not 3.1.0.</strong> Quill Radio’s version
+number sat at 3.1.0 in the shared source for four days while QUILL Lite
+1.1 was released, so the runtime that Lite installed carries a Quill
+Radio that calls itself 3.1.0. A Quill Radio 3.1.0 release would have
+compared 3.1.0 with 3.1.0 on those computers and never offered itself.
+3.1.1 is that same code under a number no runtime can already claim, so
+every copy is offered it (<code>scripts/check_sibling_versions.py</code>
+now fails a release build that would repeat this).</li>
+<li><strong>Ask QUILL Radio (Community menu, Ctrl+Shift+8): a
+conversation that knows what is playing, on your own ChatGPT
+plan.</strong> The radio’s own assistant, and the first AI in Quill
+Radio. It runs on the ChatGPT subscription you already pay for –
+<strong>Use My ChatGPT Subscription</strong> (Alt+F5) opens your browser
+on OpenAI’s own sign-in page, you allow “QUILL Radio” to use your plan,
+and you come back signed in; no key, no per-question bill, and nothing
+through QUILL’s servers – and it knows one thing ChatGPT on the web does
+not: the station and the title the stream is announcing go with every
+message (it works from that text alone: it never listens to the stream,
+records or transcribes). “What is this song, and who made it?”, “tell me
+about this station”, “what was the news story they just mentioned” need
+no names typed, and <strong>Ask About What’s Playing</strong> asks for
+you. A <strong>Quick questions</strong> list offers nine prepared
+questions: six about what is playing, and three that attach something
+you keep – your favorites, the songs logged on this station, or the
+stations you have played recently – each saying exactly what and how
+many before you press Enter, so nothing about you leaves the computer
+unless you choose it. It is a peer window on the Window menu with the
+transport keys live, replies are read aloud as they arrive, and the
+model is your plan’s own list. <strong>Allow web search</strong> is off
+until you check it. Only a refresh token is kept, in the credential
+store under Quill Radio’s own name; <strong>Sign Out</strong> (two
+presses) revokes it at OpenAI and forgets it here, <strong>Forget on
+This Computer</strong> forgets it here only, and neither button exists
+until you are signed in. Deliberately absent: QUILL’s free AI service
+and an API-key route – it is your plan, or nothing, and the window says
+so. Off in Safe Mode (<code>quill/core/ai/chatgpt_account.py</code>,
+<code>quill/ui/radio/ask_radio_window.py</code>,
+<code>quill/ui/radio/ask_radio_wiring.py</code>).</li>
+<li><strong>The portable copy has the Windows Media engine too.</strong>
+A stick copy of 3.1.0 offered only “Windows Media (classic)” in
+Preferences and could not change the sound card, though an installed
+copy could: the modern engine’s Windows components (the pywinrt wheels)
+were frozen into the shared runtime the installer ships and were never
+listed for the portable build. The portable now carries them, so Audio
+&gt; Output Device, the now-playing card and the modern engine behave
+the same way in both downloads
+(<code>standalone/studio/scripts/build_portable.py</code>).</li>
+<li><strong>Double Tap Live, in Browse Stations.</strong> Double Tap –
+the daily show where blind people talk tech, from Steven Scott and Shaun
+Preece at Accessible Media Inc. – launched a 24-hour radio channel on 30
+September 2026: talk, tech, music and the best of the podcast, around
+the clock. It is its own branch directly under ACB Media, one station,
+listed with no network call and playing from the station’s own Radio.co
+stream; What’s Playing reads what the stream announces, and it can be
+favorited, recorded and scheduled like any station
+(<code>quill/core/radio/double_tap.py</code>).</li>
 <li><strong>The sound card switches, live, or says why it cannot and
 gives the setting back.</strong> A listener reported that choosing a
 device in Audio &gt; Output Device did not move the sound. libmpv
