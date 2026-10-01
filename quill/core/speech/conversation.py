@@ -1,7 +1,6 @@
 """Voice conversation state machine (Hey QUILL Phase 2).
 
-A pure, wx-free controller for the hands-free conversation loop, modeled on the
-ADP Assistant's proven design (see
+A pure, wx-free controller for the hands-free conversation loop (see
 ``docs/planning/quill-hey-quill-voice-interaction-plan.md`` §3). It owns the
 five-state machine and the WCAG-grounded timing model; it does **not** touch the
 microphone, the speech engine, wx, or the clock. The UI layer feeds it events
@@ -12,7 +11,7 @@ timer, begin capture, dispatch a command).
 That split keeps the whole conversation policy — every transition, every
 timeout, cancel and barge-in handling — unit-testable with no audio at all.
 
-States (ADP §3.1)::
+States (plan §3.1)::
 
     OFF  --start-->  IDLE
     IDLE --arm-->    ARMED  (listening for one utterance)
@@ -31,7 +30,7 @@ from enum import Enum
 
 
 class State(Enum):
-    """The five conversation states (ADP §3.1)."""
+    """The five conversation states (plan §3.1)."""
 
     OFF = "off"
     IDLE = "idle"
@@ -54,7 +53,7 @@ CUE_ERROR = "conversation_error"
 
 @dataclass(frozen=True, slots=True)
 class Timing:
-    """User-tunable windows, in milliseconds (ADP §3.2). 0 disables a window.
+    """User-tunable windows, in milliseconds (plan §3.2). 0 disables a window.
 
     * ``silence_ms`` — how long a pause ends an utterance (WCAG 2.2.1).
     * ``review_ms`` — the cancel beat before a matched command dispatches.
@@ -120,8 +119,8 @@ class ConversationController:
     state: State = State.OFF
     #: Optional name for warm prompts ("Listening, Jeff.").
     user_name: str = ""
-    #: When True, prompts use the varied, time-aware voice-cue phrasing (ADP
-    #: personality); when False, a plain "Listening." — deterministic for tests.
+    #: When True, prompts use the varied, time-aware voice-cue phrasing;
+    #: when False, a plain "Listening." — deterministic for tests.
     varied_prompts: bool = False
     _armed_once: bool = field(default=False, repr=False)
 

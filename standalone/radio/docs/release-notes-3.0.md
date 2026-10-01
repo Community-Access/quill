@@ -985,8 +985,6 @@ Seeking needs the mpv engine and a finished recording.
   and your own mail program opens with it written. Press Send there. A
   person at Community Access reads it. You need no account, and nothing is
   posted on GitHub or any other public site.
-- **Ask the Audio Description Project (Ctrl+Alt+8)** and its settings
-  (Ctrl+Alt+Shift+A).
 - **Station > Update Radio Reading Services (Ctrl+Alt+F10)** refreshes the
   reading-services list.
 - The **Weather / NOAA** branch lists every NOAA Weather Radio transmitter with
@@ -1110,7 +1108,6 @@ they were.
 - **Stop** is **Ctrl+.** (Ctrl and period). Ctrl+Alt+P is now Connect to
   Spotify.
 - **Update Radio Reading Services** is **Ctrl+Alt+F10**.
-- **Ask the Audio Description Project** is **Ctrl+Alt+8**.
 - The **Quillins** menu is **Alt+N**, because Alt+Q is QuillVille.
 - The browse tree's label is **Alt+T**, so **Alt+S** always opens the Station
   menu.

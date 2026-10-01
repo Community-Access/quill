@@ -124,18 +124,37 @@ def build_control(
         sizer.Add(control, 1, wx.EXPAND)
         return _finish(definition, control, answer, parent, sizer, library, show, wx)
 
-    sizer.Add(wx.StaticText(parent, label=label_text), 0, wx.ALIGN_CENTER_VERTICAL)
-
+    # Every branch builds its own label, and builds it immediately before its own
+    # control. One shared label above the if/elif chain looked right and read
+    # right, and named only whichever kind of control happened to be constructed
+    # first: on wxMSW a control's accessible name is the static text created
+    # immediately before it, so the choice got the label and the spin, the float
+    # spin and the text field announced as bare roles. Repeating one line five
+    # times is the price of the branches each owning their own ordering, and the
+    # next kind added below cannot inherit a label that is not there.
+    #
+    # The text is ``definition.label`` -- this is a factory for every setting in
+    # the catalogue, so a hard-coded label here could only ever be wrong, and the
+    # access key the catalogue wrote travels with it.
+    #
+    # Written out rather than routed through ``labelled_field.label_for``: that
+    # helper builds the control inside a lambda, and a construction inside a
+    # lambda is a construction the F1 help audit cannot tie to the
+    # ``SetHelpText`` below it, so every control here would snapshot as
+    # ``missing`` (GATE-CAST-HELP).
     if definition.kind == KIND_CHOICE:
+        label = wx.StaticText(parent, label=label_text)
         control = wx.Choice(parent, choices=[choice.label for choice in definition.choices])
         values = [choice.value for choice in definition.choices]
         control.SetSelection(values.index(answer.value) if answer.value in values else 0)
     elif definition.kind == KIND_INT:
+        label = wx.StaticText(parent, label=label_text)
         control = wx.SpinCtrl(
             parent, min=int(definition.minimum), max=int(definition.maximum or 999999)
         )
         control.SetValue(int(answer.value))  # type: ignore[arg-type]
     elif definition.kind == KIND_FLOAT:
+        label = wx.StaticText(parent, label=label_text)
         control = wx.SpinCtrlDouble(
             parent,
             min=definition.minimum,
@@ -145,15 +164,22 @@ def build_control(
         )
         control.SetDigits(1)
     elif definition.kind == KIND_OPAQUE:
+        # The button carries its own label and needs no help from a static text,
+        # but the grid still wants a first column, so it keeps the one it had.
+        label = wx.StaticText(parent, label=label_text)
         control = wx.Button(parent, label=definition.label)
         if on_edit is not None:
             control.Bind(wx.EVT_BUTTON, lambda _event, d=definition: on_edit(d))
     else:
+        label = wx.StaticText(parent, label=label_text)
         control = wx.TextCtrl(parent)
         control.SetValue(str(answer.value or ""))
 
-    control.SetName(definition.label_text().rstrip(":"))
+    # No SetName. A control with a real label and a name is announced twice on
+    # some readers, and the label is the half that always works; the sentence a
+    # SetName used to carry belongs in the help, which is what F1 reads.
     control.SetHelpText(_help_for(definition, answer))
+    sizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL)
     sizer.Add(control, 1, wx.EXPAND)
     return _finish(definition, control, answer, parent, sizer, library, show, wx)
 

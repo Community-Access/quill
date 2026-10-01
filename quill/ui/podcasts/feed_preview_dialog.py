@@ -1,7 +1,7 @@
 """See what a podcast actually is, before subscribing to it.
 
 Add Podcast subscribed straight from a search result, so the only way to find
-out what a feed held was to subscribe and then unsubscribe -- which leaves an
+out what a feed held was to follow it and then unfollow -- which leaves an
 episode list, possibly some downloads, and a library entry somebody has to
 undo. **Subscribing from a title alone is the thing that produces regret**, and
 a title is all a search result shows.
@@ -110,7 +110,7 @@ class FeedPreviewDialog:
         apply_modal_ids(
             self.dialog,
             affirmative_id=self._wx.ID_OK,
-            affirmative_label="Subscribe",
+            affirmative_label="Follow",
             cancel_id=self._wx.ID_CANCEL,
             escape_id=self._wx.ID_CANCEL,
         )

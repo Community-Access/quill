@@ -359,7 +359,7 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "Remove All &Episodes...",
             lambda: dialog._on_remove_all_episodes(show),
         ),
-        action("unsubscribe", "&Unsubscribe", lambda: dialog._on_unsubscribe(None)),
+        action("unsubscribe", "Un&follow", lambda: dialog._on_unsubscribe(None)),
     ])
 
 

@@ -303,20 +303,8 @@ more than seven hundred named commands, and all of them are reachable three ways
 the menu bar, from the Command Palette, and from a keyboard shortcut you can assign.
 
 The menu bar is conventional and complete: File, Edit, View, Insert, Format, Navigate,
-Search, Tools, AI, Audio Description Project, Window, QuillVille, and Help. That is
-thirteen top-level menus in a default installation, and nothing hides in a toolbar with
-no menu equivalent.
-
-**Audio Description Project** is the one name on that list you may not have expected, so
-it should not arrive as a surprise. It holds two items, **Ask ADP** and **ADP Settings**,
-and it is a preview of a search built around the American Council of the Blind's Audio
-Description Project: ask in ordinary language which films and series are audio described,
-or what is described on television tonight, and read or hear the answer in an accessible
-results list. It reaches a hosted ADP service over HTTPS when you ask it a question and
-does nothing at all until then, it refuses to run in Safe Mode, and it is early enough
-that it is fairly described as a preview rather than a finished feature. If you would
-rather not carry the menu, turn **ADP Assistant** off in Profiles and Features and it
-leaves the menu bar entirely.
+Search, Tools, AI, Window, QuillVille, and Help. That is twelve top-level menus in a
+default installation, and nothing hides in a toolbar with no menu equivalent.
 
 The **Command Palette** finds any command by name. Multi-word queries match in any
 order, so `url open` and `open url` both find **Open From URL**. A command's shortcut

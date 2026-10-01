@@ -45,8 +45,8 @@ class CastMenuBarMixin:
         )
         subs_menu.Append(manager_id, "&Open Podcast Manager...\tCtrl+M")
         subs_menu.Append(add_id, "&Add Podcast...\tCtrl+N")
-        subs_menu.Append(import_id, "&Import OPML...\tCtrl+Alt+I")
-        subs_menu.Append(export_id, "&Export OPML...\tCtrl+Alt+E")
+        self._advanced_row(subs_menu, "import_opml", import_id, "&Import OPML...\tCtrl+Alt+I")
+        self._advanced_row(subs_menu, "export_opml", export_id, "&Export OPML...\tCtrl+Alt+E")
         folder_id = wx.NewIdRef()
         subs_menu.Append(folder_id, "New &Folder...\tCtrl+Shift+F")
         # Sort Podcasts: how the library tree orders shows. Radio items so the
@@ -73,12 +73,27 @@ class CastMenuBarMixin:
         # The second directory's key. Somewhere you go, not something you meet:
         # iTunes needs nothing and stays the default (core/podcasts/podcast_index).
         directory_id = wx.NewIdRef()
-        subs_menu.Append(directory_id, "Po&dcast Index Credentials...\tCtrl+Alt+Shift+I")
+        self._advanced_row(
+            subs_menu,
+            "directory_credentials",
+            directory_id,
+            "Po&dcast Index Credentials...\tCtrl+Alt+Shift+I",
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_directory_credentials(), id=directory_id
         )
+        # Feed Check (ear.md R2). An everyday row, not an advanced one: the
+        # question it answers -- which of my podcasts is broken -- is one a
+        # listener asks in their first month, and the only previous answer was to
+        # re-subscribe to each one and watch.
+        feed_check_id = wx.NewIdRef()
+        subs_menu.Append(feed_check_id, "Feed C&heck...\tCtrl+Shift+C")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_cast_feed_check(), id=feed_check_id)
+        self._keep_menu_ids(feed_check_id)
         quick_actions_id = wx.NewIdRef()
-        subs_menu.Append(quick_actions_id, "&Quick Actions...\tCtrl+Alt+Q")
+        self._advanced_row(
+            subs_menu, "quick_actions", quick_actions_id, "&Quick Actions...\tCtrl+Alt+Q"
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_quick_actions(), id=quick_actions_id
         )
@@ -90,11 +105,20 @@ class CastMenuBarMixin:
         from quill.ui.podcasts.list_columns_command import open_list_columns
 
         columns_id = wx.NewIdRef()
-        subs_menu.Append(columns_id, "&Choose Columns...\tCtrl+Alt+Shift+C")
+        self._advanced_row(
+            subs_menu, "choose_columns", columns_id, "&Choose Columns...\tCtrl+Alt+Shift+C"
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: open_list_columns(self), id=columns_id)
         export_data_id, delete_data_id = wx.NewIdRef(), wx.NewIdRef()
-        subs_menu.Append(export_data_id, "E&xport My Data...\tCtrl+Alt+Shift+E")
-        subs_menu.Append(delete_data_id, "Dele&te All Podcast Data...\tCtrl+Alt+Shift+D")
+        self._advanced_row(
+            subs_menu, "export_data", export_data_id, "E&xport My Data...\tCtrl+Alt+Shift+E"
+        )
+        self._advanced_row(
+            subs_menu,
+            "delete_all_data",
+            delete_data_id,
+            "Dele&te All Podcast Data...\tCtrl+Alt+Shift+D",
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_export_data(), id=export_data_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_delete_all_data(), id=delete_data_id)
         # Beside Export My Data because that is where somebody looks for them,
@@ -103,8 +127,18 @@ class CastMenuBarMixin:
         # -- subscriptions, folders, playlists, positions, notes, statistics --
         # is the more painful of the two apps' to lose.
         backup_id, restore_id = wx.NewIdRef(), wx.NewIdRef()
-        subs_menu.Append(backup_id, self._menu_label("&Back Up My Podcasts...", "app.backup"))
-        subs_menu.Append(restore_id, self._menu_label("Restore fro&m a Backup...", "app.restore"))
+        self._advanced_row(
+            subs_menu,
+            "backup",
+            backup_id,
+            self._menu_label("&Back Up My Podcasts...", "app.backup"),
+        )
+        self._advanced_row(
+            subs_menu,
+            "restore",
+            restore_id,
+            self._menu_label("Restore fro&m a Backup...", "app.restore"),
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.back_up_cast_data(), id=backup_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.restore_cast_data(), id=restore_id)
         subs_menu.AppendSeparator()
@@ -134,7 +168,13 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.subscribe_acb_media_podcasts(), id=acb_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
-        menu_bar.Append(subs_menu, "&Subscriptions")
+        # Podcasts, not Subscriptions: the Follow framing (2026-09-30) makes the
+        # old name wrong, and a menu named after the thing in it is the one a
+        # newcomer opens first.
+        menu_bar.Append(subs_menu, "&Podcasts")
+        # View second, where View sits in every Microsoft application a listener
+        # has used (there is no Edit menu here for it to follow).
+        self._build_view_menu(menu_bar)
 
         episode_menu = wx.Menu()
         self._now_playing_item_id = wx.NewIdRef()
@@ -281,8 +321,12 @@ class CastMenuBarMixin:
             wx.NewIdRef(),
         )
         downloads_menu.Append(manage_downloads_id, "&Downloads...\tCtrl+D")
-        downloads_menu.Append(free_space_id, "&Free Up Space\tCtrl+Alt+F")
-        downloads_menu.Append(housekeeping_id, "Run &Housekeeping Now\tCtrl+Alt+H")
+        self._advanced_row(
+            downloads_menu, "free_space", free_space_id, "&Free Up Space\tCtrl+Alt+F"
+        )
+        self._advanced_row(
+            downloads_menu, "housekeeping", housekeeping_id, "Run &Housekeeping Now\tCtrl+Alt+H"
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_downloads(), id=manage_downloads_id
         )
@@ -290,18 +334,22 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_run_maintenance(), id=housekeeping_id)
         menu_bar.Append(downloads_menu, "&Downloads")
 
-        # Pre-release top-level Audio Description Project menu. The typed Ask
-        # ADP assistant (future.adp_assistant) is ON by default for testing, so
-        # this is present by default; _build_adp_menu returns None only if a
-        # profile turns it off. The hands-free conversational mode
-        # (future.adp_voice_mode) is the part that stays locked until a signed
-        # unlock code is redeemed (Help > Redeem Unlock Code..., here or in
-        # QUILL -- they share one unlock store). Undocumented until launch.
-        adp_menu = self._build_adp_menu()
-        if adp_menu is not None:
-            menu_bar.Append(adp_menu, "&Community")
+        # No Community menu here (Jeff, 2026-09-30). The pre-release Audio
+        # Description Project menu stays in QUILL, Studio, Weather and Radio --
+        # Radio's is the one with real content behind it -- and comes out of
+        # Cast, which was carrying an unreleased assistant as a top-level menu
+        # in an app whose menu bar is already long. Nothing becomes unreachable:
+        # the surfaces belong to the shared main_frame_adp mixin and the other
+        # four apps still reach them, which is what GATE-REACH walks for.
 
-        menu_bar.Append(self._build_quillins_menu(), "&Quillins")
+        # Quillins only in Advanced mode (Jeff, 2026-09-30): an extensions menu is
+        # the definition of a thing you go looking for once you know it exists.
+        if self._cast_shows_row("quillins"):
+            menu_bar.Append(self._build_quillins_menu(), "&Quillins")
+
+        # &Window, between Quillins and Help, the same place Radio and Weather
+        # put it. See podcasts_view_menu.install_cast_window_menu.
+        self.install_cast_window_menu(menu_bar)
 
         help_menu = wx.Menu()
         palette_id, redeem_id, updates_id, about_id = (
@@ -316,8 +364,12 @@ class CastMenuBarMixin:
         # same already-accessible dialogs QUILL uses (KeymapEditorMixin /
         # GlobalHotkeysMixin), scoped to this app's own commands.
         shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+Shift+W")
-        help_menu.Append(hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+Shift+H")
+        self._advanced_row(
+            help_menu, "keymap_editor", shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+Shift+W"
+        )
+        self._advanced_row(
+            help_menu, "global_hotkeys", hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+Shift+H"
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
         # The sheet is the other half of the editor above it, and the half
@@ -334,7 +386,12 @@ class CastMenuBarMixin:
         help_menu.Append(
             sheet_id, self._menu_label("Keyboard Shortcuts S&heet...", "app.shortcut_sheet")
         )
-        help_menu.Append(media_tools_id, self._menu_label("&Media Tools", "app.media_tools"))
+        self._advanced_row(
+            help_menu,
+            "media_tools",
+            media_tools_id,
+            self._menu_label("&Media Tools", "app.media_tools"),
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_keyboard_cheat_sheet(), id=sheet_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.podcast_media_tools_status(), id=media_tools_id
@@ -364,7 +421,7 @@ class CastMenuBarMixin:
 
         wire_support_surfaces(self, menu_bar, help_menu, wx)
         ffmpeg_id = wx.NewIdRef()
-        help_menu.Append(ffmpeg_id, "G&et FFmpeg...\tCtrl+Alt+Shift+F")
+        self._advanced_row(help_menu, "get_ffmpeg", ffmpeg_id, "G&et FFmpeg...\tCtrl+Alt+Shift+F")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
         help_menu.AppendSeparator()
         guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
@@ -377,14 +434,16 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_cast_tutorials(), id=tutorials_id)
         help_menu.Append(guide_id, "&User Guide\tCtrl+Alt+D")
         help_menu.Append(notes_id, "&Release Notes\tCtrl+Alt+R")
-        help_menu.Append(prd_id, "Pro&duct Requirements...\tCtrl+Alt+Y")
+        self._advanced_row(help_menu, "prd", prd_id, "Pro&duct Requirements...\tCtrl+Alt+Y")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("userguide"), id=guide_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_podcasts_doc("release-notes-2.0"), id=notes_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()
-        help_menu.Append(redeem_id, "Redeem U&nlock Code...\tCtrl+Alt+Shift+Y")
+        self._advanced_row(
+            help_menu, "unlock_code", redeem_id, "Redeem U&nlock Code...\tCtrl+Alt+Shift+Y"
+        )
         help_menu.Append(updates_id, "&Check for Updates...\tCtrl+Alt+U")
         help_menu.AppendSeparator()
         help_menu.Append(about_id, "&About QUILL Cast\tCtrl+Alt+O")

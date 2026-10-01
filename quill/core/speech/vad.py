@@ -2,7 +2,7 @@
 
 Pure, wx-free, stdlib-only: decide when a spoken turn has *ended* by watching
 the microphone's energy, so a conversation turn finishes when you stop talking
-rather than after a fixed window (the ADP "silence window", WCAG 2.2.1). The UI
+rather than after a fixed window (the "silence window", WCAG 2.2.1). The UI
 feeds successive PCM-16 mono chunks to :class:`SilenceDetector`; when speech has
 been heard and then silence has persisted for the configured window, the
 detector reports the turn is done and the UI stops the recording and

@@ -2,8 +2,7 @@
 
 A small number of currently ``locked_off`` features (see
 ``core/feature_catalog.py``) are meant for trusted testers ahead of general
-availability -- the first is ``core.adp`` (a voice-conversation experience
-still in research). Rather than build a server-side gate, an unlock code is
+availability. Rather than build a server-side gate, an unlock code is
 a short string that encodes which feature it grants and (optionally) an
 expiry date, signed with a dedicated Ed25519 key that never leaves the
 person minting codes. QUILL verifies the signature offline against a

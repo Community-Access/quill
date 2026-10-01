@@ -682,10 +682,6 @@
 - [ ] W  [ ] S  [ ] A  `reveal.previous_code` — Reveal Codes: Previous Code
 - [ ] W  [ ] S  [ ] A  `reveal.toggle_speak` — Reveal Codes: Speak Codes Aloud
 
-## `adp.*` (2)
-- [ ] W  [ ] S  [ ] A  `adp.ask` — ADP: Ask about Described Movies and TV...  **[GATED future.adp_assistant]**
-- [ ] W  [ ] S  [ ] A  `adp.settings` — ADP: Settings...  **[GATED future.adp_assistant]**
-
 ## `media.*` (2)
 - [ ] W  [ ] S  [ ] A  `media.cancel_sleep_timer` — Media: Cancel Sleep Timer
 - [ ] W  [ ] S  [ ] A  `media.sleep_timer` — Media: Sleep Timer...

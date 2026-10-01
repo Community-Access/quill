@@ -86,19 +86,36 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin, SearchEverywhe
     def _build_phase4_row(self, parent_sizer: object) -> None:
         wx = self._wx
         row = wx.BoxSizer(wx.HORIZONTAL)
+        # Each label is constructed immediately before the control it names, and
+        # that ordering is the whole point. On wxMSW a control's accessible name
+        # comes from the StaticText created before it in z-order -- so these three
+        # labels existed for a long time, were all built *after* all four controls,
+        # and named nothing: the combo boxes announced as bare "combo box" (Jeff,
+        # 2026-09-30). SetName does not help; it sets wxWindow's own name, which no
+        # screen reader reads. The gate for this is tools/check_control_labels.py.
+        episodes_label = wx.StaticText(self.dialog, label="Ep&isodes:")
         self._episode_filter_choice = wx.Choice(self.dialog, choices=list(_EPISODE_FILTER_LABELS))
-        self._episode_filter_choice.SetName("Filter episodes by state")
+        self._episode_filter_choice.SetHelpText(
+            "Which episodes the list shows: all of them, only the unplayed ones, "
+            "only what is downloaded, and so on. It narrows the list you are "
+            "looking at and changes nothing about the episodes themselves."
+        )
         self._episode_filter_choice.SetSelection(0)
+        find_label = wx.StaticText(self.dialog, label="Fi&nd:")
+        self._episode_search_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
+        shows_label = wx.StaticText(self.dialog, label="S&hows:")
         self._show_filter_choice = wx.Choice(self.dialog, choices=list(_SHOW_FILTER_LABELS))
-        self._show_filter_choice.SetName("Filter shows in the folder tree")
+        self._show_filter_choice.SetHelpText(
+            "Which podcasts the folder tree shows -- all of them, or only the ones "
+            "with something unplayed. Nothing is unfollowed or hidden permanently."
+        )
         self._show_filter_choice.SetSelection(0)
+        # The boost had no label at all, in any order.
+        boost_label = wx.StaticText(self.dialog, label="&Boost:")
         self._boost_choice = wx.Choice(self.dialog, choices=list(_BOOST_LABELS))
-        self._boost_choice.SetName(volume_boost_ui.HELP)
         self._boost_choice.SetHelpText(volume_boost_ui.HELP)
         self._boost_choice.SetSelection(0)
         # Find in this show -- see episode_search.py for what it composes with.
-        self._episode_search_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
-        self._episode_search_ctrl.SetName("Find in this podcast, by title or description")
         self._episode_search_ctrl.SetHelpText(
             "Narrows the episode list of the podcast you are on, matching "
             "episode titles and the show notes. It searches this podcast only "
@@ -108,12 +125,13 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin, SearchEverywhe
         )
         search_btn = wx.Button(self.dialog, label="Search &Everywhere...")
         queue_btn = wx.Button(self.dialog, label="Play &Queue...")
-        row.Add(wx.StaticText(self.dialog, label="Ep&isodes:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        row.Add(episodes_label, 0, wx.ALIGN_CENTER_VERTICAL)
         row.Add(self._episode_filter_choice, 0, wx.LEFT | wx.RIGHT, 4)
-        row.Add(wx.StaticText(self.dialog, label="Fi&nd:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        row.Add(find_label, 0, wx.ALIGN_CENTER_VERTICAL)
         row.Add(self._episode_search_ctrl, 1, wx.LEFT | wx.RIGHT, 4)
-        row.Add(wx.StaticText(self.dialog, label="S&hows:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        row.Add(shows_label, 0, wx.ALIGN_CENTER_VERTICAL)
         row.Add(self._show_filter_choice, 0, wx.LEFT | wx.RIGHT, 4)
+        row.Add(boost_label, 0, wx.ALIGN_CENTER_VERTICAL)
         row.Add(self._boost_choice, 0, wx.RIGHT, 4)
         row.Add(search_btn, 0, wx.RIGHT, 4)
         row.Add(queue_btn, 0)

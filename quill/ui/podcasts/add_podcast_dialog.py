@@ -126,8 +126,16 @@ class AddPodcastDialog:
         search_box.Add(query_row, 0, wx.EXPAND)
         root.Add(search_box, 0, wx.EXPAND | wx.ALL, 10)
 
+        # The list needs the same treatment as the two fields above: a real
+        # heading created immediately before it, because the association is by
+        # creation order and not by sizer position. "Search results" was only a
+        # SetName, which wxMSW never hands to the reader.
+        root.Add(wx.StaticText(self.dialog, label="Search &results:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
-        self._results.SetName("Search results")
+        self._results.SetHelpText(
+            "Podcasts the chosen directory matched. Enter previews the one you "
+            "are on; Follow adds it to your library."
+        )
         # Subscriptions > Choose Columns... owns which columns exist and in
         # what order -- a report row is read out column by column.
         self._columns: list[ColumnDef] = columns_for("cast", DIRECTORY_RESULTS.id)
@@ -444,8 +452,10 @@ class AddPodcastDialog:
             feed_auth.save_feed_password(show.id, password)
         self._on_library_changed()
         backfilled = _apply_backfill(self._library, show)
-        self._status.SetLabel(f"Subscribed to {show.title} ({len(show.episodes)} episodes).")
-        message = f"Subscribed to {show.title}"
+        self._status.SetLabel(f"Now following {show.title} ({len(show.episodes)} episodes).")
+        from quill.core.podcasts.follow_words import followed
+
+        message = followed(show.title)
         if backfilled:
             message += (
                 f"; {backfilled} back-catalogue episode"

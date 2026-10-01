@@ -549,7 +549,6 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
-| Ctrl+Alt+8 | ADP: Ask about Described Movies and TV... | `adp.ask` |
 | Ctrl+Alt+9 | Suggest a Station or Podcast... | `radio.suggest_pick` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Internet Radio: Tutorials... | `radio.tutorials` |
@@ -558,7 +557,6 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+N | Internet Radio: Add YouTube Link... | `radio.add_youtube_link` |
 | Ctrl+Alt+R | Record Station... | `radio.record_station` |
 | Ctrl+Alt+S | Find Streams from a Website... | `radio.find_streams` |
-| Ctrl+Alt+Shift+A | ADP: Settings... | `adp.settings` |
 | Ctrl+Alt+Shift+D | Internet Radio: Download Preferences... | `radio.download_preferences` |
 | Ctrl+Alt+Shift+F | Upcoming... | `radio.upcoming` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |

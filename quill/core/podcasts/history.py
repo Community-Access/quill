@@ -14,7 +14,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.podcasts import search_history, transcript_export
+from quill.core.podcasts import menu_mode, search_history, transcript_export
 from quill.core.podcasts.onboarding import OnboardingState
 
 _FILE_NAME = "podcast_history.json"
@@ -139,6 +139,21 @@ class PodcastHistory:
     #: Let what a check found cut across whatever is being spoken. Off by
     #: default -- new episodes are news, not an emergency.
     podcast_check_interrupt_speech: bool = False
+    #: Simple or Advanced menus (see core/podcasts/menu_mode.py). Simple is
+    #: the shipped default, which is safe here in a way it would not be in a
+    #: released app: Cast is not in RELEASED_APPS yet, so there is nobody whose
+    #: menu bar this changes underneath them. One row in the View menu switches
+    #: it, and every hidden row is still reachable by name in the palette.
+    menu_mode: str = "simple"
+    #: The arrow-navigable status bar along the bottom (F6), as Quill Radio and
+    #: the QUILL editor have. On by default, because a status bar nobody knows
+    #: about is a status bar nobody turns on -- and it refuses Tab focus, so it
+    #: costs a listener nothing until they press F6.
+    show_status_bar: bool = True
+    #: Hide podcasts with nothing unheard, in the library tree (ear.md R1).
+    #: Off by default: a tree whose rows disappear is a tree somebody has to be
+    #: told about first, and the View menu is where they will be.
+    hide_caught_up: bool = False
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -218,6 +233,9 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.podcast_check_interrupt_speech = bool(
             raw.get("podcast_check_interrupt_speech", False)
         )
+        history.menu_mode = menu_mode.normalize_mode(raw.get("menu_mode"))
+        history.show_status_bar = bool(raw.get("show_status_bar", True))
+        history.hide_caught_up = bool(raw.get("hide_caught_up", False))
         history.onboarding = OnboardingState.from_dict(raw.get("onboarding"))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
@@ -248,6 +266,13 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "podcast_check_interval_minutes": history.podcast_check_interval_minutes,
             "podcast_check_audible_tick": history.podcast_check_audible_tick,
             "podcast_check_interrupt_speech": history.podcast_check_interrupt_speech,
+            "menu_mode": history.menu_mode,
+            "show_status_bar": history.show_status_bar,
+            "hide_caught_up": history.hide_caught_up,
+            # transcript_detail was read by load_history and missing from this
+            # list, so it has never persisted: a listener chose how much
+            # scaffolding an exported transcript keeps and the next launch forgot.
+            "transcript_detail": history.transcript_detail,
             "onboarding": history.onboarding.to_dict(),
             "episodes": [e.to_dict() for e in history.episodes],
         },

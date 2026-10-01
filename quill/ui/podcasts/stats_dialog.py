@@ -124,11 +124,20 @@ class PodcastStatsDialog:
         period_row.Add(self._period_choice, 1, wx.EXPAND)
         root.Add(period_row, 0, wx.EXPAND | wx.ALL, 10)
 
+        # Created immediately before the field, because that adjacency in
+        # creation order is the accessible name on wxMSW. The "Period:" label
+        # above names the combo that follows it and nothing else, so this field
+        # had only a SetName and announced as a bare read-only "edit".
+        report_label = wx.StaticText(self.dialog, label="Listening &report:")
         self._report = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_SIMPLE,
         )
-        self._report.SetName("Listening report; arrow through it line by line")
+        self._report.SetHelpText(
+            "Your listening figures for the chosen period. Read-only -- arrow "
+            "through it line by line, or Copy takes the whole thing."
+        )
+        root.Add(report_label, 0, wx.LEFT | wx.RIGHT, 10)
         root.Add(self._report, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)

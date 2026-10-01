@@ -10,7 +10,7 @@ commit ``unlock-priv.key``.
 
 Then, to hand a trusted tester access to a locked feature::
 
-    python -m quill.tools.mint_unlock_code --feature core.adp \\
+    python -m quill.tools.mint_unlock_code --feature future.spotify \\
         --secret-key unlock-priv.key --tester "Robert H." --expires 2027-01-01
 
 Prints a code shaped like ``QUILL-XXXX-XXXX-...`` to paste to the tester;
@@ -35,7 +35,9 @@ def main(argv: list[str] | None = None) -> int:
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("--feature", required=True, help="Feature id to unlock, e.g. core.adp.")
+    parser.add_argument(
+        "--feature", required=True, help="Feature id to unlock, e.g. future.spotify."
+    )
     parser.add_argument(
         "--secret-key", required=True, help="Path to the unlock signing private key."
     )

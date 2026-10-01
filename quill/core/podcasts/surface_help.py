@@ -47,10 +47,15 @@ PURPOSES: dict[str, str] = {
         "set it back to asking."
     ),
     "QUILL Cast": (
-        "The main window: what is playing, and the transport for it. Your "
-        "shows live in the Podcast Manager, the episodes waiting for you are "
-        "in its Inbox, and everything else is one menu away. Nothing here "
+        "Your podcast library, its pinned views and folders, and playback controls. "
+        "Choose a podcast to play its next episode or open an episode list for "
+        "more actions. Nothing here "
         "needs an account, and nothing you listen to leaves this computer."
+    ),
+    "Feed Check": (
+        "A report of your podcasts' latest feed checks, failures, and publication "
+        "times. Retry a selected feed or all failing feeds, or copy an address "
+        "to investigate it. A quiet podcast is not necessarily a failing feed."
     ),
     "QUILL Cast Tutorials": (
         "Guided lessons, one step at a time, that can run the step for you and "

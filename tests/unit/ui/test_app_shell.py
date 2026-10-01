@@ -1,14 +1,13 @@
-"""AppShellFrame host-protocol pieces the ADP mixin relies on.
+"""AppShellFrame host-protocol pieces every app mixin relies on.
 
 These cover the pure-logic host methods (no wx.Frame needed): feature
-gating, menu labels, and the unlock gate on the ADP menu items.
+gating and menu labels.
 """
 
 from __future__ import annotations
 
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.ui.app_shell import AppShellFrame
-from quill.ui.main_frame_adp import AdpMixin
 
 
 class _Locks:
@@ -35,42 +34,38 @@ def _bare_shell() -> AppShellFrame:
 
 def test_feature_enabled_consults_manager():
     shell = _bare_shell()
-    shell.features = _Features({"future.adp_assistant"})
+    shell.features = _Features({"future.spotify"})
     shell._feature_locks = _Locks(set())
-    assert shell._feature_enabled("future.adp_assistant")
+    assert shell._feature_enabled("future.spotify")
     assert not shell._feature_enabled("future.something_else")
 
 
 def test_feature_lock_wins_over_unlock():
     shell = _bare_shell()
-    shell.features = _Features({"future.adp_assistant"})
-    shell._feature_locks = _Locks({"future.adp_assistant"})
-    assert not shell._feature_enabled("future.adp_assistant")
+    shell.features = _Features({"future.spotify"})
+    shell._feature_locks = _Locks({"future.spotify"})
+    assert not shell._feature_enabled("future.spotify")
 
 
 def test_menu_label_without_binding_is_bare_title():
     shell = _bare_shell()
     shell.keymap = {}
-    assert shell._menu_label("Ask AD&P...", "adp.ask") == "Ask AD&P..."
+    assert shell._menu_label("Comm&unity Picks...", "radio.community_picks") == (
+        "Comm&unity Picks..."
+    )
 
 
 def test_menu_label_appends_simple_binding_and_skips_chords():
     shell = _bare_shell()
-    shell.keymap = {"adp.ask": "Ctrl+Shift+A", "adp.settings": "Ctrl+Shift+Grave, A"}
-    assert shell._menu_label("Ask AD&P...", "adp.ask") == "Ask AD&P...\tCtrl+Shift+A"
+    shell.keymap = {
+        "radio.community_picks": "Ctrl+Alt+0",
+        "radio.suggest_pick": "Ctrl+Shift+Grave, A",
+    }
+    assert shell._menu_label("Comm&unity Picks...", "radio.community_picks") == (
+        "Comm&unity Picks...\tCtrl+Alt+0"
+    )
     # Chord bindings would misparse as bare accelerators after the tab (#612).
-    assert shell._menu_label("ADP Se&ttings...", "adp.settings") == "ADP Se&ttings..."
-
-
-class _ShellWithAdp(AppShellFrame, AdpMixin):
-    pass
-
-
-def test_top_level_adp_menu_is_none_while_locked():
-    shell = _ShellWithAdp.__new__(_ShellWithAdp)
-    shell.features = _Features(set())
-    shell._feature_locks = _Locks(set())
-    assert shell._build_adp_menu() is None
+    assert shell._menu_label("S&uggest a Pick...", "radio.suggest_pick") == "S&uggest a Pick..."
 
 
 class _TaskManagerLikeQuills:

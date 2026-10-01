@@ -953,7 +953,6 @@ class CommandRegistryMixin:
             self._binding_for("tools.sticky_note_capture"),
         )
         self._register_global_hotkey_commands()
-        self._register_adp_commands()
         self.commands.register(
             "tools.spell_check_dialog",
             "Spell Check...",

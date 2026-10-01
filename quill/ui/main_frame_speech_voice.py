@@ -488,11 +488,6 @@ class VoiceInteractionMixin:
 
         if classify(transcript) != QUESTION:
             return False
-        # Pre-release ADP conversation routing wins when unlocked + opted in
-        # (main_frame_adp.AdpMixin); voice capture/speech stay on-device.
-        adp_router = getattr(self, "_adp_route_voice_question", None)
-        if adp_router is not None and adp_router(transcript):
-            return True
         opener = getattr(self, "open_ask_quill_conversation", None)
         if opener is None:
             return False
@@ -510,7 +505,7 @@ class VoiceInteractionMixin:
             self._conv_run(controller.on_action_done())
 
     def speak_voice_status(self) -> None:
-        """Say what voice is doing right now (ADP mic-live perceivability)."""
+        """Say what voice is doing right now (mic-live perceivability)."""
         parts: list[str] = []
         wake = getattr(self, "_wake", None)
         if wake is not None and wake.state != "off":

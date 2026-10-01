@@ -3341,13 +3341,6 @@ class MenuBuilderMixin:
         menu_bar.Append(navigate_menu, _("&Navigate"))
         menu_bar.Append(tools_menu, _("&Tools"))
         menu_bar.Append(ai_menu, _("&AI"))
-        # Pre-release top-level Audio Description Project menu, promoted out of
-        # Tools > Media so QUILL matches the companion apps (Quill Radio, QUILL
-        # Cast). Present by default (see ``_build_adp_menu``); like the AI and
-        # QuillVille menus it is conditional and stays out of ``_TOP_MENU_DEFS``.
-        adp_menu = self._build_adp_menu()
-        if adp_menu is not None:
-            menu_bar.Append(adp_menu, _("A&udio Description Project"))
         menu_bar.Append(window_menu, _("&Window"))
         # The QuillVille cross-app switcher, just before Help, as in every app.
         from quill.ui.quillville_menu import build_quillville_menu

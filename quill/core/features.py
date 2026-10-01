@@ -72,8 +72,6 @@ _QUILLLITE_OFF: tuple[str, ...] = (
     "core.third_party_plugins",
     "core.voice_commands",
     "core.watch_folder",
-    "future.adp_assistant",
-    "future.adp_voice_mode",
     "future.ai",
     "future.ai_menu_top_level",
     "future.cleanup",

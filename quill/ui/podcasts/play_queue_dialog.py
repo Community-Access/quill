@@ -66,12 +66,18 @@ class PlayQueueDialog:
         # they do in every other list on the system, and a single click still
         # replaces the selection -- LB_MULTIPLE toggles on plain arrow keys,
         # which silently turns "move down the queue" into "select the queue".
+        # The heading is created immediately before the list, because that
+        # adjacency in creation order is what wxMSW gives the reader as the
+        # list's name. The sentence below was a SetName, which no reader sees,
+        # so the queue announced as a bare "list box"; it is now the F1 answer.
+        queue_label = wx.StaticText(self.dialog, label="Play &Queue:")
         self._list = wx.ListBox(self.dialog, style=wx.LB_EXTENDED)
-        self._list.SetName(
-            "Play Queue in play order; Enter plays the selected episode now. "
+        self._list.SetHelpText(
+            "The queue in play order; Enter plays the selected episode now. "
             "Shift and arrow extend the selection, Ctrl and Space adds one, "
             "and Remove takes everything selected."
         )
+        root.Add(queue_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)

@@ -62,10 +62,18 @@ class YearInReviewDialog:
         year_row.Add(self._year_choice, 1, wx.EXPAND)
         root.Add(year_row, 0, wx.EXPAND | wx.ALL, 10)
 
+        # Created immediately before the field: the association is by creation
+        # order, so the "Year:" label belongs to the combo after it and this
+        # field, carrying only a SetName, announced as a bare read-only "edit".
+        report_label = wx.StaticText(self.dialog, label="&Report:")
         self._report = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
         )
-        self._report.SetName("Your year in listening; arrow through it line by line")
+        self._report.SetHelpText(
+            "Your year in listening, in sentences. Read-only -- arrow through it "
+            "line by line, or Copy takes the whole thing."
+        )
+        root.Add(report_label, 0, wx.LEFT | wx.RIGHT, 10)
         root.Add(self._report, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)

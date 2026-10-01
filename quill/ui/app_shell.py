@@ -779,7 +779,7 @@ class AppShellFrame(
     def open_command_palette(self) -> None:
         """The same Command Palette QUILL has, naturally scoped: a companion
         app's registry holds only its own commands (radio/podcasts, media,
-        ADP, unlock codes), so the palette lists exactly this app's features."""
+        unlock codes), so the palette lists exactly this app's features."""
         from quill.ui.palette import CommandPaletteDialog
 
         # binding_for: a companion app registers most commands with no binding,

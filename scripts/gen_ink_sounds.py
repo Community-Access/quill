@@ -534,8 +534,8 @@ def generate_all() -> None:
     )
 
     # -- Voice conversation cues (Hey QUILL Phase 2) ------------------------
-    # Warm bell sequences on consonant intervals, ported from the ADP Assistant
-    # palette (plan §3.3). Each note is a soft inharmonic bell; a sequence is
+    # Warm bell sequences on consonant intervals (plan §3.3).
+    # Each note is a soft inharmonic bell; a sequence is
     # concatenated with tiny gaps so it rings rather than beeps.
     def _bell_seq(freqs: list[float], note_ms: float, gap_ms: float = 24) -> list[float]:
         parts: list[list[float]] = []

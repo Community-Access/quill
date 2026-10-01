@@ -7,6 +7,7 @@ row-clamping helper's intent."""
 
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 
 _SRC = (
@@ -17,7 +18,20 @@ _SRC = (
 def test_subscribe_from_result_threads_the_row_index() -> None:
     # The iTunes-search subscribe path tags the request with its row so focus
     # can return to exactly that row.
-    assert "result_index=index)" in _SRC
+    actions = Path(__file__).resolve().parents[3] / "quill/ui/podcasts/add_podcast_actions.py"
+    assert "follow_action(self)" in _SRC
+    assert any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "_subscribe_to_feed"
+        and any(
+            keyword.arg == "result_index"
+            and isinstance(keyword.value, ast.Name)
+            and keyword.value.id == "index"
+            for keyword in node.keywords
+        )
+        for node in ast.walk(ast.parse(actions.read_text(encoding="utf-8")))
+    )
     assert "result_index: int | None" in _SRC
 
 

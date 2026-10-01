@@ -22,16 +22,19 @@ from quill.apps.podcasts_go_to import CastGoToMixin
 from quill.apps.podcasts_help_surfaces import CastHelpSurfacesMixin
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
 from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
+from quill.apps.podcasts_view_menu import CastViewMenuMixin
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.app_support import ListeningAppSupportMixin
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.keymap_editor import KeymapEditorMixin
-from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
+from quill.ui.podcasts.main_panel import CastMainPanelMixin
+from quill.ui.podcasts.places import CastPlacesMixin
+from quill.ui.podcasts.quick_play_commands import CastQuickPlayMixin
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 from quill.ui.podcasts.window_title import CastWindowTitleMixin
 
@@ -54,10 +57,13 @@ class PodcastsAppFrame(
     CastGoToMixin,
     CastHelpSurfacesMixin,
     CastMenuBarMixin,
+    CastMainPanelMixin,
+    CastPlacesMixin,
+    CastQuickPlayMixin,
+    CastViewMenuMixin,
     CastWindowTitleMixin,
     CastWinampKeysMixin,
     MediaSleepTimerMixin,
-    AdpMixin,
     UnlockCodesMixin,
     GlobalHotkeysMixin,
     KeymapEditorMixin,
@@ -93,12 +99,17 @@ class PodcastsAppFrame(
 
         context_help.activate()
         self._init_media_sleep_timer()
+        # The shared &Window menu plus Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9
+        # traversal, as Radio, Weather, Player, Inkwell and Converter all have and
+        # Cast alone did not. Made before the menu bar, because the bar installs it.
+        from quill.ui.window_menu import WindowManager
+
+        self._windows = WindowManager(wx)
         self._build_menu_bar()
         self._build_main_panel()
         self._register_podcasts_commands()
         self._register_podcast_session_commands()
         self._register_media_sleep_timer_commands()
-        self._register_adp_commands()
         self._register_unlock_code_commands()
         from quill.ui.podcasts import problem_retries
 
@@ -179,133 +190,6 @@ class PodcastsAppFrame(
     # and library folders the Podcast Manager shows, right on the main page,
     # matching Quill Radio's favorites tree (#1043).
 
-    def _build_main_panel(self) -> None:
-        panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
-        root = wx.BoxSizer(wx.VERTICAL)
-
-        self._now_playing_text = wx.StaticText(panel, label="Podcasts: stopped")
-        set_accessible_name(self._now_playing_text, "Now playing")
-        root.Add(self._now_playing_text, 0, wx.EXPAND | wx.ALL, 8)
-
-        library_label = wx.StaticText(panel, label="&Library:")
-        root.Add(library_label, 0, wx.LEFT | wx.RIGHT, 8)
-        self._shows_tree = wx.TreeCtrl(
-            panel, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
-        )
-        set_accessible_name(
-            self._shows_tree,
-            "Your podcast library: pinned views and folders; Enter on a show "
-            "plays its next episode, Shift+F10 opens all actions",
-        )
-        root.Add(self._shows_tree, 1, wx.EXPAND | wx.ALL, 8)
-        self._shows_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_library_activated)
-        self._shows_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_library_context_menu)
-        self._shows_tree.Bind(wx.EVT_KEY_DOWN, self._on_library_key)
-        self._shows_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_library_expanding)
-
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        # One transport button, not two static ones: it tracks Play, Pause,
-        # and Resume so it is never dead in a given state.
-        self._play_pause_btn = wx.Button(panel, label="&Play")
-        set_accessible_name(self._play_pause_btn, "Play")
-        self._play_pause_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_transport_button())
-        buttons.Add(self._play_pause_btn, 0, wx.RIGHT, 6)
-        self._stop_btn = wx.Button(panel, label="&Stop")
-        set_accessible_name(self._stop_btn, "Stop")
-        self._stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self.podcast_stop())
-        buttons.Add(self._stop_btn, 0, wx.RIGHT, 6)
-        # Favorite toggle for whatever show is playing right now, same
-        # pattern as Quill Radio's main-page toggle.
-        self._favorite_toggle_btn = wx.Button(panel, label="Add to Fa&vorites")
-        set_accessible_name(self._favorite_toggle_btn, "Add the playing show to favorites")
-        self._favorite_toggle_btn.Enable(False)
-        self._favorite_toggle_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_favorite_toggle())
-        buttons.Add(self._favorite_toggle_btn, 0, wx.RIGHT, 6)
-        for label, handler in (
-            ("Open &Manager...", lambda _e: self.open_podcast_manager()),
-            ("&Add Podcast...", lambda _e: self._podcast_open_add_dialog()),
-        ):
-            button = wx.Button(panel, label=label)
-            set_accessible_name(button, label)
-            button.Bind(wx.EVT_BUTTON, handler)
-            buttons.Add(button, 0, wx.RIGHT, 6)
-        root.Add(buttons, 0, wx.ALL, 8)
-
-        panel.SetSizer(root)
-        self._main_panel = panel
-        self._reload_library_tree()
-        self._refresh_transport_controls()
-        # Winamp classic transport letters on the main page, sharing Quill
-        # Radio's key map (quill/ui/radio/winamp_keys.py) so the letters mean
-        # the same thing in both apps.
-        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_main_char_hook)
-        self.frame.Bind(wx.EVT_KEY_UP, self._on_main_key_up)
-        # Losing the window must end a scan: a listener left at four times
-        # speed because they alt-tabbed mid-hold has no way to know why.
-        self.frame.Bind(wx.EVT_ACTIVATE, self._on_main_activate)
-        from quill.ui.podcasts.scan_hold_control import ScanHoldController
-
-        self._scan_hold = ScanHoldController(self, parent=self.frame)
-        self._select_default_launch_view()
-        self._shows_tree.SetFocus()
-
-    # -- Winamp keys + launch view -----------------------------------------
-
-    def open_notification_target(self, target: str) -> None:
-        """Enter on a notification: select the podcast it was about.
-
-        The other half of the pair Quill Radio implements: one notification
-        file, two apps, and each lands the cursor its own way.
-        """
-        from quill.ui import notification_open
-
-        notification_open.open_in_cast(self, target)
-
-    def _on_main_char_hook(self, event: wx.KeyEvent) -> None:
-        """Alt+F4-to-tray first, then the Winamp transport letters.
-
-        One hook rather than two: two EVT_CHAR_HOOK bindings on the same
-        window means only one of them decides whether the key travels on, and
-        which one wins is an implementation detail nobody should depend on.
-        """
-        if (
-            event.GetKeyCode() == wx.WXK_F4
-            and event.AltDown()
-            and getattr(self._podcast_history, "alt_f4_to_tray", False)
-        ):
-            self._send_to_tray()
-            return
-        scan = getattr(self, "_scan_hold", None)
-        if scan is not None and scan.handles(
-            key_code=event.GetKeyCode(),
-            shift=bool(event.ShiftDown()),
-            ctrl=bool(event.ControlDown()),
-            alt=bool(event.AltDown()),
-        ):
-            # Every auto-repeat comes through here, which is how the hold is
-            # measured; press() is idempotent for exactly that reason.
-            scan.press()
-            return
-        self._on_winamp_char_hook(event)
-
-    def _on_main_key_up(self, event: wx.KeyEvent) -> None:
-        """End a scan the moment the key actually comes up.
-
-        The watchdog timer would end it anyway; this only makes the drop back
-        immediate rather than up to the grace window late.
-        """
-        scan = getattr(self, "_scan_hold", None)
-        if scan is not None and scan.is_scanning and event.GetKeyCode() == wx.WXK_RIGHT:
-            scan.stop()
-        event.Skip()
-
-    def _on_main_activate(self, event: wx.ActivateEvent) -> None:
-        if not event.GetActive():
-            scan = getattr(self, "_scan_hold", None)
-            if scan is not None:
-                scan.stop()
-        event.Skip()
-
     def _winamp_keys_enabled(self) -> bool:
         return bool(getattr(self._podcast_history, "winamp_playback_keys", True))
 
@@ -347,17 +231,6 @@ class PodcastsAppFrame(
     def _winamp_play_pair(self, show: object, episode: object) -> None:
         self._play_episode_object(show, episode)
 
-    def _select_default_launch_view(self) -> None:
-        """Land on the view the listener chose, not always the tree top.
-
-        Somebody whose routine is "open it and see what is new" should not
-        have to arrow there every single time.
-        """
-        view_id = self._podcast_library.settings.default_launch_view
-        if not view_id:
-            return
-        self._reload_library_tree(keep_key=("view", view_id))
-
     # -- library tree (pinned views + folders + shows) ---------------------
 
     def _reload_library_tree(self, *, keep_key: tuple[str, str] | None = None) -> None:
@@ -386,11 +259,18 @@ class PodcastsAppFrame(
         fav_label = view_label(self._podcast_library, "favorites")
         fav_item = tree.AppendItem(root, f"{fav_label} ({fav_count})" if fav_count else fav_label)
         tag(fav_item, ("view", "favorites"))
+        # A node with a count opens to what it counts (cast-ux-plan P2). The
+        # views used to carry a number and no children, so Right-arrow on the
+        # rows a listener tries first did nothing. See ui/podcasts/library_tree.
+        from quill.ui.podcasts import library_tree
+
+        library_tree.add_view_placeholder(tree, fav_item, "favorites", fav_count)
         for view_id, _default in VIRTUAL_VIEWS:
             label = view_label(self._podcast_library, view_id)
             count = len(virtual_view_pairs(self._podcast_library, view_id))
             item = tree.AppendItem(root, f"{label} ({count})" if count else label)
             tag(item, ("view", view_id))
+            library_tree.add_view_placeholder(tree, item, view_id, count)
 
         folder_items: dict[str | None, object] = {None: root}
 
@@ -434,8 +314,10 @@ class PodcastsAppFrame(
             ):
                 tag(tree.AppendItem(root, label), ("action", key))
 
+        # Hide Caught-Up Podcasts (R1) filters at the one place the tree is
+        # built, so two answers about which podcasts exist cannot coexist.
         for show in sort_shows(
-            self._podcast_library.shows, self._podcast_library.settings.show_sort_mode
+            self._visible_library_shows(), self._podcast_library.settings.show_sort_mode
         ):
             count = unheard_count(show)
             # Say "unheard", now that folders wear a bare "(n)" for how many
@@ -485,6 +367,8 @@ class PodcastsAppFrame(
         exists without the episodes; this replaces that placeholder with the
         real thing, once, for the one show being opened.
         """
+        from quill.ui.podcasts import library_tree
+
         item = event.GetItem()
         if not item.IsOk():
             return
@@ -493,7 +377,12 @@ class PodcastsAppFrame(
         if not child.IsOk():
             return
         data = tree.GetItemData(child)
-        if not (isinstance(data, tuple) and len(data) == 2 and data[0] == "placeholder"):
+        if not (isinstance(data, tuple) and len(data) == 2):
+            return  # already filled
+        if data[0] == library_tree.PLACEHOLDER_VIEW:
+            library_tree.fill_view_children(self, item, data[1])
+            return
+        if data[0] != "placeholder":
             return  # already filled
         from quill.core.podcasts.sorting import sort_episodes
 
@@ -631,31 +520,42 @@ class PodcastsAppFrame(
 
         state = self._podcast_controller.state.state
         if state in (PodcastPlayerState.STOPPED, PodcastPlayerState.ERROR):
-            selected = self._selected_tree_data()
-            if selected is not None and selected[0] == "show":
-                self._play_show_next_episode(selected[1])
-            else:
-                self._announce("Select a show in your library first.")
+            # Play acts on whatever the cursor is on: a podcast, an episode, or a
+            # view. It used to understand podcasts only and answer "select a show"
+            # to an episode -- a refusal dressed as help, on the row somebody had
+            # just arrowed to on purpose (Jeff, 2026-09-30).
+            self._play_selection_or_say_why()
             return
         self.podcast_toggle_play_pause()
 
     def _refresh_transport_controls(self) -> None:
+        from quill.core.podcasts import transport_intent
         from quill.ui.podcasts.player_controller import PodcastPlayerState
 
         state = self._podcast_controller.state.state
-        label = {
-            PodcastPlayerState.PLAYING: "&Pause",
-            PodcastPlayerState.LOADING: "&Pause",
-            PodcastPlayerState.PAUSED: "&Resume",
-        }.get(state, "&Play")
+        intent = {
+            PodcastPlayerState.PLAYING: transport_intent.PLAYING,
+            PodcastPlayerState.LOADING: transport_intent.PLAYING,
+            PodcastPlayerState.PAUSED: transport_intent.PAUSED,
+        }.get(state, transport_intent.STOPPED)
+        label = transport_intent.button_label(intent)
         button = getattr(self, "_play_pause_btn", None)
-        if button is not None and button.GetLabel() != label:
-            button.SetLabel(label)
-            set_accessible_name(button, label.replace("&", ""))
+        if button is not None:
+            if button.GetLabel() != label:
+                button.SetLabel(label)
+            # The name is refreshed even when the label has not changed: the
+            # label depends only on the player state and the name depends on the
+            # selection too, so "Play what?" would otherwise go stale every time
+            # the listener moved the library cursor without starting anything.
+            set_accessible_name(button, self._transport_button_name(intent))
         stop_btn = getattr(self, "_stop_btn", None)
         if stop_btn is not None:
             stop_btn.Enable(state != PodcastPlayerState.STOPPED)
         self._refresh_favorite_toggle()
+        # The status bar carries the same facts as this row, so it refreshes here
+        # rather than on a timer: a readout on a timer is wrong for up to one tick,
+        # and a listener sitting on the cell hears the stale value.
+        self._refresh_cast_status_bar()
 
     def _refresh_favorite_toggle(self) -> None:
         button = getattr(self, "_favorite_toggle_btn", None)
@@ -665,12 +565,12 @@ class PodcastsAppFrame(
         show = self._podcast_library.find_show(show_id) if show_id else None
         if show is None:
             button.Enable(False)
-            if button.GetLabel() != "Add to Fa&vorites":
-                button.SetLabel("Add to Fa&vorites")
+            if button.GetLabel() != "Add to &Favorites":
+                button.SetLabel("Add to &Favorites")
                 set_accessible_name(button, "Add the playing show to favorites")
             return
         button.Enable(True)
-        label = "Remove from Fa&vorites" if show.is_favorite else "Add to Fa&vorites"
+        label = "Remove from &Favorites" if show.is_favorite else "Add to &Favorites"
         if button.GetLabel() != label:
             button.SetLabel(label)
             set_accessible_name(

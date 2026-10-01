@@ -22,7 +22,6 @@ from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
-from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Weather"
@@ -61,7 +60,7 @@ WEATHER_AREAS: tuple[AppArea, ...] = (
 )
 
 
-class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
+class WeatherAppFrame(AppShellFrame, WeatherMixin):
     """A tray-resident window whose job is to keep the alert watch running."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -81,7 +80,6 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         self._windows = WindowManager(wx)
         self._build_menu_bar()
         self._build_main_panel()
-        self._register_adp_commands()  # palette/keybinding parity for Ask ADP
         from quill.apps.weather_commands import register_weather_commands
 
         register_weather_commands(self)
@@ -178,14 +176,6 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
             wx.EVT_MENU, lambda _e: self._open_app_features(), id=self._features_item_id
         )
         menu_bar.Append(options_menu, "&Options")
-
-        # Pre-release top-level Audio Description Project menu, shared with QUILL,
-        # Radio, and Cast. Present by default (future.adp_assistant is on); the
-        # hands-free conversational mode (future.adp_voice_mode) stays locked
-        # until a signed unlock code is redeemed. Undocumented until launch.
-        adp_menu = self._build_adp_menu()
-        if adp_menu is not None:
-            menu_bar.Append(adp_menu, "&Community")
 
         from quill.ui.quillville_menu import build_quillville_menu
 

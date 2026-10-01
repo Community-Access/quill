@@ -59,10 +59,15 @@ class SingleSettingDialog:
         self.dialog = wx.Dialog(parent, title=title)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        label = wx.StaticText(self.dialog, label=setting.field_label)
-        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
-
+        # The label is built inside each branch, immediately before the control it
+        # names, and that is the whole point: on wxMSW a control's accessible name
+        # is the static text created immediately before it, so one label above the
+        # if/else named only whichever branch came first in the source and the
+        # other spin control announced as a bare "spin box". Repeating the line is
+        # cheap; a branch added below inheriting nothing is not. The label's own
+        # access key comes from the setting, so Alt+letter reaches the box too.
         if decimals:
+            label = wx.StaticText(self.dialog, label=setting.field_label)
             self._ctrl = wx.SpinCtrlDouble(
                 self.dialog,
                 min=minimum,
@@ -72,17 +77,19 @@ class SingleSettingDialog:
             )
             self._ctrl.SetDigits(decimals)
         else:
+            label = wx.StaticText(self.dialog, label=setting.field_label)
             self._ctrl = wx.SpinCtrl(
                 self.dialog,
                 min=int(minimum),
                 max=int(maximum),
                 initial=int(value),
             )
-        # The name a screen reader speaks on focus, and the F1 answer. Both,
-        # because the help is the part that says what zero means, and zero is
-        # the value people get wrong.
-        self._ctrl.SetName(setting.field_label.replace("&", ""))
+        # The F1 answer: the help is the part that says what zero means, and zero
+        # is the value people get wrong. No SetName -- a control with a real label
+        # and a name is announced twice on some readers, and the label is the half
+        # that always works.
         self._ctrl.SetHelpText(setting.help)
+        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         root.Add(self._ctrl, 0, wx.EXPAND | wx.ALL, 10)
 
         explain = wx.StaticText(self.dialog, label=setting.help)

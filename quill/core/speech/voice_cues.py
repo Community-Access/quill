@@ -3,8 +3,7 @@
 Pure, wx-free: generate the short, warm, varied spoken lines a hands-free
 session uses — the welcome, the "go ahead" listening prompt, the acknowledgement
 while working, and the follow-up nudge — personalized with an optional name and
-aware of the time of day, exactly like the ADP Assistant's spoken personality
-(app.js `welcomeText` / `followupText` / `searchAck`).
+aware of the time of day.
 
 Kept deterministic-friendly for tests: pass a ``pick`` callable (defaults to
 ``random.choice``) and a ``now`` callable (defaults to ``datetime.now``) so the

@@ -79,10 +79,6 @@
   "scenarios": 12,
   "boxes": 0
  },
- "section-app-adp": {
-  "scenarios": 12,
-  "boxes": 0
- },
  "section-accessibility": {
   "scenarios": 18,
   "boxes": 0
@@ -101,7 +97,7 @@
  },
  "dialogs": {
   "scenarios": 0,
-  "boxes": 647
+  "boxes": 645
  },
  "install-matrix": {
   "scenarios": 9,

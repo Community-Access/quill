@@ -1,6 +1,6 @@
 """Bake QUILL's YouTube OAuth client credential into a build. Generates no secret.
 
-Same shape as ``generate_podcast_index_key.py`` and ``generate_adp_client_key.py``:
+Same shape as ``generate_podcast_index_key.py``:
 a Google Cloud OAuth 2.0 "Desktop app" client ID/secret pair, issued to a
 registered developer outside this repository, is moved from the build
 environment into a gitignored module the packager can see. Nothing here

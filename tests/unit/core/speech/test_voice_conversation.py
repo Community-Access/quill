@@ -163,7 +163,7 @@ def test_status_text_tracks_state() -> None:
     assert c.status_text() == "Listening"
 
 
-# -- refinement: varied, personalized prompts (ADP personality) --------------
+# -- refinement: varied, personalized prompts --------------------------------
 
 
 def _announces(effects):

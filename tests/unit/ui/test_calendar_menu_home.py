@@ -4,14 +4,13 @@ It was on Station, on the argument that a schedule is about what is *on*. But
 Station is the menu of everything Quill Radio can tune and it had grown past
 twenty items, while the Community menu is precisely "places this community
 already goes, brought inside the app" -- which is what an ACB Media schedule
-is. It now sits beside ACB Community Events.
+is.
 
 Two things have to hold, and only one of them is placement:
 
 * the four items go on whichever menu they are handed, fenced by a separator
-  only when there is something above to fence off -- a profile with the ADP
-  assistant switched off gets a Community menu that opens on the schedule
-  rather than on a rule;
+  only when there is something above to fence off -- the caller hands over an
+  empty menu, so the Community menu opens on a row rather than on a rule;
 * every item still advertises a keyboard route, which the accelerator gate
   checks across the whole bar but which is worth pinning here too, because the
   move is exactly the kind of change that drops a label's key.

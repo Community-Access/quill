@@ -51,9 +51,12 @@ def test_picker_dialog_meets_the_dialog_contract() -> None:
     src = (_UI / "folder_picker_dialog.py").read_text(encoding="utf-8")
     assert "apply_modal_ids(" in src
     assert "show_modal_dialog(" in src
-    # Search field and tree carry accessible names.
+    # Search field and tree carry accessible names -- and on wxMSW that means a
+    # wx.StaticText built immediately before the control, not a SetName, which
+    # the reader never sees. The tree's old SetName("Folders") was exactly that
+    # kind of dead name (GATE-CTLLABEL), so the label is what is asserted now.
     assert 'SetName("Search folders by name")' in src
-    assert 'SetName("Folders")' in src
+    assert 'label="&Folders:"' in src
     # New Folder creates at the SELECTED level and selects the new folder.
     assert "parent_folder_id=parent_folder_id" in src
     assert "select_folder_id=folder.id" in src

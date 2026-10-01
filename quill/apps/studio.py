@@ -65,7 +65,6 @@ from quill.ui.audio_studio.library_tree import (
     selected_key,
 )
 from quill.ui.dialog_contract import set_accessible_name
-from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_speech_downloads import SpeechDownloadsMixin
 
 try:  # winsound is Windows-only; previews fall back to MCI/startfile elsewhere
@@ -221,7 +220,7 @@ def _await_playback(
     return False
 
 
-class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
+class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
     """The standalone QUILL Audio Studio window."""
 
     #: Voices > Download Optional Components shows only what the audio workflow
@@ -297,7 +296,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         self._sleep_eoc_timer: wx.Timer | None = None
         self._sleep_eoc_from_chapter = -1
         self._build_menu_bar()
-        self._register_adp_commands()  # palette/keybinding parity for Ask ADP
         self._build_main_panel()
         self._register_commands()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
@@ -1044,14 +1042,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             "Connect an AI provider for cloud voices, chapter titles, and translation",
         )
         menu_bar.Append(ai, "&AI")
-
-        # Pre-release top-level Audio Description Project menu, shared with QUILL,
-        # Radio, and Cast. Present by default (future.adp_assistant is on); the
-        # hands-free conversational mode (future.adp_voice_mode) stays locked
-        # until a signed unlock code is redeemed. Undocumented until launch.
-        adp_menu = self._build_adp_menu()
-        if adp_menu is not None:
-            menu_bar.Append(adp_menu, "&Community")
 
         view_menu = wx.Menu()
         self._status_bar_item_id = wx.NewIdRef()

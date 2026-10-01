@@ -71,7 +71,6 @@ RUN_ORDER = [
     "section-settings",
     "section-quillins",
     "section-whisperer",
-    "section-app-adp",
     "section-accessibility",
     "app-radio",
     "app-weather",

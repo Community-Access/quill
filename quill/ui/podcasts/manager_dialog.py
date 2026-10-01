@@ -15,11 +15,10 @@ NVDA-virtual-buffer rule documented in ``dialog_button_contract.py``).
 
 from __future__ import annotations
 
-import re
 from collections.abc import Callable
 from pathlib import Path
 
-from quill.core.podcasts import feed_auth, position_sync, speed_choices
+from quill.core.podcasts import position_sync, speed_choices
 from quill.core.podcasts.chapter_sources import (
     episode_has_possible_chapters,
 )
@@ -32,15 +31,32 @@ from quill.core.podcasts.sorting import (
     sort_shows,
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.media.list_columns_view import fill_row
 from quill.ui.podcasts.manager_actions import ManagerActionsMixin
 from quill.ui.podcasts.manager_downloads import ManagerDownloadsMixin
+from quill.ui.podcasts.manager_lookups import episode_destination
+from quill.ui.podcasts.manager_lookups import item_key as _item_key
+from quill.ui.podcasts.manager_lookups import (
+    shows_in_folder_subtree as _shows_in_folder_subtree,
+)
 from quill.ui.podcasts.manager_phase4 import ManagerPhase4Mixin
 from quill.ui.podcasts.manager_reveal import ManagerRevealMixin
 from quill.ui.podcasts.manager_row_view import ManagerRowViewMixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
+
+#: Re-exported under their old names. The implementations moved to
+#: ``manager_lookups.py`` under GATE-11, and three callers still ask this module
+#: for them -- ``show_actions.py`` and ``main_frame_podcast_transfers.py`` for
+#: ``episode_destination``, ``manager_reveal.py`` and one test for the other two.
+#: Listing them here is also what tells the linter these imports are deliberate.
+__all__ = [
+    "PodcastManagerDialog",
+    "_item_key",
+    "_shows_in_folder_subtree",
+    "episode_destination",
+]
 
 _FOLDER_ROOT_LABEL = "All Podcasts"
 # The offered speeds, the Custom row and the label/value mapping all live in
@@ -68,60 +84,6 @@ _SHOW_SORT_LABELS = (
 )
 _VIEW_MODE_LABELS = ("Flat list", "Grouped in list", "Folders per podcast")
 _VIEW_MODE_MODES = ("flat", "grouped", "folders")
-
-
-def _slug(text: str) -> str:
-    slug = re.sub(r"[^A-Za-z0-9]+", "-", text).strip("-").lower()
-    return slug or "show"
-
-
-def episode_destination(download_root: Path, show: PodcastShow, episode: PodcastEpisode) -> Path:
-    """Where a downloaded episode's file lands: ``<root>/<show-slug>/<episode-slug><ext>``."""
-    suffix = Path(episode.audio_url.split("?", 1)[0]).suffix or ".mp3"
-    return download_root / _slug(show.title) / f"{_slug(episode.title)}{suffix}"
-
-
-def _shows_in_folder_subtree(library: PodcastLibrary, folder_id: str) -> list[PodcastShow]:
-    """Every show in *folder_id* or any folder nested under it, tree order.
-
-    Powers the per-folder bulk actions (set the whole folder's shows to
-    stream/download) where "the folder" always means the whole subtree a
-    user sees under that node, never just its direct children.
-    """
-    shows = [show for show in library.shows if show.folder_id == folder_id]
-    for folder in library.folders:
-        if folder.parent_folder_id == folder_id:
-            shows.extend(_shows_in_folder_subtree(library, folder.id))
-    return shows
-
-
-def _item_key(item: object) -> int:
-    """Stable, hashable identity for a wx.TreeItemId.
-
-    ``GetID()`` returns a fresh ``sip.voidptr`` wrapper on every call; two
-    wrappers for the SAME tree item never compare equal, so keying the
-    item->show / item->folder dicts by the wrapper silently missed every lookup
-    -- ``_selected_show_id`` always returned None, so selecting a podcast showed
-    no episodes (#1189). ``int()`` of the voidptr is the raw pointer value:
-    stable, equal, hashable.
-    """
-    get_id = getattr(item, "GetID", None)
-    if callable(get_id):
-        try:
-            return int(get_id())
-        except (TypeError, ValueError):
-            pass
-    return id(item)
-
-
-def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpisode]:
-    """Every episode belonging to a show directly in *folder_id* (not
-    subfolders -- the caller recurses those separately)."""
-    episodes: list[PodcastEpisode] = []
-    for show in library.shows:
-        if show.folder_id == folder_id:
-            episodes.extend(show.episodes)
-    return episodes
 
 
 class PodcastManagerDialog(
@@ -205,7 +167,6 @@ class PodcastManagerDialog(
         body = wx.BoxSizer(wx.HORIZONTAL)
 
         tree_col = wx.BoxSizer(wx.VERTICAL)
-        tree_col.Add(wx.StaticText(self.dialog, label="&Folders and Podcasts"), 0, wx.BOTTOM, 4)
         show_sort_row = wx.BoxSizer(wx.HORIZONTAL)
         show_sort_row.Add(
             wx.StaticText(self.dialog, label="Sort sho&ws:"),
@@ -222,20 +183,26 @@ class PodcastManagerDialog(
             SHOW_SORT_MODES.index(library_mode) if library_mode in SHOW_SORT_MODES else 0
         )
         show_sort_row.Add(self._show_sort_choice, 1, wx.EXPAND)
+        # The heading is built here, after the sort row, so that it is the child
+        # created immediately before the tree -- that adjacency is what wxMSW
+        # hands the reader as the tree's name, and it is creation order, never
+        # sizer position. It is still *added* first, so the column looks the same.
+        # See manager_phase4._build_phase4_row for the same fix and the full story.
+        tree_heading = wx.StaticText(self.dialog, label="&Folders and Podcasts")
+        tree_col.Add(tree_heading, 0, wx.BOTTOM, 4)
         tree_col.Add(show_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._tree = wx.TreeCtrl(
             self.dialog,
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_SINGLE | wx.BORDER_SIMPLE,
         )
-        self._tree.SetName(
-            "Podcast folders and subscriptions; select a folder to see its "
-            "contents, a show to see its episodes"
+        self._tree.SetHelpText(
+            "Your podcast folders and the podcasts in them. Select a folder to "
+            "see its contents, a show to see its episodes."
         )
         tree_col.Add(self._tree, 1, wx.EXPAND)
         body.Add(tree_col, 1, wx.EXPAND | wx.RIGHT, 10)
 
         episode_col = wx.BoxSizer(wx.VERTICAL)
-        episode_col.Add(wx.StaticText(self.dialog, label="&Episodes"), 0, wx.BOTTOM, 4)
         episode_sort_row = wx.BoxSizer(wx.HORIZONTAL)
         episode_sort_row.Add(
             wx.StaticText(self.dialog, label="Sor&t episodes:"),
@@ -250,7 +217,6 @@ class PodcastManagerDialog(
         )
         self._episode_sort_choice.SetSelection(0)
         episode_sort_row.Add(self._episode_sort_choice, 1, wx.EXPAND)
-        episode_col.Add(episode_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         view_mode_row = wx.BoxSizer(wx.HORIZONTAL)
         view_mode_row.Add(
             wx.StaticText(self.dialog, label="&View cross-show lists as:"),
@@ -269,9 +235,15 @@ class PodcastManagerDialog(
             else 1
         )
         view_mode_row.Add(self._view_mode_choice, 1, wx.EXPAND)
+        # Same ordering rule as the tree heading above: built last of this
+        # column's labels so it is the child immediately preceding the list,
+        # added first so the column reads the same way on screen.
+        episode_heading = wx.StaticText(self.dialog, label="&Episodes")
+        episode_col.Add(episode_heading, 0, wx.BOTTOM, 4)
+        episode_col.Add(episode_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         episode_col.Add(view_mode_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._episodes = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
-        self._episodes.SetName("Episodes of the selected show; arrow through for details")
+        self._episodes.SetHelpText("Episodes of the selected podcast. Arrow through for details.")
         self._build_episode_columns()
         episode_col.Add(self._episodes, 1, wx.EXPAND)
         body.Add(episode_col, 2, wx.EXPAND)
@@ -319,8 +291,20 @@ class PodcastManagerDialog(
         self._chapters_btn = wx.Button(self.dialog, label="C&hapters...")
         self._chapters_btn.SetName("Browse and jump to this episode's chapter markers")
         self._chapters_btn.Enable(False)
-        unsubscribe_btn = wx.Button(self.dialog, label="&Unsubscribe")
-        unsubscribe_btn.SetName("Unsubscribe from the selected show (Delete key also works)")
+        # Follow framing (Jeff, 2026-09-30). The identifier keeps the old word --
+        # renaming it would touch the bindings, the tests and nothing a listener
+        # ever reads.
+        # U, not F and not N: F belongs to the "Folders and Podcasts" heading --
+        # which is also the tree's accessible name -- and N to New Folder. A
+        # duplicated mnemonic cycles focus instead of pressing and nothing
+        # announces the loss (GATE-14). U is free, and it is the letter the old
+        # "&Unsubscribe" had, so the habit survives the rewording.
+        unsubscribe_btn = wx.Button(self.dialog, label="&Unfollow")
+        unsubscribe_btn.SetHelpText(
+            "Removes the selected podcast from your library, along with your place "
+            "in its episodes. Asks first, and says what happens to anything you "
+            "have downloaded. The Delete key does the same thing."
+        )
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close (playback continues)")
         for widget in (
@@ -774,7 +758,7 @@ class PodcastManagerDialog(
             pause_item.SetHelp(
                 "Stops both halves of keeping this show current: no feed checks "
                 "for new episodes, and no automatic downloads. It does not "
-                "unsubscribe you, does not remove episodes or downloaded files, "
+                "unfollow anything, does not remove episodes or downloaded files, "
                 "does not stop a download already running, and does not disable "
                 "Refresh Feed on this show -- that still checks it on demand."
             )
@@ -1179,52 +1163,26 @@ class PodcastManagerDialog(
             self._on_open_settings()
 
     def _on_unsubscribe(self, _event: object) -> None:
+        """Stop following the selected podcast, through the shared prompt.
+
+        Through it rather than reimplementing it, which is what this method used to
+        do -- identically, except that it never registered an undo. So Ctrl+Z
+        restored a subscription removed from the library tree and did nothing for
+        one removed from here, which reads as "undo is unreliable" rather than as a
+        bug in one code path. The method name keeps the old word; nothing a listener
+        reads does.
+        """
+        from quill.ui.podcasts.show_actions import unsubscribe_show_prompt
+
         show_id = self._selected_show_id()
         show = self._library.find_show(show_id) if show_id else None
         if show is None:
             return
-        wx = self._wx
-
-        downloaded = [e for e in show.episodes if e.downloaded_path]
-        policy = self._library.effective_settings(show).delete_files_on_remove
-
-        confirmed = (
-            show_message_box(
-                f"Unsubscribe from {show.title}?",
-                "Unsubscribe",
-                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-                self.dialog,
-                announce=self._announce,
-            )
-            == wx.YES
-        )
-        if not confirmed:
-            return
-
-        delete_files = policy == "always"
-        if downloaded and policy == "ask":
-            delete_files = (
-                show_message_box(
-                    f"Also delete the {len(downloaded)} downloaded episode file(s)?",
-                    "Delete Downloaded Files",
-                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-                    self.dialog,
-                    announce=self._announce,
-                )
-                == wx.YES
-            )
-        if delete_files:
-            for episode in downloaded:
-                path = Path(episode.downloaded_path)
-                if path.exists():
-                    path.unlink(missing_ok=True)
-
-        # No orphaned secrets: unsubscribing deletes the stored feed password (S-3).
-        feed_auth.delete_feed_password(show.id)
-        self._library.remove_show(show.id)
-        self._on_library_changed()
-        self.refresh_tree()
-        if delete_files and downloaded:
-            self._announce(f"Unsubscribed from {show.title} and deleted its downloaded episodes")
-        else:
-            self._announce(f"Unsubscribed from {show.title}")
+        if unsubscribe_show_prompt(
+            self.dialog,
+            self._library,
+            show,
+            announce=self._announce,
+            on_change=self._on_library_changed,
+        ):
+            self.refresh_tree()

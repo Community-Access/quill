@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[3] / "quill"
@@ -20,8 +21,25 @@ def test_show_actions_exposes_feed_credentials_prompt() -> None:
 
 
 def test_unsubscribe_deletes_stored_credentials_everywhere() -> None:
-    assert "delete_feed_password(show.id)" in _read("ui/podcasts/show_actions.py")
-    assert "delete_feed_password(show.id)" in _read("ui/podcasts/manager_dialog.py")
+    actions = _read("ui/podcasts/show_actions.py")
+    prompt = next(
+        node
+        for node in ast.walk(ast.parse(actions))
+        if isinstance(node, ast.FunctionDef) and node.name == "unsubscribe_show_prompt"
+    )
+    assert "delete_feed_password(show.id)" in ast.get_source_segment(actions, prompt)
+    manager = ast.parse(_read("ui/podcasts/manager_dialog.py"))
+    handler = next(
+        node
+        for node in ast.walk(manager)
+        if isinstance(node, ast.FunctionDef) and node.name == "_on_unsubscribe"
+    )
+    assert any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "unsubscribe_show_prompt"
+        for node in ast.walk(handler)
+    )
 
 
 def test_context_menus_offer_feed_credentials() -> None:

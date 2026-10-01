@@ -24,7 +24,6 @@ from quill.ui.app_shell import AppShellFrame
 from quill.ui.app_support import ListeningAppSupportMixin
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.keymap_editor import KeymapEditorMixin
-from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
@@ -150,7 +149,6 @@ class RadioAppFrame(
     AppShellFrame,
     RadioMixin,
     MediaSleepTimerMixin,
-    AdpMixin,
     UnlockCodesMixin,
     WeatherMixin,
     GlobalHotkeysMixin,
@@ -199,7 +197,6 @@ class RadioAppFrame(
         self._build_main_panel()
         self._register_radio_commands()
         self._register_media_sleep_timer_commands()
-        self._register_adp_commands()
         self._register_unlock_code_commands()
         from quill.ui.radio import problem_retries
 
@@ -1354,22 +1351,22 @@ class RadioAppFrame(
         if self._app_area_enabled("recording"):
             menu_bar.Append(record_menu, "&Record")
 
-        # Pre-release top-level Audio Description Project menu. The typed Ask ADP
-        # assistant (future.adp_assistant) is ON by default for testing, so this is
-        # present by default; _build_adp_menu returns None only if a profile turns
-        # it off. The hands-free conversational mode (future.adp_voice_mode) stays
-        # locked until a signed unlock code is redeemed (Help > Redeem Unlock
-        # Code..., here or in QUILL -- one shared unlock store). The ACB Media
-        # schedule moved here from Station on 2026-08-24 (see
-        # radio_launch_tasks.append_calendar_menu), so this is built even with
-        # the ADP assistant off: Radio always has the schedule.
+        # The top-level Community menu: "places this community already goes,
+        # brought inside the app". The Audio Description Project rows it started
+        # as are gone (2026-09-30, removed from the whole family), and the menu
+        # now carries only the community surfaces it was renamed for in
+        # 2026-08-23 -- Ask QUILL Radio and Use My ChatGPT Subscription, the ACB
+        # Media schedule and podcasts, and Community Picks, all appended by
+        # radio_launch_tasks.append_calendar_menu. It starts empty here so that
+        # helper's leading separator is skipped and the menu opens on a row
+        # rather than on a rule.
         from quill.apps.radio_launch_tasks import append_calendar_menu
 
-        adp_menu = self._build_adp_menu() or wx.Menu()
-        append_calendar_menu(self, adp_menu, wx)
-        # No chord in the title (2026-08-25): Alt+C already opens this menu, and the
-        # Ctrl+Alt+A it used to advertise is Bookmark This Moment. ADP-era residue.
-        menu_bar.Append(adp_menu, "&Community")
+        community_menu = wx.Menu()
+        append_calendar_menu(self, community_menu, wx)
+        # No chord in the title (2026-08-25): Alt+C already opens this menu, and
+        # the Ctrl+Alt+A it used to advertise is Bookmark This Moment.
+        menu_bar.Append(community_menu, "&Community")
 
         help_menu = wx.Menu()
         palette_id, updates_id, about_id = (

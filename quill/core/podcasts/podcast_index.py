@@ -19,8 +19,7 @@ listener's own pair if they set one and the bundled pair otherwise, and
 :func:`available` is true out of the box.
 
 An extractable shipped key is a casual-abuse and rotation barrier rather than
-authentication -- the same stance the ADP client key documents
-(``quill/core/adp/client.py``). It identifies *the app* to a directory of public
+authentication. It identifies *the app* to a directory of public
 data: it authorises nothing on anyone's behalf, reads no account, and carries no
 personal data. A search sends the search term and nothing else. It is baked in
 at build time by ``tools/generate_podcast_index_key.py`` into a gitignored

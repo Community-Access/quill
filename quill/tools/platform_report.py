@@ -117,6 +117,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.accessible_name_audit"),
     ),
     Gate(
+        "control-labels",
+        "GATE-CTLLABEL: a control's name comes from the static text before it",
+        (sys.executable, "-m", "quill.tools.check_control_labels"),
+    ),
+    Gate(
         "radio-help",
         "GATE-RADIO-HELP: every radio surface and control answers F1",
         (sys.executable, "-m", "quill.tools.radio_help_audit"),

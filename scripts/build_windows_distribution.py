@@ -1966,23 +1966,10 @@ def bundle_embedded_python(
             check=True,
         )
 
-    # Bundle the ADP client bearer key (quill/_adp_client_key.py) so a shipped
-    # build reaches the hosted ADP service with no user setup. This is
-    # deliberately LENIENT (no --require-token): an unset
-    # QUILL_ADP_CLIENT_KEY bakes an empty key, and Ask ADP degrades gracefully to
-    # a key pasted in ADP Settings (see tools/generate_adp_client_key.py and
-    # quill/core/adp/client.py). Set QUILL_ADP_CLIENT_KEY in the build env to ship
-    # the key. The module is gitignored, never committed.
-    print("Generating bundled ADP client key (quill/_adp_client_key.py)...")
-    subprocess.run(
-        [str(python_exe), str(source_root / "tools" / "generate_adp_client_key.py")],
-        check=True,
-    )
-
     # Bundle the Podcast Index application credential
     # (quill/_podcast_index_key.py) so a shipped build reaches the open podcast
-    # index with no user setup. LENIENT for the same reason as the ADP key
-    # above: unset QUILL_PODCAST_INDEX_KEY/SECRET bakes an empty pair, and
+    # index with no user setup. Deliberately LENIENT (no --require-token):
+    # unset QUILL_PODCAST_INDEX_KEY/SECRET bakes an empty pair, and
     # every Podcast Index feature reports itself unavailable rather than
     # failing -- iTunes discovery, subscriptions and playback are untouched.
     # The module is gitignored, never committed; the values live only in the

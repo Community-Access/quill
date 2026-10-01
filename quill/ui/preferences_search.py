@@ -94,6 +94,8 @@ class PreferencesSearch:
             "Escape clears a search before closing the dialog."
         )
         layout.Add(self.search, 0, wx.EXPAND)
+        results_label = wx.StaticText(self.panel, label="Matching settings:")
+        layout.Add(results_label, 0, wx.TOP, 4)
         self.results = wx.ListBox(self.panel, size=(-1, 90))
         self.results.SetName("Matching settings")
         self.results.SetHelpText(

@@ -105,13 +105,13 @@ Full per-scenario cases: **`signoff/SIGNOFF-install-matrix.md`**.
 ---
 
 ## §B. Editor — feature/command/surface sign-off
-Every editor menu (File · Edit · View · Insert · Format · Navigate · Search · Tools · AI · [ADP] · Window · QuillVille · Help) with each leaf item and dialog. See **`signoff/SIGNOFF-editor.md`** (generated from the command registry + menu tree + dialog registry). Section is complete when every item there is triple-checked across §A environments.
+Every editor menu (File · Edit · View · Insert · Format · Navigate · Search · Tools · AI · Window · QuillVille · Help) with each leaf item and dialog. See **`signoff/SIGNOFF-editor.md`** (generated from the command registry + menu tree + dialog registry). Section is complete when every item there is triple-checked across §A environments.
 
 ## §C. Quill Radio (public) — sign-off
-Station · Playback · [Record] · [Weather] · [ADP] · View · QuillVille · Quillins · Help. Every item + all 15 Radio custom dialogs (+21 native). See **`signoff/SIGNOFF-radio.md`**. Include: playback survives dropped connection, scheduled recording fires, favorites order preserved, backup/restore round-trip, autostart, missed-recording report.
+Station · Playback · [Record] · [Weather] · View · QuillVille · Quillins · Help. Every item + all 15 Radio custom dialogs (+21 native). See **`signoff/SIGNOFF-radio.md`**. Include: playback survives dropped connection, scheduled recording fires, favorites order preserved, backup/restore round-trip, autostart, missed-recording report.
 
 ## §D. Quill Weather (public) — sign-off
-File · Weather · Options · [ADP] · QuillVille · Help. Every item + WeatherCenter/AddLocation/Settings dialogs. See **`signoff/SIGNOFF-weather.md`**. Include: background Scheduled-Task alert check (no process running), severe-weather poll tightening, alert sounder options, Test Alert, "already-told-you" dedupe across live + background.
+File · Weather · Options · QuillVille · Help. Every item + WeatherCenter/AddLocation/Settings dialogs. See **`signoff/SIGNOFF-weather.md`**. Include: background Scheduled-Task alert check (no process running), severe-weather poll tightening, alert sounder options, Test Alert, "already-told-you" dedupe across live + background.
 
 ## §E. Dialogs — every surface
 All 227 custom + 376 native + 7 web-form dialogs, grouped by area, each verified: opens, keyboard-complete, accessible name/role, Escape/Close contract, announces its outcome. See **`signoff/SIGNOFF-dialogs.md`** (generated).
@@ -137,7 +137,7 @@ With the release/dev flag OFF (default public build), confirm these are **not re
 - [ ] **Internet Radio (`core.radio`)** and **Book Library (`core.library`)** are absent from the editor: no `Tools ▸ Media ▸ Internet Radio` or `Tools ▸ Media ▸ Book Library` items, no `radio.*`/`library.*` commands in the command palette, no Radio status-bar mini-player or tray radio controls, and no Book Library entries anywhere. With Radio, Podcasts, and Book Library all gated, the **`Tools ▸ Media` submenu is omitted entirely** in a public build — confirm it is not shown. (`QUILL_DEV_BUILD=1` restores all of it.) The **standalone Quill Radio and Quill Weather apps are unaffected** and remain launchable via the QuillVille switcher (see the check above).
 - [ ] Automated test asserts gated apps are absent from public surfaces when the flag is off (Phase 2 deliverable).
 
-Already-gated (verify still correct): Podcasts (`core.podcasts`, unreleased in public builds — see above), ADP (`future.adp_assistant`, default ON — decide for 1.0), Publishing send half (`future.publishing`), Spotify (`future.spotify`), GLOW (`core.glow`), QUILL Whisperer (`core.bw_whisperer`), third-party Quillins (locked; bundled load regardless).
+Already-gated (verify still correct): Podcasts (`core.podcasts`, unreleased in public builds — see above), Publishing send half (`future.publishing`), Spotify (`future.spotify`), GLOW (`core.glow`), QUILL Whisperer (`core.bw_whisperer`), third-party Quillins (locked; bundled load regardless).
 
 ---
 

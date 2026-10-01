@@ -63,12 +63,21 @@ class ShowNotesDialog:
         view_row.Add(self._view_choice, 0)
         root.Add(view_row, 0, wx.EXPAND | wx.ALL, 10)
 
+        # Created immediately before the field it names -- the association is by
+        # creation order, so the "View as:" label above belongs to the combo that
+        # follows it and could never have named this as well. The notes field had
+        # only a SetName and announced as a bare read-only "edit".
+        notes_label = wx.StaticText(self.dialog, label="Show &notes:")
         self._plain_view = wx.TextCtrl(
             self.dialog,
             value=self._plain_text or "(No show notes for this episode.)",
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         )
-        self._plain_view.SetName("Show notes, plain text")
+        self._plain_view.SetHelpText(
+            "The episode's show notes as plain text. Read-only -- arrow through "
+            "it line by line; Links lists every web address in it."
+        )
+        root.Add(notes_label, 0, wx.LEFT | wx.RIGHT, 10)
         root.Add(self._plain_view, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         self._rich_view: object | None = None

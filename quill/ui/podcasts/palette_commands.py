@@ -60,6 +60,48 @@ def register_podcast_commands(host: Any) -> None:
             "Podcasts: Tutorials...",
             host.open_cast_tutorials,
         ),
+        # Feed Check (R2).
+        ("podcasts.feed_check", "Podcasts: Feed Check...", host.open_cast_feed_check),
+        # The three verbs Earshot publishes to Siri (R5). No menu row: they are
+        # one-press keys whose whole point is not opening a menu, and the palette
+        # is where somebody looks for a command by name.
+        (
+            "podcasts.play_unheard",
+            "Podcasts: Play an Unheard Episode (newest)",
+            host.podcast_play_unheard,
+        ),
+        (
+            "podcasts.play_unheard_oldest",
+            "Podcasts: Play an Unheard Episode (oldest)",
+            host.podcast_play_unheard_oldest,
+        ),
+        ("podcasts.shuffle_queue", "Podcasts: Play Queue Shuffled", host.podcast_shuffle_queue),
+        (
+            "podcasts.clear_queue",
+            "Podcasts: Clear Entire Queue...",
+            host.podcast_clear_entire_queue,
+        ),
+        # The queue run shipped with a submenu and no palette entries, which is a
+        # command only somebody who already knows it can find.
+        ("podcasts.next_in_queue", "Podcasts: Next in Queue", host.podcast_next_in_queue),
+        (
+            "podcasts.previous_in_queue",
+            "Podcasts: Previous in Queue",
+            host.podcast_previous_in_queue,
+        ),
+        (
+            "podcasts.mark_played_and_next",
+            "Podcasts: Mark as Played and Next",
+            host.podcast_mark_played_and_next,
+        ),
+        # The Inbox and Personal Audio places, and the Inbox folder scope (R4).
+        ("podcasts.inbox", "Podcasts: Inbox", host.open_cast_inbox),
+        ("podcasts.personal_audio", "Podcasts: Personal Audio", host.open_cast_personal_audio),
+        (
+            "podcasts.inbox_folder",
+            "Podcasts: Inbox Folder...",
+            host.choose_inbox_folder_scope,
+        ),
     ):
         host.commands.try_register(
             command_id,

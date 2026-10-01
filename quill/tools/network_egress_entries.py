@@ -153,19 +153,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "over a verified TLS context with a bounded timeout and response "
         "size. Disabled in Safe Mode via chapters.refuse_in_safe_mode."
     ),
-    "core/adp/client.py::ask": (
-        "Single egress site for the pre-release ADP Assistant (the typed "
-        "assistant is un-gated for testing; only hands-free ADP Voice Mode "
-        "stays locked behind a signed unlock code): POSTs the user's typed or "
-        "explicitly routed question to the hosted ADP catalog service and "
-        "returns the answer. Reached only when the user presses Ask (or has "
-        "explicitly enabled hands-free question routing in ADP Settings). "
-        "HTTPS enforced in code over a verified TLS context with a bounded "
-        "timeout; the per-app bearer key is either the user's override in the "
-        "OS credential vault or the key baked into the build. Voice never "
-        "leaves the device (no /api/speak, no /api/transcribe). Raises in Safe "
-        "Mode."
-    ),
     "core/community_picks.py::_fetch": (
         "Single egress site for the Community Picks catalogue: one HTTPS GET of "
         "https://quillforall.org/picks/v1/picks.json, a static file on QUILL's "

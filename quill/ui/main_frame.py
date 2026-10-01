@@ -379,7 +379,6 @@ from quill.ui.html_paste_cleaner import analyze_paste
 from quill.ui.keybinding_parse import KeybindingParseMixin
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_abbreviations import AbbreviationsMixin
-from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_ai_actions import AiActionsMixin
 from quill.ui.main_frame_ai_menu import AiMenuMixin
 from quill.ui.main_frame_ai_reading_order import ReadingOrderMixin
@@ -896,7 +895,6 @@ class MainFrame(
     LineCommandsMixin,
     ListStudioMixin,
     StoryStudioMixin,
-    AdpMixin,
     GlobalHotkeysMixin,
     UnlockCodesMixin,
     VaultMixin,

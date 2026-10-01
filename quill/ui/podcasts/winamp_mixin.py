@@ -79,6 +79,29 @@ class CastWinampKeysMixin:
 
     # -- dispatch ---------------------------------------------------------
 
+    def _winamp_focus_takes_arrows(self) -> bool:
+        """True when the focused control needs the arrow keys itself.
+
+        A tree uses Left and Right for collapse and expand, and a report list
+        uses them to move across columns -- both are the control's own
+        navigation, and a transport key that eats them removes the only
+        keyboard route to a whole structure. The rule is narrow on purpose: it
+        applies to the arrows and not to the letters, because no letter in the
+        map navigates anything.
+        """
+        wx = self._winamp_wx()
+        try:
+            focused = wx.Window.FindFocus()
+        except Exception:  # noqa: BLE001 - no focus needs no arrows
+            return False
+        if focused is None:
+            return False
+        for name in ("TreeCtrl", "ListCtrl", "ListBox", "CheckListBox", "TreeListCtrl"):
+            control = getattr(wx, name, None)
+            if control is not None and isinstance(focused, control):
+                return True
+        return False
+
     def _winamp_focus_is_text_entry(self) -> bool:
         """True when a text field has focus, so a letter must not be eaten.
 
@@ -120,6 +143,16 @@ class CastWinampKeysMixin:
             return
         action = resolve_winamp_action(key, ctrl=ctrl, shift=shift, alt=alt)
         if action is None:
+            event.Skip()
+            return
+        # An arrow is navigation before it is a transport key. Bare Left and
+        # Right mean seek-five-seconds here, and they were being swallowed
+        # anywhere but a text field -- including the library tree, where Left
+        # and Right are collapse and expand. So a keyboard listener could not
+        # collapse a folder in Cast's main surface: the keystroke was eaten and
+        # answered "nothing is playing" (reported 2026-09-30). The letters are
+        # unaffected, because no letter navigates a tree.
+        if key in ("LEFT", "RIGHT") and self._winamp_focus_takes_arrows():
             event.Skip()
             return
         self._run_winamp_action(action)

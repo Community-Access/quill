@@ -13,12 +13,6 @@ echo "==> Generating build-identity module (quill/_build_info.py)"
 # get_short_version()/__version__ fallback instead of failing the build.
 python tools/generate_build_info.py || echo "!! build/version.toml not found - shipping without a channel-annotated version label"
 
-echo "==> Generating bundled ADP client key (quill/_adp_client_key.py)"
-# Lenient by design (no --require-token): an unset QUILL_ADP_CLIENT_KEY bakes an
-# empty key and Ask ADP degrades to a key pasted in ADP Settings. Set
-# QUILL_ADP_CLIENT_KEY in the build env to ship the key. Module is gitignored.
-python tools/generate_adp_client_key.py
-
 # No bug-report credential ships in any build (2026-09-26: feedback is email to
 # support@community-access.org). setup_macos.py packages the whole quill/ tree,
 # so a stale, gitignored quill/_feedback_token.py from an older build would be

@@ -64,15 +64,23 @@ class SearchEverywhereDialog:
         # searched before it on the down arrow. An editable combo keeps
         # typing exactly as it was -- nothing is selected until somebody
         # arrows to it deliberately.
+        #
+        # This is the combo box that announced as a bare "combo box" (Jeff,
+        # 2026-09-30). It carried a careful SetName, and SetName is not an
+        # accessible name on wxMSW: the reader takes the name from the static
+        # text created immediately before the control, so the label has to be
+        # built here, before it, and not merely placed to its left.
+        search_row.Add(
+            wx.StaticText(self.dialog, label="Search &for:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
         self._query_ctrl = wx.ComboBox(
             self.dialog,
             value="",
             choices=list(self._recent),
             style=wx.TE_PROCESS_ENTER,
-        )
-        self._query_ctrl.SetName(
-            "Search every subscription, episode, and note at once; "
-            "down arrow for searches you have run before"
         )
         self._query_ctrl.SetHelpText(
             "Searches show titles, episode titles, show notes, your own notes "
@@ -84,8 +92,14 @@ class SearchEverywhereDialog:
         search_row.Add(search_btn, 0)
         root.Add(search_row, 0, wx.EXPAND | wx.ALL, 10)
 
+        # Labelled for the same reason, and built before the list for the same
+        # reason: creation order is the association.
+        root.Add(wx.StaticText(self.dialog, label="&Results:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._list = wx.ListBox(self.dialog)
-        self._list.SetName("Results, grouped by shows, then episodes, then notes")
+        self._list.SetHelpText(
+            "What matched, grouped shows first, then episodes, then your own "
+            "notes. Go To opens whatever is selected where it lives."
+        )
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         self._status = wx.StaticText(self.dialog, label="")

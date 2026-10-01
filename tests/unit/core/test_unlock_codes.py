@@ -49,25 +49,25 @@ def _pubkey_b64(vk: nacl_signing.VerifyKey) -> str:
 
 def test_mint_and_redeem_round_trip(keypair):
     sk, vk = keypair
-    code = mint_code("core.adp", sk)
+    code = mint_code("future.spotify", sk)
     result = redeem_code(code, public_key_b64=_pubkey_b64(vk))
     assert result.ok
-    assert result.feature_id == "core.adp"
+    assert result.feature_id == "future.spotify"
 
 
 def test_code_has_expected_prefix_and_is_decodable(keypair):
     sk, _vk = keypair
-    code = mint_code("core.adp", sk)
+    code = mint_code("future.spotify", sk)
     assert code.startswith("QUILL-")
     payload_bytes, signature = decode_code(code)
     assert len(signature) == 64
-    assert b"core.adp" in payload_bytes
+    assert b"future.spotify" in payload_bytes
 
 
 def test_redeem_rejects_wrong_public_key(keypair):
     sk, _vk = keypair
     other_vk = nacl_signing.SigningKey.generate().verify_key
-    code = mint_code("core.adp", sk)
+    code = mint_code("future.spotify", sk)
     result = redeem_code(code, public_key_b64=_pubkey_b64(other_vk))
     assert not result.ok
     assert result.feature_id is None
@@ -75,7 +75,7 @@ def test_redeem_rejects_wrong_public_key(keypair):
 
 def test_redeem_rejects_tampered_code(keypair):
     sk, vk = keypair
-    code = mint_code("core.adp", sk)
+    code = mint_code("future.spotify", sk)
     # Flip the first body character (right after the "QUILL-" prefix), never
     # the last: base32 without padding can leave unused zero-padding bits in
     # the final character, which base64.b32decode truncates rather than
@@ -99,7 +99,7 @@ def test_redeem_rejects_garbage_input():
 def test_redeem_honors_expiry(keypair):
     sk, vk = keypair
     yesterday = (date.today() - timedelta(days=1)).isoformat()
-    code = mint_code("core.adp", sk, expires=yesterday)
+    code = mint_code("future.spotify", sk, expires=yesterday)
     result = redeem_code(code, public_key_b64=_pubkey_b64(vk))
     assert not result.ok
     assert "expired" in (result.error or "")
@@ -108,13 +108,13 @@ def test_redeem_honors_expiry(keypair):
 def test_redeem_accepts_not_yet_expired(keypair):
     sk, vk = keypair
     tomorrow = (date.today() + timedelta(days=1)).isoformat()
-    code = mint_code("core.adp", sk, expires=tomorrow)
+    code = mint_code("future.spotify", sk, expires=tomorrow)
     result = redeem_code(code, public_key_b64=_pubkey_b64(vk))
     assert result.ok
 
 
 def test_encode_decode_round_trip():
-    payload = b"core.adp|"
+    payload = b"future.spotify|"
     signature = b"\x00" * 64
     code = encode_code(payload, signature)
     decoded_payload, decoded_signature = decode_code(code)
@@ -148,9 +148,9 @@ class TestUnlockCodeStore:
     def test_unlocked_feature_ids_reverifies_every_code(self, keypair, monkeypatch):
         sk, vk = keypair
         monkeypatch.setattr("quill.core.unlock_codes.PUBLIC_KEY_B64", _pubkey_b64(vk))
-        good = mint_code("core.adp", sk)
+        good = mint_code("future.spotify", sk)
         yesterday = (date.today() - timedelta(days=1)).isoformat()
         expired = mint_code("core.other", sk, expires=yesterday)
         store = UnlockCodeStore(codes=[good, expired, "garbage"])
         unlocked = store.unlocked_feature_ids()
-        assert unlocked == frozenset({"core.adp"})
+        assert unlocked == frozenset({"future.spotify"})

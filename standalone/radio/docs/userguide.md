@@ -2,6 +2,14 @@
 
 Version 3.1.1, released 2026-09-30.
 
+## Upcoming Preferences Search
+
+Preferences gains **Find a setting** in the next maintenance update. Type a
+term from a setting's label or help, press Down for matching settings, then Enter
+to focus one. Control+F returns to search; Escape clears a search before closing.
+Search navigates only: OK still saves, Cancel still cancels, and values are not
+indexed. Disabled settings stay disabled.
+
 Quill Radio is internet radio built for screen reader users. It is a small window. The favorites tree has focus the moment it opens. The menus say everything they do, every action speaks, and a tray icon keeps the music playing while you work. It runs the same radio code as QUILL itself and, when installed, shares its data, so nothing you set up here is stranded.
 
 ## Contents
@@ -594,7 +602,6 @@ The Record menu disappears if you turn Recording off in Customize Features. See 
 
 ### Community menu (Alt+C)
 
-- **Ask the Audio Description Project...** (Ctrl+Alt+8) and **Audio Description Project Settings...** (Ctrl+Alt+Shift+A).
 - **Ask QUILL Radio...** (Ctrl+Shift+8) and **Use My ChatGPT Subscription...** (Alt+F5) -- a conversation that already knows what is playing, on the ChatGPT plan you pay for.
 - **ACB Media Schedule...** (Ctrl+Shift+N), **What Is On Now** (Ctrl+Alt+H), **Upcoming...** (Ctrl+Alt+Shift+F) and **Refresh the Schedule** (F5).
 - **ACB Media Podcasts...** (Ctrl+Alt+I).
@@ -2025,29 +2032,6 @@ appear under Apps in ChatGPT's settings -- so signing one out leaves the others
 as they were. There is no free QUILL AI service behind Ask QUILL Radio and no
 API key to paste: it is your plan, or nothing, and the window says so.
 
-### Ask the Audio Description Project, step by step
-
-The Audio Description Project (ADP) keeps a directory of movies and TV shows with described audio.
-
-1. Press **Ctrl+Alt+8** (**Community > Ask the Audio Description Project...**). The window "Ask ADP" opens with focus in **Question** (Alt+Q).
-2. Type a question, such as "Is there audio description for The Crown?", and choose **Ask** (Enter).
-3. The answer appears in **Answer** (Alt+W), and any titles in **Results** (Alt+R). With **Speak answers** (Alt+S) checked, the answer is also spoken.
-4. **New Conversation** (Alt+N) starts over.
-5. Press **Escape** to close.
-
-Good to know: Ask ADP needs the internet, and it is off in Safe Mode. You do not need an account or a key; one is built in.
-
-### Audio Description Project Settings, step by step
-
-You should rarely need these. The defaults work.
-
-1. Press **Ctrl+Alt+Shift+A** (**Community > Audio Description Project Settings...**). The ADP Settings window opens.
-2. **Server address** (Alt+A): leave it as it is unless you were told to change it. It must start with `https`.
-3. **Client access key** (Alt+K): leave it blank to use the key built into the app. Enter one only if you were given a replacement. It is stored in the Windows credential vault, or in the portable copy's own key store.
-4. **Your first name** (Alt+F): optional. If you fill it in, it is sent to ADP with each question so answers can address you by name.
-5. **Speak answers automatically** (Alt+P): on by default.
-6. Choose **Save** (Enter). You hear that the settings were saved. Escape cancels.
-
 ### ACB Media Podcasts, step by step
 
 1. Press **Ctrl+Alt+I** (**Community > ACB Media Podcasts...**). Quill Radio fetches ACB's podcast directory, then the window opens.
@@ -2720,10 +2704,8 @@ In every other window, Alt+S is the Station menu and Alt+W the Window menu. See 
 
 | Action | Key |
 | --- | --- |
-| Ask the Audio Description Project | Ctrl+Alt+8 |
 | Ask QUILL Radio | Ctrl+Shift+8 |
 | Use My ChatGPT Subscription | Alt+F5 |
-| Audio Description Project Settings | Ctrl+Alt+Shift+A |
 | ACB Media Schedule | Ctrl+Shift+N |
 | What Is On Now | Ctrl+Alt+H |
 | Upcoming | Ctrl+Alt+Shift+F |

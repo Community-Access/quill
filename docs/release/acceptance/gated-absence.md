@@ -158,15 +158,13 @@ their documented default) for 1.0.
 **Do this**
 1. In the Command Palette, search for **`Spotify`**, **`GLOW`**, and
    **`QUILL Whisperer`** (or `whisperer.`).
-2. Note the state of **ADP** (`future.adp_assistant`, currently default ON — a
-   product decision for 1.0; record whether it is present).
-3. Note the **Publishing** send half (`future.publishing`) — the compose/preview may
+2. Note the **Publishing** send half (`future.publishing`) — the compose/preview may
    exist but the send step should be gated.
 
 **You should see and hear**
 - **Spotify** absent (`future.spotify`); **GLOW** absent (`core.glow`); **QUILL
   Whisperer** absent (`core.bw_whisperer`). Third-party Quillins are locked (bundled
-  ones still load). Record ADP and Publishing states for the release decision.
+  ones still load). Record the Publishing state for the release decision.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

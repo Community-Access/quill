@@ -88,13 +88,6 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # no accelerator ever carried on the main window and which Station >
         # Connect to Spotify also claimed; radio_main_keys now carries it.
         "radio.stop": "Ctrl+.",
-        # Ctrl+Alt+8 since 2026-09-25, beside Community Picks (Ctrl+Alt+0) and
-        # Suggest (Ctrl+Alt+9) on the same menu. It was Ctrl+Alt+Shift+Q, which
-        # is the family's system-wide Show/Hide chord (QUILL and QUILL Cast
-        # register it), and a system-wide hotkey always wins -- so while either
-        # of them ran, this menu item's key silently did nothing.
-        "adp.ask": "Ctrl+Alt+8",
-        "adp.settings": "Ctrl+Alt+Shift+A",
         # The keys Radio's own menus already bind, named so the Command Palette
         # and Keyboard Shortcuts show them (2026-09-25). Without these the
         # palette listed Play/Pause and Mute on QUILL leader chords

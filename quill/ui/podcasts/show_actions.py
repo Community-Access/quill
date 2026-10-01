@@ -385,11 +385,23 @@ def unsubscribe_show_prompt(
 
     downloaded = [e for e in show.episodes if e.downloaded_path]
     policy = library.effective_settings(show).delete_files_on_remove
-    answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
-        f"Unsubscribe from {show.title}?",
-        "Unsubscribe",
+    # The question names the show and everything that survives it, from the one
+    # place that vocabulary lives. A bare "are you sure?" answers nothing, and
+    # "stop following" sounds as though it might delete the episodes -- so
+    # somebody who would happily have unfollowed cancels rather than find out.
+    from quill.core.podcasts.follow_words import unfollow_question, unfollowed
+
+    # show_message_box rather than wx.MessageBox: it announces the dialog it has just
+    # opened. The bare call was silent about that, and the Manager's own copy of this
+    # function -- now deleted -- was better in that one respect.
+    from quill.ui.dialog_contract import show_message_box
+
+    answer = show_message_box(
+        unfollow_question(show.title),
+        "Stop Following",
         wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,
+        announce=announce,
     )
     if answer != wx.YES:
         return False
@@ -439,11 +451,7 @@ def unsubscribe_show_prompt(
         dispose=lambda: undo_last_ui.discard(held),
     )
     if delete_files and downloaded:
-        announce(
-            undo_last_ui.offer(
-                f"Unsubscribed from {show.title} and deleted its downloaded episodes"
-            )
-        )
+        announce(undo_last_ui.offer(unfollowed(show.title, deleted_files=len(held))))
     else:
         announce(undo_last_ui.offer(f"Unsubscribed from {show.title}"))
     if on_change is not None:

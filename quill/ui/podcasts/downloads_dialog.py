@@ -70,8 +70,19 @@ class DownloadsDialog:
         filter_row.Add(self._filter, 1, wx.EXPAND)
         root.Add(filter_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        # A real heading, created immediately before the list. The association
+        # is by creation order, so a label placed after the list -- or a SetName,
+        # which is what this carried -- names nothing and the list announces as a
+        # bare "list". The Show combo above has one, which is why it announces.
+        root.Add(
+            wx.StaticText(self.dialog, label="Downloaded &episodes:"), 0, wx.LEFT | wx.RIGHT, 10
+        )
         self._list = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
-        self._list.SetName("Downloaded episodes by podcast; arrow through for sizes")
+        self._list.SetHelpText(
+            "Every downloaded episode, grouped by podcast. Arrow through for "
+            "sizes; Remove This Podcast's Downloads deletes the files for the "
+            "podcast you are on."
+        )
         # Subscriptions > Choose Columns... owns which columns exist and in
         # what order -- a report row is read out column by column.
         self._columns: list[ColumnDef] = columns_for("cast", DOWNLOADS.id)

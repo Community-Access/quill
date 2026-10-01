@@ -313,7 +313,7 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 225 audited sites (63 helped, 162 named-help).
+Control coverage: 231 audited sites (91 helped, 140 named-help).
 
 ### Every window, and what it is for
 
@@ -328,6 +328,8 @@ Control coverage: 225 audited sites (63 helped, 162 named-help).
 **Downloads.** The download queue, and everything you can do to it. Finished rows stay until you clear them so "did that actually download?" always has an answer, and Enter on a saved row opens the folder it landed in.
 
 **Episode Filter Rule.** One rule inside a podcast's Episode Filters: a title pattern, a minimum length, or both -- and both have to match for the rule to. A rule is a label plus a test; it decides nothing until the filter itself is saved, and it never deletes an episode.
+
+**Feed Check.** A report of your podcasts' latest feed checks, failures, and publication times. Retry a selected feed or all failing feeds, or copy an address to investigate it. A quiet podcast is not necessarily a failing feed.
 
 **Feed Credentials.** The user name and password for a private feed -- a paid subscription, a members-only show. They are kept for this feed alone and sent to its own host, never to a directory.
 
@@ -353,7 +355,7 @@ Control coverage: 225 audited sites (63 helped, 162 named-help).
 
 **Podcasts.** The Podcast Manager: every show you follow, the episodes in each, and every verb that acts on them -- play, download, mark played, file into a folder, unsubscribe. One list chooses the show, the other holds its episodes, and Shift+F10 on any row offers everything that can be done to it.
 
-**QUILL Cast.** The main window: what is playing, and the transport for it. Your shows live in the Podcast Manager, the episodes waiting for you are in its Inbox, and everything else is one menu away. Nothing here needs an account, and nothing you listen to leaves this computer.
+**QUILL Cast.** Your podcast library, its pinned views and folders, and playback controls. Choose a podcast to play its next episode or open an episode list for more actions. Nothing here needs an account, and nothing you listen to leaves this computer.
 
 **QUILL Cast Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
@@ -411,12 +413,21 @@ Control coverage: 225 audited sites (63 helped, 162 named-help).
 
 ### Every authored control help sentence
 
+#### AddPodcastDialog (`quill/ui/podcasts/add_podcast_dialog.py`)
+
+- `self._query_ctrl`: Type part of a podcast's name and press Enter, or choose Search. The chosen directory is searched, and nothing is subscribed to until you say so.
+- `self._results`: Podcasts the chosen directory matched. Enter previews the one you are on; Follow adds it to your library.
+- `self._subscribe_btn`: Adds the selected podcast to your library. If you already follow it, this button says Unfollow instead and asks before removing anything.
+- `self._url_ctrl`: Paste a podcast's feed address here when you already have it, then press Enter or choose Add. Both http and https addresses work.
 #### CastCloseConfirmDialog (`quill/ui/podcasts/close_confirm_dialog.py`)
 
 - `self._dont_ask_check`: Stops this question appearing and always does what you choose here. Preferences can set it back to Ask every time.
 - `exit_btn`: Quits QUILL Cast. Your position in the episode is saved, so it resumes where you left it.
 - `minimize_btn`: Keeps playing and downloading with the window tucked into the system tray; the tray icon brings it back.
 - `cancel_btn`: Returns to QUILL Cast with everything as it was.
+#### DownloadsDialog (`quill/ui/podcasts/downloads_dialog.py`)
+
+- `self._list`: Every downloaded episode, grouped by podcast. Arrow through for sizes; Remove This Podcast's Downloads deletes the files for the podcast you are on.
 #### EpisodeFilterRuleDialog (`quill/ui/podcasts/episode_filter_rule_dialog.py`)
 
 - `ok_btn`: Keeps this rule in the filter. Nothing is applied until you save it.
@@ -425,15 +436,49 @@ Control coverage: 225 audited sites (63 helped, 162 named-help).
 
 - `ok_btn`: Saves these rules for this podcast. Every list you ticked takes effect at once, on episodes you already have as well as new ones; nothing is deleted. The Play Queue is the only thing not touched without asking, and saving asks about it separately.
 - `cancel_btn`: Leaves this podcast's rules exactly as they were.
+#### FeedCheckDialog (`quill/ui/podcasts/feed_check_dialog.py`)
+
+- `self._list`: Every podcast you follow, worst first: the ones failing to check, then any never checked, then any that have gone quiet, then the healthy ones. Nothing here has been unfollowed and nothing has stopped being checked -- Cast keeps trying a failing feed. Shift+F10 opens what you can do to a row.
+- `self._retry_btn`: Check the selected feed again, now.
+- `self._retry_all_btn`: Check every failing feed again. Feeds that have gone quiet are left alone -- a quiet feed is working perfectly, and retrying it would report nothing new.
+- `self._copy_btn`: Put the selected podcast's feed address on the clipboard, so you can open it in a browser and see what the publisher is actually sending.
+- `close_btn`: Closes Feed Check without changing which podcasts you follow.
+#### FolderPickerDialog (`quill/ui/podcasts/folder_picker_dialog.py`)
+
+- `self._tree`: Your podcast folders. Choose the one to move into and press Move Here; New Folder creates one inside whatever is selected.
+#### CastMainPanelMixin (`quill/ui/podcasts/main_panel.py`)
+
+- `self._shows_tree`: Your podcasts, folders, and pinned views. Arrow through the library; Enter on a podcast plays its next episode and Enter on a view opens its episode list. Shift F10 offers the selected row's actions.
+- `self._play_pause_btn`: Starts the selected podcast or episode when stopped, pauses current playback, or resumes it from the saved position when paused.
+- `self._stop_btn`: Stops the current episode. Play starts playback again.
+- `self._favorite_toggle_btn`: Adds the playing podcast to Favorites, or removes it if already there. Disabled when there is no playing podcast.
+- `self._unfollow_btn`: Stops following the podcast selected in the library. Asks first, says what happens to anything downloaded, and Ctrl+Z puts it back.
+- `button`: Opens the episode list and podcast actions, or opens Add Podcast to find and follow another show, as named by this button.
+#### PodcastManagerDialog (`quill/ui/podcasts/manager_dialog.py`)
+
+- `self._tree`: Your podcast folders and the podcasts in them. Select a folder to see its contents, a show to see its episodes.
+- `self._episodes`: Episodes of the selected podcast. Arrow through for details.
+- `unsubscribe_btn`: Removes the selected podcast from your library, along with your place in its episodes. Asks first, and says what happens to anything you have downloaded. The Delete key does the same thing.
 #### ManagerPhase4Mixin (`quill/ui/podcasts/manager_phase4.py`)
 
+- `self._episode_filter_choice`: Which episodes the list shows: all of them, only the unplayed ones, only what is downloaded, and so on. It narrows the list you are looking at and changes nothing about the episodes themselves.
+- `self._show_filter_choice`: Which podcasts the folder tree shows -- all of them, or only the ones with something unplayed. Nothing is unfollowed or hidden permanently.
 - `self._episode_search_ctrl`: Narrows the episode list of the podcast you are on, matching episode titles and the show notes. It searches this podcast only -- Search Everywhere is the one that crosses your whole library -- and it narrows whatever the filter and sort above already chose rather than replacing them. Enter says how many matched.
+#### PlayQueueDialog (`quill/ui/podcasts/play_queue_dialog.py`)
+
+- `self._list`: The queue in play order; Enter plays the selected episode now. Shift and arrow extend the selection, Ctrl and Space adds one, and Remove takes everything selected.
+#### SearchEverywhereDialog (`quill/ui/podcasts/search_everywhere_dialog.py`)
+
+- `self._list`: What matched, grouped shows first, then episodes, then your own notes. Go To opens whatever is selected where it lives.
 #### ListSettingDialog (`quill/ui/podcasts/show_list_editor.py`)
 
 - `ok_btn`: Saves this list for this podcast only.
 - `cancel_btn`: Leaves the list exactly as it was.
 - `self._preview_btn`: Shows which of the 50 newest titles these patterns would change, and how. It is a dry run: no title is altered by pressing it.
 - `self._preview_list`: Each title these patterns would change, before and after. It reports; it has changed nothing.
+#### ShowNotesDialog (`quill/ui/podcasts/show_notes_dialog.py`)
+
+- `self._plain_view`: The episode's show notes as plain text. Read-only -- arrow through it line by line; Links lists every web address in it.
 #### ShowSettingsDialog (`quill/ui/podcasts/show_settings_dialog.py`)
 
 - `self._category`: Which group of settings is shown below. Seventy controls in one list is not a list anybody can work through by ear, so this shows one group at a time. It hides nothing -- every group is one keystroke away.
@@ -448,6 +493,12 @@ Control coverage: 225 audited sites (63 helped, 162 named-help).
 
 - `ok_btn`: Applies this setting to this podcast only.
 - `cancel_btn`: Leaves the setting as it was.
+#### PodcastStatsDialog (`quill/ui/podcasts/stats_dialog.py`)
+
+- `self._report`: Your listening figures for the chosen period. Read-only -- arrow through it line by line, or Copy takes the whole thing.
+#### YearInReviewDialog (`quill/ui/podcasts/year_review_dialog.py`)
+
+- `self._report`: Your year in listening, in sentences. Read-only -- arrow through it line by line, or Copy takes the whole thing.
 
 ## QUILL Media Player
 

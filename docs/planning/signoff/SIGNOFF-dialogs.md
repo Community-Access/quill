@@ -11,7 +11,6 @@
 - [ ] W  [ ] S  [ ] A  `quill/ui/abbreviation_manager_dialog.py::_AbbreviationEditDialog.__init__::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/action_builder_dialog.py::ActionBuilderDialog.__init__::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/action_builder_dialog.py::ActionBuilderDialog._on_attach_reference::wx.FileDialog`  _(native)_
-- [ ] W  [ ] S  [ ] A  `quill/ui/adp_dialog.py::AdpAskDialog.__init__::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/agent_validator_dialog.py::AgentValidatorDialog.__init__::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/agent_validator_dialog.py::AgentValidatorDialog._on_choose_file::wx.FileDialog`  _(native)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/agent_validator_dialog.py::AgentValidatorDialog._on_choose_folder::wx.DirDialog`  _(native)_
@@ -232,7 +231,6 @@
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_spoken_echo::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_watch_folder_status::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.start_macro_recording::wx.TextEntryDialog`  _(native)_
-- [ ] W  [ ] S  [ ] A  `quill/ui/main_frame_adp.py::AdpMixin.open_adp_settings::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame_braille.py::BrailleCommandsMixin.convert_brf_file::wx.FileDialog`  _(native)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame_braille.py::BrailleCommandsMixin.go_to_braille_page::wx.TextEntryDialog`  _(native)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame_braille_phase2.py::BraillePhase2CommandsMixin.go_to_print_page::wx.TextEntryDialog`  _(native)_

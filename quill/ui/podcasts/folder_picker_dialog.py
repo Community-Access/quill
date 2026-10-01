@@ -117,11 +117,20 @@ class FolderPickerDialog:
         search_row.Add(self._search_ctrl, 1, wx.EXPAND)
         root.Add(search_row, 0, wx.EXPAND | wx.ALL, 10)
 
+        # Created immediately before the tree, because the association is by
+        # creation order: the "Search folders:" label above belongs to the field
+        # that follows it and cannot also name the tree, so the tree had only a
+        # SetName and announced as a bare "tree view".
+        tree_label = wx.StaticText(self.dialog, label="&Folders:")
         self._tree = wx.TreeCtrl(
             self.dialog,
             style=wx.TR_DEFAULT_STYLE | wx.TR_LINES_AT_ROOT | wx.TR_SINGLE,
         )
-        self._tree.SetName("Folders")
+        self._tree.SetHelpText(
+            "Your podcast folders. Choose the one to move into and press Move "
+            "Here; New Folder creates one inside whatever is selected."
+        )
+        root.Add(tree_label, 0, wx.LEFT | wx.RIGHT, 10)
         root.Add(self._tree, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)

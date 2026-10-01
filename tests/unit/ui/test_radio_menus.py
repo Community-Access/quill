@@ -85,6 +85,6 @@ def test_the_community_menu_does_not_advertise_a_chord_that_is_someone_elses() -
     top-level menu is opened by its mnemonic (Alt+C here), and no other menu on
     this bar puts a chord in its title.
     """
-    assert 'menu_bar.Append(adp_menu, "&Community")' in _RADIO
+    assert 'menu_bar.Append(community_menu, "&Community")' in _RADIO
     titles = [line for line in _RADIO.splitlines() if "menu_bar.Append(" in line]
     assert not [line for line in titles if "Ctrl+" in line], titles

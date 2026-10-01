@@ -1,7 +1,7 @@
 """Bake the Podcast Index credential into a build. It generates no secret.
 
-The name follows the family (``generate_adp_client_key.py``, the feedback token,
-the build-info and offline-edition markers) and does the same job they do:
+The name follows the family (``generate_youtube_oauth_client.py``, the
+build-info and offline-edition markers) and does the same job they do:
 **take a value that already exists outside the repository and write it into a
 gitignored module the build then packages.** The key and secret are issued by
 podcastindex.org to a registered developer -- they come from the vendor, not
@@ -26,8 +26,7 @@ to make a Google Cloud project to play a YouTube link -- seven steps of
 developer console before anything happens. So the app carries its own.
 
 **What that credential is, and is not.** An extractable shipped key is a
-casual-abuse and rotation barrier, not authentication -- exactly the stance the
-existing ADP client key documents (``tools/generate_adp_client_key.py``). It
+casual-abuse and rotation barrier, not authentication. It
 identifies the app to a directory that serves public data; it authorises nothing
 on the listener's behalf, reads no account, and carries no personal data. If it
 is ever abused it is rotated in one build, and a listener who wants their own

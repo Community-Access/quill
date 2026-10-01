@@ -168,31 +168,3 @@ def test_every_yt_dlp_call_keeps_its_cache_in_the_data_folder(
     assert len(_FakeYoutubeDL.seen) == 5
     for options in _FakeYoutubeDL.seen:
         assert options["cachedir"] == str(bundle / "data" / "yt-dlp-cache")
-
-
-def test_adp_key_goes_through_the_portable_secret_store(
-    monkeypatch: pytest.MonkeyPatch, stick: tuple[Path, Path]
-) -> None:
-    """The one secret that bypassed credential_store, and so the host's vault."""
-    from quill.core.adp import client
-    from quill.platform.windows import credential_manager, credential_store
-
-    def _vault(*_args: object, **_kwargs: object) -> None:
-        raise AssertionError("a portable copy must not touch Credential Manager")
-
-    monkeypatch.setattr(credential_manager, "save_generic_credential", _vault)
-    monkeypatch.setattr(credential_manager, "load_generic_credential", _vault)
-    stored: dict[str, str] = {}
-    monkeypatch.setattr(credential_store, "_read_store", lambda: dict(stored))
-    monkeypatch.setattr(credential_store, "_write_store", lambda d: stored.update(d) or None)
-    if sys.platform == "win32":
-        from quill.platform.windows import dpapi
-
-        monkeypatch.setattr(dpapi, "protect_secret", lambda s, **_k: f"enc:{s}")
-        monkeypatch.setattr(dpapi, "unprotect_secret", lambda s, **_k: s[4:])
-
-    assert client.save_client_key("  override  ") is True
-
-    if sys.platform == "win32":
-        assert stored == {client.CREDENTIAL_TARGET: "enc:override"}
-        assert client.stored_client_key() == "override"

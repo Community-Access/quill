@@ -189,7 +189,7 @@ class WeatherCenterDialog:
         )
         root.Add(self._alerts_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         # A StaticText immediately before the field is what actually names a
-        # read-only TextCtrl for a screen reader (the ADP dialog's pattern);
+        # read-only TextCtrl for a screen reader;
         # set_accessible_name alone does not stick on a read-only multiline box.
         self._alert_detail_label = wx.StaticText(
             self._surface, label="Selected aler&t (read-only):"

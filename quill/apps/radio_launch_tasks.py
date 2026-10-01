@@ -104,13 +104,10 @@ def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:
     argument that a schedule is about what is *on*; but Station is the menu of
     everything this app can tune, and it had grown past twenty items, while the
     Community menu is precisely "places this community already goes, brought
-    inside the app" -- which is what an ACB Media schedule is. It now sits
-    beside ACB Community Events, where somebody looking for either will find
-    both.
+    inside the app" -- which is what an ACB Media schedule is.
 
-    The separator is only added when the menu already has something above,
-    so a profile with the ADP assistant turned off gets a Community menu that
-    opens on the schedule rather than on a rule.
+    The separator is only added when the menu already has something above, so
+    the caller's empty menu opens on a row rather than on a rule.
     """
     from quill.ui.radio import (
         acb_podcasts_wiring,
@@ -119,9 +116,8 @@ def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:
         community_picks_wiring,
     )
 
-    # Ask QUILL Radio first (2026-09-29): beside Ask the Audio Description
-    # Project, because both are "ask a question and hear an answer" -- and this
-    # one already knows what is playing.
+    # Ask QUILL Radio first (2026-09-29): it is the row that answers a question
+    # in words, and it already knows what is playing.
     if menu.GetMenuItemCount():
         menu.AppendSeparator()
     ask_radio_wiring.append_menu_items(app, menu, wx)

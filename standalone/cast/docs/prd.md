@@ -45,7 +45,6 @@ In scope (all reused from upstream):
 - **Keyboard Shortcuts...** (the shared Keymap Editor, scoped to this app's commands) and **Global Hotkeys...** (system-wide keys for Play/Pause, Stop, and Show/Hide QUILL Cast to the Tray).
 - **Spotify podcasts (experimental)**, shipped dark behind `future.spotify`: requires a signed unlock code, Spotify Premium, a user-supplied Client ID, and WebView2. Play-only -- Spotify audio is DRM-protected and cannot be downloaded. Off in Safe Mode.
 - Help: Get FFmpeg (recovery download if the bundled copy goes missing), Open in Quill, Redeem Unlock Code (shared unlock store), Check for Updates against this repo's releases, About.
-- Unlock-gated Audio Description Project menu (top-level) when `future.adp_assistant` is unlocked.
 
 Out of scope, by decision (D-1, "basic level of functionality"):
 
@@ -681,7 +680,7 @@ call site so a stale rationale cannot keep asserting itself.
   the listener has to register for -- and that was the right call while the key
   was theirs to get. It is now the app's: `tools/generate_podcast_index_key.py`
   bakes a key and secret into the gitignored `quill/_podcast_index_key.py` at
-  build time (never committed; the same shape as the ADP client key), and
+  build time (never committed), and
   `podcast_index.credentials()` prefers a listener's own pair from the platform
   credential store, so pasting a key is a rotation lever rather than an entry
   fee. `directory_source` therefore defaults to `both` for a new library, while

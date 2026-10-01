@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -550,8 +550,6 @@ in §8.</li>
 <li>Command Palette scoped to the app’s registry; Redeem Unlock Code
 (shared store); in-app update check that downloads the installer with
 spoken progress and offers Install now; About.</li>
-<li>Unlock-gated Audio Description Project menu when
-<code>future.adp_assistant</code> is unlocked.</li>
 <li>Diagnostics (upstream <code>core/radio/radio_logging.py</code>,
 <code>RadioHistory.debug_mode</code>/<code>log_dir</code>; #1130, #1124,
 #1122): a Verbose logging (debug-mode) checkbox in Preferences applied
@@ -2906,17 +2904,16 @@ switchable off.</li>
 <li><em>How the credential ships.</em>
 <code>tools/generate_podcast_index_key.py</code> bakes the key and
 secret into the gitignored <code>quill/_podcast_index_key.py</code> at
-build time, exactly as the ADP client key is baked in, and the build
-script calls it leniently – an unset pair bakes empty, and the feature
-reports itself unavailable instead of breaking anything. The secret is
-never in the repository. <code>credentials()</code> prefers a listener’s
-own pair from the platform credential store (DPAPI), so pasting a key is
-a rotation lever that needs no release. What is shipped is an
-<em>application identifier for public data</em>: it authorises nothing
-on anyone’s behalf, reads no account, and sends no listener data – a
-search carries the term and nothing else. An extractable shipped key is
-a casual-abuse and rotation barrier, which is the same stance the ADP
-client key documents.</li>
+build time, and the build script calls it leniently – an unset pair
+bakes empty, and the feature reports itself unavailable instead of
+breaking anything. The secret is never in the repository.
+<code>credentials()</code> prefers a listener’s own pair from the
+platform credential store (DPAPI), so pasting a key is a rotation lever
+that needs no release. What is shipped is an <em>application identifier
+for public data</em>: it authorises nothing on anyone’s behalf, reads no
+account, and sends no listener data – a search carries the term and
+nothing else. An extractable shipped key is a casual-abuse and rotation
+barrier.</li>
 <li><em>A show you can look at before you commit to it.</em> The gap the
 podcast-directory review named: a show’s episodes were visible only
 after subscribing. <code>episodes_for_feed</code> answers for any feed,
@@ -5690,9 +5687,7 @@ what it is.</p>
 schedule is about what is <em>on</em>. Station is the menu of everything
 Quill Radio can tune and it had passed twenty items. The Community menu
 is “places this community already goes, brought inside the app”, which
-is precisely what an ACB Media schedule is; it now sits beside ACB
-Community Events. The menu is built even when the ADP assistant is
-switched off, because Radio always has the schedule.</p>
+is precisely what an ACB Media schedule is.</p>
 <h3 id="176-play-is-a-toggle-and-its-label-says-which">17.6 Play is a
 toggle, and its label says which</h3>
 <p><strong>Requirement.</strong> A Play verb aimed at the channel

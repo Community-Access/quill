@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -237,6 +237,13 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-radio-user-guide">Quill Radio User Guide</h1>
 <p>Version 3.1.1, released 2026-09-30.</p>
+<h2 id="upcoming-preferences-search">Upcoming Preferences Search</h2>
+<p>Preferences gains <strong>Find a setting</strong> in the next
+maintenance update. Type a term from a setting’s label or help, press
+Down for matching settings, then Enter to focus one. Control+F returns
+to search; Escape clears a search before closing. Search navigates only:
+OK still saves, Cancel still cancels, and values are not indexed.
+Disabled settings stay disabled.</p>
 <p>Quill Radio is internet radio built for screen reader users. It is a
 small window. The favorites tree has focus the moment it opens. The
 menus say everything they do, every action speaks, and a tray icon keeps
@@ -1419,9 +1426,6 @@ gives the same size as 100%.</li>
 Features. See “Recording”.</p>
 <h3 id="community-menu-altc">Community menu (Alt+C)</h3>
 <ul>
-<li><strong>Ask the Audio Description Project…</strong> (Ctrl+Alt+8) and
-<strong>Audio Description Project Settings…</strong>
-(Ctrl+Alt+Shift+A).</li>
 <li><strong>Ask QUILL Radio…</strong> (Ctrl+Shift+8) and <strong>Use My
 ChatGPT Subscription…</strong> (Alt+F5) – a conversation that already
 knows what is playing, on the ChatGPT plan you pay for.</li>
@@ -4202,45 +4206,6 @@ Lite and QUILL each appear under Apps in ChatGPT’s settings – so signing
 one out leaves the others as they were. There is no free QUILL AI
 service behind Ask QUILL Radio and no API key to paste: it is your plan,
 or nothing, and the window says so.</p>
-<h3 id="ask-the-audio-description-project-step-by-step">Ask the Audio
-Description Project, step by step</h3>
-<p>The Audio Description Project (ADP) keeps a directory of movies and
-TV shows with described audio.</p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+8</strong> (<strong>Community &gt; Ask the
-Audio Description Project…</strong>). The window “Ask ADP” opens with
-focus in <strong>Question</strong> (Alt+Q).</li>
-<li>Type a question, such as “Is there audio description for The
-Crown?”, and choose <strong>Ask</strong> (Enter).</li>
-<li>The answer appears in <strong>Answer</strong> (Alt+W), and any
-titles in <strong>Results</strong> (Alt+R). With <strong>Speak
-answers</strong> (Alt+S) checked, the answer is also spoken.</li>
-<li><strong>New Conversation</strong> (Alt+N) starts over.</li>
-<li>Press <strong>Escape</strong> to close.</li>
-</ol>
-<p>Good to know: Ask ADP needs the internet, and it is off in Safe Mode.
-You do not need an account or a key; one is built in.</p>
-<h3 id="audio-description-project-settings-step-by-step">Audio
-Description Project Settings, step by step</h3>
-<p>You should rarely need these. The defaults work.</p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+Shift+A</strong> (<strong>Community &gt;
-Audio Description Project Settings…</strong>). The ADP Settings window
-opens.</li>
-<li><strong>Server address</strong> (Alt+A): leave it as it is unless
-you were told to change it. It must start with <code>https</code>.</li>
-<li><strong>Client access key</strong> (Alt+K): leave it blank to use
-the key built into the app. Enter one only if you were given a
-replacement. It is stored in the Windows credential vault, or in the
-portable copy’s own key store.</li>
-<li><strong>Your first name</strong> (Alt+F): optional. If you fill it
-in, it is sent to ADP with each question so answers can address you by
-name.</li>
-<li><strong>Speak answers automatically</strong> (Alt+P): on by
-default.</li>
-<li>Choose <strong>Save</strong> (Enter). You hear that the settings
-were saved. Escape cancels.</li>
-</ol>
 <h3 id="acb-media-podcasts-step-by-step">ACB Media Podcasts, step by
 step</h3>
 <ol type="1">
@@ -5650,20 +5615,12 @@ menu. See “The menus in other windows”.</p>
 </thead>
 <tbody>
 <tr>
-<td>Ask the Audio Description Project</td>
-<td>Ctrl+Alt+8</td>
-</tr>
-<tr>
 <td>Ask QUILL Radio</td>
 <td>Ctrl+Shift+8</td>
 </tr>
 <tr>
 <td>Use My ChatGPT Subscription</td>
 <td>Alt+F5</td>
-</tr>
-<tr>
-<td>Audio Description Project Settings</td>
-<td>Ctrl+Alt+Shift+A</td>
 </tr>
 <tr>
 <td>ACB Media Schedule</td>
