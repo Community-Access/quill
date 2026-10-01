@@ -478,26 +478,20 @@ def _detail_from_http_error(exc: HTTPError) -> str | None:
     """
     try:
         raw = exc.read()
+        if not raw:
+            return None
+        parsed = json.loads(raw.decode("utf-8", errors="replace"))
+        if not isinstance(parsed, dict):
+            return None
+        error = parsed.get("error")
+        if isinstance(error, str) and error.strip():
+            return error.strip()
+        if isinstance(error, dict) and isinstance(msg := error.get("message"), str) and msg.strip():
+            return msg.strip()
+        if isinstance(msg := parsed.get("message"), str) and msg.strip():
+            return msg.strip()
     except Exception:  # noqa: BLE001 - best-effort body extraction
         return None
-    if not raw:
-        return None
-    try:
-        parsed = json.loads(raw.decode("utf-8", errors="replace"))
-    except (ValueError, UnicodeDecodeError):
-        return None
-    if not isinstance(parsed, dict):
-        return None
-    error = parsed.get("error")
-    if isinstance(error, str) and error.strip():
-        return error.strip()
-    if isinstance(error, dict):
-        message = error.get("message")
-        if isinstance(message, str) and message.strip():
-            return message.strip()
-    message = parsed.get("message")
-    if isinstance(message, str) and message.strip():
-        return message.strip()
     return None
 
 
@@ -506,32 +500,20 @@ def _extract_model_names(payload: object) -> list[str]:
         return []
 
     names: list[str] = []
-    models = payload.get("models")
-    if isinstance(models, list):
-        for item in models:
-            if isinstance(item, dict):
-                names.extend(_extract_names_from_model_item(item))
-
-    data = payload.get("data")
-    if isinstance(data, list):
-        for item in data:
-            if isinstance(item, dict):
-                names.extend(_extract_names_from_model_item(item))
-
-    items = payload.get("items")
-    if isinstance(items, list):
-        for item in items:
-            if isinstance(item, dict):
-                names.extend(_extract_names_from_model_item(item))
+    for key in ("models", "data", "items"):
+        container = payload.get(key)
+        if isinstance(container, list):
+            for item in container:
+                if isinstance(item, dict):
+                    names.extend(_extract_names_from_model_item(item))
 
     seen: set[str] = set()
     unique: list[str] = []
     for name in names:
         lowered = name.lower()
-        if lowered in seen:
-            continue
-        seen.add(lowered)
-        unique.append(name)
+        if lowered not in seen:
+            seen.add(lowered)
+            unique.append(name)
     return unique
 
 
@@ -541,7 +523,9 @@ def _extract_names_from_model_item(item: dict[str, object]) -> list[str]:
         str(item.get("id", "")).strip(),
         str(item.get("model", "")).strip(),
     )
-    primary = [v for v in id_candidates if v]
+    primary = [
+        v.removeprefix("models/") if v.startswith("models/") else v for v in id_candidates if v
+    ]
     if primary:
         return primary
     display = str(item.get("display_name", "")).strip()
@@ -550,13 +534,7 @@ def _extract_names_from_model_item(item: dict[str, object]) -> list[str]:
 
 def _model_endpoint_candidates(provider: str, host: str) -> list[str]:
     normalized = provider.strip().lower()
-    if normalized in {"openai", "openrouter", "custom", "claude"}:
-        return [f"{host}/v1/models"]
-    if normalized == "ollama_cloud":
-        # Ollama Cloud is OpenAI-compatible; its hosted catalog lives at the
-        # authenticated /v1/models endpoint. The local-style /api/tags is wrong
-        # for the cloud host (it answers 200 unauthenticated and lists nothing
-        # useful), so query only /v1/models here (#120).
+    if normalized in {"openai", "openrouter", "custom", "claude", "ollama_cloud"}:
         return [f"{host}/v1/models"]
     if normalized == "gemini":
         return [f"{host}/v1/models", f"{host}/v1beta/models"]
@@ -567,13 +545,13 @@ def _validate_endpoint_security(provider: str, host: str) -> str | None:
     parsed = urlparse(host)
     scheme = parsed.scheme.lower()
     hostname = (parsed.hostname or "").lower()
-    if provider == "off":
+    if provider == "off" or scheme == "https":
         return None
-    if scheme == "https":
-        return None
-    if scheme == "http" and provider in {"ollama", "custom"} and _is_local_host(hostname):
-        return None
-    if scheme == "http" and provider not in _CLOUD_PROVIDERS and _is_local_host(hostname):
+    if (
+        scheme == "http"
+        and (provider in {"ollama", "custom"} or provider not in _CLOUD_PROVIDERS)
+        and _is_local_host(hostname)
+    ):
         return None
     return (
         "Only HTTPS endpoints are allowed for cloud providers. "
@@ -790,6 +768,23 @@ _PROVIDER_ENV_VARS: dict[str, tuple[str, ...]] = {
 }
 
 
+def _read_dotenv_key(key_name: str) -> str:
+    """Read key from local .env files in cwd or parent directory if present."""
+    try:
+        candidates = [Path.cwd() / ".env", Path.cwd().parent / ".env", app_data_dir() / ".env"]
+        for env_path in candidates:
+            if env_path.is_file():
+                for line in env_path.read_text(encoding="utf-8", errors="replace").splitlines():
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        if k.strip() == key_name and (val := v.strip().strip("'\"")):
+                            return val
+    except Exception:  # noqa: BLE001
+        pass
+    return ""
+
+
 def environment_api_key(provider: str) -> str:
     """The key for *provider* from the environment, or "" if none is set.
 
@@ -805,6 +800,9 @@ def environment_api_key(provider: str) -> str:
         value = (os.environ.get(name) or "").strip()
         if value:
             return value
+        dotenv_val = _read_dotenv_key(name)
+        if dotenv_val:
+            return dotenv_val
     return ""
 
 
@@ -1008,7 +1006,8 @@ def chat_endpoint(provider: str, host: str, model: str) -> str:
     if normalized == "claude":
         return f"{host}/v1/messages"
     if normalized == "gemini":
-        return f"{host}/v1beta/models/{quote(model)}:generateContent"
+        model_name = model.removeprefix("models/")
+        return f"{host}/v1beta/models/{quote(model_name)}:generateContent"
     if normalized == "ollama":
         return f"{host}/api/chat"
     return f"{host}/v1/chat/completions"
@@ -1333,7 +1332,8 @@ def stream_chat_endpoint(provider: str, host: str, model: str) -> str:
     normalized = provider.strip().lower()
     if normalized == "gemini":
         host = host.rstrip("/")
-        return f"{host}/v1beta/models/{quote(model)}:streamGenerateContent?alt=sse"
+        model_name = model.removeprefix("models/")
+        return f"{host}/v1beta/models/{quote(model_name)}:streamGenerateContent?alt=sse"
     return chat_endpoint(provider, host, model)
 
 

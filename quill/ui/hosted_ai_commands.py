@@ -130,7 +130,7 @@ class HostedAiMixin(ChatGptAiMixin):
         )
 
     def cmd_ai_own_key(self) -> None:
-        """Use My Own OpenAI Key. Needs no agreement: nothing goes to QUILL's servers."""
+        """Use My Own API Key. Needs no agreement: nothing goes to QUILL's servers."""
         if not self._ai_host().feature_enabled("hosted_ai"):
             self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
             return
@@ -140,13 +140,12 @@ class HostedAiMixin(ChatGptAiMixin):
         settings = self._ai_host().settings
         dialog = OwnKeyDialog(self._ai_parent(), settings, self._announce)
         try:
-            if show_modal_dialog(dialog, "Use My Own OpenAI Key") != wx.ID_OK:
-                return
-            outcome = dialog.apply(settings)
+            if show_modal_dialog(dialog, "Use My Own API Key") == wx.ID_OK:
+                outcome = dialog.apply(settings)
+                self._ai_host().save_settings()
+                self._announce(outcome)
         finally:
             dialog.Destroy()
-        self._ai_host().save_settings()
-        self._announce(outcome)
 
     def cmd_ai_sign_in(self) -> None:
         if not self._ai_ready():
@@ -217,11 +216,11 @@ class HostedAiMixin(ChatGptAiMixin):
             from quill.ui.hosted_ai_own_key import own_key_about_text
 
             service = self._ai_service()
-            added = (
-                chatgpt_about_text(service.chatgpt)
-                if self._ai_chatgpt_active()
-                else own_key_about_text(service.own_key_model)
-            )
+            if self._ai_chatgpt_active():
+                added = chatgpt_about_text(service.chatgpt)
+            else:
+                prov = getattr(service, "own_key_provider", "openai")
+                added = own_key_about_text(service.own_key_model, provider=prov)
             where = field.GetInsertionPoint()
             field.AppendText(added)
             field.SetInsertionPoint(where)
@@ -621,6 +620,5 @@ class HostedAiMixin(ChatGptAiMixin):
         """Where the paragraph containing *position* stops."""
         if not text:
             return 0
-        position = max(0, min(position, len(text)))
-        break_at = text.find("\n\n", position)
+        break_at = text.find("\n\n", max(0, min(position, len(text))))
         return len(text) if break_at < 0 else break_at

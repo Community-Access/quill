@@ -287,6 +287,7 @@ class Settings:
     #: somebody else using the machine is not consent.
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""  # own-key AI's model (core/ai/own_key.py); empty: the default
+    ai_own_key_provider: str = ""  # own-key AI provider ("openai" or "gemini")
     markdown_clipboard_format: str = "html"
     markdown_profile_id: str = "standard"
     citation_style: str = "footnotes"
@@ -2027,17 +2028,7 @@ def settings_path() -> Path:
 
 
 def load_settings() -> Settings:
-    """Load settings, converting any legacy file to the canonical delta on the way.
-
-    The on-disk file is a *delta* of the user's overrides relative to
-    ``Settings()`` plus a ``schema_version`` stamp (see
-    :mod:`quill.core.settings_migration`), so any field the user never
-    customized always tracks the current default. The generic load / migrate /
-    backup / resave is shared with every other versioned store
-    (:func:`quill.core.versioned_store.load_with_migration`): a pre-current-schema
-    file is backed up and rewritten to the canonical delta exactly once.
-    """
-    # SET-5: read the nested versioned document, a legacy flat file, or junk.
+    """Load settings, converting any legacy file to the canonical delta on the way."""
     from quill.core.settings_migration import (
         from_versioned,
         is_future_settings_document,

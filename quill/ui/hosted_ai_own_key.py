@@ -1,33 +1,18 @@
-"""Use My Own OpenAI Key: AI help on the user's own account, with no allowance.
+"""Use My Own API Key: AI help on the user's own OpenAI or Google Gemini account.
 
 One window, shared by QUILL and QUILL Lite (Tools > AI in both, Alt+F2). It
-says plainly where the text goes -- straight to OpenAI, on the user's account,
-with no QUILL server in between -- then takes the key and the model. There is no
-separate switch: **a saved key lifts every limit**, and **Remove the Saved Key**
-puts AI help straight back on QUILL's free service. Saving a key here *is* the
-consent for this route: the free service's agreement is about QUILL's servers,
-which this route never touches.
+says plainly where the text goes -- straight to OpenAI or Google Gemini, on the
+user's account, with no QUILL server in between -- then takes the key and the model.
+There is no separate switch: **a saved key (or environment key) lifts every limit**,
+and **Remove the Saved Key** puts AI help straight back on QUILL's free service.
 
-The key is stored where QUILL's AI Hub keeps its OpenAI key (Windows Credential
+The key is stored where QUILL's AI Hub keeps its keys (Windows Credential
 Manager, or an encrypted file in a portable copy), and it is never shown again
-once saved -- the box stays empty and says a key is saved. Leaving it empty
-keeps the saved key. Removing takes effect at once, not at OK, and is spoken, so
-nobody is left wondering which service their next request will use.
+once saved.
 
 **The model is a list, filled from the account.** Once the key is known to be
-good -- Test the Key, or simply opening this window with a key already saved --
-every model the key can use for text is listed, Luna 6 and GPT-6 models first
-(:mod:`quill.core.ai.own_key_models`). Each row carries an *estimated* cost, so
-arrowing through the list is enough to compare them, and the Cost estimate box
-says plainly that the figures are estimates and where OpenAI's real prices are.
-Because opening the window lists the models, the model can be changed at any
-time: Alt+F2, pick another, OK.
-
-**Test the Key** checks the key by listing the models (which costs nothing),
-then sends one tiny request ("reply with the word pong") to the chosen model.
-Both run on a worker thread; the result arrives in the status line and is
-spoken, because a label changing under an unfocused control is exactly what a
-screen reader does not announce.
+good -- Test the Key, or simply opening this window with a key already configured --
+every model the key can use for text is listed, with estimated costs.
 """
 
 from __future__ import annotations
@@ -37,46 +22,72 @@ from typing import Any
 
 import wx
 
-from quill.core.ai.own_key import OWN_KEY_PROVIDER, default_model, has_own_key
+from quill.core.ai.own_key import (
+    default_model,
+    has_own_key,
+)
 from quill.core.ai.own_key_models import (
-    ESTIMATE_NOTE,
     choice_label,
     describe_estimate,
+    estimate_note_for,
     list_models,
+    pricing_url_for,
 )
 from quill.ui.dialog_contract import apply_modal_ids
 
-__all__ = ["OPENAI_USAGE_URL", "OwnKeyDialog", "OwnKeyUsageFrame", "own_key_about_text"]
+__all__ = [
+    "GEMINI_USAGE_URL",
+    "OPENAI_USAGE_URL",
+    "OwnKeyDialog",
+    "OwnKeyUsageFrame",
+    "own_key_about_text",
+]
 
-#: Where an OpenAI account's usage and charges are. QUILL keeps no count of
-#: own-key requests -- they never reach it -- so this is the only true answer.
 OPENAI_USAGE_URL = "https://platform.openai.com/usage"
+GEMINI_USAGE_URL = "https://ai.google.dev/"
 
 _PAD = 8
 
 _EXPLANATION = (
-    "With your own OpenAI key, the AI help commands -- Summarize, Rewrite, "
-    "Proofread, Explain and questions about a document -- send the passage "
-    "straight from this computer to OpenAI, on your own OpenAI account. "
-    "Nothing goes through QUILL's servers, there is no QUILL allowance and no "
-    "size limit beyond the model's own, and OpenAI bills your account for each "
-    "request under its own terms and privacy policy. "
-    "Create a key at platform.openai.com, under API keys. "
-    "While a key is saved, every limit is lifted. Remove the saved key to go "
-    "back to QUILL's free AI help, with its free allowance. "
-    "The key is stored on this computer in Windows' credential store, the same "
-    "place QUILL's AI Hub keeps it, so a key saved in either program works in both."
+    "With your own API key (OpenAI or Google Gemini), the AI help commands -- "
+    "Summarize, Rewrite, Proofread, Explain, and questions about a document -- "
+    "send the passage straight from this computer to the provider, on your own "
+    "account. Nothing goes through QUILL's servers, there is no QUILL allowance "
+    "and no size limit beyond the model's own, and the provider bills your "
+    "account under its own terms.\n\n"
+    "Keys set in your environment (GEMINI_API_KEY or OPENAI_API_KEY) or stored "
+    "securely in Windows Credential Manager are automatically recognized."
 )
+
+_PROVIDER_CHOICES: list[tuple[str, str]] = [
+    ("openai", "OpenAI"),
+    ("gemini", "Google Gemini"),
+]
+
+
+def _check_has_own_key(provider: str) -> bool:
+    try:
+        return has_own_key(provider)
+    except TypeError:
+        return has_own_key()
+
+
+def _fetch_models(key: str, provider: str) -> tuple[list[str], str]:
+    try:
+        return list_models(key, provider=provider)
+    except TypeError:
+        return list_models(key)
 
 
 class OwnKeyDialog(wx.Dialog):
-    """Switch own-key AI on or off, and store the key and the model."""
+    """Switch own-key AI on or off, and store the provider, key, and model."""
 
     def __init__(
         self, parent: Any, settings: Any, announce: Callable[[str], None] | None = None
     ) -> None:
-        super().__init__(parent, title="Use My Own OpenAI Key")
+        super().__init__(parent, title="Use My Own API Key")
         self._announce = announce or (lambda _message: None)
+        self._settings = settings
         root = wx.BoxSizer(wx.VERTICAL)
 
         about_label = wx.StaticText(self, label="&About this:")
@@ -84,33 +95,59 @@ class OwnKeyDialog(wx.Dialog):
             self,
             value=_EXPLANATION,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-            size=(-1, 140),
+            size=(-1, 130),
         )
         about.SetHelpText("Where your text goes with your own key. Read with the arrow keys.")
         root.Add(about_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(about, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        saved = has_own_key()
-        self.key_label = wx.StaticText(self, label=self._key_label(saved))
+        # Provider selection
+        prov_label = wx.StaticText(self, label="&Provider:")
+        chosen_prov = str(getattr(settings, "ai_own_key_provider", "") or "").strip().lower()
+        chosen_model = str(getattr(settings, "ai_own_key_model", "") or "").strip().lower()
+        if chosen_prov in ("openai", "gemini"):
+            self._current_provider = chosen_prov
+        elif "gemini" in chosen_model:
+            self._current_provider = "gemini"
+        elif any(chosen_model.startswith(p) for p in ("gpt", "o1", "o3", "o4", "chat", "luna")):
+            self._current_provider = "openai"
+        else:
+            self._current_provider = "openai"
+
+        prov_index = 0
+        for idx, (pid, _) in enumerate(_PROVIDER_CHOICES):
+            if pid == self._current_provider:
+                prov_index = idx
+                break
+        self.provider_choice = wx.Choice(self, choices=[label for _, label in _PROVIDER_CHOICES])
+        self.provider_choice.SetSelection(prov_index)
+        self.provider_choice.SetHelpText("Choose between Google Gemini and OpenAI.")
+        self.provider_choice.Bind(wx.EVT_CHOICE, self._on_provider_change)
+        root.Add(prov_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.provider_choice, 0, wx.EXPAND | wx.ALL, _PAD)
+
+        saved = _check_has_own_key(self._current_provider)
+        self.key_label = wx.StaticText(self, label=self._key_label(self._current_provider, saved))
         self.key = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self.key.SetHelpText(
-            "Paste your OpenAI API key. It starts with sk-. It is stored securely "
-            "and never shown again; leave this empty to keep the key already saved."
+            "Paste your API key. It is stored securely and never shown again; "
+            "leave empty to keep the existing saved or environment key."
         )
         root.Add(self.key_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.key, 0, wx.EXPAND | wx.ALL, _PAD)
 
         model_label = wx.StaticText(self, label="&Model:")
         self._chosen = str(getattr(settings, "ai_own_key_model", "") or "").strip()
-        self._models: list[str] = [self._chosen or default_model()]
+        self._models: list[str] = [self._chosen or default_model(self._current_provider)]
         self._listed = False
-        self.model = wx.Choice(self, choices=[choice_label(name) for name in self._models])
+        self.model = wx.Choice(
+            self,
+            choices=[choice_label(name, provider=self._current_provider) for name in self._models],
+        )
         self.model.SetSelection(0)
         self.model.SetHelpText(
-            "Which OpenAI model answers, with an estimate of what each might cost. "
-            "Every model your key can use for text is listed once the key is "
-            "checked, Luna 6 and GPT-6 models first. You can change it here at "
-            "any time."
+            "Which model answers, with an estimate of what each might cost. "
+            "Every model your key can use for text is listed once checked."
         )
         self.model.Bind(wx.EVT_CHOICE, lambda _event: self._show_estimate())
         root.Add(model_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
@@ -121,8 +158,7 @@ class OwnKeyDialog(wx.Dialog):
             self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(-1, 80)
         )
         self.cost.SetHelpText(
-            "What the chosen model might cost for a typical request, and where "
-            "OpenAI's real prices are. An estimate, not OpenAI's price."
+            "What the chosen model might cost for a typical request, and where real prices are."
         )
         root.Add(cost_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.cost, 0, wx.EXPAND | wx.ALL, _PAD)
@@ -131,25 +167,23 @@ class OwnKeyDialog(wx.Dialog):
         status_label = wx.StaticText(self, label="S&tatus:")
         self.status = wx.TextCtrl(
             self,
-            value=self._saved_status(saved),
+            value=self._saved_status(self._current_provider, saved),
             style=wx.TE_READONLY,
         )
-        self.status.SetHelpText("What the last test said, or whether a key is saved.")
+        self.status.SetHelpText("What the last test said, or whether a key is configured.")
         root.Add(status_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.status, 0, wx.EXPAND | wx.ALL, _PAD)
 
         actions = wx.BoxSizer(wx.HORIZONTAL)
         test = wx.Button(self, label="Test the Ke&y")
         test.SetHelpText(
-            "Checks the key with OpenAI, lists every model it can use, then sends "
-            "one tiny request to the chosen model and says whether it answered. "
-            "The request costs a fraction of a cent on your account."
+            "Checks the key with the provider, lists every usable model, then sends "
+            "one tiny request to verify the connection."
         )
         test.Bind(wx.EVT_BUTTON, self._on_test)
         self.remove = wx.Button(self, label="&Remove the Saved Key")
         self.remove.SetHelpText(
-            "Forgets the saved OpenAI key now, and puts AI help back on QUILL's "
-            "free service with its free allowance."
+            "Forgets the saved key now, and puts AI help back on QUILL's free service."
         )
         self.remove.Bind(wx.EVT_BUTTON, self._on_remove)
         self.remove.Enable(saved)
@@ -165,17 +199,50 @@ class OwnKeyDialog(wx.Dialog):
         if saved:
             self._list_saved_key_models()
 
-    @staticmethod
-    def _key_label(saved: bool) -> str:
+    def _selected_provider(self) -> str:
+        idx = self.provider_choice.GetSelection()
+        if 0 <= idx < len(_PROVIDER_CHOICES):
+            return _PROVIDER_CHOICES[idx][0]
+        return "openai"
+
+    def _on_provider_change(self, _event: Any) -> None:
+        prov = self._selected_provider()
+        self._current_provider = prov
+        saved = _check_has_own_key(prov)
+        self.key_label.SetLabel(self._key_label(prov, saved))
+        self.status.SetValue(self._saved_status(prov, saved))
+        self.remove.Enable(saved)
+        self._chosen = ""
+        self._models = [default_model(prov)]
+        self._listed = False
+        self.model.Set([choice_label(name, provider=prov) for name in self._models])
+        self.model.SetSelection(0)
+        self._show_estimate()
         if saved:
-            return "OpenAI API &key (a key is saved; leave empty to keep it):"
-        return "OpenAI API &key:"
+            self._list_saved_key_models()
 
     @staticmethod
-    def _saved_status(saved: bool) -> str:
+    def _key_label(provider: str, saved: bool) -> str:
+        prov_name = "Google Gemini" if provider == "gemini" else "OpenAI"
         if saved:
-            return "A key is saved, so AI help uses your OpenAI account with no limits."
-        return "No key is saved, so AI help uses QUILL's free service."
+            return f"{prov_name} API &key (a key is configured; leave empty to keep it):"
+        return f"{prov_name} API &key:"
+
+    @staticmethod
+    def _saved_status(provider: str, saved: bool) -> str:
+        from quill.core.assistant_ai import provider_api_key_source
+
+        prov_name = "Google Gemini" if provider == "gemini" else "OpenAI"
+        source = provider_api_key_source(provider)
+        if source == "environment":
+            env_var = "GEMINI_API_KEY" if provider == "gemini" else "OPENAI_API_KEY"
+            return f"{prov_name} is configured via your {env_var} environment variable."
+        if source == "stored" or saved:
+            return (
+                f"A {prov_name} key is saved, so AI help uses your {prov_name} account "
+                "with no limits."
+            )
+        return "No key is configured for this provider, so AI help uses QUILL's free service."
 
     # -- buttons ---------------------------------------------------------- #
 
@@ -185,7 +252,7 @@ class OwnKeyDialog(wx.Dialog):
             return typed
         from quill.core.assistant_ai import load_provider_api_key
 
-        return load_provider_api_key(OWN_KEY_PROVIDER)
+        return load_provider_api_key(self._selected_provider())
 
     def _set_status(self, text: str) -> None:
         if not self:
@@ -197,42 +264,45 @@ class OwnKeyDialog(wx.Dialog):
 
     def _selected_model(self) -> str:
         row = self.model.GetSelection()
-        return self._models[row] if 0 <= row < len(self._models) else default_model()
+        prov = self._selected_provider()
+        return self._models[row] if 0 <= row < len(self._models) else default_model(prov)
 
     def _show_estimate(self) -> None:
-        self.cost.SetValue(f"{describe_estimate(self._selected_model())}\n\n{ESTIMATE_NOTE}")
+        prov = self._selected_provider()
+        model = self._selected_model()
+        self.cost.SetValue(
+            f"{describe_estimate(model, provider=prov)}\n\n{estimate_note_for(prov)}"
+        )
 
     def _preferred(self, models: list[str], current: str = "") -> str:
         """The row to select: what is selected now, else what was saved, else the first."""
         for name in (current, self._chosen):
             if name and name in models:
                 return name
-        return models[0]
+        return models[0] if models else default_model(self._selected_provider())
 
     def _fill_models(self, models: list[str], select: str) -> None:
         if not self or not models:
             return
+        prov = self._selected_provider()
         self._models = list(models)
         self._listed = True
-        self.model.Set([choice_label(name) for name in self._models])
+        self.model.Set([choice_label(name, provider=prov) for name in self._models])
         self.model.SetSelection(self._models.index(select) if select in self._models else 0)
         self._show_estimate()
 
     def _list_saved_key_models(self) -> None:
-        """Fill the list for a key already saved, so the model can be changed any time.
-
-        Quiet on success -- the list is there when the person reaches it, and a
-        sentence spoken over the window's own title would be noise (GATE-13).
-        """
+        """Fill the list for a key already configured."""
         from quill.ui.update_download import thread_submit
 
         key = self._key_to_use()
+        prov = self._selected_provider()
         if not key:
             return
-        self.status.SetValue("Listing the models your key can use...")
+        self.status.SetValue(f"Listing models for {prov}...")
 
         def work(**_kwargs: Any) -> tuple[list[str], str]:
-            return list_models(key)
+            return _fetch_models(key, prov)
 
         def done(_name: str, result: Any) -> None:
             models, error = result
@@ -247,12 +317,15 @@ class OwnKeyDialog(wx.Dialog):
             self.status.SetValue(f"The models could not be listed. {error}")
             return
         self._fill_models(models, self._preferred(models, self._selected_model()))
-        self.status.SetValue(f"A key is saved. {len(models)} models are listed.")
+        prov_name = "Google Gemini" if self._selected_provider() == "gemini" else "OpenAI"
+        self.status.SetValue(f"{prov_name} key ready. {len(models)} models listed.")
 
     def _on_test(self, _event: Any) -> None:
         key = self._key_to_use()
+        prov = self._selected_provider()
+        prov_name = "Google Gemini" if prov == "gemini" else "OpenAI"
         if not key:
-            self._set_status("Enter your OpenAI key first.")
+            self._set_status(f"Enter your {prov_name} key first.")
             return
         from quill.core.assistant_ai import (
             AssistantConnectionSettings,
@@ -262,16 +335,16 @@ class OwnKeyDialog(wx.Dialog):
         from quill.ui.update_download import thread_submit
 
         current = self._selected_model() if self._listed else ""
-        self._set_status("Checking the key with OpenAI...")
+        self._set_status(f"Checking the key with {prov_name}...")
 
         def work(**_kwargs: Any) -> tuple[list[str], str, str]:
-            models, error = list_models(key)
+            models, error = _fetch_models(key, prov)
             if error:
                 return [], "", f"The key did not work. {error}"
             model = self._preferred(models, current)
             connection = AssistantConnectionSettings(
-                provider=OWN_KEY_PROVIDER,
-                host=default_host_for_provider(OWN_KEY_PROVIDER),
+                provider=prov,
+                host=default_host_for_provider(prov),
                 model=model,
             )
             ok, message = test_chat(connection, key)
@@ -296,43 +369,48 @@ class OwnKeyDialog(wx.Dialog):
         self._set_status(sentence)
 
     def _on_remove(self, _event: Any) -> None:
-        """Forget the key now: the free service is back before the window closes."""
+        """Forget the stored key now."""
         from quill.core.assistant_ai import clear_provider_api_key
 
-        clear_provider_api_key(OWN_KEY_PROVIDER)
+        prov = self._selected_provider()
+        prov_name = "Google Gemini" if prov == "gemini" else "OpenAI"
+        clear_provider_api_key(prov)
         self.key.SetValue("")
-        saved = has_own_key()  # an OPENAI_API_KEY in the environment outlives the store
-        self.key_label.SetLabel(self._key_label(saved))
+        saved = _check_has_own_key(prov)
+        self.key_label.SetLabel(self._key_label(prov, saved))
         self.remove.Enable(saved)
-        self.key.SetFocus()  # the button just disabled itself; focus must land somewhere
+        self.key.SetFocus()
         if saved:
+            env_var = "GEMINI_API_KEY" if prov == "gemini" else "OPENAI_API_KEY"
             self._set_status(
-                "The saved key was removed, but an OPENAI_API_KEY environment variable "
-                "is still set, so AI help keeps using it until that is removed."
+                f"The saved key was removed, but a {env_var} environment variable "
+                f"is still set, so AI help continues using it."
             )
             return
-        self._set_status("The key was removed. AI help is back on QUILL's free service.")
+        self._set_status(
+            f"The {prov_name} key was removed. AI help is back on QUILL's free service."
+        )
 
     # -- after OK -------------------------------------------------------- #
 
     def apply(self, settings: Any) -> str:
-        """Store a typed key and the model into *settings*. Returns what to say.
-
-        The caller saves *settings*. A key that cannot be stored securely is not
-        stored at all -- a key kept in plain text would be a worse outcome than
-        asking again.
-        """
+        """Store chosen provider, typed key, and model into *settings*."""
         from quill.core.assistant_ai import save_provider_api_key
 
+        prov = self._selected_provider()
+        prov_name = "Google Gemini" if prov == "gemini" else "OpenAI"
         typed = self.key.GetValue().strip()
+        settings.ai_own_key_provider = prov
         settings.ai_own_key_model = self._selected_model()
-        if typed and not save_provider_api_key(OWN_KEY_PROVIDER, typed):
+        if typed and not save_provider_api_key(prov, typed):
             return (
-                "The key could not be stored securely on this computer, so it was not "
+                f"The {prov_name} key could not be stored securely on this computer, so it was not "
                 "saved. AI help stays on QUILL's free service."
             )
-        if has_own_key():
-            return "AI help uses your own OpenAI key, with no limits."
+        if _check_has_own_key(prov):
+            return (
+                f"AI help uses your own {prov_name} key ({self._selected_model()}), with no limits."
+            )
         return "AI help uses QUILL's free service."
 
 
@@ -345,75 +423,66 @@ def _ignore(_name: str, _error: BaseException) -> None:
     """A background listing that failed: the status line already says what to try."""
 
 
-def _usage_text(model: str) -> str:
+def _usage_text(model: str, provider: str = "openai") -> str:
+    prov_name = "Google Gemini" if provider.strip().lower() == "gemini" else "OpenAI"
+    url = pricing_url_for(provider)
     return (
-        "AI help is using your own OpenAI key.\n\n"
+        f"AI help is using your own {prov_name} key.\n\n"
         f"Model: {model}\n\n"
-        f"{describe_estimate(model)} {ESTIMATE_NOTE}\n\n"
-        "To change the model, press Alt+F2 or choose Use My Own OpenAI Key in the "
+        f"{describe_estimate(model, provider=provider)} {estimate_note_for(provider)}\n\n"
+        "To change the provider or model, press Alt+F2 or choose Use My Own API Key in the "
         "AI menu.\n\n"
         "There is no QUILL allowance and no size limit beyond the model's own. "
-        "Requests go straight from this computer to OpenAI; nothing goes through "
+        f"Requests go straight from this computer to {prov_name}; nothing goes through "
         "QUILL's servers, so QUILL keeps no count of them.\n\n"
-        "Your usage and charges are on your OpenAI account. Open My OpenAI Usage "
-        "opens that page in your browser.\n\n"
-        "To go back to QUILL's free AI, choose Use My Own OpenAI Key in the AI "
+        f"Your usage and charges are on your {prov_name} account ({url}).\n\n"
+        "To go back to QUILL's free AI, choose Use My Own API Key in the AI "
         "menu and press Remove the Saved Key."
     )
 
 
-def own_key_about_text(model: str) -> str:
-    """What the About windows add when AI help is on the user's own key.
-
-    In place of the free service's support ID and allowance, which do not apply:
-    showing an allowance here would tell somebody paying per request that a
-    limit they do not have is running out.
-    """
+def own_key_about_text(model: str, provider: str = "openai") -> str:
+    """What the About windows add when AI help is on the user's own key."""
+    prov_name = "Google Gemini" if provider.strip().lower() == "gemini" else "OpenAI"
+    url = GEMINI_USAGE_URL if provider.strip().lower() == "gemini" else OPENAI_USAGE_URL
     return (
         "\n\nAI help\n"
-        f"Using your own OpenAI key, with the model {model}. No QUILL allowance "
+        f"Using your own {prov_name} key, with the model {model}. No QUILL allowance "
         "or size limit applies, and nothing goes through QUILL's servers. Your "
-        f"usage and charges are on your OpenAI account: {OPENAI_USAGE_URL}"
+        f"usage and account are at: {url}"
     )
 
 
 class OwnKeyUsageFrame(wx.Frame):
-    """AI Usage with the user's own key: what is in use, and where the bill is.
-
-    A different window from the free service's rather than the same one with
-    fields hidden: no allowance to fetch, no sign-out, no support ID -- and so
-    nothing is fetched, and the text is there the moment the window opens.
-    """
+    """AI Usage with the user's own key: what is in use, and where the bill is."""
 
     def __init__(self, parent: Any, service: Any, announce: Callable[[str], None]) -> None:
         from quill.ui.hosted_ai_dialogs import _close_row, _read_only, focus_on
 
         super().__init__(parent, title="AI Usage")
         self._announce = announce
+        prov = getattr(service, "own_key_provider", "openai")
+        prov_name = "Google Gemini" if prov == "gemini" else "OpenAI"
         panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
         panel.SetSizer(sizer)
         self.body = _read_only(
             panel,
             sizer,
-            "Your own OpenAI key",
-            _usage_text(service.own_key_model),
-            "Which model AI help is using with your own OpenAI key, and where your "
+            f"Your own {prov_name} key",
+            _usage_text(service.own_key_model, provider=prov),
+            f"Which model AI help is using with your own {prov_name} key, and where your "
             "usage and charges are. Read with the arrow keys.",
         )
-        usage = wx.Button(panel, label="Open My OpenAI &Usage")
-        usage.SetHelpText(
-            "Opens your OpenAI account's usage page in your browser, where your "
-            "requests and charges are."
-        )
-        usage.Bind(wx.EVT_BUTTON, self._on_usage)
+        usage_url = GEMINI_USAGE_URL if prov == "gemini" else OPENAI_USAGE_URL
+        usage = wx.Button(panel, label=f"Open My {prov_name} &Account")
+        usage.SetHelpText(f"Opens your {prov_name} account page in your browser.")
+        usage.Bind(wx.EVT_BUTTON, lambda _evt: self._on_usage(usage_url))
         _close_row(self, sizer, usage)
         focus_on(self, self.body)
         self.SetInitialSize((520, 380))
         self.Centre()
 
-    def _on_usage(self, _event: Any) -> None:
-        # The browser taking focus is what the reader announces; only a failure
-        # is ours to say.
-        if not wx.LaunchDefaultBrowser(OPENAI_USAGE_URL):
-            self._announce(f"Could not open a browser. Go to {OPENAI_USAGE_URL}.")
+    def _on_usage(self, url: str) -> None:
+        if not wx.LaunchDefaultBrowser(url):
+            self._announce(f"Could not open a browser. Go to {url}.")

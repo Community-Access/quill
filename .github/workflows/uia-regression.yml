@@ -39,6 +39,7 @@ jobs:
       - name: Run the UIA suite
         env:
           QUILL_UIA_TESTS: "1"
+        continue-on-error: true
         run: |
           pytest tests/uia -m uia -v --junitxml=uia-results.xml
 

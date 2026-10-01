@@ -216,6 +216,7 @@ class Settings:
     #: profile or a settings import would otherwise be consent nobody gave.
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""  # own-key AI model; key in the OS store (core/ai/own_key.py)
+    ai_own_key_provider: str = ""  # own-key AI provider ("openai" or "gemini")
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
     #: Same field name and same three values as QUILL, because it is the same
     #: question -- see ``quill/core/session_restore.py``, which answers it for
