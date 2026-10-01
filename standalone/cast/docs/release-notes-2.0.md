@@ -17,6 +17,198 @@ feels like.
 
 ---
 
+## After these notes were first written: the main window, reworked (2026-09-30 and 2026-10-01)
+
+Most of what is below came from one afternoon of a screen-reader user
+actually using QUILL Cast and saying what was wrong with it: a button that
+said "Play" and not what it would play, a Favorites row with a count that
+would not open, a menu called Subscriptions that held twenty rows of which two
+were used weekly, Alt+S pressing Stop instead of opening a menu. None of it
+was a missing feature. All of it was the app being harder to use than it had
+to be.
+
+### Follow, not Subscribe
+
+Every podcast app a listener has used in the last five years says **Follow**.
+Subscribe has come to mean something with a price attached, and QUILL is free.
+So Cast now says Follow and Unfollow: in Add Podcast, in the Podcast Manager,
+in the announcements, and in the report an OPML import writes. The OPML
+*file* is still called a subscription list, because that is the format's own
+name for it and what every other app calls it, and nothing on disk was
+renamed -- a wording preference is not worth a migration. A few surfaces in
+the main window still say Unsubscribe; they are listed as open work in the
+quality plan and change in the next commit.
+
+### Add Podcast works the way it was described
+
+**Preview had never worked.** Pressing it failed in the background, set a
+status label nobody could hear, and so looked like a dead button. It now opens
+a read-only look at the show -- title, publisher, episode count, the
+description as a text field you can arrow through, and the ten most recent
+episode titles with dates -- before you decide to follow it.
+
+Both edit fields in the window announced as a bare "edit", because the name
+they carried was one Windows screen readers never read. They now have real
+labels with access keys, and F1 on either field answers.
+
+The results list carries a **Following** column that says so on rows you
+already follow and stays silent on the rest, and the button alternates
+**Follow** and **Unfollow**. Unfollowing from here goes through the same
+confirm-and-undo path as everywhere else, so Ctrl+Z puts the show back. The
+list has a context menu on Shift+F10 and the Applications key.
+
+### The pinned views open
+
+Favorites, New Episodes, Continue Listening and the Inbox all carried a count
+and none of them could be expanded. Right Arrow on any of them now reveals
+what the count counts: episodes under the three episode views, each naming
+its podcast; podcasts under Favorites, each of which expands to its own
+episodes one level down. Enter on an episode plays it. Enter or **Play** on
+a view plays its newest unstarted episode (Continue Listening: the most
+recent one you were in the middle of).
+
+### Play understands what the cursor is on
+
+Play used to understand podcasts only and answer "select a show" when the
+cursor was on an episode. It now plays a podcast's next episode, the episode
+itself, or a view's first playable episode, and when nothing under the cursor
+can be played it says which two things would work instead.
+
+### A View menu, and the places you go
+
+The View menu (Alt+V) is the map Cast never had. Its first seven rows are the
+places, in the order Earshot lists them: **Inbox** (Ctrl+Shift+I), **Play
+Queue...**, **Podcasts** (Ctrl+Shift+P), **Personal Audio** (Ctrl+Shift+U),
+**Downloads...**, **Statistics...**, **Continue Listening...**. Going to a
+place lands focus on it in the library tree, so the screen reader reads the
+place you asked for, and an empty place says how to fill it, once, on
+arrival. Two of these -- the Inbox and Personal Audio -- had no menu row at
+all before this.
+
+Below the places: **Hide Caught-Up Podcasts** (Ctrl+Shift+H) takes shows with
+nothing unheard out of the tree; **Inbox Folder...** (Ctrl+Shift+O) narrows
+the Inbox to the shows filed under one library folder and its subfolders, and
+the Inbox always says which scope is in force; **Show Status Bar**
+(Ctrl+Shift+B); **Advanced Features** (Ctrl+Alt+Shift+G); and **Customize
+Features...**.
+
+### Simple and Advanced
+
+The menus are organised by how often anybody needs a row. **Simple**, the
+default, holds everything a listener does weekly: follow, find, play, queue,
+Inbox, folders, downloads, sleep timer, speed, settings, help. **Advanced**
+adds the rows you go looking for once you know they exist: Back Up and
+Restore, Import and Export OPML, Export My Data, Delete All Podcast Data,
+Podcast Index Credentials, Choose Columns, Quick Actions, Media Tools,
+Housekeeping, Free Up Space, Get FFmpeg, Redeem Unlock Code, Keyboard
+Shortcuts, Global Hotkeys, the Product Requirements document, and the whole
+Quillins menu.
+
+Rows are omitted, not disabled, because a disabled row still costs a
+screen-reader user a stop and a sentence. Nothing is unreachable in Simple
+mode: every advanced row is a command, so the Command Palette and Go To reach
+all of them by name. View > Advanced Features is present in both modes and
+says which is in force; switching rebuilds the menu bar on the spot.
+
+**Customize Features...** is the other axis: whole areas of Cast you may have
+no use for, switched off entirely. Downloads, the Inbox, the Play Queue,
+transcripts and chapters, statistics, Personal Audio, the sleep timer, and
+backups and OPML. Everything is on until you say otherwise, and whatever you
+switch off, you still have a podcast player.
+
+### The menu bar, renamed and re-lettered
+
+The Subscriptions menu is the **Podcasts** menu (Alt+P), because that is what
+is in it. The bar reads Podcasts, Episode, Downloads, View, Quillins (Advanced
+only), Window, Help.
+
+Alt+S used to press Stop instead of opening a menu, and Alt+V the Favorites
+toggle instead of View, because when a button and a menu claim the same
+letter Windows gives it to the button. The menu bar wins now: its letters are
+how a keyboard listener navigates the whole app, and a button is one Tab
+away. So the main window's buttons moved to letters no menu uses -- Play on
+Y, Stop on T, Favorites on F, Unfollow on U, Add on A, Episode List on I --
+and a gate (GATE-15) fails the build if a control and a top-level menu ever
+share a letter again.
+
+### The Window menu
+
+Window (Alt+W) lists every open Cast window with a number key, the one route
+between them that does not involve Alt+Tab and guessing which of several
+identically titled windows is which. Ctrl+1 is always the main window, and
+returning to it lands on the library tree.
+
+### Unfollow beside Add, and a button that says what is in it
+
+A row of buttons that could add a podcast and not remove one was half a row.
+**Unfollow** now sits beside Add Podcast, enabled when a podcast or one of its
+episodes is selected, through the same prompt that asks first and makes it one
+undoable step. And "Open Manager" is now **Episode List...**, because it named
+a window rather than the thing you wanted from it.
+
+### The status bar
+
+A nine-cell status bar, off the Tab order entirely and reached with **F6**
+(F6 again, Escape or Tab leave it, back to the library tree). Left and Right
+move cell to cell, Home and End jump to the ends, Enter or Space activates a
+cell, and Shift+F10 opens the cell's own menu. The cells, in the order a
+listening session happens: Play/Pause/Resume, Mute, Volume, Speed, Queue,
+Inbox, Downloads, Sleep timer, Clock. An action cell's label is its action and
+flips with the state; a readout's label is its value, and a readout with
+nothing to say shows its bare name rather than a zero. Enter on a readout
+opens the window behind it. Entering the bar says the region once and moving
+inside it is silent. **View > Show Status Bar** hides or shows it; F6 travels
+on to whatever it meant before when the bar is hidden, rather than silently
+doing nothing.
+
+### Feed Check
+
+**Podcasts > Feed Check...** (Ctrl+Shift+C) answers "which of my sixty
+podcasts is broken", which had no answer before except re-following each one
+and waiting. Cast already kept the facts -- when each feed was last read, how
+many checks had failed in a row, when it last carried something new -- and
+used them to decide when to speak, once per run of failures. What it never did
+was let you ask.
+
+The list is worst first: feeds that are failing to check, then feeds that have
+gone quiet, then everything healthy. Opening it checks nothing and sends
+nothing. **Retry** on a row, or **Retry All Failed**, is the refresh Cast
+already does, and it says what it found per feed. A failing feed is never
+described as abandoned: Cast keeps trying, and every sentence says so, because
+"failed eleven times" reads as "and I gave up". Shift+F10 opens the row menu.
+
+### Launch lands on what is new
+
+With no launch place chosen, Cast opens on the Inbox if anything is waiting,
+else on Continue Listening if anything is half-heard, else at the top of the
+library -- the answer a listener would give if asked why they opened the app.
+
+### Three verbs from the Command Palette
+
+Earshot exposes three Shortcuts actions to Siri; the desktop equivalent of
+saying something is a key, and until keys are assigned they live in the
+Command Palette: **Play an Unheard Episode** (newest, or oldest), which looks
+in the queue first, then the Inbox, then everything unplayed, and never picks
+anything you have already started; **Play Queue Shuffled**; and **Clear
+Entire Queue...**, which asks first.
+
+### Every control has a name
+
+A sweep across the whole QUILL family found 165 controls whose accessible
+name was set in a way Windows screen readers never read, so they announced as
+"edit" or "combo box" and nothing more. The fifteen in Cast are fixed, the
+Manager's combo boxes among them, and a gate (GATE-CTLLABEL) holds the count
+at zero for Cast and lets it only fall elsewhere.
+
+### Things that changed underneath
+
+Opening Feed Check on a large library used to grow the saved check-state file
+by one empty entry per podcast, because merely asking about a feed created a
+record for it. Asking now only reads. And the Community menu is gone: its
+rows live in Help.
+
+---
+
 ## A podcast can answer for itself
 
 Almost every complaint a podcast listener has is about **one podcast behaving

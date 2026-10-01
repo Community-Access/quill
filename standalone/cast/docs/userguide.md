@@ -16,9 +16,9 @@ QUILL Cast is podcasts the way a screen reader user would design them: a small w
 
 Launch QUILL Cast from the Start Menu (or `quill-cast` from a terminal if you installed from source). The window opens with keyboard focus on your **Library** tree.
 
-- No shows yet? Press Alt+S for the Subscriptions menu, then **Add Podcast...** to subscribe by search or feed URL -- or **Import OPML...** to bring a library from another podcast app, or **Subscribe to ACB Media Podcasts** for ACB's whole live directory in one step.
+- No shows yet? Press Alt+P for the Podcasts menu, then **Add Podcast...** to follow a show by search or feed URL -- or **Subscribe to ACB Media Podcasts** for ACB's whole live directory in one step. **Import OPML...** brings a library from another podcast app; it is an Advanced row (see "Simple and Advanced" below), and the Command Palette reaches it in either mode.
 - With shows: arrow to one and press **Enter** to play its next unplayed episode -- no detour through the Manager required. If every episode is already played, Enter plays the most recent one and says so.
-- Want QUILL Cast on the moment it opens? Check **Subscriptions > Resume Last Episode on Launch** once, and launching the app picks up exactly where you left off.
+- Want QUILL Cast on the moment it opens? Check **Podcasts > Resume Last Episode on Launch** once, and launching the app picks up exactly where you left off.
 
 Everything QUILL Cast announces goes through the same announcement engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA, Narrator) without stealing focus -- and writes to your braille display at the same time (see "Spoken and braille announcements" below).
 
@@ -27,10 +27,36 @@ Everything QUILL Cast announces goes through the same announcement engine QUILL 
 Tab order: the now-playing line, the library tree, then five buttons.
 
 - **Now playing** (read-only text): what is playing; mirrored in the status bar and the Episode menu.
-- **Library** (tree): the same pinned views the Podcast Manager shows -- **Favorites**, **New Episodes**, **Continue Listening**, **Inbox** -- above your nested library folders and the shows filed in them. A show wears its unplayed count in words -- "(3 unheard)" -- and a folder wears how many podcasts live under it, counting everything expanding it would reveal. Enter on a show plays its next episode; Enter on a pinned view opens the Podcast Manager to that view. Delete unsubscribes a show (with confirmation) or dissolves a folder (your shows step safely to the top level -- nothing is ever unsubscribed by deleting a folder). Shift+F10 opens the full context menu: Play/Stop, Add/Remove Favorites, Move to Folder, **Move Up / Move Down in Custom Order** (Alt+Up / Alt+Down -- see Sort Podcasts below), **Download All Episodes**, **Remove All Episodes**, **Feed Credentials...** (for private feeds -- see below), Unsubscribe, New Folder, and Open Manager. On a folder the context menu offers **Rename Folder... (F2)**, **Delete Folder...**, New Folder..., and Open Manager.
+- **Library** (tree): the same pinned views the Podcast Manager shows -- **Favorites**, **New Episodes**, **Continue Listening**, **Inbox** -- above your nested library folders and the shows filed in them. A show wears its unplayed count in words -- "(3 unheard)" -- and a folder wears how many podcasts live under it, counting everything expanding it would reveal. Enter on a show plays its next episode; Enter on a pinned view plays its newest unstarted episode (Continue Listening: the most recent one you were in the middle of). **The pinned views open**: Right Arrow on Favorites, New Episodes, Continue Listening or the Inbox reveals what its count counts -- episodes under the three episode views, each naming its podcast, and podcasts under Favorites, each of which expands to its own episodes one level down. Delete unsubscribes a show (with confirmation) or dissolves a folder (your shows step safely to the top level -- nothing is ever unsubscribed by deleting a folder). Shift+F10 opens the full context menu: Play/Stop, Add/Remove Favorites, Move to Folder, **Move Up / Move Down in Custom Order** (Alt+Up / Alt+Down -- see Sort Podcasts below), **Download All Episodes**, **Remove All Episodes**, **Feed Credentials...** (for private feeds -- see below), Unsubscribe, New Folder, and Open Manager. On a folder the context menu offers **Rename Folder... (F2)**, **Delete Folder...**, New Folder..., and Open Manager.
 - **The pinned views rename too.** Press **F2** on Favorites, New Episodes, Continue Listening or the Inbox (or choose **Rename...** from its context menu) and give it your own name -- it follows you into the Podcast Manager as well. A renamed view's menu gains **Reset Name**; entering a blank, or the shipped name itself, also resets it. Shows and episodes deliberately refuse F2: their names come from the podcast's own feed.
 - **Episodes without leaving the main page.** Every show in the tree can be expanded (Right Arrow) to reveal its episodes, newest first, right where the show sits -- no detour through the Manager to reach one particular episode. Shows start collapsed so the tree reads as a list of shows rather than a wall of episodes. **Enter on an episode plays that episode**; Enter on the show itself still plays the show's next unplayed episode. An episode row's context menu offers **Play Episode** (Stop, while it is the one playing) and **Download Episode** -- the file lands under your Download location as `show-title\episode-title.mp3`, so it has a name that means something outside the app.
-- Buttons: **Play** (becomes **Pause** while playing, **Resume** while paused -- one transport control that is never dead), **Stop**, **Add to Favorites** (becomes **Remove from Favorites** when the playing show is already a favorite), **Open Manager...**, **Add Podcast...**.
+- Buttons: **Play** (Alt+Y; becomes **Pause** while playing, **Resume** while paused -- one transport control that is never dead, and it plays whatever the library cursor is on: a podcast's next episode, the episode itself, or a view's first playable episode), **Stop** (Alt+T; enabled only while something is playing), **Add to Favorites** (Alt+F; becomes **Remove from Favorites** when the playing show is already a favorite), **Unfollow** (Alt+U; enabled with a podcast or one of its episodes selected, asks first, and Ctrl+Z puts the show back), **Episode List...** (Alt+I; the Podcast Manager), **Add Podcast...** (Alt+A). The letters are chosen so no button ever shares one with a menu: when a button and a menu claim the same Alt+letter, Windows gives it to the button, which is how Alt+S once pressed Stop instead of opening a menu.
+- **The status bar**, last in the window and off the Tab order: press **F6** to enter it. See "The status bar" below.
+- **Where Cast opens.** With no launch place chosen, Cast lands on the Inbox if anything is waiting, else on Continue Listening if anything is half-heard, else at the top of the library.
+
+## The status bar
+
+A nine-cell bar along the bottom of the main window. It is **not in the Tab
+order**, so it costs nothing until you ask for it: **F6** moves into it, and
+F6 again, Escape or Tab moves out, back to the library tree. Inside the bar,
+Left and Right move cell to cell, Home and End jump to the ends, Enter or
+Space activates the cell, and Shift+F10 (or the Applications key) opens the
+cell's own menu. Entering the bar announces the region once; moving inside it
+is silent, because the screen reader reads each cell as it takes focus.
+
+The cells, in the order a listening session happens:
+
+- **Play / Pause / Resume** and **Mute / Unmute** -- action cells, whose label
+  is the thing pressing them would do, and flips with the state.
+- **Volume**, **Speed** -- readouts; Enter repeats the level, and for Speed
+  says whether it is this podcast's own speed or the shared one.
+- **Queue**, **Inbox**, **Downloads**, **Sleep timer** -- readouts that open
+  the window behind them on Enter. A readout with nothing to say shows its
+  bare name rather than a zero.
+- **Clock**.
+
+**View > Show Status Bar** (Ctrl+Shift+B) hides or shows it. When it is
+hidden, F6 does whatever it did before rather than silently doing nothing.
 
 ## The Podcast Manager
 
@@ -98,9 +124,40 @@ Some feeds -- Patreon supporter feeds, premium and members-only shows, private c
 
 ## Menus
 
-### Subscriptions (Alt+S)
+The bar reads **Podcasts, Episode, Downloads, View, Quillins, Window, Help**.
+Quillins is present in Advanced mode only.
 
-Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML..., New Folder... (creates a library folder without opening the Manager), **Sort Podcasts** (a submenu -- see below), Add Local Podcast..., Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast Settings..., **Podcast Index Credentials...**, **Quick Actions...**, **Export My Data...**, **Delete All Podcast Data...**, **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,), Send to Tray (Ctrl+W), Exit.
+### Simple and Advanced
+
+The menus are sorted by how often anybody needs a row. **Simple**, the
+default, holds everything a listener does weekly: follow a podcast, find one,
+play, queue, Inbox, folders, downloads, sleep timer, speed, settings, help.
+**Advanced** (View > Advanced Features, Ctrl+Alt+Shift+G) adds the rows you
+go looking for once you know they exist: Back Up My Podcasts, Restore from a
+Backup, Import OPML, Export OPML, Export My Data, Delete All Podcast Data,
+Podcast Index Credentials, Choose Columns, Quick Actions, Media Tools, Run
+Housekeeping Now, Free Up Space, Get FFmpeg, Redeem Unlock Code, Keyboard
+Shortcuts, Global Hotkeys, Product Requirements, and the whole Quillins menu.
+
+Advanced rows are left out of Simple mode rather than disabled, so the lists
+are shorter rather than longer. Nothing is unreachable: every one of them is
+a command, and the **Command Palette** and **Go To** reach all of them by
+name in either mode. The Advanced Features row itself is present in both
+modes and says which is in force; switching rebuilds the menu bar at once.
+
+**View > Customize Features...** is a different switch: whole areas of Cast
+you may have no use for, turned off entirely at the next launch -- Downloads,
+the Inbox, the Play Queue, transcripts and chapters, statistics, Personal
+Audio, the sleep timer, and backups and OPML. Everything is on until you say
+otherwise, and whatever you turn off, you still have a podcast player.
+
+### Podcasts (Alt+P)
+
+The menu was called Subscriptions until 2026-09-30; it is named after what is
+in it. Rows marked *(Advanced)* appear in Advanced mode only.
+
+
+Open Podcast Manager... (Ctrl+M), Add Podcast... (Ctrl+N), Import OPML... *(Advanced)*, Export OPML... *(Advanced)*, New Folder... (Ctrl+Shift+F; creates a library folder without opening the Manager), **Sort Podcasts** (a submenu -- see below), Add Local Podcast..., Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast Settings..., **Podcast Index Credentials...** *(Advanced)*, **Feed Check...** (Ctrl+Shift+C -- see "Feed Check" below), **Quick Actions...** *(Advanced)*, **Choose Columns...** *(Advanced)*, **Export My Data...** *(Advanced)*, **Delete All Podcast Data...** *(Advanced)*, **Back Up My Podcasts...** *(Advanced)*, **Restore from a Backup...** *(Advanced)*, **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,), Send to Tray (Ctrl+W), Exit (Ctrl+Q).
 
 **Sort Podcasts** decides how your shows are ordered everywhere they are listed: **Ascending (A to Z)**, **Descending (Z to A)**, or **Custom Order**. Custom order is the one you build by hand: **Alt+Up / Alt+Down** on a show in the library tree (or Move Up/Down in Custom Order on its context menu) nudges it among its folder's neighbours. The first move switches to custom automatically -- starting from the order already on screen, so nothing jumps -- and the radio items here always show which mode is live.
 
@@ -284,6 +341,32 @@ A live now-playing line, **Player Information...**, **Continue Listening...**, *
 **Player Information...** puts everything about what is playing into one read-only text field you can review with the arrow keys, character by character or line by line, and copy: title, show, position, duration, time remaining, progress as a percentage, playback speed, whether it is streaming or a file on this computer, whether that file is kept or a temporary copy, how many notes it has, where it will resume, and which chapter you are in. A spoken status goes past once; this stays put until you close it.
 
 **Skip Forward** and **Skip Back** jump the current episode by a fixed number of seconds -- 30 forward, 15 back by default -- unlike Next/Previous Chapter, which jump to the nearest chapter marker instead. **Skip Settings...** sets how far each jumps (per-podcast, the same way Sound Enhancements is), and, only when a show is loaded, **auto-skip intro** and **auto-skip outro** (0 = off): intro-skip jumps forward automatically on a fresh start (never when resuming your saved position); outro-skip ends the episode early, exactly as if it had finished naturally -- auto-advance and delete-after-play still fire.
+
+### View (Alt+V)
+
+The places you go, one key each, in the order Earshot lists them: **Inbox**
+(Ctrl+Shift+I), **Play Queue...**, **Podcasts** (Ctrl+Shift+P), **Personal
+Audio** (Ctrl+Shift+U), **Downloads...**, **Statistics...**, **Continue
+Listening...**. Going to a place lands focus on it in the library tree, so your
+screen reader reads the place you asked for; an empty place says how to fill
+it, once, on arrival.
+
+Then what the tree shows: **Hide Caught-Up Podcasts** (Ctrl+Shift+H) takes
+shows with nothing unheard out of the tree, and **Inbox Folder...**
+(Ctrl+Shift+O) narrows the Inbox to the shows filed under one library folder,
+subfolders included -- the Inbox always says which scope is in force, so an
+Inbox that is empty because of a filter never just says "empty".
+
+Then how much of Cast you meet: **Show Status Bar** (Ctrl+Shift+B), **Advanced
+Features** (Ctrl+Alt+Shift+G), and **Customize Features...** -- see "Simple
+and Advanced" above.
+
+### Window (Alt+W)
+
+Every open Cast window, each with a number: the route between them that does
+not involve Alt+Tab and guessing which of several identically titled windows
+is which. **Ctrl+1** is always the main window, and returning to it lands on
+the library tree.
 
 ### Downloads (Alt+D)
 
@@ -662,6 +745,22 @@ here would turn it on there, with no way to say "let Radio do it" -- but they
 share the record of when a check last happened, so whichever one goes first, the
 other finds the work already done and stays quiet. There is nothing to
 configure.
+
+## Feed Check: which of your podcasts need something
+
+**Podcasts > Feed Check...** (Ctrl+Shift+C) answers "which of my sixty
+podcasts is broken". Cast has always kept the facts -- when each feed was last
+read, how many checks have failed in a row, when it last carried something new
+-- and used them to decide when to speak, once per run of failures. This
+window lets you ask.
+
+The list is **worst first**: feeds failing to check, then feeds that have gone
+quiet, then everything healthy, so you read the top rather than the whole.
+Opening it checks nothing and sends nothing. **Retry** on a row, or **Retry
+All Failed**, is the refresh Cast already does, and it says what it found per
+feed. **Copy Feed Address** puts the row's URL on the clipboard. Shift+F10 or
+the Applications key opens the row's menu. A failing feed is never described as
+abandoned: Cast keeps trying, and every sentence here says so.
 
 ## Lineups: saving the order you listen in
 

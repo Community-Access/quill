@@ -8,7 +8,7 @@ original context and must be reverified before changing completion status.
 
 ## Progress Dashboard
 
-Updated 2026-10-01. **T-00 - document consolidation completed. T-01 - validate, commit the working tree including this file, and push main is active.** Feature implementation remains paused; next planned reliability item is **F-05 - asynchronous Lite file opening**, not yet started.
+Updated 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows are committed and its fifteen pending rows are genuinely pending (two of them partly done -- see the per-row notes). F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
 
 These are grouped tracking rows, not independent bugs. Shared work can satisfy more than one group. Older pending claims are not newly verified by this consolidation.
 
@@ -1210,20 +1210,31 @@ vocabulary.
 
 #### Phase 1 -- stop the bleeding
 
-Built and lint-clean, 2,741 tests passing, **uncommitted** (section 16):
+Built and lint-clean, 2,741 tests passing, **committed as `fef27b3` on 2026-10-01** and re-verified against the source the same day:
 
 - [x] GATE-15 and the two collisions it found (Alt+S, Alt+V).
 - [x] Pinned views open: Inbox, New Episodes, Continue Listening, Favorites.
 - [x] Play understands an episode and a view.
-- [x] Podcasts / View / Episode / Downloads / [Quillins] / Window / Help;
-      Quillins Advanced-only.
+- [x] Podcasts / Episode / Downloads / View / [Quillins] / Window / Help;
+      Quillins Advanced-only. (The source appends View after Downloads; the
+      plan's section 4.7 order with View second is still the target and moves
+      with Phase 2's menu rebuild.)
 - [x] Unfollow beside Add, named after the selection.
-- [x] "Open Manager" is "Episode List..." until Phase 2 deletes it.
+- [x] "Open Manager" is "Episode List..." until Phase 2 deletes it (the button;
+      the Podcasts menu row still reads "Open Podcast Manager..." and goes with
+      the Manager in Phase 2).
 - [x] Launch lands on what is new.
 - [x] The remaining 15 Cast controls labelled (146 left tree-wide, none in Cast).
 - [x] The Manager's duplicate unfollow collapsed onto the shared undoable one.
 
-Forced by the survey (6b), each a small certain fix:
+Forced by the survey (6b), each a small certain fix. **Re-verified 2026-10-01:
+none of these had landed** -- `set_accessible_name` still targets every main
+panel button, `transport_intent.button_label` still returns `&Pause` (Alt+P
+against the Podcasts menu), the main tree binds only `EVT_TREE_ITEM_MENU`,
+the tree menu still says "&Unsubscribe...", Preview still says "&Subscribe",
+the three "&OK" buttons and "Follow &the Shared Defaults" are unchanged,
+`global_hotkeys` and `keymap_editor` are still in `ADVANCED_ROWS`, and none of
+the five dialogs calls `SetFocus`. They are the active worklist, in this order:
 
 - The button row carries its object in the **label**, not the accessible
       name (6b item 1); Pau&se and Re&sume; GATE-15 reads
@@ -1250,7 +1261,12 @@ Forced by the survey (6b), each a small certain fix:
       outright by the Notes reader (5c), whichever lands first.
 
 Written but not yet applied (the extraction script exists; two supporting pieces
-were mid-flight when Jeff said stop):
+were mid-flight when Jeff said stop). Re-verified 2026-10-01: `launch_place.py`
+exists and nothing imports it; `podcasts_preferences.py` does not exist;
+`PodcastHistory.switch_to_now_playing` does not exist; there are no tests for
+`library_tree.py`; GATE-15 **is** on the `platform_report` roster; the two
+tests **were** updated in `fef27b3`; `labelled_field.py` still takes `help=`;
+no Find field and no Now Playing surface exist:
 
 - Preferences extracted to `podcasts_preferences.py` with two new rows:
       Where to land on launch; Switch to Now Playing when playback starts.
@@ -2860,6 +2876,39 @@ programming-error path manually.
 
 Original document title: QC3: Completed Quality Changes.
 
+### 2026-10-01: Second pass -- Lite exit crash, Cast documentation catch-up
+
+- Fixed a QUILL Lite exit crash reported the same day (`RuntimeError: wrapped
+  C/C++ object of type Panel has been deleted` from `_refresh_status`). The
+  close path stopped the status bar's coalescing timer and then destroyed the
+  window; teardown events called `_touch_status` in between and re-armed it.
+  The stop is now one-way and a refresh that reaches a destroyed panel returns.
+  Committed as `d8b4d1e` and pushed. This is an instance of F-02 (lifetime
+  guards in short-lived surfaces); F-02 stays open for the general adoption.
+- Validation: `tests/unit/apps/test_lite_status_lifetime.py` (3 new tests) and
+  the three existing Lite status-bar test modules, 36 passed; ruff, GATE-11
+  (after trimming comments to stay under the 620-line budget), and every
+  pre-commit gate passed. Documented in Lite's release notes 1.1 (Unreleased
+  Quality Fixes), Lite's changelog (Unreleased) and the family changelog.
+- Re-verified the Cast Phase 1 claims against the source. Result recorded
+  inline in section 15: the nine `[x]` rows are committed in `fef27b3`; none
+  of the fifteen pending rows had landed, except that GATE-15 is on the
+  `platform_report` roster and the two named tests were updated. Three Phase 0
+  cores (`refresh_audio`, `inbox_removal`, `quick_plays`) have no window or
+  key yet; the quick plays are reachable from the Command Palette only.
+- Caught the Cast documentation up to everything Phase 0 and `fef27b3`
+  shipped, none of which had reached the user guide, PRD or release notes:
+  Follow vocabulary, Add Podcast (Preview, labelled fields, Following column,
+  context menu), the pinned views opening, Play on an episode or a view, the
+  View menu and its places, Simple/Advanced and Customize Features, the
+  Podcasts menu rename and GATE-15, the Window menu, Unfollow and Episode List
+  buttons, the status bar, Feed Check, launch landing, the three quick plays,
+  GATE-CTLLABEL. Release notes 2.0 gained a dated section at the top; the user
+  guide's Getting Started, main window, Menus (Simple and Advanced, Podcasts,
+  View, Window), a status bar section and a Feed Check section were rewritten
+  or added; the PRD gained section 23 with nine subsections. HTML and EPUB
+  regenerated for the three changed documents.
+
 ### 2026-10-01: Document Consolidation
 
 Two subsequent user requests add X-06 (Radio/Cast transport behavior) and X-07
@@ -3007,6 +3056,9 @@ This is the authoritative unchecked code/delivery tracker: **42 grouped rows**. 
 
 ### Cast Phase 1 Code and Tests: 15
 
+Re-verified against the source 2026-10-01: all fifteen remain open. Partial
+credit on two rows is noted inline. Worked top to bottom, one commit each.
+
 - [ ] The button row carries its object in the **label**, not the accessible
       name (6b item 1); Pau&se and Re&sume; GATE-15 reads
       `transport_intent.button_label` (item 2); a gate that no
@@ -3034,10 +3086,12 @@ This is the authoritative unchecked code/delivery tracker: **42 grouped rows**. 
       Where to land on launch; Switch to Now Playing when playback starts.
       Needs `PodcastHistory.switch_to_now_playing` and `core/podcasts/launch_place.py`
       (the latter is written).
-- [ ] Tests for `library_tree.py`; GATE-15 on the `platform_report` roster.
+- [ ] Tests for `library_tree.py`; GATE-15 on the `platform_report` roster
+      (the roster half is done in `fef27b3`; the tests are not written).
 - [ ] Two tests to update to the new truth (`test_add_podcast_focus_return`,
-      `test_podcast_show_actions_credentials`), and `surface_help` purposes for
-      Feed Check and the main panel's new buttons (GATE-CAST-HELP).
+      `test_podcast_show_actions_credentials`) -- done in `fef27b3`; and
+      `surface_help` purposes for Feed Check and the main panel's new buttons
+      (GATE-CAST-HELP) -- still open.
 - [ ] `labelled_field.py`: drop its `help=` parameter -- help set inside a helper
       is invisible to the help audit, so callers set it inline.
 - [ ] Find in library above the tree (the interim of P10).

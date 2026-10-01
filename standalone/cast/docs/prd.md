@@ -1353,6 +1353,104 @@ before", because these settings restrict and a restriction nobody chose is the
 worst kind. Both hiding settings name their way back in their own help. And
 every catalogue entry says what it does *not* do, enforced by a test.
 
+## 23. The main window, reworked (2026-09-30)
+
+One afternoon of a screen-reader user actually using the app produced the
+list behind this section. None of it was a missing feature; all of it was the
+app being harder to use than it had to be. The full plan, its principles and
+its phases are in the repository's `qc.md`; this section records what shipped.
+
+### 23.1 Follow, not Subscribe
+
+`core/podcasts/follow_words.py` holds the vocabulary once -- Follow, Unfollow,
+Following, the menu labels with their access keys, and the sentences -- because
+a wording that lives in fourteen literals is one that gets half-changed. Two
+things keep the old word on purpose: the OPML *file* is a subscription list,
+the format's own name; and no on-disk field is renamed, because a migration is
+too much risk for a wording preference.
+
+### 23.2 Add Podcast
+
+Preview had never worked: it called a function that did not exist, failed in
+the background, and set a status label a screen reader does not read. Both edit
+fields announced as bare "edit" because `SetName` is not an accessible name on
+wxMSW -- the name comes from the `wx.StaticText` created immediately before the
+control. Both now have a real label created first, with inline `SetHelpText` so
+the help audit can see it. The results list gained a Following column (silent
+on rows not followed: the interesting state is the rare one), the action button
+alternates Follow and Unfollow through the shared undoable prompt, and the list
+has a context menu on `EVT_CONTEXT_MENU` as well as the mouse, with items
+disabled rather than absent so the menu's shape is the same on every row.
+
+### 23.3 The pinned views open
+
+Inbox, New Episodes, Continue Listening and Favorites carried counts and had no
+children. `ui/podcasts/library_tree.py` fills each on first expansion through
+the placeholder mechanism podcasts already used. Cross-show lists name the
+podcast on every row; Favorites opens to podcasts rather than flattening their
+episodes, so no episode appears under two parents. Play on a view plays its
+first playable episode.
+
+### 23.4 Places, modes and switches
+
+The View menu carries the spine: seven places in Earshot's order, each landing
+focus in the tree (`ui/podcasts/places.py`), with no announcement because the
+focus move says it (GATE-13). `core/podcasts/menu_mode.py` defines Simple and
+Advanced: rows are omitted, not disabled; the switch is present in both modes;
+every omitted row is a command the palette and Go To reach. `CAST_AREAS` in
+`apps/podcasts_view_menu.py` lists the eight areas Customize Features can turn
+off; defaults are on and only an explicit off is stored. Hide Caught-Up
+Podcasts, the Inbox folder scope (`core/podcasts/inbox_scope.py`, narrowing by
+the *library* folder tree and never the Inbox's own), Show Status Bar and the
+Window menu complete it.
+
+### 23.5 The menu bar wins the letter
+
+GATE-15 (`tools/check_menubar_mnemonics.py`): no control in a window may share
+an Alt letter with a top-level menu, because wxMSW gives an ambiguous Alt+letter
+to the control. The first run found Alt+S (Stop against Subscriptions) and
+Alt+V (Favorites against View). Subscriptions became Podcasts; the buttons
+yielded to Y, T, F, U, A, I.
+
+### 23.6 The status bar
+
+Nine cells (`ui/podcasts/status_bar.py`, readouts in `status_bar_cells.py`),
+off the Tab order, entered with F6. An action cell's label is its action; a
+readout's label is its value; a readout with nothing to say shows its bare
+name. Every cell carries authored help, no cell claims an access key, and
+entering the bar says the region once and nothing else. Built even when
+hidden, so the first F6 after switching it on has something to focus.
+
+### 23.7 Feed Check
+
+`core/podcasts/feed_health.py` builds a worst-first report from the
+bookkeeping `check_state.py` already keeps; reading it never checks a feed.
+The window (`ui/podcasts/feed_check_dialog.py`) adds Retry, Retry All Failed
+and Copy Feed Address, a context menu on the keyboard route, and a summary
+spoken on open. A failing feed is never described as abandoned. Asking about a
+podcast's state no longer creates an empty record for it, which would have
+grown the saved file by one entry per podcast every time the window opened.
+
+### 23.8 Cores landed ahead of their surfaces
+
+Three wx-free modules shipped with tests and no window yet:
+`core/podcasts/refresh_audio.py` (get this episode's file again from wherever
+the feed now says it is; position, played mark and note untouched),
+`core/podcasts/inbox_removal.py` (Remove from Inbox is a triage decision with
+its own marker, so a publisher's re-issue cannot undo a listener's dismissal;
+the download goes only if the show's own settings say downloads go when done),
+and `core/podcasts/quick_plays.py` (Play an Unheard Episode: queue, then Inbox,
+then everything unplayed, never anything already started; Play Queue Shuffled;
+Clear Entire Queue). The three quick plays are reachable from the Command
+Palette; the other two wait for the Phase 2 episode surfaces.
+
+### 23.9 Every control has a name
+
+GATE-CTLLABEL (`tools/check_control_labels.py`) found 165 controls across the
+family whose name was set through `SetName` and never read. Cast's fifteen are
+fixed; the family count may only fall. `ui/labelled_field.py` makes the correct
+construction order the easy one.
+
 ---
 
 See `CHANGELOG.md` for the full, versioned history.

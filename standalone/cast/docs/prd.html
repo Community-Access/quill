@@ -1908,6 +1908,101 @@ land on “carry on as before”, because these settings restrict and a
 restriction nobody chose is the worst kind. Both hiding settings name
 their way back in their own help. And every catalogue entry says what it
 does <em>not</em> do, enforced by a test.</p>
+<h2 id="23-the-main-window-reworked-2026-09-30">23. The main window,
+reworked (2026-09-30)</h2>
+<p>One afternoon of a screen-reader user actually using the app produced
+the list behind this section. None of it was a missing feature; all of
+it was the app being harder to use than it had to be. The full plan, its
+principles and its phases are in the repository’s <code>qc.md</code>;
+this section records what shipped.</p>
+<h3 id="231-follow-not-subscribe">23.1 Follow, not Subscribe</h3>
+<p><code>core/podcasts/follow_words.py</code> holds the vocabulary once
+– Follow, Unfollow, Following, the menu labels with their access keys,
+and the sentences – because a wording that lives in fourteen literals is
+one that gets half-changed. Two things keep the old word on purpose: the
+OPML <em>file</em> is a subscription list, the format’s own name; and no
+on-disk field is renamed, because a migration is too much risk for a
+wording preference.</p>
+<h3 id="232-add-podcast">23.2 Add Podcast</h3>
+<p>Preview had never worked: it called a function that did not exist,
+failed in the background, and set a status label a screen reader does
+not read. Both edit fields announced as bare “edit” because
+<code>SetName</code> is not an accessible name on wxMSW – the name comes
+from the <code>wx.StaticText</code> created immediately before the
+control. Both now have a real label created first, with inline
+<code>SetHelpText</code> so the help audit can see it. The results list
+gained a Following column (silent on rows not followed: the interesting
+state is the rare one), the action button alternates Follow and Unfollow
+through the shared undoable prompt, and the list has a context menu on
+<code>EVT_CONTEXT_MENU</code> as well as the mouse, with items disabled
+rather than absent so the menu’s shape is the same on every row.</p>
+<h3 id="233-the-pinned-views-open">23.3 The pinned views open</h3>
+<p>Inbox, New Episodes, Continue Listening and Favorites carried counts
+and had no children. <code>ui/podcasts/library_tree.py</code> fills each
+on first expansion through the placeholder mechanism podcasts already
+used. Cross-show lists name the podcast on every row; Favorites opens to
+podcasts rather than flattening their episodes, so no episode appears
+under two parents. Play on a view plays its first playable episode.</p>
+<h3 id="234-places-modes-and-switches">23.4 Places, modes and
+switches</h3>
+<p>The View menu carries the spine: seven places in Earshot’s order,
+each landing focus in the tree (<code>ui/podcasts/places.py</code>),
+with no announcement because the focus move says it (GATE-13).
+<code>core/podcasts/menu_mode.py</code> defines Simple and Advanced:
+rows are omitted, not disabled; the switch is present in both modes;
+every omitted row is a command the palette and Go To reach.
+<code>CAST_AREAS</code> in <code>apps/podcasts_view_menu.py</code> lists
+the eight areas Customize Features can turn off; defaults are on and
+only an explicit off is stored. Hide Caught-Up Podcasts, the Inbox
+folder scope (<code>core/podcasts/inbox_scope.py</code>, narrowing by
+the <em>library</em> folder tree and never the Inbox’s own), Show Status
+Bar and the Window menu complete it.</p>
+<h3 id="235-the-menu-bar-wins-the-letter">23.5 The menu bar wins the
+letter</h3>
+<p>GATE-15 (<code>tools/check_menubar_mnemonics.py</code>): no control
+in a window may share an Alt letter with a top-level menu, because wxMSW
+gives an ambiguous Alt+letter to the control. The first run found Alt+S
+(Stop against Subscriptions) and Alt+V (Favorites against View).
+Subscriptions became Podcasts; the buttons yielded to Y, T, F, U, A,
+I.</p>
+<h3 id="236-the-status-bar">23.6 The status bar</h3>
+<p>Nine cells (<code>ui/podcasts/status_bar.py</code>, readouts in
+<code>status_bar_cells.py</code>), off the Tab order, entered with F6.
+An action cell’s label is its action; a readout’s label is its value; a
+readout with nothing to say shows its bare name. Every cell carries
+authored help, no cell claims an access key, and entering the bar says
+the region once and nothing else. Built even when hidden, so the first
+F6 after switching it on has something to focus.</p>
+<h3 id="237-feed-check">23.7 Feed Check</h3>
+<p><code>core/podcasts/feed_health.py</code> builds a worst-first report
+from the bookkeeping <code>check_state.py</code> already keeps; reading
+it never checks a feed. The window
+(<code>ui/podcasts/feed_check_dialog.py</code>) adds Retry, Retry All
+Failed and Copy Feed Address, a context menu on the keyboard route, and
+a summary spoken on open. A failing feed is never described as
+abandoned. Asking about a podcast’s state no longer creates an empty
+record for it, which would have grown the saved file by one entry per
+podcast every time the window opened.</p>
+<h3 id="238-cores-landed-ahead-of-their-surfaces">23.8 Cores landed
+ahead of their surfaces</h3>
+<p>Three wx-free modules shipped with tests and no window yet:
+<code>core/podcasts/refresh_audio.py</code> (get this episode’s file
+again from wherever the feed now says it is; position, played mark and
+note untouched), <code>core/podcasts/inbox_removal.py</code> (Remove
+from Inbox is a triage decision with its own marker, so a publisher’s
+re-issue cannot undo a listener’s dismissal; the download goes only if
+the show’s own settings say downloads go when done), and
+<code>core/podcasts/quick_plays.py</code> (Play an Unheard Episode:
+queue, then Inbox, then everything unplayed, never anything already
+started; Play Queue Shuffled; Clear Entire Queue). The three quick plays
+are reachable from the Command Palette; the other two wait for the Phase
+2 episode surfaces.</p>
+<h3 id="239-every-control-has-a-name">23.9 Every control has a name</h3>
+<p>GATE-CTLLABEL (<code>tools/check_control_labels.py</code>) found 165
+controls across the family whose name was set through
+<code>SetName</code> and never read. Cast’s fifteen are fixed; the
+family count may only fall. <code>ui/labelled_field.py</code> makes the
+correct construction order the easy one.</p>
 <hr />
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>
