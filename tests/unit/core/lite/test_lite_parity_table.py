@@ -108,6 +108,8 @@ def test_every_quilllite_field_is_either_shared_mapped_or_its_own() -> None:
         # this agreement would be about. The day it does, this becomes a shared
         # field and the agreement text is already shared
         # (quill/core/ai/gateway_privacy.py) so the two cannot drift apart.
+        "ai_own_key_model",
+        "ai_own_key_provider",
         "ai_privacy_accepted_version",
         "share_quill_abbreviations",
         "share_quill_dictionary",

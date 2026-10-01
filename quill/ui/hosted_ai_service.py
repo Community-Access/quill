@@ -37,6 +37,13 @@ from quill.core.ai.gateway_session import (
     save_token,
     support_id_for,
 )
+from quill.core.ai.own_key import (
+    OWN_KEY_LIMITS,
+    active_own_key_provider,
+    default_model,
+    own_key_active,
+    size_warning,
+)
 
 __all__ = ["AiService", "SignInCode"]
 
@@ -103,22 +110,16 @@ class AiService:
     @property
     def own_key_active(self) -> bool:
         """Whether requests go to OpenAI or Google Gemini with the user's own key instead."""
-        from quill.core.ai.own_key import own_key_active
-
         return own_key_active(getattr(self._app, "settings", None))
 
     @property
     def own_key_provider(self) -> str:
         """The active provider for own-key requests ('gemini' or 'openai')."""
-        from quill.core.ai.own_key import active_own_key_provider
-
         return active_own_key_provider(getattr(self._app, "settings", None))
 
     @property
     def own_key_model(self) -> str:
         """The model own-key requests use: the chosen one, or the default."""
-        from quill.core.ai.own_key import default_model
-
         chosen = getattr(getattr(self._app, "settings", None), "ai_own_key_model", "")
         return str(chosen or "").strip() or default_model(self.own_key_provider)
 
@@ -198,8 +199,6 @@ class AiService:
             from quill.core.ai.chatgpt_ai_help import size_note
 
             return size_note(text, self.direct_model, free_limit_tokens=free_tokens)
-        from quill.core.ai.own_key import size_warning
-
         return size_warning(text, self.own_key_model, free_limit_tokens=free_tokens)
 
     def conversation_note(self) -> str:
@@ -239,8 +238,6 @@ class AiService:
 
             return CHATGPT_LIMITS
         if self.own_key_active:
-            from quill.core.ai.own_key import OWN_KEY_LIMITS
-
             return OWN_KEY_LIMITS
         return self._limits or GatewayLimits()
 
@@ -334,8 +331,7 @@ class AiService:
         elif self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
 
-            prov = self.own_key_provider
-            model = self.own_key_model
+            prov, model = self.own_key_provider, self.own_key_model
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
                 answer = ask_with_own_key(
@@ -391,17 +387,11 @@ class AiService:
         elif self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
 
-            prov = self.own_key_provider
-            model = self.own_key_model
+            prov, model = self.own_key_provider, self.own_key_model
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
                 reply = ask_with_own_key(
-                    "chat",
-                    prompt,
-                    chunks,
-                    provider=prov,
-                    model=model,
-                    history=history,
+                    "chat", prompt, chunks, provider=prov, model=model, history=history
                 )
                 return reply, None, 0
 
@@ -429,41 +419,13 @@ class AiService:
         on_error: Callable[[str], None],
     ) -> None:
         """Ask About an Image. Returns at once; answers on the UI thread."""
-        if self.chatgpt_active:
-            from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
+        if self.own_key_active and self.own_key_provider == "gemini":
+            from quill.core.ai.own_key import describe_image_with_own_key
 
-            account = self.chatgpt
-
-            def work(**_kwargs: Any) -> str:
-                return describe_image_with_chatgpt(account, path, question)
-
-        elif self.own_key_active and self.own_key_provider == "gemini":
-            from pathlib import Path
-            from quill.core.ai.vision import describe_image as vision_describe
-            from quill.core.assistant_ai import (
-                AssistantConnectionSettings,
-                default_host_for_provider,
-                load_provider_api_key,
-            )
-
-            key = load_provider_api_key("gemini")
             model = self.own_key_model
-            conn = AssistantConnectionSettings(
-                provider="gemini",
-                host=default_host_for_provider("gemini"),
-                model=model,
-            )
 
             def work(**_kwargs: Any) -> str:
-                text, err = vision_describe(
-                    conn,
-                    key,
-                    Path(path),
-                    prompt=question or "Describe this image in detail.",
-                )
-                if err or not text:
-                    raise ValueError(err or "Google Gemini returned an empty description.")
-                return text
+                return describe_image_with_own_key(path, question, model=model)
 
         else:
             from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
@@ -587,13 +549,13 @@ class AiService:
         """
         device_id = self.session.device_id
         client = self.client()
-
-        def work(**_kwargs: Any) -> None:
-            client.revoke(device_id)
-
         if device_id and client.token:
-            _submit("quill-ai-revoke", work, on_success=_ignore2, on_failure=_ignore)
-
+            _submit(
+                "quill-ai-revoke",
+                lambda **_kw: client.revoke(device_id),
+                on_success=_ignore2,
+                on_failure=_ignore,
+            )
         clear_token()
         save_session(self.data_dir, GatewaySession())
         self._session = GatewaySession()
@@ -605,24 +567,15 @@ class AiService:
 
 
 def _sentence(error: BaseException) -> str:
-    """A finished sentence for a person, from whatever went wrong.
-
-    A coded gateway error already carries one, plus a hint saying what to do
-    next -- both are worth speaking, and the hint is usually the more useful
-    half. Anything else gets a generic sentence rather than a traceback: a
-    ``ConnectionResetError`` rendered at a listener tells them nothing they can
-    act on.
-    """
+    """A finished sentence for a person, from whatever went wrong."""
     from quill.core.error_codes import CodedError
 
     if isinstance(error, (GatewayError, CodedError)):
-        # The sentence first and the code last. str(error) leads with
-        # "[QUILL-AI-GATEWAY-QUOTA]", which a screen reader spells out before
-        # the person hears what happened; support still gets the code.
-        message = str(error.args[0]) if error.args else ""
-        hint = getattr(error, "user_hint", "")
-        code = getattr(error, "code", "")
-        parts = [message, hint, f"Error code {code}." if code else ""]
+        parts = [
+            str(error.args[0]) if error.args else "",
+            getattr(error, "user_hint", ""),
+            f"Error code {c}." if (c := getattr(error, "code", "")) else "",
+        ]
         return " ".join(part.strip() for part in parts if part and part.strip())
     return "The AI service is not answering right now. Try again in a moment. Nothing was used."
 
@@ -650,16 +603,14 @@ def _call_after(func: Callable[..., None], *args: Any) -> None:
 
 
 def _submit(name: str, func: Callable[..., Any], *, on_success: Any, on_failure: Any) -> None:
-    """One background job. QUILL Lite has no task manager, so this is the
-    family's ``thread_submit`` -- the same one the update check uses."""
     from quill.ui.update_download import thread_submit
 
     thread_submit(name, func, on_success=on_success, on_failure=on_failure)
 
 
 def _ignore(_name: str, _error: BaseException) -> None:
-    """A background failure nobody needs to hear about."""
+    pass
 
 
 def _ignore2(_name: str, _result: Any) -> None:
-    """A background success nobody needs to hear about."""
+    pass

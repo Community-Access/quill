@@ -313,7 +313,7 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 225 audited sites (63 helped, 162 named-help).
+Control coverage: 225 audited sites (64 helped, 161 named-help).
 
 ### Every window, and what it is for
 
@@ -1118,7 +1118,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 92 audited sites (92 helped).
+Control coverage: 93 audited sites (93 helped).
 
 ### Every window, and what it is for
 
@@ -1334,15 +1334,13 @@ Control coverage: 92 audited sites (92 helped).
 #### OwnKeyDialog (`quill/ui/hosted_ai_own_key.py`)
 
 - `about`: Where your text goes with your own key. Read with the arrow keys.
-- `self.key`: Paste your OpenAI API key. It starts with sk-. It is stored securely and never shown again; leave this empty to keep the key already saved.
-- `self.model`: Which OpenAI model answers, with an estimate of what each might cost. Every model your key can use for text is listed once the key is checked, Luna 6 and GPT-6 models first. You can change it here at any time.
-- `self.cost`: What the chosen model might cost for a typical request, and where OpenAI's real prices are. An estimate, not OpenAI's price.
-- `self.status`: What the last test said, or whether a key is saved.
-- `test`: Checks the key with OpenAI, lists every model it can use, then sends one tiny request to the chosen model and says whether it answered. The request costs a fraction of a cent on your account.
-- `self.remove`: Forgets the saved OpenAI key now, and puts AI help back on QUILL's free service with its free allowance.
-#### OwnKeyUsageFrame (`quill/ui/hosted_ai_own_key.py`)
-
-- `usage`: Opens your OpenAI account's usage page in your browser, where your requests and charges are.
+- `self.provider_choice`: Choose between Google Gemini and OpenAI.
+- `self.key`: Paste your API key. It is stored securely and never shown again; leave empty to keep the existing saved or environment key.
+- `self.model`: Which model answers, with an estimate of what each might cost. Every model your key can use for text is listed once checked.
+- `self.cost`: What the chosen model might cost for a typical request, and where real prices are.
+- `self.status`: What the last test said, or whether a key is configured.
+- `test`: Checks the key with the provider, lists every usable model, then sends one tiny request to verify the connection.
+- `self.remove`: Forgets the saved key now, and puts AI help back on QUILL's free service.
 #### AiResultFrame (`quill/ui/hosted_ai_pad.py`)
 
 - `copy`: Puts the answer on the clipboard.

@@ -47,6 +47,7 @@ __all__ = [
     "active_own_key_provider",
     "ask_with_own_key",
     "default_model",
+    "describe_image_with_own_key",
     "has_own_key",
     "load_settings_fields",
     "own_key_active",
@@ -222,7 +223,10 @@ def infer_provider_from_model(model: str) -> str:
     m = model.strip().lower()
     if "gemini" in m:
         return "gemini"
-    if any(m.startswith(p) for p in ("gpt", "o1", "o3", "o4", "chat", "luna", "text-", "davinci", "babbage")):
+    if any(
+        m.startswith(p)
+        for p in ("gpt", "o1", "o3", "o4", "chat", "luna", "text-", "davinci", "babbage")
+    ):
         return "openai"
     return ""
 
@@ -333,7 +337,9 @@ def ask_with_own_key(
     )
 
     inferred = infer_provider_from_model(model)
-    active_prov = provider.strip().lower() or (inferred if inferred and load_provider_api_key(inferred) else active_own_key_provider())
+    active_prov = provider.strip().lower() or (
+        inferred if inferred and load_provider_api_key(inferred) else active_own_key_provider()
+    )
     key = load_provider_api_key(active_prov)
     if not key:
         for fallback_prov in OWN_KEY_PROVIDERS:
@@ -344,7 +350,9 @@ def ask_with_own_key(
                 break
     if not key:
         prov_name = "Google Gemini" if active_prov == "gemini" else "OpenAI"
-        raise OwnKeyError(f"No {prov_name} key is stored on this computer or set in the environment.")
+        raise OwnKeyError(
+            f"No {prov_name} key is stored on this computer or set in the environment."
+        )
     system, user = request_for(feature, prompt, chunks, history, language)
     connection = AssistantConnectionSettings(
         provider=active_prov,
@@ -377,7 +385,9 @@ def size_warning(text: str, model: str, *, free_limit_tokens: int, provider: str
     from quill.core.ai.gateway_context import estimate_tokens, words_in
     from quill.core.ai.own_key_models import estimate_for
 
-    target_prov = provider.strip().lower() or infer_provider_from_model(model) or active_own_key_provider()
+    target_prov = (
+        provider.strip().lower() or infer_provider_from_model(model) or active_own_key_provider()
+    )
     provider_name = "Google Gemini" if target_prov == "gemini" else "OpenAI"
     tokens = estimate_tokens(text)
     words = words_in(text)
@@ -396,3 +406,34 @@ def size_warning(text: str, model: str, *, free_limit_tokens: int, provider: str
             "refuses it and nothing is charged."
         )
     return " ".join(parts)
+
+
+def describe_image_with_own_key(
+    path: Any,
+    question: str = "",
+    *,
+    provider: str = "gemini",
+    model: str = "",
+) -> str:
+    """Describe an image using the user's own API key (e.g. Gemini vision)."""
+    from pathlib import Path
+
+    from quill.core.ai.vision import describe_image as vision_describe
+    from quill.core.assistant_ai import (
+        AssistantConnectionSettings,
+        default_host_for_provider,
+        load_provider_api_key,
+    )
+
+    prov = provider.strip().lower() or "gemini"
+    key = load_provider_api_key(prov)
+    conn = AssistantConnectionSettings(
+        provider=prov,
+        host=default_host_for_provider(prov),
+        model=model.strip() or default_model(prov),
+    )
+    prompt = question or "Describe this image in detail."
+    text, err = vision_describe(conn, key, Path(path), prompt=prompt)
+    if err or not text:
+        raise ValueError(err or "Google Gemini returned an empty description.")
+    return text

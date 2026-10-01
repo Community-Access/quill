@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import pytest
+from typing import Any
 
-from quill.core.ai import own_key, own_key_models as models
+from quill.core.ai import own_key
+from quill.core.ai import own_key_models as models
 
 
 def test_gemini_models_ordering() -> None:
@@ -32,7 +33,7 @@ def test_gemini_pricing_and_estimates() -> None:
     assert "ai.google.dev" in models.estimate_note_for("gemini")
 
 
-def test_gemini_request_execution(monkeypatch) -> None:
+def test_gemini_request_execution(monkeypatch: Any) -> None:
     import quill.core.assistant_ai as assistant_ai
 
     sent: dict[str, object] = {}
@@ -50,7 +51,9 @@ def test_gemini_request_execution(monkeypatch) -> None:
     monkeypatch.setattr(assistant_ai, "load_provider_api_key", fake_key)
     monkeypatch.setattr(assistant_ai, "generate_assistant_response", fake)
 
-    answer = own_key.ask_with_own_key("summarize", "Text to summarize", provider="gemini", model="gemini-2.5-flash")
+    answer = own_key.ask_with_own_key(
+        "summarize", "Text to summarize", provider="gemini", model="gemini-2.5-flash"
+    )
     assert answer == "Gemini summary result."
     assert sent["provider"] == "gemini"
     assert sent["model"] == "gemini-2.5-flash"
@@ -59,7 +62,9 @@ def test_gemini_request_execution(monkeypatch) -> None:
 
 
 def test_gemini_size_warning() -> None:
-    warning = own_key.size_warning("Sample document text.", "gemini-2.5-flash", free_limit_tokens=3000, provider="gemini")
+    warning = own_key.size_warning(
+        "Sample document text.", "gemini-2.5-flash", free_limit_tokens=3000, provider="gemini"
+    )
     assert "Google Gemini" in warning
     assert "gemini-2.5-flash" in warning
     assert "no limits" in warning

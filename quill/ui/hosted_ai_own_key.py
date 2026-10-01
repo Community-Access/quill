@@ -23,9 +23,6 @@ from typing import Any
 import wx
 
 from quill.core.ai.own_key import (
-    OWN_KEY_PROVIDER,
-    OWN_KEY_PROVIDERS,
-    active_own_key_provider,
     default_model,
     has_own_key,
 )
@@ -63,9 +60,23 @@ _EXPLANATION = (
 )
 
 _PROVIDER_CHOICES: list[tuple[str, str]] = [
-    ("gemini", "Google Gemini"),
     ("openai", "OpenAI"),
+    ("gemini", "Google Gemini"),
 ]
+
+
+def _check_has_own_key(provider: str) -> bool:
+    try:
+        return has_own_key(provider)
+    except TypeError:
+        return has_own_key()
+
+
+def _fetch_models(key: str, provider: str) -> tuple[list[str], str]:
+    try:
+        return list_models(key, provider=provider)
+    except TypeError:
+        return list_models(key)
 
 
 class OwnKeyDialog(wx.Dialog):
@@ -92,25 +103,30 @@ class OwnKeyDialog(wx.Dialog):
 
         # Provider selection
         prov_label = wx.StaticText(self, label="&Provider:")
-        self._current_provider = (
-            str(getattr(settings, "ai_own_key_provider", "") or "").strip().lower()
-            or active_own_key_provider(settings)
-        )
+        chosen_prov = str(getattr(settings, "ai_own_key_provider", "") or "").strip().lower()
+        chosen_model = str(getattr(settings, "ai_own_key_model", "") or "").strip().lower()
+        if chosen_prov in ("openai", "gemini"):
+            self._current_provider = chosen_prov
+        elif "gemini" in chosen_model:
+            self._current_provider = "gemini"
+        elif any(chosen_model.startswith(p) for p in ("gpt", "o1", "o3", "o4", "chat", "luna")):
+            self._current_provider = "openai"
+        else:
+            self._current_provider = "openai"
+
         prov_index = 0
         for idx, (pid, _) in enumerate(_PROVIDER_CHOICES):
             if pid == self._current_provider:
                 prov_index = idx
                 break
-        self.provider_choice = wx.Choice(
-            self, choices=[label for _, label in _PROVIDER_CHOICES]
-        )
+        self.provider_choice = wx.Choice(self, choices=[label for _, label in _PROVIDER_CHOICES])
         self.provider_choice.SetSelection(prov_index)
         self.provider_choice.SetHelpText("Choose between Google Gemini and OpenAI.")
         self.provider_choice.Bind(wx.EVT_CHOICE, self._on_provider_change)
         root.Add(prov_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.provider_choice, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        saved = has_own_key(self._current_provider)
+        saved = _check_has_own_key(self._current_provider)
         self.key_label = wx.StaticText(self, label=self._key_label(self._current_provider, saved))
         self.key = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self.key.SetHelpText(
@@ -125,7 +141,8 @@ class OwnKeyDialog(wx.Dialog):
         self._models: list[str] = [self._chosen or default_model(self._current_provider)]
         self._listed = False
         self.model = wx.Choice(
-            self, choices=[choice_label(name, provider=self._current_provider) for name in self._models]
+            self,
+            choices=[choice_label(name, provider=self._current_provider) for name in self._models],
         )
         self.model.SetSelection(0)
         self.model.SetHelpText(
@@ -186,12 +203,12 @@ class OwnKeyDialog(wx.Dialog):
         idx = self.provider_choice.GetSelection()
         if 0 <= idx < len(_PROVIDER_CHOICES):
             return _PROVIDER_CHOICES[idx][0]
-        return "gemini"
+        return "openai"
 
     def _on_provider_change(self, _event: Any) -> None:
         prov = self._selected_provider()
         self._current_provider = prov
-        saved = has_own_key(prov)
+        saved = _check_has_own_key(prov)
         self.key_label.SetLabel(self._key_label(prov, saved))
         self.status.SetValue(self._saved_status(prov, saved))
         self.remove.Enable(saved)
@@ -221,7 +238,10 @@ class OwnKeyDialog(wx.Dialog):
             env_var = "GEMINI_API_KEY" if provider == "gemini" else "OPENAI_API_KEY"
             return f"{prov_name} is configured via your {env_var} environment variable."
         if source == "stored" or saved:
-            return f"A {prov_name} key is saved, so AI help uses your {prov_name} account with no limits."
+            return (
+                f"A {prov_name} key is saved, so AI help uses your {prov_name} account "
+                "with no limits."
+            )
         return "No key is configured for this provider, so AI help uses QUILL's free service."
 
     # -- buttons ---------------------------------------------------------- #
@@ -250,7 +270,9 @@ class OwnKeyDialog(wx.Dialog):
     def _show_estimate(self) -> None:
         prov = self._selected_provider()
         model = self._selected_model()
-        self.cost.SetValue(f"{describe_estimate(model, provider=prov)}\n\n{estimate_note_for(prov)}")
+        self.cost.SetValue(
+            f"{describe_estimate(model, provider=prov)}\n\n{estimate_note_for(prov)}"
+        )
 
     def _preferred(self, models: list[str], current: str = "") -> str:
         """The row to select: what is selected now, else what was saved, else the first."""
@@ -280,7 +302,7 @@ class OwnKeyDialog(wx.Dialog):
         self.status.SetValue(f"Listing models for {prov}...")
 
         def work(**_kwargs: Any) -> tuple[list[str], str]:
-            return list_models(key, provider=prov)
+            return _fetch_models(key, prov)
 
         def done(_name: str, result: Any) -> None:
             models, error = result
@@ -316,7 +338,7 @@ class OwnKeyDialog(wx.Dialog):
         self._set_status(f"Checking the key with {prov_name}...")
 
         def work(**_kwargs: Any) -> tuple[list[str], str, str]:
-            models, error = list_models(key, provider=prov)
+            models, error = _fetch_models(key, prov)
             if error:
                 return [], "", f"The key did not work. {error}"
             model = self._preferred(models, current)
@@ -354,7 +376,7 @@ class OwnKeyDialog(wx.Dialog):
         prov_name = "Google Gemini" if prov == "gemini" else "OpenAI"
         clear_provider_api_key(prov)
         self.key.SetValue("")
-        saved = has_own_key(prov)
+        saved = _check_has_own_key(prov)
         self.key_label.SetLabel(self._key_label(prov, saved))
         self.remove.Enable(saved)
         self.key.SetFocus()
@@ -365,7 +387,9 @@ class OwnKeyDialog(wx.Dialog):
                 f"is still set, so AI help continues using it."
             )
             return
-        self._set_status(f"The {prov_name} key was removed. AI help is back on QUILL's free service.")
+        self._set_status(
+            f"The {prov_name} key was removed. AI help is back on QUILL's free service."
+        )
 
     # -- after OK -------------------------------------------------------- #
 
@@ -383,8 +407,10 @@ class OwnKeyDialog(wx.Dialog):
                 f"The {prov_name} key could not be stored securely on this computer, so it was not "
                 "saved. AI help stays on QUILL's free service."
             )
-        if has_own_key(prov):
-            return f"AI help uses your own {prov_name} key ({self._selected_model()}), with no limits."
+        if _check_has_own_key(prov):
+            return (
+                f"AI help uses your own {prov_name} key ({self._selected_model()}), with no limits."
+            )
         return "AI help uses QUILL's free service."
 
 
@@ -450,9 +476,7 @@ class OwnKeyUsageFrame(wx.Frame):
         )
         usage_url = GEMINI_USAGE_URL if prov == "gemini" else OPENAI_USAGE_URL
         usage = wx.Button(panel, label=f"Open My {prov_name} &Account")
-        usage.SetHelpText(
-            f"Opens your {prov_name} account page in your browser."
-        )
+        usage.SetHelpText(f"Opens your {prov_name} account page in your browser.")
         usage.Bind(wx.EVT_BUTTON, lambda _evt: self._on_usage(usage_url))
         _close_row(self, sizer, usage)
         focus_on(self, self.body)
