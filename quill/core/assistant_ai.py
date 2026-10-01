@@ -541,7 +541,7 @@ def _extract_names_from_model_item(item: dict[str, object]) -> list[str]:
         str(item.get("id", "")).strip(),
         str(item.get("model", "")).strip(),
     )
-    primary = [v for v in id_candidates if v]
+    primary = [v.removeprefix("models/") if v.startswith("models/") else v for v in id_candidates if v]
     if primary:
         return primary
     display = str(item.get("display_name", "")).strip()
@@ -790,6 +790,31 @@ _PROVIDER_ENV_VARS: dict[str, tuple[str, ...]] = {
 }
 
 
+def _read_dotenv_key(key_name: str) -> str:
+    """Read key from local .env files in cwd or parent directory if present."""
+    from pathlib import Path
+    try:
+        candidates = [
+            Path.cwd() / ".env",
+            Path.cwd().parent / ".env",
+            app_data_dir() / ".env",
+        ]
+        for env_path in candidates:
+            if env_path.is_file():
+                for line in env_path.read_text(encoding="utf-8", errors="replace").splitlines():
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    k, v = line.split("=", 1)
+                    if k.strip() == key_name:
+                        val = v.strip().strip("'\"")
+                        if val:
+                            return val
+    except Exception:  # noqa: BLE001
+        pass
+    return ""
+
+
 def environment_api_key(provider: str) -> str:
     """The key for *provider* from the environment, or "" if none is set.
 
@@ -805,6 +830,9 @@ def environment_api_key(provider: str) -> str:
         value = (os.environ.get(name) or "").strip()
         if value:
             return value
+        dotenv_val = _read_dotenv_key(name)
+        if dotenv_val:
+            return dotenv_val
     return ""
 
 
@@ -1008,7 +1036,8 @@ def chat_endpoint(provider: str, host: str, model: str) -> str:
     if normalized == "claude":
         return f"{host}/v1/messages"
     if normalized == "gemini":
-        return f"{host}/v1beta/models/{quote(model)}:generateContent"
+        model_name = model.removeprefix("models/")
+        return f"{host}/v1beta/models/{quote(model_name)}:generateContent"
     if normalized == "ollama":
         return f"{host}/api/chat"
     return f"{host}/v1/chat/completions"
@@ -1333,7 +1362,8 @@ def stream_chat_endpoint(provider: str, host: str, model: str) -> str:
     normalized = provider.strip().lower()
     if normalized == "gemini":
         host = host.rstrip("/")
-        return f"{host}/v1beta/models/{quote(model)}:streamGenerateContent?alt=sse"
+        model_name = model.removeprefix("models/")
+        return f"{host}/v1beta/models/{quote(model_name)}:streamGenerateContent?alt=sse"
     return chat_endpoint(provider, host, model)
 
 

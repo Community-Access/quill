@@ -102,23 +102,25 @@ class AiService:
 
     @property
     def own_key_active(self) -> bool:
-        """Whether requests go to OpenAI with the user's own key instead.
-
-        Then there is no QUILL server, no sign-in and no allowance: the same
-        five commands, billed to the user's OpenAI account
-        (:mod:`quill.core.ai.own_key`).
-        """
+        """Whether requests go to OpenAI or Google Gemini with the user's own key instead."""
         from quill.core.ai.own_key import own_key_active
 
         return own_key_active(getattr(self._app, "settings", None))
 
     @property
+    def own_key_provider(self) -> str:
+        """The active provider for own-key requests ('gemini' or 'openai')."""
+        from quill.core.ai.own_key import active_own_key_provider
+
+        return active_own_key_provider(getattr(self._app, "settings", None))
+
+    @property
     def own_key_model(self) -> str:
-        """The OpenAI model own-key requests use: the chosen one, or the default."""
+        """The model own-key requests use: the chosen one, or the default."""
         from quill.core.ai.own_key import default_model
 
         chosen = getattr(getattr(self._app, "settings", None), "ai_own_key_model", "")
-        return str(chosen or "").strip() or default_model()
+        return str(chosen or "").strip() or default_model(self.own_key_provider)
 
     # -- the ChatGPT subscription -------------------------------------------- #
 
@@ -332,11 +334,17 @@ class AiService:
         elif self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
 
+            prov = self.own_key_provider
             model = self.own_key_model
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
                 answer = ask_with_own_key(
-                    feature, prompt, chunks, model=model, language=language or "English"
+                    feature,
+                    prompt,
+                    chunks,
+                    provider=prov,
+                    model=model,
+                    language=language or "English",
                 )
                 return answer, None
 
@@ -383,10 +391,18 @@ class AiService:
         elif self.own_key_active:
             from quill.core.ai.own_key import ask_with_own_key
 
+            prov = self.own_key_provider
             model = self.own_key_model
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None, int]:
-                reply = ask_with_own_key("chat", prompt, chunks, model=model, history=history)
+                reply = ask_with_own_key(
+                    "chat",
+                    prompt,
+                    chunks,
+                    provider=prov,
+                    model=model,
+                    history=history,
+                )
                 return reply, None, 0
 
         else:
@@ -412,18 +428,50 @@ class AiService:
         on_done: Callable[[str], None],
         on_error: Callable[[str], None],
     ) -> None:
-        """Ask About an Image, on the ChatGPT plan. Returns at once; answers on the UI thread.
+        """Ask About an Image. Returns at once; answers on the UI thread."""
+        if self.chatgpt_active:
+            from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
 
-        Only the plan carries images. A bad file is reported as the sentence
-        :func:`quill.core.ai.chatgpt_client.image_part` wrote for it, before
-        anything is sent.
-        """
-        from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
+            account = self.chatgpt
 
-        account = self.chatgpt
+            def work(**_kwargs: Any) -> str:
+                return describe_image_with_chatgpt(account, path, question)
 
-        def work(**_kwargs: Any) -> str:
-            return describe_image_with_chatgpt(account, path, question)
+        elif self.own_key_active and self.own_key_provider == "gemini":
+            from pathlib import Path
+            from quill.core.ai.vision import describe_image as vision_describe
+            from quill.core.assistant_ai import (
+                AssistantConnectionSettings,
+                default_host_for_provider,
+                load_provider_api_key,
+            )
+
+            key = load_provider_api_key("gemini")
+            model = self.own_key_model
+            conn = AssistantConnectionSettings(
+                provider="gemini",
+                host=default_host_for_provider("gemini"),
+                model=model,
+            )
+
+            def work(**_kwargs: Any) -> str:
+                text, err = vision_describe(
+                    conn,
+                    key,
+                    Path(path),
+                    prompt=question or "Describe this image in detail.",
+                )
+                if err or not text:
+                    raise ValueError(err or "Google Gemini returned an empty description.")
+                return text
+
+        else:
+            from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
+
+            account = self.chatgpt
+
+            def work(**_kwargs: Any) -> str:
+                return describe_image_with_chatgpt(account, path, question)
 
         def done(_name: str, text: Any) -> None:
             _call_after(on_done, str(text))

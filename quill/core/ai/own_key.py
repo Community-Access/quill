@@ -42,7 +42,9 @@ __all__ = [
     "OWN_KEY_LIMITS",
     "UNLIMITED",
     "OWN_KEY_PROVIDER",
+    "OWN_KEY_PROVIDERS",
     "OwnKeyError",
+    "active_own_key_provider",
     "ask_with_own_key",
     "default_model",
     "has_own_key",
@@ -53,6 +55,7 @@ __all__ = [
 ]
 
 OWN_KEY_PROVIDER = "openai"
+OWN_KEY_PROVIDERS: tuple[str, ...] = ("openai", "gemini")
 
 #: The instruction half of each gateway template, sent as the system message.
 #: Must match ``quill-ai-gateway/app/prompts.py`` word for word.
@@ -209,42 +212,71 @@ class OwnKeyError(CodedError):
 
     code = "QUILL-AI-OWN-KEY-FAILED"
     user_hint = (
-        "Check the key and the model in Use My Own OpenAI Key, and that your "
-        "OpenAI account has credit. Or switch back to QUILL's free AI there."
+        "Check your API key and model in Use My Own API Key, and verify your "
+        "account has credit. Or switch back to QUILL's free AI there."
     )
 
 
-def default_model() -> str:
+def infer_provider_from_model(model: str) -> str:
+    """Infer provider from model name if unmistakable, else empty string."""
+    m = model.strip().lower()
+    if "gemini" in m:
+        return "gemini"
+    if any(m.startswith(p) for p in ("gpt", "o1", "o3", "o4", "chat", "luna", "text-", "davinci", "babbage")):
+        return "openai"
+    return ""
+
+
+def active_own_key_provider(settings: Any = None) -> str:
+    """Return the provider id to use for own-key AI: the saved choice, or detected key."""
+    from quill.core.assistant_ai import load_provider_api_key
+
+    if settings is not None:
+        saved_provider = str(getattr(settings, "ai_own_key_provider", "") or "").strip().lower()
+        if saved_provider in OWN_KEY_PROVIDERS and load_provider_api_key(saved_provider):
+            return saved_provider
+
+    # Auto-detection: prefer configured/environment key in provider order
+    for prov in OWN_KEY_PROVIDERS:
+        if load_provider_api_key(prov):
+            return prov
+    return OWN_KEY_PROVIDER
+
+
+def default_model(provider: str = "") -> str:
     from quill.core.assistant_ai import default_model_for_provider
 
-    return default_model_for_provider(OWN_KEY_PROVIDER)
+    target = provider.strip().lower() or active_own_key_provider()
+    return default_model_for_provider(target)
 
 
-def has_own_key() -> bool:
-    """Whether an OpenAI key is stored (or set in the environment)."""
+def has_own_key(provider: str = "") -> bool:
+    """Whether an API key is stored (or set in the environment) for own-key use."""
     from quill.core.assistant_ai import load_provider_api_key
 
     try:
-        return bool(load_provider_api_key(OWN_KEY_PROVIDER))
+        if provider:
+            return bool(load_provider_api_key(provider.strip().lower()))
+        return bool(load_provider_api_key("openai") or load_provider_api_key("gemini"))
     except Exception:  # noqa: BLE001 - an unreadable store is "no key"
         return False
 
 
 def own_key_active(settings: Any = None) -> bool:
-    """Whether AI help uses the user's key: whenever one is saved.
-
-    There is deliberately no separate switch. A saved key lifts every limit;
-    removing it (Use My Own OpenAI Key, Remove the Saved Key) is how a person
-    goes back to the free service. *settings* is accepted for the callers'
-    convenience and not consulted.
-    """
-    del settings
+    """Whether AI help uses the user's key: whenever one is saved or present in the environment."""
+    if settings is not None:
+        saved_provider = str(getattr(settings, "ai_own_key_provider", "") or "").strip().lower()
+        if saved_provider:
+            return has_own_key(saved_provider)
     return has_own_key()
 
 
 def load_settings_fields(data: Any) -> dict[str, Any]:
-    """The own-key setting from saved JSON, for QUILL's settings loader."""
-    return {"ai_own_key_model": str(data.get("ai_own_key_model", "") or "")}
+    """The own-key settings from saved JSON, for QUILL's settings loader."""
+    return {
+        "ai_own_key_model": str(data.get("ai_own_key_model", "") or ""),
+        "ai_own_key_provider": str(data.get("ai_own_key_provider", "") or ""),
+    }
 
 
 def request_for(
@@ -284,11 +316,12 @@ def ask_with_own_key(
     prompt: str,
     chunks: list[str] | None = None,
     *,
+    provider: str = "",
     model: str = "",
     history: list[dict[str, str]] | None = None,
     language: str = "English",
 ) -> str:
-    """Send one AI help request to OpenAI with the user's key. Blocking.
+    """Send one AI help request to the provider with the user's key. Blocking.
 
     Raises :class:`OwnKeyError` with a sentence written for a person.
     """
@@ -299,14 +332,24 @@ def ask_with_own_key(
         load_provider_api_key,
     )
 
-    key = load_provider_api_key(OWN_KEY_PROVIDER)
+    inferred = infer_provider_from_model(model)
+    active_prov = provider.strip().lower() or (inferred if inferred and load_provider_api_key(inferred) else active_own_key_provider())
+    key = load_provider_api_key(active_prov)
     if not key:
-        raise OwnKeyError("No OpenAI key is stored on this computer.")
+        for fallback_prov in OWN_KEY_PROVIDERS:
+            fallback_key = load_provider_api_key(fallback_prov)
+            if fallback_key:
+                active_prov = fallback_prov
+                key = fallback_key
+                break
+    if not key:
+        prov_name = "Google Gemini" if active_prov == "gemini" else "OpenAI"
+        raise OwnKeyError(f"No {prov_name} key is stored on this computer or set in the environment.")
     system, user = request_for(feature, prompt, chunks, history, language)
     connection = AssistantConnectionSettings(
-        provider=OWN_KEY_PROVIDER,
-        host=default_host_for_provider(OWN_KEY_PROVIDER),
-        model=model.strip() or default_model(),
+        provider=active_prov,
+        host=default_host_for_provider(active_prov),
+        model=model.strip() or default_model(active_prov),
     )
     # No answer ceiling: the model's own maximum is the only one.
     text, error = generate_assistant_response(
@@ -317,11 +360,12 @@ def ask_with_own_key(
         system_prompt=system,
     )
     if error or not text:
-        raise OwnKeyError(f"OpenAI did not answer: {error or 'the answer was empty'}.")
+        prov_display = "Google Gemini" if active_prov == "gemini" else "OpenAI"
+        raise OwnKeyError(f"{prov_display} did not answer: {error or 'the answer was empty'}.")
     return text.strip()
 
 
-def size_warning(text: str, model: str, *, free_limit_tokens: int) -> str:
+def size_warning(text: str, model: str, *, free_limit_tokens: int, provider: str = "") -> str:
     """What sending *text* with the user's own key means, before it is sent.
 
     Never a refusal. Always the rough cost of sending it, because that is the
@@ -333,20 +377,22 @@ def size_warning(text: str, model: str, *, free_limit_tokens: int) -> str:
     from quill.core.ai.gateway_context import estimate_tokens, words_in
     from quill.core.ai.own_key_models import estimate_for
 
+    target_prov = provider.strip().lower() or infer_provider_from_model(model) or active_own_key_provider()
+    provider_name = "Google Gemini" if target_prov == "gemini" else "OpenAI"
     tokens = estimate_tokens(text)
     words = words_in(text)
-    cost = tokens * estimate_for(model).input_per_million / 1_000_000
+    cost = tokens * estimate_for(model, provider=target_prov).input_per_million / 1_000_000
     spent = "less than 1 cent" if cost < 0.01 else f"about ${cost:,.2f}"
     parts = [
         f"Your own key has no limits. Sending these {words:,} words costs {spent} "
-        f"on your OpenAI account with {model}, plus the answer, which is not "
+        f"on your {provider_name} account with {model}, plus the answer, which is not "
         "limited in length."
     ]
     if tokens > free_limit_tokens:
         parts.append("This is more than QUILL's free AI would accept.")
     if tokens > CONTEXT_WARNING_TOKENS:
         parts.append(
-            "It may be more than the model can read at once; if so, OpenAI "
+            f"It may be more than the model can read at once; if so, {provider_name} "
             "refuses it and nothing is charged."
         )
     return " ".join(parts)
