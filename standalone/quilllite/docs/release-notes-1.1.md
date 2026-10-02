@@ -12,7 +12,7 @@ than any number a runtime could have claimed, so Check for Updates offers it
 everywhere. The changelog has the full story and the gate that stops it
 recurring.*
 
-## Unreleased Quality Fixes
+## Coming in 1.2.0
 
 - Returning with Alt+Tab now makes one bounded follow-up focus check to handle
   late Windows activation. It preserves Find fields and menus and never repairs

@@ -1,6 +1,6 @@
 # QUILL Lite changelog
 
-## Unreleased
+## 1.2.0 -- unreleased
 
 ### Exit without a traceback
 
