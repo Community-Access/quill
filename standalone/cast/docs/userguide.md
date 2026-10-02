@@ -480,7 +480,14 @@ focus on every Play is one you turn off.
 
 ### Reading the show notes
 
-The show notes pane in Now Playing is the **Notes reader**. It is a native,
+The show notes are **under the library tree in the main window**, one Tab
+from the episode you are on: arrow to an episode and press Tab, and the
+field reads its notes (on a podcast, its description; on a folder or a
+view, a sentence saying what to select). The same field is the show-notes
+pane in Now Playing and the body of the **Show Notes** window (View Show
+Notes... on an episode in the Episode List), so wherever you meet the notes
+they read the same way and the same keys work. The field is the **Notes
+reader**. It is a native,
 read-only text field -- so your screen reader reads it exactly as it reads any
 document -- with the structure the podcast gave the notes kept on top of it:
 
@@ -492,7 +499,10 @@ document -- with the structure the podcast gave the notes kept on top of it:
   address. **Enter** opens the one you are on in your browser and says so.
 - **Timestamps are links to the episode.** "12:34" in the notes is a stop on
   the same Tab circuit ("Timestamp, 12 minutes 34 seconds. Enter plays from
-  there"), and Enter moves playback to it.
+  there"), and Enter moves playback to it. In the main window's pane, Enter on
+  a timestamp of an episode that is not playing starts it from that point and
+  says so; in the Show Notes window it seeks only while that episode is the
+  one playing.
 - **Ctrl+F** finds inside the notes and says how many matches there are and
   which line the first is on; **F3** finds the next, and says when it has
   wrapped to the top.
@@ -501,7 +511,8 @@ document -- with the structure the podcast gave the notes kept on top of it:
 
 Under the field, three buttons:
 
-- **Copy Notes** (Alt+N) copies the whole notes in the format chosen last
+- **Copy Notes** (Alt+N in Now Playing; Alt+C under the library, where Alt+N
+  is Find) copies the whole notes in the format chosen last
   time, and says what it copied: "Copied the show notes as plain text, 412
   words." The **Applications key** on the button offers every format, and the
   one you pick is remembered:
@@ -514,7 +525,8 @@ Under the field, three buttons:
     QUILL document wants.
   - **Formatted** -- HTML with an RTF copy beside it, so Word, Outlook and
     QUILL's rich editor paste the formatting and Notepad pastes text.
-- **Links** (Alt+L) opens **Links in These Notes**. Its name says how many
+- **Links** (Alt+L in Now Playing; Alt+K under the library, where Alt+L is
+  the Library) opens **Links in These Notes**. Its name says how many
   ("Links, 7 in these notes"), and it is disabled when there are none. The list
   has one row per link, in order, each reading as the title and then where it
   goes; addresses that appear twice are folded into one row. **Enter** or

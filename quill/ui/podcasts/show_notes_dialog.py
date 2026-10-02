@@ -26,7 +26,13 @@ from quill.ui.dialog_contract import apply_modal_ids
 
 
 class ShowNotesDialog:
-    """Read-only viewer for one episode's show notes/description."""
+    """One episode's show notes, read with the Notes reader (qc.md 5c).
+
+    The same reader Now Playing and the main window's pane use: headings by H,
+    links and timestamps by Tab, Copy Notes in four formats, Links in These
+    Notes, View in Browser. Two verbs of its own stay: Send to Editor, and Save
+    As, which keeps a link *as a link* in HTML and Markdown.
+    """
 
     def __init__(
         self,
@@ -36,8 +42,14 @@ class ShowNotesDialog:
         description_html: str,
         on_send_to_editor: Callable[[str], None] | None = None,
         announce_cb: Callable[[str], None] | None = None,
+        on_seek: Callable[[int], None] | None = None,
+        podcast_title: str = "",
+        copy_format: Callable[[], str] | None = None,
+        set_copy_format: Callable[[str], None] | None = None,
     ) -> None:
         import wx
+
+        from quill.ui.notes_reader import NotesReader
 
         self._wx = wx
         self._description_html = description_html
@@ -50,81 +62,38 @@ class ShowNotesDialog:
             title=f"Show Notes -- {episode_title}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((560, 480))
+        self.dialog.SetMinSize((620, 520))
         root = wx.BoxSizer(wx.VERTICAL)
-
-        view_row = wx.BoxSizer(wx.HORIZONTAL)
-        view_row.Add(
-            wx.StaticText(self.dialog, label="&View as:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
-        )
-        self._view_choice = wx.Choice(self.dialog, choices=["Plain text", "Rich text"])
-        self._view_choice.SetName("Show notes view: plain text or rich formatted text")
-        self._view_choice.SetSelection(0)
-        view_row.Add(self._view_choice, 0)
-        root.Add(view_row, 0, wx.EXPAND | wx.ALL, 10)
-
-        # Created immediately before the field it names -- the association is by
-        # creation order, so the "View as:" label above belongs to the combo that
-        # follows it and could never have named this as well. The notes field had
-        # only a SetName and announced as a bare read-only "edit".
-        notes_label = wx.StaticText(self.dialog, label="Show &notes:")
-        self._plain_view = wx.TextCtrl(
+        self.reader = NotesReader(
             self.dialog,
-            value=self._plain_text or "(No show notes for this episode.)",
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+            root,
+            label="Show &notes:",
+            announce=self._announce,
+            on_seek=on_seek,
+            copy_format=copy_format or (lambda: "plain"),
+            set_copy_format=set_copy_format,
+            min_height=300,
         )
-        self._plain_view.SetHelpText(
-            "The episode's show notes as plain text. Read-only -- arrow through "
-            "it line by line; Links lists every web address in it."
-        )
-        root.Add(notes_label, 0, wx.LEFT | wx.RIGHT, 10)
-        root.Add(self._plain_view, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-
-        self._rich_view: object | None = None
-        self._rich_label: object | None = None
-        try:
-            import wx.html as wxhtml
-
-            # Its own label, created immediately before it: the one above was
-            # consumed by the plain view, so the rich view announced with no
-            # name at all (qc.md 6b item 14). Hidden and shown with the view.
-            self._rich_label = wx.StaticText(self.dialog, label="Show notes, &formatted:")
-            self._rich_view = wxhtml.HtmlWindow(self.dialog)
-            self._rich_view.SetName("Show notes, formatted")
-            self._rich_view.SetHelpText(
-                "The episode's show notes with their formatting: headings, lists "
-                "and links. Read-only. Choose Plain text above to arrow through "
-                "them line by line."
-            )
-            sanitized = strip_html_images(description_html)
-            self._rich_view.SetPage(sanitized or "<p>(No show notes for this episode.)</p>")
-            self._rich_label.Hide()
-            self._rich_view.Hide()
-            root.Add(self._rich_label, 0, wx.LEFT | wx.RIGHT, 10)
-            root.Add(self._rich_view, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-        except Exception:  # noqa: BLE001 - rich view is optional; plain text always works
-            self._view_choice.Enable(False)
+        self.reader.set_notes(description_html, title=episode_title, podcast=podcast_title)
+        self._notes = self.reader.field  # what the window is for; focused on show
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         send_btn = wx.Button(self.dialog, label="&Send to Editor")
-        send_btn.SetName("Open these show notes as a new document")
-        self._links_btn = wx.Button(self.dialog, label="&Links...")
-        self._links_btn.SetName("List every web address in these show notes")
+        send_btn.SetHelpText("Opens these show notes as a new document, as plain text.")
         self._save_btn = wx.Button(self.dialog, label="Save &As...")
-        self._save_btn.SetName("Save these show notes as HTML, Markdown or plain text")
+        self._save_btn.SetHelpText(
+            "Saves these show notes to a file as plain text, HTML or Markdown; the "
+            "last two keep every link as a link."
+        )
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         btn_row.Add(send_btn, 0, wx.RIGHT, 6)
-        btn_row.Add(self._links_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._save_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
         self.dialog.SetSizer(root)
-
-        self._view_choice.Bind(wx.EVT_CHOICE, self._on_view_choice)
         send_btn.Bind(wx.EVT_BUTTON, self._on_send_to_editor_click)
-        self._links_btn.Bind(wx.EVT_BUTTON, lambda _e: self.show_links())
         self._save_btn.Bind(wx.EVT_BUTTON, lambda _e: self.save_as())
 
     def show(self) -> None:
@@ -132,39 +101,17 @@ class ShowNotesDialog:
         apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
         from quill.ui.dialog_contract import show_modal_dialog
 
-        # Focus on the thing this window is for, not on whatever control happens
-        # to come first in it (qc.md 6b: eight windows landed on a filter or a
-        # chooser). Set before ShowModal, which keeps a focus already placed.
-        self._plain_view.SetFocus()
+        # Focus on the thing this window is for (qc.md 6b): the notes.
+        self._notes.SetFocus()
         try:
             show_modal_dialog(self.dialog, "Show Notes", announce=self._announce)
         finally:
             self.dialog.Destroy()
 
-    def _on_view_choice(self, _event: object) -> None:
-        rich_selected = self._view_choice.GetSelection() == 1 and self._rich_view is not None
-        self._plain_view.Show(not rich_selected)
-        if self._rich_view is not None:
-            self._rich_view.Show(rich_selected)
-        if self._rich_label is not None:
-            self._rich_label.Show(rich_selected)
-        self.dialog.Layout()
-
     def show_links(self) -> int:
-        """List every address in the notes, to open or copy."""
-        from quill.core.text_links import find_links
-        from quill.ui.link_list_dialog import LinkListDialog
-
-        links = find_links(self._description_html, is_html=True)
-        if not links:
-            self._announce("There are no web addresses in these show notes.")
-            return 0
-        LinkListDialog(
-            self.dialog,
-            links=links,
-            title="Links in These Show Notes",
-            announce_cb=self._announce,
-        ).show()
+        """List every address in the notes, to open or copy (the reader's Links)."""
+        links = self.reader.links()
+        self.reader.show_links()
         return len(links)
 
     def save_as(self) -> str:

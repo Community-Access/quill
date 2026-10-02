@@ -898,7 +898,7 @@ station’s remembered level.</li>
 is playing has chapters, and runs the same command as its key.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 250 audited sites (110 helped, 140 named-help).</p>
+<p>Control coverage: 247 audited sites (111 helped, 136 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -1313,12 +1313,11 @@ change, before and after. It reports; it has changed nothing.</li>
 id="shownotesdialog-quilluipodcastsshow_notes_dialogpy">ShowNotesDialog
 (<code>quill/ui/podcasts/show_notes_dialog.py</code>)</h4>
 <ul>
-<li><code>self._plain_view</code>: The episode’s show notes as plain
-text. Read-only – arrow through it line by line; Links lists every web
-address in it.</li>
-<li><code>self._rich_view</code>: The episode’s show notes with their
-formatting: headings, lists and links. Read-only. Choose Plain text
-above to arrow through them line by line.</li>
+<li><code>send_btn</code>: Opens these show notes as a new document, as
+plain text.</li>
+<li><code>self._save_btn</code>: Saves these show notes to a file as
+plain text, HTML or Markdown; the last two keep every link as a
+link.</li>
 </ul>
 <h4
 id="showsettingsdialog-quilluipodcastsshow_settings_dialogpy">ShowSettingsDialog

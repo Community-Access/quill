@@ -2158,6 +2158,22 @@ with scripts, styles, frames and event handlers removed.
 <code>link_list_dialog.py</code> gained Copy Title and Address and the
 spec’s names; the reader passes it the unique links with their
 titles.</p>
+<p><strong>Outside Now Playing (later the same day, Jeff: “if you arrow
+to a podcast episode and hit tab shouldn’t the show notes show
+there”).</strong> The main window gets a <code>NotesReader</code> under
+the library tree (<code>main_panel.py</code>:
+<code>_refresh_notes_pane</code> on <code>EVT_TREE_SEL_CHANGED</code>;
+an episode’s notes, a show’s description, else a placeholder;
+<code>_seek_selected_episode</code> seeks the playing episode or starts
+the selected one at the timestamp through
+<code>start_episode_playback(resume_ms=)</code>), with this window’s own
+access keys (O, C, K, R – N and L are Find and Library).
+<code>ShowNotesDialog</code> is rewritten over the reader (Send to
+Editor and Save As kept; the View-as choice and the
+<code>HtmlWindow</code> are gone, and with them the rich-label test),
+and the Manager’s <code>view_show_notes</code> hands it a seek that
+works while that episode is playing and says what to do otherwise. The
+reader gained <code>labels=</code> and <code>set_placeholder</code>.</p>
 <p>Tests:
 <code>tests/unit/core/podcasts/test_cast_notes_render.py</code> (the
 renderer, the four formats, the browser page, the episode-level note,

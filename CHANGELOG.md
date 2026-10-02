@@ -27,6 +27,12 @@
   (plain, plain with links, Markdown, formatted HTML+RTF), the spoken copy
   with its word count, and the scriptless browser page. `PodcastHistory`
   keeps `notes_copy_format` (qc.md 5c).
+- **The show notes one Tab from the episode.** The main window gets the
+  Notes reader under the library tree, following the cursor (an episode's
+  notes, a podcast's description, else a placeholder; Enter on a timestamp
+  starts the episode there), and the Show Notes window in the Episode List is
+  the same reader with Send to Editor and Save As
+  (`quill/ui/podcasts/main_panel.py`, `show_notes_dialog.py`).
 - **Links in These Notes**: the shared link list reads title then address,
   folds duplicate addresses, and gains Copy Title and Address and Copy All
   Addresses (`quill/ui/link_list_dialog.py`).

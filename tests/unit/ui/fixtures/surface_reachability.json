@@ -214,6 +214,7 @@
   "quill.ui.podcasts.folder_picker_dialog": "reachable",
   "quill.ui.podcasts.folder_prompts": "reachable",
   "quill.ui.podcasts.folder_settings_dialog": "reachable",
+  "quill.ui.podcasts.main_panel": "reachable",
   "quill.ui.podcasts.manager_actions": "reachable",
   "quill.ui.podcasts.manager_dialog": "reachable",
   "quill.ui.podcasts.manager_phase4": "reachable",

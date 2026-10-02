@@ -73,7 +73,14 @@ class NotesReader:
         set_copy_format: Callable[[str], None] | None = None,
         what: str = "the show notes",
         min_height: int = 160,
+        labels: dict[str, str] | None = None,
     ) -> None:
+        """*labels* overrides the button captions' access keys per window:
+        ``copy``, ``links``, ``browser`` -- the defaults are Copy &Notes, &Links
+        and View in B&rowser, and a window whose menu bar or siblings already
+        claim N or L passes its own (GATE-14, GATE-15)."""
+        names = {"copy": "Copy &Notes", "links": "&Links", "browser": "View in B&rowser"}
+        names.update(labels or {})
         self._parent = parent
         self._announce = announce
         self._on_seek = on_seek
@@ -106,18 +113,18 @@ class NotesReader:
         sizer.Add(self.field, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         row = wx.BoxSizer(wx.HORIZONTAL)
-        self.copy_btn = wx.Button(parent, label="Copy &Notes")
+        self.copy_btn = wx.Button(parent, label=names["copy"])
         self.copy_btn.SetHelpText(
             "Copies the whole notes in the format chosen in Preferences. The "
             "Applications key on this button offers every format: plain text, plain "
             "text with links, Markdown, or formatted."
         )
-        self.links_btn = wx.Button(parent, label="&Links")
+        self.links_btn = wx.Button(parent, label=names["links"])
         self.links_btn.SetHelpText(
             "Lists every link in these notes, with its title and where it goes: open "
             "one in your browser, or copy its address."
         )
-        self.browser_btn = wx.Button(parent, label="View in B&rowser")
+        self.browser_btn = wx.Button(parent, label=names["browser"])
         self.browser_btn.SetHelpText(
             "Opens the notes as the podcast wrote them, with any images, in your "
             "default browser. The page is temporary and carries no scripts."
@@ -161,6 +168,11 @@ class NotesReader:
         )
         self.copy_btn.Enable(not self._doc.is_empty)
         self.browser_btn.Enable(bool((html or "").strip()))
+
+    def set_placeholder(self, text: str) -> None:
+        """No episode to read: say so in the field and dim the buttons."""
+        self.set_notes("", title="", podcast="")
+        self.field.SetValue(text)
 
     def _style(self) -> None:
         base = self.field.GetFont()

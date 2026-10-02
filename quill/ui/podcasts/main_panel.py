@@ -86,10 +86,35 @@ class CastMainPanelMixin(CastLibraryFindMixin):
             self._shows_tree.Bind(context_event, self._on_library_context_menu)
         self._shows_tree.Bind(wx.EVT_KEY_DOWN, self._on_library_key)
         self._shows_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_library_expanding)
-        # The button row describes the selection, so it follows the selection.
+        # The button row describes the selection, so it follows the selection;
+        # so does the show-notes pane under the tree.
         self._shows_tree.Bind(
-            wx.EVT_TREE_SEL_CHANGED, lambda e: (self._refresh_selection_buttons(), e.Skip())
+            wx.EVT_TREE_SEL_CHANGED,
+            lambda e: (self._refresh_selection_buttons(), self._refresh_notes_pane(), e.Skip()),
         )
+
+        # The show notes of the selected episode, one Tab from the tree (Jeff,
+        # 2026-10-02: "if you arrow to a podcast episode and hit tab shouldn't
+        # the show notes show there"). The same Notes reader Now Playing has,
+        # with this window's own access keys: N and L belong to Find and
+        # Library above, so Copy is C, Links is K, the field is O.
+        from quill.ui.notes_reader import NotesReader
+
+        self._notes_pane = NotesReader(
+            panel,
+            root,
+            label="Sh&ow notes:",
+            announce=self._announce,
+            on_seek=self._seek_selected_episode,
+            show_modal=getattr(self, "_show_modal_dialog", None),
+            copy_format=lambda: str(
+                getattr(self._podcast_history, "notes_copy_format", "plain") or "plain"
+            ),
+            set_copy_format=self._remember_notes_copy_format,
+            min_height=110,
+            labels={"copy": "&Copy Notes", "links": "Lin&ks", "browser": "View in B&rowser"},
+        )
+        self._notes_pane.set_placeholder("Select an episode to read its show notes here.")
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         # Every button in this row names its object IN ITS LABEL, never in an
@@ -198,6 +223,64 @@ class CastMainPanelMixin(CastLibraryFindMixin):
         self._scan_hold = ScanHoldController(self, parent=self.frame)
         self._select_default_launch_view()
         self._shows_tree.SetFocus()
+
+    def _refresh_notes_pane(self) -> None:
+        """The pane follows the library cursor: an episode's notes, a podcast's
+        description, or a sentence saying what to select."""
+        pane = getattr(self, "_notes_pane", None)
+        if pane is None:
+            return
+        pair = self._selected_episode()
+        if pair is not None:
+            show, episode = pair
+            pane.set_notes(
+                str(getattr(episode, "description", "") or ""),
+                title=str(getattr(episode, "title", "")),
+                podcast=str(getattr(show, "title", "")),
+            )
+            return
+        show = self._selected_show()
+        if show is not None and str(getattr(show, "description", "") or "").strip():
+            pane.set_notes(str(show.description), title=str(show.title), podcast=str(show.title))
+            return
+        pane.set_placeholder("Select an episode to read its show notes here.")
+
+    def _seek_selected_episode(self, ms: int) -> None:
+        """Enter on a timestamp in the pane: seek the playing episode, or start
+        the selected one from there."""
+        from quill.core.media.timecode import format_spoken
+
+        pair = self._selected_episode()
+        if pair is None:
+            self._announce("Select an episode first.")
+            return
+        show, episode = pair
+        controller = self._podcast_controller
+        state = controller.state
+        if state.show_id and state.episode_guid == episode.guid:
+            controller.seek(int(ms))
+            self._announce(f"At {format_spoken(int(ms))}.")
+            return
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
+        if start_episode_playback(
+            controller,
+            self._podcast_library,
+            show,
+            episode,
+            resume_ms=int(ms),
+            announce=self._announce,
+        ):
+            self._announce(f"Playing {episode.title} from {format_spoken(int(ms))}.")
+
+    def _remember_notes_copy_format(self, fmt: str) -> None:
+        history = getattr(self, "_podcast_history", None)
+        if history is None:
+            return
+        history.notes_copy_format = fmt
+        saver = getattr(self, "_save_podcast_history", None)
+        if callable(saver):
+            saver()
 
     def open_notification_target(self, target: str) -> None:
         """Enter on a notification: select the podcast it was about.

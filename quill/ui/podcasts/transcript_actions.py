@@ -214,12 +214,28 @@ def view_show_notes(host: Any, episode: Any) -> None:
     """
     from quill.ui.podcasts.show_notes_dialog import ShowNotesDialog
 
+    controller = getattr(host, "_controller", None)
+
+    def seek(ms: int) -> None:
+        # A timestamp seeks the episode only while it is the one playing; the
+        # Manager's list may be about any episode, and starting one from a
+        # window about reading would be a surprise.
+        state = getattr(controller, "state", None)
+        if state is not None and state.episode_guid == episode.guid:
+            controller.seek(int(ms))
+            from quill.core.media.timecode import format_spoken
+
+            host._announce(f"At {format_spoken(int(ms))}.")
+            return
+        host._announce("Play this episode first; its timestamps seek while it is playing.")
+
     ShowNotesDialog(
         host.dialog,
         episode_title=episode.title,
         description_html=episode.description,
         on_send_to_editor=getattr(host, "_on_send_show_notes", None),
         announce_cb=host._announce,
+        on_seek=seek if controller is not None else None,
     ).show()
 
 

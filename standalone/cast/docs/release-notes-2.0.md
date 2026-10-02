@@ -54,7 +54,10 @@ Episode. Ctrl+1 is the library again. The window is made when Cast starts and
 only hidden when closed, so its number never moves, and a Preferences switch
 (off by default) brings it to the front whenever playback starts.
 
-**The show notes can be read now, not only heard.** The Notes reader keeps
+**The show notes can be read now, not only heard -- and they are one Tab
+from the episode.** Under the library tree in the main window, the field
+reads the notes of the episode you are on (or a podcast's description), and
+the Show Notes window in the Episode List is the same reader. It keeps
 the podcast's headings, lists and links in a native read-only field: H and
 Shift+H move between headings and say the level, Tab and Shift+Tab move
 between links and timestamps and say the title, Enter opens a link or plays

@@ -3072,10 +3072,18 @@ Original document title: QC3: Completed Quality Changes.
   reachability; keyboard and F1 references.
 - Tests: `tests/unit/core/podcasts/test_cast_notes_render.py` (16) and
   `tests/unit/ui/podcasts/test_now_playing_window.py` (25), all passing.
+- Later the same day (Jeff: "can we read episode/show notes outside of the
+  now playing window" and "if you arrow to a podcast episode and hit tab
+  shouldn't the show notes show there"): the Notes reader sits under the
+  library tree in the main window, following the cursor
+  (`main_panel._refresh_notes_pane`, `_seek_selected_episode`), and the
+  Show Notes window is rewritten over it (`show_notes_dialog.py`; the
+  rich-label test retired, `tests/unit/ui/podcasts/test_show_notes_reader.py`
+  added). About This Podcast on the reader and the per-episode context-menu
+  Links row stay with Phase 4.
 - Docs: Cast user guide ("Now Playing" and "Reading the show notes", the
   Window section), Cast PRD 23.13 and 23.11, Cast 2.0 release notes, root
-  CHANGELOG. Not yet: the Show Notes peer window and About This Podcast on
-  the reader (Phase 4), the per-episode context-menu Links row (Phase 4).
+  CHANGELOG.
 
 ### 2026-10-02: Thesaurus, Look Up and the AI dictionary, shared by both editors (Jeff, 2026-10-01 and 2026-10-02)
 

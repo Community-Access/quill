@@ -313,7 +313,7 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 250 audited sites (110 helped, 140 named-help).
+Control coverage: 247 audited sites (111 helped, 136 named-help).
 
 ### Every window, and what it is for
 
@@ -498,8 +498,8 @@ Control coverage: 250 audited sites (110 helped, 140 named-help).
 - `self._preview_list`: Each title these patterns would change, before and after. It reports; it has changed nothing.
 #### ShowNotesDialog (`quill/ui/podcasts/show_notes_dialog.py`)
 
-- `self._plain_view`: The episode's show notes as plain text. Read-only -- arrow through it line by line; Links lists every web address in it.
-- `self._rich_view`: The episode's show notes with their formatting: headings, lists and links. Read-only. Choose Plain text above to arrow through them line by line.
+- `send_btn`: Opens these show notes as a new document, as plain text.
+- `self._save_btn`: Saves these show notes to a file as plain text, HTML or Markdown; the last two keep every link as a link.
 #### ShowSettingsDialog (`quill/ui/podcasts/show_settings_dialog.py`)
 
 - `self._category`: Which group of settings is shown below. Seventy controls in one list is not a list anybody can work through by ear, so this shows one group at a time. It hides nothing -- every group is one keystroke away.

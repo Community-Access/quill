@@ -1575,6 +1575,19 @@ frames and event handlers removed. `PodcastHistory.notes_copy_format` keeps
 the chosen format. `link_list_dialog.py` gained Copy Title and Address and the
 spec's names; the reader passes it the unique links with their titles.
 
+**Outside Now Playing (later the same day, Jeff: "if you arrow to a podcast
+episode and hit tab shouldn't the show notes show there").** The main window
+gets a `NotesReader` under the library tree (`main_panel.py`:
+`_refresh_notes_pane` on `EVT_TREE_SEL_CHANGED`; an episode's notes, a show's
+description, else a placeholder; `_seek_selected_episode` seeks the playing
+episode or starts the selected one at the timestamp through
+`start_episode_playback(resume_ms=)`), with this window's own access keys (O,
+C, K, R -- N and L are Find and Library). `ShowNotesDialog` is rewritten over
+the reader (Send to Editor and Save As kept; the View-as choice and the
+`HtmlWindow` are gone, and with them the rich-label test), and the Manager's
+`view_show_notes` hands it a seek that works while that episode is playing and
+says what to do otherwise. The reader gained `labels=` and `set_placeholder`.
+
 Tests: `tests/unit/core/podcasts/test_cast_notes_render.py` (the renderer, the
 four formats, the browser page, the episode-level note, the two history
 fields) and `tests/unit/ui/podcasts/test_now_playing_window.py` (a real

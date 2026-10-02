@@ -23,7 +23,7 @@ _PODCASTS = Path(__file__).resolve().parents[4] / "quill" / "ui" / "podcasts"
 EXPECTED = {
     "downloads_dialog.py": "_list",
     "feed_check_dialog.py": "_list",
-    "show_notes_dialog.py": "_plain_view",
+    "show_notes_dialog.py": "_notes",
     "stats_dialog.py": "_report",
     "year_review_dialog.py": "_report",
     "play_queue_dialog.py": "_list",
