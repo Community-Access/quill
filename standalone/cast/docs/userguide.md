@@ -231,9 +231,9 @@ Three things are true of every control in it:
 
 - **It shows the value actually in force**, whether that came from this podcast, from its folder, or from your shared defaults. **F1 says which**: *"Every 60 minutes, from the folder News."*
 - **Saving writes only what you changed.** Anything you leave alone keeps following the levels above it.
-- **Where this podcast has an answer of its own, a Follow button appears beside the control.** Pressing it drops that one answer so the podcast goes back to inheriting -- it does not write today's default over it.
+- **Where this podcast has an answer of its own, a Use shared default button appears beside the control**, naming the setting -- "Use shared default for Playback speed". Pressing it drops that one answer so the podcast goes back to inheriting -- it does not write today's default over it. (Until 2026-10-01 these buttons all said Follow, which is also the word for adding a podcast.)
 
-**What Have I Changed?** lists only the settings this podcast answers for itself, out of all of them. It is the fastest way to find out why one podcast is behaving differently from the rest. **Follow the Shared Defaults** drops every one of them at once, and says how many it dropped.
+**What Have I Changed?** lists only the settings this podcast answers for itself, out of all of them. It is the fastest way to find out why one podcast is behaving differently from the rest. **Use Shared Defaults** (Alt+D) drops every one of them at once, and says how many it dropped.
 
 #### What you can set for one podcast
 

@@ -534,7 +534,7 @@ How a setting is decided: your shared default, then the folder, then the podcast
 7. **Find out what you have changed.** What Have I Changed? lists only the settings this podcast answers for itself, out of all of them. It is the fastest way to find out why one podcast behaves differently from the rest, and it changes nothing by being opened.
    - You should hear: A count, then one line per setting with the level that set it.
 
-8. **Put one back, or all of them.** Where a podcast has an answer of its own, a Follow button sits beside that control; pressing it drops that one answer so the podcast inherits again. Follow the Shared Defaults drops every one of them at once, and says how many it dropped.
+8. **Put one back, or all of them.** Where a podcast has an answer of its own, a Use shared default button sits beside that control, naming it; pressing it drops that one answer so the podcast inherits again. Use Shared Defaults drops every one of them at once, and says how many it dropped.
    - You should hear: The setting following the folder or the shared default again.
 
 Most people set three things globally, one or two on a folder, and one on a single podcast, forever. The point of the chain is that you can change your mind about the first without hunting down the rest.

@@ -184,6 +184,12 @@ again. Quill Radio's main window learned the same lesson the same day.
   saying what it was called. It now opens with focus on the queue and its
   title, and a build check makes sure no window anywhere in the family can
   make that mistake again.
+- **"Use shared default", not "Follow".** In Settings for This Podcast, the
+  button beside a setting the podcast answers for itself used to say only
+  Follow -- one per row, all identical, and the same word Cast now uses for
+  adding a podcast. Each now says what it does and to what: "Use shared
+  default for Playback speed". The button that drops them all is **Use
+  Shared Defaults** (Alt+D).
 - **Shift+F10 opens the library's row menu.** The library tree's own help
   promised it, and only a right-click did it: Shift+F10 and the Applications
   key opened nothing. Both open the same menu now.

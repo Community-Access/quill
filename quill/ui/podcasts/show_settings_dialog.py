@@ -145,7 +145,7 @@ class ShowSettingsDialog:
             + " "
             + filters.describe_configuration(maintenance.filter_for(library, show))
         )
-        clear_btn = wx.Button(self.dialog, label="Follow &the Shared Defaults")
+        clear_btn = wx.Button(self.dialog, label="Use Shared &Defaults")
         clear_btn.SetHelpText(settings_help.SHOW_HELP["reset"])
         changed_btn = wx.Button(self.dialog, label="What Have I C&hanged?")
         changed_btn.SetHelpText(
@@ -306,7 +306,7 @@ class ShowSettingsDialog:
             f"{len(own)} setting{'' if len(own) == 1 else 's'} and follow its folder "
             "and the shared defaults again?\n\nIt changes settings only -- no "
             "episode, download or queue entry is touched.",
-            "Follow the Shared Defaults",
+            "Use Shared Defaults",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
             self.dialog,
             announce=None,

@@ -221,8 +221,19 @@ def _finish(
         library, definition, level=LEVEL_SHOW, scope_id=show.id
     ):
         return built
-    button = wx.Button(parent, label="Follow")
-    button.SetName(f"Stop overriding {definition.label_text().rstrip(':')} for this podcast")
+    # "Use shared default for Speed", not "Follow": a bare Follow meant
+    # "revert to the default" here and "add this podcast" everywhere else, and
+    # one per overridden row all said the same word (qc.md 6b item 19). The
+    # setting is in the label because a name set on a wxMSW button is never
+    # read -- the old SetName was inert, and on macOS replaced the label.
+    from quill.core.transport_button import object_label
+
+    button = wx.Button(
+        parent,
+        label=object_label(
+            "Use shared default for", definition.label_text().rstrip(":"), max_chars=60
+        ),
+    )
     button.SetHelpText(
         "Drops this podcast's own answer for this setting, so it follows its "
         "folder or the shared default again. It changes this setting only, and "

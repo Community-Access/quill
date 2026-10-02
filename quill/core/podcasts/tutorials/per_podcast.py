@@ -125,10 +125,11 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Put one back, or all of them",
                 body=(
-                    "Where a podcast has an answer of its own, a Follow button sits "
-                    "beside that control; pressing it drops that one answer so the "
-                    "podcast inherits again. Follow the Shared Defaults drops every "
-                    "one of them at once, and says how many it dropped."
+                    "Where a podcast has an answer of its own, a Use shared default "
+                    "button sits beside that control, naming it; pressing it drops "
+                    "that one answer so the podcast inherits again. Use Shared "
+                    "Defaults drops every one of them at once, and says how many it "
+                    "dropped."
                 ),
                 hear="The setting following the folder or the shared default again.",
             ),

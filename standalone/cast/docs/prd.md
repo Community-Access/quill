@@ -1455,6 +1455,10 @@ construction order the easy one.
 
 ### 23.10 The object is in the label (2026-10-01)
 
+The same rule renamed the per-setting revert button in Settings for This
+Podcast from "Follow" to "Use shared default for <setting>" (its inert
+`SetName` removed), and the bulk button to "Use Shared &Defaults".
+
 The 2026-09-30 "Play what?" fix put the object in the button's accessible name.
 The survey the next day (qc.md 6b, item 1) found that on wxMSW a button is
 self-labelled and `set_accessible_name` is inert on it, so the fix was

@@ -18,13 +18,13 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 10 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 9 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 49 | Human acceptance pending |
-| **Total tracked rows** | **84** | **35 code/delivery groups + 49 manual scenarios** |
+| Manual screen-reader scenarios | 50 | Human acceptance pending |
+| **Total tracked rows** | **84** | **34 code/delivery groups + 50 manual scenarios** |
 
-Code/delivery subtotal: **35**.
+Code/delivery subtotal: **34**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1255,8 +1255,8 @@ the five dialogs calls `SetFocus`. They are the active worklist, in this order
       to ACB Media" in the Podcasts menu, "Subscribe using this feed URL",
       "When I unsubscribe" in Podcast Settings, "Unsubscribe them too" in
       Delete Folder: all Follow (items 9, 10).
-- The per-row "Follow" revert button and "Follow the Shared Defaults" become
-      "Use shared default" (item 19).
+- [x] The per-row "Follow" revert button and "Follow the Shared Defaults" become
+      "Use shared default" (item 19). Done 2026-10-01.
 - [x] The three "&OK" buttons lose their access keys (item 18). Done 2026-10-01.
 - [x] Keyboard Shortcuts and Global Hotkeys come out of `ADVANCED_ROWS` and
       back into Help in Simple mode (section 8), done 2026-10-01: every key is the listener's,
@@ -2783,6 +2783,10 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] Open Settings for This Podcast on a podcast with its own speed. Beside
+  the speed field, the button reads "Use shared default for" and the
+  setting's name; pressing it drops only that answer. Use Shared Defaults
+  (Alt+D) asks first and says how many it dropped.
 - [ ] In the main window's library tree, press Shift+F10 on a podcast, a
   folder, a pinned view and an episode, then the Applications key on each.
   Each opens the same menu a right-click does, once (not twice).
@@ -2932,6 +2936,19 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- "Use shared default", not "Follow" (6b item 19)
+
+- `show_settings_panel.py`: the per-setting revert button is labelled "Use
+  shared default for <setting>" through the shared `object_label` (elided at
+  60), and its inert `SetName` is gone (on macOS it replaced the label with a
+  sentence). `show_settings_dialog.py`: "Follow &the Shared Defaults" is "Use
+  Shared &Defaults", and its confirmation title matches. The per-podcast
+  tutorial step says the same; Cast's tutorial book regenerated (GATE-TUTDOC).
+- Validation: GATE-14, Cast help audit, accessible-name audit, control-label
+  gate and F1 reference all pass; 135 settings/tutorial tests pass.
+- Documented in the Cast user guide, tutorials, release notes and PRD 23.10.
+  Manual check added to "Cast Phase 1 Small Fixes".
 
 ### 2026-10-01: Cast Phase 1 -- Shift+F10 on the library tree (6b item 3)
 
@@ -3193,7 +3210,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **35 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **34 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3229,7 +3246,7 @@ This is the authoritative unchecked code/delivery tracker: **35 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 10
+### Cast Phase 1 Code and Tests: 9
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
@@ -3241,8 +3258,6 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
       to ACB Media" in the Podcasts menu, "Subscribe using this feed URL",
       "When I unsubscribe" in Podcast Settings, "Unsubscribe them too" in
       Delete Folder: all Follow (items 9, 10).
-- [ ] The per-row "Follow" revert button and "Follow the Shared Defaults" become
-      "Use shared default" (item 19).
 - [ ] The Show Notes rich view gets its label back (item 14) -- or is replaced
       outright by the Notes reader (5c), whichever lands first.
 - [ ] Preferences extracted to `podcasts_preferences.py` with two new rows:
