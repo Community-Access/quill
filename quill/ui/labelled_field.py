@@ -17,20 +17,23 @@ So the fix is not 165 careful edits. It is a helper that makes the correct thing
 easy thing, and a gate that notices the next one. This is the helper.
 
     self._speed = labelled(
-        self.dialog, row, "&Speed:", lambda p: wx.SpinCtrlDouble(p, min=0.5, max=5.0),
-        help="How fast episodes play, unless a podcast has its own speed.",
+        self.dialog, row, "&Speed:", lambda p: wx.SpinCtrlDouble(p, min=0.5, max=5.0)
     )
+    self._speed.SetHelpText("How fast episodes play, unless a podcast has its own speed.")
 
-Three things it guarantees that hand-written code keeps failing to:
+Two things it guarantees that hand-written code keeps failing to:
 
 1. **The label is created before the control**, always, because the helper calls the
    factory after building the label. Getting this backwards is the bug.
 2. **The label and the control go into the sizer in that order**, so the visual
    order matches the z-order and a sighted user and a screen-reader user meet them
    the same way round.
-3. **``SetHelpText`` is set at the construction site**, which is the only place the
-   help audit can see it (help set anywhere else is ``help-elsewhere`` and proves
-   nothing).
+**Help is not its job.** It used to take a ``help=`` argument and call
+``SetHelpText`` itself, and that is exactly the case the help audits cannot see:
+they read ``SetHelpText`` at the construction site, so help set inside a helper
+classifies as ``help-elsewhere`` and proves nothing. The parameter is gone
+(2026-10-01, qc.md Phase 1); the caller writes ``control.SetHelpText(...)`` on
+the next line, where the audit reads it.
 
 ``SetName`` is deliberately *not* set. A control with both a label and a name gets
 announced twice on some readers, and the label is the half that always works.
@@ -50,7 +53,6 @@ def labelled(
     label: str,
     make_control: Callable[[Any], Any],
     *,
-    help: str = "",  # noqa: A002 - "help" is what every caller means
     proportion: int = 1,
     border: int = 6,
     label_border: int = 6,
@@ -71,8 +73,6 @@ def labelled(
     static = wx.StaticText(parent, label=label)
     sizer.Add(static, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, label_border)
     control = make_control(parent)
-    if help:
-        control.SetHelpText(help)
     flags = wx.ALL | (wx.EXPAND if expand else 0)
     sizer.Add(control, proportion, flags, border)
     return control

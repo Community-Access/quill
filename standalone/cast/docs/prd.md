@@ -1456,7 +1456,8 @@ Palette; the other two wait for the Phase 2 episode surfaces.
 GATE-CTLLABEL (`tools/check_control_labels.py`) found 165 controls across the
 family whose name was set through `SetName` and never read. Cast's fifteen are
 fixed; the family count may only fall. `ui/labelled_field.py` makes the correct
-construction order the easy one.
+construction order the easy one; since 2026-10-01 it takes no `help=`, because help
+set inside a helper is invisible to the help audits -- callers set it inline.
 
 ### 23.10 The object is in the label (2026-10-01)
 

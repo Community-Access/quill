@@ -2010,7 +2010,9 @@ are reachable from the Command Palette; the other two wait for the Phase
 controls across the family whose name was set through
 <code>SetName</code> and never read. Cast’s fifteen are fixed; the
 family count may only fall. <code>ui/labelled_field.py</code> makes the
-correct construction order the easy one.</p>
+correct construction order the easy one; since 2026-10-01 it takes no
+<code>help=</code>, because help set inside a helper is invisible to the
+help audits – callers set it inline.</p>
 <h3 id="2310-the-object-is-in-the-label-2026-10-01">23.10 The object is
 in the label (2026-10-01)</h3>
 <p>The same rule renamed the per-setting revert button in Settings for
