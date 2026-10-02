@@ -136,8 +136,10 @@ play, queue, Inbox, folders, downloads, sleep timer, speed, settings, help.
 go looking for once you know they exist: Back Up My Podcasts, Restore from a
 Backup, Import OPML, Export OPML, Export My Data, Delete All Podcast Data,
 Podcast Index Credentials, Choose Columns, Quick Actions, Media Tools, Run
-Housekeeping Now, Free Up Space, Get FFmpeg, Redeem Unlock Code, Keyboard
-Shortcuts, Global Hotkeys, Product Requirements, and the whole Quillins menu.
+Housekeeping Now, Free Up Space, Get FFmpeg, Redeem Unlock Code, Product
+Requirements, and the whole Quillins menu. **Keyboard Shortcuts...** and
+**Global Hotkeys...** are in the Help menu in both modes: every key is yours
+to change, so where you change them is never hidden.
 
 Advanced rows are left out of Simple mode rather than disabled, so the lists
 are shorter rather than longer. Nothing is unreachable: every one of them is

@@ -182,6 +182,11 @@ again. Quill Radio's main window learned the same lesson the same day.
   Settings and Settings for This Podcast each spent Alt+O on their OK button,
   which Enter already presses. OK is plain OK now, and O is free for the
   controls in those windows that need a key.
+- **The keyboard editors are back in Simple mode.** Help > Keyboard
+  Shortcuts... (Ctrl+Alt+Shift+W) and Help > Global Hotkeys...
+  (Ctrl+Alt+Shift+H) had become Advanced-only rows. Every key is yours to
+  change, and where you change them should never be hidden, so both are in
+  the Help menu in either mode -- as they are in Quill Radio and QUILL Lite.
 
 ### The status bar
 

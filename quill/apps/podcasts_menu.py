@@ -362,14 +362,11 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
         # The Keyboard Shortcuts editor and the Global Hotkeys manager open the
         # same already-accessible dialogs QUILL uses (KeymapEditorMixin /
-        # GlobalHotkeysMixin), scoped to this app's own commands.
+        # GlobalHotkeysMixin), scoped to this app's own commands. In both menu
+        # modes: every key is the listener's (qc.md section 8).
         shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
-        self._advanced_row(
-            help_menu, "keymap_editor", shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+Shift+W"
-        )
-        self._advanced_row(
-            help_menu, "global_hotkeys", hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+Shift+H"
-        )
+        help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+Shift+W")
+        help_menu.Append(hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+Shift+H")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
         # The sheet is the other half of the editor above it, and the half

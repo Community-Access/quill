@@ -1402,7 +1402,9 @@ every omitted row is a command the palette and Go To reach. `CAST_AREAS` in
 off; defaults are on and only an explicit off is stored. Hide Caught-Up
 Podcasts, the Inbox folder scope (`core/podcasts/inbox_scope.py`, narrowing by
 the *library* folder tree and never the Inbox's own), Show Status Bar and the
-Window menu complete it.
+Window menu complete it. Keyboard Shortcuts and Global Hotkeys are **not**
+advanced rows (removed from `ADVANCED_ROWS` 2026-10-01): every key is the
+listener's, and the editors stay in Help in both modes, as in Radio and Lite.
 
 ### 23.5 The menu bar wins the letter
 

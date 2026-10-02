@@ -86,8 +86,11 @@ ADVANCED_ROWS: dict[str, str] = {
     "free_space": "Downloads already expire on their own schedule.",
     "get_ffmpeg": "Offered when something actually needs it.",
     "unlock_code": "For a signed code somebody has been sent, and nobody else.",
-    "global_hotkeys": "System-wide keys are a power feature by definition.",
-    "keymap_editor": "Rebinding presumes you have met the bindings.",
+    # Keyboard Shortcuts and Global Hotkeys were here until 2026-10-01 and
+    # left on purpose (qc.md section 8): every key is the listener's, and a
+    # keyboard user who cannot find where keys are changed has been told
+    # the keyboard is not theirs. Radio and QUILL Lite keep both editors
+    # in plain sight; so does Cast.
     "prd": "The product requirements document is for us, not for a listener.",
     # A whole menu, not a row -- the only one the mode hides entirely.
     "quillins": "An extensions menu is a thing you go looking for once you know it exists.",

@@ -18,14 +18,14 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 13 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 12 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phase 1 commit gate | 1 | Pending |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 45 | Human acceptance pending |
-| **Total tracked rows** | **84** | **39 code/delivery groups + 45 manual scenarios** |
+| Manual screen-reader scenarios | 46 | Human acceptance pending |
+| **Total tracked rows** | **84** | **38 code/delivery groups + 46 manual scenarios** |
 
-Code/delivery subtotal: **39**.
+Code/delivery subtotal: **38**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1259,8 +1259,8 @@ the five dialogs calls `SetFocus`. They are the active worklist, in this order
 - The per-row "Follow" revert button and "Follow the Shared Defaults" become
       "Use shared default" (item 19).
 - [x] The three "&OK" buttons lose their access keys (item 18). Done 2026-10-01.
-- Keyboard Shortcuts and Global Hotkeys come out of `ADVANCED_ROWS` and
-      back into Help in Simple mode (section 8): every key is the listener's,
+- [x] Keyboard Shortcuts and Global Hotkeys come out of `ADVANCED_ROWS` and
+      back into Help in Simple mode (section 8), done 2026-10-01: every key is the listener's,
       and Radio and QUILL Lite keep the editors in plain sight.
 - Focus lands on the thing the window is for: Downloads, Feed Check, Show
       Notes, Statistics, Year in Review each gain one `SetFocus`; the Play Queue
@@ -2783,6 +2783,10 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] In Simple mode (View > Advanced Features unchecked), open Help: Keyboard
+  Shortcuts... (Ctrl+Alt+Shift+W) and Global Hotkeys... (Ctrl+Alt+Shift+H)
+  are present and open their windows; the Advanced Features announcement
+  now counts two fewer rows.
 - [ ] Smart Playlist Rules, Podcast Settings, Settings for This Podcast: the
   OK button is announced as "OK" with no shortcut; Alt+O does nothing; Enter
   saves and closes.
@@ -2918,6 +2922,19 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- the keyboard editors are everyday rows (section 8)
+
+- `menu_mode.ADVANCED_ROWS` loses `keymap_editor` and `global_hotkeys` (with a
+  comment saying why they left); `podcasts_menu.py` appends Help > Keyboard
+  Shortcuts... and Help > Global Hotkeys... unconditionally. Simple mode now
+  hides 16 entries (15 rows and the Quillins menu), not 18, and the switch
+  announcement counts that.
+- Validation: new `test_the_keyboard_editors_are_everyday_rows` plus the
+  existing menu-mode tests (every declared row is gated, every reason ends in
+  a full stop); menu accelerator gate. Documented in the Cast user guide
+  (Simple and Advanced), release notes ("Smaller fixes") and PRD 23.4. Manual
+  check added to "Cast Phase 1 Small Fixes".
 
 ### 2026-10-01: Cast Phase 1 -- OK buttons carry no access key (6b item 18)
 
@@ -3117,7 +3134,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **39 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **38 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3153,7 +3170,7 @@ This is the authoritative unchecked code/delivery tracker: **39 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 13
+### Cast Phase 1 Code and Tests: 12
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
@@ -3169,9 +3186,6 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
       Delete Folder: all Follow (items 9, 10).
 - [ ] The per-row "Follow" revert button and "Follow the Shared Defaults" become
       "Use shared default" (item 19).
-- [ ] Keyboard Shortcuts and Global Hotkeys come out of `ADVANCED_ROWS` and
-      back into Help in Simple mode (section 8): every key is the listener's,
-      and Radio and QUILL Lite keep the editors in plain sight.
 - [ ] Focus lands on the thing the window is for: Downloads, Feed Check, Show
       Notes, Statistics, Year in Review each gain one `SetFocus`; the Play Queue
       passes its title and announce callback to `show_modal_dialog`.

@@ -86,6 +86,19 @@ def test_the_switch_itself_is_never_one_of_the_hidden_rows() -> None:
         assert menu_mode.shows(menu_mode.SIMPLE, row)
 
 
+def test_the_keyboard_editors_are_everyday_rows() -> None:
+    """Every key is the listener's (qc.md section 8). A keyboard user who cannot
+    find where keys are changed has been told the keyboard is not theirs, and
+    Radio and QUILL Lite keep both editors in plain sight."""
+    for row in ("keymap_editor", "global_hotkeys"):
+        assert row not in menu_mode.ADVANCED_ROWS
+        assert menu_mode.shows(menu_mode.SIMPLE, row)
+    source = _source(MENU_SOURCE)
+    assert "&Keyboard Shortcuts...\\tCtrl+Alt+Shift+W" in source
+    assert "&Global Hotkeys...\\tCtrl+Alt+Shift+H" in source
+    assert '_advanced_row(\n            help_menu, "keymap_editor"' not in source
+
+
 # -- what it says ------------------------------------------------------------- #
 
 
