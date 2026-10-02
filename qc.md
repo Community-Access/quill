@@ -8,7 +8,7 @@ original context and must be reverified before changing completion status.
 
 ## Progress Dashboard
 
-Updated 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows are committed and its fifteen pending rows are genuinely pending (two of them partly done -- see the per-row notes). F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
+Updated 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
 
 These are grouped tracking rows, not independent bugs. Shared work can satisfy more than one group. Older pending claims are not newly verified by this consolidation.
 
@@ -18,14 +18,14 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 14 | Re-verified 2026-10-01; item 1 done with X-06 |
+| Cast Phase 1 code and tests | 13 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phase 1 commit gate | 1 | Pending |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 36 | Human acceptance pending |
-| **Total tracked rows** | **76** | **40 code/delivery groups + 36 manual scenarios** |
+| Manual screen-reader scenarios | 45 | Human acceptance pending |
+| **Total tracked rows** | **84** | **39 code/delivery groups + 45 manual scenarios** |
 
-Code/delivery subtotal: **40**.
+Code/delivery subtotal: **39**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1258,7 +1258,7 @@ the five dialogs calls `SetFocus`. They are the active worklist, in this order
       Delete Folder: all Follow (items 9, 10).
 - The per-row "Follow" revert button and "Follow the Shared Defaults" become
       "Use shared default" (item 19).
-- The three "&OK" buttons lose their access keys (item 18).
+- [x] The three "&OK" buttons lose their access keys (item 18). Done 2026-10-01.
 - Keyboard Shortcuts and Global Hotkeys come out of `ADVANCED_ROWS` and
       back into Help in Simple mode (section 8): every key is the listener's,
       and Radio and QUILL Lite keep the editors in plain sight.
@@ -2778,6 +2778,15 @@ record exact speech after running it. Two conscious gaps to listen for: Radio's
 status-bar Play cell and the player panel's Play/Stop button still say the
 bare verb.
 
+### Cast Phase 1 Small Fixes
+
+Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
+or the named dialog. Record exact speech.
+
+- [ ] Smart Playlist Rules, Podcast Settings, Settings for This Podcast: the
+  OK button is announced as "OK" with no shortcut; Alt+O does nothing; Enter
+  saves and closes.
+
 ### Lite Settings-Save Failure and Retry
 
 Implemented in commit `6eaab53`. Accepted choices stay active for the current
@@ -2909,6 +2918,20 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- OK buttons carry no access key (6b item 18)
+
+- Smart Playlist Rules, Podcast Settings and Settings for This Podcast each
+  had "&OK", spending Alt+O on a button Enter already presses (CLAUDE.md,
+  GATE-14's first fix). Now plain "OK"; O is free in all three windows.
+- Validation: GATE-14 and the dialog button-contract audit pass; 22 targeted
+  UI tests pass. Documented in Cast release notes 2.0 ("Smaller fixes").
+- Manual check: open each window, press Alt+O, nothing happens; Enter still
+  saves. Added to the handoff below under "Cast Phase 1 Small Fixes".
+- Counting: the dashboard's manual-scenario figure is now computed from the
+  handoff section's unchecked boxes on every update (45, not the hand-kept
+  36 -- the X-06 transport rows and this one had not been added to it), and
+  every code count is recomputed from the trackers the same way.
 
 ### 2026-10-01: X-06 -- the transport button says its object (Radio and Cast)
 
@@ -3094,7 +3117,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **40 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **39 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3130,7 +3153,7 @@ This is the authoritative unchecked code/delivery tracker: **40 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 14
+### Cast Phase 1 Code and Tests: 13
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
@@ -3146,7 +3169,6 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
       Delete Folder: all Follow (items 9, 10).
 - [ ] The per-row "Follow" revert button and "Follow the Shared Defaults" become
       "Use shared default" (item 19).
-- [ ] The three "&OK" buttons lose their access keys (item 18).
 - [ ] Keyboard Shortcuts and Global Hotkeys come out of `ADVANCED_ROWS` and
       back into Help in Simple mode (section 8): every key is the listener's,
       and Radio and QUILL Lite keep the editors in plain sight.

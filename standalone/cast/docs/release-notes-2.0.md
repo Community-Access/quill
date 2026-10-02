@@ -176,6 +176,13 @@ checks for every label it can produce, not only the resting one. A second
 check fails the build if any Cast button is ever named through the inert route
 again. Quill Radio's main window learned the same lesson the same day.
 
+### Smaller fixes (2026-10-01)
+
+- **OK buttons no longer take a letter.** Smart Playlist Rules, Podcast
+  Settings and Settings for This Podcast each spent Alt+O on their OK button,
+  which Enter already presses. OK is plain OK now, and O is free for the
+  controls in those windows that need a key.
+
 ### The status bar
 
 A nine-cell status bar, off the Tab order entirely and reached with **F6**

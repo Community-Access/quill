@@ -442,7 +442,7 @@ class PodcastSettingsDialog:
         root.Add(hint, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        save_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
+        save_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         btn_row.AddStretchSpacer()
         btn_row.Add(save_btn, 0, wx.RIGHT, 6)

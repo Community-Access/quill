@@ -160,7 +160,7 @@ class ShowSettingsDialog:
 
         row = wx.BoxSizer(wx.HORIZONTAL)
         row.AddStretchSpacer()
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
+        ok_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
         ok_btn.SetHelpText(
             "Saves what you changed, and only what you changed. Anything you left "
             "alone keeps following its folder and the shared defaults."
