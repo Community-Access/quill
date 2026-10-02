@@ -16,15 +16,15 @@ The following table separates implementation, its delivery gate, and human accep
 
 | Category | Remaining | Status |
 |---|---:|---|
-| Family reliability findings | 9 | Partially implemented; F-11 done 2026-10-01 |
+| Family reliability findings | 6 | Partially implemented; F-04, F-05, F-06 and F-11 done 2026-10-01 |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 2 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 1 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 57 | Human acceptance pending |
-| **Total tracked rows** | **83** | **26 code/delivery groups + 57 manual scenarios** |
+| Manual screen-reader scenarios | 73 | Human acceptance pending |
+| **Total tracked rows** | **95** | **22 code/delivery groups + 73 manual scenarios** |
 
-Code/delivery subtotal: **26**.
+Code/delivery subtotal: **22**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -2782,6 +2782,37 @@ record exact speech after running it. Two conscious gaps to listen for: Radio's
 status-bar Play cell and the player panel's Play/Stop button still say the
 bare verb.
 
+### Cast Find in Library
+
+- [ ] In Cast's main window press Ctrl+F: focus is in "Find in library". Type
+  part of a podcast name: nothing is spoken per letter; when you stop, the count
+  is spoken once.
+- [ ] Down Arrow: the first match is read with what it is ("-- a podcast",
+  "-- an episode of ..."). Enter plays it; the Play button names it; Shift+F10
+  opens the usual menu.
+- [ ] Escape from the box: "Back to your library", and the cursor is on the row
+  it was on before searching.
+- [ ] View menu: Find in Library shows Ctrl+F; Customize Features shows
+  Ctrl+Alt+C and opens with that key.
+
+### Cast Episode Filter Tests
+
+- [ ] Open a podcast's Episode Filters, Add Rule. Alt+S reaches "More tests";
+  Alt+A opens "Episode Filter Test" with focus on "Look at". Choose Show
+  notes, Test "contains", Value "sponsor", Save: the list reads "Show notes
+  contains "sponsor"" and "Test added" is spoken.
+- [ ] In Episode Filter Test choose Look at: Episode type. The Test list
+  becomes whole phrases ("is a trailer") and Value is dimmed. Choose Length
+  in minutes, type "ten" and Save: refused with the reason, focus on Value.
+- [ ] Set Match when (Alt+W) to "Any one test is enough" with two tests, then
+  Try It on Recent Episodes (Alt+Y): the count and up to five titles are
+  spoken once; Alt+U reads the same sentence. The rules list row starts
+  "Any one of:".
+- [ ] On an episode you do not want, Shift+F10, F: Episode Filters opens and
+  the rule window appears on its own; its first line says why the rule was
+  chosen and how many of the newest it catches. Save the rule: "Rule added
+  and filtering switched on". Cancel Episode Filters: nothing was stored.
+
 ### Cast Phase 1 Small Fixes
 
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
@@ -2828,6 +2859,37 @@ or the named dialog. Record exact speech.
 - [ ] Smart Playlist Rules, Podcast Settings, Settings for This Podcast: the
   OK button is announced as "OK" with no shortcut; Alt+O does nothing; Enter
   saves and closes.
+
+### Radio and Cast Closing Report
+
+Entry: Quill Radio and QUILL Cast. To force a failure, make the data folder
+read-only (or fill the disk) just before closing, then restore it.
+
+- [ ] Close Cast with the folder read-only. It closes as usual. Restore the
+  folder and start Cast: one sentence says it could not finish saving and
+  names what; it is not repeated on the next launch.
+- [ ] Help > Recent Problems: a "Closing" row is there; Retry says the
+  library and statistics were saved now.
+- [ ] Repeat in Radio: the sentence names noting when it closed or the
+  recording note; Retry while recording keeps the recording note and says so.
+- [ ] A normal close of either app says nothing at the next launch.
+
+### Lite Background Open
+
+Entry: a plain text file of several megabytes on a local disk, and any small
+file on a network share.
+
+- [ ] File > Open the large file. A new window's title says its number and
+  "Opening"; "Opening" and the name is spoken once; typing does nothing until
+  the text arrives; then focus is at the top of the text and the title is the
+  file's.
+- [ ] Open it again while it is still opening: focus moves to that window; no
+  second window opens.
+- [ ] Open the large file and press Ctrl+W at once: the window closes, nothing
+  is announced later, and nothing appears in another window.
+- [ ] Open the network file, then disconnect the share before it arrives (or
+  use a path that cannot be read): the box names the reason and asks Try
+  again?; No closes the empty window, Yes reads again.
 
 ### Lite Multi-Instance Settings
 
@@ -2970,6 +3032,232 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Episode Filters -- far more tests, any-one-of, Try It, and Filter Episodes Like This
+
+- Jeff asked for "Rules for the episodes you did not want" to be beefed up:
+  regular expressions, and rules that can do far more conditionally. Regular
+  expressions already worked on the title; what was missing was everything
+  else a feed varies on.
+- New `quill/core/podcasts/filter_conditions.py`: `FilterCondition(field, op,
+  value, case_sensitive)` over title, show notes, people, episode type,
+  length, age in days, season and episode number; text ops contains / does
+  not contain / starts / ends / is / is not / wildcard / regex / not regex,
+  number ops at least / at most / is / is not. A missing fact never matches a
+  number test; an empty type is a full episode; an unreadable test makes its
+  rule match nothing; every matcher is total.
+- `EpisodeFilterRule` gains `conditions` and `match_any` (every test, or any
+  one). Storage: version 2 is read and written only when a rule uses either,
+  so a filter made the old way stays byte-for-byte version 1 for older
+  builds; an unknown field or op is kept as unusable, never dropped. The
+  speech says "All of:" or "Any one of:" before the tests, and the save
+  gate's duration check counts a length test.
+- New "Episode Filter Test" window (`ui/podcasts/episode_filter_test_dialog.py`);
+  the rule editor gains Match when, More tests with Add / Edit / Remove Test,
+  and Try It on Recent Episodes (count and first five titles, shown and
+  announced).
+- New `quill/core/podcasts/filter_suggestions.py` behind **Filter Episodes
+  Like This...** (episode menu and Quick Action, key F): trailer or bonus
+  type, else a series name shared with siblings, else an unusual length,
+  else the exact title -- each checked against the 50 newest, never one that
+  takes every episode. Episode Filters opens with the rule editor on the
+  draft, its reason as the first line; keeping it switches filtering on in
+  the draft, saved only with Save.
+- Tests: `tests/unit/core/podcasts/test_episode_filter_conditions.py` (33),
+  `tests/unit/ui/test_cast_episode_filter_tests_ui.py` (6); the 71 existing
+  filter tests pass (the unknown-version test now uses version 3). Cast help
+  and accessible-name snapshots updated.
+- Documented in the Cast user guide (Episode Filters: More tests, Try it,
+  Filter Episodes Like This), the release notes (1.1.0 section and the rules
+  section), PRD 21.5, the tutorial "Stop the parts of a podcast you did not
+  want" (three new steps), Cast CHANGELOG 1.1.0 and the family CHANGELOG.
+  Manual script "Cast Episode Filter Tests" added.
+
+### 2026-10-01: Audio Description Project leftovers removed
+
+- Jeff asked for the Audio Description Project to be gone from the
+  Community menus. The menus, the `main_frame_adp` mixin and `quill/core/adp`
+  were already removed in `fef27b3`; a sweep found what remained: the macOS
+  test-build workflow still ran the deleted `tools/generate_adp_client_key.py`
+  (a step that could only fail -- now "Generate the build-identity module"),
+  and comments in `radio.py`, `radio_settings_menu.py` and `podcasts_menu.py`
+  still described the ADP menu. All gone. Historical changelog entries are
+  left as history.
+- Audio description itself is unchanged and stays: Quill Radio's described
+  tracks, Audio and Described Audio (Ctrl+Shift+A), Play Described Audio
+  (Ctrl+Alt+D) and the once-per-video announcement. A first pass misread the
+  request and removed those; it was fully restored before anything was
+  committed, and the Radio audio-track, video, menu and video-command tests
+  (98) pass against the restored code.
+- Documented in the family CHANGELOG.
+
+### 2026-10-01: Cast Phase 1 -- Find in library above the tree (interim of P10)
+
+- New `quill/ui/podcasts/library_find.py`: `find_rows` (podcasts with unheard
+  counts, episodes newest first, notes -- each row "<name> -- <what it is>",
+  tagged with the library's own item data so Enter, Play and Shift+F10 work
+  unchanged), `match_count_sentence`, and `CastLibraryFindMixin` (350 ms pause,
+  count announced once and shown under the box, 200-row cap with a "more" row,
+  Escape or emptying restores the library and the cursor, Down moves in,
+  `focus_library_find`). The main panel builds "Fi&nd in library:" and the box
+  above "&Library:" (label first, inline help, VoiceOver name); the panel's
+  mixin inherits the Find mixin so `podcasts.py`'s class line is untouched.
+  `_reload_library_tree` refreshes matches while Find is active; room made by
+  moving `_toggle_resume_on_launch` into `podcasts_preferences.py` (budget
+  ratcheted to 779). View > Fi&nd in Library is Ctrl+F.
+- Found on the way: `podcasts_view_menu.py` was outside the app
+  menu-accelerator gate since it was split out; added, and its first run found
+  Customize Features with no key -- now Ctrl+Alt+C, Radio's chord for it.
+  The accessible-name snapshot also picked up the two Preferences search
+  controls from 1822e4c, which had been failing that test.
+- Not done here: transcripts (F-09's index), and the plan's ranking of places.
+- Tests: `tests/unit/ui/podcasts/test_cast_library_find.py` (10); help,
+  name and accelerator gates; 2,199 Cast/label/menu tests pass.
+- Documented in the Cast user guide (main window, View menu), release notes
+  and PRD 23.13. Manual script "Cast Find in Library" added.
+
+### 2026-10-01: F-02, adoption -- a window's background work stops at the window
+
+- New `quill/ui/surface_lifetime.py`: `lifetime_for(window)` (one
+  `UiLifetimeToken` per window, invalidated by its own `EVT_WINDOW_DESTROY`, not
+  a child's); `SurfaceTasks` / `surface_tasks(manager, window_getter)` (submit
+  adds the token and wraps every callback in a delivery-time check that the
+  window is neither destroyed nor scheduled for destruction -- a top-level
+  `Destroy()` only queues the window, and `EVT_WINDOW_DESTROY` comes at the
+  next idle; `None` stays `None` so existing `is None` checks keep their
+  meaning; everything else passes through).
+- Adopted with one line per surface: Cast's Add Podcast (and Preview through
+  it), OPML import, Podcast Manager; Radio's browse tree, station browser, link
+  finder, ACB Media schedule; Weather's Center and Add Location; Publishing's
+  browse dialog. GATE-11 kept by moving the Weather Center's five text helpers
+  to `quill/ui/weather/center_text.py` and `ScheduledPublishChoice` to
+  `quill/core/publishing_schedule.py`.
+- Tests: `tests/unit/ui/test_surface_lifetime.py` (7): the token ends with a
+  real wx window and not with a child; a queued top-level window already
+  counts as going; a real `TaskManager` through the wrapper delivers while the
+  window lives and drops a result after `Destroy()`; an explicit token is kept;
+  pass-through; and the gate that no short-lived `quill/ui` surface stores the
+  raw task manager (long-lived owners listed). 5,467 surface-related tests pass.
+- Documented in the family changelog, Cast release notes and Radio 3.1.1 notes.
+- F-02 stays open for reviewable terminal results (F-10's Activity store).
+
+### 2026-10-01: F-12, in part -- timer ownership gate; the Player keeps its place on close
+
+- New `tests/unit/ui/test_timer_ownership.py`: every `self.<x> = wx.Timer(...)`
+  in `quill/apps` and `quill/ui` needs a stop somewhere -- `self.x.Stop()`, a
+  `timer = getattr(self, "x")` then `timer.Stop()` (or `.Stop` handed on as a
+  callable), or a loop over attribute names whose body stops them -- resolved
+  per function. Shown its three shapes first. `ALLOWED` is empty.
+- Its first run found Quill Player's `_resume_timer` and `_status_timer` (and
+  an unstopped `_sleep_timer`) and Quill Converter's `_ipc_timer`. New
+  `quill/apps/player_close.py` (Player at its GATE-11 budget) saves the resume
+  position, stops all four Player timers and skips; previously the position was
+  saved only every fifteen seconds and never on close. The Converter gained
+  `_on_converter_close` stopping its IPC timer.
+- Already in this session, and counted toward F-12: the `show_modal_dialog`
+  label gate, Cast's initial-focus gate and the button-object gate.
+- Validation: the gate (3 tests, one behavioural for the Player close); 353
+  Player and Converter tests pass. Documented in the Player user guide, the
+  Converter changelog (unreleased 1.0.0) and the family changelog.
+- F-12 stays open for safe absence, performance and release invariants.
+
+### 2026-10-01: X-07, first half -- Gemini model names from Gemini's own list work
+
+- Reviewed PR #1615 (`feat/gemini-api-key-support`, open). Its central bug fix
+  is real: Gemini's `GET /v1beta/models` returns `models/<id>`, and QUILL
+  interpolated that into `/v1beta/models/{model}:generateContent`, producing
+  `/v1beta/models/models/<id>`, a 404. Taken: a `gemini_model_id` normaliser
+  used by `chat_endpoint`, `stream_chat_endpoint`, Gemini TTS and the model
+  list. Not taken as a whole: the PR also rewrites unrelated error-extraction
+  and endpoint-security code, edits a UIA workflow and Radio site copies, and
+  adds silent provider inference ("gemini" in a model name) with a fallback to
+  any stored key -- which would send a request to a provider the person did not
+  choose, against X-07's consent requirement.
+- `quill/core/ai/endpoints.py` (new, wx-free) holds the three URL builders,
+  extracted from `assistant_ai.py` under GATE-11 and re-exported there;
+  `assistant_ai.py`'s budget ratcheted to 1535.
+- Tests: `tests/unit/core/ai/test_gemini_model_routes.py` (8): pure prefix
+  handling and no doubled segment from any builder; then the shipped client
+  against a Gemini-shaped `ThreadingHTTPServer` on 127.0.0.1 -- the list gives
+  usable names, a prefixed name generates and streams to the right path, a
+  wrong key is a safe error that never repeats either key, and a blank key on
+  the real host is refused up front. Synthetic keys; no live requests. All
+  1,029 AI core tests pass.
+- Documented in QUILL's user guide (AI Hub) and the family changelog.
+- Remaining in the X-07 row: QUILL Lite's own-key Gemini provider, built with an
+  explicit provider choice, its key in the shared store, model ordering and
+  pricing, cancellation, and reader acceptance scripts.
+
+### 2026-10-01: F-06 -- Radio and Cast keep a record of what closing could not save
+
+- New wx-free `quill/core/shutdown_report.py`: `ShutdownReport.step(step, class,
+  action)` never raises and records failures (step id, class, exception class
+  name only); `sentence()` names must-record failures in plain words;
+  `persist(data_dir)` writes a pending file and a Recent Problems row (new
+  `problem_log.KIND_SHUTDOWN`, labelled "Closing"), or removes a stale pending
+  file after a clean close, and never raises; `take_pending` reads it once.
+- New `quill/ui/shutdown_notice.py`: `surface_previous_shutdown` (says it once
+  at launch) and `register_shutdown_retry` (per-app Retry for "Closing" rows).
+- Cast: `_cast_shutdown` steps classed (stats and library must-record);
+  `_cast_launch_notices` replaces the bare media-health CallAfter and adds the
+  notice and Retry (flush both now). Radio: teardown moved to
+  `quill/apps/radio_shutdown.py` (last-seen and recording marker must-record),
+  `radio_launch_notice` queued in `radio_launch_tasks.schedule`; its Retry
+  keeps the marker while recording. Attribute lookups happen inside the guard
+  (a half-built frame closing must still close; the existing close tests
+  caught the first version).
+- Tests: `tests/unit/core/test_shutdown_report.py` (11); the Radio close tests
+  and 5,034 Radio/Cast/problem/close tests pass; reachability gate clean.
+- Documented in both user guides (Recent Problems), Radio 3.1.1 notes, Cast
+  release notes and PRD 23.12, family changelog. Manual script "Radio and Cast
+  Closing Report" added.
+
+### 2026-10-01: F-05 -- QUILL Lite opens large and networked files off the UI thread
+
+- New wx-free `quill/core/lite/open_prepare.py`: `prepare(path, mode)` (read
+  and decode, or RTF safety-scan, into an immutable `PreparedDocument`) and
+  `prepare_in_background(path)` (1 MiB or more, or a UNC path).
+- `lite_window_file.py`: `load()` is now prepare + `_commit_load`, so its
+  synchronous contract and every caller are unchanged; `_commit_rich` /
+  `_commit_plain` replace the readers; `stop_timers` cancels a pending open.
+- New `quill/apps/lite_window_open.py` (`DocumentBackgroundOpenMixin` on
+  `DocumentFrame`): new window, read-only while empty, "Opening <name>" once on
+  speech, status and title; the read on the app's lazily created two-worker
+  `TaskManager` with a per-window `UiLifetimeToken`; commit only for the current
+  generation, a live window and a running app; closing is Cancel; failure asks
+  Try Again (No closes an empty window). `lite.py` routes large and networked
+  opens there, counts a still-opening file as already open, and stops the pool
+  in its shutdown owner (lite.py kept within its 627-line budget).
+- Tests: `tests/unit/apps/test_lite_background_open.py` (16): prepare on real
+  files (cp1252 and CRLF kept, RTF sanitised, unreadable raises, the policy);
+  the window half on a stand-in with the shipped methods (busy, commit, stale
+  generation, cancel, destroyed window, shutdown, Try Again, decline); one run
+  through the real `TaskManager` and wx event loop asserting the commit ran on
+  the main thread; app routing and the duplicate check. All 1,737 Lite tests,
+  banned-pattern, dialog-contract, GATE-12, GATE-13 and GATE-11 pass.
+- Not done: "Open as Plain Text" on failure, and a latency budget test for a
+  large open; recorded here rather than claimed.
+- Documented in the Lite user guide, PRD 5.3c, 1.2.0 notes and changelog, and
+  the family changelog. Manual script "Lite Background Open" added.
+
+### 2026-10-01: F-04 -- a focus repair that does not take is counted, privately
+
+- `quill/apps/lite_shell.py`: after `control.SetFocus()`, the repair reads
+  `FindFocus` again; if focus is not on the editor, `_note_repair_miss` bumps
+  `focus_repair_misses` on the shell and logs `QUILL-LITE-FOCUS-MISS` with the
+  holder's class name and the session count. No titles, labels or text; no
+  announcement. A module function, so the shells the focus tests bind the
+  shipped methods to need nothing new.
+- Family helper: deliberately not extracted. QUILL's activation repair (#170)
+  is a different mechanism on a different frame, and a helper with one caller
+  is speculation; the rule (extract on the second adopter) is written into the
+  function's docstring and the Lite PRD.
+- Tests: three new in `tests/unit/apps/test_lite_alt_tab_focus.py` (counted
+  and logged; a repair that takes is not counted; the log carries a class
+  name, never window text); all 24 pass.
+- Documented in Lite PRD 5.3b and the 1.2.0 changelog. The manual Alt+Tab
+  scenarios in "Lite Activation and Alt+Tab Focus" still stand; F-04's manual
+  acceptance remains there.
 
 ### 2026-10-01: F-11 -- two QUILL Lites stop undoing each other's preferences
 
@@ -3366,19 +3654,16 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **26 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **22 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
-### Family Reliability Findings: 9
+### Family Reliability Findings: 6
 
 - [ ] F-01: Finish reviewable settings-failure Retry/Open Settings Folder actions and truthful outcomes in remaining settings/history writers.
-- [ ] F-02: Adopt surface lifetime tokens, safe timer/CallAfter policies, and reviewable terminal results; test close/reopen paths.
-- [ ] F-04: Add privacy-safe unsuccessful-focus-repair diagnostics and justified family-helper adoption. Lite activation repair is implemented.
-- [ ] F-05: Make Lite file preparation asynchronous with UI commit, generation/lifetime guards, busy/cancel/failure/retry behavior, and regression tests.
-- [ ] F-06: Implement/adopt safe shutdown reports, required-write failure retention, and next-launch Details/Retry in Radio/Cast.
+- [ ] F-02: Adopt surface lifetime tokens, safe timer/CallAfter policies, and reviewable terminal results; test close/reopen paths. (Done 2026-10-01: lifetime adoption in every short-lived surface with a gate, delivery-time destruction guard, timer-ownership gate. Remaining: reviewable terminal results, which need F-10's Activity store.)
 - [ ] F-08: Extract ownership-heavy QUILL/Radio/Cast orchestration by lifetime/invariant; preserve host contracts and ratcheted size budgets.
 - [ ] F-09: Implement bounded incremental Cast library/transcript search, feed refresh, and download state with performance/cancellation tests.
 - [ ] F-10: Implement/adopt shared operation/result/activity/progress, focus-memory, repeat-announcement, and details contracts across apps.
-- [ ] F-12: Gate critical delivery promises, timer ownership, safe absence, performance, and release invariants with automated tests.
+- [ ] F-12: Gate critical delivery promises, timer ownership, safe absence, performance, and release invariants with automated tests. (Done 2026-10-01: timer ownership, and three delivery-promise gates -- every `show_modal_dialog` call carries its label, six Cast windows focus their purpose, no Cast button is named through the inert route. Remaining: safe absence, performance and release invariants.)
 
 ### Family Product Requirements: 6
 
@@ -3387,7 +3672,11 @@ This is the authoritative unchecked code/delivery tracker: **26 grouped rows**. 
 - [ ] X-03: Implement reversible focus/review/session profiles using existing settings and truthful persistence.
 - [ ] X-04: Finish richer queue/activity views and skippable first-run/task guidance without duplicating shared models.
 - [ ] X-05: Implement specified explicit-opt-in cross-app personalization without silent keyboard/focus/screen-reader changes.
-- [ ] X-07: Review and integrate the applicable changes proposed in
+- [ ] X-07 (first half done 2026-10-01: Gemini `models/` prefix normalisation
+  in every URL builder and the model list, with real-boundary tests; remaining:
+  QUILL Lite own-key Gemini provider with an explicit, consented provider
+  choice -- the PR's silent provider inference and fallback are not taken).
+  Review and integrate the applicable changes proposed in
   [Gemini API-key support and endpoint routing, PR #1615](https://github.com/Community-Access/quill/pull/1615)
   for both QUILL and QUILL Lite. Add real-boundary unit/integration tests for
   models/ prefix normalization (no doubled models/models URLs), generateContent
@@ -3401,13 +3690,12 @@ This is the authoritative unchecked code/delivery tracker: **26 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 2
+### Cast Phase 1 Code and Tests: 1
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
 credit on two rows is noted inline. Worked top to bottom, one commit each.
 
-- [ ] Find in library above the tree (the interim of P10).
 - [ ] Now Playing (section 5), with the Notes reader and the grown Links
       dialog (5c) as its show-notes pane -- the reader is built once here and
       the Show Notes peer window in Phase 4 reuses it. Includes the Preferences

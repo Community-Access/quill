@@ -15,6 +15,22 @@ change by version.
 
 ## Also in 3.1.1
 
+### Closing a window mid-search is the end of it
+
+Close Browse Stations, the station browser, the link finder or the ACB Media
+schedule while something is still loading, and its answer no longer arrives
+afterwards as an announcement about a window you have already left.
+
+### A failed save while closing is no longer silent
+
+Quill Radio guards every step of closing so that closing always works. That
+used to mean a failed write looked exactly like a successful one. Now, if it
+cannot note when it closed (how it finds recordings missed while closed) or
+cannot clear its note that a recording was running, it says so once the next
+time it starts, and Recent Problems keeps a **Closing** row with a Retry.
+Tray, hotkey and other housekeeping failures are still only written to the
+log, because there is nothing you could do about them.
+
 ### Undo says Unfollow
 
 Undoing the removal of a podcast now says "Undid Unfollow", in the same

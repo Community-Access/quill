@@ -182,6 +182,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.check_access_keys"),
     ),
     Gate(
+        "menubar-mnemonics",
+        "GATE-15: no window control shares an Alt letter with its menu bar",
+        (sys.executable, "-m", "quill.tools.check_menubar_mnemonics"),
+    ),
+    Gate(
         "settings-documented",
         "GATE-SETDOC: every setting is documented or classified",
         (sys.executable, "-m", "quill.tools.settings_doc_audit"),

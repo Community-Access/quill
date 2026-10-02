@@ -30,16 +30,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[ui,spellcheck,macos,github]"
 
-      - name: Generate build-identity and ADP client-key modules
+      - name: Generate the build-identity module
         # No bug-report credential is generated: since 2026-09-26 every QuillVille
         # build reports by email to support@community-access.org and ships no
-        # GitHub token at all.
+        # GitHub token at all. The Audio Description Project client-key step was
+        # removed with that integration (its generator was deleted in fef27b3,
+        # so the step could only fail).
         run: |
           python tools/generate_build_info.py || echo "no build/version.toml - unversioned test build"
-          # Lenient: without QUILL_ADP_CLIENT_KEY this bakes an empty ADP key
-          # (Ask ADP falls back to a key pasted in ADP Settings) -- fine for a
-          # test build. Release builds set QUILL_ADP_CLIENT_KEY to ship the key.
-          python tools/generate_adp_client_key.py
 
       - name: Build .app with py2app (unsigned)
         run: python scripts/setup_macos.py py2app

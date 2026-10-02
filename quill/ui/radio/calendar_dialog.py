@@ -35,6 +35,7 @@ from typing import Any
 
 from quill.core.radio import acb_calendar, calendar_actions
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.surface_lifetime import surface_tasks
 
 TITLE = "ACB Media Schedule"
 
@@ -324,6 +325,9 @@ class _CalendarWindow:
     def _load(self, *, refresh: bool = False) -> None:
         """Fetch off the UI thread; fall back to fetching inline without one."""
         tasks = getattr(self._host, "_task_manager", None)
+        # Tied to this window (qc.md F-02): a schedule that arrives after
+        # it closed is not delivered into it.
+        tasks = surface_tasks(tasks, lambda: getattr(self, "dialog", None))
         safe = bool(getattr(self._host, "_safe_mode", False))
 
         def _work(**_kwargs: Any) -> Any:

@@ -4965,6 +4965,10 @@ Trust and privacy baseline:
 AI connection flow:
 
 1. Open **AI Hub** and choose provider (`Ollama (local)`, `Ollama Cloud`, `OpenAI`, `Claude`, `OpenRouter`, `Google Gemini`, or `Custom OpenAI-compatible`).
+   With Google Gemini, a model picked from the list QUILL fetches works as-is:
+   Gemini names its models `models/gemini-...`, and QUILL now drops that prefix
+   when it builds a request (until 2026-10-01 a model chosen from that list
+   failed with "not found").
 2. Confirm host URL and model.
 3. Enter key only when your endpoint requires authentication.
 4. Use **Verify Connection** to test endpoint and credentials.

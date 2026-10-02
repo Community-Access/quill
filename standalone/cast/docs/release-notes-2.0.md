@@ -29,6 +29,16 @@ were used weekly, Alt+S pressing Stop instead of opening a menu. None of it
 was a missing feature. All of it was the app being harder to use than it had
 to be.
 
+### Episode Filters ask far more, and write a rule for you
+
+A rule can now test the show notes, the people on an episode, the type the
+publisher gave it, a maximum length, its age, season and number, with words,
+wildcards or regular expressions -- and say whether every test or any one has
+to match. **Try It on Recent Episodes** says what a rule would catch before it
+is saved, and **Filter Episodes Like This...** on any episode's menu drafts
+the rule from that episode. The whole story is under "Rules for the episodes
+you did not want" below.
+
 ### Follow, not Subscribe
 
 Every podcast app a listener has used in the last five years says **Follow**.
@@ -176,6 +186,19 @@ checks for every label it can produce, not only the resting one. A second
 check fails the build if any Cast button is ever named through the inert route
 again. Quill Radio's main window learned the same lesson the same day.
 
+### Find in library (2026-10-01)
+
+A box above the library: press **Ctrl+F** from anywhere in the main window (or
+Alt+N), type part of a podcast's name, an episode title or one of your notes,
+and the library becomes the matches -- podcasts first, then episodes, newest
+first, then notes, each row saying what it is and where it lives. The count is
+said once, when you stop typing, never per letter. A match is the same row it
+stands for: Enter plays it, Shift+F10 opens its menu, the Play button names it.
+Escape brings your library back, with the cursor where it was. Transcripts are
+searched by Search Everywhere for now; searching them on every pause waits for
+the library index. Also: **Customize Features** now has a key, Ctrl+Alt+C,
+the same as in Quill Radio.
+
 ### Smaller fixes (2026-10-01)
 
 - **The Play Queue opens again.** View > Play Queue... and Episode > Play
@@ -191,6 +214,14 @@ again. Quill Radio's main window learned the same lesson the same day.
   F1 in the main window mentions the buttons that name what they act on,
   the View menu's places and F6 for the status bar; F1 in Feed Check says
   the list is worst first and that opening it checks nothing.
+- **Closing a window mid-search is the end of it.** Close Add Podcast, the
+  Podcast Manager or an import while something is still loading, and its
+  answer no longer arrives afterwards as an announcement about a window you
+  have already left.
+- **A failed save while closing is no longer silent.** If QUILL Cast cannot
+  save your podcast library or listening statistics as it closes, it still
+  closes, but the next launch says so once and Recent Problems keeps a
+  **Closing** row whose Retry saves both again.
 - **Two failures that were silent are spoken.** When Preview cannot load a
   podcast, it now says so as well as showing it. And when importing a
   subscription list, if the feed check itself cannot run, Cast says "The
@@ -514,6 +545,41 @@ Finally: if a keep-only filter rejects **every single** new episode of one
 refresh, Cast says so and remembers it, so a background check that ran while you
 were away still has something waiting for you in Episode Filters when you get
 back.
+
+### Since then: far more to ask, and a rule written for you (QUILL Cast 1.1.0)
+
+A title and a minimum length were the right first two questions, and not
+enough. A sponsor-only episode is named only in its show notes; a trailer is
+marked by the publisher, not in its title; a back catalogue re-uploaded last
+week is old in every way except its date. So a rule can now hold **as many
+tests as it needs**, each one a field, a comparison and a value:
+
+- **Text** -- the title, the **show notes**, or the **people on the episode** --
+  with contains, does not contain, starts with, ends with, is, is not, a
+  wildcard, or a **regular expression** (found anywhere unless you anchor it),
+  and its negation.
+- **The episode type** the publisher gave it: full, trailer or bonus.
+- **Numbers** -- length in minutes (so there is finally a *maximum*), age in
+  days, season and episode number -- with at least, at most, is and is not.
+
+And a rule can say **any one test is enough** instead of every test, so "a
+trailer, or anything under five minutes" is one rule with one name.
+
+The safety rules did not loosen. A feed that does not publish a length, a date
+or a number never matches a number test. A test the build cannot read makes
+its rule match nothing. A filter that uses none of this is still stored
+exactly as before, so an older copy of Cast on another computer keeps reading
+it; one that does use it reads, on an older copy, as no filter at all rather
+than as half a rule.
+
+Two things make writing one feel less like programming. **Try It on Recent
+Episodes** in the rule window says, before anything is saved, how many of the
+50 newest episodes the rule catches and names the first five. And **Filter
+Episodes Like This...** on any episode's menu writes the rule for you: the
+publisher's own trailer or bonus mark if there is one, otherwise a series name
+the title shares with its siblings, otherwise an unusual length -- each guess
+checked against the newest episodes, said with its count, and opened in the
+rule window for you to change before anything is kept.
 
 ---
 

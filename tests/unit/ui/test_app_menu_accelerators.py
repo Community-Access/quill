@@ -40,6 +40,9 @@ _APPS_DIR = Path(__file__).resolve().parents[3] / "quill" / "apps"
 APP_MENU_FILES = (
     "radio.py",
     "podcasts_menu.py",
+    # Cast's View menu, split out of podcasts_menu.py (fef27b3); it appends
+    # its own top-level menu, so it is scanned like any other bar module.
+    "podcasts_view_menu.py",
     # The Media Player's bar moved to its own mixin under GATE-11 when the
     # output-device row arrived (2026-09-29); player.py no longer builds one.
     "player_menus.py",

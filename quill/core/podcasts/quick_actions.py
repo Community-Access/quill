@@ -57,6 +57,11 @@ EPISODE_ACTIONS: tuple[QuickAction, ...] = (
         "Copy where the downloaded file is, to paste somewhere else.",
     ),
     QuickAction(
+        "filter_like_this",
+        "Filter Episodes Like This...",
+        "Draft an Episode Filter rule from this episode, checked against the newest.",
+    ),
+    QuickAction(
         "toggle_filter_exempt",
         "Always Keep This Episode (Ignore the Filter)",
         "Exempt this one episode from the podcast's Episode Filter, or put it back.",

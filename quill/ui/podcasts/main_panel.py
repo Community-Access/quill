@@ -27,11 +27,12 @@ from __future__ import annotations
 import wx
 
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.podcasts.library_find import CastLibraryFindMixin
 
 __all__ = ["CastMainPanelMixin"]
 
 
-class CastMainPanelMixin:
+class CastMainPanelMixin(CastLibraryFindMixin):
     """The main panel and the window's key handling. On ``PodcastsAppFrame``."""
 
     def _build_main_panel(self) -> None:
@@ -42,6 +43,23 @@ class CastMainPanelMixin:
         set_accessible_name(self._now_playing_text, "Now playing")
         root.Add(self._now_playing_text, 0, wx.EXPAND | wx.ALL, 8)
 
+        # Find in library (qc.md 4.2, the interim of P10): typing flattens the
+        # tree below into matches; Escape puts the library back. Its label is
+        # created first, which is what names it on wxMSW.
+        root.Add(wx.StaticText(panel, label="Fi&nd in library:"), 0, wx.LEFT | wx.RIGHT, 8)
+        self._find_box = wx.TextCtrl(panel)
+        set_accessible_name(self._find_box, "Find in library")  # VoiceOver (#1012)
+        self._find_box.SetHelpText(
+            "Type part of a podcast name, an episode title or one of your notes. "
+            "The library below becomes the matches; Down Arrow moves into them, "
+            "Enter plays one, and Escape brings your library back. Ctrl+F comes "
+            "here from anywhere in the window."
+        )
+        self._find_box.Bind(wx.EVT_TEXT, self._on_find_text)
+        self._find_box.Bind(wx.EVT_KEY_DOWN, self._on_find_key)
+        root.Add(self._find_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        self._find_status = wx.StaticText(panel, label="")
+        root.Add(self._find_status, 0, wx.LEFT | wx.RIGHT, 8)
         library_label = wx.StaticText(panel, label="&Library:")
         root.Add(library_label, 0, wx.LEFT | wx.RIGHT, 8)
         self._shows_tree = wx.TreeCtrl(

@@ -1,6 +1,26 @@
 # QUILL Lite changelog
 
-## 1.2.0 -- unreleased
+## Unreleased -- the next release, QUILL Lite 1.2.0
+
+### Large and networked files open without freezing the window (F-05)
+
+- **Opening read the whole file on the UI thread.** A large file, a slow
+  network share or a damaged RTF made the window stop responding with nothing
+  said. Opening is now prepare (read, decode or safety-scan, on a worker) then
+  commit (into the editor, on the UI thread, only if the window still wants
+  it). Files of 1 MiB or more and UNC paths take that route; others open as
+  before. Busy is said once, the empty document is read-only until the text
+  arrives, closing the window cancels, and a failed read offers Try Again
+  (`quill/core/lite/open_prepare.py`, `quill/apps/lite_window_open.py`,
+  `tests/unit/apps/test_lite_background_open.py`).
+
+### A focus repair that does not take leaves a trace (F-04)
+
+- When the Alt+Tab focus repair is overruled, QUILL Lite now counts it and
+  writes one line to its log: `QUILL-LITE-FOCUS-MISS`, the kind of control that
+  holds focus, and how many times this session -- no titles, labels or text.
+  It says nothing aloud. This is what a support bundle needs to tell an
+  intermittent focus report from a one-off (`quill/apps/lite_shell.py`).
 
 ### Two instances stop undoing each other's preferences (F-11)
 

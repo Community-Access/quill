@@ -255,6 +255,22 @@ who uses a screen reader; every step names its key.</p>
 3.0.4 – has its own document, <code>release-notes-3.0.md</code>, and the
 changelog lists every change by version.</p>
 <h2 id="also-in-311">Also in 3.1.1</h2>
+<h3 id="closing-a-window-mid-search-is-the-end-of-it">Closing a window
+mid-search is the end of it</h3>
+<p>Close Browse Stations, the station browser, the link finder or the
+ACB Media schedule while something is still loading, and its answer no
+longer arrives afterwards as an announcement about a window you have
+already left.</p>
+<h3 id="a-failed-save-while-closing-is-no-longer-silent">A failed save
+while closing is no longer silent</h3>
+<p>Quill Radio guards every step of closing so that closing always
+works. That used to mean a failed write looked exactly like a successful
+one. Now, if it cannot note when it closed (how it finds recordings
+missed while closed) or cannot clear its note that a recording was
+running, it says so once the next time it starts, and Recent Problems
+keeps a <strong>Closing</strong> row with a Retry. Tray, hotkey and
+other housekeeping failures are still only written to the log, because
+there is nothing you could do about them.</p>
 <h3 id="undo-says-unfollow">Undo says Unfollow</h3>
 <p>Undoing the removal of a podcast now says “Undid Unfollow”, in the
 same words QUILL Cast uses, because the two apps share one podcast

@@ -1,6 +1,6 @@
 # QUILL Cast Tutorials
 
-24 guided tutorials, 149 steps, about 138 minutes of material in all.
+24 guided tutorials, 152 steps, about 141 minutes of material in all.
 
 This document is generated from the tutorials inside QUILL Cast, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials...** instead.
 
@@ -18,7 +18,7 @@ The keys below are the ones QUILL Cast ships with. If you have rebound something
   - Line up what plays next (6 minutes)
   - Downloads, and the disk they live on (6 minutes)
   - Playlists, smart playlists, and the order you listen in (5 minutes)
-  - Stop the parts of a podcast you did not want (8 minutes)
+  - Stop the parts of a podcast you did not want (11 minutes)
 - **Listening well** -- The hour itself: skipping what you did not come for, shaping the sound, keeping a moment, reading what the publisher sent, and how much of your life this has taken.
   - Chapters, and skipping the parts you did not come for (6 minutes)
   - Shape the sound (6 minutes)
@@ -319,7 +319,7 @@ Hand-built for a list somebody chose; smart for a question that keeps answering 
 
 Rules, per podcast, that decide which of its episodes reach you at all -- and eight separate places you can choose to mean them.
 
-*9 steps, about 8 minutes.*
+*12 steps, about 11 minutes.*
 
 1. **Find the podcast that publishes two things.** Most libraries have one: a show you follow that also runs a daily two-minute segment, or trailers for its sister show, or a members-only strand mixed into the public feed. Every one of those arrives and has to be dismissed by hand.
    - Keys: Down arrow
@@ -333,23 +333,36 @@ Rules, per podcast, that decide which of its episodes reach you at all -- and ei
    - You should hear: The rule read back: its name, then enabled, then what it matches.
    - Worth knowing: A pattern has to describe the whole title, so put a star at each end to mean contains. An episode whose feed does not say how long it is never matches a length rule, because a missing length is not a short episode.
 
-4. **Preview before anything happens.** Preview tries the rules against the 50 newest episodes you already have and reports what each would be -- the decision first, then the title and the length. It changes nothing, and it works even while the filter itself is switched off.
+4. **Add a test the title cannot answer.** Under More tests, Add Test asks what to look at -- the show notes, the people on the episode, the type the publisher gave it, its length, age, season or number -- how to compare, and the value. Words, wildcards and regular expressions all work on text. Match when decides whether every test has to hold or any one is enough.
+   - Keys: Alt+S, Alt+A, Alt+W
+   - You should hear: The test read back as a sentence, such as Show notes contains sponsored by.
+   - Worth knowing: A feed that does not say a length, a date or a number never matches a number test, and an episode with no type counts as a full episode.
+
+5. **Try the rule before you keep it.** Try It on Recent Episodes runs the rule exactly as the window shows it against the 50 newest episodes and says how many it catches, naming the first five. Change the pattern and try again until it catches what you meant.
+   - Keys: Alt+Y
+   - You should hear: Matches, then a count of the 50 newest, then titles.
+
+6. **Or let an episode write the rule.** On any episode you did not want, Filter Episodes Like This on its menu drafts the rule for you: the publisher's trailer or bonus mark, a series name the title shares with its siblings, or an unusual length -- checked against the newest episodes and opened in the rule window for you to change.
+   - Keys: Shift+F10, F
+   - You should hear: Why the rule was chosen, and how many episodes it catches.
+
+7. **Preview before anything happens.** Preview tries the rules against the 50 newest episodes you already have and reports what each would be -- the decision first, then the title and the length. It changes nothing, and it works even while the filter itself is switched off.
    - You should hear: How many of the 50 would be filtered, and how many kept.
 
-5. **Choose where it applies.** Where this applies is eight independent tick boxes: the Inbox, Auto-Queue, automatic downloads, the announcement, this podcast's episode list, New Episodes and Continue Listening, smart playlists, and Search Everywhere.
+8. **Choose where it applies.** Where this applies is eight independent tick boxes: the Inbox, Auto-Queue, automatic downloads, the announcement, this podcast's episode list, New Episodes and Continue Listening, smart playlists, and Search Everywhere.
    - You should hear: Each row with its ticked state as you arrow past it.
    - Worth knowing: A new filter starts with the first four ticked and the last four clear. The first four decline to route an episode, which is invisible and reversible; the last four hide it, which changes what you can find.
 
-6. **Save it, and answer the two questions.** Saving refuses a filter that could not mean anything -- on with no rule on, a pattern that cannot be read, nowhere to apply. It asks about a hiding place, and about the Play Queue, which is the one list you built by hand.
+9. **Save it, and answer the two questions.** Saving refuses a filter that could not mean anything -- on with no rule on, a pattern that cannot be read, nowhere to apply. It asks about a hiding place, and about the Play Queue, which is the one list you built by hand.
    - You should hear: The filter saved, what it does, and where it applies.
 
-7. **See what it caught.** Choose Filtered out in the episode list's own filter. It shows exactly what this podcast's rules are holding back, and every episode action still works from there -- play it, queue it, download it.
+10. **See what it caught.** Choose Filtered out in the episode list's own filter. It shows exactly what this podcast's rules are holding back, and every episode action still works from there -- play it, queue it, download it.
    - You should hear: Only the episodes the rules caught.
 
-8. **Rescue the one it was wrong about.** Always Keep This Episode, on any episode's menu, exempts that one episode everywhere the filter applies. It is not undone by editing the rules afterwards, because it records that you looked at this one and wanted it.
+11. **Rescue the one it was wrong about.** Always Keep This Episode, on any episode's menu, exempts that one episode everywhere the filter applies. It is not undone by editing the rules afterwards, because it records that you looked at this one and wanted it.
    - You should hear: The episode named, and that it is exempt.
 
-9. **Know what happens if you get it wrong.** If a keep-only filter rejects every single new episode of one refresh, Cast says so and remembers it, so a background check that ran while you were away still has a notice waiting. Reviewing the rules and saving clears it.
+12. **Know what happens if you get it wrong.** If a keep-only filter rejects every single new episode of one refresh, Cast says so and remembers it, so a background check that ran while you were away still has a notice waiting. Reviewing the rules and saving clears it.
    - You should hear: A warning naming the podcast, and that nothing was lost.
 
 One rule set, and up to eight places to mean it. Nothing it does is permanent: untick a place and those episodes are back on the next redraw, because the filter is asked every time a list is drawn rather than stamped onto an episode when it arrived.

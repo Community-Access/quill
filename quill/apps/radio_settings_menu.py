@@ -73,9 +73,7 @@ def build_catalog_status_item(app, view_menu, wx):
     # launch and, when nothing is wrong, correctly says nothing, so there was
     # no way to ask.
     audio_id = wx.NewIdRef()
-    # Ctrl+Alt+Shift+M, not ...+A: the unlock-gated Audio Description Project
-    # menu already claims +A, and two items on one key means one of them
-    # silently never fires. M for media, which is what the window reports on.
+    # Ctrl+Alt+Shift+M: M for media, which is what the window reports on.
     view_menu.Append(audio_id, "Audio &Health...\tCtrl+Alt+Shift+M")
     app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_audio_health(), id=audio_id)
     return (status_id, audio_id)

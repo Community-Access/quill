@@ -127,34 +127,47 @@ class CastCloseMixin:
         return action
 
     def _cast_shutdown(self) -> None:
-        try:
-            self._app_host.shutdown()
-        except Exception:  # noqa: BLE001 - Quillin teardown must never block exit
-            pass
-        try:
-            # Force the write rather than going through the coalescing path:
-            # this is the last chance, and a pending timer will never fire.
-            self._podcast_flush_stats()
-            self._flush_podcast_library()
-        except Exception:  # noqa: BLE001 - a failed save must never block exit
-            pass
-        for action in (
-            getattr(getattr(self, "_scan_hold", None), "shutdown", None),
-            getattr(self._podcast_controller, "shutdown", None),
-            getattr(self, "_shutdown_podcast_transfers", None),
+        """Teardown just before the window closes. Every step is guarded and
+        classed (qc.md F-06): a failed final write is kept for the next launch,
+        which says so once; anything else is logged. Close always completes."""
+        from quill.core.paths import app_data_dir
+        from quill.core.shutdown_report import (
+            BACKGROUND,
+            BEST_EFFORT,
+            MUST_RECORD,
+            ShutdownReport,
+        )
+
+        report = ShutdownReport("cast", "QUILL Cast")
+        # Lambdas, not bound methods: the lookup must happen inside the guard.
+        report.step("quillins", BEST_EFFORT, lambda: self._app_host.shutdown())
+        # Forced writes rather than the coalescing path: this is the last
+        # chance, and a pending timer will never fire.
+        report.step("listening_stats", MUST_RECORD, lambda: self._podcast_flush_stats())
+        report.step("podcast_library", MUST_RECORD, lambda: self._flush_podcast_library())
+        for name, action in (
+            ("scan_hold", getattr(getattr(self, "_scan_hold", None), "shutdown", None)),
+            ("player", getattr(getattr(self, "_podcast_controller", None), "shutdown", None)),
+            ("transfers", getattr(self, "_shutdown_podcast_transfers", None)),
         ):
-            if action is None:
-                continue
-            try:
-                action()
-            except Exception:  # noqa: BLE001 - shutdown must never block exit
-                pass
-        self._task_manager.shutdown(wait=False)
-        self._unregister_media_keys()
-        # Guarded like MainFrame's teardown: a hotkey unregister failure must
-        # never block the window from closing.
-        try:
-            self._unregister_global_hotkeys()
-        except Exception:  # noqa: BLE001 - shutdown must never block exit
-            pass
-        self._remove_tray_icon()
+            report.step(name, BEST_EFFORT, action)
+        report.step("tasks", BACKGROUND, lambda: self._task_manager.shutdown(wait=False))
+        report.step("media_keys", BEST_EFFORT, lambda: self._unregister_media_keys())
+        report.step("global_hotkeys", BEST_EFFORT, lambda: self._unregister_global_hotkeys())
+        report.step("tray", BEST_EFFORT, lambda: self._remove_tray_icon())
+        report.persist(app_data_dir())
+
+    def _cast_launch_notices(self) -> None:
+        """At launch, after the window is up: media health, then the previous
+        session's closing failure if it left one (F-06), with its Retry."""
+        from quill.ui.shutdown_notice import register_shutdown_retry, surface_previous_shutdown
+
+        self.surface_cast_media_health()
+        register_shutdown_retry(self._retry_cast_final_writes)
+        surface_previous_shutdown(self, "cast")
+
+    def _retry_cast_final_writes(self) -> str:
+        """Recent Problems' Retry on a "Closing" row: the same two writes, now."""
+        self._podcast_flush_stats()
+        self._flush_podcast_library()
+        return "Saved your podcast library and listening statistics now."

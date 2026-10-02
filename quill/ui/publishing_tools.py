@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
 from datetime import datetime
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError, available_timezones
 
@@ -27,7 +26,7 @@ from quill.core.publishing_providers import (
     publishing_auth_method_name,
     publishing_provider_display_name,
 )
-from quill.core.publishing_schedule import validate_scheduled_publish_time
+from quill.core.publishing_schedule import ScheduledPublishChoice, validate_scheduled_publish_time
 from quill.core.publishing_worker import browse_publishing_content_task
 from quill.stability.task_manager import CancelledError, TaskManager
 from quill.ui.dialog_contract import (
@@ -36,14 +35,9 @@ from quill.ui.dialog_contract import (
     show_message_box,
     show_modal_dialog,
 )
+from quill.ui.surface_lifetime import surface_tasks
 
 _TIMEZONE_CHOICES = sorted(available_timezones())
-
-
-@dataclass(frozen=True, slots=True)
-class ScheduledPublishChoice:
-    content_kind: str
-    scheduled_at: datetime
 
 
 class EditPublishingConnectionDialog:
@@ -311,7 +305,8 @@ class BrowsePublishingContentDialog:
         import wx
 
         self._wx = wx
-        self._task_manager = task_manager
+        # Every task this window starts is tied to its lifetime (qc.md F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "dialog", None))
         self._announce = announce_cb or (lambda _message: None)
         self._profile = current_publishing_connection()
         self._secret = load_publishing_secret(self._profile.id) if self._profile is not None else ""

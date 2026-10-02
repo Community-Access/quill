@@ -19,6 +19,7 @@ from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.media.list_columns_view import build_columns, columns_for, fill_row
+from quill.ui.surface_lifetime import surface_tasks
 
 
 def _apply_backfill(library: Any, show: Any) -> int:
@@ -64,7 +65,8 @@ class AddPodcastDialog:
 
         self._wx = wx
         self._library = library
-        self._task_manager = task_manager
+        # Every task this window starts is tied to its lifetime (qc.md F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "dialog", None))
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._on_library_changed = on_library_changed or (lambda: None)

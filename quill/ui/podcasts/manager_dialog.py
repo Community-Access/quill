@@ -45,6 +45,7 @@ from quill.ui.podcasts.manager_reveal import ManagerRevealMixin
 from quill.ui.podcasts.manager_row_view import ManagerRowViewMixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
+from quill.ui.surface_lifetime import surface_tasks
 
 #: Re-exported under their old names. The implementations moved to
 #: ``manager_lookups.py`` under GATE-11, and three callers still ask this module
@@ -127,7 +128,8 @@ class PodcastManagerDialog(
         self._controller = controller
         self._download_root = download_root
         self._safe_mode = safe_mode
-        self._task_manager = task_manager
+        # Every task this window starts is tied to its lifetime (qc.md F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "dialog", None))
         self._announce = announce_cb or (lambda _m: None)
         #: Preferences checkbox, default on -- see CastWinampKeysMixin.
         self._winamp_keys_enabled_cb = winamp_keys_enabled or (lambda: True)

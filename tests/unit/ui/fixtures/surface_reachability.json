@@ -198,6 +198,7 @@
   "quill.ui.podcasts.downloads_dialog": "reachable",
   "quill.ui.podcasts.episode_extras_dialog": "reachable",
   "quill.ui.podcasts.episode_filter_rule_dialog": "reachable",
+  "quill.ui.podcasts.episode_filter_test_dialog": "reachable",
   "quill.ui.podcasts.episode_filters_dialog": "reachable",
   "quill.ui.podcasts.episode_notes_dialog": "reachable",
   "quill.ui.podcasts.export_audio": "reachable",

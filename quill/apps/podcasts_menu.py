@@ -334,13 +334,8 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_run_maintenance(), id=housekeeping_id)
         menu_bar.Append(downloads_menu, "&Downloads")
 
-        # No Community menu here (Jeff, 2026-09-30). The pre-release Audio
-        # Description Project menu stays in QUILL, Studio, Weather and Radio --
-        # Radio's is the one with real content behind it -- and comes out of
-        # Cast, which was carrying an unreleased assistant as a top-level menu
-        # in an app whose menu bar is already long. Nothing becomes unreachable:
-        # the surfaces belong to the shared main_frame_adp mixin and the other
-        # four apps still reach them, which is what GATE-REACH walks for.
+        # No Community menu here (Jeff, 2026-09-30): the pre-release assistant it
+        # carried was removed from the whole family.
 
         # Quillins only in Advanced mode (Jeff, 2026-09-30): an extensions menu is
         # the definition of a thing you go looking for once you know it exists.

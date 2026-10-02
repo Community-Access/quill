@@ -561,6 +561,7 @@
   "quill/ui/podcasts/downloads_dialog.py::DownloadsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/episode_extras_dialog.py::EpisodeExtrasDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/episode_filter_rule_dialog.py::EpisodeFilterRuleDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/podcasts/episode_filter_test_dialog.py::EpisodeFilterTestDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/episode_filters_dialog.py::EpisodeFiltersDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/episode_filters_dialog.py::EpisodeFiltersDialog._ask_apply_to_existing::wx.MessageDialog": "native",
   "quill/ui/podcasts/episode_notes_dialog.py::EpisodeNotesDialog.__init__::wx.Dialog": "hardened_custom",

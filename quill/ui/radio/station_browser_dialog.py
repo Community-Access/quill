@@ -53,6 +53,7 @@ from quill.ui.radio.results_view import ResultsViewMixin
 from quill.ui.radio.search_fanout import run_search
 from quill.ui.radio.search_recents import RecentSearchesMixin
 from quill.ui.radio.volume_row import add_volume_slider
+from quill.ui.surface_lifetime import surface_tasks
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
@@ -208,7 +209,8 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._menu_id_refs: list[object] = []
         self._controller = controller
         self._favorites = favorites_store
-        self._task_manager = task_manager
+        # Every task this window starts is tied to its lifetime (qc.md F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "_surface", None))
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._on_favorites_changed = on_favorites_changed or (lambda: None)

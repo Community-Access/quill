@@ -244,6 +244,32 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="120--unreleased">1.2.0 – unreleased</h2>
+<h3
+id="large-and-networked-files-open-without-freezing-the-window-f-05">Large
+and networked files open without freezing the window (F-05)</h3>
+<ul>
+<li><strong>Opening read the whole file on the UI thread.</strong> A
+large file, a slow network share or a damaged RTF made the window stop
+responding with nothing said. Opening is now prepare (read, decode or
+safety-scan, on a worker) then commit (into the editor, on the UI
+thread, only if the window still wants it). Files of 1 MiB or more and
+UNC paths take that route; others open as before. Busy is said once, the
+empty document is read-only until the text arrives, closing the window
+cancels, and a failed read offers Try Again
+(<code>quill/core/lite/open_prepare.py</code>,
+<code>quill/apps/lite_window_open.py</code>,
+<code>tests/unit/apps/test_lite_background_open.py</code>).</li>
+</ul>
+<h3 id="a-focus-repair-that-does-not-take-leaves-a-trace-f-04">A focus
+repair that does not take leaves a trace (F-04)</h3>
+<ul>
+<li>When the Alt+Tab focus repair is overruled, QUILL Lite now counts it
+and writes one line to its log: <code>QUILL-LITE-FOCUS-MISS</code>, the
+kind of control that holds focus, and how many times this session – no
+titles, labels or text. It says nothing aloud. This is what a support
+bundle needs to tell an intermittent focus report from a one-off
+(<code>quill/apps/lite_shell.py</code>).</li>
+</ul>
 <h3 id="two-instances-stop-undoing-each-others-preferences-f-11">Two
 instances stop undoing each other’s preferences (F-11)</h3>
 <ul>

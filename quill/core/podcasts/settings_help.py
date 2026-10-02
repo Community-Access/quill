@@ -358,7 +358,8 @@ FILTER_HELP: dict[str, str] = {
     "rule_pattern": (
         "The title pattern this rule looks for. It has to describe the whole "
         "title, not just part of it -- put a star at each end to mean "
-        "'contains'. Show notes and descriptions are never searched."
+        "'contains'. This box tests the title only; to test the show notes, the "
+        "people on the episode or anything else, add a test below."
     ),
     "rule_case": (
         "Whether capital letters have to match too. Off by default, because "
@@ -369,6 +370,54 @@ FILTER_HELP: dict[str, str] = {
         "Only match episodes at least this long, in minutes; 0 asks nothing "
         "about length. An episode whose feed does not say how long it is never "
         "matches a duration rule -- a missing length is not a short episode."
+    ),
+    "rule_match_any": (
+        "Whether every test in this rule has to hold, or any one of them is "
+        "enough. Any one lets a single rule say 'a trailer, or anything under "
+        "five minutes' with one name and one switch."
+    ),
+    "rule_tests": (
+        "More tests for this rule, beyond the title pattern and minimum "
+        "length above: the show notes, the people on the episode, the "
+        "episode type the publisher gave it, a maximum length, its age, "
+        "season or number. Each can be a word to look for, a wildcard or a "
+        "regular expression, or a number to compare."
+    ),
+    "rule_add_test": "Add another test to this rule. Nothing is saved until the filter is.",
+    "rule_edit_test": "Change the selected test.",
+    "rule_remove_test": "Take the selected test out of this rule. No episode is affected.",
+    "rule_try": (
+        "Try this rule, as it stands in this window, on the podcast's 50 "
+        "newest episodes, and hear how many it catches and which. Nothing "
+        "changes; adjust the pattern and try again until it catches what "
+        "you meant."
+    ),
+    "rule_try_result": (
+        "What Try It found: the count, then the first few titles it caught. Read only."
+    ),
+    "test_field": (
+        "What this test looks at. A feed that does not say a length, a date, "
+        "a season or a number never matches a number test -- a missing fact "
+        "is not a zero. An episode with no type counts as a full episode."
+    ),
+    "test_op": (
+        "How to compare. Words are found anywhere in the text; a wildcard "
+        "covers the whole text, with a star for any run of text and a "
+        "question mark for one character; a regular expression is found "
+        "anywhere unless you anchor it with a caret and a dollar sign."
+    ),
+    "test_value": (
+        "What to look for, or the number to compare with. Lengths are in minutes and ages in days."
+    ),
+    "test_case": (
+        "Whether capital letters have to match too. Off by default, because "
+        "publishers change their own capitalisation."
+    ),
+    "filter_like_this": (
+        "Draft an Episode Filter rule from this episode: what it has in "
+        "common with its siblings -- a type, a series name, an unusual "
+        "length -- checked against the newest episodes before it is offered. "
+        "You see the rule and change it before anything is saved."
     ),
     "apply_existing": (
         "Also apply this filter once to episodes already in your Inbox or Play "

@@ -313,7 +313,7 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 231 audited sites (91 helped, 140 named-help).
+Control coverage: 244 audited sites (104 helped, 140 named-help).
 
 ### Every window, and what it is for
 
@@ -327,7 +327,9 @@ Control coverage: 231 audited sites (91 helped, 140 named-help).
 
 **Downloads.** The download queue, and everything you can do to it. Finished rows stay until you clear them so "did that actually download?" always has an answer, and Enter on a saved row opens the folder it landed in.
 
-**Episode Filter Rule.** One rule inside a podcast's Episode Filters: a title pattern, a minimum length, or both -- and both have to match for the rule to. A rule is a label plus a test; it decides nothing until the filter itself is saved, and it never deletes an episode.
+**Episode Filter Rule.** One rule inside a podcast's Episode Filters: a title pattern, a minimum length, and any more tests -- show notes, people, type, age, season or number -- with every test or any one having to match. Try It says what the rule catches among the newest episodes. A rule is a label plus a test; it decides nothing until the filter itself is saved, and it never deletes an episode.
+
+**Episode Filter Test.** One test inside an Episode Filter rule: what it looks at -- the title, the show notes, the people on the episode, its type, length, age, season or number -- how to compare, and the value. Words, wildcards and regular expressions all work on text.
 
 **Feed Check.** Which of the podcasts you follow need something, worst first: failing feeds, then quiet ones, then the healthy rest. Opening it checks nothing; Retry checks the selected feed and Retry All Failed every failing one. A quiet podcast is not necessarily a failing feed, and Cast never stops trying a failing one.
 
@@ -432,6 +434,10 @@ Control coverage: 231 audited sites (91 helped, 140 named-help).
 
 - `ok_btn`: Keeps this rule in the filter. Nothing is applied until you save it.
 - `cancel_btn`: Leaves the rule as it was.
+#### EpisodeFilterTestDialog (`quill/ui/podcasts/episode_filter_test_dialog.py`)
+
+- `ok_btn`: Keeps this test in the rule. Nothing is applied until the filter is saved.
+- `cancel_btn`: Leaves the test as it was.
 #### EpisodeFiltersDialog (`quill/ui/podcasts/episode_filters_dialog.py`)
 
 - `ok_btn`: Saves these rules for this podcast. Every list you ticked takes effect at once, on episodes you already have as well as new ones; nothing is deleted. The Play Queue is the only thing not touched without asking, and saving asks about it separately.
@@ -448,6 +454,7 @@ Control coverage: 231 audited sites (91 helped, 140 named-help).
 - `self._tree`: Your podcast folders. Choose the one to move into and press Move Here; New Folder creates one inside whatever is selected.
 #### CastMainPanelMixin (`quill/ui/podcasts/main_panel.py`)
 
+- `self._find_box`: Type part of a podcast name, an episode title or one of your notes. The library below becomes the matches; Down Arrow moves into them, Enter plays one, and Escape brings your library back. Ctrl+F comes here from anywhere in the window.
 - `self._shows_tree`: Your podcasts, folders, and pinned views. Arrow through the library; Enter on a podcast plays its next episode and Enter on a view opens its episode list. Shift F10 offers the selected row's actions.
 - `self._play_pause_btn`: Starts the selected podcast or episode when stopped, pauses current playback, or resumes it from the saved position when paused. The label names what it would play, pause or resume.
 - `self._stop_btn`: Stops the current episode. Enabled only while something is playing or paused; Play starts playback again.
@@ -479,6 +486,7 @@ Control coverage: 231 audited sites (91 helped, 140 named-help).
 #### ShowNotesDialog (`quill/ui/podcasts/show_notes_dialog.py`)
 
 - `self._plain_view`: The episode's show notes as plain text. Read-only -- arrow through it line by line; Links lists every web address in it.
+- `self._rich_view`: The episode's show notes with their formatting: headings, lists and links. Read-only. Choose Plain text above to arrow through them line by line.
 #### ShowSettingsDialog (`quill/ui/podcasts/show_settings_dialog.py`)
 
 - `self._category`: Which group of settings is shown below. Seventy controls in one list is not a list anybody can work through by ear, so this shows one group at a time. It hides nothing -- every group is one keystroke away.

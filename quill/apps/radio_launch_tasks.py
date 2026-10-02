@@ -53,6 +53,10 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
     wx.CallAfter(surface_media_health_startup, app)
     wx.CallAfter(open_startup_window, app)
     wx.CallAfter(maybe_run_first_run, app)
+    # The previous session's closing failure, said once, with its Retry (F-06).
+    from quill.apps.radio_shutdown import radio_launch_notice
+
+    wx.CallAfter(radio_launch_notice, app)
     # 6. **Reminders**, armed here for the same reason the feed check is: the
     #    timer has to exist before anything can set one, and its first look is
     #    what makes a reminder missed while the app was closed still speak.

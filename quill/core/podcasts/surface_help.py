@@ -200,9 +200,17 @@ PURPOSES: dict[str, str] = {
     ),
     "Episode Filter Rule": (
         "One rule inside a podcast's Episode Filters: a title pattern, a "
-        "minimum length, or both -- and both have to match for the rule to. A "
+        "minimum length, and any more tests -- show notes, people, type, age, "
+        "season or number -- with every test or any one having to match. Try It "
+        "says what the rule catches among the newest episodes. A "
         "rule is a label plus a test; it decides nothing until the filter "
         "itself is saved, and it never deletes an episode."
+    ),
+    "Episode Filter Test": (
+        "One test inside an Episode Filter rule: what it looks at -- the "
+        "title, the show notes, the people on the episode, its type, length, "
+        "age, season or number -- how to compare, and the value. Words, "
+        "wildcards and regular expressions all work on text."
     ),
 }
 

@@ -51,11 +51,14 @@ worse than one that is briefly short.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import wx
 
 from quill.core.lite import APP_NAME
+
+logger = logging.getLogger(__name__)
 
 __all__ = ["QuillLiteShell"]
 
@@ -204,8 +207,11 @@ class QuillLiteShell(wx.MDIParentFrame):
             return
         try:
             control.SetFocus()
+            landed = wx.Window.FindFocus()
         except RuntimeError:
-            pass  # the child is on its way out; the next activation focuses it
+            return  # the child is on its way out; the next activation focuses it
+        if landed is not control:
+            _note_repair_miss(self, landed)
 
     def _on_menu_open(self, event: wx.MenuEvent) -> None:
         """Hand the opening menu to the document whose rows it holds."""
@@ -284,3 +290,34 @@ class QuillLiteShell(wx.MDIParentFrame):
         # like it has hung on the way out.
         post_sound_and_wait(SoundEvent.APP_EXITING)
         self.Destroy()
+
+
+def _note_repair_miss(shell: Any, landed: object) -> None:
+    """Count a focus repair that did not take, and log it without content (F-04).
+
+    A repair can be overruled: Windows finishing its own restoration after the
+    second check, or a control that refuses focus. That is the case the bounded
+    repair cannot see and a listener reports as "sometimes it works", so it is
+    counted per shell and logged -- the class of what holds focus and the count,
+    never a title, a label or a word of the document, because a diagnostic log
+    travels in support bundles. Silent: an announcement here would be the app
+    talking about its own plumbing.
+
+    A module function rather than a method so the stand-in shells the focus
+    tests bind the shipped methods to need nothing new. Why this is not a family
+    helper yet: QUILL's own activation repair (#170) is a different mechanism
+    on a different frame, and a shared helper with one caller is speculation --
+    it is extracted when a second app adopts this shape (qc.md F-04).
+    """
+    misses = int(getattr(shell, "focus_repair_misses", 0) or 0) + 1
+    try:
+        shell.focus_repair_misses = misses
+    except Exception:  # noqa: BLE001 - a counter must never break focus handling
+        pass
+    holder = "nothing" if landed is None else type(landed).__name__
+    logger.info(
+        "QUILL-LITE-FOCUS-MISS: activation focus repair did not take; focus is on %s "
+        "(%d this session)",
+        holder,
+        misses,
+    )

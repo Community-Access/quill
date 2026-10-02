@@ -31,6 +31,7 @@ from quill.core.ai.tts import (
     TTSQuotaError,
 )
 from quill.core.ai.tts_chunk import chunk_text
+from quill.core.assistant_ai import gemini_model_id
 
 _HOST = "https://generativelanguage.googleapis.com"
 _ENDPOINT = _HOST + "/v1beta/models/{model}:generateContent"
@@ -99,7 +100,7 @@ def request_speech_pcm(text: str, api_key: str, model: str, voice: str) -> bytes
         },
     }).encode()
     req = Request(
-        _ENDPOINT.format(model=model),
+        _ENDPOINT.format(model=gemini_model_id(model)),
         data=body,
         headers={
             "x-goog-api-key": api_key,  # header, so the key never lands in a URL/log

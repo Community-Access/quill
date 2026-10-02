@@ -329,6 +329,20 @@ than have you hunting for a document you thought you had lost.
 **Ctrl+N** makes a new document. **Ctrl+W** closes the one you are in.
 **Ctrl+Q** closes everything, asking about anything you have not saved.
 
+### Opening a large file, or one on a network drive
+
+A file of a megabyte or more, or any file on a network share, opens without
+freezing the window. A new document window appears at once, titled with its
+number and "Opening" and the file's name, and QUILL Lite says "Opening" and
+the name once. The document is read-only for that moment, so nothing you type
+can be lost when the file arrives; when it does, the text appears and the
+cursor is at the top, ready to read.
+
+To cancel, close that window (Ctrl+W). If the file cannot be read -- the
+share went away, the disk is busy -- QUILL Lite says why and asks whether to
+try again. Yes tries again; No closes the empty window. Smaller files on
+your own computer open the way they always have, all at once.
+
 ### Opening a second QUILL Lite
 
 If you open a file from your file manager while QUILL Lite is already running, it

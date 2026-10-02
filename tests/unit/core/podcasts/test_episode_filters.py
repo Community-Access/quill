@@ -294,7 +294,7 @@ def test_a_configuration_round_trips() -> None:
 
 
 def test_an_unknown_version_reads_as_no_filter_at_all() -> None:
-    assert EpisodeFilterConfiguration.from_dict({"version": 2, "enabled": True}) is None
+    assert EpisodeFilterConfiguration.from_dict({"version": 3, "enabled": True}) is None
     assert EpisodeFilterConfiguration.from_dict("nonsense") is None
     assert EpisodeFilterConfiguration.from_dict({"enabled": True}) is None
 

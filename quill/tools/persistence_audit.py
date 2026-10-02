@@ -387,6 +387,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # the web-search switch. Same shape and same reasons as the gateway
     # session beside it; the refresh token itself goes to the OS store.
     "core/ai/chatgpt_account.py::save_state": "marker",
+    # The pending "last time it closed, it could not save" sentence (qc.md
+    # F-06): written once at close, read and deleted at the next launch, and
+    # trivially defaulted -- a lost file means nothing is said.
+    "core/shutdown_report.py::persist": "marker",
     "core/ai/style.py::save_style": "content",
     "core/bookmarks.py::save": "content",
     # Per-book media time-point bookmarks (position_ms + optional label/note),

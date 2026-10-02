@@ -31,6 +31,7 @@ from quill.core.podcasts import opml_import
 from quill.core.podcasts.opml import OpmlError, OpmlValidationResult
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.surface_lifetime import surface_tasks
 
 #: Announce progress this often during the sweep (every N per cent).
 _ANNOUNCE_EVERY_PERCENT = 10
@@ -55,7 +56,8 @@ class OpmlImportDialog:
         self._wx = wx
         self._library = library
         self._path = Path(path)
-        self._task_manager = task_manager
+        # Every task this window starts is tied to its lifetime (qc.md F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "dialog", None))
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._on_library_changed = on_library_changed or (lambda: None)

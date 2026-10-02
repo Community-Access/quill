@@ -197,6 +197,7 @@ class CastViewMenuMixin:
         checked against the whole menu bar and against ``APP_KEYMAPS["cast"]``.
         """
         for label, accelerator, handler in (
+            ("Fi&nd in Library", "Ctrl+F", self.focus_library_find),
             ("&Inbox", "Ctrl+Shift+I", self.open_cast_inbox),
             ("Play &Queue...", "", self._open_play_queue),
             ("&Podcasts", "Ctrl+Shift+P", self.open_cast_subscriptions),
@@ -261,7 +262,9 @@ class CastViewMenuMixin:
             wx.EVT_MENU, lambda _e: self._toggle_advanced_menus(), id=self._advanced_item_id
         )
         features_id = wx.NewIdRef()
-        view_menu.Append(features_id, "&Customize Features...")
+        # Radio's chord for the same command (family rule 2), and the menu-bar
+        # gate's rule that every row shows a keyboard route.
+        view_menu.Append(features_id, "&Customize Features...	Ctrl+Alt+C")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_cast_app_features(), id=features_id)
         self._keep_menu_ids(self._status_bar_item_id, self._advanced_item_id, features_id)
 

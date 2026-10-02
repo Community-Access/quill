@@ -115,7 +115,7 @@ def _replaceable(target: Path) -> bool:
     The offer is made *because* the bundle has no favorites, and a 3.0.0 bundle
     that had been opened once had a favorites file with none in it -- so
     "never overwrite what the bundle has" skipped the one file the listener
-    said Yes to, and the answer was remembered as done (Jeff, C:\qr,
+    said Yes to, and the answer was remembered as done (Jeff, C:\\qr,
     2026-09-28: "it prompted me to copy favorites over but it never did").
     Anything else the bundle has is still left alone.
     """

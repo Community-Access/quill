@@ -24,9 +24,10 @@ Everything QUILL Cast announces goes through the same announcement engine QUILL 
 
 ## The main window
 
-Tab order: the now-playing line, the library tree, then five buttons.
+Tab order: the now-playing line, the Find box, the library tree, then the buttons.
 
 - **Now playing** (read-only text): what is playing; mirrored in the status bar and the Episode menu.
+- **Find in library** (Alt+N, or Ctrl+F from anywhere in the window): type part of a podcast's name, an episode title or one of your own notes, and the library below becomes the matches -- "The Daily -- a podcast (3 unheard)", "Thursday's episode -- an episode of The Daily", "Note on ...". Podcasts come first, then episodes, newest first, then notes. The line under the box says how many there are, and says it aloud once you stop typing. Down Arrow moves into the matches, where Enter plays, Shift+F10 opens the same menu as in the library, and the Play button names the match. Escape, or emptying the box, brings your library back with the cursor where it was. Transcripts are not searched here yet; Search Everywhere in the Podcast Manager still searches them. More than 200 matches end with a row saying how many more.
 - **Library** (tree): the same pinned views the Podcast Manager shows -- **Favorites**, **New Episodes**, **Continue Listening**, **Inbox** -- above your nested library folders and the shows filed in them. A show wears its unplayed count in words -- "(3 unheard)" -- and a folder wears how many podcasts live under it, counting everything expanding it would reveal. Enter on a show plays its next episode; Enter on a pinned view plays its newest unstarted episode (Continue Listening: the most recent one you were in the middle of). **The pinned views open**: Right Arrow on Favorites, New Episodes, Continue Listening or the Inbox reveals what its count counts -- episodes under the three episode views, each naming its podcast, and podcasts under Favorites, each of which expands to its own episodes one level down. Delete unfollows a show (with confirmation, and Ctrl+Z puts it back) or dissolves a folder (your shows step safely to the top level -- you never stop following anything by deleting a folder). Shift+F10 or the Applications key opens the full context menu (the same one a right-click opens): Play/Stop, Add/Remove Favorites, Move to Folder, **Move Up / Move Down in Custom Order** (Alt+Up / Alt+Down -- see Sort Podcasts below), **Download All Episodes**, **Remove All Episodes**, **Feed Credentials...** (for private feeds -- see below), **Unfollow...** (Delete), New Folder, and Open Manager. On a folder the context menu offers **Rename Folder... (F2)**, **Delete Folder...**, New Folder..., and Open Manager.
 - **The pinned views rename too.** Press **F2** on Favorites, New Episodes, Continue Listening or the Inbox (or choose **Rename...** from its context menu) and give it your own name -- it follows you into the Podcast Manager as well. A renamed view's menu gains **Reset Name**; entering a blank, or the shipped name itself, also resets it. Shows and episodes deliberately refuse F2: their names come from the podcast's own feed.
 - **Episodes without leaving the main page.** Every show in the tree can be expanded (Right Arrow) to reveal its episodes, newest first, right where the show sits -- no detour through the Manager to reach one particular episode. Shows start collapsed so the tree reads as a list of shows rather than a wall of episodes. **Enter on an episode plays that episode**; Enter on the show itself still plays the show's next unplayed episode. An episode row's context menu offers **Play Episode** (Stop, while it is the one playing) and **Download Episode** -- the file lands under your Download location as `show-title\episode-title.mp3`, so it has a name that means something outside the app.
@@ -293,7 +294,45 @@ Some podcasts publish more than one thing: a show you follow that also runs a da
 
 **It is not a delete.** A filtered episode stays in the podcast's episode list with its played mark, its position, its downloaded file, its notes and its bookmarks exactly as they were. What a filter changes is where an episode *shows up*.
 
-Each rule has your own name for it, its own on and off, and up to two tests: a **title** pattern (wildcards, where `*` is any text and `?` is one character and every other punctuation mark means itself -- so `Q+A*` finds the segment actually called "Q+A" -- or a full regular expression), and a **minimum length**. Both tests in one rule have to match; several rules need match only one. An episode whose feed does not say how long it is never matches a length rule, because a missing length is not a short episode.
+Each rule has your own name for it, its own on and off, and as many tests as it needs. The first two are in the rule window itself: a **title** pattern (wildcards, where `*` is any text and `?` is one character and every other punctuation mark means itself -- so `Q+A*` finds the segment actually called "Q+A" -- or a full regular expression), and a **minimum length**. Several rules need match only one. An episode whose feed does not say how long it is never matches a length rule, because a missing length is not a short episode.
+
+#### More tests: show notes, people, type, age and more
+
+Under **More tests** (Alt+S) in the rule window, **Add Test...** (Alt+A) opens a small window with three questions:
+
+- **Look at** (Alt+L): the title, the **show notes**, the **people on the episode** (the Podcasting 2.0 credits a publisher lists), the **episode type** the publisher gave it (full, trailer or bonus), its **length in minutes**, its **age in days**, its **season number** or its **episode number**.
+- **Test** (Alt+T), which follows what you chose to look at. For text: contains, does not contain, starts with, ends with, is, is not, fits the wildcard, matches the regular expression, or does not match it. For a number: at least, at most, is, is not. For the type: is a trailer, is not a full episode, and so on -- the whole test in one choice.
+- **Value** (Alt+V): the words, the pattern, or the number.
+
+Words are found anywhere in the text and capital letters do not matter unless you tick **Capital letters have to match too**. A regular expression is found anywhere too, unless you anchor it with `^` and `$`; a wildcard covers the whole text, the same as in the title box. A test whose regular expression cannot be read, or whose number is not a number, is refused with the reason and focus goes back to the value.
+
+Three rules keep this safe. A feed that does not say a length, a date, a season or a number **never matches a number test** -- a missing fact is not zero. An episode with no type counts as a full episode, which is what the type means when a publisher leaves it out. And a test this version of Cast cannot read makes its whole rule match nothing, rather than a rule quietly catching more than you wrote.
+
+**Match when** (Alt+W) says how a rule's tests combine: **Every test has to match** (the original meaning), or **Any one test is enough** -- so "a trailer, or anything under five minutes" is one rule with one name and one switch. The rules list says which, before the tests: "Short things, enabled. Any one of: Episode type is a trailer. Length in minutes is at most 5."
+
+Some rules worth writing:
+
+- Sponsor-only episodes: Show notes contains `sponsored by`, with the title test empty.
+- Reruns: Title matches the regular expression `\b(rerun|encore|best of)\b`.
+- One strand of a busy feed, under *keep only*: Title starts with `Daily Briefing:`.
+- Back-catalogue re-uploads: Age in days is at least 365, under a filter that keeps them out of the Inbox.
+- A guest you would rather skip: People on the episode is the name, as the publisher wrote it.
+- Everything from an old season: Season number is at most 3.
+
+#### Try it before you keep it
+
+**Try It on Recent Episodes** (Alt+Y) runs the rule exactly as the window shows it -- tests, match when and all -- against the podcast's 50 newest episodes, and says how many it catches and the first five titles: "Matches 7 of the 50 newest episodes. Daily Briefing: Monday; Daily Briefing: Tuesday; ...; and 2 more." The same sentence stays in **Try it result** (Alt+U) to read again. Nothing changes; adjust the pattern and try again until it catches what you meant.
+
+#### Filter Episodes Like This
+
+You usually know the episode you do not want before you know what it has in common with the others. So any episode's menu (Shift+F10 or the Applications key) offers **Filter Episodes Like This...** (F). Cast drafts the rule for you, in this order:
+
+1. If the publisher marked the episode a **trailer** or a **bonus**, the rule takes every episode they mark that way.
+2. Otherwise, if its title shares a **series name** with other recent episodes -- the part before a colon, a bar or a dash, or its opening words -- the rule takes titles that start (or end) the same way.
+3. Otherwise, if it is **much shorter** than this podcast usually is, the rule takes anything a little longer than it or shorter.
+4. Otherwise the rule matches this exact title, and says so, so you can widen it.
+
+Every guess is checked against the 50 newest episodes first, and a guess that would take every one of them is never offered. Episode Filters opens with the rule window already showing the drafted rule, and its first line says why it was chosen and how many episodes it catches. Save the rule and filtering is switched on in the draft; nothing is stored until you choose **Save** in Episode Filters, after Preview if you like.
 
 Two modes: *keep everything except episodes a rule matches* (the common one) and *keep only episodes a rule matches* (the sharp one).
 
@@ -353,7 +392,8 @@ A live now-playing line, **Player Information...**, **Continue Listening...**, *
 
 ### View (Alt+V)
 
-The places you go, one key each, in the order Earshot lists them: **Inbox**
+First, **Find in Library** (Ctrl+F), which puts you in the Find box above the
+library. Then the places you go, one key each, in the order Earshot lists them: **Inbox**
 (Ctrl+Shift+I), **Play Queue...**, **Podcasts** (Ctrl+Shift+P), **Personal
 Audio** (Ctrl+Shift+U), **Downloads...**, **Statistics...**, **Continue
 Listening...**. Going to a place lands focus on it in the library tree, so your
@@ -368,7 +408,8 @@ Inbox that is empty because of a filter never just says "empty".
 
 Then how much of Cast you meet: **Show Status Bar** (Ctrl+Shift+B), **Advanced
 Features** (Ctrl+Alt+Shift+G), and **Customize Features...** -- see "Simple
-and Advanced" above.
+and Advanced" above. Customize Features has the same key as in Quill Radio,
+**Ctrl+Alt+C**.
 
 ### Window (Alt+W)
 
@@ -1286,6 +1327,15 @@ error messages, never passwords. **Clear List** empties it, and does not fix
 anything or stop the same problem being recorded again next time it happens.
 
 Nothing in the list leaves this computer.
+
+**When closing could not finish saving.** If QUILL Cast cannot save your
+podcast library or your listening statistics as it closes -- a full disk, a
+data folder that went read-only, a sync tool holding the file -- it still
+closes, but it no longer pretends that went well. The next time it starts it
+says once that it could not finish saving and that anything from the end of
+that session may be missing, and a **Closing** row appears here. **Retry** on
+that row saves your library and statistics again from what this session holds,
+which also tells you whether the data folder can be written to now.
 
 ## Quiet hours
 

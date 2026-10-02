@@ -77,7 +77,9 @@ def test_period_detail_is_fully_spelled_out() -> None:
     text = wcd._period_detail_text(p)
     assert "This Afternoon: 94 degrees Fahrenheit" in text  # no "deg F"
     assert "5 miles per hour" in text and " mph" not in text
-    assert wcd._spell_out("gusts to 20 mph") == "gusts to 20 miles per hour"
+    from quill.ui.weather import center_text  # moved there 2026-10-01 (GATE-11)
+
+    assert center_text._spell_out("gusts to 20 mph") == "gusts to 20 miles per hour"
 
 
 def test_remove_location_clears_when_it_was_the_last(app, tmp_path) -> None:

@@ -10,6 +10,7 @@
   "quill/ui/main_frame_podcasts.py::PodcastsMixin.podcast_resume_all_downloads": "counts-elsewhere",
   "quill/ui/podcasts/download_pause.py::podcast_pause_all_downloads": "counted",
   "quill/ui/podcasts/download_pause.py::podcast_resume_all_downloads": "counted",
+  "quill/ui/podcasts/feed_check_dialog.py::FeedCheckDialog._on_retry_all": "counted",
   "quill/ui/podcasts/manager_actions.py::ManagerActionsMixin._append_bulk_episode_items": "no-announce",
   "quill/ui/podcasts/manager_actions.py::ManagerActionsMixin._on_bulk_add_to_playlist": "counted",
   "quill/ui/podcasts/manager_actions.py::ManagerActionsMixin._on_bulk_download": "counted",

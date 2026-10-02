@@ -24,6 +24,7 @@ from typing import Any
 
 import wx
 
+from quill.apps import player_close
 from quill.apps.player_menus import MediaPlayerMenuMixin
 from quill.core.media import DspSettings, build_audio_filters, format_spoken
 from quill.core.media.bookmarks import BookmarkStore, MediaBookmark
@@ -108,6 +109,8 @@ class QuillMediaPlayerFrame(
         self._resume_timer.Start(15_000)
         self._sleep_timer = wx.Timer(self.frame)
         self.frame.Bind(wx.EVT_TIMER, lambda _e: self._on_sleep_fired(), self._sleep_timer)
+        # Closing saves the place and stops the clocks (qc.md F-12).
+        self.frame.Bind(wx.EVT_CLOSE, lambda e: player_close.on_player_close(self, e))
         for raw in initial_paths or []:
             if raw.exists() and raw.is_file():
                 self._load_book(raw)

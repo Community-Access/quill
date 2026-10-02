@@ -2,6 +2,27 @@
 
 All notable changes to QUILL Cast are documented here. See `docs/release-notes-2.0.md` for the fuller narrative version of the latest release (Help > Release Notes opens it in the app), and `docs/release-notes-1.1.md` for 1.1.
 
+## Unreleased -- the next QUILL Cast release
+
+The main-window rework, Find in library and the rest of this release are
+described in `docs/release-notes-2.0.md`, under "After these notes were
+first written".
+
+- **Episode Filters ask far more, and write a rule for you.** A rule can hold
+  any number of tests -- the title, the show notes or the people on an
+  episode (contains, starts or ends with, is, a wildcard, a regular
+  expression, or their negations); the publisher's episode type; length
+  (finally a maximum), age in days, season and episode number -- and can say
+  that any one test is enough. Try It on Recent Episodes says what a rule
+  catches before it is saved, and Filter Episodes Like This... on any
+  episode's menu drafts the rule from that episode: its trailer or bonus
+  type, a series name it shares, or an unusual length, each checked against
+  the 50 newest. Missing facts never match a number test, an unreadable test
+  makes its rule match nothing, and a filter that uses none of this is still
+  stored exactly as older builds read it
+  (`core/podcasts/filter_conditions.py`, `filter_suggestions.py`,
+  `ui/podcasts/episode_filter_test_dialog.py`).
+
 ## 2.0.0
 
 ### Up means more on every slider (2026-09-28)

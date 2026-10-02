@@ -1344,8 +1344,8 @@ class RadioAppFrame(
             menu_bar.Append(record_menu, "&Record")
 
         # The top-level Community menu: "places this community already goes,
-        # brought inside the app". The Audio Description Project rows it started
-        # as are gone (2026-09-30, removed from the whole family), and the menu
+        # brought inside the app". The rows it started with are gone (removed
+        # from the whole family on 2026-09-30), and the menu
         # now carries only the community surfaces it was renamed for in
         # 2026-08-23 -- Ask QUILL Radio and Use My ChatGPT Subscription, the ACB
         # Media schedule and podcasts, and Community Picks, all appended by
@@ -2171,52 +2171,11 @@ class RadioAppFrame(
         (R3, so a clean close is not mistaken for a crash), then shut the
         controller, recorder, scheduler, task manager, media keys, and tray down
         (all non-blocking)."""
-        try:
-            self._app_host.shutdown()
-        except Exception:  # noqa: BLE001 - Quillin teardown must never block exit
-            pass
-        # The modeless surfaces are parentless peer frames: nothing destroys
-        # them with the main window, and any left alive would keep the process
-        # running after Exit.
-        windows = getattr(self, "_windows", None)
-        if windows is not None:
-            windows.destroy_all_except(self.frame)
-        self._stamp_radio_last_seen()
-        # Stop Weather Guardian's timer without flipping its persisted on state,
-        # so a clean exit resumes monitoring on the next launch.
-        self.stop_weather_monitoring(announce=False, persist=False)
-        for timer_attr in ("_radio_last_seen_timer", "_ipc_timer"):
-            timer = getattr(self, timer_attr, None)
-            if timer is not None:
-                try:
-                    timer.Stop()
-                except Exception:  # noqa: BLE001
-                    pass
-        self._clear_radio_recording_marker()
-        for shutdown_fn in (
-            getattr(self._radio_controller, "shutdown", None),
-            getattr(self._radio_recorder, "shutdown", None),
-            getattr(self._radio_scheduler, "shutdown", None),
-            # A wx.Timer still running when its frame goes is a timer that can
-            # fire into a destroyed window.
-            getattr(getattr(self, "_podcast_refresh_monitor", None), "stop", None),
-            getattr(getattr(self, "_reminder_monitor", None), "stop", None),
-        ):
-            if shutdown_fn is None:
-                continue
-            try:
-                shutdown_fn()
-            except Exception:  # noqa: BLE001 - shutdown must never block exit
-                pass
-        self._task_manager.shutdown(wait=False)
-        self._unregister_media_keys()
-        # Guarded like MainFrame's teardown: a hotkey unregister failure must
-        # never block the window from closing.
-        try:
-            self._unregister_global_hotkeys()
-        except Exception:  # noqa: BLE001 - shutdown must never block exit
-            pass
-        self._remove_tray_icon()
+        from quill.apps.radio_shutdown import run_radio_shutdown
+
+        # Every step guarded and classed (qc.md F-06): a failed final write is
+        # kept for the next launch, which says so once. Close always completes.
+        run_radio_shutdown(self)
 
 
 #: Single-instance slot for Quill Radio's IPC lock/queue -- distinct from

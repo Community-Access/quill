@@ -44,6 +44,7 @@ from quill.ui.dialog_contract import (
 )
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
 from quill.ui.radio.volume_row import add_volume_slider
+from quill.ui.surface_lifetime import surface_tasks
 
 #: Item data for the "Loading..." child that makes a node look expandable.
 _PLACEHOLDER = {"kind": "placeholder"}
@@ -77,7 +78,8 @@ class BrowseTreeDialog:
         self._wx = wx
         self._controller = controller
         self._favorites = favorites_store
-        self._task_manager = task_manager
+        # Every task this window starts is tied to its lifetime (qc.md F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "_surface", None))
         self._safe_mode = safe_mode
         # Downloads are queued on the app shell, not on this window: the queue
         # must be the one View > Downloads watches and the one that survives

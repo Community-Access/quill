@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import UTC, datetime
 
 
@@ -14,3 +15,15 @@ def validate_scheduled_publish_time(
     if when <= reference:
         return "Choose a publish time that is in the future."
     return None
+
+
+@dataclass(frozen=True, slots=True)
+class ScheduledPublishChoice:
+    """What the Schedule Publish dialog returns: what to publish, and when.
+
+    Moved here from ``quill/ui/publishing_tools.py`` (GATE-11, 2026-10-01);
+    it holds no UI and belongs beside the validation it pairs with.
+    """
+
+    content_kind: str
+    scheduled_at: datetime

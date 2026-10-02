@@ -56,6 +56,7 @@ from quill.apps.lite_window_marks import DocumentMarksMixin
 from quill.apps.lite_window_markup import DocumentMarkupMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
 from quill.apps.lite_window_mode import DocumentModeMixin
+from quill.apps.lite_window_open import DocumentBackgroundOpenMixin
 from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
@@ -106,6 +107,8 @@ class DocumentFrame(
     DocumentTypingMixin,
     DocumentSpellingMixin,
     DocumentFileMixin,
+    # Large and networked files open off the UI thread (F-05).
+    DocumentBackgroundOpenMixin,
     DocumentContextMenuMixin,
     DocumentMenuMixin,
     DocumentAppearanceMixin,

@@ -2,6 +2,90 @@
 
 ## 1.0.0
 
+### QUILL Cast: Episode Filters ask far more, and write a rule for you (2026-10-01)
+
+- **Episode Filters ask far more, and write a rule for you.** A rule can hold
+  any number of tests -- the title, the show notes or the people on an
+  episode (contains, starts or ends with, is, a wildcard, a regular
+  expression, or their negations); the publisher's episode type; length
+  (finally a maximum), age in days, season and episode number -- and can say
+  that any one test is enough. Try It on Recent Episodes says what a rule
+  catches before it is saved, and Filter Episodes Like This... on any
+  episode's menu drafts the rule from that episode: its trailer or bonus
+  type, a series name it shares, or an unusual length, each checked against
+  the 50 newest. Missing facts never match a number test, an unreadable test
+  makes its rule match nothing, and a filter that uses none of this is still
+  stored exactly as older builds read it
+  (`core/podcasts/filter_conditions.py`, `filter_suggestions.py`,
+  `ui/podcasts/episode_filter_test_dialog.py`).
+
+### Audio Description Project leftovers removed (2026-10-01)
+
+- The Audio Description Project integration and its Community-menu rows were
+  removed in fef27b3. What remained: the macOS test-build workflow still ran
+  the deleted ADP client-key generator (a step that could only fail), and
+  comments in Radio and Cast still described its menus. Both are gone. Audio
+  description itself -- Quill Radio's described-audio tracks, Audio and
+  Described Audio (Ctrl+Shift+A) and Play Described Audio (Ctrl+Alt+D) -- is
+  unchanged.
+
+### A window's background work stops at the window (2026-10-01)
+
+- F-02, adoption: new `quill/ui/surface_lifetime.py`. `surface_tasks(manager,
+  lambda: window)` wraps the app's task manager for a short-lived surface:
+  every task it starts carries the window's `UiLifetimeToken` (invalidated by
+  the window's own `EVT_WINDOW_DESTROY`), and every callback checks at delivery
+  that the window is not destroyed or scheduled for destruction. Adopted by
+  Cast's Add Podcast (and its Preview), OPML import and Podcast Manager;
+  Radio's Browse, Station Browser, Link Finder and ACB Media schedule;
+  Weather's Center and Add Location; and Publishing's browse dialog. A gate
+  fails if any short-lived surface stores the raw task manager. The Weather
+  Center's text helpers moved to `quill/ui/weather/center_text.py` and the
+  schedule choice to `quill/core/publishing_schedule.py` to stay within GATE-11.
+
+### Every kept timer has a stop; the Player keeps its place on close (2026-10-01)
+
+- F-12, in part: new `tests/unit/ui/test_timer_ownership.py` requires every
+  `self.<x> = wx.Timer(...)` in `quill/apps` and `quill/ui` to have a stop
+  somewhere (direct, fetched by name, or a loop over names), with an allowlist
+  that is empty. Its first run found Quill Player's resume, status and sleep
+  timers and Quill Converter's IPC timer with no stop at all; the Player also
+  saved its resume position only on its fifteen-second timer, so closing lost
+  up to fifteen seconds of a listener's place. New
+  `quill/apps/player_close.py` saves the place and stops the clocks on close;
+  the Converter stops its IPC timer on close.
+
+### A Gemini model picked from Gemini's own list works (2026-10-01)
+
+- X-07, first half: Gemini's model list names models `models/<id>`, and QUILL
+  built `/v1beta/models/models/<id>:generateContent`, which Gemini answers 404.
+  New `quill/core/ai/endpoints.py` (extracted from `assistant_ai.py` under
+  GATE-11, re-exported) adds `gemini_model_id`, used by the chat, streaming and
+  Gemini TTS URL builders and by the model list. Reviewed from PR #1615, which
+  also rewrote unrelated code and is not merged as a whole. Eight tests run the
+  shipped client against a Gemini-shaped HTTP server on 127.0.0.1 with
+  synthetic keys: list, generate, stream, wrong key (never echoed), missing key.
+
+### Radio and Cast report a failed save while closing (2026-10-01)
+
+- F-06: new wx-free `quill/core/shutdown_report.py`. Each teardown step runs
+  through `ShutdownReport.step` as must-record, best-effort or background;
+  close always completes. Must-record failures (Cast's library and stats
+  flush; Radio's last-seen stamp and recording-marker clear) leave a pending
+  sentence said once at next launch (`quill/ui/shutdown_notice.py`) and a
+  `KIND_SHUTDOWN` ("Closing") row in Recent Problems with a per-app Retry.
+  Only a step id, its class and the exception's class name are kept -- no
+  message text, paths or addresses. Radio's teardown moved to
+  `quill/apps/radio_shutdown.py`.
+
+### QUILL Lite opens large files off the UI thread (2026-10-01)
+
+- F-05: `quill/core/lite/open_prepare.py` (wx-free prepare) and
+  `quill/apps/lite_window_open.py` (generation- and lifetime-guarded commit on
+  the UI thread, busy state, Try Again). Large (1 MiB+) and networked files use
+  it; `load()` keeps its synchronous contract for everything else. Sixteen
+  tests, one through the real `TaskManager` and wx event loop.
+
 ### QUILL Lite instances stop undoing each other's preferences (2026-10-01)
 
 - F-11: with `--new-instance`, a settings save is a per-field three-way merge

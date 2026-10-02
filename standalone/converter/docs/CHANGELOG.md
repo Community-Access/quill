@@ -18,6 +18,14 @@ The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
 
+### Found before release (2026-10-01)
+
+- **Closing stops the background check.** The timer that watches for files
+  sent from another window kept running with nothing to stop it; it now stops
+  as the window closes, so it can never fire into a window that is gone
+  (`quill/apps/converter_actions.py`; found by the new timer-ownership gate,
+  `tests/unit/ui/test_timer_ownership.py`).
+
 ### 1.0 in brief
 
 - **Two downloads.** `Quill-Converter-Setup-Shared-1.0.0.exe` (the installer,

@@ -641,6 +641,41 @@ do -- so the other's choices apply at its next launch. An unreadable file is
 not merged against (that would reset untouched fields to defaults); the save
 falls back to the whole-object write.
 
+### 5.3b When a focus repair does not take (F-04, 2026-10-01)
+
+The activation repair (one check after the event loop, one 75 ms later) can
+still be overruled -- Windows restoring focus after the second check, or a
+control that refuses it. That is the residue a listener reports as "sometimes
+it works", so `lite_shell._note_repair_miss` counts it per shell
+(`focus_repair_misses`) and logs `QUILL-LITE-FOCUS-MISS` with the class of
+whatever holds focus and the session count -- never a title, a label or a word
+of a document, because the log travels in support bundles. Nothing is
+announced. It is not a family helper yet: QUILL's own repair (#170) is a
+different mechanism, and a shared helper with one caller is speculation; it is
+extracted when a second app adopts this shape.
+
+### 5.3c Opening is prepare, then commit (F-05, 2026-10-01)
+
+`DocumentFrame.load` read, decoded and RTF-scanned on the UI thread, so a
+large file, a slow share, a scanner holding the read or a damaged RTF froze
+the window with nothing said. Opening is now two halves:
+`quill/core/lite/open_prepare.prepare` (wx-free, any thread: read, decode or
+scan, return an immutable `PreparedDocument`) and
+`DocumentFileMixin._commit_load` (UI thread only: the Rich Edit control and
+everything a load implies). `load()` still runs both synchronously, so every
+existing caller is unchanged. `open_prepare.prepare_in_background` routes a
+file of 1 MiB or more, or a UNC path, through
+`lite_window_open.DocumentBackgroundOpenMixin.begin_background_load`: a new
+window, read-only while empty-and-loading, "Opening <name>" announced once
+and on the status bar, the read on the app's lazily created two-worker
+`TaskManager`, the commit on the UI thread only when the open generation still
+matches, the window's `UiLifetimeToken` is alive and the app is not shutting
+down. Closing the window is Cancel. Failure asks Try Again; declining closes a
+window that holds nothing else. A file still opening counts for the
+already-open check, so a second request focuses it instead of reading it twice.
+The app's shutdown owner stops the pool. Not done: Open as Plain Text on
+failure (a rich file that fails the scan still reports through the box).
+
 ### 5.4 File associations
 
 The full installer offers "Open .txt and .rtf files with QUILL Lite" as an

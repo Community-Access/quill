@@ -280,11 +280,23 @@ engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA,
 Narrator) without stealing focus – and writes to your braille display at
 the same time (see “Spoken and braille announcements” below).</p>
 <h2 id="the-main-window">The main window</h2>
-<p>Tab order: the now-playing line, the library tree, then five
-buttons.</p>
+<p>Tab order: the now-playing line, the Find box, the library tree, then
+the buttons.</p>
 <ul>
 <li><strong>Now playing</strong> (read-only text): what is playing;
 mirrored in the status bar and the Episode menu.</li>
+<li><strong>Find in library</strong> (Alt+N, or Ctrl+F from anywhere in
+the window): type part of a podcast’s name, an episode title or one of
+your own notes, and the library below becomes the matches – “The Daily –
+a podcast (3 unheard)”, “Thursday’s episode – an episode of The Daily”,
+“Note on …”. Podcasts come first, then episodes, newest first, then
+notes. The line under the box says how many there are, and says it aloud
+once you stop typing. Down Arrow moves into the matches, where Enter
+plays, Shift+F10 opens the same menu as in the library, and the Play
+button names the match. Escape, or emptying the box, brings your library
+back with the cursor where it was. Transcripts are not searched here
+yet; Search Everywhere in the Podcast Manager still searches them. More
+than 200 matches end with a row saying how many more.</li>
 <li><strong>Library</strong> (tree): the same pinned views the Podcast
 Manager shows – <strong>Favorites</strong>, <strong>New
 Episodes</strong>, <strong>Continue Listening</strong>,
@@ -888,15 +900,105 @@ episodes.</p>
 podcast’s episode list with its played mark, its position, its
 downloaded file, its notes and its bookmarks exactly as they were. What
 a filter changes is where an episode <em>shows up</em>.</p>
-<p>Each rule has your own name for it, its own on and off, and up to two
-tests: a <strong>title</strong> pattern (wildcards, where <code>*</code>
-is any text and <code>?</code> is one character and every other
-punctuation mark means itself – so <code>Q+A*</code> finds the segment
-actually called “Q+A” – or a full regular expression), and a
-<strong>minimum length</strong>. Both tests in one rule have to match;
-several rules need match only one. An episode whose feed does not say
-how long it is never matches a length rule, because a missing length is
-not a short episode.</p>
+<p>Each rule has your own name for it, its own on and off, and as many
+tests as it needs. The first two are in the rule window itself: a
+<strong>title</strong> pattern (wildcards, where <code>*</code> is any
+text and <code>?</code> is one character and every other punctuation
+mark means itself – so <code>Q+A*</code> finds the segment actually
+called “Q+A” – or a full regular expression), and a <strong>minimum
+length</strong>. Several rules need match only one. An episode whose
+feed does not say how long it is never matches a length rule, because a
+missing length is not a short episode.</p>
+<h4 id="more-tests-show-notes-people-type-age-and-more">More tests: show
+notes, people, type, age and more</h4>
+<p>Under <strong>More tests</strong> (Alt+S) in the rule window,
+<strong>Add Test…</strong> (Alt+A) opens a small window with three
+questions:</p>
+<ul>
+<li><strong>Look at</strong> (Alt+L): the title, the <strong>show
+notes</strong>, the <strong>people on the episode</strong> (the
+Podcasting 2.0 credits a publisher lists), the <strong>episode
+type</strong> the publisher gave it (full, trailer or bonus), its
+<strong>length in minutes</strong>, its <strong>age in days</strong>,
+its <strong>season number</strong> or its <strong>episode
+number</strong>.</li>
+<li><strong>Test</strong> (Alt+T), which follows what you chose to look
+at. For text: contains, does not contain, starts with, ends with, is, is
+not, fits the wildcard, matches the regular expression, or does not
+match it. For a number: at least, at most, is, is not. For the type: is
+a trailer, is not a full episode, and so on – the whole test in one
+choice.</li>
+<li><strong>Value</strong> (Alt+V): the words, the pattern, or the
+number.</li>
+</ul>
+<p>Words are found anywhere in the text and capital letters do not
+matter unless you tick <strong>Capital letters have to match
+too</strong>. A regular expression is found anywhere too, unless you
+anchor it with <code>^</code> and <code>$</code>; a wildcard covers the
+whole text, the same as in the title box. A test whose regular
+expression cannot be read, or whose number is not a number, is refused
+with the reason and focus goes back to the value.</p>
+<p>Three rules keep this safe. A feed that does not say a length, a
+date, a season or a number <strong>never matches a number test</strong>
+– a missing fact is not zero. An episode with no type counts as a full
+episode, which is what the type means when a publisher leaves it out.
+And a test this version of Cast cannot read makes its whole rule match
+nothing, rather than a rule quietly catching more than you wrote.</p>
+<p><strong>Match when</strong> (Alt+W) says how a rule’s tests combine:
+<strong>Every test has to match</strong> (the original meaning), or
+<strong>Any one test is enough</strong> – so “a trailer, or anything
+under five minutes” is one rule with one name and one switch. The rules
+list says which, before the tests: “Short things, enabled. Any one of:
+Episode type is a trailer. Length in minutes is at most 5.”</p>
+<p>Some rules worth writing:</p>
+<ul>
+<li>Sponsor-only episodes: Show notes contains
+<code>sponsored by</code>, with the title test empty.</li>
+<li>Reruns: Title matches the regular expression
+<code>\b(rerun|encore|best of)\b</code>.</li>
+<li>One strand of a busy feed, under <em>keep only</em>: Title starts
+with <code>Daily Briefing:</code>.</li>
+<li>Back-catalogue re-uploads: Age in days is at least 365, under a
+filter that keeps them out of the Inbox.</li>
+<li>A guest you would rather skip: People on the episode is the name, as
+the publisher wrote it.</li>
+<li>Everything from an old season: Season number is at most 3.</li>
+</ul>
+<h4 id="try-it-before-you-keep-it">Try it before you keep it</h4>
+<p><strong>Try It on Recent Episodes</strong> (Alt+Y) runs the rule
+exactly as the window shows it – tests, match when and all – against the
+podcast’s 50 newest episodes, and says how many it catches and the first
+five titles: “Matches 7 of the 50 newest episodes. Daily Briefing:
+Monday; Daily Briefing: Tuesday; …; and 2 more.” The same sentence stays
+in <strong>Try it result</strong> (Alt+U) to read again. Nothing
+changes; adjust the pattern and try again until it catches what you
+meant.</p>
+<h4 id="filter-episodes-like-this">Filter Episodes Like This</h4>
+<p>You usually know the episode you do not want before you know what it
+has in common with the others. So any episode’s menu (Shift+F10 or the
+Applications key) offers <strong>Filter Episodes Like This…</strong>
+(F). Cast drafts the rule for you, in this order:</p>
+<ol type="1">
+<li>If the publisher marked the episode a <strong>trailer</strong> or a
+<strong>bonus</strong>, the rule takes every episode they mark that
+way.</li>
+<li>Otherwise, if its title shares a <strong>series name</strong> with
+other recent episodes – the part before a colon, a bar or a dash, or its
+opening words – the rule takes titles that start (or end) the same
+way.</li>
+<li>Otherwise, if it is <strong>much shorter</strong> than this podcast
+usually is, the rule takes anything a little longer than it or
+shorter.</li>
+<li>Otherwise the rule matches this exact title, and says so, so you can
+widen it.</li>
+</ol>
+<p>Every guess is checked against the 50 newest episodes first, and a
+guess that would take every one of them is never offered. Episode
+Filters opens with the rule window already showing the drafted rule, and
+its first line says why it was chosen and how many episodes it catches.
+Save the rule and filtering is switched on in the draft; nothing is
+stored until you choose <strong>Save</strong> in Episode Filters, after
+Preview if you like.</p>
 <p>Two modes: <em>keep everything except episodes a rule matches</em>
 (the common one) and <em>keep only episodes a rule matches</em> (the
 sharp one).</p>
@@ -1044,14 +1146,15 @@ automatically on a fresh start (never when resuming your saved
 position); outro-skip ends the episode early, exactly as if it had
 finished naturally – auto-advance and delete-after-play still fire.</p>
 <h3 id="view-altv">View (Alt+V)</h3>
-<p>The places you go, one key each, in the order Earshot lists them:
-<strong>Inbox</strong> (Ctrl+Shift+I), <strong>Play Queue…</strong>,
-<strong>Podcasts</strong> (Ctrl+Shift+P), <strong>Personal
-Audio</strong> (Ctrl+Shift+U), <strong>Downloads…</strong>,
-<strong>Statistics…</strong>, <strong>Continue Listening…</strong>.
-Going to a place lands focus on it in the library tree, so your screen
-reader reads the place you asked for; an empty place says how to fill
-it, once, on arrival.</p>
+<p>First, <strong>Find in Library</strong> (Ctrl+F), which puts you in
+the Find box above the library. Then the places you go, one key each, in
+the order Earshot lists them: <strong>Inbox</strong> (Ctrl+Shift+I),
+<strong>Play Queue…</strong>, <strong>Podcasts</strong> (Ctrl+Shift+P),
+<strong>Personal Audio</strong> (Ctrl+Shift+U),
+<strong>Downloads…</strong>, <strong>Statistics…</strong>,
+<strong>Continue Listening…</strong>. Going to a place lands focus on it
+in the library tree, so your screen reader reads the place you asked
+for; an empty place says how to fill it, once, on arrival.</p>
 <p>Then what the tree shows: <strong>Hide Caught-Up Podcasts</strong>
 (Ctrl+Shift+H) takes shows with nothing unheard out of the tree, and
 <strong>Inbox Folder…</strong> (Ctrl+Shift+O) narrows the Inbox to the
@@ -1061,7 +1164,8 @@ of a filter never just says “empty”.</p>
 <p>Then how much of Cast you meet: <strong>Show Status Bar</strong>
 (Ctrl+Shift+B), <strong>Advanced Features</strong> (Ctrl+Alt+Shift+G),
 and <strong>Customize Features…</strong> – see “Simple and Advanced”
-above.</p>
+above. Customize Features has the same key as in Quill Radio,
+<strong>Ctrl+Alt+C</strong>.</p>
 <h3 id="window-altw">Window (Alt+W)</h3>
 <p>Every open Cast window, each with a number: the route between them
 that does not involve Alt+Tab and guessing which of several identically
@@ -2248,6 +2352,16 @@ report – it contains addresses and error messages, never passwords.
 <strong>Clear List</strong> empties it, and does not fix anything or
 stop the same problem being recorded again next time it happens.</p>
 <p>Nothing in the list leaves this computer.</p>
+<p><strong>When closing could not finish saving.</strong> If QUILL Cast
+cannot save your podcast library or your listening statistics as it
+closes – a full disk, a data folder that went read-only, a sync tool
+holding the file – it still closes, but it no longer pretends that went
+well. The next time it starts it says once that it could not finish
+saving and that anything from the end of that session may be missing,
+and a <strong>Closing</strong> row appears here. <strong>Retry</strong>
+on that row saves your library and statistics again from what this
+session holds, which also tells you whether the data folder can be
+written to now.</p>
 <h2 id="quiet-hours">Quiet hours</h2>
 <p><strong>Help &gt; Quiet Hours…</strong> (Ctrl+Alt+Shift+Z) sets a
 window – 22:00 to 07:00 by default, and a window may cross midnight – in

@@ -1242,6 +1242,60 @@ out**, present for every podcast rather than only for filtered ones; and a
 per-episode **exemption** beats every rule in every scope and survives editing
 the rules.
 
+### 21.5 More tests, any-one-of, and a rule from an episode (2026-10-01)
+
+**Requirement.** A rule must be able to ask what real feeds actually vary on --
+the show notes, the people credited, the publisher's episode type, a maximum
+length, age, season and number -- by words, wildcard or regular expression;
+and a listener who knows only *which episode* they do not want must be able to
+get a rule without writing one.
+
+- `core/podcasts/filter_conditions.py`: `FilterCondition(field, op, value,
+  case_sensitive)` -- fields title, notes, people, type, duration, age, season,
+  number; text ops contains / not_contains / starts_with / ends_with / is /
+  is_not / wildcard (whole text) / regex / not_regex (`re.search`, so `^` and
+  `$` anchor); number ops at_least / at_most / is / is_not; type ops is /
+  is_not over full, trailer, bonus. `error` names why a condition is unusable;
+  `condition_matches` is total. **A missing fact never matches a number test**
+  (no duration, unparseable date, season or number 0); an empty type is
+  `full`, the iTunes default; a people test asks about any one person.
+- `EpisodeFilterRule` gains `conditions` and `match_any`. The title and
+  minimum-length criteria are tests like any other: all must hold, or any one
+  when `match_any`. `pattern_error` and `is_usable` include the conditions, so
+  an unusable condition makes its rule match nothing (21.3 holds unchanged),
+  and the save gate's duration check counts a duration condition.
+- **Storage stays readable backwards.** `FILTER_CONFIG_VERSION` is 2 and
+  `READABLE_VERSIONS` is (1, 2), but a configuration is *written* as version 1
+  unless a rule uses `conditions` or `match_any`, whose keys are omitted when
+  empty -- so every filter made the old way stays byte-for-byte what older
+  builds read. A version-2 filter on an older build reads as no filter (21.3).
+  An unknown field or op is kept and read as unusable, never dropped, because
+  dropping a test widens the rule.
+- `ui/podcasts/episode_filter_test_dialog.py` ("Episode Filter Test"): Look
+  at, Test (refilled from the field; the type's rows are whole phrases, so the
+  value box is disabled), Value, capitals. Refuses an unusable test with the
+  reason and focus on Value. The rule editor gains Match when, More tests with
+  Add / Edit / Remove Test, and **Try It on Recent Episodes**, which runs the
+  draft through `rule_matches` over `newest_episodes` and both shows and
+  announces `filter_suggestions.describe_trial` (count, five titles, "and N
+  more"; an unusable draft says why).
+- `core/podcasts/filter_suggestions.py`: `suggest_rule(episode, episodes,
+  newest=)` -> `FilterSuggestion(rule, reason, matches, sample)`. Order: the
+  publisher's trailer/bonus type; a series name (text before or after `: `,
+  ` | `, ` - `, en and em dashes, ` #`, or the opening two to four words) that
+  at least one sibling shares, the highest count winning; a length ceiling
+  when the episode is under 40% of the sample's median; else the exact title.
+  A candidate matching every sampled episode is never offered.
+- **Filter Episodes Like This...** (`filter_like_this`, an episode Quick
+  Action, access key F) opens `EpisodeFiltersDialog(suggestion=...)`, which
+  opens the rule editor on the draft with the reason as its first line; a kept
+  rule is appended and the draft's switch turned on, announced as "Rule added
+  and filtering switched on. Preview to check it, then Save to keep it."
+  Nothing is stored before Save; the gate and Preview are unchanged.
+
+Tests: `tests/unit/core/podcasts/test_episode_filter_conditions.py`,
+`tests/unit/ui/test_cast_episode_filter_tests_ui.py`.
+
 ---
 
 ## 22. A podcast can answer for itself (2026-08-29)
@@ -1460,6 +1514,30 @@ family whose name was set through `SetName` and never read. Cast's fifteen are
 fixed; the family count may only fall. `ui/labelled_field.py` makes the correct
 construction order the easy one; since 2026-10-01 it takes no `help=`, because help
 set inside a helper is invisible to the help audits -- callers set it inline.
+
+### 23.13 Find in library, the interim of P10 (2026-10-01)
+
+`ui/podcasts/library_find.py` (`CastLibraryFindMixin`, inherited by the main
+panel's mixin): a labelled box above the tree; `EVT_TEXT` restarts a 350 ms
+pause, after which the tree is rebuilt as `find_rows` (podcasts, then episodes
+newest first, then notes, from `filtering.search_everywhere`) tagged with the
+library's own item data, capped at 200 with a "more" row, and the count is
+announced once. `_reload_library_tree` refreshes the matches instead of the
+library while Find is active. Escape or an empty box restores the library
+with the cursor on the row it left; Down moves into the matches. View > Find
+in Library is Ctrl+F. Transcripts are excluded until F-09's index exists.
+`podcasts_view_menu.py` joined the app menu-accelerator gate, whose first run
+gave Customize Features Radio's Ctrl+Alt+C.
+
+### 23.12 Closing keeps a record of what it could not save (F-06, 2026-10-01)
+
+`_cast_shutdown` runs each step through `core/shutdown_report.ShutdownReport`:
+the listening-statistics and library flushes are must-record; Quillin
+teardown, the player, transfers, media keys, hotkeys and tray are best-effort;
+the task manager is background. A must-record failure is persisted as a
+pending sentence and a `KIND_SHUTDOWN` problem row; `_cast_launch_notices`
+says it once at the next launch after media health, and registers a Retry that
+flushes both again. Nothing persisted carries exception text.
 
 ### 23.11 Preferences, extracted, with a launch place (2026-10-01)
 

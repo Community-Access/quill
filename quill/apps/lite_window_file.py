@@ -31,6 +31,8 @@ import wx
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
 from quill.core.lite.filetypes import is_rich_path
+from quill.core.lite.open_prepare import PreparedDocument
+from quill.core.lite.open_prepare import prepare as prepare_document
 from quill.core.lite.textfile import (
     decode_text,
     encode_text,
@@ -39,7 +41,6 @@ from quill.core.lite.textfile import (
     write_bytes_atomic,
 )
 from quill.core.sound_events import SoundEvent
-from quill.io.rtf_safety import scan_rtf_safety
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
 from quill.ui.richedit_rtf_surface import RichEditRtfError
@@ -89,15 +90,38 @@ class DocumentFileMixin:
             return False
 
     def load(self, path: Path) -> bool:
-        """Open *path* into this window. ``False`` when it could not be read."""
+        """Open *path* into this window. ``False`` when it could not be read.
+
+        Synchronous: prepare and commit back to back. A large or networked file
+        goes through ``begin_background_load`` instead (F-05), which runs the
+        same two halves with the slow one on a worker.
+        """
         path = Path(path)
         mode = RICH if is_rich_path(path.name) else PLAIN
+        try:
+            self._check_mode_available(mode)
+            prepared = prepare_document(path, mode)
+        except (OSError, RichEditRtfError) as exc:
+            self._report_failure("Open failed", f"Could not open {path.name}.\n\n{exc}")
+            return False
+        return self._commit_load(path, prepared)
+
+    def _check_mode_available(self, mode: str) -> None:
+        """Rich text needs the Rich Edit control; say so before reading anything."""
+        if mode == RICH and not self.editor.rtf_available():
+            raise RichEditRtfError("Rich text needs the Windows Rich Edit control.")
+
+    def _commit_load(self, path: Path, prepared: PreparedDocument) -> bool:
+        """Put prepared text into the editor and do everything a load implies.
+
+        UI thread only: this is the half that touches the Rich Edit control.
+        """
         self._loading = True
         try:
-            if mode == RICH:
-                self._load_rich(path)
+            if prepared.mode == RICH:
+                self._commit_rich(prepared)
             else:
-                self._load_plain(path)
+                self._commit_plain(prepared)
         except (OSError, RichEditRtfError) as exc:
             self._loading = False
             self._report_failure("Open failed", f"Could not open {path.name}.\n\n{exc}")
@@ -143,22 +167,19 @@ class DocumentFileMixin:
             self._announce(READ_ONLY_NOTICE)
         return True
 
-    def _load_rich(self, path: Path) -> None:
-        """Scan the RTF for unsafe constructs, then hand the safe copy to the TOM."""
-        if not self.editor.rtf_available():
-            raise RichEditRtfError("Rich text needs the Windows Rich Edit control.")
-        report = scan_rtf_safety(path.read_text(encoding="utf-8", errors="replace"))
+    def _commit_rich(self, prepared: PreparedDocument) -> None:
+        """Hand the already-scanned, sanitised RTF to the TOM."""
+        self._check_mode_available(RICH)
         self._set_mode_internal(RICH)
-        self.editor.set_rtf(report.sanitized_rtf.encode("utf-8", errors="replace"))
+        self.editor.set_rtf(prepared.rtf)
         self._apply_rich_theme_colour()
-        if report.blocked:
-            self._announce("Removed for safety: " + ", ".join(report.blocked))
+        if prepared.blocked:
+            self._announce("Removed for safety: " + ", ".join(prepared.blocked))
 
-    def _load_plain(self, path: Path) -> None:
-        decoded = decode_text(path.read_bytes())
-        self.encoding, self.newline = decoded.encoding, decoded.newline
+    def _commit_plain(self, prepared: PreparedDocument) -> None:
+        self.encoding, self.newline = prepared.encoding, prepared.newline
         self._set_mode_internal(PLAIN)
-        self.control.ChangeValue(decoded.text)
+        self.control.ChangeValue(prepared.text)
 
     def _load_recovery(self, slot: recovery_mod.RecoverySlot) -> None:
         """Restore a slot into this window, leaving it modified and unsaved.
@@ -397,6 +418,11 @@ class DocumentFileMixin:
             self._autosave.Stop()
         except RuntimeError:
             pass
+        # An open still reading on a worker: its result must never land in a
+        # window that is closing (F-05). Closing the window is how it is cancelled.
+        cancel_open = getattr(self, "cancel_background_load", None)
+        if callable(cancel_open):
+            cancel_open()
         self._stop_status_timer()
         timer = getattr(self, "_spell_timer", None)
         if timer is not None:

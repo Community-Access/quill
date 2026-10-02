@@ -70,6 +70,7 @@ class EpisodeFiltersDialog:
         show: PodcastShow,
         announce_cb: Callable[[str], None] | None = None,
         playing: tuple[str, str] | None = None,
+        suggestion: object = None,
     ) -> None:
         import wx
 
@@ -78,6 +79,10 @@ class EpisodeFiltersDialog:
         self._show = show
         self._announce = announce_cb or (lambda _m: None)
         self._playing = playing
+        #: A drafted rule from "Filter Episodes Like This" (a
+        #: ``filter_suggestions.FilterSuggestion``), opened in the rule editor
+        #: as soon as this window is up; ``None`` for the ordinary way in.
+        self._suggestion = suggestion
         self._saved = False
         self._title = f"{TITLE} -- {show.title}"
         stored = maintenance.filter_for(library, show)
@@ -256,10 +261,41 @@ class EpisodeFiltersDialog:
 
     # -- rule verbs ----------------------------------------------------------
 
-    def _rule_dialog(self, rule: object = None) -> object:
+    def _rule_dialog(self, rule: object = None, *, intro: str = "") -> object:
         from quill.ui.podcasts.episode_filter_rule_dialog import EpisodeFilterRuleDialog
 
-        return EpisodeFilterRuleDialog(self.dialog, rule=rule, announce_cb=self._announce).show()
+        return EpisodeFilterRuleDialog(
+            self.dialog,
+            rule=rule,
+            announce_cb=self._announce,
+            episodes=self._show.episodes,
+            intro=intro,
+        ).show()
+
+    def _offer_suggestion(self) -> None:
+        """Open the rule editor on the drafted rule; add it if it is kept.
+
+        Filtering is switched on in the draft with it -- the listener asked
+        to filter episodes like this one -- but nothing is stored until Save,
+        and the save gate and Preview are exactly as they always are.
+        """
+        suggestion = self._suggestion
+        self._suggestion = None
+        if suggestion is None:
+            return
+        drafted = self._rule_dialog(
+            getattr(suggestion, "rule", None), intro=str(getattr(suggestion, "reason", ""))
+        )
+        if drafted is None:
+            self._announce("No rule added.")
+            return
+        self._draft.rules.append(drafted)
+        self._draft.enabled = True
+        self._enabled.SetValue(True)
+        self._fill_rules(select=len(self._draft.rules) - 1)
+        self._announce(
+            "Rule added and filtering switched on. Preview to check it, then Save to keep it."
+        )
 
     def _on_add_rule(self, _event: object) -> None:
         drafted = self._rule_dialog()
@@ -445,6 +481,8 @@ class EpisodeFiltersDialog:
             cancel_id=wx.ID_CANCEL,
             escape_id=wx.ID_CANCEL,
         )
+        if self._suggestion is not None:
+            wx.CallAfter(self._offer_suggestion)
         try:
             show_modal_dialog(self.dialog, self._title, announce=self._announce)
             return self._saved

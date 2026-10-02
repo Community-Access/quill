@@ -187,6 +187,22 @@ class CastPreferencesMixin:
             said = str(monitor.describe())
         self._announce(f"Preferences saved. {said}".strip())
 
+    def _toggle_resume_on_launch(self) -> None:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts import history as podcast_history
+
+        history = self._podcast_history
+        history.resume_on_launch = not history.resume_on_launch
+        podcast_history.save_history(app_data_dir(), history)
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
+        self._announce(
+            "QUILL Cast will pick up where you left off at launch."
+            if history.resume_on_launch
+            else "Resume on launch turned off."
+        )
+
     def _preferences_app_title(self) -> str:
         from quill.apps.podcasts_menu import APP_TITLE
 

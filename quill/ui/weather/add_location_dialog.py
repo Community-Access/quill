@@ -17,6 +17,7 @@ from quill.core.weather import geocoding
 from quill.core.weather import locations as loc_store
 from quill.core.weather.models import WeatherLocation
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.surface_lifetime import surface_tasks
 
 
 class AddLocationDialog:
@@ -35,7 +36,8 @@ class AddLocationDialog:
         self._wx = wx
         self._store = store
         self._data_dir = data_dir
-        self._task_manager = task_manager
+        # Every task this window starts is tied to its lifetime (qc.md F-02).
+        self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "dialog", None))
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._added = False

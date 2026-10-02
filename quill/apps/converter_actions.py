@@ -486,6 +486,18 @@ class ConverterActionsMixin:
         self._ipc_timer = wx.Timer(self.frame)
         self.frame.Bind(wx.EVT_TIMER, self._on_ipc_timer, self._ipc_timer)
         self._ipc_timer.Start(600)
+        # Stopped as the window closes, so it never fires into a frame that is
+        # gone (qc.md F-12's timer-ownership gate).
+        self.frame.Bind(wx.EVT_CLOSE, self._on_converter_close)
+
+    def _on_converter_close(self, event: Any) -> None:
+        timer = getattr(self, "_ipc_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001 - a timer already gone is stopped
+                pass
+        event.Skip()
 
     def _on_ipc_timer(self, _event: object) -> None:
         from quill.core.ipc import drain_open_requests

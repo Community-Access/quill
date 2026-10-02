@@ -345,3 +345,59 @@ def test_activation_never_takes_the_process_down(monkeypatch) -> None:
     deferred = _activate(_Shell(None), event, monkeypatch)
     assert deferred == []
     assert event.skipped == 1
+
+
+# -- a repair that does not take is counted and logged, without content (F-04) --
+
+
+def test_a_repair_that_does_not_take_is_counted_and_logged_without_content(
+    monkeypatch, caplog
+) -> None:
+    import logging
+
+    shell = _Shell(_Child(_Control()))
+    with caplog.at_level(logging.INFO, logger="quill.apps.lite_shell"):
+        _return_focus(shell, shell, monkeypatch)  # FindFocus keeps answering the shell
+        _return_focus(shell, shell, monkeypatch)
+    assert shell.focus_repair_misses == 2
+    lines = [r.getMessage() for r in caplog.records if "QUILL-LITE-FOCUS-MISS" in r.getMessage()]
+    assert len(lines) == 2
+    assert "focus is on _Shell" in lines[0]
+    assert "(2 this session)" in lines[1]
+
+
+def test_a_repair_that_takes_is_not_counted(monkeypatch) -> None:
+    import quill.apps.lite_shell as shell_module
+
+    control = _Control()
+    shell = _Shell(_Child(control))
+    answers = iter([shell, control])  # before: the container; after: the editor
+
+    class _Window:
+        @staticmethod
+        def FindFocus():  # noqa: N802 - wx spelling
+            return next(answers)
+
+    monkeypatch.setattr(shell_module.wx, "Window", _Window)
+    QuillLiteShell.return_focus_to_document(shell)
+    assert control.focused == 1
+    assert getattr(shell, "focus_repair_misses", 0) == 0
+
+
+def test_the_miss_log_never_carries_text_from_the_window(monkeypatch, caplog) -> None:
+    """Only a class name and a count: a diagnostic log travels in support bundles."""
+    import logging
+
+    class SecretTitledThing:
+        def GetLabel(self) -> str:  # noqa: N802
+            return "Dear Doctor, my private letter"
+
+    shell = _Shell(_Child(_Control()))
+    with caplog.at_level(logging.INFO, logger="quill.apps.lite_shell"):
+        _return_focus(shell, None, monkeypatch)
+    import quill.apps.lite_shell as shell_module
+
+    shell_module._note_repair_miss(shell, SecretTitledThing())
+    text = " ".join(r.getMessage() for r in caplog.records)
+    assert "private letter" not in text
+    assert "SecretTitledThing" in text

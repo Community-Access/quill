@@ -34,6 +34,10 @@ recurring.*
   preferences. Each now writes only the settings it changed, and keeps the
   other's choices for everything else; a change made in one takes effect in
   the other the next time it starts, never mid-session.
+- A large file, or any file on a network share, no longer freezes the window
+  while it is read. A new window says "Opening" and the name once, the text
+  arrives when it is ready, closing the window cancels, and a file that cannot
+  be read asks whether to try again.
 
 ## Released in 1.1
 

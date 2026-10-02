@@ -2144,6 +2144,14 @@ The Command Palette does the same: an unavailable command reads its reason inste
 
 Nothing in the list leaves this computer.
 
+**When closing could not finish saving.** If Quill Radio cannot record when it
+closed (which is how it finds recordings it missed while closed) or cannot
+clear its note that a recording was running, it still closes -- but the next
+time it starts it says so once, and a **Closing** row appears in Recent
+Problems. **Retry** on that row writes both again now; the recording note is
+left alone while you are recording, because it is what tells a crash from a
+clean close.
+
 ## Quiet hours
 
 **Help > Quiet Hours...** (Ctrl+Alt+Shift+Z) sets a time window, 22:00 to 07:00 by default, in which Quill Radio stops speaking on its own.

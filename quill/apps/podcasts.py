@@ -177,7 +177,7 @@ class PodcastsAppFrame(
         # needs FFmpeg fails by producing a plausible result -- an untrimmed
         # download, an analysis that finds no chapters -- so without this the
         # loss is invisible (list.md 5.3). Silent on a healthy install.
-        wx.CallAfter(self.surface_cast_media_health)
+        wx.CallAfter(self._cast_launch_notices)  # media health, then F-06's notice
 
     # -- main panel -------------------------------------------------------------
     #
@@ -240,6 +240,9 @@ class PodcastsAppFrame(
             virtual_view_pairs,
         )
 
+        if self._library_find_active():  # Find shows matches: refresh those
+            self._refresh_library_find()
+            return
         tree = self._shows_tree
         if keep_key is None:
             keep_key = self._selected_tree_data()
@@ -578,22 +581,6 @@ class PodcastsAppFrame(
         toggle_favorite(self._podcast_library, show, announce=self._announce)
         self._save_podcast_library()
         self._refresh_favorite_toggle()
-
-    def _toggle_resume_on_launch(self) -> None:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts import history as podcast_history
-
-        history = self._podcast_history
-        history.resume_on_launch = not history.resume_on_launch
-        podcast_history.save_history(app_data_dir(), history)
-        menu_bar = self.frame.GetMenuBar()
-        if menu_bar is not None:
-            menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
-        self._announce(
-            "QUILL Cast will pick up where you left off at launch."
-            if history.resume_on_launch
-            else "Resume on launch turned off."
-        )
 
     def _maybe_resume_last_episode(self) -> None:
         """Podcasts as an appliance: launch, and your last episode is ready."""

@@ -35,13 +35,20 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from quill.core.podcasts.filter_conditions import FilterCondition, describe_condition
 from quill.core.podcasts.models_queue import coerce_int as _coerce_int
 
 #: The stored configuration version. A file written by a *newer* build reads as
 #: no filter at all (see :meth:`EpisodeFilterConfiguration.from_dict`) rather
 #: than being partially understood -- half a rule set is the one outcome worse
 #: than none.
-FILTER_CONFIG_VERSION = 1
+#: The newest shape this build writes. Version 2 (2026-10-01) adds a rule's
+#: extra ``conditions`` and its ``match_any`` switch; a configuration that
+#: uses neither is still written as version 1, so a filter made with only the
+#: original two tests stays readable by every build that came before.
+FILTER_CONFIG_VERSION = 2
+#: Every version this build reads.
+READABLE_VERSIONS = (1, 2)
 
 #: Keep everything **except** what a rule matches. The common case: a show you
 #: follow that also publishes a segment you do not want.
@@ -225,9 +232,16 @@ class EpisodeFilterRule:
     pattern: str = ""
     case_sensitive: bool = False
     #: A **minimum** duration in whole minutes; 0 = no duration criterion.
-    #: V1 has no maximum and no relative rule ("the longest one published that
-    #: day") -- both were considered and deferred rather than guessed at.
+    #: A maximum lives in ``conditions`` (Length in minutes, at most); a
+    #: relative rule ("the longest one published that day") is still deferred.
     min_duration_minutes: int = 0
+    #: More tests, beyond the two above (``filter_conditions.py``): show notes,
+    #: people, episode type, a maximum length, age, season and number.
+    conditions: list[FilterCondition] = field(default_factory=list)
+    #: ``False`` (the original meaning): every test in this rule has to hold.
+    #: ``True``: any one of them is enough -- "a trailer, or anything under
+    #: five minutes" as one rule with one name.
+    match_any: bool = False
 
     # -- what this rule actually asks ---------------------------------------
 
@@ -251,12 +265,14 @@ class EpisodeFilterRule:
         save gate speaks it, and "that pattern is not valid" without the
         reason is a dead end.
         """
-        if self.pattern_kind != PATTERN_REGEX or not self.pattern.strip():
-            return ""
-        try:
-            re.compile(self.pattern)
-        except re.error as exc:
-            return str(exc)
+        if self.pattern_kind == PATTERN_REGEX and self.pattern.strip():
+            try:
+                re.compile(self.pattern)
+            except re.error as exc:
+                return str(exc)
+        for condition in self.conditions:
+            if condition.error:
+                return describe_condition(condition)
         return ""
 
     @property
@@ -271,7 +287,12 @@ class EpisodeFilterRule:
         """
         if self.pattern_error:
             return False
-        return self.has_title_criterion or self.has_duration_criterion
+        return self.has_title_criterion or self.has_duration_criterion or bool(self.conditions)
+
+    @property
+    def uses_version_2(self) -> bool:
+        """Whether storing this rule needs the version-2 shape."""
+        return bool(self.conditions) or self.match_any
 
     # -- storage -------------------------------------------------------------
 
@@ -283,6 +304,14 @@ class EpisodeFilterRule:
             "pattern": self.pattern,
             "case_sensitive": self.case_sensitive,
             "min_duration_minutes": self.min_duration_minutes,
+            # Written only when used, so a version-1 rule stays byte-for-byte
+            # what every earlier build wrote.
+            **(
+                {"conditions": [condition.to_dict() for condition in self.conditions]}
+                if self.conditions
+                else {}
+            ),
+            **({"match_any": True} if self.match_any else {}),
         }
 
     @classmethod
@@ -304,6 +333,16 @@ class EpisodeFilterRule:
             pattern=str(data.get("pattern", "") or ""),
             case_sensitive=bool(data.get("case_sensitive", False)),
             min_duration_minutes=max(0, _coerce_int(data.get("min_duration_minutes"), 0)),
+            conditions=[
+                condition
+                for condition in (
+                    FilterCondition.from_dict(entry)
+                    for entry in (data.get("conditions") or [])
+                    if isinstance(data.get("conditions"), list)
+                )
+                if condition is not None
+            ],
+            match_any=bool(data.get("match_any", False)),
         )
 
 
@@ -382,7 +421,7 @@ class EpisodeFilterConfiguration:
 
     def to_dict(self) -> dict[str, object]:
         return {
-            "version": self.version,
+            "version": 2 if any(rule.uses_version_2 for rule in self.rules) else 1,
             "enabled": self.enabled,
             "mode": self.mode,
             "scopes": sorted(self.scopes),
@@ -404,7 +443,7 @@ class EpisodeFilterConfiguration:
         if not isinstance(data, dict):
             return None
         version = _coerce_int(data.get("version"), 0)
-        if version != FILTER_CONFIG_VERSION:
+        if version not in READABLE_VERSIONS:
             return None
         rules: list[EpisodeFilterRule] = []
         raw_rules = data.get("rules")
@@ -449,6 +488,8 @@ class EpisodeFilterConfiguration:
                     pattern=rule.pattern,
                     case_sensitive=rule.case_sensitive,
                     min_duration_minutes=rule.min_duration_minutes,
+                    conditions=list(rule.conditions),
+                    match_any=rule.match_any,
                 )
                 for rule in self.rules
             ],
@@ -468,6 +509,7 @@ __all__ = [
     "PATTERN_KINDS",
     "PATTERN_KIND_LABELS",
     "PATTERN_NONE",
+    "READABLE_VERSIONS",
     "PATTERN_REGEX",
     "PATTERN_WILDCARD",
     "SCOPE_DOWNLOAD",

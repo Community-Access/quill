@@ -8,9 +8,18 @@ from collections.abc import Callable, Iterable, Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urlparse
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
+from quill.core.ai.endpoints import (
+    chat_endpoint as chat_endpoint,
+)
+from quill.core.ai.endpoints import (
+    gemini_model_id as gemini_model_id,
+)
+from quill.core.ai.endpoints import (
+    stream_chat_endpoint as stream_chat_endpoint,
+)
 from quill.core.ai.providers import (
     ModelRecommendation as ModelRecommendation,
 )
@@ -541,7 +550,9 @@ def _extract_names_from_model_item(item: dict[str, object]) -> list[str]:
         str(item.get("id", "")).strip(),
         str(item.get("model", "")).strip(),
     )
-    primary = [v for v in id_candidates if v]
+    # Gemini's list names every model "models/<id>"; the id is what a person
+    # chooses and what every other provider's list already gives.
+    primary = [gemini_model_id(v) for v in id_candidates if v]
     if primary:
         return primary
     display = str(item.get("display_name", "")).strip()
@@ -1001,19 +1012,6 @@ _DEFAULT_MAX_TOKENS = 1024
 _OPENAI_COMPATIBLE = frozenset({"openai", "openrouter", "custom", "ollama_cloud"})
 
 
-def chat_endpoint(provider: str, host: str, model: str) -> str:
-    """Return the chat endpoint URL for a provider (pure; no network)."""
-    normalized = provider.strip().lower()
-    host = host.rstrip("/")
-    if normalized == "claude":
-        return f"{host}/v1/messages"
-    if normalized == "gemini":
-        return f"{host}/v1beta/models/{quote(model)}:generateContent"
-    if normalized == "ollama":
-        return f"{host}/api/chat"
-    return f"{host}/v1/chat/completions"
-
-
 def build_chat_body(
     provider: str,
     model: str,
@@ -1321,20 +1319,6 @@ def test_chat(
 
 # Providers whose streaming wire format is newline-delimited JSON, not SSE.
 _NDJSON_STREAM_PROVIDERS = frozenset({"ollama"})
-
-
-def stream_chat_endpoint(provider: str, host: str, model: str) -> str:
-    """Return the streaming chat endpoint URL for a provider (pure; no network).
-
-    Identical to :func:`chat_endpoint` except for Gemini, which uses a distinct
-    ``:streamGenerateContent`` method with ``alt=sse`` so it returns Server-Sent
-    Events instead of one buffered JSON array.
-    """
-    normalized = provider.strip().lower()
-    if normalized == "gemini":
-        host = host.rstrip("/")
-        return f"{host}/v1beta/models/{quote(model)}:streamGenerateContent?alt=sse"
-    return chat_endpoint(provider, host, model)
 
 
 def parse_stream_event(provider: str, data: str) -> str | None:

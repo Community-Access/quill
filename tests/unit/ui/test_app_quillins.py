@@ -51,8 +51,12 @@ def test_apps_shut_down_the_host() -> None:
     # Cast's whole lifecycle block -- the close preference, the confirm and
     # the teardown -- moved to apps/podcasts_close.py under GATE-11 when the
     # three close answers landed (list.md 5.4).
+    # Radio's teardown moved to apps/radio_shutdown.py with the closing report
+    # (qc.md F-06), where every step is a guarded lambda.
     cast = _read("quill/apps/podcasts.py") + _read("quill/apps/podcasts_close.py")
-    assert "self._app_host.shutdown()" in _read("quill/apps/radio.py")
+    radio = _read("quill/apps/radio.py") + _read("quill/apps/radio_shutdown.py")
+    assert "app._app_host.shutdown()" in radio
+    assert "run_radio_shutdown" in _read("quill/apps/radio.py")
     assert "self._app_host.shutdown()" in cast
 
 

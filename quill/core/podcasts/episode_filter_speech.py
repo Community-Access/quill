@@ -34,6 +34,7 @@ wx-free, strict-typed, pure.
 
 from __future__ import annotations
 
+from quill.core.podcasts.filter_conditions import describe_condition
 from quill.core.podcasts.models_filters import (
     FILTER_SCOPES,
     HIDING_SCOPES,
@@ -88,11 +89,15 @@ def describe_criteria(rule: EpisodeFilterRule) -> str:
         minutes = rule.min_duration_minutes
         unit = "minute" if minutes == 1 else "minutes"
         parts.append(f"Duration at least {minutes} {unit}.")
+    parts.extend(f"{describe_condition(condition)}." for condition in rule.conditions)
     if not parts:
         parts.append("No criteria yet, so this rule matches nothing.")
+    elif len(parts) > 1:
+        # Said first, because it changes how every test after it is heard.
+        parts.insert(0, "Any one of:" if rule.match_any else "All of:")
     error = rule.pattern_error
     if error:
-        parts.append(f"This pattern cannot be read, so the rule matches nothing: {error}.")
+        parts.append(f"This rule cannot be read, so it matches nothing: {error}.")
     return " ".join(parts)
 
 

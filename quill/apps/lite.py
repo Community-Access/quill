@@ -57,6 +57,7 @@ from quill.core.lite import inbox as inbox_mod
 from quill.core.lite import keymap as keymap_mod
 from quill.core.lite import recovery as recovery_mod
 from quill.core.lite import settings as settings_mod
+from quill.core.lite.open_prepare import prepare_in_background
 from quill.core.lite.paths import data_dir
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
@@ -287,6 +288,9 @@ class QuillLiteApp(
             self.focus_frame(reuse)
             return True
         mode = RICH if path.suffix.lower() == ".rtf" else PLAIN
+        if prepare_in_background(path):  # F-05: a large or networked file
+            self.new_window(mode).begin_background_load(path)
+            return True
         frame = DocumentFrame(self, path=path, mode=mode)
         if frame.path is None:  # the load failed and already reported why
             frame.Destroy()
@@ -316,7 +320,8 @@ class QuillLiteApp(
     def _frame_for(self, path: Path) -> DocumentFrame | None:
         """The window already editing *path*, if any (case- and link-tolerant)."""
         for frame in self.frames:
-            if frame.path is not None and _same_file(frame.path, path):
+            held = frame.path or getattr(frame, "opening_path", None)
+            if held is not None and _same_file(held, path):
                 return frame
         return None
 
@@ -470,6 +475,8 @@ class QuillLiteApp(
         self._inbox_timer = None
         if timer is not None:
             timer.Stop()
+        if getattr(self, "task_manager", None) is not None:  # F-05's background opens
+            self.task_manager.shutdown(wait=False, cancel_pending=True)
 
     def OnExit(self) -> int:  # noqa: N802 - wx API shape
         self.stop_background_sources()

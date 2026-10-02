@@ -32,6 +32,7 @@ wx-free, strict-typed, pure.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 
 # The spoken forms live next door (GATE-11: extract, never rebaseline) and are
@@ -71,6 +72,7 @@ from quill.core.podcasts.episode_filter_speech import (
 from quill.core.podcasts.episode_filter_speech import (
     rule_name as rule_name,
 )
+from quill.core.podcasts.filter_conditions import FIELD_DURATION, condition_matches
 from quill.core.podcasts.models import PodcastEpisode
 from quill.core.podcasts.models_filters import (
     FILTER_SCOPES,
@@ -146,13 +148,24 @@ def _duration_matches(rule: EpisodeFilterRule, episode: PodcastEpisode) -> bool:
 def rule_matches(rule: EpisodeFilterRule, episode: PodcastEpisode) -> bool:
     """Whether one rule matches one episode.
 
-    Both criteria have to hold -- a rule that names a title *and* a minimum
-    duration is one condition, not two. An unusable rule matches nothing at
-    all, whatever mode it is in.
+    Every test has to hold -- a rule that names a title *and* a minimum
+    duration is one condition, not two -- unless the rule says *any one
+    test is enough* (``match_any``), which makes "a trailer, or anything
+    under five minutes" one rule with one name. An unusable rule matches
+    nothing at all, whatever mode it is in.
     """
     if not rule.is_usable:
         return False
-    return _title_matches(rule, episode.title) and _duration_matches(rule, episode)
+    tests: list[Callable[[], bool]] = []
+    if rule.has_title_criterion:
+        tests.append(lambda: _title_matches(rule, episode.title))
+    if rule.has_duration_criterion:
+        tests.append(lambda: _duration_matches(rule, episode))
+    for condition in rule.conditions:
+        tests.append(lambda c=condition: condition_matches(c, episode))
+    if rule.match_any:
+        return any(test() for test in tests)
+    return all(test() for test in tests)
 
 
 def matching_rules(
@@ -331,7 +344,11 @@ class SaveAssessment:
 
 
 def _duration_rule_active(config: EpisodeFilterConfiguration) -> bool:
-    return any(rule.has_duration_criterion for rule in config.usable_rules)
+    return any(
+        rule.has_duration_criterion
+        or any(condition.field == FIELD_DURATION for condition in rule.conditions)
+        for rule in config.usable_rules
+    )
 
 
 def assess_save(

@@ -81,7 +81,9 @@ these regions in order:
 - **BARD** — arriving once the NLS BARD contract lands.
 
 When you open a book you've heard before, it **resumes exactly where you left
-off** — you don't have to find your place again.
+off** — you don't have to find your place again. Your place is saved every
+fifteen seconds while you listen and again the moment you close the Player, so
+closing never loses the last few seconds.
 
 ---
 

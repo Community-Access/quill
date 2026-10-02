@@ -415,7 +415,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
         slug="episode-filters",
         title="Stop the parts of a podcast you did not want",
         track="keeping-up",
-        minutes=8,
+        minutes=11,
         surfaces=("Podcasts",),
         summary=(
             "Rules, per podcast, that decide which of its episodes reach you at "
@@ -460,6 +460,47 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "how long it is never matches a length rule, because a missing "
                     "length is not a short episode."
                 ),
+            ),
+            Step(
+                title="Add a test the title cannot answer",
+                body=(
+                    "Under More tests, Add Test asks what to look at -- the show "
+                    "notes, the people on the episode, the type the publisher gave "
+                    "it, its length, age, season or number -- how to compare, and "
+                    "the value. Words, wildcards and regular expressions all work "
+                    "on text. Match when decides whether every test has to hold or "
+                    "any one is enough."
+                ),
+                keys=("Alt+S", "Alt+A", "Alt+W"),
+                hear="The test read back as a sentence, such as Show notes contains sponsored by.",
+                note=(
+                    "A feed that does not say a length, a date or a number never "
+                    "matches a number test, and an episode with no type counts as "
+                    "a full episode."
+                ),
+            ),
+            Step(
+                title="Try the rule before you keep it",
+                body=(
+                    "Try It on Recent Episodes runs the rule exactly as the window "
+                    "shows it against the 50 newest episodes and says how many it "
+                    "catches, naming the first five. Change the pattern and try "
+                    "again until it catches what you meant."
+                ),
+                keys=("Alt+Y",),
+                hear="Matches, then a count of the 50 newest, then titles.",
+            ),
+            Step(
+                title="Or let an episode write the rule",
+                body=(
+                    "On any episode you did not want, Filter Episodes Like This on "
+                    "its menu drafts the rule for you: the publisher's trailer or "
+                    "bonus mark, a series name the title shares with its siblings, "
+                    "or an unusual length -- checked against the newest episodes "
+                    "and opened in the rule window for you to change."
+                ),
+                keys=("Shift+F10", "F"),
+                hear="Why the rule was chosen, and how many episodes it catches.",
             ),
             Step(
                 title="Preview before anything happens",

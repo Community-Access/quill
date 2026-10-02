@@ -375,6 +375,26 @@ class ManagerActionsMixin:
             self.refresh_tree()
             self._fill_episodes(self._current_show)
 
+    def _on_filter_like_this(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        """Filter Episodes Like This: Episode Filters, opened on a drafted rule."""
+        from quill.core.podcasts.episode_filters import newest_episodes
+        from quill.core.podcasts.filter_suggestions import suggest_rule
+        from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog
+
+        suggestion = suggest_rule(episode, show.episodes, newest=newest_episodes)
+        dialog = EpisodeFiltersDialog(
+            self.dialog,
+            library=self._library,
+            show=show,
+            announce_cb=self._announce,
+            playing=self._currently_playing(),
+            suggestion=suggestion,
+        )
+        if dialog.show():
+            self._on_library_changed()
+            self.refresh_tree()
+            self._fill_episodes(self._current_show)
+
     def _on_toggle_filter_exempt(self, show: PodcastShow, episode: PodcastEpisode) -> None:
         """Exempt one episode from its podcast's Episode Filter, or put it back.
 

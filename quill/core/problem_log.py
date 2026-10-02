@@ -44,6 +44,7 @@ __all__ = [
     "KIND_LABELS",
     "KIND_OTHER",
     "KIND_RECORDING",
+    "KIND_SHUTDOWN",
     "KIND_STREAM",
     "MAX_PROBLEMS",
     "TARGET_SEP",
@@ -68,6 +69,8 @@ KIND_DOWNLOAD = "download"
 KIND_STREAM = "stream"
 KIND_RECORDING = "recording"
 KIND_OTHER = "other"
+#: A final write that failed while an app was closing (qc.md F-06).
+KIND_SHUTDOWN = "shutdown"
 
 #: How each kind reads out loud. The label leads the row, so arrowing the
 #: list groups by kind by ear without the list being sorted by it.
@@ -77,6 +80,7 @@ KIND_LABELS: dict[str, str] = {
     KIND_STREAM: "Stream",
     KIND_RECORDING: "Recording",
     KIND_OTHER: "Problem",
+    KIND_SHUTDOWN: "Closing",
 }
 
 

@@ -213,6 +213,11 @@ def episode_actions(
             reason=dimmed_reason.not_downloaded("copy the path of"),
         ),
         action(
+            "filter_like_this",
+            "&Filter Episodes Like This...",
+            lambda: dialog._on_filter_like_this(show, episode),
+        ),
+        action(
             "toggle_filter_exempt",
             _filter_exempt_label(dialog, show, episode),
             lambda: dialog._on_toggle_filter_exempt(show, episode),

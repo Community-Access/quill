@@ -15,9 +15,11 @@ and hands it back.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
+from typing import Any
 
 from quill.core.podcasts import settings_help
+from quill.core.podcasts.filter_conditions import FilterCondition, describe_condition
 from quill.core.podcasts.models_filters import (
     PATTERN_NONE,
     PATTERN_REGEX,
@@ -49,6 +51,8 @@ class EpisodeFilterRuleDialog:
         *,
         rule: EpisodeFilterRule | None = None,
         announce_cb: Callable[[str], None] | None = None,
+        episodes: Sequence[Any] = (),
+        intro: str = "",
     ) -> None:
         import wx
 
@@ -56,15 +60,20 @@ class EpisodeFilterRuleDialog:
         self._announce = announce_cb or (lambda _m: None)
         self._result: EpisodeFilterRule | None = None
         source = rule or EpisodeFilterRule(name="", pattern_kind=PATTERN_WILDCARD)
+        #: The podcast's newest episodes, for Try It; empty when the caller has none.
+        self._episodes = list(episodes)
+        self._conditions: list[FilterCondition] = list(source.conditions)
 
         self.dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE)
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
             self.dialog,
-            label=(
-                "A rule can match on the episode title, on how long it is, or on "
-                "both -- both have to match. Rules never delete anything."
+            label=intro
+            or (
+                "A rule can match on the episode title, on how long it is, and on "
+                "more tests below -- the show notes, the people on it, its type, "
+                "age, season or number. Rules never delete anything."
             ),
         )
         intro.Wrap(430)
@@ -115,7 +124,33 @@ class EpisodeFilterRuleDialog:
         self._duration.SetHelpText(settings_help.FILTER_HELP["rule_duration"])
         grid.Add(self._duration, 1, wx.EXPAND)
 
+        label("Match &when:")
+        self._match_any = wx.Choice(
+            self.dialog, choices=["Every test has to match", "Any one test is enough"]
+        )
+        self._match_any.SetName("Match when")
+        self._match_any.SetHelpText(settings_help.FILTER_HELP["rule_match_any"])
+        self._match_any.SetSelection(1 if source.match_any else 0)
+        grid.Add(self._match_any, 1, wx.EXPAND)
+
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
+
+        root.Add(wx.StaticText(self.dialog, label="More test&s:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._tests = wx.ListBox(self.dialog, size=(-1, 90))
+        self._tests.SetName("More tests")
+        self._tests.SetHelpText(settings_help.FILTER_HELP["rule_tests"])
+        root.Add(self._tests, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        test_row = wx.BoxSizer(wx.HORIZONTAL)
+        add_test = wx.Button(self.dialog, label="&Add Test...")
+        add_test.SetHelpText(settings_help.FILTER_HELP["rule_add_test"])
+        edit_test = wx.Button(self.dialog, label="&Edit Test...")
+        edit_test.SetHelpText(settings_help.FILTER_HELP["rule_edit_test"])
+        remove_test = wx.Button(self.dialog, label="&Remove Test")
+        remove_test.SetHelpText(settings_help.FILTER_HELP["rule_remove_test"])
+        for button in (add_test, edit_test, remove_test):
+            test_row.Add(button, 0, wx.RIGHT, 6)
+        root.Add(test_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        self._fill_tests()
 
         self._case = wx.CheckBox(self.dialog, label="&Capital letters have to match too")
         self._case.SetValue(source.case_sensitive)
@@ -126,6 +161,17 @@ class EpisodeFilterRuleDialog:
         self._enabled.SetValue(source.enabled)
         self._enabled.SetHelpText(settings_help.FILTER_HELP["rule_enabled"])
         root.Add(self._enabled, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        try_btn = wx.Button(self.dialog, label="Tr&y It on Recent Episodes")
+        try_btn.SetHelpText(settings_help.FILTER_HELP["rule_try"])
+        root.Add(try_btn, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        root.Add(wx.StaticText(self.dialog, label="Try it res&ult:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._trial = wx.TextCtrl(
+            self.dialog, size=(440, 70), style=wx.TE_MULTILINE | wx.TE_READONLY
+        )
+        self._trial.SetName("Try it result")
+        self._trial.SetHelpText(settings_help.FILTER_HELP["rule_try_result"])
+        root.Add(self._trial, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
@@ -139,6 +185,11 @@ class EpisodeFilterRuleDialog:
 
         self.dialog.SetSizerAndFit(root)
         ok_btn.Bind(wx.EVT_BUTTON, self._on_ok)
+        add_test.Bind(wx.EVT_BUTTON, self._on_add_test)
+        edit_test.Bind(wx.EVT_BUTTON, self._on_edit_test)
+        remove_test.Bind(wx.EVT_BUTTON, self._on_remove_test)
+        self._tests.Bind(wx.EVT_LISTBOX_DCLICK, self._on_edit_test)
+        try_btn.Bind(wx.EVT_BUTTON, self._on_try)
         apply_modal_ids(
             self.dialog,
             affirmative_id=wx.ID_OK,
@@ -159,7 +210,68 @@ class EpisodeFilterRuleDialog:
             pattern=self._pattern.GetValue().strip(),
             case_sensitive=self._case.GetValue(),
             min_duration_minutes=int(self._duration.GetValue()),
+            conditions=list(self._conditions),
+            match_any=self._match_any.GetSelection() == 1,
         )
+
+    # -- the tests -----------------------------------------------------------
+
+    def _fill_tests(self, select: int = -1) -> None:
+        rows = [describe_condition(condition) for condition in self._conditions]
+        self._tests.Set(rows or ["No more tests. The title and length above are the whole rule."])
+        if rows and 0 <= select < len(rows):
+            self._tests.SetSelection(select)
+
+    def _test_dialog(self, condition: FilterCondition | None) -> FilterCondition | None:
+        from quill.ui.podcasts.episode_filter_test_dialog import EpisodeFilterTestDialog
+
+        return EpisodeFilterTestDialog(
+            self.dialog, condition=condition, announce_cb=self._announce
+        ).show()
+
+    def _selected_test(self) -> int:
+        index = self._tests.GetSelection()
+        return index if 0 <= index < len(self._conditions) else -1
+
+    def _on_add_test(self, _event: object) -> None:
+        made = self._test_dialog(None)
+        if made is None:
+            return
+        self._conditions.append(made)
+        self._fill_tests(select=len(self._conditions) - 1)
+        self._tests.SetFocus()
+        self._announce(f"Test added. {len(self._conditions)} more test(s).")
+
+    def _on_edit_test(self, _event: object) -> None:
+        index = self._selected_test()
+        if index < 0:
+            return
+        made = self._test_dialog(self._conditions[index])
+        if made is None:
+            return
+        self._conditions[index] = made
+        self._fill_tests(select=index)
+        self._announce("Test updated.")
+
+    def _on_remove_test(self, _event: object) -> None:
+        index = self._selected_test()
+        if index < 0:
+            return
+        del self._conditions[index]
+        self._fill_tests(select=min(index, len(self._conditions) - 1))
+        self._announce(f"Test removed. {len(self._conditions)} more test(s) left.")
+
+    def _on_try(self, _event: object) -> None:
+        """Say what this rule, as written now, would catch. Changes nothing."""
+        from quill.core.podcasts.episode_filters import newest_episodes, rule_matches
+        from quill.core.podcasts.filter_suggestions import describe_trial
+
+        draft = self._drafted()
+        draft.enabled = True
+        said = describe_trial(draft, newest_episodes(self._episodes), rule_matches)
+        self._trial.SetValue(said)
+        # The text box is not focused, so the reader would not say it.
+        self._announce(said)
 
     def _refuse(self, message: str, focus: object) -> None:
         """Say why this rule cannot be saved, and put focus where the fix is.
@@ -183,7 +295,8 @@ class EpisodeFilterRuleDialog:
 
     def _on_ok(self, _event: object) -> None:
         draft = self._drafted()
-        error = draft.pattern_error
+        title_only = EpisodeFilterRule(pattern_kind=draft.pattern_kind, pattern=draft.pattern)
+        error = title_only.pattern_error
         if error:
             self._refuse(
                 f"That regular expression cannot be read: {error}. "
@@ -191,10 +304,16 @@ class EpisodeFilterRuleDialog:
                 self._pattern,
             )
             return
-        if not draft.has_title_criterion and not draft.has_duration_criterion:
+        error = draft.pattern_error
+        if error:
+            self._refuse(
+                f"One of the tests cannot be used: {error}. Edit or remove it.", self._tests
+            )
+            return
+        if not draft.is_usable:
             self._refuse(
                 "This rule asks nothing about an episode, so it would never match. "
-                "Give it a title pattern, a minimum length, or both.",
+                "Give it a title pattern, a minimum length, or another test.",
                 self._pattern,
             )
             return
