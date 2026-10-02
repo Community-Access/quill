@@ -7,6 +7,7 @@ import logging
 import wx
 
 from quill.core.lite import settings as settings_mod
+from quill.core.lite import settings_merge
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,19 @@ class LiteSettingsPersistenceMixin:
     _settings_notice_pending = False
 
     def save_settings(self) -> bool:
+        # A three-way merge against the file as it is now, when this process
+        # knows what it loaded: a second QUILL Lite started with --new-instance
+        # writes the same file, and saving our whole copy undid its changes
+        # (qc.md F-11). Without a baseline -- a stub, or before OnInit -- the
+        # plain whole-object write is the only honest thing to do.
+        to_write = self.settings
+        baseline = getattr(self, "_settings_baseline", None)
+        if baseline is not None:
+            disk = settings_merge.load_if_present()
+            if disk is not None:
+                to_write = settings_merge.merge_for_save(baseline, self.settings, disk)
         try:
-            settings_mod.save(self.settings)
+            settings_mod.save(to_write)
         except OSError:
             self.settings_dirty = True
             logger.warning("QUILL-LITE-SETTINGS-WRITE: settings storage unavailable")
@@ -36,6 +48,10 @@ class LiteSettingsPersistenceMixin:
                     self._report_settings_failure()
             return False
         self.settings_dirty = False
+        if baseline is not None:
+            import copy
+
+            self._settings_baseline = copy.deepcopy(self.settings)
         return True
 
     def _report_settings_failure(self) -> None:

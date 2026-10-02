@@ -2,6 +2,14 @@
 
 ## 1.0.0
 
+### QUILL Lite instances stop undoing each other's preferences (2026-10-01)
+
+- F-11: with `--new-instance`, a settings save is a per-field three-way merge
+  against the file on disk (`quill/core/lite/settings_merge.py`), so the last
+  instance to close no longer reverts the other's changes. In-memory settings
+  are never replaced mid-session. Seven tests, two of them with two real
+  persistence objects against one real file.
+
 ### Three windows that could not open (2026-10-01)
 
 - QUILL Cast's Play Queue (and QUILL's own podcast Play Queue), QUILL's Sticky

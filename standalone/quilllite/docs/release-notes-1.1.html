@@ -273,6 +273,11 @@ been deleted”. The status bar’s refresh timer could be re-armed by the
 closing window’s own last events after the timers had been stopped, and
 then fire on a panel that was already gone. The stop is now one-way, and
 a refresh that reaches a destroyed panel does nothing.</li>
+<li>Two QUILL Lites started with <code>--new-instance</code> no longer
+undo each other’s preferences. Each now writes only the settings it
+changed, and keeps the other’s choices for everything else; a change
+made in one takes effect in the other the next time it starts, never
+mid-session.</li>
 </ul>
 <h2 id="released-in-11">Released in 1.1</h2>
 <p>Five things are new in 1.1, and the first is the one to read: AI help

@@ -2,6 +2,18 @@
 
 ## 1.2.0 -- unreleased
 
+### Two instances stop undoing each other's preferences (F-11)
+
+- **Last closed used to win the whole file.** With `--new-instance`, both
+  processes wrote their whole copy of the settings, so whichever saved last
+  reverted every preference the other had changed. A save is now a three-way
+  merge per field against the file as it is at that moment: fields this
+  instance changed are written; the rest keep what is on disk. The running
+  instance is never changed under the listener; the other's choices apply at
+  its next launch (`quill/core/lite/settings_merge.py`,
+  `quill/apps/lite_settings_persistence.py`,
+  `tests/unit/core/lite/test_lite_settings_merge.py`).
+
 ### Exit without a traceback
 
 - **A crash on the way out.** Closing QUILL Lite could end with

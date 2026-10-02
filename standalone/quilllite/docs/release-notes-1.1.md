@@ -30,6 +30,10 @@ recurring.*
   window's own last events after the timers had been stopped, and then fire
   on a panel that was already gone. The stop is now one-way, and a refresh
   that reaches a destroyed panel does nothing.
+- Two QUILL Lites started with `--new-instance` no longer undo each other's
+  preferences. Each now writes only the settings it changed, and keeps the
+  other's choices for everything else; a change made in one takes effect in
+  the other the next time it starts, never mid-session.
 
 ## Released in 1.1
 

@@ -625,6 +625,22 @@ Both write sites are classified in `quill/tools/persistence_audit.py`
 (`merge_json_store` as content, `enable_lite_sharing` as marker), so neither can
 be added to or moved without somebody re-stating what they do.
 
+### 5.3a Two instances, one settings file (F-11, 2026-10-01)
+
+`--new-instance` runs two processes against one settings file. Each used to
+write its whole in-memory copy, so the last to save undid every preference the
+other had changed -- atomic writes stop a half-written file, not a valid older
+snapshot replacing a valid newer one. A save is now a three-way merge
+(`quill/core/lite/settings_merge.py`): the app keeps the settings it loaded or
+last wrote as a baseline; at save it re-reads the file, writes its own value
+for every field it changed since the baseline, and keeps the file's value for
+every other field. Last writer wins per field, not per file. The running
+instance's in-memory settings are never replaced by the other's -- a silent
+change to theme, font or speech mid-session is the thing this product must not
+do -- so the other's choices apply at its next launch. An unreadable file is
+not merged against (that would reset untouched fields to defaults); the save
+falls back to the whole-object write.
+
 ### 5.4 File associations
 
 The full installer offers "Open .txt and .rtf files with QUILL Lite" as an

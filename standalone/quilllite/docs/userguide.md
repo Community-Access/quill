@@ -338,6 +338,13 @@ meaningful.
 If you really do want two separate QUILL Lite windows — one per monitor, say —
 start it with the extra option `--new-instance`.
 
+Both share one settings file, and neither undoes the other's preferences. When
+one saves, only the settings *it* changed are written; everything else keeps
+whatever the other one saved. If both changed the same setting, the one that
+saves last wins that setting. A preference changed in one window does not
+change the other window while it is open -- it takes effect there the next
+time QUILL Lite starts -- so nothing about your setup shifts under you.
+
 ---
 
 ## Four kinds of document

@@ -16,15 +16,15 @@ The following table separates implementation, its delivery gate, and human accep
 
 | Category | Remaining | Status |
 |---|---:|---|
-| Family reliability findings | 10 | Partially implemented |
+| Family reliability findings | 9 | Partially implemented; F-11 done 2026-10-01 |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
 | Cast Phase 1 code and tests | 2 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 55 | Human acceptance pending |
-| **Total tracked rows** | **82** | **27 code/delivery groups + 55 manual scenarios** |
+| Manual screen-reader scenarios | 57 | Human acceptance pending |
+| **Total tracked rows** | **83** | **26 code/delivery groups + 57 manual scenarios** |
 
-Code/delivery subtotal: **27**.
+Code/delivery subtotal: **26**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -2829,6 +2829,16 @@ or the named dialog. Record exact speech.
   OK button is announced as "OK" with no shortcut; Alt+O does nothing; Enter
   saves and closes.
 
+### Lite Multi-Instance Settings
+
+Entry: start QUILL Lite, then start a second with `--new-instance`.
+
+- [ ] In the first, turn Word Wrap off (Alt+Z). In the second, change the
+  theme in Preferences. Close the first, then the second. Start QUILL Lite:
+  Word Wrap is off and the theme is the one the second chose.
+- [ ] With both open, change a setting in one: the other does not change or
+  announce anything until it is restarted.
+
 ### Lite Settings-Save Failure and Retry
 
 Implemented in commit `6eaab53`. Accepted choices stay active for the current
@@ -2960,6 +2970,25 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: F-11 -- two QUILL Lites stop undoing each other's preferences
+
+- New wx-free `quill/core/lite/settings_merge.py`: `load_if_present` (None for
+  a missing or corrupt file, so a merge never resets untouched fields to
+  defaults) and `merge_for_save(baseline, ours, disk)` (per field: ours where
+  this process changed it since the baseline, disk otherwise). Kept out of
+  `settings.py`, which is at the 600-line cap.
+- `lite.py` records `_settings_baseline` after loading; `save_settings` merges
+  against the file when a baseline exists and refreshes the baseline after a
+  successful write. Stubs without a baseline keep the old whole-object write.
+  The in-memory settings are never replaced, by design (X-05).
+- Tests: `tests/unit/core/lite/test_lite_settings_merge.py` (7: the merge,
+  aliasing, unreadable files, and two real persistence objects against one
+  real file, including "the running instance is not changed"); the existing
+  settings-save failure tests; all 1,716 Lite tests pass.
+- Documented in the Lite user guide (Opening a second QUILL Lite), PRD 5.3a,
+  1.2.0 notes and changelog, and the family changelog. Manual script added
+  ("Lite Multi-Instance Settings").
 
 ### 2026-10-01: Cast Phase 1 -- Preferences extracted, with "Where to land on launch"
 
@@ -3337,9 +3366,9 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **27 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **26 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
-### Family Reliability Findings: 10
+### Family Reliability Findings: 9
 
 - [ ] F-01: Finish reviewable settings-failure Retry/Open Settings Folder actions and truthful outcomes in remaining settings/history writers.
 - [ ] F-02: Adopt surface lifetime tokens, safe timer/CallAfter policies, and reviewable terminal results; test close/reopen paths.
@@ -3349,7 +3378,6 @@ This is the authoritative unchecked code/delivery tracker: **27 grouped rows**. 
 - [ ] F-08: Extract ownership-heavy QUILL/Radio/Cast orchestration by lifetime/invariant; preserve host contracts and ratcheted size budgets.
 - [ ] F-09: Implement bounded incremental Cast library/transcript search, feed refresh, and download state with performance/cancellation tests.
 - [ ] F-10: Implement/adopt shared operation/result/activity/progress, focus-memory, repeat-announcement, and details contracts across apps.
-- [ ] F-11: Resolve Lite multi-instance settings overwrite behavior with explicit persistence/conflict handling and tests.
 - [ ] F-12: Gate critical delivery promises, timer ownership, safe absence, performance, and release invariants with automated tests.
 
 ### Family Product Requirements: 6

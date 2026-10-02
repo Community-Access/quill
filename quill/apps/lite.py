@@ -33,6 +33,7 @@ adopted into the family here. The ``tomTrue`` bug that PR isolated is fixed in
 
 from __future__ import annotations
 
+import copy
 import os
 import sys
 from pathlib import Path
@@ -124,6 +125,7 @@ class QuillLiteApp(
         self.SetAppName(APP_ID)
         self.data_dir = data_dir()
         self.settings = settings_mod.load()
+        self._settings_baseline = copy.deepcopy(self.settings)  # F-11: merge on save
         # Here and not in __init__, where it was until 2026-09-17 and where it
         # read self.settings **before OnInit had loaded it** -- so constructing
         # the app raised AttributeError and QUILL Lite did not start at all.
