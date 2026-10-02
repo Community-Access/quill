@@ -1394,7 +1394,7 @@ children. `ui/podcasts/library_tree.py` fills each on first expansion through
 the placeholder mechanism podcasts already used. Cross-show lists name the
 podcast on every row; Favorites opens to podcasts rather than flattening their
 episodes, so no episode appears under two parents. Play on a view plays its
-first playable episode. `tests/unit/ui/podcasts/test_library_tree.py` pins all of
+first playable episode. `tests/unit/ui/podcasts/test_cast_library_tree.py` pins all of
 it: no expander on an empty view, newest first with the podcast named, the
 200-row cap and its "more" row, Favorites to podcasts, and Play's choice per view.
 

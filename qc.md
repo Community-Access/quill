@@ -2970,7 +2970,7 @@ Original document title: QC3: Completed Quality Changes.
 
 ### 2026-10-01: Cast Phase 1 -- tests for `library_tree.py`
 
-- New `tests/unit/ui/podcasts/test_library_tree.py` (9 tests, fake tree, real
+- New `tests/unit/ui/podcasts/test_cast_library_tree.py` (9 tests, fake tree, real
   library objects, view membership stubbed since `virtual_views` has its own
   tests): an empty view gets no expander; a counted view gets one tagged
   placeholder; an episode view names the podcast on every row, newest first;
