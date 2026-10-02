@@ -71,6 +71,10 @@ MENU_AREA: dict[str, str] = {
     # still fires for a feature somebody has switched off is the feature not
     # being off -- and for this one that would mean a network call they declined.
     "&Tools|&AI": "hosted_ai",
+    # The AI dictionary rides with the AI area: every row is a request on the
+    # listener's own key or plan, and a row that still fired with AI switched
+    # off would be the feature not being off.
+    "&Tools|Dictionar&y": "hosted_ai",
     # Both rows, so switching dictation off takes Ctrl+F11 with it: a key that
     # still opened the microphone would be the feature not being off.
     "&Tools|&Dictation": "dictation",
@@ -87,6 +91,11 @@ COMMAND_AREA: dict[str, str] = {
     "cmd_print": "printing",
     # With the rest of the spelling submenu, which is one switchable area.
     "cmd_misspelling_list": "spelling",
+    # In the Tools menu, its own area: Look Up (the dictionary without AI),
+    # the thesaurus and the word summary it speaks.
+    "cmd_look_up": "dictionary",
+    "cmd_thesaurus": "dictionary",
+    "cmd_word_summary": "dictionary",
     "cmd_next_heading": "headings",
     "cmd_previous_heading": "headings",
     "cmd_list_headings": "headings",

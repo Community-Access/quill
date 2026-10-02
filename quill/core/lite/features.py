@@ -141,6 +141,17 @@ AREAS: tuple[AppArea, ...] = (
         "files, where every identifier would be a false alarm.",
     ),
     AppArea(
+        "dictionary",
+        "Dictionary and thesaurus",
+        "Tools > Look Up Word (Alt+F10) and Tools > Thesaurus (Shift+F7), and "
+        "the two submenus on the word you are on: every sense of the word, "
+        "replacements already in the form the sentence needs, opposites, and a "
+        "spoken summary. Works offline from the word list that ships with QUILL "
+        "Lite. Look Up can also ask three free online services for definitions "
+        "and an encyclopedia summary, but only after you switch that on in its "
+        "window, and then it sends the word alone.",
+    ),
+    AppArea(
         "autoformat",
         "Autocorrect while typing",
         # It said "and a capital at the start of a sentence", which QUILL Lite
@@ -268,7 +279,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: 16 of the 20 areas on. The four "
+        "What a new install is: seventeen of the 21 areas on. The four "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
         "backups quietly filling a folder, a second 'go to' front door "
@@ -282,7 +293,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "everything",
         "Everything",
-        "All 20 areas on, including the four a new install leaves off. "
+        "All 21 areas on, including the four a new install leaves off. "
         # Not "and capitalise your sentences": the area description three
         # hundred lines up was corrected for saying so and this one was
         # missed, which left the same wrong rule in the sentence somebody
@@ -304,7 +315,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "spacing -- and none of the writing tools behind them. No line "
         "operations, no clipboard history, no bookmarks, no abbreviations, no "
         "command palette. Ctrl+N makes a rich text document, which is the half "
-        "of this name a list of menus cannot say. Five of the 20 areas, "
+        "of this name a list of menus cannot say. Five of the 21 areas, "
         "plus a spell checker WordPad never had.",
         frozenset({
             "abbreviations",
@@ -315,6 +326,10 @@ PROFILES: tuple[AppProfile, ...] = (
             "clipboard",
             "command_palette",
             "dictation",
+            # WordPad has never had a dictionary or thesaurus, and the
+            # profile's promise is the feature list of the program it is
+            # named after.
+            "dictionary",
             "go_to_anything",
             "history",
             # Neither of these profiles is named after a program that had
@@ -334,7 +349,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QUILL Lite gets, and the one most people are replacing "
-        "something with. Two of the 20 areas: printing and text size. No "
+        "something with. Two of the 21 areas: printing and text size. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
         "history, no spell check -- nothing Notepad does not have, which is the "
         "point of choosing it. Ctrl+N makes a plain text document. What stays "
@@ -351,6 +366,7 @@ PROFILES: tuple[AppProfile, ...] = (
             "clipboard",
             "command_palette",
             "dictation",
+            "dictionary",
             "go_to_anything",
             "headings",
             "history",

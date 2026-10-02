@@ -154,6 +154,13 @@ PURPOSES: dict[str, str] = {
         "rest -- theme, word wrap, and the editor font -- are also on the View "
         "menu, where you will reach them faster."
     ),
+    "Dictionary Status": (
+        "How many words each of your spelling dictionaries holds, where each "
+        "file is kept, and whether the thesaurus data is present. A reading, "
+        "not a setting: nothing here changes anything. Add words from the "
+        "Spelling Actions submenu on a word, or with Ctrl+Alt+F9; Preferences "
+        "chooses whether QUILL Lite shares QUILL's dictionary."
+    ),
     "Spelling Announcements": (
         "How a misspelled word is reported to you. A misspelling is the one "
         "thing an editor cannot convey by speech alone -- receive and recieve "

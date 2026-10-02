@@ -1177,7 +1177,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 92 audited sites (92 helped).
+Control coverage: 94 audited sites (94 helped).
 
 ### Every window, and what it is for
 
@@ -1204,6 +1204,8 @@ Control coverage: 92 audited sites (92 helped).
 **Copy Tray.** Twelve numbered clipboard slots that outlive a restart. Copy into a slot, and paste from it an hour later -- the system clipboard holds one thing, and this is what to do when that is one fewer than you need.
 
 **Customize QUILL Lite Features.** Turn whole parts of QUILL Lite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Type in the search box to narrow the list, or choose a profile -- Notepad, WordPad, Recommended, Everything -- to set them all at once. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
+
+**Dictionary Status.** How many words each of your spelling dictionaries holds, where each file is kept, and whether the thesaurus data is present. A reading, not a setting: nothing here changes anything. Add words from the Spelling Actions submenu on a word, or with Ctrl+Alt+F9; Preferences chooses whether QUILL Lite shares QUILL's dictionary.
 
 **Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
@@ -1334,6 +1336,10 @@ Control coverage: 92 audited sites (92 helped).
 #### ProfileRow (`quill/apps/lite_preferences_profile.py`)
 
 - `self.impact`: What the profile above would change: which parts of the app it keeps, which it removes, and anything else it sets.
+#### (module level) (`quill/apps/lite_window_words.py`)
+
+- `field`: How many words each dictionary holds and where each file is. Read only; arrow through it, and copy any line you need.
+- `close`: Closes this window.
 #### (module level) (`quill/ui/spelling_voice_dialog.py`)
 
 - `sound`: A short falling blip when a completed word is not in the dictionary. A sound rather than speech on purpose: speech would interrupt the sentence it is commenting on. Turn it off for silence; the status bar still says so, and F7 still finds everything.

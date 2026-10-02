@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 465.
+Editor commands with default bindings: 481.
 
 ## The QUILL editor
 
@@ -293,10 +293,16 @@ Editor commands with default bindings: 465.
 | (unbound by default) | Voice Conversation Mode | `tools.voice_conversation` |
 | (unbound by default) | Speak Voice Status | `tools.voice_status` |
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
+| Alt+F10 | Look Up Word... | `tools.look_up` |
 | Alt+F2 | Use My Own OpenAI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill... | `tools.ask_quill_chat` |
+| Alt+Shift+' | How to Say It | `tools.word_pronounce` |
+| Alt+Shift+, | Where It Comes From | `tools.word_origin` |
+| Alt+Shift+- | Opposites | `tools.word_opposites` |
+| Alt+Shift+; | Dictionary Status... | `tools.dictionary_status` |
+| Alt+Shift+= | Use It in a Sentence | `tools.word_examples` |
 | Alt+Shift+F10 | Windows dictation words | `tools.windows_dictation_words` |
 | Alt+Shift+F11 | Bring My QUILL Lite Settings | `tools.bring_from_quilllite` |
 | Alt+Shift+F6 | Windows dictation settings | `tools.windows_dictation_settings` |
@@ -310,8 +316,11 @@ Editor commands with default bindings: 465.
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |
 | Ctrl+Alt+F9 | Add Word to Dictionary | `tools.add_word_to_dictionary` |
 | Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
+| Ctrl+Alt+Shift+' | Define in Context | `tools.word_define` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
+| Ctrl+Alt+Shift+/ | Is This the Right Word? | `tools.word_right` |
+| Ctrl+Alt+Shift+; | Rhymes | `tools.word_rhymes` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
 | Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
 | Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
@@ -320,13 +329,20 @@ Editor commands with default bindings: 465.
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+O | Sound Scheme | `tools.sound_events` |
 | Ctrl+Alt+Shift+R | Keymap Editor... | `tools.keymap_editor` |
+| Ctrl+Alt+Shift+[ | Word Summary | `tools.word_summary` |
+| Ctrl+Alt+Shift+] | Find the Word For... | `tools.find_word` |
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
 | Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+F10 | Word Explorer... | `tools.word_explorer` |
 | Ctrl+F11 | Windows dictation toggle | `tools.windows_dictation_toggle` |
 | Ctrl+F3 | Tidy Dictated Text... | `tools.dictation_tidy` |
 | Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
+| Ctrl+Shift+' | More Vivid Word | `tools.word_vivid` |
+| Ctrl+Shift+- | Simpler Word | `tools.word_simpler` |
+| Ctrl+Shift+; | Synonyms That Fit | `tools.word_synonyms` |
+| Ctrl+Shift+= | More Formal Word | `tools.word_formal` |
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
 | Ctrl+Shift+F9 | Pause or Resume Dictation | `tools.dictation_pause` |
 | Ctrl+Shift+G | Document Statistics... | `tools.word_count` |

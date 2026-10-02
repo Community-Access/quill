@@ -36,6 +36,8 @@
   "quill/apps/lite_preferences_profile.py::ProfileRow.__init__::wx.Choice": "helped",
   "quill/apps/lite_preferences_profile.py::ProfileRow.__init__::wx.TextCtrl": "helped",
   "quill/apps/lite_window_status.py::DocumentStatusMixin._init_status_bar::wx.Button": "helped",
+  "quill/apps/lite_window_words.py::show_dictionary_status::wx.Button": "helped",
+  "quill/apps/lite_window_words.py::show_dictionary_status::wx.TextCtrl": "helped",
   "quill/ui/hosted_ai_chat.py::AiChatFrame.__init__::wx.Button": "helped",
   "quill/ui/hosted_ai_chat.py::AiChatFrame.__init__::wx.Button#2": "helped",
   "quill/ui/hosted_ai_chat.py::AiChatFrame.__init__::wx.Button#3": "helped",

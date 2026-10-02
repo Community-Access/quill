@@ -260,9 +260,109 @@ class HostedAiCommandsMixin(HostedAiMixin):
                 self._binding_for("tools.hosted_ai_image"),
             )
 
+    #: The Dictionary submenu's rows: command id, label, handler name. QUILL
+    #: Lite's rows, QUILL Lite's two chords (quill/core/lite/commands.py).
+    _DICTIONARY_ROWS: tuple[tuple[str, str, str], ...] = (
+        ("tools.word_define", "&Define in Context", "cmd_word_define"),
+        ("tools.word_explorer", "Word E&xplorer...", "cmd_word_explorer"),
+        ("", "", ""),
+        ("tools.word_synonyms", "&Synonyms That Fit", "cmd_word_synonyms"),
+        ("tools.word_simpler", "S&impler Word", "cmd_word_simpler"),
+        ("tools.word_formal", "More &Formal Word", "cmd_word_formal"),
+        ("tools.word_vivid", "More &Vivid Word", "cmd_word_vivid"),
+        ("tools.word_opposites", "&Opposites", "cmd_word_opposites"),
+        ("tools.word_right", "Is This the &Right Word?", "cmd_word_right"),
+        ("", "", ""),
+        ("tools.word_examples", "Use It in a S&entence", "cmd_word_examples"),
+        ("tools.word_origin", "Where It Comes Fro&m", "cmd_word_origin"),
+        ("tools.word_pronounce", "How to Sa&y It", "cmd_word_pronounce"),
+        ("tools.word_rhymes", "R&hymes", "cmd_word_rhymes"),
+        ("", "", ""),
+        ("tools.find_word", "Find the &Word For...", "cmd_find_word"),
+    )
+
+    def _dictionary_menu_ids(self) -> dict[str, Any]:
+        ids = getattr(self, "_hosted_ai_dictionary_ids", None)
+        if ids is None:
+            import wx
+
+            ids = {cid: wx.NewIdRef() for cid, _label, _h in self._DICTIONARY_ROWS if cid}
+            self._hosted_ai_dictionary_ids = ids
+        return ids
+
+    def _append_dictionary_rows(self, ai_menu: Any) -> None:
+        """The AI dictionary as a submenu of the AI menu: QUILL Lite's Tools >
+        Dictionary, from the shared module (:mod:`quill.ui.word_tools_commands`).
+
+        Registered and bound here like the other direct-route rows, and for the
+        same reason: the two command modules are at their size budgets.
+        """
+        import wx
+
+        from quill.core.i18n import _
+
+        ids = self._dictionary_menu_ids()
+        sub = wx.Menu()
+        for command_id, label, _handler in self._DICTIONARY_ROWS:
+            if not command_id:
+                sub.AppendSeparator()
+                continue
+            sub.Append(ids[command_id], self._menu_label(_(label), command_id))
+        ai_menu.AppendSubMenu(sub, _("Dictionar&y"))
+        if not getattr(self, "_hosted_ai_dictionary_wired", False):
+            self._hosted_ai_dictionary_wired = True
+            for command_id, label, handler_name in self._DICTIONARY_ROWS:
+                if not command_id:
+                    continue
+                handler = getattr(self, handler_name)
+                self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=ids[command_id])
+                self.commands.try_register(
+                    command_id,
+                    label.replace("&", "").rstrip("."),
+                    handler,
+                    self._binding_for(command_id),
+                )
+            self.commands.try_register(
+                "tools.word_summary",
+                "Word Summary",
+                self.cmd_word_summary,
+                self._binding_for("tools.word_summary"),
+            )
+
+    def _append_look_up_row(self, writing_menu: Any) -> None:
+        """Tools > Writing > Look Up Word..., beside Thesaurus: the dictionary without AI."""
+        import wx
+
+        from quill.core.i18n import _
+
+        menu_id = getattr(self, "_look_up_menu_id", None)
+        if menu_id is None:
+            menu_id = wx.NewIdRef()
+            self._look_up_menu_id = menu_id
+        writing_menu.Append(menu_id, self._menu_label(_("Look &Up Word..."), "tools.look_up"))
+        if not getattr(self, "_look_up_wired", False):
+            self._look_up_wired = True
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_look_up(), id=menu_id)
+            self.commands.try_register(
+                "tools.look_up",
+                "Look Up Word",
+                self.cmd_look_up,
+                self._binding_for("tools.look_up"),
+            )
+
+    def _dictionary_enabled(self) -> bool:
+        """QUILL's dictionary feature is the thesaurus switch."""
+        try:
+            return bool(self.features.is_enabled("core.dictionary"))
+        except Exception:  # noqa: BLE001 - no feature registry means no switch
+            return True
+
     def _command_to_menu_id_map(self) -> dict[str, int]:
         mapping: dict[str, int] = super()._command_to_menu_id_map()  # type: ignore[misc]
         mapping["tools.hosted_ai_own_key"] = self._own_key_menu_id()
+        mapping.update(self._dictionary_menu_ids())
+        if getattr(self, "_look_up_menu_id", None) is not None:
+            mapping["tools.look_up"] = self._look_up_menu_id
         chatgpt_id, image_id, tidy_id = self._chatgpt_menu_ids()
         mapping["tools.hosted_ai_chatgpt"] = chatgpt_id
         mapping["tools.hosted_ai_image"] = image_id

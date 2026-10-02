@@ -2,6 +2,52 @@
 
 ## 1.0.0
 
+### QUILL and QUILL Lite: a thesaurus that finds the word you are on, Look Up on a key, and an AI dictionary (2026-10-02)
+
+- **Thesaurus (Shift+F7) finds the word you are on and inflects what it
+  inserts.** The MyThes data knows headwords, so "running" found nothing and
+  "sprint" was offered where "sprinting" was needed. `quill/core/word_lookup.py`
+  walks a word back to the headwords the data knows (running to run, happier
+  to happy, irregular pasts) and inflects every replacement forward with the
+  original's capitals; the picker's title and rows say which headword a sense
+  came through. One shared `WordToolsMixin` (`quill/ui/word_tools_commands.py`)
+  now runs the thesaurus in both editors; QUILL's `show_thesaurus` delegates
+  to it, and QUILL Lite, which had no thesaurus at all, gets Tools > Thesaurus
+  on the same key with the data it already shipped.
+- **Two submenus on any word in the editor's context menu**: *Thesaurus for
+  "word"* (the best replacements one keystroke away, every other sense as a
+  submenu, Opposites, Say Word Summary, More in Thesaurus) and *Dictionary for
+  "word"* (Look Up, then the AI dictionary when AI is on). QUILL's single
+  "Look Up in Thesaurus" row is replaced by them.
+- **Look Up Word (Alt+F10)**: DICT-2's window is now on Tools > Writing and
+  on the Dictionary submenu in QUILL, and in QUILL Lite; it had been
+  reachable only when the thesaurus data was missing, and it went online
+  whenever the dictionary feature was on, which is not consent. The online
+  half is behind **Use online sources** in the window (`dictionary_online_lookups`,
+  the same field in both editors' settings), the online answer arrives on a
+  worker and replaces the offline one with a sentence said when it lands, and
+  the list replaces the word on Enter (`quill/ui/lookup_window.py`).
+- **The AI dictionary**, a Dictionary submenu of the AI menu in QUILL and
+  Tools > Dictionary in QUILL Lite: Define in Context, Synonyms That Fit,
+  Simpler, More Formal and More Vivid Word, Opposites, Is This the Right
+  Word?, Use It in a Sentence, Where It Comes From, How to Say It, Rhymes, the
+  Word Explorer and Find the Word For. One feature id and one JSON-shaped
+  instruction (`quill/core/ai/word_tools.py`), the word and its sentence sent
+  and never the document, an answer window with Choices that replace the word
+  as one undo step only while it is still there
+  (`quill/ui/word_tools_window.py`). Direct routes only -- own key or ChatGPT
+  -- never the free allowance. The same thirteen chords in both editors;
+  menu_lint's rule against bare Ctrl+Alt chords decided them.
+- **Say Word Summary (Ctrl+Alt+Shift+[)** speaks the headword, the meanings
+  per part of speech, the first replacements and the opposites. **Dictionary
+  Status** gains a chord (Alt+Shift+;) and a QUILL Lite row.
+- Gates: a `dictionary` area in QUILL Lite's Customize Features (profiles 17,
+  21, 5 and 2 of 21); `quill/core/lite/commands_words.py` split out under
+  GATE-11; sixteen new Lite handlers each called by
+  `tests/unit/apps/test_lite_words.py`; dialog, settings-vocabulary and
+  reachability inventories regenerated. Also: the Cast filter-rule help
+  strings each say what they do not do (GATE-SETHELP was red on main).
+
 ### Every app: Activity, Repeat Last Result, and saves that tell the truth (2026-10-02)
 
 - **Help > Activity... (Shift+F9)** lists every result this session, newest

@@ -2,6 +2,52 @@
 
 ## Unreleased -- the next release, QUILL Lite 1.2.0
 
+### A thesaurus, Look Up, and an AI dictionary, on the word you are on
+
+- **Tools > Thesaurus... (Shift+F7)**, QUILL's two-pane picker and QUILL's
+  data, which ships inside QUILL Lite. It looks up the word you are *on*:
+  "running" reaches "run", "happier" reaches "happy", irregular verbs are
+  known, and every replacement comes back in the form the sentence needs,
+  with the original's capitals ("sprinting" for "running", "More glad" for
+  "Happier"). QUILL's own Thesaurus now does the same, from the same code
+  (`quill/core/word_lookup.py`, `quill/ui/word_tools_commands.py`).
+- **Two submenus on any word in the context menu.** *Thesaurus for "word"*:
+  the best replacements one keystroke away, each further sense as a submenu,
+  Opposites, Say Word Summary and More in Thesaurus. *Dictionary for
+  "word"*: Look Up, then the AI dictionary's twelve questions when AI help is
+  on, or one row that says what it needs. The same two submenus in QUILL
+  (`quill/apps/lite_window_context_menu.py`, `quill/ui/main_frame.py`).
+- **Say Word Summary (Ctrl+Alt+Shift+[)** speaks what the thesaurus knows --
+  the headword, the meanings per part of speech, the first replacements and
+  the opposites -- without opening anything.
+- **Tools > Look Up Word... (Alt+F10)**: QUILL's Look Up window, the
+  dictionary without AI, shared by both editors. Offline it is the thesaurus;
+  with **Use online sources** ticked -- off until you tick it, remembered as
+  `dictionary_online_lookups` -- the word alone goes to the Free Dictionary,
+  Datamuse and Wikipedia for definitions, more words and a summary, arriving
+  in the background. Words you can use replace the word on Enter; Add to
+  Dictionary teaches it (`quill/ui/lookup_window.py`, `quill/core/lexical.py`).
+  In QUILL this window had been reachable only when the thesaurus data was
+  missing, and went online whenever the dictionary feature was on; now it is
+  on the Tools > Writing menu and asks first.
+- **Tools > Dictionary**, the AI dictionary: Define in Context, Synonyms That
+  Fit, Simpler, More Formal and More Vivid Word, Opposites, Is This the Right
+  Word?, Use It in a Sentence, Where It Comes From, How to Say It, Rhymes, the
+  Word Explorer (everything at once) and Find the Word For (the reverse
+  dictionary). Each sends the word and its sentence, never the document, and
+  answers in prose for listening plus choices that each say why; Use This
+  Word replaces the word (or inserts, for Find the Word For) as one undo
+  step, and only while the word is still where it was. On your own OpenAI key
+  or ChatGPT subscription only -- never the free allowance -- and the same
+  rows, keys and window in QUILL's AI menu (`quill/core/ai/word_tools.py`,
+  `quill/ui/word_tools_window.py`, `quill/ui/main_frame_hosted_ai.py`).
+- **Tools > Spelling > Dictionary Status... (Alt+Shift+;)**, QUILL's row: the
+  word counts and file paths of your dictionaries, and whether the thesaurus
+  data is present (`quill/apps/lite_window_words.py`).
+- A new Customize Features area, **Dictionary and thesaurus**, on by default
+  and off in the WordPad and Notepad profiles; the AI rows switch with AI
+  help. The profiles' counts are 17, 21, 5 and 2 of 21.
+
 ### Activity, Repeat Last Result, and saves that tell the truth (F-01, F-02, F-10)
 
 - **Help > Activity... (Shift+F9)** lists every result this session, newest

@@ -8,7 +8,7 @@ original context and must be reverified before changing completion status.
 
 ## Progress Dashboard
 
-Updated 2026-10-02: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
+Updated 2026-10-02: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers), and, outside the tracked rows at Jeff's request, the thesaurus, Look Up and the AI dictionary came to QUILL Lite and were made better in QUILL from one shared module (see Completed Changes). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
 
 These are grouped tracking rows, not independent bugs. Shared work can satisfy more than one group. Older pending claims are not newly verified by this consolidation.
 
@@ -3033,6 +3033,68 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-02: Thesaurus, Look Up and the AI dictionary, shared by both editors (Jeff, 2026-10-01 and 2026-10-02)
+
+- Asked for: QUILL's dictionary and thesaurus features in QUILL Lite, made
+  "more magical" with an own key or ChatGPT; rich context-menu submenus,
+  menu rows and palette entries; the non-AI features included.
+- `quill/core/word_lookup.py` (wx-free, strict; 46 tests): `find_word`,
+  `lemma_candidates`, `inflect`, `match_case`, `thesaurus_choices`,
+  `picker_senses`, `word_summary`, `sentence_around`. The thesaurus now finds
+  the word you are on ("running" reaches "run") and inflects every
+  replacement; a wrong walk-back finds nothing rather than something wrong.
+- `quill/ui/word_tools_commands.py` (`WordToolsMixin`, a base of
+  `ChatGptAiMixin`, so both editors have it through `HostedAiMixin`):
+  `cmd_thesaurus` (Shift+F7, the shared `ThesaurusDialog`), `cmd_word_summary`,
+  `cmd_look_up` (Alt+F10), thirteen AI dictionary commands, and
+  `append_word_submenus` -- *Thesaurus for "word"* (top replacements, each
+  further sense a submenu, Opposites, Say Word Summary, More in Thesaurus) and
+  *Dictionary for "word"* (Look Up, then the AI rows, or one setup row when
+  there is no direct route). Both context menus call it
+  (`lite_window_context_menu.py`, `main_frame.py`, replacing QUILL's one
+  "Look Up in Thesaurus" row).
+- `quill/ui/lookup_window.py`: DICT-2's Look Up window moved to shared code
+  and made reachable (it was reachable in QUILL only when the thesaurus data
+  was missing, and went online whenever the dictionary *feature* was on).
+  Online sources are behind **Use online sources** in the window
+  (`dictionary_online_lookups`, the same field in `core/settings.py` and
+  `core/lite/settings.py`, `shared` in the vocabulary audit); the online
+  answer runs through `thread_submit` with a generation counter and refills
+  under `dialog_alive`.
+- `quill/core/ai/word_tools.py` + `quill/ui/word_tools_window.py`: one
+  feature id under `own_key.INSTRUCTIONS` (direct routes only, by decision),
+  JSON answers (prose for listening + exact choices), `parse_answer` never
+  raises; the modeless answer window with Use This Word as one undo step
+  only while the word is still there.
+- QUILL: `main_frame_hosted_ai.py` appends the AI menu's Dictionary submenu
+  and the Tools > Writing Look Up row, registers the ids, extends the menu-id
+  map; `show_thesaurus` and `show_lookup_dialog` delegate. Keys in
+  `DEFAULT_KEYMAP`; `tools.dictionary_status` gains Alt+Shift+;.
+- QUILL Lite: `quill/core/lite/commands_words.py` (split out under GATE-11),
+  `lite_window_words.py` (`DocumentWordsMixin`: the area switch and
+  Dictionary Status), a `dictionary` area (profiles 17, 21, 5, 2 of 21),
+  parity rows, `commands_words` chords identical to QUILL's; menu_lint's
+  bare-Ctrl+Alt rule decided the lesser rows' chords.
+- Tests: `tests/unit/apps/test_lite_words.py` (31; every new handler called
+  by a lambda for GATE-LITE-COVER), `tests/unit/core/test_word_lookup.py`
+  (+5), `test_main_frame_hosted_ai.py` (the accelerator map), docs tests
+  (`_AREA_IN_PROSE` gains `dictionary`). Snapshots regenerated: Lite command
+  coverage (234 handlers, 0 shape-only), dialog inventory, accessible-name
+  inventory, Lite help inventory (Dictionary Status authored in
+  `lite_surface_help.py`), surface reachability, settings vocabulary,
+  settings documentation (`dictionary_online_lookups` documented), keyboard
+  and F1 references.
+- Also green-on-main work found on the way: the seven Cast filter-rule help
+  strings each say what they do not do (`podcasts/settings_help.py`;
+  `test_settings_help` was red).
+- Docs: QUILL user guide (Tools list, key tables, the AI menu's Dictionary
+  paragraph, "Look Up, Thesaurus and the Dictionary"), QUILL PRD 5.59e, QUILL
+  CHANGELOG, QUILL 1.0.0 release notes (Words; Activity under Help); QUILL
+  Lite user guide ("Thesaurus", "Dictionary", the Applications-key subsection,
+  profiles and the 21 areas, regenerated key tables), CHANGELOG,
+  release-notes-1.1 "Coming in 1.2.0" (Activity and the dictionary), AI guide
+  ("The Dictionary"), PRD 7.8 and the profile table.
 
 ### 2026-10-02: Activity, Repeat Last Result, and truthful settings saves (F-01, F-02, F-10)
 

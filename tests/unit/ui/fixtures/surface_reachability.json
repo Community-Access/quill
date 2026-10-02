@@ -107,6 +107,7 @@
   "quill.ui.list_studio_settings_dialog": "reachable",
   "quill.ui.local_ai_wizard": "reachable",
   "quill.ui.local_git_dialogs": "reachable",
+  "quill.ui.lookup_window": "reachable",
   "quill.ui.main_frame": "reachable",
   "quill.ui.main_frame_abbreviations": "reachable",
   "quill.ui.main_frame_ai_actions": "reachable",
@@ -371,5 +372,7 @@
   "quill.ui.web_form": "reachable",
   "quill.ui.window_state": "reachable",
   "quill.ui.windows_dictation_dialog": "reachable",
+  "quill.ui.word_tools_commands": "reachable",
+  "quill.ui.word_tools_window": "reachable",
   "quill.ui.work_persona_dialog": "reachable"
 }

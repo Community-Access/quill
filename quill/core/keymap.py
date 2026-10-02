@@ -261,6 +261,32 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.hosted_ai_chatgpt": "Alt+F5",  # rule 9; free in both editors
     "tools.hosted_ai_image": "Ctrl+F5",  # free in both editors
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
+    # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
+    # Look Up is the dictionary without AI (DICT-2's window, now reachable and
+    # consent-gated) on Alt+F10; the Word Explorer, everything the AI knows at
+    # once, on Ctrl+F10 -- both free in both editors and nothing in Word. The
+    # other AI rows are reached mostly from the Dictionary submenu -- in the AI
+    # menu and on the word's context menu -- and carry the Ctrl+Shift, Alt+Shift
+    # and Ctrl+Alt+Shift punctuation chords free in both editors (rule 9; never
+    # a bare Ctrl+Alt, which is AltGr). QUILL Lite's chords exactly.
+    "tools.look_up": "Alt+F10",
+    "tools.word_explorer": "Ctrl+F10",
+    "tools.word_define": "Ctrl+Alt+Shift+'",
+    "tools.word_synonyms": "Ctrl+Shift+;",
+    "tools.word_simpler": "Ctrl+Shift+-",
+    "tools.word_formal": "Ctrl+Shift+=",
+    "tools.word_vivid": "Ctrl+Shift+'",
+    "tools.word_opposites": "Alt+Shift+-",
+    "tools.word_right": "Ctrl+Alt+Shift+/",
+    "tools.word_examples": "Alt+Shift+=",
+    "tools.word_origin": "Alt+Shift+,",
+    "tools.word_pronounce": "Alt+Shift+'",
+    "tools.word_rhymes": "Ctrl+Alt+Shift+;",
+    "tools.find_word": "Ctrl+Alt+Shift+]",
+    # The spoken thesaurus summary, offline, and Dictionary Status (which had
+    # no chord at all): QUILL Lite's chords, free here too.
+    "tools.word_summary": "Ctrl+Alt+Shift+[",
+    "tools.dictionary_status": "Alt+Shift+;",
     # Thirteen commands that had no DEFAULT_KEYMAP entry at all and were bound
     # (or listed unbound) only in the shipped "QUILL Default" profile. That was
     # backwards: the profile is a delta over these defaults, so a command

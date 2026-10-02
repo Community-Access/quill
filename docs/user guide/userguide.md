@@ -4928,8 +4928,9 @@ The fourth of the set, **Repeat Last Announcement**, has been there since 0.9.0:
   window has one name and one key across the family.
 - **Spell Check...**
 - **Next Misspelling**
-- **Thesaurus...**
-- **Dictionary Status...**
+- **Thesaurus...** (`Shift+F7`) --- the two-pane picker, which since October 2026 finds the word you are *on* ("running" reaches "run") and puts every replacement back in the form the sentence needs. See *Look Up, Thesaurus and the Dictionary* below.
+- **Look Up Word...** (`Alt+F10`) --- the dictionary without AI: the thesaurus offline, and definitions, more words and a Wikipedia summary from three free services once you tick **Use online sources** in the window.
+- **Dictionary Status...** (`Alt+Shift+;`)
 - **AI Hub...**
 - **Writing Assistant...**
 - **Prompt Studio...**
@@ -5456,6 +5457,9 @@ upgrading QUILL never makes you fetch them again.
 | `Ctrl+F7` | Jump to next misspelling in editor |
 | `Ctrl+Shift+F7` | Jump to previous misspelling in editor |
 | `Shift+F7` | Thesaurus |
+| `Alt+F10` | Look Up Word |
+| `Ctrl+Alt+Shift+[` | Say Word Summary |
+| `Alt+Shift+;` | Dictionary Status |
 
 #### AI Spell Check
 
@@ -5584,6 +5588,10 @@ the `&AI` menu:
 | **Alt+F5** | Use My ChatGPT Subscription... | Every AI command on the ChatGPT plan you already pay for |
 | **Ctrl+F5** | Ask About an Image... | A picture described, on your ChatGPT subscription |
 | **Ctrl+F3** | Tidy Dictated Text... | Dictation's misheard words and punctuation corrected, nothing else changed |
+| **Ctrl+F10** | Dictionary ▸ Word Explorer... | Everything about the word you are on, as used in this sentence |
+| **Ctrl+Alt+Shift+'** | Dictionary ▸ Define in Context | What the word means here, and what you might be confusing it with |
+| **Ctrl+Shift+;** | Dictionary ▸ Synonyms That Fit | Replacements that keep the sentence's meaning, already in the right form |
+| **Ctrl+Alt+Shift+]** | Dictionary ▸ Find the Word For... | The reverse dictionary: describe the meaning, get the word |
 
 These are the same five commands as QUILL Lite's — one feature, shared, so
 anything you learn in one editor you have learned in both. Three of the five keys
@@ -5867,6 +5875,27 @@ else. The Tidied Dictation window offers Replace My Selection, and Ctrl+Z takes
 it back as one step. It runs on a ChatGPT subscription or your own OpenAI key,
 never on the free allowance; with neither it says so and opens the account
 window.
+
+**The Dictionary submenu** of the AI menu is the dictionary that reads the
+sentence: thirteen questions about the word you are on, each sending the word
+and the sentence it sits in -- never the rest of the document -- and answering
+in prose written to be listened to, with, where it helps, a list of choices
+that each say why. **Define in Context** (Ctrl+Alt+Shift+'), **Synonyms That
+Fit** (Ctrl+Shift+;), **Simpler Word** (Ctrl+Shift+-), **More Formal Word**
+(Ctrl+Shift+=), **More Vivid Word** (Ctrl+Shift+'), **Opposites** (Alt+Shift+-),
+**Is This the Right Word?** (Ctrl+Alt+Shift+/), **Use It in a Sentence**
+(Alt+Shift+=), **Where It Comes From** (Alt+Shift+,), **How to Say It**
+(Alt+Shift+'), **Rhymes** (Ctrl+Alt+Shift+;), the **Word Explorer** (Ctrl+F10)
+that answers all of them at once, and **Find the Word For...**
+(Ctrl+Alt+Shift+]), the reverse dictionary. The same rows sit in the
+*Dictionary for "word"* submenu when you press the Applications key on a word.
+The answer window opens on the answer; Tab reaches the **Choices**, Enter or
+**Use This Word** replaces the word as one undo step (or inserts at the
+cursor, for Find the Word For), and only while the word is still where it was.
+Like Tidy Dictated Text, it runs only on a ChatGPT subscription or your own
+OpenAI key -- a dictionary is asked a hundred times a day, and that would spend
+a free allowance on synonyms -- and with neither it says so and opens the
+account window. QUILL Lite has the same thirteen rows on the same keys.
 
 ### Basic and Advanced — the short menu and the long one
 
@@ -7087,9 +7116,13 @@ The dialog lists all twelve slots. Each row shows the slot number, an optional l
 - Slots survive restarts. Build a small library of recurring fragments you reach for daily.
 - All bindings are reassignable in the Keymap Editor (`Tools > Customize & Support > Preferences > Keyboard`).
 
-### Look Up: dictionary, thesaurus, and encyclopedia
+### Look Up, Thesaurus and the Dictionary
 
-Right-click a word (or select it and open the context menu) for **Look Up**, or **Tools > Thesaurus...** for synonyms. Look Up combines an offline dictionary/thesaurus with online sources when you have consented to online lookups (Free Dictionary and Datamuse for definitions and related words) — and now, a short **Wikipedia** summary alongside them, with a link back to the source article. A disambiguation page or a word with no real Wikipedia entry simply shows no encyclopedia section, rather than a list to sort through. Keep Look Up fully offline any time from its consent setting; nothing about the encyclopedia summary changes that choice.
+Press the **Applications key** (or Shift+F10, or right-click) on any word and the menu carries two submenus that name the word: **Thesaurus for "running"** -- the best replacements one keystroke away, each further sense as a submenu of its own, **Opposites**, **Say Word Summary** (what the thesaurus knows, spoken) and **More in Thesaurus...** -- and **Dictionary for "running"**, which starts with **Look Up "running"...** and continues, when AI is on, with the thirteen AI dictionary rows described under the AI menu. A selected word wins over the word at the cursor when the selection is a single word.
+
+**Thesaurus...** (`Shift+F7`, Tools > Writing) opens the two-pane picker for the word you are on, or asks for one. Since October 2026 it finds the word you are *actually* on: the data knows headwords ("run", not "running"; "happy", not "happier"), so QUILL walks the word back to the forms the data knows, says so in the title ("running (as run)") and on each sense's row ("verb, from run: sprinting, dashing, ..."), and puts every replacement back in the form the sentence needs with the original's capitals -- "sprinting" for "running", "More glad" for "Happier", "sought" for "sought". Focus lands in the Senses list with the part of speech first (type **n** for the nouns, **v** for the verbs); Tab reaches the words of the selected sense -- replacements, *broader:* and *opposite:* terms, labelled -- and Enter or **Replace** puts the selected one in and collapses the selection. **Say Word Summary** (`Ctrl+Alt+Shift+[`) speaks the headword, the meanings per part of speech, the first replacements and the opposites without opening anything. QUILL Lite has the same thesaurus, from the same code.
+
+**Look Up Word...** (`Alt+F10`, Tools > Writing) is the dictionary without AI, in a window QUILL Lite shares. Focus lands in the **Result**, a read-only field you arrow through: the word, then one labelled section per kind of answer. Under it, **Words you can use** lists every synonym, opposite, related word and rhyme, each saying which it is; Enter or **Replace Word** puts the selected one in place of your word, **Copy** copies the selected word (or the whole result), and **Add to Dictionary** teaches the word to your personal dictionary. Offline, Look Up is the thesaurus and nothing leaves this computer. The checkbox **Use online sources** is off until you tick it; on, the word -- only the word, never the sentence or the document -- goes to three free services that need no account: the Free Dictionary for definitions with examples, Datamuse for more synonyms, opposites, rhymes and related words, and a short **Wikipedia** summary with a link back to the article (a disambiguation page or a word with no real article simply shows no encyclopedia section). The offline answer appears at once, "Looking up online" is said, and the online answer replaces the field when it arrives and says so. The choice is remembered as `dictionary_online_lookups` in the settings file; untick the box and you are offline again from the next lookup. Before October 2026 this window was reachable only when the thesaurus data was missing, and went online whenever the dictionary feature was on; now it is on the menu, on a key, and asks first.
 
 ### Clip Library
 

@@ -496,108 +496,16 @@ class SpellcheckCommandsMixin:
         self._set_status(f'Replaced "{misspelling.word}" with "{choice}"')
 
     def show_thesaurus(self) -> None:
-        """Open the thesaurus for the selected word or the word under the caret."""
-        wx = self._wx
-        if not thesaurus_engine.is_available():
-            message = (
-                "The thesaurus data file is not installed.\n\n"
-                f"Expected location:\n  {thesaurus_engine.data_path()}\n\n"
-                "To enable the thesaurus, install the optional English thesaurus "
-                "data file (LibreOffice MyThes en_US, ~18 MB). Reinstall Quill "
-                "with the thesaurus component, or copy 'th_en_US_v2.dat' into "
-                "the data folder shown above."
-            )
-            self._show_message_box(message, "Thesaurus Not Installed", wx.ICON_INFORMATION | wx.OK)
-            self._set_status("Thesaurus data not installed")
-            return
+        """Open the thesaurus for the selected word or the word under the caret.
 
-        # Determine the word to look up: selection takes priority, else the
-        # word at the caret.
-        text = self.editor.GetValue()
-        sel_start, sel_end = self.editor.GetSelection()
-        word: str | None = None
-        word_start: int | None = None
-        word_end: int | None = None
-        if sel_end > sel_start:
-            candidate = text[sel_start:sel_end].strip()
-            if candidate and all(ch.isalpha() or ch == "'" for ch in candidate):
-                word = candidate
-                word_start = sel_start
-                word_end = sel_end
-        if word is None:
-            located = thesaurus_engine.word_at(text, self.editor.GetInsertionPoint())
-            if located is not None:
-                word, word_start, word_end = located
-
-        if not word:
-            with wx.TextEntryDialog(
-                self.frame,
-                "Look up word in thesaurus:",
-                "Thesaurus",
-                value="",
-            ) as dialog:
-                if self._show_modal_dialog(dialog, "Thesaurus") != wx.ID_OK:
-                    return
-                word = dialog.GetValue().strip()
-                if not word:
-                    self._set_status("Thesaurus: no word entered")
-                    return
-
-        entry = thesaurus_engine.lookup(word)
-        if entry is None:
-            self._set_status(f'No thesaurus entry for "{word}"')
-            self._show_message_box(
-                f'No thesaurus entries were found for "{word}".',
-                "Thesaurus",
-                wx.ICON_INFORMATION | wx.OK,
-            )
-            return
-
-        # Grouped by sense. The grouping, the ordering and the labelling are all
-        # decided in core.thesaurus.sense_rows -- pure, wx-free and unit-tested;
-        # this method only shows what it is given.
-        senses = thesaurus_engine.sense_rows(entry)
-        if not senses:
-            self._set_status(f'No synonyms available for "{word}"')
-            return
-
-        from quill.ui.thesaurus_dialog import ThesaurusDialog
-
-        replace_allowed = word_start is not None and word_end is not None
-        picker = ThesaurusDialog(
-            self.frame,
-            word,
-            senses,
-            allow_replace=replace_allowed,
-            show_modal_dialog=self._show_modal_dialog,
-            on_copy=self._copy_text_to_clipboard,
-            announce=self._announce,
-        )
-        try:
-            chosen = picker.show_modal()
-        finally:
-            picker.Destroy()
-
-        if not chosen:
-            # Copy leaves the dialog open and reports for itself, so reaching
-            # here means the user closed it -- with or without having copied.
-            self._set_status("Thesaurus closed")
-            return
-        if not replace_allowed:  # pragma: no cover - Replace is disabled without a target
-            return
-
-        # Preserve the original word's leading capitalisation.
-        replacement = chosen
-        if word[:1].isupper():
-            replacement = chosen[:1].upper() + chosen[1:]
-        self.editor.Replace(word_start, word_end, replacement)
-        self.document.set_text(self.editor.GetValue())
-        # Collapse the selection after the replacement rather than leaving it
-        # selected: a selected word is destroyed by the next keystroke, and the
-        # screen reader announces the selection on focus return, which is an
-        # utterance nobody asked for.
-        self.editor.SetInsertionPoint(word_start + len(replacement))
-        self._set_status(f'Replaced "{word}" with "{replacement}"')
+        The shared command since 2026-10-02
+        (:meth:`quill.ui.word_tools_commands.WordToolsMixin.cmd_thesaurus`): it
+        finds the word you are *on* ("running" reaches "run"), offers every
+        sense with the replacements already inflected, and is the same picker
+        QUILL Lite opens. Kept under this name because the command registry,
+        the menu and the tutorials bind it.
+        """
+        self.cmd_thesaurus()
 
     def _copy_text_to_clipboard(self, text: str) -> bool:
         wx = self._wx

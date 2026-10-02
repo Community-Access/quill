@@ -516,5 +516,9 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
         "tools.hosted_ai_chatgpt",
         "tools.hosted_ai_image",
         "tools.dictation_tidy",
+        # The Dictionary submenu's fourteen rows (2026-10-02).
+        "tools.word_define",
+        "tools.word_explorer",
+        "tools.find_word",
     }
-    assert len({int(v) for v in mapping.values()}) == 4
+    assert len({int(v) for v in mapping.values()}) == 4 + 13

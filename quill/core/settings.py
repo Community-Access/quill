@@ -339,6 +339,10 @@ class Settings:
     # default until the JAWS/NVDA validation pass; the native dialog remains
     # the fallback either way.
     find_use_quill_dialog: bool = False
+    # Look Up may ask three free online services (the Free Dictionary,
+    # Datamuse, Wikipedia) for definitions and more words. Off until the
+    # listener switches it on in the Look Up window; sends the word alone.
+    dictionary_online_lookups: bool = False
     # Speak "Entered/Exited <name> dialog" as dialogs open/close. Off by default:
     # every supported screen reader already announces the dialog and its title,
     # so the cue is redundant; turn it back on to hear the explicit transition.
@@ -1118,6 +1122,7 @@ class Settings:
         windows_dictation = load_windows_dictation_fields(data) | load_own_key_fields(data)
         announce_formatting_on_move = bool(data.get("announce_formatting_on_move", False))
         find_use_quill_dialog = bool(data.get("find_use_quill_dialog", False))
+        dictionary_online_lookups = bool(data.get("dictionary_online_lookups", False))
         announce_dialog_transitions = bool(data.get("announce_dialog_transitions", False))
         low_resource_mode = bool(data.get("low_resource_mode", False))
         idle_unload_minutes = _clamp_int(data.get("idle_unload_minutes", 10), 10, 0, 240)
@@ -1772,6 +1777,7 @@ class Settings:
             **windows_dictation,
             announce_formatting_on_move=announce_formatting_on_move,
             find_use_quill_dialog=find_use_quill_dialog,
+            dictionary_online_lookups=dictionary_online_lookups,
             announce_dialog_transitions=announce_dialog_transitions,
             low_resource_mode=low_resource_mode,
             idle_unload_minutes=idle_unload_minutes,

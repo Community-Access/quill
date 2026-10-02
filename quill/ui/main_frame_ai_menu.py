@@ -70,6 +70,7 @@ class AiMenuMixin:
         )
         self._append_own_key_row(ai_menu)  # quill/ui/main_frame_hosted_ai.py
         self._append_chatgpt_rows(ai_menu)  # same module: the subscription, and images
+        self._append_dictionary_rows(ai_menu)  # same module: the AI dictionary submenu
 
     def _build_advanced_ai_rows(self, ai_menu) -> None:
         """Everything the AI menu used to open with, now one checkbox away."""

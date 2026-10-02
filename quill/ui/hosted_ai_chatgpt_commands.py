@@ -34,6 +34,8 @@ from typing import Any
 
 import wx
 
+from quill.ui.word_tools_commands import WordToolsMixin
+
 __all__ = ["ChatGptAiMixin", "_paragraph_span"]
 
 
@@ -57,8 +59,9 @@ def _paragraph_span(document: str, position: int) -> tuple[int, int, str]:
     return start + lead, end - trail, text.strip("\n")
 
 
-class ChatGptAiMixin:
-    """Use My ChatGPT Subscription, and Ask About an Image."""
+class ChatGptAiMixin(WordToolsMixin):
+    """Use My ChatGPT Subscription, Ask About an Image, Tidy Dictated Text --
+    and, as a base, the thesaurus and the dictionary (word_tools_commands)."""
 
     def cmd_ai_chatgpt(self) -> None:
         """Open the ChatGPT account window: sign in, choose the model, sign out."""

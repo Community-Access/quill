@@ -148,6 +148,14 @@ class DocumentContextMenuMixin:
         context = self._context_spelling(position)
         if context is not None:
             self._append_spelling_section(menu, context)
+        # Thesaurus and Dictionary, as two submenus on the word (shared with
+        # QUILL: quill/ui/word_tools_commands.py). After the corrections, so a
+        # misspelling's first Down arrow still lands on the fix.
+        start, end = self.control.GetSelection()
+        if self.append_word_submenus(
+            menu, self.control.GetValue(), position, (int(start), int(end))
+        ):
+            menu.AppendSeparator()
         self._append_link_section(menu, position)
         self._append_edit_section(menu)
         try:

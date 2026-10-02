@@ -33,6 +33,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.ai import word_tools
 from quill.core.ai.gateway_client import GatewayLimits
 from quill.core.error_codes import CodedError
 
@@ -182,6 +183,10 @@ INSTRUCTIONS: dict[str, str] = {
         "nothing. Return only the corrected text, with no preamble, no "
         "explanation and no list of what changed."
     ),
+    # Direct-only, like tidy_dictation above: the word tools run on the
+    # listener's own key or ChatGPT subscription and never on the free service
+    # (core/ai/word_tools.py says why), so the gateway has no template for it.
+    word_tools.FEATURE: word_tools.INSTRUCTIONS,
 }
 
 #: Effectively no limit. The pad never refuses on size with a key; it warns

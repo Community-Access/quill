@@ -31,6 +31,7 @@ which text is sent, what happens to the answer, the limits, and your privacy.
 - [Ask About an Image](#ask-about-an-image)
 - [Web search](#web-search)
 - [Tidy Dictated Text](#tidy-dictated-text)
+- [The Dictionary: ask about the word you are on](#the-dictionary-ask-about-the-word-you-are-on)
 - [Questions people ask](#questions-people-ask)
 
 ## Starting, in about a minute
@@ -589,6 +590,41 @@ Dictation** window opens on the corrected text. **Replace My Selection** puts it
 back where the dictated text was, **Ctrl+Z** undoes it as one step, and
 **Escape** keeps what you had. It runs on a ChatGPT subscription or your own
 OpenAI key; with neither it says so and opens the account window.
+
+## The Dictionary: ask about the word you are on
+
+**Tools ▸ Dictionary**, and the *Dictionary for "word"* submenu when you press
+the Applications key on a word, is the dictionary that reads the sentence.
+The thesaurus that ships with QUILL Lite knows every sense of *bank*; it
+cannot know which one this sentence means. These rows send **the word and the
+sentence it sits in** -- never the rest of the document -- and answer in plain
+prose written to be listened to, with, where it helps, a list of choices that
+each say why.
+
+Twelve questions: **Define in Context** (Ctrl+Alt+Shift+'), **Synonyms That
+Fit** (Ctrl+Shift+;), **Simpler Word** (Ctrl+Shift+-), **More Formal Word**
+(Ctrl+Shift+=), **More Vivid Word** (Ctrl+Shift+'), **Opposites** (Alt+Shift+-),
+**Is This the Right Word?** (Ctrl+Alt+Shift+/), **Use It in a Sentence**
+(Alt+Shift+=), **Where It Comes From** (Alt+Shift+,), **How to Say It**
+(Alt+Shift+'), **Rhymes** (Ctrl+Alt+Shift+;), and the **Word Explorer**
+(Ctrl+F10), which answers all of them at once. **Find the Word For...**
+(Ctrl+Alt+Shift+]) is the reverse dictionary: describe the meaning, hear the
+candidates and why each differs, and insert the one you choose at the cursor.
+
+**The answer window** opens with focus on the answer, so your reader reads it
+and nothing is announced on top of that. Tab reaches **Choices**; Enter or
+**Use This Word** puts the selected one in place of the word (Ctrl+Z undoes it
+as one step), and only while the word is still where it was -- type over it
+while the answer is on its way and the button is disabled and says why. **Copy
+Choice**, **Copy Answer**, and **Ask Something Else...**, which reopens the
+Dictionary submenu on the same word.
+
+**It runs only on your ChatGPT subscription or your own OpenAI key, never on
+the free service.** A dictionary is asked a hundred times a day, and these
+cheap, frequent calls would spend somebody's free allowance on synonyms. With
+neither, every row says so and opens the account window. The user guide's
+*Dictionary* section has the full table, and *Look Up* there is the dictionary
+without AI.
 
 ## Questions people ask
 

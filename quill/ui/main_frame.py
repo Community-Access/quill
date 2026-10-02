@@ -2960,112 +2960,12 @@ class MainFrame(
         return self._lexical_service
 
     def show_lookup_dialog(self, word: str) -> None:
-        """Show the DICT-2 Look Up dialog for ``word``."""
-        wx = self._wx
+        """The Look Up window for *word*: the shared one since 2026-10-02
+        (:mod:`quill.ui.lookup_window`), consent-gated for its online sources."""
         if not self._feature_enabled("core.dictionary"):
             self._set_status("Dictionary feature is disabled.")
             return
-
-        from quill.core.lexical import build_lookup_items, render_lookup
-
-        # Query the lexical service (consent is per-feature, so online is enabled
-        # if the user has consented to network lookups).
-        online = self._feature_enabled("core.dictionary")
-        result = self._get_lexical_service().lookup(word, online=online)
-
-        # Render the result for screen-reader paging.
-        text = render_lookup(result)
-        items = build_lookup_items(result)
-
-        # Build a simple list dialog.
-        dialog = wx.Dialog(
-            self.frame, title=f"Look Up: {word}", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
-        # Read-only text control for the rendered lookup.
-        text_ctrl = wx.TextCtrl(
-            dialog,
-            value=text,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
-        )
-        set_accessible_name(text_ctrl, f"Look up result for {word}")
-        text_ctrl.SetMinSize((500, 300))
-        sizer.Add(text_ctrl, 1, wx.EXPAND | wx.ALL, 8)
-
-        # List of insertable items.
-        if items:
-            list_label = wx.StaticText(dialog, label="Select a word to insert:")
-            sizer.Add(list_label, 0, wx.LEFT | wx.RIGHT, 8)
-            list_box = wx.ListBox(dialog, choices=[item.label for item in items])
-            set_accessible_name(list_box, "Select a word to insert")
-            list_box.SetMinSize((500, 150))
-            sizer.Add(list_box, 0, wx.EXPAND | wx.ALL, 8)
-
-            def on_insert(_event: object) -> None:
-                selection = list_box.GetSelection()
-                if selection != wx.NOT_FOUND and 0 <= selection < len(items):
-                    selected_item = items[selection]
-                    if selected_item.action == "insert":
-                        # Replace the word at the cursor with the selected value.
-                        caret = self.editor.GetInsertionPoint()
-                        text_val = self.editor.GetValue()
-                        # Find word boundaries around cursor.
-                        start = caret
-                        while start > 0 and text_val[start - 1].isalnum():
-                            start -= 1
-                        end = caret
-                        while end < len(text_val) and text_val[end].isalnum():
-                            end += 1
-                        self.editor.Replace(start, end, selected_item.value)
-                        self.document.set_text(self.editor.GetValue())
-                        self._set_status(f'Inserted "{selected_item.value}"')
-                        dialog.Close()
-
-            list_box.Bind(wx.EVT_LISTBOX_DCLICK, on_insert)
-
-        def on_add_to_dictionary(_event: object) -> None:
-            self._add_word_to_dictionary_scope(word, 0)
-            dialog.Close()
-
-        # A non-standard "Add to Dictionary" action row sits above the
-        # standard dialog buttons so the looked-up word can be added to the
-        # personal dictionary directly from the results.
-        action_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        add_dict_btn = wx.Button(dialog, label="Add to &Dictionary")
-        add_dict_btn.Bind(wx.EVT_BUTTON, on_add_to_dictionary)
-        action_sizer.Add(add_dict_btn, 0)
-        sizer.Add(action_sizer, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-        if items:
-            btn_sizer = wx.StdDialogButtonSizer()
-            insert_btn = wx.Button(dialog, wx.ID_OK, "Insert")
-            insert_btn.Bind(wx.EVT_BUTTON, on_insert)
-            btn_sizer.AddButton(insert_btn)
-            close_btn = wx.Button(dialog, wx.ID_CANCEL, "Close")
-            btn_sizer.AddButton(close_btn)
-            btn_sizer.Realize()
-            insert_btn.SetDefault()
-            sizer.Add(btn_sizer, 0, wx.EXPAND | wx.ALL, 8)
-        else:
-            # No insertable items; just a Close button.
-            btn_sizer = wx.StdDialogButtonSizer()
-            close_btn = wx.Button(dialog, wx.ID_CANCEL, "Close")
-            btn_sizer.AddButton(close_btn)
-            btn_sizer.Realize()
-            close_btn.SetDefault()
-            sizer.Add(btn_sizer, 0, wx.EXPAND | wx.ALL, 8)
-
-        dialog.SetSizer(sizer)
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        dialog.Fit()
-        dialog.CenterOnParent()
-        # Route through _show_modal_dialog (not dialog.ShowModal() directly) so
-        # this custom dialog gets the shared contract: initial focus on its
-        # content control instead of the OK button, region tracking,
-        # enter/exit announcements, and focus return to the editor on close.
-        self._show_modal_dialog(dialog, "Look Up")
-        dialog.Destroy()
+        self._look_up_word(word, None)
 
     def show_thesaurus_or_lookup(self, word: str) -> None:
         """Show the thesaurus or Look Up dialog for ``word``.
@@ -3297,11 +3197,9 @@ class MainFrame(
             menu.Bind(wx.EVT_MENU, lambda _e: self.next_misspelling(), id=next_spell_id)
             menu.Bind(wx.EVT_MENU, lambda _e: self.previous_misspelling(), id=prev_spell_id)
 
-        # --- Thesaurus (core.dictionary). ---
-        if dict_on and thesaurus_engine.is_available():
-            thes_id = wx.NewIdRef()
-            menu.Append(thes_id, "Look Up in Thesaurus")
-            menu.Bind(wx.EVT_MENU, lambda _e: self.show_thesaurus(), id=thes_id)
+        # --- Thesaurus and Dictionary submenus on the word (word_tools_commands). ---
+        if dict_on and self.append_word_submenus(menu, text, caret, (sel_start, sel_end)):
+            menu.AppendSeparator()
 
         # --- Navigation (always available). ---
         menu.AppendSeparator()

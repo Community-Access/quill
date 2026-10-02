@@ -3014,7 +3014,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 92 audited sites (92 helped).</p>
+<p>Control coverage: 94 audited sites (94 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -3069,6 +3069,12 @@ one. Type in the search box to narrow the list, or choose a profile –
 Notepad, WordPad, Recommended, Everything – to set them all at once.
 Three areas start switched off and are found here rather than hidden:
 autocorrect, timestamped backups, and Go To Anything.</p>
+<p><strong>Dictionary Status.</strong> How many words each of your
+spelling dictionaries holds, where each file is kept, and whether the
+thesaurus data is present. A reading, not a setting: nothing here
+changes anything. Add words from the Spelling Actions submenu on a word,
+or with Ctrl+Alt+F9; Preferences chooses whether QUILL Lite shares
+QUILL’s dictionary.</p>
 <p><strong>Document language.</strong> Which markup this document is
 written in. It decides what Bold writes, what the heading keys write,
 which of the two tag pickers the Insert menu offers, and whether the
@@ -3412,6 +3418,14 @@ size for the editor.</li>
 <li><code>self.impact</code>: What the profile above would change: which
 parts of the app it keeps, which it removes, and anything else it
 sets.</li>
+</ul>
+<h4 id="module-level-quillappslite_window_wordspy">(module level)
+(<code>quill/apps/lite_window_words.py</code>)</h4>
+<ul>
+<li><code>field</code>: How many words each dictionary holds and where
+each file is. Read only; arrow through it, and copy any line you
+need.</li>
+<li><code>close</code>: Closes this window.</li>
 </ul>
 <h4 id="module-level-quilluispelling_voice_dialogpy">(module level)
 (<code>quill/ui/spelling_voice_dialog.py</code>)</h4>

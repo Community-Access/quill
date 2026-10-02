@@ -121,6 +121,7 @@
   "dictation_onboarding_shown": "internal",
   "dictation_remove_fillers": "documented",
   "dictation_stop_on_focus_loss": "grandfathered",
+  "dictionary_online_lookups": "documented",
   "dirty_title_style": "grandfathered",
   "docx_read_engine": "documented",
   "docx_write_engine": "documented",

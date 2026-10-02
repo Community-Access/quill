@@ -374,17 +374,23 @@ FILTER_HELP: dict[str, str] = {
     "rule_match_any": (
         "Whether every test in this rule has to hold, or any one of them is "
         "enough. Any one lets a single rule say 'a trailer, or anything under "
-        "five minutes' with one name and one switch."
+        "five minutes' with one name and one switch. It changes nothing about "
+        "which tests the rule has, only how many of them must agree."
     ),
     "rule_tests": (
         "More tests for this rule, beyond the title pattern and minimum "
         "length above: the show notes, the people on the episode, the "
         "episode type the publisher gave it, a maximum length, its age, "
         "season or number. Each can be a word to look for, a wildcard or a "
-        "regular expression, or a number to compare."
+        "regular expression, or a number to compare. A rule with no tests "
+        "here still works from the pattern and length above; nothing is "
+        "required."
     ),
     "rule_add_test": "Add another test to this rule. Nothing is saved until the filter is.",
-    "rule_edit_test": "Change the selected test.",
+    "rule_edit_test": (
+        "Change the selected test. The other tests stay as they are, and "
+        "nothing is saved until the filter is."
+    ),
     "rule_remove_test": "Take the selected test out of this rule. No episode is affected.",
     "rule_try": (
         "Try this rule, as it stands in this window, on the podcast's 50 "
@@ -393,7 +399,8 @@ FILTER_HELP: dict[str, str] = {
         "you meant."
     ),
     "rule_try_result": (
-        "What Try It found: the count, then the first few titles it caught. Read only."
+        "What Try It found: the count, then the first few titles it caught. "
+        "Read only; nothing here changes the rule or the episodes."
     ),
     "test_field": (
         "What this test looks at. A feed that does not say a length, a date, "
@@ -404,20 +411,24 @@ FILTER_HELP: dict[str, str] = {
         "How to compare. Words are found anywhere in the text; a wildcard "
         "covers the whole text, with a star for any run of text and a "
         "question mark for one character; a regular expression is found "
-        "anywhere unless you anchor it with a caret and a dollar sign."
+        "anywhere unless you anchor it with a caret and a dollar sign. The "
+        "choice never changes the text you typed, only how it is read."
     ),
     "test_value": (
-        "What to look for, or the number to compare with. Lengths are in minutes and ages in days."
+        "What to look for, or the number to compare with. Lengths are in "
+        "minutes and ages in days; nothing else about the episode is read."
     ),
     "test_case": (
         "Whether capital letters have to match too. Off by default, because "
-        "publishers change their own capitalisation."
+        "publishers change their own capitalisation; on, a title in capitals "
+        "does not match a pattern in lower case."
     ),
     "filter_like_this": (
         "Draft an Episode Filter rule from this episode: what it has in "
         "common with its siblings -- a type, a series name, an unusual "
         "length -- checked against the newest episodes before it is offered. "
-        "You see the rule and change it before anything is saved."
+        "You see the rule and change it before anything is saved; nothing is "
+        "filtered until you save it."
     ),
     "apply_existing": (
         "Also apply this filter once to episodes already in your Inbox or Play "

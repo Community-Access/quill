@@ -66,6 +66,7 @@ from quill.apps.lite_window_theme import DocumentAppearanceMixin
 from quill.apps.lite_window_tools import DocumentToolsMixin
 from quill.apps.lite_window_typing import DocumentTypingMixin
 from quill.apps.lite_window_view import DocumentViewCommandsMixin
+from quill.apps.lite_window_words import DocumentWordsMixin
 from quill.core.document_text import DocumentText
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
@@ -86,6 +87,8 @@ _TITLE = APP_NAME
 
 
 class DocumentFrame(
+    # Before HostedAiMixin: it answers _thesaurus_enabled with the feature area.
+    DocumentWordsMixin,
     HostedAiMixin,
     DocumentActivityMixin,
     # Tools > Dictation, from the module QUILL shares (2026-09-25).

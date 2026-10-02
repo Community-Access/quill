@@ -7818,6 +7818,82 @@ minute, Retry and Open Folder attached, and a later success of the same
 file reported so an announced failure is taken back. A result delivered
 after its window closed (<code>surface_lifetime._record_outlived</code>,
 F-02) becomes a review row rather than vanishing.</p>
+<h3
+id="559e-thesaurus-look-up-and-the-ai-dictionary-shared-with-quill-lite-shipped-2026-10-02">5.59e
+Thesaurus, Look Up and the AI dictionary, shared with QUILL Lite
+(shipped 2026-10-02)</h3>
+<p><strong>One mixin, both editors.</strong>
+<code>quill/ui/word_tools_commands.WordToolsMixin</code> is a base of
+<code>ChatGptAiMixin</code>, so every editor that has the hosted-AI
+commands has these: <code>cmd_thesaurus</code> (Shift+F7),
+<code>cmd_word_summary</code>, <code>cmd_look_up</code> (Alt+F10), the
+thirteen AI dictionary commands (<code>cmd_word_define</code> …
+<code>cmd_find_word</code>) and <code>append_word_submenus</code>, which
+both context menus call to add <em>Thesaurus for “word”</em> and
+<em>Dictionary for “word”</em>. The hooks are <code>_ai_control</code>,
+<code>_ai_parent</code>, <code>_ai_host</code> (already the hosted-AI
+hooks) and <code>_dictionary_enabled</code> (QUILL:
+<code>features.is_enabled("core.dictionary")</code>; QUILL Lite: the
+<code>dictionary</code> area). QUILL’s <code>show_thesaurus</code> and
+<code>show_lookup_dialog</code> delegate;
+<code>quill/ui/main_frame_hosted_ai.py</code> appends the Dictionary
+submenu to the AI menu and the Look Up row beside Thesaurus, registers
+the command ids and extends the menu-id map.</p>
+<p><strong>The word, and its forms.</strong>
+<code>quill/core/word_lookup.py</code> (wx-free, strict):
+<code>find_word</code> (a one-word selection wins, else the word at the
+caret, apostrophes trimmed); <code>lemma_candidates</code> walks a word
+back to the headwords MyThes knows and remembers how (plural, third
+person, -ing, past, comparative, superlative; a table of common
+irregular pasts); <code>inflect</code> walks a synonym forward the same
+way, verbs on their first word and nouns on their last, with the
+short-adjective rule for <em>-er</em> versus <em>more</em>;
+<code>match_case</code> restores the original’s capitals;
+<code>thesaurus_choices</code> (the context menu: walked-back headwords
+first, senses filtered to the parts of speech that form can be, five
+senses of eight terms, opposites apart), <code>picker_senses</code>
+(every sense for the two-pane picker, rows inflected, the headword named
+in the row) and <code>word_summary</code> (one spoken paragraph). A
+wrong walk-back finds nothing rather than something wrong, because a
+headword is accepted only when the data has it.</p>
+<p><strong>Look Up</strong> (<code>quill/ui/lookup_window.py</code>) is
+DICT-2’s window moved to shared code and made reachable: offline first
+from <code>LexicalService.lookup(word, online=False)</code>; when
+<code>dictionary_online_lookups</code> is on, the online lookup runs on
+a daemon thread with a generation counter so a toggle or a close
+discards a late answer, and <code>wx.CallAfter</code> refills the field
+under <code>dialog_alive</code>. The consent lives in the window as
+<strong>Use online sources</strong>, stored through the host’s settings
+and <code>save_settings</code> (the same field name in
+<code>core/settings.py</code> and <code>core/lite/settings.py</code>,
+classified <code>shared</code> by the vocabulary audit). It replaced a
+call site that passed the dictionary <em>feature</em> flag as the online
+flag.</p>
+<p><strong>The AI dictionary</strong>
+(<code>quill/core/ai/word_tools.py</code>): one feature id
+<code>word_tools</code> under <code>own_key.INSTRUCTIONS</code> (direct
+routes only; the gateway has no template, by decision 2026-10-01), a
+system instruction that demands a JSON object – <code>answer</code> as
+prose for listening, <code>choices</code> as exact replacement texts
+with a note – thirteen <code>WordTool</code> prompts that carry the word
+and <code>sentence_around</code> it (at most 400 characters, never the
+document), and <code>parse_answer</code>, which never raises and turns a
+non-JSON reply into prose with no choices rather than guessing an edit.
+<code>quill/ui/word_tools_window.WordAnswerFrame</code> is the modeless
+answer window (answer field focused, Choices list, Use/Insert This Word
+through <code>replace_as_one_undo</code> only while
+<code>_word_still_there</code>, Copy Choice, Copy Answer, Ask Something
+Else reopening the context menu at the caret). The route check is
+<code>_ai_direct()</code>; with no direct route every command says
+<code>NEEDS_DIRECT_ROUTE</code> and opens the ChatGPT window, and the
+context submenu shows one setup row instead of thirteen.</p>
+<p><strong>Keys.</strong> Shift+F7 (rule 1, Word’s), Alt+F10 and
+Ctrl+F10 (free in both editors, nothing in Word), and Ctrl+Shift,
+Alt+Shift and Ctrl+Alt+Shift punctuation chords for the rest – never
+bare Ctrl+Alt, which <code>menu_lint</code> rejects as AltGr (§10.8).
+Identical in both editors (<code>DEFAULT_KEYMAP</code>,
+<code>quill/core/lite/commands_words.py</code>,
+<code>parity.COMMAND_EQUIVALENTS</code>).</p>
 <h3 id="559b-quill-sync-folders--github-shipped-090-beta-3">5.59b QUILL
 Sync (folders + GitHub, shipped 0.9.0 Beta 3)</h3>
 <p><strong>Decision on record: QUILL does not build its own sync

@@ -2224,6 +2224,7 @@ class MenuBuilderMixin:
             self._id_thesaurus,
             self._menu_label(_("T&hesaurus..."), "tools.thesaurus"),
         )
+        self._append_look_up_row(writing_menu)  # main_frame_hosted_ai: the shared Look Up
         writing_menu.Append(
             self._id_dictionary_status,
             self._menu_label(_("&Dictionary Status..."), "tools.dictionary_status"),

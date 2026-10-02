@@ -1582,7 +1582,8 @@ looking for a red squiggle and right-clicking it; you have no squiggle, so the
 Applications key *is* the squiggle, and what it says first should be the answer.
 
 Under the suggestions there is a separator and then **one row** — *Spelling
-Actions for "wrold"* — and then the ordinary rows: Undo, Redo, Cut, Copy, Paste,
+Actions for "wrold"* — then the **Thesaurus** and **Dictionary** submenus for
+the word (below), and then the ordinary rows: Undo, Redo, Cut, Copy, Paste,
 Delete, Select All. That order never changes. The part that varies in length is
 at the **top**, so everything below the suggestions is always where you left it,
 and what you learn is not a row number but "after the suggestions, the menu is
@@ -1599,6 +1600,34 @@ Inside **Spelling Actions**:
 | **More Suggestions...** | The full list, in a window you can arrow through. |
 | **Check Document...** | The F7 review, from here. |
 | **Next / Previous Misspelling** | Move on without leaving the keyboard. |
+
+### Thesaurus and Dictionary on any word
+
+On **any** word, spelled right or not, the same menu carries two more rows,
+after the spelling rows and before the edit rows. Both are submenus, and both
+name the word they are about, so a menu you reached by keyboard still tells
+you what it is going to do:
+
+- **Thesaurus for "running"** opens on the best replacements, one keystroke
+  away: Enter on *sprinting* puts *sprinting* in place of *running* -- in the
+  form the sentence needs, because QUILL Lite looked the word up as *run* and
+  put the replacements back into the *-ing* form, with the capitals the
+  original had. Under the first sense, each further meaning is a submenu of
+  its own ("As a noun: ..."), then an **Opposites** submenu, then **Say Word
+  Summary** (what the thesaurus knows, spoken, without opening anything) and
+  **More in Thesaurus...**, which is the full two-pane window.
+- **Dictionary for "running"** starts with **Look Up "running"...**, the
+  dictionary without AI (see *Dictionary* below). Then, when AI help is on,
+  the twelve questions the AI dictionary can answer about the word as it is
+  used in *this* sentence: Define in Context, Synonyms That Fit, Simpler Word,
+  More Formal Word, More Vivid Word, Opposites, Is This the Right Word?, Use
+  It in a Sentence, Where It Comes From, How to Say It, Rhymes, and the Word
+  Explorer that answers all of them at once; and **Find the Word For...**,
+  the reverse dictionary. With AI help on but no key or ChatGPT sign-in, the
+  submenu holds one row that says so and opens the account window.
+
+A selected word wins over the word at the cursor, when the selection is a
+single word. There is no Thesaurus row on a number or on empty space.
 
 QUILL's menu is the same menu, in the same order, with one extra dictionary in
 it (it has projects; QUILL Lite opens files).
@@ -1640,6 +1669,128 @@ a word taught in either is known to both.
 A single document can also have its own short list of words, kept in a small
 file beside it. That is useful for names that belong to one piece of work and
 nowhere else.
+
+---
+
+## Thesaurus
+
+**Tools ▸ Thesaurus...** (**Shift+F7**, the key Word and QUILL use) opens the
+two-pane picker for the word you are on, or the word you select -- or, with
+the cursor on nothing, asks for one. It is QUILL's thesaurus, the same window
+and the same data, which ships inside QUILL Lite: nothing is downloaded and
+nothing is sent anywhere.
+
+**It finds the word you are actually on.** The word list knows headwords --
+*run*, not *running*; *happy*, not *happier* -- so a thesaurus that looked up
+the word as typed failed for most words in running prose. QUILL Lite walks the
+word back to the forms the list knows (running to run, studies to study,
+happier to happy, stopped to stop) and says so in the title ("running (as
+run)") and in each sense's row ("verb, from run: sprinting, dashing, ...").
+
+**Every replacement is already in the right form.** Choose *sprint* for
+*running* and the document gets *sprinting*; choose *glad* for *Happier* and it
+gets *Gladder*... no -- it gets *More glad*, because QUILL Lite also knows
+which adjectives take *-er* and which take *more*. Irregular verbs are known
+(*seek* for *sought* gives *sought*), and a replacement the rules cannot vouch
+for is offered in its plain form rather than invented.
+
+**The window.** Focus lands in the **Senses** list: one row per meaning, the
+part of speech first, so typing **n** jumps to the nouns and **v** to the
+verbs. Tab reaches the words of the selected sense -- replacements, then
+*broader:* terms, then *opposite:* terms, each labelled -- and **Enter** or
+**Replace** puts the selected one in place of your word and collapses the
+selection, so the next keystroke cannot destroy it. **Copy** takes it to the
+clipboard instead, and says so. **Escape** closes with nothing changed. When
+the word was typed rather than in the document, Replace is disabled and Copy
+is the default.
+
+**Say Word Summary** (**Ctrl+Alt+Shift+[**, and in the Thesaurus submenu on
+the word) speaks what the thesaurus knows without opening anything: "running,
+looked up as run: 27 meanings as a verb, 6 as an adjective, 3 as a noun.
+First: sprinting, dashing, ... Opposites: standing, ...". Useful before
+deciding whether the window is worth opening.
+
+**Dictionary Status** (**Tools ▸ Spelling ▸ Dictionary Status...**,
+**Alt+Shift+;**) is QUILL's row: how many words your personal dictionary and
+this document's own list hold, where each file is, and whether the thesaurus
+data is present.
+
+The whole area is one switch in Customize Features, **Dictionary and
+thesaurus**, on by default and off in the WordPad and Notepad profiles, which
+are named after programs that never had one.
+
+## Dictionary
+
+Two dictionaries, one row each, and the second needs AI.
+
+### Look Up: the dictionary without AI
+
+**Tools ▸ Look Up Word...** (**Alt+F10**), or **Look Up "word"...** at the
+top of the Dictionary submenu on any word, opens QUILL's Look Up window --
+the same one, now in both editors. Focus lands in the **Result**, a read-only
+field you can arrow through: the word, then one labelled section per kind of
+answer. Under it, **Words you can use** lists every synonym, opposite,
+related word and rhyme, each saying which it is; **Enter** or **Replace
+Word** puts the selected one in place of your word, **Copy** copies the
+selected word (or the whole result when none is selected), and **Add to
+Dictionary** teaches the word to your spelling dictionary.
+
+**Offline, it is the thesaurus.** Synonyms, opposites and related words from
+the word list that ships with QUILL Lite, and nothing leaves this computer.
+
+**Online, it is a dictionary and an encyclopedia too -- when you say so.** The
+checkbox **Use online sources** is off until you tick it. On, the word -- only
+the word, never the sentence or the document -- goes to three free services
+that need no account and no key: the Free Dictionary for definitions with
+examples, Datamuse for more synonyms, opposites, rhymes and related words,
+and Wikipedia for a short summary with a link back to the article. The
+offline answer appears at once, "Looking up online" is said, and when the
+online answer arrives it replaces the field and says so; a word Wikipedia has
+no real article for simply shows no encyclopedia section. The choice is
+remembered (`dictionary_online_lookups` in the settings file) and shared
+with QUILL when the two share settings vocabulary, so you are never asked
+twice; untick it and you are offline again from the next lookup.
+
+### The AI dictionary
+
+The rest of **Tools ▸ Dictionary** -- and of the Dictionary submenu on a word
+-- is the dictionary that reads the sentence. The offline thesaurus knows
+every sense of *bank*; it cannot know which one this sentence means. These
+twelve send **the word and the sentence it sits in** (never the rest of the
+document) and answer in plain prose written to be listened to, with, where
+it helps, a list of choices that each say why:
+
+| Row | Key | What comes back |
+|---|---|---|
+| **Define in Context** | Ctrl+Alt+Shift+' | What the word means *here*, its part of speech, and the meaning you might be confusing it with |
+| **Word Explorer...** | Ctrl+F10 | Everything at once: meaning, how to say it, an example, where it comes from, what it is confused with, and the best replacements |
+| **Synonyms That Fit** | Ctrl+Shift+; | Replacements that keep this sentence's meaning and register, already in the right form |
+| **Simpler Word** | Ctrl+Shift+- | Plainer, more widely known words, and what is lost |
+| **More Formal Word** | Ctrl+Shift+= | Words suited to professional writing |
+| **More Vivid Word** | Ctrl+Shift+' | Livelier or more specific words |
+| **Opposites** | Alt+Shift+- | Antonyms that would fit in the word's place |
+| **Is This the Right Word?** | Ctrl+Alt+Shift+/ | Affect or effect, complement or compliment: a plain yes, or the difference and the right word first |
+| **Use It in a Sentence** | Alt+Shift+= | Three short example sentences in the same sense |
+| **Where It Comes From** | Alt+Shift+, | The word's origin and how its meaning developed |
+| **How to Say It** | Alt+Shift+' | Syllables with the stress in capitals, a plain respelling, the IPA, and the common mispronunciation |
+| **Rhymes** | Ctrl+Alt+Shift+; | Perfect rhymes first, then near rhymes, with syllable counts |
+| **Find the Word For...** | Ctrl+Alt+Shift+] | The reverse dictionary: describe the meaning, get the word, inserted at the cursor |
+
+**The answer window.** Focus lands on the answer, so your screen reader reads
+it; nothing is announced on top of that. Tab reaches **Choices**, one line per
+replacement with its note; **Enter** or **Use This Word** puts the selected
+one in place of the word (or at the cursor, for Find the Word For) and
+**Ctrl+Z** takes it back as one step. **Copy Choice** and **Copy Answer** go
+to the clipboard. **Ask Something Else...** closes the answer and reopens the
+Dictionary submenu on the same word. If you typed over the word while the
+answer was on its way, Use This Word is disabled and says why; Copy still
+works.
+
+**It runs only on your own OpenAI key or your ChatGPT subscription**, never
+on the free service: a dictionary is asked a hundred times a day, and these
+calls would spend somebody's free allowance on synonyms. With neither, every
+row says so and opens the account window. The whole set switches off with
+**AI help** in Customize Features, because every row is a request.
 
 ---
 
@@ -2362,12 +2513,12 @@ and change your mind.
 Under the box is a **read-only description you can read line by line**, and it
 answers two different questions. First, what the profile *is*, in its own words.
 Then what it would actually *do* to the app in front of you: how many of the
-20 areas it keeps and which, which ones it removes, and anything else it
+21 areas it keeps and which, which ones it removes, and anything else it
 changes -- Notepad, for instance, also makes **Ctrl+N** create a plain text
 document. **F1** on the Profile box reads the same thing.
 
 What is spoken when you choose a profile is the short version -- "Notepad
-profile: 2 of 20 features on. New documents will be plain text. Nothing is saved
+profile: 2 of 21 features on. New documents will be plain text. Nothing is saved
 until you press Save." -- because your screen reader is already reading the name
 and the description is there to be read at your own pace.
 
@@ -2384,24 +2535,25 @@ hand-edited a profile and want to start it over.
 **The same four profiles are in Preferences**, at the top, with the same
 description box. "Make this Notepad" is a preference like any other, and you
 should not have to know that a dialog called Customize Features is where it
-lives. Preferences offers the whole answers; the 20 individual
+lives. Preferences offers the whole answers; the 21 individual
 checkboxes stay in Customize Features.
 
 Here is what each one is, at a glance and then in full.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 16 of 20 | plain text (unchanged) |
-| **Everything** | 20 of 20 | plain text (unchanged) |
-| **WordPad** | 5 of 20 | **rich text** |
-| **Notepad** | 2 of 20 | **plain text** |
+| **Recommended** | 17 of 21 | plain text (unchanged) |
+| **Everything** | 21 of 21 | plain text (unchanged) |
+| **WordPad** | 5 of 21 | **rich text** |
+| **Notepad** | 2 of 21 | **plain text** |
 
 #### Recommended
 
-**What a new install is.** 16 of the 20 areas: rich text, headings, Markdown and
+**What a new install is.** Seventeen of the 21 areas: rich text, headings, Markdown and
 HTML, bookmarks, the line tools, the clipboard history, printing, abbreviations,
-the Selection submenu, spell check, Matches, Go Back and Go Forward, the Command
-Palette, Describe Character, text size and dictation.
+the Selection submenu, spell check, the dictionary and thesaurus, Matches, Go
+Back and Go Forward, the Command Palette, Describe Character, text size and
+dictation.
 
 **Off:** autocorrect, timestamped backups, Go To Anything and AI help. Those four
 are not missing features; they are the ones that would be *wrong* on by default
@@ -2415,7 +2567,7 @@ gets to decide for you.
 
 #### Everything
 
-**All 20 areas on**, including those four -- and that includes **AI help**, which
+**All 21 areas on**, including those four -- and that includes **AI help**, which
 is the one area here that sends anything off this computer, so choose this profile
 only if that is what you meant. Autocorrect will straighten your quotes and turn
 two hyphens into a dash (and nothing else -- it does not capitalise sentences),
@@ -2429,14 +2581,15 @@ them one at a time.
 
 **What WordPad was.** Rich text you can format, print, and check the spelling
 of: bold, italic, underline, headings, alignment, bullets, indenting and line
-spacing, plus Find and Replace, printing and text size. Five of the 20
+spacing, plus Find and Replace, printing and text size. Five of the 21
 areas.
 
-**Off**, all fifteen of them: the writing tools behind the formatting. No
+**Off**, all sixteen of them: the writing tools behind the formatting. No
 line tools (Edit ▸ Lines) and no Change Case, no clipboard history or Copy
 Tray, no bookmarks, no abbreviations, no Selection submenu, no Matches list, no
 Back and Forward, no Command Palette, no Go To Anything, no Describe Character,
-no dictation, no autocorrect, no backups, **no Markdown or HTML** (Ctrl+B in a `.md` goes back
+no dictation, no dictionary or thesaurus (WordPad never had one), no
+autocorrect, no backups, **no Markdown or HTML** (Ctrl+B in a `.md` goes back
 to meaning rich text and saying so), and **no AI help**.
 
 **Ctrl+N makes a rich text document.** That is the half of this name a list of
@@ -2451,12 +2604,13 @@ without one in 2026 is a surprise rather than a simplification.
 #### Notepad
 
 **The smallest QUILL Lite gets**, and the one most people arriving here are
-replacing something with. Two of the 20 areas: **printing** and **text
+replacing something with. Two of the 21 areas: **printing** and **text
 size**.
 
-**Off**, all eighteen of them: the Format menu and everything under it,
+**Off**, all nineteen of them: the Format menu and everything under it,
 headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
-clipboard history, abbreviations, the Selection submenu, spell check, Matches,
+clipboard history, abbreviations, the Selection submenu, spell check, the
+dictionary and thesaurus, Matches,
 Back and Forward, the Command Palette, Go To Anything, Describe Character,
 dictation, autocorrect, backups and AI help. Nothing Notepad does not have -- which is the
 point of choosing it.
@@ -2492,7 +2646,7 @@ is called, so typing "curly quotes" finds Autocorrect and typing "dictionary"
 finds Spell check. The line under the box says how many are left, and **Down**
 from the box moves straight into the list.
 
-### The 20 areas
+### The 21 areas
 
 | Area | What goes | Starts |
 |---|---|---|
@@ -2505,6 +2659,7 @@ from the box moves straight into the list.
 | **Printing** | Print and Page Setup | on |
 | **Abbreviations** | Short forms, and the list that manages them | on |
 | **Spell check** | Tools ▸ Spelling, and checking as you type | on |
+| **Dictionary and thesaurus** | Look Up, Thesaurus, Say Word Summary, and the two submenus on any word | on |
 | **The Selection submenu** | F8 selecting, whole-structure selecting, marks | on |
 | **The Matches submenu** | All Matches and Count Occurrences (Find itself stays) | on |
 | **Go Back and Go Forward** | The trail of places you jumped from | on |
@@ -3327,7 +3482,8 @@ either. See *AI help* under Customize Features for the reason the switch and the
 agreement are two separate things, and for the three doors to the agreement.
 
 Once it is on, there is **one pad**, seventeen things it can do, and two keys
-into it.
+into it -- and, under **Tools ▸ Dictionary**, twelve questions about the word
+you are on, which have their own section (*Dictionary*, above).
 
 **AI Assistant** (**Ctrl+Alt+G**) opens the pad where you are. **Ask About
 This Document** (**Ctrl+Alt+Z**) opens the same pad with **Ask a question about
@@ -4211,6 +4367,9 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 
 | Key | Command |
 |---|---|
+| **Alt+F10** | Look Up Word... |
+| **Shift+F7** | Thesaurus... |
+| **Ctrl+Alt+Shift+[** | Say Word Summary |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
 | **Alt+Shift+I** | Snippets... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
@@ -4234,6 +4393,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+F7** | Previous Misspelling |
 | **Ctrl+Alt+F9** | Add Word to Dictionary |
 | **Ctrl+Alt+F7** | Check While Typing |
+| **Alt+Shift+;** | Dictionary Status... |
 | **Ctrl+Alt+Shift+F7** | Announcements... |
 
 ### Tools ▸ AI
@@ -4249,6 +4409,24 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+F5** | Use My ChatGPT Subscription... |
 | **Ctrl+F5** | Ask About an Image... |
 | **Ctrl+F3** | Tidy Dictated Text... |
+
+### Tools ▸ Dictionary
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+Shift+'** | Define in Context |
+| **Ctrl+F10** | Word Explorer... |
+| **Ctrl+Shift+;** | Synonyms That Fit |
+| **Ctrl+Shift+-** | Simpler Word |
+| **Ctrl+Shift+=** | More Formal Word |
+| **Ctrl+Shift+'** | More Vivid Word |
+| **Alt+Shift+-** | Opposites |
+| **Ctrl+Alt+Shift+/** | Is This the Right Word? |
+| **Alt+Shift+=** | Use It in a Sentence |
+| **Alt+Shift+,** | Where It Comes From |
+| **Alt+Shift+'** | How to Say It |
+| **Ctrl+Alt+Shift+;** | Rhymes |
+| **Ctrl+Alt+Shift+]** | Find the Word For... |
 
 ### Tools ▸ Dictation
 

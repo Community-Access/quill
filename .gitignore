@@ -257,3 +257,5 @@ platform-report.md
 # The UIA suite keeps a failed test's QUILL profile (logs, crash bundles,
 # exit code) here for the workflow to upload. Evidence, never source.
 /uia-diagnostics/
+# The QuillVille list write-up Jeff sends by hand (2026-10-02); not a repo document.
+describe.md

@@ -38,6 +38,40 @@ recurring.*
   while it is read. A new window says "Opening" and the name once, the text
   arrives when it is ready, closing the window cancels, and a file that cannot
   be read asks whether to try again.
+- **Activity (Help, Shift+F9) and Repeat Last Result (F9).** Everything
+  QUILL Lite told you this session, newest first, with what you can do about
+  each row: Retry, Open Folder, Copy Details, Clear List. A settings file that
+  could not be saved is said once, with the reason -- the disk is full, the
+  folder is read only, Windows would not allow it -- and its row carries a
+  Retry that saves again and an Open Folder that shows you the disk; when a
+  later save works, that is said too, so a failure you were told about is
+  never left standing. Background work that finished after you closed its
+  window lands here as a row instead of being lost. F9 says the newest result
+  that mattered again -- the last thing QUILL Lite itself told you, not the
+  last thing your screen reader read. The same two keys and the same window
+  in QUILL, Quill Radio and QUILL Cast.
+- **A thesaurus, on Shift+F7 and on every word.** QUILL's two-pane thesaurus,
+  with QUILL's data inside QUILL Lite, that finds the word you are actually
+  on ("running" reaches "run", "happier" reaches "happy") and puts every
+  replacement back in the form the sentence needs. The Applications key on
+  any word now carries a *Thesaurus for "word"* submenu -- the best
+  replacements one keystroke away, every other sense as a submenu, the
+  opposites, a spoken summary -- and a *Dictionary for "word"* submenu.
+- **Look Up Word (Alt+F10), the dictionary without AI.** QUILL's Look Up
+  window, in both editors: the thesaurus offline, and -- only after you tick
+  **Use online sources** in the window -- definitions, more words and a short
+  Wikipedia summary from three free services that receive the word alone.
+  Enter on a word in the list replaces yours; Add to Dictionary teaches it.
+- **The AI dictionary, Tools > Dictionary.** Twelve questions about the word
+  as it is used in this sentence -- define it, synonyms that fit, a simpler,
+  more formal or more vivid word, opposites, is this the right word, use it
+  in a sentence, where it comes from, how to say it, rhymes, the Word
+  Explorer that does it all at once -- and Find the Word For, the reverse
+  dictionary. Prose for listening, choices that each say why, Use This Word
+  as one undo step. On your own OpenAI key or ChatGPT subscription only.
+- **Dictionary Status**, QUILL's row, under Tools > Spelling: how many words
+  your dictionaries hold, where each file is, and whether the thesaurus data
+  is present.
 
 ## Released in 1.1
 

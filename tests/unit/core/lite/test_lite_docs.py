@@ -106,6 +106,7 @@ _AREA_IN_PROSE: dict[str, str] = {
     "printing": "printing",
     "hosted_ai": "AI help",
     "dictation": "dictation",
+    "dictionary": "thesaurus",
 }
 
 

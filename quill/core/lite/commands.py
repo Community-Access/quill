@@ -24,6 +24,7 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.lite import APP_NAME, APP_VERSION
+from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 
 __all__ = [
     "COMMANDS",
@@ -774,12 +775,14 @@ COMMANDS: list[CommandRow] = [
     # Windows applications have kept their settings since Word 6, which is why
     # Preferences and Customize Features are here rather than in View.
     ("&Tools", "&Spelling", "", "", "sub"),
+    *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
     ("&Tools", "&Change Case", "", "", "sub"),
     ("&Tools", "Indentin&g", "", "", "sub"),
     # A submenu, not a tenth top-level menu: Clipboard and Spelling were demoted
     # from the bar for exactly this reason. Why these four chords and no others,
     # in quill/ui/hosted_ai_commands.py's docstring.
     ("&Tools", "&AI", "", "", "sub"),
+    ("&Tools", "Dictionar&y", "", "", "sub"),  # the AI dictionary (commands_words.py)
     ("&Tools", "&Dictation", "", "", "sub"),
     ("&Tools", "", "", "", "sep"),
     # Both are shown in the status bar and both used to be read-only: QUILL Lite
@@ -852,10 +855,6 @@ COMMANDS: list[CommandRow] = [
     # modifier -- which means one key to remember rather than six.
     ("&Tools|&Spelling", "Check &Spelling...", "F7", "cmd_spell_review", ""),
     # Alt+Shift+F7 rather than Shift+F7 since 2026-09-16: Shift+F7 is the
-    # Thesaurus in Word and in QUILL, so a habit from either landed here on
-    # something else. QUILL Lite has no thesaurus (it needs an asset
-    # download), and the right answer for a key it cannot honour is to leave
-    # it unbound rather than to give it a different meaning (bad.md 3.6).
     (
         "&Tools|&Spelling",
         "Spelling for &This Word",
@@ -888,6 +887,7 @@ COMMANDS: list[CommandRow] = [
     # the check is sometimes off for a reason nobody was told, so there has to
     # be one visible thing that says what the state is and changes it.
     ("&Tools|&Spelling", "Check &While Typing", "Ctrl+Alt+F7", "cmd_toggle_live_spelling", "check"),
+    *DICTIONARY_STATUS_ROWS,  # QUILL's Dictionary Status (commands_words.py)
     ("&Tools|&Spelling", "", "", "", "sep"),
     # The twelve answers to "how is a misspelling *said*", in one window. On the
     # last free F7 chord, which keeps the whole submenu on one key: F7 and a
@@ -940,6 +940,7 @@ COMMANDS: list[CommandRow] = [
     # Dictation's AI: fix what the recogniser misheard, on a plan or an own key.
     # Ctrl+F3 was free in both editors and is nothing in Word QUILL has.
     ("&Tools|&AI", "Tidy Dictated Te&xt...", "Ctrl+F3", "cmd_dictation_tidy", ""),
+    *DICTIONARY_ROWS,  # Tools > Dictionary, the AI word tools (commands_words.py)
     # -- Tools > Dictation, shared with QUILL (quill/ui/windows_dictation_commands.py).
     # Ctrl+F11: Word's Alt+grave is a dead key on many layouts, and QUILL's Ctrl+F9
     # is Locked Dictation, another engine (rule 2). Checkable: "am I heard?"
@@ -1010,7 +1011,6 @@ COMMANDS: list[CommandRow] = [
     ("&Help", "&Repeat Last Result", "F9", "cmd_repeat_last_result", ""),
     # The family item and key: Lite's users least know where else to write.
     ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
-    # The family key; before it Lite could not learn of a newer version.
     ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
     ("&Help", "&About QUILL Lite", "Shift+F1", "cmd_about", ""),
 ]

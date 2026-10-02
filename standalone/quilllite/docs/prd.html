@@ -808,26 +808,26 @@ top of that is what GATE-13 exists to stop.</p>
 <tbody>
 <tr>
 <td>Recommended</td>
-<td>15 of 19</td>
+<td>17 of 21</td>
 <td>unchanged</td>
 <td>the shipped answer, and the way back from experimenting</td>
 </tr>
 <tr>
 <td>Everything</td>
-<td>19 of 19</td>
+<td>21 of 21</td>
 <td>unchanged</td>
 <td>turning things off as they annoy you rather than finding them one at
 a time</td>
 </tr>
 <tr>
 <td>WordPad</td>
-<td>5 of 19</td>
+<td>5 of 21</td>
 <td><strong>rich</strong></td>
 <td>letters and notes that should look like something</td>
 </tr>
 <tr>
 <td>Notepad</td>
-<td>2 of 19</td>
+<td>2 of 21</td>
 <td><strong>plain</strong></td>
 <td>config files, logs, and anything where hidden formatting would be a
 problem</td>
@@ -1682,6 +1682,53 @@ which is not a test anybody should have to run.</p>
 <p>Select All stays in Edit itself on Ctrl+A, outside this switchable
 area, so turning the submenu off can never remove the one selection
 command that predates all of it.</p>
+<h3
+id="78-the-thesaurus-and-the-dictionary-came-to-quill-lite-and-look-up-came-back-to-quill-2026-10-02">7.8
+The thesaurus and the dictionary came to QUILL Lite, and Look Up came
+back to QUILL (2026-10-02)</h3>
+<p>The family rule ran both ways in one change. QUILL Lite had no
+thesaurus at all – a comment in the command table said it needed an
+asset download, which was never true: the 18 MB MyThes file ships in
+every copy. QUILL’s thesaurus, meanwhile, looked up the word as typed
+and offered headwords, so “running” found nothing and “sprint” was
+offered where “sprinting” was needed. Both are fixed once, in shared
+code: <code>quill/core/word_lookup.py</code> walks a word back to the
+headwords the data knows and inflects every replacement forward, and
+<code>quill/ui/word_tools_commands.py</code> is the one
+<code>WordToolsMixin</code> both editors mix in through
+<code>HostedAiMixin</code> – Shift+F7, the <em>Thesaurus for “word”</em>
+and <em>Dictionary for “word”</em> submenus on the context menu, Say
+Word Summary, and the AI dictionary. QUILL’s <code>show_thesaurus</code>
+now delegates to it.</p>
+<p><strong>Look Up</strong> (<code>quill/ui/lookup_window.py</code>,
+DICT-2’s window) had been reachable in QUILL only when the thesaurus
+data was missing, and it went online whenever the dictionary feature was
+on, which is not consent. It is now Tools &gt; Writing</p>
+<blockquote>
+<p>Look Up Word (Alt+F10) in QUILL and Tools &gt; Look Up Word in QUILL
+Lite, the online half is behind <strong>Use online sources</strong> in
+the window itself (<code>dictionary_online_lookups</code>, the same
+field name in both settings files, so the vocabulary gate sees one
+setting), and the online answer arrives on a worker and replaces the
+offline one with a sentence said when it lands.</p>
+</blockquote>
+<p><strong>The AI dictionary</strong>
+(<code>quill/core/ai/word_tools.py</code>: one feature id, one system
+instruction asking for JSON – prose for listening and exact replacement
+texts – and thirteen prompts;
+<code>quill/ui/word_tools_window.py</code>: the answer window) runs only
+on a direct route, because the free service is metered per person and a
+dictionary is asked a hundred times a day. QUILL reaches the same
+thirteen commands through a Dictionary submenu of its AI menu
+(<code>quill/ui/main_frame_hosted_ai.py</code>), on QUILL Lite’s chords
+exactly.</p>
+<p>Gates that moved: a new Customize Features area,
+<code>dictionary</code>, with the profile counts now 17, 21, 5 and 2 of
+21; <code>commands_words.py</code> split out of the command table under
+GATE-11; the Lite coverage snapshot has sixteen new handlers, every one
+called by a test in <code>tests/unit/apps/test_lite_words.py</code>; and
+menu_lint’s rule against bare Ctrl+Alt chords (AltGr) decided the keys
+the less-used rows carry.</p>
 <h2 id="8-future-directions">8. Future directions</h2>
 <h3
 id="81-accepted-for-a-later-release-decided-2026-09-08-shipped-2026-09">8.1

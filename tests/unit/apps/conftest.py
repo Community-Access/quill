@@ -774,9 +774,12 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_tools import DocumentToolsMixin
     from quill.apps.lite_window_typing import DocumentTypingMixin
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
+    from quill.apps.lite_window_words import DocumentWordsMixin
     from quill.ui.hosted_ai_commands import HostedAiMixin
 
     class LiteWindowStub(
+        # Tools > Thesaurus and the Dictionary Status row, 2026-10-02.
+        DocumentWordsMixin,
         # Help > Activity and Repeat Last Result, 2026-10-02 (qc.md F-10).
         DocumentActivityMixin,
         # Tools > AI, added 2026-09-23. The four handlers open modeless

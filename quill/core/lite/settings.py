@@ -249,6 +249,7 @@ class Settings:
     #: switch is: a machine that has never had QUILL installed must not grow a
     #: Quill data folder because somebody taught a text editor a word.
     share_quill_dictionary: bool = False
+    dictionary_online_lookups: bool = False
     #: Keep every copy and cut in the clip library automatically.
     #:
     #: Off, and the default is the feature rather than a timidity about it: a
@@ -583,8 +584,7 @@ def save(settings: Settings, path: Path | None = None) -> None:
     """
     from quill.core.persistence_outcome import guarded_write
 
-    target = path if path is not None else settings_path()
-    document = {"schema": SCHEMA, **_deltas(settings.normalized())}
+    target, document = path or settings_path(), {"schema": SCHEMA, **_deltas(settings.normalized())}
     guarded_write("QUILL Lite settings", target, lambda: write_json_atomic(target, document))
 
 

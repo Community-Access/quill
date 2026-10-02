@@ -351,6 +351,20 @@ commands exist specifically for the moments when software usually goes silent: *
 Don't I See a Feature?**, **Why Is This Unavailable?**, and the Feature Profile health
 check.
 
+**Activity, and Repeat Last Result.** Help > **Activity...** (**Shift+F9**) lists
+everything QUILL reported in this session, newest first, one sentence per row -- whether
+it worked, what it was, and when -- with what you can do about each: **Retry**, **Open
+Folder**, **Copy Details**, **Clear List**. A settings file that could not be saved is
+said once, with the reason (the disk is full, the folder is read only, Windows would
+not allow it), and its row carries a Retry that saves again and an Open Folder that
+shows you the disk; when a later save works, that is said too, so a failure you were
+told about is never left standing. Background work that finished after you closed the
+window that started it lands here as a row instead of being lost. **Repeat Last
+Result** (**F9**) says the newest result that mattered again -- the last thing QUILL
+itself told you, not the last thing your screen reader read -- and names what Activity
+offers for it. Nothing in the list leaves this computer, and no document text is ever in
+it. The same two keys do the same thing in QUILL Lite, Quill Radio and QUILL Cast.
+
 ---
 
 ## Writing and Editing
@@ -727,9 +741,47 @@ fenced code blocks do not alert, because those regions are wall-to-wall "misspel
 that a sighted reader filters out with a glance. The full F7 review still covers the whole
 document; only the ambient alert holds back.
 
-An in-editor **thesaurus** is available when its data is installed. **Proofread before
-publish** can run a spelling pass automatically on save, on save-as, or on the text of a
-Mastodon post before it goes out.
+**The thesaurus finds the word you are on.** **Shift+F7** opens a two-pane picker for
+the word under the cursor (or the one you select, or one you type). The data knows
+headwords -- *run*, not *running*; *happy*, not *happier* -- so QUILL walks the word
+back to the forms the data knows, says so ("running (as run)"; "verb, from run:
+sprinting, dashing, ..."), and puts every replacement back in the form the sentence
+needs with the original's capitals: *sprinting* for *running*, *More glad* for
+*Happier*. Focus lands in the Senses list with the part of speech first, so **n** jumps
+to the nouns and **v** to the verbs; Tab reaches the words of the selected sense,
+labelled *broader:* and *opposite:* where they are not plain replacements; Enter puts
+the chosen one in and collapses the selection so the next keystroke cannot destroy it.
+**Say Word Summary** (Ctrl+Alt+Shift+[) speaks the headword, the meanings per part of
+speech, the first replacements and the opposites without opening anything.
+
+**Two submenus on any word.** Press the Applications key on a word and the menu
+carries *Thesaurus for "running"* -- the best replacements one keystroke away, every
+other sense as a submenu, Opposites, Say Word Summary, More in Thesaurus -- and
+*Dictionary for "running"*, which starts with Look Up and continues, when AI is on,
+with the AI dictionary.
+
+**Look Up Word** (**Alt+F10**) is the dictionary without AI. Offline it is the
+thesaurus, and nothing leaves this computer. Tick **Use online sources** in the window
+and the word -- only the word, never the sentence or the document -- goes to three free
+services that need no account: the Free Dictionary for definitions with examples,
+Datamuse for more synonyms, opposites, rhymes and related words, and a short Wikipedia
+summary with a link back to the article. The offline answer appears at once and the
+online one replaces it when it arrives, with a sentence said. The choice is remembered;
+untick it and you are offline again.
+
+**The AI dictionary** is a Dictionary submenu of the AI menu and the second half of the
+submenu on the word: thirteen questions about the word *as it is used in this
+sentence* -- Define in Context, Synonyms That Fit, Simpler, More Formal and More Vivid
+Word, Opposites, Is This the Right Word?, Use It in a Sentence, Where It Comes From, How
+to Say It, Rhymes, the Word Explorer that answers all of them at once, and Find the Word
+For, the reverse dictionary. Each sends the word and its sentence and answers in prose
+written to be listened to, with choices that each say why; Enter on a choice replaces
+the word as one undo step, only while the word is still where it was. It runs on your
+own OpenAI key or your ChatGPT subscription, never the free allowance, and QUILL Lite
+has the same thirteen rows on the same keys.
+
+**Proofread before publish** can run a spelling pass automatically on save, on save-as,
+or on the text of a Mastodon post before it goes out.
 
 **Set Document Language** pins the language of an unsaved buffer or an unusual file
 extension, which drives what Ctrl+B produces, what comment syntax is used, and how the
