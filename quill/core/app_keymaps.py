@@ -219,6 +219,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # The same key Quill Radio's Go to Position uses, so "jump to the bit
         # forty minutes in" is one keystroke in both players (11.8).
         "podcasts.go_to_position": "Ctrl+Alt+J",
+        # Now Playing (qc.md 5): window 2, so Ctrl+2 reaches it through the
+        # Window menu; this is the Episode menu row's own chord.
+        "podcasts.now_playing": "Ctrl+Alt+2",
         "app.recent_problems": "Ctrl+Alt+Shift+P",
         # qc.md F-10: the family's two result keys, the same everywhere.
         "app.repeat_last_result": "F9",

@@ -229,6 +229,11 @@ class CastMenuBarMixin:
         )
         continue_id = wx.NewIdRef()
         episode_menu.Append(continue_id, "&Continue Listening...\tCtrl+Shift+L")
+        now_playing_id = wx.NewIdRef()
+        episode_menu.Append(
+            now_playing_id, self._menu_label("Now Playin&g...", "podcasts.now_playing")
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_now_playing(), id=now_playing_id)
         about_ep_id = wx.NewIdRef()
         episode_menu.Append(about_ep_id, "Ab&out This Episode...\tCtrl+Shift+A")
         note_id = wx.NewIdRef()

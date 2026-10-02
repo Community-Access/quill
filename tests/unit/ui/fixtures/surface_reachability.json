@@ -219,6 +219,8 @@
   "quill.ui.podcasts.manager_phase4": "reachable",
   "quill.ui.podcasts.mark_played_confirm_dialog": "reachable",
   "quill.ui.podcasts.move_shows_dialog": "reachable",
+  "quill.ui.podcasts.now_playing_layout": "reachable",
+  "quill.ui.podcasts.now_playing_window": "reachable",
   "quill.ui.podcasts.opml_import_dialog": "reachable",
   "quill.ui.podcasts.opml_import_report_dialog": "reachable",
   "quill.ui.podcasts.play_queue_dialog": "reachable",

@@ -114,6 +114,11 @@ class PodcastHistory:
     #: writes it. Empty means nothing has been said. See
     #: :mod:`quill.ui.podcasts.media_preflight`.
     media_notice_signature: str = ""
+    #: Bring Now Playing to the front when playback starts (qc.md 5). Off:
+    #: a window that steals focus on every Play is one somebody turns off.
+    switch_to_now_playing: bool = False
+    #: How Copy Notes copies: plain, plain_links, markdown or formatted (5c).
+    notes_copy_format: str = "plain"
     #: Look for new episodes on a timer. Named exactly as
     #: :class:`quill.core.settings.Settings` names them, because
     #: ``PodcastCheckMonitor`` reads its settings object duck-typed: inside
@@ -236,6 +241,10 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.menu_mode = menu_mode.normalize_mode(raw.get("menu_mode"))
         history.show_status_bar = bool(raw.get("show_status_bar", True))
         history.hide_caught_up = bool(raw.get("hide_caught_up", False))
+        history.switch_to_now_playing = bool(raw.get("switch_to_now_playing", False))
+        from quill.core.podcasts.notes_export import normalize_format
+
+        history.notes_copy_format = normalize_format(raw.get("notes_copy_format"))
         history.onboarding = OnboardingState.from_dict(raw.get("onboarding"))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
@@ -274,6 +283,8 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
                 "menu_mode": history.menu_mode,
                 "show_status_bar": history.show_status_bar,
                 "hide_caught_up": history.hide_caught_up,
+                "switch_to_now_playing": history.switch_to_now_playing,
+                "notes_copy_format": history.notes_copy_format,
                 # transcript_detail was read by load_history and missing from this
                 # list, so it has never persisted: a listener chose how much
                 # scaffolding an exported transcript keeps and the next launch forgot.

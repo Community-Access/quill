@@ -2,6 +2,38 @@
 
 ## 1.0.0
 
+### QUILL Cast: Now Playing, the Notes reader, and Links in These Notes (2026-10-02)
+
+- **Now Playing (Ctrl+2)**: window 2 of QUILL Cast, made at start-up and
+  hidden on close so its number never moves. The podcast, the episode and
+  where it is playing from; the position as a `wx.Slider` whose keys seek and
+  say the time (and which is never written while it has focus); Pause/Resume,
+  Stop, Back and Forward 30 Seconds, Previous and Next Chapter; speed as nine
+  choices plus Custom through `speed.apply_speed`; volume and Mute; the sleep
+  timer readout with Set, At End of Episode and Extend by 5 Minutes; the
+  chapters as a report list whose playing row says so without moving the
+  cursor; the Notes reader; Your note (one `EpisodeNote` at position 0 under
+  an `about:` id, saved on blur); Add to/Remove from Favorites, Mark as
+  Played, Share and About This Episode. Episode > Now Playing (Ctrl+Alt+2),
+  the Play cell's first row, and Preferences > "Switch to Now Playing when
+  playback starts" (`PodcastHistory.switch_to_now_playing`, off)
+  (`quill/ui/podcasts/now_playing_window.py`, `now_playing_layout.py`,
+  `quill/apps/podcasts_now_playing.py`; qc.md section 5).
+- **The Notes reader** (`quill/ui/notes_reader.py`): a native read-only rich
+  field over `core/podcasts/notes_render.py` -- headings (H / Shift+H with the
+  level said), links and timestamps on one Tab circuit with the title said,
+  Enter opens or seeks, Ctrl+F with the count and F3 -- and
+  `core/podcasts/notes_export.py`, the one home of the four copy formats
+  (plain, plain with links, Markdown, formatted HTML+RTF), the spoken copy
+  with its word count, and the scriptless browser page. `PodcastHistory`
+  keeps `notes_copy_format` (qc.md 5c).
+- **Links in These Notes**: the shared link list reads title then address,
+  folds duplicate addresses, and gains Copy Title and Address and Copy All
+  Addresses (`quill/ui/link_list_dialog.py`).
+- Cast's `surface_help` gains Now Playing, Links in These Notes and Find;
+  the Cast help, dialog, accessible-name and reachability inventories and the
+  keyboard and F1 references are regenerated.
+
 ### QUILL and QUILL Lite: a thesaurus that finds the word you are on, Look Up on a key, and an AI dictionary (2026-10-02)
 
 - **Thesaurus (Shift+F7) finds the word you are on and inflects what it

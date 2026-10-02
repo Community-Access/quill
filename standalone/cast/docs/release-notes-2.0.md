@@ -39,6 +39,32 @@ again and an Open Folder that shows you the disk; when a later save works,
 that is said too. **Help > Repeat Last Result** (F9) says the newest result
 that mattered again. The same two keys in QUILL, QUILL Lite and Quill Radio.
 
+### Now Playing: a console you can live in
+
+**Ctrl+2**, from anywhere in QUILL Cast, is a window with everything about the
+playing episode in one place: the podcast, the episode and where it came
+from; the position as a real slider that speaks minutes and seconds as you
+move it; Pause, Stop, thirty seconds back and forward, the chapters; speed as
+a list of nine plus Custom; volume and Mute; the sleep timer's readout with
+Set, At End of Episode and Extend by 5 Minutes beside it; the chapters as a
+list whose playing row says so and follows playback without moving your
+cursor; the show notes, readable; a note of your own that is saved when you
+leave the field; and Add to Favorites, Mark as Played, Share and About This
+Episode. Ctrl+1 is the library again. The window is made when Cast starts and
+only hidden when closed, so its number never moves, and a Preferences switch
+(off by default) brings it to the front whenever playback starts.
+
+**The show notes can be read now, not only heard.** The Notes reader keeps
+the podcast's headings, lists and links in a native read-only field: H and
+Shift+H move between headings and say the level, Tab and Shift+Tab move
+between links and timestamps and say the title, Enter opens a link or plays
+from a timestamp, Ctrl+F finds with the count spoken and F3 moves on. Copy
+Notes copies the whole notes as plain text, plain text with links, Markdown or
+formatted HTML-with-RTF, remembers your choice, and says what it copied with
+the word count; Links opens Links in These Notes (title then address, Copy
+Title and Address, Copy All Addresses); View in Browser opens the notes as
+the podcast wrote them, images included, on a temporary page with no scripts.
+
 ### Episode Filters ask far more, and write a rule for you
 
 A rule can now test the show notes, the people on an episode, the type the

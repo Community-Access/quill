@@ -1529,6 +1529,60 @@ in Library is Ctrl+F. Transcripts are excluded until F-09's index exists.
 `podcasts_view_menu.py` joined the app menu-accelerator gate, whose first run
 gave Customize Features Radio's Ctrl+Alt+C.
 
+### 23.13 Now Playing, the Notes reader and Links in These Notes (section 5 and 5c, 2026-10-02)
+
+`quill/ui/podcasts/now_playing_window.py` is window 2: `NowPlayingWindow` over
+the host's controller, library, chapter list and sleep-timer controller, with
+its controls built in `now_playing_layout.py` (GATE-11) in the order a screen
+reader meets them, every label created immediately before the control it
+names and every control's help inline (GATE-CAST-HELP). `CastNowPlayingMixin`
+(`apps/podcasts_now_playing.py`) makes it at start-up, hidden, and registers it
+with the `WindowManager` so it is always Ctrl+2; closing vetoes and hides,
+which keeps the number and stops the once-a-second `wx.Timer` (the
+timer-ownership gate sees the stop). The Episode menu row (`podcasts.now_playing`,
+Ctrl+Alt+2 in `APP_KEYMAPS`) and the Play cell's first row open it;
+`_on_podcast_state_changed` is overridden to refresh an open window and, when
+`PodcastHistory.switch_to_now_playing` is on, to show it once per episode as
+playback starts.
+
+Three rules in the window are load-bearing: the slider is never written while
+it has focus or is being dragged (a value written under a focused slider is a
+value the reader repeats), so only the time readout moves each second; the
+chapters' *playing* mark is a Status-column write and never a selection
+change; and the window announces nothing on show -- the slider's own key
+handler says the time, the chapter jump says the chapter, and the rest is the
+host's own verbs (`podcast_toggle_play_pause`, `open_sleep_timer_dialog`,
+`podcast_mark_played_and_next`, `share_moment`, `open_podcast_episode_extras`),
+so a sentence is never worded twice. Speed goes through `speed.apply_speed`
+(scope and all); Custom... is a `TextEntryDialog`.
+
+**Your note** is one `EpisodeNote` per episode at position 0 under an id that
+starts `about:` (`episode_notes.episode_level_note` /
+`set_episode_level_note`), so every existing list and jump treats it as a
+note at the start and the field can find it again; empty text removes it.
+
+**The Notes reader** (`quill/ui/notes_reader.py`) is a native `TE_RICH2`
+read-only field over `core/podcasts/notes_render.py`, which parses the HTML
+into blocks (heading with level, paragraph, list item, preformatted) and
+absolute-offset spans for links and timestamps (`h:mm:ss` or `m:ss`, a span
+inside a link belongs to the link). Styles are applied by range; Tab,
+Shift+Tab, Enter, H, Shift+H, Ctrl+F and F3 are handled in the field's
+`EVT_CHAR_HOOK`. `core/podcasts/notes_export.py` is the one place the four
+copy formats live (plain, plain with links, Markdown, formatted = HTML on the
+clipboard with an RTF object and a text object beside it), with a test per
+format, and `browser_page` is the podcast's own HTML with scripts, styles,
+frames and event handlers removed. `PodcastHistory.notes_copy_format` keeps
+the chosen format. `link_list_dialog.py` gained Copy Title and Address and the
+spec's names; the reader passes it the unique links with their titles.
+
+Tests: `tests/unit/core/podcasts/test_cast_notes_render.py` (the renderer, the
+four formats, the browser page, the episode-level note, the two history
+fields) and `tests/unit/ui/podcasts/test_now_playing_window.py` (a real
+`wx.App`, a fake host: loading, the hidden-not-destroyed close, the slider
+keys, every button's verb, the chapter mark, Your note, the copy format, the
+sleep readout, speed, volume, favorites; and the reader's Tab, H, find,
+timestamp and empty cases).
+
 ### 23.12 Closing keeps a record of what it could not save (F-06, 2026-10-01)
 
 `_cast_shutdown` runs each step through `core/shutdown_report.ShutdownReport`:
@@ -1545,7 +1599,8 @@ flushes both again. Nothing persisted carries exception text.
 under GATE-11, and `podcasts.py`'s budget was ratcheted down to its new size. The
 window gained "Where to land on la&unch:" in the Podcasts group, over
 `core/podcasts/launch_place.CHOICES`, saved to `PodcastSettings.default_launch_view`
-with the library and only when it changed. The planned "Switch to Now Playing when
+with the library and only when it changed. "Switch to Now Playing when playback
+starts" landed with Now Playing on 2026-10-02 (23.13). The planned "Switch to Now Playing when
 playback starts" is deliberately absent until Now Playing exists: a switch for a
 surface that is not there is a setting that lies.
 

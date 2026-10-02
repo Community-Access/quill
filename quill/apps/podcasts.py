@@ -19,6 +19,7 @@ from quill.apps.podcasts_go_to import CastGoToMixin
 from quill.apps.podcasts_help_surfaces import CastHelpSurfacesMixin
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
 from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
+from quill.apps.podcasts_now_playing import CastNowPlayingMixin
 from quill.apps.podcasts_preferences import CastPreferencesMixin
 from quill.apps.podcasts_view_menu import CastViewMenuMixin
 from quill.ui.app_quillins import QuillinsAppMixin
@@ -55,6 +56,7 @@ class PodcastsAppFrame(
     CastHelpSurfacesMixin,
     CastMenuBarMixin,
     CastMainPanelMixin,
+    CastNowPlayingMixin,
     CastPlacesMixin,
     CastPreferencesMixin,
     CastQuickPlayMixin,
@@ -91,20 +93,18 @@ class PodcastsAppFrame(
         # F1 context help with Cast's authored purpose catalogue. The app
         # shell already activated the shared engine (provider + dialog-contract
         # hook + main-frame F1); this re-activation swaps in Cast's
-        # window-purpose resolver so the authored paragraphs lead every answer
-        # instead of the generic sentence (GATE-CAST-HELP, 2026-08-24).
+        # window-purpose resolver: authored paragraphs lead every answer (GATE-CAST-HELP).
         from quill.ui.podcasts import context_help
 
         context_help.activate()
         self._init_media_sleep_timer()
-        # The shared &Window menu plus Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9
-        # traversal, as Radio, Weather, Player, Inkwell and Converter all have and
-        # Cast alone did not. Made before the menu bar, because the bar installs it.
+        # The shared &Window menu and Ctrl+Tab / Ctrl+1..9; made before the bar installs it.
         from quill.ui.window_menu import WindowManager
 
         self._windows = WindowManager(wx)
         self._build_menu_bar()
         self._build_main_panel()
+        self._init_now_playing()  # window 2 (qc.md 5)
         self._register_podcasts_commands()
         self._register_podcast_session_commands()
         self._register_media_sleep_timer_commands()

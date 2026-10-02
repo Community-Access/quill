@@ -122,6 +122,57 @@ def add_episode_note(
     return notes
 
 
+#: The one note a listener keeps *about* an episode rather than at a moment in
+#: it: Now Playing's "Your note" field. Stored with the rest, at position 0,
+#: under an id that says what it is, so every list and jump treats it as a note
+#: at the start and this module can find it again.
+EPISODE_NOTE_PREFIX = "about:"
+
+
+def episode_level_note(
+    notes: list[EpisodeNote], show_id: str, episode_guid: str
+) -> EpisodeNote | None:
+    """The episode's own note, if the listener wrote one."""
+    for note in notes:
+        if (
+            note.show_id == show_id
+            and note.episode_guid == episode_guid
+            and note.note_id.startswith(EPISODE_NOTE_PREFIX)
+        ):
+            return note
+    return None
+
+
+def set_episode_level_note(show_id: str, episode_guid: str, text: str) -> bool:
+    """Write, replace or (with empty *text*) remove the episode's own note.
+
+    Returns whether anything changed, so the caller can stay quiet when the
+    field was left as it was.
+    """
+    notes = load_episode_notes()
+    existing = episode_level_note(notes, show_id, episode_guid)
+    clean = text.strip()
+    if existing is None and not clean:
+        return False
+    if existing is not None and existing.text == clean:
+        return False
+    if existing is not None:
+        notes = [note for note in notes if note.note_id != existing.note_id]
+    if clean:
+        notes.append(
+            EpisodeNote(
+                note_id=EPISODE_NOTE_PREFIX + uuid.uuid4().hex,
+                show_id=show_id,
+                episode_guid=episode_guid,
+                position_ms=0,
+                text=clean,
+                created_at=datetime.now(UTC).isoformat(),
+            )
+        )
+    save_episode_notes(notes)
+    return True
+
+
 def delete_episode_note(note_id: str) -> list[EpisodeNote]:
     """Load, remove *note_id* if present, save, and return the updated list."""
     notes = [n for n in load_episode_notes() if n.note_id != note_id]

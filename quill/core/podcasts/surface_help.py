@@ -290,6 +290,25 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "be shared as text with its timestamp.",
     ),
     (
+        "Now Playing",
+        "The episode that is playing, as a console you can stay in: the "
+        "position as a slider, the transport buttons, speed, volume and the "
+        "sleep timer, the chapters with the playing one marked, the show notes "
+        "you can read by heading and link, and a note of your own. Ctrl+1 "
+        "returns to the library; Ctrl+2 comes back here.",
+    ),
+    (
+        "Links in These Notes",
+        "Every link in the notes, in order, each row its title and then where "
+        "it goes. Enter opens one in your browser; the buttons copy an address, "
+        "a title with its address, or every address at once.",
+    ),
+    (
+        "Find",
+        "Type what to find in the notes; the number of matches is said and the "
+        "first is selected. F3 finds the next.",
+    ),
+    (
         "Show Notes",
         "The notes the show published with this episode, as reviewable, "
         "copyable text -- links, guests, timestamps. A timestamp here is "

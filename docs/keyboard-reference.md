@@ -639,6 +639,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Ctrl+Alt+2 | Now playing | `podcasts.now_playing` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |

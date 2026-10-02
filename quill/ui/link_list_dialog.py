@@ -71,10 +71,11 @@ class LinkListDialog:
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._open_btn = wx.Button(self.dialog, label="&Open in Browser")
         self._copy_btn = wx.Button(self.dialog, label="&Copy Address")
-        self._copy_all_btn = wx.Button(self.dialog, label="Copy &All")
+        self._copy_both_btn = wx.Button(self.dialog, label="Copy &Title and Address")
+        self._copy_all_btn = wx.Button(self.dialog, label="Copy &All Addresses")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         bind_close_button(self.dialog, close_btn)
-        for button in (self._open_btn, self._copy_btn, self._copy_all_btn):
+        for button in (self._open_btn, self._copy_btn, self._copy_both_btn, self._copy_all_btn):
             button.Enable(bool(self._links))
             buttons.Add(button, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
@@ -88,6 +89,7 @@ class LinkListDialog:
         self._list.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._open_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_selected())
         self._copy_btn.Bind(wx.EVT_BUTTON, lambda _e: self.copy_selected())
+        self._copy_both_btn.Bind(wx.EVT_BUTTON, lambda _e: self.copy_selected_with_title())
         self._copy_all_btn.Bind(wx.EVT_BUTTON, lambda _e: self.copy_all())
 
     def show(self) -> int:
@@ -141,6 +143,14 @@ class LinkListDialog:
             self._announce("Choose a link first.")
             return ""
         return self._to_clipboard(link.url, f"Copied {link.url}.")
+
+    def copy_selected_with_title(self) -> str:
+        """The highlighted link's title and address, one line, for a note."""
+        link = self.selected()
+        if link is None:
+            self._announce("Choose a link first.")
+            return ""
+        return self._to_clipboard(link.label, f"Copied {link.label}.")
 
     def copy_all(self) -> str:
         """Every address, one per line -- for pasting into notes."""

@@ -416,11 +416,114 @@ and Advanced" above. Customize Features has the same key as in Quill Radio,
 Every open Cast window, each with a number: the route between them that does
 not involve Alt+Tab and guessing which of several identically titled windows
 is which. **Ctrl+1** is always the main window, and returning to it lands on
-the library tree.
+the library tree. **Ctrl+2** is always **Now Playing** (below): it is made when
+QUILL Cast starts and only hidden when you close it, so its number never
+moves.
 
 ### Downloads (Alt+D)
 
 Pause All Downloads, Resume All Downloads, **Downloads...**, **Free Up Space**, **Run Housekeeping Now**.
+
+## Now Playing
+
+A console you can stay in for an evening without touching the library. Open it
+with **Ctrl+2**, from **Window ▸ Now Playing**, from **Episode ▸ Now
+Playing...** (Ctrl+Alt+2), or from the status bar's Play cell menu. **Ctrl+1**
+takes you back to the library; **Ctrl+W** or Alt+F4 closes the window, which
+only hides it, so Ctrl+2 brings the same window back with your place in it.
+Nothing is announced when it opens beyond its title.
+
+From the top, this is what you meet with Tab:
+
+1. **Three lines** you can read with the arrow keys: the podcast, the episode,
+   and *Playing from* -- the Inbox, a folder, the queue -- whichever the
+   episode came through.
+2. **Position**, a real slider. **Left** and **Right** move five seconds,
+   **Page Up** and **Page Down** thirty, **Home** and **End** go to the ends,
+   and every move says where you landed in minutes and seconds. The readout
+   beside it ("12:04 of 31:50") keeps up while you listen, and the slider is
+   never written under your fingers: while it has focus it only moves when you
+   move it.
+3. **Pause** (or **Resume**), **Stop**, **Back 30 Seconds**, **Forward 30
+   Seconds**, **Previous Chapter**, **Next Chapter**. The skips say where you
+   are afterwards; the chapter keys say the chapter.
+4. **Speed**, a list of nine speeds plus **Custom...**, which asks for a number.
+   It changes the same speed the keys and the status bar change, for this show
+   or for every podcast, and says which.
+5. **Volume**, a slider that says the number as you change it, and **Mute**,
+   which becomes **Unmute**.
+6. **Sleep timer**: the readout ("off", "12:30 left", or "at the end of this
+   episode"), then **Set...** (type a number of minutes), **At End of
+   Episode**, and **Extend by 5 Minutes**, which is enabled only while a timer
+   runs. The last minute is announced, as it always was.
+7. **Chapters**, a list with Title, Start and Status columns. The playing
+   chapter says *playing* in its Status column and the list follows playback
+   **without moving your cursor**; **Enter** on a row jumps there and says the
+   chapter. With no chapters, the list is empty and disabled.
+8. **Show notes**, the Notes reader described next.
+9. **Your note**, a field for a note of your own about the episode. It is saved
+   when you leave the field ("Note saved."), it comes back next time, and
+   emptying it removes it ("Note removed."). It lives with your episode notes,
+   at the start of the episode, so My Notes in This Episode lists it too.
+10. **Add to Favorites** (or **Remove from Favorites** -- the button names what
+    it will do), **Mark as Played** (which also moves to the next in the queue),
+    **Share...** (a sentence and a link to this moment, copied), and **About
+    This Episode...** (everything the feed says about it, as a report).
+
+Everything here acts on the playing episode; with nothing playing the window
+says so and the episode buttons are dimmed.
+
+**Switch to Now Playing when playback starts** is in Preferences, off by
+default. On, the window comes to the front whenever an episode starts. It is
+off because Now Playing is always one keystroke away and a window that takes
+focus on every Play is one you turn off.
+
+### Reading the show notes
+
+The show notes pane in Now Playing is the **Notes reader**. It is a native,
+read-only text field -- so your screen reader reads it exactly as it reads any
+document -- with the structure the podcast gave the notes kept on top of it:
+
+- **Headings** are kept. **H** moves to the next heading and **Shift+H** to the
+  previous, saying "Heading level 2, This week", because the reader's own
+  heading keys do not work inside a text field.
+- **Links are links.** **Tab** and **Shift+Tab** move between them, selecting
+  the link text and saying "Link, Jane and Co" -- the title, never the
+  address. **Enter** opens the one you are on in your browser and says so.
+- **Timestamps are links to the episode.** "12:34" in the notes is a stop on
+  the same Tab circuit ("Timestamp, 12 minutes 34 seconds. Enter plays from
+  there"), and Enter moves playback to it.
+- **Ctrl+F** finds inside the notes and says how many matches there are and
+  which line the first is on; **F3** finds the next, and says when it has
+  wrapped to the top.
+- Empty notes say "This episode has no show notes." Notes that were only an
+  image say so and point you at View in Browser.
+
+Under the field, three buttons:
+
+- **Copy Notes** (Alt+N) copies the whole notes in the format chosen last
+  time, and says what it copied: "Copied the show notes as plain text, 412
+  words." The **Applications key** on the button offers every format, and the
+  one you pick is remembered:
+  - **Plain text** -- paragraphs, lists and headings as lines, links reduced
+    to their text, timestamps kept. The shipped default; what pastes cleanly
+    into an email.
+  - **Plain text with links** -- the same, with each link's address in brackets
+    after its text, so nothing is hidden.
+  - **Markdown** -- headings, lists and links as Markdown, which is what a
+    QUILL document wants.
+  - **Formatted** -- HTML with an RTF copy beside it, so Word, Outlook and
+    QUILL's rich editor paste the formatting and Notepad pastes text.
+- **Links** (Alt+L) opens **Links in These Notes**. Its name says how many
+  ("Links, 7 in these notes"), and it is disabled when there are none. The list
+  has one row per link, in order, each reading as the title and then where it
+  goes; addresses that appear twice are folded into one row. **Enter** or
+  **Open in Browser** opens one; **Copy Address**, **Copy Title and Address**
+  and **Copy All Addresses** do what they say; **Escape** returns you to the
+  reader on the link you were on.
+- **View in Browser** (Alt+R) opens the notes as the podcast wrote them -- with
+  the images -- in your default browser, on a temporary page carrying no
+  scripts, with the episode's title as its heading.
 
 ## Managing your downloads
 

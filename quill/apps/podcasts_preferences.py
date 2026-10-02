@@ -94,6 +94,15 @@ class CastPreferencesMixin:
                     history.winamp_playback_keys,
                 ),
                 PreferenceCheckbox(
+                    "Switch to Now Playing when playback &starts",
+                    "Bring the Now Playing window to the front whenever an episode "
+                    "starts. Off by default: Now Playing is always one keystroke "
+                    "away on Ctrl+2, and a window that takes focus on every Play is "
+                    "one you turn off.",
+                    history.switch_to_now_playing,
+                    group=self._PODCASTS,
+                ),
+                PreferenceCheckbox(
                     "Check the feeds you follow on a &timer",
                     "Look for new episodes without being asked. Off by default. "
                     "A check reads episode lists only: it starts no downloads by "
@@ -161,6 +170,7 @@ class CastPreferencesMixin:
             history.announce_dialog_transitions,
             history.alt_f4_to_tray,
             history.winamp_playback_keys,
+            history.switch_to_now_playing,
             history.podcast_check_enabled,
         ) = checkbox_values
         history.close_action = _close_action_value(choice_indices[0])

@@ -898,7 +898,7 @@ station’s remembered level.</li>
 is playing has chapters, and runs the same command as its key.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 244 audited sites (104 helped, 140 named-help).</p>
+<p>Control coverage: 250 audited sites (110 helped, 140 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -1044,6 +1044,9 @@ nothing leaves the episode list.</p>
 <p><strong>Windows titled “File…”.</strong> Choose the Inbox folder to
 file into, or make a new one. Filing moves the row out of the Inbox
 list; it deletes nothing.</p>
+<p><strong>Windows titled “Find…”.</strong> Type what to find in the
+notes; the number of matches is said and the first is selected. F3 finds
+the next.</p>
 <p><strong>Windows titled “Folder Settings…”.</strong> Settings that
 apply to every show in this folder. A show with its own answer keeps it;
 the folder answers for the rest.</p>
@@ -1054,6 +1057,10 @@ on. Escape returns you to it.</p>
 podcast, as many as you like. A folder is one home and a label is not a
 home at all: labelling never moves a podcast, and a smart playlist can
 ask for a label the way it asks for a folder.</p>
+<p><strong>Windows titled “Links in These Notes…”.</strong> Every link
+in the notes, in order, each row its title and then where it goes. Enter
+opens one in your browser; the buttons copy an address, a title with its
+address, or every address at once.</p>
 <p><strong>Windows titled “Move…”.</strong> Choose the folder to file
 into, or make a new one. Folders are yours to invent, and filing changes
 nothing about what is downloaded or played.</p>
@@ -1061,6 +1068,12 @@ nothing about what is downloaded or played.</p>
 episode, each anchored to the moment you wrote it. Enter jumps playback
 to a note’s position, and a note can be shared as text with its
 timestamp.</p>
+<p><strong>Windows titled “Now Playing…”.</strong> The episode that is
+playing, as a console you can stay in: the position as a slider, the
+transport buttons, speed, volume and the sleep timer, the chapters with
+the playing one marked, the show notes you can read by heading and link,
+and a note of your own. Ctrl+1 returns to the library; Ctrl+2 comes back
+here.</p>
 <p><strong>Windows titled “Playback Speed…”.</strong> How fast this one
 podcast plays, remembered between its episodes, so a host who talks
 slowly stays sped up without setting it each time.</p>
@@ -1249,6 +1262,24 @@ searches this podcast only – Search Everywhere is the one that crosses
 your whole library – and it narrows whatever the filter and sort above
 already chose rather than replacing them. Enter says how many
 matched.</li>
+</ul>
+<h4 id="module-level-quilluipodcastsnow_playing_layoutpy">(module level)
+(<code>quill/ui/podcasts/now_playing_layout.py</code>)</h4>
+<ul>
+<li><code>self._slider</code>: Where you are in the episode. Left and
+Right move five seconds, Page Up and Page Down thirty, Home and End to
+the ends. The time beside it says minutes and seconds of the whole.</li>
+<li><code>self._speed</code>: Playback speed, for this show or for every
+podcast, as the Speed keys choose it. The status bar and the keys change
+the same setting.</li>
+<li><code>self._volume</code>: Playback volume, from silent to full.
+Arrow keys change it.</li>
+<li><code>self._chapters</code>: This episode’s chapters. Enter jumps to
+the selected one; the playing chapter says so in its Status column and
+the list follows playback without moving your cursor.</li>
+<li><code>self._note</code>: A note of your own about this episode, kept
+with your episode notes. Saved when you leave the field; empty removes
+it.</li>
 </ul>
 <h4
 id="playqueuedialog-quilluipodcastsplay_queue_dialogpy">PlayQueueDialog

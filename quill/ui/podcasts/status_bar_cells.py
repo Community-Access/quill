@@ -417,6 +417,7 @@ def announce_clock(host: Any) -> None:
 # have does nothing rather than raising -- see :func:`call_host`.
 
 _PLAY_ROWS: tuple[tuple[str, str], ...] = (
+    ("Now Playing...", "open_now_playing"),
     ("Stop", "podcast_stop"),
     ("Next in Queue", "podcast_next_in_queue"),
     ("Previous in Queue", "podcast_previous_in_queue"),

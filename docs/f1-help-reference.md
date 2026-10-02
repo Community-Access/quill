@@ -313,7 +313,7 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 244 audited sites (104 helped, 140 named-help).
+Control coverage: 250 audited sites (110 helped, 140 named-help).
 
 ### Every window, and what it is for
 
@@ -387,15 +387,21 @@ Control coverage: 244 audited sites (104 helped, 140 named-help).
 
 **Windows titled "File...".** Choose the Inbox folder to file into, or make a new one. Filing moves the row out of the Inbox list; it deletes nothing.
 
+**Windows titled "Find...".** Type what to find in the notes; the number of matches is said and the first is selected. F3 finds the next.
+
 **Windows titled "Folder Settings...".** Settings that apply to every show in this folder. A show with its own answer keeps it; the folder answers for the rest.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
 **Windows titled "Labels...".** Your own words for this podcast, as many as you like. A folder is one home and a label is not a home at all: labelling never moves a podcast, and a smart playlist can ask for a label the way it asks for a folder.
 
+**Windows titled "Links in These Notes...".** Every link in the notes, in order, each row its title and then where it goes. Enter opens one in your browser; the buttons copy an address, a title with its address, or every address at once.
+
 **Windows titled "Move...".** Choose the folder to file into, or make a new one. Folders are yours to invent, and filing changes nothing about what is downloaded or played.
 
 **Windows titled "My Notes...".** Your own notes on this episode, each anchored to the moment you wrote it. Enter jumps playback to a note's position, and a note can be shared as text with its timestamp.
+
+**Windows titled "Now Playing...".** The episode that is playing, as a console you can stay in: the position as a slider, the transport buttons, speed, volume and the sleep timer, the chapters with the playing one marked, the show notes you can read by heading and link, and a note of your own. Ctrl+1 returns to the library; Ctrl+2 comes back here.
 
 **Windows titled "Playback Speed...".** How fast this one podcast plays, remembered between its episodes, so a host who talks slowly stays sped up without setting it each time.
 
@@ -471,6 +477,13 @@ Control coverage: 244 audited sites (104 helped, 140 named-help).
 - `self._episode_filter_choice`: Which episodes the list shows: all of them, only the unplayed ones, only what is downloaded, and so on. It narrows the list you are looking at and changes nothing about the episodes themselves.
 - `self._show_filter_choice`: Which podcasts the folder tree shows -- all of them, or only the ones with something unplayed. Nothing is unfollowed or hidden permanently.
 - `self._episode_search_ctrl`: Narrows the episode list of the podcast you are on, matching episode titles and the show notes. It searches this podcast only -- Search Everywhere is the one that crosses your whole library -- and it narrows whatever the filter and sort above already chose rather than replacing them. Enter says how many matched.
+#### (module level) (`quill/ui/podcasts/now_playing_layout.py`)
+
+- `self._slider`: Where you are in the episode. Left and Right move five seconds, Page Up and Page Down thirty, Home and End to the ends. The time beside it says minutes and seconds of the whole.
+- `self._speed`: Playback speed, for this show or for every podcast, as the Speed keys choose it. The status bar and the keys change the same setting.
+- `self._volume`: Playback volume, from silent to full. Arrow keys change it.
+- `self._chapters`: This episode's chapters. Enter jumps to the selected one; the playing chapter says so in its Status column and the list follows playback without moving your cursor.
+- `self._note`: A note of your own about this episode, kept with your episode notes. Saved when you leave the field; empty removes it.
 #### PlayQueueDialog (`quill/ui/podcasts/play_queue_dialog.py`)
 
 - `self._list`: The queue in play order; Enter plays the selected episode now. Shift and arrow extend the selection, Ctrl and Space adds one, and Remove takes everything selected.
