@@ -1,6 +1,7 @@
 {
   "quill.ui.abbreviation_manager_dialog": "reachable",
   "quill.ui.action_builder_dialog": "reachable",
+  "quill.ui.activity_window": "reachable",
   "quill.ui.agent_validator_dialog": "reachable",
   "quill.ui.ai_agent_result_dialog": "reachable",
   "quill.ui.ai_chat_dialog": "reachable",

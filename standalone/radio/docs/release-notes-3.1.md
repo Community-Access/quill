@@ -15,6 +15,17 @@ change by version.
 
 ## Also in 3.1.1
 
+### Activity, and Repeat Last Result
+
+**Help > Activity...** (Shift+F9) is everything Quill Radio told you this
+session, newest first, with what you can do about each row: Retry, Open
+Folder, Copy Details. A settings file that could not be saved is said once,
+with the reason, and its row carries a Retry that saves again and an Open
+Folder that shows you the disk; when a later save works, that is said too.
+**Help > Repeat Last Result** (F9) says the newest result that mattered again
+-- the last thing the radio itself told you, not the last thing your screen
+reader read. The same two keys in QUILL, QUILL Lite and QUILL Cast.
+
 ### Closing a window mid-search is the end of it
 
 Close Browse Stations, the station browser, the link finder or the ACB Media

@@ -79,6 +79,14 @@ def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     help_menu.Append(problems_id, host._menu_label("Recent &Problems...", "app.recent_problems"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_recent_problems(), id=problems_id)
 
+    # Activity is this session's results, problems or not, each with its
+    # next actions; Recent Problems is failures across restarts (qc.md F-10).
+    activity_id, repeat_id = wx.NewIdRef(), wx.NewIdRef()
+    help_menu.Append(activity_id, host._menu_label("Activit&y...", "app.activity"))
+    help_menu.Append(repeat_id, host._menu_label("Repeat Last Res&ult", "app.repeat_last_result"))
+    host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_activity(), id=activity_id)
+    host.frame.Bind(wx.EVT_MENU, lambda _e: host.repeat_last_result(), id=repeat_id)
+
     # Beside Recent Problems because they answer the same shape of question:
     # that one is what went wrong, this is what you were told. Both are lists
     # over a shared file, so either app can show you the other's news.
@@ -100,7 +108,7 @@ def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.export_my_setup(), id=export_id)
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.import_my_setup(), id=import_id)
 
-    ids = (problems_id, quiet_id, bookmarks_id, export_id, import_id)
+    ids = (problems_id, activity_id, repeat_id, quiet_id, bookmarks_id, export_id, import_id)
     host._keep_menu_ids(*ids)
     return ids
 

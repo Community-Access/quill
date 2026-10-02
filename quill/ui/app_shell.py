@@ -32,6 +32,7 @@ from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
 from quill.ui import modal_stack
+from quill.ui.activity_window import ActivityMixin
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
 from quill.ui.app_availability import CommandAvailabilityMixin
@@ -45,7 +46,11 @@ from quill.ui.keybinding_parse import KeybindingParseMixin
 
 
 class AppShellFrame(
-    AnnounceCommandsMixin, ComponentDownloadsMixin, KeybindingParseMixin, CommandAvailabilityMixin
+    ActivityMixin,
+    AnnounceCommandsMixin,
+    ComponentDownloadsMixin,
+    KeybindingParseMixin,
+    CommandAvailabilityMixin,
 ):
     """Mixin: implements the MainFrame host protocol for standalone apps.
 
@@ -129,6 +134,14 @@ class AppShellFrame(
         # answer a screen-reader user needs when something goes quiet. Both
         # use try_register, so an app that registers its own copy still wins.
         self.register_announcement_commands()
+        # Activity and Repeat Last Result (qc.md F-10): the same two keys,
+        # F9 and Shift+F9, in every app on this shell.
+        self._register_activity_commands()
+        # qc.md F-01: a failed settings or history write is said once, with
+        # Retry and Open Folder in Activity, instead of crashing or vanishing.
+        from quill.ui.persistence_reporting import install as _report_writes
+
+        self._stop_write_reports = _report_writes(self)
         # Earcons need a loaded sound pack; only MainFrame ever started one, so
         # every companion app's SoundSink was inert until now (#1302). Safe
         # Mode stays silent here exactly as it does in QUILL.

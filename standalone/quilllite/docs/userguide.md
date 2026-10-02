@@ -4295,6 +4295,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **F1** | Help for This Window |
 | **Ctrl+Alt+F1** | Tutorials... |
 | **Ctrl+F1** | Keyboard Shortcuts |
+| **Shift+F9** | Activity... |
+| **F9** | Repeat Last Result |
 | **Ctrl+Alt+F2** | Get Help from Support... |
 | **Ctrl+Alt+U** | Check for Updates... |
 | **Shift+F1** | About QUILL Lite |
@@ -4328,6 +4330,37 @@ as `Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and
 the spelling wx understands.
 
 <!-- keys:end -->
+
+## Activity and Repeat Last Result
+
+**Help > Activity...** (Shift+F9) lists everything QUILL Lite reported in this
+session -- a settings file that could not be written, a save that worked after
+an earlier failure, background work that finished after you closed the window
+that started it -- newest first, one sentence per row: whether it worked, what
+it was, and when. Enter on a row takes its first action; the buttons say what
+the selected row offers and are dimmed otherwise.
+
+- **Retry** does the action again the same way. For a settings file that could
+  not be saved, that is the save itself, so a full disk you have since cleared
+  is one keystroke from fixed.
+- **Open Folder** opens the folder in File Explorer with the file selected, so
+  you can see whether the disk is full or the folder is read only.
+- **Copy Details** copies the selected result as text, for a support message.
+  **Clear List** empties the list for this session.
+
+**Help > Repeat Last Result** (F9) says the newest result that mattered again
+-- the last thing QUILL Lite itself told you, not the last thing your screen
+reader read -- and names what Activity offers for it. With nothing yet, it says
+so.
+
+Every document window shares one list, so a save that failed while you were in
+another document is in every window's Activity. Nothing in the list leaves this
+computer, and no document text is ever in it.
+
+**When a settings file cannot be saved.** QUILL Lite says so once and keeps
+your changes for the session. The Activity row carries Retry and Open Folder,
+and when a later save of the same file works, that is said too, so a failure
+you were told about is never left standing.
 
 ## Getting help
 

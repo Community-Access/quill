@@ -6852,6 +6852,8 @@ The **Help** menu is where Quill becomes a guide.
 - **Open Welcome Guide** opens a lighter, profile-aware getting-started document.
 - **Open Keyboard Reference** generates the current live shortcut reference from the active command registry.
 - **Status Page** opens a live view of what QUILL is doing right now — see [Application Status page](#application-status-page) below.
+- **Activity...** (Shift+F9) lists everything QUILL reported in this session, newest first, each with what you can do about it: **Retry**, **Open Folder**, **Copy Details**, **Clear List**. A settings file that could not be saved is said once, with the reason, and its row carries a Retry that saves again and an Open Folder that shows you the disk; a later save that works is said too. Background work that finishes after its window closed lands here as a review row instead of being lost. Nothing in the list leaves this computer, and no document text is ever in it.
+- **Repeat Last Result** (F9) says the newest result that mattered again — the last thing QUILL itself told you, not the last thing your screen reader read — and names what Activity offers for it. The same two keys do the same thing in QUILL Lite, Quill Radio and QUILL Cast.
 - **Save Diagnostics...** writes a local diagnostics bundle you can review before sharing.
 - **What Can I Do Here?** gives context-aware assistance.
 - **Why Don't I See a Feature?** explains profile-driven feature visibility.

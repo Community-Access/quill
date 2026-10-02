@@ -3235,6 +3235,7 @@ class MenuBuilderMixin:
             self._id_help_status_page,
             self._menu_label(_("Status &Page"), "help.status_page"),
         )
+        self._append_activity_rows(help_menu)  # F9 / Shift+F9 (main_frame_activity)
         help_menu.Append(
             self._id_why_dont_i_see_feature,
             self._menu_label(_("W&hy Don't I See a Feature?"), "help.why_dont_i_see_feature"),

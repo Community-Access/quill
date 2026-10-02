@@ -132,6 +132,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Recent Problems: the list a transient announcement goes into. On
         # Help, beside the other "what is going on here" surfaces.
         "app.recent_problems": "Ctrl+Alt+Shift+P",
+        # qc.md F-10: the family's two result keys, the same everywhere.
+        "app.repeat_last_result": "F9",
+        "app.activity": "Shift+F9",
         # Notifications: what the apps have told you, kept so a toast you
         # missed is still recoverable. A function key rather than a letter
         # because every Ctrl+Alt+Shift letter is already claimed somewhere in
@@ -217,6 +220,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # forty minutes in" is one keystroke in both players (11.8).
         "podcasts.go_to_position": "Ctrl+Alt+J",
         "app.recent_problems": "Ctrl+Alt+Shift+P",
+        # qc.md F-10: the family's two result keys, the same everywhere.
+        "app.repeat_last_result": "F9",
+        "app.activity": "Shift+F9",
         # Notifications: what the apps have told you, kept so a toast you
         # missed is still recoverable. A function key rather than a letter
         # because every Ctrl+Alt+Shift letter is already claimed somewhere in

@@ -627,6 +627,7 @@ The long chords are only defaults. Each row is a command named **QuillVille: Ope
 - **Keyboard Shortcuts...** (Ctrl+Alt+K) -- the Keyboard Manager.
 - **Global Hotkeys...** (Ctrl+Alt+G).
 - **Recent Problems...** (Ctrl+Alt+Shift+P).
+- **Activity...** (Shift+F9) and **Repeat Last Result** (F9) -- see "Activity and Repeat Last Result".
 - **Quiet Hours...** (Ctrl+Alt+Shift+Z).
 - **Bookmarks...** (Ctrl+Alt+Shift+J).
 - **Export My Setup...** (Ctrl+Alt+Shift+X) and **Import My Setup...** (Ctrl+Alt+Shift+N).
@@ -2151,6 +2152,21 @@ time it starts it says so once, and a **Closing** row appears in Recent
 Problems. **Retry** on that row writes both again now; the recording note is
 left alone while you are recording, because it is what tells a crash from a
 clean close.
+
+## Activity and Repeat Last Result
+
+**Help > Activity...** (Shift+F9) lists everything Quill Radio reported in this session, problems or not -- a settings file that could not be saved, a save that worked after an earlier failure, background work that finished after you closed the window that started it -- newest first, one sentence per row: whether it worked, what it was, and when. Recent Problems keeps failures across restarts; Activity keeps this session's results with their next actions.
+
+1. Press **Shift+F9**. Focus is in **What happened** (Alt+W), newest first. With nothing in it, the summary says so.
+2. Arrow through the list. **Details** (Alt+D) below holds the full sentence, the reason, the time and what you can do.
+3. **Retry** (Alt+R) does the selected action again the same way. For the settings file, that is the save itself.
+4. **Open Folder** (Alt+F) opens the folder in File Explorer with the file selected, so a full disk or a read-only folder is something you can see.
+5. **Copy Details** (Alt+C) copies the selected result as text, for a support message. **Clear List** (Alt+L) empties the list for this session.
+6. Press **Escape** to close.
+
+**Help > Repeat Last Result** (F9) says the newest result that mattered again -- the last thing Quill Radio itself told you, not the last thing your screen reader read -- and names what Activity offers for it.
+
+Nothing in the list leaves this computer. The same two keys do the same thing in QUILL, QUILL Lite and QUILL Cast.
 
 ## Quiet hours
 

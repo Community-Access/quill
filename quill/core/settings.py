@@ -2048,6 +2048,8 @@ def load_settings() -> Settings:
 def save_settings(settings: Settings) -> None:
     # SET-5: persist the nested, versioned *delta* document (overrides only),
     # so future default changes flow through to the user automatically.
+    from quill.core.persistence_outcome import guarded_write
     from quill.core.settings_migration import to_versioned
 
-    write_json_atomic(settings_path(), to_versioned(settings))
+    path, document = settings_path(), to_versioned(settings)
+    guarded_write("QUILL settings", path, lambda: write_json_atomic(path, document))

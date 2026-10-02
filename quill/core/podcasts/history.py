@@ -248,32 +248,38 @@ def load_history(data_dir: Path) -> PodcastHistory:
 
 def save_history(data_dir: Path, history: PodcastHistory) -> None:
     """Persist history atomically."""
+    from quill.core.persistence_outcome import guarded_write
     from quill.core.storage import write_json_atomic
 
-    write_json_atomic(
-        _store_path(data_dir),
-        {
-            "resume_on_launch": history.resume_on_launch,
-            "check_updates_on_startup": history.check_updates_on_startup,
-            "last_update_check": history.last_update_check,
-            "announce_dialog_transitions": history.announce_dialog_transitions,
-            "alt_f4_to_tray": history.alt_f4_to_tray,
-            "winamp_playback_keys": history.winamp_playback_keys,
-            "close_action": history.close_action,
-            "media_notice_signature": history.media_notice_signature,
-            "recent_searches": search_history.to_json(history.recent_searches),
-            "podcast_check_enabled": history.podcast_check_enabled,
-            "podcast_check_interval_minutes": history.podcast_check_interval_minutes,
-            "podcast_check_audible_tick": history.podcast_check_audible_tick,
-            "podcast_check_interrupt_speech": history.podcast_check_interrupt_speech,
-            "menu_mode": history.menu_mode,
-            "show_status_bar": history.show_status_bar,
-            "hide_caught_up": history.hide_caught_up,
-            # transcript_detail was read by load_history and missing from this
-            # list, so it has never persisted: a listener chose how much
-            # scaffolding an exported transcript keeps and the next launch forgot.
-            "transcript_detail": history.transcript_detail,
-            "onboarding": history.onboarding.to_dict(),
-            "episodes": [e.to_dict() for e in history.episodes],
-        },
+    path = _store_path(data_dir)
+    guarded_write(
+        "QUILL Cast's settings",
+        path,
+        lambda: write_json_atomic(
+            path,
+            {
+                "resume_on_launch": history.resume_on_launch,
+                "check_updates_on_startup": history.check_updates_on_startup,
+                "last_update_check": history.last_update_check,
+                "announce_dialog_transitions": history.announce_dialog_transitions,
+                "alt_f4_to_tray": history.alt_f4_to_tray,
+                "winamp_playback_keys": history.winamp_playback_keys,
+                "close_action": history.close_action,
+                "media_notice_signature": history.media_notice_signature,
+                "recent_searches": search_history.to_json(history.recent_searches),
+                "podcast_check_enabled": history.podcast_check_enabled,
+                "podcast_check_interval_minutes": history.podcast_check_interval_minutes,
+                "podcast_check_audible_tick": history.podcast_check_audible_tick,
+                "podcast_check_interrupt_speech": history.podcast_check_interrupt_speech,
+                "menu_mode": history.menu_mode,
+                "show_status_bar": history.show_status_bar,
+                "hide_caught_up": history.hide_caught_up,
+                # transcript_detail was read by load_history and missing from this
+                # list, so it has never persisted: a listener chose how much
+                # scaffolding an exported transcript keeps and the next launch forgot.
+                "transcript_detail": history.transcript_detail,
+                "onboarding": history.onboarding.to_dict(),
+                "episodes": [e.to_dict() for e in history.episodes],
+            },
+        ),
     )

@@ -6423,6 +6423,14 @@ list inside the app.</p>
 <td>Keyboard Shortcuts</td>
 </tr>
 <tr>
+<td><strong>Shift+F9</strong></td>
+<td>Activity…</td>
+</tr>
+<tr>
+<td><strong>F9</strong></td>
+<td>Repeat Last Result</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+F2</strong></td>
 <td>Get Help from Support…</td>
 </tr>
@@ -6508,6 +6516,38 @@ are the keys your fingers know, and they are listed above as
 the same physical key and the spelling wx understands.</p>
 <!-- keys:end -->
 
+<h2 id="activity-and-repeat-last-result">Activity and Repeat Last
+Result</h2>
+<p><strong>Help &gt; Activity…</strong> (Shift+F9) lists everything
+QUILL Lite reported in this session – a settings file that could not be
+written, a save that worked after an earlier failure, background work
+that finished after you closed the window that started it – newest
+first, one sentence per row: whether it worked, what it was, and when.
+Enter on a row takes its first action; the buttons say what the selected
+row offers and are dimmed otherwise.</p>
+<ul>
+<li><strong>Retry</strong> does the action again the same way. For a
+settings file that could not be saved, that is the save itself, so a
+full disk you have since cleared is one keystroke from fixed.</li>
+<li><strong>Open Folder</strong> opens the folder in File Explorer with
+the file selected, so you can see whether the disk is full or the folder
+is read only.</li>
+<li><strong>Copy Details</strong> copies the selected result as text,
+for a support message. <strong>Clear List</strong> empties the list for
+this session.</li>
+</ul>
+<p><strong>Help &gt; Repeat Last Result</strong> (F9) says the newest
+result that mattered again – the last thing QUILL Lite itself told you,
+not the last thing your screen reader read – and names what Activity
+offers for it. With nothing yet, it says so.</p>
+<p>Every document window shares one list, so a save that failed while
+you were in another document is in every window’s Activity. Nothing in
+the list leaves this computer, and no document text is ever in it.</p>
+<p><strong>When a settings file cannot be saved.</strong> QUILL Lite
+says so once and keeps your changes for the session. The Activity row
+carries Retry and Open Folder, and when a later save of the same file
+works, that is said too, so a failure you were told about is never left
+standing.</p>
 <h2 id="getting-help">Getting help</h2>
 <h3 id="if-quill-lite-does-not-start">If QUILL Lite does not start</h3>
 <p><code>QuillLite.exe</code> never fails silently. If the app’s engine

@@ -176,6 +176,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_ai_image": "tools.hosted_ai_image",
     "cmd_ai_own_key": "tools.hosted_ai_own_key",
     "cmd_dictation_tidy": "tools.dictation_tidy",
+    "cmd_activity": "app.activity",
+    "cmd_repeat_last_result": "app.repeat_last_result",
     "cmd_ai_privacy": "tools.hosted_ai_privacy",
     "cmd_ai_sign_in": "tools.hosted_ai_sign_in",
     "cmd_ai_usage": "tools.hosted_ai_usage",

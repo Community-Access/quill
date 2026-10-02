@@ -12,7 +12,8 @@ from quill.core.lite import settings_merge
 logger = logging.getLogger(__name__)
 
 SETTINGS_NOT_SAVED = (
-    "Settings could not be saved. They remain active for this session. Reopen Preferences to retry."
+    "Settings could not be saved. They remain active for this session. "
+    "Shift+F9 opens Activity, with Retry and Open Folder."
 )
 
 
@@ -22,7 +23,18 @@ class LiteSettingsPersistenceMixin:
     settings_dirty = False
     _settings_notice_pending = False
 
+    def _ensure_write_reports(self) -> None:
+        """Failed writes reach Activity with Retry and Open Folder (qc.md F-01).
+
+        Recorded, not spoken: this mixin already says SETTINGS_NOT_SAVED, once.
+        """
+        if getattr(self, "_stop_write_reports", None) is None:
+            from quill.ui.persistence_reporting import install
+
+            self._stop_write_reports = install(self, speak=False)
+
     def save_settings(self) -> bool:
+        self._ensure_write_reports()
         # A three-way merge against the file as it is now, when this process
         # knows what it loaded: a second QUILL Lite started with --new-instance
         # writes the same file, and saving our whole copy undid its changes

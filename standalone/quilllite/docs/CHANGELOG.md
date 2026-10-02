@@ -2,6 +2,27 @@
 
 ## Unreleased -- the next release, QUILL Lite 1.2.0
 
+### Activity, Repeat Last Result, and saves that tell the truth (F-01, F-02, F-10)
+
+- **Help > Activity... (Shift+F9)** lists every result this session, newest
+  first, each with what you can do about it: Retry, Open Folder, Copy
+  Details, Clear List. **Help > Repeat Last Result (F9)** says the newest
+  result that mattered again. The same two keys and the same window in QUILL,
+  Quill Radio and QUILL Cast; every document window shares one list
+  (`quill/core/activity.py`, `quill/ui/activity_window.py`,
+  `quill/apps/lite_window_activity.py`).
+- **A settings save that fails is said once, with a way back.** Every settings
+  and history writer in the family -- QUILL Lite's and QUILL's settings, Quill
+  Radio's and QUILL Cast's history, the podcast library -- goes through one
+  guard that reports how the write went. A failure reaches Activity with the
+  reason (disk full, denied, read only, missing folder), a Retry that writes
+  the same thing again and an Open Folder; the same file's failure is not
+  repeated for a minute, and the save that later works is said too
+  (`quill/core/persistence_outcome.py`, `quill/ui/persistence_reporting.py`).
+- **Background work that finishes after its window closed is not lost.** It
+  used to be dropped without trace. It is now a review row in Activity, never
+  spoken (`quill/ui/surface_lifetime.py`).
+
 ### Large and networked files open without freezing the window (F-05)
 
 - **Opening read the whole file on the UI thread.** A large file, a slow

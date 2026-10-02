@@ -8,7 +8,7 @@ original context and must be reverified before changing completion status.
 
 ## Progress Dashboard
 
-Updated 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
+Updated 2026-10-02: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
 
 These are grouped tracking rows, not independent bugs. Shared work can satisfy more than one group. Older pending claims are not newly verified by this consolidation.
 
@@ -16,15 +16,15 @@ The following table separates implementation, its delivery gate, and human accep
 
 | Category | Remaining | Status |
 |---|---:|---|
-| Family reliability findings | 6 | Partially implemented; F-04, F-05, F-06 and F-11 done 2026-10-01 |
+| Family reliability findings | 4 | Partially implemented; F-04, F-05, F-06 and F-11 done 2026-10-01; F-01 and F-02 done 2026-10-02 |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
 | Cast Phase 1 code and tests | 1 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
 | Manual screen-reader scenarios | 73 | Human acceptance pending |
-| **Total tracked rows** | **95** | **22 code/delivery groups + 73 manual scenarios** |
+| **Total tracked rows** | **93** | **20 code/delivery groups + 73 manual scenarios** |
 
-Code/delivery subtotal: **22**.
+Code/delivery subtotal: **20**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1964,27 +1964,28 @@ message retains a dirty-state warning, Preferences reports truthfully, reopening
 Preferences retries, and queued warnings are flushed before shutdown. Tested
 changes are recorded in [QC3](#completed-changes-and-validation).
 
-Remaining work:
-
-- Add direct Retry and Open Settings Folder actions to the proposed shared
-  Activity/Problems surface. The current retry route is reopening Preferences.
-- Apply the persistence outcome contract to shared settings and app history
-  writers, with their own failure-injection tests.
-- Verify the spoken result with NVDA, JAWS, and Narrator, including configured
-  announcement throttling and a hidden status bar.
+Done 2026-10-02. `quill/core/persistence_outcome.py` is the contract
+(`guarded_write`: outcome with path and a stable reason code, a retry closure,
+the `OSError` re-raised unchanged); QUILL's and QUILL Lite's settings, Radio's
+and Cast's history and the podcast library write through it.
+`quill/ui/persistence_reporting.py` is installed once per app and turns a
+failure into an Activity result with Retry and Open Folder, spoken once per
+file per minute, with the later success of the same file reported too.
+Failure-injection tests: `tests/unit/core/test_activity_results.py`
+(`test_a_guarded_write_reports_success_and_failure_and_still_raises`,
+`test_the_real_settings_writers_report_through_the_guard`) and
+`tests/unit/apps/test_lite_activity.py`. The NVDA/JAWS/Narrator check is a
+manual scenario, not code.
 
 #### F-02. Adopt lifetime guards in short-lived surfaces
 
 The shared guard and shutdown suppression are implemented and tested; see
-[completed changes](#completed-changes-and-validation). Remaining work:
-
-- Supply a distinct `UiLifetimeToken` for each short-lived surface that borrows
-  an app manager, and invalidate it before destroying that surface.
-- Integrate terminal results with the proposed reviewable Activity/Problems
-  store. A retained task future is not a user-facing history.
-- Exercise actual window close/reopen paths and verify no stale announcements
-  or updates. Direct timers and `wx.CallAfter` outside TaskManager still need
-  their own lifetime checks.
+[completed changes](#completed-changes-and-validation). Done 2026-10-02:
+the per-surface tokens, the delivery-time guard and the timer-ownership gate
+shipped 2026-10-01; a terminal result that arrives after its window closed now
+goes to the Activity store as a review row (`surface_lifetime._record_outlived`,
+`tests/unit/ui/test_activity_window.py::test_a_result_that_outlives_its_window_goes_to_activity`)
+instead of being dropped.
 
 #### F-04. Lite activation can still lose focus
 
@@ -3033,6 +3034,45 @@ programming-error path manually.
 
 Original document title: QC3: Completed Quality Changes.
 
+### 2026-10-02: Activity, Repeat Last Result, and truthful settings saves (F-01, F-02, F-10)
+
+- `quill/core/activity.py` (wx-free, strict): `ActionResult` (action, object
+  name, outcome, summary, reason, next actions, importance, details,
+  operation id, time) rendered to speech, a row and a details page from one
+  record; `ActivityLog` (newest first, bounded to 200, thread-safe,
+  listeners, operations in flight); `Progress` and `ProgressAnnouncer`
+  (phase changes and 25-percent milestones only, owner token silences a
+  stale run); `restore_index` (focus back by identity, else nearest row).
+- `quill/ui/activity_window.py`: the shared window (summary, list, details,
+  Retry / Undo / Open / Open Folder dimmed with their reason as help, Copy
+  Details, Clear List, Close), `report_result`, `repeat_last_result`,
+  `ActivityMixin` for the app shell. QUILL: `quill/ui/main_frame_activity.py`
+  (Help rows beside Status Page, command ids, menu-id map). QUILL Lite:
+  `quill/apps/lite_window_activity.py` (`cmd_activity`,
+  `cmd_repeat_last_result`), rows in `core/lite/commands.py`, parity map.
+  Radio and Cast: `ActivityMixin` on `AppShellFrame` and two Help rows in
+  `support_menu.py`. Keys F9 and Shift+F9 in `DEFAULT_KEYMAP` and both
+  `APP_KEYMAPS`; keyboard reference regenerated.
+- `quill/core/persistence_outcome.py` and `quill/ui/persistence_reporting.py`
+  (F-01): `guarded_write` around `core/settings.save_settings`,
+  `core/lite/settings.save`, `podcasts/history.save_history`,
+  `podcasts/subscriptions.save_library` and `radio/history_store`; the
+  reporter is installed once per app (shell, QUILL's menu hook, Lite's
+  settings mixin with `speak=False` because that mixin already speaks once).
+- `quill/ui/surface_lifetime.py` (F-02): a success or failure delivered after
+  its window closed is recorded as a review row naming the window.
+- Tests: `tests/unit/core/test_activity_results.py` (11),
+  `tests/unit/ui/test_activity_window.py` (2),
+  `tests/unit/apps/test_lite_activity.py` (5); Lite command coverage,
+  reachability, dialog and accessible-name inventories re-snapshotted.
+- Docs: QUILL user guide Help section and PRD 5.59d; QUILL CHANGELOG; QUILL
+  Lite user guide ("Activity and Repeat Last Result"), key table and
+  CHANGELOG; Cast user guide and 2.0 release notes; Radio user guide, 3.1
+  release notes and CHANGELOG.
+- Also: `episode_filters.rule_matches` builds its condition tests with
+  `functools.partial` (mypy could not infer the default-argument lambda; the
+  scoped mypy run was red on main).
+
 ### 2026-10-01: Cast Episode Filters -- far more tests, any-one-of, Try It, and Filter Episodes Like This
 
 - Jeff asked for "Rules for the episodes you did not want" to be beefed up:
@@ -3654,15 +3694,13 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **22 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **20 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
-### Family Reliability Findings: 6
+### Family Reliability Findings: 4
 
-- [ ] F-01: Finish reviewable settings-failure Retry/Open Settings Folder actions and truthful outcomes in remaining settings/history writers.
-- [ ] F-02: Adopt surface lifetime tokens, safe timer/CallAfter policies, and reviewable terminal results; test close/reopen paths. (Done 2026-10-01: lifetime adoption in every short-lived surface with a gate, delivery-time destruction guard, timer-ownership gate. Remaining: reviewable terminal results, which need F-10's Activity store.)
 - [ ] F-08: Extract ownership-heavy QUILL/Radio/Cast orchestration by lifetime/invariant; preserve host contracts and ratcheted size budgets.
 - [ ] F-09: Implement bounded incremental Cast library/transcript search, feed refresh, and download state with performance/cancellation tests.
-- [ ] F-10: Implement/adopt shared operation/result/activity/progress, focus-memory, repeat-announcement, and details contracts across apps.
+- [ ] F-10: Implement/adopt shared operation/result/activity/progress, focus-memory, repeat-announcement, and details contracts across apps. (Done 2026-10-02: `quill/core/activity.py` -- `ActionResult`, `ActivityLog`, `Progress`/`ProgressAnnouncer`, `restore_index`; the shared Activity window with Retry/Undo/Open/Open Folder/Details; F9 Repeat Last Result and Shift+F9 Activity in QUILL, QUILL Lite, Radio and Cast; persistence outcomes and outlived results reported through it. Remaining: adopt `Progress`/`ProgressAnnouncer` in Cast downloads and feed refresh and in Lite's background open; adopt `restore_index` in Cast's lists; route Cast's and Radio's existing operation outcomes (follow, refresh, export, record) through `report_result`.)
 - [ ] F-12: Gate critical delivery promises, timer ownership, safe absence, performance, and release invariants with automated tests. (Done 2026-10-01: timer ownership, and three delivery-promise gates -- every `show_modal_dialog` call carries its label, six Cast windows focus their purpose, no Cast button is named through the inert route. Remaining: safe absence, performance and release invariants.)
 
 ### Family Product Requirements: 6

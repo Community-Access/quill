@@ -581,8 +581,11 @@ def save(settings: Settings, path: Path | None = None) -> None:
     Raises ``OSError`` if the disk says no; that is the caller's to swallow,
     because a read-only profile must not make the editor unusable.
     """
+    from quill.core.persistence_outcome import guarded_write
+
     target = path if path is not None else settings_path()
-    write_json_atomic(target, {"schema": SCHEMA, **_deltas(settings.normalized())})
+    document = {"schema": SCHEMA, **_deltas(settings.normalized())}
+    guarded_write("QUILL Lite settings", target, lambda: write_json_atomic(target, document))
 
 
 def _deltas(settings: Settings) -> dict[str, Any]:

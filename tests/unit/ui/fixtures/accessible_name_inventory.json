@@ -108,6 +108,8 @@
   "quill/ui/action_builder_dialog.py::ActionBuilderDialog.__init__::wx.Choice": "named",
   "quill/ui/action_builder_dialog.py::ActionBuilderDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/action_builder_dialog.py::ActionBuilderDialog.__init__::wx.TextCtrl#2": "named",
+  "quill/ui/activity_window.py::show_activity::wx.ListBox": "modal-hook",
+  "quill/ui/activity_window.py::show_activity::wx.TextCtrl": "modal-hook",
   "quill/ui/agent_validator_dialog.py::AgentValidatorDialog._build_ui::wx.ListBox": "named",
   "quill/ui/agent_validator_dialog.py::AgentValidatorDialog._build_ui::wx.TextCtrl": "named",
   "quill/ui/ai_agent_result_dialog.py::AIAgentResultDialog._build_ui::wx.ListCtrl": "named",

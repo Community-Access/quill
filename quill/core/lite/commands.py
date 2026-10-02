@@ -1006,11 +1006,11 @@ COMMANDS: list[CommandRow] = [
     # Radio, Cast, Weather and QUILL answer with (bad.md P3.2).
     ("&Help", "&Tutorials...", "Ctrl+Alt+F1", "cmd_tutorials", ""),
     ("&Help", "&Keyboard Shortcuts", "Ctrl+F1", "cmd_shortcuts", ""),
-    # The family item, on the family key: QUILL Lite is the app whose users
-    # are least likely to know where else to write.
+    ("&Help", "Activit&y...", "Shift+F9", "cmd_activity", ""),
+    ("&Help", "&Repeat Last Result", "F9", "cmd_repeat_last_result", ""),
+    # The family item and key: Lite's users least know where else to write.
     ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
-    # The family key. Before this QUILL Lite had no way at all to learn that a
-    # newer version existed -- see quill.apps.lite_updates.
+    # The family key; before it Lite could not learn of a newer version.
     ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
     ("&Help", "&About QUILL Lite", "Shift+F1", "cmd_about", ""),
 ]

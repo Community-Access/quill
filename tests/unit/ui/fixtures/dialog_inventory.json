@@ -80,6 +80,7 @@
   "quill/ui/abbreviation_manager_dialog.py::_AbbreviationEditDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/action_builder_dialog.py::ActionBuilderDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/action_builder_dialog.py::ActionBuilderDialog._on_attach_reference::wx.FileDialog": "native",
+  "quill/ui/activity_window.py::show_activity::wx.Dialog": "hardened_custom",
   "quill/ui/agent_validator_dialog.py::AgentValidatorDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/agent_validator_dialog.py::AgentValidatorDialog._on_choose_file::wx.FileDialog": "native",
   "quill/ui/agent_validator_dialog.py::AgentValidatorDialog._on_choose_folder::wx.DirDialog": "native",

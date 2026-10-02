@@ -34,6 +34,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
+from functools import partial
 
 # The spoken forms live next door (GATE-11: extract, never rebaseline) and are
 # re-exported here, because "the filter's words" and "the filter's decisions"
@@ -162,7 +163,7 @@ def rule_matches(rule: EpisodeFilterRule, episode: PodcastEpisode) -> bool:
     if rule.has_duration_criterion:
         tests.append(lambda: _duration_matches(rule, episode))
     for condition in rule.conditions:
-        tests.append(lambda c=condition: condition_matches(c, episode))
+        tests.append(partial(condition_matches, condition, episode))
     if rule.match_any:
         return any(test() for test in tests)
     return all(test() for test in tests)

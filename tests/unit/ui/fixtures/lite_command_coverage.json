@@ -1,5 +1,6 @@
 {
   "cmd_about": "covered",
+  "cmd_activity": "covered",
   "cmd_add_word_to_dictionary": "covered",
   "cmd_ai_ask_document": "covered",
   "cmd_ai_assistant": "covered",
@@ -141,6 +142,7 @@
   "cmd_remove_blank_lines": "covered",
   "cmd_remove_duplicate_lines": "covered",
   "cmd_reopen_last_session": "covered",
+  "cmd_repeat_last_result": "covered",
   "cmd_replace": "covered",
   "cmd_reselect": "covered",
   "cmd_restore_deletion": "covered",

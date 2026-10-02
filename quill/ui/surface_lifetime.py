@@ -47,8 +47,13 @@ class SurfaceTasks:
     def submit(self, name: str, func: Callable[..., Any], **kwargs: Any) -> Any:
         window = self._window()
         if window is not None:
-            if "ui_lifetime" not in kwargs:
-                kwargs["ui_lifetime"] = lifetime_for(window)
+            # The window's own token is checked here, at delivery, rather than
+            # handed to the manager: a result the manager drops is gone without
+            # trace, and a result that outlived its window is still a result
+            # (qc.md F-02) -- it goes to Activity instead of into the window.
+            # An explicit token from the caller is passed through untouched.
+            token = kwargs.get("ui_lifetime") or lifetime_for(window)
+            title = _title_of(window) or name
             # A top-level window is destroyed at the next idle after Destroy(),
             # and EVT_WINDOW_DESTROY only fires then; a result arriving in that
             # gap would still be delivered. So each callback also checks, at
@@ -56,7 +61,7 @@ class SurfaceTasks:
             for key in ("on_success", "on_failure", "on_progress"):
                 callback = kwargs.get(key)
                 if callback is not None:
-                    kwargs[key] = _while_alive(window, callback)
+                    kwargs[key] = _while_alive(window, callback, token=token, kind=key, title=title)
         return self._manager.submit(name, func, **kwargs)
 
     def __getattr__(self, name: str) -> Any:
@@ -87,13 +92,57 @@ def window_is_going(window: Any) -> bool:
         return True
 
 
-def _while_alive(window: Any, callback: Callable[..., Any]) -> Callable[..., Any]:
+def _title_of(window: Any) -> str:
+    try:
+        return str(window.GetTitle() or "")
+    except Exception:  # noqa: BLE001 - a window that cannot say its title has none
+        return ""
+
+
+def _while_alive(
+    window: Any,
+    callback: Callable[..., Any],
+    *,
+    token: Any = None,
+    kind: str = "",
+    title: str = "",
+) -> Callable[..., Any]:
     def guarded(*args: Any) -> Any:
-        if window_is_going(window):
+        gone = window_is_going(window) or (token is not None and not token.is_alive)
+        if gone:
+            if kind in ("on_success", "on_failure"):
+                _record_outlived(
+                    title, failed=kind == "on_failure", payload=args[-1] if args else None
+                )
             return None
         return callback(*args)
 
     return guarded
+
+
+def _record_outlived(title: str, *, failed: bool, payload: Any) -> None:
+    """A result whose window had closed: reviewable in Activity, never spoken."""
+    from quill.core import activity
+
+    what = title or "A window"
+    if failed:
+        summary = f"{what}: its background work failed after the window closed."
+        reason = f"It reported {type(payload).__name__}." if payload is not None else ""
+        outcome = activity.FAILED
+    else:
+        summary = f"{what}: its background work finished after the window closed."
+        reason = ""
+        outcome = activity.COMPLETED
+    activity.LOG.record(
+        activity.ActionResult(
+            action="background",
+            object_name=what,
+            outcome=outcome,
+            summary=summary,
+            reason=reason,
+            importance=activity.REVIEW,
+        )
+    )
 
 
 def surface_tasks(manager: Any, window: Callable[[], Any]) -> Any:

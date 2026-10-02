@@ -29,6 +29,16 @@ were used weekly, Alt+S pressing Stop instead of opening a menu. None of it
 was a missing feature. All of it was the app being harder to use than it had
 to be.
 
+### Activity, and Repeat Last Result
+
+**Help > Activity...** (Shift+F9) is everything QUILL Cast told you this
+session, newest first, with what you can do about each row: Retry, Open
+Folder, Copy Details. A library or settings file that could not be saved is
+said once, with the reason, and its Activity row carries a Retry that saves
+again and an Open Folder that shows you the disk; when a later save works,
+that is said too. **Help > Repeat Last Result** (F9) says the newest result
+that mattered again. The same two keys in QUILL, QUILL Lite and Quill Radio.
+
 ### Episode Filters ask far more, and write a rule for you
 
 A rule can now test the show notes, the people on an episode, the type the

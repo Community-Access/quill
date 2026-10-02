@@ -634,6 +634,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # use to buy one they have never had. Both are in the command palette and
     # rebindable in the Keymap Editor, which is what the issue actually asks for.
     "app.repeat_last_announcement": "",
+    # qc.md F-10: the same two keys in every QuillVille app. F9 says the last
+    # result again; Shift+F9 shows them all. Free in both editors and every
+    # app (Word's F9 updates fields, which QUILL does not have).
+    "app.repeat_last_result": "F9",
+    "app.activity": "Shift+F9",
     "app.announcement_self_test": "",
     "app.open_media_player": "",
     "edit.follow_link": "Ctrl+Enter",

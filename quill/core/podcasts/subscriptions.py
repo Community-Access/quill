@@ -533,40 +533,51 @@ def _migrate_row_order(library: PodcastLibrary) -> None:
 
 def save_library(data_dir: Path, library: PodcastLibrary) -> None:
     """Persist the library atomically."""
+    from quill.core.persistence_outcome import guarded_write
     from quill.core.storage import write_json_atomic
 
-    write_json_atomic(
-        _store_path(data_dir),
-        {
-            "shows": [s.to_dict() for s in library.shows],
-            "folders": [f.to_dict() for f in library.folders],
-            "settings": library.settings.to_dict(),
-            "queue": [q.to_dict() for q in library.queue],
-            "inbox_folders": [f.to_dict() for f in library.inbox_folders],
-            "inbox_assignments": dict(library.inbox_assignments),
-            "playlists": [p.to_dict() for p in library.playlists],
-            "recently_expired": [e.to_dict() for e in library.recently_expired],
-            "episode_filters": {
-                show_id: config.to_dict() for show_id, config in library.episode_filters.items()
+    path = _store_path(data_dir)
+    guarded_write(
+        "your podcast library",
+        path,
+        lambda: write_json_atomic(
+            path,
+            {
+                "shows": [s.to_dict() for s in library.shows],
+                "folders": [f.to_dict() for f in library.folders],
+                "settings": library.settings.to_dict(),
+                "queue": [q.to_dict() for q in library.queue],
+                "inbox_folders": [f.to_dict() for f in library.inbox_folders],
+                "inbox_assignments": dict(library.inbox_assignments),
+                "playlists": [p.to_dict() for p in library.playlists],
+                "recently_expired": [e.to_dict() for e in library.recently_expired],
+                "episode_filters": {
+                    show_id: config.to_dict() for show_id, config in library.episode_filters.items()
+                },
+                "episode_filter_reviews": dict(library.episode_filter_reviews),
+                "episode_filter_exceptions": {
+                    show_id: list(guids)
+                    for show_id, guids in library.episode_filter_exceptions.items()
+                },
+                "extra_settings": dict(library.extra_settings),
+                # Empty buckets are dropped rather than written: an override map
+                # with nothing in it is the absence of an opinion, and storing one
+                # would make "has this level said anything?" answerable two ways.
+                "scope_overrides": {
+                    scope: dict(values)
+                    for scope, values in library.scope_overrides.items()
+                    if values
+                },
+                "show_labels": {
+                    show_id: list(names) for show_id, names in library.show_labels.items() if names
+                },
+                "show_check_state": {
+                    show_id: dict(state)
+                    for show_id, state in library.show_check_state.items()
+                    if state
+                },
+                "onboarding": library.onboarding.to_dict(),
+                "last_auto_check": library.last_auto_check,
             },
-            "episode_filter_reviews": dict(library.episode_filter_reviews),
-            "episode_filter_exceptions": {
-                show_id: list(guids) for show_id, guids in library.episode_filter_exceptions.items()
-            },
-            "extra_settings": dict(library.extra_settings),
-            # Empty buckets are dropped rather than written: an override map
-            # with nothing in it is the absence of an opinion, and storing one
-            # would make "has this level said anything?" answerable two ways.
-            "scope_overrides": {
-                scope: dict(values) for scope, values in library.scope_overrides.items() if values
-            },
-            "show_labels": {
-                show_id: list(names) for show_id, names in library.show_labels.items() if names
-            },
-            "show_check_state": {
-                show_id: dict(state) for show_id, state in library.show_check_state.items() if state
-            },
-            "onboarding": library.onboarding.to_dict(),
-            "last_auto_check": library.last_auto_check,
-        },
+        ),
     )

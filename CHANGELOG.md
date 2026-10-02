@@ -2,6 +2,32 @@
 
 ## 1.0.0
 
+### Every app: Activity, Repeat Last Result, and saves that tell the truth (2026-10-02)
+
+- **Help > Activity... (Shift+F9)** lists every result this session, newest
+  first, each with what you can do about it -- Retry, Open Folder, Copy
+  Details, Clear List -- and **Help > Repeat Last Result (F9)** says the
+  newest result that mattered again, the app's own last result rather than
+  the screen reader's last utterance. One shared result model, log, window
+  and pair of keys across QUILL, QUILL Lite, Quill Radio and QUILL Cast
+  (`quill/core/activity.py`, `quill/ui/activity_window.py`,
+  `quill/ui/main_frame_activity.py`, `quill/apps/lite_window_activity.py`,
+  `quill/ui/app_shell.py`; qc.md F-10, sections 7.1 to 7.6).
+- **A settings or history save that fails is said once, with a way back.**
+  QUILL's and QUILL Lite's settings, Quill Radio's and QUILL Cast's history
+  and the podcast library all write through one guard that reports the
+  outcome with a stable reason code and re-raises unchanged. The app says it
+  once per file per minute, offers Retry and Open Folder in Activity, and
+  says when a later save of the same file works
+  (`quill/core/persistence_outcome.py`, `quill/ui/persistence_reporting.py`;
+  qc.md F-01).
+- **A background result that outlives its window goes to Activity**, as a
+  review row that is never spoken, instead of being dropped without trace
+  (`quill/ui/surface_lifetime.py`; qc.md F-02).
+- The progress model (`Progress`, `ProgressAnnouncer`: phases, milestones,
+  owner tokens) and focus memory by identity (`restore_index`) ship in the
+  same module for the surfaces that adopt them next.
+
 ### QUILL Cast: Episode Filters ask far more, and write a rule for you (2026-10-01)
 
 - **Episode Filters ask far more, and write a rule for you.** A rule can hold

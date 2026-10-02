@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 463.
+Editor commands with default bindings: 465.
 
 ## The QUILL editor
 
@@ -376,6 +376,8 @@ Editor commands with default bindings: 463.
 | Ctrl+, | Preferences... | `app.preferences` |
 | Ctrl+Q | Exit | `app.exit` |
 | Ctrl+Shift+P | Command Palette... | `app.command_palette` |
+| F9 | Repeat Last Result | `app.repeat_last_result` |
+| Shift+F9 | Activity... | `app.activity` |
 
 ### Help
 
@@ -612,6 +614,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Up | Radio: Volume Up | `radio.volume_up` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
 | F5 | Refresh the ACB Media Schedule | `radio.refresh_calendar` |
+| F9 | Repeat Last Result | `app.repeat_last_result` |
+| Shift+F9 | Activity... | `app.activity` |
 
 ## QUILL Cast (app keys)
 
@@ -634,6 +638,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
+| F9 | Repeat Last Result | `app.repeat_last_result` |
+| Shift+F9 | Activity... | `app.activity` |
 
 ## Weather (app keys)
 

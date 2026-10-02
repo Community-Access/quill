@@ -243,7 +243,37 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
-<h2 id="120--unreleased">1.2.0 – unreleased</h2>
+<h2 id="unreleased--the-next-release-quill-lite-120">Unreleased – the
+next release, QUILL Lite 1.2.0</h2>
+<h3
+id="activity-repeat-last-result-and-saves-that-tell-the-truth-f-01-f-02-f-10">Activity,
+Repeat Last Result, and saves that tell the truth (F-01, F-02,
+F-10)</h3>
+<ul>
+<li><strong>Help &gt; Activity… (Shift+F9)</strong> lists every result
+this session, newest first, each with what you can do about it: Retry,
+Open Folder, Copy Details, Clear List. <strong>Help &gt; Repeat Last
+Result (F9)</strong> says the newest result that mattered again. The
+same two keys and the same window in QUILL, Quill Radio and QUILL Cast;
+every document window shares one list
+(<code>quill/core/activity.py</code>,
+<code>quill/ui/activity_window.py</code>,
+<code>quill/apps/lite_window_activity.py</code>).</li>
+<li><strong>A settings save that fails is said once, with a way
+back.</strong> Every settings and history writer in the family – QUILL
+Lite’s and QUILL’s settings, Quill Radio’s and QUILL Cast’s history, the
+podcast library – goes through one guard that reports how the write
+went. A failure reaches Activity with the reason (disk full, denied,
+read only, missing folder), a Retry that writes the same thing again and
+an Open Folder; the same file’s failure is not repeated for a minute,
+and the save that later works is said too
+(<code>quill/core/persistence_outcome.py</code>,
+<code>quill/ui/persistence_reporting.py</code>).</li>
+<li><strong>Background work that finishes after its window closed is not
+lost.</strong> It used to be dropped without trace. It is now a review
+row in Activity, never spoken
+(<code>quill/ui/surface_lifetime.py</code>).</li>
+</ul>
 <h3
 id="large-and-networked-files-open-without-freezing-the-window-f-05">Large
 and networked files open without freezing the window (F-05)</h3>
