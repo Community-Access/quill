@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast User Guide</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -237,6 +244,13 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-cast-user-guide">QUILL Cast User Guide</h1>
 <p>Version 1.0</p>
+<h2 id="upcoming-preferences-search">Upcoming Preferences Search</h2>
+<p>Preferences gains <strong>Find a setting</strong> in the next
+maintenance update. Type a term from a setting’s label or help, press
+Down for matching settings, then Enter to focus one. Control+F returns
+to search; Escape clears a search before closing. Search navigates only:
+OK still saves, Cancel still cancels, and values are not indexed.
+Disabled settings stay disabled.</p>
 <p>QUILL Cast is podcasts the way a screen reader user would design
 them: a small window whose library tree has focus the instant it opens,
 a Podcast Manager built entirely for the keyboard, spoken feedback for
@@ -246,18 +260,20 @@ every action, and a tray icon so playback continues while you work.</p>
 from a terminal if you installed from source). The window opens with
 keyboard focus on your <strong>Library</strong> tree.</p>
 <ul>
-<li>No shows yet? Press Alt+S for the Subscriptions menu, then
-<strong>Add Podcast…</strong> to subscribe by search or feed URL – or
-<strong>Import OPML…</strong> to bring a library from another podcast
-app, or <strong>Subscribe to ACB Media Podcasts</strong> for ACB’s whole
-live directory in one step.</li>
+<li>No shows yet? Press Alt+P for the Podcasts menu, then <strong>Add
+Podcast…</strong> to follow a show by search or feed URL – or
+<strong>Subscribe to ACB Media Podcasts</strong> for ACB’s whole live
+directory in one step. <strong>Import OPML…</strong> brings a library
+from another podcast app; it is an Advanced row (see “Simple and
+Advanced” below), and the Command Palette reaches it in either
+mode.</li>
 <li>With shows: arrow to one and press <strong>Enter</strong> to play
 its next unplayed episode – no detour through the Manager required. If
 every episode is already played, Enter plays the most recent one and
 says so.</li>
-<li>Want QUILL Cast on the moment it opens? Check <strong>Subscriptions
-&gt; Resume Last Episode on Launch</strong> once, and launching the app
-picks up exactly where you left off.</li>
+<li>Want QUILL Cast on the moment it opens? Check <strong>Podcasts &gt;
+Resume Last Episode on Launch</strong> once, and launching the app picks
+up exactly where you left off.</li>
 </ul>
 <p>Everything QUILL Cast announces goes through the same announcement
 engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA,
@@ -276,13 +292,19 @@ Episodes</strong>, <strong>Continue Listening</strong>,
 filed in them. A show wears its unplayed count in words – “(3 unheard)”
 – and a folder wears how many podcasts live under it, counting
 everything expanding it would reveal. Enter on a show plays its next
-episode; Enter on a pinned view opens the Podcast Manager to that view.
-Delete unsubscribes a show (with confirmation) or dissolves a folder
-(your shows step safely to the top level – nothing is ever unsubscribed
-by deleting a folder). Shift+F10 opens the full context menu: Play/Stop,
-Add/Remove Favorites, Move to Folder, <strong>Move Up / Move Down in
-Custom Order</strong> (Alt+Up / Alt+Down – see Sort Podcasts below),
-<strong>Download All Episodes</strong>, <strong>Remove All
+episode; Enter on a pinned view plays its newest unstarted episode
+(Continue Listening: the most recent one you were in the middle of).
+<strong>The pinned views open</strong>: Right Arrow on Favorites, New
+Episodes, Continue Listening or the Inbox reveals what its count counts
+– episodes under the three episode views, each naming its podcast, and
+podcasts under Favorites, each of which expands to its own episodes one
+level down. Delete unsubscribes a show (with confirmation) or dissolves
+a folder (your shows step safely to the top level – nothing is ever
+unsubscribed by deleting a folder). Shift+F10 or the Applications key
+opens the full context menu (the same one a right-click opens):
+Play/Stop, Add/Remove Favorites, Move to Folder, <strong>Move Up / Move
+Down in Custom Order</strong> (Alt+Up / Alt+Down – see Sort Podcasts
+below), <strong>Download All Episodes</strong>, <strong>Remove All
 Episodes</strong>, <strong>Feed Credentials…</strong> (for private feeds
 – see below), Unsubscribe, New Folder, and Open Manager. On a folder the
 context menu offers <strong>Rename Folder… (F2)</strong>, <strong>Delete
@@ -306,13 +328,61 @@ offers <strong>Play Episode</strong> (Stop, while it is the one playing)
 and <strong>Download Episode</strong> – the file lands under your
 Download location as <code>show-title\episode-title.mp3</code>, so it
 has a name that means something outside the app.</li>
-<li>Buttons: <strong>Play</strong> (becomes <strong>Pause</strong> while
-playing, <strong>Resume</strong> while paused – one transport control
-that is never dead), <strong>Stop</strong>, <strong>Add to
-Favorites</strong> (becomes <strong>Remove from Favorites</strong> when
-the playing show is already a favorite), <strong>Open Manager…</strong>,
-<strong>Add Podcast…</strong>.</li>
+<li>Buttons, each of which <strong>names the thing it will act on in its
+own label</strong>: <strong>Play</strong> and the name of whatever the
+library cursor is on (Alt+Y) – a podcast (its next episode plays), an
+episode, or a pinned view (its first playable episode); it becomes
+<strong>Pause</strong> and the playing episode’s name while playing, and
+<strong>Resume</strong> and its name (Alt+S) while paused, so it is
+never dead. With a folder, an empty show or nothing selected it reads
+<strong>Play – nothing selected</strong>, and pressing it says what
+would work. <strong>Stop</strong> (Alt+T) is enabled only while
+something is playing or paused. <strong>Add to Favorites</strong>
+(Alt+F) becomes <strong>Remove from Favorites</strong> when the playing
+show is already a favorite. <strong>Unfollow</strong> and the selected
+podcast’s name (Alt+U) – or the selected episode’s podcast – asks first,
+and Ctrl+Z puts the show back; with nothing selected it reads plain
+Unfollow and is disabled. <strong>Episode List…</strong> (Alt+I) is the
+Podcast Manager; <strong>Add Podcast…</strong> (Alt+A). Names longer
+than forty characters are shortened with an ellipsis, and every button
+keeps its share of the row, so nothing moves as you arrow through the
+library. The letters are chosen so no button ever shares one with a
+menu: when a button and a menu claim the same Alt+letter, Windows gives
+it to the button, which is how Alt+S once pressed Stop instead of
+opening a menu.</li>
+<li><strong>The status bar</strong>, last in the window and off the Tab
+order: press <strong>F6</strong> to enter it. See “The status bar”
+below.</li>
+<li><strong>Where Cast opens.</strong> With no launch place chosen, Cast
+lands on the Inbox if anything is waiting, else on Continue Listening if
+anything is half-heard, else at the top of the library.</li>
 </ul>
+<h2 id="the-status-bar">The status bar</h2>
+<p>A nine-cell bar along the bottom of the main window. It is
+<strong>not in the Tab order</strong>, so it costs nothing until you ask
+for it: <strong>F6</strong> moves into it, and F6 again, Escape or Tab
+moves out, back to the library tree. Inside the bar, Left and Right move
+cell to cell, Home and End jump to the ends, Enter or Space activates
+the cell, and Shift+F10 (or the Applications key) opens the cell’s own
+menu. Entering the bar announces the region once; moving inside it is
+silent, because the screen reader reads each cell as it takes focus.</p>
+<p>The cells, in the order a listening session happens:</p>
+<ul>
+<li><strong>Play / Pause / Resume</strong> and <strong>Mute /
+Unmute</strong> – action cells, whose label is the thing pressing them
+would do, and flips with the state.</li>
+<li><strong>Volume</strong>, <strong>Speed</strong> – readouts; Enter
+repeats the level, and for Speed says whether it is this podcast’s own
+speed or the shared one.</li>
+<li><strong>Queue</strong>, <strong>Inbox</strong>,
+<strong>Downloads</strong>, <strong>Sleep timer</strong> – readouts that
+open the window behind them on Enter. A readout with nothing to say
+shows its bare name rather than a zero.</li>
+<li><strong>Clock</strong>.</li>
+</ul>
+<p><strong>View &gt; Show Status Bar</strong> (Ctrl+Shift+B) hides or
+shows it. When it is hidden, F6 does whatever it did before rather than
+silently doing nothing.</p>
 <h2 id="the-podcast-manager">The Podcast Manager</h2>
 <p>The Manager (Ctrl+M) is where episode-level life happens, and it is
 the same Manager QUILL ships:</p>
@@ -482,16 +552,54 @@ passwords cannot be decrypted there – the first refresh of a private
 feed will say sign-in failed, and you re-enter the password once via
 Feed Credentials….</p>
 <h2 id="menus">Menus</h2>
-<h3 id="subscriptions-alts">Subscriptions (Alt+S)</h3>
-<p>Open Podcast Manager… (Ctrl+M), Add Podcast…, Import OPML…, Export
-OPML…, New Folder… (creates a library folder without opening the
-Manager), <strong>Sort Podcasts</strong> (a submenu – see below), Add
-Local Podcast…, Scan Watched Folders, Subscribe to ACB Media Podcasts,
-Podcast Settings…, <strong>Podcast Index Credentials…</strong>,
-<strong>Quick Actions…</strong>, <strong>Export My Data…</strong>,
-<strong>Delete All Podcast Data…</strong>, <strong>Resume Last Episode
-on Launch</strong> (check item – the appliance switch),
-<strong>Preferences…</strong> (Ctrl+,), Send to Tray (Ctrl+W), Exit.</p>
+<p>The bar reads <strong>Podcasts, Episode, Downloads, View, Quillins,
+Window, Help</strong>. Quillins is present in Advanced mode only.</p>
+<h3 id="simple-and-advanced">Simple and Advanced</h3>
+<p>The menus are sorted by how often anybody needs a row.
+<strong>Simple</strong>, the default, holds everything a listener does
+weekly: follow a podcast, find one, play, queue, Inbox, folders,
+downloads, sleep timer, speed, settings, help. <strong>Advanced</strong>
+(View &gt; Advanced Features, Ctrl+Alt+Shift+G) adds the rows you go
+looking for once you know they exist: Back Up My Podcasts, Restore from
+a Backup, Import OPML, Export OPML, Export My Data, Delete All Podcast
+Data, Podcast Index Credentials, Choose Columns, Quick Actions, Media
+Tools, Run Housekeeping Now, Free Up Space, Get FFmpeg, Redeem Unlock
+Code, Product Requirements, and the whole Quillins menu.
+<strong>Keyboard Shortcuts…</strong> and <strong>Global
+Hotkeys…</strong> are in the Help menu in both modes: every key is yours
+to change, so where you change them is never hidden.</p>
+<p>Advanced rows are left out of Simple mode rather than disabled, so
+the lists are shorter rather than longer. Nothing is unreachable: every
+one of them is a command, and the <strong>Command Palette</strong> and
+<strong>Go To</strong> reach all of them by name in either mode. The
+Advanced Features row itself is present in both modes and says which is
+in force; switching rebuilds the menu bar at once.</p>
+<p><strong>View &gt; Customize Features…</strong> is a different switch:
+whole areas of Cast you may have no use for, turned off entirely at the
+next launch – Downloads, the Inbox, the Play Queue, transcripts and
+chapters, statistics, Personal Audio, the sleep timer, and backups and
+OPML. Everything is on until you say otherwise, and whatever you turn
+off, you still have a podcast player.</p>
+<h3 id="podcasts-altp">Podcasts (Alt+P)</h3>
+<p>The menu was called Subscriptions until 2026-09-30; it is named after
+what is in it. Rows marked <em>(Advanced)</em> appear in Advanced mode
+only.</p>
+<p>Open Podcast Manager… (Ctrl+M), Add Podcast… (Ctrl+N), Import OPML…
+<em>(Advanced)</em>, Export OPML… <em>(Advanced)</em>, New Folder…
+(Ctrl+Shift+F; creates a library folder without opening the Manager),
+<strong>Sort Podcasts</strong> (a submenu – see below), Add Local
+Podcast…, Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast
+Settings…, <strong>Podcast Index Credentials…</strong>
+<em>(Advanced)</em>, <strong>Feed Check…</strong> (Ctrl+Shift+C – see
+“Feed Check” below), <strong>Quick Actions…</strong>
+<em>(Advanced)</em>, <strong>Choose Columns…</strong>
+<em>(Advanced)</em>, <strong>Export My Data…</strong>
+<em>(Advanced)</em>, <strong>Delete All Podcast Data…</strong>
+<em>(Advanced)</em>, <strong>Back Up My Podcasts…</strong>
+<em>(Advanced)</em>, <strong>Restore from a Backup…</strong>
+<em>(Advanced)</em>, <strong>Resume Last Episode on Launch</strong>
+(check item – the appliance switch), <strong>Preferences…</strong>
+(Ctrl+,), Send to Tray (Ctrl+W), Exit (Ctrl+Q).</p>
 <p><strong>Sort Podcasts</strong> decides how your shows are ordered
 everywhere they are listed: <strong>Ascending (A to Z)</strong>,
 <strong>Descending (Z to A)</strong>, or <strong>Custom Order</strong>.
@@ -633,15 +741,17 @@ came from this podcast, from its folder, or from your shared defaults.
 News.”</em></li>
 <li><strong>Saving writes only what you changed.</strong> Anything you
 leave alone keeps following the levels above it.</li>
-<li><strong>Where this podcast has an answer of its own, a Follow button
-appears beside the control.</strong> Pressing it drops that one answer
-so the podcast goes back to inheriting – it does not write today’s
-default over it.</li>
+<li><strong>Where this podcast has an answer of its own, a Use shared
+default button appears beside the control</strong>, naming the setting –
+“Use shared default for Playback speed”. Pressing it drops that one
+answer so the podcast goes back to inheriting – it does not write
+today’s default over it. (Until 2026-10-01 these buttons all said
+Follow, which is also the word for adding a podcast.)</li>
 </ul>
 <p><strong>What Have I Changed?</strong> lists only the settings this
 podcast answers for itself, out of all of them. It is the fastest way to
 find out why one podcast is behaving differently from the rest.
-<strong>Follow the Shared Defaults</strong> drops every one of them at
+<strong>Use Shared Defaults</strong> (Alt+D) drops every one of them at
 once, and says how many it dropped.</p>
 <h4 id="what-you-can-set-for-one-podcast">What you can set for one
 podcast</h4>
@@ -919,6 +1029,30 @@ when a show is loaded, <strong>auto-skip intro</strong> and
 automatically on a fresh start (never when resuming your saved
 position); outro-skip ends the episode early, exactly as if it had
 finished naturally – auto-advance and delete-after-play still fire.</p>
+<h3 id="view-altv">View (Alt+V)</h3>
+<p>The places you go, one key each, in the order Earshot lists them:
+<strong>Inbox</strong> (Ctrl+Shift+I), <strong>Play Queue…</strong>,
+<strong>Podcasts</strong> (Ctrl+Shift+P), <strong>Personal
+Audio</strong> (Ctrl+Shift+U), <strong>Downloads…</strong>,
+<strong>Statistics…</strong>, <strong>Continue Listening…</strong>.
+Going to a place lands focus on it in the library tree, so your screen
+reader reads the place you asked for; an empty place says how to fill
+it, once, on arrival.</p>
+<p>Then what the tree shows: <strong>Hide Caught-Up Podcasts</strong>
+(Ctrl+Shift+H) takes shows with nothing unheard out of the tree, and
+<strong>Inbox Folder…</strong> (Ctrl+Shift+O) narrows the Inbox to the
+shows filed under one library folder, subfolders included – the Inbox
+always says which scope is in force, so an Inbox that is empty because
+of a filter never just says “empty”.</p>
+<p>Then how much of Cast you meet: <strong>Show Status Bar</strong>
+(Ctrl+Shift+B), <strong>Advanced Features</strong> (Ctrl+Alt+Shift+G),
+and <strong>Customize Features…</strong> – see “Simple and Advanced”
+above.</p>
+<h3 id="window-altw">Window (Alt+W)</h3>
+<p>Every open Cast window, each with a number: the route between them
+that does not involve Alt+Tab and guessing which of several identically
+titled windows is which. <strong>Ctrl+1</strong> is always the main
+window, and returning to it lands on the library tree.</p>
 <h3 id="downloads-altd">Downloads (Alt+D)</h3>
 <p>Pause All Downloads, Resume All Downloads,
 <strong>Downloads…</strong>, <strong>Free Up Space</strong>, <strong>Run
@@ -1383,6 +1517,23 @@ otherwise turning the check on here would turn it on there, with no way
 to say “let Radio do it” – but they share the record of when a check
 last happened, so whichever one goes first, the other finds the work
 already done and stays quiet. There is nothing to configure.</p>
+<h2 id="feed-check-which-of-your-podcasts-need-something">Feed Check:
+which of your podcasts need something</h2>
+<p><strong>Podcasts &gt; Feed Check…</strong> (Ctrl+Shift+C) answers
+“which of my sixty podcasts is broken”. Cast has always kept the facts –
+when each feed was last read, how many checks have failed in a row, when
+it last carried something new – and used them to decide when to speak,
+once per run of failures. This window lets you ask.</p>
+<p>The window opens with focus in the feed list. The list is
+<strong>worst first</strong>: feeds failing to check, then feeds that
+have gone quiet, then everything healthy, so you read the top rather
+than the whole. Opening it checks nothing and sends nothing.
+<strong>Retry</strong> on a row, or <strong>Retry All Failed</strong>,
+is the refresh Cast already does, and it says what it found per feed.
+<strong>Copy Feed Address</strong> puts the row’s URL on the clipboard.
+Shift+F10 or the Applications key opens the row’s menu. A failing feed
+is never described as abandoned: Cast keeps trying, and every sentence
+here says so.</p>
 <h2 id="lineups-saving-the-order-you-listen-in">Lineups: saving the
 order you listen in</h2>
 <p>A lineup is “the order I listen in on a Tuesday” – four shows, in a

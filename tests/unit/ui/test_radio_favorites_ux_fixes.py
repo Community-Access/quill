@@ -84,6 +84,8 @@ def test_no_control_on_the_main_window_claims_a_menu_bar_mnemonic() -> None:
     # could grow a Pause row without radio.py going over its GATE-11 ceiling.
     # The rule under test is "&Stop"/"&Play" stay MENU labels rather than
     # becoming control labels again, so it is checked wherever they are built.
+    # Since 2026-10-01 the row reads the main window's transport button's word
+    # (Play, Stop or Resume) rather than the two-control panel's face.
     menu_src = _read("quill/apps/radio_transport_menu.py")
-    assert 'f"&{primary.plain}' in menu_src
+    assert 'f"&{word}\\tCtrl+P"' in menu_src
     assert "Ctrl+P" in menu_src

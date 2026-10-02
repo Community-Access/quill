@@ -3047,6 +3047,14 @@ and Beacon.</p>
 <hr />
 <h2 id="closing-a-lot-of-windows-at-once">Closing a lot of windows at
 once</h2>
+<p>When you switch back with Alt+Tab, QUILL Lite repairs focus left on a
+window container so you can type in the active document. A Find field,
+other control, or open menu keeps focus; the app does not pull you away
+from it.</p>
+<p>When you exit the whole app, incoming requests to open documents stop
+before the windows close. Requests still waiting in the inbox are
+handled on the next launch. Cancelling a save prompt cancels exit and
+leaves the app working normally.</p>
 <p><strong>Window &gt; Close Other Documents (Ctrl+Shift+F4)</strong>
 keeps the document you are in and closes every other one. QUILL has had
 it since 2026-06; QUILL Lite has it now too, on the same key, because a
@@ -3611,12 +3619,28 @@ it. That is what makes Not Now safe to press: the answer is put off
 rather than lost, and a list that needs tidying can be tidied without
 waiting for a restart. QUILL has the same window on the same key.</p>
 <h2 id="settings">Settings</h2>
+<p>In the next maintenance update, <strong>Find a setting</strong>
+searches the Preferences labels, accessible names, and help text. Type a
+term, press Down to reach Matching settings, then Enter on a result to
+focus its control. <strong>Ctrl+F</strong> returns to search. Enter here
+navigates rather than saving; Escape clears a nonempty search before
+closing. Search never reads field values or changes a setting for you.
+The existing OK and Cancel actions still apply.</p>
 <p><strong>Tools ▸ Preferences</strong> (<strong>Ctrl+,</strong>) is one
 window, one long column of controls, and an <strong>OK</strong> and a
 <strong>Cancel</strong> at the bottom. Tab moves down it, Shift+Tab
 moves back up, <strong>F1</strong> on anything reads what that one
-control does, and <strong>nothing is written until you press OK</strong>
-— so Escape is always safe.</p>
+control does, and <strong>new changes are not written until you press
+OK</strong> — so Escape is always safe.</p>
+<p>If settings could not be saved, they remain active for this session.
+QUILL Lite says so, and the status bar’s Message cell keeps the warning
+available to read with <strong>F6</strong>. Free space or restore access
+to the settings folder, then reopen Preferences to retry the settings
+you already accepted. That retry does not require another edit or
+pressing OK. A successful retry clears the warning; Cancel still
+discards new changes made inside the dialog. Settings changes and normal
+exit also attempt a save. This warning is about preferences, not whether
+your document itself has been saved.</p>
 <p>Here is every control in it, in the order you meet them.</p>
 <p><strong>Profile</strong> is the same four-answer chooser Customize
 Features has, with the same read-only description under it. It is here
