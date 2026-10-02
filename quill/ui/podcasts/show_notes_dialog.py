@@ -81,14 +81,26 @@ class ShowNotesDialog:
         root.Add(self._plain_view, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         self._rich_view: object | None = None
+        self._rich_label: object | None = None
         try:
             import wx.html as wxhtml
 
+            # Its own label, created immediately before it: the one above was
+            # consumed by the plain view, so the rich view announced with no
+            # name at all (qc.md 6b item 14). Hidden and shown with the view.
+            self._rich_label = wx.StaticText(self.dialog, label="Show notes, &formatted:")
             self._rich_view = wxhtml.HtmlWindow(self.dialog)
-            self._rich_view.SetName("Show notes, rich text")
+            self._rich_view.SetName("Show notes, formatted")
+            self._rich_view.SetHelpText(
+                "The episode's show notes with their formatting: headings, lists "
+                "and links. Read-only. Choose Plain text above to arrow through "
+                "them line by line."
+            )
             sanitized = strip_html_images(description_html)
             self._rich_view.SetPage(sanitized or "<p>(No show notes for this episode.)</p>")
+            self._rich_label.Hide()
             self._rich_view.Hide()
+            root.Add(self._rich_label, 0, wx.LEFT | wx.RIGHT, 10)
             root.Add(self._rich_view, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         except Exception:  # noqa: BLE001 - rich view is optional; plain text always works
             self._view_choice.Enable(False)
@@ -134,6 +146,8 @@ class ShowNotesDialog:
         self._plain_view.Show(not rich_selected)
         if self._rich_view is not None:
             self._rich_view.Show(rich_selected)
+        if self._rich_label is not None:
+            self._rich_label.Show(rich_selected)
         self.dialog.Layout()
 
     def show_links(self) -> int:

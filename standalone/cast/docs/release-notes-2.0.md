@@ -184,6 +184,9 @@ again. Quill Radio's main window learned the same lesson the same day.
   saying what it was called. It now opens with focus on the queue and its
   title, and a build check makes sure no window anywhere in the family can
   make that mistake again.
+- **Show Notes' formatted view has a name.** Choosing Rich text in Show Notes
+  showed the formatted notes with no name at all; it is now "Show notes,
+  formatted" (Alt+F), and the label appears and disappears with the view.
 - **F1 says what the main window and Feed Check are for, as they are now.**
   F1 in the main window mentions the buttons that name what they act on,
   the View menu's places and F6 for the status bar; F1 in Feed Check says
