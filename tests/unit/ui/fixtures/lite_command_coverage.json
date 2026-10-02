@@ -99,6 +99,7 @@
   "cmd_list_bookmarks": "covered",
   "cmd_list_headings": "covered",
   "cmd_list_marks": "covered",
+  "cmd_look_up": "covered",
   "cmd_lower_case": "covered",
   "cmd_manage_abbreviations": "covered",
   "cmd_misspelling_list": "covered",

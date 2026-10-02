@@ -501,3 +501,79 @@ def _span():
 
     start = SENTENCE.index("running")
     return WordSpan("running", start, start + len("running"))
+
+
+# --------------------------------------------------------------------------- #
+# Look Up: the dictionary without AI (Alt+F10)
+# --------------------------------------------------------------------------- #
+
+
+def test_alt_f10_opens_look_up_on_the_word_with_replace_and_the_remembered_consent(
+    lite_window, monkeypatch
+):
+    import quill.ui.lookup_window as lookup
+
+    seen: list[dict[str, Any]] = []
+    monkeypatch.setattr(
+        lookup, "show_lookup", lambda parent, word, **kw: seen.append({"word": word, **kw})
+    )
+    win = _on_running(lite_window)
+    win.app.settings.dictionary_online_lookups = True
+
+    (lambda w: w.cmd_look_up())(win)
+
+    shown = seen[0]
+    assert shown["word"] == "running"
+    assert shown["online"] is True
+    assert shown["replace"] is not None
+    shown["replace"]("sprinting")
+    assert win.control.GetValue() == SENTENCE.replace("running", "sprinting")
+    assert "Added" in shown["teach"]("running") or "Could not" in shown["teach"]("running")
+
+
+def test_look_up_remembers_the_online_choice_in_settings(lite_window, monkeypatch):
+    import quill.ui.lookup_window as lookup
+
+    seen: list[dict[str, Any]] = []
+    monkeypatch.setattr(lookup, "show_lookup", lambda parent, word, **kw: seen.append(kw))
+    win = _on_running(lite_window)
+    win.app.settings.dictionary_online_lookups = False
+
+    (lambda w: w.cmd_look_up())(win)
+
+    assert seen[0]["online"] is False
+    seen[0]["set_online"](True)
+    assert win.app.settings.dictionary_online_lookups is True
+
+
+def test_look_up_with_no_word_asks_for_one_and_offers_no_replace(
+    lite_window, monkeypatch, fake_wx_dialog, modal_passthrough
+):
+    import quill.ui.lookup_window as lookup
+
+    fake_wx_dialog("TextEntryDialog", wx.ID_OK, GetValue="happy")
+    seen: list[dict[str, Any]] = []
+    monkeypatch.setattr(
+        lookup, "show_lookup", lambda parent, word, **kw: seen.append({"word": word, **kw})
+    )
+    win = lite_window("")
+
+    (lambda w: w.cmd_look_up())(win)
+
+    assert "Look Up" in modal_passthrough
+    assert seen[0]["word"] == "happy"
+    assert seen[0]["replace"] is None
+
+
+def test_look_up_is_owned_by_the_dictionary_area(lite_window, monkeypatch):
+    import quill.ui.lookup_window as lookup
+
+    seen: list[str] = []
+    monkeypatch.setattr(lookup, "show_lookup", lambda parent, word, **kw: seen.append(word))
+    win = _on_running(lite_window)
+    monkeypatch.setattr(win.app, "feature_enabled", lambda area: area != "dictionary")
+
+    (lambda w: w.cmd_look_up())(win)
+
+    assert seen == []
+    assert any("switched off" in said for said in win.announcements)
