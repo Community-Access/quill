@@ -14,9 +14,11 @@ import time
 
 try:
     import regex as _regex
+
     _HAVE_REGEX = True
 except ImportError:  # pragma: no cover
     import re as _regex  # type: ignore[no-redef]
+
     _HAVE_REGEX = False
 
 from quill.core.error_codes import CodedError

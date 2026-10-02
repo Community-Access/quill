@@ -186,4 +186,3 @@ def test_epub_math_parsing_handles_entities(tmp_path: Path) -> None:
     equations = _math_equations(book.chapters[0].text)
     assert len(equations) == 1
     assert "less than" in equations[0] or "<" in equations[0]
-
