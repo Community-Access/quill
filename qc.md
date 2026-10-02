@@ -18,13 +18,13 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 11 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 10 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 48 | Human acceptance pending |
-| **Total tracked rows** | **84** | **36 code/delivery groups + 48 manual scenarios** |
+| Manual screen-reader scenarios | 49 | Human acceptance pending |
+| **Total tracked rows** | **84** | **35 code/delivery groups + 49 manual scenarios** |
 
-Code/delivery subtotal: **36**.
+Code/delivery subtotal: **35**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1247,8 +1247,8 @@ the five dialogs calls `SetFocus`. They are the active worklist, in this order
       `transport_intent.label_samples` (item 2); a gate that no
       `set_accessible_name` targets a `wx.Button` in Cast. Done 2026-10-01
       with X-06, through the shared `core/transport_button.py`.
-- `EVT_CONTEXT_MENU` on the main library tree, so Shift+F10 opens the row
-      menu its own help promises (item 3).
+- [x] `EVT_CONTEXT_MENU` on the main library tree, so Shift+F10 opens the row
+      menu its own help promises (item 3). Done 2026-10-01.
 - Preview's failure is spoken (item 4); the OPML feed-check failure is
       spoken (item 20).
 - "&Unsubscribe..." in the tree menu, "&Subscribe" in Preview, "Subscribe
@@ -2783,6 +2783,9 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] In the main window's library tree, press Shift+F10 on a podcast, a
+  folder, a pinned view and an episode, then the Applications key on each.
+  Each opens the same menu a right-click does, once (not twice).
 - [ ] Open Downloads, Podcasts > Feed Check..., an episode's Show Notes,
   Listening Statistics, and Year in Review from Statistics. Each opens with
   focus on its list, notes or report -- the first thing read after the
@@ -2929,6 +2932,18 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- Shift+F10 on the library tree (6b item 3)
+
+- `main_panel.py` binds `EVT_CONTEXT_MENU` alongside `EVT_TREE_ITEM_MENU` to
+  `_on_library_context_menu`, which already built its menu from the selection
+  rather than the event -- so a keyboard request, which carries no item, gets
+  the right-click menu. Radio's pattern from aaed65f.
+- Gate: `tests/unit/ui/podcasts/test_library_tree_context_menu.py` (both
+  events bound to the one handler, by AST; the handler builds the same menu
+  with no event and with an empty one). 110 Cast UI tests pass.
+- Documented in the Cast user guide (main window) and release notes. Manual
+  check added: confirm a right-click does not now open the menu twice.
 
 ### 2026-10-01: Phase 1's "Commit" row retired
 
@@ -3178,7 +3193,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **36 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **35 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3214,14 +3229,12 @@ This is the authoritative unchecked code/delivery tracker: **36 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 11
+### Cast Phase 1 Code and Tests: 10
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
 credit on two rows is noted inline. Worked top to bottom, one commit each.
 
-- [ ] `EVT_CONTEXT_MENU` on the main library tree, so Shift+F10 opens the row
-      menu its own help promises (item 3).
 - [ ] Preview's failure is spoken (item 4); the OPML feed-check failure is
       spoken (item 20).
 - [ ] "&Unsubscribe..." in the tree menu, "&Subscribe" in Preview, "Subscribe

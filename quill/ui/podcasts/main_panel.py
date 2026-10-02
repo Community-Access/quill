@@ -59,7 +59,13 @@ class CastMainPanelMixin:
         )
         root.Add(self._shows_tree, 1, wx.EXPAND | wx.ALL, 8)
         self._shows_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_library_activated)
-        self._shows_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_library_context_menu)
+        # Right-click arrives as the item event; Shift+F10 and the Applications
+        # key can arrive as a bare EVT_CONTEXT_MENU, which only the item event
+        # was bound for -- so the key this tree's own help teaches opened
+        # nothing (qc.md 6b item 3; Radio fixed the same in aaed65f). The
+        # handler reads the selection, never the event, so both reach one menu.
+        for context_event in (wx.EVT_TREE_ITEM_MENU, wx.EVT_CONTEXT_MENU):
+            self._shows_tree.Bind(context_event, self._on_library_context_menu)
         self._shows_tree.Bind(wx.EVT_KEY_DOWN, self._on_library_key)
         self._shows_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_library_expanding)
         # The button row describes the selection, so it follows the selection.
