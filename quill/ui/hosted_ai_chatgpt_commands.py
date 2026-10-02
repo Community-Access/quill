@@ -85,10 +85,11 @@ class ChatGptAiMixin(WordToolsMixin):
         if not self._ai_switched_on():
             return
         service = self._ai_service()
-        if not self._ai_chatgpt_active():
+        if not self._ai_chatgpt_active() and not bool(getattr(service, "own_key_can_see", False)):
             self._announce(
-                "Ask About an Image uses your ChatGPT subscription. Sign in with "
-                "Continue with ChatGPT first."
+                "Ask About an Image uses your ChatGPT subscription, or your own Google "
+                "Gemini key. Sign in with Use My ChatGPT Subscription, or save a Gemini "
+                "key in Use My Own AI Key, first."
             )
             self.cmd_ai_chatgpt()
             return
@@ -117,9 +118,9 @@ class ChatGptAiMixin(WordToolsMixin):
         service = self._ai_service()
         if not self._ai_direct():
             self._announce(
-                "Tidy Dictated Text uses your ChatGPT subscription or your own OpenAI "
-                "key. Sign in with Use My ChatGPT Subscription, or save a key with Use "
-                "My Own OpenAI Key, and try again."
+                "Tidy Dictated Text uses your ChatGPT subscription or your own AI key. "
+                "Sign in with Use My ChatGPT Subscription, or save a key with Use My "
+                "Own AI Key, and try again."
             )
             self.cmd_ai_chatgpt()
             return

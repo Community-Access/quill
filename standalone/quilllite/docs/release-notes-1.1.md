@@ -69,6 +69,12 @@ recurring.*
   Explorer that does it all at once -- and Find the Word For, the reverse
   dictionary. Prose for listening, choices that each say why, Use This Word
   as one undo step. On your own OpenAI key or ChatGPT subscription only.
+- **Your own key can be a Google Gemini key.** Use My Own AI Key (Alt+F2,
+  formerly Use My Own OpenAI Key) opens on a Provider list -- OpenAI or Google
+  Gemini -- and everything below follows the choice: where the text goes,
+  which key, that account's own models with that company's prices. The choice
+  is yours and saved; nothing is guessed from a key that happens to exist. With
+  a Gemini key, Ask About an Image works too.
 - **Dictionary Status**, QUILL's row, under Tools > Spelling: how many words
   your dictionaries hold, where each file is, and whether the thesaurus data
   is present.

@@ -866,12 +866,12 @@ def test_a_saved_key_lifts_the_limits_and_removing_it_restores_them(monkeypatch)
             ai_own_key_model = ""
 
     service = AiService(App())
-    monkeypatch.setattr(own_key, "has_own_key", lambda: True)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: True)
     assert service.own_key_active
     assert service.limits is own_key.OWN_KEY_LIMITS
     assert service.unavailable_reason("summarize") == ""
 
-    monkeypatch.setattr(own_key, "has_own_key", lambda: False)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: False)
     assert not service.own_key_active
     assert service.limits is not own_key.OWN_KEY_LIMITS
 

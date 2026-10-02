@@ -38,9 +38,9 @@ def test_every_shipped_feature_is_on_and_unlimited_by_an_allowance() -> None:
 
 
 def test_a_saved_key_alone_lifts_the_limits_and_removing_it_restores_them(monkeypatch) -> None:
-    monkeypatch.setattr(own_key, "has_own_key", lambda: True)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: True)
     assert own_key.own_key_active(object())
-    monkeypatch.setattr(own_key, "has_own_key", lambda: False)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: False)
     assert not own_key.own_key_active(object())
 
 

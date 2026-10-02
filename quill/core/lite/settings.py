@@ -212,10 +212,10 @@ class Settings:
     #:
     #: Separate from the ``hosted_ai`` feature area on purpose: the area answers
     #: "does this feature exist in my copy", this answers "have I agreed to what
-    #: it does". Conflating them gets one wrong -- an area switched on by a
-    #: profile or a settings import would otherwise be consent nobody gave.
+    #: it does"; an area switched on by a profile or an import is not consent.
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""  # own-key AI model; key in the OS store (core/ai/own_key.py)
+    ai_own_key_provider: str = "openai"  # or "gemini": the explicit choice, QUILL's field too
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
     #: Same field name and same three values as QUILL, because it is the same
     #: question -- see ``quill/core/session_restore.py``, which answers it for

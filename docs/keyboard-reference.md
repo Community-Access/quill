@@ -294,7 +294,7 @@ Editor commands with default bindings: 481.
 | (unbound by default) | Speak Voice Status | `tools.voice_status` |
 | (unbound by default) | Listen for Hey QUILL (Wake Word) | `tools.voice_wakeword` |
 | Alt+F10 | Look Up Word... | `tools.look_up` |
-| Alt+F2 | Use My Own OpenAI Key... | `tools.hosted_ai_own_key` |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Alt+F9 | Dictation Status | `tools.dictation_status` |
 | Alt+Q | Ask Quill... | `tools.ask_quill_chat` |

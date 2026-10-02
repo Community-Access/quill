@@ -26,7 +26,7 @@ which text is sent, what happens to the answer, the limits, and your privacy.
 - [When something goes wrong](#when-something-goes-wrong)
 - [Your privacy](#your-privacy)
 - [Signing out and changing your mind](#signing-out-and-changing-your-mind)
-- [Using your own OpenAI key: no limits](#using-your-own-openai-key-no-limits)
+- [Using your own OpenAI or Google Gemini key: no limits](#using-your-own-openai-or-google-gemini-key-no-limits)
 - [Using your ChatGPT subscription](#using-your-chatgpt-subscription)
 - [Ask About an Image](#ask-about-an-image)
 - [Web search](#web-search)
@@ -73,7 +73,7 @@ All six are in **Tools ▸ AI**.
 | Usage | Ctrl+Alt+Shift+F9 |
 | Connect or Sign Out | Ctrl+Alt+Shift+F10 |
 | Privacy Agreement | Ctrl+Alt+Shift+K |
-| Use My Own OpenAI Key | Alt+F2 |
+| Use My Own AI Key | Alt+F2 |
 
 Every key can be changed in **Tools ▸ Keyboard Manager**.
 
@@ -398,55 +398,78 @@ things and publishes what the service costs to run.
   not you ever agreed. A door you can only reach by agreeing to something is not
   a door.
 
-## Using your own OpenAI key: no limits
+## Using your own OpenAI or Google Gemini key: no limits
 
-If you have an OpenAI account, you can use **your own key** instead of QUILL's
-free service, and **every limit goes away**: no monthly, daily or hourly
+If you have an OpenAI account or a Google Gemini key, you can use **your own
+key** instead of QUILL's free service, and **every limit goes away**: no monthly, daily or hourly
 allowance, no 2,250-word ceiling, no smaller first 48 hours.
 
-**Tools ▸ AI ▸ Use My Own OpenAI Key** (**Alt+F2**) opens one window:
+**Tools ▸ AI ▸ Use My Own AI Key** (**Alt+F2**) opens one window:
 
+1. **Provider** — **OpenAI**, or **Google Gemini**. Everything below follows
+   the choice: where your text goes, which key, which models and whose
+   prices. AI help uses the key saved for the provider chosen here and never
+   the other one; the choice is yours, saved with your settings
+   (`ai_own_key_provider`), and QUILL never guesses it from a key or a model
+   name.
 1. **About this** — a read-only box saying exactly where your text goes.
    Arrow through it once.
-2. **OpenAI API key** — paste your key here. You make one at
-   platform.openai.com, under API keys. It starts with `sk-`.
+2. **API key** — paste the key for the provider you chose. An OpenAI key
+   comes from platform.openai.com, under API keys, and starts with `sk-`; a
+   Gemini key comes from Google AI Studio at aistudio.google.com/apikey.
 3. **Model** — a list of every model your key can use for text, filled
-   from your OpenAI account once the key is checked: **Luna 6 first, then the
-   other GPT-6 models**, then the rest by name. Each row says roughly what it
+   from your account once the key is checked: for OpenAI, **Luna 6 first,
+   then the other GPT-6 models**; for Gemini, **2.5 Flash first, then 2.5
+   Pro**; then the rest by name. Each row says roughly what it
    costs, for example "gpt-6-luna, about $0.57 per 100 requests (estimate)", so
    arrowing down the list is enough to compare them. Models that cannot answer
    text — speech, transcription, images, embeddings — are left out.
 4. **Cost estimate** — the chosen model's estimate per request and per 100
-   requests. **These are estimates to help you compare, not OpenAI's prices.**
-   A typical request here is about a page in and a paragraph back; the real
-   prices are at openai.com/api/pricing.
-5. **Status** — whether a key is saved, and what the last test said.
-6. **Test the Key** — checks the key with OpenAI, fills the model list,
+   requests, at the chosen provider's prices. **These are estimates to help
+   you compare, not the provider's prices.** A typical request here is about a
+   page in and a paragraph back; the real prices are at openai.com/api/pricing
+   and ai.google.dev/pricing.
+5. **Status** — whether a key is saved for the chosen provider, what the last
+   test said, and whether the other provider's key is saved too.
+6. **Test the Key** — checks the key with the provider you chose, fills the
+   model list,
    then sends one tiny request to the chosen model and says whether it
    answered. The request costs a fraction of a cent.
-7. **Remove the Saved Key** — forgets the key **at once** and puts AI help
-   straight back on QUILL's free service.
+7. **Remove the Saved Key** — forgets the chosen provider's key **at once**
+   and puts AI help straight back on QUILL's free service.
 
 Press **OK** and the key is saved. QUILL Lite says "AI help uses your own OpenAI
-key, with no limits."
+key, with no limits" -- or "your own Google Gemini key".
 
 **Change the model at any time.** With a key saved, opening this window
 lists your models straight away: press **Alt+F2**, pick another, press OK.
 
-**There is no separate switch.** While a key is saved, AI help uses it; remove
-the key and AI help is back on the free service, with its free allowance, the
-moment you do. Nothing else to find and turn off.
+**There is no separate switch.** While a key is saved for the chosen
+provider, AI help uses it; remove the key and AI help is back on the free
+service, with its free allowance, the moment you do. Nothing else to find and
+turn off.
+
+**Both keys can be saved.** The Provider list decides which one runs. Choose
+OpenAI and a saved Gemini key is simply not used -- the status line says it is
+there, and choosing Google Gemini is how it is used. Nothing is ever inferred
+from which key exists or from a model's name, so a request never quietly goes
+to a company you did not choose.
+
+**With a Gemini key, Ask About an Image works too.** Gemini's models read
+pictures, which the free service and an OpenAI key here do not, so Ctrl+F5
+answers on a Gemini key as it does on a ChatGPT subscription.
 
 **What changes with your own key:**
 
-- Your text goes **straight from this computer to OpenAI**, on your account.
+- Your text goes **straight from this computer to the provider you chose**,
+  OpenAI or Google, on your account.
   Nothing passes through QUILL's servers, so QUILL records nothing at all —
   not even the count it keeps for the free service.
-- **OpenAI bills you** for each request, under OpenAI's own terms and privacy
-  policy.
+- **OpenAI or Google bills you** for each request, under that company's own
+  terms and privacy policy.
 - **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window: which model is
-  answering, that no allowance applies, and an **Open My OpenAI Usage** button
-  that takes you to your OpenAI account's usage page, which is where your
+  answering, that no allowance applies, and an **Open My Usage** button that
+  takes you to your OpenAI or Google AI Studio account's usage page, which is where your
   requests and charges are. There is no Sign Out and no support ID in it,
   because neither applies. **Help ▸ About** likewise shows the model and that
   page's address instead of the free allowance.
@@ -464,8 +487,9 @@ QUILL Lite share it: a key saved in either works in both, and removing it in
 either removes it from both.
 
 **If a request fails**, you hear why, followed by error code
-`QUILL-AI-OWN-KEY-FAILED`. The usual causes are a mistyped key, a model your
-account cannot use, or an OpenAI account with no credit. **Test the Key** tells
+`QUILL-AI-OWN-KEY-FAILED`, and the sentence names the provider. The usual
+causes are a mistyped key, a model your account cannot use, an account with
+no credit, or the wrong provider chosen for the key you saved. **Test the Key** tells
 you which.
 
 ## Using your ChatGPT subscription

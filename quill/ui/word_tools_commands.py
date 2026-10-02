@@ -48,9 +48,9 @@ __all__ = ["WordToolsMixin", "NEEDS_DIRECT_ROUTE"]
 
 #: Said when a dictionary command runs with no key and no plan.
 NEEDS_DIRECT_ROUTE = (
-    "The dictionary uses your ChatGPT subscription or your own OpenAI key. Sign "
-    "in with Use My ChatGPT Subscription, or save a key with Use My Own OpenAI "
-    "Key, and try again."
+    "The dictionary uses your ChatGPT subscription or your own AI key. Sign in "
+    "with Use My ChatGPT Subscription, or save a key with Use My Own AI Key, and "
+    "try again."
 )
 
 #: Replacements the context menu puts in the first level of the Thesaurus

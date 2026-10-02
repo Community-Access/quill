@@ -928,7 +928,7 @@ COMMANDS: list[CommandRow] = [
     # The chord held back when this family was laid out, spent on the one
     # command that has to be reachable without agreeing to anything first.
     ("&Tools|&AI", "&Privacy Agreement...", "Ctrl+Alt+Shift+K", "cmd_ai_privacy", ""),
-    ("&Tools|&AI", "Use My &Own OpenAI Key...", "Alt+F2", "cmd_ai_own_key", ""),
+    ("&Tools|&AI", "Use My &Own AI Key...", "Alt+F2", "cmd_ai_own_key", ""),
     # A ChatGPT subscription (2026-09-29): sign in once, no key, no per-request
     # bill. Alt+F5 sits beside the own-key window on Alt+F2 -- both are
     # once-a-year account windows (rule 9) and both chords were free in both

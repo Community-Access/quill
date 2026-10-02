@@ -33,7 +33,7 @@ def dialog_module(monkeypatch):
 def test_without_a_key_the_list_holds_one_model_with_its_estimate(
     wx_app, dialog_module, monkeypatch
 ):
-    monkeypatch.setattr(dialog_module, "has_own_key", lambda: False)
+    monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: False)
     dialog = dialog_module.OwnKeyDialog(None, _Settings())
     try:
         assert dialog.model.GetCount() == 1
@@ -45,9 +45,9 @@ def test_without_a_key_the_list_holds_one_model_with_its_estimate(
 
 def test_a_saved_key_lists_every_model_on_opening_luna_6_first(wx_app, dialog_module, monkeypatch):
     """So the model can be changed at any time, not only after a test."""
-    monkeypatch.setattr(dialog_module, "has_own_key", lambda: True)
+    monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: True)
     monkeypatch.setattr(
-        dialog_module, "list_models", lambda _key: (["luna-6", "gpt-6", "gpt-4o"], "")
+        dialog_module, "list_models", lambda _key, *_a: (["luna-6", "gpt-6", "gpt-4o"], "")
     )
     import quill.core.assistant_ai as assistant_ai
 
@@ -67,9 +67,9 @@ def test_a_saved_key_lists_every_model_on_opening_luna_6_first(wx_app, dialog_mo
 
 
 def test_a_saved_choice_stays_selected_when_the_list_arrives(wx_app, dialog_module, monkeypatch):
-    monkeypatch.setattr(dialog_module, "has_own_key", lambda: True)
+    monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: True)
     monkeypatch.setattr(
-        dialog_module, "list_models", lambda _key: (["luna-6", "gpt-6", "gpt-4o"], "")
+        dialog_module, "list_models", lambda _key, *_a: (["luna-6", "gpt-6", "gpt-4o"], "")
     )
     import quill.core.assistant_ai as assistant_ai
 
@@ -88,8 +88,8 @@ def test_testing_the_key_lists_the_models_then_asks_the_chosen_one(
 ):
     import quill.core.assistant_ai as assistant_ai
 
-    monkeypatch.setattr(dialog_module, "has_own_key", lambda: False)
-    monkeypatch.setattr(dialog_module, "list_models", lambda _key: (["gpt-6", "gpt-4o"], ""))
+    monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: False)
+    monkeypatch.setattr(dialog_module, "list_models", lambda _key, *_a: (["gpt-6", "gpt-4o"], ""))
     asked = []
     monkeypatch.setattr(
         assistant_ai,
@@ -103,6 +103,6 @@ def test_testing_the_key_lists_the_models_then_asks_the_chosen_one(
         dialog._on_test(None)
         assert asked == ["gpt-6"]
         assert dialog.model.GetCount() == 2
-        assert said[-1] == "The key works. 2 models are listed, and gpt-6 answered."
+        assert said[-1] == "The key works with OpenAI. 2 models are listed, and gpt-6 answered."
     finally:
         dialog.Destroy()

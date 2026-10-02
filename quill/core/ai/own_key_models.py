@@ -44,6 +44,7 @@ __all__ = [
 ]
 
 PRICING_URL = "https://openai.com/api/pricing"
+PRICING_URLS = {"openai": PRICING_URL, "gemini": "https://ai.google.dev/pricing"}
 
 ESTIMATE_NOTE = (
     "Costs shown are estimates to help you compare models, not OpenAI's prices. "
@@ -58,7 +59,7 @@ TYPICAL_OUTPUT_TOKENS = 300
 #: Models that cannot answer a passage of text. Matched anywhere in the name.
 _NOT_FOR_TEXT = re.compile(
     r"embedding|tts|whisper|transcribe|dall-e|image|moderation|audio|realtime"
-    r"|babbage|davinci|sora|instruct",
+    r"|babbage|davinci|sora|instruct|aqa|imagen|veo|learnlm",
     re.IGNORECASE,
 )
 
@@ -85,6 +86,20 @@ class Estimate:
         ) / 1_000_000
 
 
+#: Gemini's published tiers (US dollars per million tokens, text, mid 2026):
+#: Flash-Lite, Flash, Pro. Names carry the tier, as OpenAI's do.
+_GEMINI_LITE = Estimate("smallest", 0.10, 0.40)
+_GEMINI_FLASH = Estimate("small", 0.30, 2.50)
+_GEMINI_PRO = Estimate("premium", 1.25, 10.0)
+#: Offered first for Gemini: the current Flash, then the current Pro, then the
+#: rest of that generation, then older ones, each by name.
+_GEMINI_FIRST = (
+    re.compile(r"^gemini[-_ ]?2\.5[-_ ]flash(?![-_ ]lite)", re.IGNORECASE),
+    re.compile(r"^gemini[-_ ]?2\.5[-_ ]pro", re.IGNORECASE),
+    re.compile(r"^gemini[-_ ]?2\.5", re.IGNORECASE),
+    re.compile(r"^gemini[-_ ]?2", re.IGNORECASE),
+    re.compile(r"^gemini", re.IGNORECASE),
+)
 _PREMIUM = Estimate("premium", 15.0, 60.0)
 _NANO = Estimate("smallest", 0.10, 0.40)
 _MINI = Estimate("small", 0.40, 1.60)
@@ -102,21 +117,42 @@ def usable(names: Iterable[str]) -> list[str]:
     return list(seen)
 
 
-def ordered(names: Iterable[str]) -> list[str]:
-    """Luna 6 models, then GPT-6 models, then everything else, each by name."""
+def ordered(names: Iterable[str], provider: str = "openai") -> list[str]:
+    """OpenAI: Luna 6, then GPT-6, then the rest. Gemini: the current Flash, then
+    Pro, then the rest of its generation. Each group by name."""
+    patterns = _GEMINI_FIRST if provider.strip().lower() == "gemini" else _FIRST
 
     def rank(name: str) -> tuple[int, str]:
-        for position, pattern in enumerate(_FIRST):
+        for position, pattern in enumerate(patterns):
             if pattern.search(name):
                 return position, name.lower()
-        return len(_FIRST), name.lower()
+        return len(patterns), name.lower()
 
     return sorted(usable(names), key=rank)
 
 
-def estimate_for(model: str) -> Estimate:
-    """The rough price tier *model*'s name suggests."""
+def pricing_url(provider: str = "openai") -> str:
+    return PRICING_URLS.get(provider.strip().lower(), PRICING_URL)
+
+
+def estimate_note(provider: str = "openai") -> str:
+    """The honesty line beside every estimate, naming the provider's own prices."""
+    who = "Google" if provider.strip().lower() == "gemini" else "OpenAI"
+    return (
+        f"Costs shown are estimates to help you compare models, not {who}'s prices. "
+        f"{who}'s real prices are at {pricing_url(provider)}."
+    )
+
+
+def estimate_for(model: str, provider: str = "openai") -> Estimate:
+    """The rough price tier *model*'s name suggests, for *provider*'s price list."""
     name = model.lower()
+    if provider.strip().lower() == "gemini" or name.startswith("gemini"):
+        if "lite" in name:
+            return _GEMINI_LITE
+        if "pro" in re.split(r"[-_.]", name):
+            return _GEMINI_PRO
+        return _GEMINI_FLASH
     if "pro" in re.split(r"[-_.]", name):
         return _PREMIUM
     if "nano" in name:
@@ -134,9 +170,9 @@ def _dollars(amount: float) -> str:
     return f"${amount:,.2f}"
 
 
-def describe_estimate(model: str) -> str:
+def describe_estimate(model: str, provider: str = "openai") -> str:
     """One sentence: what *model* might cost, per request and per hundred."""
-    estimate = estimate_for(model)
+    estimate = estimate_for(model, provider)
     return (
         f"Estimated cost for {model}: {_dollars(estimate.per_request())} per request, "
         f"about {_dollars(estimate.per_request() * 100)} per 100 requests "
@@ -144,29 +180,31 @@ def describe_estimate(model: str) -> str:
     )
 
 
-def choice_label(model: str) -> str:
+def choice_label(model: str, provider: str = "openai") -> str:
     """How *model* reads in the model list: its name and its estimate, briefly."""
-    per_hundred = _dollars(estimate_for(model).per_request() * 100)
+    per_hundred = _dollars(estimate_for(model, provider).per_request() * 100)
     return f"{model}, about {per_hundred} per 100 requests (estimate)"
 
 
-def list_models(key: str) -> tuple[list[str], str]:
-    """``(models, error)`` for *key*, ordered for offering. Blocking; never raises.
+def list_models(key: str, provider: str = "openai") -> tuple[list[str], str]:
+    """``(models, error)`` for *key* at *provider*, ordered for offering.
+    Blocking; never raises.
 
-    A successful list is also the proof that the key is good: ``/v1/models``
-    refuses a key OpenAI does not recognise, and costs nothing to ask.
+    A successful list is also the proof that the key is good: both providers'
+    model lists refuse a key they do not recognise, and cost nothing to ask.
     """
-    from quill.core.ai.own_key import OWN_KEY_PROVIDER, default_model
+    from quill.core.ai.own_key import default_model, normalize_provider, provider_name
     from quill.core.assistant_ai import (
         AssistantConnectionSettings,
         default_host_for_provider,
         list_assistant_models,
     )
 
+    chosen = normalize_provider(provider)
     connection = AssistantConnectionSettings(
-        provider=OWN_KEY_PROVIDER,
-        host=default_host_for_provider(OWN_KEY_PROVIDER),
-        model=default_model(),
+        provider=chosen,
+        host=default_host_for_provider(chosen),
+        model=default_model(chosen),
     )
     try:
         models, error = list_assistant_models(connection, key, max_models=1_000)
@@ -174,7 +212,7 @@ def list_models(key: str) -> tuple[list[str], str]:
         return [], str(exc)
     if error:
         return [], error
-    offered = ordered(models)
+    offered = ordered(models, chosen)
     if not offered:
-        return [], "OpenAI listed no models this key can use for text."
+        return [], f"{provider_name(chosen)} listed no models this key can use for text."
     return offered, ""

@@ -21,7 +21,7 @@ class _App:
 @pytest.fixture
 def service(tmp_path, monkeypatch):
     svc = AiService(_App(tmp_path))
-    monkeypatch.setattr(own_key, "has_own_key", lambda: False)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: False)
     return svc
 
 
@@ -41,7 +41,7 @@ def test_the_account_is_built_once_with_the_apps_agent_name(service) -> None:
 
 
 def test_a_sign_in_outranks_a_saved_key(service, monkeypatch) -> None:
-    monkeypatch.setattr(own_key, "has_own_key", lambda: True)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: True)
     assert service.route == "own_key"
     assert service.route_label == "your own OpenAI key"
     assert service.direct_model == "gpt-own"
@@ -66,7 +66,7 @@ def test_the_plan_lifts_every_limit_and_needs_no_connection(service, monkeypatch
 
 def test_the_size_note_matches_the_route(service, monkeypatch) -> None:
     assert service.size_note("words") == ""
-    monkeypatch.setattr(own_key, "has_own_key", lambda: True)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: True)
     assert "on your OpenAI account" in service.size_note("some words")
     _signed_in(service, monkeypatch)
     note = service.size_note("some words")
@@ -76,7 +76,7 @@ def test_the_size_note_matches_the_route(service, monkeypatch) -> None:
 
 def test_the_conversation_note_matches_the_route(service, monkeypatch) -> None:
     assert "free requests" in service.conversation_note()
-    monkeypatch.setattr(own_key, "has_own_key", lambda: True)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: True)
     assert "own OpenAI key" in service.conversation_note()
     _signed_in(service, monkeypatch)
     assert "ChatGPT subscription" in service.conversation_note()

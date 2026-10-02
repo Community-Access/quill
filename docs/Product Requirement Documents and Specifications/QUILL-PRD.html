@@ -7819,9 +7819,41 @@ file reported so an announced failure is taken back. A result delivered
 after its window closed (<code>surface_lifetime._record_outlived</code>,
 F-02) becomes a review row rather than vanishing.</p>
 <h3
-id="559e-thesaurus-look-up-and-the-ai-dictionary-shared-with-quill-lite-shipped-2026-10-02">5.59e
-Thesaurus, Look Up and the AI dictionary, shared with QUILL Lite
-(shipped 2026-10-02)</h3>
+id="559f-an-own-key-for-google-gemini-chosen-explicitly-x-07-shipped-2026-10-02">5.59f
+An own key for Google Gemini, chosen explicitly (X-07, shipped
+2026-10-02)</h3>
+<p><code>quill/core/ai/own_key.py</code> names two providers
+(<code>OWN_KEY_PROVIDERS</code>), and the one in use is <strong>the
+saved choice and nothing else</strong>:
+<code>provider_for(settings)</code> reads
+<code>ai_own_key_provider</code> (default <code>openai</code>; the same
+field in <code>core/settings.py</code> and
+<code>core/lite/settings.py</code>, <code>shared</code> in the
+vocabulary audit), <code>own_key_active</code> asks
+<code>has_own_key(provider)</code> for that provider only,
+<code>ask_with_own_key(..., provider=)</code> loads that provider’s key
+and raises a coded sentence naming it when there is none, and
+<code>size_warning</code> prices by it. PR #1615 proposed inferring the
+provider from the model name and falling back to whichever key exists;
+both are rejected (qc.md X-07), because a request that silently went to
+a company the person did not choose is the one outcome this feature must
+never produce. <code>describe_image_with_own_key</code> runs Ask About
+an Image through the shared vision client on a Gemini key;
+<code>AiService.own_key_can_see</code> gates the command, beside the
+ChatGPT plan.</p>
+<p>The window (<code>quill/ui/hosted_ai_own_key.py</code>, Use My Own AI
+Key, Alt+F2 in both editors) opens on a Provider list; changing it
+rewrites the About text (where the text goes, where keys are made), the
+key field’s name, the model list
+(<code>own_key_models.list_models(key, provider)</code>, ordered Flash
+then Pro for Gemini, priced from Google’s tiers, with
+<code>estimate_note(provider)</code> naming Google’s price page), the
+status line (which also says when the other provider’s key is saved),
+Test the Key and Remove. Listings and tests that arrive after the
+provider changed are dropped. <code>OwnKeyUsageFrame</code> and
+<code>own_key_about_text</code> name the provider and open its usage
+page. The service’s own-key properties moved to
+<code>quill/ui/hosted_ai_own_key_route.py</code> (GATE-11).</p>
 <p><strong>One mixin, both editors.</strong>
 <code>quill/ui/word_tools_commands.WordToolsMixin</code> is a base of
 <code>ChatGptAiMixin</code>, so every editor that has the hosted-AI

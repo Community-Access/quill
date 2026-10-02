@@ -189,14 +189,14 @@ class HostedAiCommandsMixin(HostedAiMixin):
 
         menu_id = self._own_key_menu_id()
         ai_menu.Append(
-            menu_id, self._menu_label(_("Use My &Own OpenAI Key..."), "tools.hosted_ai_own_key")
+            menu_id, self._menu_label(_("Use My &Own AI Key..."), "tools.hosted_ai_own_key")
         )
         if not getattr(self, "_hosted_ai_own_key_wired", False):
             self._hosted_ai_own_key_wired = True
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.cmd_ai_own_key(), id=menu_id)
             self.commands.try_register(
                 "tools.hosted_ai_own_key",
-                "Use My Own OpenAI Key",
+                "Use My Own AI Key",
                 self.cmd_ai_own_key,
                 self._binding_for("tools.hosted_ai_own_key"),
             )

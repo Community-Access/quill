@@ -37,6 +37,7 @@ from quill.core.ai.gateway_session import (
     save_token,
     support_id_for,
 )
+from quill.ui.hosted_ai_own_key_route import OwnKeyRouteMixin
 
 __all__ = ["AiService", "SignInCode"]
 
@@ -65,7 +66,7 @@ class SignInCode:
         return " ".join(self.user_code.replace("-", " dash "))
 
 
-class AiService:
+class AiService(OwnKeyRouteMixin):
     """One per running QUILL Lite. Holds the session and does the waiting."""
 
     def __init__(self, app: Any) -> None:
@@ -99,26 +100,6 @@ class AiService:
 
     def client(self) -> GatewayClient:
         return GatewayClient(self.session.base_url or base_url(), self.token)
-
-    @property
-    def own_key_active(self) -> bool:
-        """Whether requests go to OpenAI with the user's own key instead.
-
-        Then there is no QUILL server, no sign-in and no allowance: the same
-        five commands, billed to the user's OpenAI account
-        (:mod:`quill.core.ai.own_key`).
-        """
-        from quill.core.ai.own_key import own_key_active
-
-        return own_key_active(getattr(self._app, "settings", None))
-
-    @property
-    def own_key_model(self) -> str:
-        """The OpenAI model own-key requests use: the chosen one, or the default."""
-        from quill.core.ai.own_key import default_model
-
-        chosen = getattr(getattr(self._app, "settings", None), "ai_own_key_model", "")
-        return str(chosen or "").strip() or default_model()
 
     # -- the ChatGPT subscription -------------------------------------------- #
 
@@ -172,8 +153,13 @@ class AiService:
 
     @property
     def route_label(self) -> str:
-        """The route as a person hears it: "your ChatGPT subscription" or "your own OpenAI key"."""
-        return "your ChatGPT subscription" if self.chatgpt_active else "your own OpenAI key"
+        """The route as a person hears it: "your ChatGPT subscription", "your own
+        OpenAI key" or "your own Google Gemini key"."""
+        if self.chatgpt_active:
+            return "your ChatGPT subscription"
+        from quill.core.ai.own_key import provider_name
+
+        return f"your own {provider_name(self.own_key_provider)} key"
 
     @property
     def direct_model(self) -> str:
@@ -198,7 +184,9 @@ class AiService:
             return size_note(text, self.direct_model, free_limit_tokens=free_tokens)
         from quill.core.ai.own_key import size_warning
 
-        return size_warning(text, self.own_key_model, free_limit_tokens=free_tokens)
+        return size_warning(
+            text, self.own_key_model, free_limit_tokens=free_tokens, provider=self.own_key_provider
+        )
 
     def conversation_note(self) -> str:
         """What a conversation costs on this route, said once at the top of the window."""
@@ -333,10 +321,16 @@ class AiService:
             from quill.core.ai.own_key import ask_with_own_key
 
             model = self.own_key_model
+            provider = self.own_key_provider
 
             def work(**_kwargs: Any) -> tuple[str, GatewayQuota | None]:
                 answer = ask_with_own_key(
-                    feature, prompt, chunks, model=model, language=language or "English"
+                    feature,
+                    prompt,
+                    chunks,
+                    model=model,
+                    language=language or "English",
+                    provider=provider,
                 )
                 return answer, None
 
@@ -412,18 +406,25 @@ class AiService:
         on_done: Callable[[str], None],
         on_error: Callable[[str], None],
     ) -> None:
-        """Ask About an Image, on the ChatGPT plan. Returns at once; answers on the UI thread.
-
-        Only the plan carries images. A bad file is reported as the sentence
-        :func:`quill.core.ai.chatgpt_client.image_part` wrote for it, before
-        anything is sent.
+        """Ask About an Image on the ChatGPT plan or an own Gemini key; answers on
+        the UI thread. The free service and an OpenAI key carry no pictures. A
+        bad file is reported as the client's own sentence before anything is sent.
         """
-        from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
+        if self.chatgpt_active:
+            from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
 
-        account = self.chatgpt
+            account = self.chatgpt
 
-        def work(**_kwargs: Any) -> str:
-            return describe_image_with_chatgpt(account, path, question)
+            def work(**_kwargs: Any) -> str:
+                return describe_image_with_chatgpt(account, path, question)
+
+        else:
+            from quill.core.ai.own_key import describe_image_with_own_key
+
+            provider, model = self.own_key_provider, self.own_key_model
+
+            def work(**_kwargs: Any) -> str:
+                return describe_image_with_own_key(path, question, provider=provider, model=model)
 
         def done(_name: str, text: Any) -> None:
             _call_after(on_done, str(text))

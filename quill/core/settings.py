@@ -287,6 +287,9 @@ class Settings:
     #: somebody else using the machine is not consent.
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""  # own-key AI's model (core/ai/own_key.py); empty: the default
+    # Which company the own key belongs to: "openai" or "gemini". An explicit
+    # choice made in Use My Own AI Key, never inferred (core/ai/own_key.py).
+    ai_own_key_provider: str = "openai"
     markdown_clipboard_format: str = "html"
     markdown_profile_id: str = "standard"
     citation_style: str = "footnotes"

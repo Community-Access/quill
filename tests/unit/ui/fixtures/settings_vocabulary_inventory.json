@@ -1,6 +1,7 @@
 {
   "lite:action_feedback": "shared",
   "lite:ai_own_key_model": "shared",
+  "lite:ai_own_key_provider": "shared",
   "lite:ai_privacy_accepted_version": "shared",
   "lite:announce_headings": "shared",
   "lite:announce_lists": "shared",
@@ -77,6 +78,7 @@
   "quill:ai_chat_default_model": "one_side",
   "quill:ai_chat_default_provider": "one_side",
   "quill:ai_own_key_model": "shared",
+  "quill:ai_own_key_provider": "shared",
   "quill:ai_privacy_accepted_version": "shared",
   "quill:ai_prompt_default_model": "one_side",
   "quill:ai_tts_model": "one_side",

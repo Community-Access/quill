@@ -276,8 +276,9 @@ wrong</a></li>
 <li><a href="#your-privacy">Your privacy</a></li>
 <li><a href="#signing-out-and-changing-your-mind">Signing out and
 changing your mind</a></li>
-<li><a href="#using-your-own-openai-key-no-limits">Using your own OpenAI
-key: no limits</a></li>
+<li><a
+href="#using-your-own-openai-or-google-gemini-key-no-limits">Using your
+own OpenAI or Google Gemini key: no limits</a></li>
 <li><a href="#using-your-chatgpt-subscription">Using your ChatGPT
 subscription</a></li>
 <li><a href="#ask-about-an-image">Ask About an Image</a></li>
@@ -349,7 +350,7 @@ takes you to the Connect window.</p>
 <td>Ctrl+Alt+Shift+K</td>
 </tr>
 <tr>
-<td>Use My Own OpenAI Key</td>
+<td>Use My Own AI Key</td>
 <td>Alt+F2</td>
 </tr>
 </tbody>
@@ -751,65 +752,88 @@ way round.</li>
 on</strong>, and whether or not you ever agreed. A door you can only
 reach by agreeing to something is not a door.</li>
 </ul>
-<h2 id="using-your-own-openai-key-no-limits">Using your own OpenAI key:
-no limits</h2>
-<p>If you have an OpenAI account, you can use <strong>your own
-key</strong> instead of QUILL’s free service, and <strong>every limit
-goes away</strong>: no monthly, daily or hourly allowance, no 2,250-word
-ceiling, no smaller first 48 hours.</p>
-<p><strong>Tools ▸ AI ▸ Use My Own OpenAI Key</strong>
+<h2 id="using-your-own-openai-or-google-gemini-key-no-limits">Using your
+own OpenAI or Google Gemini key: no limits</h2>
+<p>If you have an OpenAI account or a Google Gemini key, you can use
+<strong>your own key</strong> instead of QUILL’s free service, and
+<strong>every limit goes away</strong>: no monthly, daily or hourly
+allowance, no 2,250-word ceiling, no smaller first 48 hours.</p>
+<p><strong>Tools ▸ AI ▸ Use My Own AI Key</strong>
 (<strong>Alt+F2</strong>) opens one window:</p>
 <ol type="1">
+<li><strong>Provider</strong> — <strong>OpenAI</strong>, or
+<strong>Google Gemini</strong>. Everything below follows the choice:
+where your text goes, which key, which models and whose prices. AI help
+uses the key saved for the provider chosen here and never the other one;
+the choice is yours, saved with your settings
+(<code>ai_own_key_provider</code>), and QUILL never guesses it from a
+key or a model name.</li>
 <li><strong>About this</strong> — a read-only box saying exactly where
 your text goes. Arrow through it once.</li>
-<li><strong>OpenAI API key</strong> — paste your key here. You make one
-at platform.openai.com, under API keys. It starts with
-<code>sk-</code>.</li>
+<li><strong>API key</strong> — paste the key for the provider you chose.
+An OpenAI key comes from platform.openai.com, under API keys, and starts
+with <code>sk-</code>; a Gemini key comes from Google AI Studio at
+aistudio.google.com/apikey.</li>
 <li><strong>Model</strong> — a list of every model your key can use for
-text, filled from your OpenAI account once the key is checked:
-<strong>Luna 6 first, then the other GPT-6 models</strong>, then the
-rest by name. Each row says roughly what it costs, for example
-“gpt-6-luna, about $0.57 per 100 requests (estimate)”, so arrowing down
-the list is enough to compare them. Models that cannot answer text —
-speech, transcription, images, embeddings — are left out.</li>
+text, filled from your account once the key is checked: for OpenAI,
+<strong>Luna 6 first, then the other GPT-6 models</strong>; for Gemini,
+<strong>2.5 Flash first, then 2.5 Pro</strong>; then the rest by name.
+Each row says roughly what it costs, for example “gpt-6-luna, about
+$0.57 per 100 requests (estimate)”, so arrowing down the list is enough
+to compare them. Models that cannot answer text — speech, transcription,
+images, embeddings — are left out.</li>
 <li><strong>Cost estimate</strong> — the chosen model’s estimate per
-request and per 100 requests. <strong>These are estimates to help you
-compare, not OpenAI’s prices.</strong> A typical request here is about a
-page in and a paragraph back; the real prices are at
-openai.com/api/pricing.</li>
-<li><strong>Status</strong> — whether a key is saved, and what the last
-test said.</li>
-<li><strong>Test the Key</strong> — checks the key with OpenAI, fills
-the model list, then sends one tiny request to the chosen model and says
-whether it answered. The request costs a fraction of a cent.</li>
-<li><strong>Remove the Saved Key</strong> — forgets the key <strong>at
-once</strong> and puts AI help straight back on QUILL’s free
-service.</li>
+request and per 100 requests, at the chosen provider’s prices.
+<strong>These are estimates to help you compare, not the provider’s
+prices.</strong> A typical request here is about a page in and a
+paragraph back; the real prices are at openai.com/api/pricing and
+ai.google.dev/pricing.</li>
+<li><strong>Status</strong> — whether a key is saved for the chosen
+provider, what the last test said, and whether the other provider’s key
+is saved too.</li>
+<li><strong>Test the Key</strong> — checks the key with the provider you
+chose, fills the model list, then sends one tiny request to the chosen
+model and says whether it answered. The request costs a fraction of a
+cent.</li>
+<li><strong>Remove the Saved Key</strong> — forgets the chosen
+provider’s key <strong>at once</strong> and puts AI help straight back
+on QUILL’s free service.</li>
 </ol>
 <p>Press <strong>OK</strong> and the key is saved. QUILL Lite says “AI
-help uses your own OpenAI key, with no limits.”</p>
+help uses your own OpenAI key, with no limits” – or “your own Google
+Gemini key”.</p>
 <p><strong>Change the model at any time.</strong> With a key saved,
 opening this window lists your models straight away: press
 <strong>Alt+F2</strong>, pick another, press OK.</p>
-<p><strong>There is no separate switch.</strong> While a key is saved,
-AI help uses it; remove the key and AI help is back on the free service,
-with its free allowance, the moment you do. Nothing else to find and
-turn off.</p>
+<p><strong>There is no separate switch.</strong> While a key is saved
+for the chosen provider, AI help uses it; remove the key and AI help is
+back on the free service, with its free allowance, the moment you do.
+Nothing else to find and turn off.</p>
+<p><strong>Both keys can be saved.</strong> The Provider list decides
+which one runs. Choose OpenAI and a saved Gemini key is simply not used
+– the status line says it is there, and choosing Google Gemini is how it
+is used. Nothing is ever inferred from which key exists or from a
+model’s name, so a request never quietly goes to a company you did not
+choose.</p>
+<p><strong>With a Gemini key, Ask About an Image works too.</strong>
+Gemini’s models read pictures, which the free service and an OpenAI key
+here do not, so Ctrl+F5 answers on a Gemini key as it does on a ChatGPT
+subscription.</p>
 <p><strong>What changes with your own key:</strong></p>
 <ul>
-<li>Your text goes <strong>straight from this computer to
-OpenAI</strong>, on your account. Nothing passes through QUILL’s
-servers, so QUILL records nothing at all — not even the count it keeps
-for the free service.</li>
-<li><strong>OpenAI bills you</strong> for each request, under OpenAI’s
-own terms and privacy policy.</li>
+<li>Your text goes <strong>straight from this computer to the provider
+you chose</strong>, OpenAI or Google, on your account. Nothing passes
+through QUILL’s servers, so QUILL records nothing at all — not even the
+count it keeps for the free service.</li>
+<li><strong>OpenAI or Google bills you</strong> for each request, under
+that company’s own terms and privacy policy.</li>
 <li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens a
 different window: which model is answering, that no allowance applies,
-and an <strong>Open My OpenAI Usage</strong> button that takes you to
-your OpenAI account’s usage page, which is where your requests and
-charges are. There is no Sign Out and no support ID in it, because
-neither applies. <strong>Help ▸ About</strong> likewise shows the model
-and that page’s address instead of the free allowance.</li>
+and an <strong>Open My Usage</strong> button that takes you to your
+OpenAI or Google AI Studio account’s usage page, which is where your
+requests and charges are. There is no Sign Out and no support ID in it,
+because neither applies. <strong>Help ▸ About</strong> likewise shows
+the model and that page’s address instead of the free allowance.</li>
 <li>You do not need to connect this computer, and the free service’s
 agreement is not asked for: it is about QUILL’s servers, which this
 route never touches.</li>
@@ -825,9 +849,10 @@ an encrypted file instead. QUILL and QUILL Lite share it: a key saved in
 either works in both, and removing it in either removes it from
 both.</p>
 <p><strong>If a request fails</strong>, you hear why, followed by error
-code <code>QUILL-AI-OWN-KEY-FAILED</code>. The usual causes are a
-mistyped key, a model your account cannot use, or an OpenAI account with
-no credit. <strong>Test the Key</strong> tells you which.</p>
+code <code>QUILL-AI-OWN-KEY-FAILED</code>, and the sentence names the
+provider. The usual causes are a mistyped key, a model your account
+cannot use, an account with no credit, or the wrong provider chosen for
+the key you saved. <strong>Test the Key</strong> tells you which.</p>
 <h2 id="using-your-chatgpt-subscription">Using your ChatGPT
 subscription</h2>
 <p>If you already pay for ChatGPT, QUILL Lite can run every AI command

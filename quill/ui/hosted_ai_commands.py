@@ -130,7 +130,7 @@ class HostedAiMixin(ChatGptAiMixin):
         )
 
     def cmd_ai_own_key(self) -> None:
-        """Use My Own OpenAI Key. Needs no agreement: nothing goes to QUILL's servers."""
+        """Use My Own AI Key (OpenAI or Gemini). No agreement: the window says where text goes."""
         if not self._ai_host().feature_enabled("hosted_ai"):
             self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
             return
@@ -140,7 +140,7 @@ class HostedAiMixin(ChatGptAiMixin):
         settings = self._ai_host().settings
         dialog = OwnKeyDialog(self._ai_parent(), settings, self._announce)
         try:
-            if show_modal_dialog(dialog, "Use My Own OpenAI Key") != wx.ID_OK:
+            if show_modal_dialog(dialog, "Use My Own AI Key") != wx.ID_OK:
                 return
             outcome = dialog.apply(settings)
         finally:
@@ -220,7 +220,7 @@ class HostedAiMixin(ChatGptAiMixin):
             added = (
                 chatgpt_about_text(service.chatgpt)
                 if self._ai_chatgpt_active()
-                else own_key_about_text(service.own_key_model)
+                else own_key_about_text(service.own_key_model, service.own_key_provider)
             )
             where = field.GetInsertionPoint()
             field.AppendText(added)

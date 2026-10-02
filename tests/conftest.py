@@ -567,7 +567,7 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     from quill.core.ai import own_key
 
-    monkeypatch.setattr(own_key, "has_own_key", lambda: False)
+    monkeypatch.setattr(own_key, "has_own_key", lambda *_a: False)
 
 
 @pytest.fixture(autouse=True)

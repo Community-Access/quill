@@ -2,7 +2,29 @@
 
 ## 1.0.0
 
-### QUILL Cast: Now Playing, the Notes reader, and Links in These Notes (2026-10-02)
+### QUILL and QUILL Lite: an own key for Google Gemini, chosen explicitly (X-07, 2026-10-02)
+
+- **Use My Own AI Key** (the row was Use My Own OpenAI Key; Alt+F2 in both
+  editors) opens on a **Provider** list, OpenAI or Google Gemini, and
+  everything under it follows the choice: the About text names the company
+  and where its keys are made, the key field names the company, the model
+  list is that account's own with that company's prices
+  (`own_key_models.ordered/estimate_for/estimate_note` by provider), Test the
+  Key tests that company, and Remove forgets that company's key. The provider
+  is saved as `ai_own_key_provider` in both settings files (`shared`), and
+  `own_key.provider_for` is the only source of it: `own_key_active`,
+  `ask_with_own_key`, `size_warning` and the service's route all take the
+  explicit provider, and a key saved for the other provider is reported in
+  the status line, never used. PR #1615's silent inference from a model name
+  and its fallback to whichever key exists are not taken, by decision.
+- **Ask About an Image works on a Gemini key**: `own_key.describe_image_with_own_key`
+  through the shared vision client; the service's `own_key_can_see` gates it.
+- `quill/ui/hosted_ai_own_key_route.py` holds the service's own-key properties
+  (GATE-11). Real-boundary tests in `tests/unit/core/ai/test_own_key_gemini.py`
+  run the shipped client against a Gemini-shaped loopback server: the request
+  path carries no doubled `models/`, a model from Gemini's own list is usable,
+  a bad key is a coded sentence naming the provider, and no fallback happens.
+
 
 - **Now Playing (Ctrl+2)**: window 2 of QUILL Cast, made at start-up and
   hidden on close so its number never moves. The podcast, the episode and

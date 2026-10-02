@@ -8,7 +8,7 @@ original context and must be reverified before changing completion status.
 
 ## Progress Dashboard
 
-Updated 2026-10-02 (later): Cast Phase 1 closed with Now Playing, the Notes reader and Links in These Notes (section 5 and 5c), one commit. **Priority order from here (Jeff, 2026-10-02): QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.** Earlier the same day: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers), and, outside the tracked rows at Jeff's request, the thesaurus, Look Up and the AI dictionary came to QUILL Lite and were made better in QUILL from one shared module (see Completed Changes). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
+Updated 2026-10-02 (evening): X-07 closed -- an own Google Gemini key, chosen explicitly, in both editors -- and Cast Phase 1 closed with Now Playing, the Notes reader and Links in These Notes (section 5 and 5c), one commit each. **Priority order from here (Jeff, 2026-10-02): QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.** Earlier the same day: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers), and, outside the tracked rows at Jeff's request, the thesaurus, Look Up and the AI dictionary came to QUILL Lite and were made better in QUILL from one shared module (see Completed Changes). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
 
 These are grouped tracking rows, not independent bugs. Shared work can satisfy more than one group. Older pending claims are not newly verified by this consolidation.
 
@@ -17,7 +17,7 @@ The following table separates implementation, its delivery gate, and human accep
 | Category | Remaining | Status |
 |---|---:|---|
 | Family reliability findings | 4 | Partially implemented; F-04, F-05, F-06 and F-11 done 2026-10-01; F-01 and F-02 done 2026-10-02 |
-| Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
+| Family product requirements | 6 | X-06 done 2026-10-01; X-07 done 2026-10-02; X-08 (PR #1618 review) added 2026-10-02 |
 | Cast Phase 1 code and tests | 0 | Closed 2026-10-02: Now Playing, the Notes reader and the grown Links dialog |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
@@ -3036,6 +3036,39 @@ programming-error path manually.
 
 Original document title: QC3: Completed Quality Changes.
 
+### 2026-10-02: X-07, the own-key Gemini provider, chosen explicitly (QUILL and QUILL Lite)
+
+- Taken from PR #1615 (Robert): the two-provider shape, per-provider model
+  ordering and price tiers, Google's pricing page, the Gemini vision route for
+  Ask About an Image, and the loopback-server testing style. Not taken, by
+  decision: inferring the provider from a model name, and falling back to
+  whichever key exists -- `own_key.provider_for(settings)` is the only source
+  of the provider, a key saved for the other company is reported and never
+  used, and the window says so in its status line.
+- `quill/core/ai/own_key.py`: `OWN_KEY_PROVIDERS`, `normalize_provider`,
+  `provider_for`, `provider_name`, `key_url`, `usage_url`; `has_own_key`,
+  `own_key_active`, `default_model`, `ask_with_own_key`, `size_warning` take
+  the provider; `describe_image_with_own_key`. `own_key_models.py`: Gemini
+  ordering (2.5 Flash, Pro, the rest), tiers (Flash-Lite, Flash, Pro),
+  `estimate_note(provider)`, `pricing_url`, `list_models(key, provider)`.
+  Settings: `ai_own_key_provider` in both editors (vocabulary `shared`).
+- `quill/ui/hosted_ai_own_key.py` rewritten around a Provider list (OpenAI,
+  Google Gemini); `hosted_ai_own_key_route.py` (GATE-11) holds the service's
+  `own_key_provider`, `own_key_model`, `own_key_can_see`; `route_label` and
+  the route's `ask` carry the provider; `describe_image` runs on a Gemini key
+  when there is no plan, and `cmd_ai_image`'s gate says both routes. The row
+  is **Use My Own AI Key** in both editors (`commands.py`,
+  `main_frame_hosted_ai.py`); every sentence that named it follows.
+- Tests: `tests/unit/core/ai/test_own_key_gemini.py` (9; a Gemini-shaped
+  loopback server with a synthetic key, no network); the own-key, dialog,
+  route and Lite AI suites updated to the provider argument and the new
+  sentences (1,145 passing in suite order). Live checks against Google remain
+  Jeff's, with S:\keys.txt, per the row's rule.
+- Docs: QUILL user guide (the own-key section and the AI key table), QUILL
+  PRD 5.59f, QUILL CHANGELOG; QUILL Lite user guide and AI guide (the own-key
+  sections), CHANGELOG, 1.1 release notes "Coming in 1.2.0"; references and
+  inventories regenerated.
+
 ### 2026-10-02: Cast Now Playing, the Notes reader, and Links in These Notes (Phase 1, sections 5 and 5c)
 
 - `quill/ui/podcasts/now_playing_window.py` + `now_playing_layout.py` (GATE-11
@@ -3823,28 +3856,17 @@ This is the authoritative unchecked code/delivery tracker: **19 grouped rows**. 
 - [ ] X-03: Implement reversible focus/review/session profiles using existing settings and truthful persistence.
 - [ ] X-04: Finish richer queue/activity views and skippable first-run/task guidance without duplicating shared models.
 - [ ] X-05: Implement specified explicit-opt-in cross-app personalization without silent keyboard/focus/screen-reader changes.
-- [ ] X-07 (first half done 2026-10-01: Gemini `models/` prefix normalisation
-  in every URL builder and the model list, with real-boundary tests; remaining:
-  QUILL Lite own-key Gemini provider with an explicit, consented provider
-  choice -- the PR's silent provider inference and fallback are not taken).
-  Review and integrate the applicable changes proposed in
-  [Gemini API-key support and endpoint routing, PR #1615](https://github.com/Community-Access/quill/pull/1615)
-  for both QUILL and QUILL Lite. Add real-boundary unit/integration tests for
-  models/ prefix normalization (no doubled models/models URLs), generateContent
-  and streaming routes, Gemini/OpenAI provider and key selection, missing/invalid
-  keys, model ordering, cancellation, and safe errors. Preserve explicit consent,
-  secure key storage, and shared-editor parity. The PR's claimed live passes
-  are not local verification. Use synthetic credentials in reproducible offline
-  tests; when authenticated validation is needed, load the user-authorized
-  S:\keys.txt only inside a local opt-in test process, never into chat, fixtures,
-  logs, snapshots, or Git. Keep live API checks separate from offline unit tests;
-  ask before sending content or incurring requests. Document the tested shared
-  writing features and resulting reader acceptance scripts before closing this item.
-
-### Cast Phase 1 Code and Tests: 0
-
-Closed 2026-10-02. The last row -- Now Playing with the Notes reader and the
-grown Links dialog, and the Preferences switch -- is in Completed Changes.
+- [ ] X-08 (added 2026-10-02, Jeff): review and integrate the applicable changes in
+  [MathML parsing, EPUB entity handling and regex fallbacks, PR #1618](https://github.com/Community-Access/quill/pull/1618)
+  (Robert): `core/math/mathml.py` and `io/docx_math.py` hard-import
+  `defusedxml` and fail to import without it (route through
+  `core/safe_xml.fromstring`); `core/epub.py` unescapes MathML before XML
+  parsing, turning `&lt;` into a bare `<` and losing the symbol from speech
+  (parse first); `stability/safe_regex.py` should fall back to stdlib `re`
+  when `regex` is absent. Take the fixes with real-boundary tests (the EPUB
+  entity case, an import without `defusedxml`, the regex fallback); the PR's
+  own test counts are not local verification. Keep every XML path on the
+  hardened parser when it is present.
 
 ### Cast Phases 2-7: 6
 

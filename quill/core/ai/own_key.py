@@ -43,17 +43,68 @@ __all__ = [
     "OWN_KEY_LIMITS",
     "UNLIMITED",
     "OWN_KEY_PROVIDER",
+    "OWN_KEY_PROVIDERS",
+    "PROVIDER_NAMES",
     "OwnKeyError",
     "ask_with_own_key",
     "default_model",
+    "describe_image_with_own_key",
     "has_own_key",
+    "key_url",
     "load_settings_fields",
+    "normalize_provider",
     "own_key_active",
+    "provider_for",
+    "provider_name",
     "request_for",
     "size_warning",
+    "usage_url",
 ]
-
+#: The provider the window started with, and the one a settings file that
+#: predates the choice means.
 OWN_KEY_PROVIDER = "openai"
+#: The two providers an own key can name (qc.md X-07, 2026-10-02). The choice
+#: is **explicit**: it is the Provider list in Use My Own AI Key, saved as
+#: ``ai_own_key_provider`` in both editors' settings, and nothing infers it
+#: from a model name or falls back to whichever key happens to exist -- a
+#: request that silently went to a company the person did not choose is the
+#: one outcome this feature must never produce.
+OWN_KEY_PROVIDERS: tuple[str, ...] = ("openai", "gemini")
+PROVIDER_NAMES: dict[str, str] = {"openai": "OpenAI", "gemini": "Google Gemini"}
+_KEY_URLS = {
+    "openai": "platform.openai.com, under API keys",
+    "gemini": "aistudio.google.com/apikey (Google AI Studio)",
+}
+_USAGE_URLS = {
+    "openai": "https://platform.openai.com/usage",
+    "gemini": "https://aistudio.google.com/usage",
+}
+
+
+def normalize_provider(value: object) -> str:
+    """``"openai"`` or ``"gemini"``; anything else is OpenAI, the original route."""
+    text = str(value or "").strip().lower()
+    return text if text in OWN_KEY_PROVIDERS else OWN_KEY_PROVIDER
+
+
+def provider_for(settings: Any = None) -> str:
+    """The provider the listener chose, from *settings*; OpenAI when unsaid."""
+    return normalize_provider(getattr(settings, "ai_own_key_provider", ""))
+
+
+def provider_name(provider: str) -> str:
+    return PROVIDER_NAMES.get(normalize_provider(provider), "OpenAI")
+
+
+def key_url(provider: str) -> str:
+    """Where a key for *provider* is made, as a person reads it."""
+    return _KEY_URLS[normalize_provider(provider)]
+
+
+def usage_url(provider: str) -> str:
+    """Where the account's usage and charges are: QUILL keeps no count."""
+    return _USAGE_URLS[normalize_provider(provider)]
+
 
 #: The instruction half of each gateway template, sent as the system message.
 #: Must match ``quill-ai-gateway/app/prompts.py`` word for word.
@@ -214,42 +265,46 @@ class OwnKeyError(CodedError):
 
     code = "QUILL-AI-OWN-KEY-FAILED"
     user_hint = (
-        "Check the key and the model in Use My Own OpenAI Key, and that your "
-        "OpenAI account has credit. Or switch back to QUILL's free AI there."
+        "Check the provider, the key and the model in Use My Own AI Key, and that "
+        "your account has credit. Or switch back to QUILL's free AI there."
     )
 
 
-def default_model() -> str:
+def default_model(provider: str = OWN_KEY_PROVIDER) -> str:
     from quill.core.assistant_ai import default_model_for_provider
 
-    return default_model_for_provider(OWN_KEY_PROVIDER)
+    return default_model_for_provider(normalize_provider(provider))
 
 
-def has_own_key() -> bool:
-    """Whether an OpenAI key is stored (or set in the environment)."""
+def has_own_key(provider: str = OWN_KEY_PROVIDER) -> bool:
+    """Whether a key for *provider* is stored (or set in the environment)."""
     from quill.core.assistant_ai import load_provider_api_key
 
     try:
-        return bool(load_provider_api_key(OWN_KEY_PROVIDER))
+        return bool(load_provider_api_key(normalize_provider(provider)))
     except Exception:  # noqa: BLE001 - an unreadable store is "no key"
         return False
 
 
 def own_key_active(settings: Any = None) -> bool:
-    """Whether AI help uses the user's key: whenever one is saved.
+    """Whether AI help uses the user's key: whenever one is saved **for the
+    provider they chose**.
 
     There is deliberately no separate switch. A saved key lifts every limit;
-    removing it (Use My Own OpenAI Key, Remove the Saved Key) is how a person
-    goes back to the free service. *settings* is accepted for the callers'
-    convenience and not consulted.
+    removing it (Use My Own AI Key, Remove the Saved Key) is how a person goes
+    back to the free service. A key saved for the *other* provider does not
+    count: the window says it is there, and choosing that provider is how it
+    is used (never a silent fallback).
     """
-    del settings
-    return has_own_key()
+    return has_own_key(provider_for(settings))
 
 
 def load_settings_fields(data: Any) -> dict[str, Any]:
-    """The own-key setting from saved JSON, for QUILL's settings loader."""
-    return {"ai_own_key_model": str(data.get("ai_own_key_model", "") or "")}
+    """The own-key settings from saved JSON, for QUILL's settings loader."""
+    return {
+        "ai_own_key_model": str(data.get("ai_own_key_model", "") or ""),
+        "ai_own_key_provider": normalize_provider(data.get("ai_own_key_provider", "")),
+    }
 
 
 def request_for(
@@ -292,9 +347,12 @@ def ask_with_own_key(
     model: str = "",
     history: list[dict[str, str]] | None = None,
     language: str = "English",
+    provider: str = OWN_KEY_PROVIDER,
 ) -> str:
-    """Send one AI help request to OpenAI with the user's key. Blocking.
+    """Send one AI help request to *provider* with the user's key. Blocking.
 
+    *provider* is the saved, explicit choice (:func:`provider_for`); this never
+    guesses from the model name and never tries the other provider's key.
     Raises :class:`OwnKeyError` with a sentence written for a person.
     """
     from quill.core.assistant_ai import (
@@ -304,14 +362,16 @@ def ask_with_own_key(
         load_provider_api_key,
     )
 
-    key = load_provider_api_key(OWN_KEY_PROVIDER)
+    chosen = normalize_provider(provider)
+    name = provider_name(chosen)
+    key = load_provider_api_key(chosen)
     if not key:
-        raise OwnKeyError("No OpenAI key is stored on this computer.")
+        raise OwnKeyError(f"No {name} key is stored on this computer.")
     system, user = request_for(feature, prompt, chunks, history, language)
     connection = AssistantConnectionSettings(
-        provider=OWN_KEY_PROVIDER,
-        host=default_host_for_provider(OWN_KEY_PROVIDER),
-        model=model.strip() or default_model(),
+        provider=chosen,
+        host=default_host_for_provider(chosen),
+        model=model.strip() or default_model(chosen),
     )
     # No answer ceiling: the model's own maximum is the only one.
     text, error = generate_assistant_response(
@@ -322,11 +382,52 @@ def ask_with_own_key(
         system_prompt=system,
     )
     if error or not text:
-        raise OwnKeyError(f"OpenAI did not answer: {error or 'the answer was empty'}.")
+        raise OwnKeyError(f"{name} did not answer: {error or 'the answer was empty'}.")
     return text.strip()
 
 
-def size_warning(text: str, model: str, *, free_limit_tokens: int) -> str:
+def describe_image_with_own_key(
+    path: Any, question: str = "", *, provider: str = "gemini", model: str = ""
+) -> str:
+    """Ask About an Image on the listener's own key. Blocking.
+
+    Gemini's models read pictures, so a Gemini key answers the one AI help
+    command the free service and an OpenAI key cannot. Raises
+    :class:`OwnKeyError` with a sentence for a person.
+    """
+    from pathlib import Path as _Path
+
+    from quill.core.ai.vision import describe_image
+    from quill.core.assistant_ai import (
+        AssistantConnectionSettings,
+        default_host_for_provider,
+        load_provider_api_key,
+    )
+
+    chosen = normalize_provider(provider)
+    name = provider_name(chosen)
+    key = load_provider_api_key(chosen)
+    if not key:
+        raise OwnKeyError(f"No {name} key is stored on this computer.")
+    connection = AssistantConnectionSettings(
+        provider=chosen,
+        host=default_host_for_provider(chosen),
+        model=model.strip() or default_model(chosen),
+    )
+    try:
+        text, error = describe_image(
+            connection, key, _Path(str(path)), prompt=question or "Describe this image in detail."
+        )
+    except Exception as exc:  # noqa: BLE001 - a sentence for a person
+        raise OwnKeyError(f"{name} could not describe the image: {exc}") from exc
+    if error or not text:
+        raise OwnKeyError(f"{name} did not describe the image: {error or 'the answer was empty'}.")
+    return str(text).strip()
+
+
+def size_warning(
+    text: str, model: str, *, free_limit_tokens: int, provider: str = OWN_KEY_PROVIDER
+) -> str:
     """What sending *text* with the user's own key means, before it is sent.
 
     Never a refusal. Always the rough cost of sending it, because that is the
@@ -338,20 +439,22 @@ def size_warning(text: str, model: str, *, free_limit_tokens: int) -> str:
     from quill.core.ai.gateway_context import estimate_tokens, words_in
     from quill.core.ai.own_key_models import estimate_for
 
+    chosen = normalize_provider(provider)
+    name = provider_name(chosen)
     tokens = estimate_tokens(text)
     words = words_in(text)
-    cost = tokens * estimate_for(model).input_per_million / 1_000_000
+    cost = tokens * estimate_for(model, chosen).input_per_million / 1_000_000
     spent = "less than 1 cent" if cost < 0.01 else f"about ${cost:,.2f}"
     parts = [
         f"Your own key has no limits. Sending these {words:,} words costs {spent} "
-        f"on your OpenAI account with {model}, plus the answer, which is not "
+        f"on your {name} account with {model}, plus the answer, which is not "
         "limited in length."
     ]
     if tokens > free_limit_tokens:
         parts.append("This is more than QUILL's free AI would accept.")
     if tokens > CONTEXT_WARNING_TOKENS:
         parts.append(
-            "It may be more than the model can read at once; if so, OpenAI "
+            f"It may be more than the model can read at once; if so, {name} "
             "refuses it and nothing is charged."
         )
     return " ".join(parts)

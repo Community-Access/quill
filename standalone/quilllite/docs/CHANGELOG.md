@@ -2,7 +2,22 @@
 
 ## Unreleased -- the next release, QUILL Lite 1.2.0
 
-### A thesaurus, Look Up, and an AI dictionary, on the word you are on
+### Your own key can be a Google Gemini key (X-07)
+
+- **Use My Own AI Key (Alt+F2)** -- the row was Use My Own OpenAI Key -- opens
+  on a **Provider** list: OpenAI, or Google Gemini. Everything under it
+  follows the choice: where the text goes, which key, that account's own
+  models with that company's prices, Test the Key against that company. The
+  choice is explicit and saved (`ai_own_key_provider`, the same field as
+  QUILL's); nothing is inferred from a saved key or a model name, and a key
+  for the other provider is reported, never used. Both keys may be saved.
+  With a Gemini key, Ask About an Image works too, because Gemini reads
+  pictures. Every AI help command, the dictionary and Tidy Dictated Text run
+  on the chosen key (`quill/core/ai/own_key.py`, `own_key_models.py`,
+  `quill/ui/hosted_ai_own_key.py`, `hosted_ai_own_key_route.py`;
+  `tests/unit/core/ai/test_own_key_gemini.py` drives a Gemini-shaped
+  loopback server with a synthetic key).
+
 
 - **Tools > Thesaurus... (Shift+F7)**, QUILL's two-pane picker and QUILL's
   data, which ships inside QUILL Lite. It looks up the word you are *on*:
