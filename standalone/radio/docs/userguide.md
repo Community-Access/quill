@@ -2100,7 +2100,7 @@ Suggest a Station or Podcast is off in Safe Mode: it says "Safe Mode is on, so n
 
 ## Taking back the last thing you did
 
-Press **Ctrl+Z** in the main window (**Edit > Undo Last Action**) and the last destructive thing you did comes back: an unsubscribe, a Remove All Downloads, a Mark All as Played, or a deleted recording. It says what it brought back, such as "Undid Unsubscribe. Brought back The Daily, with 412 episodes and 3 downloaded files."
+Press **Ctrl+Z** in the main window (**Edit > Undo Last Action**) and the last destructive thing you did comes back: an unsubscribe, a Remove All Downloads, a Mark All as Played, or a deleted recording. It says what it brought back, such as "Undid Unfollow. Brought back The Daily, with 412 episodes and 3 downloaded files."
 
 1. Do something you regret, such as deleting a recording in Radio Recordings. Its announcement ends with "Ctrl+Z undoes this".
 2. Press **Escape** or **Ctrl+Tab** until you are back in the main window.

@@ -64,7 +64,7 @@ Four ways in -- search, a feed address, an OPML file from another app, or ACB Me
    - Keys: Alt+S
    - You should hear: How many shows it imported.
 
-5. **Or take ACB Media's whole directory.** Subscribe to ACB Media Podcasts adds ACB's live directory in one step -- no search, no addresses, no account. Worth knowing about before you go hunting for the shows one at a time.
+5. **Or take ACB Media's whole directory.** Follow ACB Media Podcasts adds ACB's live directory in one step -- no search, no addresses, no account. Worth knowing about before you go hunting for the shows one at a time.
    - Keys: Alt+S
    - You should hear: How many shows it added.
 
@@ -150,7 +150,7 @@ Where episode-level life happens: the four pinned views, the episode list and it
    - You should hear: How many matches, across which kinds of thing.
    - Worth knowing: Press Down arrow in the search box for your last fifteen searches, newest first. The list stays on this machine: nothing about what you search for leaves it.
 
-7. **Do something to a whole show.** A show's context menu holds the heavy verbs: Download All Episodes, Remove All Downloads (the files, and only the files), Remove All Episodes, Mark All as Played, Settings for This Podcast, and Unsubscribe.
+7. **Do something to a whole show.** A show's context menu holds the heavy verbs: Download All Episodes, Remove All Downloads (the files, and only the files), Remove All Episodes, Mark All as Played, Settings for This Podcast, and Unfollow.
    - Keys: Shift+F10
    - You should hear: Each action, and its confirmation when it needs one.
 
@@ -656,7 +656,7 @@ Which podcasts may interrupt you, which are merely counted, which say nothing at
 
 5. **Be told when a podcast stops.** Tell me if this podcast goes quiet for says something when a podcast you follow publishes nothing for that many weeks. A podcast that ends does so silently, and the absence is exactly the thing nobody notices.
    - You should hear: The podcast named, and how long it has been silent.
-   - Worth knowing: It never unsubscribes you and never stops checking. It is said once, and again only if the podcast comes back and then stops again.
+   - Worth knowing: It never unfollows anything and never stops checking. It is said once, and again only if the podcast comes back and then stops again.
 
 6. **Be told when a feed is failing.** Tell me after this many failed checks speaks up after a run of failures. Cast keeps trying either way, and the sentence says so, because a feed that has failed reads as one Cast has given up on.
    - You should hear: The failures listed, with their reasons.
@@ -683,7 +683,7 @@ Folders, an order of your own, favorites, and the counts that tell you what is w
    - Keys: Alt+S
    - You should hear: The folder created, by name.
 
-3. **File shows into it.** Move to Folder on a show's context menu. Deleting a folder later dissolves it -- your shows step safely to the top level. Nothing is ever unsubscribed by deleting a folder, which is the fear that stops people making folders at all.
+3. **File shows into it.** Move to Folder on a show's context menu. Deleting a folder later dissolves it -- your shows step safely to the top level. You never stop following anything by deleting a folder, which is the fear that stops people making folders at all.
    - Keys: Shift+F10
    - You should hear: Moved, and the folder it landed in.
 
@@ -820,7 +820,7 @@ The backup you will be glad of exactly once, the readable export, the media-tool
 6. **Find what went wrong while you were elsewhere.** Recent Problems lists what has failed recently -- feeds that could not be read, downloads that died -- each with its reason and the time. It exists because a spoken failure you missed used to be gone for good.
    - You should hear: The failures, newest first, each with its reason.
 
-7. **Take back the last destructive thing.** Undo Last Action brings back the last thing you removed: an unsubscribe, a Remove All Episodes, a Mark All as Played. It says what it brought back, and it is one step rather than a stack, on purpose.
+7. **Take back the last destructive thing.** Undo Last Action brings back the last thing you removed: an unfollow, a Remove All Episodes, a Mark All as Played. It says what it brought back, and it is one step rather than a stack, on purpose.
    - Keys: Ctrl+Z
    - You should hear: Undid, and what came back -- or Nothing to undo.
 

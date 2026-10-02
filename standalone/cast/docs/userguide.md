@@ -16,7 +16,7 @@ QUILL Cast is podcasts the way a screen reader user would design them: a small w
 
 Launch QUILL Cast from the Start Menu (or `quill-cast` from a terminal if you installed from source). The window opens with keyboard focus on your **Library** tree.
 
-- No shows yet? Press Alt+P for the Podcasts menu, then **Add Podcast...** to follow a show by search or feed URL -- or **Subscribe to ACB Media Podcasts** for ACB's whole live directory in one step. **Import OPML...** brings a library from another podcast app; it is an Advanced row (see "Simple and Advanced" below), and the Command Palette reaches it in either mode.
+- No shows yet? Press Alt+P for the Podcasts menu, then **Add Podcast...** to follow a show by search or feed URL -- or **Follow ACB Media Podcasts** for ACB's whole live directory in one step. **Import OPML...** brings a library from another podcast app; it is an Advanced row (see "Simple and Advanced" below), and the Command Palette reaches it in either mode.
 - With shows: arrow to one and press **Enter** to play its next unplayed episode -- no detour through the Manager required. If every episode is already played, Enter plays the most recent one and says so.
 - Want QUILL Cast on the moment it opens? Check **Podcasts > Resume Last Episode on Launch** once, and launching the app picks up exactly where you left off.
 
@@ -27,7 +27,7 @@ Everything QUILL Cast announces goes through the same announcement engine QUILL 
 Tab order: the now-playing line, the library tree, then five buttons.
 
 - **Now playing** (read-only text): what is playing; mirrored in the status bar and the Episode menu.
-- **Library** (tree): the same pinned views the Podcast Manager shows -- **Favorites**, **New Episodes**, **Continue Listening**, **Inbox** -- above your nested library folders and the shows filed in them. A show wears its unplayed count in words -- "(3 unheard)" -- and a folder wears how many podcasts live under it, counting everything expanding it would reveal. Enter on a show plays its next episode; Enter on a pinned view plays its newest unstarted episode (Continue Listening: the most recent one you were in the middle of). **The pinned views open**: Right Arrow on Favorites, New Episodes, Continue Listening or the Inbox reveals what its count counts -- episodes under the three episode views, each naming its podcast, and podcasts under Favorites, each of which expands to its own episodes one level down. Delete unsubscribes a show (with confirmation) or dissolves a folder (your shows step safely to the top level -- nothing is ever unsubscribed by deleting a folder). Shift+F10 or the Applications key opens the full context menu (the same one a right-click opens): Play/Stop, Add/Remove Favorites, Move to Folder, **Move Up / Move Down in Custom Order** (Alt+Up / Alt+Down -- see Sort Podcasts below), **Download All Episodes**, **Remove All Episodes**, **Feed Credentials...** (for private feeds -- see below), Unsubscribe, New Folder, and Open Manager. On a folder the context menu offers **Rename Folder... (F2)**, **Delete Folder...**, New Folder..., and Open Manager.
+- **Library** (tree): the same pinned views the Podcast Manager shows -- **Favorites**, **New Episodes**, **Continue Listening**, **Inbox** -- above your nested library folders and the shows filed in them. A show wears its unplayed count in words -- "(3 unheard)" -- and a folder wears how many podcasts live under it, counting everything expanding it would reveal. Enter on a show plays its next episode; Enter on a pinned view plays its newest unstarted episode (Continue Listening: the most recent one you were in the middle of). **The pinned views open**: Right Arrow on Favorites, New Episodes, Continue Listening or the Inbox reveals what its count counts -- episodes under the three episode views, each naming its podcast, and podcasts under Favorites, each of which expands to its own episodes one level down. Delete unfollows a show (with confirmation, and Ctrl+Z puts it back) or dissolves a folder (your shows step safely to the top level -- you never stop following anything by deleting a folder). Shift+F10 or the Applications key opens the full context menu (the same one a right-click opens): Play/Stop, Add/Remove Favorites, Move to Folder, **Move Up / Move Down in Custom Order** (Alt+Up / Alt+Down -- see Sort Podcasts below), **Download All Episodes**, **Remove All Episodes**, **Feed Credentials...** (for private feeds -- see below), **Unfollow...** (Delete), New Folder, and Open Manager. On a folder the context menu offers **Rename Folder... (F2)**, **Delete Folder...**, New Folder..., and Open Manager.
 - **The pinned views rename too.** Press **F2** on Favorites, New Episodes, Continue Listening or the Inbox (or choose **Rename...** from its context menu) and give it your own name -- it follows you into the Podcast Manager as well. A renamed view's menu gains **Reset Name**; entering a blank, or the shipped name itself, also resets it. Shows and episodes deliberately refuse F2: their names come from the podcast's own feed.
 - **Episodes without leaving the main page.** Every show in the tree can be expanded (Right Arrow) to reveal its episodes, newest first, right where the show sits -- no detour through the Manager to reach one particular episode. Shows start collapsed so the tree reads as a list of shows rather than a wall of episodes. **Enter on an episode plays that episode**; Enter on the show itself still plays the show's next unplayed episode. An episode row's context menu offers **Play Episode** (Stop, while it is the one playing) and **Download Episode** -- the file lands under your Download location as `show-title\episode-title.mp3`, so it has a name that means something outside the app.
 - Buttons, each of which **names the thing it will act on in its own label**: **Play** and the name of whatever the library cursor is on (Alt+Y) -- a podcast (its next episode plays), an episode, or a pinned view (its first playable episode); it becomes **Pause** and the playing episode's name while playing, and **Resume** and its name (Alt+S) while paused, so it is never dead. With a folder, an empty show or nothing selected it reads **Play -- nothing selected**, and pressing it says what would work. **Stop** (Alt+T) is enabled only while something is playing or paused. **Add to Favorites** (Alt+F) becomes **Remove from Favorites** when the playing show is already a favorite. **Unfollow** and the selected podcast's name (Alt+U) -- or the selected episode's podcast -- asks first, and Ctrl+Z puts the show back; with nothing selected it reads plain Unfollow and is disabled. **Episode List...** (Alt+I) is the Podcast Manager; **Add Podcast...** (Alt+A). Names longer than forty characters are shortened with an ellipsis, and every button keeps its share of the row, so nothing moves as you arrow through the library. The letters are chosen so no button ever shares one with a menu: when a button and a menu claim the same Alt+letter, Windows gives it to the button, which is how Alt+S once pressed Stop instead of opening a menu.
@@ -159,7 +159,7 @@ The menu was called Subscriptions until 2026-09-30; it is named after what is
 in it. Rows marked *(Advanced)* appear in Advanced mode only.
 
 
-Open Podcast Manager... (Ctrl+M), Add Podcast... (Ctrl+N), Import OPML... *(Advanced)*, Export OPML... *(Advanced)*, New Folder... (Ctrl+Shift+F; creates a library folder without opening the Manager), **Sort Podcasts** (a submenu -- see below), Add Local Podcast..., Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast Settings..., **Podcast Index Credentials...** *(Advanced)*, **Feed Check...** (Ctrl+Shift+C -- see "Feed Check" below), **Quick Actions...** *(Advanced)*, **Choose Columns...** *(Advanced)*, **Export My Data...** *(Advanced)*, **Delete All Podcast Data...** *(Advanced)*, **Back Up My Podcasts...** *(Advanced)*, **Restore from a Backup...** *(Advanced)*, **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,), Send to Tray (Ctrl+W), Exit (Ctrl+Q).
+Open Podcast Manager... (Ctrl+M), Add Podcast... (Ctrl+N), Import OPML... *(Advanced)*, Export OPML... *(Advanced)*, New Folder... (Ctrl+Shift+F; creates a library folder without opening the Manager), **Sort Podcasts** (a submenu -- see below), Add Local Podcast..., Scan Watched Folders, Follow ACB Media Podcasts, Podcast Settings..., **Podcast Index Credentials...** *(Advanced)*, **Feed Check...** (Ctrl+Shift+C -- see "Feed Check" below), **Quick Actions...** *(Advanced)*, **Choose Columns...** *(Advanced)*, **Export My Data...** *(Advanced)*, **Delete All Podcast Data...** *(Advanced)*, **Back Up My Podcasts...** *(Advanced)*, **Restore from a Backup...** *(Advanced)*, **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,), Send to Tray (Ctrl+W), Exit (Ctrl+Q).
 
 **Sort Podcasts** decides how your shows are ordered everywhere they are listed: **Ascending (A to Z)**, **Descending (Z to A)**, or **Custom Order**. Custom order is the one you build by hand: **Alt+Up / Alt+Down** on a show in the library tree (or Move Up/Down in Custom Order on its context menu) nudges it among its folder's neighbours. The first move switches to custom automatically -- starting from the order already on screen, so nothing jumps -- and the radio items here always show which mode is live.
 
@@ -199,7 +199,7 @@ merging, anything playing stops first, and your library reappears without
 restarting the app. This is different from Export My Data, which is a readable
 snapshot you can look at but not put back.
 
-**Delete All Podcast Data...** unsubscribes from everything and clears your queue, playlists, Inbox filing, statistics, and history. It asks twice, and asks about downloaded files separately, because "start over" and "reclaim the disk" are not the same wish.
+**Delete All Podcast Data...** unfollows everything and clears your queue, playlists, Inbox filing, statistics, and history. It asks twice, and asks about downloaded files separately, because "start over" and "reclaim the disk" are not the same wish.
 
 ### Podcast Settings and per-podcast settings
 
@@ -263,7 +263,7 @@ Three things are true of every control in it:
 
 **Labels.** Your own words for a podcast, as many as you like, usable as a Smart Playlist rule. A folder is one home; a label is not a home at all, so labelling never moves anything.
 
-**Tell me if this podcast goes quiet.** A podcast that ends does so silently. After the number of weeks you set, Cast says so -- once, and again if it comes back and stops again. It never unsubscribes you and never stops checking. Its companion speaks up after a run of failed checks, and says plainly that Cast is still trying.
+**Tell me if this podcast goes quiet.** A podcast that ends does so silently. After the number of weeks you set, Cast says so -- once, and again if it comes back and stops again. It never unfollows anything and never stops checking. Its companion speaks up after a run of failed checks, and says plainly that Cast is still trying.
 
 None of these deletes an episode, a file, a note or a bookmark, and none marks anything played. The two that *hide* something -- the episode-list limit and Episode Filters -- both tell you where the hidden episodes still are.
 
@@ -647,7 +647,7 @@ Cast cannot read them" are very different things to know, and a greyed-out menu
 item would leave you guessing which one it was.
 
 **The button says what it will do.** It changes as you move down a list -- *Open
-in Browser*, *Play*, *Subscribe to This Podcast* -- and on a row with nothing to
+in Browser*, *Play*, *Follow This Podcast* -- and on a row with nothing to
 do it reads *Nothing to Open* and is disabled, rather than being pressed and
 quietly declining.
 
@@ -1047,7 +1047,7 @@ Episode notes mark a moment and jump back to it. Two ways in:
 
 Selecting a note jumps to it. From the Manager the episode need not be the one playing -- it starts it first, then jumps.
 
-**Copy Note** puts one note on the clipboard as text somebody else can use: the episode, the podcast, the timestamp, your note, and the audio link together. The note's own words on their own are a fragment with no way back to the moment they mark. A note whose podcast you have unsubscribed from still copies; the missing parts are simply left out.
+**Copy Note** puts one note on the clipboard as text somebody else can use: the episode, the podcast, the timestamp, your note, and the audio link together. The note's own words on their own are a fragment with no way back to the moment they mark. A note whose podcast you no longer follow still copies; the missing parts are simply left out.
 
 ## Importing a large subscription list
 
@@ -1212,9 +1212,9 @@ crosses your whole library.
 ## Taking back the last thing you did
 
 Press **Ctrl+Z** (Edit > Undo Last Action) and the last destructive thing you
-did comes back: an unsubscribe, a Remove All Episodes, a Remove All Downloads,
+did comes back: an unfollow, a Remove All Episodes, a Remove All Downloads,
 a Mark All as Played, a deleted recording. It says what it brought back --
-"Undid Unsubscribe. Brought back The Daily, with 412 episodes and 3 downloaded
+"Undid Unfollow. Brought back The Daily, with 412 episodes and 3 downloaded
 files."
 
 Three things worth knowing.
@@ -1233,7 +1233,7 @@ first.
 
 **Anything it cannot bring back, it says so in the same breath.** A private
 feed's saved password, for instance, is deleted deliberately when you
-unsubscribe; the undo brings the subscription back and tells you the password
+unfollow; the undo brings the podcast back and tells you the password
 has to be entered again.
 
 Every action that can be undone ends its own announcement with "Ctrl+Z undoes
@@ -1443,7 +1443,7 @@ QUILL Cast reads and writes the same data store as QUILL and Quill Radio (`%APPD
 | Play selected show's next episode | Enter (in the tree) |
 | Expand a show to see its episodes | Right Arrow (in the tree) |
 | Play the selected episode | Enter (on an episode in the tree) |
-| Unsubscribe / delete folder | Delete (in the tree) |
+| Unfollow / delete folder | Delete (in the tree) |
 | Tree context menu | Shift+F10 (in the tree) |
 | Subscriptions menu | Alt+S |
 | Episode menu | Alt+E |
@@ -1480,7 +1480,7 @@ using and what happened.
 - **A private feed says "feed sign-in failed" during refresh.** The publisher rotated or revoked your credentials, or -- on a portable copy -- you've moved the stick to a different PC or Windows account, where stored passwords can't be decrypted. Either way: show's context menu > **Feed Credentials...**, re-enter the password, refresh again.
 - **An episode will not download and reconnect isn't fixing it.** Downloads menu > Resume All Downloads; check Subscriptions > Podcast Settings... to confirm reconnecting is on and the attempt/wait numbers give it enough tries. Some hosts rate-limit regardless.
 - **Positions seem stale across apps.** Positions are written on pause/stop/switch; if two apps play simultaneously against the same store, the last writer wins.
-- **Resume Last Episode on Launch didn't pick up my episode.** It only fires at app startup, and only if the episode is still in your library (an unsubscribed show or a removed download won't resume).
+- **Resume Last Episode on Launch didn't pick up my episode.** It only fires at app startup, and only if the episode is still in your library (a podcast you no longer follow, or a removed download, won't resume).
 - **Episodes vanished from my queue.** Check **Recently Expired** in the Podcast Manager: a podcast with a queue age limit moves what has waited too long there, and Restore or Restore All puts it back. If you did not mean to set a limit, it is **Expire from the queue** in Settings for This Podcast...
 - **The Inbox is missing episodes I expected.** Inbox limits (count or age) can trim a show's older episodes out of the Inbox. They are never deleted -- they are unplayed in the show's own episode list -- and anything started, queued, or filed by hand is never trimmed. Adjust or clear the limits in Settings for This Podcast...
 - **A download disappeared.** The download age limit or the total storage cap (Podcast Settings) removed it; the episode is still there and can be downloaded again. Neither rule ever removes a queued or part-played episode. **Downloads...** shows what is currently on disk.

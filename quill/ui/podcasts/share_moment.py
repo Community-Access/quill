@@ -77,8 +77,8 @@ def open_share_link(host: Any, text: str) -> bool:
         # add a podcast to somebody's library, and an offer here would be a
         # dialog nobody asked for on top of a window that just opened.
         announce(
-            "That link is for a podcast you are not subscribed to. "
-            "Subscribe to it first, then open the link again."
+            "That link is for a podcast you do not follow. "
+            "Follow it first, then open the link again."
         )
         return False
     episode = next(

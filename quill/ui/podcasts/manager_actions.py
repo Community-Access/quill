@@ -441,13 +441,13 @@ class ManagerActionsMixin:
         """
         monitor = getattr(self._transport_host, "_podcast_check_monitor", None)
         if monitor is None or self._safe_mode:
-            self._announce("Subscribed feeds cannot be checked right now.")
+            self._announce("Feeds cannot be checked right now.")
             return
         # The count up front, because this is the one verb whose result
         # arrives show by show over the next few seconds: "checking three
         # feeds" tells you when it is finished, where "checking" does not.
         started = monitor.check_now(force=True)
         if not started:
-            self._announce("No subscribed feed to check.")
+            self._announce("You follow no podcast with a feed to check.")
             return
         self._announce(f"Checking {started} feed{'' if started == 1 else 's'}...")

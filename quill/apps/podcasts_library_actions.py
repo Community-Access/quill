@@ -70,7 +70,7 @@ class CastLibraryActionsMixin:
             if show.feed_url:
                 entries.append(("Feed Cre&dentials...", self._on_library_feed_credentials))
             entries += [
-                ("&Unsubscribe...\tDelete", self._on_library_remove),
+                ("Un&follow...\tDelete", self._on_library_remove),
                 ("New F&older...", self._on_library_new_folder),
                 ("Open &Manager...", lambda: self.open_podcast_manager()),
             ]

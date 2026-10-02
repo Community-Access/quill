@@ -129,7 +129,7 @@ SHOW_ACTIONS: tuple[QuickAction, ...] = (
     QuickAction(
         "remove_all_episodes", "Remove All Episodes...", "Empty the episode list, stay subscribed."
     ),
-    QuickAction("unsubscribe", "Unsubscribe...", "Remove the show from your library."),
+    QuickAction("unsubscribe", "Unfollow...", "Remove the show from your library."),
 )
 
 #: Actions on one Play Queue slot.

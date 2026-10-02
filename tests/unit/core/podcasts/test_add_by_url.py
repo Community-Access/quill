@@ -115,7 +115,7 @@ def test_success_subscribes_and_lists_the_episodes_at_once(
     _patch_fetch(monkeypatch, _feed_info(episodes=3))
     outcome = add_by_url.add_podcast_by_url(tmp_path, FEED)
     assert outcome.ok
-    assert "Subscribed to The Show" in outcome.spoken
+    assert "Now following The Show" in outcome.spoken
     assert "3 episodes" in outcome.spoken
     assert "Quill Cast" in outcome.spoken
     show = load_library(tmp_path).find_show_by_feed_url(FEED)

@@ -192,10 +192,10 @@ def describe_schedule(interval_minutes: object, *, on_launch: bool = False) -> s
     minutes = normalize_interval(interval_minutes)
     if not minutes:
         opening = (
-            "Subscribed feeds are checked when you open a show, when you press "
+            "The feeds you follow are checked when you open a show, when you press "
             "Refresh, and at launch."
             if on_launch
-            else "Subscribed feeds are checked only when you open a show or press Refresh."
+            else "The feeds you follow are checked only when you open a show or press Refresh."
         )
     else:
         every = (

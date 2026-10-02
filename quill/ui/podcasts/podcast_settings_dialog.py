@@ -278,7 +278,7 @@ class PodcastSettingsDialog:
         grid.Add(dest_row, 1, wx.EXPAND)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="&When I unsubscribe, delete downloaded files:"),
+            wx.StaticText(self.dialog, label="&When I unfollow, delete downloaded files:"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
@@ -435,7 +435,7 @@ class PodcastSettingsDialog:
             self.dialog,
             label=(
                 "Any podcast can override these defaults from its own context "
-                "menu; these are only what a newly subscribed show starts with."
+                "menu; these are only what a newly followed podcast starts with."
             ),
         )
         hint.Wrap(480)

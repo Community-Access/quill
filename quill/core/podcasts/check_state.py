@@ -173,7 +173,7 @@ def failure_notice(library: PodcastLibrary, show: PodcastShow) -> str:
     state[_NOTIFIED_FAILED] = True
     return (
         f"{show.title} has failed to check {run} times in a row. Cast is still "
-        "trying, and nothing has been unsubscribed or deleted -- the feed's "
+        "trying, and nothing has been unfollowed or deleted -- the feed's "
         "address may have changed."
     )
 
@@ -202,7 +202,7 @@ def quiet_notice(library: PodcastLibrary, show: PodcastShow, *, now: datetime | 
     state[_NOTIFIED_QUIET] = True
     return (
         f"{show.title} has published nothing for {weeks} "
-        f"week{'' if weeks == 1 else 's'}. It is still subscribed and still "
+        f"week{'' if weeks == 1 else 's'}. You still follow it and it is still "
         "being checked; nothing has changed except that there is nothing new."
     )
 

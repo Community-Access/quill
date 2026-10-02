@@ -51,7 +51,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 body=(
                     "Move to Folder on a show's context menu. Deleting a folder "
                     "later dissolves it -- your shows step safely to the top level. "
-                    "Nothing is ever unsubscribed by deleting a folder, which is "
+                    "You never stop following anything by deleting a folder, which is "
                     "the fear that stops people making folders at all."
                 ),
                 keys=("Shift+F10",),
@@ -441,7 +441,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Take back the last destructive thing",
                 body=(
                     "Undo Last Action brings back the last thing you removed: an "
-                    "unsubscribe, a Remove All Episodes, a Mark All as Played. It "
+                    "unfollow, a Remove All Episodes, a Mark All as Played. It "
                     "says what it brought back, and it is one step rather than a "
                     "stack, on purpose."
                 ),

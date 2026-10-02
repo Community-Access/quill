@@ -507,7 +507,7 @@ def refresh_all_feeds(dialog: Any) -> None:
         for name in ("_podcast_refresh_monitor", "_podcast_check_monitor"):
             monitor = monitor or getattr(owner, name, None)
     if monitor is None:
-        dialog._announce("Subscribed feeds cannot be checked right now.")
+        dialog._announce("Feeds cannot be checked right now.")
         return
     dialog._announce("Checking subscribed feeds...")
     monitor.check_now(force=True)

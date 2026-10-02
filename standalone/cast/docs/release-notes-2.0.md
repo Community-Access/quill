@@ -184,6 +184,15 @@ again. Quill Radio's main window learned the same lesson the same day.
   saying what it was called. It now opens with focus on the queue and its
   title, and a build check makes sure no window anywhere in the family can
   make that mistake again.
+- **Follow everywhere, not only in Add Podcast.** The library's row menu
+  said Unsubscribe, Preview's button said Subscribe, the Podcasts menu said
+  Subscribe to ACB Media Podcasts, and a dozen announcements and settings
+  still said subscribed. All say Follow now: **Unfollow...** (Delete) in the
+  row menu, **Follow** in Preview, **Follow ACB Media Podcasts**, **When I
+  unfollow, delete downloaded files** in Podcast Settings, **Unfollow them
+  too** when deleting a folder, **Follow This Podcast** among an episode's
+  extras, and the undo sentence "Undid Unfollow". The OPML file is still
+  called a subscription list, because that is the format's own name for it.
 - **"Use shared default", not "Follow".** In Settings for This Podcast, the
   button beside a setting the podcast answers for itself used to say only
   Follow -- one per row, all identical, and the same word Cast now uses for

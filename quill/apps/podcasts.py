@@ -655,7 +655,7 @@ class PodcastsAppFrame(
                     history.winamp_playback_keys,
                 ),
                 PreferenceCheckbox(
-                    "Check subscribed podcast feeds on a &timer",
+                    "Check the feeds you follow on a &timer",
                     "Look for new episodes without being asked. Off by default. "
                     "A check reads episode lists only: it starts no downloads by "
                     "itself, skips shows you have paused, and never changes what "
@@ -683,7 +683,7 @@ class PodcastsAppFrame(
                     _close_action_index(history.close_action),
                 ),
                 PreferenceChoice(
-                    "Check subscribed podcast &feeds:",
+                    "Check the &feeds you follow:",
                     # The rule from section 3: what it does, then the misreading
                     # it prevents. Every misread here has been the second half.
                     refresh_policy.describe_schedule(

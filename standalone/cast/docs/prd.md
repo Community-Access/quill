@@ -1367,7 +1367,12 @@ Following, the menu labels with their access keys, and the sentences -- because
 a wording that lives in fourteen literals is one that gets half-changed. Two
 things keep the old word on purpose: the OPML *file* is a subscription list,
 the format's own name; and no on-disk field is renamed, because a migration is
-too much risk for a wording preference.
+too much risk for a wording preference. On 2026-10-01 the remaining
+user-visible strings followed (row menu, Preview, the ACB row, Podcast
+Settings, Delete Folder, extras, refresh and check-state sentences, the
+add-by-address outcome shared with Radio, the shared undo label); internal
+identifiers such as `ACTION_SUBSCRIBE` and `unsubscribe_show_prompt` keep
+their names.
 
 ### 23.2 Add Podcast
 

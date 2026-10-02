@@ -437,7 +437,7 @@ def unsubscribe_show_prompt(
             on_change()
 
     undo_last_ui.remember(
-        "Unsubscribe",
+        "Unfollow",
         show.title,
         _restores_phrase(len(show.episodes), len(held)),
         _undo,
@@ -453,7 +453,7 @@ def unsubscribe_show_prompt(
     if delete_files and downloaded:
         announce(undo_last_ui.offer(unfollowed(show.title, deleted_files=len(held))))
     else:
-        announce(undo_last_ui.offer(f"Unsubscribed from {show.title}"))
+        announce(undo_last_ui.offer(unfollowed(show.title)))
     if on_change is not None:
         on_change()
     return True

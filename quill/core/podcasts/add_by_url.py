@@ -117,7 +117,7 @@ def add_podcast_by_url(data_dir: Path, url: str, *, safe_mode: bool = False) -> 
     count = len(playable)
     return AddByUrlOutcome(
         True,
-        f"Subscribed to {title}. {count} episode{'s are' if count != 1 else ' is'} "
+        f"Now following {title}. {count} episode{'s are' if count != 1 else ' is'} "
         "listed, and the show is shared with Quill Cast.",
         feed_url=address,
         title=title,

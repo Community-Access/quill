@@ -85,7 +85,7 @@ class FeedPreviewDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
-        subscribe_btn = wx.Button(self.dialog, wx.ID_OK, "&Subscribe")
+        subscribe_btn = wx.Button(self.dialog, wx.ID_OK, "&Follow")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "&Close")
         buttons.Add(subscribe_btn, 0, wx.RIGHT, 6)
         buttons.Add(close_btn, 0)

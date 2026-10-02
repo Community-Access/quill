@@ -71,7 +71,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Or take ACB Media's whole directory",
                 body=(
-                    "Subscribe to ACB Media Podcasts adds ACB's live directory in "
+                    "Follow ACB Media Podcasts adds ACB's live directory in "
                     "one step -- no search, no addresses, no account. Worth knowing "
                     "about before you go hunting for the shows one at a time."
                 ),
@@ -304,7 +304,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "A show's context menu holds the heavy verbs: Download All "
                     "Episodes, Remove All Downloads (the files, and only the "
                     "files), Remove All Episodes, Mark All as Played, Settings for "
-                    "This Podcast, and Unsubscribe."
+                    "This Podcast, and Unfollow."
                 ),
                 keys=("Shift+F10",),
                 hear="Each action, and its confirmation when it needs one.",

@@ -262,7 +262,7 @@ keyboard focus on your <strong>Library</strong> tree.</p>
 <ul>
 <li>No shows yet? Press Alt+P for the Podcasts menu, then <strong>Add
 Podcast…</strong> to follow a show by search or feed URL – or
-<strong>Subscribe to ACB Media Podcasts</strong> for ACB’s whole live
+<strong>Follow ACB Media Podcasts</strong> for ACB’s whole live
 directory in one step. <strong>Import OPML…</strong> brings a library
 from another podcast app; it is an Advanced row (see “Simple and
 Advanced” below), and the Command Palette reaches it in either
@@ -298,17 +298,18 @@ episode; Enter on a pinned view plays its newest unstarted episode
 Episodes, Continue Listening or the Inbox reveals what its count counts
 – episodes under the three episode views, each naming its podcast, and
 podcasts under Favorites, each of which expands to its own episodes one
-level down. Delete unsubscribes a show (with confirmation) or dissolves
-a folder (your shows step safely to the top level – nothing is ever
-unsubscribed by deleting a folder). Shift+F10 or the Applications key
-opens the full context menu (the same one a right-click opens):
-Play/Stop, Add/Remove Favorites, Move to Folder, <strong>Move Up / Move
-Down in Custom Order</strong> (Alt+Up / Alt+Down – see Sort Podcasts
-below), <strong>Download All Episodes</strong>, <strong>Remove All
-Episodes</strong>, <strong>Feed Credentials…</strong> (for private feeds
-– see below), Unsubscribe, New Folder, and Open Manager. On a folder the
-context menu offers <strong>Rename Folder… (F2)</strong>, <strong>Delete
-Folder…</strong>, New Folder…, and Open Manager.</li>
+level down. Delete unfollows a show (with confirmation, and Ctrl+Z puts
+it back) or dissolves a folder (your shows step safely to the top level
+– you never stop following anything by deleting a folder). Shift+F10 or
+the Applications key opens the full context menu (the same one a
+right-click opens): Play/Stop, Add/Remove Favorites, Move to Folder,
+<strong>Move Up / Move Down in Custom Order</strong> (Alt+Up / Alt+Down
+– see Sort Podcasts below), <strong>Download All Episodes</strong>,
+<strong>Remove All Episodes</strong>, <strong>Feed Credentials…</strong>
+(for private feeds – see below), <strong>Unfollow…</strong> (Delete),
+New Folder, and Open Manager. On a folder the context menu offers
+<strong>Rename Folder… (F2)</strong>, <strong>Delete Folder…</strong>,
+New Folder…, and Open Manager.</li>
 <li><strong>The pinned views rename too.</strong> Press
 <strong>F2</strong> on Favorites, New Episodes, Continue Listening or
 the Inbox (or choose <strong>Rename…</strong> from its context menu) and
@@ -588,7 +589,7 @@ only.</p>
 <em>(Advanced)</em>, Export OPML… <em>(Advanced)</em>, New Folder…
 (Ctrl+Shift+F; creates a library folder without opening the Manager),
 <strong>Sort Podcasts</strong> (a submenu – see below), Add Local
-Podcast…, Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast
+Podcast…, Scan Watched Folders, Follow ACB Media Podcasts, Podcast
 Settings…, <strong>Podcast Index Credentials…</strong>
 <em>(Advanced)</em>, <strong>Feed Check…</strong> (Ctrl+Shift+C – see
 “Feed Check” below), <strong>Quick Actions…</strong>
@@ -658,10 +659,10 @@ Restoring replaces what is here rather than merging, anything playing
 stops first, and your library reappears without restarting the app. This
 is different from Export My Data, which is a readable snapshot you can
 look at but not put back.</p>
-<p><strong>Delete All Podcast Data…</strong> unsubscribes from
-everything and clears your queue, playlists, Inbox filing, statistics,
-and history. It asks twice, and asks about downloaded files separately,
-because “start over” and “reclaim the disk” are not the same wish.</p>
+<p><strong>Delete All Podcast Data…</strong> unfollows everything and
+clears your queue, playlists, Inbox filing, statistics, and history. It
+asks twice, and asks about downloaded files separately, because “start
+over” and “reclaim the disk” are not the same wish.</p>
 <h3 id="podcast-settings-and-per-podcast-settings">Podcast Settings and
 per-podcast settings</h3>
 <p><strong>Podcast Settings…</strong> holds the shared defaults every
@@ -824,9 +825,9 @@ like, usable as a Smart Playlist rule. A folder is one home; a label is
 not a home at all, so labelling never moves anything.</p>
 <p><strong>Tell me if this podcast goes quiet.</strong> A podcast that
 ends does so silently. After the number of weeks you set, Cast says so –
-once, and again if it comes back and stops again. It never unsubscribes
-you and never stops checking. Its companion speaks up after a run of
-failed checks, and says plainly that Cast is still trying.</p>
+once, and again if it comes back and stops again. It never unfollows
+anything and never stops checking. Its companion speaks up after a run
+of failed checks, and says plainly that Cast is still trying.</p>
 <p>None of these deletes an episode, a file, a note or a bookmark, and
 none marks anything played. The two that <em>hide</em> something – the
 episode-list limit and Episode Filters – both tell you where the hidden
@@ -1411,10 +1412,10 @@ says so: “this podcast publishes no extra details” and “QUILL Cast
 cannot read them” are very different things to know, and a greyed-out
 menu item would leave you guessing which one it was.</p>
 <p><strong>The button says what it will do.</strong> It changes as you
-move down a list – <em>Open in Browser</em>, <em>Play</em>,
-<em>Subscribe to This Podcast</em> – and on a row with nothing to do it
-reads <em>Nothing to Open</em> and is disabled, rather than being
-pressed and quietly declining.</p>
+move down a list – <em>Open in Browser</em>, <em>Play</em>, <em>Follow
+This Podcast</em> – and on a row with nothing to do it reads <em>Nothing
+to Open</em> and is disabled, rather than being pressed and quietly
+declining.</p>
 <h2 id="finding-a-podcast-to-subscribe-to">Finding a podcast to
 subscribe to</h2>
 <p><strong>Add Podcast…</strong> searches a <strong>Directory</strong>,
@@ -1884,8 +1885,8 @@ be the one playing – it starts it first, then jumps.</p>
 somebody else can use: the episode, the podcast, the timestamp, your
 note, and the audio link together. The note’s own words on their own are
 a fragment with no way back to the moment they mark. A note whose
-podcast you have unsubscribed from still copies; the missing parts are
-simply left out.</p>
+podcast you no longer follow still copies; the missing parts are simply
+left out.</p>
 <h2 id="importing-a-large-subscription-list">Importing a large
 subscription list</h2>
 <p>Import OPML is built for the real thing: a list of a thousand or more
@@ -2175,10 +2176,10 @@ Everywhere</strong> is the one that crosses your whole library.</p>
 <h2 id="taking-back-the-last-thing-you-did">Taking back the last thing
 you did</h2>
 <p>Press <strong>Ctrl+Z</strong> (Edit &gt; Undo Last Action) and the
-last destructive thing you did comes back: an unsubscribe, a Remove All
+last destructive thing you did comes back: an unfollow, a Remove All
 Episodes, a Remove All Downloads, a Mark All as Played, a deleted
-recording. It says what it brought back – “Undid Unsubscribe. Brought
-back The Daily, with 412 episodes and 3 downloaded files.”</p>
+recording. It says what it brought back – “Undid Unfollow. Brought back
+The Daily, with 412 episodes and 3 downloaded files.”</p>
 <p>Three things worth knowing.</p>
 <p><strong>It is one step, not a stack.</strong> Undoing twice in a row
 does nothing the second time; you get one, and the app says “Nothing to
@@ -2192,9 +2193,8 @@ destructive thing, the one before it is gone for good – which is what
 makes a single step safe to offer without asking you first.</p>
 <p><strong>Anything it cannot bring back, it says so in the same
 breath.</strong> A private feed’s saved password, for instance, is
-deleted deliberately when you unsubscribe; the undo brings the
-subscription back and tells you the password has to be entered
-again.</p>
+deleted deliberately when you unfollow; the undo brings the podcast back
+and tells you the password has to be entered again.</p>
 <p>Every action that can be undone ends its own announcement with
 “Ctrl+Z undoes this”, so you never have to remember whether this
 particular verb was one of them.</p>
@@ -2511,7 +2511,7 @@ deletes the shared store.</p>
 <td>Enter (on an episode in the tree)</td>
 </tr>
 <tr>
-<td>Unsubscribe / delete folder</td>
+<td>Unfollow / delete folder</td>
 <td>Delete (in the tree)</td>
 </tr>
 <tr>
@@ -2585,8 +2585,8 @@ written on pause/stop/switch; if two apps play simultaneously against
 the same store, the last writer wins.</li>
 <li><strong>Resume Last Episode on Launch didn’t pick up my
 episode.</strong> It only fires at app startup, and only if the episode
-is still in your library (an unsubscribed show or a removed download
-won’t resume).</li>
+is still in your library (a podcast you no longer follow, or a removed
+download, won’t resume).</li>
 <li><strong>Episodes vanished from my queue.</strong> Check
 <strong>Recently Expired</strong> in the Podcast Manager: a podcast with
 a queue age limit moves what has waited too long there, and Restore or

@@ -26,13 +26,15 @@ __all__ = ["delete_folder"]
 def delete_folder(dialog: Any, folder: Any) -> None:
     import wx
 
+    from quill.core.podcasts.follow_words import following_count
+
     with wx.SingleChoiceDialog(  # dialog_button_contract: exempt
         dialog.dialog,
         f'What should happen to the podcasts inside "{folder.name}"?',
         "Delete Folder",
         [
             "Move them up to the parent folder (safe)",
-            "Unsubscribe them too",
+            "Unfollow them too",
         ],
     ) as picker:
         if picker.ShowModal() != wx.ID_OK:
@@ -42,7 +44,8 @@ def delete_folder(dialog: Any, folder: Any) -> None:
     deleted_files = 0
     if removed:
         confirm = show_message_box(
-            f"Also delete the downloaded episode files of the {len(removed)} unsubscribed show(s)?",
+            "Also delete the downloaded episodes of the "
+            f"{following_count(len(removed))} you stopped following?",
             "Delete Downloaded Files",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
             dialog.dialog,
@@ -55,7 +58,8 @@ def delete_folder(dialog: Any, folder: Any) -> None:
     if removed:
         suffix = f" and {deleted_files} downloaded file(s) deleted" if deleted_files else ""
         dialog._announce(
-            f"Folder {folder.name} deleted; {len(removed)} show(s) unsubscribed{suffix}"
+            f"Folder {folder.name} deleted; stopped following "
+            f"{following_count(len(removed))}{suffix}"
         )
     else:
         dialog._announce(f"Folder {folder.name} deleted; its contents moved up")

@@ -297,7 +297,7 @@ def test_a_podcast_that_goes_quiet_is_reported_once_and_again_later(library) -> 
     assert check_state.quiet_notice(library, show, now=start + timedelta(days=6)) == ""
     said = check_state.quiet_notice(library, show, now=start + timedelta(days=21))
     assert "published nothing for 2 weeks" in said
-    assert "still subscribed" in said
+    assert "You still follow it" in said
     assert check_state.quiet_notice(library, show, now=start + timedelta(days=22)) == ""
     # Publishing again clears the latch, so the next silence is reported too.
     check_state.record_success(library, show, new_episodes=1, now=start + timedelta(days=30))

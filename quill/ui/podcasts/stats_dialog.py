@@ -70,7 +70,7 @@ def format_report(
     if summary.shows:
         lines.append("By podcast, most listened first:")
         for index, total in enumerate(summary.shows[:max_shows], start=1):
-            name = titles.get(total.show_id) or "(no longer subscribed)"
+            name = titles.get(total.show_id) or "(no longer followed)"
             lines.append(
                 f"{index}. {name}: {stats.format_duration(total.seconds)}, "
                 f"{total.completed} finished"

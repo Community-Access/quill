@@ -15,6 +15,13 @@ change by version.
 
 ## Also in 3.1.1
 
+### Undo says Unfollow
+
+Undoing the removal of a podcast now says "Undid Unfollow", in the same
+words QUILL Cast uses, because the two apps share one podcast library and one
+way of removing a show from it. Browse's "feeds cannot be checked" message
+lost the word "Subscribed" for the same reason.
+
 ### The button says what it will do, and to what
 
 A listener asked: "The stop button now always shows up in the app and doesn't

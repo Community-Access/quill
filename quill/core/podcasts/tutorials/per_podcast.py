@@ -492,7 +492,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 ),
                 hear="The podcast named, and how long it has been silent.",
                 note=(
-                    "It never unsubscribes you and never stops checking. It is "
+                    "It never unfollows anything and never stops checking. It is "
                     "said once, and again only if the podcast comes back and then "
                     "stops again."
                 ),

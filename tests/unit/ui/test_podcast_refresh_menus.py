@@ -121,7 +121,7 @@ def test_no_monitor_says_so_rather_than_doing_nothing() -> None:
 
     browse_podcast_actions.refresh_all_feeds(dialog)
 
-    assert dialog.said == ["Subscribed feeds cannot be checked right now."]
+    assert dialog.said == ["Feeds cannot be checked right now."]
 
 
 # -- QUILL Cast -----------------------------------------------------------------
@@ -175,7 +175,7 @@ def test_casts_handler_says_so_when_there_is_no_feed_to_check() -> None:
     manager = _Manager()
     manager._on_check_all_feeds()
 
-    assert manager.said == ["No subscribed feed to check."]
+    assert manager.said == ["You follow no podcast with a feed to check."]
 
 
 def test_casts_handler_refuses_in_safe_mode() -> None:
@@ -197,7 +197,7 @@ def test_casts_handler_refuses_in_safe_mode() -> None:
     manager._on_check_all_feeds()
 
     assert monitor.calls == []
-    assert manager.said == ["Subscribed feeds cannot be checked right now."]
+    assert manager.said == ["Feeds cannot be checked right now."]
 
 
 def test_casts_show_menu_still_offers_refresh_feed_on_a_paused_show() -> None:

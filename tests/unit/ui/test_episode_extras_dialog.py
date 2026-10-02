@@ -66,7 +66,7 @@ def test_the_button_is_named_from_the_highlighted_row(wx_app) -> None:
         assert dialog._action_btn.IsEnabled() is False
         dialog._notebook.SetSelection(2)
         dialog._sync_button()
-        assert dialog._action_btn.GetLabel() == "&Subscribe to This Podcast"
+        assert dialog._action_btn.GetLabel() == "&Follow This Podcast"
         assert dialog._action_btn.IsEnabled() is True
     finally:
         dialog.dialog.Destroy()

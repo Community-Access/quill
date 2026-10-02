@@ -120,7 +120,7 @@ def delete_folder_prompt(
     answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
         f"Delete the folder {folder.name}?\n\n"
         "Your shows are completely safe: they simply step out of the folder "
-        "and land at the top level of your library. Nothing is unsubscribed.",
+        "and land at the top level of your library. You still follow every one.",
         "Delete Folder",
         wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,

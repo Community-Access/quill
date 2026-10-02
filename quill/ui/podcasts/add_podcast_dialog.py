@@ -147,7 +147,7 @@ class AddPodcastDialog:
         # alone is the thing that produces regret, and a title is all a search
         # result shows.
         self._preview_btn = wx.Button(self.dialog, label="&Preview...")
-        self._preview_btn.SetName("Look at this podcast before subscribing to it")
+        self._preview_btn.SetName("Look at this podcast before following it")
         self._preview_btn.Enable(False)
         # Follow, not Subscribe. Every podcast app a listener has used in
         # the last five years says Follow, and "subscribe" now reads as
@@ -186,7 +186,7 @@ class AddPodcastDialog:
         )
         url_box.Add(self._url_ctrl, 1, wx.ALL | wx.EXPAND, 6)
         self._add_url_btn = wx.Button(self.dialog, label="&Add")
-        self._add_url_btn.SetName("Subscribe using this feed URL")
+        self._add_url_btn.SetName("Follow the podcast at this feed address")
         url_box.Add(self._add_url_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         root.Add(url_box, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -427,7 +427,7 @@ class AddPodcastDialog:
             self._prompt_for_credentials(feed_url, last_username=username)
             return
         if error is not None or info is None:
-            self._status.SetLabel(f"Could not subscribe: {error}")
+            self._status.SetLabel(f"Could not follow it: {error}")
             self._return_focus_to_results(result_index)
             return
         show = PodcastShow(

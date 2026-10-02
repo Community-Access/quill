@@ -40,7 +40,7 @@ ACTION_LABELS: dict[str, str] = {
     ACTION_NONE: "Nothing to Open",
     ACTION_OPEN: "&Open in Browser",
     ACTION_PLAY: "&Play",
-    ACTION_SUBSCRIBE: "&Subscribe to This Podcast",
+    ACTION_SUBSCRIBE: "&Follow This Podcast",
 }
 
 

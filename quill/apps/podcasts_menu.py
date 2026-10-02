@@ -67,7 +67,7 @@ class CastMenuBarMixin:
         local_id, watched_id, acb_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(local_id, "Add &Local Podcast...\tCtrl+Alt+L")
         subs_menu.Append(watched_id, "Scan &Watched Folders\tCtrl+Alt+W")
-        subs_menu.Append(acb_id, "Subscribe to ACB Media &Podcasts\tCtrl+Alt+B")
+        subs_menu.Append(acb_id, "Follow ACB Media &Podcasts\tCtrl+Alt+B")
         subs_menu.AppendSeparator()
         subs_menu.Append(settings_id, "Podcast &Settings...\tCtrl+Alt+,")
         # The second directory's key. Somewhere you go, not something you meet:

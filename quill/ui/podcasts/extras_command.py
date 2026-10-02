@@ -146,7 +146,7 @@ def subscribe_to(host: Any, feed_url: str) -> bool:
     if library is None or task_manager is None or not address:
         return False
     if any(getattr(existing, "feed_url", "") == address for existing in library.shows):
-        host._announce("You are already subscribed to that podcast.")
+        host._announce("You already follow that podcast.")
         return False
 
     safe_mode = bool(getattr(host, "_safe_mode", False))
@@ -165,17 +165,17 @@ def subscribe_to(host: Any, feed_url: str) -> bool:
             episodes=info.episodes,
         )
         if not library.add_show(show):
-            host._announce("You are already subscribed to that podcast.")
+            host._announce("You already follow that podcast.")
             return
         _save_and_refresh(host)
-        host._announce(f"Subscribed to {show.title}.")
+        host._announce(f"Now following {show.title}.")
 
     host._announce("Fetching that podcast...")
     task_manager.submit(
         "podcast-podroll-subscribe",
         _work,
         on_success=_done,
-        on_failure=lambda _op, exc: host._announce(f"Could not subscribe: {exc}"),
+        on_failure=lambda _op, exc: host._announce(f"Could not follow it: {exc}"),
     )
     return True
 
