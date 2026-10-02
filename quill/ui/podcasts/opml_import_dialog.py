@@ -230,7 +230,7 @@ class OpmlImportDialog:
             "podcast-opml-validate",
             _do_validate,
             on_success=lambda _op, results: self._wx.CallAfter(self._on_validated, results),
-            on_failure=lambda _op, _error: self._wx.CallAfter(self._on_validated, []),
+            on_failure=lambda _op, _error: self._wx.CallAfter(self._on_validation_failed),
         )
 
     def _on_progress(self, done: int, total: int) -> None:
@@ -263,6 +263,30 @@ class OpmlImportDialog:
             f"Checked {len(self._results)} feed(s): {unreachable} unreachable."
             + (" (Stopped early.)" if self._cancelled else "")
         )
+        self._finish()
+
+    def _on_validation_failed(self) -> None:
+        """The feed check itself broke: say so, rather than "checked 0 feeds".
+
+        It used to land in ``_on_validated`` with an empty list, which reported
+        zero feeds checked and zero unreachable -- a success-shaped sentence for
+        a check that never ran (qc.md 6b item 20). The import itself is already
+        committed by this point, so the sentence says that too, and names where
+        the same question can be asked later. No exception text: it can carry a
+        feed address, and the listener cannot act on a traceback.
+        """
+        self._results = []
+        self._running = False
+        try:
+            self._cancel_check_btn.Enable(False)
+        except RuntimeError:
+            return
+        message = (
+            "The feed check could not run. Everything you imported is kept; "
+            "Podcasts, Feed Check shows which feeds are healthy."
+        )
+        self._set_status(message)
+        self._announce(message)
         self._finish()
 
     # -- report ---------------------------------------------------------

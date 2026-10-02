@@ -18,13 +18,13 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 8 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 7 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 51 | Human acceptance pending |
-| **Total tracked rows** | **84** | **33 code/delivery groups + 51 manual scenarios** |
+| Manual screen-reader scenarios | 52 | Human acceptance pending |
+| **Total tracked rows** | **84** | **32 code/delivery groups + 52 manual scenarios** |
 
-Code/delivery subtotal: **33**.
+Code/delivery subtotal: **32**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1249,8 +1249,8 @@ the five dialogs calls `SetFocus`. They are the active worklist, in this order
       with X-06, through the shared `core/transport_button.py`.
 - [x] `EVT_CONTEXT_MENU` on the main library tree, so Shift+F10 opens the row
       menu its own help promises (item 3). Done 2026-10-01.
-- Preview's failure is spoken (item 4); the OPML feed-check failure is
-      spoken (item 20).
+- [x] Preview's failure is spoken (item 4); the OPML feed-check failure is
+      spoken (item 20). Done 2026-10-01.
 - [x] "&Unsubscribe..." in the tree menu, "&Subscribe" in Preview, "Subscribe
       to ACB Media" in the Podcasts menu, "Subscribe using this feed URL",
       "When I unsubscribe" in Podcast Settings, "Unsubscribe them too" in
@@ -2783,6 +2783,11 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] With the network off, Preview a search result in Add Podcast: the
+  failure is spoken once, and Preview is usable again. Import an OPML file
+  with feed checking on while offline: either per-feed results, or "The
+  feed check could not run. Everything you imported is kept" -- never
+  "checked 0 feeds".
 - [ ] Shift+F10 on a podcast in the library: the menu says Unfollow...
   (Delete). Preview a search result in Add Podcast: the button says Follow.
   Podcasts menu: Follow ACB Media Podcasts. Unfollow a podcast, press
@@ -2941,6 +2946,23 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- two silent failures spoken (6b items 4, 20)
+
+- `preview_command.py`: Preview's failure is announced as well as set on the
+  status label (a label is silent to a screen reader).
+- `opml_import_dialog.py`: the feed check's task failure no longer lands in
+  `_on_validated([])`, which reported "checked 0 feeds, 0 unreachable"; the
+  new `_on_validation_failed` sets and speaks "The feed check could not run.
+  Everything you imported is kept; Podcasts, Feed Check shows which feeds are
+  healthy." (no exception text -- it can carry an address), then shows the
+  report.
+- Tests: `tests/unit/ui/podcasts/test_spoken_failures.py` (both behaviours on
+  fakes, and that the task's on_failure is wired to the new handler); 78
+  related UI tests; GATE-13 clean.
+- Documented in the Cast user guide (Importing a large subscription list) and
+  release notes. Manual check added. The wider silent-label sweep (survey item
+  12, 26 sites) stays in Phase 3.
 
 ### 2026-10-01: Cast Phase 1 -- Follow everywhere (6b items 9, 10)
 
@@ -3237,7 +3259,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **33 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **32 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3273,14 +3295,12 @@ This is the authoritative unchecked code/delivery tracker: **33 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 8
+### Cast Phase 1 Code and Tests: 7
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
 credit on two rows is noted inline. Worked top to bottom, one commit each.
 
-- [ ] Preview's failure is spoken (item 4); the OPML feed-check failure is
-      spoken (item 20).
 - [ ] The Show Notes rich view gets its label back (item 14) -- or is replaced
       outright by the Notes reader (5c), whichever lands first.
 - [ ] Preferences extracted to `podcasts_preferences.py` with two new rows:

@@ -1057,6 +1057,8 @@ The import runs in the background, so the window never freezes. Duplicates are m
 
 Tick **Check that each feed is still reachable** and QUILL Cast checks them all after importing, several at a time, with progress announced every ten per cent and a **Stop Checking** button that keeps everything already imported. A feed asking for a sign-in counts as reachable, so a private feed is never reported dead.
 
+If the feed check itself cannot run, Cast says so in those words and keeps
+what you imported; Podcasts > Feed Check... answers the same question later.
 The report that follows lists corrections, unreachable feeds, skipped duplicates, and anything that could not be imported, with two exports:
 
 - **Export Report...** -- the whole report as text.

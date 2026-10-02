@@ -184,6 +184,11 @@ again. Quill Radio's main window learned the same lesson the same day.
   saying what it was called. It now opens with focus on the queue and its
   title, and a build check makes sure no window anywhere in the family can
   make that mistake again.
+- **Two failures that were silent are spoken.** When Preview cannot load a
+  podcast, it now says so as well as showing it. And when importing a
+  subscription list, if the feed check itself cannot run, Cast says "The
+  feed check could not run. Everything you imported is kept" -- where it used
+  to report zero feeds checked, which sounded like success.
 - **Follow everywhere, not only in Add Podcast.** The library's row menu
   said Unsubscribe, Preview's button said Subscribe, the Podcasts menu said
   Subscribe to ACB Media Podcasts, and a dozen announcements and settings

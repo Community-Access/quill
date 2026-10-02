@@ -74,7 +74,11 @@ def preview_search_result(dialog: Any, result: Any, result_index: int) -> None:
     def _failed(_op: str, error: object) -> None:
         dialog._preview_btn.Enable(True)
         # Named, and not fatal: the feed may be down while the directory entry
-        # is fine, and subscribing anyway is still a reasonable thing to do.
-        dialog._status.SetLabel(f"That podcast could not be loaded: {error}")
+        # is fine, and following anyway is still a reasonable thing to do.
+        # Spoken as well as shown: a status label is silent to a screen
+        # reader, which is how Preview's failure went unheard (qc.md 6b item 4).
+        message = f"That podcast could not be loaded: {error}"
+        dialog._status.SetLabel(message)
+        dialog._announce(message)
 
     dialog._task_manager.submit("podcast-preview", _work, on_success=_done, on_failure=_failed)
