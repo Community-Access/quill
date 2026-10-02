@@ -19,8 +19,7 @@ import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
-from defusedxml import ElementTree as DET
-
+from quill.core.safe_xml import fromstring as safe_xml_fromstring
 from quill.io.pandoc import PandocConversionError, PandocUnavailableError, convert_file_with_pandoc
 
 _MATH_OMML_NS = "{http://schemas.openxmlformats.org/officeDocument/2006/math}"
@@ -84,7 +83,7 @@ def omml_fragment_for_latex(latex: str, *, display: bool) -> str | None:
         return None
 
     try:
-        root = DET.fromstring(xml)
+        root = safe_xml_fromstring(xml)
     except Exception:  # noqa: BLE001 - malformed pandoc output degrades to plain text
         return None
     tag = f"{_MATH_OMML_NS}oMathPara" if display else f"{_MATH_OMML_NS}oMath"

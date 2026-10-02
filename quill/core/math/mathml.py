@@ -14,9 +14,8 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import cast
 
-from defusedxml import ElementTree as DET
-
 from quill.core.error_codes import CodedError
+from quill.core.safe_xml import fromstring as _safe_xml_fromstring
 
 MATHML_NS = "http://www.w3.org/1998/Math/MathML"
 TEX_ANNOTATION_ENCODING = "application/x-tex"
@@ -45,8 +44,8 @@ def parse_mathml(text: str) -> ET.Element:
     or a Quillin, not only from QUILL's own LaTeX bridge.
     """
     try:
-        root = cast(ET.Element, DET.fromstring(text))
-    except Exception as exc:  # noqa: BLE001 - defusedxml raises varied XML error types
+        root = cast(ET.Element, _safe_xml_fromstring(text))
+    except Exception as exc:  # noqa: BLE001 - safe_xml raises varied XML error types
         raise MathMLError(str(exc) or type(exc).__name__) from exc
     if root.tag not in (f"{{{MATHML_NS}}}math", "math"):
         raise MathMLError(f"root element is not <math>: {root.tag}")
