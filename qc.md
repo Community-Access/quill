@@ -19,13 +19,12 @@ The following table separates implementation, its delivery gate, and human accep
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
 | Cast Phase 1 code and tests | 11 | Re-verified 2026-10-01; being closed one commit at a time |
-| Cast Phase 1 commit gate | 1 | Pending |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
 | Manual screen-reader scenarios | 48 | Human acceptance pending |
-| **Total tracked rows** | **85** | **37 code/delivery groups + 48 manual scenarios** |
+| **Total tracked rows** | **84** | **36 code/delivery groups + 48 manual scenarios** |
 
-Code/delivery subtotal: **37**.
+Code/delivery subtotal: **36**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -2931,6 +2930,13 @@ programming-error path manually.
 
 Original document title: QC3: Completed Quality Changes.
 
+### 2026-10-01: Phase 1's "Commit" row retired
+
+- The Cast Phase 1 Delivery Gate ("- [ ] Commit.") is removed at Jeff's
+  request: every Phase 1 item now lands as its own commit pushed to main, so
+  a separate end-of-phase commit row no longer describes anything. Its
+  dashboard row went with it and the counts were recomputed.
+
 ### 2026-10-01: Cast Phase 1 -- windows open on the thing they are for (6b)
 
 - Downloads and Feed Check focus their list, Show Notes its notes field,
@@ -3172,7 +3178,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **37 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **36 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3242,10 +3248,6 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
 - [ ] Now Playing (section 5), with the Notes reader and the grown Links
       dialog (5c) as its show-notes pane -- the reader is built once here and
       the Show Notes peer window in Phase 4 reuses it.
-
-### Cast Phase 1 Delivery Gate: 1
-
-- [ ] Commit.
 
 ### Cast Phases 2-7: 6
 
