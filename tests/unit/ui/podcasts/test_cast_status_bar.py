@@ -478,6 +478,7 @@ def test_each_cell_menu_offers_the_actions_that_belong_to_that_cell() -> None:
     """
     bar = _menu_bar()
     assert _built_menu(bar, "play_pause").labels == [
+        "Now Playing...",
         "Stop",
         "Next in Queue",
         "Previous in Queue",
@@ -686,6 +687,7 @@ def test_every_context_menu_row_names_a_command_this_app_has() -> None:
     core half has sat in ``core/podcasts/quick_plays.py`` with no caller at all.
     When either lands, this list shrinks; nothing else may join it.
     """
+    from quill.apps.podcasts_now_playing import CastNowPlayingMixin
     from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
     from quill.ui.main_frame_podcast_session import PodcastSessionMixin
     from quill.ui.main_frame_podcasts import PodcastsMixin
@@ -697,6 +699,7 @@ def test_every_context_menu_row_names_a_command_this_app_has() -> None:
         PodcastSessionMixin,
         MediaSleepTimerMixin,
         QueueRunCommandsMixin,
+        CastNowPlayingMixin,  # Now Playing..., the Play cell's first row (qc.md 5)
     ):
         available |= set(dir(mixin))
     rows = [
