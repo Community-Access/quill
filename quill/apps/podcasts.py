@@ -30,6 +30,7 @@ from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
+from quill.ui.podcasts.cast_ai_host import CastAiMixin
 from quill.ui.podcasts.main_panel import CastMainPanelMixin
 from quill.ui.podcasts.places import CastPlacesMixin
 from quill.ui.podcasts.quick_play_commands import CastQuickPlayMixin
@@ -57,6 +58,7 @@ class PodcastsAppFrame(
     CastMenuBarMixin,
     CastMainPanelMixin,
     CastNowPlayingMixin,
+    CastAiMixin,  # the shared hosted AI, through an adapter (ear.md A1)
     CastPlacesMixin,
     CastPreferencesMixin,
     CastQuickPlayMixin,
@@ -93,12 +95,10 @@ class PodcastsAppFrame(
         # F1 context help with Cast's authored purpose catalogue. The app
         # shell already activated the shared engine (provider + dialog-contract
         # hook + main-frame F1); this re-activation swaps in Cast's
-        # window-purpose resolver: authored paragraphs lead every answer (GATE-CAST-HELP).
         from quill.ui.podcasts import context_help
 
         context_help.activate()
         self._init_media_sleep_timer()
-        # The shared &Window menu and Ctrl+Tab / Ctrl+1..9; made before the bar installs it.
         from quill.ui.window_menu import WindowManager
 
         self._windows = WindowManager(wx)

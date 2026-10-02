@@ -245,6 +245,19 @@
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="unreleased--the-next-release-quill-lite-120">Unreleased – the
 next release, QUILL Lite 1.2.0</h2>
+<h3 id="each-app-keeps-its-own-chatgpt-sign-in-2026-10-02">Each app
+keeps its own ChatGPT sign-in (2026-10-02)</h3>
+<ul>
+<li>The family’s apps share one data folder, and until now one ChatGPT
+record: signing in to a second app overwrote the first app’s
+registration while each kept its own token, so the first believed it was
+signed in and could not refresh. Each app now keeps its own record under
+its own name (<code>ai/chatgpt-quill-lite.json</code>; the old shared
+file is read until QUILL Lite writes its own), signing out of one leaves
+the others signed in, and Use My ChatGPT Subscription says when another
+app is already signed in on this computer – the browser then is too, and
+Continue is one Allow.</li>
+</ul>
 <h3 id="your-own-key-can-be-a-google-gemini-key-x-07">Your own key can
 be a Google Gemini key (X-07)</h3>
 <ul>

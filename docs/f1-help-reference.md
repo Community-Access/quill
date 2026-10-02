@@ -1190,7 +1190,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 94 audited sites (94 helped).
+Control coverage: 95 audited sites (95 helped).
 
 ### Every window, and what it is for
 

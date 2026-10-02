@@ -2,6 +2,17 @@
 
 ## Unreleased -- the next release, QUILL Lite 1.2.0
 
+### Each app keeps its own ChatGPT sign-in (2026-10-02)
+
+- The family's apps share one data folder, and until now one ChatGPT record:
+  signing in to a second app overwrote the first app's registration while
+  each kept its own token, so the first believed it was signed in and could
+  not refresh. Each app now keeps its own record under its own name
+  (`ai/chatgpt-quill-lite.json`; the old shared file is read until QUILL
+  Lite writes its own), signing out of one leaves the others signed in, and
+  Use My ChatGPT Subscription says when another app is already signed in on
+  this computer -- the browser then is too, and Continue is one Allow.
+
 ### Your own key can be a Google Gemini key (X-07)
 
 - **Use My Own AI Key (Alt+F2)** -- the row was Use My Own OpenAI Key -- opens

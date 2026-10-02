@@ -8,7 +8,7 @@ original context and must be reverified before changing completion status.
 
 ## Progress Dashboard
 
-Updated 2026-10-02 (evening): X-07 closed -- an own Google Gemini key, chosen explicitly, in both editors -- and Cast Phase 1 closed with Now Playing, the Notes reader and Links in These Notes (section 5 and 5c), one commit each. **Priority order from here (Jeff, 2026-10-02): QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.** Earlier the same day: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers), and, outside the tracked rows at Jeff's request, the thesaurus, Look Up and the AI dictionary came to QUILL Lite and were made better in QUILL from one shared module (see Completed Changes). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
+Updated 2026-10-02 (night): the Cast ChatGPT/hosted-AI row closed -- the family's AI reaches Cast through an adapter with no command of its own (ear.md A1, A11, A12), and every app now keeps its own ChatGPT sign-in. Earlier that evening: X-07 closed -- an own Google Gemini key, chosen explicitly, in both editors -- and Cast Phase 1 closed with Now Playing, the Notes reader and Links in These Notes (section 5 and 5c), one commit each. **Priority order from here (Jeff, 2026-10-02): QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.** Earlier the same day: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers), and, outside the tracked rows at Jeff's request, the thesaurus, Look Up and the AI dictionary came to QUILL Lite and were made better in QUILL from one shared module (see Completed Changes). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
 
 These are grouped tracking rows, not independent bugs. Shared work can satisfy more than one group. Older pending claims are not newly verified by this consolidation.
 
@@ -20,11 +20,11 @@ The following table separates implementation, its delivery gate, and human accep
 | Family product requirements | 6 | X-06 done 2026-10-01; X-07 done 2026-10-02; X-08 (PR #1618 review) added 2026-10-02 |
 | Cast Phase 1 code and tests | 0 | Closed 2026-10-02: Now Playing, the Notes reader and the grown Links dialog |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
-| Cast follow-on integrations | 3 | Remaining |
+| Cast follow-on integrations | 2 | ChatGPT (ear.md A1/A11/A12) done 2026-10-02 |
 | Manual screen-reader scenarios | 73 | Human acceptance pending |
-| **Total tracked rows** | **92** | **19 code/delivery groups + 73 manual scenarios** |
+| **Total tracked rows** | **91** | **18 code/delivery groups + 73 manual scenarios** |
 
-Code/delivery subtotal: **19**.
+Code/delivery subtotal: **18**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1365,7 +1365,7 @@ lands with whichever AI feature first reads it.
 
 #### After that
 
-ChatGPT connectivity through the shared adapter (ear.md A1); the text-only AI
+~~ChatGPT connectivity through the shared adapter (ear.md A1)~~ (done 2026-10-02); the text-only AI
 features (A2 onward), each behind its own switch in section 17; the remaining
 Earshot parity items (ear.md R8-R10, B1-B3).
 
@@ -3036,6 +3036,36 @@ programming-error path manually.
 
 Original document title: QC3: Completed Quality Changes.
 
+### 2026-10-02: Cast reaches the shared hosted AI; one ChatGPT sign-in per app (ear.md A1, A11, A12)
+
+- `quill/ui/podcasts/cast_ai_host.py`: `CastAiHost` (data dir, the
+  `PodcastHistory` record as settings, `feature_enabled("hosted_ai")` on
+  `ai_help_enabled`, menu rebuild, `ai_agent_name = "QUILL Cast"`) and
+  `CastAiMixin(HostedAiMixin)`: hooks only -- the Notes reader's field is the
+  control, Replace/Insert announce that notes are read only and name Copy.
+  `tests/unit/apps/test_cast_ai_host.py` asserts no `cmd_*` of its own (as
+  `test_main_frame_hosted_ai.py` does for QUILL), the history round-trip, the
+  contract, the read-only refusal, and a chord plus a unique mnemonic per row.
+- `PodcastHistory`: `ai_help_enabled` (off), `ai_privacy_accepted_version`,
+  `ai_own_key_provider`, `ai_own_key_model`. Preferences: the **AI help**
+  checkbox names the sending in its label. Help > **AI Features**: the eight
+  rows on the family's chords in `APP_KEYMAPS["cast"]` (Privacy Agreement on
+  Alt+Shift+F2, commented); registered with the command registry.
+- Jeff's question answered in code: a sign-in in one app is **not** a sign-in
+  in another, by design (each app registers under its own name with OpenAI),
+  and now also in storage -- `quill/core/ai/chatgpt_state.py` (GATE-11 split)
+  keeps `ai/chatgpt-<slug>.json` per app, reads the legacy shared file until
+  the app writes its own, stamps `agent_name`, and `sibling_sign_ins` names
+  the other apps signed in; the account window's signed-out status says so.
+  `tests/unit/core/ai/test_chatgpt_state_per_app.py` (4 tests).
+- Docs: Cast user guide ("AI help: what the AI can do, and what it will never
+  do", Help menu row), Cast release notes 1.1.0, Cast PRD 23.14, ear.md A1/A11/A12,
+  QUILL user guide and Lite AI guide (each app signs in on its own), both
+  changelogs; keyboard and F1 references regenerated. Validation: Cast launched
+  clean; `pytest tests/unit/apps/test_cast_ai_host.py tests/unit/core/ai
+  tests/unit/ui/test_hosted_ai_chatgpt_window.py` green; menu-accelerator,
+  help, reachability, access-key, keymap and docs gates green.
+
 ### 2026-10-02: X-07, the own-key Gemini provider, chosen explicitly (QUILL and QUILL Lite)
 
 - Taken from PR #1615 (Robert): the two-provider shape, per-provider model
@@ -3840,7 +3870,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **19 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **18 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 4
 
@@ -3877,8 +3907,7 @@ This is the authoritative unchecked code/delivery tracker: **19 grouped rows**. 
 - [ ] Phase 6: Complete First Run, Tutorials, five documents, and the F1/help audit.
 - [ ] Phase 7: Complete the twelve extensions specified in section 18, including keys, behavior tests, help, and shared implementations.
 
-### Cast Follow-On Integrations: 3
+### Cast Follow-On Integrations: 2
 
-- [ ] ChatGPT: Integrate the shared consent-gated adapter, settings, cancellation, and error handling.
 - [ ] Text-only AI: Complete the specified independently switchable features using shared privacy/operation contracts.
 - [ ] Earshot parity: Complete referenced R8-R10 and B1-B3 groups, with switches, documentation, and reachability tests.

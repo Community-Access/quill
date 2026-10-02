@@ -222,6 +222,17 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Now Playing (qc.md 5): window 2, so Ctrl+2 reaches it through the
         # Window menu; this is the Episode menu row's own chord.
         "podcasts.now_playing": "Ctrl+Alt+2",
+        # The shared hosted AI (ear.md A1): the family's chords, all free in
+        # Cast except Privacy Agreement's Ctrl+Alt+Shift+K (Keyboard Shortcuts
+        # Sheet), which takes Alt+Shift+F2, beside the own key on Alt+F2.
+        "tools.hosted_ai_assistant": "Ctrl+Alt+G",
+        "tools.hosted_ai_ask_document": "Ctrl+Alt+Z",
+        "tools.hosted_ai_image": "Ctrl+F5",
+        "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
+        "tools.hosted_ai_sign_in": "Ctrl+Alt+Shift+F4",
+        "tools.hosted_ai_privacy": "Alt+Shift+F2",
+        "tools.hosted_ai_own_key": "Alt+F2",
+        "tools.hosted_ai_chatgpt": "Alt+F5",
         "app.recent_problems": "Ctrl+Alt+Shift+P",
         # qc.md F-10: the family's two result keys, the same everywhere.
         "app.repeat_last_result": "F9",

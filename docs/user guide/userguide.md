@@ -5865,6 +5865,13 @@ the seventeen writing tools, Ask About This Document and conversations go
 straight from this computer to OpenAI on your plan -- no monthly allowance, no
 size limit, no per-request bill, nothing through QUILL's servers.
 
+Each QuillVille app signs in on its own: QUILL's sign-in is not QUILL Lite's or
+QUILL Cast's, each appears under its own name in ChatGPT's Apps, and signing
+out of one leaves the others signed in. When another app is already signed in
+on this computer the Status line says so, because your browser is then
+already signed in and Continue with ChatGPT is one Allow rather than a
+password.
+
 Once signed in the window offers the **Model** list (your plan's own, read from
 your account; the first is chosen for you and another is saved as you arrow to
 it), **Allow web search** (off until you check it; on, the model may search the

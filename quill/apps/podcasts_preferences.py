@@ -94,10 +94,21 @@ class CastPreferencesMixin:
                     history.winamp_playback_keys,
                 ),
                 PreferenceCheckbox(
+                    "AI help (sends the show notes you ask about to QUILL's servers) (&J)",
+                    "Help > AI Features: summarize, explain or ask about the show notes "
+                    "of the episode you are on, and describe a picture. The notes you "
+                    "ask about are sent over the internet to QUILL and on to OpenAI, or "
+                    "straight to OpenAI or Google on your own key or plan. Off until you "
+                    "turn it on, and the privacy agreement is still asked for before "
+                    "anything is sent.",
+                    history.ai_help_enabled,
+                    group=self._PODCASTS,
+                ),
+                PreferenceCheckbox(
                     "Switch to Now Playing when playback &starts",
                     "Bring the Now Playing window to the front whenever an episode "
                     "starts. Off by default: Now Playing is always one keystroke "
-                    "away on Ctrl+2, and a window that takes focus on every Play is "
+                    "away on Ctrl+Alt+2, and a window that takes focus on every Play is "
                     "one you turn off.",
                     history.switch_to_now_playing,
                     group=self._PODCASTS,
@@ -170,6 +181,7 @@ class CastPreferencesMixin:
             history.announce_dialog_transitions,
             history.alt_f4_to_tray,
             history.winamp_playback_keys,
+            history.ai_help_enabled,
             history.switch_to_now_playing,
             history.podcast_check_enabled,
         ) = checkbox_values

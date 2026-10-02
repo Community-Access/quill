@@ -2,6 +2,26 @@
 
 ## 1.0.0
 
+### QUILL Cast: AI help through the family's shared AI, and one ChatGPT sign-in per app (2026-10-02)
+
+- **Help > AI Features** in QUILL Cast: the hosted AI QUILL and QUILL Lite
+  share, on the show notes of the episode you are on -- Free AI Assistant
+  (Ctrl+Alt+G), Ask About These Show Notes (Ctrl+Alt+Z), Ask About an Image
+  (Ctrl+F5), Free AI Usage (Ctrl+Alt+Shift+F2), Connect or Sign Out
+  (Ctrl+Alt+Shift+F4), Privacy Agreement (Alt+Shift+F2), Use My Own AI Key
+  (Alt+F2), Use My ChatGPT Subscription (Alt+F5). Off until **AI help** in
+  Preferences is checked; the agreement is still asked for; the notes are
+  read only so answers go to the clipboard. `quill/ui/podcasts/cast_ai_host.py`
+  is an adapter (`CastAiHost`, `CastAiMixin`) with no command of its own,
+  asserted by `tests/unit/apps/test_cast_ai_host.py`; the switch and the
+  agreement live in `PodcastHistory` (ear.md A1, A11, A12).
+- **One ChatGPT sign-in per app** (`quill/core/ai/chatgpt_state.py`): the
+  apps share one data folder and shared one `chatgpt.json`, so the second
+  app to sign in overwrote the first's client id while each kept its own
+  refresh token. The state is `chatgpt-<slug>.json` per app, the legacy file
+  is read until the app writes its own, `sibling_sign_ins` names the other
+  apps signed in, and the account window's signed-out status says so.
+
 ### QUILL and QUILL Lite: an own key for Google Gemini, chosen explicitly (X-07, 2026-10-02)
 
 - **Use My Own AI Key** (the row was Use My Own OpenAI Key; Alt+F2 in both

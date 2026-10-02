@@ -48,6 +48,8 @@ def host(monkeypatch: pytest.MonkeyPatch, tmp_path) -> SimpleNamespace:
         announce_dialog_transitions=False,
         alt_f4_to_tray=False,
         winamp_playback_keys=True,
+        ai_help_enabled=False,
+        switch_to_now_playing=False,
         podcast_check_enabled=False,
         podcast_check_interval_minutes=0,
         close_action="exit",

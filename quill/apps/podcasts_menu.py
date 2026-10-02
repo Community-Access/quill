@@ -358,6 +358,7 @@ class CastMenuBarMixin:
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
+        self._append_cast_ai_submenu(help_menu)  # AI Features (cast_ai_host.py)
         help_menu.Append(palette_id, self._menu_label("Command &Palette...", "app.command_palette"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
         # The Keyboard Shortcuts editor and the Global Hotkeys manager open the

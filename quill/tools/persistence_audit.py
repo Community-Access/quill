@@ -386,7 +386,9 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # issued client id, the host id, the account label, the chosen model and
     # the web-search switch. Same shape and same reasons as the gateway
     # session beside it; the refresh token itself goes to the OS store.
-    "core/ai/chatgpt_account.py::save_state": "marker",
+    # One file per app since 2026-10-02 (chatgpt-<slug>.json), split into its
+    # own module under GATE-11; the shape and the reasons are unchanged.
+    "core/ai/chatgpt_state.py::save_state": "marker",
     # The pending "last time it closed, it could not save" sentence (qc.md
     # F-06): written once at close, read and deleted at the next launch, and
     # trivially defaulted -- a lost file means nothing is said.

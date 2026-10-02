@@ -47,15 +47,21 @@ import threading
 import time
 import uuid
 from collections.abc import Callable
-from dataclasses import dataclass, replace
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 
 from quill.core.ai.chatgpt_errors import ChatGptSignedOutError, ChatGptSignInError
 from quill.core.ai.chatgpt_loopback import CALLBACK_PATH, LoopbackListener
+from quill.core.ai.chatgpt_state import (
+    ChatGptState,
+    load_state,
+    save_state,
+    sibling_sign_ins,
+    slug_for,
+)
 from quill.core.secrets import SecretRef, SecretsManager
-from quill.core.storage import read_json, write_json_atomic
 
 __all__ = [
     "API_BASE",
@@ -70,6 +76,7 @@ __all__ = [
     "decode_claims",
     "load_state",
     "save_state",
+    "sibling_sign_ins",
     "slug_for",
 ]
 
@@ -99,8 +106,6 @@ SCOPES: tuple[str, ...] = (
 #: The redirect carries the client id actually issued; that is what is kept.
 DYNAMIC_CLIENT = "dynamic_agent_client"
 _SECRETS_NAMESPACE = "chatgpt"
-_STATE_DIR = "ai"
-_STATE_FILE = "chatgpt.json"
 #: A refresh happens this many seconds before the access token would expire.
 _REFRESH_SKEW_SECONDS = 120.0
 #: How long the browser is waited for before the sign-in is abandoned.
@@ -110,87 +115,6 @@ SIGN_IN_TIMEOUT_SECONDS = 300.0
 Poster = Callable[[str, "dict[str, str]"], "dict[str, Any]"]
 #: Opens a URL in the person's browser. Returns whether it could.
 Browser = Callable[[str], bool]
-
-
-def slug_for(agent_name: str) -> str:
-    """``"QUILL Lite"`` -> ``"quill-lite"``: the secrets-store name for an agent."""
-    cleaned = "".join(ch.lower() if ch.isalnum() else "-" for ch in agent_name.strip())
-    while "--" in cleaned:
-        cleaned = cleaned.replace("--", "-")
-    return cleaned.strip("-") or "quill"
-
-
-@dataclass(frozen=True, slots=True)
-class ChatGptState:
-    """Everything non-secret this app knows about its ChatGPT sign-in."""
-
-    #: Stable per install and per app; OpenAI ties the dynamic registration to it.
-    host_id: str = ""
-    client_id: str = ""
-    subject: str = ""
-    email: str = ""
-    scope: str = ""
-    connected_at: str = ""
-    #: The model requests use, chosen from the account's own list. Empty until
-    #: the list has been read once; a request with no model says so.
-    model: str = ""
-    #: Whether OpenAI's hosted web search may be offered to the model. Off by
-    #: default: a search is a second thing sent somewhere, and it is the
-    #: person's to switch on.
-    web_search: bool = False
-
-    @property
-    def signed_in(self) -> bool:
-        return bool(self.client_id and self.subject)
-
-    @property
-    def account_label(self) -> str:
-        """The account as a person hears it: the email, or a neutral phrase."""
-        return self.email or "your ChatGPT account"
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "host_id": self.host_id,
-            "client_id": self.client_id,
-            "subject": self.subject,
-            "email": self.email,
-            "scope": self.scope,
-            "connected_at": self.connected_at,
-            "model": self.model,
-            "web_search": self.web_search,
-        }
-
-    @classmethod
-    def from_dict(cls, data: object) -> ChatGptState:
-        if not isinstance(data, dict):
-            return cls()
-        return cls(
-            host_id=str(data.get("host_id", "") or ""),
-            client_id=str(data.get("client_id", "") or ""),
-            subject=str(data.get("subject", "") or ""),
-            email=str(data.get("email", "") or ""),
-            scope=str(data.get("scope", "") or ""),
-            connected_at=str(data.get("connected_at", "") or ""),
-            model=str(data.get("model", "") or ""),
-            web_search=bool(data.get("web_search", False)),
-        )
-
-
-def _state_path(data_dir: Path) -> Path:
-    return data_dir / _STATE_DIR / _STATE_FILE
-
-
-def load_state(data_dir: Path) -> ChatGptState:
-    try:
-        return ChatGptState.from_dict(read_json(_state_path(data_dir), default={}))
-    except OSError:
-        return ChatGptState()
-
-
-def save_state(data_dir: Path, state: ChatGptState) -> None:
-    path = _state_path(data_dir)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    write_json_atomic(path, state.to_dict())
 
 
 # --------------------------------------------------------------------------- #
@@ -300,12 +224,18 @@ class ChatGptAccount:
     @property
     def state(self) -> ChatGptState:
         if self._state is None:
-            self._state = load_state(self.data_dir)
+            self._state = load_state(self.data_dir, self.slug)
         return self._state
 
     def _save(self, state: ChatGptState) -> None:
-        save_state(self.data_dir, state)
+        if not state.agent_name:
+            state = replace(state, agent_name=self.agent_name)
+        save_state(self.data_dir, state, self.slug)
         self._state = state
+
+    def siblings_signed_in(self) -> list[str]:
+        """The other apps on this computer signed in with ChatGPT, by name."""
+        return sibling_sign_ins(self.data_dir, except_slug=self.slug)
 
     @property
     def signed_in(self) -> bool:

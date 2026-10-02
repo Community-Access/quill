@@ -1233,6 +1233,7 @@ The report that follows lists corrections, unreachable feeds, skipped duplicates
 
 One standalone difference from QUILL: "Send Show Notes to Editor" copies notes to the clipboard instead, since there is no editor here.
 
+- **AI Features** -- a submenu: the family's AI on the show notes of the episode you are on. Off until you turn on **AI help** in Preferences; see "AI help: what the AI can do, and what it will never do" below.
 - **Command Palette...** (Ctrl+Shift+P) -- every QUILL Cast command in one searchable list.
 - **Keyboard Shortcuts...** -- open the Keyboard Manager to view, search, and change QUILL Cast's keyboard shortcuts (see "Global hotkeys and keyboard shortcuts" below).
 - **Global Hotkeys...** -- assign a system-wide key to QUILL Cast's Play/Pause and Stop so they work while another program has focus (see below).
@@ -1241,6 +1242,69 @@ One standalone difference from QUILL: "Send Show Notes to Editor" copies notes t
 - **Redeem Unlock Code...** -- enter a signed unlock code for a pre-release capability. Verified entirely on your machine; nothing is transmitted. A code redeemed here counts for QUILL and Quill Radio too -- all three share one unlock store.
 - **Check for Updates...** -- compares your version with the newest release of QUILL Cast, downloads the installer in-app with spoken progress, then offers Install now (closes the app and runs the installer) or Open folder. Already up to date shows a dialog too, not just a spoken announcement. QUILL Cast also runs this check quietly once a day on launch -- silent unless it actually finds something; Subscriptions > Preferences (Ctrl+,) turns it off.
 - **About QUILL Cast** -- version, sync statement, and the project address.
+
+## AI help: what the AI can do, and what it will never do
+
+QUILL Cast can ask an AI about the **show notes of the episode you are on**:
+the same AI QUILL and QUILL Lite have, reached the same way, with the same
+agreement and the same keys. It is **off** until you turn it on, and nothing
+is ever sent without you pressing a key that says so.
+
+### Turning it on
+
+1. Press Ctrl+, (Preferences) and check **AI help**. The checkbox says in its
+   own words what it sends and where.
+2. Open **Help > AI Features** and choose any row. The first time, the
+   **privacy agreement** opens and explains where the notes go; nothing is
+   sent until you accept it. Both are needed: the switch is not consent, and
+   the agreement is not the switch.
+
+### The rows, and their keys
+
+- **Free AI Assistant...** (Ctrl+Alt+G) -- summarize, explain, shorten or
+  rewrite the show notes of the selected episode, in the family's AI pad.
+  The notes are read only in QUILL Cast, so **Replace My Selection** and
+  **Insert Below** say so; **Copy** puts the answer on the clipboard.
+- **Ask About These Show Notes...** (Ctrl+Alt+Z) -- a question about the
+  notes of the episode you are on ("when is the guest's book out?").
+- **Ask About an Image...** (Ctrl+F5) -- a picture on your computer,
+  described. Needs your ChatGPT subscription or your own Google Gemini key;
+  the free service does not look at pictures.
+- **Free AI Usage...** (Ctrl+Alt+Shift+F2) -- what the free allowance has
+  left this month.
+- **Connect or Sign Out...** (Ctrl+Alt+Shift+F4) -- the free service's
+  sign-in.
+- **Privacy Agreement...** (Alt+Shift+F2) -- read it again, or withdraw it.
+- **Use My Own AI Key...** (Alt+F2) -- your own OpenAI or Google Gemini key,
+  chosen explicitly, with that account's own models and prices.
+- **Use My ChatGPT Subscription...** (Alt+F5) -- the ChatGPT plan you already
+  pay for; no key, no bill.
+
+The keys are the family's: QUILL and QUILL Lite answer the same chords, except
+Privacy Agreement, whose family chord is the Keyboard Shortcuts Sheet here.
+
+### Each app signs in on its own
+
+When you sign in with ChatGPT, OpenAI's page asks whether **QUILL Cast** may
+use your plan, and that is the name you see under Apps in ChatGPT's settings.
+Signing in to QUILL Cast does not sign in QUILL Lite, QUILL or Quill Radio,
+and signing out of one leaves the others signed in; each keeps its own
+sign-in on this computer. The account window tells you when another app is
+already signed in: your browser is then already signed in to ChatGPT, so
+Continue with ChatGPT is one Allow rather than a password.
+
+### What it will never do
+
+- It never reads anything but the notes you are on, and only when you press
+  the key.
+- It never runs in the background: not in the feed check, not in the
+  maintenance pass, not on launch.
+- It never changes your library: it cannot unsubscribe, delete, move or
+  mark anything.
+- It never writes into the show notes. Answers go to the clipboard.
+- With AI help off, the rows are present and say where the switch is;
+  nothing is sent.
+- In Safe Mode nothing in the submenu runs.
 
 ## Spotify podcasts (experimental)
 

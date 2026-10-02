@@ -136,6 +136,23 @@ class ChatGptFrame(wx.Frame):
             return
         show_problem(self, self._status, message, self._announce)
 
+    def _sibling_note(self) -> str:
+        """The other apps signed in on this computer: each app signs in under its
+        own name, so a sibling's sign-in is not this app's -- but the browser is
+        already signed in, and Continue with ChatGPT is one Allow, not a password."""
+        try:
+            names = list(self._account.siblings_signed_in())
+        except Exception:  # noqa: BLE001 - an account that cannot look is alone
+            return ""
+        if not names:
+            return ""
+        verb = "is" if len(names) == 1 else "are"
+        return (
+            f" {' and '.join(names)} {verb} signed in on this computer. Each app signs "
+            "in under its own name, so Continue with ChatGPT here is one Allow in a "
+            "browser that is already signed in."
+        )
+
     # -- state 1: not signed in ------------------------------------------------ #
 
     def _show_signed_out(self, said: str = "") -> None:
@@ -155,7 +172,7 @@ class ChatGptFrame(wx.Frame):
             panel,
             self._sizer,
             "Status",
-            said or f"{self.agent} is not signed in with ChatGPT.",
+            said or f"{self.agent} is not signed in with ChatGPT.{self._sibling_note()}",
             "Whether this app is signed in, and what the last step said.",
             grow=False,
         )

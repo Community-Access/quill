@@ -68,6 +68,28 @@ the word count; Links opens Links in These Notes (title then address, Copy
 Title and Address, Copy All Addresses); View in Browser opens the notes as
 the podcast wrote them, images included, on a temporary page with no scripts.
 
+### AI help, the family's own, on the show notes (2026-10-02)
+
+**Help > AI Features** brings the AI that QUILL and QUILL Lite share to the
+show notes of the episode you are on: summarize or explain them (Free AI
+Assistant, Ctrl+Alt+G), ask a question about them (Ask About These Show
+Notes, Ctrl+Alt+Z), describe a picture (Ask About an Image, Ctrl+F5, on your
+ChatGPT plan or Gemini key), and the family's usage, sign-in, privacy, own
+key (Alt+F2) and ChatGPT subscription (Alt+F5) windows, on the family's
+keys. It is **off** until **AI help** in Preferences is checked, and the
+privacy agreement is still asked for before anything is sent. The notes are
+read only here, so an answer goes to the clipboard, never into Cast; the AI
+never runs in the background and never touches the library. One
+implementation, not a second: Cast reaches it through an adapter, and a test
+asserts Cast has no AI command of its own.
+
+**One ChatGPT sign-in per app.** The family's apps share one data folder, and
+until now they shared one ChatGPT record too, so the second app to sign in
+overwrote the first app's registration while each kept its own token. Each app
+now keeps its own, under its own name; signing out of one leaves the others
+signed in; and the account window says when a sibling is already signed in,
+which makes Continue with ChatGPT one Allow in a browser that already is.
+
 ### Episode Filters ask far more, and write a rule for you
 
 A rule can now test the show notes, the people on an episode, the type the

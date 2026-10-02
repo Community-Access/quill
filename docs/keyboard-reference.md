@@ -639,12 +639,18 @@ App keys, not editor keys: these apply inside the app named above and never insi
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+2 | Now playing | `podcasts.now_playing` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
+| Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
+| Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
+| Ctrl+Alt+Shift+F4 | Connect or Sign Out... | `tools.hosted_ai_sign_in` |
 | Ctrl+Alt+Shift+J | Bookmarks... | `app.bookmarks` |
 | Ctrl+Alt+Shift+K | Shortcut sheet | `app.shortcut_sheet` |
 | Ctrl+Alt+Shift+M | Media tools | `app.media_tools` |
@@ -653,6 +659,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+R | Restore | `app.restore` |
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
+| Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
 | F9 | Repeat Last Result | `app.repeat_last_result` |

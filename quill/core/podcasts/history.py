@@ -119,6 +119,13 @@ class PodcastHistory:
     switch_to_now_playing: bool = False
     #: How Copy Notes copies: plain, plain_links, markdown or formatted (5c).
     notes_copy_format: str = "plain"
+    #: AI help (ear.md A1): off until switched on in Preferences, and then the
+    #: shared agreement still has to be accepted. The three fields below are
+    #: what the shared hosted-AI code reads from "the settings".
+    ai_help_enabled: bool = False
+    ai_privacy_accepted_version: int = 0
+    ai_own_key_model: str = ""
+    ai_own_key_provider: str = "openai"
     #: Look for new episodes on a timer. Named exactly as
     #: :class:`quill.core.settings.Settings` names them, because
     #: ``PodcastCheckMonitor`` reads its settings object duck-typed: inside
@@ -245,6 +252,17 @@ def load_history(data_dir: Path) -> PodcastHistory:
         from quill.core.podcasts.notes_export import normalize_format
 
         history.notes_copy_format = normalize_format(raw.get("notes_copy_format"))
+        history.ai_help_enabled = bool(raw.get("ai_help_enabled", False))
+        try:
+            history.ai_privacy_accepted_version = int(
+                raw.get("ai_privacy_accepted_version", 0) or 0
+            )
+        except (TypeError, ValueError):
+            history.ai_privacy_accepted_version = 0
+        history.ai_own_key_model = str(raw.get("ai_own_key_model", "") or "")
+        from quill.core.ai.own_key import normalize_provider
+
+        history.ai_own_key_provider = normalize_provider(raw.get("ai_own_key_provider"))
         history.onboarding = OnboardingState.from_dict(raw.get("onboarding"))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
@@ -285,6 +303,10 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
                 "hide_caught_up": history.hide_caught_up,
                 "switch_to_now_playing": history.switch_to_now_playing,
                 "notes_copy_format": history.notes_copy_format,
+                "ai_help_enabled": history.ai_help_enabled,
+                "ai_privacy_accepted_version": history.ai_privacy_accepted_version,
+                "ai_own_key_model": history.ai_own_key_model,
+                "ai_own_key_provider": history.ai_own_key_provider,
                 # transcript_detail was read by load_history and missing from this
                 # list, so it has never persisted: a listener chose how much
                 # scaffolding an exported transcript keeps and the next launch forgot.

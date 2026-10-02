@@ -1529,6 +1529,39 @@ in Library is Ctrl+F. Transcripts are excluded until F-09's index exists.
 `podcasts_view_menu.py` joined the app menu-accelerator gate, whose first run
 gave Customize Features Radio's Ctrl+Alt+C.
 
+### 23.14 AI help: the shared hosted AI through an adapter (ear.md A1, A11, A12; 2026-10-02)
+
+`quill/ui/podcasts/cast_ai_host.py` is what QUILL got when the hosted AI came
+to the big editor: `CastAiHost` answers the five things
+`hosted_ai_commands` asks of "the app" (a data dir, settings it can read and
+write, a feature switch, a menu rebuild, `ai_agent_name = "QUILL Cast"`), and
+`CastAiMixin(HostedAiMixin)` is hooks only -- `_ai_parent`, `_ai_control`
+(the Notes reader's field under the library tree), `_ai_host`,
+`_ai_switch_route`, and `_replace_range` / `_insert_below` which announce
+that the notes cannot be changed here and name Copy. A test asserts the mixin
+has no `cmd_*` of its own, the way `test_main_frame_hosted_ai.py` does for
+QUILL, because a second implementation is how the family rule gets broken
+quietly. "The settings" are the `PodcastHistory` record: `ai_help_enabled`
+(off), `ai_privacy_accepted_version`, `ai_own_key_provider`,
+`ai_own_key_model`, all round-tripped. The switch is **AI help** in
+Preferences, with the sending named in the label; the agreement is the
+shared one, and both are needed. Help > **AI Features** holds the family's
+rows on the family's chords (`APP_KEYMAPS["cast"]`), the one divergence
+commented: Privacy Agreement is Alt+Shift+F2 because Ctrl+Alt+Shift+K is the
+Keyboard Shortcuts Sheet. The rows register with the command registry, so
+the Command Palette and the Keyboard Manager see them. The user guide's "AI
+help: what the AI can do, and what it will never do" is A12's section.
+
+**One ChatGPT sign-in per app** (`quill/core/ai/chatgpt_state.py`, split from
+`chatgpt_account.py` under GATE-11). Every app shares `app_data_dir()`, and
+one `ai/chatgpt.json` meant the second app to sign in overwrote the first's
+client id and model while each kept its own refresh token under its own slug
+-- an app that believed it was signed in and could not refresh. The state is
+now `ai/chatgpt-<slug>.json`, the legacy file is read until the app writes
+its own, each record carries `agent_name`, and `sibling_sign_ins` reports the
+other apps signed in by name; the account window's signed-out status says so,
+because a browser that is already signed in makes Continue one Allow.
+
 ### 23.13 Now Playing, the Notes reader and Links in These Notes (section 5 and 5c, 2026-10-02)
 
 `quill/ui/podcasts/now_playing_window.py` is window 2: `NowPlayingWindow` over

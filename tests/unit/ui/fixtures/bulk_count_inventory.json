@@ -8,6 +8,7 @@
   "quill/ui/main_frame_podcast_session.py::PodcastSessionMixin.podcast_mark_all_played": "counted",
   "quill/ui/main_frame_podcasts.py::PodcastsMixin.podcast_pause_all_downloads": "counts-elsewhere",
   "quill/ui/main_frame_podcasts.py::PodcastsMixin.podcast_resume_all_downloads": "counts-elsewhere",
+  "quill/ui/podcasts/cast_ai_host.py::CastAiHost.rebuild_all_menus": "single-row",
   "quill/ui/podcasts/download_pause.py::podcast_pause_all_downloads": "counted",
   "quill/ui/podcasts/download_pause.py::podcast_resume_all_downloads": "counted",
   "quill/ui/podcasts/feed_check_dialog.py::FeedCheckDialog._on_retry_all": "counted",

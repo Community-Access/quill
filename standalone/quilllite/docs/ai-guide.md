@@ -511,7 +511,11 @@ servers -- and two things that neither the free service nor an API key can do:
    OpenAI's own sign-in page.
 3. Sign in to ChatGPT there. On the page that asks whether **QUILL Lite** may
    use your plan, allow it. That name is the one you will see under Apps in
-   ChatGPT's settings from now on.
+   ChatGPT's settings from now on. Each QuillVille app signs in on its own --
+   QUILL, QUILL Cast and Quill Radio each ask under their own name, and
+   signing out of one leaves the others signed in. If another app is already
+   signed in on this computer, the Status line says so: your browser is then
+   already signed in, and this step is one Allow rather than a password.
 4. Come back to QUILL Lite. The window says "Signed in with ChatGPT as" your
    email address, focus lands on the **Model** list, and the first model your
    plan offers is already chosen. You are done.
