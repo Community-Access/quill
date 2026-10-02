@@ -17,15 +17,21 @@ The following table separates implementation, its delivery gate, and human accep
 | Category | Remaining | Status |
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
-| Family product requirements | 7 | Includes transport feedback and Gemini review |
-| Cast Phase 1 code and tests | 15 | Documented pending; reverify source |
+| Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
+| Cast Phase 1 code and tests | 14 | Re-verified 2026-10-01; item 1 done with X-06 |
 | Cast Phase 1 commit gate | 1 | Pending |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
 | Manual screen-reader scenarios | 36 | Human acceptance pending |
-| **Total tracked rows** | **78** | **42 code/delivery groups + 36 manual scenarios** |
+| **Total tracked rows** | **76** | **40 code/delivery groups + 36 manual scenarios** |
 
-Code/delivery subtotal: **42**. Manual scenarios remain in their testing section; they are not duplicated in the bottom code tracker. Maintain this table, bottom checklists, and VS Code todos in the same progress update. Remove completed code rows only after tests and documentation are recorded; never mark human testing passed automatically.
+Code/delivery subtotal: **40**.
+
+**Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
+the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
+code still says 1.1.2 and is bumped at release, not before -- the 1.1.1
+story is why), Quill Converter **1.0.0** (first release). Release notes
+and changelogs label unreleased work with these numbers. Manual scenarios remain in their testing section; they are not duplicated in the bottom code tracker. Maintain this table, bottom checklists, and VS Code todos in the same progress update. Remove completed code rows only after tests and documentation are recorded; never mark human testing passed automatically.
 
 ## Contents
 
@@ -1234,12 +1240,14 @@ against the Podcasts menu), the main tree binds only `EVT_TREE_ITEM_MENU`,
 the tree menu still says "&Unsubscribe...", Preview still says "&Subscribe",
 the three "&OK" buttons and "Follow &the Shared Defaults" are unchanged,
 `global_hotkeys` and `keymap_editor` are still in `ADVANCED_ROWS`, and none of
-the five dialogs calls `SetFocus`. They are the active worklist, in this order:
+the five dialogs calls `SetFocus`. They are the active worklist, in this order
+(the first landed with X-06 on 2026-10-01 and is struck below):
 
-- The button row carries its object in the **label**, not the accessible
+- [x] The button row carries its object in the **label**, not the accessible
       name (6b item 1); Pau&se and Re&sume; GATE-15 reads
-      `transport_intent.button_label` (item 2); a gate that no
-      `set_accessible_name` targets a `wx.Button` in Cast.
+      `transport_intent.label_samples` (item 2); a gate that no
+      `set_accessible_name` targets a `wx.Button` in Cast. Done 2026-10-01
+      with X-06, through the shared `core/transport_button.py`.
 - `EVT_CONTEXT_MENU` on the main library tree, so Shift+F10 opens the row
       menu its own help promises (item 3).
 - Preview's failure is spoken (item 4); the OPML feed-check failure is
@@ -2714,25 +2722,45 @@ Do not report this as completed all-app/global settings search.
 
 ### Radio and Cast Transport State
 
-The primary transport action must say what pressing it will do. Radio's
-main-window contract is a single Play/Stop button: stopped offers Play, active
-offers Stop, and paused offers Resume. Cast has a primary Play/Pause/Resume
-button plus a separate Stop action. Do not turn Stop into a duplicate Play;
-ensure the separate Stop action is unavailable when nothing is playing, while
-the primary action becomes enabled Play. The label, accessible name, enablement,
-and action must agree. Do not announce a state the focused native control says.
+The primary transport action must say what pressing it will do, **and to
+what, in its visible label** (implemented 2026-10-01, X-06). Radio's
+main-window contract is a single button: stopped offers "Play <selected
+favorite>" (Alt+L), active offers "Stop <what is playing>" (Alt+T), and paused
+offers "Resume <it>" (Alt+U); with a folder or nothing selected it reads "Play
+-- nothing selected" and pressing it says what would work. Cast has a primary
+"Play <selection>" / "Pause <episode>" / "Resume <episode>" button (Alt+Y,
+Alt+S) plus a separate Stop (Alt+T) that is disabled when nothing is playing
+or paused. The object is in the label because an accessible name on a wxMSW
+button is never read. The label, enablement, and action must agree. Do not
+announce a state the focused native control says. The Volume slider in Radio's
+main window is now Alt+O.
 
 Entry points: Radio's main player window and Cast's main podcast window. Test a
 playable station/show, a local or recorded item, and a bounded Cast episode.
 
 - [ ] With playback stopped and a playable target selected, Tab to the primary
-  transport. It must be enabled and identified as Play for the selected
-  station/show/episode. In Cast, separate Stop must be disabled or otherwise
-  unavailable, never an enabled dead action.
+  transport. It must be enabled and read "Play" followed by the name of the
+  selected station/show/episode -- the name you gave a renamed favorite, in
+  Radio. In Cast, separate Stop must be disabled, never an enabled dead action.
+- [ ] Arrow the list to a folder (Radio), a folder, an empty show or a view
+  with nothing playable (Cast). The button must read "Play -- nothing
+  selected"; pressing it must say which two things would work and start
+  nothing. Arrow back to a playable row: the label must follow without
+  anything else being said.
+- [ ] Select a podcast whose title is longer than forty characters. The label
+  must end with an ellipsis and the button must not change width; Tab onward
+  and confirm the buttons after it did not move. A title containing an
+  ampersand must read naturally and not create a stray Alt key.
+- [ ] In Cast, select a podcast: the Unfollow button must read "Unfollow" and
+  that podcast's name. Select one of its episodes: the same. Select a folder:
+  plain "Unfollow", disabled.
 - [ ] Start playback. Radio's primary button changes to Stop; Cast's changes to
   Pause, with separate Stop available only when it can stop active playback.
-- [ ] Pause a bounded Cast episode. Resume must be offered and continue at the
-  saved position; no control may be mislabeled as Stop.
+- [ ] Pause a bounded Cast episode. Resume and the episode's name must be
+  offered (Alt+S, the same letter Pause had) and continue at the saved
+  position; no control may be mislabeled as Stop. In Radio, pause a podcast or
+  recording with Ctrl+Space: the main window's button must read "Resume" and
+  its name, Alt+U must press it, and Playback > Play must read Resume too.
 - [ ] Stop playback. Radio returns to Play. Cast returns its primary button to
   Play and makes separate Stop unavailable. Do not duplicate Play in that row.
 - [ ] Repeat with no selection, a folder/view, live Radio, loading, natural
@@ -2740,9 +2768,15 @@ playable station/show, a local or recorded item, and a bounded Cast episode.
 - [ ] Invoke actions by keyboard. Labels, spoken names, menus, and hotkeys must
   agree; refreshing the state must not steal focus. Record exact speech/state.
 
-Coverage: the shared pure transport-face and Cast status/transport tests cover
-state decisions and rendered behavior. This cross-app physical reader and main-
-window enablement matrix remains unrun; record exact commands after any change.
+Coverage: `tests/unit/core/test_transport_button.py` (every label and sentence
+the shared module can produce), `tests/unit/ui/podcasts/test_cast_transport_row.py`
+and `tests/unit/ui/radio/test_main_transport_button.py` (both rows on fake
+hosts, every state), `tests/unit/ui/test_button_mnemonics.py` (the real Radio
+frame against its real menu bar), and GATE-15 with run-time labels. This
+cross-app physical reader and main-window enablement matrix remains unrun;
+record exact speech after running it. Two conscious gaps to listen for: Radio's
+status-bar Play cell and the player panel's Play/Stop button still say the
+bare verb.
 
 ### Lite Settings-Save Failure and Retry
 
@@ -2876,6 +2910,58 @@ programming-error path manually.
 
 Original document title: QC3: Completed Quality Changes.
 
+### 2026-10-01: X-06 -- the transport button says its object (Radio and Cast)
+
+Resolves X-06 and Cast Phase 1 item 1 together, because they were one defect
+seen from two sides: a button that says only its verb, and a button that says
+a verb that cannot happen.
+
+- New wx-free `quill/core/transport_button.py`: one `face()` returns the
+  button's label (verb, access key, object, elided at 40 visible characters,
+  ampersands doubled), its full sentence, and its verb, from one reading of one
+  state. Parameters: `active_verb` ("pause" for Cast, "stop" for Radio's main
+  window), per-app `Mnemonics`, and the app's own dead-state hint.
+  `label_samples()` hands GATE-15 every label the button can show.
+- Cast: `core/podcasts/transport_intent.py` is now a thin reading of the
+  shared module (`button_face`, `button_label`, `transport_name`,
+  `label_samples`). `main_panel.py` builds every row button without
+  `set_accessible_name`, with proportion 1 so the row never reflows;
+  `podcasts.py` sets the label from the face; `places.py` grew
+  `_transport_button_face` and `_unfollow_target` (the selected show, or the
+  selected episode's show), and Unfollow's label names it. Stop is enabled only
+  while playing or paused (unchanged).
+- Radio: `quill/ui/radio/stop_button.py` is replaced by
+  `quill/ui/radio/main_transport_button.py`: Play <favorite> (Alt+L), Stop
+  <playing> (Alt+T), Resume <it> (Alt+U), "Play -- nothing selected" which
+  announces the way out when pressed. Follows the favorites tree's selection.
+  `_on_play_stop_button` (Ctrl+P, Playback > Play) presses it; the Playback
+  row now reads the button's word (it read "Stop" while paused on a row that
+  resumed). The Volume label moved from Alt+U to Alt+O: the bar owns every
+  other letter of "Resume".
+- Gates: GATE-15 gained `DYNAMIC_LABELS` (labels built at run time, checked
+  like literals, reported with the providing module's path) and the Radio
+  roster gained the new module. New
+  `tests/unit/ui/podcasts/test_button_object_in_label.py` fails the build if
+  `set_accessible_name` targets a `wx.Button` anywhere in Cast (shown a known
+  bad sample first).
+- Validation: 16 core transport-button tests, 11 transport-intent tests, 13
+  Cast row tests on a fake host (`test_cast_transport_row.py`), 12 Radio
+  button tests on a fake host and fake wx (`test_main_transport_button.py`),
+  the GATE-15 tests including the run-time-label case, the real-frame Radio
+  mnemonic test, and the Cast and Radio unit directories: 2,788 passed. GATE-15
+  CLI clean. Platform report: see the commit.
+- Documented: Radio user guide (main window, Playback menu), Radio release
+  notes 3.1 (Unreleased), Cast user guide (main window), Cast release notes
+  2.0, Cast PRD 23.10, family changelog. Manual reader script: the "Radio and
+  Cast Transport State" handoff section, updated below.
+- Not done here, and recorded: the ~40 `SetName` calls on buttons in Cast's
+  dialogs (Add Podcast, Manager, Downloads, Statistics, Show Notes and others)
+  are the same inert route by another name; they are Phase 5's wordlist and
+  help sweep. Radio's status-bar Play cell and the player panel's Play/Stop
+  face still say the bare verb -- a cell is a readout in a bar, and the panel
+  has no selection to name -- which the handoff script records as a conscious
+  choice to listen for.
+
 ### 2026-10-01: Second pass -- Lite exit crash, Cast documentation catch-up
 
 - Fixed a QUILL Lite exit crash reported the same day (`RuntimeError: wrapped
@@ -3008,7 +3094,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **42 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **40 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3023,23 +3109,13 @@ This is the authoritative unchecked code/delivery tracker: **42 grouped rows**. 
 - [ ] F-11: Resolve Lite multi-instance settings overwrite behavior with explicit persistence/conflict handling and tests.
 - [ ] F-12: Gate critical delivery promises, timer ownership, safe absence, performance, and release invariants with automated tests.
 
-### Family Product Requirements: 7
+### Family Product Requirements: 6
 
 - [ ] X-01: Finish family settings search, including Converter/Player/Inkwell entry points, web forms, and unopened settings areas.
 - [ ] X-02: Implement discoverable keyboard-accessible task recipes using existing commands and shared operation results.
 - [ ] X-03: Implement reversible focus/review/session profiles using existing settings and truthful persistence.
 - [ ] X-04: Finish richer queue/activity views and skippable first-run/task guidance without duplicating shared models.
 - [ ] X-05: Implement specified explicit-opt-in cross-app personalization without silent keyboard/focus/screen-reader changes.
-- [ ] X-06: Resolve Radio/Cast Stop-to-Play feedback and implement/test the same
-  meaningful transport contract in both apps. Preserve explicit Stop while
-  playback is active if it has a distinct action; once stopped, offer enabled
-  Play for the actual playable target rather than a dead Stop action. The
-  primary transport must distinguish Play, Pause, and Resume correctly. Verify
-  visible/accessibility labels, enablement, unchanged focus, menu/hotkey parity,
-  queued/loading/failure states, and action outcomes. Add manual reader tests
-  after implementation. Original report: "@quillforall The stop button now always
-  shows up in the app and doesn't change to a play button when stopped. Should
-  that happen or should it change to play?"
 - [ ] X-07: Review and integrate the applicable changes proposed in
   [Gemini API-key support and endpoint routing, PR #1615](https://github.com/Community-Access/quill/pull/1615)
   for both QUILL and QUILL Lite. Add real-boundary unit/integration tests for
@@ -3054,15 +3130,12 @@ This is the authoritative unchecked code/delivery tracker: **42 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 15
+### Cast Phase 1 Code and Tests: 14
 
-Re-verified against the source 2026-10-01: all fifteen remain open. Partial
+Re-verified against the source 2026-10-01: fifteen were open; the first (the
+button row's object in the label) closed with X-06, leaving fourteen. Partial
 credit on two rows is noted inline. Worked top to bottom, one commit each.
 
-- [ ] The button row carries its object in the **label**, not the accessible
-      name (6b item 1); Pau&se and Re&sume; GATE-15 reads
-      `transport_intent.button_label` (item 2); a gate that no
-      `set_accessible_name` targets a `wx.Button` in Cast.
 - [ ] `EVT_CONTEXT_MENU` on the main library tree, so Shift+F10 opens the row
       menu its own help promises (item 3).
 - [ ] Preview's failure is spoken (item 4); the OPML feed-check failure is

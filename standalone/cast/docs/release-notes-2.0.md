@@ -19,6 +19,8 @@ feels like.
 
 ## After these notes were first written: the main window, reworked (2026-09-30 and 2026-10-01)
 
+Everything in this section ships in the next release, **QUILL Cast 1.1.0**.
+
 Most of what is below came from one afternoon of a screen-reader user
 actually using QUILL Cast and saying what was wrong with it: a button that
 said "Play" and not what it would play, a Favorites row with a count that
@@ -145,6 +147,34 @@ A row of buttons that could add a podcast and not remove one was half a row.
 episodes is selected, through the same prompt that asks first and makes it one
 undoable step. And "Open Manager" is now **Episode List...**, because it named
 a window rather than the thing you wanted from it.
+
+### The buttons say what they will act on (2026-10-01)
+
+"If I tab I see play, play what?" The first fix put the answer in the button's
+hidden accessible name, and on Windows a button's accessible name is never
+read -- the button still said "Play". So the answer is in the label now, where
+it can be heard:
+
+- **Play The Daily** with a podcast under the cursor; **Play** and the episode's
+  name with an episode under it; a pinned view's first playable episode with a
+  view under it.
+- **Pause The Daily, Thursday's episode** while that is playing (Alt+S), and
+  **Resume** and the same name while it is paused.
+- **Play -- nothing selected** with a folder, an empty show or nothing under
+  the cursor. Pressing it says what would work: choose a podcast or an episode
+  in the library first, or use Continue Listening.
+- **Unfollow The Daily** with that podcast, or one of its episodes, selected.
+  Plain **Unfollow**, disabled, with nothing to unfollow.
+
+Stop is enabled only while something is playing or paused, so the row never
+offers a verb that cannot happen. Names are shortened to forty characters with
+an ellipsis, a podcast called "Rock & Roll" cannot grow a stray access key,
+and each button keeps an equal share of the row, so nothing shifts as you move
+through the library. Pause and Resume share Alt+S -- they are one button -- and
+no label the button can show shares a letter with a menu, which the build now
+checks for every label it can produce, not only the resting one. A second
+check fails the build if any Cast button is ever named through the inert route
+again. Quill Radio's main window learned the same lesson the same day.
 
 ### The status bar
 

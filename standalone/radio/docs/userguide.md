@@ -311,9 +311,9 @@ Tab moves through five stops, in this order. It is a list you play from, not a p
 
 1. **Now playing**, a read-only box. It says the station and what the player is doing, the track when there is one, and anything else true, such as a recording running. You can arrow through it and copy it with Ctrl+C. It is never rewritten while you are reading it: an update that arrives while it has focus waits until you leave. It does not show elapsed time. Press **Ctrl+Shift+W** for that.
 2. **Favorite stations**, the tree. It shows the same folders you build in the Favorites Manager. **Alt+F** jumps to it from anywhere in the window.
-3. **Stop** (Alt+T), a button. It stops whatever is playing -- the same as **Ctrl+Period** and **Station > Stop**. Back in 3.0.3, because stopping is the one thing everyone needs at once without knowing a key.
+3. **The transport button**, which says what it will do and to what: **Play** and the selected favorite's name (Alt+L) while nothing is playing, **Stop** and the playing station's name (Alt+T) while something is, and **Resume** and its name (Alt+U) while a podcast, recording or local file is paused. The name is the one you gave the station in Favorites, if you gave it one. With a folder or nothing selected it reads **Play -- nothing selected**, and pressing it says what would work. Stop is the same as **Ctrl+Period** and **Station > Stop**; **Ctrl+P** presses this button from anywhere. (Until 2026-10-01 this was a Stop button that stayed Stop while nothing played; a listener asked whether it should become Play, and it should.)
 4. **Mute**, a toggle button. It shows the true state, even when you muted from somewhere else.
-5. **Volume**, a slider. Up and Right make it louder, Down and Left quieter, and Page Up and Page Down move it in bigger steps. (Until 3.0.4 Up was quieter, because that is what a Windows slider does on its own; a listener reported it as backwards, and it was.) The slider, Ctrl+Up and Ctrl+Down, and the status bar's Volume cell always agree, including with each station's remembered volume.
+5. **Volume** (Alt+O), a slider. Up and Right make it louder, Down and Left quieter, and Page Up and Page Down move it in bigger steps. (Until 3.0.4 Up was quieter, because that is what a Windows slider does on its own; a listener reported it as backwards, and it was.) The slider, Ctrl+Up and Ctrl+Down, and the status bar's Volume cell always agree, including with each station's remembered volume.
 
 Along the bottom is the **status bar**. Tab never reaches it. Press **F6**. See "The status bar".
 
@@ -544,7 +544,7 @@ Every menu item shows its own shortcut. If you rebind a key, the menu shows your
 ### Playback menu (Alt+P)
 
 - A dimmed first row shows what is playing, such as "Radio: stopped".
-- **Play** (Ctrl+P) -- reads **Stop** while something plays. From idle, it plays the favorite selected in the tree. While something is paused, it resumes.
+- **Play** (Ctrl+P) -- reads **Stop** while something plays and **Resume** while something is paused, the same three words as the main window's transport button, which it presses. From idle, it plays the favorite selected in the tree.
 - **Pause** (Ctrl+Space) -- reads **Resume** while paused. It holds a podcast, a recording, a downloaded or local file, or a finished video, and picks it up where it was. On a live station it is dimmed and says why: live radio is going out now, so there is nothing to hold.
 - **Rewind 30 Seconds** (Ctrl+Shift+Left), **Forward 30 Seconds** (Ctrl+Shift+Right) and **Back to Live** (Ctrl+Shift+L).
 - **Continue Listening...** (Ctrl+Alt+Shift+L) -- everything you started and did not finish.

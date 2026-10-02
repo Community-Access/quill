@@ -234,6 +234,9 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 #### (module level) (`quill/ui/radio/import_stations_dialog.py`)
 
 - `combo`: Where the imported stations land in your favorites: pick an existing folder, or type a new name to create one.
+#### (module level) (`quill/ui/radio/main_transport_button.py`)
+
+- `button`: Plays the favorite selected in the list, stops whatever is playing, or resumes a paused podcast or recording. The label names which, and what. Ctrl+P does the same from anywhere; Ctrl+Period always stops.
 #### NowPlayingDialog (`quill/ui/radio/now_playing_dialog.py`)
 
 - `self._copy_btn`: Copies the whole text to the clipboard -- the exact spelling, ready for a search or a note.
@@ -272,9 +275,6 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 - `copy_btn`: Copies the whole report to the clipboard as plain text.
 - `export_btn`: Saves the listening history as a CSV file a spreadsheet can open.
 - `clear_btn`: Erases the local listening history after a confirmation. Nothing about your listening ever leaves this computer either way.
-#### (module level) (`quill/ui/radio/stop_button.py`)
-
-- `button`: Stops the radio, podcast or recording you are listening to. The same as Ctrl+Period and Station, Stop.
 #### _SuggestDialog (`quill/ui/radio/suggest_pick_dialog.py`)
 
 - `self._send`: Checks what you typed, then opens your mail program with the suggestion written to support@community-access.org. Nothing is sent until you press Send there.
@@ -449,10 +449,10 @@ Control coverage: 231 audited sites (91 helped, 140 named-help).
 #### CastMainPanelMixin (`quill/ui/podcasts/main_panel.py`)
 
 - `self._shows_tree`: Your podcasts, folders, and pinned views. Arrow through the library; Enter on a podcast plays its next episode and Enter on a view opens its episode list. Shift F10 offers the selected row's actions.
-- `self._play_pause_btn`: Starts the selected podcast or episode when stopped, pauses current playback, or resumes it from the saved position when paused.
-- `self._stop_btn`: Stops the current episode. Play starts playback again.
+- `self._play_pause_btn`: Starts the selected podcast or episode when stopped, pauses current playback, or resumes it from the saved position when paused. The label names what it would play, pause or resume.
+- `self._stop_btn`: Stops the current episode. Enabled only while something is playing or paused; Play starts playback again.
 - `self._favorite_toggle_btn`: Adds the playing podcast to Favorites, or removes it if already there. Disabled when there is no playing podcast.
-- `self._unfollow_btn`: Stops following the podcast selected in the library. Asks first, says what happens to anything downloaded, and Ctrl+Z puts it back.
+- `self._unfollow_btn`: Stops following the podcast named on the button, the one selected in the library. Asks first, says what happens to anything downloaded, and Ctrl+Z puts it back.
 - `button`: Opens the episode list and podcast actions, or opens Add Podcast to find and follow another show, as named by this button.
 #### PodcastManagerDialog (`quill/ui/podcasts/manager_dialog.py`)
 

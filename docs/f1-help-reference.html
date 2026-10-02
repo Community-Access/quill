@@ -724,6 +724,14 @@ level) (<code>quill/ui/radio/import_stations_dialog.py</code>)</h4>
 favorites: pick an existing folder, or type a new name to create
 one.</li>
 </ul>
+<h4 id="module-level-quilluiradiomain_transport_buttonpy">(module level)
+(<code>quill/ui/radio/main_transport_button.py</code>)</h4>
+<ul>
+<li><code>button</code>: Plays the favorite selected in the list, stops
+whatever is playing, or resumes a paused podcast or recording. The label
+names which, and what. Ctrl+P does the same from anywhere; Ctrl+Period
+always stops.</li>
+</ul>
 <h4
 id="nowplayingdialog-quilluiradionow_playing_dialogpy">NowPlayingDialog
 (<code>quill/ui/radio/now_playing_dialog.py</code>)</h4>
@@ -808,12 +816,6 @@ spreadsheet can open.</li>
 <li><code>clear_btn</code>: Erases the local listening history after a
 confirmation. Nothing about your listening ever leaves this computer
 either way.</li>
-</ul>
-<h4 id="module-level-quilluiradiostop_buttonpy">(module level)
-(<code>quill/ui/radio/stop_button.py</code>)</h4>
-<ul>
-<li><code>button</code>: Stops the radio, podcast or recording you are
-listening to. The same as Ctrl+Period and Station, Stop.</li>
 </ul>
 <h4 id="_suggestdialog-quilluiradiosuggest_pick_dialogpy">_SuggestDialog
 (<code>quill/ui/radio/suggest_pick_dialog.py</code>)</h4>
@@ -1181,15 +1183,16 @@ episode and Enter on a view opens its episode list. Shift F10 offers the
 selected row’s actions.</li>
 <li><code>self._play_pause_btn</code>: Starts the selected podcast or
 episode when stopped, pauses current playback, or resumes it from the
-saved position when paused.</li>
-<li><code>self._stop_btn</code>: Stops the current episode. Play starts
-playback again.</li>
+saved position when paused. The label names what it would play, pause or
+resume.</li>
+<li><code>self._stop_btn</code>: Stops the current episode. Enabled only
+while something is playing or paused; Play starts playback again.</li>
 <li><code>self._favorite_toggle_btn</code>: Adds the playing podcast to
 Favorites, or removes it if already there. Disabled when there is no
 playing podcast.</li>
-<li><code>self._unfollow_btn</code>: Stops following the podcast
-selected in the library. Asks first, says what happens to anything
-downloaded, and Ctrl+Z puts it back.</li>
+<li><code>self._unfollow_btn</code>: Stops following the podcast named
+on the button, the one selected in the library. Asks first, says what
+happens to anything downloaded, and Ctrl+Z puts it back.</li>
 <li><code>button</code>: Opens the episode list and podcast actions, or
 opens Add Podcast to find and follow another show, as named by this
 button.</li>

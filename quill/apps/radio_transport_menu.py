@@ -85,13 +85,22 @@ def refresh_labels(app: Any) -> None:
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is None:
         return
-    primary, pause = transport_face.faces(app)
+    _primary, pause = transport_face.faces(app)
     play_id = getattr(app, "_play_menu_item_id", None)
     if play_id is not None:
-        # The menu keeps its own mnemonic (&Play / &Stop): the panel's button
-        # takes Alt+P, and on a frame a button mnemonic and a menu-bar one
-        # compete (#1208).
-        menu_bar.SetLabel(int(play_id), f"&{primary.plain}\tCtrl+P")
+        # This row runs _on_play_stop_button, which is the main window's
+        # transport button, so it says what that button says -- Play, Stop or
+        # Resume -- rather than the two-control panel's Play/Stop face, which
+        # read "Stop" while paused on a row that resumed (2026-10-01). The
+        # object stays off the row: a menu row is read in a list, and the
+        # button carries it. The menu keeps its own mnemonic: the panel's
+        # button takes Alt+P, and on a frame a button mnemonic and a menu-bar
+        # one compete (#1208).
+        from quill.ui.radio import main_transport_button
+
+        verb = main_transport_button.current_face(app).verb
+        word = {"stop": "Stop", "resume": "Resume"}.get(verb, "Play")
+        menu_bar.SetLabel(int(play_id), f"&{word}\tCtrl+P")
     pause_id = getattr(app, "_pause_menu_item_id", None)
     if pause_id is not None:
         menu_bar.SetLabel(int(pause_id), app._menu_label(pause.label, "radio.pause"))

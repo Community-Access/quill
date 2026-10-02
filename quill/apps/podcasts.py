@@ -26,7 +26,6 @@ from quill.apps.podcasts_view_menu import CastViewMenuMixin
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.app_support import ListeningAppSupportMixin
-from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
@@ -538,16 +537,12 @@ class PodcastsAppFrame(
             PodcastPlayerState.LOADING: transport_intent.PLAYING,
             PodcastPlayerState.PAUSED: transport_intent.PAUSED,
         }.get(state, transport_intent.STOPPED)
-        label = transport_intent.button_label(intent)
+        # The label carries the object (qc.md 4.5), so it depends on the
+        # selection as well as the player state and is re-read on both.
+        label = self._transport_button_face(intent).label
         button = getattr(self, "_play_pause_btn", None)
-        if button is not None:
-            if button.GetLabel() != label:
-                button.SetLabel(label)
-            # The name is refreshed even when the label has not changed: the
-            # label depends only on the player state and the name depends on the
-            # selection too, so "Play what?" would otherwise go stale every time
-            # the listener moved the library cursor without starting anything.
-            set_accessible_name(button, self._transport_button_name(intent))
+        if button is not None and button.GetLabel() != label:
+            button.SetLabel(label)
         stop_btn = getattr(self, "_stop_btn", None)
         if stop_btn is not None:
             stop_btn.Enable(state != PodcastPlayerState.STOPPED)
@@ -567,18 +562,11 @@ class PodcastsAppFrame(
             button.Enable(False)
             if button.GetLabel() != "Add to &Favorites":
                 button.SetLabel("Add to &Favorites")
-                set_accessible_name(button, "Add the playing show to favorites")
             return
         button.Enable(True)
         label = "Remove from &Favorites" if show.is_favorite else "Add to &Favorites"
         if button.GetLabel() != label:
             button.SetLabel(label)
-            set_accessible_name(
-                button,
-                "Remove the playing show from favorites"
-                if show.is_favorite
-                else "Add the playing show to favorites",
-            )
 
     def _on_favorite_toggle(self) -> None:
         from quill.ui.podcasts.show_actions import toggle_favorite

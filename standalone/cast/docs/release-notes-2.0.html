@@ -263,6 +263,8 @@ like.</p>
 id="after-these-notes-were-first-written-the-main-window-reworked-2026-09-30-and-2026-10-01">After
 these notes were first written: the main window, reworked (2026-09-30
 and 2026-10-01)</h2>
+<p>Everything in this section ships in the next release, <strong>QUILL
+Cast 1.1.0</strong>.</p>
 <p>Most of what is below came from one afternoon of a screen-reader user
 actually using QUILL Cast and saying what was wrong with it: a button
 that said “Play” and not what it would play, a Favorites row with a
@@ -383,6 +385,37 @@ when a podcast or one of its episodes is selected, through the same
 prompt that asks first and makes it one undoable step. And “Open
 Manager” is now <strong>Episode List…</strong>, because it named a
 window rather than the thing you wanted from it.</p>
+<h3 id="the-buttons-say-what-they-will-act-on-2026-10-01">The buttons
+say what they will act on (2026-10-01)</h3>
+<p>“If I tab I see play, play what?” The first fix put the answer in the
+button’s hidden accessible name, and on Windows a button’s accessible
+name is never read – the button still said “Play”. So the answer is in
+the label now, where it can be heard:</p>
+<ul>
+<li><strong>Play The Daily</strong> with a podcast under the cursor;
+<strong>Play</strong> and the episode’s name with an episode under it; a
+pinned view’s first playable episode with a view under it.</li>
+<li><strong>Pause The Daily, Thursday’s episode</strong> while that is
+playing (Alt+S), and <strong>Resume</strong> and the same name while it
+is paused.</li>
+<li><strong>Play – nothing selected</strong> with a folder, an empty
+show or nothing under the cursor. Pressing it says what would work:
+choose a podcast or an episode in the library first, or use Continue
+Listening.</li>
+<li><strong>Unfollow The Daily</strong> with that podcast, or one of its
+episodes, selected. Plain <strong>Unfollow</strong>, disabled, with
+nothing to unfollow.</li>
+</ul>
+<p>Stop is enabled only while something is playing or paused, so the row
+never offers a verb that cannot happen. Names are shortened to forty
+characters with an ellipsis, a podcast called “Rock &amp; Roll” cannot
+grow a stray access key, and each button keeps an equal share of the
+row, so nothing shifts as you move through the library. Pause and Resume
+share Alt+S – they are one button – and no label the button can show
+shares a letter with a menu, which the build now checks for every label
+it can produce, not only the resting one. A second check fails the build
+if any Cast button is ever named through the inert route again. Quill
+Radio’s main window learned the same lesson the same day.</p>
 <h3 id="the-status-bar">The status bar</h3>
 <p>A nine-cell status bar, off the Tab order entirely and reached with
 <strong>F6</strong> (F6 again, Escape or Tab leave it, back to the

@@ -233,17 +233,18 @@ class CastPlacesMixin:
 
     # -- what the transport button would do -------------------------------- #
 
-    def _transport_button_name(self, intent: str) -> str:
-        """The accessible name for the Play/Pause/Resume button.
+    def _transport_button_face(self, intent: str):  # noqa: ANN202 - ButtonFace
+        """The Play/Pause/Resume button's label and sentence, as one reading.
 
         "Play what?" was the report (Jeff, 2026-09-30): the button announced the
         bare verb, so somebody hearing it had been told nothing about what pressing
         it would start, whether it would resume a place, or -- in the one state
-        where it does nothing at all -- that it would do nothing.
+        where it does nothing at all -- that it would do nothing. The object goes
+        in the *label* -- an accessible name on a wxMSW button is never read.
 
         Lives here rather than in ``podcasts.py`` because answering it needs the
         library cursor, which is this mixin's subject, and because that module is
-        exactly on its GATE-11 budget. The sentence itself is built in
+        exactly on its GATE-11 budget. The words themselves are built in
         ``core/podcasts/transport_intent.py``, wx-free, so every phrase it can
         produce is under test.
         """
@@ -257,7 +258,7 @@ class CastPlacesMixin:
             else None
         )
         selection, playable = self._selected_playable()
-        return transport_intent.transport_name(
+        return transport_intent.button_face(
             intent,
             show_title=str(getattr(show, "title", "") or ""),
             episode_title=str(getattr(episode, "title", "") or ""),
@@ -315,8 +316,9 @@ class CastPlacesMixin:
         """Re-describe the buttons that act on the library cursor.
 
         Called on every selection change, because a button that names its object
-        is only honest while the object is current. Cheap: two names and one
-        enable, no I/O.
+        is only honest while the object is current. Cheap: two labels and one
+        enable, no I/O. The object goes in the *label*: an accessible name on a
+        wxMSW button is never read (qc.md 6b, item 1).
         """
         try:
             self._refresh_transport_controls()
@@ -325,19 +327,26 @@ class CastPlacesMixin:
         button = getattr(self, "_unfollow_btn", None)
         if button is None:
             return
-        from quill.ui.dialog_contract import set_accessible_name
+        from quill.core.transport_button import object_label
 
+        show = self._unfollow_target()
+        label = object_label("&Unfollow", str(getattr(show, "title", "") or ""))
+        if button.GetLabel() != label:
+            button.SetLabel(label)
+        button.Enable(show is not None)
+
+    def _unfollow_target(self):  # noqa: ANN202 - PodcastShow | None
+        """The podcast Unfollow would act on: the selected show, or the selected
+        episode's show (qc.md 4.5). A folder or a view is nothing to unfollow."""
         show = self._selected_show()
-        if show is None:
-            button.Enable(False)
-            set_accessible_name(button, "Unfollow -- select a podcast first")
-            return
-        button.Enable(True)
-        set_accessible_name(button, f"Unfollow {show.title}")
+        if show is not None:
+            return show
+        pair = self._selected_episode()
+        return pair[0] if pair is not None else None
 
     def _on_unfollow_button(self) -> None:
         """Stop following the selected podcast, through the shared undoable prompt."""
-        show = self._selected_show()
+        show = self._unfollow_target()
         if show is None:
             self._announce("Select a podcast in the library first.")
             return
@@ -359,8 +368,8 @@ class CastPlacesMixin:
 
         A podcast plays its next episode; an episode plays itself; a view plays
         its newest unstarted episode (Continue Listening: its most recent). And
-        when nothing under the cursor can play, the sentence is the same one the
-        button's own name gives, so the refusal and the description never differ.
+        when nothing under the cursor can play, the sentence is the long form of
+        the button's own label, so the refusal and the description never differ.
         """
         from quill.core.podcasts import transport_intent
         from quill.ui.podcasts import library_tree
@@ -379,4 +388,4 @@ class CastPlacesMixin:
             if pair is not None:
                 self._play_episode_object(*pair)
                 return
-        self._announce(self._transport_button_name(transport_intent.STOPPED))
+        self._announce(self._transport_button_face(transport_intent.STOPPED).spoken)

@@ -1,6 +1,6 @@
 # Quill Radio 3.1 Release Notes
 
-Version 3.1.1, released 2026-09-30.
+Version 3.1.1, not yet released.
 
 Quill Radio 3.1 is the release where the radio can answer you. **Ask QUILL
 Radio** holds a conversation about what is playing, on the ChatGPT plan you
@@ -12,6 +12,47 @@ written for a listener who uses a screen reader; every step names its key.
 The 3.0 line -- the launch and its four follow-up releases, 3.0.1 to 3.0.4 --
 has its own document, `release-notes-3.0.md`, and the changelog lists every
 change by version.
+
+## Also in 3.1.1
+
+### The button says what it will do, and to what
+
+A listener asked: "The stop button now always shows up in the app and doesn't
+change to a play button when stopped. Should that happen or should it change
+to play?" It should. Stop came back to the main window in 3.0.3 as a button
+that always said Stop, which made it a dead control the moment nothing was
+playing -- enabled, labelled with a verb that could not happen, and silent
+about the verb that could.
+
+The main window's button is now the one transport control, and its label
+carries its object:
+
+- **Play** and the name of the favorite under the cursor (Alt+L) while nothing
+  is playing. Press it, or Enter on the row, and that station plays.
+- **Stop** and the name of what is playing (Alt+T) while something is -- live
+  radio, a podcast, a recording. The name is yours: a station you renamed in
+  Favorites is named the way you renamed it.
+- **Resume** and its name (Alt+U) while a podcast, recording or local file is
+  paused. Ctrl+Period and Station > Stop still end it.
+- **Play -- nothing selected** with a folder or nothing under the cursor.
+  Pressing it does not sit there silently: it says to choose a station in
+  Favorites first, or press Ctrl+B to browse for one.
+
+The label is kept to forty characters and the button is as wide as its longest
+label, so Volume and Mute after it never move. **Ctrl+P** and **Playback >
+Play** press this same button from anywhere, and that menu row now reads the
+same word the button does -- Play, Stop or Resume -- where it used to read Stop
+while paused and then resume when chosen.
+
+One key moved to make room: the **Volume** slider's access key is **Alt+O**,
+because every other letter of "Resume" belongs to a menu, and the button needed
+U. The slider itself, Ctrl+Up and Ctrl+Down, and the status bar's Volume cell
+are unchanged.
+
+Why the object is in the label rather than in a hidden accessible name: on
+Windows a button is self-labelled, and a name set on it any other way is never
+read by JAWS, NVDA or Narrator. QUILL Cast's Play button learned the same
+lesson the same day.
 
 ## What's new in 3.1.1
 

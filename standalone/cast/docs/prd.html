@@ -2003,6 +2003,26 @@ controls across the family whose name was set through
 <code>SetName</code> and never read. Cast’s fifteen are fixed; the
 family count may only fall. <code>ui/labelled_field.py</code> makes the
 correct construction order the easy one.</p>
+<h3 id="2310-the-object-is-in-the-label-2026-10-01">23.10 The object is
+in the label (2026-10-01)</h3>
+<p>The 2026-09-30 “Play what?” fix put the object in the button’s
+accessible name. The survey the next day (qc.md 6b, item 1) found that
+on wxMSW a button is self-labelled and <code>set_accessible_name</code>
+is inert on it, so the fix was inaudible.
+<code>core/transport_button.py</code> is the family answer, shared with
+Quill Radio’s main window: one function returns the button’s label
+(verb, access key, object, elided at forty visible characters,
+ampersands doubled), its full sentence, and its verb, from one reading
+of one state; per-app mnemonics and the app’s own active verb (Cast
+pauses, Radio stops) are parameters.
+<code>core/podcasts/transport_intent.py</code> is Cast’s reading of it.
+The row gives each button an equal share so it never reflows; Unfollow
+names the selected podcast or the selected episode’s podcast; Stop is
+enabled only while something is playing or paused. GATE-15 now reads
+every label the button can produce through <code>label_samples()</code>,
+and <code>test_button_object_in_label.py</code> fails the build if
+<code>set_accessible_name</code> ever targets a <code>wx.Button</code>
+in Cast again.</p>
 <hr />
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>

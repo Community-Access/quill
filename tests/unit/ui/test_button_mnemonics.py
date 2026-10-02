@@ -101,9 +101,11 @@ def test_no_button_mnemonic_is_stolen_by_the_menu_bar(radio_frame) -> None:
 
 
 def test_the_transport_button_keeps_a_key_in_both_states(radio_frame) -> None:
-    """Play and Stop are the same button with two labels; a mnemonic that
-    survives only one of them is a key that vanishes mid-listen."""
-    for label in ("P&lay", "S&top"):
+    """Play, Stop and Resume are the same button with three labels; a mnemonic
+    that survives only one of them is a key that vanishes mid-listen."""
+    from quill.core import transport_button as tb
+
+    for label in tb.label_samples(tb.RADIO_MNEMONICS, active_verb="stop"):
         found = re.search(r"&(.)", label)
         assert found, label
         assert found.group(1).upper() not in _menu_bar_keys(radio_frame)

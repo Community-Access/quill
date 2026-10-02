@@ -142,9 +142,15 @@ def test_every_door_onto_saving_a_station_reads_the_same_two_facts() -> None:
 
 def test_the_main_window_is_a_list_you_play_from() -> None:
     """The five buttons are gone; every handler behind them stays, because the
-    menus, the keys and the player panel still call them."""
+    menus, the keys and the player panel still call them.
+
+    One came back, reshaped (2026-10-01): the Stop button of 3.0.3 is now the
+    one transport face -- Play <station>, Stop <station>, Resume -- built in
+    ``quill/ui/radio/main_transport_button.py``, not here. A static Stop was a
+    dead control the moment nothing played."""
     source = _source()
     assert "self._play_stop_btn" not in source
+    assert "add_transport_button(self, panel, buttons, wx)" in source
     assert "self._favorite_toggle_btn = wx.Button" not in source
     assert "self._record_btn" not in source
     assert "radio_chapter_buttons.build(" not in source

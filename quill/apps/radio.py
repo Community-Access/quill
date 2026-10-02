@@ -331,17 +331,23 @@ class RadioAppFrame(
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         # A favorites list you play from, not a player: the rest of the player
-        # left this row on 2026-08-21, and Stop came back first in 3.0.3.
-        from quill.ui.radio.stop_button import add_stop_button
+        # left this row on 2026-08-21, Stop came back first in 3.0.3, and since
+        # 2026-10-01 it is the one transport face: Play <station> / Stop / Resume.
+        from quill.ui.radio.main_transport_button import add_transport_button
 
-        add_stop_button(self, panel, buttons, wx)
+        add_transport_button(self, panel, buttons, wx)
         # A volume control right in the Tab order, so the volume can be adjusted
         # by arrowing a focused slider while listening -- not only via Ctrl+Up/
         # Down or the status bar (#1214). Kept in step with the real volume by
         # _refresh_statusbar (which also reflects Ctrl+Up/Down and per-station
         # memory), so the two paths never disagree.
         buttons.Add(
-            wx.StaticText(panel, label="Vol&ume:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
+            # O, not U: the transport button before it needs U for Res&ume,
+            # and the menu bar owns every other letter of the word (2026-10-01).
+            wx.StaticText(panel, label="V&olume:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            4,
         )
         start_volume = 100
         controller = getattr(self, "_radio_controller", None)
@@ -898,33 +904,19 @@ class RadioAppFrame(
             self._reload_favorites_tree(keep_key=favorite.key)
 
     def _on_play_stop_button(self) -> None:
-        from quill.ui.radio.playback_state import ACTIVE_STATES, RadioPlayerState
+        """Ctrl+P and Playback > Play/Stop: whatever the transport button says."""
+        from quill.ui.radio import main_transport_button
 
-        state = self._radio_controller.state.state
-        if state in ACTIVE_STATES:
-            self.radio_stop()
-        elif state is RadioPlayerState.PAUSED:
-            self.radio_toggle_play_pause()
-        else:
-            self._play_selected_favorite()
+        main_transport_button.press(self)
 
     def _refresh_play_stop_button(self) -> None:
-        from quill.ui.radio.playback_state import ACTIVE_STATES
-
-        state = self._radio_controller.state.state
-        stopping = state in ACTIVE_STATES
-        # A button mnemonic on a frame competes with the MENU BAR's, which is
-        # #1208: "&Record" on both meant Alt+R opened the menu and the button
-        # never fired. The answer is a free letter, not no letter -- Alt+P is
-        # the Playback menu, so the transport button takes Alt+L to play and
-        # Alt+T to stop, and Ctrl+P still toggles from anywhere.
-        button_label = "S&top" if stopping else "P&lay"
-        button = getattr(self, "_play_stop_btn", None)
-        if button is not None and button.GetLabel() != button_label:
-            button.SetLabel(button_label)
-            spoken = "Stop (Alt+T, or Ctrl+P)" if stopping else "Play (Alt+L, or Ctrl+P)"
-            set_accessible_name(button, spoken)
+        # The button's letters (L, T, E) are chosen against the menu bar's: a
+        # button mnemonic on a frame competes with the bar's (#1208), and the
+        # bar wins. GATE-15 reads every label the button can show.
         from quill.apps import radio_transport_menu
+        from quill.ui.radio import main_transport_button
+
+        main_transport_button.refresh(self)
 
         radio_transport_menu.refresh_labels(self)
         self._refresh_favorite_toggle()
@@ -1778,7 +1770,7 @@ class RadioAppFrame(
         for name in (
             "_now_playing_text",
             "_favorites_tree",
-            "_play_stop_btn",
+            "_transport_btn",
             "_favorite_toggle_btn",
             "_record_btn",
         ):

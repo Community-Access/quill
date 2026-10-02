@@ -1,68 +1,93 @@
-"""What pressing Play would actually do, said out loud.
+"""What pressing Play would actually do, in the button's own label.
 
 Jeff, 2026-09-30, from the main window: "I land in the library on favorites, if I
 tab I see play, play what?"
 
-The button said "Play". That is the correct *label* and a useless *name*. A sighted
+The button said "Play". That is the correct *verb* and a useless *label*. A sighted
 listener reads it next to a Now Playing line and a highlighted tree row and assembles
 the answer in a glance; somebody hearing "Play, button" has been told the verb and
 nothing else -- not what it would play, not whether it would resume something, not
-whether pressing it would do anything at all. And in the one state where it genuinely
-does nothing (stopped, with nothing selected that can play) it looked exactly the same
-as in the state where it would start an episode.
+whether pressing it would do anything at all.
 
-So the two halves are split, which is what ``set_accessible_name`` is for:
-
-* **The visible label stays short** -- Play, Pause, Resume. A button whose visible
-  text grew to a full sentence would reflow the row it sits in every time the
-  selection changed, which is its own kind of unusable.
-* **The accessible name carries the object.** "Resume The Daily, Thursday's episode"
-  is what a screen reader should say, because that is the whole of what the listener
-  cannot otherwise find out.
-
-One rule decides every case below: **the name describes the effect of pressing it,
-not the state of the player.** Those are different sentences, and only the first one
-answers "play what?". A button named after the state ("Stopped") is a readout
-wearing a button's clothes, which is the same mistake Radio's status bar was
-redesigned to stop making.
+The first fix split the two halves: a short visible label and an accessible name
+carrying the object. The survey of the next day (qc.md 6b, item 1) found that on
+wxMSW a button is self-labelled and ``set_accessible_name`` is inert on it, so the
+fix was inaudible -- the button still said "Play". The object has to be in the
+label. That rule, the elision that keeps the row still, and the ampersand escaping
+now live in :mod:`quill.core.transport_button`, shared with Quill Radio's main
+window; this module is Cast's reading of it: Cast's mnemonics (chosen against the
+Podcasts, Episode, Downloads, View, Quillins, Window and Help menus), Cast's active
+verb (Pause -- Stop is a second button), and Cast's sentence for the one dead state.
 
 wx-free, strict-typed, pure.
 """
 
 from __future__ import annotations
 
-__all__ = ["PAUSED", "PLAYING", "STOPPED", "button_label", "transport_name"]
+from quill.core import transport_button as tb
 
-#: The three states this module distinguishes. Deliberately *not* the player's own
-#: enum: this module is wx-free and must not import the UI, and the caller already
-#: holds the enum. Loading counts as playing, because pressing the button while a
-#: stream opens should pause it, which is what the listener means.
-PLAYING = "playing"
-PAUSED = "paused"
-STOPPED = "stopped"
+__all__ = [
+    "LOADING",
+    "PAUSED",
+    "PLAYING",
+    "STOPPED",
+    "button_face",
+    "button_label",
+    "label_samples",
+    "transport_name",
+]
+
+#: The phases this module distinguishes. Loading counts as playing, because
+#: pressing the button while a stream opens should pause it, which is what the
+#: listener means.
+STOPPED = tb.STOPPED
+LOADING = tb.LOADING
+PLAYING = tb.PLAYING
+PAUSED = tb.PAUSED
+
+#: What the dead state tells a listener to do. Both routes are in the window
+#: they are standing in.
+_DEAD_HINT = "choose a podcast or an episode in the library first, or use Continue Listening"
 
 
-def button_label(state: str) -> str:
-    """The short visible label, with its access key.
+def button_face(
+    state: str,
+    *,
+    show_title: str = "",
+    episode_title: str = "",
+    selection: str = "",
+    can_play_selection: bool = False,
+) -> tb.ButtonFace:
+    """Label, sentence and verb for the Play/Pause/Resume button, as one reading."""
+    return tb.face(
+        state,
+        active_verb="pause",
+        object_name=show_title,
+        episode_title=episode_title,
+        selection=selection,
+        can_play_selection=can_play_selection,
+        mnemonics=tb.CAST_MNEMONICS,
+        dead_hint=_DEAD_HINT,
+    )
 
-    Three labels rather than two, because Resume and Play are different promises:
-    Play starts something at the beginning, Resume returns to a place. A listener
-    who hears Resume knows their position survived.
-    """
-    if state == PLAYING:
-        return "&Pause"
-    if state == PAUSED:
-        return "&Resume"
-    return "&Play"
 
-
-def _episode_phrase(show_title: str, episode_title: str) -> str:
-    """ "The Daily, Thursday's episode", or whichever half exists."""
-    show = (show_title or "").strip()
-    episode = (episode_title or "").strip()
-    if show and episode:
-        return f"{show}, {episode}"
-    return episode or show
+def button_label(
+    state: str,
+    *,
+    show_title: str = "",
+    episode_title: str = "",
+    selection: str = "",
+    can_play_selection: bool = False,
+) -> str:
+    """The visible label, object included: "Pla&y The Daily", "Pau&se The Daily,
+    Thursday's episode", "Re&sume ...", or "Pla&y -- nothing selected"."""
+    return button_face(
+        state,
+        show_title=show_title,
+        episode_title=episode_title,
+        selection=selection,
+        can_play_selection=can_play_selection,
+    ).label
 
 
 def transport_name(
@@ -73,29 +98,20 @@ def transport_name(
     selection: str = "",
     can_play_selection: bool = False,
 ) -> str:
-    """The accessible name: what pressing the button would do, in full.
+    """The whole sentence, never elided: what pressing the button would do.
 
-    *selection* is what the library cursor is on, and *can_play_selection* whether
-    pressing Play would actually start it -- a folder, a pinned view or an empty
-    show is a selection that cannot be played, and a button that says it would play
-    "News" when News is a folder has lied about the one thing it was asked.
-
-    The stopped-with-nothing-playable case says **what to do instead**, because it
-    is the only state in which the button does nothing, and a button that does
-    nothing and says only "Play" is indistinguishable from a broken one. That was
-    the report.
+    Spoken when the button is pressed in the one state where it does nothing,
+    and used wherever a status line wants the same words as the button.
     """
-    if state == PLAYING:
-        what = _episode_phrase(show_title, episode_title)
-        return f"Pause {what}" if what else "Pause"
-    if state == PAUSED:
-        what = _episode_phrase(show_title, episode_title)
-        return f"Resume {what}" if what else "Resume"
-    if can_play_selection and selection.strip():
-        return f"Play {selection.strip()}"
-    # Stopped, and nothing pressing it would start. Name the two routes, since the
-    # listener is standing in the library and one of them is under their cursor.
-    return (
-        "Play. Nothing is selected that can be played -- choose a podcast or an "
-        "episode in the library first, or use Continue Listening"
-    )
+    return button_face(
+        state,
+        show_title=show_title,
+        episode_title=episode_title,
+        selection=selection,
+        can_play_selection=can_play_selection,
+    ).spoken
+
+
+def label_samples() -> list[str]:
+    """Every label shape the button can show, for GATE-15."""
+    return tb.label_samples(tb.CAST_MNEMONICS, active_verb="pause")

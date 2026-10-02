@@ -29,10 +29,11 @@ from __future__ import annotations
 import ast
 import re
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
-__all__ = ["APPS", "Collision", "check_app", "main"]
+__all__ = ["APPS", "DYNAMIC_LABELS", "Collision", "check_app", "main"]
 
 _ROOT = Path(__file__).resolve().parents[2]
 
@@ -47,12 +48,36 @@ APPS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
     ),
     "radio": (
         ("quill/apps/radio.py",),
-        ("quill/apps/radio.py",),
+        ("quill/apps/radio.py", "quill/ui/radio/main_transport_button.py"),
     ),
     "weather": (
         ("quill/apps/weather.py",),
         ("quill/apps/weather.py",),
     ),
+}
+
+
+def _cast_dynamic_labels() -> list[str]:
+    from quill.core.podcasts import transport_intent
+
+    return transport_intent.label_samples()
+
+
+def _radio_dynamic_labels() -> list[str]:
+    from quill.core import transport_button
+
+    return transport_button.label_samples(transport_button.RADIO_MNEMONICS, active_verb="stop")
+
+
+#: Labels a window builds at run time, which the source scan cannot see. The
+#: survey of 2026-09-30 found ``&Pause`` reclaiming Alt+P from the Podcasts menu
+#: the moment anything played: the gate had read only the static ``Pla&y``
+#: literal, and the transport button's other two labels were computed. Each
+#: provider returns every label shape its button can show, and they are checked
+#: exactly like a literal.
+DYNAMIC_LABELS: dict[str, tuple[tuple[str, Callable[[], list[str]]], ...]] = {
+    "cast": (("quill/core/podcasts/transport_intent.py", _cast_dynamic_labels),),
+    "radio": (("quill/core/transport_button.py", _radio_dynamic_labels),),
 }
 
 _MNEMONIC = re.compile(r"&([A-Za-z0-9])")
@@ -139,6 +164,10 @@ def check_app(app: str) -> list[Collision]:
         _scan(_ROOT / rel, found, menus=True, controls=False)
     for rel in control_files:
         _scan(_ROOT / rel, found, menus=False, controls=True)
+    for rel, provider in DYNAMIC_LABELS.get(app, ()):
+        for label in provider():
+            if _letter(label):
+                found.controls.append((label, (_ROOT / rel).as_posix(), 0))
     collisions: list[Collision] = []
     for label, file, line in found.controls:
         letter = _letter(label)

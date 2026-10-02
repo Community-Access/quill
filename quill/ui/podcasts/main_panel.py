@@ -68,28 +68,44 @@ class CastMainPanelMixin:
         )
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        # One transport button, not two static ones: it tracks Play, Pause,
-        # and Resume so it is never dead in a given state.
-        # Mnemonics here are chosen against the menu bar's top-level letters,
-        # not only against each other. Alt+S opened Stop instead of the
+        # Every button in this row names its object IN ITS LABEL, never in an
+        # accessible name: on wxMSW a button is self-labelled and
+        # set_accessible_name is inert on it (qc.md 6b, item 1), so "Play what?"
+        # can only be answered by the label. The labels are built by
+        # core/transport_button.py, elided at forty characters, and each button
+        # gets an equal share of the row (proportion 1), so nothing reflows as
+        # the selection changes. tests/unit/ui/podcasts/test_button_object_in_label.py
+        # is the gate that no set_accessible_name targets a wx.Button here.
+        #
+        # Mnemonics are chosen against the menu bar's top-level letters, not
+        # only against each other. Alt+S opened Stop instead of the
         # Subscriptions menu, and Alt+V the favourites toggle instead of View,
         # because wxMSW hands an ambiguous Alt+letter to the control (Jeff,
         # 2026-09-30). The menu bar wins -- its letters are how a listener
-        # navigates -- so the buttons yield: Y, T, F, U, A, I. The gate is
-        # quill/tools/check_menubar_mnemonics.py.
-        self._play_pause_btn = wx.Button(panel, label="Pla&y")
+        # navigates -- so the buttons yield: Y (Play), S (Pause and Resume), T,
+        # F, U, A, I. GATE-15 (quill/tools/check_menubar_mnemonics.py) reads the
+        # computed transport labels as well as the literals here.
+        from quill.core.podcasts import transport_intent
+
+        # One transport button, not two static ones: it tracks Play, Pause,
+        # and Resume so it is never dead in a given state.
+        self._play_pause_btn = wx.Button(
+            panel, label=transport_intent.button_label(transport_intent.STOPPED)
+        )
         self._play_pause_btn.SetHelpText(
             "Starts the selected podcast or episode when stopped, pauses current "
-            "playback, or resumes it from the saved position when paused."
+            "playback, or resumes it from the saved position when paused. The label "
+            "names what it would play, pause or resume."
         )
-        set_accessible_name(self._play_pause_btn, "Play")
         self._play_pause_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_transport_button())
-        buttons.Add(self._play_pause_btn, 0, wx.RIGHT, 6)
+        buttons.Add(self._play_pause_btn, 1, wx.EXPAND | wx.RIGHT, 6)
         self._stop_btn = wx.Button(panel, label="S&top")
-        self._stop_btn.SetHelpText("Stops the current episode. Play starts playback again.")
-        set_accessible_name(self._stop_btn, "Stop")
+        self._stop_btn.SetHelpText(
+            "Stops the current episode. Enabled only while something is playing or "
+            "paused; Play starts playback again."
+        )
         self._stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self.podcast_stop())
-        buttons.Add(self._stop_btn, 0, wx.RIGHT, 6)
+        buttons.Add(self._stop_btn, 1, wx.EXPAND | wx.RIGHT, 6)
         # Favorite toggle for whatever show is playing right now, same
         # pattern as Quill Radio's main-page toggle.
         self._favorite_toggle_btn = wx.Button(panel, label="Add to &Favorites")
@@ -97,24 +113,23 @@ class CastMainPanelMixin:
             "Adds the playing podcast to Favorites, or removes it if already there. "
             "Disabled when there is no playing podcast."
         )
-        set_accessible_name(self._favorite_toggle_btn, "Add the playing podcast to favorites")
         self._favorite_toggle_btn.Enable(False)
         self._favorite_toggle_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_favorite_toggle())
-        buttons.Add(self._favorite_toggle_btn, 0, wx.RIGHT, 6)
+        buttons.Add(self._favorite_toggle_btn, 1, wx.EXPAND | wx.RIGHT, 6)
         # Unfollow beside Add, because a row of buttons that can add a podcast
         # and cannot remove one is half a row (Jeff: "shouldn't that also show
-        # remove podcast if a podcast is highlighted?"). Named after the
+        # remove podcast if a podcast is highlighted?"). Labelled with the
         # selected podcast and disabled with nothing selected; the shared prompt
         # asks first and makes it one undoable step.
         self._unfollow_btn = wx.Button(panel, label="&Unfollow")
-        set_accessible_name(self._unfollow_btn, "Unfollow -- select a podcast first")
         self._unfollow_btn.SetHelpText(
-            "Stops following the podcast selected in the library. Asks first, says "
-            "what happens to anything downloaded, and Ctrl+Z puts it back."
+            "Stops following the podcast named on the button, the one selected in "
+            "the library. Asks first, says what happens to anything downloaded, "
+            "and Ctrl+Z puts it back."
         )
         self._unfollow_btn.Enable(False)
         self._unfollow_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_unfollow_button())
-        buttons.Add(self._unfollow_btn, 0, wx.RIGHT, 6)
+        buttons.Add(self._unfollow_btn, 1, wx.EXPAND | wx.RIGHT, 6)
         # "Open Manager" named a window, not a thing you wanted. Until Phase 2
         # folds that window into this one, the button says what is in it.
         for label, handler in (
@@ -126,10 +141,9 @@ class CastMainPanelMixin:
                 "Opens the episode list and podcast actions, or opens Add Podcast "
                 "to find and follow another show, as named by this button."
             )
-            set_accessible_name(button, label)
             button.Bind(wx.EVT_BUTTON, handler)
-            buttons.Add(button, 0, wx.RIGHT, 6)
-        root.Add(buttons, 0, wx.ALL, 8)
+            buttons.Add(button, 1, wx.EXPAND | wx.RIGHT, 6)
+        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
 
         # The status bar, last in the panel and last in the tab order -- and it
         # refuses Tab focus entirely, so it costs a listener nothing until they

@@ -98,6 +98,37 @@ def test_every_rostered_app_is_clean_today() -> None:
         assert gate.check_app(app) == [], app
 
 
+def test_a_label_built_at_run_time_is_checked_like_a_literal(monkeypatch) -> None:
+    """The survey of 2026-09-30 found ``&Pause`` reclaiming Alt+P from the
+    Podcasts menu the moment anything played: the gate had read only the static
+    ``Pla&y``. Every label the transport button can show is now handed to the
+    gate by its own module, and a bad one is reported with that module's path."""
+    assert gate.check_app("cast") == []
+    monkeypatch.setitem(
+        gate.DYNAMIC_LABELS,
+        "cast",
+        (("quill/core/podcasts/transport_intent.py", lambda: ["&Pause The Daily"]),),
+    )
+    found = gate.check_app("cast")
+    assert [(c.letter, c.control_label, c.control_file) for c in found] == [
+        ("P", "&Pause The Daily", "quill/core/podcasts/transport_intent.py")
+    ]
+
+
+def test_both_transport_buttons_hand_the_gate_every_label_they_can_show() -> None:
+    from quill.core import transport_button as tb
+    from quill.core.podcasts import transport_intent
+
+    providers = {rel: fn for rel, fn in gate.DYNAMIC_LABELS["cast"]}
+    assert (
+        providers["quill/core/podcasts/transport_intent.py"]() == transport_intent.label_samples()
+    )
+    providers = {rel: fn for rel, fn in gate.DYNAMIC_LABELS["radio"]}
+    assert providers["quill/core/transport_button.py"]() == tb.label_samples(
+        tb.RADIO_MNEMONICS, active_verb="stop"
+    )
+
+
 def test_the_gate_names_the_letter_the_menu_and_the_control() -> None:
     """A collision report the reader can act on without opening two files."""
     text = str(gate.Collision("cast", "S", "&Subscriptions", "&Stop", "quill/x.py", 7))

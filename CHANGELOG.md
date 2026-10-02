@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### The transport button says its object, in Radio and Cast (2026-10-01)
+
+- Quill Radio's main-window Stop button is the one transport control again,
+  and its label carries its object: Play <selected favorite> (Alt+L), Stop
+  <what is playing> (Alt+T), Resume <it> (Alt+U), or "Play -- nothing selected",
+  which explains itself when pressed. The Playback > Play row reads the same
+  word. The Volume slider's access key moved to Alt+O to free U
+  (`quill/ui/radio/main_transport_button.py`; `stop_button.py` removed).
+- QUILL Cast's Play/Pause/Resume button names its object in its label rather
+  than in an accessible name, which wxMSW never reads on a button; Unfollow
+  names the selected podcast or the selected episode's podcast; the row keeps
+  fixed shares so it never reflows. `set_accessible_name` no longer targets any
+  Cast button, and a test keeps it that way.
+- Shared `quill/core/transport_button.py`: one wx-free face builder for both
+  apps (verb, object, elision at 40 characters, ampersand escaping, per-app
+  mnemonics). GATE-15 now reads every label the buttons can produce, not only
+  the resting literal. Resolves QC X-06 and Cast Phase 1 item 1.
+
 ### QC reliability pass (2026-09-30)
 
 - Native Preferences/Settings surfaces gain a shared label/help search field,
