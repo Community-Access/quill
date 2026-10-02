@@ -3872,6 +3872,8 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 This is the authoritative unchecked code/delivery tracker: **18 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
+The same rows, ordered by what users will feel first and with the impact of each, are in "What Remains, in the Order Users Will Feel It" at the bottom of this file; an entry there is deleted when its row here is closed.
+
 ### Family Reliability Findings: 4
 
 - [ ] F-08: Extract ownership-heavy QUILL/Radio/Cast orchestration by lifetime/invariant; preserve host contracts and ratcheted size budgets.
@@ -3911,3 +3913,115 @@ This is the authoritative unchecked code/delivery tracker: **18 grouped rows**. 
 
 - [ ] Text-only AI: Complete the specified independently switchable features using shared privacy/operation contracts.
 - [ ] Earshot parity: Complete referenced R8-R10 and B1-B3 groups, with switches, documentation, and reachability tests.
+
+## What Remains, in the Order Users Will Feel It
+
+Added 2026-10-02 at Jeff's request. This is the working order from here: the
+things a listener or writer will meet on an ordinary day come first, the
+things only the build sees come last. Each entry says what a person will
+notice when it ships and how much it changes their day (**High**: met daily or
+protects their data; **Medium**: met weekly or by a subset; **Low**: rare, or
+invisible unless it fails). An entry is deleted the moment its row above is
+closed, so this list only ever shrinks. Family priority order still applies
+within a tier: QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.
+
+### Tier 1 -- met every day
+
+1. **Cast Phase 7, the extensions (section 18).** Impact: **High**. These are
+   keys pressed during every listen: time remaining on one key and Ctrl+Home
+   to the start; bookmarks and timestamp links on the seek plumbing Now
+   Playing already built; "up next" spoken before the gap; earcons through the
+   shared feedback setting; Play This Next; follow a podcast from an address
+   on the clipboard; a global hotkey for Now Playing; an undo history shared
+   with Radio. An afternoon each for the first two, and every one of them is
+   something a listener reaches for by hand today.
+2. **Cast Phase 3, nothing silent.** Impact: **High**. Every button and every
+   background job ends in a sentence: the status bar through one `say_status`,
+   failures into Recent Problems through one helper, the per-window audit of
+   what is actually heard. Today a feed check that fails reports zero feeds
+   checked rather than "the check failed"; after this, nothing that went wrong
+   can go unsaid.
+3. **Earshot parity R8-R10.** Impact: **High**. R8: a renamed podcast or
+   episode keeps its name through the next refresh (today the feed overwrites
+   it). R9: Play Now and Add to Queue on the new-episode notification, and on
+   keys, because a toast is not reliably reachable. R10: "Clear from this
+   computer" and "Delete everywhere" worded apart, so tidying a laptop cannot
+   empty a phone. B1-B3 stay blocked on Earshot's format and a real export
+   from Jeff's phone; they are listed, not scheduled.
+4. **Cast text-only AI, A2-A10.** Impact: **High** for anyone who turned AI
+   help on, none for anyone who did not. On the switch shipped 2026-10-02:
+   Organise My Podcasts (the core exists; the review checklist does not),
+   What Is This Show About, Is This Episode for Me, Summarise This Episode
+   (says whether it read the transcript or the notes), Build Me a Listening
+   Run ("I have 40 minutes"), smart-playlist rules from a sentence, Name
+   These Chapters, Tidy My Subscriptions -- every one a proposal list with
+   Accept/Skip, never an action on its own -- and A10, the written rule and
+   its test that no AI sits on a path that deletes, unsubscribes or spends.
+
+### Tier 2 -- met every week, or by everyone once
+
+5. **Cast Phase 2, one window.** Impact: **High**, and the largest change in
+   the plan. The Places list, the content pane and Find in one main window;
+   the Podcast Manager's episode list and actions move home and the Manager
+   is deleted; reorder, hide and rename the places; Notifications as a place,
+   a status-bar cell and a peer window with actions per notice; the complete
+   feature-switch inventory so every place and cell is absent when its switch
+   is off. A listener stops learning two windows that show the same library.
+6. **Cast Phase 5, names, words, settings, schedules.** Impact: **Medium**.
+   Settings consolidated into two windows (Podcast Settings today calls Fit
+   over forty rows and loses OK and Cancel off the bottom of a 1080p screen);
+   the wordlist gate so every row reads in one vocabulary; refresh schedules
+   per podcast with Check Now and Change Schedule, the learned publish time,
+   and Feed Check columns that say when the next check is.
+7. **Cast Phase 6, the first hour.** Impact: **Medium**. First Run, the
+   Tutorials, the five documents and the F1 audit: what a new listener meets
+   before they have a library, and what an old one presses when stuck.
+8. **Cast Phase 4, every surface a peer, and Watched Folders.** Impact:
+   **Medium**. Every secondary surface opens the same way, raises instead of
+   duplicating, closes on Escape and Ctrl+W back to the control that opened
+   it. With it, Watched Folders in full: a folder of personal audio watched
+   live with the settled-file rule, groups, per-folder settings, arrivals
+   announced once. New for people with audiobooks and lectures on disk.
+9. **F-10, the remaining adoptions.** Impact: **Medium**. Spoken progress
+   during Cast downloads and feed refreshes and during QUILL Lite's background
+   open ("3 of 12, two minutes left"), the cursor back on the row it left
+   after a list refreshes in Cast, and follow/refresh/export/record outcomes
+   in Cast and Radio reported through the one result model so F9 repeats
+   them and Activity lists them.
+10. **X-01, family settings search, finished.** Impact: **Medium**. Type a
+    word, land on the setting, in Converter, Player and Inkwell as in the
+    rest, including the web forms and the settings areas never opened.
+11. **X-04, richer queue and activity views; skippable first-run and task
+    guidance.** Impact: **Medium**. The queue and Activity answer "what is
+    waiting and why" in one list; the first-run and task guidance can be
+    skipped and returned to.
+12. **X-08, PR #1618 review (MathML, EPUB entities, regex fallback).** Impact:
+    **Medium** for anyone reading an EPUB with maths: a `&lt;` in MathML is
+    spoken as "less than" rather than vanishing; the app still starts without
+    `defusedxml` or `regex` installed. Invisible to everyone else.
+
+### Tier 3 -- met by a few, or rarely
+
+13. **X-02, task recipes.** Impact: **Medium-Low**. Discoverable, keyboard-run
+    sequences of existing commands ("export this chapter as audio and share
+    the file") with the shared result at the end. Useful; not daily.
+14. **X-03, focus, review and session profiles.** Impact: **Low-Medium**.
+    Named, reversible bundles of existing settings. The people who want them
+    want them badly; most never will.
+15. **X-05, explicit cross-app personalization.** Impact: **Low**. Opt-in
+    sharing of preferences between the apps with nothing silent about keys,
+    focus or speech.
+16. **F-09, bounded incremental search, refresh and download state.** Impact:
+    **Medium on a 1,300-podcast library, Low otherwise**. Find in Library
+    stays instant and the transcript index exists; refresh and downloads can
+    be cancelled and never block the window. Felt only as absence of waiting.
+
+### Tier 4 -- only the build sees it
+
+17. **F-12, the remaining gates** (safe absence, performance, release
+    invariants). Impact: **Low** directly; it is what keeps every item above
+    from regressing. Users see it only when it fails.
+18. **F-08, extraction by lifetime and invariant.** Impact: **None** directly.
+    QUILL, Radio and Cast orchestration split along ownership lines under the
+    ratcheted size budgets, host contracts preserved. It makes the rest
+    cheaper to build and is scheduled wherever it unblocks a tier above.
