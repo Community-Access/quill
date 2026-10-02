@@ -18,13 +18,13 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 5 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 4 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
 | Manual screen-reader scenarios | 53 | Human acceptance pending |
-| **Total tracked rows** | **83** | **30 code/delivery groups + 53 manual scenarios** |
+| **Total tracked rows** | **82** | **29 code/delivery groups + 53 manual scenarios** |
 
-Code/delivery subtotal: **30**.
+Code/delivery subtotal: **29**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1280,7 +1280,8 @@ no Find field and no Now Playing surface exist:
       Where to land on launch; Switch to Now Playing when playback starts.
       Needs `PodcastHistory.switch_to_now_playing` and `core/podcasts/launch_place.py`
       (the latter is written).
-- Tests for `library_tree.py`; GATE-15 on the `platform_report` roster.
+- [x] Tests for `library_tree.py`; GATE-15 on the `platform_report` roster.
+      Done 2026-10-01 (the roster in `fef27b3`).
 - [x] Two tests to update to the new truth (`test_add_podcast_focus_return`,
       `test_podcast_show_actions_credentials`), and `surface_help` purposes for
       Feed Check and the main panel's new buttons (GATE-CAST-HELP). Done
@@ -2952,6 +2953,19 @@ programming-error path manually.
 
 Original document title: QC3: Completed Quality Changes.
 
+### 2026-10-01: Cast Phase 1 -- tests for `library_tree.py`
+
+- New `tests/unit/ui/podcasts/test_library_tree.py` (9 tests, fake tree, real
+  library objects, view membership stubbed since `virtual_views` has its own
+  tests): an empty view gets no expander; a counted view gets one tagged
+  placeholder; an episode view names the podcast on every row, newest first;
+  205 pairs show 200 rows and "5 more"; Favorites opens to podcasts, each
+  with its own episode expander and none for a podcast with no episodes;
+  Play takes the newest unstarted episode, Continue Listening the most recent
+  started one, Favorites a favourite's newest unplayed, and an empty view
+  returns None so the caller can say why. GATE-15's roster entry landed in
+  `fef27b3`. Documented in Cast PRD 23.3. No user-visible change.
+
 ### 2026-10-01: Cast Phase 1 -- F1 purposes for the main window and Feed Check
 
 - `core/podcasts/surface_help.py`: the "QUILL Cast" purpose names what the
@@ -3288,7 +3302,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **30 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **29 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3324,7 +3338,7 @@ This is the authoritative unchecked code/delivery tracker: **30 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 5
+### Cast Phase 1 Code and Tests: 4
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
@@ -3336,8 +3350,6 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
       Where to land on launch; Switch to Now Playing when playback starts.
       Needs `PodcastHistory.switch_to_now_playing` and `core/podcasts/launch_place.py`
       (the latter is written).
-- [ ] Tests for `library_tree.py`; GATE-15 on the `platform_report` roster
-      (the roster half is done in `fef27b3`; the tests are not written).
 - [ ] Find in library above the tree (the interim of P10).
 - [ ] Now Playing (section 5), with the Notes reader and the grown Links
       dialog (5c) as its show-notes pane -- the reader is built once here and
