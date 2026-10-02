@@ -225,7 +225,8 @@ def test_standalone_cast_falls_back_to_its_own_history_record() -> None:
 
 
 def test_standalone_cast_offers_the_setting_in_preferences() -> None:
-    source = (REPO / "quill" / "apps" / "podcasts.py").read_text(encoding="utf-8")
+    # Preferences moved to its own mixin on 2026-10-01 (GATE-11 extraction).
+    source = (REPO / "quill" / "apps" / "podcasts_preferences.py").read_text(encoding="utf-8")
     assert "history.podcast_check_enabled" in source
     assert "history.podcast_check_interval_minutes" in source
     # Re-applied on save, so a cadence you just chose is the one that is

@@ -265,6 +265,9 @@ described as abandoned: Cast keeps trying, and every sentence says so, because
 With no launch place chosen, Cast opens on the Inbox if anything is waiting,
 else on Continue Listening if anything is half-heard, else at the top of the
 library -- the answer a listener would give if asked why they opened the app.
+**Preferences > Where to land on launch** (Alt+U) chooses one place instead:
+the Inbox, New Episodes, Continue Listening or Favorites, always, even when
+empty.
 
 ### Three verbs from the Command Palette
 

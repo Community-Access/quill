@@ -232,8 +232,9 @@ def test_quill_radio_groups_its_podcast_and_reminder_settings() -> None:
 def test_quill_cast_groups_its_podcast_settings() -> None:
     from pathlib import Path
 
-    source = (Path(__file__).resolve().parents[3] / "quill" / "apps" / "podcasts.py").read_text(
-        encoding="utf-8"
-    )
+    # Preferences moved to its own mixin on 2026-10-01 (GATE-11 extraction).
+    source = (
+        Path(__file__).resolve().parents[3] / "quill" / "apps" / "podcasts_preferences.py"
+    ).read_text(encoding="utf-8")
 
     assert "group=self._PODCASTS" in source

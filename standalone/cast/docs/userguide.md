@@ -32,7 +32,7 @@ Tab order: the now-playing line, the library tree, then five buttons.
 - **Episodes without leaving the main page.** Every show in the tree can be expanded (Right Arrow) to reveal its episodes, newest first, right where the show sits -- no detour through the Manager to reach one particular episode. Shows start collapsed so the tree reads as a list of shows rather than a wall of episodes. **Enter on an episode plays that episode**; Enter on the show itself still plays the show's next unplayed episode. An episode row's context menu offers **Play Episode** (Stop, while it is the one playing) and **Download Episode** -- the file lands under your Download location as `show-title\episode-title.mp3`, so it has a name that means something outside the app.
 - Buttons, each of which **names the thing it will act on in its own label**: **Play** and the name of whatever the library cursor is on (Alt+Y) -- a podcast (its next episode plays), an episode, or a pinned view (its first playable episode); it becomes **Pause** and the playing episode's name while playing, and **Resume** and its name (Alt+S) while paused, so it is never dead. With a folder, an empty show or nothing selected it reads **Play -- nothing selected**, and pressing it says what would work. **Stop** (Alt+T) is enabled only while something is playing or paused. **Add to Favorites** (Alt+F) becomes **Remove from Favorites** when the playing show is already a favorite. **Unfollow** and the selected podcast's name (Alt+U) -- or the selected episode's podcast -- asks first, and Ctrl+Z puts the show back; with nothing selected it reads plain Unfollow and is disabled. **Episode List...** (Alt+I) is the Podcast Manager; **Add Podcast...** (Alt+A). Names longer than forty characters are shortened with an ellipsis, and every button keeps its share of the row, so nothing moves as you arrow through the library. The letters are chosen so no button ever shares one with a menu: when a button and a menu claim the same Alt+letter, Windows gives it to the button, which is how Alt+S once pressed Stop instead of opening a menu.
 - **The status bar**, last in the window and off the Tab order: press **F6** to enter it. See "The status bar" below.
-- **Where Cast opens.** With no launch place chosen, Cast lands on the Inbox if anything is waiting, else on Continue Listening if anything is half-heard, else at the top of the library.
+- **Where Cast opens.** With no launch place chosen, Cast lands on the Inbox if anything is waiting, else on Continue Listening if anything is half-heard, else at the top of the library. Preferences > **Where to land on launch** chooses a place instead.
 
 ## The status bar
 
@@ -163,15 +163,16 @@ Open Podcast Manager... (Ctrl+M), Add Podcast... (Ctrl+N), Import OPML... *(Adva
 
 **Sort Podcasts** decides how your shows are ordered everywhere they are listed: **Ascending (A to Z)**, **Descending (Z to A)**, or **Custom Order**. Custom order is the one you build by hand: **Alt+Up / Alt+Down** on a show in the library tree (or Move Up/Down in Custom Order on its context menu) nudges it among its folder's neighbours. The first move switches to custom automatically -- starting from the order already on screen, so nothing jumps -- and the radio items here always show which mode is live.
 
-**Preferences...** (Ctrl+,) holds five checkboxes:
+**Preferences...** (Ctrl+,) holds six checkboxes:
 
 - **Resume Last Episode on Launch** -- pick up where you left off the moment the app opens.
 - **Check for updates automatically on launch** -- the quiet once-a-day check.
 - **Announce dialog transitions** -- off by default; turn it on for more spoken detail around every dialog.
 - **Alt+F4 minimizes to the system tray** -- off by default. When on, Alt+F4 tucks the window away with playback still running instead of closing it, so the reflexive keyboard close stops ending your listening. The titlebar X and Exit are unaffected: a deliberate exit still exits.
 - **Winamp playback keys** -- on by default. See "Winamp playback keys" below.
+- **Check the feeds you follow on a timer** -- off by default, in the Podcasts group. A check reads episode lists only; it starts no downloads by itself.
 
-and one list:
+and three lists:
 
 - **When closing the window** -- *Ask every time*, *Exit* (the shipped answer,
   and what QUILL Cast has always done), or *Minimize to Tray*. This governs
@@ -181,6 +182,12 @@ and one list:
   close to ask whether you meant it. The question names what is at stake --
   "An episode is playing and 2 downloads are in progress" -- and can remember
   your answer. The Alt+F4 checkbox above still acts first when it is on.
+- **Check the feeds you follow** -- how often, when the timer is on.
+- **Where to land on launch** (Alt+U) -- which place has focus when QUILL Cast
+  opens. **What is new**, the default, lands on the Inbox when anything is
+  waiting, else Continue Listening when anything is half-heard, else the top
+  of your podcasts. Choosing **Inbox**, **New Episodes**, **Continue
+  Listening** or **Favorites** always lands there, even when it is empty.
 
 **Export My Data...** writes everything QUILL Cast knows about your listening -- subscriptions, folders, the Play Queue, playlists, episode notes, listening statistics, and your recently-played list -- to one readable JSON file. Export OPML covers your subscriptions and nothing else; this covers the rest.
 

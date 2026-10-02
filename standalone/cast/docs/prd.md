@@ -1461,6 +1461,16 @@ fixed; the family count may only fall. `ui/labelled_field.py` makes the correct
 construction order the easy one; since 2026-10-01 it takes no `help=`, because help
 set inside a helper is invisible to the help audits -- callers set it inline.
 
+### 23.11 Preferences, extracted, with a launch place (2026-10-01)
+
+`_open_preferences` moved to `apps/podcasts_preferences.py` (`CastPreferencesMixin`)
+under GATE-11, and `podcasts.py`'s budget was ratcheted down to its new size. The
+window gained "Where to land on la&unch:" in the Podcasts group, over
+`core/podcasts/launch_place.CHOICES`, saved to `PodcastSettings.default_launch_view`
+with the library and only when it changed. The planned "Switch to Now Playing when
+playback starts" is deliberately absent until Now Playing exists: a switch for a
+surface that is not there is a setting that lies.
+
 ### 23.10 The object is in the label (2026-10-01)
 
 The same rule renamed the per-setting revert button in Settings for This

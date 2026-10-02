@@ -18,13 +18,13 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 3 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 2 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 54 | Human acceptance pending |
-| **Total tracked rows** | **82** | **28 code/delivery groups + 54 manual scenarios** |
+| Manual screen-reader scenarios | 55 | Human acceptance pending |
+| **Total tracked rows** | **82** | **27 code/delivery groups + 55 manual scenarios** |
 
-Code/delivery subtotal: **28**.
+Code/delivery subtotal: **27**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1277,10 +1277,11 @@ exists and nothing imports it; `podcasts_preferences.py` does not exist;
 tests **were** updated in `fef27b3`; `labelled_field.py` still takes `help=`;
 no Find field and no Now Playing surface exist:
 
-- Preferences extracted to `podcasts_preferences.py` with two new rows:
+- [x] Preferences extracted to `podcasts_preferences.py` with two new rows:
       Where to land on launch; Switch to Now Playing when playback starts.
       Needs `PodcastHistory.switch_to_now_playing` and `core/podcasts/launch_place.py`
-      (the latter is written).
+      (the latter is written). Extraction and the launch row done 2026-10-01; the
+      Now Playing switch moved into the Now Playing row.
 - [x] Tests for `library_tree.py`; GATE-15 on the `platform_report` roster.
       Done 2026-10-01 (the roster in `fef27b3`).
 - [x] Two tests to update to the new truth (`test_add_podcast_focus_return`,
@@ -2786,6 +2787,9 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] Press Ctrl+, in Cast. In the Podcasts group, "Where to land on launch"
+  (Alt+U) reads "What is new..."; choose Favorites, OK, close and reopen Cast:
+  focus lands on Favorites even when it is empty. Set it back to What is new.
 - [ ] Open an episode's Show Notes, choose View as: Rich text, then Tab. The
   formatted notes are announced as "Show notes, formatted"; Alt+F reaches
   them; choosing Plain text hides the label with them.
@@ -2956,6 +2960,22 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- Preferences extracted, with "Where to land on launch"
+
+- `quill/apps/podcasts_preferences.py` (`CastPreferencesMixin`) now owns
+  `_open_preferences`; `podcasts.py` lost 137 lines and its GATE-11 budget was
+  ratcheted down to 792. New row "Where to land on la&unch:" (Podcasts group)
+  over `launch_place.CHOICES`, saved to `PodcastSettings.default_launch_view`
+  with the library, and only when it changed. "Switch to Now Playing when
+  playback starts" is deliberately not added yet -- there is no Now Playing to
+  switch to -- and has moved into the Now Playing row.
+- Tests: new `tests/unit/apps/test_cast_preferences_launch_place.py` (5, the
+  real method against a fake dialog: the row, its default, saving, not
+  re-saving, reopening selected); two source-reading tests repointed at the
+  new module; 215 Preferences/help/settings-doc/budget tests pass.
+- Documented in the Cast user guide (Preferences, Where Cast opens), release
+  notes and PRD 23.11. Manual check added.
 
 ### 2026-10-01: Cast Phase 1 -- the Show Notes formatted view has a name (6b item 14)
 
@@ -3317,7 +3337,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **28 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **27 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3353,20 +3373,19 @@ This is the authoritative unchecked code/delivery tracker: **28 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 3
+### Cast Phase 1 Code and Tests: 2
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
 credit on two rows is noted inline. Worked top to bottom, one commit each.
 
-- [ ] Preferences extracted to `podcasts_preferences.py` with two new rows:
-      Where to land on launch; Switch to Now Playing when playback starts.
-      Needs `PodcastHistory.switch_to_now_playing` and `core/podcasts/launch_place.py`
-      (the latter is written).
 - [ ] Find in library above the tree (the interim of P10).
 - [ ] Now Playing (section 5), with the Notes reader and the grown Links
       dialog (5c) as its show-notes pane -- the reader is built once here and
-      the Show Notes peer window in Phase 4 reuses it.
+      the Show Notes peer window in Phase 4 reuses it. Includes the Preferences
+      row "Switch to Now Playing when playback starts"
+      (`PodcastHistory.switch_to_now_playing`), moved here from the Preferences
+      row on 2026-10-01 because a switch for a surface that does not exist lies.
 
 ### Cast Phases 2-7: 6
 

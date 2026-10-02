@@ -13,15 +13,13 @@ import sys
 import wx
 
 from quill.apps.podcasts_close import (
-    _CLOSE_ACTION_LABELS,
     CastCloseMixin,
-    _close_action_index,
-    _close_action_value,
 )
 from quill.apps.podcasts_go_to import CastGoToMixin
 from quill.apps.podcasts_help_surfaces import CastHelpSurfacesMixin
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
 from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
+from quill.apps.podcasts_preferences import CastPreferencesMixin
 from quill.apps.podcasts_view_menu import CastViewMenuMixin
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
@@ -58,6 +56,7 @@ class PodcastsAppFrame(
     CastMenuBarMixin,
     CastMainPanelMixin,
     CastPlacesMixin,
+    CastPreferencesMixin,
     CastQuickPlayMixin,
     CastViewMenuMixin,
     CastWindowTitleMixin,
@@ -595,140 +594,6 @@ class PodcastsAppFrame(
             if history.resume_on_launch
             else "Resume on launch turned off."
         )
-
-    #: Preference group names (list.md 8.1). Short, because a static box
-    #: label is read aloud every time focus enters the group.
-    _PODCASTS = "Podcasts"
-
-    def _open_preferences(self) -> None:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts import history as podcast_history
-        from quill.core.podcasts import refresh_policy
-        from quill.ui.app_preferences_dialog import (
-            PreferenceAction,
-            PreferenceCheckbox,
-            PreferenceChoice,
-            PreferencesDialog,
-        )
-        from quill.ui.data_folder_dialog import open_data_folder_dialog
-
-        history = self._podcast_history
-        dialog = PreferencesDialog(
-            self.frame,
-            app_title=_TITLE,
-            actions=[
-                PreferenceAction(
-                    "&Data Folder...",
-                    "Where every Quill app stores settings, favorites, and "
-                    "subscriptions. Choose a folder a service like Dropbox or "
-                    "OneDrive keeps in sync to carry them between computers.",
-                    lambda: open_data_folder_dialog(self, app_title=_TITLE),
-                ),
-            ],
-            checkboxes=[
-                PreferenceCheckbox(
-                    "Resume Last Episode on &Launch",
-                    "Resume Last Episode on Launch",
-                    history.resume_on_launch,
-                ),
-                PreferenceCheckbox(
-                    "&Check for updates automatically on launch",
-                    "Check for updates automatically on launch",
-                    history.check_updates_on_startup,
-                ),
-                PreferenceCheckbox(
-                    "&Announce dialog transitions (more spoken detail)",
-                    "Announce dialog transitions -- off by default to reduce alert noise",
-                    history.announce_dialog_transitions,
-                ),
-                PreferenceCheckbox(
-                    "Alt+F&4 minimizes to the system tray",
-                    "When on, Alt+F4 sends QUILL Cast to the system tray, still "
-                    "playing, instead of closing the window",
-                    history.alt_f4_to_tray,
-                ),
-                PreferenceCheckbox(
-                    "&Winamp playback keys (Z X C V B, arrows to seek)",
-                    "The classic Winamp letter keys in the library and episode "
-                    "lists. Turn off to use those letters for list typeahead "
-                    "instead. The same keys as Quill Radio's recordings player.",
-                    history.winamp_playback_keys,
-                ),
-                PreferenceCheckbox(
-                    "Check the feeds you follow on a &timer",
-                    "Look for new episodes without being asked. Off by default. "
-                    "A check reads episode lists only: it starts no downloads by "
-                    "itself, skips shows you have paused, and never changes what "
-                    "you are playing.",
-                    history.podcast_check_enabled,
-                    group=self._PODCASTS,
-                ),
-            ],
-            choices=[
-                PreferenceChoice(
-                    "When c&losing the window:",
-                    # Radio has carried these three for as long as it has had a
-                    # tray icon. Cast had only the Alt+F4 checkbox above, so the
-                    # titlebar X ended playback with no way to say otherwise
-                    # (list.md 5.4). Exit stays the shipped answer: an upgrade
-                    # that starts asking a question is an upgrade that changed
-                    # somebody's Alt+F4 under them.
-                    "What the titlebar X, Alt+F4 and Exit do. Ask every time "
-                    "offers Exit or Minimize to Tray, and can remember your "
-                    "answer. Minimize to Tray keeps playing and downloading "
-                    "with the window out of the way; the tray icon brings it "
-                    "back. This does not change the Alt+F4 setting above, which "
-                    "acts first when it is on.",
-                    list(_CLOSE_ACTION_LABELS),
-                    _close_action_index(history.close_action),
-                ),
-                PreferenceChoice(
-                    "Check the &feeds you follow:",
-                    # The rule from section 3: what it does, then the misreading
-                    # it prevents. Every misread here has been the second half.
-                    refresh_policy.describe_schedule(
-                        history.podcast_check_interval_minutes
-                        if history.podcast_check_enabled
-                        else 0
-                    )
-                    + " Quill Radio has its own separate setting; whichever app "
-                    "checks first, the other skips that round rather than asking "
-                    "the same feeds twice.",
-                    [label for _minutes, label in refresh_policy.INTERVAL_CHOICES],
-                    refresh_policy.interval_index(history.podcast_check_interval_minutes),
-                    group=self._PODCASTS,
-                ),
-            ],
-            announce_cb=self._announce,
-        )
-        result = dialog.show()
-        if result is None:
-            return
-        checkbox_values, choice_indices, _text_values = result
-        (
-            history.resume_on_launch,
-            history.check_updates_on_startup,
-            history.announce_dialog_transitions,
-            history.alt_f4_to_tray,
-            history.winamp_playback_keys,
-            history.podcast_check_enabled,
-        ) = checkbox_values
-        history.close_action = _close_action_value(choice_indices[0])
-        history.podcast_check_interval_minutes = refresh_policy.interval_from_index(
-            choice_indices[1]
-        )
-        podcast_history.save_history(app_data_dir(), history)
-        menu_bar = self.frame.GetMenuBar()
-        if menu_bar is not None:
-            menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
-        # Re-applied rather than left until the next launch: a cadence you just
-        # chose should be the cadence that is running.
-        monitor = getattr(self, "_podcast_check_monitor", None)
-        said = ""
-        if monitor is not None:
-            monitor.apply()
-            said = str(monitor.describe())
-        self._announce(f"Preferences saved. {said}".strip())
 
     def _maybe_resume_last_episode(self) -> None:
         """Podcasts as an appliance: launch, and your last episode is ready."""

@@ -833,7 +833,7 @@
     "quill/ui/main_frame_local_git.py": 696,
     "quill/ui/main_frame_github_extras.py": 335,
     "quill/core/browser_preview.py": 813,
-    "quill/apps/podcasts.py": 1039,
+    "quill/apps/podcasts.py": 792,
     "_rebaseline_2026_07_17_alt_f4_to_tray_cast": "apps/podcasts.py 884 -> 908 (+24): the opt-in Alt+F4-minimizes-to-tray preference -- the EVT_CHAR_HOOK bind + handler and the Preferences checkbox/save wiring. Mirrors Quill Radio; the field lives in core/podcasts/history.py.",
     "_rebaseline_2026_07_25_adp_top_level_menu_studio_weather": "studio.py 2562 -> 2572 (+10): the pre-release ADP Assistant, promoted to a top-level 'Audio Description Project' menu, is now carried by the two standalone properties that lacked it (QUILL Audio Studio here, Quill Weather too -- weather.py stayed under its 600 default cap). StudioAppFrame mixes in AdpMixin and appends _build_adp_menu() in _build_menu_bar (before Help), plus _register_adp_commands() for palette/keybinding parity -- the identical wiring Radio and Cast already use. Reuses the shared _build_adp_menu; no new handler or id. Menu-bar construction lives on the frame and cannot be extracted. Feature growth, set to current size with no slack.",
     "quill/apps/studio.py": 2807,
