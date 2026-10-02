@@ -120,6 +120,10 @@ class ShowNotesDialog:
         apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
         from quill.ui.dialog_contract import show_modal_dialog
 
+        # Focus on the thing this window is for, not on whatever control happens
+        # to come first in it (qc.md 6b: eight windows landed on a filter or a
+        # chooser). Set before ShowModal, which keeps a focus already placed.
+        self._plain_view.SetFocus()
         try:
             show_modal_dialog(self.dialog, "Show Notes", announce=self._announce)
         finally:

@@ -184,6 +184,11 @@ again. Quill Radio's main window learned the same lesson the same day.
   saying what it was called. It now opens with focus on the queue and its
   title, and a build check makes sure no window anywhere in the family can
   make that mistake again.
+- **Windows open on the thing they are for.** Downloads opens in the
+  download list, Feed Check in the feed list, Show Notes in the notes,
+  and Listening Statistics and Year in Review in their reports -- not on a
+  filter, a chooser or the first button, which is where several of them
+  used to land.
 - **OK buttons no longer take a letter.** Smart Playlist Rules, Podcast
   Settings and Settings for This Podcast each spent Alt+O on their OK button,
   which Enter already presses. OK is plain OK now, and O is free for the

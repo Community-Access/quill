@@ -18,14 +18,14 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 12 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 11 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phase 1 commit gate | 1 | Pending |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 47 | Human acceptance pending |
-| **Total tracked rows** | **85** | **38 code/delivery groups + 47 manual scenarios** |
+| Manual screen-reader scenarios | 48 | Human acceptance pending |
+| **Total tracked rows** | **85** | **37 code/delivery groups + 48 manual scenarios** |
 
-Code/delivery subtotal: **38**.
+Code/delivery subtotal: **37**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1262,8 +1262,9 @@ the five dialogs calls `SetFocus`. They are the active worklist, in this order
 - [x] Keyboard Shortcuts and Global Hotkeys come out of `ADVANCED_ROWS` and
       back into Help in Simple mode (section 8), done 2026-10-01: every key is the listener's,
       and Radio and QUILL Lite keep the editors in plain sight.
-- Focus lands on the thing the window is for: Downloads, Feed Check, Show
-      Notes, Statistics, Year in Review each gain one `SetFocus`; the Play Queue
+- [x] Focus lands on the thing the window is for: Downloads, Feed Check, Show
+      Notes, Statistics, Year in Review each gain one `SetFocus` (done
+      2026-10-01); the Play Queue
       passes its title and announce callback to `show_modal_dialog`.
 - The Show Notes rich view gets its label back (item 14) -- or is replaced
       outright by the Notes reader (5c), whichever lands first.
@@ -2783,6 +2784,10 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] Open Downloads, Podcasts > Feed Check..., an episode's Show Notes,
+  Listening Statistics, and Year in Review from Statistics. Each opens with
+  focus on its list, notes or report -- the first thing read after the
+  title is content, not a filter or a button.
 - [ ] Press Ctrl+Shift+Q (or View > Play Queue...): the Play Queue opens with
   focus in the queue list and its title read once. In QUILL, open the Sticky
   Notes Browser: it opens with focus in the search field.
@@ -2925,6 +2930,19 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- windows open on the thing they are for (6b)
+
+- Downloads and Feed Check focus their list, Show Notes its notes field,
+  Listening Statistics and Year in Review their report, each in `show()`
+  before `show_modal_dialog` (ShowModal keeps a focus already placed). The
+  Play Queue half of the row landed in the previous commit, as a crash fix.
+- Gate: `tests/unit/ui/podcasts/test_initial_focus.py` pins, by AST, that each
+  of the six windows focuses its named control before the modal loop.
+- Validation: the new gate plus all 107 Cast UI tests pass; GATE-11 and the
+  dialog inventory pass. Documented in Cast release notes ("Smaller fixes")
+  and the user guide (Feed Check). Manual check added to "Cast Phase 1 Small
+  Fixes".
 
 ### 2026-10-01: Three windows that raised TypeError on open
 
@@ -3154,7 +3172,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **38 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **37 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3190,7 +3208,7 @@ This is the authoritative unchecked code/delivery tracker: **38 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 12
+### Cast Phase 1 Code and Tests: 11
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
@@ -3206,10 +3224,6 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
       Delete Folder: all Follow (items 9, 10).
 - [ ] The per-row "Follow" revert button and "Follow the Shared Defaults" become
       "Use shared default" (item 19).
-- [ ] Focus lands on the thing the window is for: Downloads, Feed Check, Show
-      Notes, Statistics, Year in Review each gain one `SetFocus`; the Play Queue
-      passes its title and announce callback to `show_modal_dialog` (the Play
-      Queue half done 2026-10-01 -- it was a crash, not a nicety).
 - [ ] The Show Notes rich view gets its label back (item 14) -- or is replaced
       outright by the Notes reader (5c), whichever lands first.
 - [ ] Preferences extracted to `podcasts_preferences.py` with two new rows:

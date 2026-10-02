@@ -276,6 +276,10 @@ class FeedCheckDialog:
         # The summary is spoken on arrival: it is the answer to the question
         # somebody opened this window to ask, and a StaticText is silent.
         self._announce(self._summary.GetLabel())
+        # Focus on the thing this window is for, not on whatever control happens
+        # to come first in it (qc.md 6b: eight windows landed on a filter or a
+        # chooser). Set before ShowModal, which keeps a focus already placed.
+        self._list.SetFocus()
         try:
             show_modal_dialog(self.dialog, "Feed Check", announce=self._announce)
         finally:

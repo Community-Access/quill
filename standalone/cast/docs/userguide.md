@@ -756,7 +756,8 @@ read, how many checks have failed in a row, when it last carried something new
 -- and used them to decide when to speak, once per run of failures. This
 window lets you ask.
 
-The list is **worst first**: feeds failing to check, then feeds that have gone
+The window opens with focus in the feed list. The list is **worst first**:
+feeds failing to check, then feeds that have gone
 quiet, then everything healthy, so you read the top rather than the whole.
 Opening it checks nothing and sends nothing. **Retry** on a row, or **Retry
 All Failed**, is the refresh Cast already does, and it says what it found per
