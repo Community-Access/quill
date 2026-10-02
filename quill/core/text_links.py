@@ -65,6 +65,21 @@ class Link:
         name = " ".join(self.text.split())
         return f"{name} -- {self.url}" if name and name != self.url else self.url
 
+    @property
+    def row(self) -> str:
+        """The row the Links window reads: the title, then where it goes.
+
+        "Support the show on Patreon, patreon.com/thedaily" (qc.md 5c): the title
+        is what somebody arrows through, and the address -- shortened to where it
+        goes -- is there at the end of the row for whoever wants it. A link with no
+        title of its own is its address.
+        """
+        name = " ".join(self.text.split())
+        where = where_it_goes(self.url)
+        if not name or name in (self.url, where):
+            return where or self.url
+        return f"{name}, {where}"
+
 
 def _tidy(url: str) -> str:
     """One raw address, trimmed of the sentence it was sitting in.
@@ -160,6 +175,35 @@ def links_in_text(text: str) -> list[Link]:
     """Every openable address in plain *text*, in the order it appears."""
     found = [Link(url=_tidy(match.group(0))) for match in _BARE_URL.finditer(text or "")]
     return _dedupe([link for link in found if _openable(link.url)])
+
+
+def bare_url_spans(text: str) -> list[tuple[int, int, str]]:
+    """``(start, end, address)`` for every openable address typed into *text*.
+
+    The span is the *tidied* address, so trailing sentence punctuation stays
+    outside it: the Notes reader (qc.md 5c) turns these into links in place, and
+    a link that swallowed the full stop after it would underline the end of the
+    sentence as well.
+    """
+    spans: list[tuple[int, int, str]] = []
+    for match in _BARE_URL.finditer(text or ""):
+        url = _tidy(match.group(0))
+        if url and _openable(url):
+            spans.append((match.start(), match.start() + len(url), url))
+    return spans
+
+
+def where_it_goes(url: str) -> str:
+    """The address as a listener wants to hear it: no scheme, no ``www.``.
+
+    "patreon.com/thedaily" rather than "https colon slash slash www dot...":
+    the Links window reads the title first and this second (qc.md 5c), so the
+    part worth hearing is where the link goes, not how.
+    """
+    shown = re.sub(r"^[a-z][a-z0-9+.-]*://", "", (url or "").strip(), flags=re.IGNORECASE)
+    if shown.lower().startswith("www."):
+        shown = shown[4:]
+    return shown.rstrip("/")
 
 
 def find_links(content: str, *, is_html: bool = False) -> list[Link]:
