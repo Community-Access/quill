@@ -178,6 +178,12 @@ again. Quill Radio's main window learned the same lesson the same day.
 
 ### Smaller fixes (2026-10-01)
 
+- **The Play Queue opens again.** View > Play Queue... and Episode > Play
+  Queue... (Ctrl+Shift+Q) did nothing: the window failed as it opened,
+  silently, because it asked the shared dialog code to show it without
+  saying what it was called. It now opens with focus on the queue and its
+  title, and a build check makes sure no window anywhere in the family can
+  make that mistake again.
 - **OK buttons no longer take a letter.** Smart Playlist Rules, Podcast
   Settings and Settings for This Podcast each spent Alt+O on their OK button,
   which Enter already presses. OK is plain OK now, and O is free for the

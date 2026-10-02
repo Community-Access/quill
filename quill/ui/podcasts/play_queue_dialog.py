@@ -522,5 +522,5 @@ class PlayQueueDialog:
         self.dialog.CentreOnParent()
         apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)
         self._list.SetFocus()
-        show_modal_dialog(self.dialog)
+        show_modal_dialog(self.dialog, "Play Queue", announce=self._announce)
         self.dialog.Destroy()

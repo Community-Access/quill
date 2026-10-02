@@ -202,7 +202,7 @@ class GlobalHotkeysDialog:
         else:
             from quill.ui.dialog_contract import show_modal_dialog
 
-            show_modal_dialog(self.dialog)
+            show_modal_dialog(self.dialog, "Global Hotkeys", announce=self._announce)
         result = self._result
         self.dialog.Destroy()
         return result

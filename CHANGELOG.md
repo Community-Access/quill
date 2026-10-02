@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+### Three windows that could not open (2026-10-01)
+
+- QUILL Cast's Play Queue (and QUILL's own podcast Play Queue), QUILL's Sticky
+  Notes Browser, and the Global Hotkeys manager's fallback path each called
+  `show_modal_dialog(self.dialog)` without the label that has been a required
+  argument since the dialog contract grew one, so each raised `TypeError` the
+  moment it was opened and nothing was shown or said. All three now pass their
+  title and announce callback. New `tests/unit/ui/test_show_modal_dialog_calls.py`
+  walks the whole tree by AST and fails on any call missing its label.
+
 ### The transport button says its object, in Radio and Cast (2026-10-01)
 
 - Quill Radio's main-window Stop button is the one transport control again,

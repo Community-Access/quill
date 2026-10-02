@@ -160,5 +160,5 @@ class StickyNotesBrowserDialog:
         count = len(self._all_notes)
         self._announce(f"Sticky Notes Browser: {count} note(s). Type to search, Down for results.")
         self._search.SetFocus()
-        show_modal_dialog(self.dialog)
+        show_modal_dialog(self.dialog, "Sticky Notes Browser", announce=self._announce)
         self.dialog.Destroy()

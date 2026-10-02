@@ -22,8 +22,8 @@ The following table separates implementation, its delivery gate, and human accep
 | Cast Phase 1 commit gate | 1 | Pending |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 46 | Human acceptance pending |
-| **Total tracked rows** | **84** | **38 code/delivery groups + 46 manual scenarios** |
+| Manual screen-reader scenarios | 47 | Human acceptance pending |
+| **Total tracked rows** | **85** | **38 code/delivery groups + 47 manual scenarios** |
 
 Code/delivery subtotal: **38**.
 
@@ -2783,6 +2783,9 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] Press Ctrl+Shift+Q (or View > Play Queue...): the Play Queue opens with
+  focus in the queue list and its title read once. In QUILL, open the Sticky
+  Notes Browser: it opens with focus in the search field.
 - [ ] In Simple mode (View > Advanced Features unchecked), open Help: Keyboard
   Shortcuts... (Ctrl+Alt+Shift+W) and Global Hotkeys... (Ctrl+Alt+Shift+H)
   are present and open their windows; the Advanced Features announcement
@@ -2922,6 +2925,23 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Three windows that raised TypeError on open
+
+- Found while giving Cast's Play Queue its title (Phase 1, focus row): the
+  call was `show_modal_dialog(self.dialog)`, and `label` is a required
+  argument, so the Play Queue had been raising `TypeError` on every open --
+  View > Play Queue and Ctrl+Shift+Q in Cast, and QUILL's podcast host. A
+  whole-tree AST scan found two more: QUILL's Sticky Notes Browser (same
+  crash) and the Global Hotkeys dialog's fallback branch (latent: every
+  caller injects `show_modal_fn`). All three now pass title and announce.
+- Gate: `tests/unit/ui/test_show_modal_dialog_calls.py` (detector shown a bad
+  sample first; then the live tree). This is F-12's kind of gate -- a
+  delivery promise ("this window opens") checked without building a window --
+  recorded here rather than closing F-12, which is broader.
+- Validation: the new gate plus 48 targeted UI tests pass. Documented in Cast
+  release notes ("Smaller fixes") and the family changelog. Manual check
+  added to "Cast Phase 1 Small Fixes".
 
 ### 2026-10-01: Cast Phase 1 -- the keyboard editors are everyday rows (section 8)
 
@@ -3188,7 +3208,8 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
       "Use shared default" (item 19).
 - [ ] Focus lands on the thing the window is for: Downloads, Feed Check, Show
       Notes, Statistics, Year in Review each gain one `SetFocus`; the Play Queue
-      passes its title and announce callback to `show_modal_dialog`.
+      passes its title and announce callback to `show_modal_dialog` (the Play
+      Queue half done 2026-10-01 -- it was a crash, not a nicety).
 - [ ] The Show Notes rich view gets its label back (item 14) -- or is replaced
       outright by the Notes reader (5c), whichever lands first.
 - [ ] Preferences extracted to `podcasts_preferences.py` with two new rows:
