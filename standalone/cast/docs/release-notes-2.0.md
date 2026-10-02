@@ -184,6 +184,10 @@ again. Quill Radio's main window learned the same lesson the same day.
   saying what it was called. It now opens with focus on the queue and its
   title, and a build check makes sure no window anywhere in the family can
   make that mistake again.
+- **F1 says what the main window and Feed Check are for, as they are now.**
+  F1 in the main window mentions the buttons that name what they act on,
+  the View menu's places and F6 for the status bar; F1 in Feed Check says
+  the list is worst first and that opening it checks nothing.
 - **Two failures that were silent are spoken.** When Preview cannot load a
   podcast, it now says so as well as showing it. And when importing a
   subscription list, if the feed check itself cannot run, Cast says "The

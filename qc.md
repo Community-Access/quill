@@ -18,13 +18,13 @@ The following table separates implementation, its delivery gate, and human accep
 |---|---:|---|
 | Family reliability findings | 10 | Partially implemented |
 | Family product requirements | 6 | Includes Gemini review; transport feedback (X-06) done 2026-10-01 |
-| Cast Phase 1 code and tests | 6 | Re-verified 2026-10-01; being closed one commit at a time |
+| Cast Phase 1 code and tests | 5 | Re-verified 2026-10-01; being closed one commit at a time |
 | Cast Phases 2-7 | 6 | Grouped implementation phases |
 | Cast follow-on integrations | 3 | Remaining |
-| Manual screen-reader scenarios | 52 | Human acceptance pending |
-| **Total tracked rows** | **83** | **31 code/delivery groups + 52 manual scenarios** |
+| Manual screen-reader scenarios | 53 | Human acceptance pending |
+| **Total tracked rows** | **83** | **30 code/delivery groups + 53 manual scenarios** |
 
-Code/delivery subtotal: **31**.
+Code/delivery subtotal: **30**.
 
 **Next releases** (Jeff, 2026-10-01): Quill Radio **3.1.1** (not yet tagged;
 the code already says 3.1.1), QUILL Cast **1.1.0**, QUILL Lite **1.2.0** (the
@@ -1281,9 +1281,10 @@ no Find field and no Now Playing surface exist:
       Needs `PodcastHistory.switch_to_now_playing` and `core/podcasts/launch_place.py`
       (the latter is written).
 - Tests for `library_tree.py`; GATE-15 on the `platform_report` roster.
-- Two tests to update to the new truth (`test_add_podcast_focus_return`,
+- [x] Two tests to update to the new truth (`test_add_podcast_focus_return`,
       `test_podcast_show_actions_credentials`), and `surface_help` purposes for
-      Feed Check and the main panel's new buttons (GATE-CAST-HELP).
+      Feed Check and the main panel's new buttons (GATE-CAST-HELP). Done
+      2026-10-01 (the tests in `fef27b3`).
 - [x] `labelled_field.py`: drop its `help=` parameter -- help set inside a helper
       is invisible to the help audit, so callers set it inline. Done 2026-10-01.
 - Find in library above the tree (the interim of P10).
@@ -2783,6 +2784,10 @@ bare verb.
 Each row is one small Phase 1 fix, checked by ear in QUILL Cast's main window
 or the named dialog. Record exact speech.
 
+- [ ] Press F1 in the main window (focus on the library) and in Feed Check.
+  The first paragraph describes the window as it is now: the main window's
+  buttons name their object, places are in the View menu, F6 reaches the
+  status bar; Feed Check is worst first and opening it checks nothing.
 - [ ] With the network off, Preview a search result in Add Podcast: the
   failure is spoken once, and Preview is usable again. Import an OPML file
   with feed checking on while offline: either per-feed results, or "The
@@ -2946,6 +2951,18 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-01: Cast Phase 1 -- F1 purposes for the main window and Feed Check
+
+- `core/podcasts/surface_help.py`: the "QUILL Cast" purpose names what the
+  reworked window has (buttons that name their object, View-menu places, F6
+  to the status bar) instead of "open an episode list for more actions"; the
+  "Feed Check" purpose says worst first, opening checks nothing, Retry and
+  Retry All Failed, and that Cast never stops trying a failing feed. The two
+  test updates in the same row landed in `fef27b3`.
+- `docs/f1-help-reference.md` regenerated (GATE-HELPREF) and rendered.
+  GATE-CAST-HELP and 28 help tests pass. Documented in Cast release notes.
+  Manual F1 check added.
 
 ### 2026-10-01: Cast Phase 1 -- `labelled_field` takes no help
 
@@ -3271,7 +3288,7 @@ work is paused, identify it as paused rather than leaving a false active status.
 
 ## Remaining Code Work
 
-This is the authoritative unchecked code/delivery tracker: **31 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
+This is the authoritative unchecked code/delivery tracker: **30 grouped rows**. Manual tests live in Screen-Reader Testing Handoff. Preserve the detailed specifications above when trimming obsolete pending text. Record finished code and test evidence in Completed Changes and Validation, and add/update a UX testing script before removing its row. Recompute the dashboard and VS Code category counts after each removal.
 
 ### Family Reliability Findings: 10
 
@@ -3307,7 +3324,7 @@ This is the authoritative unchecked code/delivery tracker: **31 grouped rows**. 
   ask before sending content or incurring requests. Document the tested shared
   writing features and resulting reader acceptance scripts before closing this item.
 
-### Cast Phase 1 Code and Tests: 6
+### Cast Phase 1 Code and Tests: 5
 
 Re-verified against the source 2026-10-01: fifteen were open; the first (the
 button row's object in the label) closed with X-06, leaving fourteen. Partial
@@ -3321,10 +3338,6 @@ credit on two rows is noted inline. Worked top to bottom, one commit each.
       (the latter is written).
 - [ ] Tests for `library_tree.py`; GATE-15 on the `platform_report` roster
       (the roster half is done in `fef27b3`; the tests are not written).
-- [ ] Two tests to update to the new truth (`test_add_podcast_focus_return`,
-      `test_podcast_show_actions_credentials`) -- done in `fef27b3`; and
-      `surface_help` purposes for Feed Check and the main panel's new buttons
-      (GATE-CAST-HELP) -- still open.
 - [ ] Find in library above the tree (the interim of P10).
 - [ ] Now Playing (section 5), with the Notes reader and the grown Links
       dialog (5c) as its show-notes pane -- the reader is built once here and

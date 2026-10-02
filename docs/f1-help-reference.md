@@ -329,7 +329,7 @@ Control coverage: 231 audited sites (91 helped, 140 named-help).
 
 **Episode Filter Rule.** One rule inside a podcast's Episode Filters: a title pattern, a minimum length, or both -- and both have to match for the rule to. A rule is a label plus a test; it decides nothing until the filter itself is saved, and it never deletes an episode.
 
-**Feed Check.** A report of your podcasts' latest feed checks, failures, and publication times. Retry a selected feed or all failing feeds, or copy an address to investigate it. A quiet podcast is not necessarily a failing feed.
+**Feed Check.** Which of the podcasts you follow need something, worst first: failing feeds, then quiet ones, then the healthy rest. Opening it checks nothing; Retry checks the selected feed and Retry All Failed every failing one. A quiet podcast is not necessarily a failing feed, and Cast never stops trying a failing one.
 
 **Feed Credentials.** The user name and password for a private feed -- a paid subscription, a members-only show. They are kept for this feed alone and sent to its own host, never to a directory.
 
@@ -355,7 +355,7 @@ Control coverage: 231 audited sites (91 helped, 140 named-help).
 
 **Podcasts.** The Podcast Manager: every show you follow, the episodes in each, and every verb that acts on them -- play, download, mark played, file into a folder, unsubscribe. One list chooses the show, the other holds its episodes, and Shift+F10 on any row offers everything that can be done to it.
 
-**QUILL Cast.** Your podcast library, its pinned views and folders, and playback controls. Choose a podcast to play its next episode or open an episode list for more actions. Nothing here needs an account, and nothing you listen to leaves this computer.
+**QUILL Cast.** Your podcast library, its pinned views and folders, and playback controls. The buttons under the library name what they act on -- Play names the podcast or episode under the cursor, Unfollow the podcast -- and the View menu takes you to each place in one key. F6 reaches the status bar. Nothing here needs an account, and nothing you listen to leaves this computer.
 
 **QUILL Cast Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
