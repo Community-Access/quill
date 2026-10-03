@@ -259,3 +259,24 @@ def test_preferences_and_the_places_chooser_build(cast_frame) -> None:
     )
     assert chooser._list.GetCount() == 11
     chooser.dialog.Destroy()
+
+
+def test_cast_never_takes_ctrl_alt_shift_q_system_wide(cast_frame) -> None:
+    """qc.md C2-01: Ctrl+Alt+Shift+Q is Cast's Mark as Played and Next. The
+    shared default show/hide key must not claim it while Cast runs, even when
+    Windows refuses Cast's own chord."""
+    from quill.apps.podcasts_routes import CAST_TRAY_HOTKEY
+
+    assert cast_frame._own_tray_hotkey == CAST_TRAY_HOTKEY
+    cast_frame._tray_hotkey_registered = False  # as if Windows refused it
+    assert "Ctrl+Alt+Shift+Q" not in cast_frame._global_hotkey_bindings().values()
+
+
+def test_player_information_and_carry_my_place_have_menu_rows(cast_frame) -> None:
+    """qc.md C2-03: both were reachable only through the Command Palette."""
+    labels = []
+    bar = cast_frame.frame.GetMenuBar()
+    for index in range(bar.GetMenuCount()):
+        labels += [item.GetItemLabel() for item in bar.GetMenu(index).GetMenuItems()]
+    assert any(label.startswith("Player Information...\tCtrl+I") for label in labels)
+    assert any("Carry My Place Between Mac&hines..." in label for label in labels)

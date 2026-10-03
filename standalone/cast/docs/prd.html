@@ -2101,6 +2101,53 @@ F-09’s index exists. <code>podcasts_view_menu.py</code> joined the app
 menu-accelerator gate, whose first run gave Customize Features Radio’s
 Ctrl+Alt+C.</p>
 <h3
+id="2317-the-20-follow-ups-watched-folders-a-showhide-chord-two-menu-rows-qcmd-c2-01-to-c2-03-2026-10-03">23.17
+The 2.0 follow-ups: watched folders, a show/hide chord, two menu rows
+(qc.md C2-01 to C2-03, 2026-10-03)</h3>
+<p><strong>Watched folders (C2-02, section 5d of qc.md).</strong>
+<code>WatchedFolder</code> records live in the library file
+(<code>watched_folders</code>), replacing the one
+<code>watched_folder</code> string a Personal Audio show carried;
+<code>watched_folders.migrate</code> turns each old string into a record
+with the defaults and marks the files the show already has as seen, so
+an upgrade imports nothing twice. Each record carries a name,
+include-subfolders, one-group-per-subfolder, file types, what happens to
+the original (keep a copy, move, or play in place), what an arrival does
+(add, queue, play when idle), Tell me (each, batch, quiet), a minimum
+length (30 seconds) and a speed. <code>plan</code> does the slow half on
+the task manager (find, skip seen by size and time, wait for anything
+modified in the last five seconds or not yet openable, skip known
+content hashes and short files, copy through <code>_staged_copy</code>);
+<code>apply</code> does the quick half on the UI thread. Live watching
+is <code>wx.FileSystemWatcher</code> (created after the event loop
+starts) feeding <code>SettleTracker</code>, which releases a path once
+its size has held still for five seconds and it opens; a network path
+(<code>is_network_path</code>) is polled every ten minutes instead. A
+full look runs at launch and on <code>EVT_POWER_RESUME</code>. Arrivals
+write an <code>IMPORT_FINISHED</code> notice and are spoken by Tell me;
+a folder’s problem is spoken once until it recovers and written to
+Recent Problems. The window
+(<code>ui/podcasts/watched_folders_window.py</code>) is a peer like
+Notifications; the settings page is
+<code>ui/podcasts/watched_folder_settings.py</code>; the host side is
+<code>ui/podcasts/folder_watch.FolderWatchMixin</code>, shared by QUILL
+through <code>PodcastsMixin</code>, where Podcasts: Watched Folders… is
+a palette command. Safe Mode watches nothing. Ctrl+Alt+W opens the
+window; Scan Watched Folders stays as a palette command and scans every
+folder.</p>
+<p><strong>Show/hide chord (C2-01).</strong> Cast registers its own
+system-wide show/hide, Ctrl+Alt+Shift+F12
+(<code>podcasts_routes.CAST_TRAY_HOTKEY</code>), and sets
+<code>_own_tray_hotkey</code> so the shared default (Ctrl+Alt+Shift+Q,
+which is Cast’s Mark as Played and Next) is never added, even when
+Windows refuses Cast’s own chord. Every Ctrl+Alt+Shift letter already
+belongs to a family app.</p>
+<p><strong>Menu rows (C2-03).</strong> Episode &gt; Player Information…
+(Ctrl+I) and Podcasts &gt; Carry My Place Between Machines… (Alt+H in
+the menu) were palette-only. Bookmark This Moment (Ctrl+Alt+A) and Skip
+Silence (Ctrl+Shift+9) gained Episode rows in the same pass; their keys
+never fired in Cast without one.</p>
+<h3
 id="2316-phase-5-one-vocabulary-two-settings-windows-refresh-schedules-2026-10-02">23.16
 Phase 5: one vocabulary, two settings windows, refresh schedules
 (2026-10-02)</h3>

@@ -46,6 +46,7 @@ from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 from quill.ui.podcasts.window_title import CastWindowTitleMixin
 
 # Identity lives with the menu bar that displays it; see podcasts_menu.py.
+
 _TITLE = APP_TITLE
 _VERSION = APP_VERSION
 _REPO = APP_REPO
@@ -144,10 +145,10 @@ class PodcastsAppFrame(
             "next": self.podcast_next_chapter,
             "previous": self.podcast_previous_chapter,
         })
+        self._register_cast_tray_hotkey()  # podcasts_routes.py, qc.md C2-01
         # Per-command system-wide hotkeys (Help > Global Hotkeys...). Register
-        # the show/hide command the default table binds so its Ctrl+Alt+Shift+Q
-        # actually dispatches; the transport commands (podcasts.play_pause/stop)
-        # are already registered above. We do NOT call
+        # the show/hide command so a key assigned there dispatches; the
+        # transport commands (podcasts.play_pause/stop) are registered above. We do NOT call
         # _register_global_hotkey_commands -- that also adds the sticky-note /
         # editor commands the apps don't want. Then bind the message hook and
         # register whatever the user has configured.
@@ -168,6 +169,7 @@ class PodcastsAppFrame(
         self._refresh_statusbar()
         wx.CallAfter(self._say_launch_digest)  # qc.md 5b: one sentence, if anything arrived
         wx.CallAfter(self._check_at_launch)  # qc.md 5e: on launch, and missed checks
+        wx.CallAfter(self._start_folder_watching)  # qc.md 5d: watched folders, live
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
         # Alt+F4-to-tray (opt-in preference) is handled inside
         # _on_main_char_hook, bound with the Winamp keys in _build_main_panel:

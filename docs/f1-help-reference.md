@@ -313,7 +313,7 @@ Control coverage: 235 audited sites (121 helped, 114 named-help).
 
 ## QUILL Cast
 
-Control coverage: 277 audited sites (141 helped, 136 named-help).
+Control coverage: 288 audited sites (152 helped, 136 named-help).
 
 ### Every window, and what it is for
 
@@ -380,6 +380,10 @@ Control coverage: 277 audited sites (141 helped, 136 named-help).
 **Skip Settings.** How far each skip key moves, forward and back, and the intro and outro amounts an episode can skip by itself. A show can override any of this for itself in its own Settings.
 
 **Smart Playlist Rules.** The rules that build a smart playlist: which shows it draws from, how old an episode may be, whether played episodes count, and how many it holds. The playlist rebuilds itself from these rules -- you never add episodes to it by hand.
+
+**Watched Folder Settings.** How one watched folder behaves: its name in Personal Audio, whether Cast copies, moves or plays your files where they are, what a new file does when it arrives, what you hear, the shortest recording worth bringing in, its speed, and which kinds of audio file it takes.
+
+**Watched Folders.** The folders QUILL Cast keeps an eye on. Anything that lands in one -- from a voice recorder, a download, a shared folder -- arrives in Personal Audio by itself, once, and is announced. Add Folder chooses a new one, Folder Settings changes how it behaves, Pause stops watching for now, and Remove stops for good without touching a single file.
 
 **Welcome to QUILL Cast.** A three-screen tour for a first launch. Nothing here is a setting you can get wrong: read, press Next, and Skip leaves at any point.
 
@@ -562,6 +566,22 @@ Control coverage: 277 audited sites (141 helped, 136 named-help).
 #### PodcastStatsDialog (`quill/ui/podcasts/stats_dialog.py`)
 
 - `self._report`: Your listening figures for the chosen period. Read-only -- arrow through it line by line, or Copy takes the whole thing.
+#### WatchedFolderSettingsDialog (`quill/ui/podcasts/watched_folder_settings.py`)
+
+- `self._name`: What Personal Audio calls the files from this folder. It starts as the folder's own name.
+- `self._original`: Leave it where it is keeps your file untouched and gives Cast its own copy. Move it takes the file into Cast's folder once the copy is checked. Play it from where it is makes no copy; if the drive goes away, the episode reads Unavailable and keeps your place.
+- `self._arrivals`: What a new file does when it lands: join Personal Audio, also join the end of the Play Queue, or also start playing when nothing else is.
+- `self._tell`: Say each new file by name and length, say only how many arrived, or say nothing. Every arrival is written to Notifications either way.
+- `self._min`: A recording shorter than this is left out, so an accidental two-second file does not become an episode. 0 takes everything.
+- `self._speed`: The speed this folder's files play at. A lecture folder and an audiobook folder often want different ones. The shared speed follows Preferences.
+- `self._subfolders`: Also watch every folder inside this one. Leave it on for a recorder that files by date.
+- `self._groups`: Each folder inside this one becomes its own group in Personal Audio, so a folder of audiobooks becomes one group per book.
+- `save`: Keeps these settings. They apply from the next file that arrives.
+- `cancel`: Closes this window; nothing you changed here is kept.
+#### WatchedFoldersWindow (`quill/ui/podcasts/watched_folders_window.py`)
+
+- `self._list`: Every folder Cast watches. Anything that lands in one arrives in Personal Audio by itself. Enter goes to the folder's files; the Applications key offers the buttons, Open Folder in File Explorer and Copy Path. Escape closes the window.
+- `close`: Closes this window and returns to where you were.
 #### YearInReviewDialog (`quill/ui/podcasts/year_review_dialog.py`)
 
 - `self._report`: Your year in listening, in sentences. Read-only -- arrow through it line by line, or Copy takes the whole thing.

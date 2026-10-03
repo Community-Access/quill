@@ -461,6 +461,7 @@ COMMAND_AREAS: dict[str, str] = {
     "podcasts.add_local": "personal_audio",
     "podcasts.personal_audio": "personal_audio",
     "podcasts.scan_watched": "watched_folders",
+    "podcasts.watched_folders": "watched_folders",
     "podcasts.acb_media": "acb_media",
     "podcasts.import_opml": "backups",
     "podcasts.export_opml": "backups",

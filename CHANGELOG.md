@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### QUILL Cast: watched folders, its own show/hide key, and two menu rows (qc.md C2-01 to C2-03, 2026-10-03)
+
+- **Watched Folders** (Podcasts > Watched Folders..., Ctrl+Alt+W): a peer
+  window that adds, configures, scans, pauses and removes watched folders;
+  live watching with `wx.FileSystemWatcher` and a five-second settled-file
+  rule, a network-drive poll every ten minutes, a full look at launch and on
+  resume, content-hash deduplication, per-folder settings (name, subfolders,
+  one group per subfolder, file types, keep/move/play in place, add/queue/play,
+  Tell me, minimum length, speed), arrivals in Notifications, problems in
+  Recent Problems. The old per-show `watched_folder` string migrates to a
+  `WatchedFolder` record. `core/podcasts/watched_folders.py`,
+  `watched_folder_words.py`, `ui/podcasts/folder_watch.py`,
+  `watched_folders_window.py`, `watched_folder_settings.py`.
+- **Cast's own show/hide key**, Ctrl+Alt+Shift+F12. The shared default had
+  taken Ctrl+Alt+Shift+Q system-wide, which is Cast's Mark as Played and Next,
+  so that row never fired while Cast ran.
+- **Episode > Player Information... (Ctrl+I)** and **Podcasts > Carry My Place
+  Between Machines...**, both previously reachable only from the Command
+  Palette; **Bookmark This Moment** (Ctrl+Alt+A) and **Skip Silence**
+  (Ctrl+Shift+9) gain Episode rows so their keys fire in Cast.
+- **Preferences** gives every control in a section its own access key at
+  build time (six sections had collisions).
+
 ### QUILL Cast: one window, and Preferences in eight sections with refresh schedules (qc.md Phases 2 and 5, 2026-10-02)
 
 - **One window.** The Places list (Inbox, New Episodes, Continue Listening,

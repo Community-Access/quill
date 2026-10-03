@@ -226,6 +226,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "podcasts.say_now_playing": "Ctrl+T",
         # Quill Radio's Skip Silence key, for the same verb (family rule 2).
         "podcasts.skip_silence": "Ctrl+Shift+9",
+        # Player Information, which had no key or menu row in Cast (qc.md C2-03).
+        "podcasts.player_information": "Ctrl+I",
         # The shared hosted AI (ear.md A1): the family's chords, all free in
         # Cast except Privacy Agreement's Ctrl+Alt+Shift+K (Keyboard Shortcuts
         # Sheet), which takes Alt+Shift+F2, beside the own key on Alt+F2.

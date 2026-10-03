@@ -30,6 +30,7 @@ from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
+from quill.ui.podcasts.folder_watch import FolderWatchMixin
 from quill.ui.podcasts.player_controller import (
     PodcastPlaybackState,
     PodcastPlayerController,
@@ -45,6 +46,7 @@ _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally
 
 
 class PodcastsMixin(
+    FolderWatchMixin,  # watched folders, shared with QUILL (qc.md 5d)
     PodcastSessionMixin,
     QueueRunCommandsMixin,
     PodcastAcquisitionMixin,
@@ -791,22 +793,6 @@ class PodcastsMixin(
             "Its files live outside your synced data folder by design."
         )
 
-    def scan_watched_podcast_folders(self) -> None:
-        """Scan every local show's watched folder for new audio files."""
-        from quill.core.podcasts.local_import import scan_watched_folder
-
-        added_total = 0
-        for show in self._podcast_library.shows:
-            if show.is_local and show.watched_folder:
-                added_total += scan_watched_folder(show)
-        if added_total:
-            self._save_podcast_library()
-            if self._podcast_manager_dialog is not None:
-                self._podcast_manager_dialog.refresh_tree()
-            self._announce(f"Watched folders added {added_total} new episode(s)")
-        else:
-            self._announce("No new files in watched folders")
-
     def subscribe_acb_media_podcasts(self) -> None:
         """One command subscribes ACB Media's whole podcast directory
         (idempotent; new arrivals are stream-only so nothing mass-downloads)."""
@@ -945,6 +931,11 @@ class PodcastsMixin(
                 "podcasts.scan_watched",
                 "Podcasts: Scan Watched Folders for New Episodes",
                 self.scan_watched_podcast_folders,
+            ),
+            (
+                "podcasts.watched_folders",
+                "Podcasts: Watched Folders...",
+                self.open_watched_folders,
             ),
             (
                 "podcasts.acb_media",

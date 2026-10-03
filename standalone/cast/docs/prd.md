@@ -1529,6 +1529,44 @@ in Library is Ctrl+F. Transcripts are excluded until F-09's index exists.
 `podcasts_view_menu.py` joined the app menu-accelerator gate, whose first run
 gave Customize Features Radio's Ctrl+Alt+C.
 
+### 23.17 The 2.0 follow-ups: watched folders, a show/hide chord, two menu rows (qc.md C2-01 to C2-03, 2026-10-03)
+
+**Watched folders (C2-02, section 5d of qc.md).** `WatchedFolder` records live
+in the library file (`watched_folders`), replacing the one `watched_folder`
+string a Personal Audio show carried; `watched_folders.migrate` turns each old
+string into a record with the defaults and marks the files the show already
+has as seen, so an upgrade imports nothing twice. Each record carries a name,
+include-subfolders, one-group-per-subfolder, file types, what happens to the
+original (keep a copy, move, or play in place), what an arrival does (add,
+queue, play when idle), Tell me (each, batch, quiet), a minimum length
+(30 seconds) and a speed. `plan` does the slow half on the task manager (find,
+skip seen by size and time, wait for anything modified in the last five
+seconds or not yet openable, skip known content hashes and short files, copy
+through `_staged_copy`); `apply` does the quick half on the UI thread. Live
+watching is `wx.FileSystemWatcher` (created after the event loop starts) feeding
+`SettleTracker`, which releases a path once its size has held still for five
+seconds and it opens; a network path (`is_network_path`) is polled every ten
+minutes instead. A full look runs at launch and on `EVT_POWER_RESUME`. Arrivals
+write an `IMPORT_FINISHED` notice and are spoken by Tell me; a folder's problem
+is spoken once until it recovers and written to Recent Problems. The window
+(`ui/podcasts/watched_folders_window.py`) is a peer like Notifications; the
+settings page is `ui/podcasts/watched_folder_settings.py`; the host side is
+`ui/podcasts/folder_watch.FolderWatchMixin`, shared by QUILL through
+`PodcastsMixin`, where Podcasts: Watched Folders... is a palette command. Safe
+Mode watches nothing. Ctrl+Alt+W opens the window; Scan Watched Folders stays
+as a palette command and scans every folder.
+
+**Show/hide chord (C2-01).** Cast registers its own system-wide show/hide,
+Ctrl+Alt+Shift+F12 (`podcasts_routes.CAST_TRAY_HOTKEY`), and sets
+`_own_tray_hotkey` so the shared default (Ctrl+Alt+Shift+Q, which is Cast's
+Mark as Played and Next) is never added, even when Windows refuses Cast's own
+chord. Every Ctrl+Alt+Shift letter already belongs to a family app.
+
+**Menu rows (C2-03).** Episode > Player Information... (Ctrl+I) and Podcasts >
+Carry My Place Between Machines... (Alt+H in the menu) were palette-only.
+Bookmark This Moment (Ctrl+Alt+A) and Skip Silence (Ctrl+Shift+9) gained
+Episode rows in the same pass; their keys never fired in Cast without one.
+
 ### 23.16 Phase 5: one vocabulary, two settings windows, refresh schedules (2026-10-02)
 
 **Words** (section 12): `core/podcasts/words.py` is the list (forbidden word ->

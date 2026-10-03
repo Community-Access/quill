@@ -141,6 +141,12 @@ Cast can keep the newest few episodes of each podcast downloaded, so they
 are ready when the internet is not. It keeps an eye on disk space for you and
 never removes an episode you have queued or started.
 
+Your own recordings can arrive by themselves too. Point Cast at the folder
+your voice recorder, your downloads or a shared Dropbox folder fills, using
+Podcasts > Watched Folders (Ctrl+Alt+W). From then on, whatever lands there
+turns up in Personal Audio, announced once and never twice, and your original
+stays where it was. Chapter 4 of the user guide walks you through it.
+
 And if a podcast keeps sending things you never want, such as trailers,
 reruns or a daily two-minute segment, choose Filter Episodes Like This on one
 of them. Cast writes the rule, and those episodes stay out of your way. Nothing

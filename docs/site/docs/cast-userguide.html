@@ -593,6 +593,13 @@ each time.</p>
 <p>If your keyboard has media keys, Play/Pause, Stop, Next Track and
 Previous Track control Cast from any program, even while it is in the
 tray. Next and Previous move by chapter.</p>
+<p>There is one more key that works from anywhere:
+<strong>Ctrl+Alt+Shift+F12</strong> shows or hides Cast, whatever window
+you are in. Press it while Cast is showing and Cast tells you it is
+hidden in the tray. Press it again and Cast comes back with focus and
+tells you it is shown. The episode keeps playing either way. If another
+program already uses that key, Cast leaves it alone, and the tray icon
+still works.</p>
 <h3 id="opening-cast-next-time">Opening Cast next time</h3>
 <p>Cast opens where something is waiting for you. If new episodes have
 arrived, it opens on the Inbox. Otherwise, if you are partway through an
@@ -1542,11 +1549,10 @@ that exact second.</p>
 <h3 id="everything-about-what-is-playing">Everything about what is
 playing</h3>
 <p>When you want every detail about the playing episode in one place,
-open the Command Palette (<strong>Ctrl+Shift+P</strong>) and choose
-<strong>Player Information</strong>. You get a text box you can read at
-your own pace and copy from: the title, podcast, position, length, time
-left, speed, whether it is streaming or saved on this computer, and
-which chapter you are in.</p>
+press <strong>Ctrl+I</strong> (Episode &gt; Player Information). You get
+a text box you can read at your own pace and copy from: the title,
+podcast, position, length, time left, speed, whether it is streaming or
+saved on this computer, and which chapter you are in.</p>
 <h3 id="winamp-keys">Winamp keys</h3>
 <p>If your fingers learned on Winamp, the classic letter keys work in
 every list in the main window.</p>
@@ -1829,9 +1835,102 @@ work.</li>
 <li>Type a name for the collection and press Enter.</li>
 </ol>
 <p>Each file becomes an episode. Cast keeps its own copy, so moving or
-deleting the originals does no harm. Podcasts &gt; <strong>Scan Watched
-Folders</strong> (Ctrl+Alt+W) picks up new files in any watched folders
-you have.</p>
+deleting the originals does no harm.</p>
+<h3 id="folders-cast-watches-for-you">Folders Cast watches for you</h3>
+<p>This is one of my favourite parts of Cast. Maybe your voice recorder
+copies its recordings to a folder on your computer. Maybe a friend drops
+lectures into a shared Dropbox folder, or your audiobooks download into
+the same place every time. Tell Cast about that folder once, and from
+then on anything that lands there turns up in Personal Audio on its own.
+Cast tells you when it arrives, it never brings the same file in twice,
+and your original stays exactly where it was. You never have to go and
+fetch it.</p>
+<p>To watch a folder:</p>
+<ol type="1">
+<li>Choose Podcasts &gt; <strong>Watched Folders…</strong> (Ctrl+Alt+W).
+The Watched Folders window opens.</li>
+<li>Press <strong>Add Folder</strong> (Alt+A) and choose the folder, the
+same way you would choose one anywhere else in Windows.</li>
+<li>A settings page opens for that folder. The choices are explained
+just below, and the ones it starts with are good ones, so you can simply
+press <strong>Save</strong>.</li>
+<li>Cast says it is watching the folder and has a first look straight
+away. Anything already there arrives now.</li>
+</ol>
+<p>Try it with a folder you already have recordings in. Within a few
+seconds you will hear something like “New in Voice Memos: Tuesday
+meeting, 42 minutes”. Press Ctrl+Shift+U to go to Personal Audio, and
+there it is, ready to play with every key you already know.</p>
+<h3 id="what-the-folder-settings-mean">What the folder settings
+mean</h3>
+<p>The settings page has one row for each choice:</p>
+<ul>
+<li><strong>Name</strong> (Alt+N) is what Personal Audio calls the files
+from this folder. It starts as the folder’s own name.</li>
+<li><strong>What to do with the original</strong> (Alt+O). <em>Leave it
+where it is</em> is the safe choice: Cast keeps its own copy and never
+touches yours. <em>Move it into Cast’s folder</em> tidies your folder as
+files arrive. <em>Play it from where it is</em> makes no copy at all,
+which saves space. If that folder is on a drive you unplug, the episode
+says it is unavailable and keeps your place until the drive is
+back.</li>
+<li><strong>New arrivals</strong> (Alt+A). A new file can simply join
+Personal Audio, or also go to the end of your Play Queue, or also start
+playing when nothing else is.</li>
+<li><strong>Tell me</strong> (Alt+T). Cast can say each new file by name
+and length, say only how many arrived, or stay quiet. Every arrival goes
+into Notifications whichever you pick.</li>
+<li><strong>Ignore files shorter than</strong> (Alt+I). Recorders
+sometimes make a file by accident when a button is bumped. Anything
+shorter than this, in seconds, is left out. It starts at 30.</li>
+<li><strong>Speed</strong> (Alt+P). Lectures and audiobooks often want
+different speeds, so each folder can have its own.</li>
+<li><strong>Include subfolders</strong> (Alt+S) also watches every
+folder inside this one.</li>
+<li><strong>Each subfolder is its own group</strong> (Alt+G). With this
+on, a folder of audiobooks becomes one group per book in Personal
+Audio.</li>
+<li><strong>File types to bring in</strong> (Alt+Y). Every kind of audio
+Cast plays starts checked. Uncheck one to leave those files alone, such
+as raw .wav recordings you are still editing.</li>
+</ul>
+<h3 id="living-with-your-watched-folders">Living with your watched
+folders</h3>
+<p>The Watched Folders window lists each folder as a sentence: its name,
+whether Cast is watching it, how many files it has brought in, when
+something last arrived, and where it is. Press Enter on one to go to its
+files in Personal Audio. The buttons do the rest, and the Applications
+key offers them again, along with Open Folder in File Explorer and Copy
+Path:</p>
+<ul>
+<li><strong>Folder Settings</strong> (Alt+S) opens that folder’s
+settings page again.</li>
+<li><strong>Scan Now</strong> (Alt+N) looks at the folder straight
+away.</li>
+<li><strong>Pause or Resume</strong> (Alt+U) stops watching for a while,
+and starts again.</li>
+<li><strong>Remove</strong> (Alt+M), or the Delete key, stops watching
+the folder. Cast asks first, and the answer starts on No. The files it
+already brought in stay in Personal Audio, and nothing in the folder is
+touched.</li>
+</ul>
+<p>A few things happen without you having to think about them:</p>
+<ul>
+<li>A file that is still being written, such as a long recording copying
+across, is left alone until it has finished. Then it arrives once.</li>
+<li>The same recording renamed, or dropped into two watched folders, is
+still one episode.</li>
+<li>Deleting a file from the folder does not delete the episode. The
+folder is a way in, not a mirror.</li>
+<li>Cast also looks at every folder when it opens and when your computer
+wakes up, so nothing that arrived while it was closed is missed.</li>
+<li>A folder on a network drive is looked at every ten minutes, because
+Windows cannot always tell Cast about changes there. Scan Now is there
+for when you cannot wait.</li>
+<li>If a folder goes missing, for example because a drive is unplugged,
+Cast tells you once and keeps watching. Help &gt; Recent Problems keeps
+a note of it.</li>
+</ul>
 <h3 id="organising-podcasts-into-folders">Organising podcasts into
 folders</h3>
 <p>Once you follow more than a handful, folders help: News, Comedy,
@@ -2992,7 +3091,8 @@ processor without switching windows.</p>
 <li>Press <strong>Ctrl+Alt+Shift+H</strong> (Help &gt; Global
 Hotkeys).</li>
 <li>Choose Play/Pause, Stop, or Show or Hide QUILL Cast, and give it a
-key.</li>
+key. Cast already shows and hides on Ctrl+Alt+Shift+F12, so you only
+need a key here if you would like a different one as well.</li>
 </ol>
 <p>The first time, Cast warns you that a system-wide key can take over
 the same key in other programs. If another program already owns a key,
@@ -3224,9 +3324,8 @@ already sync with Dropbox, OneDrive, Google Drive, iCloud Drive or a
 network share. There is no account to make, and nothing goes anywhere
 except that folder.</p>
 <ol type="1">
-<li>Press <strong>Ctrl+Shift+P</strong> for the Command Palette, type
-“carry”, and choose <strong>Carry My Place Between
-Machines</strong>.</li>
+<li>Open the Podcasts menu (Alt+P) and choose <strong>Carry My Place
+Between Machines</strong> (H).</li>
 <li>Check <strong>Carry my place between machines</strong>.</li>
 <li>In <strong>Shared folder</strong>, choose the synced folder.
 <strong>Browse</strong> helps you find it.</li>
@@ -3592,6 +3691,10 @@ on.</p>
 <td>Ctrl+W</td>
 </tr>
 <tr>
+<td>Show or hide Cast from any program</td>
+<td>Ctrl+Alt+Shift+F12</td>
+</tr>
+<tr>
 <td>Exit</td>
 <td>Ctrl+Q</td>
 </tr>
@@ -3797,6 +3900,10 @@ back. In Playlists, Enter opens a playlist.</p>
 <td>Ctrl+T</td>
 </tr>
 <tr>
+<td>Player Information</td>
+<td>Ctrl+I</td>
+</tr>
+<tr>
 <td>Now Playing window</td>
 <td>Ctrl+Alt+2</td>
 </tr>
@@ -3855,6 +3962,10 @@ back. In Playlists, Enter opens a playlist.</p>
 <tr>
 <td>Add 5 minutes to the sleep timer</td>
 <td>Ctrl+Alt+X</td>
+</tr>
+<tr>
+<td>Skip Silence, on or off</td>
+<td>Ctrl+Shift+9</td>
 </tr>
 <tr>
 <td>Sound Enhancements</td>
@@ -3971,6 +4082,10 @@ folder tree, they keep doing that.</p>
 <tr>
 <td>Add Personal Audio</td>
 <td>Ctrl+Alt+L</td>
+</tr>
+<tr>
+<td>Watched Folders</td>
+<td>Ctrl+Alt+W</td>
 </tr>
 <tr>
 <td>Follow ACB Media Podcasts</td>

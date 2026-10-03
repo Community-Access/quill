@@ -8,7 +8,7 @@ original context and must be reverified before changing completion status.
 
 ## Progress Dashboard
 
-Updated 2026-10-02 (late night): Cast Phases 2 and 5 closed together -- QUILL Cast is one window (Places, a content pane, Find, Notifications as a place and a peer window, the complete feature-switch inventory) and has one vocabulary, Preferences in eight sections and refresh schedules. Earlier that night: the Cast ChatGPT/hosted-AI row closed -- the family's AI reaches Cast through an adapter with no command of its own (ear.md A1, A11, A12), and every app now keeps its own ChatGPT sign-in. Earlier that evening: X-07 closed -- an own Google Gemini key, chosen explicitly, in both editors -- and Cast Phase 1 closed with Now Playing, the Notes reader and Links in These Notes (section 5 and 5c), one commit each. **Priority order from here (Jeff, 2026-10-02): QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.** Earlier the same day: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers), and, outside the tracked rows at Jeff's request, the thesaurus, Look Up and the AI dictionary came to QUILL Lite and were made better in QUILL from one shared module (see Completed Changes). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
+Updated 2026-10-03: the Cast 2.0 follow-ups C2-01 to C2-03 closed -- Watched Folders (section 5d: a window, per-folder settings, live watching with the settled-file rule), Cast's own show/hide key, and menu rows for Player Information and Carry My Place. Earlier, 2026-10-02 (late night): Cast Phases 2 and 5 closed together -- QUILL Cast is one window (Places, a content pane, Find, Notifications as a place and a peer window, the complete feature-switch inventory) and has one vocabulary, Preferences in eight sections and refresh schedules. Earlier that night: the Cast ChatGPT/hosted-AI row closed -- the family's AI reaches Cast through an adapter with no command of its own (ear.md A1, A11, A12), and every app now keeps its own ChatGPT sign-in. Earlier that evening: X-07 closed -- an own Google Gemini key, chosen explicitly, in both editors -- and Cast Phase 1 closed with Now Playing, the Notes reader and Links in These Notes (section 5 and 5c), one commit each. **Priority order from here (Jeff, 2026-10-02): QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.** Earlier the same day: F-01, F-02 and the Activity half of F-10 shipped (one shared result model, Activity window and F9/Shift+F9 in every app; guarded settings and history writers), and, outside the tracked rows at Jeff's request, the thesaurus, Look Up and the AI dictionary came to QUILL Lite and were made better in QUILL from one shared module (see Completed Changes). Previous update 2026-10-01 (second pass). **T-00 and T-01 are done**: the consolidation and the Phase 0/1 working tree were committed as `fef27b3` and pushed to main. **Active: Cast Phase 1, one feature per commit, each pushed to main with the gates green and the Cast user guide, PRD and release notes updated in the same commit.** The Phase 1 section below was re-verified against the source on 2026-10-01; its nine `[x]` rows were committed in `fef27b3`, and the rest are being closed one commit each; the table below is recomputed from the trackers on every commit, never edited by hand. F-05 (asynchronous Lite file opening) stays queued behind the Cast work.
 
 These are grouped tracking rows, not independent bugs. Shared work can satisfy more than one group. Older pending claims are not newly verified by this consolidation.
 
@@ -21,8 +21,8 @@ The following table separates implementation, its delivery gate, and human accep
 | Cast Phase 1 code and tests | 0 | Closed 2026-10-02: Now Playing, the Notes reader and the grown Links dialog |
 | Cast Phases 2-7 | 4 | Phases 2 and 5 done 2026-10-02 (one window; words, settings, schedules) |
 | Cast follow-on integrations | 2 | ChatGPT (ear.md A1/A11/A12) done 2026-10-02 |
-| Manual screen-reader scenarios | 73 | Human acceptance pending |
-| **Total tracked rows** | **89** | **16 code/delivery groups + 73 manual scenarios** |
+| Manual screen-reader scenarios | 83 | Human acceptance pending |
+| **Total tracked rows** | **99** | **16 code/delivery groups + 83 manual scenarios** |
 
 Code/delivery subtotal: **16**.
 
@@ -2879,6 +2879,37 @@ or the named dialog. Record exact speech.
   OK button is announced as "OK" with no shortcut; Alt+O does nothing; Enter
   saves and closes.
 
+### Cast Watched Folders and the 2.0 Follow-Ups
+
+Checked by ear in QUILL Cast with a scratch folder you can drop files into.
+Record exact speech.
+
+- [ ] Press Ctrl+Alt+W. "Watched Folders" opens on "No folders yet. Press Add
+  Folder to choose one." Press Alt+A, choose the scratch folder, and Save the
+  settings page as it opens. Cast says it is watching the folder.
+- [ ] Copy a 40-second MP3 into the folder. Within about ten seconds Cast says
+  "New in <folder>: <title>, 1 minute." Ctrl+Shift+U shows it in Personal
+  Audio. The original is still in the folder.
+- [ ] Copy the same file in again under another name: nothing is said and no
+  second episode appears. Copy a two-second file: nothing arrives.
+- [ ] Start copying a large file over a slow link (or a network share): nothing
+  is said until the copy finishes; then it arrives once.
+- [ ] Folder Settings (Alt+S): set Tell me to "Say how many arrived", copy two
+  files: "2 new recordings in <folder>." Set it to Quietly: nothing is said,
+  and Notifications (Ctrl+Shift+N) has the arrival.
+- [ ] Pause (Alt+U), copy a file: nothing arrives. Resume: it arrives.
+- [ ] Rename the folder in File Explorer: Cast says once that it is
+  unavailable, "Still watching." Help > Recent Problems lists it. Rename it
+  back and press Scan Now: it recovers silently.
+- [ ] Remove (Alt+M): the question starts on No; Yes says its files stay in
+  Personal Audio, and they do.
+- [ ] Ctrl+Alt+Shift+F12 from another program shows and hides Cast. Ctrl+Alt+Shift+Q
+  in Cast marks the playing episode played and moves to the next.
+- [ ] Episode menu: Player Information... (Ctrl+I) opens the report; Bookmark
+  This Moment (Ctrl+Alt+A) saves a bookmark; Skip Silence (Ctrl+Shift+9)
+  says it is on, then off. Podcasts menu: Carry My Place Between Machines...
+  (H) opens its window.
+
 ### Radio and Cast Closing Report
 
 Entry: Quill Radio and QUILL Cast. To force a failure, make the data folder
@@ -3051,6 +3082,34 @@ programming-error path manually.
 ## Completed Changes and Validation
 
 Original document title: QC3: Completed Quality Changes.
+
+### 2026-10-03: Cast 2.0 follow-ups C2-01 to C2-03 (watched folders, show/hide key, menu rows)
+
+Found while rewriting the Cast 2.0 guide; Jeff asked for them first.
+
+- **C2-02, Watched Folders (section 5d).** `quill/core/podcasts/watched_folders.py`
+  (the `WatchedFolder` record in the library file, migration from the old
+  per-show string, `plan` off the UI thread, `apply` on it, `SettleTracker`,
+  network detection) and `watched_folder_words.py`; `quill/ui/podcasts/folder_watch.py`
+  (`FolderWatchMixin`, shared by QUILL through `PodcastsMixin`; live
+  `wx.FileSystemWatcher`, ten-minute network poll, launch and resume looks,
+  notices, Recent Problems), `watched_folders_window.py` (peer window) and
+  `watched_folder_settings.py`. Ctrl+Alt+W opens the window. Verified live: a
+  file dropped into a watched subfolder arrived and was announced inside a
+  real event loop.
+  Not built from 5d: the per-folder settings as Preferences defaults under
+  Data, and the Inbox switch for Personal Audio arrivals; both stay with
+  Phase 4.
+- **C2-01.** Cast's own show/hide chord, Ctrl+Alt+Shift+F12; the shared
+  Ctrl+Alt+Shift+Q default is never added in Cast.
+- **C2-03.** Episode > Player Information... (Ctrl+I); Podcasts > Carry My
+  Place Between Machines...; Bookmark This Moment and Skip Silence rows.
+- Tests: `tests/unit/core/podcasts/test_watched_folders.py` (14),
+  `tests/unit/apps/test_cast_watched_folders.py` (6), two in
+  `test_cast_one_window.py`. Docs: user guide (Folders Cast watches for you,
+  the show/hide key, Player Information, Carry My Place, keyboard reference),
+  release notes, PRD 23.17, CHANGELOG. Testing script: "Cast Watched Folders
+  and the 2.0 Follow-Ups" above.
 
 ### 2026-10-02: Cast Phase 2 (one window) and Phase 5 (words, settings, schedules)
 
@@ -3966,7 +4025,7 @@ The same rows, ordered by what users will feel first and with the impact of each
 ### Cast Phases 2-7: 4
 
 - [ ] Phase 3: Complete meaningful shared status, Recent Problems, silent-outcome cleanup, and the regression gate.
-- [ ] Phase 4: Complete shared peer surfaces and Watched Folders, settled-file background watching, Groups, settings, and notifications.
+- [ ] Phase 4: Complete shared peer surfaces; from Watched Folders (shipped 2026-10-03 as C2-02), the per-folder defaults in Preferences and the Inbox switch for Personal Audio arrivals.
 - [ ] Phase 6: Complete First Run, Tutorials, five documents, and the F1/help audit.
 - [ ] Phase 7: Complete the twelve extensions specified in section 18, including keys, behavior tests, help, and shared implementations.
 
@@ -4021,55 +4080,57 @@ within a tier: QUILL Cast, then QUILL Lite, then QUILL, then Quill Radio.
 
 ### Tier 2 -- met every week, or by everyone once
 
-7. **Cast Phase 6, the first hour.** Impact: **Medium**. First Run, the
+5. **Cast Phase 6, the first hour.** Impact: **Medium**. First Run, the
    Tutorials, the five documents and the F1 audit: what a new listener meets
    before they have a library, and what an old one presses when stuck.
-8. **Cast Phase 4, every surface a peer, and Watched Folders.** Impact:
-   **Medium**. Every secondary surface opens the same way, raises instead of
-   duplicating, closes on Escape and Ctrl+W back to the control that opened
-   it. With it, Watched Folders in full: a folder of personal audio watched
-   live with the settled-file rule, groups, per-folder settings, arrivals
-   announced once. New for people with audiobooks and lectures on disk.
-9. **F-10, the remaining adoptions.** Impact: **Medium**. Spoken progress
+6. **Cast Phase 4, every surface a peer.** Impact: **Medium**. Every
+   secondary surface opens the same way, raises instead of duplicating,
+   closes on Escape and Ctrl+W back to the control that opened it. Watched
+   Folders shipped 2026-10-03 (C2-02); what is left of it here is the
+   per-folder defaults in Preferences and the Inbox switch for Personal Audio
+   arrivals.
+7. **F-10, the remaining adoptions.** Impact: **Medium**. Spoken progress
    during Cast downloads and feed refreshes and during QUILL Lite's background
    open ("3 of 12, two minutes left"), the cursor back on the row it left
    after a list refreshes in Cast, and follow/refresh/export/record outcomes
    in Cast and Radio reported through the one result model so F9 repeats
    them and Activity lists them.
-10. **X-01, family settings search, finished.** Impact: **Medium**. Type a
+8. **X-01, family settings search, finished.** Impact: **Medium**. Type a
     word, land on the setting, in Converter, Player and Inkwell as in the
     rest, including the web forms and the settings areas never opened.
-11. **X-04, richer queue and activity views; skippable first-run and task
+9. **X-04, richer queue and activity views; skippable first-run and task
     guidance.** Impact: **Medium**. The queue and Activity answer "what is
     waiting and why" in one list; the first-run and task guidance can be
     skipped and returned to.
-12. **X-08, PR #1618 review (MathML, EPUB entities, regex fallback).** Impact:
+10. **X-08, PR #1618 review (MathML, EPUB entities, regex fallback).** Impact:
     **Medium** for anyone reading an EPUB with maths: a `&lt;` in MathML is
     spoken as "less than" rather than vanishing; the app still starts without
     `defusedxml` or `regex` installed. Invisible to everyone else.
 
 ### Tier 3 -- met by a few, or rarely
 
-13. **X-02, task recipes.** Impact: **Medium-Low**. Discoverable, keyboard-run
+11. **X-02, task recipes.** Impact: **Medium-Low**. Discoverable, keyboard-run
     sequences of existing commands ("export this chapter as audio and share
     the file") with the shared result at the end. Useful; not daily.
-14. **X-03, focus, review and session profiles.** Impact: **Low-Medium**.
+12. **X-03, focus, review and session profiles.** Impact: **Low-Medium**.
     Named, reversible bundles of existing settings. The people who want them
     want them badly; most never will.
-15. **X-05, explicit cross-app personalization.** Impact: **Low**. Opt-in
+13. **X-05, explicit cross-app personalization.** Impact: **Low**. Opt-in
     sharing of preferences between the apps with nothing silent about keys,
     focus or speech.
-16. **F-09, bounded incremental search, refresh and download state.** Impact:
+14. **F-09, bounded incremental search, refresh and download state.** Impact:
     **Medium on a 1,300-podcast library, Low otherwise**. Find in Library
     stays instant and the transcript index exists; refresh and downloads can
     be cancelled and never block the window. Felt only as absence of waiting.
 
 ### Tier 4 -- only the build sees it
 
-17. **F-12, the remaining gates** (safe absence, performance, release
+Jeff, 2026-10-03: these two come last, after every tier above.
+
+15. **F-12, the remaining gates** (safe absence, performance, release
     invariants). Impact: **Low** directly; it is what keeps every item above
     from regressing. Users see it only when it fails.
-18. **F-08, extraction by lifetime and invariant.** Impact: **None** directly.
+16. **F-08, extraction by lifetime and invariant.** Impact: **None** directly.
     QUILL, Radio and Cast orchestration split along ownership lines under the
     ratcheted size budgets, host contracts preserved. It makes the rest
     cheaper to build and is scheduled wherever it unblocks a tier above.

@@ -30,6 +30,10 @@ _CELL_AREAS: dict[str, str] = {
 }
 
 
+#: Show or hide QUILL Cast from any program (qc.md C2-01).
+CAST_TRAY_HOTKEY = "Ctrl+Alt+Shift+F12"
+
+
 class CastPlaceRoutesMixin:
     """On ``PodcastsAppFrame``, first among the podcast mixins."""
 
@@ -55,11 +59,40 @@ class CastPlaceRoutesMixin:
             episode_menu, "skipping", silence_id, label("Skip Silence", "podcasts.skip_silence")
         )
         episode_menu.Append(say_id, label("Say &Current Episode", "podcasts.say_now_playing"))
+        info_id = wx.NewIdRef()
+        episode_menu.Append(info_id, label("Player Information...", "podcasts.player_information"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_player_information(), id=info_id)  # type: ignore[attr-defined]
+        self._keep_menu_ids(info_id)  # type: ignore[attr-defined]
         frame = self.frame  # type: ignore[attr-defined]
         frame.Bind(wx.EVT_MENU, lambda _e: self.bookmark_this_moment(), id=bookmark_id)  # type: ignore[attr-defined]
         frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_skip_silence(), id=silence_id)  # type: ignore[attr-defined]
         frame.Bind(wx.EVT_MENU, lambda _e: self.say_now_playing(), id=say_id)
         self._keep_menu_ids(bookmark_id, silence_id, say_id)  # type: ignore[attr-defined]
+
+    def _register_cast_tray_hotkey(self) -> None:
+        """Cast's own show/hide chord, like every family app's (Radio R, Weather
+        W, Converter C, Player P). Without it the shared default added
+        Ctrl+Alt+Shift+Q system-wide, which is Cast's own Mark as Played and
+        Next, so that row never fired while Cast ran (qc.md C2-01). Every
+        Ctrl+Alt+Shift letter already belongs to some family app, so Cast takes
+        a function key nothing in the family uses. ``_own_tray_hotkey`` keeps
+        the shared default away even when Windows refuses this chord.
+        """
+        self._own_tray_hotkey = CAST_TRAY_HOTKEY
+        self._register_tray_hotkey(CAST_TRAY_HOTKEY)  # type: ignore[attr-defined]
+
+    def _append_podcasts_extras(self, subs_menu: Any) -> None:
+        """Carry My Place Between Machines..., beside Back Up and Restore: it was
+        reachable only from the Command Palette (qc.md C2-03)."""
+        import wx
+
+        carry_id = wx.NewIdRef()
+        label = self._menu_label  # type: ignore[attr-defined]
+        subs_menu.Append(
+            carry_id, label("Carry My Place Between Mac&hines...", "media.sync_places")
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sync_places(), id=carry_id)  # type: ignore[attr-defined]
+        self._keep_menu_ids(carry_id)  # type: ignore[attr-defined]
 
     # -- the old doors ---------------------------------------------------------- #
 
@@ -351,6 +384,7 @@ class CastPlaceRoutesMixin:
             event.Skip()
         if getattr(self, "_safe_mode", False):
             return 0
+        self._folders_after_resume()  # type: ignore[attr-defined]
         started = 0
         for show in list(self._podcast_library.shows):  # type: ignore[attr-defined]
             if not show.feed_url or getattr(show, "paused", False):

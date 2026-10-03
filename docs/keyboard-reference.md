@@ -662,6 +662,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
 | Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+G | Go to | `app.go_to` |
+| Ctrl+I | Player Information... | `podcasts.player_information` |
 | Ctrl+Shift+9 | Skip silence | `podcasts.skip_silence` |
 | Ctrl+T | Say now playing | `podcasts.say_now_playing` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |

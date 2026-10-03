@@ -156,6 +156,19 @@ PURPOSES: dict[str, str] = {
         "the row's menu offers Play Now and Add to Queue. Clearing the list never "
         "touches the episodes it was about."
     ),
+    "Watched Folders": (
+        "The folders QUILL Cast keeps an eye on. Anything that lands in one -- "
+        "from a voice recorder, a download, a shared folder -- arrives in "
+        "Personal Audio by itself, once, and is announced. Add Folder chooses a "
+        "new one, Folder Settings changes how it behaves, Pause stops watching "
+        "for now, and Remove stops for good without touching a single file."
+    ),
+    "Watched Folder Settings": (
+        "How one watched folder behaves: its name in Personal Audio, whether "
+        "Cast copies, moves or plays your files where they are, what a new file "
+        "does when it arrives, what you hear, the shortest recording worth "
+        "bringing in, its speed, and which kinds of audio file it takes."
+    ),
     "Places": (
         "The order of the places in the main window, and which of them it "
         "shows. Up and Down move a place, Hide and Show take it out of the "

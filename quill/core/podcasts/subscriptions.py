@@ -28,6 +28,9 @@ from quill.core.podcasts.models import (
 )
 from quill.core.podcasts.models_filters import EpisodeFilterConfiguration
 from quill.core.podcasts.onboarding import OnboardingState
+from quill.core.podcasts.watched_folders import WatchedFolder
+from quill.core.podcasts.watched_folders import parse as parse_watched
+from quill.core.podcasts.watched_folders import serialise as serialise_watched
 
 _FILE_NAME = "podcasts_library.json"
 
@@ -116,6 +119,8 @@ class PodcastLibrary:
     #: whether this podcast's own interval has elapsed. Also carries the two
     #: counters the gone-quiet and failed-check notices read (7.19).
     show_check_state: dict[str, dict[str, object]] = field(default_factory=dict)
+    #: Watched folders (qc.md 5d); records and work in podcasts.watched_folders.
+    watched_folders: list[WatchedFolder] = field(default_factory=list)
     #: What the listener has already been shown: the first-run flow, and which
     #: one-shot tips have fired. Stored as a set of ids rather than a version
     #: stamp, so a tip added next year still fires for somebody who has been
@@ -505,6 +510,7 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         show_check_state=show_check_state,
         onboarding=OnboardingState.from_dict(raw.get("onboarding")),
         last_auto_check=str(raw.get("last_auto_check", "") or ""),
+        watched_folders=parse_watched(raw.get("watched_folders")),
     )
     # A library written before the four-level chain carries whole-record
     # overrides. Converted here, once, on the way in -- so nothing downstream
@@ -578,6 +584,7 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
                 },
                 "onboarding": library.onboarding.to_dict(),
                 "last_auto_check": library.last_auto_check,
+                "watched_folders": serialise_watched(library.watched_folders),
             },
         ),
     )

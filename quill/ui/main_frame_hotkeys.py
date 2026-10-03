@@ -98,8 +98,12 @@ class GlobalHotkeysMixin:
         # There this default was a *second* system-wide show/hide key, and it
         # took Ctrl+Alt+Shift+Q from every other program -- including QUILL,
         # whose own show/hide it is, and Radio's own Community menu (2026-09-25).
-        if "view.toggle_window_to_tray" not in bindings and not getattr(
-            self, "_tray_hotkey_registered", False
+        # Nor in an app that asked for none (QUILL Cast: Ctrl+Alt+Shift+Q is its
+        # Mark as Played and Next, and its own chord can be refused by Windows).
+        if (
+            "view.toggle_window_to_tray" not in bindings
+            and not getattr(self, "_tray_hotkey_registered", False)
+            and not getattr(self, "_own_tray_hotkey", "")
         ):
             bindings["view.toggle_window_to_tray"] = "Ctrl+Alt+Shift+Q"
         return bindings

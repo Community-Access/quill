@@ -66,9 +66,7 @@ class CastMenuBarMixin:
         subs_menu.AppendSubMenu(sort_menu, "So&rt Podcasts")
         local_id, watched_id, acb_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         self._area_row(subs_menu, "personal_audio", local_id, "Add &Personal Audio...\tCtrl+Alt+L")
-        self._area_row(
-            subs_menu, "watched_folders", watched_id, "Scan &Watched Folders\tCtrl+Alt+W"
-        )
+        self._area_row(subs_menu, "watched_folders", watched_id, "&Watched Folders...\tCtrl+Alt+W")
         self._area_row(subs_menu, "acb_media", acb_id, "Follow ACB Media Podcasts (&B)\tCtrl+Alt+B")
         subs_menu.AppendSeparator()
         subs_menu.Append(settings_id, "&Settings for This Podcast...\tCtrl+Alt+,")
@@ -143,6 +141,7 @@ class CastMenuBarMixin:
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.back_up_cast_data(), id=backup_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.restore_cast_data(), id=restore_id)
+        self._append_podcasts_extras(subs_menu)  # podcasts_routes.py
         subs_menu.AppendSeparator()
         self._resume_menu_item_id = wx.NewIdRef()
         subs_menu.AppendCheckItem(
@@ -168,7 +167,7 @@ class CastMenuBarMixin:
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._new_library_folder(), id=folder_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_local_podcast(), id=local_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.scan_watched_podcast_folders(), id=watched_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_watched_folders(), id=watched_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.subscribe_acb_media_podcasts(), id=acb_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
