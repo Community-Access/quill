@@ -2,6 +2,38 @@
 
 ## 1.0.0
 
+### QUILL Cast: one window, and Preferences in eight sections with refresh schedules (qc.md Phases 2 and 5, 2026-10-02)
+
+- **One window.** The Places list (Inbox, New Episodes, Continue Listening,
+  Favorites, Playlists, Personal Audio, Play Queue, Recently Expired --
+  hidden by default -- Downloads, Notifications, Podcasts) beside a content
+  pane whose kind follows the place; the Podcast Manager, the Play Queue,
+  Downloads and Continue Listening windows are places in Cast. Reorder
+  (Alt+Shift+Up/Down), hide (Delete, Ctrl+Z), rename (F2) and View > Places...
+  (Ctrl+Shift+G). `core/podcasts/places.py`, `ui/podcasts/places_list.py`,
+  `content_pane.py`, `places_host.py`, `episode_list.py`, `context_menus.py`,
+  `places_chooser.py`, `folder_prompt.py`, `apps/podcasts_routes.py`; the
+  Manager's verbs moved to the shared `ui/podcasts/manager_verbs.py`.
+- **Notifications** as a place, a status-bar cell and a peer window with Play
+  Now / Add to Queue / Go to the Podcast / Mark Read; Cast writes its own
+  notices, six kinds each switchable, and a launch digest sentence
+  (`core/podcasts/notices.py`, `ui/podcasts/notifications_window.py`).
+- **Every feature has a switch**: 47 areas in eight groups with three
+  profiles; switched-off features are absent from places, menus, cells and Go
+  To and marked "(off in Customize Features)" in the palette
+  (`core/podcasts/cast_features.py`).
+- **Preferences** in eight scrolling sections absorbing Podcast Settings and
+  Skip Settings (`ui/podcasts/preferences_window.py`); **refresh schedules**
+  with five kinds, a learned publish time and the publisher's hint
+  (`core/podcasts/refresh_schedule.py`, `schedule_policy.py`,
+  `settings_defs_fetching.py`, `ui/podcasts/schedule_dialog.py`); Feed Check
+  gains Schedule and Next check; **GATE-CAST-WORDS**
+  (`quill/tools/cast_words_audit.py`, `core/podcasts/words.py`) and its sweep.
+- Tests: `tests/unit/apps/test_cast_one_window.py` drives the real frame;
+  `tests/unit/core/podcasts/test_places_model.py`, `test_refresh_schedule.py`,
+  `tests/unit/tools/test_cast_words_audit.py`; the Preferences, status bar,
+  Find, folder picker and refresh-menu tests follow the new shape.
+
 ### QUILL Cast: AI help through the family's shared AI, and one ChatGPT sign-in per app (2026-10-02)
 
 - **Help > AI Features** in QUILL Cast: the hosted AI QUILL and QUILL Lite

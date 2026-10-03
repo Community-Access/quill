@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to QUILL Cast are documented here. See `docs/release-notes-2.0.md` for the fuller narrative version of the latest release (Help > Release Notes opens it in the app), and `docs/release-notes-1.1.md` for 1.1.
+All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the first release most people will meet, so its release notes (`docs/release-notes-2.0.md`, Help > Release Notes in the app) are written as a welcome for new users rather than a list of changes; this file keeps the engineering record. The 1.x release notes were retired on 2026-10-03.
 
 ## Unreleased -- the next QUILL Cast release
 

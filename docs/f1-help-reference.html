@@ -898,7 +898,7 @@ station’s remembered level.</li>
 is playing has chapters, and runs the same command as its key.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 247 audited sites (111 helped, 136 named-help).</p>
+<p>Control coverage: 277 audited sites (141 helped, 136 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -960,10 +960,20 @@ downloads.</p>
 <p><strong>Move to Folder.</strong> Choose the folder to file into, or
 make a new one. Folders are yours to invent, and filing changes nothing
 about what is downloaded or played.</p>
+<p><strong>Notifications.</strong> What QUILL Cast told you while you
+were elsewhere, newest first: new episodes, finished downloads, feeds
+that keep failing and podcasts that have gone quiet. Enter goes to what
+a row was about; on a new episode the row’s menu offers Play Now and Add
+to Queue. Clearing the list never touches the episodes it was about.</p>
 <p><strong>OPML Import Report.</strong> What the import actually did:
 how many shows were added, how many were already followed, and every
 feed that could not be read, with its reason. Copy All takes the report
 with you.</p>
+<p><strong>Places.</strong> The order of the places in the main window,
+and which of them it shows. Up and Down move a place, Hide and Show take
+it out of the list or put it back, Rename gives it your own name, and
+Reset restores the shipped order. Hiding a place never removes what is
+in it.</p>
 <p><strong>Play Queue.</strong> What plays next, in order. Move a row up
 or down to change the order, remove one you have changed your mind
 about, and Enter plays the highlighted episode now without losing the
@@ -981,12 +991,18 @@ follow, the episodes in each, and every verb that acts on them – play,
 download, mark played, file into a folder, unsubscribe. One list chooses
 the show, the other holds its episodes, and Shift+F10 on any row offers
 everything that can be done to it.</p>
-<p><strong>QUILL Cast.</strong> Your podcast library, its pinned views
-and folders, and playback controls. The buttons under the library name
-what they act on – Play names the podcast or episode under the cursor,
-Unfollow the podcast – and the View menu takes you to each place in one
-key. F6 reaches the status bar. Nothing here needs an account, and
+<p><strong>QUILL Cast.</strong> One window: Find at the top, the Places
+list – Inbox, New Episodes, Continue Listening, Favorites, Personal
+Audio, the Play Queue, Downloads, Notifications, Podcasts – and beside
+it the place you chose, with its show notes and the buttons below. The
+buttons name what they act on, the View menu reaches each place in one
+key, and F6 reaches the status bar. Nothing here needs an account, and
 nothing you listen to leaves this computer.</p>
+<p><strong>QUILL Cast Preferences.</strong> Everything that is not about
+one podcast, in eight sections: when Cast opens, playing, fetching, the
+Inbox, chapters, telling you, the window, and data. The shared defaults
+here are what every podcast follows until Settings for This Podcast says
+otherwise. Save writes only what you changed.</p>
 <p><strong>QUILL Cast Tutorials.</strong> Guided lessons, one step at a
 time, that can run the step for you and notice when you have done it.
 The contents list is grouped by track and remembers where you stopped;
@@ -1003,6 +1019,12 @@ recently, in one list that outlives the announcement: feeds that could
 not be read, downloads that died, streams that dropped – each with its
 reason and the time it happened. Retry tries the highlighted row again;
 nothing here is sent anywhere.</p>
+<p><strong>Rename Place.</strong> Your own name for a place in the main
+window. Leave it as shipped, or blank, to keep the shipped name; nothing
+in the place changes.</p>
+<p><strong>Save Lineup.</strong> A name for the Play Queue’s current
+order, so Apply Lineup can put it back later. Saving never changes the
+queue itself.</p>
 <p><strong>Search Everywhere.</strong> One search across everything Cast
 knows: your shows, their episodes, show notes and transcripts. Each
 result says which show and which episode it came from, and Enter opens
@@ -1089,6 +1111,11 @@ an episode or mark it played.</p>
 worked out for this episode, before they are kept: rename one, drop one
 that is wrong, and save. Chapters the feed supplied are never guessed at
 – this window appears only for episodes that arrived without them.</p>
+<p><strong>Windows titled “Schedule for…”.</strong> When this podcast –
+or every podcast – is looked at for new episodes: manually only, every
+so often, at set times, around when it usually publishes, or on the
+publisher’s own hint. Checking never downloads audio by itself, and Save
+says the schedule back in one sentence.</p>
 <p><strong>Windows titled “Settings for…”.</strong> Settings for this
 show alone: how often it is checked, how many episodes are kept, whether
 new ones download by themselves, the speed it plays at, and what to skip
@@ -1115,8 +1142,8 @@ id="addpodcastdialog-quilluipodcastsadd_podcast_dialogpy">AddPodcastDialog
 (<code>quill/ui/podcasts/add_podcast_dialog.py</code>)</h4>
 <ul>
 <li><code>self._query_ctrl</code>: Type part of a podcast’s name and
-press Enter, or choose Search. The chosen directory is searched, and
-nothing is subscribed to until you say so.</li>
+press Enter, or choose Find Podcasts. The chosen directory is searched,
+and nothing is followed to until you say so.</li>
 <li><code>self._results</code>: Podcasts the chosen directory matched.
 Enter previews the one you are on; Follow adds it to your library.</li>
 <li><code>self._subscribe_btn</code>: Adds the selected podcast to your
@@ -1176,6 +1203,16 @@ touched without asking, and saving asks about it separately.</li>
 were.</li>
 </ul>
 <h4
+id="castepisodelistmixin-quilluipodcastsepisode_listpy">CastEpisodeListMixin
+(<code>quill/ui/podcasts/episode_list.py</code>)</h4>
+<ul>
+<li><code>self._episodes</code>: The episodes (or podcasts) of the place
+you chose, one per row, read column by column. Enter plays an episode or
+opens a podcast; Space adds an episode to the queue; Delete removes it
+from this place; Shift+F10 offers everything else. Left Arrow at the top
+returns to Places.</li>
+</ul>
+<h4
 id="feedcheckdialog-quilluipodcastsfeed_check_dialogpy">FeedCheckDialog
 (<code>quill/ui/podcasts/feed_check_dialog.py</code>)</h4>
 <ul>
@@ -1207,14 +1244,18 @@ selected.</li>
 id="castmainpanelmixin-quilluipodcastsmain_panelpy">CastMainPanelMixin
 (<code>quill/ui/podcasts/main_panel.py</code>)</h4>
 <ul>
+<li><code>self._now_playing_text</code>: What is playing, how far in,
+and the speed when it is not normal. Read only; arrow through it to
+check a title. Ctrl+T says it from anywhere.</li>
 <li><code>self._find_box</code>: Type part of a podcast name, an episode
-title or one of your notes. The library below becomes the matches; Down
-Arrow moves into them, Enter plays one, and Escape brings your library
-back. Ctrl+F comes here from anywhere in the window.</li>
-<li><code>self._shows_tree</code>: Your podcasts, folders, and pinned
-views. Arrow through the library; Enter on a podcast plays its next
-episode and Enter on a view opens its episode list. Shift F10 offers the
-selected row’s actions.</li>
+title or one of your notes. The content pane becomes the matches, each
+row saying what it is and where it lives; Down Arrow moves into them,
+Enter goes to one, and Escape brings the place back. Ctrl+F comes here
+from anywhere.</li>
+<li><code>self._shows_tree</code>: Your podcasts and folders. Arrow
+through them; Enter on a podcast plays its next episode; expand a
+podcast to reach its episodes; Left Arrow at the top returns to Places.
+Shift F10 offers the row’s actions.</li>
 <li><code>self._play_pause_btn</code>: Starts the selected podcast or
 episode when stopped, pauses current playback, or resumes it from the
 saved position when paused. The label names what it would play, pause or
@@ -1227,9 +1268,8 @@ playing podcast.</li>
 <li><code>self._unfollow_btn</code>: Stops following the podcast named
 on the button, the one selected in the library. Asks first, says what
 happens to anything downloaded, and Ctrl+Z puts it back.</li>
-<li><code>button</code>: Opens the episode list and podcast actions, or
-opens Add Podcast to find and follow another show, as named by this
-button.</li>
+<li><code>add_button</code>: Opens Add Podcast, to find a podcast by
+name in a directory or follow one by its feed address.</li>
 </ul>
 <h4
 id="podcastmanagerdialog-quilluipodcastsmanager_dialogpy">PodcastManagerDialog
@@ -1250,7 +1290,7 @@ id="managerphase4mixin-quilluipodcastsmanager_phase4py">ManagerPhase4Mixin
 (<code>quill/ui/podcasts/manager_phase4.py</code>)</h4>
 <ul>
 <li><code>self._episode_filter_choice</code>: Which episodes the list
-shows: all of them, only the unplayed ones, only what is downloaded, and
+shows: all of them, only the unheard ones, only what is downloaded, and
 so on. It narrows the list you are looking at and changes nothing about
 the episodes themselves.</li>
 <li><code>self._show_filter_choice</code>: Which podcasts the folder
@@ -1262,6 +1302,17 @@ searches this podcast only – Search Everywhere is the one that crosses
 your whole library – and it narrows whatever the filter and sort above
 already chose rather than replacing them. Enter says how many
 matched.</li>
+</ul>
+<h4
+id="notificationswindow-quilluipodcastsnotifications_windowpy">NotificationsWindow
+(<code>quill/ui/podcasts/notifications_window.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: What QUILL Cast told you, newest first. A
+row beginning New has not been read. Enter goes to what it was about;
+the Applications key offers Play Now, Add to Queue, Go to the Podcast
+and Mark Read on a new-episode notice. Escape closes the window.</li>
+<li><code>close</code>: Closes this window and returns to where you
+were.</li>
 </ul>
 <h4 id="module-level-quilluipodcastsnow_playing_layoutpy">(module level)
 (<code>quill/ui/podcasts/now_playing_layout.py</code>)</h4>
@@ -1281,6 +1332,29 @@ the list follows playback without moving your cursor.</li>
 with your episode notes. Saved when you leave the field; empty removes
 it.</li>
 </ul>
+<h4 id="placeschooser-quilluipodcastsplaces_chooserpy">PlacesChooser
+(<code>quill/ui/podcasts/places_chooser.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Every place, in the order the main window
+lists them. Up and Down move the selected place; Hide takes it out of
+the main window’s list and Show puts it back; Rename gives it your own
+name; Reset restores the shipped order and names. Nothing here changes
+what is in a place.</li>
+<li><code>ok</code>: Keeps this order and these names in the main
+window.</li>
+<li><code>cancel</code>: Closes this window without saving; nothing you
+changed here is kept.</li>
+</ul>
+<h4 id="placeslist-quilluipodcastsplaces_listpy">PlacesList
+(<code>quill/ui/podcasts/places_list.py</code>)</h4>
+<ul>
+<li><code>self.box</code>: The places in your library, each with its
+count: the Inbox, New Episodes, Continue Listening, Favorites, Personal
+Audio, the Play Queue, Downloads, Notifications and your Podcasts. Enter
+or Right Arrow moves into the place; Delete hides a row; F2 renames it;
+Alt+Shift+Up and Down move it; the Applications key offers what the
+whole place can do. View &gt; Places restores anything hidden.</li>
+</ul>
 <h4
 id="playqueuedialog-quilluipodcastsplay_queue_dialogpy">PlayQueueDialog
 (<code>quill/ui/podcasts/play_queue_dialog.py</code>)</h4>
@@ -1288,6 +1362,49 @@ id="playqueuedialog-quilluipodcastsplay_queue_dialogpy">PlayQueueDialog
 <li><code>self._list</code>: The queue in play order; Enter plays the
 selected episode now. Shift and arrow extend the selection, Ctrl and
 Space adds one, and Remove takes everything selected.</li>
+</ul>
+<h4
+id="castpreferenceswindow-quilluipodcastspreferences_windowpy">CastPreferencesWindow
+(<code>quill/ui/podcasts/preferences_window.py</code>)</h4>
+<ul>
+<li><code>self._section</code>: Which group of settings the panel below
+shows: when Cast opens, playing, fetching, the Inbox, chapters, telling
+you, the window, and data. Changing the section keeps what you changed
+in the others.</li>
+<li><code>ok</code>: Saves every change made in any section and says
+what changed.</li>
+<li><code>cancel</code>: Closes this window without saving; nothing you
+changed here is kept.</li>
+<li><code>control</code>: Which place has focus when QUILL Cast opens.
+What is new lands on the Inbox when anything is waiting, else Continue
+Listening, else Podcasts; every other choice always lands on that place,
+even empty.</li>
+</ul>
+<h4 id="scheduledialog-quilluipodcastsschedule_dialogpy">ScheduleDialog
+(<code>quill/ui/podcasts/schedule_dialog.py</code>)</h4>
+<ul>
+<li><code>self._kind</code>: Manually only never checks on its own.
+Every so often checks on an interval you type. At set times checks at
+the times of day you list, on the days you choose. Around when it
+usually publishes learns the day and hour from the last twelve episodes
+and checks closely then. Follow the publisher’s hint uses what the feed
+itself declares.</li>
+<li><code>self._amount</code>: How many of the unit beside it. Any
+number, not only the quick picks.</li>
+<li><code>self._unit</code>: Minutes, hours or days, for the number
+before it.</li>
+<li><code>self._quick</code>: The eight usual intervals, one keystroke
+each. It fills in the number and unit.</li>
+<li><code>self._times</code>: One to six times in 24-hour form,
+separated by commas. Blank means none chosen yet.</li>
+<li><code>self._pin</code>: Keeps the learned day and hour as they are
+now, so a one-off late episode cannot move them.</li>
+<li><code>self._reset</code>: Forgets the pin and learns again from the
+newest episodes.</li>
+<li><code>ok</code>: Saves this schedule and says it back in one
+sentence.</li>
+<li><code>cancel</code>: Closes this window without saving; nothing you
+changed here is kept.</li>
 </ul>
 <h4
 id="searcheverywheredialog-quilluipodcastssearch_everywhere_dialogpy">SearchEverywhereDialog

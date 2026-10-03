@@ -45,13 +45,13 @@ def format_report_text(
             lines.append(f"- {result.title} ({result.feed_url}): {result.error}")
         lines.append("")
     if skipped:
-        lines.append("Skipped as already subscribed (same feed URL):")
+        lines.append("Skipped as already followed (same feed URL):")
         for entry in skipped:
             lines.append(f"- {entry}")
         lines.append("")
     if possible:
         lines.append(
-            "Imported, but share a name with another subscription (different "
+            "Imported, but share a name with another podcast (different "
             "feeds; two different shows CAN share a name — review these):"
         )
         for entry in possible:

@@ -35,6 +35,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
+from quill.core.podcasts import schedule_policy
 from quill.core.podcasts.check_state import failure_run, last_checked, last_published
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
@@ -80,6 +81,10 @@ class FeedRow:
     #: the wording impossible to assert.
     checked_ago: str = "never"
     published_ago: str = "never"
+    #: The schedule sentence and when it next fires (qc.md 5e), so "when
+    #: will it look again?" is a column rather than a guess.
+    schedule: str = ""
+    next_check: str = "never"
 
     @property
     def is_failing(self) -> bool:
@@ -102,6 +107,7 @@ class FeedRow:
             self.status,
             f"last checked {self.checked_ago}",
             f"last new episode {self.published_ago}",
+            f"next check {self.next_check}",
         ])
 
 
@@ -198,6 +204,10 @@ def rows(library: PodcastLibrary, *, now: datetime | None = None) -> list[FeedRo
                 rank=rank,
                 checked_ago=_ago(checked, now=moment),
                 published_ago=_ago(published, now=moment),
+                schedule=schedule_policy.describe_for(library, show),
+                next_check=schedule_policy.next_check_words(
+                    schedule_policy.next_check(library, show, now=moment), now=moment
+                ),
             )
         )
     built.sort(

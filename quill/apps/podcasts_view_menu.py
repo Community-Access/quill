@@ -38,67 +38,11 @@ from __future__ import annotations
 
 import wx
 
-from quill.core.app_features import AppArea
-from quill.core.podcasts import menu_mode
+from quill.core.podcasts import cast_features, menu_mode
 
 __all__ = ["CAST_AREAS", "CastViewMenuMixin"]
 
-#: The switchable areas of QUILL Cast (View > Customize Features...). Turning one
-#: off omits its whole menu, or its rows, at the next launch.
-#:
-#: Areas, not features: the unit is "a part of the app you might have no use for",
-#: which is why there is no area for Play or for the library tree. Somebody who
-#: switches off everything here still has a podcast player. Defaults are **on**,
-#: and only an explicit off is stored, so an area added in a later version is
-#: enabled for everybody until they say otherwise.
-CAST_AREAS: tuple[AppArea, ...] = (
-    AppArea(
-        "downloads",
-        "Downloads",
-        "The Downloads menu and the download queue: keeping episodes on this "
-        "computer rather than streaming them.",
-    ),
-    AppArea(
-        "inbox",
-        "Inbox",
-        "The Inbox: new episodes waiting to be triaged, its folders and its caps. "
-        "Switch it off to have new episodes simply appear in their podcasts.",
-    ),
-    AppArea(
-        "queue",
-        "Play Queue",
-        "The queue and the queue run: building a listening order ahead of time.",
-    ),
-    AppArea(
-        "transcripts",
-        "Transcripts and chapters",
-        "Reading along, jumping by chapter, and the chapter inference that "
-        "produces chapters for podcasts whose publishers did not.",
-    ),
-    AppArea(
-        "statistics",
-        "Statistics",
-        "Listening statistics, streaks and Year in Review. Nothing here leaves "
-        "this computer; switch it off if you would rather not be counted at all.",
-    ),
-    AppArea(
-        "personal_audio",
-        "Personal Audio",
-        "Your own recordings and audiobooks: Add Local Podcast and watched folders.",
-    ),
-    AppArea(
-        "sleep_timer",
-        "Sleep timer",
-        "Stopping after a set time or at the end of the episode.",
-    ),
-    AppArea(
-        "backups",
-        "Backups and OPML",
-        "Backing up the library, restoring it, and importing or exporting a "
-        "subscription list. Advanced mode shows these; this switches them off "
-        "entirely.",
-    ),
-)
+CAST_AREAS = cast_features.AREAS
 
 
 class CastViewMenuMixin:
@@ -185,34 +129,47 @@ class CastViewMenuMixin:
 
     # -- the spine -------------------------------------------------------- #
 
+    #: Each place's View row: label, chord, opener (qc.md 4.7). Built from the
+    #: places model so a place whose feature is off is absent here too.
+    _PLACE_ROWS: tuple[tuple[str, str, str, str], ...] = (
+        ("inbox", "&Inbox", "Ctrl+Shift+I", "open_cast_inbox"),
+        ("new_episodes", "Ne&w Episodes", "Ctrl+Shift+W", "open_cast_new_episodes"),
+        ("continue_listening", "Con&tinue Listening", "Ctrl+Shift+L", "open_continue_listening"),
+        ("favorites", "Fa&vorites", "Ctrl+Shift+V", "open_cast_favorites"),
+        ("playlists", "Pla&ylists", "Ctrl+Shift+Y", "open_cast_playlists"),
+        ("personal_audio", "Personal &Audio", "Ctrl+Shift+U", "open_cast_personal_audio"),
+        ("queue", "Play &Queue", "Ctrl+Shift+Q", "_open_play_queue"),
+        ("recently_expired", "Recently E&xpired", "Ctrl+Shift+X", "open_cast_recently_expired"),
+        ("downloads", "&Downloads", "Ctrl+D", "open_podcast_downloads"),
+        ("notifications", "N&otifications", "Ctrl+Shift+N", "open_cast_notifications"),
+        ("podcasts", "&Podcasts", "Ctrl+Shift+S", "open_cast_subscriptions"),
+    )
+
     def _append_places(self, view_menu: wx.Menu) -> None:
-        """The seven places, in Earshot's order, one key each.
+        """Find, then the places in the listener's order, one key each (qc.md 4.3)."""
+        from quill.core.podcasts import places as places_model
 
-        Every one of these already existed and most were reachable; what they did
-        not have was a single list that says *these are the places*. Two --
-        Personal Audio and the Inbox -- had no menu row at all, so the only way in
-        was to know where to arrow in the tree.
-
-        The accelerators are the plain ones a listener would guess, and each was
-        checked against the whole menu bar and against ``APP_KEYMAPS["cast"]``.
-        """
-        for label, accelerator, handler in (
-            ("Fi&nd in Library", "Ctrl+F", self.focus_library_find),
-            ("&Inbox", "Ctrl+Shift+I", self.open_cast_inbox),
-            ("Play &Queue...", "", self._open_play_queue),
-            ("&Podcasts", "Ctrl+Shift+P", self.open_cast_subscriptions),
-            ("Personal &Audio", "Ctrl+Shift+U", self.open_cast_personal_audio),
-            ("&Downloads...", "", self.open_podcast_downloads),
-            ("&Statistics...", "", self.open_podcast_statistics),
-            ("Contin&ue Listening...", "", self.open_continue_listening),
+        find_id = wx.NewIdRef()
+        view_menu.Append(find_id, "Fi&nd\tCtrl+F")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.focus_library_find(), id=find_id)
+        self._keep_menu_ids(find_id)
+        rows = {
+            place_id: (label, accel, opener) for place_id, label, accel, opener in self._PLACE_ROWS
+        }
+        layout = places_model.decode(self._podcast_library.settings.places_layout)
+        for place in places_model.visible(
+            layout, enabled=self._cast_area_enabled, include_hidden=True
         ):
+            label, accelerator, opener = rows[place.id]
             item_id = wx.NewIdRef()
-            # The rows that repeat a command already in another menu deliberately
-            # do not repeat its accelerator: two menu items advertising one chord
-            # is how a listener learns to distrust the labels.
-            view_menu.Append(item_id, f"{label}\t{accelerator}" if accelerator else label)
+            view_menu.Append(item_id, f"{label}\t{accelerator}")
+            handler = getattr(self, opener)
             self.frame.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
             self._keep_menu_ids(item_id)
+        places_id = wx.NewIdRef()
+        view_menu.Append(places_id, "P&laces...\tCtrl+Shift+G")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_places_chooser(), id=places_id)
+        self._keep_menu_ids(places_id)
 
     # -- what the library tree shows -------------------------------------- #
     # The chords were chosen against both halves of what Cast already claims:
@@ -226,8 +183,63 @@ class CastViewMenuMixin:
     # fOlder, B for Bar. Only the mode switch keeps a long chord, which is rule 9:
     # a once-a-year command gets *a* key, not a short one.
 
+    #: View > Show: the one episode filter, applied to every list (qc.md 4.2).
+    _SHOW_FILTERS: tuple[tuple[str, str], ...] = (
+        ("all", "&All Episodes"),
+        ("unplayed", "&Unheard Only"),
+        ("in_progress", "&Started Only"),
+        ("downloaded", "&Downloaded Only"),
+        ("played", "&Played Only"),
+    )
+    #: View > Sort Episodes, the library's own sort modes in the listener's words.
+    _EPISODE_SORTS: tuple[tuple[str, str], ...] = (
+        ("date_newest", "&Newest First"),
+        ("date_oldest", "&Oldest First"),
+        ("title_az", "By &Title"),
+        ("duration_shortest", "Shortest &First"),
+        ("duration_longest", "&Longest First"),
+    )
+
+    def _append_show_and_sort(self, view_menu: wx.Menu) -> None:
+        """Show > (the one filter) and Sort Episodes > (the one order)."""
+        show_menu = wx.Menu()
+        current = str(getattr(self._podcast_history, "episode_filter", "all") or "all")
+        for mode, label in self._SHOW_FILTERS:
+            mode_id = wx.NewIdRef()
+            show_menu.AppendRadioItem(mode_id, label)
+            if mode == current:
+                show_menu.Check(mode_id, True)
+            self.frame.Bind(wx.EVT_MENU, lambda _e, m=mode: self._set_episode_filter(m), id=mode_id)
+            self._keep_menu_ids(mode_id)
+        view_menu.AppendSubMenu(show_menu, "S&how")
+        sort_menu = wx.Menu()
+        current_sort = str(self._podcast_library.settings.episode_sort_mode)
+        for mode, label in self._EPISODE_SORTS:
+            mode_id = wx.NewIdRef()
+            sort_menu.AppendRadioItem(mode_id, label)
+            if mode == current_sort:
+                sort_menu.Check(mode_id, True)
+            self.frame.Bind(wx.EVT_MENU, lambda _e, m=mode: self._set_episode_sort(m), id=mode_id)
+            self._keep_menu_ids(mode_id)
+        view_menu.AppendSubMenu(sort_menu, "Sort &Episodes")
+
+    def _set_episode_filter(self, mode: str) -> None:
+        self._podcast_history.episode_filter = mode
+        self._save_podcast_history()
+        self._refresh_place(keep=True)
+        label = dict(self._SHOW_FILTERS).get(mode, mode).replace("&", "")
+        self._announce(f"Showing {label.lower()}.")
+
+    def _set_episode_sort(self, mode: str) -> None:
+        self._podcast_library.settings.episode_sort_mode = mode
+        self._save_podcast_library()
+        self._refresh_place(keep=True)
+        label = dict(self._EPISODE_SORTS).get(mode, mode).replace("&", "")
+        self._announce(f"Episodes sorted {label.lower()}.")
+
     def _append_library_view_items(self, view_menu: wx.Menu) -> None:
-        """Hide Caught-Up Podcasts (R1) and the Inbox's folder scope (R4)."""
+        """Show, Sort Episodes, Hide Caught-Up Podcasts (R1) and the Inbox's folder scope (R4)."""
+        self._append_show_and_sort(view_menu)
         self._hide_caught_up_item_id = wx.NewIdRef()
         view_menu.AppendCheckItem(
             self._hide_caught_up_item_id, "Hide Caught-&Up Podcasts\tCtrl+Shift+H"
@@ -237,7 +249,7 @@ class CastViewMenuMixin:
             wx.EVT_MENU, lambda _e: self._toggle_hide_caught_up(), id=self._hide_caught_up_item_id
         )
         scope_id = wx.NewIdRef()
-        view_menu.Append(scope_id, "Inbox &Folder...\tCtrl+Shift+O")
+        self._area_row(view_menu, "inbox", scope_id, "Inbox &Folder...\tCtrl+Shift+O")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.choose_inbox_folder_scope(), id=scope_id)
         self._keep_menu_ids(self._hide_caught_up_item_id, scope_id)
 
@@ -253,7 +265,7 @@ class CastViewMenuMixin:
         # Present in both modes, always, and it says which mode is in force: the
         # one row a mode must never hide is the row that changes the mode.
         self._advanced_item_id = wx.NewIdRef()
-        view_menu.AppendCheckItem(self._advanced_item_id, "Advanced Feat&ures\tCtrl+Alt+Shift+G")
+        view_menu.AppendCheckItem(self._advanced_item_id, "Advanced Feature&s\tCtrl+Alt+Shift+G")
         view_menu.Check(
             self._advanced_item_id,
             menu_mode.normalize_mode(self._podcast_history.menu_mode) == menu_mode.ADVANCED,
@@ -348,13 +360,22 @@ class CastViewMenuMixin:
             app_title="QUILL Cast",
             areas=CAST_AREAS,
             settings=self._cast_app_features(),
+            profiles=cast_features.PROFILES,
             announce_cb=self._announce,
         )
         if dialog.show():
             save_app_features(app_data_dir(), self._cast_app_features())
+            # Now, not at the next launch: the menus, the places and Go To follow
+            # the switches at once; the status bar's cells follow at the next
+            # launch, and the sentence says so.
+            self._build_menu_bar()
+            self._rebuild_places()
+            shown = [place.id for place in self._visible_places()]
+            if self._current_place not in shown and shown:
+                self.show_place(shown[0], focus=False)
             self._announce(
-                "Feature settings saved. Menu changes take effect the next time you "
-                "open QUILL Cast."
+                "Feature settings saved. The menus and places follow them now; the "
+                "status bar follows the next time you open QUILL Cast."
             )
 
     def _cast_app_features(self):  # noqa: ANN201 - AppFeatureSettings

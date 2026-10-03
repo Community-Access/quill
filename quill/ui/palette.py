@@ -152,6 +152,10 @@ class CommandPaletteDialog:
         if self._is_available(command):
             return ""
         reason = self._unavailable_reason(command)
+        if reason.startswith("off in "):
+            # A feature the listener switched off is not "unavailable": it is
+            # where they put it, and the suffix says where (qc.md section 17).
+            return f" ({reason})"
         return f" (unavailable: {reason})" if reason else " (unavailable)"
 
     def show_modal_and_run(self) -> None:

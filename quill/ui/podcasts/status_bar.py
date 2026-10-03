@@ -88,7 +88,13 @@ class CastStatusBar:
     def _build_specs(self) -> list[CellSpec]:
         """The nine cells. A method rather than an inline call so a subclass or
         a test can narrow the bar without rebuilding the navigation."""
-        return build_specs(self._host, self._wx)
+        enabled = getattr(self._host, "_cell_enabled", None)
+        specs = build_specs(self._host, self._wx)
+        if not callable(enabled):
+            return specs
+        # A cell whose feature is off in Customize Features is absent, not
+        # dimmed (qc.md section 17).
+        return [spec for spec in specs if enabled(spec.key)]
 
     # -- construction ---------------------------------------------------------
 

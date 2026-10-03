@@ -243,7 +243,124 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
-<h2 id="120--unreleased">1.2.0 – unreleased</h2>
+<h2 id="unreleased--the-next-release-quill-lite-120">Unreleased – the
+next release, QUILL Lite 1.2.0</h2>
+<h3 id="each-app-keeps-its-own-chatgpt-sign-in-2026-10-02">Each app
+keeps its own ChatGPT sign-in (2026-10-02)</h3>
+<ul>
+<li>The family’s apps share one data folder, and until now one ChatGPT
+record: signing in to a second app overwrote the first app’s
+registration while each kept its own token, so the first believed it was
+signed in and could not refresh. Each app now keeps its own record under
+its own name (<code>ai/chatgpt-quill-lite.json</code>; the old shared
+file is read until QUILL Lite writes its own), signing out of one leaves
+the others signed in, and Use My ChatGPT Subscription says when another
+app is already signed in on this computer – the browser then is too, and
+Continue is one Allow.</li>
+</ul>
+<h3 id="your-own-key-can-be-a-google-gemini-key-x-07">Your own key can
+be a Google Gemini key (X-07)</h3>
+<ul>
+<li><p><strong>Use My Own AI Key (Alt+F2)</strong> – the row was Use My
+Own OpenAI Key – opens on a <strong>Provider</strong> list: OpenAI, or
+Google Gemini. Everything under it follows the choice: where the text
+goes, which key, that account’s own models with that company’s prices,
+Test the Key against that company. The choice is explicit and saved
+(<code>ai_own_key_provider</code>, the same field as QUILL’s); nothing
+is inferred from a saved key or a model name, and a key for the other
+provider is reported, never used. Both keys may be saved. With a Gemini
+key, Ask About an Image works too, because Gemini reads pictures. Every
+AI help command, the dictionary and Tidy Dictated Text run on the chosen
+key (<code>quill/core/ai/own_key.py</code>,
+<code>own_key_models.py</code>,
+<code>quill/ui/hosted_ai_own_key.py</code>,
+<code>hosted_ai_own_key_route.py</code>;
+<code>tests/unit/core/ai/test_own_key_gemini.py</code> drives a
+Gemini-shaped loopback server with a synthetic key).</p></li>
+<li><p><strong>Tools &gt; Thesaurus… (Shift+F7)</strong>, QUILL’s
+two-pane picker and QUILL’s data, which ships inside QUILL Lite. It
+looks up the word you are <em>on</em>: “running” reaches “run”,
+“happier” reaches “happy”, irregular verbs are known, and every
+replacement comes back in the form the sentence needs, with the
+original’s capitals (“sprinting” for “running”, “More glad” for
+“Happier”). QUILL’s own Thesaurus now does the same, from the same code
+(<code>quill/core/word_lookup.py</code>,
+<code>quill/ui/word_tools_commands.py</code>).</p></li>
+<li><p><strong>Two submenus on any word in the context menu.</strong>
+<em>Thesaurus for “word”</em>: the best replacements one keystroke away,
+each further sense as a submenu, Opposites, Say Word Summary and More in
+Thesaurus. <em>Dictionary for “word”</em>: Look Up, then the AI
+dictionary’s twelve questions when AI help is on, or one row that says
+what it needs. The same two submenus in QUILL
+(<code>quill/apps/lite_window_context_menu.py</code>,
+<code>quill/ui/main_frame.py</code>).</p></li>
+<li><p><strong>Say Word Summary (Ctrl+Alt+Shift+[)</strong> speaks what
+the thesaurus knows – the headword, the meanings per part of speech, the
+first replacements and the opposites – without opening
+anything.</p></li>
+<li><p><strong>Tools &gt; Look Up Word… (Alt+F10)</strong>: QUILL’s Look
+Up window, the dictionary without AI, shared by both editors. Offline it
+is the thesaurus; with <strong>Use online sources</strong> ticked – off
+until you tick it, remembered as <code>dictionary_online_lookups</code>
+– the word alone goes to the Free Dictionary, Datamuse and Wikipedia for
+definitions, more words and a summary, arriving in the background. Words
+you can use replace the word on Enter; Add to Dictionary teaches it
+(<code>quill/ui/lookup_window.py</code>,
+<code>quill/core/lexical.py</code>). In QUILL this window had been
+reachable only when the thesaurus data was missing, and went online
+whenever the dictionary feature was on; now it is on the Tools &gt;
+Writing menu and asks first.</p></li>
+<li><p><strong>Tools &gt; Dictionary</strong>, the AI dictionary: Define
+in Context, Synonyms That Fit, Simpler, More Formal and More Vivid Word,
+Opposites, Is This the Right Word?, Use It in a Sentence, Where It Comes
+From, How to Say It, Rhymes, the Word Explorer (everything at once) and
+Find the Word For (the reverse dictionary). Each sends the word and its
+sentence, never the document, and answers in prose for listening plus
+choices that each say why; Use This Word replaces the word (or inserts,
+for Find the Word For) as one undo step, and only while the word is
+still where it was. On your own OpenAI key or ChatGPT subscription only
+– never the free allowance – and the same rows, keys and window in
+QUILL’s AI menu (<code>quill/core/ai/word_tools.py</code>,
+<code>quill/ui/word_tools_window.py</code>,
+<code>quill/ui/main_frame_hosted_ai.py</code>).</p></li>
+<li><p><strong>Tools &gt; Spelling &gt; Dictionary Status…
+(Alt+Shift+;)</strong>, QUILL’s row: the word counts and file paths of
+your dictionaries, and whether the thesaurus data is present
+(<code>quill/apps/lite_window_words.py</code>).</p></li>
+<li><p>A new Customize Features area, <strong>Dictionary and
+thesaurus</strong>, on by default and off in the WordPad and Notepad
+profiles; the AI rows switch with AI help. The profiles’ counts are 17,
+21, 5 and 2 of 21.</p></li>
+</ul>
+<h3
+id="activity-repeat-last-result-and-saves-that-tell-the-truth-f-01-f-02-f-10">Activity,
+Repeat Last Result, and saves that tell the truth (F-01, F-02,
+F-10)</h3>
+<ul>
+<li><strong>Help &gt; Activity… (Shift+F9)</strong> lists every result
+this session, newest first, each with what you can do about it: Retry,
+Open Folder, Copy Details, Clear List. <strong>Help &gt; Repeat Last
+Result (F9)</strong> says the newest result that mattered again. The
+same two keys and the same window in QUILL, Quill Radio and QUILL Cast;
+every document window shares one list
+(<code>quill/core/activity.py</code>,
+<code>quill/ui/activity_window.py</code>,
+<code>quill/apps/lite_window_activity.py</code>).</li>
+<li><strong>A settings save that fails is said once, with a way
+back.</strong> Every settings and history writer in the family – QUILL
+Lite’s and QUILL’s settings, Quill Radio’s and QUILL Cast’s history, the
+podcast library – goes through one guard that reports how the write
+went. A failure reaches Activity with the reason (disk full, denied,
+read only, missing folder), a Retry that writes the same thing again and
+an Open Folder; the same file’s failure is not repeated for a minute,
+and the save that later works is said too
+(<code>quill/core/persistence_outcome.py</code>,
+<code>quill/ui/persistence_reporting.py</code>).</li>
+<li><strong>Background work that finishes after its window closed is not
+lost.</strong> It used to be dropped without trace. It is now a review
+row in Activity, never spoken
+(<code>quill/ui/surface_lifetime.py</code>).</li>
+</ul>
 <h3
 id="large-and-networked-files-open-without-freezing-the-window-f-05">Large
 and networked files open without freezing the window (F-05)</h3>

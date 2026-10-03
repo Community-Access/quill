@@ -20,7 +20,7 @@ class ManagerDownloadsMixin:
 
     def _on_download(self, _event: object) -> None:
         show = self._current_show
-        episode = self._selected_episode()
+        episode = self._verb_selected_episode()
         if show is None or episode is None:
             return
         from quill.ui.podcasts.show_actions import enqueue_episode_download
@@ -36,7 +36,7 @@ class ManagerDownloadsMixin:
         self._refresh_selected_episode_row()
 
     def _on_pause_resume_download(self, _event: object) -> None:
-        episode = self._selected_episode()
+        episode = self._verb_selected_episode()
         if episode is None:
             return
         item_id = self._download_item_id(episode)
@@ -54,7 +54,7 @@ class ManagerDownloadsMixin:
     def _on_remove_download(self, _event: object) -> None:
         from quill.core.podcasts.retention import remove_downloaded_copy
 
-        episode = self._selected_episode()
+        episode = self._verb_selected_episode()
         if episode is None or not remove_downloaded_copy(episode):
             return
         self._on_library_changed()
@@ -112,7 +112,7 @@ class ManagerDownloadsMixin:
                 break
 
     def _refresh_selected_episode_row(self) -> None:
-        episode = self._selected_episode()
+        episode = self._verb_selected_episode()
         if episode is None:
             return
         index = self._episodes.GetFirstSelected()

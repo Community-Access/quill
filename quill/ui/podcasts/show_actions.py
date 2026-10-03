@@ -498,7 +498,7 @@ def remove_all_episodes_prompt(
     deleting downloaded media too, asked as its own follow-up question (same
     two-step shape as :func:`unsubscribe_show_prompt`).
 
-    The show stays subscribed; a future feed refresh can repopulate its
+    The podcast stays followed; a future feed refresh can repopulate its
     episode list from the feed itself, unlike Unsubscribe.
     """
     import wx
@@ -508,8 +508,8 @@ def remove_all_episodes_prompt(
         return False
     downloaded = [e for e in show.episodes if e.downloaded_path]
     answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
-        f"Remove all {len(show.episodes)} episode(s) of {show.title}? The show "
-        "stays subscribed -- a future feed refresh can bring episodes back.",
+        f"Remove all {len(show.episodes)} episode(s) of {show.title}? The podcast "
+        "stays followed -- a future feed refresh can bring episodes back.",
         "Remove All Episodes",
         wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,

@@ -51,10 +51,10 @@ _FILE_NAME = "cast-go-to.json"
 #: construction -- a new entry appears in the pool for anyone with a saved
 #: layout, so nobody's numbering moves.
 DESTINATIONS: tuple[Destination, ...] = (
-    Destination("manager", "Podcast Manager", "open_podcast_manager", "Ctrl+M"),
-    Destination("continue", "Continue Listening", "open_continue_listening"),
-    Destination("queue", "Play Queue", "_open_play_queue"),
-    Destination("downloads", "Downloads", "open_podcast_downloads"),
+    Destination("manager", "Podcasts", "open_podcast_manager", "Ctrl+Shift+S"),
+    Destination("continue", "Continue Listening", "open_continue_listening", "Ctrl+Shift+L"),
+    Destination("queue", "Play Queue", "_open_play_queue", "Ctrl+Shift+Q"),
+    Destination("downloads", "Downloads", "open_podcast_downloads", "Ctrl+D"),
     Destination("bookmarks", "Bookmarks", "open_bookmarks", "Ctrl+Alt+Shift+J"),
     Destination("statistics", "Listening Statistics", "open_podcast_statistics"),
     Destination("add", "Add a Podcast", "_podcast_open_add_dialog"),
@@ -69,7 +69,38 @@ DESTINATIONS: tuple[Destination, ...] = (
     Destination("shortcuts", "Keyboard Shortcuts", "open_keymap_editor"),
     Destination("sheet", "Keyboard Shortcuts Sheet", "podcast_keyboard_cheat_sheet"),
     Destination("media_tools", "Media Tools", "podcast_media_tools_status"),
+    # The places that were not doors before the one window (qc.md 4.3).
+    Destination("inbox", "Inbox", "open_cast_inbox", "Ctrl+Shift+I"),
+    Destination("new_episodes", "New Episodes", "open_cast_new_episodes", "Ctrl+Shift+W"),
+    Destination("favorites", "Favorites", "open_cast_favorites", "Ctrl+Shift+V"),
+    Destination("personal_audio", "Personal Audio", "open_cast_personal_audio", "Ctrl+Shift+U"),
+    Destination("playlists", "Playlists", "open_cast_playlists", "Ctrl+Shift+Y"),
+    Destination(
+        "recently_expired", "Recently Expired", "open_cast_recently_expired", "Ctrl+Shift+X"
+    ),
+    Destination("notifications", "Notifications", "open_cast_notifications", "Ctrl+Shift+N"),
+    Destination("places", "Places", "open_places_chooser", "Ctrl+Shift+G"),
 )
+
+#: Destination id -> the Customize Features area it needs (section 17).
+DESTINATION_AREAS: dict[str, str] = {
+    "queue": "queue",
+    "downloads": "downloads",
+    "bookmarks": "notes",
+    "statistics": "statistics",
+    "notes": "notes",
+    "sleep": "sleep_timer",
+    "enhancements": "sound",
+    "skip": "skipping",
+    "quick_actions": "customizing",
+    "extras": "notes",
+    "inbox": "inbox",
+    "personal_audio": "personal_audio",
+    "playlists": "playlists",
+    "recently_expired": "queue",
+    "notifications": "notifications",
+    "continue": "recently_played",
+}
 
 #: The first ten, which is what a fresh install gets.
 DEFAULT_ORDER: tuple[str, ...] = go_to_menu.default_order(DESTINATIONS)

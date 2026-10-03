@@ -55,7 +55,7 @@ def test_picker_dialog_meets_the_dialog_contract() -> None:
     # wx.StaticText built immediately before the control, not a SetName, which
     # the reader never sees. The tree's old SetName("Folders") was exactly that
     # kind of dead name (GATE-CTLLABEL), so the label is what is asserted now.
-    assert 'SetName("Search folders by name")' in src
+    assert 'SetName("Find folders by name")' in src
     assert 'label="&Folders:"' in src
     # New Folder creates at the SELECTED level and selects the new folder.
     assert "parent_folder_id=parent_folder_id" in src
@@ -65,8 +65,11 @@ def test_picker_dialog_meets_the_dialog_contract() -> None:
 def test_manager_move_preserves_tree_position() -> None:
     """#move-to-folder: after the show disappears into its folder, selection
     lands on its nearest former neighbor, never snapping to the top."""
+    # The verbs moved to manager_verbs.py (qc.md Phase 2) so QUILL's Manager and
+    # Cast's one window share them; the anchors stay with the Manager's tree.
     src = (_UI / "manager_dialog.py").read_text(encoding="utf-8")
-    assert "def _on_move_show_to_folder(" in src
+    verbs = (_UI / "manager_verbs.py").read_text(encoding="utf-8")
+    assert "def _on_move_show_to_folder(" in verbs
     assert "_neighbor_anchor_for_show(" in src
     assert "_restore_tree_anchor(" in src
     # The menu entry itself moved to manager_menus.py in 1.1.0, where the
@@ -98,10 +101,11 @@ def test_manager_offers_folder_rename_and_delete_with_contents_choice() -> None:
     the folder row gained its listening actions; the manager keeps the entry
     point, and the two questions are checked where they now live."""
     src = (_UI / "manager_dialog.py").read_text(encoding="utf-8")
-    assert "def _on_rename_folder(" in src
+    verbs = (_UI / "manager_verbs.py").read_text(encoding="utf-8")
+    assert "def _on_rename_folder(" in verbs
     assert "def _on_delete_folder(" in src
-    assert "def _on_rename_show(" in src
-    assert "def _on_rename_episode(" in src
+    assert "def _on_rename_show(" in verbs
+    assert "def _on_rename_episode(" in verbs
     assert "def _on_delete_inbox_folder(" in src
     assert "WXK_F2" in src
 

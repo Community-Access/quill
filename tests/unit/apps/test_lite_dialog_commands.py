@@ -862,6 +862,7 @@ def test_about_names_the_model_and_the_bill_with_an_own_key(lite_window, monkeyp
         signed_in = True
         own_key_active = True
         own_key_model = "gpt-test"
+        own_key_provider = "openai"
         support_id = "2DFD-22DB"
 
         def fetch_quota(self, *, on_done, on_error):

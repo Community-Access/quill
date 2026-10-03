@@ -130,6 +130,14 @@ class CastCloseMixin:
         """Teardown just before the window closes. Every step is guarded and
         classed (qc.md F-06): a failed final write is kept for the next launch,
         which says so once; anything else is logged. Close always completes."""
+        try:
+            from quill.core.paths import app_data_dir
+            from quill.core.podcasts import history as podcast_history
+
+            self._stamp_last_seen()
+            podcast_history.save_history(app_data_dir(), self._podcast_history)
+        except Exception:  # noqa: BLE001 - a stamp is never worth a crash at close
+            pass
         from quill.core.paths import app_data_dir
         from quill.core.shutdown_report import (
             BACKGROUND,

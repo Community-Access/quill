@@ -106,6 +106,7 @@ def test_the_nine_cells_appear_in_the_order_a_listening_session_does() -> None:
         "queue",
         "inbox",
         "downloads",
+        "notifications",  # qc.md 5b: between Downloads and the sleep timer
         "sleep_timer",
         "clock",
     ]
@@ -680,13 +681,11 @@ def test_leaving_the_bar_hands_focus_to_the_library_tree_without_a_word() -> Non
 def test_every_context_menu_row_names_a_command_this_app_has() -> None:
     """A menu row naming a method nobody wrote does nothing, silently.
 
-    Checked against the mixins that actually supply Cast's commands rather than
-    against the frame, so the test does not need a window. Two names are
-    allowed to be absent because they are being written alongside this bar --
-    the Inbox door the new View menu also opens, and Clear Entire Queue, whose
-    core half has sat in ``core/podcasts/quick_plays.py`` with no caller at all.
-    When either lands, this list shrinks; nothing else may join it.
+    Checked against the frame class (its methods, not a window), so every
+    mixin that supplies a command counts -- the Inbox door and Clear Entire
+    Queue that were once allowed to be absent included. Nothing may be.
     """
+    from quill.apps.podcasts import PodcastsAppFrame
     from quill.apps.podcasts_now_playing import CastNowPlayingMixin
     from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
     from quill.ui.main_frame_podcast_session import PodcastSessionMixin
@@ -700,6 +699,7 @@ def test_every_context_menu_row_names_a_command_this_app_has() -> None:
         MediaSleepTimerMixin,
         QueueRunCommandsMixin,
         CastNowPlayingMixin,  # Now Playing..., the Play cell's first row (qc.md 5)
+        PodcastsAppFrame,
     ):
         available |= set(dir(mixin))
     rows = [
@@ -709,7 +709,7 @@ def test_every_context_menu_row_names_a_command_this_app_has() -> None:
         for row in value
     ]
     missing = sorted({method for _label, method in rows if method not in available})
-    assert missing == ["open_cast_inbox", "podcast_clear_entire_queue"]
+    assert missing == []
 
 
 # ---------------------------------------------------------------------------
@@ -820,7 +820,7 @@ def test_home_and_end_jump_to_the_ends_of_the_bar() -> None:
     spec = bar._specs[4]
     bar._on_key_down(_KeyDownEvent(313), spec)  # Home
     bar._on_key_down(_KeyDownEvent(312), spec)  # End
-    assert focused == ["cell:0", "cell:8"]
+    assert focused == ["cell:0", f"cell:{len(bar._specs) - 1}"]
 
 
 def test_tab_leaves_the_bar_rather_than_stepping_through_nine_cells() -> None:

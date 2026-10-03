@@ -1,1340 +1,214 @@
-# QUILL Cast 2.0 -- Release Notes
-
-QUILL Cast 1.1 made the app do things without being asked. 2.0 is about the
-places it could not reach: **another directory**, **another device**, **another
-app**, and the episodes whose publishers never wrote a chapter list.
-
-Two of those are new kinds of thing for Cast entirely. It has never before been
-able to hand anything to another program, and it has never before known where
-you got to on a machine that is not this one.
-
-And two more arrived late in the release, both about the same thing: **one
-podcast is not like the others**. Settings a podcast can answer for itself --
-seventy of them, inherited properly through folders at last -- and **Episode
-Filters**, rules for the episodes you did not want in the first place. Those two
-come first below, because between them they change what using a large library
-feels like.
-
----
-
-## After these notes were first written: the main window, reworked (2026-09-30 and 2026-10-01)
-
-Everything in this section ships in the next release, **QUILL Cast 1.1.0**.
-
-Most of what is below came from one afternoon of a screen-reader user
-actually using QUILL Cast and saying what was wrong with it: a button that
-said "Play" and not what it would play, a Favorites row with a count that
-would not open, a menu called Subscriptions that held twenty rows of which two
-were used weekly, Alt+S pressing Stop instead of opening a menu. None of it
-was a missing feature. All of it was the app being harder to use than it had
-to be.
-
-### Activity, and Repeat Last Result
-
-**Help > Activity...** (Shift+F9) is everything QUILL Cast told you this
-session, newest first, with what you can do about each row: Retry, Open
-Folder, Copy Details. A library or settings file that could not be saved is
-said once, with the reason, and its Activity row carries a Retry that saves
-again and an Open Folder that shows you the disk; when a later save works,
-that is said too. **Help > Repeat Last Result** (F9) says the newest result
-that mattered again. The same two keys in QUILL, QUILL Lite and Quill Radio.
-
-### Now Playing: a console you can live in
-
-**Ctrl+2**, from anywhere in QUILL Cast, is a window with everything about the
-playing episode in one place: the podcast, the episode and where it came
-from; the position as a real slider that speaks minutes and seconds as you
-move it; Pause, Stop, thirty seconds back and forward, the chapters; speed as
-a list of nine plus Custom; volume and Mute; the sleep timer's readout with
-Set, At End of Episode and Extend by 5 Minutes beside it; the chapters as a
-list whose playing row says so and follows playback without moving your
-cursor; the show notes, readable; a note of your own that is saved when you
-leave the field; and Add to Favorites, Mark as Played, Share and About This
-Episode. Ctrl+1 is the library again. The window is made when Cast starts and
-only hidden when closed, so its number never moves, and a Preferences switch
-(off by default) brings it to the front whenever playback starts.
-
-**The show notes can be read now, not only heard -- and they are one Tab
-from the episode.** Under the library tree in the main window, the field
-reads the notes of the episode you are on (or a podcast's description), and
-the Show Notes window in the Episode List is the same reader. It keeps
-the podcast's headings, lists and links in a native read-only field: H and
-Shift+H move between headings and say the level, Tab and Shift+Tab move
-between links and timestamps and say the title, Enter opens a link or plays
-from a timestamp, Ctrl+F finds with the count spoken and F3 moves on. Copy
-Notes copies the whole notes as plain text, plain text with links, Markdown or
-formatted HTML-with-RTF, remembers your choice, and says what it copied with
-the word count; Links opens Links in These Notes (title then address, Copy
-Title and Address, Copy All Addresses); View in Browser opens the notes as
-the podcast wrote them, images included, on a temporary page with no scripts.
-
-### AI help, the family's own, on the show notes (2026-10-02)
-
-**Help > AI Features** brings the AI that QUILL and QUILL Lite share to the
-show notes of the episode you are on: summarize or explain them (Free AI
-Assistant, Ctrl+Alt+G), ask a question about them (Ask About These Show
-Notes, Ctrl+Alt+Z), describe a picture (Ask About an Image, Ctrl+F5, on your
-ChatGPT plan or Gemini key), and the family's usage, sign-in, privacy, own
-key (Alt+F2) and ChatGPT subscription (Alt+F5) windows, on the family's
-keys. It is **off** until **AI help** in Preferences is checked, and the
-privacy agreement is still asked for before anything is sent. The notes are
-read only here, so an answer goes to the clipboard, never into Cast; the AI
-never runs in the background and never touches the library. One
-implementation, not a second: Cast reaches it through an adapter, and a test
-asserts Cast has no AI command of its own.
-
-**One ChatGPT sign-in per app.** The family's apps share one data folder, and
-until now they shared one ChatGPT record too, so the second app to sign in
-overwrote the first app's registration while each kept its own token. Each app
-now keeps its own, under its own name; signing out of one leaves the others
-signed in; and the account window says when a sibling is already signed in,
-which makes Continue with ChatGPT one Allow in a browser that already is.
-
-### Episode Filters ask far more, and write a rule for you
-
-A rule can now test the show notes, the people on an episode, the type the
-publisher gave it, a maximum length, its age, season and number, with words,
-wildcards or regular expressions -- and say whether every test or any one has
-to match. **Try It on Recent Episodes** says what a rule would catch before it
-is saved, and **Filter Episodes Like This...** on any episode's menu drafts
-the rule from that episode. The whole story is under "Rules for the episodes
-you did not want" below.
-
-### Follow, not Subscribe
-
-Every podcast app a listener has used in the last five years says **Follow**.
-Subscribe has come to mean something with a price attached, and QUILL is free.
-So Cast now says Follow and Unfollow: in Add Podcast, in the Podcast Manager,
-in the announcements, and in the report an OPML import writes. The OPML
-*file* is still called a subscription list, because that is the format's own
-name for it and what every other app calls it, and nothing on disk was
-renamed -- a wording preference is not worth a migration. A few surfaces in
-the main window still say Unsubscribe; they are listed as open work in the
-quality plan and change in the next commit.
-
-### Add Podcast works the way it was described
-
-**Preview had never worked.** Pressing it failed in the background, set a
-status label nobody could hear, and so looked like a dead button. It now opens
-a read-only look at the show -- title, publisher, episode count, the
-description as a text field you can arrow through, and the ten most recent
-episode titles with dates -- before you decide to follow it.
-
-Both edit fields in the window announced as a bare "edit", because the name
-they carried was one Windows screen readers never read. They now have real
-labels with access keys, and F1 on either field answers.
-
-The results list carries a **Following** column that says so on rows you
-already follow and stays silent on the rest, and the button alternates
-**Follow** and **Unfollow**. Unfollowing from here goes through the same
-confirm-and-undo path as everywhere else, so Ctrl+Z puts the show back. The
-list has a context menu on Shift+F10 and the Applications key.
-
-### The pinned views open
-
-Favorites, New Episodes, Continue Listening and the Inbox all carried a count
-and none of them could be expanded. Right Arrow on any of them now reveals
-what the count counts: episodes under the three episode views, each naming
-its podcast; podcasts under Favorites, each of which expands to its own
-episodes one level down. Enter on an episode plays it. Enter or **Play** on
-a view plays its newest unstarted episode (Continue Listening: the most
-recent one you were in the middle of).
-
-### Play understands what the cursor is on
-
-Play used to understand podcasts only and answer "select a show" when the
-cursor was on an episode. It now plays a podcast's next episode, the episode
-itself, or a view's first playable episode, and when nothing under the cursor
-can be played it says which two things would work instead.
-
-### A View menu, and the places you go
-
-The View menu (Alt+V) is the map Cast never had. Its first seven rows are the
-places, in the order Earshot lists them: **Inbox** (Ctrl+Shift+I), **Play
-Queue...**, **Podcasts** (Ctrl+Shift+P), **Personal Audio** (Ctrl+Shift+U),
-**Downloads...**, **Statistics...**, **Continue Listening...**. Going to a
-place lands focus on it in the library tree, so the screen reader reads the
-place you asked for, and an empty place says how to fill it, once, on
-arrival. Two of these -- the Inbox and Personal Audio -- had no menu row at
-all before this.
-
-Below the places: **Hide Caught-Up Podcasts** (Ctrl+Shift+H) takes shows with
-nothing unheard out of the tree; **Inbox Folder...** (Ctrl+Shift+O) narrows
-the Inbox to the shows filed under one library folder and its subfolders, and
-the Inbox always says which scope is in force; **Show Status Bar**
-(Ctrl+Shift+B); **Advanced Features** (Ctrl+Alt+Shift+G); and **Customize
-Features...**.
-
-### Simple and Advanced
-
-The menus are organised by how often anybody needs a row. **Simple**, the
-default, holds everything a listener does weekly: follow, find, play, queue,
-Inbox, folders, downloads, sleep timer, speed, settings, help. **Advanced**
-adds the rows you go looking for once you know they exist: Back Up and
-Restore, Import and Export OPML, Export My Data, Delete All Podcast Data,
-Podcast Index Credentials, Choose Columns, Quick Actions, Media Tools,
-Housekeeping, Free Up Space, Get FFmpeg, Redeem Unlock Code, Keyboard
-Shortcuts, Global Hotkeys, the Product Requirements document, and the whole
-Quillins menu.
-
-Rows are omitted, not disabled, because a disabled row still costs a
-screen-reader user a stop and a sentence. Nothing is unreachable in Simple
-mode: every advanced row is a command, so the Command Palette and Go To reach
-all of them by name. View > Advanced Features is present in both modes and
-says which is in force; switching rebuilds the menu bar on the spot.
-
-**Customize Features...** is the other axis: whole areas of Cast you may have
-no use for, switched off entirely. Downloads, the Inbox, the Play Queue,
-transcripts and chapters, statistics, Personal Audio, the sleep timer, and
-backups and OPML. Everything is on until you say otherwise, and whatever you
-switch off, you still have a podcast player.
-
-### The menu bar, renamed and re-lettered
-
-The Subscriptions menu is the **Podcasts** menu (Alt+P), because that is what
-is in it. The bar reads Podcasts, Episode, Downloads, View, Quillins (Advanced
-only), Window, Help.
-
-Alt+S used to press Stop instead of opening a menu, and Alt+V the Favorites
-toggle instead of View, because when a button and a menu claim the same
-letter Windows gives it to the button. The menu bar wins now: its letters are
-how a keyboard listener navigates the whole app, and a button is one Tab
-away. So the main window's buttons moved to letters no menu uses -- Play on
-Y, Stop on T, Favorites on F, Unfollow on U, Add on A, Episode List on I --
-and a gate (GATE-15) fails the build if a control and a top-level menu ever
-share a letter again.
-
-### The Window menu
-
-Window (Alt+W) lists every open Cast window with a number key, the one route
-between them that does not involve Alt+Tab and guessing which of several
-identically titled windows is which. Ctrl+1 is always the main window, and
-returning to it lands on the library tree.
-
-### Unfollow beside Add, and a button that says what is in it
-
-A row of buttons that could add a podcast and not remove one was half a row.
-**Unfollow** now sits beside Add Podcast, enabled when a podcast or one of its
-episodes is selected, through the same prompt that asks first and makes it one
-undoable step. And "Open Manager" is now **Episode List...**, because it named
-a window rather than the thing you wanted from it.
-
-### The buttons say what they will act on (2026-10-01)
-
-"If I tab I see play, play what?" The first fix put the answer in the button's
-hidden accessible name, and on Windows a button's accessible name is never
-read -- the button still said "Play". So the answer is in the label now, where
-it can be heard:
-
-- **Play The Daily** with a podcast under the cursor; **Play** and the episode's
-  name with an episode under it; a pinned view's first playable episode with a
-  view under it.
-- **Pause The Daily, Thursday's episode** while that is playing (Alt+S), and
-  **Resume** and the same name while it is paused.
-- **Play -- nothing selected** with a folder, an empty show or nothing under
-  the cursor. Pressing it says what would work: choose a podcast or an episode
-  in the library first, or use Continue Listening.
-- **Unfollow The Daily** with that podcast, or one of its episodes, selected.
-  Plain **Unfollow**, disabled, with nothing to unfollow.
-
-Stop is enabled only while something is playing or paused, so the row never
-offers a verb that cannot happen. Names are shortened to forty characters with
-an ellipsis, a podcast called "Rock & Roll" cannot grow a stray access key,
-and each button keeps an equal share of the row, so nothing shifts as you move
-through the library. Pause and Resume share Alt+S -- they are one button -- and
-no label the button can show shares a letter with a menu, which the build now
-checks for every label it can produce, not only the resting one. A second
-check fails the build if any Cast button is ever named through the inert route
-again. Quill Radio's main window learned the same lesson the same day.
-
-### Find in library (2026-10-01)
-
-A box above the library: press **Ctrl+F** from anywhere in the main window (or
-Alt+N), type part of a podcast's name, an episode title or one of your notes,
-and the library becomes the matches -- podcasts first, then episodes, newest
-first, then notes, each row saying what it is and where it lives. The count is
-said once, when you stop typing, never per letter. A match is the same row it
-stands for: Enter plays it, Shift+F10 opens its menu, the Play button names it.
-Escape brings your library back, with the cursor where it was. Transcripts are
-searched by Search Everywhere for now; searching them on every pause waits for
-the library index. Also: **Customize Features** now has a key, Ctrl+Alt+C,
-the same as in Quill Radio.
-
-### Smaller fixes (2026-10-01)
-
-- **The Play Queue opens again.** View > Play Queue... and Episode > Play
-  Queue... (Ctrl+Shift+Q) did nothing: the window failed as it opened,
-  silently, because it asked the shared dialog code to show it without
-  saying what it was called. It now opens with focus on the queue and its
-  title, and a build check makes sure no window anywhere in the family can
-  make that mistake again.
-- **Show Notes' formatted view has a name.** Choosing Rich text in Show Notes
-  showed the formatted notes with no name at all; it is now "Show notes,
-  formatted" (Alt+F), and the label appears and disappears with the view.
-- **F1 says what the main window and Feed Check are for, as they are now.**
-  F1 in the main window mentions the buttons that name what they act on,
-  the View menu's places and F6 for the status bar; F1 in Feed Check says
-  the list is worst first and that opening it checks nothing.
-- **Closing a window mid-search is the end of it.** Close Add Podcast, the
-  Podcast Manager or an import while something is still loading, and its
-  answer no longer arrives afterwards as an announcement about a window you
-  have already left.
-- **A failed save while closing is no longer silent.** If QUILL Cast cannot
-  save your podcast library or listening statistics as it closes, it still
-  closes, but the next launch says so once and Recent Problems keeps a
-  **Closing** row whose Retry saves both again.
-- **Two failures that were silent are spoken.** When Preview cannot load a
-  podcast, it now says so as well as showing it. And when importing a
-  subscription list, if the feed check itself cannot run, Cast says "The
-  feed check could not run. Everything you imported is kept" -- where it used
-  to report zero feeds checked, which sounded like success.
-- **Follow everywhere, not only in Add Podcast.** The library's row menu
-  said Unsubscribe, Preview's button said Subscribe, the Podcasts menu said
-  Subscribe to ACB Media Podcasts, and a dozen announcements and settings
-  still said subscribed. All say Follow now: **Unfollow...** (Delete) in the
-  row menu, **Follow** in Preview, **Follow ACB Media Podcasts**, **When I
-  unfollow, delete downloaded files** in Podcast Settings, **Unfollow them
-  too** when deleting a folder, **Follow This Podcast** among an episode's
-  extras, and the undo sentence "Undid Unfollow". The OPML file is still
-  called a subscription list, because that is the format's own name for it.
-- **"Use shared default", not "Follow".** In Settings for This Podcast, the
-  button beside a setting the podcast answers for itself used to say only
-  Follow -- one per row, all identical, and the same word Cast now uses for
-  adding a podcast. Each now says what it does and to what: "Use shared
-  default for Playback speed". The button that drops them all is **Use
-  Shared Defaults** (Alt+D).
-- **Shift+F10 opens the library's row menu.** The library tree's own help
-  promised it, and only a right-click did it: Shift+F10 and the Applications
-  key opened nothing. Both open the same menu now.
-- **Windows open on the thing they are for.** Downloads opens in the
-  download list, Feed Check in the feed list, Show Notes in the notes,
-  and Listening Statistics and Year in Review in their reports -- not on a
-  filter, a chooser or the first button, which is where several of them
-  used to land.
-- **OK buttons no longer take a letter.** Smart Playlist Rules, Podcast
-  Settings and Settings for This Podcast each spent Alt+O on their OK button,
-  which Enter already presses. OK is plain OK now, and O is free for the
-  controls in those windows that need a key.
-- **The keyboard editors are back in Simple mode.** Help > Keyboard
-  Shortcuts... (Ctrl+Alt+Shift+W) and Help > Global Hotkeys...
-  (Ctrl+Alt+Shift+H) had become Advanced-only rows. Every key is yours to
-  change, and where you change them should never be hidden, so both are in
-  the Help menu in either mode -- as they are in Quill Radio and QUILL Lite.
-
-### The status bar
-
-A nine-cell status bar, off the Tab order entirely and reached with **F6**
-(F6 again, Escape or Tab leave it, back to the library tree). Left and Right
-move cell to cell, Home and End jump to the ends, Enter or Space activates a
-cell, and Shift+F10 opens the cell's own menu. The cells, in the order a
-listening session happens: Play/Pause/Resume, Mute, Volume, Speed, Queue,
-Inbox, Downloads, Sleep timer, Clock. An action cell's label is its action and
-flips with the state; a readout's label is its value, and a readout with
-nothing to say shows its bare name rather than a zero. Enter on a readout
-opens the window behind it. Entering the bar says the region once and moving
-inside it is silent. **View > Show Status Bar** hides or shows it; F6 travels
-on to whatever it meant before when the bar is hidden, rather than silently
-doing nothing.
-
-### Feed Check
-
-**Podcasts > Feed Check...** (Ctrl+Shift+C) answers "which of my sixty
-podcasts is broken", which had no answer before except re-following each one
-and waiting. Cast already kept the facts -- when each feed was last read, how
-many checks had failed in a row, when it last carried something new -- and
-used them to decide when to speak, once per run of failures. What it never did
-was let you ask.
-
-The list is worst first: feeds that are failing to check, then feeds that have
-gone quiet, then everything healthy. Opening it checks nothing and sends
-nothing. **Retry** on a row, or **Retry All Failed**, is the refresh Cast
-already does, and it says what it found per feed. A failing feed is never
-described as abandoned: Cast keeps trying, and every sentence says so, because
-"failed eleven times" reads as "and I gave up". Shift+F10 opens the row menu.
-
-### Launch lands on what is new
-
-With no launch place chosen, Cast opens on the Inbox if anything is waiting,
-else on Continue Listening if anything is half-heard, else at the top of the
-library -- the answer a listener would give if asked why they opened the app.
-**Preferences > Where to land on launch** (Alt+U) chooses one place instead:
-the Inbox, New Episodes, Continue Listening or Favorites, always, even when
-empty.
-
-### Three verbs from the Command Palette
-
-Earshot exposes three Shortcuts actions to Siri; the desktop equivalent of
-saying something is a key, and until keys are assigned they live in the
-Command Palette: **Play an Unheard Episode** (newest, or oldest), which looks
-in the queue first, then the Inbox, then everything unplayed, and never picks
-anything you have already started; **Play Queue Shuffled**; and **Clear
-Entire Queue...**, which asks first.
-
-### Every control has a name
-
-A sweep across the whole QUILL family found 165 controls whose accessible
-name was set in a way Windows screen readers never read, so they announced as
-"edit" or "combo box" and nothing more. The fifteen in Cast are fixed, the
-Manager's combo boxes among them, and a gate (GATE-CTLLABEL) holds the count
-at zero for Cast and lets it only fall elsewhere.
-
-### Things that changed underneath
-
-Opening Feed Check on a large library used to grow the saved check-state file
-by one empty entry per podcast, because merely asking about a feed created a
-record for it. Asking now only reads. And the Community menu is gone: its
-rows live in Help.
-
----
-
-## A podcast can answer for itself
-
-Almost every complaint a podcast listener has is about **one podcast behaving
-differently from the rest**. Keep the newest three ready is right for a daily
-news show and wrong for a weekly three-hour interview. Check hourly is right for
-the news show and wasteful for an archive that stopped publishing in 2019. Say
-the podcast's name in every row is right for a mixed list and noise inside that
-podcast's own.
-
-Cast has always had per-show settings. It had about a dozen. It now has around
-seventy, and -- more importantly -- it can finally tell the difference between
-*"I have no opinion about this"* and *"I want exactly this"*.
-
-### The bug underneath, worth naming
-
-Until now, giving one podcast its own answer to one setting made a **complete
-copy** of every setting it had. So the moment you set a playback speed for one
-show, that show also acquired its own private copy of your retention rule, your
-download count, your Inbox caps and everything else -- frozen at whatever your
-shared defaults happened to be that afternoon. Change a shared default a month
-later and it would reach every podcast except the ones you had ever bothered to
-adjust.
-
-Folders had the same shape of problem. **Folder Settings** wrote its values into
-each member podcast and then forgot them, so a podcast you filed into that
-folder afterwards inherited nothing at all.
-
-Both are gone. Settings now resolve through four levels -- your **shared
-defaults**, then any **folder** the podcast is in, outermost first, then the
-**podcast** -- and each level stores only the settings it actually has an
-opinion about. Set "check hourly" on your News folder and everything in it and
-beneath it checks hourly, including podcasts you file there next year. Move one
-out and it stops. Nothing was copied, so nothing drifts.
-
-Your existing settings are converted the first time this version opens your
-library: each frozen copy is compared against your shared defaults, and only the
-values that genuinely differ are kept as that podcast's own. Anything that
-matched is read as "no opinion", which is almost always what was meant.
-
-### The window
-
-**Settings for This Podcast...** now shows one **category** at a time --
-Arrival, Playback, Storage, Announcements, Curation -- because seventy controls
-in a single scroll is not a window anybody can work through by ear.
-
-Three things are true of every control in it. It shows the value **actually in
-force**, whether that came from this podcast, from its folder or from your
-shared defaults -- and F1 says which: *"Every 60 minutes, from the folder
-News."* Saving writes **only what you changed**, so everything you left alone
-keeps following the levels above it. And where a podcast has an answer of its
-own, a **Follow** button appears beside that control; pressing it drops that one
-answer rather than writing today's default over it.
-
-**What Have I Changed?** lists only the settings this podcast answers for
-itself, out of all of them. It is the question a window full of controls cannot
-answer, and it is how you find out why one podcast is behaving oddly without
-reading seventy rows.
-
-### The ones that matter most by ear
-
-**Tidy episode titles.** A great many podcasts prefix every episode with the
-same thing: `Ep. 412 -`, `MyShow Presents:`, `[Bonus]`. Read by eye that is
-noise you skip past. Read by ear it is the first thing said on every row, two
-hundred times, and it destroys first-letter navigation completely -- arrowing to
-"S" in a list where every row begins "Ep." finds nothing at all, because the
-part of the title that differs is never where the reader starts. Patterns you
-set here are removed **when a title is shown and spoken**. The feed's own title
-is untouched, nothing is renamed, and Rename... is still a different verb.
-Preview shows exactly which of the 50 newest titles would change, and a rule can
-never empty a title.
-
-**Say this podcast's name as.** One spelling used only when the name is
-*spoken*, for a title your speech engine mangles -- an initialism, a word from
-another language, a run of punctuation. The podcast keeps its own name
-everywhere it is written.
-
-**What each row says is yours now.** A screen reader reads every row of every
-list out loud, in full. Cast's answer to that had been a single switch -- put
-the podcast name before the episode title -- over a question with at least seven
-answers. Now there is a named **order** (title, podcast or date first: whichever
-comes first is what you can skim by first letter) and independent switches for
-the podcast's name, the date, the length or how much is **left**, the download
-state, the season and episode number, whether the episode has chapters or a
-transcript, and the description at off, brief or full. Per podcast as well as
-globally, because a daily show with the date in every title should not have the
-date read to you again. And the podcast's name is never repeated inside its own
-episode list, whatever the switch says.
-
-**Urgent, normal or quiet.** New-episode announcements had a switch, over a
-question with three answers: *tell me by name*, *count it in the summary*, *say
-nothing at all*. All three are now available per podcast. A quiet podcast still
-downloads, queues and files exactly as it would; it simply says nothing. One
-podcast can also be allowed through **quiet hours** by name, for a live or news
-feed you asked to be told about, and can have a **sound of its own** when it
-publishes.
-
-### Arrival, storage, and the rest
-
-**Per-podcast check cadence**, so a daily briefing checks hourly while a weekly
-show checks daily and a dormant archive is never checked at all. **Backfill on
-subscribe** -- nothing, the newest few, the last few months, or everything --
-which is a separate question from the automatic download count, because that
-one only ever looks forward. **Off-peak download windows** that wrap midnight,
-beside the metered-connection guard. **Auto-Queue from the oldest unplayed
-episode**, which is how you start a series at the beginning rather than at
-today.
-
-**Sort by season and episode number.** Serial fiction is meant to be heard in
-order, and its published dates are the least reliable thing about it --
-bulk-imported, or re-stamped every time the feed is rebuilt. Where a publisher
-numbered their episodes, Cast now reads that numbering out of the feed, sorts on
-it, and can say it. An episode the feed did not number is not episode zero: it
-sorts to the end and says nothing.
-
-**Never delete this podcast's downloads** exempts one podcast from the storage
-cap, the age rule and delete-after-playing. It exists because the alternative
-was worse: without it, the only way to protect the one podcast you genuinely
-archive was to switch the automatic sweeps off for everything, which is what
-most people did.
-
-**Show at most N episodes** is a **view** over a four-thousand-episode archive
-feed, not a trim. Nothing is deleted, search still finds everything, and raising
-the number brings it all back.
-
-**Labels** are your own words for a podcast, as many as you like, and a Smart
-Playlist can ask for one. A folder is one home; a label is not a home at all, so
-labelling never moves anything.
-
-**Tell me if this podcast goes quiet** says something when a podcast you follow
-stops publishing for as long as you choose -- a podcast that ends does so
-silently, and the absence is exactly the thing nobody notices. Its companion
-speaks up after a run of failed checks. Both say plainly that Cast has not
-unsubscribed you and has not given up.
-
-And, more briefly: transcript policy including opt-in local transcription,
-chapter-title skip rules for the advert breaks a publisher marked, a preferred
-audio variant when a feed offers more than one, a per-podcast disk budget,
-silence-trim strength, a default playlist new episodes join, a sleep-timer
-default, redirect and re-publish policy, and an artwork override.
-
-Nothing added here deletes anything. Everything fails open: a value Cast cannot
-read means "carry on as before", never "do less".
-
----
-
-## Rules for the episodes you did not want
-
-Some podcasts publish more than one thing. A show you follow also runs a daily
-two-minute segment; or trailers for its sister show; or a members-only strand
-mixed into the public feed. Until now every one of those arrived, was dismissed
-by hand, and counted against an Inbox limit you had set for a completely
-different reason.
-
-**Episode Filters** is the missing decision, per podcast: rules that say which
-of a show's episodes you actually want, and **where that answer counts**.
-
-Each rule has your own name for it and its own on and off. It can match on the
-title -- wildcards, where `*` is any run of text and `?` is one character, and
-every other punctuation mark means itself, so `Q+A*` finds the segment actually
-called "Q+A" -- or on a full regular expression if you want one. It can also
-match on a minimum length. Both tests in one rule have to match; several rules
-need match only one. An episode whose feed does not say how long it is never
-matches a length rule, because a missing length is not a short episode.
-
-Two modes: *keep everything except episodes a rule matches*, which is the
-everyday one, and *keep only episodes a rule matches*, which is how you follow a
-single strand of a feed that carries several.
-
-### Eight places to mean it
-
-This is the half that makes one feature do the work of eight. A rule set says
-what an episode *is*; the tick boxes say where that means anything -- the Inbox,
-Auto-Queue, automatic downloads, the new-episode announcement, the podcast's own
-episode list, New Episodes and Continue Listening, smart playlists, and Search
-Everywhere.
-
-They are independent, so "keep it out of my Inbox but still tell me about it"
-and "just do not spend my bandwidth on it" are both things you can actually
-have. A new filter starts with the four **routing** places ticked and the four
-**hiding** ones clear: declining to route an episode is invisible and
-reversible, and hiding one changes what you can find.
-
-### It never deletes anything
-
-A filtered episode keeps its place in the podcast's episode list, its played
-mark, its position, its downloaded file, its notes and its bookmarks. Filtering
-is a routing decision, and every message the feature speaks says so.
-
-Everything except the Play Queue takes effect the moment you save, including on
-episodes you already had -- the lists ask the filter as they are drawn, so
-unticking a place later brings those episodes straight back. The Play Queue is
-the exception, because it is the one list you built by hand: saving offers,
-separately, to clear this podcast's matching episodes out of it, and the episode
-playing right now keeps its place.
-
-### Look before you leap, and two ways back
-
-**Preview** tries the rules against the 50 newest episodes you already have and
-reports what each would be -- *Filtered* or *Kept* first, then the title and the
-length. It changes nothing, and it works **while the filter itself is switched
-off**, which is the only safe way to write a keep-only rule.
-
-Saving is gated rather than merely checked. Cast refuses a filter that is
-switched on with no rule switched on, one whose regular expression cannot be
-read (it quotes the reason), one with nowhere to apply, and a minimum-length
-rule against a feed where not one of the 50 newest episodes publishes a length.
-Where only some do, it says exactly how many and asks.
-
-And there are always two ways back. **Filtered out** is a new entry in the
-episode list's own filter, present for every podcast rather than appearing only
-for filtered ones, and it lists exactly what the rules are catching -- every
-episode action still works from there. Any single episode's menu also offers
-**Always Keep This Episode**, which exempts that one episode everywhere the
-filter applies and is not undone by editing the rules afterwards.
-
-Finally: if a keep-only filter rejects **every single** new episode of one
-refresh, Cast says so and remembers it, so a background check that ran while you
-were away still has something waiting for you in Episode Filters when you get
-back.
-
-### Since then: far more to ask, and a rule written for you (QUILL Cast 1.1.0)
-
-A title and a minimum length were the right first two questions, and not
-enough. A sponsor-only episode is named only in its show notes; a trailer is
-marked by the publisher, not in its title; a back catalogue re-uploaded last
-week is old in every way except its date. So a rule can now hold **as many
-tests as it needs**, each one a field, a comparison and a value:
-
-- **Text** -- the title, the **show notes**, or the **people on the episode** --
-  with contains, does not contain, starts with, ends with, is, is not, a
-  wildcard, or a **regular expression** (found anywhere unless you anchor it),
-  and its negation.
-- **The episode type** the publisher gave it: full, trailer or bonus.
-- **Numbers** -- length in minutes (so there is finally a *maximum*), age in
-  days, season and episode number -- with at least, at most, is and is not.
-
-And a rule can say **any one test is enough** instead of every test, so "a
-trailer, or anything under five minutes" is one rule with one name.
-
-The safety rules did not loosen. A feed that does not publish a length, a date
-or a number never matches a number test. A test the build cannot read makes
-its rule match nothing. A filter that uses none of this is still stored
-exactly as before, so an older copy of Cast on another computer keeps reading
-it; one that does use it reads, on an older copy, as no filter at all rather
-than as half a rule.
-
-Two things make writing one feel less like programming. **Try It on Recent
-Episodes** in the rule window says, before anything is saved, how many of the
-50 newest episodes the rule catches and names the first five. And **Filter
-Episodes Like This...** on any episode's menu writes the rule for you: the
-publisher's own trailer or bonus mark if there is one, otherwise a series name
-the title shares with its siblings, otherwise an unusual length -- each guess
-checked against the newest episodes, said with its count, and opened in the
-rule window for you to change before anything is kept.
-
----
-
-## Your place follows you, and not only between QUILL machines
-
-Cast has carried your listening position between two copies of itself for a
-while, encrypted, through a folder you already sync. That works, and it will
-only ever work QUILL-to-QUILL.
-
-**Listening Places** is the other half: a small, published, plain-text format
-that any podcast app can read and write, in the same folder. Turn on **a plain
-file other apps can read** in *Carry My Place Between Machines...*, and Cast
-keeps one file up to date with where you are in every episode -- and reads
-whatever the other apps have left there.
-
-There is no account, no server, and no signup. You pick a folder inside
-Dropbox, OneDrive, Google Drive, iCloud Drive, Nextcloud, Syncthing, or a
-network share, and the cloud provider you already pay for does the syncing.
-QUILL runs nothing and holds nobody's listening history.
-
-Four decisions in that design are worth knowing about, because each of them
-rules out a specific way this could have gone wrong.
-
-**Every device writes exactly one file and reads everyone else's.** Cloud
-drives resolve two devices editing the same file by leaving `positions (Jeff's
-conflicted copy).json` lying around, which is the single worst failure
-available here. If no two devices ever write the same file, that cannot happen
--- and it scales past two devices for nothing: phone, laptop and desktop each
-drop one file, and every device merges across all of them.
-
-**The most recent position wins, not the furthest one.** If you jump back
-twenty minutes to hear something again and then open the episode on the laptop,
-"furthest" is exactly the wrong answer.
-
-**Reading happens at launch and when you press Sync Now. Never otherwise.** Not
-on a timer, not when the window gains focus. If a read landed mid-session and
-found that another device had moved you to 52 minutes in the episode you are
-listening to at 40, every available behaviour would be bad -- and moving the
-playhead under somebody with no visual cue that it happened is the worst of
-them. At launch nothing is playing, so there is nothing to disturb. The cost is
-that a change made elsewhere while Cast is open does not appear until next
-launch; the promise being kept is that your place is right when you sit down.
-
-**Nothing in the folder says what you listen to.** Every episode is identified
-by a hash of its feed's own GUID, so somebody with access to the folder learns
-how many things you listen to and roughly when, and nothing about what. Episode
-names are a *separate* switch, on by default because a message that says "you
-and your phone disagree about Episode 214" is worth far more than one that
-reads out a hash -- and off for anybody who would rather the folder learned
-less.
-
-The format is written down in `docs/engineering/listening-places-spec.md`, with
-JSON conformance fixtures both implementations test against, so two apps cannot
-quietly drift into disagreeing about somebody's data.
-
-## Share the moment, not the file
-
-Cast could copy an episode's audio address and save its audio to a file.
-Neither of those is what somebody means when they say *listen to this bit*.
-
-**Share This Moment** (any episode's menu) copies two things at once: a link
-that reopens the episode at the second you shared it from, and a plain English
-sentence saying the same thing -- "Blind Abilities, Episode 214, at 41 minutes
-12 seconds". The sentence is not an afterthought. A link nobody can open is
-worse than a sentence anybody can paste, and the person you are sending it to
-very often does not have QUILL Cast at all. The sentence works in an email, in
-a text message, and read down the phone.
-
-The installer registers `quill-cast://` so a link opens the app at the right
-place. Opening one is treated as what it is -- somebody else's input -- so it
-resolves to a feed address and an episode GUID, both of which are looked up in
-the library **you already subscribe to**. A link for a podcast you do not
-follow says so and does nothing. Cast never fetches a web address because a
-link asked it to, and never adds a subscription because a link asked it to.
-
-## A second podcast directory
-
-Add Podcast has searched Apple's directory and nothing else. Apple's is a good
-default -- free, keyless, and it indexes very nearly everything -- but it knows
-nothing about the Podcasting 2.0 tags Cast has built a great deal on: chapter
-documents, transcripts, marked moments, credits, funding.
-
-**Podcast Index** does, because it is the index those tags were defined for.
-Add Podcast now has a **Directory** picker: iTunes, Podcast Index, or both.
-Searching both merges the results by feed address and says where they came from
--- "12 results: 9 from iTunes, 3 from Podcast Index" -- and a directory that
-fails does not fail the search: you get the results that did arrive, and a
-sentence about the one that did not.
-
-Podcast Index needs a free key, which is why iTunes stays the default and why
-the option is simply absent until you add one (**Subscriptions > Podcast Index
-Credentials...**). The key and secret go into Windows' own credential store,
-never into a settings file, and they are scrubbed out of crash reports.
-
-## Look before you subscribe
-
-A search result is a title. Subscribing to a title is how you end up
-unsubscribing from a title.
-
-**Preview** (and Enter on a result, which now previews rather than subscribing)
-opens the podcast read-only first: what it is, who makes it, how many episodes,
-its own description as text you can arrow through, and its ten most recent
-episode titles with dates. Between them those answer *is this the show I meant,
-is it still going, and is it in my language*. Subscribe is right there when the
-answer is yes.
-
-## Folders you can listen from
-
-Cast has had a folder tree for a long time and has never had a single action
-*on* a folder. Forty shows filed into "News" made the list tidier and did
-nothing whatever for the listening.
-
-A folder's menu now offers:
-
-- **Play All Unplayed** -- the newest unplayed episode of *each* show in the
-  folder, queued and started. One per show, deliberately: a folder of forty
-  shows holds hundreds of unplayed episodes, and a queue of hundreds is not a
-  queue, it is something you have to undo.
-- **Add All to Queue** -- every unplayed episode, for when you meant it.
-- **Move Up** and **Move Down**, which announce the new position ("News, 2 of
-  5"). A tree that can only be rearranged by dragging is a tree that cannot be
-  rearranged at all with a screen reader.
-- **Folder Settings...** -- apply the queue-expiry window, Inbox routing, and
-  playback speed to every podcast in the folder at once. Each control starts at
-  "change nothing", so nothing is applied by accident, and it says how many
-  podcasts it touched.
-- **Export This Folder as OPML...** -- hand one folder and its children to
-  another machine, or another person, without exporting your whole library.
-
-A folder always means its whole subtree, everywhere: playing "News" plays what
-is in "News/Local" too, because that is what somebody looking at the tree
-means.
-
-**The Play Queue can be grouped by folder** as well as by podcast (**Group
-by**, in the Play Queue). Grouping never changes the play order -- only how it
-reads -- and a group header announces itself as one ("News, group, 4
-episodes"), so no action can act on a header by accident.
-
-## Moving several podcasts at once
-
-Filing was one show at a time, so tidying forty into six folders was forty
-trips through a picker. **Move Several Podcasts to Folder...** lists your
-podcasts in a multiple-selection list -- arrows move, Shift and arrow extend,
-Ctrl and Space toggles -- with Select All, a running count, and then the same
-folder picker once for the lot.
-
-The subscription tree itself is deliberately *not* multi-select. That would
-change how every existing selection in it behaves, and multi-select trees are
-markedly harder to drive with a screen reader, for a job most people do twice
-in the life of a library.
-
-## Smart playlists that can express what you mean
-
-`PlaylistRules` had six filters and ANDed all of them. That is right for
-narrowing and useless for the other half of what people want: *anything from
-these three shows, or anything I have bookmarked* cannot be said with AND at
-all.
-
-Smart playlists now also filter on: **match all or any**, **a library folder**
-(subtree aware), **downloaded or not**, **has a note of mine**, **title or show
-notes contain**, **where the playhead is** (not started, started, finished --
-which is genuinely different from the played mark), and **at most N episodes**,
-applied *after* sorting so "the ten newest" is the ten newest.
-
-Beside them is the thing that makes a rule builder usable: **"Matches 23
-episodes right now"**, recomputed as you change the rules. Without it, checking
-what a filter did meant saving, closing, reopening and reading -- four steps to
-answer *did I mean that*.
-
-And because a blank rule builder is where most people stop, **Add Starter
-Playlists** creates five worth having: Continue Listening, New This Week, Quick
-Listens, Downloaded and Unplayed, Long Reads. They arrive as ordinary editable
-playlists rather than built-ins, so renaming, retuning or deleting one works
-exactly as it does for a playlist you wrote yourself.
-
-## Chapters for the episodes nobody wrote chapters for
-
-Most podcasts publish no chapter list. A good many of them do something almost
-as useful and Cast was throwing it away: they describe their running order in
-prose.
-
-> "high school student Tyler Juranek begins a series of short reviews he calls
-> Techie Tidbits ... Next, we visit with Gerry Chevalier about the newest
-> release of the Victor Reader Stream ... Finally, Matt Roberts brings us part
-> one of a demonstration on accessing DVR from Dish Network"
-
-That is a running order: four segments, named, in sequence, **written by a
-person**. Cast now takes each described topic and finds where in the episode
-its distinctive words actually *arrive*, giving chapters whose titles a human
-wrote and whose times were worked out. Measured against hand-built reference
-chapter lists, the marks landed within 9 and 15 seconds.
-
-Two details decided the design. The phrases are matched **in order**, because
-show notes are written in the order the programme runs, so it is a
-sequence-alignment problem rather than a series of independent guesses. And a
-topic anchors where it **starts**, not where it is densest -- a
-thirty-five-minute interview mentions its guest most often in the middle, and
-matching on density put one episode's main segment at 30:00 when it began at
-1:09.
-
-**Thorough no longer offers to listen for pauses.** Measured against those same
-reference lists, the pause scan scored 0.06 where cutting the episode into
-equal slices with no knowledge of it at all scored 0.15. An answer worse than
-dividing by *n* is not an answer, and offering it by default spent tens of
-seconds making the list worse. Thorough fetches a transcript and works the
-sections out of the words; if there is no transcript it says so. Deep still
-offers the pause scan, because somebody who chose Deep has said they would
-rather have a weak answer than none, and a recording off the radio still uses
-it, because for a recording there is nothing else.
-
-**Deep can now transcribe an episode on your own machine**, which it has always
-advertised and never actually done. The engine ships in the box -- 40 MB,
-CPU-only -- so chapters work the first time you ask, with no download and no
-network. It was chosen over models thirty-five times its size on measurement:
-it scored *better* (0.372 against 0.316) and ran 4.7 times faster, and the
-reason is not transcription quality at all. Its cues break at natural pauses,
-so its edges are already plausible section starts.
-
-And **every chapters setting now has a control**. All six were live and all six
-were invisible, which is worse than absent: a listener whose chapters were slow,
-missing, or being worked out when they did not want them to be had no way to
-find the switch that said so. There is now a **Chapters** group in Podcast
-Settings, led by the one question most people will ever want to answer -- how
-hard should I look? -- with the consequence of that choice spelled out beneath
-it in a sentence.
-
-## The columns are yours now
-
-This one is a speech setting wearing a display setting's clothes. An episode
-list is read out one column at a time, so the columns *are* the sentence you
-hear on every row -- and that sentence had been chosen once, in code, for
-everybody. If you work through one show at a time you never needed its name; if
-you queue by length you wanted the duration first, not third.
-
-**Subscriptions > Choose Columns...** (Ctrl+Alt+Shift+C) hands it over, for the
-episode list, for Downloads, and for Add Podcast's results. There are two lists
-in the window -- what is shown, in the order it is read, and what is hidden --
-with Move Up and Move Down between them. Not checkboxes: a checkbox in a list is
-a state your screen reader has to be asked for, while a position is a place you
-land on, and moving something says where it is now.
-
-Hiding a column takes it *out* of the row rather than to the end of it, because
-a screen reader reads every column it is given and "last" is still read. It
-keeps its place while hidden, so bringing it back later does not send it to the
-end of a row you already arranged. Underneath, one line reads out exactly what a
-row will say, so you can hear the effect of a change before pressing OK.
-
-Each list offers more than it shows. The episode list can add **Podcast** --
-worth having in the Inbox or a playlist where the rows come from several shows,
-and pure noise in a list of one show, which is why it is off to begin with --
-**Time Left** on an episode you have started, and **Downloaded**. Add Podcast can
-add the **Feed Address**, which is what tells two shows with the same name apart.
-One column in each list cannot be hidden -- the episode's title, the podcast's
-name -- and asking to says so, and why.
-
-Change it while the Manager is open and the list rearranges under you there and
-then. Quill Radio gets the same window on its own lists, from the same code:
-Quick Actions, listening statistics and folder actions all had to be carried
-across from one app to the other after being built twice, and this one was
-shared on the first day.
-
-## A first launch that says hello
-
-Three screens on a genuinely first launch: welcome, add your first podcast,
-you're set. One window with the words in a read-only text area you can arrow
-through and copy, and Back / Next / Skip beneath it.
-
-**Skip is a first-class button, not a small link.** Somebody who already knows
-what a podcast player is should be able to leave in one keystroke, and making
-that awkward is a way of insisting they read something they do not need.
-Skipping counts as done -- you chose it, and asking again next launch would be
-overriding that choice with a guess about what you meant.
-
-It stays away entirely from anybody who already has podcasts, however they got
-there: an imported OPML, a restored setup, an upgrade. Explaining how to add a
-first podcast to somebody with two hundred is a way of saying nobody checked.
-
-These screens were written for 1.1 and never once shown, because nothing in
-the app ever called them. That is the kind of thing tests do not catch: every
-one of them passed, on a feature nobody could reach.
-
-## When something goes wrong, or you change your mind
-
-Everything above is about places Cast could not reach. This part is about
-moments it handled badly -- and none of them are features anybody goes looking
-for. Each is something Cast owed you and was quietly not paying.
-
-### You can take it back
-
-Press **Ctrl+Z**.
-
-Unsubscribe, Remove All Episodes, Mark All as Played, Remove All Downloads --
-the last one comes back, and Cast says what came back: *"Undid Unsubscribe.
-Brought back The Daily, with 412 episodes and 3 downloaded files."*
-
-The alternative, and the thing this deliberately is not, was asking you first
-every single time. A confirmation prompt costs a keystroke and a sentence on
-every one of the nine hundred occasions you meant it, and it cannot help you
-on the one occasion that matters -- because on that occasion you read the
-question, thought about a different show, and pressed Yes. The prompt was
-never protecting you from a slip of the finger; it was protecting you from a
-slip of attention, which is the thing it cannot see.
-
-**Deleted files genuinely come back.** A downloaded episode Cast removes on
-your behalf is moved aside rather than unlinked, so an undo restores the audio
-rather than the intention to fetch it again. That includes the ones removed
-*for* you: if marking a show played fired your delete-after-play rule, those
-files come back too.
-
-**It is one step, not a stack** -- press Ctrl+Z twice and the second press
-says "Nothing to undo" rather than quietly rewinding something older. And **it
-says what it cannot bring back**: unsubscribing from a private feed deletes
-the password stored for it, deliberately, so no orphaned secret is left
-behind, and the offer says the password has to be entered again.
-
-Every action that can be undone ends its announcement with "Ctrl+Z undoes
-this", so you never have to remember which ones were on the list.
-
-### Recent Problems
-
-**Help > Recent Problems...** (Ctrl+Alt+Shift+P).
-
-Cast talks. A feed fails, a download dies overnight, and it tells you -- once,
-at the moment it happens. That is right almost always, and completely wrong
-the one time the sentence went past while you were in another window, or
-asleep.
-
-This was the one place this app was not built the way the rest of it is.
-Somebody who can see the screen still had a list to scroll back through.
-Somebody listening had nothing: the announcement had been made, so as far as
-the app was concerned the job was done.
-
-Every failure worth a second look is now written down as well as spoken --
-what failed, why, when, newest first. **Retry** re-reads the feed or re-queues
-the download. **Copy All** takes the list as text for a bug report; it carries
-addresses and error messages, never passwords. A feed that has failed on each
-of the last six checks reads as one row with a fresh time, but a *different*
-reason gets its own row, because "404 Not Found" and "timed out" are not the
-same news.
-
-Nothing in this list leaves your computer.
-
-### Quiet hours
-
-**Help > Quiet Hours...** (Ctrl+Alt+Shift+Z), 22:00 to 07:00 by default, and a
-window may cross midnight.
-
-Inside it, Cast stops speaking **on its own**: the heartbeat of a feed check,
-"three new episodes of The Daily", a download landing.
-
-Three things it does not mean, all of which the window says out loud:
-
-- **Nothing stops happening.** Feeds are still checked, downloads still run,
-  new episodes still arrive and are still queued. Only the sentences wait.
-- **Anything you press a key for still answers.** Press Play at three in the
-  morning and you hear what is playing. Quiet hours never silence a reply to
-  something you asked for. That is the line the whole feature is built around,
-  and it is why every announcement had to opt in by name rather than
-  everything being switched off at a single point.
-- **Failures always speak.**
-
-One override, for the one thing people legitimately want through a quiet
-window: reminders can be let through anyway.
-
-The window is shared with Quill Radio and the rest of the family, so you set
-it once.
-
-### Move your setup to another machine
-
-**Help > Export My Setup...** (Ctrl+Alt+Shift+X) writes one file; **Import My
-Setup...** (Ctrl+Alt+Shift+N) reads it on the other machine.
-
-Inside it: your subscriptions, your folders, your playlists, your settings,
-your Quick Action order, the confirmations you asked not to see again, your
-bookmarks, and any keys you rebound.
-
-OPML has always moved subscriptions and nothing else -- the part that was easy
-to standardise, leaving behind the part you had actually built.
-
-The file is an ordinary ZIP with a readable manifest, deliberately: you should
-be able to see what you are carrying between machines. It holds a **declared
-list** of files rather than whatever happens to be in the data folder, because
-a sweep of a folder eventually carries a cache, a lock file, or a credential
-nobody meant to move.
-
-**Passwords are not in it**, and the confirmation says so before it acts.
-Importing **replaces** what is on the other machine rather than merging with
-it, and says that too: merging two libraries is a different job with different
-questions.
-
-### Your place follows you into Quill Radio, and back
-
-Both apps can play the same subscribed episode. Until now half an episode
-heard in Radio reached Cast at Cast's next launch -- the one moment you are
-least likely to be mid-episode -- and nothing went the other way at all.
-
-They now share one place per episode on this computer, written **when you
-pause** as well as on stop, switch and shutdown. Open an episode you were
-part-way through in the other app and it picks up where you left off, and says
-so.
-
-The **later** decision wins, not the furthest through the episode. Somebody
-who skipped to the outro to check something and went back to the middle has
-decided the middle is where they are; an app that dragged them forward again
-on the grounds that it was further in would be overruling them with
-arithmetic. An episode either app has finished stays finished.
-
-### Find an episode inside one show
-
-The episode list has a **Find** box beside its filter.
-
-There was a filter by state and there was Search Everywhere across the whole
-library, and nothing in between -- so *which episode of this show was the one
-about the harbour* had no answer except arrowing two hundred rows.
-
-It matches **titles and show notes**, because a podcast that numbers its
-episodes and describes them in the notes -- most interview shows -- is exactly
-the one a title-only search cannot help with. It **narrows what the filter and
-sort already chose** rather than replacing them, so "unplayed episodes about
-the harbour, newest first" is three controls you set independently.
-
-Typing narrows the list quietly, so nothing talks over you. **Enter** says how
-many matched out of how many were searched. A search that found nothing says
-so *and* tells you the filter above may be the reason, rather than announcing
-a zero and leaving you to work out why.
-
-### Skip Silence, while you are listening
-
-**Ctrl+Shift+9.**
-
-Cast has had this as **Smart Speed** for a long time -- a per-show setting in
-Podcast Settings. What it did not have was any way to reach it while an
-episode was playing, which is the only moment anybody forms an opinion about
-it. It applies to the playing show (or, with nothing playing, to every
-podcast), takes effect on the episode in progress, and keeps your place:
-somebody forty minutes in who turns it on is not sent back to the beginning to
-get it.
-
-Quill Radio gained the same key for the same thing.
-
-### Go to Position
-
-**Ctrl+Alt+J**, or Episode > Go to Position...
-
-Cast could already jump to a typed time -- from a Winamp letter key, which
-means it existed for whoever had those keys turned on and knew about them, and
-for nobody else. It is a menu item and a command palette entry now, over the
-same labelled Hours / Minutes / Seconds window Quill Radio opens.
-
-`1:02:03`, `62:03` and `3723` all mean the same moment, in both apps. They did
-not: the two apps had two parsers that disagreed about what you could type.
-
-### Smaller things that were quietly wrong
-
-**F1 answers with Cast's own words.** Press F1 anywhere and the help opens
-with what *that window* is for, the way Quill Radio's has since its 3.0. Every
-Cast window had been answering with a generic sentence: true, and useless. A
-build gate now means a new Cast window cannot ship without one.
-
-**A dimmed menu item tells you why.** Cast dims a great deal on purpose --
-Analyse Chapters on an episode whose audio is not here yet, Mark All as Played
-with nothing unheard -- and a screen reader says "dimmed" and stops. Each now
-carries its reason: *"Analyse Chapters: this episode is not downloaded yet, so
-there is nothing to analyse."* Pressing a Quick Action number on a dimmed row
-says the same rather than "that Quick Action is not available", and so does
-the command palette.
-
-**Adding a podcast you already follow says which one, out loud, and goes to
-it.** The refusal was a line of text in the dialog, which a screen reader does
-not read when it changes -- so in practice it was nothing happening. It now
-names the show, announces it, and moves the Podcast Manager's cursor to the
-row you already have.
-
-**Pause All Downloads says how many are waiting**, and that the one already
-transferring will finish.
-
-## Smaller things that were missing
-
-- **How long your listening history is kept** is now yours to choose: don't
-  keep one, 30 days, 90 days (the default, and what was hardcoded), a year, or
-  forever. "Don't keep one" stops the writing rather than deleting afterwards,
-  which is what somebody choosing it asked for.
-- **Downloads can wait for a connection you are not paying for.** Cast has
-  mentioned metered connections in its own source comments for two releases and
-  never checked. It checks now, and holds only *automatic* downloads -- one you
-  pressed Download for always happens. An unknown connection counts as
-  unmetered, because refusing to download on a guess is worse than downloading.
-- **Audio Output Device...** is in the Episode menu. Cast plays through
-  Windows' default device and cannot switch devices itself, so rather than
-  offering a picker that would do nothing, it says so in one sentence and
-  offers to open Windows' own per-app sound settings, where the choice sticks.
-- **Listening streaks and a Year in Review.** Streaks are **off by default**: a
-  streak is a nudge, and a nudge nobody asked for is pressure. Year in Review is
-  a few sentences you can read, copy or save -- not a dashboard, because a
-  table read aloud is a list of numbers with their meanings three columns away.
-  Anything the log cannot support is omitted rather than printed as a confident
-  zero.
-- **What Quill Radio was asked to do now happens.** From Radio's browse tree
-  you could play a subscribed show's episode and nothing else. **Play Next in
-  QUILL Cast**, **Add to QUILL Cast Queue** and **Send to the QUILL Cast
-  Inbox** are on those rows now, and Cast carries them out at its next launch.
-
-## Six things Quill Radio had and QUILL Cast did not
-
-Two apps, one audience, and a list of small things that had only ever been
-built once. None of them are new ideas -- they are all Radio's, brought across
-where the reasoning applies equally to podcasts.
-
-**A Keyboard Shortcuts Sheet** (Ctrl+Alt+Shift+K). Cast had the shortcuts
-*editor*, which is for changing a key you can already name. The sheet is for
-finding out which keys exist. It is generated from the menus you actually
-have, so it includes anything you rebound and cannot go stale, and a filter
-box narrows 130 rows to the eight about recording -- or downloading, or
-chapters.
-
-**Go To** (Ctrl+G). A short numbered list of places -- Podcast Manager,
-Continue Listening, Play Queue, Downloads, Bookmarks, Statistics -- where the
-numbering never moves. That is what makes it different from the Window menu,
-which renumbers itself every time something opens. You choose which ten places
-are on the list and in what order; anything a later release adds lands in a
-pool rather than in your menu, so an update cannot renumber what you have
-learned. Cast's only "Go To" until now jumped to a *time inside an episode*,
-which is a different feature that happens to share two words.
-
-**Something to say when FFmpeg is missing.** Cast needs it for four things:
-trimming silence off a download, evening out its volume, working out chapters
-for an episode that has none, and Sound Enhancements while playing. Every one
-of them fails by producing a plausible result -- the download completes and is
-simply not trimmed; the chapter analysis finishes and finds nothing, which is
-what an episode with no chapters looks like. So it is now said once at launch,
-naming what is lost, and silence means all is well. **Help > Media Tools**
-(Ctrl+Alt+Shift+M) answers the same question whenever you ask.
-
-**Three answers to closing the window.** Cast exited, and had one narrow
-escape from it in the Alt+F4 checkbox -- so the titlebar X ended an hour of
-listening with no way to say otherwise. Preferences now carries *When closing
-the window*: Ask every time, Exit, or Minimize to Tray. Exit stays the shipped
-answer, because an upgrade that starts asking a question has changed your
-Alt+F4 under you. Ask only asks when there is something to lose, and names it:
-"An episode is playing and 2 downloads are in progress."
-
-**Search Everywhere remembers.** The box is a combo now: press the down arrow
-for the last fifteen searches, newest first, and choosing one runs it. The
-episode about the harbour is a thing people look for several times across a
-week, from a different place in the library each time.
-
-**Back Up My Podcasts** (Ctrl+Alt+Shift+B) and **Restore from a Backup**
-(Ctrl+Alt+Shift+R). Cast had Export My Data -- a readable snapshot you can
-look at but cannot put back -- and the shared setup transfer. Neither is a
-restore, and Cast's library is the more painful of the two apps' to lose:
-subscriptions, folders, playlists, positions, notes and statistics are years
-of accumulated choices, where a station list can be rebuilt from a directory
-in an afternoon. The backup is one file; downloaded episodes are optional and
-left out by default, because they are the part that can always be fetched
-again. A restore names the date and the size of what it is about to put back
-*before* it does anything, stops playback first, and leaves your library live
-without a restart.
-
-## And one thing Earshot had
-
-**Three per-show settings you can reach in one keystroke.** How many downloads
-to keep, how long an episode waits in the queue, and how fast this particular
-host talks are the settings people change over and over -- and each of them
-lived in a window of two dozen controls. Each now has its own row on a show's
-context menu, opening a window with **one control and the cursor already in
-it**. They are Quick Actions too, so if you adjust speed constantly you can
-put Playback Speed first and reach it with Ctrl+1.
-
-## One fix worth naming
-
-**Ctrl+Shift+P opened nothing, in every window.** The Command Palette key
-rides the shared transport keyboard that both QUILL Cast and Quill Radio
-install on every window, and it resolved to nothing in either app: the palette
-belongs to the window, and the key was only ever asking the player. It was
-silent about it, which is why nobody reported it -- a key that quietly does
-nothing looks exactly like a key that was never bound. It opens the palette
-now, from anywhere.
-
-The reason it went unnoticed for so long is worth writing down too: every test
-either app had was an *app's* test, and this was broken in both, identically,
-for the same reason. There is now one that walks the shared table verb by verb
-and asks whether each app can actually perform it.
-
----
-
-## The app teaches itself
-
-**Help > Tutorials... (Ctrl+Alt+F1)** opens 24 guided tutorials -- 149 steps,
-a little over two hours of material -- covering every feature QUILL Cast has,
-in the order somebody would actually learn it. A fifth track, **One podcast at
-a time**, arrived with the per-podcast settings: how a setting is decided, what
-arrives and when, what every row says, how to fix a podcast that reads badly,
-and who is allowed to interrupt you.
-
-They are not a second copy of the user guide. A guide answers "what does this
-do". It cannot answer "what do I do now", because a document cannot see what
-you have already done. This window can.
-
-### What the set is shaped like
-
-Four tracks, and the shape of them is the shape of the problem.
-
-**Your first hour** (3 lessons) -- subscribe by search, by feed address, by
-OPML or by taking ACB Media's whole directory in one step; work the player;
-meet the Podcast Manager, which is where episode-level life happens and where
-most people never go until somebody shows them.
-
-**Keeping up** (5 lessons, and the longest track on purpose) -- the hard part
-of podcasting is not playing an episode, it is deciding which of the four
-hundred waiting ones you will play. Finding what is new, triaging with the
-Inbox, lining up the Play Queue, automatic downloads and the caps that keep the
-disk honest, and playlists both hand-built and rule-based. These are one system
-and they only make sense together, which is why they are one track rather than
-five scattered pages.
-
-**Listening well** (5) -- chapters and skipping the parts you did not come for,
-shaping the sound, keeping a moment, reading what the publisher actually sent,
-and how much of your life this has taken.
-
-**Making it yours** (5) -- a library that has grown, what a row says and what
-Enter does, the settings that differ per show, private feeds and audio of your
-own, and the backup you will be glad of exactly once.
-
-### The three things that make it more than a document
-
-**A step names a command, not a key.** The key is rendered when the step is
-drawn, from your own keymap, so a rebinding changes every lesson that mentions
-it. It is the same rule that makes the Keyboard Shortcuts Sheet trustworthy: a
-second list of keys, maintained beside the first, is a list that is wrong by the
-next release.
-
-**Try it runs the step**, exactly as its key would -- so a lesson can open the
-Podcast Manager for you and then talk you through what you are standing in.
-
-**Follow me notices when you have done one.** While a lesson is open the window
-asks the app, once a second, the question the step declared -- did your
-subscriptions grow, is something playing, did the queue change -- and when the
-answer changes it says what it noticed and reads the next step:
-
-> Done: you have a new subscription.
->
-> Subscribe to your first podcast -- step 4 of 8: Or bring a whole library
-> across...
-
-It watches **state, not keystrokes**, so subscribing from the menu, the palette
-or the Add Podcast window all count equally. It compares against a baseline
-taken when the step was shown, so somebody with forty subscriptions has not
-already passed "subscribe to one". And anything it cannot read answers "cannot
-tell", which the window treats exactly like a step with no check on it.
-
-Nothing is graded, nothing is blocked, there is no score and no streak, and
-every step still has **Next**. A check that never comes true costs you one
-keypress.
-
-### It is a window, not a wizard
-
-The Tutorials window is a real window. Leave it open, move to the app, do the
-step there, and hear the lesson move on behind you. A modal wizard could not do
-that: it would own the keyboard for the whole lesson, which is precisely the
-wrong shape for teaching somebody to use the thing underneath it.
-
-Typing **here** in the filter box narrows the contents to the tutorials about
-the window you came from, and the window says how many those are as it opens.
-
-### Your place is kept
-
-Close a lesson half way through and it opens there again. Finishing one is
-remembered separately from where you are in it, so re-reading something you have
-done does not throw away the fact that you did it. **Forget my progress** clears
-the lot, asks first, and changes nothing else. Nothing about your progress
-leaves this computer -- there is no telemetry here and no completion badge.
-
-### Reading rather than doing
-
-**Read it all** shows a whole tutorial as one page of text. **The whole book as
-a document** opens all 18 as one page, generated from the same lessons the
-window teaches from, so the two cannot disagree -- it ships as `tutorials`
-beside this document. (The book states the keys QUILL Cast ships with. Only the
-window can know the ones you rebound.)
-
-### The same window in every app
-
-Quill Radio, Quill Weather and QUILL have their own lessons, in the same window,
-on the same key: **Ctrl+Alt+F1** opens the tutorials wherever you are in the
-family. Each app keeps its own progress file, because a lesson slug is only
-unique within its own set and forgetting your place in one app must never forget
-it in another.
-
-## For anybody keeping score on the format
-
-`listening-places/1` is deliberately not a QUILL thing. It is documented,
-versioned, and small enough to implement in an afternoon; the identity scheme
-is the only part that is hard to change once data exists in the wild, which is
-why it is the part the specification is most careful about. If you write a
-podcast app and want your users' places to travel to and from QUILL Cast, the
-whole of what you need is in `docs/engineering/listening-places-spec.md` and
-the fixtures beside it.
+# QUILL Cast 2.0
+
+I listen to a lot of podcasts, and I do it with a screen reader. For years
+that meant apps where the list I wanted was three windows away, buttons that
+said "Play" without saying what they would play, and news that went by while
+I was busy in another program.
+
+So I made the podcast app I wanted. It is one window. Every list in it works
+from the keyboard. And when something happens that you would want to know
+about, it tells you in a sentence. QUILL Cast is free, it runs on Windows, and
+it works with JAWS, NVDA and Narrator.
+
+I open it every morning with my coffee. I hope you end up doing the same.
+
+Jeff
+
+## Try this first
+
+1. Open QUILL Cast. The first time, three short screens say hello. Read them,
+   or press Skip.
+2. Press **Ctrl+N** to add a podcast. Type the name of one you like, arrow
+   through the results, and press Enter to hear what it is about. If it is the
+   one you meant, press Alt+O to follow it.
+3. Close that window and press **Ctrl+Shift+S** to go to your podcasts. Arrow
+   to the one you followed and press Enter. Its newest unheard episode starts
+   playing.
+4. While it plays, press **Ctrl+Right** to skip ahead 30 seconds and
+   **Ctrl+Left** to go back 15. **Ctrl+Shift+Up** speeds it up a little.
+   **Ctrl+P** pauses, and pressing it again picks up where you stopped.
+5. Press **Ctrl+2** for Now Playing, a window with everything about the
+   episode. **Ctrl+1** brings you back.
+6. When you have a few minutes, press **Ctrl+Alt+F1** for the tutorials. They
+   walk you through the rest at your own pace.
+
+Want a library to explore straight away? Podcasts > Follow ACB Media Podcasts
+(Ctrl+Alt+B) follows ACB Media's whole directory in one go.
+
+## One window with everything in it
+
+Cast is a single window, and Tab takes you through it from top to bottom. At
+the top is a line saying what is playing; press Ctrl+T from anywhere and Cast
+reads it to you. Under that is Find. Press Ctrl+F, type part of a podcast
+name, an episode title or one of your own notes, and the list fills with
+matches. Escape puts things back.
+
+Next comes the list of places, and beside it the place you are in. Places are
+where your episodes live: the Inbox, New Episodes, Continue Listening,
+Favorites, your playlists, the Play Queue, Downloads, Notifications, and
+Podcasts, which holds everything you follow in folders. There is even a place
+called Personal Audio for your own recordings and audiobooks. Each place has a
+live count, and each has a key of its own in the View menu, so after a day or
+two you will stop using the list and jump straight there.
+
+Tab once more and you are reading the show notes of the episode you were on.
+Below them, every button says exactly what it will act on. You hear "Play
+Blind Abilities", never a bare "Play".
+
+In any list of episodes, Enter plays and Space adds to the Play Queue.
+Shift+F10 opens a menu with everything else you can do. Delete takes an
+episode out of that one place and nowhere else, and Cast tells you so. Press
+F2 and give an episode a name of your own. Cast remembers.
+
+Along the bottom is a status bar with your volume, speed, counts, downloads
+and the clock. It stays out of your way until you press F6 to go in.
+
+## Finding podcasts to follow
+
+Add Podcast (Ctrl+N) searches Apple's directory and Podcast Index at the same
+time. Before you follow anything, Enter on a result tells you what the podcast
+is, who makes it, and what its last ten episodes were called. You can also
+paste a feed address, and feeds that need a password, such as a Patreon
+supporter feed, work too. Cast keeps the password in Windows' own credential
+store.
+
+Coming from another podcast app? Cast can import your OPML file, however long
+your list is. You will find it through the Command Palette (Ctrl+Shift+P);
+type "OPML".
+
+Changed your mind about a podcast? Unfollow it, and if that was a mistake,
+Ctrl+Z brings it back with its episodes and downloads. Ctrl+Z rescues you the
+same way after removing or marking a whole batch of episodes.
+
+When the list gets long, folders keep it tidy. A folder can play the newest
+unheard episode from every podcast inside it, which is a lovely way to start a
+day. Chapter 4 of the user guide, Finding podcasts you will love, shows how to
+set them up.
+
+## Listening
+
+The Episode menu (Alt+E) has every key for whatever is playing, and the ones
+from "Try this first" will carry you a long way. A few more worth knowing:
+
+- Hold **Shift+Right** to scan forward at four times speed. Let go and you are
+  back at your own pace.
+- **Ctrl+Alt+J** jumps to a time you type, such as 1:02:03.
+- **Ctrl+Alt+A** bookmarks the moment you are at, no note needed.
+- **Ctrl+Alt+T** sets a sleep timer, and Cast tells you when there is a minute
+  left.
+
+Speed can belong to a podcast. Speed up the slow talker, leave the fast one
+alone, and each podcast remembers its own.
+
+Chapters work even when a podcast does not publish any. Cast can find them in
+the show notes or a transcript, and can skip the sponsor chapter for you every
+time it comes round.
+
+The show notes are a plain text field you can read like any document, with
+the podcast's headings and links kept. Press H to move between headings, Tab
+to move between links, and Enter to open one. If the notes give a timestamp,
+Enter on it plays from that point.
+
+Now Playing (Ctrl+2) is where I spend most evenings. It has a position slider
+that speaks minutes and seconds as you move it, the chapters, the sleep timer,
+the show notes and a place for a note of your own. From there you can also
+share the moment: Cast copies a sentence like "Blind Abilities, Episode 214,
+at 41 minutes 12 seconds", with a link that opens the episode at that second
+for anyone who has Cast.
+
+## Keeping up without keeping watch
+
+Cast checks your podcasts for you, on a schedule you choose for all of them or
+one at a time. Press F5 whenever you cannot wait.
+
+New episodes wait in the **Inbox** (Ctrl+Shift+I) for you to decide about
+them. You choose which podcasts send episodes there, and you can keep it short
+so it never turns into a wall.
+
+**Notifications** (Ctrl+Shift+N) remember what Cast told you, so the episode
+that arrived while you were on the phone is still there afterwards. A new
+episode in the list offers to play it now or add it to the queue. And when you
+open Cast in the morning, one sentence tells you what came in overnight.
+
+The **Play Queue** (Ctrl+Shift+Q) is what plays next. Shuffle it, clear it, or
+save a running order you use every week and put it back with one choice.
+
+**Playlists** can be lists you build by hand or smart ones that follow a rule,
+such as everything under twenty minutes from one folder. There are five
+starter playlists ready to try.
+
+Cast can keep the newest few episodes of each podcast downloaded, so they
+are ready when the internet is not. It keeps an eye on disk space for you and
+never removes an episode you have queued or started.
+
+And if a podcast keeps sending things you never want, such as trailers,
+reruns or a daily two-minute segment, choose Filter Episodes Like This on one
+of them. Cast writes the rule, and those episodes stay out of your way. Nothing
+filtered is ever deleted.
+
+## Making it yours
+
+Preferences (Ctrl+,) holds the settings every podcast shares. Settings for
+This Podcast (Ctrl+Alt+,) lets one podcast be different, with its own speed,
+schedule, downloads, even how Cast pronounces its name. Every setting has F1
+help that says what it does.
+
+You can decide what each row in a list says first: the title, the podcast or
+the date. You can reorder, rename or hide places until the list matches how
+you listen. And you can change what Enter does on an episode.
+
+If Cast feels like too much, View > Customize Features (Ctrl+Alt+C) switches
+off whatever you do not use, and it disappears from the menus and lists.
+There is a Just Listen profile for a plain player. If you are coming from
+Earshot on your phone, try the Earshot-like profile.
+
+Every key in Cast can be changed in Help > Keyboard Shortcuts. Help > Keyboard
+Shortcuts Sheet (Ctrl+Alt+Shift+K) lists every key you have. If you forget
+where something lives, Go To (Ctrl+G) lists every place by number, and the
+Command Palette (Ctrl+Shift+P) finds any command by name. Winamp fans will
+find X, C, V, B and Z doing what they always did.
+
+Help > Quiet Hours (Ctrl+Alt+Shift+Z) keeps Cast from talking on its own
+overnight. Anything you ask for still answers.
+
+Close the window and Cast can keep playing from the system tray, if you would
+like it to. Ctrl+W sends it there any time.
+
+## Your library goes where you go
+
+Back up your whole library to one file, with your podcasts, playlists,
+positions, notes and bookmarks, and restore it later. When you get a new
+computer, Help > Export My Setup moves your library, settings and keys across
+in one file.
+
+If you listen on more than one computer, Cast can keep your place in each
+episode in step through a folder you already sync, such as Dropbox or
+OneDrive. There is no account to make.
+
+Cast also shares its library with QUILL and Quill Radio on the same computer.
+Follow a podcast here and it is there too. Pause an episode in Radio, and Cast
+picks it up where you left off.
+
+## AI help, if you want it
+
+Cast can ask an AI to summarize the show notes of the episode you are on, or
+answer a question about them. It is off until you turn it on, and nothing is
+sent until you ask. Help > AI Features is where to start, and Chapter 6 of the
+user guide, Making Cast yours, explains what is sent and where.
+
+## When you need a hand
+
+- **F1** anywhere tells you what the window is for and what the control you
+  are on does.
+- **Ctrl+Alt+F1** opens 24 guided lessons. Leave the lesson open, do the step
+  in Cast, and it notices and moves on with you.
+- **F9** repeats the last thing Cast said, and **Shift+F9** lists everything
+  it has told you since you opened it.
+- **Help > Get Help from Support** (Ctrl+Alt+F2) starts an email to support
+  with Cast's version filled in. You can also write to
+  support@community-access.org yourself. A person reads every message.
+
+The user guide covers everything here in more detail, one chapter at a time,
+and Chapter 8, When you need a hand, is there whenever you get stuck.
+Start with the six steps at the top, press F1 whenever you wonder where you
+are, and let me know what you think.

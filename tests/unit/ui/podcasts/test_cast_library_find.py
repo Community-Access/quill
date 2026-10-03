@@ -215,6 +215,9 @@ def test_the_box_is_built_above_the_tree_with_its_own_label_and_ctrl_f_reaches_i
     root = Path(__file__).resolve().parents[4]
     panel = (root / "quill" / "ui" / "podcasts" / "main_panel.py").read_text(encoding="utf-8")
     menu = (root / "quill" / "apps" / "podcasts_view_menu.py").read_text(encoding="utf-8")
-    assert panel.index('label="Fi&nd in library:"') < panel.index("self._find_box = wx.TextCtrl(")
-    assert panel.index("self._find_box = wx.TextCtrl(") < panel.index('label="&Library:"')
-    assert '("Fi&nd in Library", "Ctrl+F", self.focus_library_find)' in menu
+    # The one window (qc.md 4.2): Find's label, then the box, then the Places
+    # list and the content pane below it; View > Find is Ctrl+F.
+    assert panel.index('label="Fi&nd:"') < panel.index("self._find_box = wx.TextCtrl(")
+    assert panel.index("self._find_box = wx.TextCtrl(") < panel.index("self._places = PlacesList(")
+    assert 'view_menu.Append(find_id, "Fi&nd' in menu
+    assert "self.focus_library_find()" in menu

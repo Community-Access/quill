@@ -145,7 +145,7 @@ def episode_actions(
         ),
         action(
             "toggle_played",
-            "Mark as &Unplayed" if episode.played else "Mark as &Played",
+            "Mark as &Unheard" if episode.played else "Mark as &Played",
             lambda: dialog._on_toggle_played(episode),
         ),
         action(

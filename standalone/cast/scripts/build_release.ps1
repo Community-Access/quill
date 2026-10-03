@@ -135,8 +135,6 @@ Copy-Item (Join-Path $repoRoot "docs\userguide.md") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\userguide.html") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.md") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-1.1.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-1.1.html") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\prd.md") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\prd.html") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "README.md") (Join-Path $appDir "README-QUILL-Cast.md") -Force

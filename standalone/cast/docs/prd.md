@@ -1529,6 +1529,106 @@ in Library is Ctrl+F. Transcripts are excluded until F-09's index exists.
 `podcasts_view_menu.py` joined the app menu-accelerator gate, whose first run
 gave Customize Features Radio's Ctrl+Alt+C.
 
+### 23.16 Phase 5: one vocabulary, two settings windows, refresh schedules (2026-10-02)
+
+**Words** (section 12): `core/podcasts/words.py` is the list (forbidden word ->
+the word to use) and the allowed phrases that carry a format's own name;
+`quill/tools/cast_words_audit.py` (GATE-CAST-WORDS, on the `platform_report`
+roster) walks every non-docstring literal of two or more words in
+`quill/ui/podcasts` and `quill/apps/podcasts*.py`. The sweep fixed 39
+literals; nine remain in the reviewed allowlist
+(`tests/unit/ui/fixtures/cast_words_allowlist.json`), all in QUILL's Podcast
+Manager and Search Everywhere, which Cast never opens, each with its reason.
+An entry with no reason fails, as does a stale one.
+
+**Settings** (section 13): `ui/podcasts/preferences_window.py` is a Section
+choice over a scrolling panel rebuilt per section. App rows are the table in
+`apps/podcasts_preferences.app_rows` (history-backed); shared defaults are the
+catalogue at `LEVEL_GLOBAL`, placed by `section_of` (by id, by prefix, else by
+category), built by kind with the definition's own help, and written with
+`set_value` only when changed -- so a new default needs a definition and
+nothing in the window. `default_launch_view` is offered as the places
+(`launch_place.CHOICES`, appended so stored values keep meaning);
+`refresh_schedule` is a button that opens the schedule dialog. Podcast
+Settings and Skip Settings open Preferences on Fetching and Playing; the menu
+row is Settings for This Podcast (Ctrl+Alt+,) on the selection.
+
+**Schedules** (5e): `core/podcasts/refresh_schedule.py` is pure -- `Schedule`
+with five kinds, JSON `encode`/`decode`, `from_legacy`, `describe`, `learn`
+(the usual weekday and hour of the newest twelve, three agreeing within an
+hour), `parse_hint` (`sy:updatePeriod`/`updateFrequency`,
+`podcast:updateFrequency` rrule) and `next_due(schedule, now, last_checked, *,
+published, hint)`, tested against a fixed clock. `settings_defs_fetching.py`
+adds `refresh_schedule`, `check_on_launch`, `check_on_resume`,
+`check_in_quiet_hours`, `check_burst_after_miss` at every level, stored by id.
+`schedule_policy.py` resolves them: an empty schedule at every level falls back
+to `refresh_minutes` (the migration -- nothing rewritten, nothing changed on
+upgrade), `next_check`, `is_due`, `describe_for`, `next_check_words`, and
+`summary` for Preferences. The feed reader carries the hint as
+`FeedInfo.hint_minutes/hint_words`; `check_state.record_hint` keeps it beside
+the success stamp. `PodcastCheckMonitor._show_is_due` asks `schedule_policy`,
+honouring Quiet Hours unless `check_in_quiet_hours`. Feed Check gains Schedule
+and Next check columns and Check Now / Change Schedule rows;
+`ui/podcasts/schedule_dialog.py` is the dialog, its kind rows shown per kind,
+confirming in `describe`'s words.
+
+At launch, `CastPlaceRoutesMixin._check_at_launch` checks each podcast whose
+*Check when Cast opens* is on, and -- with the automatic check on -- each
+whose schedule fell due while Cast was closed (*Catch up on a missed check*).
+*Check when the computer wakes* binds `wx.EVT_POWER_RESUME` on the frame
+(`_watch_power_resume`) and checks each podcast whose switch is on, once.
+
+### 23.15 Phase 2: one window (2026-10-02)
+
+The main window is `CastMainPanelMixin._build_main_panel`: Now Playing (a
+read-only bold field), Find, `PlacesList` (`ui/podcasts/places_list.py`) beside
+`ContentPane` (`content_pane.py`: a heading and a Simplebook with the report
+list and the folder tree, carrying Radio's Tab-across-Simplebook fix), the
+Notes reader, the button row and the status bar. `core/podcasts/places.py` is
+the model: eleven places with kind, area and empty sentence; `PlacesLayout`
+(order and hidden, `places_layout` on `PodcastSettings`, Recently Expired
+hidden by default), `move` (skipping hidden rows), `move_sentence`, `label`,
+`count`, `empty_state`. `ui/podcasts/places_host.py` is the one verb,
+`show_place`, used by every route -- Places, View rows, Go To, status cells,
+a notice's Enter, the old openers (`apps/podcasts_routes.py` answers
+`open_podcast_manager`, `_open_play_queue`, `open_podcast_downloads`,
+`open_continue_listening` with places, ahead of `PodcastsMixin`). Delete in a
+list removes from the place only, per place.
+
+The Manager's verbs moved to `ui/podcasts/manager_verbs.py`
+(`ManagerVerbsMixin`, 38 methods) and are shared by QUILL's Podcast Manager and
+Cast's frame; `ui/podcasts/episode_list.py` (`CastEpisodeListMixin`) gives the
+frame the Manager-shaped names (`_library`, `_controller`, `_episodes`,
+`_current_episodes`, `refresh_tree`, `dialog`...) so `ManagerActionsMixin`,
+`ManagerDownloadsMixin`, `ManagerRowViewMixin` and `ManagerExpiredMixin` run on
+the frame unchanged. Rows are filled by column id, which fixed the Manager's
+cross-show fill writing by position. The selection contract
+(`_selected_tree_data`, `_selected_show`, `_selected_episode`) reads whichever
+pane is up, so the tree's context menus, the button row, the Winamp letters and
+the notes pane follow both. `manager_dialog.py` stays for QUILL's editor, which
+still opens it; Cast has no door to it.
+
+Notifications (5b): `core/podcasts/notices.py` -- six kinds as the notice
+`category`, a `notify_<kind>` switch each on `PodcastHistory`, `record`, and
+`digest` (one sentence since `last_seen_at`, stamped at shutdown). Cast's feed
+refresh writes new-episode, feed-failed and gone-quiet notices; a finished
+download writes one and the toast honours `toasts_enabled`.
+`ui/podcasts/notifications_window.py` is a peer (Window menu, Close Ctrl+W,
+hidden on close) with Play Now, Add to Queue, Go to the Podcast, Mark Read.
+The status bar gains a Notifications cell between Downloads and the sleep
+timer, and `support_menu` now keeps its Notifications id.
+
+Feature switches (17): `core/podcasts/cast_features.py` -- 47 `AppArea`s in
+eight groups (the eight original ids kept), `COMMAND_AREAS` mapping every id
+Cast registers or binds, and three `PROFILES`. Places, menu rows (`_area_row`),
+status cells (`CastStatusBar._build_specs` filters by `_cell_enabled`) and Go
+To (`DESTINATION_AREAS`) follow; the palette shows "(off in Customize
+Features)" through the frame's availability probe and `palette._unavailable_suffix`.
+
+Not yet built from Phase 2: the episode-state filter is one View > Show setting
+but not yet per place; folder tree reorder of places via the tree; the
+transcripts in Find (F-09).
+
 ### 23.14 AI help: the shared hosted AI through an adapter (ear.md A1, A11, A12; 2026-10-02)
 
 `quill/ui/podcasts/cast_ai_host.py` is what QUILL got when the hosted AI came

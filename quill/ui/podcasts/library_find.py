@@ -123,6 +123,11 @@ class CastLibraryFindMixin:
             except Exception:  # noqa: BLE001
                 pass
             self._find_return_key = selected or ("", "")
+            self._find_return_place = getattr(self, "_current_place", "")
+        pane = getattr(self, "_content", None)
+        if pane is not None:
+            pane.show(pane.TREE)
+            pane.set_heading("Matches")
         said = self._refresh_library_find()
         self._announce(said)
 
@@ -180,7 +185,11 @@ class CastLibraryFindMixin:
                 status.SetLabel("")
             except RuntimeError:
                 pass
-        self._reload_library_tree(keep_key=key if key and key[0] else None)
+        place = getattr(self, "_find_return_place", "")
+        if place and callable(getattr(self, "show_place", None)):
+            self.show_place(place, focus=False, keep=key if key and key[0] else None)
+        else:
+            self._reload_library_tree(keep_key=key if key and key[0] else None)
         if announce:
             self._announce("Back to your library.")
 
@@ -197,6 +206,11 @@ class CastLibraryFindMixin:
         if code == wx.WXK_DOWN and self._library_find_active():
             self._shows_tree.SetFocus()
             return
+        if code == wx.WXK_ESCAPE and not self._library_find_query():
+            pane = getattr(self, "_content", None)
+            if pane is not None:
+                pane.focus()
+                return
         event.Skip()
 
     def focus_library_find(self) -> None:

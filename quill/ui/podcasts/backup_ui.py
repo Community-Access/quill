@@ -8,7 +8,7 @@ restore takes effect without a restart. Shaped after Quill Radio's
 data differ, and so does one decision:
 
 **A restore reloads the library in place.** Radio reloads favorites and the
-history and refreshes its tree. Cast has to do the same for subscriptions,
+history and refreshes its tree. Cast has to do the same for podcasts,
 folders, playlists, positions and notes, and it has one extra hazard: if
 something is playing while the library is replaced underneath it, the position
 being written when it stops would be written against a library that no longer
@@ -62,7 +62,7 @@ def back_up_cast_data(frame: Any) -> None:
         answer = frame._show_message_box(
             "Include your downloaded episodes in the backup? They can be very "
             "large, and they can be downloaded again. Choose No to back up just "
-            "your subscriptions, playlists, positions and notes -- the part that "
+            "your podcasts, playlists, positions and notes -- the part that "
             "cannot be got back.",
             "Back Up QUILL Cast",
             wx.ICON_QUESTION | wx.YES_NO | wx.CANCEL,
@@ -137,7 +137,7 @@ def restore_cast_data(frame: Any) -> None:
     # which are the two facts somebody needs to spot the wrong file *before*
     # it replaces the right one.
     confirm = frame._show_message_box(
-        f"{manifest.describe()}\n\nRestoring replaces your current subscriptions, "
+        f"{manifest.describe()}\n\nRestoring replaces your current podcasts, "
         "playlists, positions and notes. Anything playing will stop.",
         "Restore QUILL Cast",
         wx.ICON_WARNING | wx.YES_NO,
@@ -181,11 +181,11 @@ def _apply_restore(frame: Any, result: Any) -> None:
     and refresh the view, so the restore is live without a restart."""
     from quill.core.paths import app_data_dir
     from quill.core.podcasts import history as podcast_history
-    from quill.core.podcasts import subscriptions
+    from quill.core.podcasts import podcasts
 
     data_dir = app_data_dir()
     try:
-        frame._podcast_library = subscriptions.load_library(data_dir)
+        frame._podcast_library = podcasts.load_library(data_dir)
         frame._podcast_history = podcast_history.load_history(data_dir)
         frame._reload_library_tree()
     except Exception as exc:  # noqa: BLE001 - it worked on disk; report the reload

@@ -36,6 +36,7 @@ from datetime import UTC, datetime, timedelta
 
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.models_queue import coerce_int
+from quill.core.podcasts.refresh_schedule import Hint
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 _CHECKED = "checked"
@@ -130,6 +131,28 @@ def record_failure(
 
 def failure_run(library: PodcastLibrary, show: PodcastShow) -> int:
     return max(0, coerce_int(_read(library, show).get(_FAILURES, 0), 0))
+
+
+_HINT_MINUTES = "hint_minutes"
+_HINT_WORDS = "hint_words"
+
+
+def record_hint(library: PodcastLibrary, show: PodcastShow, minutes: int, words: str) -> None:
+    """What the feed declared about its own cadence (qc.md 5e, the publisher's
+    hint). Written only when the feed says something; a feed that stops saying
+    it keeps the last answer, which is better than forgetting it hourly."""
+    if minutes <= 0:
+        return
+    state = _state(library, show)
+    state[_HINT_MINUTES] = int(minutes)
+    state[_HINT_WORDS] = str(words or "")
+
+
+def hint(library: PodcastLibrary, show: PodcastShow) -> Hint:
+    read = _read(library, show)
+    return Hint(
+        max(0, coerce_int(read.get(_HINT_MINUTES, 0), 0)), str(read.get(_HINT_WORDS, "") or "")
+    )
 
 
 def last_published(library: PodcastLibrary, show: PodcastShow) -> datetime | None:

@@ -65,12 +65,13 @@ def test_spelling_for_this_word_agrees_in_both() -> None:
     assert _lite_keys()["cmd_spell_word_at_cursor"] == "Alt+Shift+F7"
 
 
-def test_shift_f7_stays_the_thesaurus_and_quilllite_leaves_it_alone() -> None:
-    """QUILL Lite has no thesaurus, so the honest answer for the key is silence."""
+def test_shift_f7_is_the_thesaurus_in_both_editors() -> None:
+    """Word's key for the thesaurus, in both editors since QUILL Lite gained
+    the shared thesaurus on 2026-10-02 (``quill/ui/word_tools_commands.py``)."""
     from quill.core.keymap import DEFAULT_KEYMAP
 
     assert DEFAULT_KEYMAP["tools.thesaurus"] == "Shift+F7"
-    assert "Shift+F7" not in set(_lite_keys().values())
+    assert _lite_keys().get("cmd_thesaurus") == "Shift+F7"
 
 
 def test_the_whole_f7_family_agrees_between_the_editors() -> None:

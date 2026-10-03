@@ -237,4 +237,17 @@ def test_quill_cast_groups_its_podcast_settings() -> None:
         Path(__file__).resolve().parents[3] / "quill" / "apps" / "podcasts_preferences.py"
     ).read_text(encoding="utf-8")
 
-    assert "group=self._PODCASTS" in source
+    # Eight sections since 2026-10-02 (qc.md 13), each row placed in one.
+    from quill.ui.podcasts.preferences_window import SECTIONS
+
+    assert [key for key, _label in SECTIONS] == [
+        "opens",
+        "playing",
+        "fetching",
+        "inbox",
+        "chapters",
+        "telling",
+        "window",
+        "data",
+    ]
+    assert '"fetching",' in source and '"telling",' in source

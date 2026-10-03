@@ -132,6 +132,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.cast_help_audit"),
     ),
     Gate(
+        "cast-words",
+        "GATE-CAST-WORDS: QUILL Cast says podcast, follow, unheard and find",
+        (sys.executable, "-m", "quill.tools.cast_words_audit"),
+    ),
+    Gate(
         "player-help",
         "GATE-PLAYER-HELP: every Media Player surface and control answers F1",
         (sys.executable, "-m", "quill.tools.player_help_audit"),

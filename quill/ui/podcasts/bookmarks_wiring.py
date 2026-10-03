@@ -81,7 +81,7 @@ def _play_episode(host: Any, anchor: str, mark: MediaBookmark) -> str:
     show = library.find_show(show_id) if library is not None else None
     episode = show.find_episode(guid) if show is not None else None
     if show is None or episode is None:
-        return "That episode is no longer in your subscriptions."
+        return "That episode is no longer in a podcast you follow."
     controller = getattr(host, "_podcast_controller", None)
     if controller is None:
         return "Nothing here can play that."

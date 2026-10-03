@@ -43,7 +43,7 @@ class CastMenuBarMixin:
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        subs_menu.Append(manager_id, "&Open Podcast Manager...\tCtrl+M")
+        subs_menu.Append(manager_id, "Refresh All N&ow\tF5")
         subs_menu.Append(add_id, "&Add Podcast...\tCtrl+N")
         self._advanced_row(subs_menu, "import_opml", import_id, "&Import OPML...\tCtrl+Alt+I")
         self._advanced_row(subs_menu, "export_opml", export_id, "&Export OPML...\tCtrl+Alt+E")
@@ -65,11 +65,13 @@ class CastMenuBarMixin:
             self.frame.Bind(wx.EVT_MENU, lambda _e, m=mode: self._set_show_sort_mode(m), id=mode_id)
         subs_menu.AppendSubMenu(sort_menu, "So&rt Podcasts")
         local_id, watched_id, acb_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        subs_menu.Append(local_id, "Add &Local Podcast...\tCtrl+Alt+L")
-        subs_menu.Append(watched_id, "Scan &Watched Folders\tCtrl+Alt+W")
-        subs_menu.Append(acb_id, "Follow ACB Media &Podcasts\tCtrl+Alt+B")
+        self._area_row(subs_menu, "personal_audio", local_id, "Add &Personal Audio...\tCtrl+Alt+L")
+        self._area_row(
+            subs_menu, "watched_folders", watched_id, "Scan &Watched Folders\tCtrl+Alt+W"
+        )
+        self._area_row(subs_menu, "acb_media", acb_id, "Follow ACB Media Podcasts (&B)\tCtrl+Alt+B")
         subs_menu.AppendSeparator()
-        subs_menu.Append(settings_id, "Podcast &Settings...\tCtrl+Alt+,")
+        subs_menu.Append(settings_id, "&Settings for This Podcast...\tCtrl+Alt+,")
         # The second directory's key. Somewhere you go, not something you meet:
         # iTunes needs nothing and stays the default (core/podcasts/podcast_index).
         directory_id = wx.NewIdRef()
@@ -87,7 +89,7 @@ class CastMenuBarMixin:
         # listener asks in their first month, and the only previous answer was to
         # re-subscribe to each one and watch.
         feed_check_id = wx.NewIdRef()
-        subs_menu.Append(feed_check_id, "Feed C&heck...\tCtrl+Shift+C")
+        self._area_row(subs_menu, "feed_check", feed_check_id, "Feed C&heck...\tCtrl+Shift+C")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_cast_feed_check(), id=feed_check_id)
         self._keep_menu_ids(feed_check_id)
         quick_actions_id = wx.NewIdRef()
@@ -157,11 +159,13 @@ class CastMenuBarMixin:
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(tray_id, "Send to Tra&y\tCtrl+W")
         subs_menu.Append(exit_id, "Exit\tCtrl+Q")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_manager(), id=manager_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_check_all_feeds(), id=manager_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_add_dialog(), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_import_opml(), id=import_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_export_opml(), id=export_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_settings(), id=settings_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_show_settings_for_selection(), id=settings_id
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._new_library_folder(), id=folder_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_local_podcast(), id=local_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.scan_watched_podcast_folders(), id=watched_id)
@@ -194,11 +198,11 @@ class CastMenuBarMixin:
         vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef()
         episode_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
         episode_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
-        episode_menu.Append(next_id, "&Next Chapter\tCtrl+Alt+Right")
-        episode_menu.Append(prev_id, "P&revious Chapter\tCtrl+Alt+Left")
+        self._area_row(episode_menu, "transcripts", next_id, "&Next Chapter\tCtrl+Alt+Right")
+        self._area_row(episode_menu, "transcripts", prev_id, "P&revious Chapter\tCtrl+Alt+Left")
         skip_fwd_id, skip_back_id = wx.NewIdRef(), wx.NewIdRef()
-        episode_menu.Append(skip_fwd_id, "Skip &Forward\tCtrl+Right")
-        episode_menu.Append(skip_back_id, "Skip &Back\tCtrl+Left")
+        self._area_row(episode_menu, "skipping", skip_fwd_id, "Skip &Forward\tCtrl+Right")
+        self._area_row(episode_menu, "skipping", skip_back_id, "Skip &Back\tCtrl+Left")
         # Speed as a continuum (1.1.0): 0.5x-5.0x in tenths, from the
         # keyboard, with the scope announced -- the playing show's own speed
         # if something is playing, otherwise the shared default.
@@ -207,9 +211,11 @@ class CastMenuBarMixin:
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        episode_menu.Append(speed_up_id, "Sp&eed Up\tCtrl+Shift+Up")
-        episode_menu.Append(speed_down_id, "Speed Do&wn\tCtrl+Shift+Down")
-        episode_menu.Append(speed_reset_id, "Reset Speed to Norma&l\tCtrl+Shift+0")
+        self._area_row(episode_menu, "speed", speed_up_id, "Sp&eed Up\tCtrl+Shift+Up")
+        self._area_row(episode_menu, "speed", speed_down_id, "Speed Do&wn\tCtrl+Shift+Down")
+        self._area_row(
+            episode_menu, "speed", speed_reset_id, "Reset Speed to Norma&l\tCtrl+Shift+0"
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_speed_up(), id=speed_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_speed_down(), id=speed_down_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_speed_reset(), id=speed_reset_id)
@@ -222,24 +228,26 @@ class CastMenuBarMixin:
             goto_pos_id, self._menu_label("&Go to Position...", "podcasts.go_to_position")
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_go_to_position(), id=goto_pos_id)
+        self._append_episode_extras(episode_menu)  # podcasts_routes.py
         stop_after_id = wx.NewIdRef()
         episode_menu.Append(stop_after_id, "Stop &After This Episode\tCtrl+Alt+Shift+A")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.podcast_toggle_stop_after_episode(), id=stop_after_id
         )
         continue_id = wx.NewIdRef()
-        episode_menu.Append(continue_id, "&Continue Listening...\tCtrl+Shift+L")
         now_playing_id = wx.NewIdRef()
-        episode_menu.Append(
-            now_playing_id, self._menu_label("Now Playin&g...", "podcasts.now_playing")
+        self._area_row(
+            episode_menu,
+            "now_playing",
+            now_playing_id,
+            self._menu_label("Now Playing (&J)...", "podcasts.now_playing"),
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_now_playing(), id=now_playing_id)
         about_ep_id = wx.NewIdRef()
-        episode_menu.Append(about_ep_id, "Ab&out This Episode...\tCtrl+Shift+A")
+        self._area_row(episode_menu, "notes", about_ep_id, "Ab&out This Episode...\tCtrl+Shift+A")
         note_id = wx.NewIdRef()
-        episode_menu.Append(note_id, "Add Ep&isode Note...\tCtrl+Alt+N")
+        self._area_row(episode_menu, "notes", note_id, "Add Ep&isode Note...\tCtrl+Alt+N")
         queue_id = wx.NewIdRef()
-        episode_menu.Append(queue_id, "Play &Queue...\tCtrl+Shift+Q")
         self._append_queue_run_submenu(episode_menu)
         mark_all_id = wx.NewIdRef()
         episode_menu.Append(mark_all_id, "Mar&k All as Played...\tCtrl+Shift+E")
@@ -252,20 +260,32 @@ class CastMenuBarMixin:
             id=mark_all_id,
         )
         keep_id = wx.NewIdRef()
-        episode_menu.Append(keep_id, "Keep &This Episode\tCtrl+Alt+K")
+        self._area_row(episode_menu, "keep_episode", keep_id, "Keep &This Episode\tCtrl+Alt+K")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_keep_episode(), id=keep_id)
         stats_id = wx.NewIdRef()
-        episode_menu.Append(stats_id, "Listening Statistics...\tCtrl+Alt+Shift+S")
+        self._area_row(
+            episode_menu, "statistics", stats_id, "Listening Statistics...\tCtrl+Alt+Shift+S"
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_statistics(), id=stats_id)
         episode_menu.AppendSeparator()
         self._append_podcast_recent_submenu(episode_menu)
         episode_menu.AppendSeparator()
         sleep_id = wx.NewIdRef()
-        episode_menu.Append(sleep_id, "Sleep Timer...\tCtrl+Alt+T")
+        self._area_row(episode_menu, "sleep_timer", sleep_id, "Sleep Timer...\tCtrl+Alt+T")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         sleep_episode_id, sleep_extend_id = wx.NewIdRef(), wx.NewIdRef()
-        episode_menu.Append(sleep_episode_id, "Sleep at End of T&his Episode\tCtrl+Alt+Shift+T")
-        episode_menu.Append(sleep_extend_id, "E&xtend Sleep Timer 5 Minutes\tCtrl+Alt+X")
+        self._area_row(
+            episode_menu,
+            "sleep_timer",
+            sleep_episode_id,
+            "Sleep at End of T&his Episode\tCtrl+Alt+Shift+T",
+        )
+        self._area_row(
+            episode_menu,
+            "sleep_timer",
+            sleep_extend_id,
+            "E&xtend Sleep Timer 5 Minutes\tCtrl+Alt+X",
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.sleep_timer_end_of_episode(), id=sleep_episode_id
         )
@@ -274,7 +294,7 @@ class CastMenuBarMixin:
         )
         episode_menu.AppendSeparator()
         enhance_id = wx.NewIdRef()
-        episode_menu.Append(enhance_id, "Sound Enhancements...\tCtrl+E")
+        self._area_row(episode_menu, "sound", enhance_id, "Sound Enhancements...\tCtrl+E")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_sound_enhancements(), id=enhance_id
         )
@@ -283,19 +303,14 @@ class CastMenuBarMixin:
         # -- someone listening with one ear, or sharing their ears with a screen
         # reader, needs this in every app and should not learn it twice.
         channel_id = wx.NewIdRef()
-        episode_menu.Append(channel_id, "Audio Output Mode\tCtrl+Shift+M")
+        self._area_row(episode_menu, "sound", channel_id, "Audio Output Mode\tCtrl+Shift+M")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_cycle_channel_mode(), id=channel_id)
         # And which sound card it comes out of. Radio can route audio itself
         # (libmpv); Cast cannot, and says so rather than opening a picker that
         # would do nothing -- see ui/media/output_device.
         device_id = wx.NewIdRef()
-        episode_menu.Append(device_id, "Audio Output De&vice...\tCtrl+Shift+K")
+        self._area_row(episode_menu, "sound", device_id, "Audio Output De&vice...\tCtrl+Shift+K")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_choose_output_device(), id=device_id)
-        skip_settings_id = wx.NewIdRef()
-        episode_menu.Append(skip_settings_id, "Skip Settings...\tCtrl+Alt+G")
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.open_podcast_skip_settings(), id=skip_settings_id
-        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mute_toggle(), id=mute_id)
@@ -313,8 +328,12 @@ class CastMenuBarMixin:
 
         downloads_menu = wx.Menu()
         pause_all_id, resume_all_id = wx.NewIdRef(), wx.NewIdRef()
-        downloads_menu.Append(pause_all_id, "&Pause All Downloads\tCtrl+Alt+Shift+U")
-        downloads_menu.Append(resume_all_id, "&Resume All Downloads\tCtrl+Alt+Shift+V")
+        self._area_row(
+            downloads_menu, "downloads", pause_all_id, "&Pause All Downloads\tCtrl+Alt+Shift+U"
+        )
+        self._area_row(
+            downloads_menu, "downloads", resume_all_id, "&Resume All Downloads\tCtrl+Alt+Shift+V"
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_pause_all_downloads(), id=pause_all_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.podcast_resume_all_downloads(), id=resume_all_id
@@ -325,7 +344,6 @@ class CastMenuBarMixin:
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        downloads_menu.Append(manage_downloads_id, "&Downloads...\tCtrl+D")
         self._advanced_row(
             downloads_menu, "free_space", free_space_id, "&Free Up Space\tCtrl+Alt+F"
         )
@@ -345,7 +363,8 @@ class CastMenuBarMixin:
         # Quillins only in Advanced mode (Jeff, 2026-09-30): an extensions menu is
         # the definition of a thing you go looking for once you know it exists.
         if self._cast_shows_row("quillins"):
-            menu_bar.Append(self._build_quillins_menu(), "&Quillins")
+            if self._cast_area_enabled("quillins"):
+                menu_bar.Append(self._build_quillins_menu(), "&Quillins")
 
         # &Window, between Quillins and Help, the same place Radio and Weather
         # put it. See podcasts_view_menu.install_cast_window_menu.
@@ -358,7 +377,8 @@ class CastMenuBarMixin:
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        self._append_cast_ai_submenu(help_menu)  # AI Features (cast_ai_host.py)
+        if self._cast_area_enabled("ai_features"):
+            self._append_cast_ai_submenu(help_menu)  # AI Features (cast_ai_host.py)
         help_menu.Append(palette_id, self._menu_label("Command &Palette...", "app.command_palette"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
         # The Keyboard Shortcuts editor and the Global Hotkeys manager open the
@@ -507,7 +527,6 @@ class CastMenuBarMixin:
             queue_id,
             sleep_id,
             enhance_id,
-            skip_settings_id,
             pause_all_id,
             resume_all_id,
             palette_id,

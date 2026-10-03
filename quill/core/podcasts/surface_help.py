@@ -47,12 +47,12 @@ PURPOSES: dict[str, str] = {
         "set it back to asking."
     ),
     "QUILL Cast": (
-        "Your podcast library, its pinned views and folders, and playback controls. "
-        "The buttons under the library name what they act on -- Play names the "
-        "podcast or episode under the cursor, Unfollow the podcast -- and the View "
-        "menu takes you to each place in one key. F6 reaches the status bar. "
-        "Nothing here needs an account, and nothing you listen to leaves this "
-        "computer."
+        "One window: Find at the top, the Places list -- Inbox, New Episodes, "
+        "Continue Listening, Favorites, Personal Audio, the Play Queue, Downloads, "
+        "Notifications, Podcasts -- and beside it the place you chose, with its "
+        "show notes and the buttons below. The buttons name what they act on, the "
+        "View menu reaches each place in one key, and F6 reaches the status bar. "
+        "Nothing here needs an account, and nothing you listen to leaves this computer."
     ),
     "Feed Check": (
         "Which of the podcasts you follow need something, worst first: failing "
@@ -149,6 +149,33 @@ PURPOSES: dict[str, str] = {
         "happened. Retry tries the highlighted row again; nothing here is "
         "sent anywhere."
     ),
+    "Notifications": (
+        "What QUILL Cast told you while you were elsewhere, newest first: new "
+        "episodes, finished downloads, feeds that keep failing and podcasts that "
+        "have gone quiet. Enter goes to what a row was about; on a new episode "
+        "the row's menu offers Play Now and Add to Queue. Clearing the list never "
+        "touches the episodes it was about."
+    ),
+    "Places": (
+        "The order of the places in the main window, and which of them it "
+        "shows. Up and Down move a place, Hide and Show take it out of the "
+        "list or put it back, Rename gives it your own name, and Reset "
+        "restores the shipped order. Hiding a place never removes what is in it."
+    ),
+    "QUILL Cast Preferences": (
+        "Everything that is not about one podcast, in eight sections: when Cast "
+        "opens, playing, fetching, the Inbox, chapters, telling you, the window, "
+        "and data. The shared defaults here are what every podcast follows until "
+        "Settings for This Podcast says otherwise. Save writes only what you changed."
+    ),
+    "Rename Place": (
+        "Your own name for a place in the main window. Leave it as shipped, or "
+        "blank, to keep the shipped name; nothing in the place changes."
+    ),
+    "Save Lineup": (
+        "A name for the Play Queue's current order, so Apply Lineup can put it "
+        "back later. Saving never changes the queue itself."
+    ),
     "Skip Settings": (
         "How far each skip key moves, forward and back, and the intro and "
         "outro amounts an episode can skip by itself. A show can override "
@@ -216,6 +243,13 @@ PURPOSES: dict[str, str] = {
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    (
+        "Schedule for",
+        "When this podcast -- or every podcast -- is looked at for new episodes: "
+        "manually only, every so often, at set times, around when it usually "
+        "publishes, or on the publisher's own hint. Checking never downloads "
+        "audio by itself, and Save says the schedule back in one sentence.",
+    ),
     (
         "Tidy Episode Titles",
         "Patterns removed from this podcast's episode titles when they are "

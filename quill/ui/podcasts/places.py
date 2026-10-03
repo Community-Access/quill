@@ -62,25 +62,8 @@ class CastPlacesMixin:
     # -- Inbox ------------------------------------------------------------- #
 
     def open_cast_inbox(self) -> None:
-        """Go to the Inbox, and say what to do about it when it is empty.
-
-        The empty sentence comes from ``inbox_scope`` rather than being written
-        here, because it is the same sentence the Manager's Inbox shows and there
-        must not be two versions of it -- and because only that module knows
-        whether the Inbox is empty or merely *filtered* empty, which want
-        different answers.
-        """
-        if not self._go_to_tree_node(("view", "inbox")):
-            self._announce("The Inbox is in the main window, which is not open.")
-            return
-        from quill.core.podcasts.inbox_scope import empty_state
-
-        said = empty_state(
-            self._podcast_library,
-            getattr(self._podcast_library.settings, "inbox_folder_scope", None),
-        )
-        if said:
-            self._announce(said)
+        """View > Inbox, Ctrl+Shift+I: the place, with its scope's empty sentence."""
+        self.show_place("inbox")
 
     def choose_inbox_folder_scope(self) -> None:
         """Narrow the Inbox to one library folder, or widen it again (R4).
@@ -141,32 +124,12 @@ class CastPlacesMixin:
     # -- Podcasts, and Personal Audio ------------------------------------- #
 
     def open_cast_subscriptions(self) -> None:
-        """Go to the library tree itself -- the list of everything you follow."""
-        if not self._go_to_tree_node(("view", "favorites")):
-            self._announce("Your podcasts are in the main window, which is not open.")
-            return
-        if not self._podcast_library.shows:
-            self._announce(
-                "You do not follow any podcasts yet. Add Podcast, in the Podcasts "
-                "menu, searches the directories by name."
-            )
+        """View > Podcasts, Ctrl+Shift+P: the folder tree."""
+        self.show_place("podcasts")
 
     def open_cast_personal_audio(self) -> None:
-        """Go to your own recordings and audiobooks (R8).
-
-        Personal Audio is a local show rather than a pinned view, so there is
-        nothing to land on until something has been imported -- which is exactly
-        when the empty sentence matters, since a menu row that silently does
-        nothing is indistinguishable from a broken one.
-        """
-        from quill.core.podcasts import personal_audio
-
-        local = next((show for show in self._podcast_library.shows if show.is_local), None)
-        if local is None:
-            self._announce(personal_audio.empty_state(self._podcast_library))
-            return
-        if not self._go_to_tree_node(("show", local.id)):
-            self._announce("Personal Audio is in the main window, which is not open.")
+        """View > Personal Audio, Ctrl+Shift+U: your own files, as a place."""
+        self.show_place("personal_audio")
 
     # -- what the tree leaves out ----------------------------------------- #
 
@@ -208,28 +171,23 @@ class CastPlacesMixin:
     # -- where a launch lands ---------------------------------------------- #
 
     def _select_default_launch_view(self) -> None:
-        """Land on the place the listener chose, not always the tree top.
+        """Land on the place the listener chose (qc.md 4.8), or on what is new:
+        the Inbox if anything is waiting, else Continue Listening if anything is
+        half-heard, else Podcasts. Focus is on that place's content, first row."""
+        from quill.core.podcasts import places as places_model
+        from quill.core.podcasts.virtual_views import virtual_view_pairs
 
-        Somebody whose routine is "open it and see what is new" should not have to
-        arrow there every single time. Moved here from ``podcasts.py`` under
-        GATE-11, and it belongs here anyway: it is the same question the View
-        menu's rows answer, asked once at startup.
-        """
         view_id = self._podcast_library.settings.default_launch_view
-        if not view_id:
-            # No stated preference: land on what is new. The Inbox if anything
-            # is waiting, else Continue Listening if anything is half-heard, else
-            # leave the cursor where the tree puts it. Earshot's answer, and the
-            # one a listener would give if asked why they opened the app.
-            from quill.core.podcasts.virtual_views import virtual_view_pairs
-
+        if places_model.place(view_id) is None:
+            view_id = "podcasts"
             for candidate in ("inbox", "continue_listening"):
                 if virtual_view_pairs(self._podcast_library, candidate):
                     view_id = candidate
                     break
-            else:
-                return
-        self._reload_library_tree(keep_key=("view", view_id))
+        shown = [entry.id for entry in self._visible_places()]
+        if view_id not in shown and shown:
+            view_id = shown[0]
+        self.show_place(view_id, focus=True)
 
     # -- what the transport button would do -------------------------------- #
 

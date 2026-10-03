@@ -162,6 +162,20 @@ class PodcastTransfersMixin:
             return
         show = self._podcast_library.find_show(item.show_id)
         episode = show.find_episode(item.episode_guid) if show is not None else None
+        history = getattr(self, "_podcast_history", None)
+        if history is not None and hasattr(history, "notify_download_finished"):
+            from quill.core import notification_targets
+            from quill.core.podcasts import notices
+
+            notices.record(
+                history,
+                "download_finished",
+                title=download_notice.TITLE,
+                body=str(getattr(episode, "title", "") or ""),
+                target=notification_targets.for_show(item.show_id),
+            )
+            if not getattr(history, "toasts_enabled", True):
+                return
         from quill.ui.toast import show_toast
 
         show_toast(

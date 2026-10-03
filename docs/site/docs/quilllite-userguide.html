@@ -2250,12 +2250,13 @@ misspelling by looking for a red squiggle and right-clicking it; you
 have no squiggle, so the Applications key <em>is</em> the squiggle, and
 what it says first should be the answer.</p>
 <p>Under the suggestions there is a separator and then <strong>one
-row</strong> — <em>Spelling Actions for “wrold”</em> — and then the
-ordinary rows: Undo, Redo, Cut, Copy, Paste, Delete, Select All. That
-order never changes. The part that varies in length is at the
-<strong>top</strong>, so everything below the suggestions is always
-where you left it, and what you learn is not a row number but “after the
-suggestions, the menu is the menu”.</p>
+row</strong> — <em>Spelling Actions for “wrold”</em> — then the
+<strong>Thesaurus</strong> and <strong>Dictionary</strong> submenus for
+the word (below), and then the ordinary rows: Undo, Redo, Cut, Copy,
+Paste, Delete, Select All. That order never changes. The part that
+varies in length is at the <strong>top</strong>, so everything below the
+suggestions is always where you left it, and what you learn is not a row
+number but “after the suggestions, the menu is the menu”.</p>
 <p>Inside <strong>Spelling Actions</strong>:</p>
 <table>
 <thead>
@@ -2298,6 +2299,39 @@ too.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="thesaurus-and-dictionary-on-any-word">Thesaurus and Dictionary
+on any word</h3>
+<p>On <strong>any</strong> word, spelled right or not, the same menu
+carries two more rows, after the spelling rows and before the edit rows.
+Both are submenus, and both name the word they are about, so a menu you
+reached by keyboard still tells you what it is going to do:</p>
+<ul>
+<li><strong>Thesaurus for “running”</strong> opens on the best
+replacements, one keystroke away: Enter on <em>sprinting</em> puts
+<em>sprinting</em> in place of <em>running</em> – in the form the
+sentence needs, because QUILL Lite looked the word up as <em>run</em>
+and put the replacements back into the <em>-ing</em> form, with the
+capitals the original had. Under the first sense, each further meaning
+is a submenu of its own (“As a noun: …”), then an
+<strong>Opposites</strong> submenu, then <strong>Say Word
+Summary</strong> (what the thesaurus knows, spoken, without opening
+anything) and <strong>More in Thesaurus…</strong>, which is the full
+two-pane window.</li>
+<li><strong>Dictionary for “running”</strong> starts with <strong>Look
+Up “running”…</strong>, the dictionary without AI (see
+<em>Dictionary</em> below). Then, when AI help is on, the twelve
+questions the AI dictionary can answer about the word as it is used in
+<em>this</em> sentence: Define in Context, Synonyms That Fit, Simpler
+Word, More Formal Word, More Vivid Word, Opposites, Is This the Right
+Word?, Use It in a Sentence, Where It Comes From, How to Say It, Rhymes,
+and the Word Explorer that answers all of them at once; and <strong>Find
+the Word For…</strong>, the reverse dictionary. With AI help on but no
+key or ChatGPT sign-in, the submenu holds one row that says so and opens
+the account window.</li>
+</ul>
+<p>A selected word wins over the word at the cursor, when the selection
+is a single word. There is no Thesaurus row on a number or on empty
+space.</p>
 <p>QUILL’s menu is the same menu, in the same order, with one extra
 dictionary in it (it has projects; QUILL Lite opens files).</p>
 <p>Every row names the word it is about, so a menu you reached by
@@ -2335,6 +2369,196 @@ both.</p>
 <p>A single document can also have its own short list of words, kept in
 a small file beside it. That is useful for names that belong to one
 piece of work and nowhere else.</p>
+<hr />
+<h2 id="thesaurus">Thesaurus</h2>
+<p><strong>Tools ▸ Thesaurus…</strong> (<strong>Shift+F7</strong>, the
+key Word and QUILL use) opens the two-pane picker for the word you are
+on, or the word you select – or, with the cursor on nothing, asks for
+one. It is QUILL’s thesaurus, the same window and the same data, which
+ships inside QUILL Lite: nothing is downloaded and nothing is sent
+anywhere.</p>
+<p><strong>It finds the word you are actually on.</strong> The word list
+knows headwords – <em>run</em>, not <em>running</em>; <em>happy</em>,
+not <em>happier</em> – so a thesaurus that looked up the word as typed
+failed for most words in running prose. QUILL Lite walks the word back
+to the forms the list knows (running to run, studies to study, happier
+to happy, stopped to stop) and says so in the title (“running (as run)”)
+and in each sense’s row (“verb, from run: sprinting, dashing, …”).</p>
+<p><strong>Every replacement is already in the right form.</strong>
+Choose <em>sprint</em> for <em>running</em> and the document gets
+<em>sprinting</em>; choose <em>glad</em> for <em>Happier</em> and it
+gets <em>Gladder</em>… no – it gets <em>More glad</em>, because QUILL
+Lite also knows which adjectives take <em>-er</em> and which take
+<em>more</em>. Irregular verbs are known (<em>seek</em> for
+<em>sought</em> gives <em>sought</em>), and a replacement the rules
+cannot vouch for is offered in its plain form rather than invented.</p>
+<p><strong>The window.</strong> Focus lands in the
+<strong>Senses</strong> list: one row per meaning, the part of speech
+first, so typing <strong>n</strong> jumps to the nouns and
+<strong>v</strong> to the verbs. Tab reaches the words of the selected
+sense – replacements, then <em>broader:</em> terms, then
+<em>opposite:</em> terms, each labelled – and <strong>Enter</strong> or
+<strong>Replace</strong> puts the selected one in place of your word and
+collapses the selection, so the next keystroke cannot destroy it.
+<strong>Copy</strong> takes it to the clipboard instead, and says so.
+<strong>Escape</strong> closes with nothing changed. When the word was
+typed rather than in the document, Replace is disabled and Copy is the
+default.</p>
+<p><strong>Say Word Summary</strong> (<strong>Ctrl+Alt+Shift+[</strong>,
+and in the Thesaurus submenu on the word) speaks what the thesaurus
+knows without opening anything: “running, looked up as run: 27 meanings
+as a verb, 6 as an adjective, 3 as a noun. First: sprinting, dashing, …
+Opposites: standing, …”. Useful before deciding whether the window is
+worth opening.</p>
+<p><strong>Dictionary Status</strong> (<strong>Tools ▸ Spelling ▸
+Dictionary Status…</strong>, <strong>Alt+Shift+;</strong>) is QUILL’s
+row: how many words your personal dictionary and this document’s own
+list hold, where each file is, and whether the thesaurus data is
+present.</p>
+<p>The whole area is one switch in Customize Features,
+<strong>Dictionary and thesaurus</strong>, on by default and off in the
+WordPad and Notepad profiles, which are named after programs that never
+had one.</p>
+<h2 id="dictionary">Dictionary</h2>
+<p>Two dictionaries, one row each, and the second needs AI.</p>
+<h3 id="look-up-the-dictionary-without-ai">Look Up: the dictionary
+without AI</h3>
+<p><strong>Tools ▸ Look Up Word…</strong> (<strong>Alt+F10</strong>), or
+<strong>Look Up “word”…</strong> at the top of the Dictionary submenu on
+any word, opens QUILL’s Look Up window – the same one, now in both
+editors. Focus lands in the <strong>Result</strong>, a read-only field
+you can arrow through: the word, then one labelled section per kind of
+answer. Under it, <strong>Words you can use</strong> lists every
+synonym, opposite, related word and rhyme, each saying which it is;
+<strong>Enter</strong> or <strong>Replace Word</strong> puts the
+selected one in place of your word, <strong>Copy</strong> copies the
+selected word (or the whole result when none is selected), and
+<strong>Add to Dictionary</strong> teaches the word to your spelling
+dictionary.</p>
+<p><strong>Offline, it is the thesaurus.</strong> Synonyms, opposites
+and related words from the word list that ships with QUILL Lite, and
+nothing leaves this computer.</p>
+<p><strong>Online, it is a dictionary and an encyclopedia too – when you
+say so.</strong> The checkbox <strong>Use online sources</strong> is off
+until you tick it. On, the word – only the word, never the sentence or
+the document – goes to three free services that need no account and no
+key: the Free Dictionary for definitions with examples, Datamuse for
+more synonyms, opposites, rhymes and related words, and Wikipedia for a
+short summary with a link back to the article. The offline answer
+appears at once, “Looking up online” is said, and when the online answer
+arrives it replaces the field and says so; a word Wikipedia has no real
+article for simply shows no encyclopedia section. The choice is
+remembered (<code>dictionary_online_lookups</code> in the settings file)
+and shared with QUILL when the two share settings vocabulary, so you are
+never asked twice; untick it and you are offline again from the next
+lookup.</p>
+<h3 id="the-ai-dictionary">The AI dictionary</h3>
+<p>The rest of <strong>Tools ▸ Dictionary</strong> – and of the
+Dictionary submenu on a word – is the dictionary that reads the
+sentence. The offline thesaurus knows every sense of <em>bank</em>; it
+cannot know which one this sentence means. These twelve send <strong>the
+word and the sentence it sits in</strong> (never the rest of the
+document) and answer in plain prose written to be listened to, with,
+where it helps, a list of choices that each say why:</p>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Key</th>
+<th>What comes back</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Define in Context</strong></td>
+<td>Ctrl+Alt+Shift+’</td>
+<td>What the word means <em>here</em>, its part of speech, and the
+meaning you might be confusing it with</td>
+</tr>
+<tr>
+<td><strong>Word Explorer…</strong></td>
+<td>Ctrl+F10</td>
+<td>Everything at once: meaning, how to say it, an example, where it
+comes from, what it is confused with, and the best replacements</td>
+</tr>
+<tr>
+<td><strong>Synonyms That Fit</strong></td>
+<td>Ctrl+Shift+;</td>
+<td>Replacements that keep this sentence’s meaning and register, already
+in the right form</td>
+</tr>
+<tr>
+<td><strong>Simpler Word</strong></td>
+<td>Ctrl+Shift+-</td>
+<td>Plainer, more widely known words, and what is lost</td>
+</tr>
+<tr>
+<td><strong>More Formal Word</strong></td>
+<td>Ctrl+Shift+=</td>
+<td>Words suited to professional writing</td>
+</tr>
+<tr>
+<td><strong>More Vivid Word</strong></td>
+<td>Ctrl+Shift+’</td>
+<td>Livelier or more specific words</td>
+</tr>
+<tr>
+<td><strong>Opposites</strong></td>
+<td>Alt+Shift+-</td>
+<td>Antonyms that would fit in the word’s place</td>
+</tr>
+<tr>
+<td><strong>Is This the Right Word?</strong></td>
+<td>Ctrl+Alt+Shift+/</td>
+<td>Affect or effect, complement or compliment: a plain yes, or the
+difference and the right word first</td>
+</tr>
+<tr>
+<td><strong>Use It in a Sentence</strong></td>
+<td>Alt+Shift+=</td>
+<td>Three short example sentences in the same sense</td>
+</tr>
+<tr>
+<td><strong>Where It Comes From</strong></td>
+<td>Alt+Shift+,</td>
+<td>The word’s origin and how its meaning developed</td>
+</tr>
+<tr>
+<td><strong>How to Say It</strong></td>
+<td>Alt+Shift+’</td>
+<td>Syllables with the stress in capitals, a plain respelling, the IPA,
+and the common mispronunciation</td>
+</tr>
+<tr>
+<td><strong>Rhymes</strong></td>
+<td>Ctrl+Alt+Shift+;</td>
+<td>Perfect rhymes first, then near rhymes, with syllable counts</td>
+</tr>
+<tr>
+<td><strong>Find the Word For…</strong></td>
+<td>Ctrl+Alt+Shift+]</td>
+<td>The reverse dictionary: describe the meaning, get the word, inserted
+at the cursor</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The answer window.</strong> Focus lands on the answer, so
+your screen reader reads it; nothing is announced on top of that. Tab
+reaches <strong>Choices</strong>, one line per replacement with its
+note; <strong>Enter</strong> or <strong>Use This Word</strong> puts the
+selected one in place of the word (or at the cursor, for Find the Word
+For) and <strong>Ctrl+Z</strong> takes it back as one step. <strong>Copy
+Choice</strong> and <strong>Copy Answer</strong> go to the clipboard.
+<strong>Ask Something Else…</strong> closes the answer and reopens the
+Dictionary submenu on the same word. If you typed over the word while
+the answer was on its way, Use This Word is disabled and says why; Copy
+still works.</p>
+<p><strong>It runs only on your own OpenAI key or your ChatGPT
+subscription</strong>, never on the free service: a dictionary is asked
+a hundred times a day, and these calls would spend somebody’s free
+allowance on synonyms. With neither, every row says so and opens the
+account window. The whole set switches off with <strong>AI help</strong>
+in Customize Features, because every row is a request.</p>
 <hr />
 <h2 id="what-is-this-character">What is this character?</h2>
 <p><strong>Ctrl+Shift+C</strong> tells you exactly which character the
@@ -3251,13 +3475,13 @@ change your mind.</p>
 <p>Under the box is a <strong>read-only description you can read line by
 line</strong>, and it answers two different questions. First, what the
 profile <em>is</em>, in its own words. Then what it would actually
-<em>do</em> to the app in front of you: how many of the 20 areas it
+<em>do</em> to the app in front of you: how many of the 21 areas it
 keeps and which, which ones it removes, and anything else it changes –
 Notepad, for instance, also makes <strong>Ctrl+N</strong> create a plain
 text document. <strong>F1</strong> on the Profile box reads the same
 thing.</p>
 <p>What is spoken when you choose a profile is the short version –
-“Notepad profile: 2 of 20 features on. New documents will be plain text.
+“Notepad profile: 2 of 21 features on. New documents will be plain text.
 Nothing is saved until you press Save.” – because your screen reader is
 already reading the name and the description is there to be read at your
 own pace.</p>
@@ -3274,7 +3498,7 @@ it over.</p>
 top, with the same description box. “Make this Notepad” is a preference
 like any other, and you should not have to know that a dialog called
 Customize Features is where it lives. Preferences offers the whole
-answers; the 20 individual checkboxes stay in Customize Features.</p>
+answers; the 21 individual checkboxes stay in Customize Features.</p>
 <p>Here is what each one is, at a glance and then in full.</p>
 <table>
 <thead>
@@ -3287,32 +3511,32 @@ answers; the 20 individual checkboxes stay in Customize Features.</p>
 <tbody>
 <tr>
 <td><strong>Recommended</strong></td>
-<td>16 of 20</td>
+<td>17 of 21</td>
 <td>plain text (unchanged)</td>
 </tr>
 <tr>
 <td><strong>Everything</strong></td>
-<td>20 of 20</td>
+<td>21 of 21</td>
 <td>plain text (unchanged)</td>
 </tr>
 <tr>
 <td><strong>WordPad</strong></td>
-<td>5 of 20</td>
+<td>5 of 21</td>
 <td><strong>rich text</strong></td>
 </tr>
 <tr>
 <td><strong>Notepad</strong></td>
-<td>2 of 20</td>
+<td>2 of 21</td>
 <td><strong>plain text</strong></td>
 </tr>
 </tbody>
 </table>
 <h4 id="recommended">Recommended</h4>
-<p><strong>What a new install is.</strong> 16 of the 20 areas: rich
-text, headings, Markdown and HTML, bookmarks, the line tools, the
+<p><strong>What a new install is.</strong> Seventeen of the 21 areas:
+rich text, headings, Markdown and HTML, bookmarks, the line tools, the
 clipboard history, printing, abbreviations, the Selection submenu, spell
-check, Matches, Go Back and Go Forward, the Command Palette, Describe
-Character, text size and dictation.</p>
+check, the dictionary and thesaurus, Matches, Go Back and Go Forward,
+the Command Palette, Describe Character, text size and dictation.</p>
 <p><strong>Off:</strong> autocorrect, timestamped backups, Go To
 Anything and AI help. Those four are not missing features; they are the
 ones that would be <em>wrong</em> on by default rather than merely
@@ -3324,7 +3548,7 @@ something a default gets to decide for you.</p>
 <p><strong>Choose this</strong> to get back to the shipped answer after
 experimenting.</p>
 <h4 id="everything">Everything</h4>
-<p><strong>All 20 areas on</strong>, including those four – and that
+<p><strong>All 21 areas on</strong>, including those four – and that
 includes <strong>AI help</strong>, which is the one area here that sends
 anything off this computer, so choose this profile only if that is what
 you meant. Autocorrect will straighten your quotes and turn two hyphens
@@ -3337,14 +3561,15 @@ they annoy you than find them one at a time.</p>
 <p><strong>What WordPad was.</strong> Rich text you can format, print,
 and check the spelling of: bold, italic, underline, headings, alignment,
 bullets, indenting and line spacing, plus Find and Replace, printing and
-text size. Five of the 20 areas.</p>
-<p><strong>Off</strong>, all fifteen of them: the writing tools behind
+text size. Five of the 21 areas.</p>
+<p><strong>Off</strong>, all sixteen of them: the writing tools behind
 the formatting. No line tools (Edit ▸ Lines) and no Change Case, no
 clipboard history or Copy Tray, no bookmarks, no abbreviations, no
 Selection submenu, no Matches list, no Back and Forward, no Command
 Palette, no Go To Anything, no Describe Character, no dictation, no
-autocorrect, no backups, <strong>no Markdown or HTML</strong> (Ctrl+B in
-a <code>.md</code> goes back to meaning rich text and saying so), and
+dictionary or thesaurus (WordPad never had one), no autocorrect, no
+backups, <strong>no Markdown or HTML</strong> (Ctrl+B in a
+<code>.md</code> goes back to meaning rich text and saying so), and
 <strong>no AI help</strong>.</p>
 <p><strong>Ctrl+N makes a rich text document.</strong> That is the half
 of this name a list of menus cannot say, and it is why choosing WordPad
@@ -3356,15 +3581,15 @@ simplification.</p>
 to look like something.</p>
 <h4 id="notepad">Notepad</h4>
 <p><strong>The smallest QUILL Lite gets</strong>, and the one most
-people arriving here are replacing something with. Two of the 20 areas:
+people arriving here are replacing something with. Two of the 21 areas:
 <strong>printing</strong> and <strong>text size</strong>.</p>
-<p><strong>Off</strong>, all eighteen of them: the Format menu and
+<p><strong>Off</strong>, all nineteen of them: the Format menu and
 everything under it, headings, Markdown and HTML, bookmarks, the line
 tools, Change Case, the clipboard history, abbreviations, the Selection
-submenu, spell check, Matches, Back and Forward, the Command Palette, Go
-To Anything, Describe Character, dictation, autocorrect, backups and AI
-help. Nothing Notepad does not have – which is the point of choosing
-it.</p>
+submenu, spell check, the dictionary and thesaurus, Matches, Back and
+Forward, the Command Palette, Go To Anything, Describe Character,
+dictation, autocorrect, backups and AI help. Nothing Notepad does not
+have – which is the point of choosing it.</p>
 <p><strong>Ctrl+N makes a plain text document</strong>, and the Save As
 dialog stops offering you formats you have turned off.</p>
 <p><strong>What stays that you might not expect</strong>, because
@@ -3394,7 +3619,7 @@ profile row filters them as you type. It matches what an area
 quotes” finds Autocorrect and typing “dictionary” finds Spell check. The
 line under the box says how many are left, and <strong>Down</strong>
 from the box moves straight into the list.</p>
-<h3 id="the-20-areas">The 20 areas</h3>
+<h3 id="the-21-areas">The 21 areas</h3>
 <table>
 <thead>
 <tr>
@@ -3447,6 +3672,12 @@ from the box moves straight into the list.</p>
 <tr>
 <td><strong>Spell check</strong></td>
 <td>Tools ▸ Spelling, and checking as you type</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Dictionary and thesaurus</strong></td>
+<td>Look Up, Thesaurus, Say Word Summary, and the two submenus on any
+word</td>
 <td>on</td>
 </tr>
 <tr>
@@ -4549,7 +4780,9 @@ agreement</strong> — both, not either. See <em>AI help</em> under
 Customize Features for the reason the switch and the agreement are two
 separate things, and for the three doors to the agreement.</p>
 <p>Once it is on, there is <strong>one pad</strong>, seventeen things it
-can do, and two keys into it.</p>
+can do, and two keys into it – and, under <strong>Tools ▸
+Dictionary</strong>, twelve questions about the word you are on, which
+have their own section (<em>Dictionary</em>, above).</p>
 <p><strong>AI Assistant</strong> (<strong>Ctrl+Alt+G</strong>) opens the
 pad where you are. <strong>Ask About This Document</strong>
 (<strong>Ctrl+Alt+Z</strong>) opens the same pad with <strong>Ask a
@@ -4932,65 +5165,88 @@ number the next time you open it.</p>
 <p>Your support ID is also on <strong>Help ▸ About</strong> and in
 <strong>Usage</strong>, with a <strong>Copy Support ID</strong> button,
 if you would rather write from somewhere else.</p>
-<h3 id="using-your-own-openai-key-no-limits">Using your own OpenAI key:
-no limits</h3>
-<p>If you have an OpenAI account, you can use <strong>your own
-key</strong> instead of QUILL’s free service, and <strong>every limit
-goes away</strong>: no monthly, daily or hourly allowance, no 2,250-word
-ceiling, no smaller first 48 hours.</p>
-<p><strong>Tools ▸ AI ▸ Use My Own OpenAI Key</strong>
+<h3 id="using-your-own-openai-or-google-gemini-key-no-limits">Using your
+own OpenAI or Google Gemini key: no limits</h3>
+<p>If you have an OpenAI account or a Google Gemini key, you can use
+<strong>your own key</strong> instead of QUILL’s free service, and
+<strong>every limit goes away</strong>: no monthly, daily or hourly
+allowance, no 2,250-word ceiling, no smaller first 48 hours.</p>
+<p><strong>Tools ▸ AI ▸ Use My Own AI Key</strong>
 (<strong>Alt+F2</strong>) opens one window:</p>
 <ol type="1">
+<li><strong>Provider</strong> — <strong>OpenAI</strong>, or
+<strong>Google Gemini</strong>. Everything below follows the choice:
+where your text goes, which key, which models and whose prices. AI help
+uses the key saved for the provider chosen here and never the other one;
+the choice is yours, saved with your settings
+(<code>ai_own_key_provider</code>), and QUILL never guesses it from a
+key or a model name.</li>
 <li><strong>About this</strong> — a read-only box saying exactly where
 your text goes. Arrow through it once.</li>
-<li><strong>OpenAI API key</strong> — paste your key here. You make one
-at platform.openai.com, under API keys. It starts with
-<code>sk-</code>.</li>
+<li><strong>API key</strong> — paste the key for the provider you chose.
+An OpenAI key comes from platform.openai.com, under API keys, and starts
+with <code>sk-</code>; a Gemini key comes from Google AI Studio at
+aistudio.google.com/apikey.</li>
 <li><strong>Model</strong> — a list of every model your key can use for
-text, filled from your OpenAI account once the key is checked:
-<strong>Luna 6 first, then the other GPT-6 models</strong>, then the
-rest by name. Each row says roughly what it costs, for example
-“gpt-6-luna, about $0.57 per 100 requests (estimate)”, so arrowing down
-the list is enough to compare them. Models that cannot answer text —
-speech, transcription, images, embeddings — are left out.</li>
+text, filled from your account once the key is checked: for OpenAI,
+<strong>Luna 6 first, then the other GPT-6 models</strong>; for Gemini,
+<strong>2.5 Flash first, then 2.5 Pro</strong>; then the rest by name.
+Each row says roughly what it costs, for example “gpt-6-luna, about
+$0.57 per 100 requests (estimate)”, so arrowing down the list is enough
+to compare them. Models that cannot answer text — speech, transcription,
+images, embeddings — are left out.</li>
 <li><strong>Cost estimate</strong> — the chosen model’s estimate per
-request and per 100 requests. <strong>These are estimates to help you
-compare, not OpenAI’s prices.</strong> A typical request here is about a
-page in and a paragraph back; the real prices are at
-openai.com/api/pricing.</li>
-<li><strong>Status</strong> — whether a key is saved, and what the last
-test said.</li>
-<li><strong>Test the Key</strong> — checks the key with OpenAI, fills
-the model list, then sends one tiny request to the chosen model and says
-whether it answered. The request costs a fraction of a cent.</li>
-<li><strong>Remove the Saved Key</strong> — forgets the key <strong>at
-once</strong> and puts AI help straight back on QUILL’s free
-service.</li>
+request and per 100 requests, at the chosen provider’s prices.
+<strong>These are estimates to help you compare, not the provider’s
+prices.</strong> A typical request here is about a page in and a
+paragraph back; the real prices are at openai.com/api/pricing and
+ai.google.dev/pricing.</li>
+<li><strong>Status</strong> — whether a key is saved for the chosen
+provider, what the last test said, and whether the other provider’s key
+is saved too.</li>
+<li><strong>Test the Key</strong> — checks the key with the provider you
+chose, fills the model list, then sends one tiny request to the chosen
+model and says whether it answered. The request costs a fraction of a
+cent.</li>
+<li><strong>Remove the Saved Key</strong> — forgets the chosen
+provider’s key <strong>at once</strong> and puts AI help straight back
+on QUILL’s free service.</li>
 </ol>
 <p>Press <strong>OK</strong> and the key is saved. QUILL Lite says “AI
-help uses your own OpenAI key, with no limits.”</p>
+help uses your own OpenAI key, with no limits” – or “your own Google
+Gemini key”.</p>
 <p><strong>Change the model at any time.</strong> With a key saved,
 opening this window lists your models straight away: press
 <strong>Alt+F2</strong>, pick another, press OK.</p>
-<p><strong>There is no separate switch.</strong> While a key is saved,
-AI help uses it; remove the key and AI help is back on the free service,
-with its free allowance, the moment you do. Nothing else to find and
-turn off.</p>
+<p><strong>There is no separate switch.</strong> While a key is saved
+for the chosen provider, AI help uses it; remove the key and AI help is
+back on the free service, with its free allowance, the moment you do.
+Nothing else to find and turn off.</p>
+<p><strong>Both keys can be saved.</strong> The Provider list decides
+which one runs. Choose OpenAI and a saved Gemini key is simply not used
+– the status line says it is there, and choosing Google Gemini is how it
+is used. Nothing is ever inferred from which key exists or from a
+model’s name, so a request never quietly goes to a company you did not
+choose.</p>
+<p><strong>With a Gemini key, Ask About an Image works too.</strong>
+Gemini’s models read pictures, which the free service and an OpenAI key
+here do not, so Ctrl+F5 answers on a Gemini key as it does on a ChatGPT
+subscription.</p>
 <p><strong>What changes with your own key:</strong></p>
 <ul>
-<li>Your text goes <strong>straight from this computer to
-OpenAI</strong>, on your account. Nothing passes through QUILL’s
-servers, so QUILL records nothing at all — not even the count it keeps
-for the free service.</li>
-<li><strong>OpenAI bills you</strong> for each request, under OpenAI’s
-own terms and privacy policy.</li>
+<li>Your text goes <strong>straight from this computer to the provider
+you chose</strong>, OpenAI or Google, on your account. Nothing passes
+through QUILL’s servers, so QUILL records nothing at all — not even the
+count it keeps for the free service.</li>
+<li><strong>OpenAI or Google bills you</strong> for each request, under
+that company’s own terms and privacy policy.</li>
 <li><strong>Usage</strong> (<strong>Ctrl+Alt+Shift+F9</strong>) opens a
 different window: which model is answering, that no allowance applies,
-and an <strong>Open My OpenAI Usage</strong> button that takes you to
-your OpenAI account’s usage page, which is where your requests and
-charges are. There is no Sign Out and no support ID in it, because
-neither applies. <strong>Help ▸ About</strong> likewise shows the model
-and that page’s address instead of the free allowance.</li>
+and an <strong>Open My Usage</strong> button that takes you to your
+OpenAI or Google AI Studio account’s usage page, which is where your
+requests and charges are. There is no Sign Out and no support ID in it,
+because neither applies. <strong>Help ▸ About</strong> likewise shows
+the model and that page’s address instead of the free allowance.</li>
 <li>You do not need to connect this computer, and the free service’s
 agreement is not asked for: it is about QUILL’s servers, which this
 route never touches.</li>
@@ -5015,9 +5271,10 @@ an encrypted file instead. QUILL and QUILL Lite share it: a key saved in
 either works in both, and removing it in either removes it from
 both.</p>
 <p><strong>If a request fails</strong>, you hear why, followed by error
-code <code>QUILL-AI-OWN-KEY-FAILED</code>. The usual causes are a
-mistyped key, a model your account cannot use, or an OpenAI account with
-no credit. <strong>Test the Key</strong> tells you which.</p>
+code <code>QUILL-AI-OWN-KEY-FAILED</code>, and the sentence names the
+provider. The usual causes are a mistyped key, a model your account
+cannot use, an account with no credit, or the wrong provider chosen for
+the key you saved. <strong>Test the Key</strong> tells you which.</p>
 <h3
 id="using-your-chatgpt-subscription-no-key-no-bill-and-two-things-the-free-service-cannot-do">Using
 your ChatGPT subscription: no key, no bill, and two things the free
@@ -6150,6 +6407,18 @@ list inside the app.</p>
 </thead>
 <tbody>
 <tr>
+<td><strong>Alt+F10</strong></td>
+<td>Look Up Word…</td>
+</tr>
+<tr>
+<td><strong>Shift+F7</strong></td>
+<td>Thesaurus…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+[</strong></td>
+<td>Say Word Summary</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+E</strong></td>
 <td>File Encoding and Line Endings…</td>
 </tr>
@@ -6233,6 +6502,10 @@ list inside the app.</p>
 <td>Check While Typing</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+;</strong></td>
+<td>Dictionary Status…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+F7</strong></td>
 <td>Announcements…</td>
 </tr>
@@ -6269,7 +6542,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+F2</strong></td>
-<td>Use My Own OpenAI Key…</td>
+<td>Use My Own AI Key…</td>
 </tr>
 <tr>
 <td><strong>Alt+F5</strong></td>
@@ -6282,6 +6555,69 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+F3</strong></td>
 <td>Tidy Dictated Text…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tools--dictionary">Tools ▸ Dictionary</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+’</strong></td>
+<td>Define in Context</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F10</strong></td>
+<td>Word Explorer…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+;</strong></td>
+<td>Synonyms That Fit</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+-</strong></td>
+<td>Simpler Word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+=</strong></td>
+<td>More Formal Word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+’</strong></td>
+<td>More Vivid Word</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+-</strong></td>
+<td>Opposites</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+/</strong></td>
+<td>Is This the Right Word?</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+=</strong></td>
+<td>Use It in a Sentence</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+,</strong></td>
+<td>Where It Comes From</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+’</strong></td>
+<td>How to Say It</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+;</strong></td>
+<td>Rhymes</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+]</strong></td>
+<td>Find the Word For…</td>
 </tr>
 </tbody>
 </table>
@@ -6423,6 +6759,14 @@ list inside the app.</p>
 <td>Keyboard Shortcuts</td>
 </tr>
 <tr>
+<td><strong>Shift+F9</strong></td>
+<td>Activity…</td>
+</tr>
+<tr>
+<td><strong>F9</strong></td>
+<td>Repeat Last Result</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+F2</strong></td>
 <td>Get Help from Support…</td>
 </tr>
@@ -6508,6 +6852,38 @@ are the keys your fingers know, and they are listed above as
 the same physical key and the spelling wx understands.</p>
 <!-- keys:end -->
 
+<h2 id="activity-and-repeat-last-result">Activity and Repeat Last
+Result</h2>
+<p><strong>Help &gt; Activity…</strong> (Shift+F9) lists everything
+QUILL Lite reported in this session – a settings file that could not be
+written, a save that worked after an earlier failure, background work
+that finished after you closed the window that started it – newest
+first, one sentence per row: whether it worked, what it was, and when.
+Enter on a row takes its first action; the buttons say what the selected
+row offers and are dimmed otherwise.</p>
+<ul>
+<li><strong>Retry</strong> does the action again the same way. For a
+settings file that could not be saved, that is the save itself, so a
+full disk you have since cleared is one keystroke from fixed.</li>
+<li><strong>Open Folder</strong> opens the folder in File Explorer with
+the file selected, so you can see whether the disk is full or the folder
+is read only.</li>
+<li><strong>Copy Details</strong> copies the selected result as text,
+for a support message. <strong>Clear List</strong> empties the list for
+this session.</li>
+</ul>
+<p><strong>Help &gt; Repeat Last Result</strong> (F9) says the newest
+result that mattered again – the last thing QUILL Lite itself told you,
+not the last thing your screen reader read – and names what Activity
+offers for it. With nothing yet, it says so.</p>
+<p>Every document window shares one list, so a save that failed while
+you were in another document is in every window’s Activity. Nothing in
+the list leaves this computer, and no document text is ever in it.</p>
+<p><strong>When a settings file cannot be saved.</strong> QUILL Lite
+says so once and keeps your changes for the session. The Activity row
+carries Retry and Open Folder, and when a later save of the same file
+works, that is said too, so a failure you were told about is never left
+standing.</p>
 <h2 id="getting-help">Getting help</h2>
 <h3 id="if-quill-lite-does-not-start">If QUILL Lite does not start</h3>
 <p><code>QuillLite.exe</code> never fails silently. If the app’s engine

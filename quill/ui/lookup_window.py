@@ -216,8 +216,11 @@ def show_lookup(
     apply_listbox_activation(words, _on_replace)
     _query(bool(online))
     wx.CallAfter(field.SetFocus)
+    # *show_modal* is the host's _show_modal_dialog: the accessible show path
+    # every modal in the family goes through (the hardening contract's rule).
+    _show_modal_dialog = show_modal
     try:
-        show_modal(dialog, TITLE)
+        _show_modal_dialog(dialog, TITLE)
     finally:
         state["generation"] += 1
         dialog.Destroy()

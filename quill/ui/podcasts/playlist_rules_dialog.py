@@ -21,7 +21,7 @@ _SORT_LABELS = (
     "Title A-Z",
     "Longest first",
     "Shortest first",
-    "Unplayed first",
+    "Unheard first",
 )
 
 

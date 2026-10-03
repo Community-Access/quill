@@ -227,8 +227,11 @@ def test_standalone_cast_falls_back_to_its_own_history_record() -> None:
 def test_standalone_cast_offers_the_setting_in_preferences() -> None:
     # Preferences moved to its own mixin on 2026-10-01 (GATE-11 extraction).
     source = (REPO / "quill" / "apps" / "podcasts_preferences.py").read_text(encoding="utf-8")
-    assert "history.podcast_check_enabled" in source
-    assert "history.podcast_check_interval_minutes" in source
+    # Preferences became eight sections on 2026-10-02 (qc.md 13); the switch and
+    # the heartbeat are app rows in Fetching, written back by name.
+    assert '"podcast_check_enabled"' in source
+    assert '"podcast_check_interval_minutes"' in source
+    assert "setattr(history, key, value)" in source
     # Re-applied on save, so a cadence you just chose is the one that is
     # running -- not the one that will be running after the next launch.
     assert "monitor.apply()" in source

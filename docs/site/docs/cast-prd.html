@@ -2101,6 +2101,262 @@ F-09’s index exists. <code>podcasts_view_menu.py</code> joined the app
 menu-accelerator gate, whose first run gave Customize Features Radio’s
 Ctrl+Alt+C.</p>
 <h3
+id="2316-phase-5-one-vocabulary-two-settings-windows-refresh-schedules-2026-10-02">23.16
+Phase 5: one vocabulary, two settings windows, refresh schedules
+(2026-10-02)</h3>
+<p><strong>Words</strong> (section 12):
+<code>core/podcasts/words.py</code> is the list (forbidden word -&gt;
+the word to use) and the allowed phrases that carry a format’s own name;
+<code>quill/tools/cast_words_audit.py</code> (GATE-CAST-WORDS, on the
+<code>platform_report</code> roster) walks every non-docstring literal
+of two or more words in <code>quill/ui/podcasts</code> and
+<code>quill/apps/podcasts*.py</code>. The sweep fixed 39 literals; nine
+remain in the reviewed allowlist
+(<code>tests/unit/ui/fixtures/cast_words_allowlist.json</code>), all in
+QUILL’s Podcast Manager and Search Everywhere, which Cast never opens,
+each with its reason. An entry with no reason fails, as does a stale
+one.</p>
+<p><strong>Settings</strong> (section 13):
+<code>ui/podcasts/preferences_window.py</code> is a Section choice over
+a scrolling panel rebuilt per section. App rows are the table in
+<code>apps/podcasts_preferences.app_rows</code> (history-backed); shared
+defaults are the catalogue at <code>LEVEL_GLOBAL</code>, placed by
+<code>section_of</code> (by id, by prefix, else by category), built by
+kind with the definition’s own help, and written with
+<code>set_value</code> only when changed – so a new default needs a
+definition and nothing in the window. <code>default_launch_view</code>
+is offered as the places (<code>launch_place.CHOICES</code>, appended so
+stored values keep meaning); <code>refresh_schedule</code> is a button
+that opens the schedule dialog. Podcast Settings and Skip Settings open
+Preferences on Fetching and Playing; the menu row is Settings for This
+Podcast (Ctrl+Alt+,) on the selection.</p>
+<p><strong>Schedules</strong> (5e):
+<code>core/podcasts/refresh_schedule.py</code> is pure –
+<code>Schedule</code> with five kinds, JSON
+<code>encode</code>/<code>decode</code>, <code>from_legacy</code>,
+<code>describe</code>, <code>learn</code> (the usual weekday and hour of
+the newest twelve, three agreeing within an hour),
+<code>parse_hint</code>
+(<code>sy:updatePeriod</code>/<code>updateFrequency</code>,
+<code>podcast:updateFrequency</code> rrule) and
+<code>next_due(schedule, now, last_checked, *, published, hint)</code>,
+tested against a fixed clock. <code>settings_defs_fetching.py</code>
+adds <code>refresh_schedule</code>, <code>check_on_launch</code>,
+<code>check_on_resume</code>, <code>check_in_quiet_hours</code>,
+<code>check_burst_after_miss</code> at every level, stored by id.
+<code>schedule_policy.py</code> resolves them: an empty schedule at
+every level falls back to <code>refresh_minutes</code> (the migration –
+nothing rewritten, nothing changed on upgrade), <code>next_check</code>,
+<code>is_due</code>, <code>describe_for</code>,
+<code>next_check_words</code>, and <code>summary</code> for Preferences.
+The feed reader carries the hint as
+<code>FeedInfo.hint_minutes/hint_words</code>;
+<code>check_state.record_hint</code> keeps it beside the success stamp.
+<code>PodcastCheckMonitor._show_is_due</code> asks
+<code>schedule_policy</code>, honouring Quiet Hours unless
+<code>check_in_quiet_hours</code>. Feed Check gains Schedule and Next
+check columns and Check Now / Change Schedule rows;
+<code>ui/podcasts/schedule_dialog.py</code> is the dialog, its kind rows
+shown per kind, confirming in <code>describe</code>’s words.</p>
+<p>At launch, <code>CastPlaceRoutesMixin._check_at_launch</code> checks
+each podcast whose <em>Check when Cast opens</em> is on, and – with the
+automatic check on – each whose schedule fell due while Cast was closed
+(<em>Catch up on a missed check</em>). <em>Check when the computer
+wakes</em> binds <code>wx.EVT_POWER_RESUME</code> on the frame
+(<code>_watch_power_resume</code>) and checks each podcast whose switch
+is on, once.</p>
+<h3 id="2315-phase-2-one-window-2026-10-02">23.15 Phase 2: one window
+(2026-10-02)</h3>
+<p>The main window is <code>CastMainPanelMixin._build_main_panel</code>:
+Now Playing (a read-only bold field), Find, <code>PlacesList</code>
+(<code>ui/podcasts/places_list.py</code>) beside
+<code>ContentPane</code> (<code>content_pane.py</code>: a heading and a
+Simplebook with the report list and the folder tree, carrying Radio’s
+Tab-across-Simplebook fix), the Notes reader, the button row and the
+status bar. <code>core/podcasts/places.py</code> is the model: eleven
+places with kind, area and empty sentence; <code>PlacesLayout</code>
+(order and hidden, <code>places_layout</code> on
+<code>PodcastSettings</code>, Recently Expired hidden by default),
+<code>move</code> (skipping hidden rows), <code>move_sentence</code>,
+<code>label</code>, <code>count</code>, <code>empty_state</code>.
+<code>ui/podcasts/places_host.py</code> is the one verb,
+<code>show_place</code>, used by every route – Places, View rows, Go To,
+status cells, a notice’s Enter, the old openers
+(<code>apps/podcasts_routes.py</code> answers
+<code>open_podcast_manager</code>, <code>_open_play_queue</code>,
+<code>open_podcast_downloads</code>,
+<code>open_continue_listening</code> with places, ahead of
+<code>PodcastsMixin</code>). Delete in a list removes from the place
+only, per place.</p>
+<p>The Manager’s verbs moved to
+<code>ui/podcasts/manager_verbs.py</code>
+(<code>ManagerVerbsMixin</code>, 38 methods) and are shared by QUILL’s
+Podcast Manager and Cast’s frame;
+<code>ui/podcasts/episode_list.py</code>
+(<code>CastEpisodeListMixin</code>) gives the frame the Manager-shaped
+names (<code>_library</code>, <code>_controller</code>,
+<code>_episodes</code>, <code>_current_episodes</code>,
+<code>refresh_tree</code>, <code>dialog</code>…) so
+<code>ManagerActionsMixin</code>, <code>ManagerDownloadsMixin</code>,
+<code>ManagerRowViewMixin</code> and <code>ManagerExpiredMixin</code>
+run on the frame unchanged. Rows are filled by column id, which fixed
+the Manager’s cross-show fill writing by position. The selection
+contract (<code>_selected_tree_data</code>, <code>_selected_show</code>,
+<code>_selected_episode</code>) reads whichever pane is up, so the
+tree’s context menus, the button row, the Winamp letters and the notes
+pane follow both. <code>manager_dialog.py</code> stays for QUILL’s
+editor, which still opens it; Cast has no door to it.</p>
+<p>Notifications (5b): <code>core/podcasts/notices.py</code> – six kinds
+as the notice <code>category</code>, a <code>notify_&lt;kind&gt;</code>
+switch each on <code>PodcastHistory</code>, <code>record</code>, and
+<code>digest</code> (one sentence since <code>last_seen_at</code>,
+stamped at shutdown). Cast’s feed refresh writes new-episode,
+feed-failed and gone-quiet notices; a finished download writes one and
+the toast honours <code>toasts_enabled</code>.
+<code>ui/podcasts/notifications_window.py</code> is a peer (Window menu,
+Close Ctrl+W, hidden on close) with Play Now, Add to Queue, Go to the
+Podcast, Mark Read. The status bar gains a Notifications cell between
+Downloads and the sleep timer, and <code>support_menu</code> now keeps
+its Notifications id.</p>
+<p>Feature switches (17): <code>core/podcasts/cast_features.py</code> –
+47 <code>AppArea</code>s in eight groups (the eight original ids kept),
+<code>COMMAND_AREAS</code> mapping every id Cast registers or binds, and
+three <code>PROFILES</code>. Places, menu rows (<code>_area_row</code>),
+status cells (<code>CastStatusBar._build_specs</code> filters by
+<code>_cell_enabled</code>) and Go To (<code>DESTINATION_AREAS</code>)
+follow; the palette shows “(off in Customize Features)” through the
+frame’s availability probe and
+<code>palette._unavailable_suffix</code>.</p>
+<p>Not yet built from Phase 2: the episode-state filter is one View &gt;
+Show setting but not yet per place; folder tree reorder of places via
+the tree; the transcripts in Find (F-09).</p>
+<h3
+id="2314-ai-help-the-shared-hosted-ai-through-an-adapter-earmd-a1-a11-a12-2026-10-02">23.14
+AI help: the shared hosted AI through an adapter (ear.md A1, A11, A12;
+2026-10-02)</h3>
+<p><code>quill/ui/podcasts/cast_ai_host.py</code> is what QUILL got when
+the hosted AI came to the big editor: <code>CastAiHost</code> answers
+the five things <code>hosted_ai_commands</code> asks of “the app” (a
+data dir, settings it can read and write, a feature switch, a menu
+rebuild, <code>ai_agent_name = "QUILL Cast"</code>), and
+<code>CastAiMixin(HostedAiMixin)</code> is hooks only –
+<code>_ai_parent</code>, <code>_ai_control</code> (the Notes reader’s
+field under the library tree), <code>_ai_host</code>,
+<code>_ai_switch_route</code>, and <code>_replace_range</code> /
+<code>_insert_below</code> which announce that the notes cannot be
+changed here and name Copy. A test asserts the mixin has no
+<code>cmd_*</code> of its own, the way
+<code>test_main_frame_hosted_ai.py</code> does for QUILL, because a
+second implementation is how the family rule gets broken quietly. “The
+settings” are the <code>PodcastHistory</code> record:
+<code>ai_help_enabled</code> (off),
+<code>ai_privacy_accepted_version</code>,
+<code>ai_own_key_provider</code>, <code>ai_own_key_model</code>, all
+round-tripped. The switch is <strong>AI help</strong> in Preferences,
+with the sending named in the label; the agreement is the shared one,
+and both are needed. Help &gt; <strong>AI Features</strong> holds the
+family’s rows on the family’s chords (<code>APP_KEYMAPS["cast"]</code>),
+the one divergence commented: Privacy Agreement is Alt+Shift+F2 because
+Ctrl+Alt+Shift+K is the Keyboard Shortcuts Sheet. The rows register with
+the command registry, so the Command Palette and the Keyboard Manager
+see them. The user guide’s “AI help: what the AI can do, and what it
+will never do” is A12’s section.</p>
+<p><strong>One ChatGPT sign-in per app</strong>
+(<code>quill/core/ai/chatgpt_state.py</code>, split from
+<code>chatgpt_account.py</code> under GATE-11). Every app shares
+<code>app_data_dir()</code>, and one <code>ai/chatgpt.json</code> meant
+the second app to sign in overwrote the first’s client id and model
+while each kept its own refresh token under its own slug – an app that
+believed it was signed in and could not refresh. The state is now
+<code>ai/chatgpt-&lt;slug&gt;.json</code>, the legacy file is read until
+the app writes its own, each record carries <code>agent_name</code>, and
+<code>sibling_sign_ins</code> reports the other apps signed in by name;
+the account window’s signed-out status says so, because a browser that
+is already signed in makes Continue one Allow.</p>
+<h3
+id="2313-now-playing-the-notes-reader-and-links-in-these-notes-section-5-and-5c-2026-10-02">23.13
+Now Playing, the Notes reader and Links in These Notes (section 5 and
+5c, 2026-10-02)</h3>
+<p><code>quill/ui/podcasts/now_playing_window.py</code> is window 2:
+<code>NowPlayingWindow</code> over the host’s controller, library,
+chapter list and sleep-timer controller, with its controls built in
+<code>now_playing_layout.py</code> (GATE-11) in the order a screen
+reader meets them, every label created immediately before the control it
+names and every control’s help inline (GATE-CAST-HELP).
+<code>CastNowPlayingMixin</code>
+(<code>apps/podcasts_now_playing.py</code>) makes it at start-up,
+hidden, and registers it with the <code>WindowManager</code> so it is
+always Ctrl+2; closing vetoes and hides, which keeps the number and
+stops the once-a-second <code>wx.Timer</code> (the timer-ownership gate
+sees the stop). The Episode menu row (<code>podcasts.now_playing</code>,
+Ctrl+Alt+2 in <code>APP_KEYMAPS</code>) and the Play cell’s first row
+open it; <code>_on_podcast_state_changed</code> is overridden to refresh
+an open window and, when
+<code>PodcastHistory.switch_to_now_playing</code> is on, to show it once
+per episode as playback starts.</p>
+<p>Three rules in the window are load-bearing: the slider is never
+written while it has focus or is being dragged (a value written under a
+focused slider is a value the reader repeats), so only the time readout
+moves each second; the chapters’ <em>playing</em> mark is a
+Status-column write and never a selection change; and the window
+announces nothing on show – the slider’s own key handler says the time,
+the chapter jump says the chapter, and the rest is the host’s own verbs
+(<code>podcast_toggle_play_pause</code>,
+<code>open_sleep_timer_dialog</code>,
+<code>podcast_mark_played_and_next</code>, <code>share_moment</code>,
+<code>open_podcast_episode_extras</code>), so a sentence is never worded
+twice. Speed goes through <code>speed.apply_speed</code> (scope and
+all); Custom… is a <code>TextEntryDialog</code>.</p>
+<p><strong>Your note</strong> is one <code>EpisodeNote</code> per
+episode at position 0 under an id that starts <code>about:</code>
+(<code>episode_notes.episode_level_note</code> /
+<code>set_episode_level_note</code>), so every existing list and jump
+treats it as a note at the start and the field can find it again; empty
+text removes it.</p>
+<p><strong>The Notes reader</strong>
+(<code>quill/ui/notes_reader.py</code>) is a native
+<code>TE_RICH2</code> read-only field over
+<code>core/podcasts/notes_render.py</code>, which parses the HTML into
+blocks (heading with level, paragraph, list item, preformatted) and
+absolute-offset spans for links and timestamps (<code>h:mm:ss</code> or
+<code>m:ss</code>, a span inside a link belongs to the link). Styles are
+applied by range; Tab, Shift+Tab, Enter, H, Shift+H, Ctrl+F and F3 are
+handled in the field’s <code>EVT_CHAR_HOOK</code>.
+<code>core/podcasts/notes_export.py</code> is the one place the four
+copy formats live (plain, plain with links, Markdown, formatted = HTML
+on the clipboard with an RTF object and a text object beside it), with a
+test per format, and <code>browser_page</code> is the podcast’s own HTML
+with scripts, styles, frames and event handlers removed.
+<code>PodcastHistory.notes_copy_format</code> keeps the chosen format.
+<code>link_list_dialog.py</code> gained Copy Title and Address and the
+spec’s names; the reader passes it the unique links with their
+titles.</p>
+<p><strong>Outside Now Playing (later the same day, Jeff: “if you arrow
+to a podcast episode and hit tab shouldn’t the show notes show
+there”).</strong> The main window gets a <code>NotesReader</code> under
+the library tree (<code>main_panel.py</code>:
+<code>_refresh_notes_pane</code> on <code>EVT_TREE_SEL_CHANGED</code>;
+an episode’s notes, a show’s description, else a placeholder;
+<code>_seek_selected_episode</code> seeks the playing episode or starts
+the selected one at the timestamp through
+<code>start_episode_playback(resume_ms=)</code>), with this window’s own
+access keys (O, C, K, R – N and L are Find and Library).
+<code>ShowNotesDialog</code> is rewritten over the reader (Send to
+Editor and Save As kept; the View-as choice and the
+<code>HtmlWindow</code> are gone, and with them the rich-label test),
+and the Manager’s <code>view_show_notes</code> hands it a seek that
+works while that episode is playing and says what to do otherwise. The
+reader gained <code>labels=</code> and <code>set_placeholder</code>.</p>
+<p>Tests:
+<code>tests/unit/core/podcasts/test_cast_notes_render.py</code> (the
+renderer, the four formats, the browser page, the episode-level note,
+the two history fields) and
+<code>tests/unit/ui/podcasts/test_now_playing_window.py</code> (a real
+<code>wx.App</code>, a fake host: loading, the hidden-not-destroyed
+close, the slider keys, every button’s verb, the chapter mark, Your
+note, the copy format, the sleep readout, speed, volume, favorites; and
+the reader’s Tab, H, find, timestamp and empty cases).</p>
+<h3
 id="2312-closing-keeps-a-record-of-what-it-could-not-save-f-06-2026-10-01">23.12
 Closing keeps a record of what it could not save (F-06, 2026-10-01)</h3>
 <p><code>_cast_shutdown</code> runs each step through
@@ -2121,9 +2377,11 @@ Preferences, extracted, with a launch place (2026-10-01)</h3>
 The window gained “Where to land on la&amp;unch:” in the Podcasts group,
 over <code>core/podcasts/launch_place.CHOICES</code>, saved to
 <code>PodcastSettings.default_launch_view</code> with the library and
-only when it changed. The planned “Switch to Now Playing when playback
-starts” is deliberately absent until Now Playing exists: a switch for a
-surface that is not there is a setting that lies.</p>
+only when it changed. “Switch to Now Playing when playback starts”
+landed with Now Playing on 2026-10-02 (23.13). The planned “Switch to
+Now Playing when playback starts” is deliberately absent until Now
+Playing exists: a switch for a surface that is not there is a setting
+that lies.</p>
 <h3 id="2310-the-object-is-in-the-label-2026-10-01">23.10 The object is
 in the label (2026-10-01)</h3>
 <p>The same rule renamed the per-setting revert button in Settings for

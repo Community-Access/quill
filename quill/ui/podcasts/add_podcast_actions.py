@@ -53,8 +53,9 @@ __all__ = [
 #: against every other mnemonic in the window (Search, Preview, Add, Import
 #: OPML, Podcast name, Feed address, Directory), so neither collides -- GATE-14,
 #: where a duplicate advertises a key that may silently not work.
-FOLLOW_LABEL = "&Follow"
-UNFOLLOW_LABEL = "Un&follow"
+# Alt+O, not Alt+F: the Add Podcast window's "&Feed address:" owns F (GATE-14).
+FOLLOW_LABEL = "F&ollow"
+UNFOLLOW_LABEL = "Unf&ollow"
 
 
 def already_following(library: Any, feed_url: str) -> Any:

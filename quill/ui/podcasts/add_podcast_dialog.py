@@ -81,7 +81,7 @@ class AddPodcastDialog:
         self.dialog.SetMinSize((640, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        search_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "Search a Podcast Directory")
+        search_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "Find a Podcast in a Directory")
         source_row = wx.BoxSizer(wx.HORIZONTAL)
         source_row.Add(
             wx.StaticText(self.dialog, label="&Directory:"),
@@ -93,9 +93,9 @@ class AddPodcastDialog:
             self.dialog, choices=[label for _sid, label in directory_search.SOURCE_LABELS]
         )
         self._source_choice.SetName(
-            "Which directory to search. iTunes needs nothing. Podcast Index "
+            "Which directory to look in. iTunes needs nothing. Podcast Index "
             "carries the extra Podcasting 2.0 information -- chapters, "
-            "transcripts -- and needs a key you add in Podcast Settings."
+            "transcripts -- and needs a key you add with Podcast Index Credentials."
         )
         self._source_choice.SetSelection(self._source_index())
         source_row.Add(self._source_choice, 1, wx.ALL | wx.EXPAND, 6)
@@ -115,15 +115,15 @@ class AddPodcastDialog:
             6,
         )
         self._query_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
-        self._query_ctrl.SetName("Podcast name to search for")
+        self._query_ctrl.SetName("Podcast name to find")
         self._query_ctrl.SetHelpText(
-            "Type part of a podcast's name and press Enter, or choose Search. "
-            "The chosen directory is searched, and nothing is subscribed to "
+            "Type part of a podcast's name and press Enter, or choose Find Podcasts. "
+            "The chosen directory is searched, and nothing is followed to "
             "until you say so."
         )
         query_row.Add(self._query_ctrl, 1, wx.ALL | wx.EXPAND, 6)
-        self._search_btn = wx.Button(self.dialog, label="&Search")
-        self._search_btn.SetName("Search the chosen directory for podcasts matching this name")
+        self._search_btn = wx.Button(self.dialog, label="Find Podcast&s")
+        self._search_btn.SetName("Finds podcasts matching this name in the chosen directory")
         query_row.Add(self._search_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         search_box.Add(query_row, 0, wx.EXPAND)
         root.Add(search_box, 0, wx.EXPAND | wx.ALL, 10)
@@ -132,7 +132,7 @@ class AddPodcastDialog:
         # heading created immediately before it, because the association is by
         # creation order and not by sizer position. "Search results" was only a
         # SetName, which wxMSW never hands to the reader.
-        root.Add(wx.StaticText(self.dialog, label="Search &results:"), 0, wx.LEFT | wx.RIGHT, 10)
+        root.Add(wx.StaticText(self.dialog, label="&Results:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetHelpText(
             "Podcasts the chosen directory matched. Enter previews the one you "
@@ -235,7 +235,7 @@ class AddPodcastDialog:
         self._subscribe_btn.Enable(False)
         self._refresh_follow_button()
         self._status.SetLabel("")
-        self._announce("Search cleared.")
+        self._announce("Find cleared.")
 
     def show(self) -> None:
         self.dialog.CentreOnParent()
@@ -252,11 +252,11 @@ class AddPodcastDialog:
 
     def _on_search(self, _event: object) -> None:
         if self._safe_mode:
-            self._status.SetLabel("Podcast search is disabled in Safe Mode.")
+            self._status.SetLabel("Finding podcasts is disabled in Safe Mode.")
             return
         query = self._query_ctrl.GetValue().strip()
         if not query:
-            self._status.SetLabel("Type a podcast name to search for.")
+            self._status.SetLabel("Type a podcast name to find.")
             return
         source = directory_search.SOURCES[self._source_choice.GetSelection()]
         self._status.SetLabel("Searching...")
@@ -288,7 +288,7 @@ class AddPodcastDialog:
     ) -> None:
         self._search_btn.Enable(True)
         if error is not None or found is None:
-            self._status.SetLabel(f"Search failed: {error}")
+            self._status.SetLabel(f"Find failed: {error}")
             return
         from quill.ui.podcasts.add_podcast_actions import following_cell
 
@@ -471,7 +471,7 @@ class AddPodcastDialog:
         """Name the show you already follow, and go to it if we can (11.6).
 
         The status label alone was not enough: a StaticText that changes is
-        silent to a screen reader, so "You're already subscribed to that feed"
+        silent to a screen reader, so "You're already followed to that feed"
         was, in practice, nothing happening. It is announced now, it names the
         show rather than "that feed", and where the Podcast Manager is open
         behind this dialog the cursor lands on the row you already have.
@@ -495,7 +495,7 @@ class AddPodcastDialog:
 
         Only applies to the iTunes-search path (``result_index`` set); the
         Add-by-Feed-URL path leaves focus alone so the URL box stays put. The
-        just-subscribed row is re-selected and focused so a screen-reader user
+        just-followed row is re-selected and focused so a screen-reader user
         can keep arrowing through results without hunting for the list again.
         """
         if result_index is None:

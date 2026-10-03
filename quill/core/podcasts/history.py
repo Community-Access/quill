@@ -126,6 +126,20 @@ class PodcastHistory:
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""
     ai_own_key_provider: str = "openai"
+    #: View > Show: the one episode filter, applied to every list (qc.md 4.2).
+    episode_filter: str = "all"
+    #: The six notice kinds (core/podcasts/notices.py), each its own switch,
+    #: all on; the digest on launch; the desktop toasts; when Cast was last
+    #: open, which is what the digest counts from.
+    notify_new_episode: bool = True
+    notify_feed_failed: bool = True
+    notify_gone_quiet: bool = True
+    notify_download_finished: bool = True
+    notify_sleep_last_minute: bool = True
+    notify_import_finished: bool = True
+    launch_digest: bool = True
+    toasts_enabled: bool = True
+    last_seen_at: str = ""
     #: Look for new episodes on a timer. Named exactly as
     #: :class:`quill.core.settings.Settings` names them, because
     #: ``PodcastCheckMonitor`` reads its settings object duck-typed: inside
@@ -188,6 +202,18 @@ class PodcastHistory:
     @property
     def last_played(self) -> PlayedEpisode | None:
         return self.episodes[0] if self.episodes else None
+
+
+_SWITCHES: tuple[str, ...] = (
+    "notify_new_episode",
+    "notify_feed_failed",
+    "notify_gone_quiet",
+    "notify_download_finished",
+    "notify_sleep_last_minute",
+    "notify_import_finished",
+    "launch_digest",
+    "toasts_enabled",
+)
 
 
 def _coerce_close_action(value: object) -> str:
@@ -260,6 +286,10 @@ def load_history(data_dir: Path) -> PodcastHistory:
         except (TypeError, ValueError):
             history.ai_privacy_accepted_version = 0
         history.ai_own_key_model = str(raw.get("ai_own_key_model", "") or "")
+        history.episode_filter = str(raw.get("episode_filter", "all") or "all")
+        for switch in _SWITCHES:
+            setattr(history, switch, bool(raw.get(switch, True)))
+        history.last_seen_at = str(raw.get("last_seen_at", "") or "")
         from quill.core.ai.own_key import normalize_provider
 
         history.ai_own_key_provider = normalize_provider(raw.get("ai_own_key_provider"))
@@ -307,6 +337,9 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
                 "ai_privacy_accepted_version": history.ai_privacy_accepted_version,
                 "ai_own_key_model": history.ai_own_key_model,
                 "ai_own_key_provider": history.ai_own_key_provider,
+                "episode_filter": history.episode_filter,
+                **{switch: getattr(history, switch, True) for switch in _SWITCHES},
+                "last_seen_at": history.last_seen_at,
                 # transcript_detail was read by load_history and missing from this
                 # list, so it has never persisted: a listener chose how much
                 # scaffolding an exported transcript keeps and the next launch forgot.

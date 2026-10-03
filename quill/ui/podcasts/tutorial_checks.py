@@ -17,7 +17,7 @@ from typing import Any
 _CHECKS: dict[str, str] = {
     "playing": "something is playing now",
     "paused": "it is paused",
-    "subscriptions-grew": "you have a new subscription",
+    "subscriptions-grew": "you follow a new podcast",
     "queue-grew": "the play queue grew",
     # The per-podcast settings work gave three more things a lesson can watch
     # for. All three are library facts rather than window facts, which is what

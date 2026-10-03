@@ -82,7 +82,7 @@ class OpmlImportDialog:
             self.dialog, label="&Check that each feed is still reachable after importing"
         )
         self._check_feeds.SetName(
-            "Makes one request per feed to find dead subscriptions. Slower on a "
+            "Makes one request per feed to find dead feeds. Slower on a "
             "large file, can be cancelled, and produces a report you can use to "
             "prune the OPML file."
         )
@@ -191,7 +191,7 @@ class OpmlImportDialog:
         self._on_library_changed()
         summary = (
             f"Imported {added} podcast(s). {len(plan.duplicates_in_library)} already "
-            f"subscribed, {len(plan.duplicates_in_file)} listed twice in the file, "
+            f"followed, {len(plan.duplicates_in_file)} listed twice in the file, "
             f"{len(plan.unusable)} unusable."
         )
         self._set_status(summary)

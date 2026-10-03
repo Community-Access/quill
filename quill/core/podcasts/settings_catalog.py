@@ -32,6 +32,7 @@ from functools import lru_cache
 
 from quill.core.podcasts import (
     row_speech,
+    settings_defs_fetching,
     settings_defs_library,
     settings_defs_playback,
     settings_defs_show,
@@ -52,6 +53,7 @@ from quill.core.podcasts.subscriptions import PodcastLibrary
 CATALOG: tuple[SettingDef, ...] = (
     *settings_defs_playback.SETTINGS,
     *settings_defs_library.SETTINGS,
+    *settings_defs_fetching.SETTINGS,
     *row_speech.SETTINGS,
     *settings_defs_show.SETTINGS,
 )

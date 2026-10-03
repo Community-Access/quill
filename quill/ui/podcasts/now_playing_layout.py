@@ -15,6 +15,7 @@ from typing import Any
 import wx
 
 from quill.ui.notes_reader import NotesReader
+from quill.ui.slider_keys import bind_up_means_more
 
 __all__ = ["SPEEDS", "TITLE", "build_controls"]
 
@@ -94,6 +95,7 @@ def build_controls(self: Any, host: Any) -> None:
     wx.StaticText(panel, label="Volume:")
     volume_caption = panel.GetChildren()[-1]
     self._volume = wx.Slider(panel, value=100, minValue=0, maxValue=100)
+    bind_up_means_more(self._volume)  # Up is louder, the family rule
     self._volume.SetHelpText("Playback volume, from silent to full. Arrow keys change it.")
     self._mute = _button(
         panel, "&Mute", "Silences playback without stopping it; press again to unmute."

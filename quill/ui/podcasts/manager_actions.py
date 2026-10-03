@@ -282,7 +282,7 @@ class ManagerActionsMixin:
             self._announce(f"Every episode of {show.title} is already played.")
             return
         answer = show_message_box(
-            f"Mark all {len(unplayed)} unplayed episode(s) of {show.title} as played? "
+            f"Mark all {len(unplayed)} unheard episode(s) of {show.title} as played? "
             "They stay in your library; downloaded files are not deleted.",
             "Mark All as Played",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
@@ -319,7 +319,7 @@ class ManagerActionsMixin:
         undo_last_ui.remember(
             "Mark All as Played",
             show.title,
-            f"{len(unplayed)} unplayed episode(s)"
+            f"{len(unplayed)} unheard episode(s)"
             + (f" and {len(held)} downloaded file(s)" if held else ""),
             _undo,
             dispose=lambda: undo_last_ui.discard(held),

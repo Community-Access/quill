@@ -87,6 +87,10 @@ class FeedInfo:
     #: its funding link, where it is about. Separate from the per-episode set
     #: because a guest belongs to one episode and a host belongs to the show.
     tags: NamespaceTags = field(default_factory=NamespaceTags)
+    #: What the feed declares about its own cadence (qc.md 5e): sy:updatePeriod
+    #: and sy:updateFrequency, or Podcasting 2.0 podcast:updateFrequency.
+    hint_minutes: int = 0
+    hint_words: str = ""
 
 
 def _basic_auth_header(username: str, password: str) -> str:
@@ -288,12 +292,17 @@ def parse_feed(raw_bytes: bytes) -> FeedInfo:
     # ...except live items, which are channel-level but may be written anywhere
     # among the episodes, so those are looked for across the whole feed.
     channel_tags.live_items = namespace_tags.parse_live_items(raw_text)
+    from quill.core.podcasts.refresh_schedule import parse_hint
+
+    hint = parse_hint(fragments[0] if fragments else "")
     return FeedInfo(
         title=title,
         homepage=homepage,
         artwork_url=artwork_url,
         episodes=episodes,
         tags=channel_tags,
+        hint_minutes=hint.minutes,
+        hint_words=hint.words,
     )
 
 

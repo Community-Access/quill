@@ -110,10 +110,10 @@ class FolderPickerDialog:
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)
-        search_label = wx.StaticText(self.dialog, label="&Search folders:")
+        search_label = wx.StaticText(self.dialog, label="F&ind folders:")
         search_row.Add(search_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         self._search_ctrl = wx.TextCtrl(self.dialog)
-        self._search_ctrl.SetName("Search folders by name")
+        self._search_ctrl.SetName("Find folders by name")
         search_row.Add(self._search_ctrl, 1, wx.EXPAND)
         root.Add(search_row, 0, wx.EXPAND | wx.ALL, 10)
 

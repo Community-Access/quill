@@ -47,6 +47,9 @@ _COLUMNS: tuple[tuple[str, int], ...] = (
     ("Status", 260),
     ("Last checked", 130),
     ("Last new episode", 140),
+    # qc.md 5e: "when will it look again?" is a row, not a guess.
+    ("Schedule", 220),
+    ("Next check", 130),
 )
 
 
@@ -61,6 +64,7 @@ class FeedCheckDialog:
         announce: Callable[[str], None],
         retry: Callable[[str], None],
         safe_mode: bool = False,
+        change_schedule: Callable[[str], bool] | None = None,
     ) -> None:
         import wx
 
@@ -69,6 +73,7 @@ class FeedCheckDialog:
         self._announce = announce
         self._retry = retry
         self._safe_mode = safe_mode
+        self._change_schedule = change_schedule
         self._rows: list[Any] = []
 
         self.dialog = wx.Dialog(
@@ -158,6 +163,8 @@ class FeedCheckDialog:
             self._list.SetItem(index, 1, row.status)
             self._list.SetItem(index, 2, row.checked_ago)
             self._list.SetItem(index, 3, row.published_ago)
+            self._list.SetItem(index, 4, row.schedule)
+            self._list.SetItem(index, 5, row.next_check)
         said = feed_health.summary(self._rows)
         self._summary.SetLabel(said)
         self._retry_all_btn.Enable(bool(feed_health.failing_rows(self._rows)))
@@ -240,6 +247,14 @@ class FeedCheckDialog:
             clipboard.Close()
         self._announce(f"Feed address for {row.title} copied")
 
+    def _on_change_schedule(self) -> None:
+        """Change Schedule... on the selected podcast (qc.md 5e)."""
+        row = self._selected_row()
+        if row is None or self._change_schedule is None:
+            return
+        if self._change_schedule(row.show_id):
+            self._reload(keep_index=self._list.GetFirstSelected())
+
     def _on_context_menu(self, event: object) -> None:
         """The row's own menu, positioned on the list rather than at the pointer.
 
@@ -252,12 +267,15 @@ class FeedCheckDialog:
         if row is None:
             return
         menu = wx.Menu()
-        retry_id, copy_id = wx.NewIdRef(), wx.NewIdRef()
-        menu.Append(retry_id, "&Retry This Feed")
+        retry_id, copy_id, schedule_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        menu.Append(retry_id, "Chec&k Now")
+        menu.Append(schedule_id, "Change Sc&hedule...")
         menu.Append(copy_id, "&Copy Feed Address")
         menu.Enable(retry_id, not row.is_local and not self._safe_mode)
+        menu.Enable(schedule_id, not row.is_local and self._change_schedule is not None)
         menu.Enable(copy_id, bool(row.feed_url))
         self.dialog.Bind(wx.EVT_MENU, lambda _e: self._on_retry(), id=retry_id)
+        self.dialog.Bind(wx.EVT_MENU, lambda _e: self._on_change_schedule(), id=schedule_id)
         self.dialog.Bind(wx.EVT_MENU, lambda _e: self._on_copy(), id=copy_id)
         try:
             self._list.PopupMenu(menu)
@@ -286,6 +304,13 @@ class FeedCheckDialog:
             self.dialog.Destroy()
 
 
+def _change_schedule(host: Any, show_id: str) -> bool:
+    from quill.ui.podcasts.schedule_dialog import change_schedule
+
+    show = host._podcast_library.find_show(show_id)
+    return bool(show is not None and change_schedule(host, show))
+
+
 def open_feed_check(host: Any) -> None:
     """Podcasts > Feed Check...: the report, with Retry wired to the real refresh."""
     from quill.ui.podcasts.feed_refresh import refresh_feed
@@ -296,5 +321,6 @@ def open_feed_check(host: Any) -> None:
         announce=host._announce,
         retry=lambda show_id: refresh_feed(host, show_id),
         safe_mode=bool(getattr(host, "_safe_mode", False)),
+        change_schedule=lambda show_id: _change_schedule(host, show_id),
     )
     dialog.show()

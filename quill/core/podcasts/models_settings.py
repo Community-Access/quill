@@ -346,6 +346,9 @@ class PodcastSettings:
     #: listener who wants an hourly check does not necessarily want to wait on
     #: the network while the app is opening.
     refresh_on_launch: bool = False
+    #: The Places list's order and hidden rows (core/podcasts/places.py);
+    #: empty is the shipped layout.
+    places_layout: str = ""
     #: Delete a downloaded file once the episode has been *played* -- an
     #: independent switch, not a retention mode, so it composes with "keep the
     #: last N" and with the age and storage rules rather than replacing one of
@@ -425,6 +428,7 @@ class PodcastSettings:
             "view_names": dict(self.view_names),
             "refresh_minutes": self.refresh_minutes,
             "refresh_on_launch": self.refresh_on_launch,
+            "places_layout": self.places_layout,
             "delete_after_play": self.delete_after_play,
         }
 
@@ -542,6 +546,7 @@ class PodcastSettings:
             view_names=view_names,
             refresh_minutes=_coerce_int(data.get("refresh_minutes"), 0),
             refresh_on_launch=bool(data.get("refresh_on_launch", False)),
+            places_layout=str(data.get("places_layout", "") or ""),
             # A file written before the switch existed carries the old
             # retention *mode*, which meant exactly this; read it as True so
             # nobody's downloads start piling up after an upgrade.

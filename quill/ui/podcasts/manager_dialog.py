@@ -18,7 +18,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
-from quill.core.podcasts import position_sync, speed_choices
+from quill.core.podcasts import speed_choices
 from quill.core.podcasts.chapter_sources import (
     episode_has_possible_chapters,
 )
@@ -43,6 +43,7 @@ from quill.ui.podcasts.manager_lookups import (
 from quill.ui.podcasts.manager_phase4 import ManagerPhase4Mixin
 from quill.ui.podcasts.manager_reveal import ManagerRevealMixin
 from quill.ui.podcasts.manager_row_view import ManagerRowViewMixin
+from quill.ui.podcasts.manager_verbs import ManagerVerbsMixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 from quill.ui.surface_lifetime import surface_tasks
@@ -74,7 +75,7 @@ _EPISODE_SORT_LABELS = (
     "Title A-Z",
     "Longest first",
     "Shortest first",
-    "Unplayed first",
+    "Unheard first",
 )
 _SHOW_SORT_LABELS = (
     "Title A-Z",
@@ -89,6 +90,7 @@ _VIEW_MODE_MODES = ("flat", "grouped", "folders")
 
 class PodcastManagerDialog(
     ManagerRevealMixin,
+    ManagerVerbsMixin,
     ManagerPhase4Mixin,
     ManagerActionsMixin,
     ManagerDownloadsMixin,
@@ -275,7 +277,7 @@ class PodcastManagerDialog(
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         add_podcast_btn = wx.Button(self.dialog, label="&Add Podcast...")
-        add_podcast_btn.SetName("Search, add by feed URL, or import OPML")
+        add_podcast_btn.SetName("Find, add by feed URL, or import OPML")
         new_folder_btn = wx.Button(self.dialog, label="&New Folder...")
         new_folder_btn.SetName("Create a new folder, nested under the selected folder if any")
         import_opml_btn = wx.Button(self.dialog, label="&Import OPML...")
@@ -525,7 +527,7 @@ class PodcastManagerDialog(
         self._tree.ExpandAll()
         if not self._library.shows:
             self._status.SetLabel(
-                "No podcasts yet. Press Add Podcast to search, add by feed URL, or import OPML."
+                "No podcasts yet. Press Add Podcast to find one, add by feed URL, or import OPML."
             )
 
     def _selected_show_id(self) -> str | None:
@@ -645,61 +647,6 @@ class PodcastManagerDialog(
                 child, cookie = self._tree.GetNextChild(current, cookie)
 
     # -- move / rename / delete ----------------------------------------------
-
-    def _on_move_show_to_folder(self, show: PodcastShow) -> None:
-        """File one podcast -- see ui/podcasts/move_shows_dialog."""
-        from quill.ui.podcasts.move_shows_dialog import move_one_show
-
-        move_one_show(self, show)
-
-    def _on_add_starter_playlists(self) -> None:
-        """Five smart playlists worth having -- see ui/podcasts/playlist_starters."""
-        from quill.ui.podcasts.playlist_starters import add_starters
-
-        add_starters(self)
-
-    def _on_move_several(self, preselect: str = "") -> None:
-        """Move several podcasts into one folder -- see ui/podcasts/move_shows_dialog."""
-        from quill.ui.podcasts.move_shows_dialog import open_move_shows
-
-        open_move_shows(self, preselect)
-
-    def _prompt_rename(self, title: str, current: str) -> str | None:
-        wx = self._wx
-        with wx.TextEntryDialog(  # dialog_button_contract: exempt
-            self.dialog, "New name:", title, value=current
-        ) as dialog:
-            if dialog.ShowModal() != wx.ID_OK:
-                return None
-            name = dialog.GetValue().strip()
-        return name or None
-
-    def _on_rename_folder(self, folder: object) -> None:
-        name = self._prompt_rename("Rename Folder", folder.name)
-        if name is None:
-            return
-        folder.name = name
-        self._on_library_changed()
-        self.refresh_tree()
-        self._announce(f"Folder renamed to {name}")
-
-    def _on_rename_show(self, show: PodcastShow) -> None:
-        name = self._prompt_rename("Rename Podcast", show.title)
-        if name is None:
-            return
-        show.title = name
-        self._on_library_changed()
-        self.refresh_tree()
-        self._announce(f"Podcast renamed to {name}")
-
-    def _on_rename_episode(self, episode: PodcastEpisode) -> None:
-        name = self._prompt_rename("Rename Episode", episode.title)
-        if name is None:
-            return
-        episode.title = name
-        self._on_library_changed()
-        self._fill_episodes(self._current_show)
-        self._announce(f"Episode renamed to {name}")
 
     def _delete_downloaded_files_for_removed_shows(self, removed: list[PodcastShow]) -> int:
         """Best-effort removal of downloaded files for unsubscribed shows;
@@ -861,6 +808,9 @@ class PodcastManagerDialog(
     def _download_item_id(self, episode: PodcastEpisode) -> str:
         return episode.guid
 
+    def _verb_selected_episode(self) -> PodcastEpisode | None:
+        return self._selected_episode()
+
     def _selected_episode(self) -> PodcastEpisode | None:
         index = self._episodes.GetFirstSelected()
         if 0 <= index < len(self._current_episodes):
@@ -896,56 +846,6 @@ class PodcastManagerDialog(
             actions[0].run()
             return
         self._play_selected()
-
-    def _on_chapters_click(self, _event: object) -> None:
-        from quill.ui.podcasts import transcript_actions
-
-        transcript_actions.open_chapters(self, self._current_show, self._selected_episode())
-
-    def _on_analyze_chapters(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        """Analyse Chapters, from the episode context menu.
-
-        Routed to the frame rather than run here: the analysis needs the task
-        manager and the announcement channel, and the manager dialog is a view
-        onto the frame's library, not a second owner of it.
-        """
-        from quill.ui.podcasts.chapter_analysis import analyse_chapters_for_episode
-
-        host = self._transport_host
-        if host is None or not hasattr(host, "_task_manager"):
-            self._announce("Chapters can only be analysed from the main window.")
-            return
-        analyse_chapters_for_episode(host, show, episode)
-
-    def _open_chapters_dialog(
-        self, show: PodcastShow, episode: PodcastEpisode, chapter_set: object
-    ) -> None:
-        from quill.ui.podcasts.chapters_dialog import ChaptersDialog
-
-        chapters = list(getattr(chapter_set, "chapters", []) or [])
-        if not chapters:
-            self._announce("This episode has no chapters.")
-            return
-        # Marking chapters to skip is only offered for the episode actually
-        # playing: a mark on something else would either do nothing now or
-        # surprise you later, and neither is worth a button.
-        state = self._controller.state
-        playing_this = state.show_id == show.id and state.episode_guid == episode.guid
-        dialog = ChaptersDialog(
-            self.dialog,
-            episode_title=episode.title,
-            chapters=chapters,
-            announce_cb=self._announce,
-            source_label=str(getattr(chapter_set, "label", "")),
-            skip_state=self._chapter_skip_state() if playing_this else None,
-        )
-        start_ms = dialog.show()
-        if start_ms is None:
-            return
-        if state.show_id == show.id and state.episode_guid == episode.guid:
-            self._controller.seek(start_ms)
-        else:
-            self._play_episode(show, episode, resume_ms=start_ms)
 
     def _play_selected(self) -> None:
         show = self._current_show
@@ -1045,86 +945,9 @@ class PodcastManagerDialog(
 
         handle_episode_key(self, event)
 
-    def _on_view_show_notes(self, episode: PodcastEpisode) -> None:
-        from quill.ui.podcasts import transcript_actions
-
-        transcript_actions.view_show_notes(self, episode)
-
-    def _on_send_show_notes_click(self, episode: PodcastEpisode) -> None:
-        if self._on_send_show_notes is None:
-            return
-        from quill.core.podcasts.show_notes import html_to_plain_text
-
-        self._on_send_show_notes(html_to_plain_text(episode.description))
-        self._announce("Sent show notes to a new document")
-
-    def _on_toggle_played(self, episode: PodcastEpisode) -> None:
-        position_sync.mark_played(episode, not episode.played)
-        if episode.played:
-            from quill.core.podcasts import retention
-
-            show = self._current_show or next(
-                (
-                    candidate
-                    for candidate in self._library.shows
-                    if any(item.guid == episode.guid for item in candidate.episodes)
-                ),
-                None,
-            )
-            retention.on_episode_played(self._library, show, episode)
-        self._on_library_changed()
-        self._refresh_selected_episode_row()
-        self._announce("Marked as played" if episode.played else "Marked as unplayed")
-
-    def _on_copy_episode_link(self, episode: PodcastEpisode) -> None:
-        wx = self._wx
-        if wx.TheClipboard.Open():
-            try:
-                wx.TheClipboard.SetData(wx.TextDataObject(episode.audio_url))
-            finally:
-                wx.TheClipboard.Close()
-        self._announce("Copied episode link")
-
-    def _on_share_moment(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        """Copy a link and a sentence for where this episode is right now."""
-        from quill.ui.podcasts.share_moment import share_moment
-
-        share_moment(self, show, episode, int(getattr(episode, "position_ms", 0) or 0))
-
     # -- sharing and export (x.md item 9) ------------------------------
     # Thin wiring only; the behaviour is in show_actions so the standalone
     # QUILL Cast panel gets the same wording from the same implementation.
-
-    def _on_copy_show_link(self, show: PodcastShow) -> None:
-        from quill.ui.podcasts.share_actions import copy_show_link
-
-        copy_show_link(show, announce=self._announce)
-
-    def _on_show_episode_in_explorer(self, episode: PodcastEpisode) -> None:
-        from quill.ui.podcasts.share_actions import reveal_episode_in_file_manager
-
-        reveal_episode_in_file_manager(episode, announce=self._announce)
-
-    def _on_save_episode_audio_as(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        from quill.ui.podcasts.export_audio import export_episode_audio
-
-        export_episode_audio(
-            self.dialog,
-            self._download_queue,
-            self._download_root,
-            show,
-            episode,
-            announce=self._announce,
-            wx=self._wx,
-            # However it ended: the download changed the row, and a wait that
-            # finished can be several minutes after the click.
-            on_finished=self._refresh_selected_episode_row,
-        )
-
-    def _on_copy_episode_path(self, episode: PodcastEpisode) -> None:
-        from quill.ui.podcasts.export_audio import copy_episode_path
-
-        copy_episode_path(episode, announce=self._announce, wx=self._wx)
 
     # ------------------------------------------------------------------
     # Subscriptions / folders / OPML

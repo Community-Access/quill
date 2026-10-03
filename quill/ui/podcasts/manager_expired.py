@@ -66,7 +66,7 @@ class ManagerExpiredMixin:
         if restore_expired(self._library, show.id, episode.guid):
             self._on_library_changed()
             self.refresh_tree()
-            self._maybe_fill_virtual_selection()
+            getattr(self, "_maybe_fill_virtual_selection", lambda: None)()
             self._announce(f"Restored {episode.title} to the end of the Play Queue")
 
     def _on_restore_all_expired(self) -> None:
@@ -77,7 +77,7 @@ class ManagerExpiredMixin:
             return
         self._on_library_changed()
         self.refresh_tree()
-        self._maybe_fill_virtual_selection()
+        getattr(self, "_maybe_fill_virtual_selection", lambda: None)()
         self._announce(f"Restored {restored} episode(s) to the Play Queue")
 
     def _on_forget_expired(self, pair: object) -> None:
@@ -101,5 +101,5 @@ class ManagerExpiredMixin:
         if forget_expired(self._library, show.id, episode.guid):
             self._on_library_changed()
             self.refresh_tree()
-            self._maybe_fill_virtual_selection()
+            getattr(self, "_maybe_fill_virtual_selection", lambda: None)()
             self._announce(f"Forgot {episode.title}")

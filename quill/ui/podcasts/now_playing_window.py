@@ -83,6 +83,8 @@ class NowPlayingWindow:
         self._next_chapter.Bind(wx.EVT_BUTTON, lambda _e: self._call("podcast_next_chapter"))
         self._speed.Bind(wx.EVT_CHOICE, lambda _e: self._on_speed())
         self._volume.Bind(wx.EVT_SCROLL_CHANGED, lambda _e: self._on_volume())
+        # Up and Down go through bind_up_means_more, which fires EVT_SLIDER.
+        self._volume.Bind(wx.EVT_SLIDER, lambda _e: self._on_volume())
         self._volume.Bind(wx.EVT_SCROLL_THUMBRELEASE, lambda _e: self._on_volume())
         self._mute.Bind(wx.EVT_BUTTON, lambda _e: self._call("podcast_mute_toggle"))
         self._sleep_set.Bind(wx.EVT_BUTTON, lambda _e: self._call("open_sleep_timer_dialog"))

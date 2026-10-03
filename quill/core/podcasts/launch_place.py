@@ -34,6 +34,15 @@ CHOICES: tuple[tuple[str, str], ...] = (
     ("new_episodes", "New Episodes"),
     ("continue_listening", "Continue Listening"),
     ("favorites", "Favorites"),
+    # The rest of the one window's places (qc.md 4.3), appended so a stored
+    # index from before the window keeps its meaning.
+    ("personal_audio", "Personal Audio"),
+    ("playlists", "Playlists"),
+    ("queue", "Play Queue"),
+    ("recently_expired", "Recently Expired"),
+    ("downloads", "Downloads"),
+    ("notifications", "Notifications"),
+    ("podcasts", "Podcasts"),
 )
 
 

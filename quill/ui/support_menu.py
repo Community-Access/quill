@@ -108,7 +108,16 @@ def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.export_my_setup(), id=export_id)
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.import_my_setup(), id=import_id)
 
-    ids = (problems_id, activity_id, repeat_id, quiet_id, bookmarks_id, export_id, import_id)
+    ids = (
+        problems_id,
+        activity_id,
+        repeat_id,
+        notices_id,
+        quiet_id,
+        bookmarks_id,
+        export_id,
+        import_id,
+    )
     host._keep_menu_ids(*ids)
     return ids
 
@@ -128,8 +137,29 @@ def insert_edit_menu(host: object, menu_bar: object, wx: object, *, position: in
     host._keep_menu_ids(undo_id)
     edit_menu.Append(undo_id, host._menu_label("&Undo Last Action", "app.undo_last"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.undo_last_action(), id=undo_id)
-    menu_bar.Insert(position, edit_menu, "&Edit")
+    menu_bar.Insert(position, edit_menu, _edit_label(menu_bar))
     return undo_id
+
+
+def _edit_label(menu_bar: Any) -> str:
+    """ "&Edit", unless a menu already owns Alt+E (QUILL Cast's Episode).
+
+    Two top-level menus on one letter means Alt+E cycles between them instead
+    of opening either, so Edit yields to the next free letter, else none.
+    """
+    taken: set[str] = set()
+    try:
+        for index in range(menu_bar.GetMenuCount()):
+            label = str(menu_bar.GetMenuLabel(index))
+            if "&" in label:
+                taken.add(label.split("&", 1)[1][:1].lower())
+    except Exception:  # noqa: BLE001 - a bar that cannot be read keeps the usual label
+        return "&Edit"
+    # E, then I (T is QUILL Cast's Stop button and D is a Downloads menu).
+    for index, letter in ((0, "e"), (2, "i"), (3, "t")):
+        if letter not in taken:
+            return "Edit"[:index] + "&" + "Edit"[index:]
+    return "Edit"
 
 
 def wire_support_surfaces(host: Any, menu_bar: Any, help_menu: Any, wx: Any) -> None:

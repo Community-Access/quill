@@ -33,7 +33,7 @@ _INTRO = (
     "the extra information some podcasts publish -- chapters, transcripts, and "
     "the moments a show marked as worth hearing. It needs a key and a secret, "
     "which you can get for nothing at podcastindex.org. Leave these empty and "
-    "QUILL Cast simply searches iTunes, as it always has."
+    "QUILL Cast simply finds iTunes, as it always has."
 )
 
 
@@ -168,5 +168,5 @@ def open_directory_credentials(host: Any) -> None:
     announce(
         "Podcast Index credentials saved."
         if new_key and new_secret
-        else "Podcast Index credentials removed. Searches use iTunes."
+        else "Podcast Index credentials removed. Finding podcasts uses iTunes."
     )

@@ -35,6 +35,16 @@ class CastGoToMixin:
 
             data_dir = app_data_dir()
             layout = go_to.load_layout(data_dir)
+            enabled = getattr(self, "_cast_area_enabled", lambda _area: True)
+            # A place whose feature is off is not in Go To (qc.md section 17).
+            layout = go_to.GoToLayout(
+                order=list(layout.order),
+                catalogue=tuple(
+                    destination
+                    for destination in layout.catalogue
+                    if enabled(go_to.DESTINATION_AREAS.get(destination.id, "") or "status_bar")
+                ),
+            )
             chosen = go_to_dialog.open_popup(self, layout)
             if chosen == "__settings__":
                 from quill.ui.radio import go_to_settings_dialog

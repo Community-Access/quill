@@ -21,6 +21,7 @@ from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
 from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.apps.podcasts_now_playing import CastNowPlayingMixin
 from quill.apps.podcasts_preferences import CastPreferencesMixin
+from quill.apps.podcasts_routes import CastPlaceRoutesMixin
 from quill.apps.podcasts_view_menu import CastViewMenuMixin
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
@@ -31,8 +32,15 @@ from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.podcasts.cast_ai_host import CastAiMixin
+from quill.ui.podcasts.episode_list import CastEpisodeListMixin
 from quill.ui.podcasts.main_panel import CastMainPanelMixin
+from quill.ui.podcasts.manager_actions import ManagerActionsMixin
+from quill.ui.podcasts.manager_downloads import ManagerDownloadsMixin
+from quill.ui.podcasts.manager_expired import ManagerExpiredMixin
+from quill.ui.podcasts.manager_row_view import ManagerRowViewMixin
+from quill.ui.podcasts.manager_verbs import ManagerVerbsMixin
 from quill.ui.podcasts.places import CastPlacesMixin
+from quill.ui.podcasts.places_host import CastPlacesHostMixin
 from quill.ui.podcasts.quick_play_commands import CastQuickPlayMixin
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 from quill.ui.podcasts.window_title import CastWindowTitleMixin
@@ -50,6 +58,7 @@ class PodcastsAppFrame(
     # AppShellFrame is listed first so its toggle_window_to_tray / _send_to_tray
     # (which the apps have) win over GlobalHotkeysMixin's send_to_tray-based copy.
     AppShellFrame,
+    CastPlaceRoutesMixin,  # the one window's doors, before the shared mixins
     PodcastsMixin,
     CastLibraryActionsMixin,
     CastCloseMixin,
@@ -60,11 +69,21 @@ class PodcastsAppFrame(
     CastNowPlayingMixin,
     CastAiMixin,  # the shared hosted AI, through an adapter (ear.md A1)
     CastPlacesMixin,
+    CastPlacesHostMixin,
+    CastEpisodeListMixin,
     CastPreferencesMixin,
     CastQuickPlayMixin,
     CastViewMenuMixin,
     CastWindowTitleMixin,
     CastWinampKeysMixin,
+    # The Podcast Manager's mixins, re-homed on the frame (qc.md Phase 2):
+    # one implementation of every episode and podcast verb for QUILL's
+    # Manager and Cast's one window. Last, so the frame's own names win.
+    ManagerVerbsMixin,
+    ManagerActionsMixin,
+    ManagerDownloadsMixin,
+    ManagerRowViewMixin,
+    ManagerExpiredMixin,
     MediaSleepTimerMixin,
     UnlockCodesMixin,
     GlobalHotkeysMixin,
@@ -75,6 +94,7 @@ class PodcastsAppFrame(
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360), app_id="cast")
         self._apply_app_keymap("cast")
+        self.commands.set_availability_probe(self._cast_command_unavailable_reason)
         # Undo, Recent Problems, Quiet Hours and setup transfer: the shared
         # slots, claimed before any window can offer them.
         self._init_app_support()
@@ -146,6 +166,8 @@ class PodcastsAppFrame(
 
         wx.CallAfter(surface_data_folder_startup, self)
         self._refresh_statusbar()
+        wx.CallAfter(self._say_launch_digest)  # qc.md 5b: one sentence, if anything arrived
+        wx.CallAfter(self._check_at_launch)  # qc.md 5e: on launch, and missed checks
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
         # Alt+F4-to-tray (opt-in preference) is handled inside
         # _on_main_char_hook, bound with the Winamp keys in _build_main_panel:
@@ -195,7 +217,9 @@ class PodcastsAppFrame(
         return self._podcast_controller
 
     def _winamp_rows(self) -> list[tuple[object, object]]:
-        """The selected show's episodes -- what the tree is showing here."""
+        """The list on screen: the content list's rows, or the selected show's."""
+        if self._content_is_list():
+            return self._list_winamp_rows()
         selected = self._selected_tree_data()
         show = None
         if selected is not None and selected[0] == "show":
@@ -210,6 +234,8 @@ class PodcastsAppFrame(
         return [(show, episode) for episode in sort_episodes(show.episodes, "newest_first")]
 
     def _winamp_selected_index(self) -> int:
+        if self._content_is_list():
+            return self._episodes.GetFirstSelected()
         selected = self._selected_tree_data()
         if selected is None or selected[0] != "episode":
             return -1
@@ -220,6 +246,9 @@ class PodcastsAppFrame(
         return -1
 
     def _winamp_select_index(self, index: int) -> None:
+        if self._content_is_list():
+            self._select_list_row(index)
+            return
         rows = self._winamp_rows()
         if not (0 <= index < len(rows)):
             return
@@ -233,12 +262,6 @@ class PodcastsAppFrame(
 
     def _reload_library_tree(self, *, keep_key: tuple[str, str] | None = None) -> None:
         from quill.core.podcasts.sorting import sort_shows, unheard_count
-        from quill.core.podcasts.virtual_views import (
-            VIRTUAL_VIEWS,
-            favorite_shows,
-            view_label,
-            virtual_view_pairs,
-        )
 
         if self._library_find_active():  # Find shows matches: refresh those
             self._refresh_library_find()
@@ -256,23 +279,8 @@ class PodcastsAppFrame(
             if key == keep_key:
                 select_item = item
 
-        fav_count = len(favorite_shows(self._podcast_library))
-        fav_label = view_label(self._podcast_library, "favorites")
-        fav_item = tree.AppendItem(root, f"{fav_label} ({fav_count})" if fav_count else fav_label)
-        tag(fav_item, ("view", "favorites"))
-        # A node with a count opens to what it counts (cast-ux-plan P2). The
-        # views used to carry a number and no children, so Right-arrow on the
-        # rows a listener tries first did nothing. See ui/podcasts/library_tree.
-        from quill.ui.podcasts import library_tree
-
-        library_tree.add_view_placeholder(tree, fav_item, "favorites", fav_count)
-        for view_id, _default in VIRTUAL_VIEWS:
-            label = view_label(self._podcast_library, view_id)
-            count = len(virtual_view_pairs(self._podcast_library, view_id))
-            item = tree.AppendItem(root, f"{label} ({count})" if count else label)
-            tag(item, ("view", view_id))
-            library_tree.add_view_placeholder(tree, item, view_id, count)
-
+        # The pinned views are places now (qc.md 4.3); this tree is the
+        # Podcasts place: folders and podcasts only.
         folder_items: dict[str | None, object] = {None: root}
 
         # Folder badges: how many podcasts live under each folder -- the whole
@@ -311,7 +319,7 @@ class PodcastsAppFrame(
             for key, label in (
                 ("add", "Add a Podcast by URL..."),
                 ("import", "Import Podcasts from OPML..."),
-                ("search", "Search for a Podcast..."),
+                ("search", "Find a Podcast..."),
             ):
                 tag(tree.AppendItem(root, label), ("action", key))
 
@@ -321,25 +329,13 @@ class PodcastsAppFrame(
             self._visible_library_shows(), self._podcast_library.settings.show_sort_mode
         ):
             count = unheard_count(show)
-            # Say "unheard", now that folders wear a bare "(n)" for how many
-            # podcasts they hold -- two counts that read identically would
-            # force the listener to remember which node kind they are on.
             label = f"{show.title} ({count} unheard)" if count else show.title
             item = tree.AppendItem(folder_item(show.folder_id), label)
             tag(item, ("show", show.id))
-            # #1192: episodes hang under the show so it can be expanded in
-            # place. They are filled in on demand (EVT_TREE_ITEM_EXPANDING),
-            # not up front: a 1,300-show library with a refreshed catalog is
-            # around 196,000 episodes, and building that many tree items on
-            # every library save froze the window for minutes. A single
-            # placeholder child is enough to make the show expandable, and
-            # expanding one show costs one show's worth of work.
             if show.episodes:
                 placeholder = tree.AppendItem(item, "Loading episodes...")
                 tag(placeholder, ("placeholder", show.id))
 
-        # Expand favorites/views/folders but leave shows COLLAPSED, so the tree
-        # is not a wall of episodes -- expand a show to reveal its episodes.
         # wxMSW asserts on expanding a hidden root (TR_HIDE_ROOT), which took
         # the whole app down before its window appeared -- and the call was a
         # no-op regardless: a hidden root's children are the visible top level.
@@ -402,14 +398,23 @@ class PodcastsAppFrame(
             )
             tree.SetItemData(more, ("more", show.id))
 
+    def _content_is_list(self) -> bool:
+        pane = getattr(self, "_content", None)
+        return pane is not None and pane.showing == pane.LIST
+
     def _selected_tree_data(self) -> tuple[str, str] | None:
+        if self._content_is_list():
+            return self._list_selected_data()
         tree = getattr(self, "_shows_tree", None)
         if tree is None:
             return None
-        item = tree.GetSelection()
-        if not item.IsOk():
+        try:
+            item = tree.GetSelection()
+            if not item.IsOk():
+                return None
+            data = tree.GetItemData(item)
+        except RuntimeError:  # the tree is mid-teardown
             return None
-        data = tree.GetItemData(item)
         return data if isinstance(data, tuple) and len(data) == 2 else None
 
     def _selected_show(self):
@@ -444,8 +449,9 @@ class PodcastsAppFrame(
             self._play_specific_episode(show_id, guid)
             return
         if kind == "more":
-            self.open_podcast_manager()
-            self._announce("Opened the Podcast Manager, where the full episode list lives.")
+            show = self._podcast_library.find_show(key)
+            if show is not None:
+                self._open_show_in_place(show)
             return
         if kind == "action":
             # The empty-library filler rows. Add Podcast and Search open the
@@ -457,11 +463,7 @@ class PodcastsAppFrame(
                 self._podcast_open_add_dialog()
             return
         if kind == "view":
-            from quill.core.podcasts.virtual_views import view_label
-
-            self.open_podcast_manager()
-            label = view_label(self._podcast_library, key)
-            self._announce(f"Opened Podcast Manager. Select {label} there.")
+            self.show_place(key)
             return
         event.Skip()  # a folder: let the tree toggle it
 
@@ -479,6 +481,12 @@ class PodcastsAppFrame(
         if code in (wx.WXK_UP, wx.WXK_DOWN) and event.AltDown():
             self._on_library_move_show(-1 if code == wx.WXK_UP else 1)
             return
+        if code == wx.WXK_LEFT and not self._library_find_active():
+            tree = self._shows_tree
+            item = tree.GetSelection()
+            if item.IsOk() and tree.GetItemParent(item) == tree.GetRootItem():
+                self._places.focus()
+                return
         event.Skip()
 
     def _play_show_next_episode(self, show_id: str) -> None:
@@ -492,7 +500,7 @@ class PodcastsAppFrame(
             self._announce(f"{show.title} has no episodes yet.")
             return
         episode = ordered[0]
-        note = " (no unplayed episodes; playing the most recent)" if episode.played else ""
+        note = " (no unheard episodes; playing the most recent)" if episode.played else ""
         self._play_episode_object(show, episode, note=note)
 
     def _play_specific_episode(self, show_id: str, guid: str) -> None:
@@ -633,11 +641,7 @@ class PodcastsAppFrame(
     def _open_podcasts_doc(self, stem: str) -> None:
         titles = {
             "userguide": "QUILL Cast User Guide",
-            # 2.0 is the current release; Help offered 1.1, so the notes
-            # describing everything in this build were unreachable from
-            # inside it. 1.1 stays in the box for anybody upgrading.
             "release-notes-2.0": "QUILL Cast Release Notes",
-            "release-notes-1.1": "QUILL Cast Release Notes (1.1)",
             "prd": "QUILL Cast Product Requirements",
             "tutorials": "QUILL Cast Tutorials",
         }
@@ -672,7 +676,7 @@ class PodcastsAppFrame(
             f"{_TITLE} {_VERSION}\n"
             "Podcasts from Quill, as a standalone app.\n\n"
             "Runs the same podcast feature code as QUILL itself and shares "
-            "its settings, subscriptions, and downloads.\n"
+            "its settings, podcasts, and downloads.\n"
             f"https://github.com/{_REPO}\n\n"
             "Credits and thanks:\n"
             "- Podcast data from the Podcast Index, an open, independent "
@@ -703,23 +707,13 @@ class PodcastsAppFrame(
             menu_bar.SetLabel(int(self._now_playing_item_id), text)
         now_playing = getattr(self, "_now_playing_text", None)
         if now_playing is not None:
-            now_playing.SetLabel(text)
+            setter = getattr(now_playing, "ChangeValue", None) or now_playing.SetLabel
+            if (getattr(now_playing, "GetValue", None) or now_playing.GetLabel)() != text:
+                setter(text)
         if getattr(self, "_play_pause_btn", None) is not None:
             self._refresh_transport_controls()
 
     def _save_podcast_library(self) -> None:
-        # Every library mutation -- folder/favorite actions, the Manager --
-        # funnels through this save; refreshing here keeps the main-page
-        # tree true without rebuilding it on every unrelated status change.
-        #
-        # The rebuild is not free. Every node's label carries a count, so one
-        # reload walks every episode of every show (measured at 0.14 s over a
-        # 1,300-show library with a refreshed catalog) and then builds 1,300
-        # tree items. A position checkpoint fires this on every pause, stop,
-        # and episode change -- which is exactly the shape of the bug that
-        # made Earshot's inbox badge saturate the main thread and get the app
-        # killed. So on a large library the reload rides the same coalescing
-        # timer as the write, and on a normal one it stays immediate.
         super()._save_podcast_library()
         if getattr(self, "_shows_tree", None) is None:
             return
@@ -727,6 +721,7 @@ class PodcastsAppFrame(
             self._tree_reload_pending = True
             return
         self._reload_library_tree()
+        self._refresh_place(keep=True)
 
     def _flush_podcast_library(self) -> None:
         """Write, and take the deferred tree reload with it."""

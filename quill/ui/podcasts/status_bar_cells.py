@@ -191,6 +191,18 @@ def build_specs(host: Any, wx: Any) -> list[CellSpec]:
             build_menu=lambda menu: _append(host, wx, menu, _DOWNLOAD_ROWS),
         ),
         CellSpec(
+            key="notifications",
+            name="Notifications",
+            text=lambda: notifications_text(host),
+            activate=lambda: call_host(host, "open_notifications"),
+            help=(
+                "How many notifications are unread. Press Enter to open the "
+                "Notifications window; right-click to mark them all read or clear "
+                "the list. Empty when there is nothing unread."
+            ),
+            build_menu=lambda menu: _append(host, wx, menu, _NOTIFICATION_ROWS),
+        ),
+        CellSpec(
             key="sleep_timer",
             name="Sleep timer",
             text=lambda: sleep_timer_text(host),
@@ -454,6 +466,24 @@ _DOWNLOAD_ROWS: tuple[tuple[str, str], ...] = (
     ("Pause All Downloads", "podcast_pause_all_downloads"),
     ("Resume All Downloads", "podcast_resume_all_downloads"),
 )
+
+_NOTIFICATION_ROWS: tuple[tuple[str, str], ...] = (
+    ("Notifications...", "open_notifications"),
+    ("Mark All as Read", "mark_all_notices_read"),
+    ("Clear", "clear_all_notices"),
+)
+
+
+def notifications_text(host: Any) -> str:
+    """The unread count, or nothing (qc.md 5b: empty when nothing is unread)."""
+    del host
+    try:
+        from quill.core.notifications import load_notifications, unread_count
+
+        count = int(unread_count(load_notifications()))
+    except Exception:  # noqa: BLE001 - a list that cannot be read counts nothing
+        return ""
+    return str(count) if count else ""
 
 
 def _append(host: Any, wx: Any, menu: Any, rows: tuple[tuple[str, str], ...]) -> None:

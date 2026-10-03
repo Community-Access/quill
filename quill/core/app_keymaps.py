@@ -222,6 +222,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Now Playing (qc.md 5): window 2, so Ctrl+2 reaches it through the
         # Window menu; this is the Episode menu row's own chord.
         "podcasts.now_playing": "Ctrl+Alt+2",
+        # The Now Playing line's key: what is playing, how far in, the speed.
+        "podcasts.say_now_playing": "Ctrl+T",
+        # Quill Radio's Skip Silence key, for the same verb (family rule 2).
+        "podcasts.skip_silence": "Ctrl+Shift+9",
         # The shared hosted AI (ear.md A1): the family's chords, all free in
         # Cast except Privacy Agreement's Ctrl+Alt+Shift+K (Keyboard Shortcuts
         # Sheet), which takes Alt+Shift+F2, beside the own key on Alt+F2.

@@ -11,9 +11,11 @@ def test_dict2_imports_are_present() -> None:
     # Core lexical imports must be present.
     assert "from quill.core.lexical import" in source
     assert "default_service" in source
-    # Check for individual imports in source regardless of formatting.
-    assert "build_lookup_items" in source
-    assert "render_lookup" in source
+    # The rendering moved to the shared Look Up window on 2026-10-02, which
+    # both editors open (quill/ui/lookup_window.py).
+    shared = Path("quill/ui/lookup_window.py").read_text(encoding="utf-8")
+    assert "build_lookup_items" in shared
+    assert "render_lookup" in shared
 
 
 def test_dict2_service_initialized() -> None:
@@ -31,12 +33,12 @@ def test_dict2_lookup_dialog_method_exists() -> None:
     source = main_frame_path.read_text(encoding="utf-8")
 
     assert "def show_lookup_dialog(self, word: str)" in source
-    # The method queries the lexical service (built lazily on first use).
-    assert "self._get_lexical_service().lookup(" in source
-    # The method renders the lookup result.
-    assert "render_lookup(result)" in source
-    # The method builds selectable items.
-    assert "build_lookup_items(result)" in source
+    # It opens the shared Look Up window, which renders the result and builds
+    # the selectable items (quill/ui/lookup_window.py).
+    assert "self._look_up_word(word, None)" in source
+    shared = Path("quill/ui/lookup_window.py").read_text(encoding="utf-8")
+    assert "render_lookup(result)" in shared
+    assert "build_lookup_items(result)" in shared
 
 
 def test_dict2_dialog_uses_textctrl_readonly() -> None:

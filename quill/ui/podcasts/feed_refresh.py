@@ -55,6 +55,22 @@ def _follow_redirect(host: Any, show: Any, redirected_to: list[str]) -> None:
     host._announce(f"{show.title} has permanently moved; its feed address was updated.")
 
 
+def _record(host: Any, kind: str, *, title: str, body: str, show: Any) -> None:
+    """A Cast notice, when its switch is on (qc.md 5b). Never raises."""
+    try:
+        from quill.core import notification_targets
+        from quill.core.podcasts import notices
+
+        history = getattr(host, "_podcast_history", None)
+        if history is None:
+            return
+        notices.record(
+            history, kind, title=title, body=body, target=notification_targets.for_show(show.id)
+        )
+    except Exception:  # noqa: BLE001 - a notice is never worth a failed refresh
+        pass
+
+
 def refresh_feed(host: Any, show_id: str) -> None:
     from quill.core.podcasts import feed_reader
 
@@ -112,6 +128,12 @@ def refresh_feed(host: Any, show_id: str) -> None:
         from quill.core.podcasts import check_state
 
         check_state.record_success(host._podcast_library, show, new_episodes=len(arrived))
+        check_state.record_hint(
+            host._podcast_library,
+            show,
+            int(getattr(info, "hint_minutes", 0) or 0),
+            str(getattr(info, "hint_words", "") or ""),
+        )
         _follow_redirect(host, show, redirected_to)
         # A podcast that has stopped publishing does not announce it, and an
         # absence is precisely the thing nobody notices. Latched, so an hourly
@@ -119,6 +141,15 @@ def refresh_feed(host: Any, show_id: str) -> None:
         quiet = check_state.quiet_notice(host._podcast_library, show)
         if quiet:
             host._announce(quiet)
+            _record(host, "gone_quiet", title="Gone quiet", body=show.title, show=show)
+        if new_count:
+            _record(
+                host,
+                "new_episode",
+                title=f"{new_count} new episode{'' if new_count == 1 else 's'}",
+                body=show.title,
+                show=show,
+            )
         host._save_podcast_library()
         if host._podcast_manager_dialog is not None:
             host._podcast_manager_dialog.refresh_tree()
@@ -174,6 +205,7 @@ def refresh_feed(host: Any, show_id: str) -> None:
         notice = check_state.failure_notice(host._podcast_library, show)
         if notice:
             host._announce(notice, force=True)
+            _record(host, "feed_failed", title="Feed keeps failing", body=show.title, show=show)
         # Written down as well as spoken (11.5): a feed that failed while
         # you were in another window said its piece to nobody, and until
         # Recent Problems existed there was nowhere to go and look.

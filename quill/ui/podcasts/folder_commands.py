@@ -33,9 +33,9 @@ __all__ = [
 def play_folder(dialog: Any, folder_id: str) -> None:
     """Queue one round of what is new in this folder, and start it."""
     library = dialog._library
-    pairs = folder_actions.latest_unplayed_per_show(library, folder_id)
+    pairs = folder_actions.latest_unheard_per_show(library, folder_id)
     if not pairs:
-        dialog._announce("Nothing in that folder is unplayed.")
+        dialog._announce("Nothing in that folder is unheard.")
         return
     from quill.core.podcasts import queue as queue_module
 
@@ -55,7 +55,7 @@ def play_folder(dialog: Any, folder_id: str) -> None:
 
 
 def add_folder_to_queue(dialog: Any, folder_id: str) -> None:
-    """Every unplayed episode in the folder, appended to the queue.
+    """Every unheard episode in the folder, appended to the queue.
 
     The whole folder rather than one per show: this is the deliberate version
     of Play All, chosen by somebody who meant it.
@@ -64,11 +64,11 @@ def add_folder_to_queue(dialog: Any, folder_id: str) -> None:
     from quill.core.podcasts import queue as queue_module
 
     added = 0
-    for show, episode in folder_actions.unplayed_in_folder(library, folder_id):
+    for show, episode in folder_actions.unheard_in_folder(library, folder_id):
         if queue_module.add_to_queue(library, str(show.id), str(episode.guid)):
             added += 1
     if not added:
-        dialog._announce("Nothing in that folder is unplayed.")
+        dialog._announce("Nothing in that folder is unheard.")
         return
     dialog._on_library_changed()
     dialog._announce(f"Added {added} episode{'' if added == 1 else 's'} to the queue.")
